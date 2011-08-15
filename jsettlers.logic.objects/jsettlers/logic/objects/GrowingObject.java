@@ -1,6 +1,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 import jsettlers.logic.timer.ITimerable;
@@ -24,8 +25,11 @@ public abstract class GrowingObject extends AbstractHexMapObject implements ITim
 
 	private final IMapObjectRemovableGrid grid;
 
-	protected GrowingObject(IMapObjectRemovableGrid grid, EMapObjectType growing, EMapObjectType adult, EMapObjectType dead) {
+	private final ISPosition2D pos;
+
+	protected GrowingObject(IMapObjectRemovableGrid grid, ISPosition2D pos, EMapObjectType growing, EMapObjectType adult, EMapObjectType dead) {
 		this.grid = grid;
+		this.pos = pos;
 		this.growing = growing;
 		this.adult = adult;
 		this.dead = dead;

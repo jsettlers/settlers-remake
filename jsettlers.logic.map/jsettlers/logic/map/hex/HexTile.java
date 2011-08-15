@@ -102,7 +102,7 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	public boolean isBlocked() {
-		return blocked || mapObjectHead != null && mapObjectHead.hasAnyBlocking();
+		return blocked;
 	}
 
 	public void markAsOpen() {
@@ -216,7 +216,8 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	/**
-	 * This method overrides the movable that's currently located at this position.
+	 * This method overrides the movable that's currently located at this
+	 * position.
 	 * 
 	 * @param movable
 	 */
@@ -243,13 +244,13 @@ public class HexTile implements IHexTile, ILocatable {
 		this.landscapeType = landscapeType;
 
 		switch (landscapeType) {
-		case WATER:
-		case SNOW:
-			setBlocked(true);
-			break;
-		default:
-			setBlocked(false);
-			break;
+			case WATER:
+			case SNOW:
+				setBlocked(true);
+				break;
+			default:
+				setBlocked(false);
+				break;
 		}
 	}
 
@@ -263,8 +264,11 @@ public class HexTile implements IHexTile, ILocatable {
 		return mapObjectHead != null;
 	}
 
+	/**
+	 * Use {@link HexGrid#addMapObject(ISPosition2D, AbstractHexMapObject)}
+	 * @param mapObject
+	 */
 	void addMapObject(AbstractHexMapObject mapObject) {
-		mapObject.setPos(this);
 		if (this.mapObjectHead == null) {
 			this.mapObjectHead = mapObject;
 		} else {
@@ -272,24 +276,42 @@ public class HexTile implements IHexTile, ILocatable {
 		}
 	}
 
-	void removeMapObject(AbstractHexMapObject mapObject) {
+	/**
+	 * Removes a map object, but does not update blocking, so you should use {@link HexGrid#removeMapObject(ISPosition2D, AbstractHexMapObject)} instead
+	 * 
+	 * @param mapObject
+	 */
+	boolean removeMapObject(AbstractHexMapObject mapObject) {
 		if (this.mapObjectHead != null) {
+			boolean removed;
 			if (this.mapObjectHead == mapObject) {
 				this.mapObjectHead = this.mapObjectHead.getNextObject();
+				removed = true;
 			} else {
-				this.mapObjectHead.removeMapObject(mapObject);
+				removed = this.mapObjectHead.removeMapObject(mapObject);
 			}
+
+			return removed;
 		}
+		return false;
 	}
 
-	void removeMapObjectType(EMapObjectType mapObjectType) {
+	/**
+	 * Use {@link HexGrid#removeMapObjectType(ISPosition2D, EMapObjectType)}
+	 * @param mapObjectType
+	 * @return
+	 */
+	AbstractHexMapObject removeMapObjectType(EMapObjectType mapObjectType) {
+		AbstractHexMapObject removed = null;
 		if (this.mapObjectHead != null) {
 			if (this.mapObjectHead.getObjectType() == mapObjectType) {
+				removed = this.mapObjectHead;
 				this.mapObjectHead = this.mapObjectHead.getNextObject();
 			} else {
-				this.mapObjectHead.removeMapObjectType(mapObjectType);
+				removed = this.mapObjectHead.removeMapObjectType(mapObjectType);
 			}
 		}
+		return removed;
 	}
 
 	void setPlayer(byte newPlayer) {
@@ -299,7 +321,9 @@ public class HexTile implements IHexTile, ILocatable {
 				IHexStack oldStack = stack;
 				// TODO: multi-material stacks
 				EMaterialType materialType = oldStack.getMaterial();
-				stack = new SingleMaterialStack(materialType, this, EStackType.OFFER, newPlayer);
+				stack =
+				        new SingleMaterialStack(materialType, this,
+				                EStackType.OFFER, newPlayer);
 				for (int i = 0; i < oldStack.getNumberOfElements(); i++) {
 					stack.push(materialType);
 				}
@@ -310,22 +334,26 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	boolean hasCuttableObject(EMapObjectType mapObjectType) {
-		return mapObjectHead != null && mapObjectHead.hasCuttableObject(mapObjectType);
+		return mapObjectHead != null
+		        && mapObjectHead.hasCuttableObject(mapObjectType);
 	}
 
 	/**
 	 * @param mapObjectType
 	 *            type to be looked for
-	 * @return true if at least one of the map objects fits the given EMapObjectType
+	 * @return true if at least one of the map objects fits the given
+	 *         EMapObjectType
 	 */
 	boolean hasMapObjectType(EMapObjectType mapObjectType) {
-		return mapObjectHead != null && mapObjectHead.hasMapObjectType(mapObjectType);
+		return mapObjectHead != null
+		        && mapObjectHead.hasMapObjectType(mapObjectType);
 	}
 
 	/**
 	 * @param type
 	 *            type to be looked for
-	 * @return the first map object with the given type or null if none has been found.
+	 * @return the first map object with the given type or null if none has been
+	 *         found.
 	 */
 	AbstractHexMapObject getMapObject(EMapObjectType type) {
 		return mapObjectHead != null ? mapObjectHead.getMapObject(type) : null;

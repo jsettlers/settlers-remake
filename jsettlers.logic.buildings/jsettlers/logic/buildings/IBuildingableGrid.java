@@ -23,7 +23,7 @@ public interface IBuildingableGrid {
 
 	void removeStack(ISPosition2D pos);
 
-	void addMapObject(ISPosition2D flagPosition, AbstractHexMapObject flagMapObject);
+	boolean addMapObject(ISPosition2D position, AbstractHexMapObject object);
 
 	void removeMapObjectType(ISPosition2D pos, EMapObjectType mapObjectType);
 

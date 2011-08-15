@@ -102,7 +102,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		movablesByID.remove(this.getID());
 		ActivePlayer.get().reduceOwned(player, this.strategy.getMovableType());
 
-		HexGrid.get().addMapObject(pos, new SelfDeletingMapObject(HexGrid.get(), EMapObjectType.GHOST, 1, player));
+		HexGrid.get().addMapObject(pos, new SelfDeletingMapObject(HexGrid.get(), pos, EMapObjectType.GHOST, 1, player));
 	}
 
 	@Override
@@ -241,7 +241,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				state = EMovableState.FINISHED_ACTION;
 				strategy.actionFinished();
 				if (state == EMovableState.FINISHED_ACTION) {
-					System.out.println("blöd");
+					System.out.println("blï¿½d");
 					strategy.actionFinished();
 				}
 			}

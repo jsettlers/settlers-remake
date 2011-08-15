@@ -2,20 +2,22 @@ package jsettlers.logic.map.hex.interfaces;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.RelativePoint;
 
 /**
  * extension to IMapObject to get functions needed by the hex grid.
  * 
  * @author Andreas Eberle
- * 
  */
 public abstract class AbstractHexMapObject implements IMapObject {
+	private static final RelativePoint[] NO_BLOCKING = new RelativePoint[] {};
+	private static final RelativePoint[] SELF_BLOCKING = new RelativePoint[] {
+		new RelativePoint(0, 0)
+	};
 	/**
 	 * next map object to build a list of map objects
 	 */
 	private AbstractHexMapObject next;
-	protected ISPosition2D pos;
 
 	public abstract boolean cutOff();
 
@@ -24,7 +26,17 @@ public abstract class AbstractHexMapObject implements IMapObject {
 	 * 
 	 * @return true if this map object is blocking it's position
 	 */
-	public abstract boolean isBlocking();
+	protected boolean isBlocking() {
+		return false;
+	}
+
+	public RelativePoint[] getBlockedTiles() {
+		if (isBlocking()) {
+			return SELF_BLOCKING;
+		} else {
+			return NO_BLOCKING;
+		}
+	}
 
 	@Override
 	public final AbstractHexMapObject getNextObject() {
@@ -34,8 +46,10 @@ public abstract class AbstractHexMapObject implements IMapObject {
 	/**
 	 * checks if any map object on this list is blocking.
 	 * 
-	 * @return true if any of the map objects on this list is blocking it's position (returns true when {@link #isBlocking()} is called).
+	 * @return true if any of the map objects on this list is blocking it's
+	 *         position (returns true when {@link #isBlocking()} is called).
 	 */
+	@Deprecated
 	public final boolean hasAnyBlocking() {
 		return isBlocking() || this.next != null && this.next.hasAnyBlocking();
 	}
@@ -75,21 +89,21 @@ public abstract class AbstractHexMapObject implements IMapObject {
 		}
 	}
 
-	public final boolean removeMapObjectType(EMapObjectType mapObjectType) {
+	public final AbstractHexMapObject removeMapObjectType(
+	        EMapObjectType mapObjectType) {
+		AbstractHexMapObject removed = null;
 		if (this.next != null) {
 			if (this.next.getObjectType() == mapObjectType) {
+				removed = this.next;
 				this.next = this.next.next;
-				return true;
 			} else {
-				return this.next.removeMapObjectType(mapObjectType);
+				removed = this.next.removeMapObjectType(mapObjectType);
 			}
-		} else {
-			return false;
 		}
+		return removed;
 	}
 
 	/**
-	 * 
 	 * @return true if this map object can be cut.
 	 */
 	public abstract boolean canBeCut();
@@ -97,24 +111,24 @@ public abstract class AbstractHexMapObject implements IMapObject {
 	/**
 	 * @param mapObjectType
 	 *            {@link EMapObjectType} to be checked
-	 * @return true if any of the objects in this list is of the given mapObjectType and {@link #canBeCut()} returns true
+	 * @return true if any of the objects in this list is of the given
+	 *         mapObjectType and {@link #canBeCut()} returns true
 	 */
 	public boolean hasCuttableObject(EMapObjectType mapObjectType) {
-		return this.getObjectType() == mapObjectType && this.canBeCut() || this.next != null && this.next.hasCuttableObject(mapObjectType);
+		return this.getObjectType() == mapObjectType && this.canBeCut()
+		        || this.next != null
+		        && this.next.hasCuttableObject(mapObjectType);
 	}
 
 	/**
-	 * 
 	 * @param mapObjectType
 	 *            type to be looked for
-	 * @return true if at least one of the map objects fits the given EMapObjectType
+	 * @return true if at least one of the map objects fits the given
+	 *         EMapObjectType
 	 */
 	public boolean hasMapObjectType(EMapObjectType mapObjectType) {
-		return this.getObjectType() == mapObjectType || this.next != null && this.next.hasMapObjectType(mapObjectType);
-	}
-
-	public void setPos(ISPosition2D pos) {
-		this.pos = pos;
+		return this.getObjectType() == mapObjectType || this.next != null
+		        && this.next.hasMapObjectType(mapObjectType);
 	}
 
 	public AbstractHexMapObject getMapObject(EMapObjectType type) {

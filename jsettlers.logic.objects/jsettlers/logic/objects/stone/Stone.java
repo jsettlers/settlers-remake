@@ -1,6 +1,7 @@
 package jsettlers.logic.objects.stone;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 
 public class Stone extends AbstractHexMapObject {
@@ -37,8 +38,16 @@ public class Stone extends AbstractHexMapObject {
 	}
 
 	@Override
-	public boolean isBlocking() {
-		return canBeCut();
+	public RelativePoint[] getBlockedTiles() {
+	    return new RelativePoint[] {
+	    		new RelativePoint(-1, -1),
+	    		new RelativePoint(0, -1),
+	    		new RelativePoint(-1, 0),
+	    		new RelativePoint(0, 0),
+	    		new RelativePoint(0, 1),
+	    		new RelativePoint(1, 0),
+	    		new RelativePoint(1, 1),
+	    };
 	}
 
 	@Override

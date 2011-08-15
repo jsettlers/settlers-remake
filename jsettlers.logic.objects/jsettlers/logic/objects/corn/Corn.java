@@ -1,6 +1,7 @@
 package jsettlers.logic.objects.corn;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.objects.GrowingObject;
 import jsettlers.logic.objects.IMapObjectRemovableGrid;
@@ -18,8 +19,8 @@ public class Corn extends GrowingObject {
 	 * 
 	 * @param grid
 	 */
-	public Corn(IMapObjectRemovableGrid grid) {
-		super(grid, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD);
+	public Corn(IMapObjectRemovableGrid grid, ISPosition2D pos) {
+		super(grid, pos, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD);
 	}
 
 	@Override

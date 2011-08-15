@@ -18,7 +18,7 @@ public class BuildingInstruction extends ObjectInstruction {
 		defaults.put("count", "1");
 		defaults.put("distance", "0");
 		defaults.put("on", "grass");
-		defaults.put("type", "tree");
+		defaults.put("type", "tower");
 	}
 
 	@Override
