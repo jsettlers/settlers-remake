@@ -1,0 +1,127 @@
+<?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
+
+<building worker="STONECUTTER" workradius="20">
+	<blocked dx="2" dy="4" block="true" />
+	<blocked dx="1" dy="4" block="false" />
+	<blocked dx="0" dy="3" block="true" />
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="3" dy="1" block="true" />
+	<blocked dx="2" dy="0" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-3" dy="-1" block="true" />
+	<blocked dx="-3" dy="-2" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="-1" dy="2" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="-3" dy="0" block="true" />
+	<blocked dx="-4" dy="-4" block="true" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-4" dy="-1" block="false" />
+	<blocked dx="-4" dy="-2" block="false" />
+	<blocked dx="-4" dy="-3" block="false" />
+	<blocked dx="-3" dy="-3" block="false" />
+	<blocked dx="-2" dy="-3" block="false" />
+	<blocked dx="-1" dy="-3" block="false" />
+	<blocked dx="0" dy="-2" block="false" />
+	<blocked dx="2" dy="-1" block="false" />
+	<blocked dx="1" dy="-2" block="false" />
+	<blocked dx="4" dy="1" block="false" />
+	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="4" dy="3" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="3" dy="3" block="false" />
+	<blocked dx="4" dy="4" block="false" />
+	<blocked dx="4" dy="5" block="false" />
+	<blocked dx="4" dy="6" block="false" />
+	<blocked dx="2" dy="6" block="false" />
+	<blocked dx="3" dy="6" block="false" />
+	<blocked dx="2" dy="5" block="false" />
+	<blocked dx="1" dy="5" block="false" />
+	<blocked dx="0" dy="4" block="false" />
+	<blocked dx="-1" dy="3" block="false" />
+	<blocked dx="-2" dy="2" block="false" />
+	<blocked dx="-3" dy="1" block="false" />
+	<blocked dx="3" dy="5" block="false" />
+	<door dx="2" dy="1" />
+	<stack dx="1" dy="5" material="PLANK" buildrequired="5" />
+	<stack dx="3" dy="5" material="STONE" buildrequired="2" />
+	<bricklayer dx="-2" dy="2" direction="NORTH_EAST" />
+	<bricklayer dx="-1" dy="3" direction="NORTH_EAST" />
+	<bricklayer dx="3" dy="4" direction="NORTH_WEST" />
+	<bricklayer dx="3" dy="3" direction="NORTH_WEST" />
+	<bricklayer dx="4" dy="2" direction="NORTH_WEST" />
+	<flag dx="1" dy="-1" />
+	
+	<buildmark dx="3" dy="1" />
+	<buildmark dx="2" dy="4" />
+	<buildmark dx="0" dy="3" />
+	<buildmark dx="-3" dy="0" />
+	<buildmark dx="-3" dy="-2" />
+	<buildmark dx="-1" dy="-2" />
+	<image file="14" type="GUI" for="GUI"
+		image="0" sequence="42" />
+
+	<startjob name="gohome"/>
+	
+	<!-- go home -->
+	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome_wait" 	dx="2" dy="1"/>
+	<!-- go home failed, retry -->
+	<job name="gohome_wait" 	type="WAIT" 			successjob="gohome" 		failjob="gohome_wait" 	time="1.0"/>
+	
+	<!-- arrive at front door => hide -->
+	<job name="hide" 			type="HIDE" 			successjob="reset" 			failjob="gohome_wait"/>
+	<job name="reset" 			type="SET_MATERIAL"		successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
+	
+	<!-- wait some time -->
+	<job name="wait_at_home" 	type="WAIT" 			successjob="check" 			failjob="wait_at_home" 	time="1.0"/>
+	
+	<job name="check" 			type="NOT_FULL" 		successjob="presearch" 		failjob="hide" 			dx="3" dy="4" material="STONE"/>
+	
+	<!-- show -->
+	<job name="presearch" 		type="PRE_SEARCH" 		successjob="show" 			failjob="wait_at_home" 	search="CUTTABLE_STONE" dx="2" dy="1"/>
+	<job name="show" 			type="SHOW" 			successjob="search_stone" 	failjob="hide" 			dx="2" dy="1"/>
+	
+	<!-- go search the stones -->
+	<job name="search_stone" 	type="FOLLOW_SEARCHED" 	successjob="look_at_stone" 	failjob="gohome" 		/>
+	
+	<!-- hack the stone -->
+	<job name="look_at_stone" 	type="LOOK_AT" 			successjob="hit_stone1" 	failjob="gohome" 		direction="NORTH_WEST"/>
+	<job name="hit_stone1" 		type="PLAY_ACTION1" 	successjob="hit_stone2" 	failjob="gohome" 		time="0.75"/>
+	<job name="hit_stone2" 		type="PLAY_ACTION1" 	successjob="hit_stone3" 	failjob="gohome" 		time="0.75"/>
+	<job name="hit_stone3" 		type="PLAY_ACTION1" 	successjob="hit_stone4" 	failjob="gohome" 		time="0.75"/>
+	<job name="hit_stone4" 		type="PLAY_ACTION1" 	successjob="hit_stone5" 	failjob="gohome" 		time="0.75"/>
+	<job name="hit_stone5" 		type="PLAY_ACTION1" 	successjob="hit_stone6" 	failjob="gohome" 		time="0.75"/>
+	<job name="hit_stone6" 		type="PLAY_ACTION1" 	successjob="take_stone" 	failjob="gohome" 		time="0.75"/>
+	
+	<job name="take_stone" 		type="TAKE" 			successjob="execute" 		failjob="gohome" 		material="STONE"/>
+	<job name="execute" 		type="EXECUTE" 			successjob="set_mat_stone" 	failjob="gohome" 		search="CUTTABLE_STONE"/>
+	<job name="set_mat_stone"	type="SET_MATERIAL" 	successjob="go_drop_stone" 	failjob="gohome" 		material="STONE"/>
+	
+	<!-- drop it at (3|4) -->
+	<job name="go_drop_stone"	type="GO_TO" 			successjob="drop_stone" 	failjob="set_mat_none" 	dx="3" dy="4"/>
+	<job name="drop_stone" 		type="DROP" 			successjob="set_mat_none" 	failjob="set_mat_none" 	material="STONE"/>
+	<job name="set_mat_none" 	type="SET_MATERIAL" 	successjob="walk1" 			failjob="gohome" 		material="NO_MATERIAL"/>
+	
+	<job name="walk1" 			type="WALK" 			successjob="walk2" 			failjob="hide" 			direction="NORTH_EAST"/>
+	<job name="walk2" 			type="WALK" 			successjob="walk3" 			failjob="hide" 			direction="NORTH_EAST"/>
+	<job name="walk3" 			type="WALK" 			successjob="hide" 			failjob="hide" 			direction="NORTH_WEST"/>
+
+
+</building>

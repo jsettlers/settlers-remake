@@ -1,0 +1,58 @@
+<?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
+
+<building worker="MILLER" workradius="10">
+
+	<blocked dx="1" dy="1" />
+	<blocked dx="1" dy="3" />
+	<blocked dx="1" dy="2" />
+	<blocked dx="0" dy="1" />
+	<blocked dx="0" dy="2" />
+	<blocked dx="-1" dy="1" />
+	<blocked dx="-2" dy="0" />
+	<blocked dx="-2" dy="-1" />
+	<blocked dx="-1" dy="-1" />
+	<blocked dx="-1" dy="-2" />
+	<blocked dx="0" dy="-1" />
+	<blocked dx="1" dy="-1" />
+	<blocked dx="1" dy="0" />
+	<blocked dx="0" dy="-2" />
+	<blocked dx="0" dy="0" />
+	<blocked dx="-1" dy="0" />
+	<door dx="-1" dy="2" />
+	
+	<stack dx="2" dy="2" material="CROP" buildrequired="0" />
+	<stack dx="0" dy="3" material="PLANK" buildrequired="6" />
+	<stack dx="2" dy="3" material="STONE" buildrequired="3" />
+		
+	<bricklayer dx="-2" dy="1" direction="NORTH_EAST"/>
+	<bricklayer dx="0" dy="3" direction="NORTH_EAST"/>
+	<bricklayer dx="2" dy="3" direction="NORTH_WEST"/>
+	<bricklayer dx="2" dy="2" direction="NORTH_WEST"/>
+	<bricklayer dx="3" dy="1" direction="NORTH_WEST"/>
+	
+	<flag dx="-5" dy="-10" />
+	
+	<startjob name="gohome"/>
+	
+	<!-- going home job -->
+	<job name="gohome" 		type="GO_TO" 			successjob="hide" 			failjob="waithome" 	dx="-1" dy="2"/>
+	<job name="waithome" 	type="WAIT" 			successjob="gohome" 		failjob="waithome" 	time="3"/>
+	<job name="hide" 		type="HIDE" 			successjob="start" 			failjob="start"		/>
+	
+	<job name="start" 		type="WAIT" 			successjob="checkflour" 	failjob="show" 		time="3.0"/>
+	<job name="checkflour" 	type="NOT_FULL" 		successjob="checkcrop" 		failjob="hide" 		dx="-2" dy="1" material="FLOUR"/>
+	<job name="checkcrop"	type="AVAILABLE"		successjob="show"			failjob="start"		dx="2" dy="2" material="CROP"/>	
+	<job name="show"		type="SHOW"				successjob="go_to_crop"		failjob="hide"		dx="-1" dy="2"/>
+	<job name="go_to_crop"	type="GO_TO"			successjob="take"			failjob="gohome"	dx="2" dy="2"/>
+	<job name="changeMat1"	type="SET_MATERIAL"		successjob="go_back"		failjob="gohome"	material="CROP"/>
+	<job name="take"		type="TAKE"				successjob="changeMat1"		failjob="gohome"	material="CROP"/>
+	<job name="go_back"		type="GO_TO"			successjob="hide1"			failjob="gohome"	dx="-1" dy="2"/>
+	<job name="hide1"		type="HIDE"				successjob="makeflour"		failjob="start"		/>
+	<job name="makeflour"	type="WAIT"				successjob="changeMat2"		failjob="start"		time="2.0"/>
+	<job name="changeMat2"	type="SET_MATERIAL"		successjob="get_flour"		failjob="hide"		material="FLOUR"/>
+	<job name="get_flour"	type="GO_TO"			successjob="look"			failjob="gohome"	dx="-2" dy="1"/>
+	<job name="look"		type="LOOK_AT"			successjob="drop"			failjob="hide"		direction="NORTH_EAST"/>
+	<job name="drop"		type="DROP"				successjob="changeMat3"		failjob="gohome"	material="FLOUR"/>
+	<job name="changeMat3"	type="SET_MATERIAL"		successjob="gohome"			failjob="gohome"	material="NO_MATERIAL"/>
+  
+</building>

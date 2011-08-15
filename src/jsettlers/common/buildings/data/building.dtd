@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ENTITY % imagelinktype "(SETTLER| GUI| LANDSCAPE)">
+
+<!ENTITY % material "(NO_MATERIAL|
+	AXE|
+	BOW|
+	BLADE|
+	BREAD|
+	COAL|
+	CROP|
+	FISH|
+	FISHINGROD|
+	FLOUR|
+	GOLD|
+	GOLDORE|
+	HAMMER|
+	IRON|
+	IRONORE|
+	MEAT|
+	PICK|
+	PIG|
+	PLANK|
+	SAW|
+	SCYTHE|
+	SPEAR|
+	STONE|
+	SWORD|
+	TRUNK|
+	WATER|
+	WINE|
+	WHITE_BREAD|
+	BASKET|
+	TREE|
+	PLANT)">
+<!ENTITY % jobtype "(
+	WAIT|
+	WALK|
+	SHOW|
+	HIDE|
+	SET_MATERIAL|
+	TAKE|
+	DROP|
+	PRE_SEARCH|
+	PRE_SEARCH_IN_AREA|
+	FOLLOW_SEARCHED|
+	GO_TO|
+	LOOK_AT|
+	PLAY_ACTION1|
+	PLAY_ACTION2|
+	EXECUTE|
+	AVAILABLE|
+	NOT_FULL)
+">
+<!ENTITY % direction "(EAST| SOUTH_EAST| SOUTH_WEST| WEST | NORTH_WEST | NORTH_EAST)
+">
+
+<!ENTITY % searchtype "(FOREIGN_GROUND|
+	CUTTABLE_TREE|
+	CUTTABLE_STONE|
+	PLANTABLE_TREE|
+	PLANTABLE_CORN|
+	CUTTABLE_CORN|
+	FISHABLE|
+	RIVER|
+	ENEMY)
+">
+
+<!ELEMENT building (blocked+, door, stack*, bricklayer+, flag, buildmark*, image*, startjob?, job*) >
+
+<!ATTLIST building
+   worker CDATA #REQUIRED
+   workradius CDATA #IMPLIED
+>
+
+
+<!ELEMENT blocked EMPTY>
+<!ATTLIST blocked
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+   block (true|false) "true"
+>
+
+<!ELEMENT door EMPTY>
+<!ATTLIST door
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+>
+
+<!ELEMENT flag EMPTY>
+<!ATTLIST flag
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+>
+
+
+<!ELEMENT stack EMPTY>
+<!ATTLIST stack
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+   buildrequired CDATA #REQUIRED
+   material %material; #REQUIRED
+>
+
+<!ELEMENT bricklayer EMPTY>
+<!ATTLIST bricklayer
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+   direction %direction; #REQUIRED
+>
+
+<!ELEMENT startjob EMPTY>
+<!ATTLIST startjob
+   name IDREF #REQUIRED
+>
+
+<!ELEMENT job EMPTY>
+<!ATTLIST job
+   name ID #REQUIRED
+   type %jobtype; #REQUIRED
+   successjob IDREF #REQUIRED
+   failjob IDREF #REQUIRED
+   dx CDATA #IMPLIED
+   dy CDATA #IMPLIED
+   time CDATA #IMPLIED
+   material %material; #IMPLIED
+   direction %direction; #IMPLIED
+   search %searchtype; #IMPLIED
+>
+
+<!ELEMENT image EMPTY>
+<!ATTLIST image
+   for (GUI|BUILD|FINAL) #REQUIRED
+   type %imagelinktype; #REQUIRED
+   file CDATA #REQUIRED
+   sequence CDATA #REQUIRED
+   image CDATA #REQUIRED
+>
+
+<!ELEMENT buildmark EMPTY>
+<!ATTLIST buildmark
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+>

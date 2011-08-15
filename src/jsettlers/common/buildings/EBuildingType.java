@@ -1,0 +1,188 @@
+package jsettlers.common.buildings;
+
+import jsettlers.common.buildings.jobs.IBuildingJob;
+import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.RelativePoint;
+
+/**
+ * This interface defines the main building type.
+ * 
+ * @author michael
+ */
+public enum EBuildingType {
+	STONECUTTER(3), FORESTER(7), LUMBERJACK(0), SAWMILL(1),
+
+	COALMINE(5), IRONMINE(4), GOLDMINE(6), GOLDMELT(8), IRONMELT(9), TOOLSMITH(
+	        10), WEAPONSMITH(11),
+
+	FARM(21), PIG_FARM(20), MILL(14), // 13 => rotating
+	WATERWORKS(19),
+	SLAUGHTERHOUSE(13),
+	BAKER(23),
+	FISHER(22),
+	WINEGROWER(33),
+	CHARCOAL_BURNER(30),
+	DONKEY_FARM(35),
+
+	SMALL_LIVINGHOUSE(24),
+	MEDIUM_LIVINGHOUSE(25),
+	BIG_LIVINGHOUSE(26),
+
+	LOOKOUT_TOWER(2),
+	TOWER(17),
+	BIG_TOWER(18),
+	CASTLE(16),
+	HOSPITAL(29),
+	BARRACK(34),
+
+	DOCKYARD(45),
+	HARBUR(44),
+	// 27: katapult
+
+	TEMPLE(31),
+	BIG_TEMPLE(32);
+
+	private final IBuildingJob startJob;
+
+	private final EMovableType workerType;
+
+	private final RelativePoint doorTile;
+
+	private final RelativePoint[] blockedTiles;
+
+	private final int imageIndex;
+
+	private final short workradius;
+
+	private final RelativeStack[] stacks;
+
+	private final RelativePoint workcenter;
+
+	private final RelativePoint flag;
+
+	private final RelativeBricklayer[] bricklayers;
+
+	private final byte numberOfConstructionMaterials;
+
+	private final ImageLink guiImage;
+
+	private final ImageLink[] images;
+
+	private RelativePoint[] protectedTiles;
+
+	private RelativePoint[] buildmarks;
+
+	EBuildingType(int imageIndex) {
+		this.imageIndex = imageIndex;
+		BuildingFile file = new BuildingFile(this.toString());
+		startJob = file.getStartJob();
+		workerType = file.getWorkerType();
+		doorTile = file.getDoor();
+		blockedTiles = file.getBlockedTiles();
+		protectedTiles = file.getProtectedTiles();
+		stacks = file.getStacks();
+		workradius = file.getWorkradius();
+		workcenter = file.getWorkcenter();
+		flag = file.getFlag();
+		bricklayers = file.getBricklayers();
+		guiImage = file.getGuiImage();
+		images = file.getImages();
+		buildmarks = file.getBuildmarks();
+
+		this.numberOfConstructionMaterials =
+		        calculateNumberOfConstructionMaterials();
+	}
+
+	private byte calculateNumberOfConstructionMaterials() {
+		byte sum = 0;
+		for (RelativeStack curr : stacks) {
+			sum += curr.requiredForBuild();
+		}
+		return sum;
+	}
+
+	public IBuildingJob getStartJob() {
+		return startJob;
+	}
+
+	public EMovableType getWorkerType() {
+		return workerType;
+	}
+
+	public RelativePoint getDoorTile() {
+		return doorTile;
+	}
+
+	public RelativePoint[] getBlockedTiles() {
+		return blockedTiles;
+	}
+
+	public RelativeStack[] getRequestStacks() {
+		return stacks;
+	}
+
+	@Deprecated
+	public int getImageIndex() {
+		return imageIndex;
+	}
+
+	/**
+	 * Gets the images needed to display this building
+	 * 
+	 * @return The images
+	 */
+	public ImageLink[] getImages() {
+		return images;
+	}
+
+	/**
+	 * Gets the gui image
+	 * 
+	 * @return The image. It may be <code>null</code>
+	 */
+	public ImageLink getGuiImage() {
+		return guiImage;
+	}
+
+	/**
+	 * Gets the working radius of the building. If it is 0, the building does
+	 * not support a working radius.
+	 * 
+	 * @return
+	 */
+	public short getWorkradius() {
+		return workradius;
+	}
+
+	public RelativePoint getWorkcenter() {
+		return workcenter;
+	}
+
+	public RelativePoint getFlag() {
+		return flag;
+	}
+
+	public RelativeBricklayer[] getBricklayers() {
+		return bricklayers;
+	}
+
+	public byte getNumberOfConstructionMaterials() {
+		return numberOfConstructionMaterials;
+	}
+
+	/**
+	 * Gets the tiles that are protected by this building. On thse tiles, no
+	 * other buildings may be build.
+	 * 
+	 * @return The tiles as array.
+	 */
+	public RelativePoint[] getProtectedTiles() {
+		return protectedTiles;
+	}
+	
+	public RelativePoint[] getBuildmarks() {
+	    return buildmarks;
+    }
+}
