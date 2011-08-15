@@ -2,6 +2,7 @@ package jsettlers.common.buildings;
 
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
@@ -88,7 +89,16 @@ public enum EBuildingType {
 		flag = file.getFlag();
 		bricklayers = file.getBricklayers();
 		guiImage = file.getGuiImage();
-		images = file.getImages();
+		ImageLink[] tempimages = file.getImages();
+		if (tempimages.length == 0) {
+			// TODO: this can be removed if all images are converted
+			images = new ImageLink[] {
+				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
+			};
+		} else {
+			images = tempimages;
+		}
+
 		buildmarks = file.getBuildmarks();
 
 		this.numberOfConstructionMaterials =
@@ -181,8 +191,8 @@ public enum EBuildingType {
 	public RelativePoint[] getProtectedTiles() {
 		return protectedTiles;
 	}
-	
+
 	public RelativePoint[] getBuildmarks() {
-	    return buildmarks;
-    }
+		return buildmarks;
+	}
 }
