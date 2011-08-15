@@ -1,0 +1,324 @@
+package jsettlers.input;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.movable.IMovable;
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.selectable.ISelectable;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.MoveToAction;
+import jsettlers.graphics.action.ScreenChangeAction;
+import jsettlers.graphics.action.SelectAction;
+import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.map.IMapInterfaceListener;
+import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.selection.BuildingSelection;
+import jsettlers.graphics.map.selection.EmptySelection;
+import jsettlers.graphics.map.selection.ISelectionSet;
+import jsettlers.graphics.map.selection.SettlerSelection;
+import jsettlers.input.task.GeneralGuiTask;
+import jsettlers.input.task.MoveToGuiTask;
+import jsettlers.input.task.SimpleGuiTask;
+import jsettlers.input.task.TaskExecutor;
+import jsettlers.input.task.WorkAreaGuiTask;
+import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.map.hex.HexTile;
+import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.movable.IDebugable;
+import jsettlers.logic.movable.IIDable;
+import network.INetworkManager;
+import synchronic.timer.NetworkTimer;
+
+/**
+ * class to handle the events provided by the user through jsettlers.graphics
+ * 
+ * @author Andreas Eberle
+ */
+public class GuiInterface implements IMapInterfaceListener {
+
+	private ISelectionSet currentSelection = new EmptySelection();
+	private final MapInterfaceConnector connector;
+
+	/**
+	 * The current active action that waits for the user to select a point.
+	 */
+	private Action activeAction = null;
+	private final INetworkManager manager;
+
+	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager) {
+		this.connector = connector;
+		this.manager = manager;
+		TaskExecutor.init();
+		connector.addListener(this);
+	}
+
+	@Override
+	public void action(Action action) {
+		if (action.getActionType() != EActionType.SCREEN_CHANGE) {
+			System.out.println("action(Action): " + action.getActionType());
+		}
+
+		switch (action.getActionType()) {
+		case BUILD:
+			EBuildingType buildingType = ((BuildAction) action).getBuilding();
+			System.err.println("build: " + buildingType);
+			HexGrid.get().setPreviewBuilding(buildingType);
+			ConstructMarksCalculator.setBuildingType(buildingType);
+			setActiveAction(action);
+			break;
+
+		case DEBUG_ACTION:
+			for (ISelectable curr : currentSelection) {
+				if (curr instanceof IDebugable) {
+					((IDebugable) curr).debug();
+				}
+			}
+			break;
+
+		case SPEED_TOGGLE_PAUSE:
+			NetworkTimer.get().invertPausing();
+			break;
+
+		case SPEED_SLOW:
+			if (!manager.isMultiplayer())
+				NetworkTimer.setGameSpeed(0.5f);
+			break;
+		case SPEED_FAST:
+			if (!manager.isMultiplayer())
+				NetworkTimer.setGameSpeed(2.0f);
+			break;
+		case SPEED_FASTER:
+			if (!manager.isMultiplayer())
+				NetworkTimer.multiplyGameSpeed(1.2f);
+			break;
+		case SPEED_SLOWER:
+			if (!manager.isMultiplayer())
+				NetworkTimer.multiplyGameSpeed(1 / 1.2f);
+			break;
+		case SPEED_NORMAL:
+			if (!manager.isMultiplayer())
+				NetworkTimer.setGameSpeed(1.0f);
+			break;
+
+		case SELECT_POINT:
+			handleSelectPointAction((SelectAction) action);
+			break;
+
+		case SELECT_AREA:
+			selectArea((SelectAreaAction) action);
+			break;
+
+		case MOVE_TO:
+			MoveToAction moveToAction = (MoveToAction) action;
+			ISPosition2D pos = moveToAction.getPosition();
+
+			moveTo(pos);
+			break;
+
+		case FAST_FORWARD:
+			if (!manager.isMultiplayer()) {
+				NetworkTimer.get().fastForward();
+			}
+			break;
+
+		case SET_WORK_AREA:
+			setActiveAction(action);
+			break;
+
+		case DESTROY:
+			// TODO handle destroy actions of buildings
+			break;
+
+		case STOP_WORKING:
+			stopOrStartWorkingAction(true);
+			break;
+		case START_WORKING:
+			stopOrStartWorkingAction(false);
+			break;
+
+		case SHOW_SELECTION:
+			showSelection();
+			break;
+
+		case SCREEN_CHANGE:
+			ConstructMarksCalculator.setScreen(((ScreenChangeAction) action).getScreenArea());
+			break;
+
+		default:
+			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+		}
+	}
+
+	private void showSelection() {
+		int x = 0;
+		int y = 0;
+		int count = 0;
+		for (ISelectable member : currentSelection) {
+			if (member instanceof ILocatable) {
+				x += ((ILocatable) member).getPos().getX();
+				y += ((ILocatable) member).getPos().getY();
+				count++;
+			}
+		}
+		System.out.println("locatable: " + count);
+		if (count > 0) {
+			ISPosition2D point = new ShortPoint2D(x / count, y / count);
+			connector.scrollTo(point, false);
+		}
+	}
+
+	/**
+	 * @param stop
+	 *            if true the members of currentSelection will stop working<br>
+	 *            if false, they will start working
+	 */
+	private void stopOrStartWorkingAction(boolean stop) {
+		for (ISelectable curr : currentSelection) {
+			curr.stopOrStartWorking(stop);
+		}
+	}
+
+	private void moveTo(ISPosition2D pos) {
+		List<Integer> selectedIds = new LinkedList<Integer>();
+
+		for (ISelectable curr : currentSelection) {
+			if (curr instanceof IIDable) {
+				selectedIds.add(((IIDable) curr).getID());
+			}
+		}
+
+		scheduleTask(new MoveToGuiTask(EGuiAction.MOVE_TO, pos, selectedIds));
+	}
+
+	private void setActiveAction(Action action) {
+		if (this.activeAction != null) {
+			// TODO: if it was a build action, remove build images
+			this.activeAction.setActive(false);
+		}
+		this.activeAction = action;
+		if (action != null) {
+			action.setActive(true);
+		}
+	}
+
+	private void selectArea(SelectAreaAction action) {
+		ArrayList<IMovable> foundMovables = new ArrayList<IMovable>();
+		IBuilding foundBuilding = null;
+		HexGrid grid = HexGrid.get();
+		for (ISPosition2D cur : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
+			HexTile tile = grid.getTile(cur);
+			if (tile.getMovable() != null) {
+				foundMovables.add(tile.getMovable());
+			} else if (tile.getBuilding() != null) {
+				foundBuilding = tile.getBuilding();
+			}
+		}
+
+		if (!foundMovables.isEmpty()) {
+			setSelection(new SettlerSelection(foundMovables));
+		} else if (foundBuilding != null) {
+			setSelection(new BuildingSelection(foundBuilding));
+		} else {
+			setSelection(new EmptySelection());
+		}
+	}
+
+	private void handleSelectPointAction(SelectAction action) {
+		SelectAction selectAction = action;
+		ISPosition2D pos = selectAction.getPosition();
+		System.out.println("clicked: ( " + pos.getX() + " | " + pos.getY() + " )");
+
+		if (activeAction == null) {
+			select(pos);
+		} else {
+			switch (activeAction.getActionType()) {
+			case BUILD:
+				EBuildingType type = HexGrid.get().getConstructionPreviewBuilding();
+				HexGrid.get().setPreviewBuilding(null);
+				ConstructMarksCalculator.setBuildingType(null);
+				scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos, type));
+				break;
+			case SET_WORK_AREA:
+				if (currentSelection.getSize() > 0) {
+					ISelectable selected = currentSelection.iterator().next();
+					if (selected instanceof Building) {
+						scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, pos, ((Building) selected).getPos()));
+					}
+				}
+				break;
+			}
+
+			setActiveAction(null);
+		}
+	}
+
+	private void scheduleTask(SimpleGuiTask guiTask) {
+		manager.scheduleTask(guiTask);
+	}
+
+	private void select(ISPosition2D pos) {
+		HexTile tile = HexGrid.get().getTile(pos);
+		if (tile != null) {
+			IHexMovable m = tile.getMovable();
+			if (m != null) {
+				setSelection(new SettlerSelection(Collections.singletonList(m)));
+			} else {
+				// search buildings
+				IBuilding building = getBuildingAround(pos);
+				if (building != null) {
+					setSelection(new BuildingSelection(building));
+				} else {
+					setSelection(new EmptySelection());
+				}
+			}
+		}
+	}
+
+	private IBuilding getBuildingAround(ISPosition2D pos) {
+		for (ISPosition2D cur : new MapCircle(pos.getX(), pos.getY(), 5)) {
+			HexTile tile = HexGrid.get().getTile(cur);
+			if (tile != null && tile.getBuilding() != null) {
+				return tile.getBuilding();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Sets the selection.
+	 * 
+	 * @param selection
+	 *            The selected items. Not null!
+	 */
+	private void setSelection(ISelectionSet selection) {
+		for (ISelectable unselected : this.currentSelection) {
+			unselected.setSelected(false);
+			if (unselected instanceof Building) {
+				((Building) unselected).drawWorkAreaCircle(false);
+			}
+		}
+		for (ISelectable selected : selection) {
+			selected.setSelected(true);
+			if (selected instanceof Building) {
+				((Building) selected).drawWorkAreaCircle(true);
+			}
+		}
+
+		this.connector.setSelection(selection);
+		this.currentSelection = selection;
+	}
+
+}

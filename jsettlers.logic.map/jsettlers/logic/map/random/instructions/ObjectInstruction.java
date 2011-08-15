@@ -1,0 +1,61 @@
+package jsettlers.logic.map.random.instructions;
+
+import java.util.Random;
+
+import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.map.random.generation.PlayerStart;
+import jsettlers.logic.map.random.grid.GridLandscapeType;
+import jsettlers.logic.map.random.grid.MapGrid;
+import jsettlers.logic.map.random.grid.MapObject;
+import jsettlers.logic.map.random.grid.PlaceholderObject;
+import jsettlers.logic.map.random.landscape.MeshLandscapeType;
+
+public abstract class ObjectInstruction extends GenerationInstruction {
+	
+	private TileMatcher matcher;
+
+	public void execute(MapGrid grid, PlayerStart[] starts, Random random) {
+		for (PlayerStart start : starts) {
+			int startx = start.getX() + getIntParameter("dx", random);
+			int starty = start.getY() + getIntParameter("dy", random);
+
+			ELandscapeType onLandscape =
+			        GridLandscapeType.convert(MeshLandscapeType.parse(
+			                getParameter("on", random), null));
+
+			boolean group =
+			        "true".equalsIgnoreCase(getParameter("group", random));
+			
+			int distance = getIntParameter("distance", random);
+			
+			if (!group) {
+				matcher = new RandomMatcher(grid, startx, starty, distance, onLandscape, random);
+			} else {
+				matcher = new GroupMatcher(grid, startx, starty, distance, onLandscape, random);
+			}
+			
+			int count = getIntParameter("count", random);
+
+			int i = 0;
+			for (ISPosition2D place : matcher) {
+				placeObject(grid, start, place.getX(), place.getY(), random);
+				i++;
+				if (i >= count) {
+					break;
+				}
+			}
+		}
+	}
+
+	protected void placeObject(MapGrid grid, PlayerStart start, int x, int y,
+	        Random random) {
+		grid.setMapObject(x, y, getObject(start, random));
+		grid.reserveArea(x, y, getIntParameter("tight", random));
+	}
+
+	protected MapObject getObject(PlayerStart start, Random random) {
+		return PlaceholderObject.getInstance();
+	}
+
+}

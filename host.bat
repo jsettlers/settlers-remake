@@ -1,0 +1,1 @@
+javaw.exe -jar JSettlers.jar host
