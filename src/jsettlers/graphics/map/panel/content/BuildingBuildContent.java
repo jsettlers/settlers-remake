@@ -1,0 +1,85 @@
+package jsettlers.graphics.map.panel.content;
+
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.utils.UIPanel;
+
+public class BuildingBuildContent implements ContentFactory {
+	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
+	        EBuildingType.LUMBERJACK,
+	        EBuildingType.SAWMILL,
+	        EBuildingType.STONECUTTER,
+	        EBuildingType.FORESTER,
+	        EBuildingType.IRONMINE,
+	        EBuildingType.IRONMELT,
+	        EBuildingType.GOLDMINE,
+	        EBuildingType.GOLDMELT,
+	        EBuildingType.COALMINE,
+	        EBuildingType.TOOLSMITH,
+	        EBuildingType.CHARCOAL_BURNER
+	};
+	public static final EBuildingType[] foodBuildings = new EBuildingType[] {
+	        EBuildingType.FISHER,
+	        EBuildingType.FARM,
+	        EBuildingType.PIG_FARM,
+	        EBuildingType.MILL,
+	        EBuildingType.SLAUGHTERHOUSE,
+	        EBuildingType.BAKER,
+	        EBuildingType.WATERWORKS,
+	        EBuildingType.DONKEY_FARM,
+	        EBuildingType.WINEGROWER
+	};
+	public static final EBuildingType[] militaryBuildings =
+	        new EBuildingType[] {
+	                EBuildingType.TOWER,
+	                EBuildingType.BIG_TOWER,
+	                EBuildingType.CASTLE,
+	                EBuildingType.LOOKOUT_TOWER,
+	                EBuildingType.WEAPONSMITH
+	        };
+	public static final EBuildingType[] socialBuildings = new EBuildingType[] {
+	        EBuildingType.SMALL_LIVINGHOUSE,
+	        EBuildingType.MEDIUM_LIVINGHOUSE,
+	        EBuildingType.BIG_LIVINGHOUSE
+	};
+
+	private static final int ROWS = 6;
+	private static final int COLUMNS = 2;
+
+	private final UIPanel panel;
+
+	private BuildingBuildContent(EBuildingType[] buildings) {
+		panel = new UIPanel();
+
+		float colWidth = 1f / COLUMNS;
+		float rowHeight = 1f / ROWS;
+
+		for (int i = 0; i < buildings.length; i++) {
+			BuildingButton button = new BuildingButton(buildings[i]);
+			int row = i / COLUMNS;
+			int col = i % COLUMNS;
+			panel.addChild(button, col * colWidth, 1 - (row + 1) * rowHeight,
+			        (col + 1) * colWidth, 1 - row * rowHeight);
+		}
+	}
+
+	@Override
+	public UIPanel getPanel() {
+		return panel;
+	}
+
+	public static BuildingBuildContent getNormal() {
+		return new BuildingBuildContent(normalBuildings);
+	}
+
+	public static BuildingBuildContent getFood() {
+		return new BuildingBuildContent(foodBuildings);
+	}
+
+	public static BuildingBuildContent getMilitary() {
+		return new BuildingBuildContent(militaryBuildings);
+	}
+
+	public static BuildingBuildContent getSocial() {
+		return new BuildingBuildContent(socialBuildings);
+	}
+}

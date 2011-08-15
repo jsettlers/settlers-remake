@@ -1,0 +1,82 @@
+package jsettlers.graphics.localization;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.progress.EProgressState;
+
+/**
+ * This class provides access to all messages.
+ * 
+ * @author michael
+ */
+public final class Labels {
+
+	private Labels() {
+	}
+
+	private static ResourceBundle labels;
+
+	private static ResourceBundle getLabels() {
+		if (labels == null) {
+			// TODO: changeable locale?
+			Locale currentLocale = Locale.GERMAN;
+			labels =
+			        ResourceBundle.getBundle(
+			                "jsettlers.graphics.localization.labels",
+			                currentLocale);
+		}
+		return labels;
+	}
+
+	/**
+	 * Gets a string
+	 * 
+	 * @param key
+	 *            The name of the string
+	 * @return The localized string
+	 */
+	public static String getString(String key) {
+		return getLabels().getString(key);
+	}
+
+	/**
+	 * Gets the name of a building
+	 * 
+	 * @param type
+	 *            The building type
+	 * @return The name.
+	 */
+	public static String getName(EBuildingType type) {
+		return getString("building_" + type);
+	}
+
+	/**
+	 * Gets the name of a material
+	 * 
+	 * @param type
+	 *            The material type
+	 * @param plural
+	 *            If the plural name should be returned.
+	 * @return The localized name.
+	 */
+	public static String getName(EMaterialType type, boolean plural) {
+		return getString("material_" + type + (plural ? "p" : ""));
+	}
+
+	/**
+	 * Gets the name for an action type.
+	 * @param action The action type.
+	 * @return The localized name.
+	 */
+	public static String getName(EActionType action) {
+		return getString("action_" + action);
+    }
+
+	public static String getProgress(EProgressState loading) {
+		return getString("progress_" + loading);
+    }
+}

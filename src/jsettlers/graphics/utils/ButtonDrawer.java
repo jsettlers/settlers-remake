@@ -1,0 +1,97 @@
+package jsettlers.graphics.utils;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+
+import jsettlers.common.position.IntRectangle;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SettlerImage;
+
+/**
+ * This class provides utilities to draw buttons and images.
+ * 
+ * @author michael
+ */
+public final class ButtonDrawer {
+	private static final int BORDER = 2;
+
+	private ButtonDrawer() {
+	}
+
+	/**
+	 * Draws a button at the given position.
+	 * 
+	 * @param gl
+	 *            The gl context
+	 * @param position
+	 *            The position
+	 * @param image
+	 *            The button.
+	 */
+	public static void drawButton(GL2 gl, IntRectangle position, Image image) {
+		gl.glColor3f(.3f, .3f, .3f);
+		gl.glRecti(position.getMinX(), position.getMinY(), position.getMaxX(),
+		        position.getMaxY());
+
+		gl.glColor3f(.8f, .8f, .8f);
+		gl.glRecti(position.getMinX() + BORDER, position.getMinY() + BORDER,
+		        position.getMaxX() - BORDER, position.getMaxY() - BORDER);
+
+		drawScaledImage(gl, position.bigger(-BORDER), image);
+
+	}
+
+	/**
+	 * Draws a scaled image.
+	 * 
+	 * @param gl
+	 *            The context
+	 * @param position
+	 *            The position the image should fit at.
+	 * @param image
+	 *            The image to draw
+	 */
+	public static void drawScaledImage(GL2 gl, IntRectangle position,
+	        Image image) {
+
+		float maxXScale = (float) (position.getWidth()) / image.getWidth();
+		float maxYScale = (float) (position.getHeight()) / image.getHeight();
+
+		float scale = Math.min(maxYScale, maxXScale) * .9f;
+
+		float halfWidth = 0.5f * scale * image.getWidth();
+		float left = position.getCenterX() - halfWidth;
+		float right = position.getCenterX() + halfWidth;
+		float halfHeight = 0.5f * scale * image.getHeight();
+		float top = position.getCenterY() + halfHeight;
+		float bottom = position.getCenterY() - halfHeight;
+
+		gl.glColor3f(1, 1, 1);
+		drawImage(gl, image, left, right, top, bottom);
+
+		if (image instanceof SettlerImage
+		        && ((SettlerImage) image).getTorso() != null) {
+			gl.glColor3f(1, 0, 0);
+			drawImage(gl, ((SettlerImage) image).getTorso(), left, right, top,
+			        bottom);
+		}
+	}
+
+	private static void drawImage(GL2 gl, Image image, float left, float right,
+	        float top, float bottom) {
+		image.bind(gl);
+
+		gl.glEnable(GL.GL_TEXTURE_2D);
+		gl.glBegin(GL2.GL_QUADS);
+		gl.glTexCoord2f(0, 0);
+		gl.glVertex2f(left, bottom);
+		gl.glTexCoord2f(1, 0);
+		gl.glVertex2f(right, bottom);
+		gl.glTexCoord2f(1, 1);
+		gl.glVertex2f(right, top);
+		gl.glTexCoord2f(0, 1);
+		gl.glVertex2f(left, top);
+		gl.glEnd();
+		gl.glDisable(GL.GL_TEXTURE_2D);
+	}
+}
