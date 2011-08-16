@@ -34,7 +34,8 @@ import jsettlers.logic.objects.building.FlagMapObject;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 
-public abstract class Building implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
+public abstract class Building implements IConstructableBuilding, IPlayerable,
+        IBuilding, ITimerable {
 	private final byte player;
 	private EBuildingState state = EBuildingState.CREATED;
 
@@ -59,54 +60,66 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	public final void constructAt(IBuildingableGrid grid, ISPosition2D pos) {
 		assert state == EBuildingState.CREATED : "building can not be positioned in this state";
 
-		this.state = EBuildingState.POSITIONED;
-		positionAt(grid, pos);
+		boolean itWorked = positionAt(grid, pos);
 
-		placeAdditionalMapObjects(grid, pos, true);
+		if (itWorked) {
+			stacks = createStacks(true);
+			placeStacks(stacks, true);
+			
+			placeAdditionalMapObjects(grid, pos, true);
 
-		requestDiggers();
+			this.state = EBuildingState.POSITIONED;
+
+			requestDiggers();
+		}
 	}
 
-	private void placeAdditionalMapObjects(IBuildingableGrid grid, ISPosition2D pos, boolean place) {
+	private void placeAdditionalMapObjects(IBuildingableGrid grid,
+	        ISPosition2D pos, boolean place) {
 		if (place) {
-			grid.addMapObject(pos, new StandardMapObject(EMapObjectType.BUILDINGSITE_SIGN, false));
+			grid.addMapObject(pos, new StandardMapObject(
+			        EMapObjectType.BUILDINGSITE_SIGN, false));
 		} else {
 			grid.removeMapObjectType(pos, EMapObjectType.BUILDINGSITE_SIGN);
 		}
 
 		for (RelativePoint curr : type.getBuildmarks()) {
 			if (place) {
-				grid.addMapObject(curr.calculatePoint(pos), new StandardMapObject(EMapObjectType.BUILDINGSITE_POST, false));
+				grid.addMapObject(curr.calculatePoint(pos),
+				        new StandardMapObject(EMapObjectType.BUILDINGSITE_POST,
+				                false));
 			} else {
-				grid.removeMapObjectType(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST);
+				grid.removeMapObjectType(curr.calculatePoint(pos),
+				        EMapObjectType.BUILDINGSITE_POST);
 			}
 		}
 	}
 
-	private void positionAt(IBuildingableGrid grid, ISPosition2D pos) {
-		this.pos = pos;
-		this.grid = grid;
+	private boolean positionAt(IBuildingableGrid grid, ISPosition2D pos) {
+		boolean couldBePlaced = grid.setBuilding(pos, this);
+		if (couldBePlaced) {
+			this.pos = pos;
+			this.grid = grid;
+			
+			this.door = getBuildingType().getDoorTile().calculatePoint(pos);
 
-		this.grid.setBuilding(pos, this);
-		this.door = getBuildingType().getDoorTile().calculatePoint(pos);
+			Timer100Milli.add(this);
 
-		Timer100Milli.add(this);
+			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
+				placeFlag(true);
+			}
 
-		stacks = createStacks(true);
-		placeStacks(stacks, true);
-
-		if (getFlagType() == EMapObjectType.FLAG_DOOR) {
-			placeFlag(true);
+			positionedEvent(pos);
 		}
-
-		positionedEvent(pos);
+		return couldBePlaced;
 	}
 
 	protected void placeFlag(boolean place) {
 		ISPosition2D flagPosition = type.getFlag().calculatePoint(pos);
 
 		if (place) {
-			grid.addMapObject(flagPosition, new FlagMapObject(getFlagType(), player));
+			grid.addMapObject(flagPosition, new FlagMapObject(getFlagType(),
+			        player));
 		} else {
 			grid.removeMapObjectType(flagPosition, getFlagType());
 		}
@@ -138,10 +151,13 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		this.buildingArea = new FreeMapArea(positions);
 
 		this.heightAvg = (byte) (heightSum / blocked.length);
-		int numberOfDiggers = (int) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
+		int numberOfDiggers =
+		        (int) Math.ceil(((float) blocked.length)
+		                / Constants.TILES_PER_DIGGER);
 
 		for (int i = 0; i < numberOfDiggers; i++)
-			GameManager.requestDigger(this.buildingArea, this.heightAvg, this.player);
+			GameManager.requestDigger(this.buildingArea, this.heightAvg,
+			        this.player);
 	}
 
 	private boolean isFlatened() {
@@ -156,46 +172,46 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	@Override
 	public void timerEvent() {
 		switch (state) {
-		case CREATED:
-			assert false : "this should never happen!";
-			break;
-		case POSITIONED:
-			if (waitedSecond()) {
-				if (isFlatened()) {
-					placeAdditionalMapObjects(grid, pos, false);
+			case CREATED:
+				assert false : "this should never happen!";
+				break;
+			case POSITIONED:
+				if (waitedSecond()) {
+					if (isFlatened()) {
+						placeAdditionalMapObjects(grid, pos, false);
 
-					this.state = EBuildingState.WAITING_FOR_MATERIAL;
-					System.out.println("flatened!");
+						this.state = EBuildingState.WAITING_FOR_MATERIAL;
+						System.out.println("flatened!");
+					}
 				}
-			}
-			break;
+				break;
 
-		case WAITING_FOR_MATERIAL:
-			if (waitedSecond()) {
-				if (isMaterialAvailable()) {
-					requestBricklayers();
-					state = EBuildingState.BRICKLAYERS_REQUESTED;
+			case WAITING_FOR_MATERIAL:
+				if (waitedSecond()) {
+					if (isMaterialAvailable()) {
+						requestBricklayers();
+						state = EBuildingState.BRICKLAYERS_REQUESTED;
+					}
 				}
-			}
-			break;
+				break;
 
-		case BRICKLAYERS_REQUESTED:
-			// the state changes are handled by tryToTakeMaterial()
-			break;
+			case BRICKLAYERS_REQUESTED:
+				// the state changes are handled by tryToTakeMaterial()
+				break;
 
-		case CONSTRUCTED:
-			if (door != null) {
-				IHexMovable movableAtDoor = grid.getMovable(door);
-				if (movableAtDoor != null) {
-					movableAtDoor.push(null);
+			case CONSTRUCTED:
+				if (door != null) {
+					IHexMovable movableAtDoor = grid.getMovable(door);
+					if (movableAtDoor != null) {
+						movableAtDoor.push(null);
+					}
 				}
-			}
-			subTimerEvent();
-			break;
+				subTimerEvent();
+				break;
 
-		case DESTROYED:
+			case DESTROYED:
 
-			break;
+				break;
 		}
 	}
 
@@ -204,7 +220,8 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	private void requestBricklayers() {
 		RelativeBricklayer[] bricklayers = type.getBricklayers();
 		for (RelativeBricklayer curr : bricklayers) {
-			GameManager.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
+			GameManager.requestBricklayer(this, curr.getPosition()
+			        .calculatePoint(pos), curr.getDirection());
 		}
 	}
 
@@ -235,7 +252,8 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	 * 
 	 * @param constructionStacks
 	 *            if true, only the build stacks will be placed<br>
-	 *            if false, only the normal stacks needed for working will be placed<br>
+	 *            if false, only the normal stacks needed for working will be
+	 *            placed<br>
 	 */
 	private LinkedList<AbstractStack> createStacks(boolean constructionStacks) {
 		LinkedList<AbstractStack> result = new LinkedList<AbstractStack>();
@@ -245,10 +263,12 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 
 			short requiredForBuild = curr.requiredForBuild();
 			if (!constructionStacks && requiredForBuild == 0) {
-				result.add(new SingleMaterialStack(curr.getType(), stackPos, EStackType.REQUEST, player));
+				result.add(new SingleMaterialStack(curr.getType(), stackPos,
+				        EStackType.REQUEST, player));
 			}
 			if (constructionStacks && requiredForBuild > 0) {
-				result.add(new SingleMaterialStack(curr.getType(), stackPos, EStackType.LIMITED_REQUEST, player, requiredForBuild));
+				result.add(new SingleMaterialStack(curr.getType(), stackPos,
+				        EStackType.LIMITED_REQUEST, player, requiredForBuild));
 			}
 		}
 
@@ -286,39 +306,41 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 
 	public static Building getBuilding(EBuildingType type, byte player) {
 		switch (type) {
-		case BIG_LIVINGHOUSE:
-			return new BigLivinghouse(player);
-		case MEDIUM_LIVINGHOUSE:
-			return new MediumLivinghouse(player);
-		case SMALL_LIVINGHOUSE:
-			return new SmallLivinghouse(player);
-		case CHARCOAL_BURNER:
-		case COALMINE:
-		case BAKER:
-		case FARM:
-		case FISHER:
-		case FORESTER:
-		case GOLDMELT:
-		case GOLDMINE:
-		case IRONMELT:
-		case IRONMINE:
-		case LUMBERJACK:
-		case MILL:
-		case PIG_FARM:
-		case SAWMILL:
-		case SLAUGHTERHOUSE:
-		case STONECUTTER:
-		case TOOLSMITH:
-		case WEAPONSMITH:
-		case WATERWORKS:
-		case WINEGROWER:
-			return new WorkerBuilding(type, player);
+			case BIG_LIVINGHOUSE:
+				return new BigLivinghouse(player);
+			case MEDIUM_LIVINGHOUSE:
+				return new MediumLivinghouse(player);
+			case SMALL_LIVINGHOUSE:
+				return new SmallLivinghouse(player);
+			case CHARCOAL_BURNER:
+			case COALMINE:
+			case BAKER:
+			case FARM:
+			case FISHER:
+			case FORESTER:
+			case GOLDMELT:
+			case GOLDMINE:
+			case IRONMELT:
+			case IRONMINE:
+			case LUMBERJACK:
+			case MILL:
+			case PIG_FARM:
+			case SAWMILL:
+			case SLAUGHTERHOUSE:
+			case STONECUTTER:
+			case TOOLSMITH:
+			case WEAPONSMITH:
+			case WATERWORKS:
+			case WINEGROWER:
+				return new WorkerBuilding(type, player);
 
-		case TOWER:
-			return new Tower(player);
+			case TOWER:
+				return new Tower(player);
 
-		default:
-			System.err.println("couldn't create new building, because type is unknown: " + type);
+			default:
+				System.err
+				        .println("couldn't create new building, because type is unknown: "
+				                + type);
 		}
 
 		return new TestBuilding(player, type);
@@ -346,7 +368,9 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 
 		delayCtr--;
-		constructionProgress += 1f / (Constants.BRICKLAYER_ACTIONS_PER_MATERIAL * getBuildingType().getNumberOfConstructionMaterials());
+		constructionProgress +=
+		        1f / (Constants.BRICKLAYER_ACTIONS_PER_MATERIAL * getBuildingType()
+		                .getNumberOfConstructionMaterials());
 		if (delayCtr > 0) {
 			return true;
 		} else {
@@ -369,7 +393,10 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	private void finishConstruction() {
 		constructionProgress = 1;
 
-		placeStacks(stacks, false);
+		if (stacks != null) {
+			// they are null if this method was called by appear
+			placeStacks(stacks, false);
+		}
 		stacks = createStacks(false);
 		placeStacks(stacks, true);
 
@@ -458,7 +485,8 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		return null;
 	}
 
-	private void addOrRemoveMarkObject(boolean draw, IBuildingableGrid grid, ISPosition2D pos, float progress) {
+	private void addOrRemoveMarkObject(boolean draw, IBuildingableGrid grid,
+	        ISPosition2D pos, float progress) {
 		if (draw) {
 			grid.addMapObject(pos, new BuildingWorkAreaMarkObject(progress));
 		} else {
@@ -466,7 +494,8 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 	}
 
-	private MapShapeFilter getCircle(IBuildingableGrid grid, ISPosition2D center, float radius) {
+	private MapShapeFilter getCircle(IBuildingableGrid grid,
+	        ISPosition2D center, float radius) {
 		MapCircle baseCircle = new MapCircle(center, radius);
 		MapCircleBorder border = new MapCircleBorder(baseCircle);
 		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());

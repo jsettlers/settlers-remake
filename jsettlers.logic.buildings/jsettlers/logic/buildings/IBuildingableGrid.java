@@ -11,7 +11,7 @@ public interface IBuildingableGrid {
 
 	byte getHeightAt(ISPosition2D currPos);
 
-	void setBuilding(ISPosition2D pos, IBuilding newBuilding);
+	boolean setBuilding(ISPosition2D pos, IBuilding newBuilding);
 
 	void setPlayerAt(ISPosition2D currPos, byte player);
 

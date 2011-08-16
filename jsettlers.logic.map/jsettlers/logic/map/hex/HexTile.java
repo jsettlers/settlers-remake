@@ -17,6 +17,20 @@ import jsettlers.logic.map.hex.interfaces.IHexStack;
 import jsettlers.logic.materials.stack.single.EStackType;
 import jsettlers.logic.materials.stack.single.SingleMaterialStack;
 
+/**
+ * This is a tile of the map grid.
+ * <p>
+ * It holds tow flags that state if it is blcked:
+ * <p>
+ * The protected flag states that walking and placing materials is allowed, but
+ * it is forbidden to build something here or add protecting objects.
+ * <p>
+ * The blocked flag means that no one may enter this place. If it is set, the
+ * protected flag is set automatically. To set/unset you should use
+ * {@link #setBlockedAndProtected(boolean)}
+ * 
+ * @author Andreas
+ */
 public class HexTile implements IHexTile, ILocatable {
 
 	public static final float TILE_PATHFINDER_COST = 1.0f;
@@ -31,6 +45,7 @@ public class HexTile implements IHexTile, ILocatable {
 	private ELandscapeType landscapeType = ELandscapeType.GRASS;
 
 	private boolean blocked = false;
+	private boolean isProtected = false;
 	private Color debugColor;
 
 	private byte constructionMarkValue = -1;
@@ -195,13 +210,34 @@ public class HexTile implements IHexTile, ILocatable {
 		return stack;
 	}
 
+	/**
+	 * Sets the blocked status of the tile.
+	 * <p>
+	 * If the new status is blocked, isProtected is automatically set.
+	 * 
+	 * @param blocked
+	 */
 	public void setBlocked(boolean blocked) {
 		this.blocked = blocked;
+		if (blocked) {
+			setProtected(true);
+		}
 		if (blocked) {
 			this.debugColor = BLOCKED_COLOR;
 		} else {
 			this.debugColor = null;
 		}
+	}
+
+	public void setProtected(boolean isProtected) {
+		this.isProtected = isProtected;
+		if (!isProtected) {
+			setBlocked(false);
+		}
+	}
+
+	public boolean isProtected() {
+		return isProtected;
 	}
 
 	@Override
@@ -266,6 +302,7 @@ public class HexTile implements IHexTile, ILocatable {
 
 	/**
 	 * Use {@link HexGrid#addMapObject(ISPosition2D, AbstractHexMapObject)}
+	 * 
 	 * @param mapObject
 	 */
 	void addMapObject(AbstractHexMapObject mapObject) {
@@ -277,7 +314,9 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	/**
-	 * Removes a map object, but does not update blocking, so you should use {@link HexGrid#removeMapObject(ISPosition2D, AbstractHexMapObject)} instead
+	 * Removes a map object, but does not update blocking, so you should use
+	 * {@link HexGrid#removeMapObject(ISPosition2D, AbstractHexMapObject)}
+	 * instead
 	 * 
 	 * @param mapObject
 	 */
@@ -298,6 +337,7 @@ public class HexTile implements IHexTile, ILocatable {
 
 	/**
 	 * Use {@link HexGrid#removeMapObjectType(ISPosition2D, EMapObjectType)}
+	 * 
 	 * @param mapObjectType
 	 * @return
 	 */
@@ -366,6 +406,11 @@ public class HexTile implements IHexTile, ILocatable {
 
 	void setHeight(byte height) {
 		this.height = height;
+	}
+
+	public void setBlockedAndProtected(boolean blocked2) {
+		this.blocked = blocked2;
+		this.isProtected = blocked2;
 	}
 
 }
