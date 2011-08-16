@@ -19,6 +19,7 @@ import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.swing.JFrame;
 
+import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
@@ -29,8 +30,15 @@ import com.jogamp.opengl.util.gl2.GLUT;
 
 public class DatFileTester {
 
+	static { // sets the native library path for the system dependent jogl libs
+		JoglLibraryPathInitializer.initLibraryPath();
+	}
+
 	private static final String FILE =
 	        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
+
+	// private static final String FILE =
+	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
 	private static int datFileIndex = 1;
 
@@ -151,7 +159,7 @@ public class DatFileTester {
 				int seqIndex = 0;
 				for (Sequence<SettlerImage> seq : reader.getSettlers()) {
 					int x = offsetX;
-					System.out.println("next sequence: "+ seqIndex);
+					System.out.println("next sequence: " + seqIndex);
 
 					for (SettlerImage image : seq) {
 						gl.glEnable(GL.GL_TEXTURE_2D);
@@ -228,7 +236,9 @@ public class DatFileTester {
 				int guiImageIndex = 0;
 				for (Sequence<GuiImage> seq : reader.getGuis()) {
 					GuiImage image = seq.getImage(0);
-					System.out.println("next gui image: "+ guiImageIndex + " " + image.getWidth() + "x" + image.getHeight() + " px");
+					System.out.println("next gui image: " + guiImageIndex + " "
+					        + image.getWidth() + "x" + image.getHeight()
+					        + " px");
 					gl.glEnable(GL.GL_TEXTURE_2D);
 					image.drawAt(gl, 100, y);
 					gl.glDisable(GL.GL_TEXTURE_2D);
