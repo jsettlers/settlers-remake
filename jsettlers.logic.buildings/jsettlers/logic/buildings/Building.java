@@ -3,6 +3,8 @@ package jsettlers.logic.buildings;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import random.RandomSingleton;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.RelativeBricklayer;
@@ -131,7 +133,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 			heightSum += this.grid.getHeightAt(currPos);
 		}
 
-		Collections.shuffle(positions);
+		Collections.shuffle(positions, RandomSingleton.get());
 
 		this.buildingArea = new FreeMapArea(positions);
 
