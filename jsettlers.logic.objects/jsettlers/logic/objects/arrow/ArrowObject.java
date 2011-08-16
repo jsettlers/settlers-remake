@@ -4,41 +4,32 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.HexGrid;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.hex.interfaces.IHexMovable;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.MovableTimer;
+import jsettlers.logic.objects.ProgressingObject;
 
-public class ArrowObject extends AbstractHexMapObject implements IArrowMapObject, ITimerable {
-	private static final float SECONDS_PER_TILE = 0.6f;
+public class ArrowObject extends ProgressingObject implements IArrowMapObject {
+	private static final float SECONDS_PER_TILE = 0.03f;
 
-	private final ISPosition2D target;
+	public static final float DECOMPOSE_DELAY = 60;
+
 	private final ISPosition2D source;
-	private final float progressIncrease;
 	private final float hitStrength;
-	private short decomposeCounter = 0;
 
-	private float progress;
+	private final IHexMovable target;
 
-	public ArrowObject(ISPosition2D pos, ISPosition2D source, float hitStrength) {
-		this.target = pos;
+	public ArrowObject(IHexMovable target, ISPosition2D source, float hitStrength) {
+		super(target.getPos());
+		this.target = target;
+
 		this.source = source;
 		this.hitStrength = hitStrength;
-		MovableTimer.add(this);
 
-		progressIncrease = (float) (1 / (SECONDS_PER_TILE * Math.hypot(source.getX() - pos.getX(), source.getY() - pos.getY())));
+		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(source.getX() - target.getPos().getX(), source.getY() - target.getPos().getY())));
 	}
 
 	@Override
 	public EMapObjectType getObjectType() {
 		return EMapObjectType.ARROW;
-	}
-
-	@Override
-	public float getStateProgress() {
-		return progress;
 	}
 
 	@Override
@@ -52,47 +43,18 @@ public class ArrowObject extends AbstractHexMapObject implements IArrowMapObject
 	}
 
 	@Override
-	public void timerEvent() {
-		if (decomposeCounter == 0) {
-			progress += progressIncrease;
-
-			if (progress >= 1) {
-				progress = 1;
-				decomposeCounter = 1;
-
-				IHexMovable enemy = HexGrid.get().getMovable(target);
-				if (enemy != null) {
-					enemy.hit(hitStrength);
-					kill(); // the arrow hit the enemy, so it can't be on the map
-				}
-			}
-		} else {
-			decomposeCounter++;
-			if (decomposeCounter >= Constants.ARROW_DECOMPOSE_INTERRUPTS) {
-				kill();
-			}
-		}
-	}
-
-	@Override
-	public void kill() {
-		MovableTimer.remove(this);
-		HexGrid.get().removeMapObject(target, this);
-	}
-
-	@Override
 	public boolean isBlocking() {
 		return false;
 	}
 
 	@Override
 	public EDirection getDirection() {
-		return EDirection.getApproxDirection(source, target);
+		return EDirection.getApproxDirection(source, super.getPos());
 	}
 
 	@Override
 	public ISPosition2D getTarget() {
-		return target;
+		return super.getPos();
 	}
 
 	@Override
@@ -100,4 +62,10 @@ public class ArrowObject extends AbstractHexMapObject implements IArrowMapObject
 		return false;
 	}
 
+	@Override
+	protected void changeState() {
+		if (target.getPos().equals(this.getTarget())) {
+			target.hit(hitStrength);
+		}
+	}
 }

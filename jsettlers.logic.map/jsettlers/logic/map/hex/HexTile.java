@@ -16,22 +16,21 @@ import jsettlers.logic.map.hex.interfaces.IHexMovable;
 import jsettlers.logic.map.hex.interfaces.IHexStack;
 import jsettlers.logic.materials.stack.single.EStackType;
 import jsettlers.logic.materials.stack.single.SingleMaterialStack;
+import jsettlers.logic.objects.IMapObjectsManagerTile;
 
 /**
  * This is a tile of the map grid.
  * <p>
- * It holds tow flags that state if it is blcked:
+ * It holds two flags that state if it is blocked:
  * <p>
- * The protected flag states that walking and placing materials is allowed, but
- * it is forbidden to build something here or add protecting objects.
+ * The protected flag states that walking and placing materials is allowed, but it is forbidden to build something here or add protecting objects.
  * <p>
- * The blocked flag means that no one may enter this place. If it is set, the
- * protected flag is set automatically. To set/unset you should use
+ * The blocked flag means that no one may enter this place. If it is set, the protected flag is set automatically. To set/unset you should use
  * {@link #setBlockedAndProtected(boolean)}
  * 
  * @author Andreas
  */
-public class HexTile implements IHexTile, ILocatable {
+public class HexTile implements IHexTile, ILocatable, IMapObjectsManagerTile {
 
 	public static final float TILE_PATHFINDER_COST = 1.0f;
 	public static final float TILE_HEURISTIC_DIST = 1f;
@@ -76,7 +75,7 @@ public class HexTile implements IHexTile, ILocatable {
 
 	@Override
 	public ISPosition2D getPos() {
-		return new ShortPoint2D(hexX, hexY);
+		return this;
 	}
 
 	@Override
@@ -116,6 +115,7 @@ public class HexTile implements IHexTile, ILocatable {
 		this.marked = setMarker;
 	}
 
+	@Override
 	public boolean isBlocked() {
 		return blocked;
 	}
@@ -217,6 +217,7 @@ public class HexTile implements IHexTile, ILocatable {
 	 * 
 	 * @param blocked
 	 */
+	@Override
 	public void setBlocked(boolean blocked) {
 		this.blocked = blocked;
 		if (blocked) {
@@ -252,8 +253,7 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	/**
-	 * This method overrides the movable that's currently located at this
-	 * position.
+	 * This method overrides the movable that's currently located at this position.
 	 * 
 	 * @param movable
 	 */
@@ -276,17 +276,18 @@ public class HexTile implements IHexTile, ILocatable {
 		this.debugColor = color;
 	}
 
-	void setLandscape(ELandscapeType landscapeType) {
+	@Override
+	public void setLandscape(ELandscapeType landscapeType) {
 		this.landscapeType = landscapeType;
 
 		switch (landscapeType) {
-			case WATER:
-			case SNOW:
-				setBlocked(true);
-				break;
-			default:
-				setBlocked(false);
-				break;
+		case WATER:
+		case SNOW:
+			setBlocked(true);
+			break;
+		default:
+			setBlocked(false);
+			break;
 		}
 	}
 
@@ -305,7 +306,8 @@ public class HexTile implements IHexTile, ILocatable {
 	 * 
 	 * @param mapObject
 	 */
-	void addMapObject(AbstractHexMapObject mapObject) {
+	@Override
+	public void addMapObject(AbstractHexMapObject mapObject) {
 		if (this.mapObjectHead == null) {
 			this.mapObjectHead = mapObject;
 		} else {
@@ -314,13 +316,14 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	/**
-	 * Removes a map object, but does not update blocking, so you should use
-	 * {@link HexGrid#removeMapObject(ISPosition2D, AbstractHexMapObject)}
-	 * instead
+	 * <<<<<<< .mine Removes a map object, but does not update blocking, so you should use
+	 * {@link HexGrid#removeMapObject(ISPosition2D, AbstractHexMapObject)} instead ======= Removes a map object, but does not update blocking, so you
+	 * should use {@link HexGrid#removeMapObject(ISPosition2D, AbstractHexMapObject)} instead >>>>>>> .r512
 	 * 
 	 * @param mapObject
 	 */
-	boolean removeMapObject(AbstractHexMapObject mapObject) {
+	@Override
+	public boolean removeMapObject(AbstractHexMapObject mapObject) {
 		if (this.mapObjectHead != null) {
 			boolean removed;
 			if (this.mapObjectHead == mapObject) {
@@ -341,7 +344,8 @@ public class HexTile implements IHexTile, ILocatable {
 	 * @param mapObjectType
 	 * @return
 	 */
-	AbstractHexMapObject removeMapObjectType(EMapObjectType mapObjectType) {
+	@Override
+	public AbstractHexMapObject removeMapObjectType(EMapObjectType mapObjectType) {
 		AbstractHexMapObject removed = null;
 		if (this.mapObjectHead != null) {
 			if (this.mapObjectHead.getObjectType() == mapObjectType) {
@@ -361,9 +365,7 @@ public class HexTile implements IHexTile, ILocatable {
 				IHexStack oldStack = stack;
 				// TODO: multi-material stacks
 				EMaterialType materialType = oldStack.getMaterial();
-				stack =
-				        new SingleMaterialStack(materialType, this,
-				                EStackType.OFFER, newPlayer);
+				stack = new SingleMaterialStack(materialType, this, EStackType.OFFER, newPlayer);
 				for (int i = 0; i < oldStack.getNumberOfElements(); i++) {
 					stack.push(materialType);
 				}
@@ -374,28 +376,25 @@ public class HexTile implements IHexTile, ILocatable {
 	}
 
 	boolean hasCuttableObject(EMapObjectType mapObjectType) {
-		return mapObjectHead != null
-		        && mapObjectHead.hasCuttableObject(mapObjectType);
+		return mapObjectHead != null && mapObjectHead.hasCuttableObject(mapObjectType);
 	}
 
 	/**
 	 * @param mapObjectType
 	 *            type to be looked for
-	 * @return true if at least one of the map objects fits the given
-	 *         EMapObjectType
+	 * @return true if at least one of the map objects fits the given EMapObjectType
 	 */
 	boolean hasMapObjectType(EMapObjectType mapObjectType) {
-		return mapObjectHead != null
-		        && mapObjectHead.hasMapObjectType(mapObjectType);
+		return mapObjectHead != null && mapObjectHead.hasMapObjectType(mapObjectType);
 	}
 
 	/**
 	 * @param type
 	 *            type to be looked for
-	 * @return the first map object with the given type or null if none has been
-	 *         found.
+	 * @return the first map object with the given type or null if none has been found.
 	 */
-	AbstractHexMapObject getMapObject(EMapObjectType type) {
+	@Override
+	public AbstractHexMapObject getMapObject(EMapObjectType type) {
 		return mapObjectHead != null ? mapObjectHead.getMapObject(type) : null;
 	}
 
@@ -412,5 +411,4 @@ public class HexTile implements IHexTile, ILocatable {
 		this.blocked = blocked2;
 		this.isProtected = blocked2;
 	}
-
 }

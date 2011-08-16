@@ -2,9 +2,7 @@ package jsettlers.logic.objects.corn;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.objects.GrowingObject;
-import jsettlers.logic.objects.IMapObjectRemovableGrid;
 
 /**
  * This is a Corn on the map.
@@ -14,23 +12,27 @@ import jsettlers.logic.objects.IMapObjectRemovableGrid;
  */
 public class Corn extends GrowingObject {
 
+	public static final float GROWTH_DURATION = 3 * 60;
+	public static final float DECOMPOSE_DURATION = 2 * 60;
+	public static final float REMOVE_DURATION = 1 * 60;
+
 	/**
 	 * Creates a new Corn.
 	 * 
 	 * @param grid
 	 */
-	public Corn(IMapObjectRemovableGrid grid, ISPosition2D pos) {
-		super(grid, pos, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD);
+	public Corn(ISPosition2D pos) {
+		super(pos, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD);
 	}
 
 	@Override
-	public boolean isBlocking() {
-		return false;
+	protected float getGrowthDuration() {
+		return GROWTH_DURATION;
 	}
 
 	@Override
-	protected float getGrowthIncrease() {
-		return Constants.CORN_GROWTH_PER_INTERRUPT;
+	protected float getDecomposeDuration() {
+		return DECOMPOSE_DURATION;
 	}
 
 }

@@ -7,16 +7,15 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IHexMap;
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighbours;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
@@ -28,7 +27,6 @@ import jsettlers.logic.buildings.IBuildingableGrid;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.GameManager;
 import jsettlers.logic.management.MaterialJobPart;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.hex.interfaces.IHexMovable;
 import jsettlers.logic.map.hex.interfaces.IHexStack;
 import jsettlers.logic.map.random.RandomMapEvaluator;
@@ -43,18 +41,17 @@ import jsettlers.logic.map.random.grid.StackObject;
 import jsettlers.logic.materials.stack.single.EStackType;
 import jsettlers.logic.materials.stack.single.SingleMaterialStack;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.objects.IMapObjectRemovableGrid;
-import jsettlers.logic.objects.corn.Corn;
-import jsettlers.logic.objects.stone.Stone;
-import jsettlers.logic.objects.tree.Tree;
+import jsettlers.logic.objects.IMapObjectsManagerGrid;
+import jsettlers.logic.objects.MapObjectsManager;
 import random.RandomSingleton;
 
-public class HexGrid implements IPathfinderWrapperMap, IHexMap,
-        ILandmarksThreadMap, IConstructionMarkableMap, IBuildingableGrid,
-        IMapObjectRemovableGrid {
+public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThreadMap, IConstructionMarkableMap, IBuildingableGrid,
+		IMapObjectsManagerGrid {
 	private static HexGrid uniIns = null;
 
 	private static final int TREE_COUNT = 1200;
+
+	private static final int STONE_COUNT = 800;
 
 	private final HexTile[][] map;
 
@@ -62,6 +59,8 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	private final short height;
 
 	private EBuildingType previewBuilding;
+
+	private final MapObjectsManager mapObjectsManager;
 
 	public static HexGrid get() {
 		return uniIns;
@@ -71,8 +70,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	 * creates a new HexGrid if there has not already been created one.
 	 */
 	@Deprecated
-	public synchronized static void create(short width, short height,
-	        boolean fillMap) {
+	public synchronized static void create(short width, short height, boolean fillMap) {
 		if (uniIns == null) {
 			uniIns = new HexGrid(width, height);
 		}
@@ -81,18 +79,17 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	/**
 	 * creates a new HexGrid if there has not already been created one.
 	 */
-	public synchronized static void createRandom(String filename, int players,
-	        Random random) {
+	public synchronized static void createRandom(String filename, int players, Random random) {
 		if (uniIns == null) {
 			RandomMapFile file = RandomMapFile.getByName(filename);
-			RandomMapEvaluator evaluator =
-			        new RandomMapEvaluator(file.getInstructions(), players);
+			RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
 			evaluator.createMap(random);
 			uniIns = new HexGrid(evaluator.getGrid());
 		}
 	}
 
 	private HexGrid(short width, short height) {
+		this.mapObjectsManager = new MapObjectsManager(this);
 		this.width = width;
 		this.height = height;
 		map = new HexTile[height][width];
@@ -111,7 +108,17 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 				y = (short) (RandomSingleton.nextD() * height);
 			} while (map[y][x].hasMapObject());
 
-			addMapObject(map[y][x], new Tree(this, new ShortPoint2D(x, y)));
+			mapObjectsManager.executeSearchType(map[y][x], ESearchType.PLANTABLE_TREE);
+		}
+
+		for (int i = 0; i < STONE_COUNT; i++) {
+			short x, y;
+			do {
+				x = (short) (RandomSingleton.nextD() * (width - 20) + 10);
+				y = (short) (RandomSingleton.nextD() * (height - 20) + 10);
+			} while (!isStonePlantable(new ShortPoint2D(x, y)));
+
+			mapObjectsManager.addStone(map[y][x], RandomSingleton.getInt(4, 12));
 		}
 
 		createTestPlayerArea();
@@ -134,18 +141,29 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 			setMovable(x, 5, EMovableType.BEARER, 1);
 		}
 
-		for (short y = 80; y < 160; y++) {
-			for (x = 80; x < 160; x++) {
+		for (short y = 60; y < 8; y++) {
+			for (x = 60; x < 80; x++) {
 				setMovable(x, y, EMovableType.PIONEER, 1);
 			}
 		}
 		// setMovable(20, 5, EMovableType.BEARER, 1);
 
 		for (int i = 0; i < 2; i++)
-			GameManager.requestMaterial(new MaterialJobPart(
-			        EMaterialType.PLANK, new ShortPoint2D(20, height - 40),
-			        (byte) 1));
+			GameManager.requestMaterial(new MaterialJobPart(EMaterialType.PLANK, new ShortPoint2D(20, height - 40), (byte) 1));
 
+		mapObjectsManager.executeSearchType(new ShortPoint2D(30, height - 30), ESearchType.PLANTABLE_CORN);
+
+	}
+
+	private boolean isStonePlantable(ShortPoint2D pos) {
+		IMapArea circle = new MapCircle(pos, 5);
+		for (ISPosition2D curr : circle) {
+			HexTile tile = getTile(curr);
+			if (tile == null || tile.isBlocked()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void setMovable(int x, int y, EMovableType type, int player) {
@@ -155,6 +173,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	}
 
 	private HexGrid(MapGrid grid) {
+		this.mapObjectsManager = new MapObjectsManager(this);
 		this.width = (short) grid.getWidth();
 		this.height = (short) grid.getHeight();
 		map = new HexTile[height][width];
@@ -179,38 +198,29 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 
 	private void addMapObject(HexTile tile, MapObject object) {
 		if (object instanceof MapTreeObject) {
-			this.addMapObject(tile, new Tree(this, tile));
+			mapObjectsManager.executeSearchType(tile, ESearchType.PLANTABLE_TREE);
 		} else if (object instanceof MapStoneObject) {
-			this.addMapObject(tile,
-			        new Stone(((MapStoneObject) object).getCapacity()));
+			mapObjectsManager.addStone(tile, ((MapStoneObject) object).getCapacity());
 		} else if (object instanceof StackObject) {
 			EMaterialType type = ((StackObject) object).getType();
-			IHexStack stack =
-			        new SingleMaterialStack(type, tile, EStackType.OFFER,
-			                tile.getPlayer());
+			IHexStack stack = new SingleMaterialStack(type, tile, EStackType.OFFER, tile.getPlayer());
 			tile.setStack(stack);
 			for (int i = 0; i < ((StackObject) object).getCount(); i++) {
 				stack.push(type);
 			}
 		} else if (object instanceof BuildingObject) {
-			Building building =
-			        Building.getBuilding(((BuildingObject) object).getType(),
-			                ((BuildingObject) object).getPlayer());
+			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(this, tile);
 		} else if (object instanceof MovableObject) {
-			this.placeNewMovable(tile, new Movable(tile,
-			        ((MovableObject) object).getType(),
-			        ((MovableObject) object).getPlayer()));
+			this.placeNewMovable(tile, new Movable(tile, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer()));
 		}
 	}
 
 	private void createTestSea() {
-		for (ISPosition2D pos : new MapCircle((short) 70,
-		        (short) (height - 70), 20)) {
+		for (ISPosition2D pos : new MapCircle((short) 70, (short) (height - 70), 20)) {
 			map[pos.getY()][pos.getX()].setLandscape(ELandscapeType.SAND);
 		}
-		for (ISPosition2D pos : new MapCircle((short) 70,
-		        (short) (height - 70), 16)) {
+		for (ISPosition2D pos : new MapCircle((short) 70, (short) (height - 70), 16)) {
 			map[pos.getY()][pos.getX()].setLandscape(ELandscapeType.WATER);
 		}
 	}
@@ -225,9 +235,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	}
 
 	private void placeFullStack(EMaterialType type, short x, short y) {
-		IHexStack stack =
-		        new SingleMaterialStack(type, new ShortPoint2D(x, y),
-		                EStackType.OFFER, getTile(x, y).getPlayer());
+		IHexStack stack = new SingleMaterialStack(type, new ShortPoint2D(x, y), EStackType.OFFER, getTile(x, y).getPlayer());
 		map[y][x].setStack(stack);
 		for (int i = 0; i < Constants.STACK_SIZE; i++) {
 			stack.push(type);
@@ -264,15 +272,13 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 
 	@Override
 	public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-		return isBlocked(x, y) || requester.needsPlayersGround()
-		        && map[y][x].getPlayer() != requester.getPlayer();
+		return isBlocked(x, y) || requester.needsPlayersGround() && map[y][x].getPlayer() != requester.getPlayer();
 	}
 
 	@Override
 	public boolean isBlocked(short x, short y) {
 		HexTile tile = getTile(x, y);
-		return !isInBounds(x, y) || tile.isBlocked()
-		        || tile.getLandscapeType() == ELandscapeType.WATER;
+		return !isInBounds(x, y) || tile.isBlocked() || tile.getLandscapeType() == ELandscapeType.WATER;
 	}
 
 	@Override
@@ -317,65 +323,46 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 		map[y][x].markAsClosed();
 	}
 
-	public boolean fitsSearchType(ISPosition2D pos, ESearchType option,
-	        IPathCalculateable requester) {
+	public boolean fitsSearchType(ISPosition2D pos, ESearchType option, IPathCalculateable requester) {
 		return fitsSearchType(pos.getX(), pos.getY(), option, requester);
 	}
 
 	@Override
-	public boolean fitsSearchType(short x, short y, ESearchType type,
-	        IPathCalculateable requester) {
+	public boolean fitsSearchType(short x, short y, ESearchType type, IPathCalculateable requester) {
 
 		switch (type) {
 
-			case FOREIGN_GROUND:
-				return !isBlocked(x, y) && !hasSamePlayer(x, y, requester)
-				        && !isMarked(x, y);
+		case FOREIGN_GROUND:
+			return !isBlocked(x, y) && !hasSamePlayer(x, y, requester) && !isMarked(x, y);
 
-			case CUTTABLE_TREE:
-				HexTile tile = getTile((short) (x - 1), (short) (y - 1));
-				return tile != null
-				        && tile.hasCuttableObject(EMapObjectType.TREE_ADULT)
-				        && hasSamePlayer(x - 1, y - 1, requester)
-				        && !isMarked(x, y);
+		case CUTTABLE_TREE:
+			HexTile tile = getTile((short) (x - 1), (short) (y - 1));
+			return tile != null && tile.hasCuttableObject(EMapObjectType.TREE_ADULT) && hasSamePlayer(x - 1, y - 1, requester) && !isMarked(x, y);
 
-			case PLANTABLE_TREE:
-				return y < height - 1
-				        && isTreePlantable(x, (short) (y + 1))
-				        && !hasProtectedNeighbor(new ShortPoint2D(x,
-				                (short) (y + 1)))
-				        && hasSamePlayer(x, y + 1, requester)
-				        && !isMarked(x, y);
+		case PLANTABLE_TREE:
+			return y < height - 1 && isTreePlantable(x, (short) (y + 1)) && !hasProtectedNeighbor(new ShortPoint2D(x, (short) (y + 1)))
+					&& hasSamePlayer(x, y + 1, requester) && !isMarked(x, y);
 
-			case PLANTABLE_CORN:
-				return isCornPlantable(x, y) && hasSamePlayer(x, y, requester)
-				        && !isMarked(x, y);
+		case PLANTABLE_CORN:
+			return isCornPlantable(x, y) && hasSamePlayer(x, y, requester) && !isMarked(x, y);
 
-			case CUTTABLE_CORN:
-				return isCornCuttable(x, y) && hasSamePlayer(x, y, requester)
-				        && !isMarked(x, y);
+		case CUTTABLE_CORN:
+			return isCornCuttable(x, y) && hasSamePlayer(x, y, requester) && !isMarked(x, y);
 
-			case CUTTABLE_STONE:
-				return y < height - 1
-				        && x < width - 2
-				        && getTile((short) (x - 2), (short) (y - 1))
-				                .hasCuttableObject(EMapObjectType.STONE)
-				        && hasSamePlayer(x, y, requester) && !isMarked(x, y);
+		case CUTTABLE_STONE:
+			return y < height - 1 && x < width - 2 && getTile((short) (x - 2), (short) (y - 1)).hasCuttableObject(EMapObjectType.STONE)
+					&& hasSamePlayer(x, y, requester) && !isMarked(x, y);
 
-			case ENEMY:
-				IHexMovable movable = map[y][x].getMovable();
-				return movable != null
-				        && movable.getPlayer() != requester.getPlayer();
+		case ENEMY:
+			IHexMovable movable = map[y][x].getMovable();
+			return movable != null && movable.getPlayer() != requester.getPlayer();
 
-			case RIVER:
-				return isRiver(x, y) && hasSamePlayer(x, y, requester)
-				        && !isMarked(x, y);
+		case RIVER:
+			return isRiver(x, y) && hasSamePlayer(x, y, requester) && !isMarked(x, y);
 
-			default:
-				System.err
-				        .println("can't handle search type in fitsSearchType(): "
-				                + type);
-				return false;
+		default:
+			System.err.println("can't handle search type in fitsSearchType(): " + type);
+			return false;
 		}
 	}
 
@@ -388,33 +375,24 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	 * @return
 	 */
 	private boolean hasSamePlayer(int x, int y, IPathCalculateable requester) {
-		return getTile((short) x, (short) y).getPlayer() == requester
-		        .getPlayer();
+		return getTile((short) x, (short) y).getPlayer() == requester.getPlayer();
 	}
 
 	private boolean isRiver(short x, short y) {
 		ELandscapeType type = getTile(x, y).getLandscapeType();
-		return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2
-		        || type == ELandscapeType.RIVER3
-		        || type == ELandscapeType.RIVER4;
+		return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2 || type == ELandscapeType.RIVER3 || type == ELandscapeType.RIVER4;
 	}
 
 	private boolean isTreePlantable(short x, short y) {
-		return getTile(x, y).getLandscapeType() == ELandscapeType.GRASS
-		        && !isBlocked(x, y)
-		        && !hasBlockedNeighbor(new ShortPoint2D(x, y));
+		return getTile(x, y).getLandscapeType() == ELandscapeType.GRASS && !isBlocked(x, y) && !hasBlockedNeighbor(new ShortPoint2D(x, y));
 	}
 
 	private boolean isCornPlantable(short x, short y) {
 		HexTile tile = getTile(x, y);
-		return (tile.getLandscapeType() == ELandscapeType.GRASS || tile
-		        .getLandscapeType() == ELandscapeType.EARTH)
-		        && !tile.isProtected()
-		        && !hasProtectedNeighbor(tile)
-		        && !tile.hasMapObjectType(EMapObjectType.CORN_GROWING)
-		        && !tile.hasMapObjectType(EMapObjectType.CORN_ADULT)
-		        && !isNeighbor(tile, EMapObjectType.CORN_ADULT)
-		        && !isNeighbor(tile, EMapObjectType.CORN_GROWING);
+		return (tile.getLandscapeType() == ELandscapeType.GRASS || tile.getLandscapeType() == ELandscapeType.EARTH) && !tile.isProtected()
+				&& !hasProtectedNeighbor(tile) && !tile.hasMapObjectType(EMapObjectType.CORN_GROWING)
+				&& !tile.hasMapObjectType(EMapObjectType.CORN_ADULT) && !isNeighbor(tile, EMapObjectType.CORN_ADULT)
+				&& !isNeighbor(tile, EMapObjectType.CORN_GROWING);
 	}
 
 	private boolean isCornCuttable(short x, short y) {
@@ -427,78 +405,11 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	 * @param pos
 	 *            The position the settler is currently at
 	 * @param type
-	 *            The type the settler searched for and to which the
-	 *            corrosponding aciton should be done.
+	 *            The type the settler searched for and to which the corrosponding aciton should be done.
 	 * @return true if we succeeded.
 	 */
 	public boolean executeSearchType(ISPosition2D pos, ESearchType type) {
-		switch (type) {
-			case CUTTABLE_TREE:
-				return executeCutTree(pos);
-
-			case CUTTABLE_STONE:
-				getTile((short) (pos.getX() - 2), (short) (pos.getY() - 1))
-				        .getMapObject(EMapObjectType.STONE).cutOff();
-				// XXX: might fail?
-				return true;
-
-			case PLANTABLE_TREE:
-				return plantTree(pos);
-
-			case CUTTABLE_CORN:
-				return cutCorn(pos);
-
-			case PLANTABLE_CORN:
-				return plantCorn(pos);
-
-			default:
-				System.err
-				        .println("can't handle search type in executeSearchType(): "
-				                + type);
-				return false;
-		}
-	}
-
-	private boolean plantTree(ISPosition2D pos) {
-		this.addMapObject(new ShortPoint2D(pos.getX(), pos.getY() + 1),
-		        new Tree(this, pos));
-		return true;
-	}
-
-	private boolean plantCorn(ISPosition2D pos) {
-		HexTile tile = getTile(pos);
-		tile.setLandscape(ELandscapeType.EARTH);
-		for (ISPosition2D cur : new MapShapeFilter(new MapNeighbours(pos),
-		        getWidth(), getHeight())) {
-			getTile(cur).setLandscape(ELandscapeType.EARTH);
-		}
-		this.addMapObject(pos, new Corn(this, pos));
-		return true;
-	}
-
-	private boolean cutCorn(ISPosition2D pos) {
-		HexTile tile = getTile(pos);
-		if (tile != null) {
-			AbstractHexMapObject corn =
-			        tile.getMapObject(EMapObjectType.CORN_ADULT);
-			if (corn.cutOff()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean executeCutTree(ISPosition2D pos) {
-		HexTile tile =
-		        getTile((short) (pos.getX() - 1), (short) (pos.getY() - 1));
-		if (tile != null) {
-			AbstractHexMapObject tree =
-			        tile.getMapObject(EMapObjectType.TREE_ADULT);
-			if (tree.cutOff()) {
-				return true;
-			}
-		}
-		return false;
+		return mapObjectsManager.executeSearchType(pos, type);
 	}
 
 	private boolean hasBlockedNeighbor(ISPosition2D pos) {
@@ -567,8 +478,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	@Override
 	public boolean isBuildingPlaceable(ISPosition2D pos, byte player) {
 		HexTile tile = getTile(pos);
-		return tile != null && !tile.isProtected()
-		        && tile.getPlayer() == player;
+		return tile != null && !tile.isProtected() && tile.getPlayer() == player;
 	}
 
 	@Override
@@ -614,9 +524,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 		if (isInBounds(pos)) {
 			IHexStack stack = map[pos.getY()][pos.getX()].getStack();
 			if (stack == null) {
-				stack =
-				        new SingleMaterialStack(materialType, pos,
-				                EStackType.OFFER, getTile(pos).getPlayer());
+				stack = new SingleMaterialStack(materialType, pos, EStackType.OFFER, getTile(pos).getPlayer());
 				getTile(pos).setStack(stack);
 			}
 			return stack.push(materialType);
@@ -628,9 +536,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	@Override
 	public boolean setBuilding(ISPosition2D pos, IBuilding building) {
 		if (isInBounds(pos)) {
-			FreeMapArea area =
-			        new FreeMapArea(pos, building.getBuildingType()
-			                .getProtectedTiles());
+			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
 			boolean protectWorked = setProtectedState(area, true);
 
 			if (protectWorked) {
@@ -647,8 +553,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 	private boolean setProtectedState(FreeMapArea area, boolean protectState) {
 		boolean isFree = true;
 		for (ISPosition2D protect : area) {
-			if (!isInBounds(protect)
-			        || (getTile(protect).isProtected() == protectState)) {
+			if (!isInBounds(protect) || (getTile(protect).isProtected() == protectState)) {
 				isFree = false;
 			}
 		}
@@ -707,51 +612,6 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 			return null;
 	}
 
-	@Override
-	public boolean addMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
-		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			HexTile tile = getTile(point.calculatePoint(pos));
-			if (tile == null || tile.isProtected()) {
-				return false;
-			}
-		}
-
-		getTile(pos).addMapObject(mapObject);
-
-		setBlockedForObject(pos, mapObject, true);
-		return true;
-	}
-
-	@Override
-	public void removeMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
-		boolean removed = getTile(pos).removeMapObject(mapObject);
-
-		if (removed) {
-			setBlockedForObject(pos, mapObject, false);
-		}
-	}
-
-	private void setBlockedForObject(ISPosition2D pos,
-	        AbstractHexMapObject mapObject, boolean blocked) {
-		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			HexTile tile = getTile(point.calculatePoint(pos));
-			if (tile != null) {
-				tile.setBlockedAndProtected(blocked);
-			}
-		}
-	}
-
-	@Override
-	public void removeMapObjectType(ISPosition2D pos,
-	        EMapObjectType mapObjectType) {
-		AbstractHexMapObject removed =
-		        getTile(pos).removeMapObjectType(mapObjectType);
-
-		if (removed != null) {
-			setBlockedForObject(pos, removed, false);
-		}
-	}
-
 	public boolean isFreeToEnter(ISPosition2D nextTile) {
 		return isInBounds(nextTile) && getTile(nextTile).getMovable() == null;
 	}
@@ -787,5 +647,10 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap,
 
 	public boolean isMarked(short x, short y) {
 		return getTile(x, y).isMarked();
+	}
+
+	@Override
+	public MapObjectsManager getMapObjectsManager() {
+		return mapObjectsManager;
 	}
 }

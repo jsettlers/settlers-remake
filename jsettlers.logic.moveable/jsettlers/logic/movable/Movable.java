@@ -12,7 +12,6 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.map.hex.interfaces.IHexMovable;
-import jsettlers.logic.objects.SelfDeletingMapObject;
 import jsettlers.logic.player.ActivePlayer;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
@@ -102,7 +101,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		movablesByID.remove(this.getID());
 		ActivePlayer.get().reduceOwned(player, this.strategy.getMovableType());
 
-		HexGrid.get().addMapObject(pos, new SelfDeletingMapObject(HexGrid.get(), pos, EMapObjectType.GHOST, 1, player));
+		HexGrid.get().getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.GHOST, 1, player);
 	}
 
 	@Override
@@ -241,7 +240,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				state = EMovableState.FINISHED_ACTION;
 				strategy.actionFinished();
 				if (state == EMovableState.FINISHED_ACTION) {
-					System.out.println("blï¿½d");
+					System.out.println("blöd");
 					strategy.actionFinished();
 				}
 			}

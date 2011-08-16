@@ -93,6 +93,16 @@ dx = 10
 dy = -15
 distance = 10
 
+[settler]
+count = 20
+type = BOWMAN_L1
+tight = 1
+group = true
+dx = 10
+dy = -15
+distance = 10
+
+
 
 [stack]
 count = 6

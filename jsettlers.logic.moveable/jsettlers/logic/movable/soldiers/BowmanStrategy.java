@@ -7,7 +7,6 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.objects.arrow.ArrowObject;
 
 /**
  * strategy for a bowman.
@@ -34,7 +33,7 @@ public class BowmanStrategy extends AbstractSoldierStrategy {
 		if (dir != null)
 			super.setDirection(dir);
 
-		HexGrid.get().addMapObject(enemyPos, new ArrowObject(enemyPos, super.getPos(), 0.8f));
+		HexGrid.get().getMapObjectsManager().addArrowObject(HexGrid.get().getMovable(enemyPos), super.getPos(), 0.8f);
 	}
 
 	@Override

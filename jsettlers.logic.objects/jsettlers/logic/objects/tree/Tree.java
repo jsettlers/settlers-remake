@@ -3,9 +3,7 @@ package jsettlers.logic.objects.tree;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.objects.GrowingObject;
-import jsettlers.logic.objects.IMapObjectRemovableGrid;
 
 /**
  * This is a tree on the map.
@@ -14,28 +12,35 @@ import jsettlers.logic.objects.IMapObjectRemovableGrid;
  * 
  */
 public class Tree extends GrowingObject {
+	/**
+	 * time a tree needs to grow
+	 */
+	public static final float GROWTH_DURATION = 7 * 60;
+	public static final float DECOMPOSE_DURATION = 2 * 60;
 
-	private static final RelativePoint[] BLOCKED = new RelativePoint[] {
-    		new RelativePoint(0, 0)
-    };
+	private static final RelativePoint[] BLOCKED = new RelativePoint[] { new RelativePoint(0, 0) };
 
 	/**
 	 * Creates a new Tree.
 	 * 
 	 * @param grid
 	 */
-	public Tree(IMapObjectRemovableGrid grid, ISPosition2D pos) {
-		super(grid, pos, EMapObjectType.TREE_GROWING, EMapObjectType.TREE_ADULT, EMapObjectType.TREE_DEAD);
+	public Tree(ISPosition2D pos) {
+		super(pos, EMapObjectType.TREE_GROWING, EMapObjectType.TREE_ADULT, EMapObjectType.TREE_DEAD);
 	}
 
 	@Override
 	public RelativePoint[] getBlockedTiles() {
-	    return BLOCKED;
+		return BLOCKED;
 	}
 
 	@Override
-	protected float getGrowthIncrease() {
-		return Constants.TREE_GROWTH_PER_INTERRUPT;
+	protected float getGrowthDuration() {
+		return GROWTH_DURATION;
 	}
 
+	@Override
+	protected float getDecomposeDuration() {
+		return DECOMPOSE_DURATION;
+	}
 }

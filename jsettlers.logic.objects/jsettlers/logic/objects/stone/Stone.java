@@ -7,15 +7,16 @@ import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 public class Stone extends AbstractHexMapObject {
 
 	private static final int MAX_CAPACITY = 12;
-	private byte imageIdx = 0;
+	public static final float DECOMPOSE_DELAY = 150;
+	private byte leftCapacity = 0;
 
 	public Stone() {
 		this(MAX_CAPACITY);
 	}
 
 	public Stone(int capacity) {
-		imageIdx = (byte) capacity;
-    }
+		leftCapacity = (byte) capacity;
+	}
 
 	@Override
 	public boolean cutOff() {
@@ -23,7 +24,7 @@ public class Stone extends AbstractHexMapObject {
 			return false;
 		}
 
-		this.imageIdx--;
+		this.leftCapacity--;
 		return true;
 	}
 
@@ -34,25 +35,18 @@ public class Stone extends AbstractHexMapObject {
 
 	@Override
 	public float getStateProgress() {
-		return imageIdx;
+		return leftCapacity;
 	}
 
 	@Override
 	public RelativePoint[] getBlockedTiles() {
-	    return new RelativePoint[] {
-	    		new RelativePoint(-1, -1),
-	    		new RelativePoint(0, -1),
-	    		new RelativePoint(-1, 0),
-	    		new RelativePoint(0, 0),
-	    		new RelativePoint(0, 1),
-	    		new RelativePoint(1, 0),
-	    		new RelativePoint(1, 1),
-	    };
+		return new RelativePoint[] { new RelativePoint(-1, -1), new RelativePoint(0, -1), new RelativePoint(-1, 0), new RelativePoint(0, 0),
+				new RelativePoint(0, 1), new RelativePoint(1, 0), new RelativePoint(1, 1), };
 	}
 
 	@Override
 	public boolean canBeCut() {
-		return imageIdx > 0;
+		return leftCapacity > 0;
 	}
 
 }

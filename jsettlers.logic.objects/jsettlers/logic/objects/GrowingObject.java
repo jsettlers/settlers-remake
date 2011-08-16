@@ -2,11 +2,6 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.Timer100Milli;
-import random.RandomSingleton;
 
 /**
  * This is an abstract class used for growing objects.
@@ -14,57 +9,30 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public abstract class GrowingObject extends AbstractHexMapObject implements ITimerable {
-	private float progress = 0;
+public abstract class GrowingObject extends ProgressingObject {
 
 	private EMapObjectType state;
 
-	private final EMapObjectType growing;
 	private final EMapObjectType adult;
 	private final EMapObjectType dead;
 
-	private final IMapObjectRemovableGrid grid;
-
-	private final ISPosition2D pos;
-
-	protected GrowingObject(IMapObjectRemovableGrid grid, ISPosition2D pos, EMapObjectType growing, EMapObjectType adult, EMapObjectType dead) {
-		this.grid = grid;
-		this.pos = pos;
-		this.growing = growing;
+	protected GrowingObject(ISPosition2D pos, EMapObjectType growing, EMapObjectType adult, EMapObjectType dead) {
+		super(pos);
 		this.adult = adult;
 		this.dead = dead;
 
-		Timer100Milli.add(this);
 		state = growing;
-		progress = (float) (RandomSingleton.nextD() * 0.1);
+		super.setDuration(getGrowthDuration());
 	}
 
-	@Override
-	public void timerEvent() {
-		if (state == growing) {
-			progress += getGrowthIncrease();
-			if (progress >= 1) {
-				state = adult;
-				progress = 0;
-			}
-		} else if (state == adult) {
-		} else {
-			progress += Constants.TREE_DECOMPOSE_PER_INTERRUPT;
-
-			if (progress >= 1) {
-				kill();
-			}
-		}
-	}
-
-	protected abstract float getGrowthIncrease();
+	protected abstract float getGrowthDuration();
 
 	public boolean isDead() {
-		return state == dead;
+		return this.state == dead;
 	}
 
 	public boolean isAdult() {
-		return state == adult;
+		return this.state == adult;
 	}
 
 	@Override
@@ -74,25 +42,25 @@ public abstract class GrowingObject extends AbstractHexMapObject implements ITim
 
 	@Override
 	public boolean cutOff() {
+		super.setDuration(getDecomposeDuration());
 		this.state = dead;
-		this.progress += 0.1F;
-		return false;
+		return true;
 	}
 
-	@Override
-	public void kill() {
-		Timer100Milli.remove(this);
-		grid.removeMapObject(pos, this);
-	}
+	protected abstract float getDecomposeDuration();
 
 	@Override
 	public EMapObjectType getObjectType() {
-		return state;
+		return this.state;
 	}
 
 	@Override
-	public float getStateProgress() {
-		return progress;
+	protected void changeState() {
+		if (state == adult) {
+			state = dead;
+		} else if (state == dead) {
+		} else {
+			state = adult;
+		}
 	}
-
 }
