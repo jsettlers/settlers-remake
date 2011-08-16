@@ -32,7 +32,7 @@ public class DatFileTester {
 	private static final String FILE =
 	        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
 
-	private static int datFileIndex = 14;
+	private static int datFileIndex = 1;
 
 	private static int offsetY = 400;
 	private static int offsetX = 200;
