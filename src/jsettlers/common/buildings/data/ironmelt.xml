@@ -1,65 +1,99 @@
 <?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
-<building worker="MELTER" workradius="0"> 
-	<blocked dx="-3" dy="1" />
-	<blocked dx="-2" dy="2" />
-	<blocked dx="-1" dy="3" />
-	<blocked dx="0" dy="4" />
-	<blocked dx="1" dy="4" />
-	<blocked dx="2" dy="4" />
-	<blocked dx="2" dy="3" />
-	<blocked dx="2" dy="2" />
-	<blocked dx="2" dy="1" />
-	<blocked dx="2" dy="-1" />
-	<blocked dx="2" dy="-2" />
-	<blocked dx="3" dy="-1" />
-	<blocked dx="-2" dy="1" />
-	<blocked dx="-1" dy="2" />
-	<blocked dx="0" dy="3" />
-	<blocked dx="-2" dy="0" />
-	<blocked dx="-3" dy="0" />
-	<blocked dx="-3" dy="-1" />
-	<blocked dx="-1" dy="1" />
-	<blocked dx="0" dy="2" />
-	<blocked dx="1" dy="3" />
-	<blocked dx="1" dy="2" />
-	<blocked dx="1" dy="1" />
-	<blocked dx="1" dy="0" />
-	<blocked dx="1" dy="-1" />
-	<blocked dx="1" dy="-2" />
-	<blocked dx="1" dy="-3" />
-	<blocked dx="0" dy="1" />
-	<blocked dx="0" dy="0" />
-	<blocked dx="0" dy="-1" />
-	<blocked dx="0" dy="-2" />
-	<blocked dx="0" dy="-3" />
-	<blocked dx="0" dy="-4" />
-	<blocked dx="-1" dy="0" />
-	<blocked dx="-1" dy="-1" />
-	<blocked dx="-1" dy="-2" />
-	<blocked dx="-1" dy="-3" />
-	<blocked dx="-1" dy="-4" />
-	<blocked dx="-1" dy="-5" />
-	<blocked dx="-2" dy="-1" />
-	<blocked dx="-2" dy="-2" />
-	<blocked dx="-2" dy="-3" />
-	<blocked dx="-2" dy="-4" />
-	<blocked dx="-2" dy="-5" />
-	<blocked dx="-2" dy="-6" />
-	<blocked dx="-3" dy="-2" />
-	<blocked dx="-3" dy="-3" />
-	
+<building worker="MELTER" workradius="0"> 	<blocked dx="-3" dy="1" block="true" />
+	<blocked dx="-2" dy="2" block="true" />
+	<blocked dx="-1" dy="3" block="true" />
+	<blocked dx="0" dy="4" block="true" />
+	<blocked dx="1" dy="4" block="true" />
+	<blocked dx="2" dy="4" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="2" dy="-1" block="true" />
+	<blocked dx="2" dy="-2" block="true" />
+	<blocked dx="3" dy="-1" block="true" />
+	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="-1" dy="2" block="true" />
+	<blocked dx="0" dy="3" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-3" dy="0" block="true" />
+	<blocked dx="-3" dy="-1" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="1" dy="-2" block="true" />
+	<blocked dx="1" dy="-3" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-3" block="true" />
+	<blocked dx="0" dy="-4" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="-1" dy="-4" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-2" dy="-4" block="true" />
+	<blocked dx="-2" dy="-5" block="true" />
+	<blocked dx="-2" dy="-6" block="true" />
+	<blocked dx="-3" dy="-2" block="true" />
+	<blocked dx="-3" dy="-3" block="true" />
+	<blocked dx="-1" dy="-5" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="-3" dy="-4" block="false" />
+	<blocked dx="-3" dy="-5" block="false" />
+	<blocked dx="-3" dy="-6" block="false" />
+	<blocked dx="-3" dy="-7" block="false" />
+	<blocked dx="-2" dy="-7" block="false" />
+	<blocked dx="0" dy="-5" block="false" />
+	<blocked dx="-1" dy="-6" block="false" />
+	<blocked dx="2" dy="-3" block="false" />
+	<blocked dx="1" dy="-4" block="false" />
+	<blocked dx="3" dy="-2" block="false" />
+	<blocked dx="4" dy="-1" block="false" />
+	<blocked dx="4" dy="0" block="false" />
+	<blocked dx="4" dy="1" block="false" />
+	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="3" dy="1" block="false" />
+	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="4" dy="3" block="false" />
+	<blocked dx="3" dy="3" block="false" />
+	<blocked dx="4" dy="4" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="0" dy="5" block="false" />
+	<blocked dx="1" dy="5" block="false" />
+	<blocked dx="2" dy="5" block="false" />
+	<blocked dx="3" dy="5" block="false" />
+	<blocked dx="4" dy="5" block="false" />
+	<blocked dx="-1" dy="4" block="false" />
+	<blocked dx="-2" dy="3" block="false" />
+	<blocked dx="-3" dy="2" block="false" />
+	<blocked dx="-4" dy="1" block="false" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-4" dy="-1" block="false" />
+	<blocked dx="-4" dy="-2" block="false" />
+	<blocked dx="-4" dy="-3" block="false" />
+	<blocked dx="-4" dy="-4" block="false" />
+	<blocked dx="-4" dy="-5" block="false" />
 	<door dx="2" dy="0" />
-	
 	<stack dx="-3" dy="2" material="COAL" buildrequired="0" />
 	<stack dx="3" dy="3" material="IRONORE" buildrequired="0" />
-	
-	<bricklayer dx="4" dy="-1" direction="NORTH_WEST" />
-	<bricklayer dx="3" dy="1" direction="NORTH_WEST" />
-	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
-	<bricklayer dx="-3" dy="2" direction="NORTH_EAST" />
+	<stack dx="3" dy="5" material="PLANK" buildrequired="7" />
+	<stack dx="0" dy="5" material="STONE" buildrequired="4" />
 	<bricklayer dx="-1" dy="4" direction="NORTH_EAST" />
+	<bricklayer dx="-3" dy="2" direction="NORTH_EAST" />
+	<bricklayer dx="3" dy="0" direction="NORTH_WEST" />
+	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
+	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
+	<flag dx="0" dy="0" />
 
-	<flag dx="0" dy="-4"/>
 	
 	<startjob name="gohome"/>
 	
