@@ -1,18 +1,21 @@
 package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.SRectangle;
 
 /**
- * This class gives a fast lookup (in O(1)) for contains if a MapArea is given by a list of n positions.<br>
- * This class should only be used if the given positions are NOT distributed over big parts of the map. They should be positioned quite close to each
+ * This class gives a fast lookup (in O(1)) for contains if a MapArea is given
+ * by a list of n positions.<br>
+ * This class should only be used if the given positions are NOT distributed
+ * over big parts of the map. They should be positioned quite close to each
  * other.
  * 
  * @author Andreas Eberle
- * 
  */
 public class FreeMapArea implements IMapArea {
 	private final List<ISPosition2D> positions;
@@ -23,7 +26,6 @@ public class FreeMapArea implements IMapArea {
 	private final int height;
 
 	/**
-	 * 
 	 * @param positions
 	 *            the positions this map area shall contain.
 	 */
@@ -42,7 +44,29 @@ public class FreeMapArea implements IMapArea {
 		setPositionsToMap(areaMap, positions);
 	}
 
-	private void setPositionsToMap(boolean[][] areaMap, List<ISPosition2D> positions2) {
+	/**
+	 * Creates a free map area by converting the relative points to absolute
+	 * ones.
+	 * 
+	 * @param pos The origin for the relative points
+	 * @param relativePoints The relative points
+	 */
+	public FreeMapArea(ISPosition2D pos, RelativePoint[] relativePoints) {
+		this(convertRelative(pos, relativePoints));
+	}
+
+	private static LinkedList<ISPosition2D> convertRelative(ISPosition2D pos,
+            RelativePoint[] relativePoints) {
+	    LinkedList<ISPosition2D> list = new LinkedList<ISPosition2D>();
+		
+		for (RelativePoint relative : relativePoints) {
+			list.add(relative.calculatePoint(pos));
+		}
+	    return list;
+    }
+
+	private void setPositionsToMap(boolean[][] areaMap,
+	        List<ISPosition2D> positions2) {
 		for (ISPosition2D curr : positions) {
 			areaMap[getMapX(curr)][getMapY(curr)] = true;
 		}
@@ -57,7 +81,8 @@ public class FreeMapArea implements IMapArea {
 	}
 
 	private SRectangle getBounds(List<ISPosition2D> positions) {
-		short xMin = Short.MAX_VALUE, xMax = 0, yMin = Short.MAX_VALUE, yMax = 0;
+		short xMin = Short.MAX_VALUE, xMax = 0, yMin = Short.MAX_VALUE, yMax =
+		        0;
 
 		for (ISPosition2D curr : positions) {
 			short x = curr.getX();
