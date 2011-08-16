@@ -49,5 +49,10 @@ public enum EMapObjectType {
 	/**
 	 * on top of the roof
 	 */
-	FLAG_ROOF
+	FLAG_ROOF,
+
+	/**
+	 * the rest of a stone that can not be cut any more.
+	 */
+	CUT_OFF_STONE
 }

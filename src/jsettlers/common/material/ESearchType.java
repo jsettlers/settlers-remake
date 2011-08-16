@@ -1,5 +1,11 @@
 package jsettlers.common.material;
 
+/**
+ * This enum defines things that can be searched on the grid.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public enum ESearchType {
 	/**
 	 * Searches for foreign ground
@@ -13,6 +19,7 @@ public enum ESearchType {
 
 	CUTTABLE_STONE,
 
+
 	PLANTABLE_TREE,
 
 	PLANTABLE_CORN,
@@ -20,11 +27,12 @@ public enum ESearchType {
 	CUTTABLE_CORN,
 
 	FISHABLE,
-	
+
 	/**
 	 * A river to get water from
 	 */
 	RIVER,
 
 	ENEMY
+
 }
