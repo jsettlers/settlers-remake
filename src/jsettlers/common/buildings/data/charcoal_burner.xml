@@ -85,7 +85,7 @@
 
 	<!-- go home -->
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="gohome_wait"
-		dx="2" dy="1" />
+		dx="2" dy="2" />
 	<!-- go home failed, retry -->
 	<job name="gohome_wait" type="WAIT" successjob="gohome" failjob="gohome_wait"
 		time="1.0" />

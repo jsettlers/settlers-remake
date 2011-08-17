@@ -62,7 +62,8 @@ public enum EBuildingJobType {
 	SET_MATERIAL,
 
 	/**
-	 * Picks up the specified material. Does not change the material type assigned to the settler
+	 * Picks up the specified material. Does not change the material type
+	 * assigned to the settler
 	 * <p>
 	 * Parameter: material
 	 * <p>
@@ -84,7 +85,8 @@ public enum EBuildingJobType {
 	DROP,
 
 	/**
-	 * Searches a given search type. The search center is given by the working center of the building.
+	 * Searches a given search type. The search center is given by the working
+	 * center of the building.
 	 * <p>
 	 * Parameters: <br>
 	 * search (type to be searched @see {@link ESearchType}), <br>
@@ -96,7 +98,8 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Fail: If the searched thing was not found.
 	 * <p>
-	 * XXX: what if an error occurs during walking there? (e.g. land ownership changed, object removed, ...)
+	 * XXX: what if an error occurs during walking there? (e.g. land ownership
+	 * changed, object removed, ...)
 	 * 
 	 * @see ESearchType
 	 * @see EBuildingType#getWorkradius()
@@ -104,7 +107,8 @@ public enum EBuildingJobType {
 	PRE_SEARCH,
 
 	/**
-	 * Searches a given search type with the InAreaFinder. The search center is given by the working center of the building.
+	 * Searches a given search type with the InAreaFinder. The search center is
+	 * given by the working center of the building.
 	 * <p>
 	 * Parameters: <br>
 	 * search (type to be searched @see {@link ESearchType}), <br>
@@ -122,7 +126,8 @@ public enum EBuildingJobType {
 	PRE_SEARCH_IN_AREA,
 
 	/**
-	 * Follows the pre-calculated path that has been searched with {@link #PRE_SEARCH} or {@link #PRE_SEARCH_IN_AREA}
+	 * Follows the pre-calculated path that has been searched with
+	 * {@link #PRE_SEARCH} or {@link #PRE_SEARCH_IN_AREA}
 	 */
 	FOLLOW_SEARCHED,
 
@@ -191,7 +196,20 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Success: The material may be placed at the given position
 	 * <p>
-	 * Fail: There is a full stack at that position, a wrong stack or it is blocked otherwise.
+	 * Fail: There is a full stack at that position, a wrong stack or it is
+	 * blocked otherwise.
 	 */
-	NOT_FULL
+	NOT_FULL,
+
+	/**
+	 * Looks at the water that has been searched. TODO: make it work for other
+	 * stuff, like Stones.
+	 */
+	LOOK_AT_SEARCHED,
+
+	/**
+	 * If the settler should be productive, this method succeds, it fails
+	 * otherwise.
+	 */
+	IS_PRODUCTIVE
 }
