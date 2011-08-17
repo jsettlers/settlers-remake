@@ -33,6 +33,12 @@ on = grass
 size = 1200
 distance = 20-90
 
+[playerland]
+type = sea
+on = sand
+size = 4000
+distance = 20-90
+
 [building]
 count = 1
 x = 0
@@ -68,7 +74,7 @@ dy = -10
 distance = 10
 
 [settler]
-count = 2
+count = 4
 type = DIGGER
 tight = 1
 group = true
@@ -101,7 +107,6 @@ group = true
 dx = 10
 dy = -15
 distance = 10
-
 
 
 [stack]
@@ -185,6 +190,42 @@ dx = 3
 dy = 3
 capacity = 4
 material = scythe
+distance = 5..10
+
+[stack]
+count = 1
+tight = 1
+dx = 3
+dy = 3
+capacity = 8
+material = coal
+distance = 5..10
+
+[stack]
+count = 1
+tight = 1
+dx = 3
+dy = 3
+capacity = 8
+material = iron
+distance = 5..10
+
+[stack]
+count = 1
+tight = 1
+dx = 3
+dy = 3
+capacity = 8
+material = bread
+distance = 5..10
+
+[stack]
+count = 1
+tight = 1
+dx = 3
+dy = 3
+capacity = 8
+material = fish
 distance = 5..10
 
 

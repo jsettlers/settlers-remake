@@ -2,7 +2,9 @@ package jsettlers.logic.movable.workers;
 
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -14,10 +16,13 @@ import jsettlers.logic.management.workers.IWorkerJobable;
 import jsettlers.logic.management.workers.building.BuildingWorkerRequest;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.map.hex.HexTile;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
+import random.RandomSingleton;
 
-public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJobable<BuildingWorkerRequest> {
+public class BuildingWorkerStrategy extends PathableStrategy implements
+        IWorkerJobable<BuildingWorkerRequest> {
 
 	private final EMovableType movableType;
 	private IBuildingJob currentJob;
@@ -47,7 +52,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 
 	@Override
 	protected void setCalculatedPath(Path path) {
-		if (currentJob.getType() == EBuildingJobType.PRE_SEARCH || currentJob.getType() == EBuildingJobType.PRE_SEARCH_IN_AREA) {
+		if (currentJob.getType() == EBuildingJobType.PRE_SEARCH
+		        || currentJob.getType() == EBuildingJobType.PRE_SEARCH_IN_AREA) {
 			this.path = path;
 			HexGrid.get().setMarked(path.getLastTile(), true);
 			jobFinished();
@@ -61,8 +67,11 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 		if (!super.actionFinished()) {
 			if (currentJob != null) {
 				boolean success = true;
-				if (currentJob.getType() == EBuildingJobType.DROP && currentJob.getMaterial() != EMaterialType.NO_MATERIAL) {
-					success = HexGrid.get().pushMaterial(super.getPos(), currentJob.getMaterial());
+				if (currentJob.getType() == EBuildingJobType.DROP
+				        && currentJob.getMaterial() != EMaterialType.NO_MATERIAL) {
+					success =
+					        HexGrid.get().pushMaterial(super.getPos(),
+					                currentJob.getMaterial());
 				}
 
 				if (success) {
@@ -86,95 +95,144 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 		assert currentJob != null : "currentJob should not be null here";
 
 		switch (currentJob.getType()) {
-		case WAIT:
-			super.setWaiting(currentJob.getTime());
-			break;
+			case WAIT:
+				super.setWaiting(currentJob.getTime());
+				break;
 
-		case WALK:
-			walkAction();
-			break;
+			case WALK:
+				walkAction();
+				break;
 
-		case SHOW:
-			showAction();
-			break;
+			case SHOW:
+				showAction();
+				break;
 
-		case HIDE:
-			super.setVisible(false);
-			super.setAction(EAction.NO_ACTION, -1);
-			jobFinished();
-			break;
-
-		case SET_MATERIAL:
-			super.setMaterial(currentJob.getMaterial());
-			jobFinished();// start next action
-			break;
-
-		case TAKE:
-			super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-			HexGrid.get().popMaterial(super.getPos(), currentJob.getMaterial());
-			break;
-
-		case DROP:
-			dropAction();
-			break;
-
-		case PRE_SEARCH:
-			searchAction();
-			break;
-
-		case PRE_SEARCH_IN_AREA:
-			searchInAreaAction();
-			break;
-
-		case FOLLOW_SEARCHED:
-			followSearchedAction();
-			break;
-
-		case EXECUTE:
-			if (HexGrid.get().fitsSearchType(super.getPos(), currentJob.getSearchType(), this)) {
-				HexGrid.get().executeSearchType(super.getPos(), currentJob.getSearchType());
+			case HIDE:
+				super.setVisible(false);
+				super.setAction(EAction.NO_ACTION, -1);
 				jobFinished();
-			} else {
-				jobFailed();
-			}
-			break;
+				break;
 
-		case GO_TO:
-			gotoAction();
-			break;
+			case SET_MATERIAL:
+				super.setMaterial(currentJob.getMaterial());
+				jobFinished();// start next action
+				break;
 
-		case LOOK_AT:
-			super.setDirection(currentJob.getDirection());
-			jobFinished();
-			break;
+			case TAKE:
+				super.setAction(EAction.TAKE,
+				        Constants.MOVABLE_TAKE_DROP_DURATION);
+				HexGrid.get().popMaterial(super.getPos(),
+				        currentJob.getMaterial());
+				break;
 
-		case PLAY_ACTION1:
-			super.setAction(EAction.ACTION1, currentJob.getTime());
-			break;
+			case DROP:
+				dropAction();
+				break;
 
-		case PLAY_ACTION2:
-			super.setAction(EAction.ACTION2, currentJob.getTime());
-			break;
+			case PRE_SEARCH:
+				searchAction();
+				break;
 
-		case AVAILABLE:
-			if (HexGrid.get().canPop(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()), currentJob.getMaterial())) {
+			case PRE_SEARCH_IN_AREA:
+				searchInAreaAction();
+				break;
+
+			case LOOK_AT_SEARCHED:
+				if (lookAtSearched()) {
+					jobFinished();
+				} else {
+					jobFailed();
+				}
+				break;
+
+			case IS_PRODUCTIVE:
+				if (isProductive()) {
+					jobFinished();
+				} else {
+					jobFailed();
+				}
+				break;
+
+			case FOLLOW_SEARCHED:
+				followSearchedAction();
+				break;
+
+			case EXECUTE:
+				if (HexGrid.get().fitsSearchType(super.getPos(),
+				        currentJob.getSearchType(), this)) {
+					HexGrid.get().executeSearchType(super.getPos(),
+					        currentJob.getSearchType());
+					jobFinished();
+				} else {
+					jobFailed();
+				}
+				break;
+
+			case GO_TO:
+				gotoAction();
+				break;
+
+			case LOOK_AT:
+				super.setDirection(currentJob.getDirection());
 				jobFinished();
-			} else {
-				jobFailed();
-			}
-			break;
+				break;
 
-		case NOT_FULL:
-			if (HexGrid.get().canPush(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()), currentJob.getMaterial())) {
-				jobFinished();
-			} else {
-				jobFailed();
-			}
-			break;
+			case PLAY_ACTION1:
+				super.setAction(EAction.ACTION1, currentJob.getTime());
+				break;
 
-		default:
-			System.err.println("unknown job type in BuildingWorkerStrategy: " + currentJob.getType());
-			break;
+			case PLAY_ACTION2:
+				super.setAction(EAction.ACTION2, currentJob.getTime());
+				break;
+
+			case AVAILABLE:
+				if (HexGrid.get().canPop(
+				        building.calculateRealPoint(currentJob.getDx(),
+				                currentJob.getDy()), currentJob.getMaterial())) {
+					jobFinished();
+				} else {
+					jobFailed();
+				}
+				break;
+
+			case NOT_FULL:
+				if (HexGrid.get().canPush(
+				        building.calculateRealPoint(currentJob.getDx(),
+				                currentJob.getDy()), currentJob.getMaterial())) {
+					jobFinished();
+				} else {
+					jobFailed();
+				}
+				break;
+
+			default:
+				System.err
+				        .println("unknown job type in BuildingWorkerStrategy: "
+				                + currentJob.getType());
+				break;
+		}
+	}
+
+	private boolean isProductive() {
+		// TODO: weight
+		return RandomSingleton.get().nextBoolean();
+	}
+
+	private boolean lookAtSearched() {
+		if (currentJob.getSearchType() == ESearchType.FISHABLE) {
+			HexGrid grid = HexGrid.get();
+			for (EDirection direction : EDirection.values()) {
+				HexTile tile =
+				        grid.getTile(direction.getNextHexPoint(super.getPos()));
+				if (tile != null
+				        && tile.getLandscapeType() == ELandscapeType.WATER) {
+					super.setDirection(direction);
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return false;
 		}
 	}
 
@@ -200,19 +258,24 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 	}
 
 	private void searchInAreaAction() {
-		super.setPos(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()));
-		super.calculateInAreaPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
+		super.setPos(building.calculateRealPoint(currentJob.getDx(),
+		        currentJob.getDy()));
+		super.calculateInAreaPath(building.getWorkAreaCenter(), building
+		        .getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
 	private void searchAction() {
-		super.setPos(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()));
-		super.calculateDijkstraPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
+		super.setPos(building.calculateRealPoint(currentJob.getDx(),
+		        currentJob.getDy()));
+		super.calculateDijkstraPath(building.getWorkAreaCenter(), building
+		        .getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
 	private void gotoAction() {
 		if (!done) {
 			this.done = true;
-			super.calculatePathTo(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()));
+			super.calculatePathTo(building.calculateRealPoint(
+			        currentJob.getDx(), currentJob.getDy()));
 		} else {
 			super.setAction(EAction.NO_ACTION, -1);
 			jobFinished();// start next action
@@ -220,7 +283,9 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 	}
 
 	private void showAction() {
-		ISPosition2D pos = building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
+		ISPosition2D pos =
+		        building.calculateRealPoint(currentJob.getDx(),
+		                currentJob.getDy());
 		if (!HexGrid.get().isBlocked(this, pos.getX(), pos.getY())) {
 			super.setPos(pos);
 			super.setVisible(true);

@@ -359,12 +359,25 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 
 		case RIVER:
 			return isRiver(x, y) && hasSamePlayer(x, y, requester) && !isMarked(x, y);
+				
+			case FISHABLE:
+				return hasNeighbourLandscape(x, y, ELandscapeType.WATER);
 
 		default:
 			System.err.println("can't handle search type in fitsSearchType(): " + type);
 			return false;
 		}
 	}
+
+	private boolean hasNeighbourLandscape(short x, short y, ELandscapeType landscape) {
+	    for (ISPosition2D pos : new MapNeighbours(new ShortPoint2D(x, y))) {
+	    	HexTile tile = getTile(pos);
+	    	if (tile != null && tile.getLandscapeType() == landscape) {
+	    		return true;
+	    	}
+	    }
+	    return false;
+    }
 
 	/**
 	 * NOTE: NO CHECK if coordinates are out of the map!
