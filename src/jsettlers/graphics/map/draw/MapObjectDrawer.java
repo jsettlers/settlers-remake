@@ -72,7 +72,7 @@ public class MapObjectDrawer {
 	private static final int FILE_BORDERPOST = 13;
 
 	private static final int STONE = 31;
-
+	
 	int animationStep = 0;
 
 	ImageProvider imageProvider = ImageProvider.getInstance();
@@ -269,7 +269,12 @@ public class MapObjectDrawer {
 		context.beginBetweenTileContext(start, end, progress);
 		context.getGl()
 		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, 0);
-		this.imageProvider.getSettlerSequence(FILE, sequence).getImage(index)
+		if (progress >= 1) {
+			context.getGl()
+	        .glTranslatef(0, 0, -.2f);
+		}
+		
+		this.imageProvider.getSettlerSequence(FILE, sequence).getImageSafe(index)
 		        .draw(context.getGl());
 		context.endTileContext();
 	}
@@ -333,6 +338,7 @@ public class MapObjectDrawer {
 	        float progress) {
 		int treeType = getTreeType(pos);
 		int imageStep = 0;
+		System.out.println("progress:" + progress);
 
 		// TODO
 		if (progress < IMapObject.TREE_CUT_1) {
@@ -351,7 +357,7 @@ public class MapObjectDrawer {
 			        (int) ((progress - IMapObject.TREE_TAKEN)
 			                / (1 - IMapObject.TREE_TAKEN) * TREE_ROT_IMAGES);
 
-			imageStep = relativeStep + TREE_FALL_IMAGES + 3 + TREE_ROT_IMAGES;
+			imageStep = relativeStep + TREE_FALL_IMAGES + 3;
 		}
 
 		Sequence<? extends Image> seq =
