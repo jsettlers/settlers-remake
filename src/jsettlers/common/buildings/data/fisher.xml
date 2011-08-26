@@ -55,46 +55,46 @@
 	<startjob name="gohome"/>
 
 	<!-- go home -->
-	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="gohome_wait" 	dx="2" dy="1"/>
+	<job name="gohome" 			type="GO_TO" 					successjob="hide" 			failjob="gohome_wait" 	dx="2" dy="1"/>
 	<!-- go home failed, retry -->
-	<job name="gohome_wait" 	type="WAIT" 			successjob="gohome" 		failjob="gohome_wait" 	time="1.0"/>
+	<job name="gohome_wait" 	type="WAIT" 					successjob="gohome" 		failjob="gohome_wait" 	time="1.0"/>
 	
 	<!-- arrive at front door => hide -->
-	<job name="hide" 			type="HIDE" 			successjob="reset" 			failjob="gohome_wait"/>
-	<job name="reset" 			type="SET_MATERIAL"		successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
+	<job name="hide" 			type="HIDE" 					successjob="reset" 			failjob="gohome_wait"/>
+	<job name="reset" 			type="SET_MATERIAL"				successjob="wait_at_home" 	failjob="wait_at_home" 	material="NO_MATERIAL"/>
 	
 	<!-- wait some time -->
-	<job name="wait_at_home" 	type="WAIT" 			successjob="check" 			failjob="wait_at_home" 	time="1.0"/>
+	<job name="wait_at_home" 	type="WAIT" 					successjob="check" 			failjob="wait_at_home" 	time="1.0"/>
 	
-	<job name="check" 			type="NOT_FULL" 		successjob="presearch" 		failjob="hide" 			dx="3" dy="4" material="FISH"/>
+	<job name="check" 			type="NOT_FULL" 				successjob="presearch" 		failjob="hide" 			dx="3" dy="4" material="FISH"/>
 	
 	<!-- show -->
 	<job name="presearch" 		type="PRE_SEARCH_IN_AREA" 		successjob="show" 			failjob="wait_at_home" 	search="FISHABLE"/>
-	<job name="show" 			type="SHOW" 			successjob="search_fish" 	failjob="hide" 			dx="2" dy="1"/>
+	<job name="show" 			type="SHOW" 					successjob="search_fish" 	failjob="hide" 			dx="2" dy="1"/>
 	
 	<!-- go search -->
-	<job name="search_fish" 	type="FOLLOW_SEARCHED" 	successjob="look_at_fish" 	failjob="gohome" 		/>
+	<job name="search_fish" 	type="FOLLOW_SEARCHED" 			successjob="look_at_fish" 	failjob="hide" 		/>
 	
 	<!-- fish it -->
-	<job name="look_at_fish" 	type="LOOK_AT" 			successjob="play" 	failjob="gohome" 		direction="NORTH_WEST"/>
-	<job name="play" 			type="PLAY_ACTION2" 	successjob="successful" 	failjob="gohome" 		time="1"/>
-	<job name="successful"		type="IS_PRODUCTIVE"	successjob="play_success1" failjob="play_fail"/>
+	<job name="look_at_fish" 	type="LOOK_AT_SEARCHED"			successjob="play" 			failjob="gohome" 		direction="NORTH_WEST"/>
+	<job name="play" 			type="PLAY_ACTION2" 			successjob="successful" 	failjob="gohome" 		time="1"/>
+	<job name="successful"		type="IS_PRODUCTIVE"			successjob="play_success1" 	failjob="play_fail"		/>
 	
 	<!--  fail -->
-	<job name="play_fail" 		type="PLAY_ACTION1" 	successjob="gohome" 	failjob="gohome" 		time="2"/>
+	<job name="play_fail" 		type="PLAY_ACTION1" 			successjob="gohome" 		failjob="gohome" 		time="2"/>
 	
 	<!-- success -->	
-	<job name="play_success1"	type="SET_MATERIAL" 	successjob="play_success2" 	failjob="gohome" 		material="FISH"/>
-	<job name="play_success2" 		type="PLAY_ACTION1" 	successjob="go_drop" 	failjob="gohome" 		time="2"/>
+	<job name="play_success1"	type="SET_MATERIAL" 			successjob="play_success2" 	failjob="gohome" 		material="FISH"/>
+	<job name="play_success2" 	type="PLAY_ACTION1" 			successjob="go_drop" 		failjob="gohome" 		time="2"/>
 	
 	<!-- drop it at (3|4) -->
-	<job name="go_drop"			type="GO_TO" 			successjob="drop1" 	failjob="gohome" 	dx="3" dy="4"/>
-	<job name="drop1" 			type="DROP" 			successjob="drop2" 	failjob="gohome" 	material="STONE"/>
-	<job name="drop2" 			type="SET_MATERIAL" 	successjob="drop3" 	failjob="gohome" 		material="NO_MATERIAL"/>
-	<job name="drop3" 			type="TAKE" 			successjob="walk1" 	failjob="gohome" 	material="NO_MATERIAL"/>
+	<job name="go_drop"			type="GO_TO" 					successjob="drop1" 			failjob="gohome" 		dx="3" dy="4"/>
+	<job name="drop1" 			type="DROP" 					successjob="drop2" 			failjob="gohome" 		material="STONE"/>
+	<job name="drop2" 			type="SET_MATERIAL" 			successjob="drop3" 			failjob="gohome" 		material="NO_MATERIAL"/>
+	<job name="drop3" 			type="TAKE" 					successjob="walk1" 			failjob="gohome" 		material="NO_MATERIAL"/>
 	
-	<job name="walk1" 			type="WALK" 			successjob="walk2" 			failjob="hide" 			direction="NORTH_EAST"/>
-	<job name="walk2" 			type="WALK" 			successjob="walk3" 			failjob="hide" 			direction="NORTH_EAST"/>
-	<job name="walk3" 			type="WALK" 			successjob="hide" 			failjob="hide" 			direction="NORTH_WEST"/>
+	<job name="walk1" 			type="WALK" 					successjob="walk2" 			failjob="hide" 			direction="NORTH_EAST"/>
+	<job name="walk2" 			type="WALK" 					successjob="walk3" 			failjob="hide" 			direction="NORTH_EAST"/>
+	<job name="walk3" 			type="WALK" 					successjob="hide" 			failjob="hide" 			direction="NORTH_WEST"/>
 	
 </building>
