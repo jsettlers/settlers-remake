@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapNeighbours;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
@@ -104,7 +104,7 @@ public class MapGrid {
 				short y = point.getY();
 				if (types[x][y] == null) {
 					types[x][y] = landscape;
-					for (ISPosition2D toAdd : new MapNeighbours(point)) {
+					for (ISPosition2D toAdd : new MapNeighboursArea(point)) {
 						sitePoints.offer(toAdd);
 					}
 				}

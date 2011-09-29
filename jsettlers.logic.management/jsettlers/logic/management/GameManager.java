@@ -26,17 +26,17 @@ public class GameManager {
 		}
 	}
 
-	private final PlayerManager[] managers;
+	private final PartitionManager[] managers;
 
 	public static void cancel() {
 		uniInstance.cancelMangement();
 	}
 
 	public GameManager(byte numberOfPlayers) {
-		this.managers = new PlayerManager[numberOfPlayers];
+		this.managers = new PartitionManager[numberOfPlayers];
 
 		for (int i = 0; i < numberOfPlayers; i++) {
-			this.managers[i] = new PlayerManager();
+			this.managers[i] = new PartitionManager();
 		}
 	}
 

@@ -16,13 +16,13 @@ import jsettlers.logic.management.workers.construction.BricklayerRequest;
 import jsettlers.logic.management.workers.construction.DiggerRequest;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
 
-class PlayerManager {
+class PartitionManager {
 	private final BearerJobCenter bearerJobCenter;
 	private final BearerJobCreator bearerJobCreator;
 	private final WorkerJobCenter<BuildingWorkerRequest> buildingWorkerJobCenter;
 	private final WorkerJobCenter<AbstractConstructionWorkerRequest> consturctionWorkerJobCenter;
 
-	public PlayerManager() {
+	public PartitionManager() {
 		this.bearerJobCenter = new BearerJobCenter();
 		bearerJobCenter.start();
 

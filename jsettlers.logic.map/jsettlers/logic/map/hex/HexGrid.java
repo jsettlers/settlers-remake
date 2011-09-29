@@ -9,7 +9,7 @@ import jsettlers.common.map.IHexMap;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapNeighbours;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -359,9 +359,9 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 
 		case RIVER:
 			return isRiver(x, y) && hasSamePlayer(x, y, requester) && !isMarked(x, y);
-				
-			case FISHABLE:
-				return hasNeighbourLandscape(x, y, ELandscapeType.WATER);
+
+		case FISHABLE:
+			return hasNeighbourLandscape(x, y, ELandscapeType.WATER);
 
 		default:
 			System.err.println("can't handle search type in fitsSearchType(): " + type);
@@ -370,14 +370,14 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	}
 
 	private boolean hasNeighbourLandscape(short x, short y, ELandscapeType landscape) {
-	    for (ISPosition2D pos : new MapNeighbours(new ShortPoint2D(x, y))) {
-	    	HexTile tile = getTile(pos);
-	    	if (tile != null && tile.getLandscapeType() == landscape) {
-	    		return true;
-	    	}
-	    }
-	    return false;
-    }
+		for (ISPosition2D pos : new MapNeighboursArea(new ShortPoint2D(x, y))) {
+			HexTile tile = getTile(pos);
+			if (tile != null && tile.getLandscapeType() == landscape) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * NOTE: NO CHECK if coordinates are out of the map!
@@ -439,7 +439,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	}
 
 	private boolean hasProtectedNeighbor(ISPosition2D pos) {
-		for (ISPosition2D neighbour : new MapNeighbours(pos)) {
+		for (ISPosition2D neighbour : new MapNeighboursArea(pos)) {
 			if (!isInBounds(neighbour) || getTile(neighbour).isProtected()) {
 				return true;
 			}
@@ -647,6 +647,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 
 	@Override
 	public void setPlayerAt(short x, short y, byte player) {
+
 		getTile(x, y).setPlayer(player);
 	}
 

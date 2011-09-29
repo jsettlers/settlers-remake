@@ -3,7 +3,7 @@ package jsettlers.logic.objects;
 import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.shapes.MapNeighbours;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
@@ -99,7 +99,7 @@ public class MapObjectsManager implements ITimerable {
 	private boolean plantCorn(ISPosition2D pos) {
 		IMapObjectsManagerTile tile = getTile(pos);
 		tile.setLandscape(ELandscapeType.EARTH);
-		for (ISPosition2D cur : new MapShapeFilter(new MapNeighbours(pos), grid.getWidth(), grid.getHeight())) {
+		for (ISPosition2D cur : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
 			getTile(cur).setLandscape(ELandscapeType.EARTH);
 		}
 		Corn corn = new Corn(pos);

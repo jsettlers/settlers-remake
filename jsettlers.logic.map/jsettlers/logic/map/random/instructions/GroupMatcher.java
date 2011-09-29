@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.shapes.MapNeighbours;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
@@ -54,7 +54,7 @@ public class GroupMatcher extends TileMatcher {
 					break;
 				}
 				current = possible.poll();
-				for (ISPosition2D pos : new MapShapeFilter(new MapNeighbours(
+				for (ISPosition2D pos : new MapShapeFilter(new MapNeighboursArea(
 				        current), grid.getWidth(), grid.getHeight())) {
 					if (!found.contains(pos)
 					        && Math.hypot(pos.getX() - startx, pos.getY()
