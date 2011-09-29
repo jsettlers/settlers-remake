@@ -5,10 +5,10 @@ import java.util.Iterator;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 
-public class MapNeighbours implements IMapArea {
+public class MapNeighboursArea implements IMapArea {
 	private final ISPosition2D center;
 
-	public MapNeighbours(ISPosition2D center) {
+	public MapNeighboursArea(ISPosition2D center) {
 		this.center = center;
 	}
 
