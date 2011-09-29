@@ -1,6 +1,6 @@
 package jsettlers.logic.algorithms.path;
 
-import jsettlers.common.map.shapes.MapNeighbours;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 
 /**
  * interface to specify the methods needed by pathfinders to operate on a map
@@ -28,7 +28,7 @@ public interface IPathMap {
 	 * @param neighbors
 	 *            The array to load with the neighbours. If it is null or does not match the reqirements, a new one is created.
 	 * @return The resulting array
-	 * @see MapNeighbours
+	 * @see MapNeighboursArea
 	 */
 	short[][] getNeighbors(short x, short y, short[][] neighbors);
 
