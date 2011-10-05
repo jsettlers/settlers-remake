@@ -9,10 +9,14 @@ import jsettlers.common.mapobject.IMapObject;
  * 
  */
 public class ObjectsGrid {
-	private final IMapObject[][] grid;
+	private final IMapObject[][] objectsGrid;
 
 	public ObjectsGrid(short width, short height) {
-		this.grid = new IMapObject[width][height];
+		this.objectsGrid = new IMapObject[width][height];
+	}
+
+	public IMapObject getObjectsAt(short x, short y) {
+		return objectsGrid[x][y];
 	}
 
 }

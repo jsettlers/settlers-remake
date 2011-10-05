@@ -15,7 +15,7 @@ public class MovableGrid {
 		this.movableGrid = new IMovable[width][height];
 	}
 
-	public IMovable getMovable(short x, short y) {
+	public IMovable getMovableAt(short x, short y) {
 		return this.movableGrid[x][y];
 	}
 
