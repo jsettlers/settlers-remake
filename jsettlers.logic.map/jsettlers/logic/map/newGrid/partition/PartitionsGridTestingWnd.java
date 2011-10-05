@@ -1,4 +1,4 @@
-package jsettlers.logic.map.hex.partition;
+package jsettlers.logic.map.newGrid.partition;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -25,7 +25,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.test.DummyEmptyPathfinderMap;
 import synchronic.timer.NetworkTimer;
 
-public class PartitionsMapTestingWnd extends JFrame {
+public class PartitionsGridTestingWnd extends JFrame {
 	private static final short HEIGHT = 400;
 	private static final short WIDTH = 400;
 
@@ -34,7 +34,7 @@ public class PartitionsMapTestingWnd extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 
-	PartitionsMap map;
+	PartitionsGrid map;
 
 	/**
 	 * Launch the application.
@@ -47,7 +47,7 @@ public class PartitionsMapTestingWnd extends JFrame {
 			@Override
 			public void run() {
 				try {
-					PartitionsMapTestingWnd frame = new PartitionsMapTestingWnd();
+					PartitionsGridTestingWnd frame = new PartitionsGridTestingWnd();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -59,8 +59,8 @@ public class PartitionsMapTestingWnd extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public PartitionsMapTestingWnd() {
-		map = new PartitionsMap(WIDTH, HEIGHT, new DummyEmptyPathfinderMap(WIDTH, HEIGHT) {
+	public PartitionsGridTestingWnd() {
+		map = new PartitionsGrid(WIDTH, HEIGHT, new DummyEmptyPathfinderMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 				return map.getPlayer(x, y) != requester.getPlayer();

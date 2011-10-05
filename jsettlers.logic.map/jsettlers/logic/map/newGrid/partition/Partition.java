@@ -1,4 +1,4 @@
-package jsettlers.logic.map.hex.partition;
+package jsettlers.logic.map.newGrid.partition;
 
 /**
  * This class holds the metadata of a partition.
@@ -10,9 +10,11 @@ public class Partition {
 
 	private int counter = 0;
 	private final byte player;
+	private final PartitionManager manager;
 
 	public Partition(final byte player) {
 		this.player = player;
+		this.manager = new PartitionManager();
 	}
 
 	public void decrement() {

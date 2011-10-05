@@ -1,4 +1,4 @@
-package jsettlers.logic.map.hex.partition;
+package jsettlers.logic.map.newGrid.partition;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
@@ -11,7 +11,7 @@ import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionsMap implements IPartionsAlgorithmMap {
+public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	private final short width;
 	private final short height;
@@ -23,7 +23,7 @@ public final class PartitionsMap implements IPartionsAlgorithmMap {
 	private final Partition[] partitionObjects = new Partition[1024]; // TODO make the array grow dynamically
 	private final PartitionsAlgorithm partitionsManager;
 
-	public PartitionsMap(final short width, final short height, IAStarPathMap pathfinderMap) {
+	public PartitionsGrid(final short width, final short height, IAStarPathMap pathfinderMap) {
 		this.width = width;
 		this.height = height;
 		this.partitions = new short[width][height];
