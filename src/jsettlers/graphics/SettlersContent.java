@@ -1,7 +1,8 @@
 package jsettlers.graphics;
 
-import go.RedrawListener;
-import go.region.RegionContent;
+import go.graphics.RedrawListener;
+import go.graphics.region.RegionContent;
+
 
 public interface SettlersContent extends RegionContent {
 

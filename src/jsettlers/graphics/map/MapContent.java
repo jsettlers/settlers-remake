@@ -1,27 +1,21 @@
 package jsettlers.graphics.map;
 
-import go.RedrawListener;
-import go.event.GOEvent;
-import go.event.GOEventHandler;
-import go.event.GOEventHandlerProvoder;
-import go.event.GOKeyEvent;
-import go.event.GOModalEventHandler;
-import go.event.command.GOCommandEvent;
-import go.event.mouse.GODrawEvent;
-import go.event.mouse.GOHoverEvent;
-import go.event.mouse.GOPanEvent;
+import go.graphics.GLDrawContext;
+import go.graphics.RedrawListener;
+import go.graphics.event.GOEvent;
+import go.graphics.event.GOEventHandler;
+import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOKeyEvent;
+import go.graphics.event.GOModalEventHandler;
+import go.graphics.event.command.GOCommandEvent;
+import go.graphics.event.mouse.GODrawEvent;
+import go.graphics.event.mouse.GOHoverEvent;
+import go.graphics.event.mouse.GOPanEvent;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.text.DecimalFormat;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2ES1;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
@@ -60,8 +54,6 @@ import jsettlers.graphics.utils.EFontSize;
 import jsettlers.graphics.utils.TextDrawer;
 import jsettlers.graphics.utils.UIPanel;
 
-import com.jogamp.common.nio.Buffers;
-
 /**
  * This is the main map content class. It manages the map drawing on the screen
  * region.
@@ -94,13 +86,13 @@ import com.jogamp.common.nio.Buffers;
  * @author michael
  */
 public class MapContent implements SettlersContent, GOEventHandlerProvoder {
-	private static final float UI_RATIO = (float) 768 / 333;
+	private static final float UI_RATIO = (float) 480 / 209;
 
-	private static final float UI_CENTERY = (float) 544 / 768;
+	private static final float UI_CENTERY = (float) 338 / 480;
 
-	private static final float UI_CENTERX = (float) 216 / 333;
+	private static final float UI_CENTERX = (float) 136 / 209;
 
-	private static final float UI_DECORATIONRIGHT = (float) 8 / 333
+	private static final float UI_DECORATIONRIGHT = (float) 8 / 209
 	        + UI_CENTERX;
 
 	private static final int UI_BG_FILE = 4;
@@ -187,7 +179,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	}
 
 	@Override
-	public void drawContent(GL2 gl, int newWidth, int newHeight) {
+    public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
 		if (newWidth != this.context.getScreen().getWidth()
 		        || newHeight != this.context.getScreen().getHeight()) {
 			resizeTo(newWidth, newHeight);
@@ -199,8 +191,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		}
 		oldScreen = newScreen;
 
-		gl.glDisable(GL.GL_STENCIL_BUFFER_BIT);
-		gl.glDisable(GL.GL_DEPTH_TEST);
 		this.context.begin(gl);
 
 		this.context.debugTime("Context set up");
@@ -210,18 +200,11 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		drawBackground();
 		this.context.debugTime("Background drawn");
 
-		gl.glAlphaFunc(GL.GL_GREATER, 0.1f);
-		gl.glEnable(GL2ES1.GL_ALPHA_TEST);
-		gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
-		gl.glDepthFunc(GL.GL_LEQUAL);
-		gl.glEnable(GL.GL_DEPTH_TEST);
-
 		drawMain();
 
 		this.context.end();
 
-		gl.glDepthFunc(GL.GL_ALWAYS);
-		gl.glColor3f(1, 1, 1);
+		gl.glTranslatef(0, 0, .5f);
 		drawSelectionHint(gl);
 		uiBase.drawAt(gl);
 		this.context.debugTime("Interface drawn");
@@ -230,7 +213,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		drawTooltip();
 	}
 
-	private void drawSelectionHint(GL2 gl) {
+	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null
 		        && this.currentSelectionAreaEnd != null) {
 			int x1 = this.currentSelectionAreaStart.x;
@@ -238,13 +221,11 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 			int x2 = this.currentSelectionAreaEnd.x;
 			int y2 = this.currentSelectionAreaEnd.y;
 
-			gl.glColor3f(1, 1, 1);
-			gl.glBegin(GL.GL_LINE_LOOP);
-			gl.glVertex2i(x1, y1);
-			gl.glVertex2i(x2, y1);
-			gl.glVertex2i(x2, y2);
-			gl.glVertex2i(x1, y2);
-			gl.glEnd();
+
+			gl.color(1, 1, 1, 1);
+			gl.drawLine(new float[] {
+					x1, y1,0,x2, y1,0,x2, y2,0,x1, y2,0
+			}, true);
 		}
 	}
 
@@ -373,7 +354,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		IMapArea tiles =
 		        new MapShapeFilter(context.getScreenArea(), map.getWidth(),
 		                map.getHeight());
-		GL2 gl = this.context.getGl();
+		/*GL2 gl = this.context.getGl();
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		ByteBuffer buffer =
@@ -395,7 +376,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 				this.context.endTileContext();
 			}
 		}
-		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
+		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);*/
 	}
 
 	private void drawPlayerBorderIfNeeded(IHexTile tile) {
@@ -430,13 +411,13 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	 * @param debugColor
 	 */
 	private void drawDebugTile(Color debugColor) {
-		GL2 gl = this.context.getGl();
-		gl.glColor4f(debugColor.getRed() / 255.0f,
+		GLDrawContext gl = this.context.getGl();
+		gl.color(debugColor.getRed() / 255.0f,
 		        debugColor.getGreen() / 255.0f, debugColor.getBlue() / 255.0f,
 		        debugColor.getAlpha() / 255.0f);
-		gl.glDrawArrays(GL2.GL_POLYGON, 0, 6);
-		gl.glColor4f(1, 1, 1, .5f);
-		gl.glDrawArrays(GL2.GL_LINE_LOOP, 0, 6);
+		//gl.glDrawArrays(GL2.GL_POLYGON, 0, 6);
+		gl.color(1, 1, 1, .5f);
+		//gl.glDrawArrays(GL2.GL_LINE_LOOP, 0, 6);
 	}
 
 	/**
@@ -446,7 +427,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	 * @param screen2
 	 */
 	private void drawBackground() {
-		this.background.drawMapContent(this.context);
+		//this.background.drawMapContent(this.context);
 	}
 
 	@Override
@@ -516,7 +497,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 		@Override
 		public void finished(GOEvent event) {
-			changeMousePosition(((GOHoverEvent) event).getMousePosition());
+			changeMousePosition(((GOHoverEvent) event).getHoverPosition());
 		}
 
 		@Override
@@ -525,7 +506,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			changeMousePosition(((GOHoverEvent) event).getMousePosition());
+			changeMousePosition(((GOHoverEvent) event).getHoverPosition());
 		}
 	};
 
@@ -584,7 +565,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	}
 
 	private void handleDrawOnMap(GODrawEvent drawEvent) {
-		this.currentSelectionAreaStart = drawEvent.getMousePosition();
+		this.currentSelectionAreaStart = drawEvent.getDrawPosition();
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
@@ -596,7 +577,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 		@Override
 		public void finished(GOEvent event) {
-			updateSelectionArea(((GODrawEvent) event).getMousePosition(), true);
+			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), true);
 		}
 
 		@Override
@@ -606,7 +587,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			updateSelectionArea(((GODrawEvent) event).getMousePosition(), false);
+			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), false);
 		}
 
 	};
@@ -691,5 +672,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	@Override
 	public void removeRedrawListener(RedrawListener l) {
 	}
+
 
 }

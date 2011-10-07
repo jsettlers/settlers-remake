@@ -12,17 +12,24 @@ import jsettlers.graphics.utils.UIPanel;
  */
 public class MainPanel extends UIPanel {
 	// relative to main content
-	private static final float UI_TABS1_TOP = 1 - (float) 0 / 544;
-	private static final float UI_TABS1_BOTTOM = UI_TABS1_TOP - (float) 55
-	        / 544;
-	private static final float UI_TABS1_SIDEMARGIN = (float) 25 / 216;
+	private static final float UI_TABS1_TOP = 1 - (float) 13 / 338;
+	private static final float UI_TABS1_BOTTOM = 1 - (float) 46 / 338;
+	private static final float UI_TABS1_SIDEMARGIN = (float) 8 / 136;
+	private static final float UI_TABS1_WIDTH = (float) 33 / 136;
+	private static final float UI_TABS1_SPACING = (float) 9 / 136;
 
 	private static final float UI_TABS2_TOP = UI_TABS1_BOTTOM;
-	private static final float UI_TABS2_BOTTOM = UI_TABS2_TOP - (float) 40
-	        / 544;
-	private static final float UI_TABS2_SIDEMARGIN = (float) 25 / 216;
+	private static final float UI_TABS2_BOTTOM = UI_TABS2_TOP - (float) 24
+	        / 338;
+	private static final float UI_TABS2_SIDEMARGIN = (float) 8 / 136;
+	private static final float UI_TABS2_WIDTH = (float) 27 / 136;
+	private static final float UI_TABS2_SPACING = (float) 3 / 136;
 
 	private static final int BUTTONS_FILE = 3;
+	private static final float CONTENT_LEFT = (float) 8 / 136;
+	private static final float CONTENT_BOTTOM = 1 - (float) 294 / 338;
+	private static final float CONTENT_RIGHT = (float) 128 / 136;
+	private static final float CONTENT_TOP = 1 - (float) 76 / 338;
 
 	private final UIPanel tabpanel = new UIPanel();
 
@@ -67,26 +74,28 @@ public class MainPanel extends UIPanel {
 	public MainPanel() {
 		initTabbar1();
 		initTabbar2();
-		this.addChild(contentContainer, 0, .1f, 1, .7f);
+		this.addChild(contentContainer, CONTENT_LEFT, CONTENT_BOTTOM,
+		        CONTENT_RIGHT, CONTENT_TOP);
 		setContent(EContentType.BUILD_NORMAL);
 	}
 
 	private void initTabbar2() {
-		this.addChild(tabpanel, UI_TABS2_SIDEMARGIN, UI_TABS2_BOTTOM,
-		        1 - UI_TABS2_SIDEMARGIN, UI_TABS2_TOP);
+		this.addChild(tabpanel, 0, UI_TABS2_BOTTOM,
+		        1, UI_TABS2_TOP);
 	}
 
 	private void initTabbar1() {
 		int i = 0;
 		UIPanel tabbar1 = new UIPanel();
-		this.addChild(tabbar1, UI_TABS1_SIDEMARGIN, UI_TABS1_BOTTOM,
-		        1 - UI_TABS1_SIDEMARGIN, UI_TABS1_TOP);
+		this.addChild(tabbar1, 0, UI_TABS1_BOTTOM, 1, UI_TABS1_TOP);
 		Button[] buttons = new Button[] {
 		        button_build, button_settlers, button_goods
 		};
 		for (Button button : buttons) {
-			tabbar1.addChild(button, (float) i / buttons.length, 0,
-			        (float) (i + 1) / buttons.length, 1);
+			float left =
+			        UI_TABS1_SIDEMARGIN + i
+			                * (UI_TABS1_WIDTH + UI_TABS1_SPACING);
+			tabbar1.addChild(button, left, 0, left + UI_TABS1_WIDTH, 1);
 			i++;
 		}
 
@@ -131,8 +140,10 @@ public class MainPanel extends UIPanel {
 	private void addTabpanelButtons(Button[] buttons) {
 		int i = 0;
 		for (Button button : buttons) {
-			tabpanel.addChild(button, (float) i / buttons.length, 0,
-			        (float) (i + 1) / buttons.length, 1);
+			float left =
+			        UI_TABS2_SIDEMARGIN + i
+			                * (UI_TABS2_WIDTH + UI_TABS2_SPACING);
+			tabpanel.addChild(button, left, 0, left + UI_TABS2_WIDTH, 1);
 			i++;
 		}
 	}

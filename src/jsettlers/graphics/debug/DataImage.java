@@ -26,13 +26,13 @@ public class DataImage extends JPanel implements MouseListener,
 	private final byte[] data;
 
 	private int offset = 0;
-	private int pixelLength = 2; // in bytes
+	private int pixelLength = 1; // in bytes
 
-	private long redMask = 0x7c00;
-	private long greenMask = 0x03e0;
-	private long blueMask = 0x001f;
+	private long redMask = 0xff;
+	private long greenMask = 0x0000;
+	private long blueMask = 0x0000;
 
-	private int width = 200; // in pixel
+	private int width = 128; // in pixel
 	private int height = 200;
 
 	private int currentMarked = 0;
@@ -119,7 +119,20 @@ public class DataImage extends JPanel implements MouseListener,
 			}
 			result |= (0xffl & this.data[pos + i]) << (resultByte * 8);
 		}
-
+		
+//		if ((pos & 0x04) != 0) {
+			result -= pos;
+//		} else {
+//			result -= pos;
+//		}
+		result &= 0xff;
+		
+		if (pos % 128 < 64) {
+			result = 0xff - result;
+		}
+		
+		result |= (pos & 0xffff) << 8;
+		
 		return result;
 	}
 

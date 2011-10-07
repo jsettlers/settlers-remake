@@ -1,13 +1,9 @@
 package jsettlers.graphics.image;
 
+import go.graphics.GLDrawContext;
+
 import java.awt.Color;
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
-import com.jogamp.common.nio.Buffers;
 
 /**
  * This is the base for all images.
@@ -27,7 +23,7 @@ public class Image implements ImageDataPrivider {
 	protected final int offsetX;
 	protected final int offsetY;
 
-	private int texture = 0;
+	private int texture = -1;
 
 	private static int elementBufferId = 0;
 	private int vertexBufferId = 0;
@@ -97,11 +93,11 @@ public class Image implements ImageDataPrivider {
 	 * @param gl
 	 *            The gl context
 	 */
-	protected void tryGenerateTexture(GL2 gl) {
-		if (this.texture == 0) {
-			generateTexture(gl);
-		}
-	}
+	// protected void tryGenerateTexture(GL2 gl) {
+	// if (this.texture == 0) {
+	// generateTexture(gl);
+	// }
+	// }
 
 	/**
 	 * Generates the texture. If there is already a texture, the old one is
@@ -112,122 +108,122 @@ public class Image implements ImageDataPrivider {
 	 * @return The success status
 	 * @see #tryGenerateTexture(GL2)
 	 */
-	protected boolean generateTexture(GL2 gl) {
-		if (this.texture != 0) {
-			gl.glDeleteTextures(1, new int[] {
-				this.texture
-			}, 0);
-		}
+	// protected boolean generateTexture(GL2 gl) {
+	// if (this.texture != 0) {
+	// gl.glDeleteTextures(1, new int[] {
+	// this.texture
+	// }, 0);
+	// }
+	//
+	// // 1 byte aligned.
+	// gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+	//
+	// int[] textureIndexes = new int[1];
+	// gl.glGenTextures(1, textureIndexes, 0);
+	// this.texture = textureIndexes[0];
+	// if (this.texture == 0) {
+	// // FIXME: Error?
+	// return false;
+	// }
+	//
+	// gl.glBindTexture(GL.GL_TEXTURE_2D, this.texture);
+	//
+	// if (textureWidth == 0) {
+	// textureWidth = TextureCalculator.supportedTextureSize(gl, width);
+	// textureHeight = TextureCalculator.supportedTextureSize(gl, height);
+	// if (textureHeight != height || textureWidth != width) {
+	// adaptDataToTextureSize();
+	// }
+	// }
+	//
+	// this.data.rewind();
+	// texImage2D(gl);
+	//
+	// setTextureParameters(gl);
+	//
+	// return true;
+	// }
 
-		// 1 byte aligned.
-		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+	// private void generateVBOs(GL2 gl) {
+	// gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+	// if (elementBufferId == 0) {
+	// // two triangles
+	// byte[] elements = new byte[] {
+	// 0, 1, 3, 1, 3, 2
+	// };
+	// ByteBuffer buffer = ByteBuffer.wrap(elements);
+	//
+	// int[] elementBufferIds = new int[] {
+	// 0
+	// };
+	// gl.glGenBuffers(0, elementBufferIds, 0);
+	// elementBufferId = elementBufferIds[0];
+	//
+	// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, elementBufferId);
+	// gl.glBufferData(GL2.GL_ELEMENT_ARRAY_BUFFER, 6, buffer,
+	// GL.GL_STATIC_DRAW);
+	// }
+	//
+	// if (vertexBufferId != 0) {
+	// gl.glDeleteBuffers(1, new int[] {
+	// vertexBufferId
+	// }, 0);
+	// }
+	// int[] vertexBuffIds = new int[] {
+	// 0
+	// };
+	// gl.glGenBuffers(1, vertexBuffIds, 0);
+	// vertexBufferId = vertexBuffIds[0];
+	//
+	// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
+	// gl.glBufferData(GL.GL_ARRAY_BUFFER, 5 * 4 * Buffers.SIZEOF_FLOAT, null,
+	// GL.GL_DYNAMIC_DRAW);
+	// ByteBuffer buffer =
+	// gl.glMapBuffer(GL.GL_ARRAY_BUFFER, GL.GL_WRITE_ONLY);
+	// // FloatBuffer buffer = FloatBuffer.allocate(5 * 4);
+	// loadBuffer(buffer);
+	// gl.glUnmapBuffer(GL.GL_ARRAY_BUFFER);
+	//
+	// // buffer.rewind();
+	// // gl.glBufferData(GL.GL_ARRAY_BUFFER, 5 * 4 * Buffers.SIZEOF_FLOAT,
+	// // buffer, GL.GL_STATIC_DRAW);
+	// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+	// gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
+	// }
 
-		int[] textureIndexes = new int[1];
-		gl.glGenTextures(1, textureIndexes, 0);
-		this.texture = textureIndexes[0];
-		if (this.texture == 0) {
-			// FIXME: Error?
-			return false;
-		}
-
-		gl.glBindTexture(GL.GL_TEXTURE_2D, this.texture);
-
-		if (textureWidth == 0) {
-			textureWidth = TextureCalculator.supportedTextureSize(gl, width);
-			textureHeight = TextureCalculator.supportedTextureSize(gl, height);
-			if (textureHeight != height || textureWidth != width) {
-				convertDataToPowerOfTwo();
-			}
-		}
-
-		this.data.rewind();
-		texImage2D(gl);
-
-		setTextureParameters(gl);
-
-		return true;
-	}
-
-	private void generateVBOs(GL2 gl) {
-		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		if (elementBufferId == 0) {
-			// two triangles
-			byte[] elements = new byte[] {
-			        0, 1, 3, 1, 3, 2
-			};
-			ByteBuffer buffer = ByteBuffer.wrap(elements);
-
-			int[] elementBufferIds = new int[] {
-				0
-			};
-			gl.glGenBuffers(0, elementBufferIds, 0);
-			elementBufferId = elementBufferIds[0];
-
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, elementBufferId);
-			gl.glBufferData(GL2.GL_ELEMENT_ARRAY_BUFFER, 6, buffer,
-			        GL.GL_STATIC_DRAW);
-		}
-
-		if (vertexBufferId != 0) {
-			gl.glDeleteBuffers(1, new int[] {
-				vertexBufferId
-			}, 0);
-		}
-		int[] vertexBuffIds = new int[] {
-			0
-		};
-		gl.glGenBuffers(1, vertexBuffIds, 0);
-		vertexBufferId = vertexBuffIds[0];
-
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
-		gl.glBufferData(GL.GL_ARRAY_BUFFER, 5 * 4 * Buffers.SIZEOF_FLOAT, null,
-		        GL.GL_DYNAMIC_DRAW);
-		ByteBuffer buffer =
-		        gl.glMapBuffer(GL.GL_ARRAY_BUFFER, GL.GL_WRITE_ONLY);
-		// FloatBuffer buffer = FloatBuffer.allocate(5 * 4);
-		loadBuffer(buffer);
-		gl.glUnmapBuffer(GL.GL_ARRAY_BUFFER);
-
-		// buffer.rewind();
-		// gl.glBufferData(GL.GL_ARRAY_BUFFER, 5 * 4 * Buffers.SIZEOF_FLOAT,
-		// buffer, GL.GL_STATIC_DRAW);
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-	}
-
-	private void loadBuffer(ByteBuffer buffer) {
-		int left = getOffsetX();
-		int top = -getOffsetY();
-		// bottom left
-		buffer.putFloat(0);
-		buffer.putFloat(0);
-		buffer.putFloat(left);
-		buffer.putFloat(top - this.height);
-		buffer.putFloat(0);
-		// top left
-		buffer.putFloat((float) width / textureWidth);
-		buffer.putFloat(0);
-		buffer.putFloat(left + this.width);
-		buffer.putFloat(top - this.height);
-		buffer.putFloat(0);
-		// top right
-		buffer.putFloat((float) width / textureWidth);
-		buffer.putFloat((float) height / textureHeight);
-		buffer.putFloat(left + this.width);
-		buffer.putFloat(top);
-		buffer.putFloat(0);
-		// bottom right
-		buffer.putFloat(0);
-		buffer.putFloat((float) height / textureHeight);
-		buffer.putFloat(left);
-		buffer.putFloat(top);
-		buffer.putFloat(0);
-	}
+	// private void loadBuffer(ByteBuffer buffer) {
+	// int left = getOffsetX();
+	// int top = -getOffsetY();
+	// // bottom left
+	// buffer.putFloat(0);
+	// buffer.putFloat(0);
+	// buffer.putFloat(left);
+	// buffer.putFloat(top - this.height);
+	// buffer.putFloat(0);
+	// // top left
+	// buffer.putFloat((float) width / textureWidth);
+	// buffer.putFloat(0);
+	// buffer.putFloat(left + this.width);
+	// buffer.putFloat(top - this.height);
+	// buffer.putFloat(0);
+	// // top right
+	// buffer.putFloat((float) width / textureWidth);
+	// buffer.putFloat((float) height / textureHeight);
+	// buffer.putFloat(left + this.width);
+	// buffer.putFloat(top);
+	// buffer.putFloat(0);
+	// // bottom right
+	// buffer.putFloat(0);
+	// buffer.putFloat((float) height / textureHeight);
+	// buffer.putFloat(left);
+	// buffer.putFloat(top);
+	// buffer.putFloat(0);
+	// }
 
 	/**
 	 * Converts the current data to match the pwer of two size.
 	 */
-	protected void convertDataToPowerOfTwo() {
+	protected void adaptDataToTextureSize() {
 		this.data.rewind();
 		short[] newData = new short[textureHeight * textureWidth];
 		for (int y = 0; y < height; y++) {
@@ -249,53 +245,51 @@ public class Image implements ImageDataPrivider {
 	}
 
 	/**
-	 * Sets the textures parameters, assuming that the texture was just created
-	 * and is bound.
-	 * 
-	 * @param gl
-	 *            The opnegl constext.
-	 */
-	protected void setTextureParameters(GL2 gl) {
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
-		        GL.GL_LINEAR);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-		        GL.GL_LINEAR);
-	}
-
-	/**
-	 * Sends the data to the currently bound opengl texture.
-	 * 
-	 * @param gl
-	 *            The gl context to use.
-	 */
-	protected void texImage2D(GL2 gl) {
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB5_A1, this.textureWidth,
-		        this.textureHeight, 0, GL.GL_RGBA,
-		        GL.GL_UNSIGNED_SHORT_5_5_5_1, this.data);
-	}
-
-	/**
-	 * Gets the texture index.
+	 * Generates the texture, if needed, and returns the index of that texutre.
 	 * 
 	 * @return The gl index or 0 if the texture is not allocated.
 	 */
-	protected int getTextureIndex() {
+	private int getTextureIndex(GLDrawContext gl) {
+		if (texture == -1) {
+			textureWidth = gl.makeWidthValid(width);
+			textureHeight = gl.makeHeightValid(height);
+			if (textureWidth != width || textureHeight != height) {
+				adaptDataToTextureSize();
+			}
+			data.position(0);
+			texture =
+			        gl.generateTexture(textureWidth, textureHeight, this.data);
+		}
 		return this.texture;
 	}
 
-	/**
-	 * Binds the image to the given opengl context.
-	 * 
-	 * @param gl
-	 *            The gl context.
-	 */
-	public void bind(GL2 gl) {
-		if (this.texture == 0) {
-			generateTexture(gl);
-		}
-		gl.glBindTexture(GL.GL_TEXTURE_2D, this.texture);
+	public void drawImageAtRect(GLDrawContext gl, int minX, int minY, int maxX,
+	        int maxY) {
+		float[] coords =
+		        new float[] {
+		                minX,
+		                minY,
+		                0,
+		                0,
+		                0,
+		                minX,
+		                maxY,
+		                0,
+		                0,
+		                1,
+		                maxX,
+		                maxY,
+		                0,
+		                1,
+		                1,
+		                maxX,
+		                minY,
+		                0,
+		                1,
+		                0,
+		        };
+		gl.color(1, 1, 1, 1);
+		gl.drawQuadsWithTexture(getTextureIndex(gl), coords);
 	}
 
 	/**
@@ -308,7 +302,7 @@ public class Image implements ImageDataPrivider {
 	 * @param y
 	 *            The y position of the center
 	 */
-	public void drawAt(GL2 gl, int x, int y) {
+	public void drawAt(GLDrawContext gl, int x, int y) {
 		drawAt(gl, x, y, null);
 	}
 
@@ -324,7 +318,7 @@ public class Image implements ImageDataPrivider {
 	 * @param color
 	 *            The player number.
 	 */
-	public void drawAt(GL2 gl, int x, int y, Color color) {
+	public void drawAt(GLDrawContext gl, int x, int y, Color color) {
 		gl.glPushMatrix();
 		gl.glTranslatef(x, y, 0);
 		draw(gl, color);
@@ -342,7 +336,7 @@ public class Image implements ImageDataPrivider {
 	 * @param gl
 	 *            The gl context
 	 */
-	public void draw(GL2 gl) {
+	public void draw(GLDrawContext gl) {
 		draw(gl, null);
 	}
 
@@ -354,46 +348,84 @@ public class Image implements ImageDataPrivider {
 	 * @param color
 	 *            The color to use. If it is <code>null</code>, white is used.
 	 */
-	public void draw(GL2 gl, Color color) {
-
+	public void draw(GLDrawContext gl, Color color) {
 		if (color == null) {
-			gl.glColor3f(1, 1, 1);
+			gl.color(1, 1, 1, 1);
 		} else {
-			gl.glColor3ub((byte) color.getRed(), (byte) color.getGreen(),
-			        (byte) color.getBlue());
+			gl.color(color.getRGBComponents(null));
 		}
 
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		bind(gl);
+		gl.drawQuadsWithTexture(getTextureIndex(gl), getGeometry());
+		// gl.glEnable(GL.GL_TEXTURE_2D);
+		// bind(gl);
+		//
+		// if (vertexBufferId == 0) {
+		// generateVBOs(gl);
+		// }
+		//
+		// gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+		// gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		//
+		// if (gl.isExtensionAvailable("GL_ARB_vertex_buffer_object")) {
+		// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
+		// gl.glTexCoordPointer(2, GL.GL_FLOAT, 5 * 4, 0);
+		// gl.glVertexPointer(3, GL.GL_FLOAT, 20, 8);
+		// } else {
+		// ByteBuffer buffer =
+		// ByteBuffer.allocateDirect(5 * 4 * Buffers.SIZEOF_FLOAT);
+		// loadBuffer(buffer);
+		// buffer.position(0);
+		// gl.glTexCoordPointer(2, GL.GL_FLOAT, 5 * 4, buffer);
+		// buffer.position(8);
+		// gl.glVertexPointer(3, GL.GL_FLOAT, 20, buffer);
+		// }
 
-		if (vertexBufferId == 0) {
-			generateVBOs(gl);
-		}
+		// gl.glDrawArrays(GL2.GL_QUADS, 0, 4);
+		// gl.glDisable(GL.GL_TEXTURE_2D);
 
-		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-
-		if (gl.isExtensionAvailable("GL_ARB_vertex_buffer_object")) {
-			gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
-			gl.glTexCoordPointer(2, GL.GL_FLOAT, 5 * 4, 0);
-			gl.glVertexPointer(3, GL.GL_FLOAT, 20, 8);
-		} else {
-			ByteBuffer buffer =
-			        ByteBuffer.allocateDirect(5 * 4 * Buffers.SIZEOF_FLOAT);
-			loadBuffer(buffer);
-			buffer.position(0);
-			gl.glTexCoordPointer(2, GL.GL_FLOAT, 5 * 4, buffer);
-			buffer.position(8);
-			gl.glVertexPointer(3, GL.GL_FLOAT, 20, buffer);
-		}
-		
-		gl.glDrawArrays(GL2.GL_QUADS, 0, 4);
-		gl.glDisable(GL.GL_TEXTURE_2D);
-
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
+		// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		// gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
 
 		return;
+	}
+
+	private float[] getGeometry() {
+		int left = getOffsetX();
+		int top = -getOffsetY();
+		return new float[] {
+		        // bottom left
+		        left,
+		        top - this.height,
+		        0,
+		        0,
+		        0,
+		        // top left
+		        left + this.width,
+		        top - this.height,
+		        0,
+		        (float) width / textureWidth,
+		        0,
+		        // top right
+		        left + this.width,
+		        top,
+		        0,
+		        (float) width / textureWidth,
+		        (float) height / textureHeight,
+		        // bottom right
+		        left,
+		        top,
+		        0,
+		        0,
+		        (float) height / textureHeight,
+		};
+	}
+
+	public float getTextureScaleX() {
+		return (float) width / textureWidth;
+	}
+
+	public float getTextureScaleY() {
+		return (float) height / textureHeight;
 	}
 
 }

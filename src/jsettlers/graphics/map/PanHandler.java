@@ -1,8 +1,8 @@
 package jsettlers.graphics.map;
 
-import go.event.GOEvent;
-import go.event.GOModalEventHandler;
-import go.event.mouse.GOPanEvent;
+import go.graphics.event.GOEvent;
+import go.graphics.event.GOModalEventHandler;
+import go.graphics.event.mouse.GOPanEvent;
 
 import java.awt.Point;
 

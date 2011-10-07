@@ -1,8 +1,8 @@
 package jsettlers.graphics.image;
 
-import java.awt.Color;
+import go.graphics.GLDrawContext;
 
-import javax.media.opengl.GL2;
+import java.awt.Color;
 
 /**
  * This is the image of something that is displayed as an object on the map,
@@ -25,7 +25,7 @@ public class SettlerImage extends Image {
 	}
 	
 	@Override
-	public void draw(GL2 gl, Color color) {
+	public void draw(GLDrawContext gl, Color color) {
 	    super.draw(gl, null);
 	    if (this.torso != null) {
 	    	this.torso.draw(gl, color);

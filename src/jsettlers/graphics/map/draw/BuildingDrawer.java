@@ -1,8 +1,6 @@
 package jsettlers.graphics.map.draw;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
+import go.graphics.GLDrawContext;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.graphics.image.Image;
@@ -67,45 +65,71 @@ public class BuildingDrawer {
 
 	private void drawWithConstructionMask(MapDrawContext context,
 	        float maskState, Image image) {
-		GL2 gl = context.getGl();
+		GLDrawContext gl = context.getGl();
+		/*gl.glEnable(GL.GL_TEXTURE_2D);
+		image.bind(gl);
 
-		gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
-		gl.glColorMask(false, false, false, false);
-		gl.glDepthMask(false);
-		gl.glEnable(GL.GL_STENCIL_TEST);
-		gl.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF); // draw stencil buffer
-		gl.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
+		int left = image.getOffsetX();
+		int top = -image.getOffsetY();
+		int bottom = top - image.getHeight();
 
-		int startx = image.getOffsetX();
-		int endx = startx + image.getWidth();
-		int bottomy = image.getOffsetY();
-		int lowy =
-		        (int) (bottomy + maskState * image.getHeight()) - BUILD_SIZE
-		                / 2;
+		// number of tiles in x direction
+		int tiles = 3;
+		int steps = tiles * 2 + 1;
 
-		gl.glColor3f(1, 1, 1);
-		gl.glBegin(GL2.GL_POLYGON);
-		boolean isLow = true;
-		for (int currentX = startx; currentX < endx; currentX += BUILD_SIZE) {
-			int currentY = isLow ? lowy : lowy + BUILD_SIZE;
-			gl.glVertex2i(currentX, currentY);
-			isLow = !isLow;
+		float toplineBottom = (1 - maskState);
+		float toplineTop = toplineBottom + 3.0f / image.getHeight();
+
+		// Our buffer: 2 floats for x,y, 2 floats for u,v, always: top, botom,
+		// top, ...
+		ByteBuffer buffer =
+		        ByteBuffer.allocateDirect((4 * Buffers.SIZEOF_FLOAT) * 2
+		                * steps);
+		buffer.order(ByteOrder.nativeOrder());
+		FloatBuffer floatBuffer = buffer.asFloatBuffer();
+
+		for (int i = 0; i < steps; i++) {
+			// relative to top left, y downwards
+			float x = (float) i / (tiles * 2);
+			float topy = i % 2 == 0 ? toplineBottom : toplineTop;
+
+			//top
+			floatBuffer.put(left + x * image.getWidth());
+			floatBuffer.put(top - topy * image.getHeight());
+			floatBuffer.put(x * image.getTextureScaleX());
+			floatBuffer.put(topy * image.getTextureScaleY());
+			
+			//bottom
+			floatBuffer.put(left + x * image.getWidth());
+			floatBuffer.put(bottom);
+			floatBuffer.put(x * image.getTextureScaleX());
+			floatBuffer.put(image.getTextureScaleY());
+
 		}
 
-		gl.glVertex2i(endx, bottomy);
-		gl.glVertex2i(startx, bottomy);
-		gl.glEnd();
+		floatBuffer.rewind();
+		float[] debug = new float[4 * 2 * steps];
+		floatBuffer.get(debug);
+		System.out.println(Arrays.toString(debug));
 
-		gl.glColorMask(true, true, true, true);
-		gl.glDepthMask(true);
-		gl.glStencilFunc(GL.GL_EQUAL, 1, 0xFFFFFFFF);
-		gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 
-		image.draw(context.getGl());
+		floatBuffer.position(0);
+		gl.glVertexPointer(2, GL2.GL_FLOAT, 4 * Buffers.SIZEOF_FLOAT,
+		        floatBuffer);
+		floatBuffer.position(2 * Buffers.SIZEOF_FLOAT);
+		gl.glTexCoordPointer(2, GL2.GL_FLOAT, 4 * Buffers.SIZEOF_FLOAT,
+		        floatBuffer);
 
-		gl.glDisable(GL.GL_STENCIL_TEST);
+		gl.glColor3f(1, 1, 1);
+		gl.glDrawArrays(GL2.GL_TRIANGLE_STRIP, 0, 2 * steps);
+		gl.glEnable(GL.GL_TEXTURE_2D);
+		gl.glDrawArrays(GL2.GL_TRIANGLE_STRIP, 0, 2 * steps);
 
-		gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
+		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
+		gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		gl.glDisable(GL.GL_TEXTURE_2D); */
 	}
 
 	/**

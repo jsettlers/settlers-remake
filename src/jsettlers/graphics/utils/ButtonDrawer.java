@@ -1,8 +1,6 @@
 package jsettlers.graphics.utils;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
+import go.graphics.GLDrawContext;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SettlerImage;
@@ -28,13 +26,13 @@ public final class ButtonDrawer {
 	 * @param image
 	 *            The button.
 	 */
-	public static void drawButton(GL2 gl, IntRectangle position, Image image) {
-		gl.glColor3f(.3f, .3f, .3f);
-		gl.glRecti(position.getMinX(), position.getMinY(), position.getMaxX(),
+	public static void drawButton(GLDrawContext gl, IntRectangle position, Image image) {
+		gl.color(.3f, .3f, .3f, 1);
+		gl.fillQuad(position.getMinX(), position.getMinY(), position.getMaxX(),
 		        position.getMaxY());
 
-		gl.glColor3f(.8f, .8f, .8f);
-		gl.glRecti(position.getMinX() + BORDER, position.getMinY() + BORDER,
+		gl.color(.8f, .8f, .8f, 1);
+		gl.fillQuad(position.getMinX() + BORDER, position.getMinY() + BORDER,
 		        position.getMaxX() - BORDER, position.getMaxY() - BORDER);
 
 		drawScaledImage(gl, position.bigger(-BORDER), image);
@@ -51,8 +49,8 @@ public final class ButtonDrawer {
 	 * @param image
 	 *            The image to draw
 	 */
-	public static void drawScaledImage(GL2 gl, IntRectangle position,
-	        Image image) {
+	public static void drawScaledImage(GLDrawContext gl, IntRectangle position,
+			Image image) {
 
 		float maxXScale = (float) (position.getWidth()) / image.getWidth();
 		float maxYScale = (float) (position.getHeight()) / image.getHeight();
@@ -66,22 +64,22 @@ public final class ButtonDrawer {
 		float top = position.getCenterY() + halfHeight;
 		float bottom = position.getCenterY() - halfHeight;
 
-		gl.glColor3f(1, 1, 1);
+		gl.color(1, 1, 1, 1);
 		drawImage(gl, image, left, right, top, bottom);
 
 		if (image instanceof SettlerImage
 		        && ((SettlerImage) image).getTorso() != null) {
-			gl.glColor3f(1, 0, 0);
+			gl.color(1, 0, 0, 1);
 			drawImage(gl, ((SettlerImage) image).getTorso(), left, right, top,
 			        bottom);
 		}
 	}
 
-	private static void drawImage(GL2 gl, Image image, float left, float right,
+	private static void drawImage(GLDrawContext gl, Image image, float left, float right,
 	        float top, float bottom) {
-		image.bind(gl);
+		//image.bind(gl);
 
-		gl.glEnable(GL.GL_TEXTURE_2D);
+		/*gl.glEnable(GL.GL_TEXTURE_2D);
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glTexCoord2f(0, 0);
 		gl.glVertex2f(left, bottom);
@@ -92,6 +90,6 @@ public final class ButtonDrawer {
 		gl.glTexCoord2f(0, 1);
 		gl.glVertex2f(left, top);
 		gl.glEnd();
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glDisable(GL.GL_TEXTURE_2D);*/
 	}
 }

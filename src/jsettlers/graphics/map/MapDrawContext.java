@@ -1,8 +1,8 @@
 package jsettlers.graphics.map;
 
-import java.awt.Color;
+import go.graphics.GLDrawContext;
 
-import javax.media.opengl.GL2;
+import java.awt.Color;
 
 import jsettlers.common.map.IHexMap;
 import jsettlers.common.map.IHexTile;
@@ -24,7 +24,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * <li>The draw space (used by all draw stuff).
  * <li>The screen space (visible space on which is drawn).
  * <ul>
- * <h2>gl setup</h2> With {@link #begin(GL2)}, the gl state machine is
+ * <h2>gl setup</h2> With {@link #begin(GLDrawContext)}, the gl state machine is
  * initialized for drawing the map. The draw coordinates can then be given in
  * draw space.
  * 
@@ -34,7 +34,7 @@ public class MapDrawContext {
 
 	// private static final byte HEIGHT_FACTOR = 4;
 
-	private GL2 gl = null;
+	private GLDrawContext gl = null;
 
 	private final IHexMap map;
 
@@ -104,17 +104,17 @@ public class MapDrawContext {
 	 * Begin a new draw session (=> draw a new image). Sets up the gl screen
 	 * assuming the current viewport is set to (0,0,width,height)
 	 * 
-	 * @param newGlContext
+	 * @param gl2
 	 *            The gl context to use.
 	 * @see #end()
 	 */
-	public void begin(GL2 newGlContext) {
-		this.gl = newGlContext;
+	public void begin(GLDrawContext gl2) {
+		this.gl = gl2;
 
 		// beginTime = System.nanoTime();
 
-		newGlContext.glPushMatrix();
-		newGlContext.glTranslatef(-this.screen.getLeft(),
+		gl2.glPushMatrix();
+		gl2.glTranslatef(-this.screen.getLeft(),
 		        -this.screen.getBottom(), 0);
 	}
 
@@ -130,9 +130,9 @@ public class MapDrawContext {
 	 * Gets the current gl context, of <code>null</code> if it is called outside
 	 * a gl drawing session.
 	 * 
-	 * @return The gl context that was given to {@link #begin(GL2)}
+	 * @return The gl context that was given to {@link #begin(GLDrawContext)}
 	 */
-	public GL2 getGl() {
+	public GLDrawContext getGl() {
 		return this.gl;
 	}
 

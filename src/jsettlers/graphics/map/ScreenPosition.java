@@ -132,19 +132,19 @@ public class ScreenPosition {
 	}
 
 	public int getBottom() {
-		return this.screen.getY1();
+		return this.screen.getMinY();
 	}
 
 	public int getTop() {
-		return this.screen.getY2();
+		return this.screen.getMaxY();
 	}
 
 	public int getLeft() {
-		return this.screen.getX1();
+		return this.screen.getMinX();
 	}
 
 	public int getRight() {
-		return this.screen.getX2();
+		return this.screen.getMaxX();
 	}
 
 	public int getWidth() {

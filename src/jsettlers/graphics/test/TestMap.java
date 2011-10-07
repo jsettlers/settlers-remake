@@ -30,7 +30,6 @@ public class TestMap implements IHexMap {
 	private static final int RIVERS = 50;
 	private static final int MATERIALS = 100;
 	private static final int TREES = 50;
-	private static final int PLAYER_STARTS = 20;
 	private static final int TREES_IN_FOREST = 40;
 	private static final int FORESTS = 30;
 	private static final double FORESTSIZE = 20;
@@ -74,28 +73,6 @@ public class TestMap implements IHexMap {
 				moveStep();
 			}
 		}, 100, 100);
-	}
-
-	private void addPlayers() {
-		for (int i = 0; i < PLAYER_STARTS; i++) {
-
-			int cx = (int) (Math.random() * WIDTH);
-			int cy = (int) (Math.random() * HEIGHT);
-
-			int r = (int) (Math.random() * 30);
-			byte player = (byte) (i % 3);
-
-			for (int x = 0; x < WIDTH; x++) {
-				for (int y = 0; y < HEIGHT; y++) {
-					double distance = Math.hypot(x - cx, y - cy);
-					if (distance < r) {
-						getTile(x, y).setPlayer(player);
-					}
-				}
-			}
-
-		}
-
 	}
 
 	private void addTrees() {
@@ -147,10 +124,6 @@ public class TestMap implements IHexMap {
 
 	private TestTile getTile(int x, int y) {
 		return this.tiles.get(y * WIDTH + x);
-	}
-
-	private boolean isValid(int x, int y) {
-		return x >= 0 && y >= 0 && x < WIDTH && y < HEIGHT;
 	}
 
 	@Override

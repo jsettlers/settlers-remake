@@ -1,10 +1,10 @@
 package jsettlers.graphics.progress;
 
-import go.RedrawListener;
+import go.graphics.GLDrawContext;
+import go.graphics.RedrawListener;
+import go.graphics.event.GOEvent;
 
 import java.util.LinkedList;
-
-import javax.media.opengl.GL2;
 
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.image.Image;
@@ -26,7 +26,7 @@ public class ProgressContent implements SettlersContent {
 	        new LinkedList<RedrawListener>();
 
 	@Override
-	public void drawContent(GL2 gl, int width, int height) {
+	public void drawContent(GLDrawContext gl, int width, int height) {
 		provider.preload(2);
 		provider.waitForPreload(2);
 
@@ -68,5 +68,10 @@ public class ProgressContent implements SettlersContent {
 	public void removeRedrawListener(RedrawListener l) {
 		this.listeners.remove(l);
 	}
+
+	@Override
+    public void handleEvent(GOEvent event) {
+	    
+    }
 
 }

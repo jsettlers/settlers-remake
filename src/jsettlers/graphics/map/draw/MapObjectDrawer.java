@@ -1,8 +1,8 @@
 package jsettlers.graphics.map.draw;
 
-import java.awt.Color;
+import go.graphics.GLDrawContext;
 
-import javax.media.opengl.GL2;
+import java.awt.Color;
 
 import jsettlers.common.map.IHexMap;
 import jsettlers.common.map.IHexTile;
@@ -72,7 +72,7 @@ public class MapObjectDrawer {
 	private static final int FILE_BORDERPOST = 13;
 
 	private static final int STONE = 31;
-	
+
 	int animationStep = 0;
 
 	ImageProvider imageProvider = ImageProvider.getInstance();
@@ -90,8 +90,7 @@ public class MapObjectDrawer {
 	 *            The object (tree, ...) to draw.
 	 */
 	public void drawMapObject(MapDrawContext context, IHexMap map,
-	        IHexTile tile, IMapObject object) {
-
+	        IHexTile tile, IMapObject object) {		
 		EMapObjectType type = object.getObjectType();
 
 		float progress = object.getStateProgress();
@@ -178,7 +177,7 @@ public class MapObjectDrawer {
 					break;
 
 				case FLAG_ROOF:
-					//TODO: better flag positioning
+					// TODO: better flag positioning
 					context.getGl().glTranslatef(0, 0, 0.2f);
 					drawPlayerableWaving(context, 13, 64, object);
 					break;
@@ -270,12 +269,11 @@ public class MapObjectDrawer {
 		context.getGl()
 		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, 0);
 		if (progress >= 1) {
-			context.getGl()
-	        .glTranslatef(0, 0, -.2f);
+			context.getGl().glTranslatef(0, 0, -.2f);
 		}
-		
-		this.imageProvider.getSettlerSequence(FILE, sequence).getImageSafe(index)
-		        .draw(context.getGl());
+
+		this.imageProvider.getSettlerSequence(FILE, sequence)
+		        .getImageSafe(index).draw(context.getGl());
 		context.endTileContext();
 	}
 
@@ -400,7 +398,7 @@ public class MapObjectDrawer {
 	 *            The player.
 	 */
 	public void drawPlayerBorderObject(MapDrawContext context, byte player) {
-		GL2 gl = context.getGl();
+		GLDrawContext gl = context.getGl();
 		Color color = context.getPlayerColor(player);
 
 		this.imageProvider.getSettlerSequence(FILE_BORDERPOST, 65)
@@ -444,18 +442,19 @@ public class MapObjectDrawer {
 	/**
 	 * Draws the stack directly to the screen.
 	 * 
-	 * @param gl
+	 * @param glDrawContext
 	 *            The gl context to draw at.
 	 * @param material
 	 *            The material the stack should have.
 	 * @param count
 	 *            The number of elements on the stack
 	 */
-	public void drawStackAtScreen(GL2 gl, EMaterialType material, int count) {
+	public void drawStackAtScreen(GLDrawContext glDrawContext,
+	        EMaterialType material, int count) {
 		int stackIndex = material.getStackIndex();
 
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, stackIndex);
-		seq.getImageSafe(count - 1).draw(gl);
+		seq.getImageSafe(count - 1).draw(glDrawContext);
 	}
 }

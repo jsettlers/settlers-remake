@@ -1,10 +1,9 @@
 package jsettlers.graphics.image;
 
+import go.graphics.GLDrawContext;
+
 import java.awt.Color;
 import java.nio.ShortBuffer;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 
 /**
  * This is a null image.
@@ -34,25 +33,16 @@ public final class NullImage extends Image {
 	}
 
 	@Override
-	public void draw(GL2 gl, Color color) {
-		gl.glColor4f(1, 1, 1, 0.5f);
-		gl.glBegin(GL2.GL_QUADS);
-		gl.glVertex2i(-HALFSIZE, -HALFSIZE);
-		gl.glVertex2i(+HALFSIZE, -HALFSIZE);
-		gl.glVertex2i(+HALFSIZE, +HALFSIZE);
-		gl.glVertex2i(-HALFSIZE, +HALFSIZE);
-		gl.glEnd();
-
-		gl.glColor3f(1, 0, 0);
-		gl.glBegin(GL.GL_LINE_STRIP);
-		gl.glVertex2i(-HALFSIZE, -HALFSIZE);
-		gl.glVertex2i(+HALFSIZE, -HALFSIZE);
-		gl.glVertex2i(+HALFSIZE, +HALFSIZE);
-		gl.glVertex2i(-HALFSIZE, +HALFSIZE);
-		gl.glVertex2i(+HALFSIZE, -HALFSIZE);
-		gl.glEnd();
-
-		gl.glColor3f(1, 1, 1);
+	public void draw(GLDrawContext gl, Color color) {
+		gl.color(1, 1, 1, 0.5f);
+		gl.fillQuad(-HALFSIZE, -HALFSIZE, HALFSIZE, HALFSIZE);
+		
+		gl.color(1, 0, 0, 1);
+		gl.drawLine(new float[] {
+				-HALFSIZE, -HALFSIZE, 0,
+				+HALFSIZE, -HALFSIZE,0,
+				+HALFSIZE, +HALFSIZE,0,
+				-HALFSIZE, +HALFSIZE,0,
+		}, true);
 	}
-
 }

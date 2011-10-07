@@ -1,9 +1,10 @@
 package jsettlers.graphics;
 
-import go.area.Area;
-import go.area.AreaContainer;
-import go.region.Region;
+import go.graphics.area.Area;
+import go.graphics.region.Region;
+import go.graphics.swing.AreaContainer;
 
+import java.awt.Dimension;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,6 +40,7 @@ public class JOGLPanel {
 		this.region = new Region(Region.POSITION_CENTER);
 		area.add(this.region);
 		this.panel = new AreaContainer(area);
+		this.panel.setPreferredSize(new Dimension(640, 480));
 	}
 
 	public synchronized ProgressConnector showProgress() {
@@ -81,7 +83,7 @@ public class JOGLPanel {
 			@Override
 			public void run() {
 				// TODO: this is only for testing
-				JOGLPanel.this.region.redraw();
+				JOGLPanel.this.region.requestRedraw();
 			}
 		}, 10, 50);
 		// this.panel.setAutoAnimate(true);

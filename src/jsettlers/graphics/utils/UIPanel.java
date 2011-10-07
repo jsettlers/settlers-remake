@@ -1,8 +1,8 @@
 package jsettlers.graphics.utils;
 
-import java.util.LinkedList;
+import go.graphics.GLDrawContext;
 
-import javax.media.opengl.GL2;
+import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -40,12 +40,37 @@ public class UIPanel implements UIElement {
 		this.background = link;
 	}
 
+	/**
+	 * Adds a child to the panel.
+	 * 
+	 * @param child
+	 *            The child to add.
+	 * @param left
+	 *            relative left border (0..1).
+	 * @param bottom
+	 *            relative bottom border (0..1).
+	 * @param right
+	 *            relative right border (0..1).
+	 * @param top
+	 *            relative top border (0..1).
+	 */
 	public void addChild(UIElement child, float left, float bottom,
 	        float right, float top) {
 		this.children.add(new ChildLink(child, left, bottom, right, top));
 	}
 
-	public void drawAt(GL2 gl) {
+	/**
+	 * Adds a child to the center of the panel.
+	 * @param child The child to add.
+	 * @param width The relative width of the child (0..1).
+	 * @param height The relative height of the child (0..1).
+	 */
+	public void addChildCentered(UIElement child, float width, float height) {
+		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2,
+		        0.5f + height / 2);
+	}
+
+	public void drawAt(GLDrawContext gl) {
 		drawBackground(gl);
 
 		if (children.size() > 0) {
@@ -58,10 +83,9 @@ public class UIPanel implements UIElement {
 		}
 	}
 
-	private void drawBackground(GL2 gl) {
+	protected void drawBackground(GLDrawContext gl) {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
-			gl.glEnable(GL2.GL_TEXTURE_2D);
 			IntRectangle position = getPosition();
 			Image image =
 			        getDetailedImage(link, position.getWidth(),
@@ -80,20 +104,14 @@ public class UIPanel implements UIElement {
 	 * @param position
 	 *            The position to draw the image at
 	 */
-	private void drawAtRect(GL2 gl, Image image, IntRectangle position) {
-		image.bind(gl);
-		gl.glBegin(GL2.GL_QUADS);
-		gl.glTexCoord2i(0, 0);
-		gl.glVertex2i(position.getMinX(), position.getMinY());
-		gl.glTexCoord2i(0, 1);
-		gl.glVertex2i(position.getMinX(), position.getMaxY());
-		gl.glTexCoord2i(1, 1);
-		gl.glVertex2i(position.getMaxX(), position.getMaxY());
-		gl.glTexCoord2i(1, 0);
-		gl.glVertex2i(position.getMaxX(), position.getMinY());
-		gl.glEnd();
-		gl.glDisable(GL2.GL_TEXTURE_2D);
+	protected void drawAtRect(GLDrawContext gl, Image image, IntRectangle position) {
+		int minX = position.getMinX();
+		int minY = position.getMinY();
+		int maxX = position.getMaxX();
+		int maxY = position.getMaxY();
+		image.drawImageAtRect(gl, minX, minY, maxX, maxY);
 	}
+
 
 	/**
 	 * Gets a detailed GUI image.
@@ -146,7 +164,7 @@ public class UIPanel implements UIElement {
 			this.bottom = bottom;
 		}
 
-		public void drawAt(GL2 gl, int width, int height) {
+		public void drawAt(GLDrawContext gl, int width, int height) {
 			child.setPosition(new IntRectangle((int) (left * width),
 			        (int) (bottom * height), (int) (right * width),
 			        (int) (top * height)));
@@ -173,7 +191,7 @@ public class UIPanel implements UIElement {
 			} else {
 				return null;
 			}
-        }
+		}
 	}
 
 	@Override
@@ -203,11 +221,12 @@ public class UIPanel implements UIElement {
 	@Override
 	public String getDescription(float relativex, float relativey) {
 		for (ChildLink link : children) {
-			String description = link.getDesctiptionRelative(relativex, relativey);
+			String description =
+			        link.getDesctiptionRelative(relativex, relativey);
 			if (description != null) {
 				return description;
 			}
 		}
-	    return null;
-    }
+		return null;
+	}
 }

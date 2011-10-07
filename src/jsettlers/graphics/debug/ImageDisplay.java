@@ -1,4 +1,5 @@
 package jsettlers.graphics.debug;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -26,10 +27,13 @@ import javax.swing.event.DocumentListener;
 
 public class ImageDisplay extends JFrame {
 
+	private static final String FILE =
+	// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.7c003e01f.dat";
+	       "/home/michael/Desktop/sounds/VL-212.DX4";
 	/**
      * 
      */
-    private static final long serialVersionUID = 3846777822789324058L;
+	private static final long serialVersionUID = 3846777822789324058L;
 
 	protected static final int PIXELLENGTH = 8;
 
@@ -87,7 +91,8 @@ public class ImageDisplay extends JFrame {
 
 		getImage().setFocusable(true);
 		getRoot();
-		InputMap input = getRoot().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap input =
+		        getRoot().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actions = getRoot().getActionMap();
 
 		input.put(KeyStroke.getKeyStroke("UP"), "up");
@@ -98,7 +103,7 @@ public class ImageDisplay extends JFrame {
 			/**
              * 
              */
-            private static final long serialVersionUID = -5230566743343442027L;
+			private static final long serialVersionUID = -5230566743343442027L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -109,7 +114,7 @@ public class ImageDisplay extends JFrame {
 			/**
              * 
              */
-            private static final long serialVersionUID = -901408786185210944L;
+			private static final long serialVersionUID = -901408786185210944L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -120,7 +125,7 @@ public class ImageDisplay extends JFrame {
 			/**
              * 
              */
-            private static final long serialVersionUID = 2545364896702320931L;
+			private static final long serialVersionUID = 2545364896702320931L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -131,14 +136,14 @@ public class ImageDisplay extends JFrame {
 			/**
              * 
              */
-            private static final long serialVersionUID = 5756131018979838342L;
+			private static final long serialVersionUID = 5756131018979838342L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getImage().moveMarked(1, 0);
 			}
 		});
-		
+
 		getImage().setFocusable(true);
 	}
 
@@ -164,7 +169,9 @@ public class ImageDisplay extends JFrame {
 			this.offsetSpinner.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					getImage().setOffset((Integer) ImageDisplay.this.offsetSpinner.getValue());
+					getImage().setOffset(
+					        (Integer) ImageDisplay.this.offsetSpinner
+					                .getValue());
 				}
 			});
 		}
@@ -248,7 +255,8 @@ public class ImageDisplay extends JFrame {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					getImage().setPixelLength(
-					        (Integer) ImageDisplay.this.pixelLengthSpinner.getValue());
+					        (Integer) ImageDisplay.this.pixelLengthSpinner
+					                .getValue());
 					reloadLineLength();
 				}
 
@@ -277,7 +285,8 @@ public class ImageDisplay extends JFrame {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					getImage().setImageWidth(
-					        (Integer) ImageDisplay.this.imageWidthSpinner.getValue());
+					        (Integer) ImageDisplay.this.imageWidthSpinner
+					                .getValue());
 					reloadLineLength();
 				}
 			});
@@ -300,7 +309,8 @@ public class ImageDisplay extends JFrame {
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					getImage().setLittleEndian(ImageDisplay.this.littleEndian.isSelected());
+					getImage().setLittleEndian(
+					        ImageDisplay.this.littleEndian.isSelected());
 				}
 			});
 		}
@@ -317,28 +327,30 @@ public class ImageDisplay extends JFrame {
 			this.redMask = new JTextField();
 			this.redMask.setBounds(new Rectangle(248, 80, 69, 24));
 			this.redMask.setText("" + getImage().getRedMask());
-			this.redMask.getDocument().addDocumentListener(new DocumentListener() {
-				
-				private void changed() {
-					getImage().setRedMask(loadMaskField(ImageDisplay.this.redMask));
-				}
-				
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					changed();
-				}
-				
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					changed();
-				}
-				
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					changed();
-					
-				}
-			});
+			this.redMask.getDocument().addDocumentListener(
+			        new DocumentListener() {
+
+				        private void changed() {
+					        getImage().setRedMask(
+					                loadMaskField(ImageDisplay.this.redMask));
+				        }
+
+				        @Override
+				        public void removeUpdate(DocumentEvent e) {
+					        changed();
+				        }
+
+				        @Override
+				        public void insertUpdate(DocumentEvent e) {
+					        changed();
+				        }
+
+				        @Override
+				        public void changedUpdate(DocumentEvent e) {
+					        changed();
+
+				        }
+			        });
 		}
 		return this.redMask;
 	}
@@ -382,28 +394,30 @@ public class ImageDisplay extends JFrame {
 			this.greenMask.setBounds(new Rectangle(370, 79, 77, 25));
 			this.greenMask.setText("" + getImage().getGreenMask());
 
-			this.greenMask.getDocument().addDocumentListener(new DocumentListener() {
-				
-				private void changed() {
-					getImage().setGreenMask(loadMaskField(ImageDisplay.this.greenMask));
-				}
-				
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					changed();
-				}
-				
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					changed();
-				}
-				
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					changed();
-					
-				}
-			});
+			this.greenMask.getDocument().addDocumentListener(
+			        new DocumentListener() {
+
+				        private void changed() {
+					        getImage().setGreenMask(
+					                loadMaskField(ImageDisplay.this.greenMask));
+				        }
+
+				        @Override
+				        public void removeUpdate(DocumentEvent e) {
+					        changed();
+				        }
+
+				        @Override
+				        public void insertUpdate(DocumentEvent e) {
+					        changed();
+				        }
+
+				        @Override
+				        public void changedUpdate(DocumentEvent e) {
+					        changed();
+
+				        }
+			        });
 		}
 		return this.greenMask;
 	}
@@ -418,28 +432,30 @@ public class ImageDisplay extends JFrame {
 			this.blueMask = new JTextField();
 			this.blueMask.setBounds(new Rectangle(498, 77, 96, 28));
 			this.blueMask.setText("" + getImage().getBlueMask());
-			this.blueMask.getDocument().addDocumentListener(new DocumentListener() {
-				
-				private void changed() {
-					getImage().setBlueMask(loadMaskField(ImageDisplay.this.blueMask));
-				}
-				
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					changed();
-				}
-				
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					changed();
-				}
-				
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					changed();
-					
-				}
-			});
+			this.blueMask.getDocument().addDocumentListener(
+			        new DocumentListener() {
+
+				        private void changed() {
+					        getImage().setBlueMask(
+					                loadMaskField(ImageDisplay.this.blueMask));
+				        }
+
+				        @Override
+				        public void removeUpdate(DocumentEvent e) {
+					        changed();
+				        }
+
+				        @Override
+				        public void insertUpdate(DocumentEvent e) {
+					        changed();
+				        }
+
+				        @Override
+				        public void changedUpdate(DocumentEvent e) {
+					        changed();
+
+				        }
+			        });
 		}
 		return this.blueMask;
 	}
@@ -449,9 +465,7 @@ public class ImageDisplay extends JFrame {
 	 */
 	public static void main(String[] args) {
 		try {
-			new ImageDisplay(
-			        new File(
-			                "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.7c003e01f.dat"));
+			new ImageDisplay(new File(FILE));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
