@@ -1,4 +1,4 @@
-package go.graphics.opengl.test;
+package go.graphics.swing.test;
 
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
@@ -8,9 +8,9 @@ import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
-import go.graphics.opengl.AreaContainer;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
+import go.graphics.swing.AreaContainer;
 
 import java.awt.Point;
 import java.util.ArrayList;

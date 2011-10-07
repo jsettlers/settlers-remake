@@ -1,4 +1,4 @@
-package go.graphics.opengl.opengl;
+package go.graphics.swing.opengl;
 
 import go.graphics.GLDrawContext;
 

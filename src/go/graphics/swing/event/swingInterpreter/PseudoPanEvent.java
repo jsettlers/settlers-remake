@@ -1,4 +1,4 @@
-package go.graphics.opengl.event.swingInterpreter;
+package go.graphics.swing.event.swingInterpreter;
 
 import go.graphics.event.SingleHandlerGoModalEvent;
 import go.graphics.event.mouse.GOPanEvent;

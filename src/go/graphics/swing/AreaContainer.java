@@ -1,12 +1,12 @@
-package go.graphics.opengl;
+package go.graphics.swing;
 
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvoder;
-import go.graphics.opengl.event.swingInterpreter.GOSwingEventConverter;
-import go.graphics.opengl.opengl.JOGLDrawContext;
+import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
+import go.graphics.swing.opengl.JOGLDrawContext;
 
 import java.awt.BorderLayout;
 

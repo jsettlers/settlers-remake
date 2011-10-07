@@ -1,4 +1,4 @@
-package go.graphics.opengl;
+package go.graphics.swing;
 
 import go.graphics.area.Area;
 
