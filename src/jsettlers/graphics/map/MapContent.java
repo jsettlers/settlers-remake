@@ -41,13 +41,15 @@ import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.map.controls.IControls;
+import jsettlers.graphics.map.controls.original.OriginalControls;
+import jsettlers.graphics.map.controls.original.panel.MainPanel;
+import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.BuildingDrawer;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
-import jsettlers.graphics.map.panel.MainPanel;
-import jsettlers.graphics.map.panel.content.EContentType;
 import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.sequence.Sequence;
 import jsettlers.graphics.utils.EFontSize;
@@ -86,25 +88,6 @@ import jsettlers.graphics.utils.UIPanel;
  * @author michael
  */
 public class MapContent implements SettlersContent, GOEventHandlerProvoder {
-	private static final float UI_RATIO = (float) 480 / 209;
-
-	private static final float UI_CENTERY = (float) 338 / 480;
-
-	private static final float UI_CENTERX = (float) 136 / 209;
-
-	private static final float UI_DECORATIONRIGHT = (float) 8 / 209
-	        + UI_CENTERX;
-
-	private static final int UI_BG_FILE = 4;
-
-	private static final int UI_BG_SEQ_MAIN = 2;
-
-	private static final int UI_BG_SEQ_MINIMAPR = 1;
-
-	private static final int UI_BG_SEQ_MINIMAPL = 0;
-
-	private static final int UI_BG_SEQ_RIGHT = 3;
-
 	private boolean ENABLE_DEBUG = false;
 
 	private final IHexMap map;
@@ -126,9 +109,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 	private IntRectangle oldScreen;
 
-	private final UIPanel uiBase;
-
-	private final MainPanel mainPanel = new MainPanel();
+	private final IControls controls;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -140,42 +121,15 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		this.map = map;
 		this.context = new MapDrawContext(map);
 
-		uiBase = createInterface();
+		controls = new OriginalControls(map);
 
 		this.connector = new MapInterfaceConnector(this);
 	}
 
-	private UIPanel createInterface() {
-		UIPanel panel = new UIPanel();
-
-		UIPanel minimapbg_left = new UIPanel();
-		minimapbg_left.setBackground(new ImageLink(EImageLinkType.SETTLER,
-		        UI_BG_FILE, UI_BG_SEQ_MINIMAPL, 0));
-		panel.addChild(minimapbg_left, 0, UI_CENTERY, UI_CENTERX, 1);
-
-		UIPanel minimapbg_right = new UIPanel();
-		minimapbg_right.setBackground(new ImageLink(EImageLinkType.SETTLER,
-		        UI_BG_FILE, UI_BG_SEQ_MINIMAPR, 0));
-		panel.addChild(minimapbg_right, UI_CENTERX, UI_CENTERY, 1, 1);
-
-		mainPanel.setBackground(new ImageLink(EImageLinkType.SETTLER,
-		        UI_BG_FILE, UI_BG_SEQ_MAIN, 0));
-		panel.addChild(mainPanel, 0, 0, UI_CENTERX, UI_CENTERY);
-
-		UIPanel rightDecoration = new UIPanel();
-		rightDecoration.setBackground(new ImageLink(EImageLinkType.SETTLER,
-		        UI_BG_FILE, UI_BG_SEQ_RIGHT, 0));
-		panel.addChild(rightDecoration, UI_CENTERX, 0, UI_DECORATIONRIGHT,
-		        UI_CENTERY);
-
-		return panel;
-	}
-
 	private void resizeTo(int newWidth, int newHeight) {
 		this.context.setSize(newWidth, newHeight);
+		this.controls.resizeTo(newWidth, newHeight);
 		// this.mapInterface.setWindowSize(newWidth, newHeight);
-		this.uiBase.setPosition(new IntRectangle(0, 0,
-		        (int) (newHeight / UI_RATIO), newHeight));
 	}
 
 	@Override
@@ -206,7 +160,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 		gl.glTranslatef(0, 0, .5f);
 		drawSelectionHint(gl);
-		uiBase.drawAt(gl);
+		controls.drawAt(gl);
 		this.context.debugTime("Interface drawn");
 
 		drawFramerate();
@@ -457,12 +411,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	}
 
 	private void fireAction(GOEvent event, Action action) {
-		if (action.getActionType() == EActionType.CHANGE_PANEL) {
-			// TODO. can we fire the action and catch it later?
-			mainPanel.setContent(((ChangePanelAction) action).getContent());
-		} else {
+		
 			event.setHandler(new ActionHandler(action, getInterfaceConnector()));
-		}
 	}
 
 	private Action getActionForKeyboard(int keyCode) {
@@ -521,32 +471,35 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	protected void changeMousePosition(Point position) {
 		mousePosition = position;
 
-		double relativeUIX =
-		        position.getX() / this.uiBase.getPosition().getWidth();
-		double relativeUIY =
-		        position.getY() / this.uiBase.getPosition().getHeight();
-		if (relativeUIX < UI_CENTERX && relativeUIY < UI_CENTERY) {
-			tooltipString =
-			        mainPanel.getDescription((float) relativeUIX / UI_CENTERX,
-			                (float) relativeUIY / UI_CENTERY);
-			if (tooltipString == null) {
-				tooltipString = "";
-			}
-		} else {
-			tooltipString = "";
-		}
+		//TODO: make it work again
+//		double relativeUIX =
+//		        position.getX() / this.uiBase.getPosition().getWidth();
+//		double relativeUIY =
+//		        position.getY() / this.uiBase.getPosition().getHeight();
+//		if (relativeUIX < UI_CENTERX && relativeUIY < UI_CENTERY) {
+//			tooltipString =
+//			        mainPanel.getDescription((float) relativeUIX / UI_CENTERX,
+//			                (float) relativeUIY / UI_CENTERY);
+//			if (tooltipString == null) {
+//				tooltipString = "";
+//			}
+//		} else {
+//			tooltipString = "";
+//		}
 	}
 
 	private Action handleCommand(GOCommandEvent commandEvent) {
 		Point position = commandEvent.getCommandPosition();
-		double relativeUIX =
-		        position.getX() / this.uiBase.getPosition().getWidth();
-		double relativeUIY =
-		        position.getY() / this.uiBase.getPosition().getHeight();
-		if (relativeUIX < UI_CENTERX && relativeUIY < UI_CENTERY) {
-			// we are on the sidebar
-			return mainPanel.getAction((float) relativeUIX / UI_CENTERX,
-			        (float) relativeUIY / UI_CENTERY);
+//		double relativeUIX =
+//		        position.getX() / this.uiBase.getPosition().getWidth();
+//		double relativeUIY =
+//		        position.getY() / this.uiBase.getPosition().getHeight();
+//		if (relativeUIX < UI_CENTERX && relativeUIY < UI_CENTERY) {
+//			// we are on the sidebar
+//			return mainPanel.getAction((float) relativeUIX / UI_CENTERX,
+//			        (float) relativeUIY / UI_CENTERY);
+			if (controls.containsPoint(position)) {
+				return controls.getActionFor(position);
 		} else {
 			// handle map click
 			return handleCommandOnMap(commandEvent, position);
@@ -640,10 +593,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		} else {
 			this.currentSelectionAreaEnd = mousePosition;
 		}
-	}
-
-	public void displayUIContent(EContentType content) {
-		this.mainPanel.setContent(content);
 	}
 
 	/**

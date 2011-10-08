@@ -1,6 +1,6 @@
 package jsettlers.graphics.action;
 
-import jsettlers.graphics.map.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 
 public class ChangePanelAction extends Action {
 

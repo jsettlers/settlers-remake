@@ -7,6 +7,7 @@ import java.awt.Color;
 import jsettlers.common.map.IHexMap;
 import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
@@ -374,7 +375,7 @@ public class MapDrawContext {
 		        drawx2, drawy2));
 	}
 
-	public IMapArea getScreenArea() {
+	public MapRectangle getScreenArea() {
 		return this.converter.getMapForScreen(this.screen.getPosition());
 	}
 

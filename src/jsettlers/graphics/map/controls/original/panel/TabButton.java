@@ -1,9 +1,9 @@
-package jsettlers.graphics.map.panel;
+package jsettlers.graphics.map.controls.original.panel;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.action.ChangePanelAction;
-import jsettlers.graphics.map.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.utils.Button;
 
 /**

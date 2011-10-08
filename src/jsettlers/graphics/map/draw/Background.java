@@ -1,8 +1,10 @@
 package jsettlers.graphics.map.draw;
 
+import go.graphics.GLDrawContext;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.image.Image;
@@ -188,11 +190,43 @@ public class Background {
 	 *            The context to draw at.
 	 */
 	public void drawMapContent(MapDrawContext context) {
+		float[] geometry = getGeometry(context);
+		
+		GLDrawContext gl = context.getGl();
+		gl.glPushMatrix();
+		gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
+		
+		gl.drawTrianglesWithTexture(0, geometry);
+		
+		gl.glPopMatrix();
 //		if (useRenderbuffer(((JOGLDrawContext)context.getGl()).getGl2())) {
 //			drawWithRenderbuffer(context);
 //		} else {
 //			draw(context);
 //		}
+	}
+
+	private float[] getGeometry(MapDrawContext context) {
+	    MapRectangle area = context.getScreenArea();
+	    
+	    int linecount = area.getLineLength() * 2 * 3 * 5;
+		int count = area.getLines() * linecount;
+	    float[] geometry = new float[count];
+	    
+	    for (int line = 0; line < area.getLines(); line++) {
+	    	int y = area.getLineY(line);
+	    	addLineToGeometry(context, geometry, line * linecount, y, area.getLineStartX(line), area.getLineEndX(line));
+	    }
+	    
+	    return geometry;
+    }
+
+	private void addLineToGeometry(MapDrawContext context, float[] geometry, int offset, int y, int minx, int maxx) {
+		
+	}
+	
+	private void addPointToGeometry(MapDrawContext context, float[] geometry, int offset, int x, int y) {
+		
 	}
 
 //	private boolean useRenderbuffer(GL2 gl) {

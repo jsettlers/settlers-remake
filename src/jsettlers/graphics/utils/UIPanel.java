@@ -87,9 +87,7 @@ public class UIPanel implements UIElement {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
 			IntRectangle position = getPosition();
-			Image image =
-			        getDetailedImage(link, position.getWidth(),
-			                position.getHeight());
+			Image image = ImageProvider.getInstance().getImage(link);
 			drawAtRect(gl, image, position);
 		}
 	}

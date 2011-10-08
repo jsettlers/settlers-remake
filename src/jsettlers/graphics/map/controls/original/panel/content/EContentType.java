@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.panel.content;
+package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.graphics.utils.UIPanel;
 

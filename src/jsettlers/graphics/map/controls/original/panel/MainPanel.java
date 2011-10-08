@@ -1,7 +1,9 @@
-package jsettlers.graphics.map.panel;
+package jsettlers.graphics.map.controls.original.panel;
 
-import jsettlers.graphics.map.panel.content.EContentType;
-import jsettlers.graphics.map.panel.content.ESecondaryTabType;
+import jsettlers.graphics.map.controls.original.IOriginalConstants;
+import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
+import jsettlers.graphics.map.controls.original.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -11,25 +13,8 @@ import jsettlers.graphics.utils.UIPanel;
  * @author michael
  */
 public class MainPanel extends UIPanel {
-	// relative to main content
-	private static final float UI_TABS1_TOP = 1 - (float) 13 / 338;
-	private static final float UI_TABS1_BOTTOM = 1 - (float) 46 / 338;
-	private static final float UI_TABS1_SIDEMARGIN = (float) 8 / 136;
-	private static final float UI_TABS1_WIDTH = (float) 33 / 136;
-	private static final float UI_TABS1_SPACING = (float) 9 / 136;
-
-	private static final float UI_TABS2_TOP = UI_TABS1_BOTTOM;
-	private static final float UI_TABS2_BOTTOM = UI_TABS2_TOP - (float) 24
-	        / 338;
-	private static final float UI_TABS2_SIDEMARGIN = (float) 8 / 136;
-	private static final float UI_TABS2_WIDTH = (float) 27 / 136;
-	private static final float UI_TABS2_SPACING = (float) 3 / 136;
 
 	private static final int BUTTONS_FILE = 3;
-	private static final float CONTENT_LEFT = (float) 8 / 136;
-	private static final float CONTENT_BOTTOM = 1 - (float) 294 / 338;
-	private static final float CONTENT_RIGHT = (float) 128 / 136;
-	private static final float CONTENT_TOP = 1 - (float) 76 / 338;
 
 	private final UIPanel tabpanel = new UIPanel();
 
@@ -71,31 +56,33 @@ public class MainPanel extends UIPanel {
 
 	private UIPanel contentContainer = new UIPanel();
 
+	private IOriginalConstants constants;
+
 	public MainPanel() {
-		initTabbar1();
-		initTabbar2();
-		this.addChild(contentContainer, CONTENT_LEFT, CONTENT_BOTTOM,
-		        CONTENT_RIGHT, CONTENT_TOP);
+		useConstants(new SmallOriginalConstants());
 		setContent(EContentType.BUILD_NORMAL);
 	}
 
 	private void initTabbar2() {
-		this.addChild(tabpanel, 0, UI_TABS2_BOTTOM,
-		        1, UI_TABS2_TOP);
+		this.addChild(tabpanel, 0, constants.UI_TABS2_BOTTOM, 1,
+		        constants.UI_TABS2_TOP);
 	}
 
 	private void initTabbar1() {
 		int i = 0;
 		UIPanel tabbar1 = new UIPanel();
-		this.addChild(tabbar1, 0, UI_TABS1_BOTTOM, 1, UI_TABS1_TOP);
+		this.addChild(tabbar1, 0, constants.UI_TABS1_BOTTOM, 1,
+		        constants.UI_TABS1_TOP);
 		Button[] buttons = new Button[] {
 		        button_build, button_settlers, button_goods
 		};
 		for (Button button : buttons) {
 			float left =
-			        UI_TABS1_SIDEMARGIN + i
-			                * (UI_TABS1_WIDTH + UI_TABS1_SPACING);
-			tabbar1.addChild(button, left, 0, left + UI_TABS1_WIDTH, 1);
+			        constants.UI_TABS1_SIDEMARGIN
+			                + i
+			                * (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
+			tabbar1.addChild(button, left, 0, left + constants.UI_TABS1_WIDTH,
+			        1);
 			i++;
 		}
 
@@ -141,10 +128,26 @@ public class MainPanel extends UIPanel {
 		int i = 0;
 		for (Button button : buttons) {
 			float left =
-			        UI_TABS2_SIDEMARGIN + i
-			                * (UI_TABS2_WIDTH + UI_TABS2_SPACING);
-			tabpanel.addChild(button, left, 0, left + UI_TABS2_WIDTH, 1);
+			        constants.UI_TABS2_SIDEMARGIN
+			                + i
+			                * (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
+			tabpanel.addChild(button, left, 0, left + constants.UI_TABS2_WIDTH,
+			        1);
 			i++;
 		}
+	}
+
+	/**
+	 * Resize everything according to constants.
+	 * 
+	 * @param constants
+	 */
+	public void useConstants(IOriginalConstants constants) {
+		this.constants = constants;
+		initTabbar1();
+		initTabbar2();
+		this.addChild(contentContainer, constants.CONTENT_LEFT,
+		        constants.CONTENT_BOTTOM, constants.CONTENT_RIGHT,
+		        constants.CONTENT_TOP);
 	}
 }
