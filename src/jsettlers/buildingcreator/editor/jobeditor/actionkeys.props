@@ -1,0 +1,4 @@
+#This file defines which actions need to have which keys.
+go=direction
+hide=
+show=positionx,positiony
