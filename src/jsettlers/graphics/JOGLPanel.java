@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IHexMap;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.MapContent;
@@ -73,7 +74,7 @@ public class JOGLPanel {
 	 * @return The connector to access the view and add event listenrs
 	 * @see MapInterfaceConnector
 	 */
-	public synchronized MapInterfaceConnector showHexMap(final IHexMap map,
+	public synchronized MapInterfaceConnector showHexMap(final IGraphicsGrid map,
 	        IStatisticable playerStatistics) {
 		MapContent content = new MapContent(map);
 		changeContent(content);

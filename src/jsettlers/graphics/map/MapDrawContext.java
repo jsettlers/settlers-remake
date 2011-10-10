@@ -4,14 +4,12 @@ import go.graphics.GLDrawContext;
 
 import java.awt.Color;
 
-import jsettlers.common.map.IHexMap;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
@@ -37,7 +35,7 @@ public class MapDrawContext {
 
 	private GLDrawContext gl = null;
 
-	private final IHexMap map;
+	private final IGraphicsGrid map;
 
 	private ScreenPosition screen;
 
@@ -64,7 +62,7 @@ public class MapDrawContext {
 	 * @param map
 	 *            The map.
 	 */
-	public MapDrawContext(IHexMap map) {
+	public MapDrawContext(IGraphicsGrid map) {
 		this.map = map;
 		float incline = IHexTile.X_DISTANCE / 2.0f / IHexTile.Y_DISTANCE;
 		int mapHeight = map.getHeight() * IHexTile.Y_DISTANCE;
@@ -231,45 +229,6 @@ public class MapDrawContext {
 	}
 
 	/**
-	 * Gets a tile.
-	 * 
-	 * @param x
-	 *            The x coordinate in map space.
-	 * @param y
-	 *            The y coordinate in map space.
-	 * @return The tile or <code>null</code> if no tile is on that position
-	 */
-	public IHexTile getTile(short x, short y) {
-		if (checkMapCoordinates(x, y)) {
-			return this.map.getTile(x, y);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets a tile in a given direction next to an other tile.
-	 * 
-	 * @param position
-	 *            The position.
-	 * @param direction
-	 *            THe direction.
-	 * @return The tile or <code>null</code> if there is no tile in that
-	 *         direction.
-	 */
-	public IHexTile getTileInDirection(ISPosition2D position,
-	        EDirection direction) {
-		short x = (short) (position.getX() + direction.getGridDeltaX());
-		short y = (short) (position.getY() + direction.getGridDeltaY());
-
-		if (checkMapCoordinates(x, y)) {
-			return this.map.getTile(new ShortPoint2D(x, y));
-		} else {
-			return null;
-		}
-	}
-
-	/**
 	 * Gets the color for a given player.
 	 * 
 	 * @param player
@@ -301,13 +260,13 @@ public class MapDrawContext {
 	/**
 	 * sets up the gl drawing context to draw a given tile.
 	 * 
-	 * @param tile
+	 * @param pos
 	 *            The tile to draw.
 	 */
-	public void beginTileContext(IHexTile tile) {
+	public void beginTileContext(ISPosition2D pos) {
 		this.gl.glPushMatrix();
-		this.gl.glTranslatef(this.converter.getViewX(tile),
-		        this.converter.getViewY(tile), 0);
+		this.gl.glTranslatef(this.converter.getViewX(pos),
+		        this.converter.getViewY(pos), 0);
 	}
 
 	/**
@@ -320,18 +279,6 @@ public class MapDrawContext {
 	}
 
 	/**
-	 * Gets a map tile.
-	 * 
-	 * @param pos
-	 *            The position of the tile
-	 * @return The map tile at the given position
-	 * @see #getTile(short, short)
-	 */
-	public IHexTile getTile(ISPosition2D pos) {
-		return getTile(pos.getX(), pos.getY());
-	}
-
-	/**
 	 * Sets up drawing between two tiles.
 	 * 
 	 * @param tile
@@ -341,7 +288,7 @@ public class MapDrawContext {
 	 * @param progress
 	 *            The progress between those two bytes.
 	 */
-	public void beginBetweenTileContext(IHexTile tile, IHexTile destination,
+	public void beginBetweenTileContext(ISPosition2D tile, ISPosition2D destination,
 	        float progress) {
 		this.gl.glPushMatrix();
 		float x =

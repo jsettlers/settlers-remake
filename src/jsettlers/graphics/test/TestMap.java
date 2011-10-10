@@ -1,5 +1,6 @@
 package jsettlers.graphics.test;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,18 +11,18 @@ import java.util.TimerTask;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.IHexMap;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.graphics.map.MapDrawContext;
 
-public class TestMap implements IHexMap {
+public class TestMap implements IGraphicsGrid {
 	private static final int HEIGHT = 150;
 	private static final int WIDTH = 150;
 	private static final int SETTLERS = 300;
@@ -42,7 +43,7 @@ public class TestMap implements IHexMap {
 	private ArrayList<TestBuilding> buildings = new ArrayList<TestBuilding>();
 
 	// only for direction, ... calculations, not for displaying.
-	MapDrawContext context = new MapDrawContext(this);
+	// MapDrawContext context = new MapDrawContext(this);
 
 	private byte[][] heights = new byte[WIDTH][HEIGHT];
 
@@ -123,10 +124,14 @@ public class TestMap implements IHexMap {
 	}
 
 	private TestTile getTile(int x, int y) {
-		return this.tiles.get(y * WIDTH + x);
+		int i = y * WIDTH + x;
+		if (i < tiles.size() && i >= 0) {
+			return this.tiles.get(i);
+		} else {
+			return null;
+		}
 	}
 
-	@Override
 	public IHexTile getTile(ISPosition2D pos) {
 		return getTile(pos.getX(), pos.getY());
 	}
@@ -348,8 +353,8 @@ public class TestMap implements IHexMap {
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
 					IHexTile tile =
-					        this.context.getTileInDirection(current,
-					                possibleDirection);
+					        this.getTile(possibleDirection
+					                .getNextHexPoint(current));
 					if (tile != null && tile.getHeight() <= current.getHeight()
 					        && tile.getLandscapeType() != ELandscapeType.RIVER1
 					        && tile.getLandscapeType() != ELandscapeType.RIVER2
@@ -369,7 +374,7 @@ public class TestMap implements IHexMap {
 	private int getNeighbourRiverCount(IHexTile tile) {
 		int rivers = 0;
 		for (EDirection dir : EDirection.values()) {
-			IHexTile toTest = this.context.getTileInDirection(tile, dir);
+			IHexTile toTest = this.getTile(dir.getNextHexPoint(tile));
 			if (toTest != null
 			        && (toTest.getLandscapeType() == ELandscapeType.RIVER1
 			                || toTest.getLandscapeType() == ELandscapeType.RIVER2
@@ -401,8 +406,8 @@ public class TestMap implements IHexMap {
 			settler.increaseProgress();
 			if (settler.moveOn()) {
 				TestTile newPosition =
-				        (TestTile) this.context.getTileInDirection(
-				                settler.getPos(), settler.getDirection());
+				        (TestTile) this.getTile(settler.getDirection()
+				                .getNextHexPoint(settler.getPos()));
 				if (newPosition == null) {
 					// should not happen
 					EDirection direction = getRandomDirection();
@@ -410,8 +415,8 @@ public class TestMap implements IHexMap {
 				} else {
 
 					TestTile nextPosition =
-					        (TestTile) this.context.getTileInDirection(
-					                newPosition, settler.getDirection());
+					        (TestTile) this.getTile(settler.getDirection()
+					                .getNextHexPoint(newPosition));
 
 					((TestTile) settler.getPos()).setMovable(null);
 					newPosition.setMovable(settler);
@@ -432,7 +437,6 @@ public class TestMap implements IHexMap {
 		}
 	}
 
-	@Override
 	public EBuildingType getConstructionPreviewBuilding() {
 		return null;
 	}
@@ -447,7 +451,6 @@ public class TestMap implements IHexMap {
 		return WIDTH;
 	}
 
-	@Override
 	public IHexTile getTile(short x, short y) {
 		return getTile((int) x, (int) y);
 	}
@@ -463,5 +466,40 @@ public class TestMap implements IHexMap {
 
 	public List<? extends IMovable> getAllSettlers() {
 		return this.settlers;
+	}
+
+	@Override
+	public IMovable getMovableAt(short x, short y) {
+		return getTile(x, y).getMovable();
+	}
+
+	@Override
+	public IMapObject getMapObjectsAt(short x, short y) {
+		return getTile(x, y).getHeadMapObject();
+	}
+
+	@Override
+	public byte getHeightAt(short x, short y) {
+		return getTile(x, y).getHeight();
+	}
+
+	@Override
+	public ELandscapeType getLandscapeTypeAt(short x, short y) {
+		return getTile(x, y).getLandscapeType();
+	}
+
+	@Override
+	public Color getDebugColorAt(short x, short y) {
+		return null;
+	}
+
+	@Override
+	public boolean isBorder(short x, short y) {
+		return false;
+	}
+
+	@Override
+	public byte getPlayerAt(short x, short y) {
+		return 0;
 	}
 }

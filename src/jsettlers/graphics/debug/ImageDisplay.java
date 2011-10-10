@@ -80,6 +80,7 @@ public class ImageDisplay extends JFrame {
 		initialize();
 
 		this.setVisible(true);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	/**

@@ -1,10 +1,10 @@
 package jsettlers.graphics.map.controls;
 
+import go.graphics.GLDrawContext;
+
 import java.awt.Point;
 
 import jsettlers.graphics.action.Action;
-
-import go.graphics.GLDrawContext;
 
 /**
  * Classes that implement this are capable of displaying the full game controls

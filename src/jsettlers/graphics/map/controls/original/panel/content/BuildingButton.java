@@ -1,7 +1,5 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import javax.swing.text.Position;
-
 import go.graphics.GLDrawContext;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;

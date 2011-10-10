@@ -43,7 +43,7 @@ public class BuildingDrawer {
 
 		} else if (state < 0.99) {
 			maskState = state * 2 - 1;
-			sequence.getImage(1).draw(context.getGl());
+			sequence.getImageSafe(1).draw(context.getGl());
 			Image image = sequence.getImageSafe(0);
 			drawWithConstructionMask(context, maskState, image);
 		} else {

@@ -1,11 +1,10 @@
 package jsettlers.graphics.map.controls.original;
 
+import go.graphics.GLDrawContext;
+
 import java.awt.Point;
 
-import go.graphics.GLDrawContext;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.map.IHexMap;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
@@ -16,7 +15,7 @@ import jsettlers.graphics.utils.UIPanel;
 
 public class OriginalControls implements IControls {
 
-	private final IHexMap map;
+	private final IGraphicsGrid map;
 
 	private UIPanel uiBase;
 
@@ -24,7 +23,7 @@ public class OriginalControls implements IControls {
 
 	private IOriginalConstants constants;
 
-	public OriginalControls(IHexMap map) {
+	public OriginalControls(IGraphicsGrid map) {
 		this.map = map;
 		constants = new SmallOriginalConstants();
 		uiBase = createInterface();

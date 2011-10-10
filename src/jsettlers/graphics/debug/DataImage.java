@@ -45,6 +45,10 @@ public class DataImage extends JPanel implements MouseListener,
 		this.data = data;
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
+
+		for (int i = 64; i < 100000; i+=128) {
+			System.out.println(getData(i, 1));
+		}
 	}
 
 	@Override
@@ -121,7 +125,7 @@ public class DataImage extends JPanel implements MouseListener,
 		}
 		
 //		if ((pos & 0x04) != 0) {
-			result -= pos;
+			result += pos;
 //		} else {
 //			result -= pos;
 //		}
@@ -131,9 +135,16 @@ public class DataImage extends JPanel implements MouseListener,
 			result = 0xff - result;
 		}
 		
-		result |= (pos & 0xffff) << 8;
 		
-		return result;
+		
+		//result |= (pos & 0xffff) << 8;
+		
+		if (result < 100 || result > 155) {
+			return 0;
+		} else {
+			return result;
+		}
+		//return result;
 	}
 
 	@Override

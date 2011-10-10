@@ -4,8 +4,7 @@ import go.graphics.GLDrawContext;
 
 import java.awt.Color;
 
-import jsettlers.common.map.IHexMap;
-import jsettlers.common.map.IHexTile;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IMapObject;
@@ -89,8 +88,8 @@ public class MapObjectDrawer {
 	 * @param object
 	 *            The object (tree, ...) to draw.
 	 */
-	public void drawMapObject(MapDrawContext context, IHexMap map,
-	        IHexTile tile, IMapObject object) {		
+	public void drawMapObject(MapDrawContext context, IGraphicsGrid map,
+	        ISPosition2D pos, IMapObject object) {		
 		EMapObjectType type = object.getObjectType();
 
 		float progress = object.getStateProgress();
@@ -98,18 +97,18 @@ public class MapObjectDrawer {
 		if (type == EMapObjectType.ARROW) {
 			drawArrow(context, map, (IArrowMapObject) object);
 		} else {
-			context.beginTileContext(tile);
+			context.beginTileContext(pos);
 			switch (type) {
 				case TREE_ADULT:
-					drawTree(context, tile);
+					drawTree(context, pos);
 					break;
 
 				case TREE_DEAD:
-					drawFallingTree(context, tile, progress);
+					drawFallingTree(context, pos, progress);
 					break;
 
 				case TREE_GROWING:
-					drawGrowingTree(context, tile, progress);
+					drawGrowingTree(context, pos, progress);
 					break;
 
 				case CORN_GROWING:
@@ -192,7 +191,7 @@ public class MapObjectDrawer {
 			context.endTileContext();
 		}
 		if (object.getNextObject() != null) {
-			drawMapObject(context, map, tile, object.getNextObject());
+			drawMapObject(context, map, pos, object.getNextObject());
 		}
 	}
 
@@ -235,7 +234,7 @@ public class MapObjectDrawer {
 		sequence.getImage(index).draw(context.getGl());
 	}
 
-	private void drawArrow(MapDrawContext context, IHexMap map,
+	private void drawArrow(MapDrawContext context, IGraphicsGrid map,
 	        IArrowMapObject object) {
 		int sequence = 0;
 		switch (object.getDirection()) {
@@ -267,8 +266,8 @@ public class MapObjectDrawer {
 		float progress = object.getStateProgress();
 		int index = Math.round(progress * 2);
 
-		IHexTile start = map.getTile(object.getSource());
-		IHexTile end = map.getTile(object.getTarget());
+		ISPosition2D start = object.getSource();
+		ISPosition2D end = object.getTarget();
 		context.beginBetweenTileContext(start, end, progress);
 		context.getGl()
 		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, 0);

@@ -2,7 +2,6 @@ package jsettlers.graphics.map.draw;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
@@ -276,6 +275,7 @@ public class Background {
 		IMapArea area = context.getScreenArea();
 		int hash = 0;
 		for (ISPosition2D pos : area) {
+			/*
 			IHexTile tile = context.getTile(pos);
 			if (tile != null) {
 				int key =
@@ -284,7 +284,7 @@ public class Background {
 				hash += key;
 				hash += (hash << 12);
 				hash ^= hash >> 10;
-			}
+			}*/
 		}
 		return hash;
 	}

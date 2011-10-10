@@ -17,44 +17,31 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 
-import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
-import jsettlers.common.map.IHexMap;
-import jsettlers.common.map.IHexTile;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.material.IStack;
 import jsettlers.common.movable.EAction;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionHandler;
-import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
-import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
-import jsettlers.graphics.map.controls.original.panel.MainPanel;
-import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.BuildingDrawer;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
-import jsettlers.graphics.sequence.Sequence;
 import jsettlers.graphics.utils.EFontSize;
 import jsettlers.graphics.utils.TextDrawer;
-import jsettlers.graphics.utils.UIPanel;
 
 /**
  * This is the main map content class. It manages the map drawing on the screen
@@ -90,7 +77,7 @@ import jsettlers.graphics.utils.UIPanel;
 public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	private boolean ENABLE_DEBUG = false;
 
-	private final IHexMap map;
+	private final IGraphicsGrid map;
 
 	private Background background = new Background();
 
@@ -117,7 +104,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	 * @param map
 	 *            The map.
 	 */
-	public MapContent(IHexMap map) {
+	public MapContent(IGraphicsGrid map) {
 		this.map = map;
 		this.context = new MapDrawContext(map);
 
@@ -217,84 +204,67 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		                this.context.getScreen().getPosition().bigger(30)),
 		                map.getWidth(), map.getHeight());
 		for (ISPosition2D pos : tiles) {
-			IHexTile tile = map.getTile(pos);
-
-			IBuilding building = tile.getBuilding();
-			if (building != null) {
-				this.context.beginTileContext(tile);
-				this.buildingDrawer.draw(this.context, building);
-				this.context.endTileContext();
-			}
-
-			IMapObject object = tile.getHeadMapObject();
+			IMapObject object = map.getMapObjectsAt(pos.getX(), pos.getY());
 			if (object != null) {
-				this.objectDrawer.drawMapObject(this.context, this.map, tile,
+				this.objectDrawer.drawMapObject(this.context, this.map, pos,
 				        object);
 			}
 
-			IStack stack = tile.getStack();
-			if (stack != null) {
-				this.context.beginTileContext(tile);
-				this.objectDrawer.drawStack(this.context, stack);
-				this.context.endTileContext();
-			}
-
-			IMovable movable = tile.getMovable();
+			IMovable movable = map.getMovableAt(pos.getX(), pos.getY());
 			if (movable != null) {
 				if (movable.getAction() == EAction.WALKING) {
 					// TODO: catch nullpointer!
-					IHexTile origin =
-					        context.getTileInDirection(tile, movable
-					                .getDirection().getInverseDirection());
+					ISPosition2D origin =movable
+			                .getDirection().getInverseDirection().getNextHexPoint(pos);
 					if (origin == null) {
-						origin = tile;
+						origin = pos;
 					}
-					this.context.beginBetweenTileContext(origin, tile,
+					this.context.beginBetweenTileContext(origin, pos,
 					        movable.getMoveProgress());
 					this.movableDrawer.draw(this.context, movable);
 					this.context.endTileContext();
 				} else {
-					this.context.beginTileContext(tile);
+					this.context.beginTileContext(pos);
 					this.movableDrawer.draw(this.context, movable);
 					this.context.endTileContext();
 				}
 			}
 
-			if (ENABLE_DEBUG && tile.getDebugColor() != null) {
+			if (ENABLE_DEBUG && map.getDebugColorAt(pos.getX(), pos.getY()) != null) {
 				needDrawDebug = true;
 			}
 
-			drawPlayerBorderIfNeeded(tile);
+			//drawPlayerBorderIfNeeded(tile);
 		}
 
-		if (map.getConstructionPreviewBuilding() != null) {
-			Sequence<? extends Image> sequence =
-			        ImageProvider.getInstance().getSettlerSequence(4, 5);
-			float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
-
-			for (ISPosition2D pos : tiles) {
-				IHexTile tile = map.getTile(pos);
-				byte constructionMark = tile.getConstructionMark();
-
-				if (constructionMark >= 0) {
-					this.context.beginTileContext(tile);
-					int index = (int) (constructionMark * imageScale);
-					Image image = sequence.getImageSafe(index);
-					image.draw(context.getGl());
-					this.context.endTileContext();
-				}
-			}
-			
-			ISPosition2D underMouse = this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
-			IHexTile tile = map.getTile(underMouse);
-			if (tile != null) {
-				context.beginTileContext(tile);
-				for (ImageLink image : map.getConstructionPreviewBuilding().getImages()) {
-					ImageProvider.getInstance().getImage(image).draw(context.getGl());
-				}
-				context.endTileContext();
-			}
-		}
+//		if (map.getConstructionPreviewBuilding() != null) {
+//			Sequence<? extends Image> sequence =
+//			        ImageProvider.getInstance().getSettlerSequence(4, 5);
+//			float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
+//
+//			for (ISPosition2D pos : tiles) {
+//				IHexTile tile = map.getTile(pos);
+//				byte constructionMark = tile.getConstructionMark();
+//
+//				if (constructionMark >= 0) {
+//					this.context.beginTileContext(tile);
+//					int index = (int) (constructionMark * imageScale);
+//					Image image = sequence.getImageSafe(index);
+//					image.draw(context.getGl());
+//					this.context.endTileContext();
+//				}
+//			}
+//			
+//			ISPosition2D underMouse = this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
+//			IHexTile tile = map.getTile(underMouse);
+//			if (tile != null) {
+//				context.beginTileContext(tile);
+//				for (ImageLink image : map.getConstructionPreviewBuilding().getImages()) {
+//					ImageProvider.getInstance().getImage(image).draw(context.getGl());
+//				}
+//				context.endTileContext();
+//			}
+//		}
 
 		this.context.debugTime("Tiles drawn");
 
@@ -333,31 +303,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);*/
 	}
 
-	private void drawPlayerBorderIfNeeded(IHexTile tile) {
-		byte player = tile.getPlayer();
-		if (player != -1 && tile.getX() > 0
-		        && tile.getX() < this.map.getWidth() - 1 && tile.getY() > 0
-		        && tile.getY() < this.map.getHeight() - 1
-		        && isBorderOfPlayer(tile, player)) {
-			this.context.beginTileContext(tile);
-			this.objectDrawer.drawPlayerBorderObject(this.context, player);
-			this.context.endTileContext();
-		}
-	}
-
-	private boolean isBorderOfPlayer(IHexTile tile, byte player) {
-		return (this.context.getTileInDirection(tile, EDirection.NORTH_EAST)
-		        .getPlayer() != player
-		        || this.context.getTileInDirection(tile, EDirection.EAST)
-		                .getPlayer() != player
-		        || this.context.getTileInDirection(tile, EDirection.SOUTH_EAST)
-		                .getPlayer() != player
-		        || this.context.getTileInDirection(tile, EDirection.SOUTH_WEST)
-		                .getPlayer() != player
-		        || this.context.getTileInDirection(tile, EDirection.WEST)
-		                .getPlayer() != player || this.context
-		        .getTileInDirection(tile, EDirection.NORTH_WEST).getPlayer() != player);
-	}
 
 	/**
 	 * draws a debug tile around the current (0,0)
