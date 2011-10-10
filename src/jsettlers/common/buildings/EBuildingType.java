@@ -71,9 +71,11 @@ public enum EBuildingType {
 
 	private final ImageLink[] images;
 
-	private RelativePoint[] protectedTiles;
+	private final RelativePoint[] protectedTiles;
 
-	private RelativePoint[] buildmarks;
+	private final RelativePoint[] buildmarks;
+
+	private final ImageLink[] buildImages;
 
 	EBuildingType(int imageIndex) {
 		this.imageIndex = imageIndex;
@@ -95,8 +97,12 @@ public enum EBuildingType {
 			images = new ImageLink[] {
 				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
 			};
+			buildImages = new ImageLink[] {
+					new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
+				};
 		} else {
 			images = tempimages;
+			buildImages = file.getBuildImages();
 		}
 
 		buildmarks = file.getBuildmarks();
@@ -194,5 +200,9 @@ public enum EBuildingType {
 
 	public RelativePoint[] getBuildmarks() {
 		return buildmarks;
+	}
+
+	public ImageLink[] getBuildImages() {
+		return buildImages;
 	}
 }

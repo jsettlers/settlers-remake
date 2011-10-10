@@ -11,6 +11,7 @@ public final class ImageLink {
 	private final int file;
 	private final int sequence;
 	private final int image;
+	private final int length;
 
 	/**
 	 * Creates a new image link description
@@ -22,14 +23,32 @@ public final class ImageLink {
 	 * @param sequence
 	 *            The sequence index
 	 * @param image
-	 *            The image in the sequence, for {@value EImageLinkType#SETTLER}
-	 *            images.
+	 *            The image in the sequence, for {@value EImageLinkType#SETTLER} images.
+	 * @param length
+	 *            The number contained in the sequence that is linked,
 	 */
-	public ImageLink(EImageLinkType type, int file, int sequence, int image) {
+	public ImageLink(EImageLinkType type, int file, int sequence, int image, int length) {
 		this.type = type;
 		this.file = file;
 		this.sequence = sequence;
 		this.image = image;
+		this.length = length;
+	}
+
+	/**
+	 * Creates a new image link description
+	 * 
+	 * @param type
+	 *            The type
+	 * @param file
+	 *            The file it is in
+	 * @param sequence
+	 *            The sequence index
+	 * @param image
+	 *            The image in the sequence, for {@value EImageLinkType#SETTLER} images.
+	 */
+	public ImageLink(EImageLinkType type, int file, int sequence, int image) {
+		this(type, file, sequence, image, 1);
 	}
 
 	/**
@@ -72,7 +91,14 @@ public final class ImageLink {
 
 	@Override
 	public String toString() {
-		return "image[type=" + type + ", file=" + file + ", sequence="
-		        + sequence + ", image=" + image + "]";
+		return "image[type=" + type + ", file=" + file + ", sequence=" + sequence + ", image=" + image + "]";
+	}
+
+	/**
+	 * Gets the length of this strip
+	 * @return The length as int
+	 */
+	public int getLength() {
+		return length;
 	}
 }

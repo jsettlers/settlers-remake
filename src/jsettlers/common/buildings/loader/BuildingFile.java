@@ -77,8 +77,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private RelativePoint flag = new RelativePoint(0, 0);
 	private ArrayList<RelativePoint> buildmarks =
 	        new ArrayList<RelativePoint>();
-	private ImageLink guiimage;
+	private ImageLink guiimage = new ImageLink(EImageLinkType.GUI, 1, 0, 0);
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
+	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
 
 	public BuildingFile(String buildingName) {
 		document = createDocument(buildingName);
@@ -138,9 +139,12 @@ public class BuildingFile implements BuildingJobDataProvider {
 			EImageLinkType type =
 			        EImageLinkType.valueOf(element.getAttribute("type"));
 			ImageLink imageLink = new ImageLink(type, file, sequence, image);
-			if ("GUI".equals(element.getAttribute("for"))) {
+			String forState = element.getAttribute("for");
+			if ("GUI".equals(forState)) {
 				guiimage = imageLink;
-			} else {
+			} else if ("BUILD".equals(forState)) {
+				buildImages.add(imageLink);
+			}else {
 				images.add(imageLink);
 			}
 		} catch (NumberFormatException e) {
@@ -339,6 +343,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	public ImageLink[] getImages() {
 		return images.toArray(new ImageLink[images.size()]);
+	}
+
+	public ImageLink[] getBuildImages() {
+		return buildImages.toArray(new ImageLink[buildImages.size()]);
 	}
 
 	public ImageLink getGuiImage() {

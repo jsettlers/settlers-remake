@@ -76,6 +76,10 @@ public class MapRectangle implements IMapArea {
 	public short getLines() {
 		return height;
 	}
+	
+	public short getLineLength() {
+		return width;
+	}
 
 	private class RectangleIterator implements Iterator<ISPosition2D> {
 		private int relativex = 0;
