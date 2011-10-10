@@ -3,6 +3,7 @@ package jsettlers.logic.map.newGrid;
 import java.awt.Color;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.ESearchType;
@@ -10,6 +11,8 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
+import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -18,7 +21,6 @@ import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.map.hex.HexTile;
 import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.blocked.BlockedGrid;
-import jsettlers.logic.map.newGrid.interfaces.graphics.IGraphicsGrid;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
@@ -34,19 +36,20 @@ import jsettlers.logic.objects.MapObjectsManager;
  * 
  */
 public class MainGrid {
-	private final LandscapeGrid landscapeGrid;
-	private final ObjectsGrid objectsGrid;
-	private final PartitionsGrid partitionsGrid;
-	private final MovableGrid movableGrid;
-	private final BlockedGrid blockedGrid;
+	protected final LandscapeGrid landscapeGrid;
+	protected final ObjectsGrid objectsGrid;
+	protected final PartitionsGrid partitionsGrid;
+	protected final MovableGrid movableGrid;
+	protected final BlockedGrid blockedGrid;
 
-	private final short width;
-	private final short height;
+	protected final short width;
+	protected final short height;
 
 	private final PathfinderGrid pathfinderGrid;
-	private IGraphicsGrid graphicsGrid;
-	private MapObjectsManager objectsManager;
-	private LandmarksCorrectingThread landmarksCorrectionThread;
+	private final IGraphicsGrid graphicsGrid;
+	protected final MapObjectsManager objectsManager;
+	private final LandmarksCorrectingThread landmarksCorrectionThread;
+	private final ConstructMarksCalculator constructionMarksCalculator;
 
 	public MainGrid(short width, short height) {
 		this.width = width;
@@ -56,6 +59,8 @@ public class MainGrid {
 		this.graphicsGrid = new GraphicsGrid();
 		this.objectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
+		this.constructionMarksCalculator = new ConstructMarksCalculator(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
+																												// dynamically
 
 		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.objectsGrid = new ObjectsGrid(width, height);
@@ -83,6 +88,10 @@ public class MainGrid {
 
 	public MapObjectsManager getMapObjectsManager() {
 		return objectsManager;
+	}
+
+	protected final boolean isInBounds(short x, short y) {
+		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
 	private class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap {
@@ -142,7 +151,7 @@ public class MainGrid {
 
 		@Override
 		public boolean isInBounds(short x, short y) {
-			return x >= 0 && x < width && y >= 0 && y < height;
+			return this.isInBounds(x, y);
 		}
 
 		@Override
@@ -177,7 +186,7 @@ public class MainGrid {
 
 		@Override
 		public byte getHeightAt(short x, short y) {
-			return landscapeGrid.getHeight(x, y);
+			return landscapeGrid.getHeightAt(x, y);
 		}
 
 		@Override
@@ -272,6 +281,33 @@ public class MainGrid {
 		@Override
 		public void setPlayerAt(short x, short y, byte newPlayer) {
 			partitionsGrid.changePlayer(new ShortPoint2D(x, y), newPlayer); // TODO check if creation of ShortPoint2D can be avoided
+		}
+	}
+
+	private class ConstructionMarksGrid implements IConstructionMarkableMap {
+		@Override
+		public void setConstructMarking(ISPosition2D pos, byte value) {
+			objectsManager.setConstructionMarking(pos, value);
+		}
+
+		@Override
+		public boolean isBuildingPlaceable(ISPosition2D position, byte player) {
+			return !blockedGrid.isBlocked(position.getX(), position.getY()) && partitionsGrid.getPlayer(position) == player;
+		}
+
+		@Override
+		public short getWidth() {
+			return width;
+		}
+
+		@Override
+		public short getHeight() {
+			return height;
+		}
+
+		@Override
+		public byte getHeightAt(ISPosition2D pos) {
+			return landscapeGrid.getHeightAt(pos.getX(), pos.getY());
 		}
 	}
 }

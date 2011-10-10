@@ -17,7 +17,7 @@ public class LandscapeGrid {
 		this.landscapeGrid = new ELandscapeType[width][height];
 	}
 
-	public byte getHeight(short x, short y) {
+	public byte getHeightAt(short x, short y) {
 		return heightGrid[x][y];
 	}
 

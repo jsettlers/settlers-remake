@@ -14,6 +14,7 @@ import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.hex.interfaces.IHexMovable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
+import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.corn.Corn;
 import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.objects.tree.Tree;
@@ -244,4 +245,17 @@ public class MapObjectsManager implements ITimerable {
 
 	}
 
+	public void setConstructionMarking(ISPosition2D pos, byte value) {
+		IMapObjectsManagerTile tile = grid.getTile(pos.getX(), pos.getY());
+		if (value >= 0) {
+			ConstructionMarkObject markObject = (ConstructionMarkObject) tile.getMapObject(EMapObjectType.CONSTRUCTION_MARK);
+			if (markObject == null) {
+				addMapObject(pos, new ConstructionMarkObject(value));
+			} else {
+				markObject.setConstructionValue(value);
+			}
+		} else {
+			removeMapObjectType(pos, EMapObjectType.CONSTRUCTION_MARK);
+		}
+	}
 }
