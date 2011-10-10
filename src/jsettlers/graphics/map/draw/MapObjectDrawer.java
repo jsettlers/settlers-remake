@@ -175,6 +175,10 @@ public class MapObjectDrawer {
 				case FLAG_DOOR:
 					drawPlayerableWaving(context, 13, 63, object);
 					break;
+					
+				case CONSTRUCTION_MARK:
+					drawByProgress(context, 4, 6, object.getStateProgress());
+					break;
 
 				case FLAG_ROOF:
 					// TODO: better flag positioning
