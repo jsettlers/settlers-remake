@@ -413,7 +413,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	}
 
 	/**
-	 * Executes a search type action. TODO: does this really belong here?
+	 * Executes a search type action.
 	 * 
 	 * @param pos
 	 *            The position the settler is currently at
