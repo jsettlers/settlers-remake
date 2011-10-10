@@ -12,7 +12,7 @@ public interface ILandmarksThreadMap {
 
 	public boolean isBlocked(short x, short y);
 
-	public byte getPlayer(ISPosition2D currPos);
+	public byte getPlayer(ISPosition2D position);
 
-	public void setPlayerAt(short x, short y, byte startPlayer);
+	public void setPlayerAt(short x, short y, byte newPlayer);
 }

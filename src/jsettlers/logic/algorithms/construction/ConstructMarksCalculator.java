@@ -34,14 +34,14 @@ public class ConstructMarksCalculator extends Thread {
 	/**
 	 * Starts a ConstructPointsCalculator Thread if there is not already a running one.
 	 */
-	public static void startCalculator(IConstructionMarkableMap map, byte player) {
+	public static void startCalculator(IConstructionMarkableMap map, byte player) { // TODO: remove singleton
 		if (uniIns == null) {
 			uniIns = new ConstructMarksCalculator(map, player);
 			uniIns.start();
 		}
 	}
 
-	private ConstructMarksCalculator(IConstructionMarkableMap map, byte player) {
+	public ConstructMarksCalculator(IConstructionMarkableMap map, byte player) {
 		super("constrMarks");
 		this.map = map;
 		this.player = player;

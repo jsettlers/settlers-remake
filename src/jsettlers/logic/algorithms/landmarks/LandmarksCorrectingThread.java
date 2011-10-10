@@ -18,12 +18,12 @@ public class LandmarksCorrectingThread extends Thread {
 	private final ILandmarksThreadMap map;
 	private final ConcurrentLinkedQueue<ISPosition2D> queue = new ConcurrentLinkedQueue<ISPosition2D>();
 
-	private LandmarksCorrectingThread(ILandmarksThreadMap map) {
+	public LandmarksCorrectingThread(ILandmarksThreadMap map) {
 		super("LandmarksCorrectingThread");
 		this.map = map;
 	}
 
-	public static void startThread(ILandmarksThreadMap map) {
+	public static void startThread(ILandmarksThreadMap map) { // TODO remove singleton
 		if (instance == null) {
 			instance = new LandmarksCorrectingThread(map);
 			instance.start();
