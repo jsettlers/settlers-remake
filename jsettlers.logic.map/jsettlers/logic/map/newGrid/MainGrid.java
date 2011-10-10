@@ -35,18 +35,24 @@ public class MainGrid {
 	private final short height;
 
 	private final PathfinderMap pathfinderMap;
+	private IGraphicsGrid graphicsGrid;
 
 	public MainGrid(short width, short height) {
 		this.width = width;
 		this.height = height;
 
 		this.pathfinderMap = new PathfinderMap();
+		this.graphicsGrid = new GraphicsGrid();
 
 		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.movableGrid = new MovableGrid(width, height);
 		this.blockedGrid = new BlockedGrid(width, height);
 		this.partitionsGrid = new PartitionsGrid(width, height, pathfinderMap);
+	}
+
+	public IGraphicsGrid getGraphicsGrid() {
+		return graphicsGrid;
 	}
 
 	private class PathfinderMap implements IAStarPathMap, IDijkstraPathMap {
