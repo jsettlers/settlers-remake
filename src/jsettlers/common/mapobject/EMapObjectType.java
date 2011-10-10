@@ -16,7 +16,7 @@ public enum EMapObjectType {
 	 */
 	ARROW,
 	/**
-	 * A Ghost (disappearing settler). TODO: Color by player
+	 * A Ghost (disappearing settler).
 	 */
 	GHOST,
 	/**
@@ -54,5 +54,14 @@ public enum EMapObjectType {
 	/**
 	 * the rest of a stone that can not be cut any more.
 	 */
-	CUT_OFF_STONE
+	CUT_OFF_STONE,
+
+	/**
+	 * Type of objects used to view the user where a building can be build.
+	 * <p />
+	 * The value of the construction mark is given by {@link IMapObject} .getStateProgress().<br>
+	 * The value ranges from 0 to 1 where 0 is best and 1 is worst.<br>
+	 * If there is no marking at a position, the building can not be constructed there.
+	 */
+	CONSTRUCTION_MARK
 }
