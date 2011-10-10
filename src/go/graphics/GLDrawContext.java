@@ -79,8 +79,11 @@ public interface GLDrawContext {
 	 *            A float array of the form: x,y,z,u,v
 	 */
 	void drawQuadsWithTexture(int textureid, float[] geometry);
+	void drawTrianglesWithTexture(int textureid, float[] geometry);
 
 	int makeWidthValid(int width);
 
 	int makeHeightValid(int height);
+
+	void glMultMatrixf(float[] matrix, int offset);
 }
