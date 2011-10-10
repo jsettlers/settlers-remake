@@ -9,6 +9,9 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
+import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
@@ -43,6 +46,7 @@ public class MainGrid {
 	private final PathfinderGrid pathfinderGrid;
 	private IGraphicsGrid graphicsGrid;
 	private MapObjectsManager objectsManager;
+	private LandmarksCorrectingThread landmarksCorrectionThread;
 
 	public MainGrid(short width, short height) {
 		this.width = width;
@@ -51,6 +55,7 @@ public class MainGrid {
 		this.pathfinderGrid = new PathfinderGrid();
 		this.graphicsGrid = new GraphicsGrid();
 		this.objectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
+		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 
 		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.objectsGrid = new ObjectsGrid(width, height);
@@ -251,5 +256,22 @@ public class MainGrid {
 			return height;
 		}
 
+	}
+
+	private class LandmarksGrid implements ILandmarksThreadMap {
+		@Override
+		public boolean isBlocked(short x, short y) {
+			return blockedGrid.isBlocked(x, y);
+		}
+
+		@Override
+		public byte getPlayer(ISPosition2D position) {
+			return partitionsGrid.getPlayer(position);
+		}
+
+		@Override
+		public void setPlayerAt(short x, short y, byte newPlayer) {
+			partitionsGrid.changePlayer(new ShortPoint2D(x, y), newPlayer); // TODO check if creation of ShortPoint2D can be avoided
+		}
 	}
 }

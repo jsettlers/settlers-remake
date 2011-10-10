@@ -14,9 +14,9 @@ public interface IMapObjectsManagerTile {
 
 	AbstractHexMapObject getMapObject(EMapObjectType mapObjectType);
 
-	void setLandscape(ELandscapeType earth);
+	void setLandscape(ELandscapeType landscapeType);
 
-	void addMapObject(AbstractHexMapObject tree);
+	void addMapObject(AbstractHexMapObject mapObject);
 
 	boolean isBlocked();
 
