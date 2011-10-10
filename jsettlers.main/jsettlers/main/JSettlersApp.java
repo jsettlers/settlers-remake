@@ -103,6 +103,7 @@ public class JSettlersApp {
 		jsettlersWnd.setSize(1200, 800);
 		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jsettlersWnd.setVisible(true);
+		jsettlersWnd.setLocationRelativeTo(null);
 
 		ProgressConnector progress = panel.showProgress();
 
@@ -122,7 +123,7 @@ public class JSettlersApp {
 
 		progress.setProgressState(EProgressState.LOADING_MAP);
 		if (map != null && map.equalsIgnoreCase("noRandom")) {
-			HexGrid.create((short) 400, (short) 400, true);
+			HexGrid.create((short) 400, (short) 400);
 		} else {
 			HexGrid.createRandom("test", PLAYERS, RandomSingleton.get());
 

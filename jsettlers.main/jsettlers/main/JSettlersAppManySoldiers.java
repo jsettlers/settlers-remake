@@ -65,7 +65,7 @@ public class JSettlersAppManySoldiers {
 		Timer100Milli.start();
 
 		GameManager.start(PLAYERS);
-		HexGrid.create(Constants.WIDTH, Constants.HEIGHT, true);
+		HexGrid.create(Constants.WIDTH, Constants.HEIGHT);
 		PathfinderWrapper.startPathfinder(HexGrid.get());
 
 		ConstructMarksCalculator.startCalculator(HexGrid.get(), (byte) 0);
@@ -109,6 +109,7 @@ public class JSettlersAppManySoldiers {
 		jsettlersWnd.pack();
 		jsettlersWnd.setSize(1200, 800);
 		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jsettlersWnd.setLocationRelativeTo(null);
 
 		ImageProvider provider = ImageProvider.getInstance();
 		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));

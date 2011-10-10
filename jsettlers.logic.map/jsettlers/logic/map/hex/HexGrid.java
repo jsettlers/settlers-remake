@@ -70,7 +70,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	 * creates a new HexGrid if there has not already been created one.
 	 */
 	@Deprecated
-	public synchronized static void create(short width, short height, boolean fillMap) {
+	public synchronized static void create(short width, short height) {
 		if (uniIns == null) {
 			uniIns = new HexGrid(width, height);
 		}
