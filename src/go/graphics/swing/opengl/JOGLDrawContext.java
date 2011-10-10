@@ -165,6 +165,20 @@ public class JOGLDrawContext implements GLDrawContext {
     }
 
 	@Override
+    public void drawTrianglesWithTexture(int textureid, float[] geometry) {
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+		
+		FloatBuffer buffer = generateFloatBuffer(geometry);
+				
+		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
+		buffer.position(3);
+		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
+        gl2.glDrawArrays(GL2.GL_QUADS, 0, geometry.length / 5);
+		
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
+    }
+
+	@Override
     public int makeWidthValid(int width) {
 		return TextureCalculator.supportedTextureSize(gl2, width);
     }
@@ -172,5 +186,10 @@ public class JOGLDrawContext implements GLDrawContext {
 	@Override
     public int makeHeightValid(int height) {
 		return TextureCalculator.supportedTextureSize(gl2, height);
+    }
+
+	@Override
+    public void glMultMatrixf(float[] matrix, int offset) {
+	    gl2.glMultMatrixf(matrix, offset);
     }
 }
