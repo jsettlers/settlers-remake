@@ -7,7 +7,7 @@ import jsettlers.logic.management.GameManager;
 import jsettlers.logic.management.workers.IWorkerJobable;
 import jsettlers.logic.management.workers.construction.AbstractConstructionWorkerRequest;
 import jsettlers.logic.management.workers.construction.DiggerRequest;
-import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
@@ -15,8 +15,8 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 
 	private DiggerRequest request;
 
-	public DiggerStrategy(Movable movable) {
-		super(movable);
+	public DiggerStrategy(IMovableGrid grid, Movable movable) {
+		super(grid, movable);
 		GameManager.addJoblessWorker(this);
 	}
 
@@ -65,13 +65,13 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 	}
 
 	private void executeDigg() {
-		HexGrid.get().changeHeightAt(super.getPos(), (byte) (Math.signum(request.getHeightAvg() - HexGrid.get().getHeightAt(super.getPos()))));
-		HexGrid.get().setMarked(super.getPos(), false);
+		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(request.getHeightAvg() - super.getGrid().getHeightAt(super.getPos()))));
+		super.getGrid().setMarked(super.getPos(), false);
 	}
 
 	private ISPosition2D getDiggablePosition() {
 		for (ISPosition2D pos : request.getPositions()) {
-			if (needsToChangeHeight(pos) && !HexGrid.get().isMarked(pos)) {
+			if (needsToChangeHeight(pos) && !super.getGrid().isMarked(pos)) {
 				return pos;
 			}
 		}
@@ -79,7 +79,7 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 	}
 
 	private boolean needsToChangeHeight(ISPosition2D pos) {
-		if (HexGrid.get().getHeightAt(pos) != request.getHeightAvg()) {
+		if (super.getGrid().getHeightAt(pos) != request.getHeightAvg()) {
 			return true;
 		}
 		return false;
@@ -98,7 +98,7 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 			ISPosition2D diggablePos = getDiggablePosition();
 			if (diggablePos != null) {
 				wentThere = false;
-				HexGrid.get().setMarked(diggablePos, true);
+				super.getGrid().setMarked(diggablePos, true);
 				super.calculatePathTo(diggablePos);
 			} else {
 				super.setAction(EAction.NO_ACTION, -1);

@@ -20,6 +20,9 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.area.InAreaFinder;
+import jsettlers.logic.algorithms.path.astar.HexAStar;
+import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.wrapper.IPathRequester;
 import jsettlers.logic.algorithms.path.wrapper.IPathfinderWrapperMap;
 import jsettlers.logic.buildings.Building;
@@ -40,14 +43,18 @@ import jsettlers.logic.map.random.grid.MovableObject;
 import jsettlers.logic.map.random.grid.StackObject;
 import jsettlers.logic.materials.stack.single.EStackType;
 import jsettlers.logic.materials.stack.single.SingleMaterialStack;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.objects.MapObjectsManager;
 import random.RandomSingleton;
 
 public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThreadMap, IConstructionMarkableMap, IBuildingableGrid,
-		IMapObjectsManagerGrid {
+		IMapObjectsManagerGrid, IMovableGrid {
 	private static HexGrid uniIns = null;
+	private final HexAStar astar;
+	private final DijkstraAlgorithm dijkstra;
+	private final InAreaFinder inAreaFinder;
 
 	private static final int TREE_COUNT = 1200;
 
@@ -153,6 +160,10 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 
 		mapObjectsManager.executeSearchType(new ShortPoint2D(30, height - 30), ESearchType.PLANTABLE_CORN);
 
+		this.astar = new HexAStar(this);
+		this.dijkstra = new DijkstraAlgorithm(this);
+		this.inAreaFinder = new InAreaFinder(this);
+
 	}
 
 	private boolean isStonePlantable(ShortPoint2D pos) {
@@ -169,7 +180,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	private void setMovable(int x, int y, EMovableType type, int player) {
 		ShortPoint2D pos = new ShortPoint2D((short) x, (short) (height - y));
 		if (!isBlocked(pos.getX(), pos.getY()))
-			placeNewMovable(pos, new Movable(pos, type, (byte) player));
+			placeNewMovable(pos, new Movable(this, pos, type, (byte) player));
 	}
 
 	private HexGrid(MapGrid grid) {
@@ -194,6 +205,11 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 				}
 			}
 		}
+
+		this.astar = new HexAStar(this);
+		this.dijkstra = new DijkstraAlgorithm(this);
+		this.inAreaFinder = new InAreaFinder(this);
+
 	}
 
 	private void addMapObject(HexTile tile, MapObject object) {
@@ -212,7 +228,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(this, tile);
 		} else if (object instanceof MovableObject) {
-			this.placeNewMovable(tile, new Movable(tile, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer()));
+			this.placeNewMovable(tile, new Movable(this, tile, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer()));
 		}
 	}
 
@@ -276,6 +292,11 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	}
 
 	@Override
+	public boolean isBlocked(ISPosition2D position) {
+		return isBlocked(position.getX(), position.getY());
+	}
+
+	@Override
 	public boolean isBlocked(short x, short y) {
 		HexTile tile = getTile(x, y);
 		return !isInBounds(x, y) || tile.isBlocked() || tile.getLandscapeType() == ELandscapeType.WATER;
@@ -323,6 +344,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 		map[y][x].markAsClosed();
 	}
 
+	@Override
 	public boolean fitsSearchType(ISPosition2D pos, ESearchType option, IPathCalculateable requester) {
 		return fitsSearchType(pos.getX(), pos.getY(), option, requester);
 	}
@@ -421,6 +443,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	 *            The type the settler searched for and to which the corrosponding aciton should be done.
 	 * @return true if we succeeded.
 	 */
+	@Override
 	public boolean executeSearchType(ISPosition2D pos, ESearchType type) {
 		return mapObjectsManager.executeSearchType(pos, type);
 	}
@@ -465,7 +488,8 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	 *            position to be checked
 	 * @return true if the given position is in the grid
 	 */
-	private boolean isInBounds(ISPosition2D pos) {
+	@Override
+	public boolean isInBounds(ISPosition2D pos) {
 		return isInBounds(pos.getX(), pos.getY());
 	}
 
@@ -484,7 +508,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	}
 
 	@Override
-	public byte getPlayer(ISPosition2D pos) {
+	public byte getPlayerAt(ISPosition2D pos) {
 		return getTile(pos).getPlayer();
 	}
 
@@ -501,10 +525,12 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 		}
 	}
 
+	@Override
 	public void movableLeft(ISPosition2D pos, IHexMovable movable) {
 		getTile(pos).moveableLeft(movable);
 	}
 
+	@Override
 	public void movableEntered(ISPosition2D pos, IHexMovable movable) {
 		getTile(pos).moveableEntered(movable);
 	}
@@ -518,6 +544,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	 *            The material type.
 	 * @return true if the material was removed.
 	 */
+	@Override
 	public boolean popMaterial(ISPosition2D pos, EMaterialType materialType) {
 		if (isInBounds(pos)) {
 			IHexStack stack = getTile(pos).getStack();
@@ -533,6 +560,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 		}
 	}
 
+	@Override
 	public boolean pushMaterial(ISPosition2D pos, EMaterialType materialType) {
 		if (isInBounds(pos)) {
 			IHexStack stack = map[pos.getY()][pos.getX()].getStack();
@@ -587,11 +615,13 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 			return null;
 	}
 
+	@Override
 	public boolean canPop(ISPosition2D pos, EMaterialType material) {
 		IHexStack stack = getTile(pos).getStack();
 		return stack != null && !stack.isEmpty();
 	}
 
+	@Override
 	public boolean canPush(ISPosition2D pos, EMaterialType material) {
 		IHexStack stack = getTile(pos).getStack();
 		return stack == null || !stack.isFull();
@@ -634,6 +664,7 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 		return getTile(pos).getHeight();
 	}
 
+	@Override
 	public void changeHeightAt(ISPosition2D pos, byte signum) {
 		HexTile tile = getTile(pos);
 		tile.setHeight((byte) (tile.getHeight() + signum));
@@ -651,10 +682,12 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 		getTile(x, y).setPlayer(player);
 	}
 
+	@Override
 	public void setMarked(ISPosition2D pos, boolean setMarker) {
 		getTile(pos).setMarked(setMarker);
 	}
 
+	@Override
 	public boolean isMarked(ISPosition2D pos) {
 		return isMarked(pos.getX(), pos.getY());
 	}
@@ -666,5 +699,25 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	@Override
 	public MapObjectsManager getMapObjectsManager() {
 		return mapObjectsManager;
+	}
+
+	@Override
+	public ELandscapeType getLandscapeTypeAt(ISPosition2D position) {
+		return getTile(position).getLandscapeType();
+	}
+
+	@Override
+	public HexAStar getAStar() {
+		return astar;
+	}
+
+	@Override
+	public DijkstraAlgorithm getDijkstra() {
+		return dijkstra;
+	}
+
+	@Override
+	public InAreaFinder getInAreaFinder() {
+		return inAreaFinder;
 	}
 }

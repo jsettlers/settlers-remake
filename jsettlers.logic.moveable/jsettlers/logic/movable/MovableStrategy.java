@@ -23,13 +23,17 @@ import jsettlers.logic.player.ActivePlayer;
  */
 public abstract class MovableStrategy {
 	protected final Movable movable;
+	private final IMovableGrid grid;
 
 	/**
 	 * Creates a new strategy.
 	 * 
+	 * @param grid
+	 * 
 	 * @param movable
 	 */
-	protected MovableStrategy(Movable movable) {
+	protected MovableStrategy(IMovableGrid grid, Movable movable) {
+		this.grid = grid;
 		this.movable = movable;
 	}
 
@@ -38,18 +42,20 @@ public abstract class MovableStrategy {
 	/**
 	 * Gets the default strategy for the given type of worker.
 	 * 
+	 * @param grid
+	 * 
 	 * @param type
 	 * @param movable
 	 * @return
 	 */
-	static MovableStrategy getTypeStrategy(EMovableType type, Movable movable) {
+	static MovableStrategy getTypeStrategy(IMovableGrid grid, EMovableType type, Movable movable) {
 		ActivePlayer.get().increaseOwned(movable.getPlayer(), type);
 		switch (type) {
 		case BEARER:
-			return new BearerStrategy(movable);
+			return new BearerStrategy(grid, movable);
 
 		case PIONEER:
-			return new PioneerStrategy(movable);
+			return new PioneerStrategy(grid, movable);
 
 		case LUMBERJACK:
 		case SAWMILLER:
@@ -64,28 +70,28 @@ public abstract class MovableStrategy {
 		case BAKER:
 		case PIG_FARMER:
 		case CHARCOAL_BURNER:
-			return new BuildingWorkerStrategy(movable, type);
+			return new BuildingWorkerStrategy(grid, movable, type);
 
 		case SWORDSMAN_L1:
 		case SWORDSMAN_L2:
 		case SWORDSMAN_L3:
-			return new SwordsmanStrategy(movable, type);
+			return new SwordsmanStrategy(grid, movable, type);
 
 		case BOWMAN_L1:
 		case BOWMAN_L2:
 		case BOWMAN_L3:
-			return new BowmanStrategy(movable, type);
+			return new BowmanStrategy(grid, movable, type);
 
 		case PIKEMAN_L1:
 		case PIKEMAN_L2:
 		case PIKEMAN_L3:
-			return new PikemanStrategy(movable, type);
+			return new PikemanStrategy(grid, movable, type);
 
 		case BRICKLAYER:
-			return new BricklayerStrategy(movable);
+			return new BricklayerStrategy(grid, movable);
 
 		case DIGGER:
-			return new DiggerStrategy(movable);
+			return new DiggerStrategy(grid, movable);
 
 		default:
 			assert false : "have no strategy for this type of movable: " + type;
@@ -123,7 +129,7 @@ public abstract class MovableStrategy {
 	protected abstract void setGotoJob(GotoJob gotoJob);
 
 	protected void convertTo(EMovableType movableType) {
-		this.movable.setStrategy(getTypeStrategy(movableType, movable));
+		this.movable.setStrategy(getTypeStrategy(grid, movableType, movable));
 	}
 
 	protected void setPos(ISPosition2D pos) {
@@ -147,5 +153,9 @@ public abstract class MovableStrategy {
 
 	protected void setWaiting(float time) {
 		movable.setWaiting(time);
+	}
+
+	protected IMovableGrid getGrid() {
+		return grid;
 	}
 }

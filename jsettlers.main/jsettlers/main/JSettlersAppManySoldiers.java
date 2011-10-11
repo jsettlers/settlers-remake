@@ -96,7 +96,7 @@ public class JSettlersAppManySoldiers {
 	private static void setMovable(int x, int y, EMovableType type, int player) {
 		ShortPoint2D pos = new ShortPoint2D((short) x, (short) (Constants.HEIGHT - y));
 		if (!HexGrid.get().isBlocked(pos.getX(), pos.getY()))
-			HexGrid.get().placeNewMovable(pos, new Movable(pos, type, (byte) player));
+			HexGrid.get().placeNewMovable(pos, new Movable(HexGrid.get(), pos, type, (byte) player));
 	}
 
 	private JSettlersAppManySoldiers(INetworkManager manager) {

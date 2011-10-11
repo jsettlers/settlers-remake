@@ -10,7 +10,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.map.hex.interfaces.IHexMovable;
 import jsettlers.logic.player.ActivePlayer;
 import jsettlers.logic.timer.ITimerable;
@@ -23,6 +22,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 	private final int id;
 
+	private final IMovableGrid grid;
 	private ISPosition2D pos;
 	private byte player;
 	private float health = 1.0f;
@@ -41,11 +41,12 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	private ISPosition2D nextTile;
 	private IHexMovable pushedFrom;
 
-	public Movable(ISPosition2D pos, EMovableType type, byte player) {
+	public Movable(IMovableGrid grid, ISPosition2D pos, EMovableType type, byte player) {
+		this.grid = grid;
 		this.pos = pos;
 		this.setDirection(EDirection.values()[RandomSingleton.getInt(0, 5)]);
 		this.player = player;
-		this.strategy = MovableStrategy.getTypeStrategy(type, this);
+		this.strategy = MovableStrategy.getTypeStrategy(grid, type, this);
 
 		this.id = getNewID();
 
@@ -97,11 +98,11 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	public void kill() {
 		MovableTimer.remove(this);
 		this.health = 0;
-		HexGrid.get().movableLeft(pos, this);
+		grid.movableLeft(pos, this);
 		movablesByID.remove(this.getID());
 		ActivePlayer.get().reduceOwned(player, this.strategy.getMovableType());
 
-		HexGrid.get().getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.GHOST, 1, player);
+		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.GHOST, 1, player);
 	}
 
 	@Override
@@ -152,7 +153,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				}
 
 			} else {
-				IHexMovable movableOnNextTile = HexGrid.get().getMovable(nextTile);
+				IHexMovable movableOnNextTile = grid.getMovable(nextTile);
 				if (movableOnNextTile != null) { // next tile is free, we can move!
 					state = EMovableState.PUSHED_AND_WAITING;
 					pushedFrom = from;
@@ -191,7 +192,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 		for (int i = 0; i < directions; i++) {
 			ISPosition2D newPos = EDirection.values()[(i + offset) % directions].getNextHexPoint(pos);
-			if (!HexGrid.get().isBlocked(newPos.getX(), newPos.getY()) && HexGrid.get().getMovable(newPos) == null) {
+			if (!grid.isBlocked(newPos.getX(), newPos.getY()) && grid.getMovable(newPos) == null) {
 				goToTile(newPos);
 				return;
 			}
@@ -205,8 +206,8 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 	@Override
 	public void initGoingToNextTile() {
-		HexGrid.get().movableLeft(pos, this);
-		HexGrid.get().movableEntered(this.nextTile, this);
+		grid.movableLeft(pos, this);
+		grid.movableEntered(this.nextTile, this);
 		this.pos = this.nextTile;
 		this.nextTile = null;
 		this.progress = 0;
@@ -226,7 +227,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 		case PUSHED_AND_WAITING:
 		case WAITING_FOR_FREE_TILE:
-			IHexMovable movableOnNextTile = HexGrid.get().getMovable(nextTile);
+			IHexMovable movableOnNextTile = grid.getMovable(nextTile);
 			if (movableOnNextTile == null) { // next tile is free, we can move!
 				initGoingToNextTile();
 			} else {
@@ -258,7 +259,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
 		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_STEP_PROBABILITY) {
 			for (EDirection curr : EDirection.values()) { // push all movables around this movable
-				IHexMovable movable = HexGrid.get().getMovable(curr.getNextHexPoint(pos));
+				IHexMovable movable = grid.getMovable(curr.getNextHexPoint(pos));
 				if (movable != null) {
 					movable.push(this);
 				}
@@ -338,16 +339,16 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	void setPos(ISPosition2D pos) {
-		HexGrid.get().movableLeft(this.pos, this);
+		grid.movableLeft(this.pos, this);
 		this.pos = pos;
 		this.progress = 0;
 	}
 
 	void setVisible(boolean visible) {
 		if (visible) {
-			HexGrid.get().movableEntered(pos, this);
+			grid.movableEntered(pos, this);
 		} else {
-			HexGrid.get().movableLeft(pos, this);
+			grid.movableLeft(pos, this);
 		}
 	}
 

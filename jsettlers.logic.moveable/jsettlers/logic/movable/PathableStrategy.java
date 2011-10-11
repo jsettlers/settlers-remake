@@ -4,41 +4,11 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.area.InAreaFinder;
-import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
-import jsettlers.logic.map.hex.HexGrid;
 
 public abstract class PathableStrategy extends MovableStrategy implements IPathCalculateable {
-	private static HexAStar astar = null;
 
-	private static HexAStar getAStar() {
-		if (astar == null) {
-			astar = new HexAStar(HexGrid.get());
-		}
-		return astar;
-	}
-
-	private static DijkstraAlgorithm dijkstra = null;
-
-	protected static DijkstraAlgorithm getDijkstra() {
-		if (dijkstra == null) {
-			dijkstra = new DijkstraAlgorithm(HexGrid.get());
-		}
-		return dijkstra;
-	}
-
-	private static InAreaFinder inAreaFinder = null;
-
-	private static InAreaFinder getInAreaFinder() {
-		if (inAreaFinder == null) {
-			inAreaFinder = new InAreaFinder(HexGrid.get());
-		}
-		return inAreaFinder;
-	}
-
-	protected PathableStrategy(Movable movable) {
-		super(movable);
+	protected PathableStrategy(IMovableGrid grid, Movable movable) {
+		super(grid, movable);
 	}
 
 	private Path path;
@@ -103,7 +73,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	}
 
 	protected void calculatePathTo(ISPosition2D target) {
-		Path path = getAStar().findPath(this, target);
+		Path path = super.getGrid().getAStar().findPath(this, target);
 		if (path == null) {
 			this.path = null;
 			pathRequestFailed();
@@ -125,7 +95,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	}
 
 	protected void calculateDijkstraPath(ISPosition2D centerPos, short searchRadius, ESearchType type) {
-		ISPosition2D targetPos = getDijkstra().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
+		ISPosition2D targetPos = super.getGrid().getDijkstra().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
 		if (targetPos == null) {
 			pathRequestFailed();
 		} else {
@@ -134,7 +104,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	}
 
 	protected void calculateInAreaPath(ISPosition2D centerPos, short searchRadius, ESearchType type) {
-		ISPosition2D targetPos = getInAreaFinder().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
+		ISPosition2D targetPos = super.getGrid().getInAreaFinder().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
 		if (targetPos == null) {
 			pathRequestFailed();
 		} else {

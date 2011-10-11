@@ -8,8 +8,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.HexGrid;
-import jsettlers.logic.map.hex.HexTile;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
@@ -19,8 +18,8 @@ public class PioneerStrategy extends PathableStrategy {
 	private ISPosition2D centerPos;
 	private boolean going = false;
 
-	public PioneerStrategy(Movable movable) {
-		super(movable);
+	public PioneerStrategy(IMovableGrid grid, Movable movable) {
+		super(grid, movable);
 	}
 
 	@Override
@@ -30,7 +29,7 @@ public class PioneerStrategy extends PathableStrategy {
 
 	@Override
 	protected void setCalculatedPath(Path path) {
-		HexGrid.get().setMarked(super.getPos(), false);
+		super.getGrid().setMarked(super.getPos(), false);
 		super.setCalculatedPath(path);
 	}
 
@@ -40,7 +39,7 @@ public class PioneerStrategy extends PathableStrategy {
 			centerPos = super.getPos();
 		}
 
-		if (HexGrid.get().getPlayer(super.getPos()) != super.getPlayer()) {
+		if (super.getGrid().getPlayerAt(super.getPos()) != super.getPlayer()) {
 			super.setAction(EAction.ACTION1, Constants.PIONEER_ACTION_DURATION);
 			going = false;
 		} else {
@@ -53,8 +52,8 @@ public class PioneerStrategy extends PathableStrategy {
 		if (!super.actionFinished()) {
 			if (centerPos != null) {
 				if (!going) {
-					HexGrid.get().setMarked(super.getPos(), false);
-					HexGrid.get().setPlayerAt(super.getPos(), super.getPlayer());
+					super.getGrid().setMarked(super.getPos(), false);
+					super.getGrid().setPlayerAt(super.getPos(), super.getPlayer());
 					LandmarksCorrectingThread.addLandmarkedPosition(super.getPos());
 					requestNewPath();
 				} else {
@@ -85,7 +84,7 @@ public class PioneerStrategy extends PathableStrategy {
 		ISPosition2D bestNeighbour = getCloseForeignTile();
 
 		if (bestNeighbour != null) {
-			HexGrid.get().setMarked(bestNeighbour, true);
+			super.getGrid().setMarked(bestNeighbour, true);
 			super.goToTile(bestNeighbour);
 		} else {
 			centerPos = super.getPos();
@@ -96,18 +95,19 @@ public class PioneerStrategy extends PathableStrategy {
 
 	private ISPosition2D getCloseForeignTile() {
 		byte myPlayer = super.getPlayer();
-		HexTile bestNeighbour = null;
+		ISPosition2D bestNeighbour = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
 
 		// TODO: look at more tiles (radius 3)
 		for (EDirection sateliteDir : EDirection.values()) {
 			ISPosition2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
-			HexTile sateliteTile = HexGrid.get().getTile(satelitePos);
-			if (sateliteTile != null && sateliteTile.getPlayer() != myPlayer && !sateliteTile.isBlocked() && !sateliteTile.isMarked()) {
-				double distance = Math.hypot(sateliteTile.getX() - centerPos.getX(), sateliteTile.getY() - centerPos.getY());
+
+			if (super.getGrid().isInBounds(satelitePos) && super.getGrid().getPlayerAt(satelitePos) != myPlayer
+					&& !super.getGrid().isBlocked(satelitePos) && !super.getGrid().isMarked(satelitePos)) {
+				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
-					bestNeighbour = sateliteTile;
+					bestNeighbour = satelitePos;
 				}
 			}
 

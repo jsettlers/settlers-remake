@@ -7,6 +7,7 @@ import jsettlers.logic.management.workers.IWorkerJobable;
 import jsettlers.logic.management.workers.construction.AbstractConstructionWorkerRequest;
 import jsettlers.logic.management.workers.construction.BricklayerRequest;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
@@ -15,8 +16,8 @@ public class BricklayerStrategy extends PathableStrategy implements IWorkerJobab
 	private BricklayerRequest bricklayerRequest;
 	private IConstructableBuilding constructionSite;
 
-	public BricklayerStrategy(Movable movable) {
-		super(movable);
+	public BricklayerStrategy(IMovableGrid grid, Movable movable) {
+		super(grid, movable);
 		GameManager.addJoblessWorker(this);
 	}
 

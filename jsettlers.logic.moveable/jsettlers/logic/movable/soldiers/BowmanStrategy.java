@@ -5,7 +5,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 
 /**
@@ -17,8 +17,8 @@ import jsettlers.logic.movable.Movable;
  * 
  */
 public class BowmanStrategy extends AbstractSoldierStrategy {
-	public BowmanStrategy(Movable movable, EMovableType type) {
-		super(movable, type);
+	public BowmanStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
+		super(grid, movable, type);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class BowmanStrategy extends AbstractSoldierStrategy {
 		if (dir != null)
 			super.setDirection(dir);
 
-		HexGrid.get().getMapObjectsManager().addArrowObject(HexGrid.get().getMovable(enemyPos), super.getPos(), 0.8f);
+		super.getGrid().getMapObjectsManager().addArrowObject(super.getGrid().getMovable(enemyPos), super.getPos(), 0.8f);
 	}
 
 	@Override

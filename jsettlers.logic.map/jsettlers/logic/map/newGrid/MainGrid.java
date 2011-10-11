@@ -274,7 +274,7 @@ public class MainGrid {
 		}
 
 		@Override
-		public byte getPlayer(ISPosition2D position) {
+		public byte getPlayerAt(ISPosition2D position) {
 			return partitionsGrid.getPlayer(position);
 		}
 

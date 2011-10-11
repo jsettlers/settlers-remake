@@ -22,6 +22,12 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import synchronic.timer.NetworkTimer;
 
+/**
+ * This class manages the MapObjects on the grid. It handles timed events like growth interrupts of a tree or deletion of arrows.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class MapObjectsManager implements ITimerable {
 	private final IMapObjectsManagerGrid grid;
 	private final PriorityQueue<TimeEvent> timingQueue = new PriorityQueue<TimeEvent>();

@@ -9,7 +9,7 @@ import jsettlers.logic.management.bearer.IBearerJobable;
 import jsettlers.logic.management.bearer.job.BearerCarryJob;
 import jsettlers.logic.management.bearer.job.BearerToWorkerJob;
 import jsettlers.logic.management.bearer.job.BearerToWorkerWithMaterialJob;
-import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
@@ -18,8 +18,8 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 	private BearerCarryJob carryJob;
 	private BearerToWorkerWithMaterialJob toWorkerJob;
 
-	public BearerStrategy(Movable movable) {
-		super(movable);
+	public BearerStrategy(IMovableGrid grid, Movable movable) {
+		super(grid, movable);
 		GameManager.addJobless(this);
 	}
 
@@ -33,13 +33,13 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 		if (carryJob != null) {
 			switch (state) {
 			case TAKE:
-				HexGrid.get().pushMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
+				super.getGrid().pushMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
 				// no break here!
 			case DROP:
 				GameManager.requestMaterial(carryJob.getRequest());
 			}
 		} else if (toWorkerJob != null) {
-			HexGrid.get().pushMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
+			super.getGrid().pushMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
 			GameManager.requestMovable(toWorkerJob.getMovableType(), super.getPlayer());
 		}
 	}
@@ -82,14 +82,14 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 			if (carryJob != null) {
 				switch (state) {
 				case TAKE:
-					HexGrid.get().popMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
+					super.getGrid().popMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
 					carryJob.getOffer().setFulfilled();
 					super.calculatePathTo(carryJob.getRequest().getPos());
 					state = EBearerState.DROP;
 					break;
 
 				case DROP:
-					HexGrid.get().pushMaterial(super.getPos(), carryJob.getRequest().getMaterialType());
+					super.getGrid().pushMaterial(super.getPos(), carryJob.getRequest().getMaterialType());
 					carryJob.getRequest().setFulfilled();
 					super.setAction(EAction.NO_ACTION, -1);
 					super.setMaterial(EMaterialType.NO_MATERIAL);
@@ -100,7 +100,7 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 					super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
 				}
 			} else if (toWorkerJob != null) {
-				HexGrid.get().popMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
+				super.getGrid().popMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
 				toWorkerJob.getOffer().setFulfilled();
 				super.setAction(EAction.NO_ACTION, -1);
 				super.convertTo(toWorkerJob.getMovableType());

@@ -2,13 +2,14 @@ package jsettlers.logic.movable.go;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class GotoTestStrategy extends PathableStrategy {
 
-	protected GotoTestStrategy(Movable movable) {
-		super(movable);
+	protected GotoTestStrategy(IMovableGrid grid, Movable movable) {
+		super(grid, movable);
 	}
 
 	@Override

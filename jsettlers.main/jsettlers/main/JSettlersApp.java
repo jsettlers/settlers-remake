@@ -88,7 +88,7 @@ public class JSettlersApp {
 
 	private static void setMovable(int x, int y, EMovableType type, int player) {
 		ShortPoint2D pos = new ShortPoint2D((short) x, (short) (Constants.HEIGHT - y));
-		HexGrid.get().placeNewMovable(pos, new Movable(HexGrid.get().getTile(pos), type, (byte) player));
+		HexGrid.get().placeNewMovable(pos, new Movable(HexGrid.get(), HexGrid.get().getTile(pos), type, (byte) player));
 	}
 
 	private JSettlersApp(INetworkManager manager, String map) {

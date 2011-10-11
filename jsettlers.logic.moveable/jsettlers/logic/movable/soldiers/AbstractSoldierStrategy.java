@@ -6,7 +6,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
@@ -16,8 +16,8 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 	private ISPosition2D enemyPos;
 	private final EMovableType type;
 
-	protected AbstractSoldierStrategy(Movable movable, EMovableType type) {
-		super(movable);
+	protected AbstractSoldierStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
+		super(grid, movable);
 		this.type = type;
 	}
 
@@ -25,7 +25,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 		if (enemyPos != null || delayCtr > Constants.MOVABLE_INTERRUPTS_PER_SECOND * 2) {
 			delayCtr = 0;
 
-			enemyPos = getDijkstra().find(this, super.getPos().getX(), super.getPos().getY(), getSearchRadius(), ESearchType.ENEMY);
+			enemyPos = super.getGrid().getDijkstra().find(this, super.getPos().getX(), super.getPos().getY(), getSearchRadius(), ESearchType.ENEMY);
 		} else {
 			delayCtr++;
 			enemyPos = null;
@@ -95,7 +95,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 		int ctr = 0; // to prevent endless loop
 		do {
 			nextPos = dir.getNextHexPoint(super.getPos());
-			if (HexGrid.get().isBlocked(this, nextPos.getX(), nextPos.getY())) {
+			if (super.getGrid().isBlocked(nextPos.getX(), nextPos.getY())) {
 				dir = dir.getNeighbor(-1);
 				nextPos = null;
 			}

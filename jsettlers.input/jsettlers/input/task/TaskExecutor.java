@@ -36,7 +36,7 @@ public class TaskExecutor {
 
 		case BUILD: {
 			GeneralGuiTask task = (GeneralGuiTask) guiTask;
-			Building building = Building.getBuilding(task.getType(), HexGrid.get().getPlayer(task.getPosition()));
+			Building building = Building.getBuilding(task.getType(), HexGrid.get().getPlayerAt(task.getPosition()));
 			building.constructAt(HexGrid.get(), task.getPosition());
 		}
 			break;

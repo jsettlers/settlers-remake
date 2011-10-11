@@ -5,7 +5,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.HexGrid;
+import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 
 /**
@@ -17,8 +17,8 @@ import jsettlers.logic.movable.Movable;
  * 
  */
 public class PikemanStrategy extends AbstractSoldierStrategy {
-	public PikemanStrategy(Movable movable, EMovableType type) {
-		super(movable, type);
+	public PikemanStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
+		super(grid, movable, type);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class PikemanStrategy extends AbstractSoldierStrategy {
 		EDirection enemyDir = EDirection.getDirection(super.getPos(), enemyPos);
 		super.setDirection(enemyDir);
 		super.setAction(EAction.ACTION1, 0.60f);
-		HexGrid.get().getMovable(enemyPos).hit(1.0f);
+		super.getGrid().getMovable(enemyPos).hit(1.0f);
 	}
 
 	@Override
