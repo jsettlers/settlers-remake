@@ -63,5 +63,12 @@ public enum EMapObjectType {
 	 * The value ranges from 0 to 1 where 0 is best and 1 is worst.<br>
 	 * If there is no marking at a position, the building can not be constructed there.
 	 */
-	CONSTRUCTION_MARK
+	CONSTRUCTION_MARK,
+
+	/**
+	 * Type to represent material stacks.
+	 * <p />
+	 * {@link IMapObject}s of this type must implement {@link IStackMapObject}.
+	 */
+	STACK_OBJECT
 }
