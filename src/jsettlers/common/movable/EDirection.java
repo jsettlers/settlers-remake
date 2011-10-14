@@ -136,7 +136,7 @@ public enum EDirection {
 	 * @param y
 	 * @return
 	 */
-	public ISPosition2D getNextTilePoint(short x, short y) {
+	public ISPosition2D getNextHexPoint(short x, short y) {
 		return new ShortPoint2D(getNextTileX(x), getNextTileY(y));
 	}
 
@@ -148,7 +148,7 @@ public enum EDirection {
 	 * @return
 	 */
 	public ISPosition2D getNextHexPoint(ISPosition2D pos) {
-		return getNextTilePoint(pos.getX(), pos.getY());
+		return getNextHexPoint(pos.getX(), pos.getY());
 	}
 
 	public ISPosition2D getNextTilePoint(ISPosition2D pos, int steps) {
