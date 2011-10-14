@@ -78,4 +78,5 @@ public class PositionableDatastructure<T> implements Iterable<T> {
 	public static interface IAcceptor<T> {
 		public boolean isAccepted(T object);
 	}
+
 }

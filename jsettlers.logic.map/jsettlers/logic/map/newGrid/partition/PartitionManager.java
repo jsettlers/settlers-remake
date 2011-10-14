@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.map.newGrid.partition.PositionableDatastructure.IAcceptor;
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
 
@@ -131,10 +132,61 @@ public class PartitionManager implements INetworkTimerable {
 		public int compareTo(Request other) {
 			return this.priority - other.priority;
 		}
+
+		public void decreasePriority() {
+			if (priority > Byte.MIN_VALUE)
+				priority--;
+		}
 	}
+
+	private class MaterialTypeAcceptor implements IAcceptor<Offer> {
+		EMaterialType materialType = null;
+
+		@Override
+		public final boolean isAccepted(Offer offer) {
+			return this.materialType == offer.materialType;
+		}
+	}
+
+	private class AllAcceptor<T> implements IAcceptor<T> {
+		@Override
+		public final boolean isAccepted(T object) {
+			return true;
+		}
+	}
+
+	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
+	private final AllAcceptor<IManagable> manageableAcceptor = new AllAcceptor<IManagable>();
 
 	@Override
 	public void timerEvent() {
-		// TODO implement job creation and propagation to jobless
+		if (!requests.isEmpty()) {
+			Request request = requests.poll();
+
+			materialTypeAcceptor.materialType = request.materialType;
+			Offer offer = offers.getObjectNextTo(request.position, materialTypeAcceptor);
+
+			if (offer == null) {
+				reofferRequest(request);
+			} else {
+				IManagable manageable = jobless.getObjectNextTo(offer.position, manageableAcceptor);
+
+				if (manageable != null) {
+					offer.amount--;
+					if (offer.amount <= 0) {
+						offers.removeObjectAt(offer.position);
+					}
+					manageable.executeJob(offer.position, request.position, offer.materialType);
+				} else {
+					reofferRequest(request);
+				}
+			}
+		}
+
+	}
+
+	private void reofferRequest(Request request) {
+		request.decreasePriority();
+		requests.offer(request);
 	}
 }

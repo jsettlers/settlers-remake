@@ -556,7 +556,6 @@ public class MainGrid {
 	}
 
 	private class BuildingsGrid implements IBuildingsGrid {
-
 		@Override
 		public byte getHeightAt(ISPosition2D position) {
 			return landscapeGrid.getHeightAt(position.getX(), position.getY());
@@ -564,7 +563,7 @@ public class MainGrid {
 
 		@Override
 		public boolean setBuilding(ISPosition2D position, IBuilding newBuilding) {
-			// TODO Auto-generated method stub
+			// FIXME make building to map objects
 			return false;
 		}
 
@@ -585,14 +584,12 @@ public class MainGrid {
 
 		@Override
 		public void placeStack(ISPosition2D position, IHexStack stack) {
-			// TODO Auto-generated method stub
-
+			// FIXME implement requests of material
 		}
 
 		@Override
 		public void removeStack(ISPosition2D position) {
-			// TODO Auto-generated method stub
-
+			// TODO remove this method, it's not needed any more
 		}
 
 		@Override

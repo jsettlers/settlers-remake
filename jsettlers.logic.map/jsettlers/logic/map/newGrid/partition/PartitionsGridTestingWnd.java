@@ -39,7 +39,6 @@ public class PartitionsGridTestingWnd extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		NetworkTimer.get().schedule();
 
