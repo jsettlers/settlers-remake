@@ -5,24 +5,26 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.input.IInputGrid;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.movable.GotoJob;
 import jsettlers.logic.movable.Movable;
 
 public class TaskExecutor {
 	private static TaskExecutor instance = null;
+	private final IInputGrid grid;
 
-	private TaskExecutor() {
+	private TaskExecutor(IInputGrid grid) {
+		this.grid = grid;
 	}
 
 	public static TaskExecutor get() {
 		return instance;
 	}
 
-	public static void init() {
+	public static void init(IInputGrid grid) {
 		if (instance == null)
-			instance = new TaskExecutor();
+			instance = new TaskExecutor(grid);
 	}
 
 	public void executeAction(SimpleGuiTask guiTask) {
@@ -36,8 +38,8 @@ public class TaskExecutor {
 
 		case BUILD: {
 			GeneralGuiTask task = (GeneralGuiTask) guiTask;
-			Building building = Building.getBuilding(task.getType(), HexGrid.get().getPlayerAt(task.getPosition()));
-			building.constructAt(HexGrid.get(), task.getPosition());
+			Building building = Building.getBuilding(task.getType(), grid.getPlayerAt(task.getPosition()));
+			building.constructAt(grid.getBuildingsGrid(), task.getPosition());
 		}
 			break;
 
@@ -73,7 +75,7 @@ public class TaskExecutor {
 	}
 
 	private void setWorkArea(ISPosition2D pos, ISPosition2D buildingPos) {
-		Building building = (Building) HexGrid.get().getBuilding(buildingPos);
+		Building building = (Building) grid.getBuildingAt(buildingPos);
 
 		if (building != null) {
 			building.drawWorkAreaCircle(false);

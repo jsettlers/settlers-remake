@@ -31,7 +31,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		this.partitions = new short[width][height];
 		this.player = new byte[width][height];
 		this.borders = new boolean[width][height];
-		this.partitionsManager = new PartitionsAlgorithm(this, pathfinderMap); // TODO remove HexGrid.get()
+		this.partitionsManager = new PartitionsAlgorithm(this, pathfinderMap);
 		// this.partitionsManager.start();
 
 		for (short x = 0; x < width; x++) {

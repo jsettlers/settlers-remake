@@ -35,7 +35,6 @@ import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.hex.HexGrid;
-import jsettlers.logic.map.hex.HexTile;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.movable.IIDable;
@@ -57,11 +56,13 @@ public class GuiInterface implements IMapInterfaceListener {
 	 */
 	private Action activeAction = null;
 	private final INetworkManager manager;
+	private final IInputGrid grid;
 
-	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager) {
+	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IInputGrid grid) {
 		this.connector = connector;
 		this.manager = manager;
-		TaskExecutor.init();
+		this.grid = grid;
+		TaskExecutor.init(grid);
 		connector.addListener(this);
 	}
 
@@ -217,13 +218,15 @@ public class GuiInterface implements IMapInterfaceListener {
 	private void selectArea(SelectAreaAction action) {
 		ArrayList<IMovable> foundMovables = new ArrayList<IMovable>();
 		IBuilding foundBuilding = null;
-		HexGrid grid = HexGrid.get();
-		for (ISPosition2D cur : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
-			HexTile tile = grid.getTile(cur);
-			if (tile.getMovable() != null) {
-				foundMovables.add(tile.getMovable());
-			} else if (tile.getBuilding() != null) {
-				foundBuilding = tile.getBuilding();
+
+		for (ISPosition2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
+			IMovable movable = grid.getMovable(curr);
+			if (movable != null) {
+				foundMovables.add(movable);
+			}
+			IBuilding building = grid.getBuildingAt(curr);
+			if (building != null) {
+				foundBuilding = building;
 			}
 		}
 
@@ -270,9 +273,8 @@ public class GuiInterface implements IMapInterfaceListener {
 	}
 
 	private void select(ISPosition2D pos) {
-		HexTile tile = HexGrid.get().getTile(pos);
-		if (tile != null) {
-			IHexMovable m = tile.getMovable();
+		if (grid.isInBounds(pos)) {
+			IHexMovable m = grid.getMovable(pos);
 			if (m != null) {
 				setSelection(new SettlerSelection(Collections.singletonList(m)));
 			} else {
@@ -288,10 +290,9 @@ public class GuiInterface implements IMapInterfaceListener {
 	}
 
 	private IBuilding getBuildingAround(ISPosition2D pos) {
-		for (ISPosition2D cur : new MapCircle(pos.getX(), pos.getY(), 5)) {
-			HexTile tile = HexGrid.get().getTile(cur);
-			if (tile != null && tile.getBuilding() != null) {
-				return tile.getBuilding();
+		for (ISPosition2D curr : new MapCircle(pos.getX(), pos.getY(), 5)) {
+			if (grid.isInBounds(curr)) {
+				return grid.getBuildingAt(curr);
 			}
 		}
 		return null;

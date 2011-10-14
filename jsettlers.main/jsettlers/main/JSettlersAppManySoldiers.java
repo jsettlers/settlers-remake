@@ -119,7 +119,7 @@ public class JSettlersAppManySoldiers {
 		ActivePlayer.instantiate((byte) 0);
 
 		MapInterfaceConnector connector = panel.showHexMap(HexGrid.get(), ActivePlayer.get().getStatistics());
-		new GuiInterface(connector, manager);
+		new GuiInterface(connector, manager, HexGrid.get());
 
 		jsettlersWnd.setVisible(true);
 	}

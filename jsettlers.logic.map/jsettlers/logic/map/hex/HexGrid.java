@@ -17,6 +17,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.IInputGrid;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -50,7 +51,7 @@ import jsettlers.logic.objects.MapObjectsManager;
 import random.RandomSingleton;
 
 public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThreadMap, IConstructionMarkableMap, IBuildingsGrid,
-		IMapObjectsManagerGrid, IMovableGrid {
+		IMapObjectsManagerGrid, IMovableGrid, IInputGrid {
 	private static HexGrid uniIns = null;
 	private final HexAStar astar;
 	private final DijkstraAlgorithm dijkstra;
@@ -723,6 +724,16 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 
 	@Override
 	public IMovableGrid getMovableGrid() {
+		return this;
+	}
+
+	@Override
+	public IBuilding getBuildingAt(ISPosition2D curr) {
+		return getTile(curr).getBuilding();
+	}
+
+	@Override
+	public IBuildingsGrid getBuildingsGrid() {
 		return this;
 	}
 }

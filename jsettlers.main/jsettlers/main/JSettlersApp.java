@@ -141,9 +141,7 @@ public class JSettlersApp {
 		}
 
 		MapInterfaceConnector connector = panel.showHexMap(HexGrid.get(), ActivePlayer.get().getStatistics());
-		new GuiInterface(connector, manager);
-
-		// initTests();
+		new GuiInterface(connector, manager, HexGrid.get());
 
 		manager.startGameTimer();
 	}
