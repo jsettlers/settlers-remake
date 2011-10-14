@@ -5,17 +5,23 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 
-public interface IInputGrid {
+/**
+ * This interface defines the methods needed by the GUI to interact with the grid.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public interface IGuiInputGrid {
 
-	IHexMovable getMovable(ISPosition2D curr);
+	IHexMovable getMovable(ISPosition2D position);
 
 	short getWidth();
 
 	short getHeight();
 
-	IBuilding getBuildingAt(ISPosition2D curr);
+	IBuilding getBuildingAt(ISPosition2D position);
 
-	boolean isInBounds(ISPosition2D pos);
+	boolean isInBounds(ISPosition2D position);
 
 	IBuildingsGrid getBuildingsGrid();
 

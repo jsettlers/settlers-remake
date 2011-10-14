@@ -56,9 +56,9 @@ public class GuiInterface implements IMapInterfaceListener {
 	 */
 	private Action activeAction = null;
 	private final INetworkManager manager;
-	private final IInputGrid grid;
+	private final IGuiInputGrid grid;
 
-	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IInputGrid grid) {
+	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IGuiInputGrid grid) {
 		this.connector = connector;
 		this.manager = manager;
 		this.grid = grid;

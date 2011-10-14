@@ -5,16 +5,16 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.input.IInputGrid;
+import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.GotoJob;
 import jsettlers.logic.movable.Movable;
 
 public class TaskExecutor {
 	private static TaskExecutor instance = null;
-	private final IInputGrid grid;
+	private final IGuiInputGrid grid;
 
-	private TaskExecutor(IInputGrid grid) {
+	private TaskExecutor(IGuiInputGrid grid) {
 		this.grid = grid;
 	}
 
@@ -22,7 +22,7 @@ public class TaskExecutor {
 		return instance;
 	}
 
-	public static void init(IInputGrid grid) {
+	public static void init(IGuiInputGrid grid) {
 		if (instance == null)
 			instance = new TaskExecutor(grid);
 	}

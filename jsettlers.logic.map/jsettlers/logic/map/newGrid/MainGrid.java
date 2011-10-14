@@ -14,6 +14,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
@@ -64,6 +65,7 @@ public class MainGrid {
 	private final ConstructMarksCalculator constructionMarksCalculator;
 	private final BordersThread bordersThread;
 	private final BuildingsGrid buildingsGrid;
+	private final IGuiInputGrid guiInputGrid;
 
 	public MainGrid(short width, short height) {
 		this.width = width;
@@ -84,11 +86,15 @@ public class MainGrid {
 		this.constructionMarksCalculator = new ConstructMarksCalculator(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
 		// dynamically
 		this.buildingsGrid = new BuildingsGrid();
-
+		this.guiInputGrid = new GUIInputGrid();
 	}
 
 	public IGraphicsGrid getGraphicsGrid() {
 		return graphicsGrid;
+	}
+
+	public IGuiInputGrid getGuiInputGrid() {
+		return guiInputGrid;
 	}
 
 	protected final boolean isInBounds(short x, short y) {
@@ -610,6 +616,45 @@ public class MainGrid {
 		@Override
 		public IMovableGrid getMovableGrid() {
 			return movablePathfinderGrid;
+		}
+	}
+
+	private class GUIInputGrid implements IGuiInputGrid {
+		@Override
+		public IHexMovable getMovable(ISPosition2D position) {
+			return movableGrid.getMovableAt(position.getX(), position.getY());
+		}
+
+		@Override
+		public short getWidth() {
+			return width;
+		}
+
+		@Override
+		public short getHeight() {
+			return height;
+		}
+
+		@Override
+		public IBuilding getBuildingAt(ISPosition2D position) {
+			// return objectsGrid.getMapObjectAt(position.getX(), position.getY(), EMapObjectType.BUILDING);
+			// FIXME make buildings to IMapObjects
+			return null;
+		}
+
+		@Override
+		public boolean isInBounds(ISPosition2D position) {
+			return MainGrid.this.isInBounds(position.getX(), position.getY());
+		}
+
+		@Override
+		public IBuildingsGrid getBuildingsGrid() {
+			return buildingsGrid;
+		}
+
+		@Override
+		public byte getPlayerAt(ISPosition2D position) {
+			return partitionsGrid.getPlayerAt(position);
 		}
 
 	}
