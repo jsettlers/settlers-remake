@@ -22,7 +22,7 @@ import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.GameManager;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.materials.stack.AbstractStack;
 import jsettlers.logic.materials.stack.single.EStackType;
 import jsettlers.logic.materials.stack.single.SingleMaterialStack;

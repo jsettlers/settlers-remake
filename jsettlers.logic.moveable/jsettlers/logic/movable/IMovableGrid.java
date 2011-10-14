@@ -8,7 +8,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.objects.MapObjectsManager;
 import synchronic.timer.NetworkTimer;
 

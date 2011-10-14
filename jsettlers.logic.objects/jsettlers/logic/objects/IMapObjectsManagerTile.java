@@ -2,7 +2,7 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 /**
  * This interface represents a tile that can be used by the MapObjectsManager

@@ -2,7 +2,7 @@ package jsettlers.logic.objects.stone;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 public class Stone extends AbstractHexMapObject {
 

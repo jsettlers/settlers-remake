@@ -2,8 +2,8 @@ package jsettlers.logic.buildings;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
 import jsettlers.logic.map.hex.interfaces.IHexStack;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.objects.MapObjectsManager;
 

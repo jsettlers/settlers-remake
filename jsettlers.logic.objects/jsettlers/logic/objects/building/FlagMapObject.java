@@ -2,7 +2,7 @@ package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 public class FlagMapObject extends AbstractHexMapObject implements IPlayerable {
 

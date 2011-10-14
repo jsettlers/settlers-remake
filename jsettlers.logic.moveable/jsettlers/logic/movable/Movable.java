@@ -10,7 +10,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.player.ActivePlayer;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;

@@ -1,7 +1,7 @@
 package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 /**
  * This map objects represent a construction marking used to show the user where he is able to construct a building.<br>

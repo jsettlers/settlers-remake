@@ -1,7 +1,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 /**
  * 

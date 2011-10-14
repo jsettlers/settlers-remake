@@ -4,7 +4,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 /**
  * This is a stack object that can be located on the grid.

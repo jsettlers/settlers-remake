@@ -1,4 +1,4 @@
-package jsettlers.logic.map.hex.interfaces;
+package jsettlers.logic.map.newGrid.interfaces;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;

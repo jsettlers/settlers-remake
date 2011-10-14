@@ -36,7 +36,7 @@ import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.map.hex.HexTile;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.movable.IIDable;
 import network.INetworkManager;

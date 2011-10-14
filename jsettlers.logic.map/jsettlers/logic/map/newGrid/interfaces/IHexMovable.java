@@ -1,4 +1,4 @@
-package jsettlers.logic.map.hex.interfaces;
+package jsettlers.logic.map.newGrid.interfaces;
 
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;

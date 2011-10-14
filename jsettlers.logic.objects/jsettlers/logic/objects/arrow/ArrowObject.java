@@ -4,7 +4,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.objects.ProgressingObject;
 
 public class ArrowObject extends ProgressingObject implements IArrowMapObject {

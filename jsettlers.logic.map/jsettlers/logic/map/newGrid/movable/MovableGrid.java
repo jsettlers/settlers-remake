@@ -2,7 +2,7 @@ package jsettlers.logic.map.newGrid.movable;
 
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.hex.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 
 /**
  * This grid stores the position of the {@link IMovable}s.
