@@ -2,7 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jogl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics"/>
+	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/jogl.all.jar"/>
+	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/nativewindow.all.jar"/>
+	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/newt.all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
