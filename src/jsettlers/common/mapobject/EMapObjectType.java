@@ -70,5 +70,10 @@ public enum EMapObjectType {
 	 * <p />
 	 * {@link IMapObject}s of this type must implement {@link IStackMapObject}.
 	 */
-	STACK_OBJECT
+	STACK_OBJECT,
+
+	/**
+	 * Type to represent a Building
+	 */
+	BUILDING
 }
