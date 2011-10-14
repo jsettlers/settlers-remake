@@ -63,7 +63,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 		map = new PartitionsGrid(WIDTH, HEIGHT, new DummyEmptyPathfinderMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-				return map.getPlayer(x, y) != requester.getPlayer();
+				return map.getPlayerAt(x, y) != requester.getPlayer();
 			}
 		});
 
@@ -115,14 +115,14 @@ public class PartitionsGridTestingWnd extends JFrame {
 		if (map.isInBounds(x, y)) {
 			byte player = new Byte(textField.getText());
 			ISPosition2D position = new ShortPoint2D(x, y);
-			map.changePlayer(position, player);
+			map.changePlayerAt(position, player);
 
 			for (ISPosition2D currPos : new MapNeighboursArea(position)) {
-				map.changePlayer(currPos, player);
+				map.changePlayerAt(currPos, player);
 			}
 
 			for (ISPosition2D currPos : new HexBorderArea(position, (short) 2)) {
-				map.changePlayer(currPos, player);
+				map.changePlayerAt(currPos, player);
 			}
 		}
 		repaint();

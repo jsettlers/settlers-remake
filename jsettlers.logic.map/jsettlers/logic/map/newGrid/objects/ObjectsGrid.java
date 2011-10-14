@@ -1,6 +1,8 @@
 package jsettlers.logic.map.newGrid.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.hex.interfaces.AbstractHexMapObject;
 
 /**
@@ -65,6 +67,30 @@ public class ObjectsGrid {
 		} else {
 			mapObjectHead.addMapObject(mapObject);
 		}
+	}
+
+	public boolean hasCuttableObject(short x, short y, EMapObjectType mapObjectType) {
+		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
+
+		return mapObjectHead != null && mapObjectHead.hasCuttableObject(mapObjectType);
+	}
+
+	public boolean hasMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
+
+		return mapObjectHead != null && mapObjectHead.hasMapObjectType(mapObjectType);
+	}
+
+	public boolean hasNeighborObjectType(short x, short y, EMapObjectType mapObjectType) {
+		EDirection[] directions = EDirection.values();
+
+		for (EDirection currDir : directions) {
+			ISPosition2D currPos = currDir.getNextHexPoint(x, y);
+			if (hasMapObjectType(currPos.getX(), currPos.getY(), mapObjectType)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

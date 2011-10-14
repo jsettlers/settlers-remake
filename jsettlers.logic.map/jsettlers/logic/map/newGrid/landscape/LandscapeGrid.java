@@ -25,7 +25,7 @@ public class LandscapeGrid {
 		this.heightGrid[x][y] = height;
 	}
 
-	public ELandscapeType getLandscapeType(short x, short y) {
+	public ELandscapeType getLandscapeTypeAt(short x, short y) {
 		return landscapeGrid[x][y];
 	}
 

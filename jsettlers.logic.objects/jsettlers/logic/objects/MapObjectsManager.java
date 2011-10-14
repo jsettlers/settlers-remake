@@ -6,6 +6,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
@@ -16,6 +17,7 @@ import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.corn.Corn;
+import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.objects.tree.Tree;
 import jsettlers.logic.timer.ITimerable;
@@ -264,4 +266,51 @@ public class MapObjectsManager implements ITimerable {
 			removeMapObjectType(pos, EMapObjectType.CONSTRUCTION_MARK);
 		}
 	}
+
+	public boolean canPush(ISPosition2D position, EMaterialType material) {
+		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
+
+		return stackObject == null || stackObject.getMaterialType() == material && !stackObject.isFull();
+	}
+
+	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
+
+		if (stackObject == null) {
+			stackObject = new StackMapObject(materialType, (byte) 1);
+			return true;
+		} else {
+			if (stackObject.getMaterialType() != materialType || stackObject.isFull()) { // TODO reuse empty stack objects
+				return false;
+			} else {
+				stackObject.increment();
+				return true;
+			}
+		}
+	}
+
+	public boolean popMaterial(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
+
+		if (stackObject == null) {
+			return false;
+		} else {
+			if (stackObject.getMaterialType() != materialType || stackObject.isEmpty()) {
+				return false;
+			} else {
+				stackObject.decrement();
+				if (stackObject.isEmpty()) { // remove empty stack object
+					removeMapObject(position, stackObject);
+				}
+				return true;
+			}
+		}
+	}
+
+	public boolean canPop(ISPosition2D position, EMaterialType material) {
+		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
+
+		return stackObject != null && stackObject.getMaterialType() == material && !stackObject.isEmpty();
+	}
+
 }

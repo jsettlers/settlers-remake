@@ -26,7 +26,7 @@ import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.wrapper.IPathRequester;
 import jsettlers.logic.algorithms.path.wrapper.IPathfinderWrapperMap;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.IBuildingableGrid;
+import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.GameManager;
 import jsettlers.logic.management.MaterialJobPart;
@@ -49,7 +49,7 @@ import jsettlers.logic.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.objects.MapObjectsManager;
 import random.RandomSingleton;
 
-public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThreadMap, IConstructionMarkableMap, IBuildingableGrid,
+public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThreadMap, IConstructionMarkableMap, IBuildingsGrid,
 		IMapObjectsManagerGrid, IMovableGrid {
 	private static HexGrid uniIns = null;
 	private final HexAStar astar;
@@ -719,5 +719,10 @@ public class HexGrid implements IPathfinderWrapperMap, IHexMap, ILandmarksThread
 	@Override
 	public InAreaFinder getInAreaFinder() {
 		return inAreaFinder;
+	}
+
+	@Override
+	public IMovableGrid getMovableGrid() {
+		return this;
 	}
 }

@@ -1,5 +1,6 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
@@ -17,6 +18,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	private final short height;
 	private final short[][] partitions;
 	private final byte[][] player;
+	private final boolean[][] borders;
 	/**
 	 * This array stores the partition objects handled by this class.<br>
 	 */
@@ -28,6 +30,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		this.height = height;
 		this.partitions = new short[width][height];
 		this.player = new byte[width][height];
+		this.borders = new boolean[width][height];
 		this.partitionsManager = new PartitionsAlgorithm(this, pathfinderMap); // TODO remove HexGrid.get()
 		// this.partitionsManager.start();
 
@@ -39,7 +42,12 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		}
 	}
 
-	public byte getPlayer(short x, short y) {
+	@Override
+	public byte getPlayerAt(ISPosition2D position) {
+		return isInBounds(position) ? this.player[position.getX()][position.getY()] : -1;
+	}
+
+	public byte getPlayerAt(short x, short y) {
 		return this.player[x][y];
 	}
 
@@ -47,11 +55,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return this.partitions[x][y];
 	}
 
-	public Partition getPartitionObject(short x, short y) {
-		return getPartitionObject(getPartition(x, y));
-	}
-
-	public Partition getPartitionObject(ISPosition2D pos) {
+	private Partition getPartitionObject(ISPosition2D pos) {
 		short partition = getPartition(pos);
 		if (partition >= 0)
 			return getPartitionObject(partition);
@@ -66,11 +70,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	@Override
 	public short getPartition(ISPosition2D position) {
 		return this.partitions[position.getX()][position.getY()];
-	}
-
-	@Override
-	public byte getPlayer(ISPosition2D position) {
-		return isInBounds(position) ? this.player[position.getX()][position.getY()] : -1;
 	}
 
 	@Override
@@ -119,15 +118,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 			startPos = firstPos;
 		}
 
-		// for (short x = 0; x < width; x++) { // relabel the old partition
-		// for (short y = 0; y < height; y++) { // TODO improve performance (save upper left and lower right edges in Partition)
-		// short currPartition = partitions[x][y];
-		// if (currPartition == oldPartition) {
-		// setPartition(x, y, newPartition);
-		// }
-		// }
-		// }
-
 		relabelPartition(startPos.getX(), startPos.getY(), oldPartition, newPartition);
 
 		return newPartition;
@@ -157,9 +147,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	@Override
 	public void dividePartition(ISPosition2D changedPosition, ISPosition2D firstPos, ISPosition2D secondPos) {
-		// TODO Auto-generated method stub
 		System.out.println("DIVIDE!!");
-		short newPartition = initializeNewPartition(getPlayer(firstPos));
+		short newPartition = initializeNewPartition(getPlayerAt(firstPos));
 		short oldPartition = getPartition(firstPos);
 
 		partitions[changedPosition.getX()][changedPosition.getY()] = -1;// this is needed, because the new partition is not determined yet
@@ -167,7 +156,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		partitions[changedPosition.getX()][changedPosition.getY()] = oldPartition;
 	}
 
-	private short[] neighborhoodMatrix = { 0, 1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1 };
+	private final short[] neighborhoodMatrix = { 0, 1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1 };
 
 	private void relabelPartition(short inX, short inY, short oldPartition, short newPartition) {
 		final short MAX_LENGTH = 1000;
@@ -196,7 +185,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		}
 	}
 
-	public void changePlayer(ISPosition2D position, byte newPlayer) {
+	public void changePlayerAt(ISPosition2D position, byte newPlayer) {
 		if (this.player[position.getX()][position.getY()] != newPlayer) {
 			this.player[position.getX()][position.getY()] = newPlayer;
 			this.partitionsManager.calculateNewPartition(position, newPlayer);
@@ -211,4 +200,15 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
+	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+		return getPartitionObject(position).pushMaterial(position, materialType);
+	}
+
+	public void setBorderAt(short x, short y, boolean isBorder) {
+		this.borders[x][y] = isBorder;
+	}
+
+	public boolean isBorderAt(short x, short y) {
+		return borders[x][y];
+	}
 }

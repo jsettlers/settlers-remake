@@ -29,10 +29,10 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	public boolean addOffer(ISPosition2D position, EMaterialType materialType) {
-		Offer exisitingOffer = offers.getObjectAt(position);
-		if (exisitingOffer != null) {
-			if (exisitingOffer.materialType == materialType) {
-				exisitingOffer.amount++;
+		Offer existingOffer = offers.getObjectAt(position);
+		if (existingOffer != null) {
+			if (existingOffer.materialType == materialType) {
+				existingOffer.amount++;
 				return true;
 			} else {
 				return false;

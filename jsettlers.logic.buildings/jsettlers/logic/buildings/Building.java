@@ -37,7 +37,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	private ISPosition2D pos;
 	private ISPosition2D door;
 	private boolean selected;
-	protected IBuildingableGrid grid;
+	protected IBuildingsGrid grid;
 
 	private float constructionProgress = 0.0f;
 	private FreeMapArea buildingArea;
@@ -52,7 +52,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		this.player = player;
 	}
 
-	public final void constructAt(IBuildingableGrid grid, ISPosition2D pos) {
+	public final void constructAt(IBuildingsGrid grid, ISPosition2D pos) {
 		assert state == EBuildingState.CREATED : "building can not be positioned in this state";
 
 		boolean itWorked = positionAt(grid, pos);
@@ -69,7 +69,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 	}
 
-	private void placeAdditionalMapObjects(IBuildingableGrid grid, ISPosition2D pos, boolean place) {
+	private void placeAdditionalMapObjects(IBuildingsGrid grid, ISPosition2D pos, boolean place) {
 		if (place) {
 			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, (byte) -1);
 		} else {
@@ -85,7 +85,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 	}
 
-	private boolean positionAt(IBuildingableGrid grid, ISPosition2D pos) {
+	private boolean positionAt(IBuildingsGrid grid, ISPosition2D pos) {
 		boolean couldBePlaced = grid.setBuilding(pos, this);
 		if (couldBePlaced) {
 			this.pos = pos;
@@ -116,7 +116,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 
 	protected abstract void positionedEvent(ISPosition2D pos);
 
-	public final void appearAt(IBuildingableGrid grid, ISPosition2D pos) {
+	public final void appearAt(IBuildingsGrid grid, ISPosition2D pos) {
 		this.state = EBuildingState.CONSTRUCTED;
 
 		positionAt(grid, pos);
@@ -465,7 +465,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		return null;
 	}
 
-	private void addOrRemoveMarkObject(boolean draw, IBuildingableGrid grid, ISPosition2D pos, float progress) {
+	private void addOrRemoveMarkObject(boolean draw, IBuildingsGrid grid, ISPosition2D pos, float progress) {
 		if (draw) {
 			grid.getMapObjectsManager().addBuildingWorkAreaObject(pos, progress);
 		} else {
@@ -473,7 +473,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 	}
 
-	private MapShapeFilter getCircle(IBuildingableGrid grid, ISPosition2D center, float radius) {
+	private MapShapeFilter getCircle(IBuildingsGrid grid, ISPosition2D center, float radius) {
 		MapCircle baseCircle = new MapCircle(center, radius);
 		MapCircleBorder border = new MapCircleBorder(baseCircle);
 		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());

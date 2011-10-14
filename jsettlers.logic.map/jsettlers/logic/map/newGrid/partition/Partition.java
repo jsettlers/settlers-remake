@@ -1,5 +1,8 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ISPosition2D;
+
 /**
  * This class holds the metadata of a partition.
  * 
@@ -35,6 +38,10 @@ public class Partition {
 
 	public int getNumberOfElements() {
 		return counter;
+	}
+
+	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+		return manager.addOffer(position, materialType);
 	}
 
 }

@@ -5,7 +5,6 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.movable.Movable;
 
 public abstract class SpawnBuilding extends Building {
@@ -44,7 +43,8 @@ public abstract class SpawnBuilding extends Building {
 				if (super.grid.getMovable(super.getDoor()) == null) {
 					delayCtr = 0;
 
-					super.grid.placeNewMovable(getDoor(), new Movable(HexGrid.get(), super.getDoor(), getMovableType(), super.getPlayer()));
+					super.grid.placeNewMovable(getDoor(),
+							new Movable(super.grid.getMovableGrid(), super.getDoor(), getMovableType(), super.getPlayer()));
 					// Movable created = getDoor().getMovable();
 					produced++;
 				}
