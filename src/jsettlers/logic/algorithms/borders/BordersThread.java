@@ -1,0 +1,82 @@
+package jsettlers.logic.algorithms.borders;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.position.ISPosition2D;
+
+/**
+ * This thread calculates the positions that represent the border between the areas occupied by different players.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public class BordersThread implements Runnable {
+
+	private final IBordersThreadGrid grid;
+	private boolean canceled = false;
+	private final Queue<ISPosition2D> positionsQueue = new ConcurrentLinkedQueue<ISPosition2D>();
+
+	/**
+	 * This constructor creates a new instance of {@link BordersThread} and automatically launches a thread for it called "bordersThread".
+	 * 
+	 * @param grid
+	 *            the grid on that the {@link BordersThread} will be operating
+	 */
+	public BordersThread(IBordersThreadGrid grid) {
+		this.grid = grid;
+
+		Thread thread = new Thread(this);
+		thread.setName("bordersThread");
+		thread.start();
+	}
+
+	@Override
+	public void run() {
+		while (!canceled) {
+			if (!positionsQueue.isEmpty()) {
+				ISPosition2D position = positionsQueue.poll();
+				byte player = grid.getPlayer(position.getX(), position.getY());
+				boolean isBorder = false;
+
+				for (EDirection currDir : EDirection.values()) {
+					short currNeighborX = currDir.getNextTileX(position.getX());
+					short currNeighborY = currDir.getNextTileY(position.getY());
+
+					byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
+					boolean neighborIsBorder = false;
+
+					if (neighborPlayer != player) {
+						isBorder = true;
+					}
+
+					for (EDirection currNeighborDir : EDirection.values()) {
+						if (grid.getPlayer(currNeighborDir.getNextTileX(currNeighborX), currNeighborDir.getNextTileY(currNeighborY)) != neighborPlayer) {
+							neighborIsBorder = true;
+							break;
+						}
+					}
+
+					grid.setBorder(currNeighborX, currNeighborY, neighborIsBorder);
+				}
+
+				grid.setBorder(position.getX(), position.getY(), isBorder);
+			} else {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void checkPosition(ISPosition2D position) {
+		this.positionsQueue.offer(position);
+	}
+
+	public void cancel() {
+		this.canceled = true;
+	}
+}

@@ -24,7 +24,7 @@ public interface IPartionsAlgorithmMap {
 	 *            position the team is requested for
 	 * @return team occupying this position
 	 */
-	byte getPlayer(final ISPosition2D position);
+	byte getPlayerAt(final ISPosition2D position);
 
 	/**
 	 * Sets the given partition to the given position.

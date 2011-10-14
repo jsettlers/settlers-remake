@@ -40,7 +40,7 @@ public class LandmarksCorrectingThread extends Thread {
 				}
 			} else {
 				ISPosition2D startPos = queue.poll();
-				byte startPlayer = map.getPlayer(startPos);
+				byte startPlayer = map.getPlayerAt(startPos);
 
 				LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
 				for (EDirection startDirection : allBlockedDirections) {
@@ -66,7 +66,7 @@ public class LandmarksCorrectingThread extends Thread {
 				blocked = neighborPos;
 				blockedDir = neighborDir;
 				blockedBorder.add(blocked);
-			} else if (map.getPlayer(neighborPos) == startPlayer) {
+			} else if (map.getPlayerAt(neighborPos) == startPlayer) {
 				currBase = neighborPos;
 				blockedDir = EDirection.getDirection(currBase, blocked);
 

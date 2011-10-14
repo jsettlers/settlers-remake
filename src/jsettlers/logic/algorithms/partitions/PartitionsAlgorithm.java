@@ -67,7 +67,7 @@ public class PartitionsAlgorithm {
 		short newPartition = -1;
 
 		for (ISPosition2D currPos : new MapNeighboursArea(changedPosition)) {
-			if (map.getPlayer(currPos) == newPlayer) {
+			if (map.getPlayerAt(currPos) == newPlayer) {
 				if (newPartition == -1) { // neighbor has same player and we have no partition found yet -> add to the same partition
 					newPartition = map.getPartition(currPos);
 					map.setPartition(changedPosition, newPartition);
@@ -125,7 +125,7 @@ public class PartitionsAlgorithm {
 		}
 
 		if (disconnectedCtr > 1) {
-			byte oldPlayer = map.getPlayer(disconnected[0]);
+			byte oldPlayer = map.getPlayerAt(disconnected[0]);
 			if (!existsPathBetween(disconnected[1], disconnected[0], oldPlayer)) { // [0] and [1] are not connected
 				map.dividePartition(position, disconnected[1], disconnected[0]);
 
