@@ -180,7 +180,6 @@ public class MainGrid {
 	}
 
 	private class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap {
-
 		@Override
 		public short getHeight() {
 			return height;

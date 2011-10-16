@@ -277,7 +277,7 @@ public class MapObjectsManager implements ITimerable {
 		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
 
 		if (stackObject == null) {
-			stackObject = new StackMapObject(materialType, (byte) 1);
+			grid.getTile(position.getX(), position.getY()).addMapObject(new StackMapObject(materialType, (byte) 1));
 			return true;
 		} else {
 			if (stackObject.getMaterialType() != materialType || stackObject.isFull()) { // TODO reuse empty stack objects
