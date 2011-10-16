@@ -216,7 +216,7 @@ public final class MapCoordinateConverter {
 	 *            The y coordinate
 	 * @return The position.
 	 */
-	public Point2D getView(int x, int y, byte height) {
+	public Point2D getView(int x, int y, int height) {
 		return new Point2D.Float(getViewX(x, y, height), getViewY(x, y, height));
 	}
 
