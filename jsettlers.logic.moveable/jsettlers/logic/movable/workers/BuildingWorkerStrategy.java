@@ -12,7 +12,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;

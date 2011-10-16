@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition;
+package jsettlers.logic.map.newGrid.partition.manager;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -6,8 +6,9 @@ import java.util.PriorityQueue;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.map.newGrid.partition.PositionableDatastructure;
 import jsettlers.logic.map.newGrid.partition.PositionableDatastructure.IAcceptor;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
 
@@ -22,7 +23,7 @@ public class PartitionManager implements INetworkTimerable {
 	private PriorityQueue<Request> requests;
 	private PositionableDatastructure<IManageableBearer> jobless;
 
-	protected PartitionManager() {
+	public PartitionManager() {
 		this.offers = new PositionableDatastructure<PartitionManager.Offer>();
 		this.requests = new PriorityQueue<PartitionManager.Request>();
 		this.jobless = new PositionableDatastructure<IManageableBearer>();
@@ -45,8 +46,8 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-		requests.offer(new Request(position, materialType, priority));
+	public void request(ISPosition2D position, EMaterialType materialType, byte priority, IMaterialRequester requester) {
+		requests.offer(new Request(position, materialType, priority, requester));
 	}
 
 	public IManageableBearer removeJobless(ISPosition2D position) {
@@ -107,27 +108,30 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private class Offer {
+		ISPosition2D position;
+		EMaterialType materialType;
+		byte amount = 0;
+
 		public Offer(ISPosition2D position, EMaterialType materialType, byte amount) {
 			this.position = position;
 			this.materialType = materialType;
 			this.amount = amount;
 		}
 
-		private ISPosition2D position;
-		private EMaterialType materialType;
-		private byte amount = 0;
 	}
 
 	private class Request implements Comparable<Request> {
-		public Request(ISPosition2D position, EMaterialType materialType, byte priority) {
+		final ISPosition2D position;
+		final EMaterialType materialType;
+		byte priority = 1;
+		final IMaterialRequester requester;
+
+		public Request(ISPosition2D position, EMaterialType materialType, byte priority, IMaterialRequester requester) {
 			this.position = position;
 			this.materialType = materialType;
 			this.priority = priority;
+			this.requester = requester;
 		}
-
-		private ISPosition2D position;
-		private EMaterialType materialType;
-		private byte priority = 1;
 
 		@Override
 		public int compareTo(Request other) {

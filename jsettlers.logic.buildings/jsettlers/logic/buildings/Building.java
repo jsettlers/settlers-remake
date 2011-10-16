@@ -20,12 +20,8 @@ import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.management.GameManager;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
-import jsettlers.logic.materials.stack.AbstractStack;
-import jsettlers.logic.materials.stack.single.EStackType;
-import jsettlers.logic.materials.stack.single.SingleMaterialStack;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
@@ -44,7 +40,6 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	private byte heightAvg;
 
 	private short delayCtr = 0;
-	private LinkedList<AbstractStack> stacks;
 	private final EBuildingType type;
 
 	protected Building(EBuildingType type, byte player) {
@@ -60,7 +55,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		if (itWorked) {
 			stacks = createStacks(true);
 			placeStacks(stacks, true);
-			
+
 			placeAdditionalMapObjects(grid, pos, true);
 
 			this.state = EBuildingState.POSITIONED;
@@ -90,7 +85,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		if (couldBePlaced) {
 			this.pos = pos;
 			this.grid = grid;
-			
+
 			this.door = getBuildingType().getDoorTile().calculatePoint(pos);
 
 			Timer100Milli.add(this);
@@ -140,9 +135,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		this.buildingArea = new FreeMapArea(positions);
 
 		this.heightAvg = (byte) (heightSum / blocked.length);
-		int numberOfDiggers =
-		        (int) Math.ceil(((float) blocked.length)
-		                / Constants.TILES_PER_DIGGER);
+		int numberOfDiggers = (int) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
 
 		for (int i = 0; i < numberOfDiggers; i++)
 			GameManager.requestDigger(this.buildingArea, this.heightAvg, this.player);
@@ -241,7 +234,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	 *            if true, only the build stacks will be placed<br>
 	 *            if false, only the normal stacks needed for working will be placed<br>
 	 */
-	private LinkedList<AbstractStack> createStacks(boolean constructionStacks) {
+	private void createStacks(boolean constructionStacks) {
 		LinkedList<AbstractStack> result = new LinkedList<AbstractStack>();
 
 		for (RelativeStack curr : getBuildingType().getRequestStacks()) {
@@ -380,7 +373,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		stacks = createStacks(false);
 		placeStacks(stacks, true);
 
-		state = EBuildingState.CONSTRUCTED;
+		this.state = EBuildingState.CONSTRUCTED;
 
 		constructionFinishedEvent();
 	}
@@ -388,7 +381,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	protected abstract void constructionFinishedEvent();
 
 	@Override
-	public float getConstructionState() {
+	public float getStateProgress() {
 		return constructionProgress;
 	}
 

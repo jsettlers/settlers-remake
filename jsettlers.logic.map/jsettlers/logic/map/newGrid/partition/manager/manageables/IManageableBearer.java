@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition.manageables;
+package jsettlers.logic.map.newGrid.partition.manager.manageables;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;

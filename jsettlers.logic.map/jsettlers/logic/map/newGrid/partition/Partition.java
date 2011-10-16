@@ -2,7 +2,8 @@ package jsettlers.logic.map.newGrid.partition;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 
 /**
  * This class holds the metadata of a partition.

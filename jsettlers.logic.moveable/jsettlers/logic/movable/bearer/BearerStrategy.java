@@ -7,7 +7,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.bearer.job.BearerCarryJob;
 import jsettlers.logic.management.bearer.job.BearerToWorkerWithMaterialJob;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;

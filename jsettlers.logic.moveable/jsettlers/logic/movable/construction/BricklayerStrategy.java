@@ -4,7 +4,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.management.workers.construction.BricklayerRequest;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBricklayer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;

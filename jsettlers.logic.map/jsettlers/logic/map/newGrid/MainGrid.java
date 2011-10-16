@@ -40,10 +40,10 @@ import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBricklayer;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableDigger;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
 import jsettlers.logic.map.random.grid.BuildingObject;
@@ -144,19 +144,17 @@ public class MainGrid {
 		} else if (object instanceof MapStoneObject) {
 			mapObjectsManager.addStone(pos, ((MapStoneObject) object).getCapacity());
 		} else if (object instanceof StackObject) {
-			// EMaterialType type = ((StackObject) object).getType();
-			// IHexStack stack = new SingleMaterialStack(type, pos, EStackType.OFFER, partitionsGrid.getPlayerAt(x, y));
-			// tile.setStack(stack);
-			// for (int i = 0; i < ((StackObject) object).getCount(); i++) {
-			// stack.push(type);
-			// }
+			EMaterialType type = ((StackObject) object).getType();
+
+			for (int i = 0; i < ((StackObject) object).getCount(); i++) {
+				movablePathfinderGrid.pushMaterial(pos, type);
+			}
 		} else if (object instanceof BuildingObject) {
 			// Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			// building.appearAt(this, pos);
 		} else if (object instanceof MovableObject) {
 			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}
-
 	}
 
 	public IGraphicsGrid getGraphicsGrid() {

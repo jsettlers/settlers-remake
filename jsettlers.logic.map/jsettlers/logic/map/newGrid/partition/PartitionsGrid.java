@@ -5,7 +5,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 
 /**
  * This class handles the partitions of the map.

@@ -4,7 +4,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.management.workers.construction.DiggerRequest;
-import jsettlers.logic.map.newGrid.partition.manageables.IManageableDigger;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
