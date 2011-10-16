@@ -3,11 +3,13 @@ package jsettlers.graphics.map;
 import go.graphics.GLDrawContext;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
@@ -189,15 +191,30 @@ public class MapDrawContext {
 	 *            The y coordinate in draw space.
 	 * @return The map position under the point.
 	 */
-	public ISPosition2D getPositionUnder(int x, int y) {
-		// short tiley =
-		// (short) Math.round(this.map.getHeight() - (float) y
-		// / IHexTile.Y_DISTANCE);
-		// float incline = IHexTile.X_DISTANCE / 2.0f / IHexTile.Y_DISTANCE;
-		// short tilex =
-		// (short) Math.round((x - incline * y) / IHexTile.X_DISTANCE);
-		// return new ShortPoint2D(tilex, tiley);
-		return converter.getMap(x, y);
+	public ISPosition2D getPositionUnder(int screenx, int screeny) {
+		ISPosition2D currentPoint = converter.getMap(screenx, screeny);
+		Point2D desiredOnScreen = new Point2D.Float(screenx, screeny);
+		
+		Point2D onscreen = converter.getView(currentPoint.getX(), currentPoint.getY(), getHeight(currentPoint.getX(), currentPoint.getY()));
+		double currentbest = onscreen.distance(desiredOnScreen);
+		
+		boolean couldBeImproved;
+		do {
+			couldBeImproved = false;
+			
+			for (ISPosition2D p : new MapNeighboursArea(currentPoint)) {
+				onscreen = converter.getView(p.getX(), p.getY(), getHeight(p.getX(), p.getY()));
+				double newDistance = onscreen.distance(desiredOnScreen);
+				if (newDistance < currentbest) {
+					currentbest = newDistance;
+					currentPoint = p;
+					couldBeImproved = true;
+				}
+			}
+			
+		} while (couldBeImproved);
+		
+		return currentPoint;
 	}
 
 	/**
