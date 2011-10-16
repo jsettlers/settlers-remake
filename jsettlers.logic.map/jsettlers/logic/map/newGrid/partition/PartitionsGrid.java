@@ -94,6 +94,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	@Override
 	public final short mergePartitions(ISPosition2D firstPos, ISPosition2D secondPos) {
+		System.out.println("MERGE!!");
+
 		short firstPartition = getPartition(firstPos);
 		short secondPartition = getPartition(secondPos);
 

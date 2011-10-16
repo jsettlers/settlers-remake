@@ -373,7 +373,6 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
