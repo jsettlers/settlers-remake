@@ -21,7 +21,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
-import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
+import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
@@ -79,7 +79,7 @@ public class MainGrid {
 	private final IGraphicsGrid graphicsGrid;
 	protected final MapObjectsManager mapObjectsManager;
 	private final LandmarksCorrectingThread landmarksCorrectionThread;
-	private final ConstructMarksCalculator constructionMarksCalculator;
+	private final ConstructMarksThread constructionMarksCalculator;
 	private final BordersThread bordersThread;
 	private final BuildingsGrid buildingsGrid;
 	private final IGuiInputGrid guiInputGrid;
@@ -100,7 +100,7 @@ public class MainGrid {
 
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
-		this.constructionMarksCalculator = new ConstructMarksCalculator(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
+		this.constructionMarksCalculator = new ConstructMarksThread(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
 		// dynamically
 		this.buildingsGrid = new BuildingsGrid();
 		this.guiInputGrid = new GUIInputGrid();
@@ -172,6 +172,7 @@ public class MainGrid {
 	private void changePlayerAt(ISPosition2D position, byte player) {
 		partitionsGrid.changePlayerAt(position, player);
 		bordersThread.checkPosition(position);
+		landmarksCorrectionThread.addLandmarkedPosition(position);
 	}
 
 	public void createNewMovableAt(ISPosition2D pos, EMovableType type, byte player) {
@@ -591,8 +592,8 @@ public class MainGrid {
 		}
 
 		@Override
-		public void setPlayerAt(ISPosition2D position, byte player) {
-			changePlayerAt(position, player);
+		public void changePlayerAt(ISPosition2D position, byte player) {
+			MainGrid.this.changePlayerAt(position, player);
 		}
 
 		@Override

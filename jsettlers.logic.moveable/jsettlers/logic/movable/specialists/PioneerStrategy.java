@@ -5,7 +5,6 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.IMovableGrid;
@@ -53,8 +52,7 @@ public class PioneerStrategy extends PathableStrategy {
 			if (centerPos != null) {
 				if (!going) {
 					super.getGrid().setMarked(super.getPos(), false);
-					super.getGrid().setPlayerAt(super.getPos(), super.getPlayer());
-					LandmarksCorrectingThread.addLandmarkedPosition(super.getPos());
+					super.getGrid().changePlayerAt(super.getPos(), super.getPlayer());
 					requestNewPath();
 				} else {
 					super.setAction(EAction.ACTION1, Constants.PIONEER_ACTION_DURATION);

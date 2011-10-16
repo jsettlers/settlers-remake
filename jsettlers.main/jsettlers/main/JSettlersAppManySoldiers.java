@@ -15,7 +15,7 @@ import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.input.GuiInterface;
-import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
+import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.wrapper.PathfinderWrapper;
 import jsettlers.logic.constants.Constants;
@@ -68,7 +68,7 @@ public class JSettlersAppManySoldiers {
 		HexGrid.create(Constants.WIDTH, Constants.HEIGHT);
 		PathfinderWrapper.startPathfinder(HexGrid.get());
 
-		ConstructMarksCalculator.startCalculator(HexGrid.get(), (byte) 0);
+		ConstructMarksThread.startCalculator(HexGrid.get(), (byte) 0);
 
 		new JSettlersAppManySoldiers(manager);
 

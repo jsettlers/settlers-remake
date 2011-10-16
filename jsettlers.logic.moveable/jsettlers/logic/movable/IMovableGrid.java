@@ -196,7 +196,7 @@ public interface IMovableGrid {
 	 * @param player
 	 *            player that is now occupying the given position.
 	 */
-	void setPlayerAt(ISPosition2D position, byte player);
+	void changePlayerAt(ISPosition2D position, byte player);
 
 	/**
 	 * Checks if the given position fits the given search type.
