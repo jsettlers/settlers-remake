@@ -80,6 +80,7 @@ public interface GLDrawContext {
 	 */
 	void drawQuadsWithTexture(int textureid, float[] geometry);
 	void drawTrianglesWithTexture(int textureid, float[] geometry);
+	void drawTrianglesWithTextureColored(int textureid, float[] geometry);
 
 	int makeWidthValid(int width);
 
