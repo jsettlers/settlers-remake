@@ -249,7 +249,7 @@ public class Image implements ImageDataPrivider {
 	 * 
 	 * @return The gl index or 0 if the texture is not allocated.
 	 */
-	private int getTextureIndex(GLDrawContext gl) {
+	public int getTextureIndex(GLDrawContext gl) {
 		if (texture == -1) {
 			textureWidth = gl.makeWidthValid(width);
 			textureHeight = gl.makeHeightValid(height);

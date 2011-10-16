@@ -65,71 +65,46 @@ public class BuildingDrawer {
 
 	private void drawWithConstructionMask(MapDrawContext context,
 	        float maskState, Image image) {
-		GLDrawContext gl = context.getGl();
-		/*gl.glEnable(GL.GL_TEXTURE_2D);
-		image.bind(gl);
+		// number of tiles in x direction, can be adjustet for performance
+		int tiles = 6;
 
+		float toplineBottom = maskState;
+		float toplineTop = Math.min(1, toplineBottom + .2f * image.getHeight());
+
+		float[] tris = new float[(tiles + 2) * 3 * 5];
+
+		addToArray(tris, 0, 0, 0, image);
+		addToArray(tris, 1, 1, 0, image);
+		addToArray(tris, 2, 0, toplineBottom, image);
+		addToArray(tris, 3, 1, 0, image);
+		addToArray(tris, 2, 1, toplineBottom, image);
+		addToArray(tris, 2, 0, toplineBottom, image);
+		
+		for (int i = 0; i < tiles; i++) {
+			addToArray(tris, 6 + i*3, 1.0f / tiles * i, toplineBottom, image);
+			addToArray(tris, 7 + i*3, 1.0f / tiles * (i + 1), toplineBottom, image);
+			addToArray(tris, 8 + i*3, 1.0f / tiles * (i + .5f), toplineTop, image);
+		}
+
+		GLDrawContext gl = context.getGl();
+		gl.drawTrianglesWithTexture(image.getTextureIndex(gl), tris);
+	}
+
+	private void addToArray(float[] array, int pointindex,
+	        float u, float v, Image image) {
 		int left = image.getOffsetX();
 		int top = -image.getOffsetY();
 		int bottom = top - image.getHeight();
-
-		// number of tiles in x direction
-		int tiles = 3;
-		int steps = tiles * 2 + 1;
-
-		float toplineBottom = (1 - maskState);
-		float toplineTop = toplineBottom + 3.0f / image.getHeight();
-
-		// Our buffer: 2 floats for x,y, 2 floats for u,v, always: top, botom,
-		// top, ...
-		ByteBuffer buffer =
-		        ByteBuffer.allocateDirect((4 * Buffers.SIZEOF_FLOAT) * 2
-		                * steps);
-		buffer.order(ByteOrder.nativeOrder());
-		FloatBuffer floatBuffer = buffer.asFloatBuffer();
-
-		for (int i = 0; i < steps; i++) {
-			// relative to top left, y downwards
-			float x = (float) i / (tiles * 2);
-			float topy = i % 2 == 0 ? toplineBottom : toplineTop;
-
-			//top
-			floatBuffer.put(left + x * image.getWidth());
-			floatBuffer.put(top - topy * image.getHeight());
-			floatBuffer.put(x * image.getTextureScaleX());
-			floatBuffer.put(topy * image.getTextureScaleY());
-			
-			//bottom
-			floatBuffer.put(left + x * image.getWidth());
-			floatBuffer.put(bottom);
-			floatBuffer.put(x * image.getTextureScaleX());
-			floatBuffer.put(image.getTextureScaleY());
-
-		}
-
-		floatBuffer.rewind();
-		float[] debug = new float[4 * 2 * steps];
-		floatBuffer.get(debug);
-		System.out.println(Arrays.toString(debug));
-
-		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-
-		floatBuffer.position(0);
-		gl.glVertexPointer(2, GL2.GL_FLOAT, 4 * Buffers.SIZEOF_FLOAT,
-		        floatBuffer);
-		floatBuffer.position(2 * Buffers.SIZEOF_FLOAT);
-		gl.glTexCoordPointer(2, GL2.GL_FLOAT, 4 * Buffers.SIZEOF_FLOAT,
-		        floatBuffer);
-
-		gl.glColor3f(1, 1, 1);
-		gl.glDrawArrays(GL2.GL_TRIANGLE_STRIP, 0, 2 * steps);
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		gl.glDrawArrays(GL2.GL_TRIANGLE_STRIP, 0, 2 * steps);
-
-		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-		gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-		gl.glDisable(GL.GL_TEXTURE_2D); */
+		
+		int x = left + (int) (image.getWidth() * u);
+		int y = bottom + (int) (image.getHeight() * v);
+		
+		int offset = pointindex * 5;
+		array[offset] = x;
+		array[offset + 1] = y;
+		array[offset + 2] = 0;
+		array[offset + 3] = u * image.getTextureScaleX();
+		array[offset + 4] = v * image.getTextureScaleY();
 	}
 
 	/**

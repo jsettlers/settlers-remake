@@ -4,6 +4,7 @@ import go.graphics.GLDrawContext;
 
 import java.awt.Color;
 
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
@@ -73,8 +74,10 @@ public class MapObjectDrawer {
 	private static final int STONE = 31;
 
 	int animationStep = 0;
+	
+	private final BuildingDrawer buildingDrawer = new BuildingDrawer();
 
-	ImageProvider imageProvider = ImageProvider.getInstance();
+	private final ImageProvider imageProvider = ImageProvider.getInstance();
 
 	/**
 	 * Draws a map object at a given position.
@@ -186,7 +189,7 @@ public class MapObjectDrawer {
 					break;
 					
 				case BUILDING:
-					// big TODO: draw building.
+					buildingDrawer.draw(context, (IBuilding) object);
 					break;
 					
 				case STACK_OBJECT:
