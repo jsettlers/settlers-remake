@@ -173,7 +173,26 @@ public class JOGLDrawContext implements GLDrawContext {
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3);
 		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
-        gl2.glDrawArrays(GL2.GL_QUADS, 0, geometry.length / 5);
+        gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, geometry.length / 5);
+		
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
+    }
+
+	@Override
+    public void drawTrianglesWithTextureColored(int textureid, float[] geometry) {
+		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+		
+		FloatBuffer buffer = generateFloatBuffer(geometry);
+		
+		gl2.glVertexPointer(3, GL2.GL_FLOAT, 8 * 4, buffer);
+		buffer.position(3);
+		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 8 * 4, buffer);
+		buffer.position(5);
+		gl2.glColorPointer(3, GL2.GL_FLOAT, 8 * 4, buffer);
+		
+        gl2.glEnableClientState(GL2.GL_COLOR_ARRAY);
+        gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, geometry.length / 8);
+        gl2.glDisableClientState(GL2.GL_COLOR_ARRAY);
 		
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
     }
