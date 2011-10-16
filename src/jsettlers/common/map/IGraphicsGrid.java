@@ -31,7 +31,7 @@ public interface IGraphicsGrid {
 	 *            y coordinate
 	 * @return {@link IMovable} object at the given position or null if there is none.
 	 */
-	IMovable getMovableAt(short x, short y);
+	IMovable getMovableAt(int x, int y);
 
 	/**
 	 * Gets the first map object that is placed on the given position. There may be more map objects that can be retained by using the
@@ -43,7 +43,7 @@ public interface IGraphicsGrid {
 	 *            y coordinate
 	 * @return an {@link IMapObject} that's at the given position or null if there is none.
 	 */
-	IMapObject getMapObjectsAt(short x, short y);
+	IMapObject getMapObjectsAt(int x, int y);
 
 	/**
 	 * @param x
@@ -52,7 +52,7 @@ public interface IGraphicsGrid {
 	 *            y coordinate
 	 * @return height at the given position.
 	 */
-	byte getHeightAt(short x, short y);
+	byte getHeightAt(int x, int y);
 
 	/**
 	 * @param x
@@ -61,7 +61,7 @@ public interface IGraphicsGrid {
 	 *            y coordinate
 	 * @return {@link ELandscapeType} at the given position.
 	 */
-	ELandscapeType getLandscapeTypeAt(short x, short y);
+	ELandscapeType getLandscapeTypeAt(int x, int y);
 
 	/**
 	 * @param x
@@ -70,7 +70,7 @@ public interface IGraphicsGrid {
 	 *            y coordinate
 	 * @return {@link Color} object that should be drawn as debug color at the given position or null if no debug color should be drawn.
 	 */
-	Color getDebugColorAt(short x, short y);
+	Color getDebugColorAt(int x, int y);
 
 	/**
 	 * @param x
@@ -79,7 +79,7 @@ public interface IGraphicsGrid {
 	 *            y coordinate
 	 * @return true if this position is a border position.
 	 */
-	boolean isBorder(short x, short y);
+	boolean isBorder(int x, int y);
 
 	/**
 	 * @param x
@@ -89,5 +89,5 @@ public interface IGraphicsGrid {
 	 * @return -1 if this position has no player (for example when it is not occupied)<br>
 	 *         otherwise: the player number occupying this position.
 	 */
-	byte getPlayerAt(short x, short y);
+	byte getPlayerAt(int x, int y);
 }
