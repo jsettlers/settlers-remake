@@ -47,7 +47,11 @@ public class BuildingtestMap implements IGraphicsGrid {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		return tiles[x][y].getHeadMapObject();
+		if (tiles[x][y].getBuilding() != null) {
+			return tiles[x][y].getBuilding();
+		} else {
+			return tiles[x][y].getHeadMapObject();
+		}
 	}
 
 	@Override
