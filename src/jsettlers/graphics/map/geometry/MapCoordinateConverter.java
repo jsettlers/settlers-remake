@@ -3,7 +3,6 @@ package jsettlers.graphics.map.geometry;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.Parallelogram;
@@ -206,22 +205,6 @@ public final class MapCoordinateConverter {
 		return new Parallelogram(roundUpShort(mapstartx),
 		        roundUpShort(mapstarty), roundUpShort(mapendx - 1),
 		        roundUpShort(mapendy - 1));
-	}
-
-	public float getViewX(ISPosition2D tile) {
-		return getViewX(tile.getX(), tile.getY(), 0);
-	}
-
-	public float getViewY(ISPosition2D tile) {
-		return getViewY(tile.getX(), tile.getY(), 0);
-	}
-
-	public float getViewX(IHexTile tile) {
-		return getViewX(tile.getX(), tile.getY(), tile.getHeight());
-	}
-
-	public float getViewY(IHexTile tile) {
-		return getViewY(tile.getX(), tile.getY(), tile.getHeight());
 	}
 
 	/**

@@ -8,8 +8,8 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.IStack;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.image.Image;
@@ -183,6 +183,14 @@ public class MapObjectDrawer {
 					// TODO: better flag positioning
 					context.getGl().glTranslatef(0, 0, 0.2f);
 					drawPlayerableWaving(context, 13, 64, object);
+					break;
+					
+				case BUILDING:
+					// big TODO: draw building.
+					break;
+					
+				case STACK_OBJECT:
+					drawStack(context, (IStackMapObject)object);
 					break;
 
 				default:
@@ -428,17 +436,13 @@ public class MapObjectDrawer {
 	 * 
 	 * @param context
 	 *            The context to draw with
-	 * @param stack
+	 * @param object
 	 *            The stack to draw.
 	 */
-	public void drawStack(MapDrawContext context, IStack stack) {
-		byte elements = stack.getNumberOfElements();
+	public void drawStack(MapDrawContext context, IStackMapObject object) {
+		byte elements = object.getSize();
 		if (elements > 0) {
-			drawStackAtScreen(context.getGl(), stack.getMaterial(), elements);
-		}
-
-		if (stack.getNextStack() != null) {
-			drawStack(context, stack.getNextStack());
+			drawStackAtScreen(context.getGl(), object.getMaterialType(), elements);
 		}
 	}
 

@@ -204,13 +204,15 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		                this.context.getScreen().getPosition().bigger(30)),
 		                map.getWidth(), map.getHeight());
 		for (ISPosition2D pos : tiles) {
-			IMapObject object = map.getMapObjectsAt(pos.getX(), pos.getY());
+			short x = pos.getX();
+			short y = pos.getY();
+			IMapObject object = map.getMapObjectsAt(x, y);
 			if (object != null) {
 				this.objectDrawer.drawMapObject(this.context, this.map, pos,
 				        object);
 			}
 
-			IMovable movable = map.getMovableAt(pos.getX(), pos.getY());
+			IMovable movable = map.getMovableAt(x, y);
 			if (movable != null) {
 				if (movable.getAction() == EAction.WALKING) {
 					// TODO: catch nullpointer!
@@ -230,10 +232,16 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 				}
 			}
 
-			if (ENABLE_DEBUG && map.getDebugColorAt(pos.getX(), pos.getY()) != null) {
+			if (ENABLE_DEBUG && map.getDebugColorAt(x, y) != null) {
 				needDrawDebug = true;
 			}
 
+			if (map.isBorder(x, y)) {
+				this.context.beginTileContext(pos);
+				byte player = map.getPlayerAt(x, y);
+				objectDrawer.drawPlayerBorderObject(context, player);
+				this.context.endTileContext();
+			}
 			//drawPlayerBorderIfNeeded(tile);
 		}
 

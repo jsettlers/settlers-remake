@@ -265,8 +265,11 @@ public class MapDrawContext {
 	 */
 	public void beginTileContext(ISPosition2D pos) {
 		this.gl.glPushMatrix();
-		this.gl.glTranslatef(this.converter.getViewX(pos),
-		        this.converter.getViewY(pos), 0);
+		short x = pos.getX();
+		short y = pos.getY();
+		int height = getHeight(x, y);
+		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
+		        this.converter.getViewY(x, y, height), 0);
 	}
 
 	/**
@@ -291,12 +294,18 @@ public class MapDrawContext {
 	public void beginBetweenTileContext(ISPosition2D tile,
 	        ISPosition2D destination, float progress) {
 		this.gl.glPushMatrix();
+		short tx = tile.getX();
+		short ty = tile.getY();
+		float theight = getHeight(tx, ty);
+		short dx = destination.getX();
+		short dy = destination.getY();
+		float dheight = getHeight(dx, dy);
 		float x =
-		        (1 - progress) * this.converter.getViewX(tile) + progress
-		                * this.converter.getViewX(destination);
+		        (1 - progress) * this.converter.getViewX(tx, ty, theight)
+		                + progress * this.converter.getViewX(dx, dy, dheight);
 		float y =
-		        (1 - progress) * this.converter.getViewY(tile) + progress
-		                * this.converter.getViewY(destination);
+		        (1 - progress) * this.converter.getViewY(tx, ty, theight)
+		                + progress * this.converter.getViewY(dx, dy, dheight);
 		this.gl.glTranslatef(x, y, 0);
 	}
 
@@ -327,19 +336,23 @@ public class MapDrawContext {
 	}
 
 	public void scrollTo(ISPosition2D point) {
-		int x = Math.round(converter.getViewX(point));
-		int y = Math.round(converter.getViewY(point));
+		int height = getHeight(point.getX(), point.getY());
+		int x =
+		        Math.round(converter.getViewX(point.getX(), point.getY(),
+		                height));
+		int y =
+		        Math.round(converter.getViewY(point.getX(), point.getY(),
+		                height));
 		screen.setScreenCenter(x, y);
 	}
 
 	public ELandscapeType getLandscape(int x, int y) {
-		// TODO: allow ints
-		return map.getLandscapeTypeAt((short) x, (short) y);
+		return map.getLandscapeTypeAt(x, y);
 	}
 
 	public int getHeight(int x, int y) {
 		if (x >= 0 && x < map.getWidth() && y >= 0 && y < map.getHeight()) {
-			return map.getHeightAt((short) x, (short) y);
+			return map.getHeightAt(x, y);
 		} else {
 			return 0;
 		}
