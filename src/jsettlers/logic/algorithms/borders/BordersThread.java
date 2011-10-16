@@ -47,21 +47,23 @@ public class BordersThread implements Runnable {
 					byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
 					boolean neighborIsBorder = false;
 
-					if (neighborPlayer != player) {
-						isBorder = true;
-					}
-
-					for (EDirection currNeighborDir : EDirection.values()) {
-						if (grid.getPlayer(currNeighborDir.getNextTileX(currNeighborX), currNeighborDir.getNextTileY(currNeighborY)) != neighborPlayer) {
-							neighborIsBorder = true;
-							break;
+					if (neighborPlayer >= 0) { // this position is occupied by a player
+						if (neighborPlayer != player) {
+							isBorder = true;
 						}
-					}
+
+						for (EDirection currNeighborDir : EDirection.values()) {
+							if (grid.getPlayer(currNeighborDir.getNextTileX(currNeighborX), currNeighborDir.getNextTileY(currNeighborY)) != neighborPlayer) {
+								neighborIsBorder = true;
+								break;
+							}
+						}
+					} // else the position is not occupied -> don't display a border here
 
 					grid.setBorder(currNeighborX, currNeighborY, neighborIsBorder);
 				}
 
-				grid.setBorder(position.getX(), position.getY(), isBorder);
+				grid.setBorder(position.getX(), position.getY(), isBorder && player >= 0);
 			} else {
 				try {
 					Thread.sleep(50);
