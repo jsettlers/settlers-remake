@@ -286,29 +286,29 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		IMapArea tiles =
 		        new MapShapeFilter(context.getScreenArea(), map.getWidth(),
 		                map.getHeight());
-		/*GL2 gl = this.context.getGl();
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		ByteBuffer buffer =
-		        ByteBuffer.allocateDirect(6 * 2 * Buffers.SIZEOF_INT);
-		buffer.order(ByteOrder.nativeOrder());
-		IntBuffer intBuffer = buffer.asIntBuffer();
-		intBuffer.put(new int[] {
-		        0, 4, -3, 2, -3, -2, 0, -4, 3, -2, 3, 2
-		});
-		intBuffer.rewind();
-		gl.glVertexPointer(2, GL2.GL_INT, 0, intBuffer);
-		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+		GLDrawContext gl = this.context.getGl();
+		
+		float[] shape = new float[] {
+				0, 4, .5f, 0, 0,
+				-3, 2, .5f,  0, 0,
+				-3, -2, .5f,  0, 0,
+				0, -4, .5f,  0, 0,
+				0, -4, .5f,  0, 0,
+				3, -2, .5f,  0, 0,
+				3, 2, .5f, 0, 0,
+				0, 4, .5f,  0, 0,
+		};
 
+		float[] colorArray = new float[4];
 		for (ISPosition2D pos : tiles) {
-			IHexTile tile = map.getTile(pos);
-			if (tile.getDebugColor() != null) {
-				this.context.beginTileContext(tile);
-				drawDebugTile(tile.getDebugColor());
-				this.context.endTileContext();
+			Color color = map.getDebugColorAt(pos.getX(), pos.getY());
+			if (color != null) {
+				this.context.beginTileContext(pos);
+				gl.color(color.getComponents(colorArray));
+				gl.drawQuadsWithTexture(0, shape);
+				context.endTileContext();
 			}
 		}
-		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);*/
 	}
 
 
@@ -364,7 +364,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	}
 
 	private void fireAction(GOEvent event, Action action) {
-		
 			event.setHandler(new ActionHandler(action, getInterfaceConnector()));
 	}
 
