@@ -6,7 +6,6 @@ import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.JOGLPanel;
@@ -16,14 +15,8 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
-import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
-import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
-import jsettlers.logic.algorithms.path.wrapper.PathfinderWrapper;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.management.GameManager;
-import jsettlers.logic.management.MaterialJobPart;
-import jsettlers.logic.map.hex.HexGrid;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.player.ActivePlayer;
 import jsettlers.logic.timer.Timer100Milli;
 import network.INetworkManager;
@@ -65,33 +58,28 @@ public class JSettlersApp {
 
 		ActivePlayer.instantiate((byte) 0);
 
-		String map = null;
-		if (args.length == 2) {
-			map = args[1];
-		}
-
-		new JSettlersApp(manager, map);
+		new JSettlersApp(manager);
 	}
 
-	private static void initTests() {
+	private static void initTests(MainGrid grid) {
 		for (int x = 20; x < 60; x += 2) {
-			setMovable(x, 5, EMovableType.BEARER, 1);
+			setMovable(grid, x, 5, EMovableType.BEARER, (byte) 1);
 		}
 
-		GameManager.requestMaterial(new MaterialJobPart(EMaterialType.PICK, new ShortPoint2D((short) 60, (short) (Constants.HEIGHT - 30)), (byte) 1));
+		// grid.requestMaterial(new MaterialJobPart(EMaterialType.PICK, new ShortPoint2D((short) 60, (short) (Constants.HEIGHT - 30)), (byte) 1));
 
 		for (int i = 0; i < 40; i++) {
 			for (int h = 0; h < 40; h++)
-				setMovable(100 + i, 120 + h, EMovableType.PIONEER, 1);
+				setMovable(grid, 100 + i, 120 + h, EMovableType.PIONEER, (byte) 1);
 		}
 	}
 
-	private static void setMovable(int x, int y, EMovableType type, int player) {
+	private static void setMovable(MainGrid grid, int x, int y, EMovableType type, byte player) {
 		ShortPoint2D pos = new ShortPoint2D((short) x, (short) (Constants.HEIGHT - y));
-		HexGrid.get().placeNewMovable(pos, new Movable(HexGrid.get(), HexGrid.get().getTile(pos), type, (byte) player));
+		grid.createNewMovableAt(pos, type, player);
 	}
 
-	private JSettlersApp(INetworkManager manager, String map) {
+	private JSettlersApp(INetworkManager manager) {
 
 		JFrame jsettlersWnd = new JFrame("jsettlers");
 
@@ -119,29 +107,17 @@ public class JSettlersApp {
 
 		Timer100Milli.start();
 
-		GameManager.start(PLAYERS);
-
 		progress.setProgressState(EProgressState.LOADING_MAP);
-		if (map != null && map.equalsIgnoreCase("noRandom")) {
-			HexGrid.create((short) 400, (short) 400);
-		} else {
-			HexGrid.createRandom("test", PLAYERS, RandomSingleton.get());
 
-		}
-
-		PathfinderWrapper.startPathfinder(HexGrid.get());
-
-		ConstructMarksCalculator.startCalculator(HexGrid.get(), (byte) 0);
-
-		LandmarksCorrectingThread.startThread(HexGrid.get());
+		MainGrid grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
 
 		progress.setProgressState(EProgressState.LOADING_IMAGES);
 		for (int i : PRELOAD_FILES) {
 			provider.waitForPreload(i);
 		}
 
-		MapInterfaceConnector connector = panel.showHexMap(HexGrid.get(), ActivePlayer.get().getStatistics());
-		new GuiInterface(connector, manager, HexGrid.get());
+		MapInterfaceConnector connector = panel.showHexMap(grid.getGraphicsGrid(), ActivePlayer.get().getStatistics());
+		new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 		manager.startGameTimer();
 	}

@@ -11,16 +11,14 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.management.GameManager;
-import jsettlers.logic.management.workers.IWorkerJobable;
-import jsettlers.logic.management.workers.building.BuildingWorkerRequest;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableWorker;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 import random.RandomSingleton;
 
-public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJobable<BuildingWorkerRequest> {
+public class BuildingWorkerStrategy extends PathableStrategy implements IManageableWorker {
 
 	private final EMovableType movableType;
 	private IBuildingJob currentJob;
@@ -32,7 +30,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 	public BuildingWorkerStrategy(IMovableGrid grid, Movable movable, EMovableType movableType) {
 		super(grid, movable);
 		this.movableType = movableType;
-		GameManager.addJoblessBuildingWorker(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -315,13 +313,13 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IWorkerJ
 		return movableType;
 	}
 
-	@Override
-	public void setWorkerRequest(BuildingWorkerRequest request) {
-		this.building = request.getBuilding();
-		this.currentJob = building.getBuildingType().getStartJob();
-		this.done = false;
-		pathOrActionFinished();
-	}
+	// @Override
+	// public void setWorkerRequest(BuildingWorkerRequest request) { // FIXME add method set requests
+	// this.building = request.getBuilding();
+	// this.currentJob = building.getBuildingType().getStartJob();
+	// this.done = false;
+	// pathOrActionFinished();
+	// }
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {

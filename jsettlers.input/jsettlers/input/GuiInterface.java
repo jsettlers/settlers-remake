@@ -32,9 +32,7 @@ import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.TaskExecutor;
 import jsettlers.input.task.WorkAreaGuiTask;
-import jsettlers.logic.algorithms.construction.ConstructMarksCalculator;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.hex.HexGrid;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.movable.IIDable;
@@ -57,6 +55,7 @@ public class GuiInterface implements IMapInterfaceListener {
 	private Action activeAction = null;
 	private final INetworkManager manager;
 	private final IGuiInputGrid grid;
+	private EBuildingType previewBuilding;
 
 	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IGuiInputGrid grid) {
 		this.connector = connector;
@@ -76,8 +75,8 @@ public class GuiInterface implements IMapInterfaceListener {
 		case BUILD:
 			EBuildingType buildingType = ((BuildAction) action).getBuilding();
 			System.err.println("build: " + buildingType);
-			HexGrid.get().setPreviewBuilding(buildingType);
-			ConstructMarksCalculator.setBuildingType(buildingType);
+			this.previewBuilding = buildingType; // FIXME implement a way to give graphics grid the preview building
+			grid.setBuildingType(buildingType);
 			setActiveAction(action);
 			break;
 
@@ -155,7 +154,7 @@ public class GuiInterface implements IMapInterfaceListener {
 			break;
 
 		case SCREEN_CHANGE:
-			ConstructMarksCalculator.setScreen(((ScreenChangeAction) action).getScreenArea());
+			grid.setScreen(((ScreenChangeAction) action).getScreenArea());
 			break;
 
 		default:
@@ -249,9 +248,9 @@ public class GuiInterface implements IMapInterfaceListener {
 		} else {
 			switch (activeAction.getActionType()) {
 			case BUILD:
-				EBuildingType type = HexGrid.get().getConstructionPreviewBuilding();
-				HexGrid.get().setPreviewBuilding(null);
-				ConstructMarksCalculator.setBuildingType(null);
+				EBuildingType type = previewBuilding;
+				previewBuilding = null;
+				grid.setBuildingType(null);
 				scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos, type));
 				break;
 			case SET_WORK_AREA:

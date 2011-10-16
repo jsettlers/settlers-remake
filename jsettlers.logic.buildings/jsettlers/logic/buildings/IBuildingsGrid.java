@@ -2,7 +2,6 @@ package jsettlers.logic.buildings;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.hex.interfaces.IHexStack;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.objects.MapObjectsManager;
@@ -41,10 +40,6 @@ public interface IBuildingsGrid {
 	 * @return height of the grid,
 	 */
 	short getHeight();
-
-	void placeStack(ISPosition2D position, IHexStack stack);
-
-	void removeStack(ISPosition2D position);
 
 	/**
 	 * Gives the movable currently located at the given position.

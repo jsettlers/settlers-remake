@@ -2,23 +2,21 @@ package jsettlers.logic.movable.construction;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.management.GameManager;
-import jsettlers.logic.management.workers.IWorkerJobable;
-import jsettlers.logic.management.workers.construction.AbstractConstructionWorkerRequest;
 import jsettlers.logic.management.workers.construction.BricklayerRequest;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableBricklayer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
-public class BricklayerStrategy extends PathableStrategy implements IWorkerJobable<AbstractConstructionWorkerRequest> {
+public class BricklayerStrategy extends PathableStrategy implements IManageableBricklayer {
 
 	private BricklayerRequest bricklayerRequest;
 	private IConstructableBuilding constructionSite;
 
 	public BricklayerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
-		GameManager.addJoblessWorker(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -41,7 +39,7 @@ public class BricklayerStrategy extends PathableStrategy implements IWorkerJobab
 		if (bricklayerRequest != null) {
 			// TODO rerequest the worker request
 			bricklayerRequest = null;
-			GameManager.addJoblessWorker(this);
+			super.getGrid().addJobless(this);
 		}
 	}
 
@@ -62,7 +60,7 @@ public class BricklayerStrategy extends PathableStrategy implements IWorkerJobab
 			super.setAction(EAction.ACTION1, 1);
 		} else {
 			constructionSite = null;
-			GameManager.addJoblessWorker(this);
+			super.getGrid().addJobless(this);
 			super.setAction(EAction.NO_ACTION, -1);
 		}
 	}
@@ -84,12 +82,12 @@ public class BricklayerStrategy extends PathableStrategy implements IWorkerJobab
 		return EMovableType.BRICKLAYER;
 	}
 
-	@Override
-	public void setWorkerRequest(AbstractConstructionWorkerRequest curr) {
-		assert curr instanceof BricklayerRequest;
-		this.bricklayerRequest = (BricklayerRequest) curr;
-		this.constructionSite = null;
-	}
+	// @Override FIXME
+	// public void setWorkerRequest(AbstractConstructionWorkerRequest curr) {
+	// assert curr instanceof BricklayerRequest;
+	// this.bricklayerRequest = (BricklayerRequest) curr;
+	// this.constructionSite = null;
+	// }
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {

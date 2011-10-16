@@ -7,6 +7,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.newGrid.partition.PositionableDatastructure.IAcceptor;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
 
@@ -19,12 +20,12 @@ import synchronic.timer.NetworkTimer;
 public class PartitionManager implements INetworkTimerable {
 	private PositionableDatastructure<Offer> offers;
 	private PriorityQueue<Request> requests;
-	private PositionableDatastructure<IManagable> jobless;
+	private PositionableDatastructure<IManageableBearer> jobless;
 
 	protected PartitionManager() {
 		this.offers = new PositionableDatastructure<PartitionManager.Offer>();
 		this.requests = new PriorityQueue<PartitionManager.Request>();
-		this.jobless = new PositionableDatastructure<IManagable>();
+		this.jobless = new PositionableDatastructure<IManageableBearer>();
 
 		NetworkTimer.schedule(this, (short) 1);
 	}
@@ -48,12 +49,12 @@ public class PartitionManager implements INetworkTimerable {
 		requests.offer(new Request(position, materialType, priority));
 	}
 
-	public IManagable removeJobless(ISPosition2D position) {
+	public IManageableBearer removeJobless(ISPosition2D position) {
 		return jobless.removeObjectAt(position);
 	}
 
-	public void addJobless(ISPosition2D position, IManagable managable) {
-		this.jobless.set(position, managable);
+	public void addJobless(IManageableBearer manageable) {
+		this.jobless.set(manageable.getPos(), manageable);
 	}
 
 	/**
@@ -156,7 +157,7 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
-	private final AllAcceptor<IManagable> manageableAcceptor = new AllAcceptor<IManagable>();
+	private final AllAcceptor<IManageableBearer> manageableAcceptor = new AllAcceptor<IManageableBearer>();
 
 	@Override
 	public void timerEvent() {
@@ -169,7 +170,7 @@ public class PartitionManager implements INetworkTimerable {
 			if (offer == null) {
 				reofferRequest(request);
 			} else {
-				IManagable manageable = jobless.getObjectNextTo(offer.position, manageableAcceptor);
+				IManageableBearer manageable = jobless.getObjectNextTo(offer.position, manageableAcceptor);
 
 				if (manageable != null) {
 					offer.amount--;

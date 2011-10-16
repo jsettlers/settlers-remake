@@ -8,6 +8,10 @@ package jsettlers.logic.constants;
  */
 public final class Constants {
 
+	public static final float TILE_PATHFINDER_COST = 1.0f;
+
+	public static final float TILE_HEURISTIC_DIST = 1f;
+
 	/**
 	 * private constructor, because no instances of this class can be created.
 	 */

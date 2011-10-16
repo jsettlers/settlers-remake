@@ -21,7 +21,7 @@ public class LandscapeGrid {
 		return heightGrid[x][y];
 	}
 
-	public void setHeight(short x, short y, byte height) {
+	public void setHeightAt(short x, short y, byte height) {
 		this.heightGrid[x][y] = height;
 	}
 
@@ -29,7 +29,7 @@ public class LandscapeGrid {
 		return landscapeGrid[x][y];
 	}
 
-	public void setLandscapeType(short x, short y, ELandscapeType landscapeType) {
+	public void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
 		this.landscapeGrid[x][y] = landscapeType;
 	}
 }

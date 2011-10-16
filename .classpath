@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="jsettlers.logic"/>
 	<classpathentry kind="src" path="jsettlers.logic.objects"/>
-	<classpathentry kind="src" path="jsettlers.logic.materials"/>
 	<classpathentry kind="src" path="jsettlers.logic.buildings"/>
 	<classpathentry kind="src" path="jsettlers.logic.moveable"/>
 	<classpathentry kind="src" path="jsettlers.logic.map"/>

@@ -5,6 +5,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
 
 /**
  * This class handles the partitions of the map.
@@ -23,6 +24,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	 * This array stores the partition objects handled by this class.<br>
 	 */
 	private final Partition[] partitionObjects = new Partition[1024]; // TODO make the array grow dynamically
+	private final Partition nullPartition = new Partition((byte) -1);
 	private final PartitionsAlgorithm partitionsManager;
 
 	public PartitionsGrid(final short width, final short height, IAStarPathMap pathfinderMap) {
@@ -32,7 +34,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		this.player = new byte[width][height];
 		this.borders = new boolean[width][height];
 		this.partitionsManager = new PartitionsAlgorithm(this, pathfinderMap);
-		// this.partitionsManager.start();
 
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
@@ -58,13 +59,9 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	private Partition getPartitionObject(ISPosition2D pos) {
 		short partition = getPartition(pos);
 		if (partition >= 0)
-			return getPartitionObject(partition);
+			return this.partitionObjects[partition];
 		else
-			return null;
-	}
-
-	private Partition getPartitionObject(short partition) {
-		return this.partitionObjects[partition];
+			return nullPartition;
 	}
 
 	@Override
@@ -210,5 +207,9 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	public boolean isBorderAt(short x, short y) {
 		return borders[x][y];
+	}
+
+	public void addJobless(IManageableBearer manageable) {
+		getPartitionObject(manageable.getPos()).addJobless(manageable);
 	}
 }

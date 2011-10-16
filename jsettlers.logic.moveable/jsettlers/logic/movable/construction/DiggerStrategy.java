@@ -3,21 +3,19 @@ package jsettlers.logic.movable.construction;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.management.GameManager;
-import jsettlers.logic.management.workers.IWorkerJobable;
-import jsettlers.logic.management.workers.construction.AbstractConstructionWorkerRequest;
 import jsettlers.logic.management.workers.construction.DiggerRequest;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableDigger;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
-public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<AbstractConstructionWorkerRequest> {
+public class DiggerStrategy extends PathableStrategy implements IManageableDigger {
 
 	private DiggerRequest request;
 
 	public DiggerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
-		GameManager.addJoblessWorker(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -44,7 +42,7 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 		if (request != null) {
 			// TODO rerequest the worker request
 			request = null;
-			GameManager.addJoblessWorker(this);
+			super.getGrid().addJobless(this);
 		}
 		super.setAction(EAction.NO_ACTION, -1);
 	}
@@ -103,7 +101,7 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 			} else {
 				super.setAction(EAction.NO_ACTION, -1);
 				request = null;
-				GameManager.addJoblessWorker(this);
+				super.getGrid().addJobless(this);
 			}
 		}
 	}
@@ -113,12 +111,12 @@ public class DiggerStrategy extends PathableStrategy implements IWorkerJobable<A
 		return EMovableType.DIGGER;
 	}
 
-	@Override
-	public void setWorkerRequest(AbstractConstructionWorkerRequest curr) {
-		assert curr instanceof DiggerRequest;
-		this.request = (DiggerRequest) curr;
-		wentThere = false;
-	}
+	// @Override FIXME
+	// public void setWorkerRequest(AbstractConstructionWorkerRequest curr) {
+	// assert curr instanceof DiggerRequest;
+	// this.request = (DiggerRequest) curr;
+	// wentThere = false;
+	// }
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {

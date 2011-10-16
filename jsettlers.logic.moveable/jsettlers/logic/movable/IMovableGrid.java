@@ -9,6 +9,10 @@ import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableBricklayer;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableDigger;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableWorker;
 import jsettlers.logic.objects.MapObjectsManager;
 import synchronic.timer.NetworkTimer;
 
@@ -270,4 +274,12 @@ public interface IMovableGrid {
 	 * @return {@link InAreaFinder} algorithm.
 	 */
 	InAreaFinder getInAreaFinder();
+
+	void addJobless(IManageableBearer bearer);
+
+	void addJobless(IManageableWorker worker);
+
+	void addJobless(IManageableBricklayer bricklayer);
+
+	void addJobless(IManageableDigger digger);
 }

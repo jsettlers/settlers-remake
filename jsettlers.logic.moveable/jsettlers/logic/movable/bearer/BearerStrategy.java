@@ -3,24 +3,23 @@ package jsettlers.logic.movable.bearer;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.management.GameManager;
-import jsettlers.logic.management.bearer.IBearerJobable;
 import jsettlers.logic.management.bearer.job.BearerCarryJob;
-import jsettlers.logic.management.bearer.job.BearerToWorkerJob;
 import jsettlers.logic.management.bearer.job.BearerToWorkerWithMaterialJob;
+import jsettlers.logic.map.newGrid.partition.manageables.IManageableBearer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
-public class BearerStrategy extends PathableStrategy implements IBearerJobable {
+public class BearerStrategy extends PathableStrategy implements IManageableBearer {
 	private EBearerState state;
 	private BearerCarryJob carryJob;
 	private BearerToWorkerWithMaterialJob toWorkerJob;
 
 	public BearerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
-		GameManager.addJobless(this);
+		grid.addJobless(this);
 	}
 
 	@Override
@@ -36,11 +35,11 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 				super.getGrid().pushMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
 				// no break here!
 			case DROP:
-				GameManager.requestMaterial(carryJob.getRequest());
+				// grid.requestMaterial(carryJob.getRequest()); FIXME implement reOffering of request
 			}
 		} else if (toWorkerJob != null) {
 			super.getGrid().pushMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
-			GameManager.requestMovable(toWorkerJob.getMovableType(), super.getPlayer());
+			// GameManager.requestMovable(toWorkerJob.getMovableType(), super.getPlayer()); FIXME
 		}
 	}
 
@@ -94,7 +93,7 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 					super.setAction(EAction.NO_ACTION, -1);
 					super.setMaterial(EMaterialType.NO_MATERIAL);
 					carryJob = null;
-					GameManager.addJobless(this);
+					super.getGrid().addJobless(this);
 					break;
 				case INIT:
 					super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
@@ -134,22 +133,22 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 		}
 	}
 
-	@Override
-	public void setToWorkerJob(BearerToWorkerJob job) {
-		BearerToWorkerJob toWorkerJob = job;
-		if (!(job instanceof BearerToWorkerWithMaterialJob)) {
-			super.convertTo(toWorkerJob.getMovableType());
-		} else {
-			this.toWorkerJob = (BearerToWorkerWithMaterialJob) toWorkerJob;
-			this.state = EBearerState.INIT;
-		}
-	}
-
-	@Override
-	public void setCarryJob(BearerCarryJob job) {
-		this.carryJob = job;
-		this.state = EBearerState.INIT;
-	}
+	// @Override
+	// public void setToWorkerJob(BearerToWorkerJob job) {
+	// BearerToWorkerJob toWorkerJob = job;
+	// if (!(job instanceof BearerToWorkerWithMaterialJob)) {
+	// super.convertTo(toWorkerJob.getMovableType());
+	// } else {
+	// this.toWorkerJob = (BearerToWorkerWithMaterialJob) toWorkerJob;
+	// this.state = EBearerState.INIT;
+	// }
+	// }
+	//
+	// @Override
+	// public void setCarryJob(BearerCarryJob job) {
+	// this.carryJob = job;
+	// this.state = EBearerState.INIT;
+	// }
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
@@ -159,6 +158,12 @@ public class BearerStrategy extends PathableStrategy implements IBearerJobable {
 	@Override
 	protected boolean isGotoJobable() {
 		return false;
+	}
+
+	@Override
+	public void executeJob(ISPosition2D offer, ISPosition2D request, EMaterialType materialType) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
