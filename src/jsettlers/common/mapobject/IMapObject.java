@@ -27,6 +27,9 @@ public interface IMapObject {
 	 * <p />
 	 * for stones:<br>
 	 * - the value gives the number of stones that can be picked from this stone.
+	 * <p />
+	 * for buildings:<br>
+	 * - the value gives the construction state
 	 * 
 	 * @return a positive float, normally from 0..1
 	 */
@@ -34,6 +37,7 @@ public interface IMapObject {
 
 	/**
 	 * Gets the next map object for that position.
+	 * 
 	 * @return The next object at the same position
 	 */
 	public IMapObject getNextObject();

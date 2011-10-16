@@ -74,6 +74,8 @@ public enum EMapObjectType {
 
 	/**
 	 * Type to represent a Building
+	 * <p />
+	 * {@link IMapObject}s of this type must implement {@link IBuildingMapObject}.
 	 */
 	BUILDING
 }
