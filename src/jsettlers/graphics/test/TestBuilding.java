@@ -2,6 +2,8 @@ package jsettlers.graphics.test;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.ISPosition2D;
 
 public class TestBuilding implements IBuilding {
@@ -66,5 +68,15 @@ public class TestBuilding implements IBuilding {
 	public void stopOrStartWorking(boolean stop) {
 
 	}
+
+	@Override
+    public EMapObjectType getObjectType() {
+	    return EMapObjectType.BUILDING;
+    }
+
+	@Override
+    public IMapObject getNextObject() {
+	    return null;
+    }
 
 }
