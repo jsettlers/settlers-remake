@@ -25,7 +25,7 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-	public float getConstructionState() {
+	public float getStateProgress() {
 		return 1;
 	}
 
