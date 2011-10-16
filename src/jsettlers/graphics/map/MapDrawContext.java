@@ -4,6 +4,7 @@ import go.graphics.GLDrawContext;
 
 import java.awt.Color;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
@@ -113,8 +114,7 @@ public class MapDrawContext {
 		// beginTime = System.nanoTime();
 
 		gl2.glPushMatrix();
-		gl2.glTranslatef(-this.screen.getLeft(),
-		        -this.screen.getBottom(), 0);
+		gl2.glTranslatef(-this.screen.getLeft(), -this.screen.getBottom(), 0);
 	}
 
 	/**
@@ -190,13 +190,13 @@ public class MapDrawContext {
 	 * @return The map position under the point.
 	 */
 	public ISPosition2D getPositionUnder(int x, int y) {
-//		short tiley =
-//		        (short) Math.round(this.map.getHeight() - (float) y
-//		                / IHexTile.Y_DISTANCE);
-//		float incline = IHexTile.X_DISTANCE / 2.0f / IHexTile.Y_DISTANCE;
-//		short tilex =
-//		        (short) Math.round((x - incline * y) / IHexTile.X_DISTANCE);
-//		return new ShortPoint2D(tilex, tiley);
+		// short tiley =
+		// (short) Math.round(this.map.getHeight() - (float) y
+		// / IHexTile.Y_DISTANCE);
+		// float incline = IHexTile.X_DISTANCE / 2.0f / IHexTile.Y_DISTANCE;
+		// short tilex =
+		// (short) Math.round((x - incline * y) / IHexTile.X_DISTANCE);
+		// return new ShortPoint2D(tilex, tiley);
 		return converter.getMap(x, y);
 	}
 
@@ -288,8 +288,8 @@ public class MapDrawContext {
 	 * @param progress
 	 *            The progress between those two bytes.
 	 */
-	public void beginBetweenTileContext(ISPosition2D tile, ISPosition2D destination,
-	        float progress) {
+	public void beginBetweenTileContext(ISPosition2D tile,
+	        ISPosition2D destination, float progress) {
 		this.gl.glPushMatrix();
 		float x =
 		        (1 - progress) * this.converter.getViewX(tile) + progress
@@ -327,8 +327,25 @@ public class MapDrawContext {
 	}
 
 	public void scrollTo(ISPosition2D point) {
-	    int x = Math.round(converter.getViewX(point));
-	    int y = Math.round(converter.getViewY(point));
-	    screen.setScreenCenter(x, y);
-    }
+		int x = Math.round(converter.getViewX(point));
+		int y = Math.round(converter.getViewY(point));
+		screen.setScreenCenter(x, y);
+	}
+
+	public ELandscapeType getLandscape(int x, int y) {
+		// TODO: allow ints
+		return map.getLandscapeTypeAt((short) x, (short) y);
+	}
+
+	public int getHeight(int x, int y) {
+		if (x >= 0 && x < map.getWidth() && y >= 0 && y < map.getHeight()) {
+			return map.getHeightAt((short) x, (short) y);
+		} else {
+			return 0;
+		}
+	}
+
+	public IGraphicsGrid getMap() {
+		return map;
+	}
 }

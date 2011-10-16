@@ -187,7 +187,7 @@ public final class ImageProvider {
 
 	public void waitForPreload(int filenumber) {
 		synchronized (images) {
-			while (!images.containsKey(Integer.valueOf(filenumber))) {
+			while (!isPreloaded(filenumber)) {
 				try {
 					images.wait();
 				} catch (InterruptedException e) {
@@ -196,5 +196,9 @@ public final class ImageProvider {
 			}
 		}
 	}
+
+	public boolean isPreloaded(int filenumber) {
+	    return images.containsKey(Integer.valueOf(filenumber));
+    }
 
 }

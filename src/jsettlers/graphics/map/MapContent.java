@@ -326,7 +326,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	 * @param screen2
 	 */
 	private void drawBackground() {
-		//this.background.drawMapContent(this.context);
+		this.background.drawMapContent(this.context);
 	}
 
 	@Override
