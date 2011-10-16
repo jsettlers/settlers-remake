@@ -34,7 +34,7 @@ public class BuildingDrawer {
 		Sequence<? extends Image> sequence =
 		        getBuildingSequence(building.getBuildingType());
 
-		float state = building.getConstructionState();
+		float state = building.getStateProgress();
 		float maskState;
 		if (state < 0.5f) {
 			maskState = state * 2;

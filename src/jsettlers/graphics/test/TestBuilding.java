@@ -47,7 +47,7 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
-	public float getConstructionState() {
+	public float getStateProgress() {
 		return Math.min(this.constructed, 1);
 	}
 
