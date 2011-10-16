@@ -469,37 +469,37 @@ public class TestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public IMovable getMovableAt(short x, short y) {
+	public IMovable getMovableAt(int x, int y) {
 		return getTile(x, y).getMovable();
 	}
 
 	@Override
-	public IMapObject getMapObjectsAt(short x, short y) {
+	public IMapObject getMapObjectsAt(int x, int y) {
 		return getTile(x, y).getHeadMapObject();
 	}
 
 	@Override
-	public byte getHeightAt(short x, short y) {
+	public byte getHeightAt(int x, int y) {
 		return getTile(x, y).getHeight();
 	}
 
 	@Override
-	public ELandscapeType getLandscapeTypeAt(short x, short y) {
+	public ELandscapeType getLandscapeTypeAt(int x, int y) {
 		return getTile(x, y).getLandscapeType();
 	}
 
 	@Override
-	public Color getDebugColorAt(short x, short y) {
+	public Color getDebugColorAt(int x, int y) {
 		return null;
 	}
 
 	@Override
-	public boolean isBorder(short x, short y) {
+	public boolean isBorder(int x, int y) {
 		return false;
 	}
 
 	@Override
-	public byte getPlayerAt(short x, short y) {
+	public byte getPlayerAt(int x, int y) {
 		return 0;
 	}
 }
