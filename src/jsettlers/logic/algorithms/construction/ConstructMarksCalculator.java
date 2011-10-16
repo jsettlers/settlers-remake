@@ -19,10 +19,6 @@ import synchronic.timer.NetworkTimer;
  */
 public class ConstructMarksCalculator extends Thread {
 	/**
-	 * Unique instance of this class (singleton pattern).
-	 */
-	private static ConstructMarksCalculator uniIns = null;
-	/**
 	 * area of tiles to be checked.
 	 */
 	private static IMapArea mapArea = null;
@@ -30,16 +26,6 @@ public class ConstructMarksCalculator extends Thread {
 	private static EBuildingType buildingType = null;
 	private final IConstructionMarkableMap map;
 	private final byte player;
-
-	/**
-	 * Starts a ConstructPointsCalculator Thread if there is not already a running one.
-	 */
-	public static void startCalculator(IConstructionMarkableMap map, byte player) { // TODO: remove singleton
-		if (uniIns == null) {
-			uniIns = new ConstructMarksCalculator(map, player);
-			uniIns.start();
-		}
-	}
 
 	public ConstructMarksCalculator(IConstructionMarkableMap map, byte player) {
 		super("constrMarks");
@@ -110,17 +96,17 @@ public class ConstructMarksCalculator extends Thread {
 		return (byte) (diff / usedPositions.length);
 	}
 
-	public static void setScreen(IMapArea mapArea) {
-		ConstructMarksCalculator.mapArea = new MapShapeFilter(mapArea, uniIns.map.getWidth(), uniIns.map.getHeight());
+	public void setScreen(IMapArea mapArea) {
+		ConstructMarksCalculator.mapArea = new MapShapeFilter(mapArea, map.getWidth(), map.getHeight());
 		refreshMarkings();
 	}
 
-	public static void setBuildingType(EBuildingType type) {
+	public void setBuildingType(EBuildingType type) {
 		ConstructMarksCalculator.buildingType = type;
 		refreshMarkings();
 	}
 
-	public static void refreshMarkings() {
+	public void refreshMarkings() {
 		refreshNeeded = true;
 	}
 }
