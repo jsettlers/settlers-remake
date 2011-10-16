@@ -63,7 +63,7 @@ public class ObjectsGrid {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 
 		if (mapObjectHead == null) {
-			mapObjectHead = mapObject;
+			objectsGrid[x][y] = mapObject;
 		} else {
 			mapObjectHead.addMapObject(mapObject);
 		}
