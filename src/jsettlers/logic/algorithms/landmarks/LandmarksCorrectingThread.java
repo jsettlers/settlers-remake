@@ -14,20 +14,14 @@ import jsettlers.common.position.ISPosition2D;
  * 
  */
 public class LandmarksCorrectingThread extends Thread {
-	private static LandmarksCorrectingThread instance = null;
 	private final ILandmarksThreadMap map;
 	private final ConcurrentLinkedQueue<ISPosition2D> queue = new ConcurrentLinkedQueue<ISPosition2D>();
 
 	public LandmarksCorrectingThread(ILandmarksThreadMap map) {
 		super("LandmarksCorrectingThread");
 		this.map = map;
-	}
 
-	public static void startThread(ILandmarksThreadMap map) { // TODO remove singleton
-		if (instance == null) {
-			instance = new LandmarksCorrectingThread(map);
-			instance.start();
-		}
+		this.start();
 	}
 
 	@Override
@@ -106,8 +100,7 @@ public class LandmarksCorrectingThread extends Thread {
 		return blockedDirections;
 	}
 
-	public static void addLandmarkedPosition(ISPosition2D pos) {
-		if (instance != null)
-			instance.queue.offer(pos);
+	public void addLandmarkedPosition(ISPosition2D pos) {
+		queue.offer(pos);
 	}
 }

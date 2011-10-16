@@ -17,7 +17,7 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class ConstructMarksCalculator extends Thread {
+public class ConstructMarksThread extends Thread {
 	/**
 	 * area of tiles to be checked.
 	 */
@@ -27,7 +27,7 @@ public class ConstructMarksCalculator extends Thread {
 	private final IConstructionMarkableMap map;
 	private final byte player;
 
-	public ConstructMarksCalculator(IConstructionMarkableMap map, byte player) {
+	public ConstructMarksThread(IConstructionMarkableMap map, byte player) {
 		super("constrMarks");
 		this.map = map;
 		this.player = player;
@@ -97,12 +97,12 @@ public class ConstructMarksCalculator extends Thread {
 	}
 
 	public void setScreen(IMapArea mapArea) {
-		ConstructMarksCalculator.mapArea = new MapShapeFilter(mapArea, map.getWidth(), map.getHeight());
+		ConstructMarksThread.mapArea = new MapShapeFilter(mapArea, map.getWidth(), map.getHeight());
 		refreshMarkings();
 	}
 
 	public void setBuildingType(EBuildingType type) {
-		ConstructMarksCalculator.buildingType = type;
+		ConstructMarksThread.buildingType = type;
 		refreshMarkings();
 	}
 

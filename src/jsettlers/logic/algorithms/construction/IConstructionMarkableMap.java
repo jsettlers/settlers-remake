@@ -3,7 +3,7 @@ package jsettlers.logic.algorithms.construction;
 import jsettlers.common.position.ISPosition2D;
 
 /**
- * Interface offering the methods needed by {@link ConstructMarksCalculator}.
+ * Interface offering the methods needed by {@link ConstructMarksThread}.
  * 
  * @author Andreas Eberle
  * 
