@@ -3,12 +3,9 @@ package jsettlers.buildingcreator.editor.map;
 import java.awt.Color;
 
 import jsettlers.buildingcreator.editor.BuildingDefinition;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.IHexMap;
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
@@ -44,42 +41,42 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-    public IMovable getMovableAt(short x, short y) {
-	    return null;
-    }
+	public IMovable getMovableAt(int x, int y) {
+		return null;
+	}
 
 	@Override
-    public IMapObject getMapObjectsAt(short x, short y) {
-	    return tiles[x][y].getHeadMapObject();
-    }
+	public IMapObject getMapObjectsAt(int x, int y) {
+		return tiles[x][y].getHeadMapObject();
+	}
 
 	@Override
-    public byte getHeightAt(short x, short y) {
-	    return 0;
-    }
+	public byte getHeightAt(int x, int y) {
+		return 0;
+	}
 
 	@Override
-    public ELandscapeType getLandscapeTypeAt(short x, short y) {
-	    return ELandscapeType.GRASS;
-    }
+	public ELandscapeType getLandscapeTypeAt(int x, int y) {
+		return ELandscapeType.GRASS;
+	}
 
 	@Override
-    public Color getDebugColorAt(short x, short y) {
-	    return tiles[x][y].getDebugColor();
-    }
+	public Color getDebugColorAt(int x, int y) {
+		return tiles[x][y].getDebugColor();
+	}
 
 	@Override
-    public boolean isBorder(short x, short y) {
-	    return false;
-    }
+	public boolean isBorder(int x, int y) {
+		return false;
+	}
 
 	@Override
-    public byte getPlayerAt(short x, short y) {
-	    return 0;
-    }
+	public byte getPlayerAt(int x, int y) {
+		return 0;
+	}
 
 	public PseudoTile getTile(ISPosition2D pos) {
-	    return tiles[pos.getX()][pos.getY()];
-    }
+		return tiles[pos.getX()][pos.getY()];
+	}
 
 }
