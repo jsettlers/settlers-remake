@@ -12,7 +12,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.IMapObject;
@@ -132,7 +131,7 @@ public class TestMap implements IGraphicsGrid {
 		}
 	}
 
-	public IHexTile getTile(ISPosition2D pos) {
+	public TestTile getTile(ISPosition2D pos) {
 		return getTile(pos.getX(), pos.getY());
 	}
 
@@ -352,7 +351,7 @@ public class TestMap implements IGraphicsGrid {
 				Collections.shuffle(directions);
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
-					IHexTile tile =
+					TestTile tile =
 					        this.getTile(possibleDirection
 					                .getNextHexPoint(current));
 					if (tile != null && tile.getHeight() <= current.getHeight()
@@ -371,10 +370,10 @@ public class TestMap implements IGraphicsGrid {
 		}
 	}
 
-	private int getNeighbourRiverCount(IHexTile tile) {
+	private int getNeighbourRiverCount(TestTile tile) {
 		int rivers = 0;
 		for (EDirection dir : EDirection.values()) {
-			IHexTile toTest = this.getTile(dir.getNextHexPoint(tile));
+			TestTile toTest = this.getTile(dir.getNextHexPoint(tile));
 			if (toTest != null
 			        && (toTest.getLandscapeType() == ELandscapeType.RIVER1
 			                || toTest.getLandscapeType() == ELandscapeType.RIVER2
@@ -451,7 +450,7 @@ public class TestMap implements IGraphicsGrid {
 		return WIDTH;
 	}
 
-	public IHexTile getTile(short x, short y) {
+	public TestTile getTile(short x, short y) {
 		return getTile((int) x, (int) y);
 	}
 

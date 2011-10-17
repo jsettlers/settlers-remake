@@ -1,9 +1,10 @@
 package jsettlers.graphics.test;
 
+import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.IStack;
 
-public class TestStack implements IStack {
+public class TestStack implements IMapObject {
 
 	private final EMaterialType material;
 	private final int count;
@@ -13,19 +14,27 @@ public class TestStack implements IStack {
 		this.count = count;
     }
 
-	@Override
     public EMaterialType getMaterial() {
 		return this.material;
     }
 
-	@Override
-    public IStack getNextStack() {
+    public IMapObject getNextStack() {
 	    return null;
     }
 
 	@Override
-    public byte getNumberOfElements() {
+    public EMapObjectType getObjectType() {
+	    return EMapObjectType.STACK_OBJECT;
+    }
+
+	@Override
+    public float getStateProgress() {
 	    return (byte) this.count;
+    }
+
+	@Override
+    public IMapObject getNextObject() {
+	    return null;
     }
 	
 }

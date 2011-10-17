@@ -7,12 +7,12 @@ import java.awt.geom.Point2D;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
+import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
@@ -67,14 +67,14 @@ public class MapDrawContext {
 	 */
 	public MapDrawContext(IGraphicsGrid map) {
 		this.map = map;
-		float incline = IHexTile.X_DISTANCE / 2.0f / IHexTile.Y_DISTANCE;
-		int mapHeight = map.getHeight() * IHexTile.Y_DISTANCE;
-		int mapWidth = map.getWidth() * IHexTile.X_DISTANCE;
+		float incline = DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
+		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
+		int mapWidth = map.getWidth() * DrawConstants.DISTANCE_X;
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
 		this.converter =
-		        MapCoordinateConverter.get(IHexTile.X_DISTANCE,
-		                IHexTile.Y_DISTANCE, map.getWidth(), map.getHeight());
+		        MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
+		        		DrawConstants.DISTANCE_Y, map.getWidth(), map.getHeight());
 
 	}
 

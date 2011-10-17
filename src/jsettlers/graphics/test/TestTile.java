@@ -4,14 +4,12 @@ import java.awt.Color;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.material.IStack;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
-public class TestTile implements IHexTile {
+public class TestTile implements ISPosition2D {
 
 	private final short y;
 	private final short x;
@@ -21,7 +19,7 @@ public class TestTile implements IHexTile {
 
 	private IMovable movable = null;
 	private TestBuilding building = null;
-	private IStack stack = null;
+	private IMapObject stack = null;
 	private IMapObject object = null;
 	private byte player = -1;
 
@@ -31,22 +29,18 @@ public class TestTile implements IHexTile {
 		this.height = height;
 	}
 
-	@Override
 	public IBuilding getBuilding() {
 		return this.building;
 	}
 
-	@Override
 	public byte getConstructionMark() {
 		return 0;
 	}
 
-	@Override
 	public byte getHeight() {
 		return this.height;
 	}
 
-	@Override
 	public ELandscapeType getLandscapeType() {
 		if (isRiver()) {
 			return ELandscapeType.RIVER1;
@@ -63,22 +57,18 @@ public class TestTile implements IHexTile {
 		}
 	}
 
-	@Override
 	public IMapObject getHeadMapObject() {
 		return this.object;
 	}
 
-	@Override
 	public IMovable getMovable() {
 		return this.movable;
 	}
 
-	@Override
-	public IStack getStack() {
+	public IMapObject getStack() {
 		return this.stack;
 	}
 
-	@Override
 	public byte getPlayer() {
 		return this.player;
 	}
@@ -119,7 +109,7 @@ public class TestTile implements IHexTile {
 		return this.river;
 	}
 
-	public void setStack(IStack stack) {
+	public void setStack(IMapObject stack) {
 		this.stack = stack;
 	}
 
@@ -131,7 +121,6 @@ public class TestTile implements IHexTile {
 		this.player = player;
 	}
 
-	@Override
 	public Color getDebugColor() {
 		return null;
 	}

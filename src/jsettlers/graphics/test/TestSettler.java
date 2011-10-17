@@ -1,6 +1,5 @@
 package jsettlers.graphics.test;
 
-import jsettlers.common.map.IHexTile;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
@@ -11,13 +10,13 @@ import jsettlers.common.position.ISPosition2D;
 public class TestSettler implements IMovable {
 
 	private EDirection direction;
-	private IHexTile position;
+	private TestTile position;
 	private short progress = 0;
 	private final byte player;
 	private EMaterialType material = EMaterialType.NO_MATERIAL;
 	private final EMovableType type;
 
-	public TestSettler(EDirection direction, EMovableType type, IHexTile tile,
+	public TestSettler(EDirection direction, EMovableType type, TestTile tile,
 	        byte player) {
 		this.type = type;
 		this.setDirection(direction);
@@ -72,7 +71,7 @@ public class TestSettler implements IMovable {
 		return (0.1f * this.progress) > 1;
 	}
 
-	public void setPosition(IHexTile position) {
+	public void setPosition(TestTile position) {
 		this.position = position;
 		this.progress = 0;
 	}

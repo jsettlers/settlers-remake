@@ -15,39 +15,39 @@ public enum ETextureOrientation {
 	 * the right point
 	 */
 	CONTINUOUS_UP(true, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X / 2,
+	        DrawConstants.DISTANCE_X / 2,
 	        0,
 	        0,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y
+	        DrawConstants.DISTANCE_Y,
+	        DrawConstants.DISTANCE_X,
+	        DrawConstants.DISTANCE_Y
 	}),
 
 	TOPLEFT(false, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X / 2,
+	        DrawConstants.TEXTUREUNIT_X / 2,
 	        0,
 	        0,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y
+	        DrawConstants.TEXTUREUNIT_Y,
+	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_Y
 	}),
 
 	TOPRIGHT(false, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
 	        0,
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X * 2,
-	        ETextureOrientation.TEXTUREUNIT_Y
+	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_Y,
+	        DrawConstants.TEXTUREUNIT_X * 2,
+	        DrawConstants.TEXTUREUNIT_Y
 	}),
 
 	BOTTOM(false, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X / 2,
-	        ETextureOrientation.TEXTUREUNIT_Y * 2,
-	        ETextureOrientation.TEXTUREUNIT_X * 3 / 2,
-	        ETextureOrientation.TEXTUREUNIT_Y * 2
+	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_Y,
+	        DrawConstants.TEXTUREUNIT_X / 2,
+	        DrawConstants.TEXTUREUNIT_Y * 2,
+	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.TEXTUREUNIT_Y * 2
 	}),
 	/**
 	 * left
@@ -57,42 +57,36 @@ public enum ETextureOrientation {
 	 * right
 	 */
 	CONTINUOUS_DOWN(true, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X / 2,
+	        DrawConstants.DISTANCE_X / 2,
 	        0,
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.DISTANCE_X,
+	        DrawConstants.DISTANCE_Y,
+	        DrawConstants.DISTANCE_X * 3 / 2,
 	        0
 	}),
 
 	TOP(false, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X / 2,
+	        DrawConstants.TEXTUREUNIT_X / 2,
 	        0,
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_Y,
+	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
 	        0
 	}), BOTTOMLEFT(false, new float[] {
 	        0,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X / 2,
-	        ETextureOrientation.TEXTUREUNIT_Y * 2,
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y
+	        DrawConstants.TEXTUREUNIT_Y,
+	        DrawConstants.TEXTUREUNIT_X / 2,
+	        DrawConstants.TEXTUREUNIT_Y * 2,
+	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_Y
 	}), BOTTOMRIGHT(false, new float[] {
-	        ETextureOrientation.TEXTUREUNIT_X,
-	        ETextureOrientation.TEXTUREUNIT_Y,
-	        ETextureOrientation.TEXTUREUNIT_X * 3 / 2,
-	        ETextureOrientation.TEXTUREUNIT_Y * 2,
-	        ETextureOrientation.TEXTUREUNIT_X * 2,
-	        ETextureOrientation.TEXTUREUNIT_Y
+	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_Y,
+	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.TEXTUREUNIT_Y * 2,
+	        DrawConstants.TEXTUREUNIT_X * 2,
+	        DrawConstants.TEXTUREUNIT_Y
 	});
-
-	public static final int DISTANCE_X = 16;
-	public static final int DISTANCE_Y = 16;
-	
-	public static final int TEXTUREUNIT_X = 16;
-	public static final int TEXTUREUNIT_Y = 16;
 
 	private static final int CONTINOUS_SIZE = 128;
 
@@ -109,8 +103,8 @@ public enum ETextureOrientation {
 		int adddx = 0;
 		int adddy = 0;
 		if (continous) {
-			adddx = x * DISTANCE_X - y * DISTANCE_X / 2;
-			adddy = y * DISTANCE_Y;
+			adddx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
+			adddy = y * DrawConstants.DISTANCE_Y;
 			adddx = realModulo(adddx, CONTINOUS_SIZE);
 			adddy = realModulo(adddy, CONTINOUS_SIZE);
 		}
