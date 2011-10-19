@@ -7,6 +7,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -31,7 +32,9 @@ import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
+import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.blocked.BlockedGrid;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
@@ -58,6 +61,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.objects.IMapObjectsManagerTile;
 import jsettlers.logic.objects.MapObjectsManager;
+import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -150,8 +154,8 @@ public class MainGrid {
 				movablePathfinderGrid.pushMaterial(pos, type);
 			}
 		} else if (object instanceof BuildingObject) {
-			// Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
-			// building.appearAt(this, pos);
+			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
+			building.appearAt(buildingsGrid, pos);
 		} else if (object instanceof MovableObject) {
 			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}
@@ -656,15 +660,45 @@ public class MainGrid {
 	}
 
 	private class BuildingsGrid implements IBuildingsGrid {
+		private final RequestStackGrid requestStackGrid = new RequestStackGrid();
+
 		@Override
 		public byte getHeightAt(ISPosition2D position) {
 			return landscapeGrid.getHeightAt(position.getX(), position.getY());
 		}
 
 		@Override
-		public boolean setBuilding(ISPosition2D position, IBuilding newBuilding) {
-			// FIXME make building to map objects
-			return false;
+		public boolean setBuilding(ISPosition2D position, Building newBuilding) {
+			if (MainGrid.this.isInBounds(position.getX(), position.getY())) {
+				FreeMapArea area = new FreeMapArea(position, newBuilding.getBuildingType().getProtectedTiles());
+				boolean protectWorked = setProtectedState(area, true);
+
+				if (protectWorked) {
+					mapObjectsManager.addBuildingTo(position, newBuilding);
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+
+		private boolean setProtectedState(FreeMapArea area, boolean setProtected) {
+			boolean isFree = true;
+			for (ISPosition2D protect : area) {
+				if (!isInBounds(protect.getX(), protect.getY()) || (blockedGrid.isPortected(protect.getX(), protect.getY()) == setProtected)) {
+					isFree = false;
+				}
+			}
+			if (!isFree) {
+				return false;
+			} else {
+				for (ISPosition2D protect : area) {
+					blockedGrid.setProtected(protect.getX(), protect.getY(), setProtected);
+				}
+				return true;
+			}
 		}
 
 		@Override
@@ -681,8 +715,6 @@ public class MainGrid {
 		public short getHeight() {
 			return height;
 		}
-
-		// FIXME implement requests of material
 
 		@Override
 		public IHexMovable getMovable(ISPosition2D position) {
@@ -702,6 +734,46 @@ public class MainGrid {
 		@Override
 		public IMovableGrid getMovableGrid() {
 			return movablePathfinderGrid;
+		}
+
+		@Override
+		public void requestDigger(FreeMapArea buildingArea, byte heightAvg) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public IRequestsStackGrid getRequestStackGrid() {
+			return requestStackGrid;
+		}
+
+		@Override
+		public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
+			// TODO Auto-generated method stub
+
+		}
+
+		private class RequestStackGrid implements IRequestsStackGrid {
+			@Override
+			public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
+				partitionsGrid.request(position, materialType, priority);
+			}
+
+			@Override
+			public boolean hasMaterial(ISPosition2D position, EMaterialType materialType) {
+				return mapObjectsManager.canPop(position, materialType);
+			}
+
+			@Override
+			public void popMaterial(ISPosition2D position, EMaterialType materialType) {
+				mapObjectsManager.popMaterial(position, materialType);
+			}
 		}
 	}
 

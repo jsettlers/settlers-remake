@@ -214,4 +214,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	public void addJobless(IManageableBearer manageable) {
 		getPartitionObject(manageable.getPos()).addJobless(manageable);
 	}
+
+	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
+		getPartitionObject(position).request(position, materialType, priority);
+	}
 }

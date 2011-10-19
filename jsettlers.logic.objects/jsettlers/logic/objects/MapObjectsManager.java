@@ -307,10 +307,14 @@ public class MapObjectsManager implements ITimerable {
 		}
 	}
 
-	public boolean canPop(ISPosition2D position, EMaterialType material) {
+	public boolean canPop(ISPosition2D position, EMaterialType materialType) {
 		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
 
-		return stackObject != null && stackObject.getMaterialType() == material && !stackObject.isEmpty();
+		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
+	}
+
+	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
+		addMapObject(position, newBuilding);
 	}
 
 }

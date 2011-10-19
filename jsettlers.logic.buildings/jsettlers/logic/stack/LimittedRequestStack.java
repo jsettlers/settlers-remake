@@ -1,0 +1,41 @@
+package jsettlers.logic.stack;
+
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.constants.Constants;
+
+public class LimittedRequestStack extends RequestStack {
+
+	private final short requestedAmount;
+	private short stillToBeRequested;
+	private short poppedMaterials = 0;
+
+	public LimittedRequestStack(IRequestsStackGrid grid, ISPosition2D position, EMaterialType materialType, short requestedAmount) {
+		super(grid, position, materialType);
+		this.requestedAmount = requestedAmount;
+		this.stillToBeRequested = requestedAmount;
+
+		for (int i = 0; i < Constants.STACK_SIZE; i++) {
+			requestMaterial();
+		}
+	}
+
+	@Override
+	protected void requestMaterial() {
+		if (stillToBeRequested > 0) {
+			super.requestMaterial();
+			stillToBeRequested--;
+		}
+	}
+
+	@Override
+	public void pop() {
+		super.pop();
+		poppedMaterials++;
+	}
+
+	@Override
+	public boolean isFullfilled() {
+		return poppedMaterials >= requestedAmount;
+	}
+}

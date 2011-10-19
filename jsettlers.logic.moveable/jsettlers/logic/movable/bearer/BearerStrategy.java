@@ -5,7 +5,6 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.management.bearer.job.BearerCarryJob;
 import jsettlers.logic.management.bearer.job.BearerToWorkerWithMaterialJob;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.movable.IMovableGrid;
@@ -13,9 +12,11 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class BearerStrategy extends PathableStrategy implements IManageableBearer {
-	private EBearerState state;
-	private BearerCarryJob carryJob;
+	private EBearerState state = EBearerState.JOBLESS;
 	private BearerToWorkerWithMaterialJob toWorkerJob;
+	private ISPosition2D offer;
+	private ISPosition2D request;
+	private EMaterialType materialType;
 
 	public BearerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -27,45 +28,62 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		return true;
 	}
 
+	private void initJob() {
+		switch (state) {
+		case CARRY_INIT:
+			state = EBearerState.CARRY_TAKE;
+			super.calculatePathTo(offer);
+			break;
+
+		default:
+			assert false : "wrong state for initializing job";
+		}
+
+		// (state == EBearerState.CARRY_INIT) {
+		//
+		// } else if (this.toWorkerJob != null) {
+		// state = EBearerState.TAKE;
+		// super.calculatePathTo(toWorkerJob.getFirstPos());
+		// }
+	}
+
 	@Override
 	protected void pathRequestFailed() {
-		if (carryJob != null) {
-			switch (state) {
-			case TAKE:
-				super.getGrid().pushMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
-				// no break here!
-			case DROP:
-				// grid.requestMaterial(carryJob.getRequest()); FIXME implement reOffering of request
-			}
-		} else if (toWorkerJob != null) {
-			super.getGrid().pushMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
-			// GameManager.requestMovable(toWorkerJob.getMovableType(), super.getPlayer()); FIXME
+		switch (state) {
+		case CARRY_TAKE:
+			super.getGrid().pushMaterial(super.getPos(), materialType);
+			// no break here!
+		case CARRY_DROP:
+			// grid.requestMaterial(carryJob.getRequest()); FIXME implement reOffering of request
 		}
+		// } else if (toWorkerJob != null) {
+		// super.getGrid().pushMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
+		// // GameManager.requestMovable(toWorkerJob.getMovableType(), super.getPlayer()); FIXME
+		// }
 	}
 
 	@Override
 	protected void pathFinished() {
-		if (carryJob != null) {
-			switch (state) {
-			case TAKE:
-				super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-				super.setMaterial(carryJob.getOffer().getMaterialType());
-				break;
-			case DROP:
-				super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
-				break;
-			}
-		} else if (toWorkerJob != null) {
+		switch (state) {
+		case CARRY_TAKE:
 			super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-		} else {
-			System.err.println("BearerStrategy.pathFinished() called, but no job set");
+			super.setMaterial(materialType);
+			break;
+		case CARRY_DROP:
+			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+			break;
 		}
+		// } else if (toWorkerJob != null) {
+		// super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
+		// } else {
+		// System.err.println("BearerStrategy.pathFinished() called, but no job set");
+		// }
 	}
 
 	@Override
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			if (state == EBearerState.INIT) {
+			if (state == EBearerState.CARRY_INIT) {
 				initJob();
 				return true;
 			} else {
@@ -78,35 +96,34 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	@Override
 	protected boolean actionFinished() {
 		if (!super.actionFinished()) {// the action was not connected to PathableStrategy, so its for us
-			if (carryJob != null) {
-				switch (state) {
-				case TAKE:
-					super.getGrid().popMaterial(super.getPos(), carryJob.getOffer().getMaterialType());
-					carryJob.getOffer().setFulfilled();
-					super.calculatePathTo(carryJob.getRequest().getPos());
-					state = EBearerState.DROP;
-					break;
+			switch (state) {
+			case CARRY_TAKE:
+				super.getGrid().popMaterial(super.getPos(), materialType);
+				super.calculatePathTo(request);
+				state = EBearerState.CARRY_DROP;
+				break;
 
-				case DROP:
-					super.getGrid().pushMaterial(super.getPos(), carryJob.getRequest().getMaterialType());
-					carryJob.getRequest().setFulfilled();
-					super.setAction(EAction.NO_ACTION, -1);
-					super.setMaterial(EMaterialType.NO_MATERIAL);
-					carryJob = null;
-					super.getGrid().addJobless(this);
-					break;
-				case INIT:
-					super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
-				}
-			} else if (toWorkerJob != null) {
-				super.getGrid().popMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
-				toWorkerJob.getOffer().setFulfilled();
+			case CARRY_DROP:
+				super.getGrid().pushMaterial(super.getPos(), materialType);
+				this.state = EBearerState.JOBLESS;
 				super.setAction(EAction.NO_ACTION, -1);
-				super.convertTo(toWorkerJob.getMovableType());
-				toWorkerJob = null;
-			} else {
+				super.setMaterial(EMaterialType.NO_MATERIAL);
+				super.getGrid().addJobless(this);
+				break;
+			case CARRY_INIT:
+				super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
+			default:
 				super.setAction(EAction.NO_ACTION, -1);
 			}
+			// } else if (toWorkerJob != null) {
+			// super.getGrid().popMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
+			// toWorkerJob.getOffer().setFulfilled();
+			// super.setAction(EAction.NO_ACTION, -1);
+			// super.convertTo(toWorkerJob.getMovableType());
+			// toWorkerJob = null;
+			// } else {
+			// super.setAction(EAction.NO_ACTION, -1);
+			// }
 		}
 		return true;
 	}
@@ -117,20 +134,11 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	public static enum EBearerState {
-		TAKE,
-		DROP,
-		INIT
+		CARRY_INIT,
+		CARRY_TAKE,
+		CARRY_DROP,
+		JOBLESS
 
-	}
-
-	private void initJob() {
-		if (this.carryJob != null) {
-			state = EBearerState.TAKE;
-			super.calculatePathTo(carryJob.getOffer().getPos());
-		} else if (this.toWorkerJob != null) {
-			state = EBearerState.TAKE;
-			super.calculatePathTo(toWorkerJob.getFirstPos());
-		}
 	}
 
 	// @Override
@@ -142,12 +150,6 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	// this.toWorkerJob = (BearerToWorkerWithMaterialJob) toWorkerJob;
 	// this.state = EBearerState.INIT;
 	// }
-	// }
-	//
-	// @Override
-	// public void setCarryJob(BearerCarryJob job) {
-	// this.carryJob = job;
-	// this.state = EBearerState.INIT;
 	// }
 
 	@Override
@@ -162,8 +164,10 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 
 	@Override
 	public void executeJob(ISPosition2D offer, ISPosition2D request, EMaterialType materialType) {
-		// TODO Auto-generated method stub
-
+		this.offer = offer;
+		this.request = request;
+		this.materialType = materialType;
+		this.state = EBearerState.CARRY_INIT;
 	}
 
 }

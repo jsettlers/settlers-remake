@@ -46,8 +46,8 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	public void request(ISPosition2D position, EMaterialType materialType, byte priority, IMaterialRequester requester) {
-		requests.offer(new Request(position, materialType, priority, requester));
+	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
+		requests.offer(new Request(position, materialType, priority));
 	}
 
 	public IManageableBearer removeJobless(ISPosition2D position) {
@@ -118,24 +118,27 @@ public class PartitionManager implements INetworkTimerable {
 			this.amount = amount;
 		}
 
+		@Override
+		public String toString() {
+			return "Offer: " + position + "   " + materialType + "    " + amount;
+		}
+
 	}
 
 	private class Request implements Comparable<Request> {
 		final ISPosition2D position;
 		final EMaterialType materialType;
 		byte priority = 1;
-		final IMaterialRequester requester;
 
-		public Request(ISPosition2D position, EMaterialType materialType, byte priority, IMaterialRequester requester) {
+		public Request(ISPosition2D position, EMaterialType materialType, byte priority) {
 			this.position = position;
 			this.materialType = materialType;
 			this.priority = priority;
-			this.requester = requester;
 		}
 
 		@Override
 		public int compareTo(Request other) {
-			return this.priority - other.priority;
+			return other.priority - this.priority;
 		}
 
 		public void decreasePriority() {
@@ -153,15 +156,7 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class AllAcceptor<T> implements IAcceptor<T> {
-		@Override
-		public final boolean isAccepted(T object) {
-			return true;
-		}
-	}
-
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
-	private final AllAcceptor<IManageableBearer> manageableAcceptor = new AllAcceptor<IManageableBearer>();
 
 	@Override
 	public void timerEvent() {
@@ -174,7 +169,7 @@ public class PartitionManager implements INetworkTimerable {
 			if (offer == null) {
 				reofferRequest(request);
 			} else {
-				IManageableBearer manageable = jobless.getObjectNextTo(offer.position, manageableAcceptor);
+				IManageableBearer manageable = jobless.getObjectNextTo(offer.position, null);
 
 				if (manageable != null) {
 					offer.amount--;

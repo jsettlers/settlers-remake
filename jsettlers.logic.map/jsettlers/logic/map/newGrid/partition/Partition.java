@@ -50,4 +50,8 @@ public class Partition {
 		manager.addJobless(manageable);
 	}
 
+	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
+		manager.request(position, materialType, priority);
+	}
+
 }

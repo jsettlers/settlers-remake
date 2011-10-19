@@ -4,7 +4,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.management.GameManager;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 
 public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
@@ -47,7 +46,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	protected void constructionFinishedEvent() {
-		GameManager.requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
+		grid.requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
 		super.placeFlag(true);
 	}
 

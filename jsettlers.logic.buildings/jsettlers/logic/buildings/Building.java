@@ -2,6 +2,7 @@ package jsettlers.logic.buildings;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -21,12 +22,15 @@ import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
+import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.stack.LimittedRequestStack;
+import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
 
-public abstract class Building implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
+public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
 	private final byte player;
 	private EBuildingState state = EBuildingState.CREATED;
 
@@ -41,10 +45,26 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 
 	private short delayCtr = 0;
 	private final EBuildingType type;
+	private List<RequestStack> stacks;
 
 	protected Building(EBuildingType type, byte player) {
 		this.type = type;
 		this.player = player;
+	}
+
+	@Override
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.BUILDING;
+	}
+
+	@Override
+	public boolean cutOff() {
+		return false;
+	}
+
+	@Override
+	public boolean canBeCut() {
+		return false;
 	}
 
 	public final void constructAt(IBuildingsGrid grid, ISPosition2D pos) {
@@ -53,8 +73,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		boolean itWorked = positionAt(grid, pos);
 
 		if (itWorked) {
-			stacks = createStacks(true);
-			placeStacks(stacks, true);
+			stacks = createConstructionStacks();
 
 			placeAdditionalMapObjects(grid, pos, true);
 
@@ -62,6 +81,35 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 
 			requestDiggers();
 		}
+	}
+
+	private List<RequestStack> createConstructionStacks() {
+		RelativeStack[] requestStacks = type.getRequestStacks();
+		List<RequestStack> result = new LinkedList<RequestStack>();
+
+		for (int i = 0; i < requestStacks.length; i++) {
+			RelativeStack currStack = requestStacks[i];
+			if (currStack.requiredForBuild() > 0) {
+				result.add(new LimittedRequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), currStack
+						.requiredForBuild()));
+			}
+		}
+
+		return result;
+	}
+
+	private List<RequestStack> createWorkStacks() {
+		RelativeStack[] requestStacks = type.getRequestStacks();
+		List<RequestStack> result = new LinkedList<RequestStack>();
+
+		for (int i = 0; i < requestStacks.length; i++) {
+			RelativeStack currStack = requestStacks[i];
+			if (currStack.requiredForBuild() == 0) {
+				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType()));
+			}
+		}
+
+		return result;
 	}
 
 	private void placeAdditionalMapObjects(IBuildingsGrid grid, ISPosition2D pos, boolean place) {
@@ -138,7 +186,7 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		int numberOfDiggers = (int) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
 
 		for (int i = 0; i < numberOfDiggers; i++)
-			GameManager.requestDigger(this.buildingArea, this.heightAvg, this.player);
+			grid.requestDigger(this.buildingArea, this.heightAvg);
 	}
 
 	private boolean isFlatened() {
@@ -196,79 +244,17 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 	}
 
+	private boolean isMaterialAvailable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	protected abstract void subTimerEvent();
 
 	private void requestBricklayers() {
 		RelativeBricklayer[] bricklayers = type.getBricklayers();
 		for (RelativeBricklayer curr : bricklayers) {
-			GameManager.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
-		}
-	}
-
-	private boolean isMaterialAvailable() {
-		return getStackWithMaterial() != null;
-	}
-
-	private AbstractStack getStackWithMaterial() {
-		for (AbstractStack curr : stacks) {
-			if (!curr.isEmpty()) {
-				return curr;
-			}
-		}
-		return null;
-	}
-
-	private boolean areAllStacksFullfilled() {
-		for (AbstractStack curr : stacks) {
-			if (!curr.isFulfilled()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * creates the request stacks
-	 * 
-	 * @param constructionStacks
-	 *            if true, only the build stacks will be placed<br>
-	 *            if false, only the normal stacks needed for working will be placed<br>
-	 */
-	private void createStacks(boolean constructionStacks) {
-		LinkedList<AbstractStack> result = new LinkedList<AbstractStack>();
-
-		for (RelativeStack curr : getBuildingType().getRequestStacks()) {
-			ISPosition2D stackPos = curr.calculatePoint(pos);
-
-			short requiredForBuild = curr.requiredForBuild();
-			if (!constructionStacks && requiredForBuild == 0) {
-				result.add(new SingleMaterialStack(curr.getType(), stackPos, EStackType.REQUEST, player));
-			}
-			if (constructionStacks && requiredForBuild > 0) {
-				result.add(new SingleMaterialStack(curr.getType(), stackPos, EStackType.LIMITED_REQUEST, player, requiredForBuild));
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Positions or removes the given stacks on the grid.
-	 * 
-	 * @param stacks
-	 *            stacks to be handled.
-	 * @param place
-	 *            if true, the stacks will be placed.<br>
-	 *            if false the stacks will be removed.
-	 */
-	private void placeStacks(LinkedList<AbstractStack> stacks, boolean place) {
-		assert stacks != null : "stacks mustn't be null here!";
-		for (AbstractStack curr : stacks) {
-			if (place) {
-				grid.placeStack(curr.getPos(), curr);
-			} else {
-				grid.removeStack(curr.getPos());
-			}
+			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
 		}
 	}
 
@@ -347,9 +333,9 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		if (delayCtr > 0) {
 			return true;
 		} else {
-			AbstractStack stack = getStackWithMaterial();
+			RequestStack stack = getStackWithMaterial();
 			if (stack != null) {
-				stack.pop(stack.getMaterial());
+				stack.pop();
 				delayCtr = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
 				return true;
 			} else {
@@ -363,17 +349,29 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 		}
 	}
 
+	private boolean areAllStacksFullfilled() {
+		for (RequestStack curr : stacks) {
+			if (!curr.isFullfilled()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected RequestStack getStackWithMaterial() {
+		for (RequestStack curr : stacks) {
+			if (curr.hasMaterial()) {
+				return curr;
+			}
+		}
+		return null;
+	}
+
 	private void finishConstruction() {
 		constructionProgress = 1;
 
-		if (stacks != null) {
-			// they are null if this method was called by appear
-			placeStacks(stacks, false);
-		}
-		stacks = createStacks(false);
-		placeStacks(stacks, true);
-
 		this.state = EBuildingState.CONSTRUCTED;
+		stacks = createWorkStacks();
 
 		constructionFinishedEvent();
 	}
@@ -422,7 +420,6 @@ public abstract class Building implements IConstructableBuilding, IPlayerable, I
 	@Override
 	public void kill() {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void setWorkAreaCenter(ISPosition2D workAreaCenter) {

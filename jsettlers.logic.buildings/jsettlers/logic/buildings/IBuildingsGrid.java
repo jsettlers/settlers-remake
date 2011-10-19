@@ -1,10 +1,15 @@
 package jsettlers.logic.buildings;
 
-import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.objects.MapObjectsManager;
+import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
  * This interface defines the methods needed by buildings to exist on a grid.
@@ -23,7 +28,7 @@ public interface IBuildingsGrid {
 	 */
 	byte getHeightAt(ISPosition2D position);
 
-	boolean setBuilding(ISPosition2D position, IBuilding newBuilding);
+	boolean setBuilding(ISPosition2D position, Building newBuilding); // FIXME create interface for Building to be used by the grid
 
 	void setPlayerAt(ISPosition2D position, byte player);
 
@@ -64,4 +69,12 @@ public interface IBuildingsGrid {
 	MapObjectsManager getMapObjectsManager();
 
 	IMovableGrid getMovableGrid();
+
+	void requestDigger(FreeMapArea buildingArea, byte heightAvg);
+
+	void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction);
+
+	IRequestsStackGrid getRequestStackGrid();
+
+	void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding);
 }
