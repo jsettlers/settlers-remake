@@ -82,13 +82,13 @@ public class PartitionManager implements INetworkTimerable {
 
 	/**
 	 * 
-	 * @param position
-	 *            position to be removed from this manager and added to the given manager
+	 * @param area
+	 *            area to be removed from this manager and added to the given manager
 	 * @param newManager
 	 *            new manager of the given position <br>
 	 *            NOTE: the new manager MUST NOT be null!
 	 */
-	public void removePositionTo(IMapArea area, PartitionManager newManager) {
+	public void removeAreaTo(IMapArea area, PartitionManager newManager) {
 		Iterator<Offer> offerIter = offers.iterator();
 
 		while (offerIter.hasNext()) {

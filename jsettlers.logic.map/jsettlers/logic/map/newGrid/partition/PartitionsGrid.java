@@ -2,6 +2,7 @@ package jsettlers.logic.map.newGrid.partition;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
@@ -24,7 +25,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	 * This array stores the partition objects handled by this class.<br>
 	 */
 	private final Partition[] partitionObjects = new Partition[1024]; // TODO make the array grow dynamically
-	private final Partition nullPartition = new Partition((byte) -1);
+	private final Partition nullPartition;
 	private final PartitionsAlgorithm partitionsManager;
 
 	public PartitionsGrid(final short width, final short height, IAStarPathMap pathfinderMap) {
@@ -34,6 +35,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		this.player = new byte[width][height];
 		this.borders = new boolean[width][height];
 		this.partitionsManager = new PartitionsAlgorithm(this, pathfinderMap);
+		this.nullPartition = new Partition((byte) -1, height * width);
 
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
@@ -56,8 +58,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return this.partitions[x][y];
 	}
 
-	private Partition getPartitionObject(ISPosition2D pos) {
-		short partition = getPartition(pos);
+	private Partition getPartitionObject(short x, short y) {
+		return getPartitionObject(getPartition(x, y));
+	}
+
+	private Partition getPartitionObject(short partition) {
 		if (partition >= 0)
 			return this.partitionObjects[partition];
 		else
@@ -70,26 +75,12 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	}
 
 	@Override
-	public void setPartition(ISPosition2D position, short partition) {
-		setPartition(position.getX(), position.getY(), partition);
-	}
+	public void setPartition(ISPosition2D position, short newPartition) {
+		Partition newPartitionObject = getPartitionObject(newPartition);
 
-	private void setPartition(short x, short y, short partition) {
-		decrement(getPartition(x, y));
+		getPartitionObject(position.getX(), position.getY()).removePositionTo(position, newPartitionObject);
 
-		this.partitions[x][y] = partition;
-
-		increment(partition);
-	}
-
-	private void decrement(short partition) {
-		if (partition >= 0)
-			this.partitionObjects[partition].decrement();
-	}
-
-	private void increment(short partition) {
-		if (partition >= 0)
-			this.partitionObjects[partition].increment();
+		this.partitions[position.getX()][position.getY()] = newPartition;
 	}
 
 	@Override
@@ -159,23 +150,23 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	private void relabelPartition(short inX, short inY, short oldPartition, short newPartition) {
 		final short MAX_LENGTH = 1000;
-		final short[] points = new short[MAX_LENGTH];
-		points[0] = inX;
-		points[1] = inY;
+		final short[] pointsBuffer = new short[MAX_LENGTH];
+		pointsBuffer[0] = inX;
+		pointsBuffer[1] = inY;
 		short length = 2;
 
 		while (length > 0) {
-			short y = points[--length];
-			short x = points[--length];
-			setPartition(x, y, newPartition);
+			short y = pointsBuffer[--length];
+			short x = pointsBuffer[--length];
+			setPartition(new ShortPoint2D(x, y), newPartition);
 
 			for (byte i = 0; i < 12; i += 2) {
 				short currX = (short) (x + neighborhoodMatrix[i]);
 				short currY = (short) (y + neighborhoodMatrix[i + 1]);
 				if (isInBounds(currX, currY) && partitions[currX][currY] == oldPartition) {
 					if (length < MAX_LENGTH) {
-						points[length++] = currX;
-						points[length++] = currY;
+						pointsBuffer[length++] = currX;
+						pointsBuffer[length++] = currY;
 					} else {
 						relabelPartition(currX, currY, oldPartition, newPartition);
 					}
@@ -200,7 +191,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	}
 
 	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
-		return getPartitionObject(position).pushMaterial(position, materialType);
+		return getPartitionObject(position.getX(), position.getY()).pushMaterial(position, materialType);
 	}
 
 	public void setBorderAt(short x, short y, boolean isBorder) {
@@ -212,10 +203,10 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	}
 
 	public void addJobless(IManageableBearer manageable) {
-		getPartitionObject(manageable.getPos()).addJobless(manageable);
+		getPartitionObject(manageable.getPos().getX(), manageable.getPos().getY()).addJobless(manageable);
 	}
 
 	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-		getPartitionObject(position).request(position, materialType, priority);
+		getPartitionObject(position.getX(), position.getY()).request(position, materialType, priority);
 	}
 }

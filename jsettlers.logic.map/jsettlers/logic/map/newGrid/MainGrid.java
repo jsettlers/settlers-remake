@@ -151,7 +151,7 @@ public class MainGrid {
 			EMaterialType type = ((StackObject) object).getType();
 
 			for (int i = 0; i < ((StackObject) object).getCount(); i++) {
-				movablePathfinderGrid.pushMaterial(pos, type);
+				movablePathfinderGrid.pushMaterial(pos, type, true);
 			}
 		} else if (object instanceof BuildingObject) {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
@@ -537,9 +537,11 @@ public class MainGrid {
 		}
 
 		@Override
-		public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+		public boolean pushMaterial(ISPosition2D position, EMaterialType materialType, boolean offer) {
 			if (mapObjectsManager.pushMaterial(position, materialType)) {
-				partitionsGrid.pushMaterial(position, materialType);
+				if (offer) {
+					partitionsGrid.pushMaterial(position, materialType);
+				}
 				return true;
 			} else
 				return false;

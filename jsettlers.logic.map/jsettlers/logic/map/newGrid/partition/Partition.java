@@ -22,12 +22,23 @@ public class Partition {
 		this.manager = new PartitionManager();
 	}
 
-	public void decrement() {
+	public Partition(byte player, int size) {
+		this(player);
+		this.counter = size;
+	}
+
+	private void decrement() {
 		counter--;
 	}
 
-	public void increment() {
+	private void increment() {
 		counter++;
+	}
+
+	public void removePositionTo(ISPosition2D position, Partition newPartitionObject) {
+		this.decrement();
+		newPartitionObject.increment();
+		this.manager.removePositionTo(position, newPartitionObject.manager);
 	}
 
 	public boolean isEmpty() {

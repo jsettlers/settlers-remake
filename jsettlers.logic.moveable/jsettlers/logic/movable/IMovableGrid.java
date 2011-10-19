@@ -103,10 +103,13 @@ public interface IMovableGrid {
 	 *            position the material should be placed
 	 * @param materialType
 	 *            {@link EMaterialType} of the material to be placed
+	 * @param offer
+	 *            if true, the pushed material will be offered to the manager<br>
+	 *            if false it won't be offered to the manager
 	 * @return true if the material had been placed,<br>
 	 *         false otherwise.
 	 */
-	boolean pushMaterial(ISPosition2D position, EMaterialType materialType);
+	boolean pushMaterial(ISPosition2D position, EMaterialType materialType, boolean offer);
 
 	/**
 	 * Takes a material of the given type from the given position.

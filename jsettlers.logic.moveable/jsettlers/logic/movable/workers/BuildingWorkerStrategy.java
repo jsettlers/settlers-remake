@@ -63,7 +63,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			if (currentJob != null) {
 				boolean success = true;
 				if (currentJob.getType() == EBuildingJobType.DROP && currentJob.getMaterial() != EMaterialType.NO_MATERIAL) {
-					success = super.getGrid().pushMaterial(super.getPos(), currentJob.getMaterial());
+					success = super.getGrid().pushMaterial(super.getPos(), currentJob.getMaterial(), true);
 				}
 
 				if (success) {

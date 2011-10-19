@@ -51,7 +51,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	protected void pathRequestFailed() {
 		switch (state) {
 		case CARRY_TAKE:
-			super.getGrid().pushMaterial(super.getPos(), materialType);
+			super.getGrid().pushMaterial(super.getPos(), materialType, true);
 			// no break here!
 		case CARRY_DROP:
 			// grid.requestMaterial(carryJob.getRequest()); FIXME implement reOffering of request
@@ -104,7 +104,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 				break;
 
 			case CARRY_DROP:
-				super.getGrid().pushMaterial(super.getPos(), materialType);
+				super.getGrid().pushMaterial(super.getPos(), materialType, false); // target needs material => don't give it to the manager
 				this.state = EBearerState.JOBLESS;
 				super.setAction(EAction.NO_ACTION, -1);
 				super.setMaterial(EMaterialType.NO_MATERIAL);

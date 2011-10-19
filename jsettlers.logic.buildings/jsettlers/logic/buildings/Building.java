@@ -422,7 +422,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		// TODO Auto-generated method stub
 	}
 
-	public void setWorkAreaCenter(ISPosition2D workAreaCenter) {
+	public void setWorkAreaCenter(@SuppressWarnings("unused") ISPosition2D workAreaCenter) {
 	}
 
 	/**
