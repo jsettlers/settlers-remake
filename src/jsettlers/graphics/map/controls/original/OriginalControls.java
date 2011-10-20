@@ -4,19 +4,19 @@ import go.graphics.GLDrawContext;
 
 import java.awt.Point;
 
-import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.PanToAction;
+import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.graphics.map.controls.Minimap;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
+import jsettlers.graphics.map.minimap.Minimap;
 import jsettlers.graphics.utils.UIPanel;
 
 public class OriginalControls implements IControls {
-
-	private final IGraphicsGrid map;
 
 	private UIPanel uiBase;
 
@@ -26,9 +26,8 @@ public class OriginalControls implements IControls {
 
 	private IOriginalConstants constants;
 
-	public OriginalControls(IGraphicsGrid map) {
-		this.map = map;
-		minimap = new Minimap(map);
+	public OriginalControls(MapDrawContext context) {
+		minimap = new Minimap(context);
 		constants = new SmallOriginalConstants();
 		uiBase = createInterface();
 		mainPanel.useConstants(constants);
@@ -73,13 +72,31 @@ public class OriginalControls implements IControls {
 			uiBase = createInterface();
 			mainPanel.useConstants(constants);
 		}
-		this.uiBase.setPosition(new IntRectangle(0, 0,
-		        (int) (newHeight / constants.UI_RATIO), newHeight));
+		int width = (int) (newHeight / constants.UI_RATIO);
+		this.uiBase.setPosition(new IntRectangle(0, 0, width, newHeight));
+
+		minimap.setSize(
+		        (int) (constants.MINIMAP_WIDTH * width),
+		        (int) (constants.MINIMAP_HEIGHT * (1 - constants.UI_CENTERY) * newHeight));
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		uiBase.drawAt(gl);
+		gl.glPushMatrix();
+		gl.glTranslatef(getMinimapLeft(), getMinimapBottom(), 0);
+		minimap.draw(gl);
+		gl.glPopMatrix();
+	}
+
+	private float getMinimapLeft() {
+		return constants.MINIMAP_BOTTOMLEFT_X * uiBase.getPosition().getWidth();
+	}
+
+	private float getMinimapBottom() {
+		return (constants.UI_CENTERY + (1 - constants.UI_CENTERY)
+		        * constants.MINIMAP_BOTTOM_Y)
+		        * uiBase.getPosition().getHeight();
 	}
 
 	@Override
@@ -95,14 +112,32 @@ public class OriginalControls implements IControls {
 		        (float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey =
 		        (float) position.getY() / this.uiBase.getPosition().getHeight();
-		Action action = uiBase.getAction(relativex, relativey);
-		if (action.getActionType() == EActionType.CHANGE_PANEL) {
-			// TODO. can we fire the action and catch it later?
+		Action action;
+		if (relativey > constants.UI_CENTERY) {
+			action = getForMinimap(relativex, relativey);
+		} else {
+			action = uiBase.getAction(relativex, relativey);
+		}
+		if (action != null
+		        && action.getActionType() == EActionType.CHANGE_PANEL) {
+			// TODO; can we fire the action and catch it later?
 			mainPanel.setContent(((ChangePanelAction) action).getContent());
 			return null;
 		} else {
 			return action;
 		}
+	}
+
+	private Action getForMinimap(float relativex, float relativey) {
+		float minimapx =
+		        (relativex - constants.MINIMAP_BOTTOMLEFT_X)
+		                / constants.MINIMAP_WIDTH;
+		float minimapy =
+		        ((relativey - constants.UI_CENTERY)
+		                / (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
+		                / constants.MINIMAP_HEIGHT;
+		System.out.println("relative: " + minimapx + ", " + minimapy);
+		return new PanToAction(minimap.getClickPosition(minimapx, minimapy));
 	}
 
 	@Override
@@ -112,5 +147,10 @@ public class OriginalControls implements IControls {
 		float relativey =
 		        (float) position.getY() / this.uiBase.getPosition().getHeight();
 		return uiBase.getDescription(relativex, relativey);
+	}
+	
+	@Override
+	public void setMapViewport(MapRectangle screenArea) {
+	    minimap.setMapViewport(screenArea);
 	}
 }

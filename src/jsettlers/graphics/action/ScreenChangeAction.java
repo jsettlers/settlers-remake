@@ -1,6 +1,6 @@
 package jsettlers.graphics.action;
 
-import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapRectangle;
 
 /**
  * @see EActionType#SCREEN_CHANGE
@@ -8,7 +8,7 @@ import jsettlers.common.map.shapes.IMapArea;
  */
 public class ScreenChangeAction extends Action {
 
-	private final IMapArea screenArea;
+	private final MapRectangle screenArea;
 
 	/**
 	 * Creates a new screen change action
@@ -16,7 +16,7 @@ public class ScreenChangeAction extends Action {
 	 * @param screenArea
 	 *            the area
 	 */
-	public ScreenChangeAction(IMapArea screenArea) {
+	public ScreenChangeAction(MapRectangle screenArea) {
 		super(EActionType.SCREEN_CHANGE);
 		this.screenArea = screenArea;
 	}
@@ -26,7 +26,7 @@ public class ScreenChangeAction extends Action {
 	 * 
 	 * @return The screen area.
 	 */
-	public IMapArea getScreenArea() {
+	public MapRectangle getScreenArea() {
 		return screenArea;
 	}
 

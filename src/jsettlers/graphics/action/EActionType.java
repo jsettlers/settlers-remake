@@ -95,5 +95,12 @@ public enum EActionType {
 	/**
 	 * Toggles debug tile display
 	 */
-	TOGGLE_DEBUG,
+	TOGGLE_DEBUG, 
+	
+	/**
+	 * Pan to the given point.
+	 * <p>
+	 * The action must be an instance of {@link PanToAction}
+	 */
+	PAN_TO,
 }

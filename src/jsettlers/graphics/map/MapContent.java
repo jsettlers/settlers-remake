@@ -30,6 +30,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.MoveToAction;
+import jsettlers.graphics.action.PanToAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
@@ -108,7 +109,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		this.map = map;
 		this.context = new MapDrawContext(map);
 
-		controls = new OriginalControls(map);
+		controls = new OriginalControls(context);
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
@@ -525,6 +526,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
     public void action(Action action) {
 	    if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
 	    	ENABLE_DEBUG = !ENABLE_DEBUG;
+	    } else if (action.getActionType() == EActionType.PAN_TO) {
+	    	PanToAction panAction = (PanToAction) action;
+	    	scrollTo(panAction.getCenter(), false);
+	    } else if (action.getActionType() == EActionType.SCREEN_CHANGE) {
+	    	ScreenChangeAction screenAction = (ScreenChangeAction) action;
+	    	controls.setMapViewport(screenAction.getScreenArea());
 	    }
     }
 

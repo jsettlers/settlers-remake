@@ -4,6 +4,7 @@ import go.graphics.GLDrawContext;
 
 import java.awt.Point;
 
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.graphics.action.Action;
 
 /**
@@ -23,4 +24,6 @@ public interface IControls {
 	Action getActionFor(Point position);
 
 	String getDescriptionFor(Point position);
+
+	void setMapViewport(MapRectangle screenArea);
 }
