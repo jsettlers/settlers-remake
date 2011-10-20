@@ -69,7 +69,10 @@ public class LandmarksCorrectingThread extends Thread {
 
 			map.setDebugColor(neighborPos.getX(), neighborPos.getY(), colors[(int) (Math.random() * colors.length)]);
 
-			if (map.isBlocked(neighborPos.getX(), neighborPos.getY())) {
+			if (!map.isInBounds(neighborPos.getX(), neighborPos.getY())) {
+				takeOverBlockedLand(blockedBorder, startPlayer);
+				break;
+			} else if (map.isBlocked(neighborPos.getX(), neighborPos.getY())) {
 				blocked = neighborPos;
 				blockedDir = neighborDir;
 				blockedBorder.add(blocked);
@@ -106,7 +109,7 @@ public class LandmarksCorrectingThread extends Thread {
 		for (EDirection currDir : EDirection.values()) {
 			short currX = currDir.getNextTileX(position.getX());
 			short currY = currDir.getNextTileY(position.getY());
-			if (map.isBlocked(currX, currY)) {
+			if (map.isInBounds(currX, currY) && map.isBlocked(currX, currY)) {
 				blockedDirections.add(currDir);
 			}
 		}

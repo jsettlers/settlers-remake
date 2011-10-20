@@ -19,4 +19,6 @@ public interface ILandmarksThreadMap {
 	public void setPlayerAt(short x, short y, byte newPlayer);
 
 	public void setDebugColor(short x, short y, Color color);
+
+	public boolean isInBounds(short x, short y);
 }
