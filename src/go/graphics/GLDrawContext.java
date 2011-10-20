@@ -87,4 +87,16 @@ public interface GLDrawContext {
 	int makeHeightValid(int height);
 
 	void glMultMatrixf(float[] matrix, int offset);
+
+	/**
+	 * Updates a part of a texture image.
+	 * @param textureIndex The texture to use.
+	 * @param left
+	 * @param bottom
+	 * @param width
+	 * @param height
+	 * @param data
+	 */
+	void updateTexture(int textureIndex, int left, int bottom, int width,
+            int height, ShortBuffer data);
 }
