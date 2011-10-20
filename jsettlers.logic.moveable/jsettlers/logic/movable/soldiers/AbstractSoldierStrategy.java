@@ -95,7 +95,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 		int ctr = 0; // to prevent endless loop
 		do {
 			nextPos = dir.getNextHexPoint(super.getPos());
-			if (super.getGrid().isBlocked(nextPos.getX(), nextPos.getY())) {
+			if (super.getGrid().isBlocked(this, nextPos.getX(), nextPos.getY())) {
 				dir = dir.getNeighbor(-1);
 				nextPos = null;
 			}

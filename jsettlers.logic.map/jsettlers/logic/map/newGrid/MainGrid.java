@@ -199,7 +199,13 @@ public class MainGrid {
 
 		@Override
 		public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-			return blockedGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
+			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y)
+					|| (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
+		}
+
+		protected boolean isLandscapeBlocking(short x, short y) {
+			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
+			return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
 		}
 
 		@Override
@@ -452,7 +458,7 @@ public class MainGrid {
 	private class LandmarksGrid implements ILandmarksThreadMap {
 		@Override
 		public boolean isBlocked(short x, short y) {
-			return !isInBounds(x, y) || blockedGrid.isBlocked(x, y);
+			return blockedGrid.isBlocked(x, y);
 		}
 
 		@Override
@@ -467,7 +473,13 @@ public class MainGrid {
 
 		@Override
 		public void setDebugColor(short x, short y, Color color) {
-			debugColors[x][y] = color;
+			if (isInBounds(x, y))
+				debugColors[x][y] = color;
+		}
+
+		@Override
+		public boolean isInBounds(short x, short y) {
+			return MainGrid.this.isInBounds(x, y);
 		}
 	}
 
@@ -532,12 +544,7 @@ public class MainGrid {
 
 		@Override
 		public boolean isBlocked(short x, short y) {
-			return blockedGrid.isBlocked(x, y);
-		}
-
-		@Override
-		public boolean isBlocked(ISPosition2D position) {
-			return isBlocked(position.getX(), position.getY());
+			return blockedGrid.isBlocked(x, y) || super.isLandscapeBlocking(x, y);
 		}
 
 		@Override

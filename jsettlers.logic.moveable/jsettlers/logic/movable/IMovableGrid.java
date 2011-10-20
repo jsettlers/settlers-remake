@@ -73,16 +73,6 @@ public interface IMovableGrid {
 	boolean isBlocked(short x, short y);
 
 	/**
-	 * Checks if the given position is blocked.
-	 * 
-	 * @param position
-	 *            position to be checked.
-	 * @return true if the position is blocked<br>
-	 *         false otherwise
-	 */
-	boolean isBlocked(ISPosition2D position);
-
-	/**
 	 * Checks if the given position is blocked for the given {@link IPathCalculateable}.
 	 * 
 	 * @param pathCalculateable
