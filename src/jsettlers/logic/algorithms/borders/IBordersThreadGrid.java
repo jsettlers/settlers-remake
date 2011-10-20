@@ -32,4 +32,6 @@ public interface IBordersThreadGrid {
 	 */
 	void setBorder(short x, short y, boolean isBorder);
 
+	boolean isInBounds(short x, short y);
+
 }

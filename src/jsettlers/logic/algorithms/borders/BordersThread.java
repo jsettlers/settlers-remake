@@ -44,6 +44,10 @@ public class BordersThread implements Runnable {
 					short currNeighborX = currDir.getNextTileX(position.getX());
 					short currNeighborY = currDir.getNextTileY(position.getY());
 
+					if (!grid.isInBounds(currNeighborX, currNeighborY)) {
+						continue;
+					}
+
 					byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
 					boolean neighborIsBorder = false;
 
@@ -53,7 +57,10 @@ public class BordersThread implements Runnable {
 						}
 
 						for (EDirection currNeighborDir : EDirection.values()) {
-							if (grid.getPlayer(currNeighborDir.getNextTileX(currNeighborX), currNeighborDir.getNextTileY(currNeighborY)) != neighborPlayer) {
+							short nextX = currNeighborDir.getNextTileX(currNeighborX);
+							short nextY = currNeighborDir.getNextTileY(currNeighborY);
+
+							if (grid.isInBounds(nextX, nextY) && grid.getPlayer(nextX, nextY) != neighborPlayer) {
 								neighborIsBorder = true;
 								break;
 							}
