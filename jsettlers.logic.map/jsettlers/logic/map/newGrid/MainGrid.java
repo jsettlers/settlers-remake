@@ -449,7 +449,7 @@ public class MainGrid {
 	private class LandmarksGrid implements ILandmarksThreadMap {
 		@Override
 		public boolean isBlocked(short x, short y) {
-			return blockedGrid.isBlocked(x, y);
+			return !isInBounds(x, y) || blockedGrid.isBlocked(x, y);
 		}
 
 		@Override
@@ -658,6 +658,11 @@ public class MainGrid {
 		@Override
 		public void setBorder(short x, short y, boolean isBorder) {
 			partitionsGrid.setBorderAt(x, y, isBorder);
+		}
+
+		@Override
+		public final boolean isInBounds(short x, short y) {
+			return MainGrid.this.isInBounds(x, y);
 		}
 	}
 
