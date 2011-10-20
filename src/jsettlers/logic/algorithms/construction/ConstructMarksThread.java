@@ -31,6 +31,8 @@ public class ConstructMarksThread extends Thread {
 		super("constrMarks");
 		this.map = map;
 		this.player = player;
+
+		this.start();
 	}
 
 	@Override
