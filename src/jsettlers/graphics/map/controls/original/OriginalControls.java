@@ -10,6 +10,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.controls.IControls;
+import jsettlers.graphics.map.controls.Minimap;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -19,12 +20,15 @@ public class OriginalControls implements IControls {
 
 	private UIPanel uiBase;
 
+	private Minimap minimap;
+
 	private MainPanel mainPanel = new MainPanel();
 
 	private IOriginalConstants constants;
 
 	public OriginalControls(IGraphicsGrid map) {
 		this.map = map;
+		minimap = new Minimap(map);
 		constants = new SmallOriginalConstants();
 		uiBase = createInterface();
 		mainPanel.useConstants(constants);
@@ -61,7 +65,7 @@ public class OriginalControls implements IControls {
 		if (newHeight <= 480) {
 			newConstants = new SmallOriginalConstants();
 		} else {
-			//TODO...
+			// TODO...
 			newConstants = new SmallOriginalConstants();
 		}
 		if (!newConstants.equals(constants)) {
@@ -99,5 +103,14 @@ public class OriginalControls implements IControls {
 		} else {
 			return action;
 		}
+	}
+
+	@Override
+	public String getDescriptionFor(Point position) {
+		float relativex =
+		        (float) position.getX() / this.uiBase.getPosition().getWidth();
+		float relativey =
+		        (float) position.getY() / this.uiBase.getPosition().getHeight();
+		return uiBase.getDescription(relativex, relativey);
 	}
 }

@@ -69,7 +69,7 @@ public class BuildingDrawer {
 		int tiles = 6;
 
 		float toplineBottom = maskState;
-		float toplineTop = Math.min(1, toplineBottom + .2f * image.getHeight());
+		float toplineTop = Math.min(1, toplineBottom + .1f);
 
 		float[] tris = new float[(tiles + 2) * 3 * 5];
 

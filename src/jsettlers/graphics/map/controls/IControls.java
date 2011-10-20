@@ -21,4 +21,6 @@ public interface IControls {
 	boolean containsPoint(Point position);
 
 	Action getActionFor(Point position);
+
+	String getDescriptionFor(Point position);
 }

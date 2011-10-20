@@ -36,7 +36,6 @@ import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
-import jsettlers.graphics.map.draw.BuildingDrawer;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
@@ -74,7 +73,7 @@ import jsettlers.graphics.utils.TextDrawer;
  * 
  * @author michael
  */
-public class MapContent implements SettlersContent, GOEventHandlerProvoder {
+public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMapInterfaceListener {
 	private boolean ENABLE_DEBUG = false;
 
 	private final IGraphicsGrid map;
@@ -85,8 +84,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 	private final MapDrawContext context;
 
-	private BuildingDrawer buildingDrawer = new BuildingDrawer();
-
 	private MapObjectDrawer objectDrawer = new MapObjectDrawer();
 
 	/**
@@ -96,6 +93,9 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 
 	private IntRectangle oldScreen;
 
+	/**
+	 * The controls that represent the interface.
+	 */
 	private final IControls controls;
 
 	/**
@@ -111,38 +111,22 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		controls = new OriginalControls(map);
 
 		this.connector = new MapInterfaceConnector(this);
+		this.connector.addListener(this);
 	}
 
 	private void resizeTo(int newWidth, int newHeight) {
 		this.context.setSize(newWidth, newHeight);
 		this.controls.resizeTo(newWidth, newHeight);
-		// this.mapInterface.setWindowSize(newWidth, newHeight);
 	}
 
 	@Override
     public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
-		if (newWidth != this.context.getScreen().getWidth()
-		        || newHeight != this.context.getScreen().getHeight()) {
-			resizeTo(newWidth, newHeight);
-		}
-		IntRectangle newScreen = context.getScreen().getPosition();
-		if (!newScreen.equals(oldScreen)) {
-			getInterfaceConnector().fireAction(
-			        new ScreenChangeAction(context.getScreenArea()));
-		}
-		oldScreen = newScreen;
-
-		this.context.begin(gl);
-
-		this.context.debugTime("Context set up");
-
+		adaptScreenSize(newWidth, newHeight);
 		this.objectDrawer.increaseAnimationStep();
 
+		this.context.begin(gl);
 		drawBackground();
-		this.context.debugTime("Background drawn");
-
 		drawMain();
-
 		this.context.end();
 
 		gl.glTranslatef(0, 0, .5f);
@@ -153,6 +137,19 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		drawFramerate();
 		drawTooltip();
 	}
+
+	private void adaptScreenSize(int newWidth, int newHeight) {
+	    if (newWidth != this.context.getScreen().getWidth()
+		        || newHeight != this.context.getScreen().getHeight()) {
+			resizeTo(newWidth, newHeight);
+		}
+		IntRectangle newScreen = context.getScreen().getPosition();
+		if (!newScreen.equals(oldScreen)) {
+			getInterfaceConnector().fireAction(
+			        new ScreenChangeAction(context.getScreenArea()));
+		}
+		oldScreen = newScreen;
+    }
 
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null
@@ -215,7 +212,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 			IMovable movable = map.getMovableAt(x, y);
 			if (movable != null) {
 				if (movable.getAction() == EAction.WALKING) {
-					// TODO: catch nullpointer!
 					ISPosition2D origin =movable
 			                .getDirection().getInverseDirection().getNextHexPoint(pos);
 					if (origin == null) {
@@ -242,7 +238,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 				objectDrawer.drawPlayerBorderObject(context, player);
 				this.context.endTileContext();
 			}
-			//drawPlayerBorderIfNeeded(tile);
 		}
 
 //		if (map.getConstructionPreviewBuilding() != null) {
@@ -250,19 +245,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 //			        ImageProvider.getInstance().getSettlerSequence(4, 5);
 //			float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
 //
-//			for (ISPosition2D pos : tiles) {
-//				IHexTile tile = map.getTile(pos);
-//				byte constructionMark = tile.getConstructionMark();
-//
-//				if (constructionMark >= 0) {
-//					this.context.beginTileContext(tile);
-//					int index = (int) (constructionMark * imageScale);
-//					Image image = sequence.getImageSafe(index);
-//					image.draw(context.getGl());
-//					this.context.endTileContext();
-//				}
-//			}
-//			
 //			ISPosition2D underMouse = this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
 //			IHexTile tile = map.getTile(underMouse);
 //			if (tile != null) {
@@ -274,12 +256,9 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 //			}
 //		}
 
-		this.context.debugTime("Tiles drawn");
-
 		if (needDrawDebug) {
 			drawDebugColors();
 		}
-		this.context.debugTime("Debug tiles drawn");
 	}
 
 	private void drawDebugColors() {
@@ -311,22 +290,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		}
 	}
 
-
-	/**
-	 * draws a debug tile around the current (0,0)
-	 * 
-	 * @param debugColor
-	 */
-	private void drawDebugTile(Color debugColor) {
-		GLDrawContext gl = this.context.getGl();
-		gl.color(debugColor.getRed() / 255.0f,
-		        debugColor.getGreen() / 255.0f, debugColor.getBlue() / 255.0f,
-		        debugColor.getAlpha() / 255.0f);
-		//gl.glDrawArrays(GL2.GL_POLYGON, 0, 6);
-		gl.color(1, 1, 1, .5f);
-		//gl.glDrawArrays(GL2.GL_LINE_LOOP, 0, 6);
-	}
-
 	/**
 	 * Draws the background.
 	 * 
@@ -346,13 +309,13 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 			Action action = handleCommand(commandEvent);
 
 			if (action != null) {
-				fireAction(event, action);
+				fireActionEvent(event, action);
 			}
 		} else if (event instanceof GOKeyEvent) {
 			Action actionForKeyboard =
 			        getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
 			if (actionForKeyboard != null) {
-				fireAction(event, actionForKeyboard);
+				fireActionEvent(event, actionForKeyboard);
 			}
 		} else if (event instanceof GODrawEvent) {
 			GODrawEvent drawEvent = (GODrawEvent) event;
@@ -363,8 +326,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 		}
 	}
 
-	private void fireAction(GOEvent event, Action action) {
-			event.setHandler(new ActionHandler(action, getInterfaceConnector()));
+	private void fireActionEvent(GOEvent event, Action action) {
+		event.setHandler(new ActionHandler(action, getInterfaceConnector()));
 	}
 
 	private Action getActionForKeyboard(int keyCode) {
@@ -385,8 +348,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 			case KeyEvent.VK_S:
 				return new Action(EActionType.STOP_WORKING);
 			case KeyEvent.VK_Q:
-				ENABLE_DEBUG = !ENABLE_DEBUG;
-				break;
+				return new Action(EActionType.TOGGLE_DEBUG);
 
 		}
 		return null;
@@ -423,35 +385,20 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	protected void changeMousePosition(Point position) {
 		mousePosition = position;
 
-		//TODO: make it work again
-//		double relativeUIX =
-//		        position.getX() / this.uiBase.getPosition().getWidth();
-//		double relativeUIY =
-//		        position.getY() / this.uiBase.getPosition().getHeight();
-//		if (relativeUIX < UI_CENTERX && relativeUIY < UI_CENTERY) {
-//			tooltipString =
-//			        mainPanel.getDescription((float) relativeUIX / UI_CENTERX,
-//			                (float) relativeUIY / UI_CENTERY);
-//			if (tooltipString == null) {
-//				tooltipString = "";
-//			}
-//		} else {
-//			tooltipString = "";
-//		}
+		if (controls.containsPoint(position)) {
+			tooltipString = controls.getDescriptionFor(position);
+			if (tooltipString == null) {
+				tooltipString = "";
+			}
+		} else {
+			tooltipString = "";
+		}
 	}
 
 	private Action handleCommand(GOCommandEvent commandEvent) {
 		Point position = commandEvent.getCommandPosition();
-//		double relativeUIX =
-//		        position.getX() / this.uiBase.getPosition().getWidth();
-//		double relativeUIY =
-//		        position.getY() / this.uiBase.getPosition().getHeight();
-//		if (relativeUIX < UI_CENTERX && relativeUIY < UI_CENTERY) {
-//			// we are on the sidebar
-//			return mainPanel.getAction((float) relativeUIX / UI_CENTERX,
-//			        (float) relativeUIY / UI_CENTERY);
-			if (controls.containsPoint(position)) {
-				return controls.getActionFor(position);
+		if (controls.containsPoint(position)) {
+			return controls.getActionFor(position);
 		} else {
 			// handle map click
 			return handleCommandOnMap(commandEvent, position);
@@ -573,6 +520,13 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder {
 	@Override
 	public void removeRedrawListener(RedrawListener l) {
 	}
+
+	@Override
+    public void action(Action action) {
+	    if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
+	    	ENABLE_DEBUG = !ENABLE_DEBUG;
+	    }
+    }
 
 
 }
