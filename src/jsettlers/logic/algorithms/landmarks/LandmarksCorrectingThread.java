@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.landmarks;
 
+import java.awt.Color;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -34,17 +35,24 @@ public class LandmarksCorrectingThread extends Thread {
 				}
 			} else {
 				ISPosition2D startPos = queue.poll();
-				byte startPlayer = map.getPlayerAt(startPos);
-
-				LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
-				for (EDirection startDirection : allBlockedDirections) {
-					checkLandmarks(startPos, startPlayer, startDirection);
-				}
+				checkLandmarks(startPos);
 			}
 		}
 	}
 
+	private void checkLandmarks(ISPosition2D startPos) {
+		byte startPlayer = map.getPlayerAt(startPos);
+
+		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
+		for (EDirection startDirection : allBlockedDirections) {
+			checkLandmarks(startPos, startPlayer, startDirection);
+		}
+	}
+
 	private void checkLandmarks(ISPosition2D startPos, byte startPlayer, EDirection startDirection) {
+		if (map.isBlocked(startPos.getX(), startPos.getY()))
+			return;
+
 		EDirection blockedDir = startDirection;
 
 		ISPosition2D blocked = blockedDir.getNextHexPoint(startPos);
@@ -52,9 +60,14 @@ public class LandmarksCorrectingThread extends Thread {
 		LinkedList<ISPosition2D> blockedBorder = new LinkedList<ISPosition2D>();
 		blockedBorder.add(blocked);
 
+		map.setDebugColor(startPos.getX(), startPos.getY(), Color.RED);
+		Color[] colors = { Color.RED, Color.BLACK, Color.BLUE, Color.PINK };
+
 		while (true) {
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
 			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
+
+			map.setDebugColor(neighborPos.getX(), neighborPos.getY(), colors[(int) (Math.random() * colors.length)]);
 
 			if (map.isBlocked(neighborPos.getX(), neighborPos.getY())) {
 				blocked = neighborPos;

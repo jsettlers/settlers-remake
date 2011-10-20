@@ -1,5 +1,7 @@
 package jsettlers.logic.algorithms.landmarks;
 
+import java.awt.Color;
+
 import jsettlers.common.position.ISPosition2D;
 
 /**
@@ -15,4 +17,6 @@ public interface ILandmarksThreadMap {
 	public byte getPlayerAt(ISPosition2D position);
 
 	public void setPlayerAt(short x, short y, byte newPlayer);
+
+	public void setDebugColor(short x, short y, Color color);
 }
