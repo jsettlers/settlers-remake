@@ -170,6 +170,9 @@ public class MapObjectsManager implements ITimerable {
 
 		if (removed != null) {
 			setBlockedForObject(pos, removed, false);
+			AbstractHexMapObject object = getTile(pos).getMapObject(mapObjectType);
+
+			System.out.println("");
 		}
 	}
 

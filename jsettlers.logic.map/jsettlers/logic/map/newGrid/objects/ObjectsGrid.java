@@ -35,7 +35,7 @@ public class ObjectsGrid {
 		if (mapObjectHead != null) {
 			if (mapObjectHead.getObjectType() == mapObjectType) {
 				removed = mapObjectHead;
-				mapObjectHead = mapObjectHead.getNextObject();
+				objectsGrid[x][y] = mapObjectHead.getNextObject();
 			} else {
 				removed = mapObjectHead.removeMapObjectType(mapObjectType);
 			}
@@ -43,12 +43,12 @@ public class ObjectsGrid {
 		return removed;
 	}
 
-	public boolean removeMapObjectType(short x, short y, AbstractHexMapObject mapObject) {
+	public boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 		if (mapObjectHead != null) {
 			boolean removed;
 			if (mapObjectHead == mapObject) {
-				mapObjectHead = mapObjectHead.getNextObject();
+				objectsGrid[x][y] = mapObjectHead.getNextObject();
 				removed = true;
 			} else {
 				removed = mapObjectHead.removeMapObject(mapObject);

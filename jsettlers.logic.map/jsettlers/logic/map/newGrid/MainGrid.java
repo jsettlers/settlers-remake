@@ -414,7 +414,7 @@ public class MainGrid {
 
 				@Override
 				public boolean removeMapObject(AbstractHexMapObject mapObject) {
-					return objectsGrid.removeMapObjectType(x, y, mapObject);
+					return objectsGrid.removeMapObject(x, y, mapObject);
 				}
 
 				@Override
@@ -471,7 +471,8 @@ public class MainGrid {
 
 		@Override
 		public boolean isBuildingPlaceable(ISPosition2D position, byte player) {
-			return !blockedGrid.isBlocked(position.getX(), position.getY()) && partitionsGrid.getPlayerAt(position) == player;
+			short x = position.getX(), y = position.getY();
+			return MainGrid.this.isInBounds(x, y) && !blockedGrid.isBlocked(x, y) && partitionsGrid.getPlayerAt(x, y) == player;
 		}
 
 		@Override
