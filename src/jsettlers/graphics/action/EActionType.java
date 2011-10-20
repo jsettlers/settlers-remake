@@ -90,5 +90,10 @@ public enum EActionType {
 	 * Changes the side panel content.
 	 * @see ChangePanelAction
 	 */
-	CHANGE_PANEL,
+	CHANGE_PANEL, 
+	
+	/**
+	 * Toggles debug tile display
+	 */
+	TOGGLE_DEBUG,
 }
