@@ -75,6 +75,7 @@ public class MainGrid {
 	protected final PartitionsGrid partitionsGrid;
 	protected final MovableGrid movableGrid;
 	protected final BlockedGrid blockedGrid;
+	protected final Color[][] debugColors;
 
 	protected final short width;
 	protected final short height;
@@ -108,6 +109,8 @@ public class MainGrid {
 		// dynamically
 		this.buildingsGrid = new BuildingsGrid();
 		this.guiInputGrid = new GUIInputGrid();
+
+		this.debugColors = new Color[width][height];
 	}
 
 	private MainGrid(MapGrid mapGrid) {
@@ -377,7 +380,7 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			return null;
+			return debugColors[x][y];
 		}
 
 		@Override
@@ -460,6 +463,11 @@ public class MainGrid {
 		@Override
 		public void setPlayerAt(short x, short y, byte newPlayer) {
 			changePlayerAt(new ShortPoint2D(x, y), newPlayer); // TODO check if creation of ShortPoint2D can be avoided
+		}
+
+		@Override
+		public void setDebugColor(short x, short y, Color color) {
+			debugColors[x][y] = color;
 		}
 	}
 
