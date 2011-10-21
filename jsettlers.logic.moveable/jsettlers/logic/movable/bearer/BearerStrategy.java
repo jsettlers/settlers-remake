@@ -102,18 +102,19 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 				super.calculatePathTo(request);
 				state = EBearerState.CARRY_DROP;
 				break;
-
 			case CARRY_DROP:
 				super.getGrid().pushMaterial(super.getPos(), materialType, false); // target needs material => don't give it to the manager
-				this.state = EBearerState.JOBLESS;
-				super.setAction(EAction.NO_ACTION, -1);
 				super.setMaterial(EMaterialType.NO_MATERIAL);
 				super.getGrid().addJobless(this);
+				super.setAction(EAction.NO_ACTION, -1);
+				this.state = EBearerState.JOBLESS;
 				break;
 			case CARRY_INIT:
 				super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
+				break;
 			default:
 				super.setAction(EAction.NO_ACTION, -1);
+				break;
 			}
 			// } else if (toWorkerJob != null) {
 			// super.getGrid().popMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
@@ -137,7 +138,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		CARRY_INIT,
 		CARRY_TAKE,
 		CARRY_DROP,
-		JOBLESS
+		JOBLESS,
 
 	}
 

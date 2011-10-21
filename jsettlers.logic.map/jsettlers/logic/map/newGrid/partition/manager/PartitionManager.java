@@ -6,8 +6,9 @@ import java.util.PriorityQueue;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.newGrid.partition.PositionableDatastructure;
-import jsettlers.logic.map.newGrid.partition.PositionableDatastructure.IAcceptor;
+import jsettlers.logic.map.newGrid.partition.datastructures.PositionableHashMap;
+import jsettlers.logic.map.newGrid.partition.datastructures.PositionableHashMap.IAcceptor;
+import jsettlers.logic.map.newGrid.partition.datastructures.PositionableList;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
@@ -19,16 +20,16 @@ import synchronic.timer.NetworkTimer;
  * 
  */
 public class PartitionManager implements INetworkTimerable {
-	private PositionableDatastructure<Offer> offers;
+	private PositionableHashMap<Offer> offers;
 	private PriorityQueue<Request> requests;
-	private PositionableDatastructure<IManageableBearer> jobless;
+	private PositionableList<IManageableBearer> jobless;
 
 	public PartitionManager() {
-		this.offers = new PositionableDatastructure<PartitionManager.Offer>();
+		this.offers = new PositionableHashMap<PartitionManager.Offer>();
 		this.requests = new PriorityQueue<PartitionManager.Request>();
-		this.jobless = new PositionableDatastructure<IManageableBearer>();
+		this.jobless = new PositionableList<IManageableBearer>();
 
-		NetworkTimer.schedule(this, (short) 1);
+		NetworkTimer.schedule(this, (short) 2);
 	}
 
 	public boolean addOffer(ISPosition2D position, EMaterialType materialType) {
@@ -55,7 +56,7 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	public void addJobless(IManageableBearer manageable) {
-		this.jobless.set(manageable.getPos(), manageable);
+		this.jobless.set(manageable);
 	}
 
 	/**
@@ -169,7 +170,7 @@ public class PartitionManager implements INetworkTimerable {
 			if (offer == null) {
 				reofferRequest(request);
 			} else {
-				IManageableBearer manageable = jobless.getObjectNextTo(offer.position, null);
+				IManageableBearer manageable = jobless.removeObjectNextTo(offer.position);
 
 				if (manageable != null) {
 					offer.amount--;

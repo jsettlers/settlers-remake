@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition;
+package jsettlers.logic.map.newGrid.partition.datastructures;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -14,11 +14,11 @@ import jsettlers.common.position.ISPosition2D;
  * 
  * @param <T>
  */
-public class PositionableDatastructure<T> implements Iterable<T> {
+public class PositionableHashMap<T> implements Iterable<T> {
 
 	private Hashtable<ISPosition2D, T> data;
 
-	public PositionableDatastructure() {
+	public PositionableHashMap() {
 		data = new Hashtable<ISPosition2D, T>();
 	}
 
@@ -59,6 +59,30 @@ public class PositionableDatastructure<T> implements Iterable<T> {
 				}
 			}
 		}
+
+		return currBest;
+	}
+
+	public T removeObjectNextTo(ISPosition2D position, IAcceptor<T> acceptor) {
+		float bestDistance = Float.MAX_VALUE;
+		T currBest = null;
+		ISPosition2D bestPos = null;
+
+		for (Entry<ISPosition2D, T> currEntry : data.entrySet()) {
+			if (acceptor == null || acceptor.isAccepted(currEntry.getValue())) {
+				ISPosition2D currPosition = currEntry.getKey();
+				float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
+
+				if (bestDistance > currDist) {
+					bestDistance = currDist;
+					currBest = currEntry.getValue();
+					bestPos = currPosition;
+				}
+			}
+		}
+
+		if (bestPos != null)
+			data.remove(bestPos);
 
 		return currBest;
 	}
