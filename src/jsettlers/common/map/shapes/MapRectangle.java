@@ -29,17 +29,23 @@ public class MapRectangle implements IMapArea {
 
 	@Override
 	public boolean contains(ISPosition2D position) {
-		short y = position.getY();
-		if (y < miny || y >= miny + height) {
+		return contains(position.getX(), position.getY());
+	}
+
+	public boolean contains(int x, int y) {
+		if (!containsLine(y)) {
 			return false;
 		}
-		short x = position.getX();
 		if (x < getLineStartX(y - miny) || x > getLineEndX(y - miny)) {
 			return false;
 		}
 		return true;
-	}
+    }
 
+	public boolean containsLine(int y) {
+		return y >= miny && y < miny + height;
+    }
+	
 	@Override
 	public Iterator<ISPosition2D> iterator() {
 		return new RectangleIterator();
@@ -114,4 +120,5 @@ public class MapRectangle implements IMapArea {
 			        "Cannot remove tiles from a Shape");
 		}
 	}
+
 }
