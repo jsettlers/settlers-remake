@@ -19,6 +19,7 @@ class LineLoader implements Runnable {
 		this.minimap = minimap;
 	}
 
+	@Override
 	public void run() {
 		while (true) {
 			updateLine();

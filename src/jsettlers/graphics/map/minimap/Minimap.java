@@ -47,7 +47,7 @@ public class Minimap {
 		converter =
 		        new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1,
 		                1);
-		new Thread(new LineLoader(this)).start();
+		new Thread(new LineLoader(this), "minimap loader").start();
 	}
 
 	public void setSize(int width, int height) {

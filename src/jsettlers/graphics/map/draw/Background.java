@@ -789,13 +789,14 @@ public class Background {
 
 	/**
 	 * gets the image number of the border
-	 * @param useSecond 
 	 * 
+	 * @param useSecond
 	 * @param left
 	 * @param bottom
 	 * @return
 	 */
-	private int getBorder(ELandscapeType outer, ELandscapeType inner, boolean useSecond) {
+	private int getBorder(ELandscapeType outer, ELandscapeType inner,
+	        boolean useSecond) {
 		int index;
 
 		// grass <=> dessert
@@ -931,13 +932,13 @@ public class Background {
 
 		} else {
 			index = outer.getImageNumber();
-			useSecond = false; //force!
+			useSecond = false; // force!
 		}
-		
+
 		if (useSecond) {
 			index += 1;
 		}
-		
+
 		return index;
 	}
 
@@ -949,7 +950,7 @@ public class Background {
 	 */
 	public void drawMapContent(MapDrawContext context) {
 		float[] geometry = getGeometry(context);
-		
+
 		GLDrawContext gl = context.getGl();
 		gl.glPushMatrix();
 		gl.glScalef(1, 1, 0);
@@ -962,30 +963,60 @@ public class Background {
 		gl.glPopMatrix();
 	}
 
+	/**
+	 * The geometry buffer. It has a length of bufferwidth * bufferheight * 2 *
+	 * 3 verteces.
+	 */
+	private float[] geometryBuffer = new float[1];
+	private MapRectangle oldBufferPosition = null;
+	private int bufferwidth = 1;; // in map points.
+	private int bufferheight = 1; // in map points.
+
 	private float[] getGeometry(MapDrawContext context) {
-		IntRectangle screen = context.getScreen().getPosition().bigger(EXTRA_PADDING);
+		IntRectangle screen =
+		        context.getScreen().getPosition().bigger(EXTRA_PADDING);
 		MapRectangle area = context.getConverter().getMapForScreen(screen);
-		int linecount = area.getLineLength() * 2 * 3 * VERTEX_SIZE;
-		int count = area.getLines() * linecount;
-		float[] geometry = new float[count];
+		if (area.getLineLength() + 1 != bufferwidth
+		        || area.getLines() != bufferheight) {
+			bufferwidth = area.getLineLength() + 1;
+			bufferheight = area.getLines();
+			int count = bufferheight * (bufferwidth * 2 * 3 * VERTEX_SIZE);
+			geometryBuffer = new float[count];
+			oldBufferPosition = null;
+		}
 
-		for (int line = 0; line < area.getLines(); line++) {
+		for (int line = 0; line < bufferheight; line++) {
 			int y = area.getLineY(line);
-			addLineToGeometry(context, geometry, line * linecount, y,
-			        area.getLineStartX(line), area.getLineEndX(line));
+			int minx = area.getLineStartX(line);
+			int maxx = area.getLineEndX(line) + 1;
+			for (int x = minx; x < maxx; x++) {
+				if (oldBufferPosition == null
+				        || !oldBufferPosition.contains(x, y)) {
+					int pointOffset =
+					        getBufferPosition(y, x);
+					addTrianglesToGeometry(context, geometryBuffer,
+					        pointOffset, x, y);
+				}
+			}
 		}
 
-		return geometry;
+		oldBufferPosition = area;
+
+		return geometryBuffer;
 	}
 
-	private void addLineToGeometry(MapDrawContext context, float[] geometry,
-	        int offset, int y, int minx, int maxx) {
-		int currentOffset = offset;
-		for (int x = minx; x < maxx; x++) {
-			addTrianglesToGeometry(context, geometry, currentOffset, x, y);
-			currentOffset += 2 * 3 * VERTEX_SIZE;
+	private int getBufferPosition(int y, int x) {
+		int linepos = y % bufferheight;
+		int colpos = x % bufferwidth;
+		if (linepos < 0) {
+			linepos += bufferheight;
 		}
-	}
+		if (colpos < 0) {
+			colpos += bufferwidth;
+		}
+		
+	    return (linepos * bufferwidth + colpos) * 2 * 3 * VERTEX_SIZE;
+    }
 
 	/**
 	 * Adds the two triangles for a point to the list of verteces
@@ -1004,13 +1035,18 @@ public class Background {
 			addTriangle2ToGeometry(context, geometry, offset + 3 * VERTEX_SIZE,
 			        x, y);
 		} else {
-			//manually do everything...
+			// manually do everything...
 			addPointToGeometry(context, geometry, offset, x, y);
-			addPointToGeometry(context, geometry, offset + VERTEX_SIZE, x, y+1);
-			addPointToGeometry(context, geometry, offset + 2*VERTEX_SIZE, x+1, y+1);
-			addPointToGeometry(context, geometry, offset + 3*VERTEX_SIZE, x, y);
-			addPointToGeometry(context, geometry, offset + 4*VERTEX_SIZE, x+1, y+1);
-			addPointToGeometry(context, geometry, offset + 5*VERTEX_SIZE, x+1, y);
+			addPointToGeometry(context, geometry, offset + VERTEX_SIZE, x,
+			        y + 1);
+			addPointToGeometry(context, geometry, offset + 2 * VERTEX_SIZE,
+			        x + 1, y + 1);
+			addPointToGeometry(context, geometry, offset + 3 * VERTEX_SIZE, x,
+			        y);
+			addPointToGeometry(context, geometry, offset + 4 * VERTEX_SIZE,
+			        x + 1, y + 1);
+			addPointToGeometry(context, geometry, offset + 5 * VERTEX_SIZE,
+			        x + 1, y);
 		}
 	}
 
@@ -1127,44 +1163,44 @@ public class Background {
 		geometry[offset + 2] = color;
 	}
 
-//	private void drawWithRenderbuffer(MapDrawContext context) {
-		// IntRectangle screen = context.getScreen().getPosition();
-		// GL2 gl = ((JOGLDrawContext)context.getGl()).getGl2();
-		// int width = screen.getWidth();
-		// int height = screen.getHeight();
-		// int newChecksum = computeChecksum(context);
-		// if (!screen.equals(bufferScreen) || checksum != newChecksum) {
-		// if (bufferScreen == null || width != bufferScreen.getWidth()
-		// || height != bufferScreen.getHeight()) {
-		// createNewBuffer(gl, width, height);
-		// }
-		// bufferScreen = screen;
-		// checksum = newChecksum;
-		// gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, buffer);
-		// gl.glPushAttrib(GL2.GL_VIEWPORT_BIT);
-		// gl.glViewport(0, 0, textureWidth, textureHeight);
-		// gl.glClearColor(0, 0, 0, 1);
-		// gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		// draw(context);
-		// gl.glPopAttrib();
-		// gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
-		// }
-		//
-		// gl.glBindTexture(GL.GL_TEXTURE_2D, texture);
-		// gl.glEnable(GL.GL_TEXTURE_2D);
-		// gl.glColor3f(1, 1, 1);
-		// gl.glBegin(GL2.GL_QUADS);
-		// gl.glTexCoord2f(0, 0);
-		// gl.glVertex2f(screen.getMinX(), screen.getMinY());
-		// gl.glTexCoord2f(0, 1);
-		// gl.glVertex2f(screen.getMinX(), screen.getMinY() + textureHeight);
-		// gl.glTexCoord2f(1, 1);
-		// gl.glVertex2f(screen.getMinX() + textureWidth, screen.getMinY()
-		// + textureHeight);
-		// gl.glTexCoord2f(1, 0);
-		// gl.glVertex2f(screen.getMinX() + textureWidth, screen.getMinY());
-		// gl.glEnd();
-//	}
+	// private void drawWithRenderbuffer(MapDrawContext context) {
+	// IntRectangle screen = context.getScreen().getPosition();
+	// GL2 gl = ((JOGLDrawContext)context.getGl()).getGl2();
+	// int width = screen.getWidth();
+	// int height = screen.getHeight();
+	// int newChecksum = computeChecksum(context);
+	// if (!screen.equals(bufferScreen) || checksum != newChecksum) {
+	// if (bufferScreen == null || width != bufferScreen.getWidth()
+	// || height != bufferScreen.getHeight()) {
+	// createNewBuffer(gl, width, height);
+	// }
+	// bufferScreen = screen;
+	// checksum = newChecksum;
+	// gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, buffer);
+	// gl.glPushAttrib(GL2.GL_VIEWPORT_BIT);
+	// gl.glViewport(0, 0, textureWidth, textureHeight);
+	// gl.glClearColor(0, 0, 0, 1);
+	// gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+	// draw(context);
+	// gl.glPopAttrib();
+	// gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
+	// }
+	//
+	// gl.glBindTexture(GL.GL_TEXTURE_2D, texture);
+	// gl.glEnable(GL.GL_TEXTURE_2D);
+	// gl.glColor3f(1, 1, 1);
+	// gl.glBegin(GL2.GL_QUADS);
+	// gl.glTexCoord2f(0, 0);
+	// gl.glVertex2f(screen.getMinX(), screen.getMinY());
+	// gl.glTexCoord2f(0, 1);
+	// gl.glVertex2f(screen.getMinX(), screen.getMinY() + textureHeight);
+	// gl.glTexCoord2f(1, 1);
+	// gl.glVertex2f(screen.getMinX() + textureWidth, screen.getMinY()
+	// + textureHeight);
+	// gl.glTexCoord2f(1, 0);
+	// gl.glVertex2f(screen.getMinX() + textureWidth, screen.getMinY());
+	// gl.glEnd();
+	// }
 
 	private int computeChecksum(MapDrawContext context) {
 		IMapArea area = context.getScreenArea();

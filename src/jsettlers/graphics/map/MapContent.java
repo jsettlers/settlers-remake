@@ -126,6 +126,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		this.objectDrawer.increaseAnimationStep();
 
 		this.context.begin(gl);
+		
 		drawBackground();
 		drawMain();
 		this.context.end();
@@ -133,7 +134,6 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		gl.glTranslatef(0, 0, .5f);
 		drawSelectionHint(gl);
 		controls.drawAt(gl);
-		this.context.debugTime("Interface drawn");
 
 		drawFramerate();
 		drawTooltip();

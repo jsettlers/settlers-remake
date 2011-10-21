@@ -5,6 +5,7 @@ import go.graphics.GLDrawContext;
 import java.awt.Point;
 
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
@@ -101,9 +102,15 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public boolean containsPoint(Point position) {
-		float uicenter = uiBase.getPosition().getWidth() * constants.UI_CENTERX;
+		int width = uiBase.getPosition().getWidth();
+		int height = uiBase.getPosition().getHeight();
+		float uicenter = width * constants.UI_CENTERX;
+		float m =
+		        1 / (1 - constants.UI_CENTERX) / width
+		                * (1 - constants.UI_CENTERY) * height;
 		return position.getX() < uicenter
-		        && position.getY() < uiBase.getPosition().getHeight();
+		        || position.getY() > position.getX() * m + constants.UI_CENTERY
+		                * height - m * constants.UI_CENTERX * width;
 	}
 
 	@Override
@@ -136,8 +143,8 @@ public class OriginalControls implements IControls {
 		        ((relativey - constants.UI_CENTERY)
 		                / (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
 		                / constants.MINIMAP_HEIGHT;
-		System.out.println("relative: " + minimapx + ", " + minimapy);
-		return new PanToAction(minimap.getClickPosition(minimapx, minimapy));
+		ISPosition2D clickPosition = minimap.getClickPosition(minimapx, minimapy);
+		return new PanToAction(clickPosition);
 	}
 
 	@Override
@@ -148,9 +155,9 @@ public class OriginalControls implements IControls {
 		        (float) position.getY() / this.uiBase.getPosition().getHeight();
 		return uiBase.getDescription(relativex, relativey);
 	}
-	
+
 	@Override
 	public void setMapViewport(MapRectangle screenArea) {
-	    minimap.setMapViewport(screenArea);
+		minimap.setMapViewport(screenArea);
 	}
 }

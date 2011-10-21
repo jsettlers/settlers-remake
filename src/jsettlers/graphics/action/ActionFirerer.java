@@ -23,6 +23,9 @@ public class ActionFirerer implements ActionFireable {
 	}
 
 	private class ActionFirererThread extends Thread {
+		public ActionFirererThread() {
+			super("action firerer");
+		}
 		@Override
 		public void run() {
 			while (true) {
@@ -36,6 +39,7 @@ public class ActionFirerer implements ActionFireable {
 				}
 			}
 		}
+		
 	}
 
 	@Override

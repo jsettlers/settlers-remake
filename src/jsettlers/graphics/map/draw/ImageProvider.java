@@ -2,6 +2,7 @@ package jsettlers.graphics.map.draw;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -26,6 +27,8 @@ public final class ImageProvider {
 
 	private Hashtable<Integer, DatFileSet> images =
 	        new Hashtable<Integer, DatFileSet>();
+	
+	private BitSet requestedFiles = new BitSet();
 
 	/**
 	 * The lookup paths for the dat files.
@@ -94,9 +97,7 @@ public final class ImageProvider {
 	 */
 	private DatFileSet tryGetFileSet(int file) {
 		Integer valueOf = Integer.valueOf(file);
-		if (!this.images.containsKey(valueOf)) {
-			loadDatFile(valueOf);
-		}
+		loadDatFile(valueOf);
 
 		DatFileSet set = this.images.get(valueOf);
 		return set;
@@ -168,10 +169,11 @@ public final class ImageProvider {
 	 * @return true on success.
 	 */
 	private void loadDatFile(int number) {
-		synchronized (filesToLoad) {
+		synchronized (requestedFiles) {
 			Integer key = Integer.valueOf(number);
-			if (!filesToLoad.contains(key)) {
+			if (!requestedFiles.get(number)) {
 				this.filesToLoad.offer(key);
+				requestedFiles.set(number);
 			}
 		}
 	}
@@ -182,10 +184,11 @@ public final class ImageProvider {
 	 * @param filenumber
 	 */
 	public void preload(int filenumber) {
-		filesToLoad.add(Integer.valueOf(filenumber));
+		loadDatFile(filenumber);
 	}
 
 	public void waitForPreload(int filenumber) {
+		preload(filenumber);
 		synchronized (images) {
 			while (!isPreloaded(filenumber)) {
 				try {
