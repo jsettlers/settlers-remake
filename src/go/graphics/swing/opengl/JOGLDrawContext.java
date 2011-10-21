@@ -36,50 +36,62 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
-		ByteBuffer quadPoints = ByteBuffer.allocateDirect(4 * 2 * 4);
-		quadPoints.order(ByteOrder.nativeOrder());
-		FloatBuffer floatBuff = quadPoints.asFloatBuffer();
-		floatBuff.put(x1);
-		floatBuff.put(y1);
-
-		floatBuff.put(x1);
-		floatBuff.put(y2);
-
-		floatBuff.put(x2);
-		floatBuff.put(y2);
-
-		floatBuff.put(x2);
-		floatBuff.put(y1);
-
-		floatBuff.position(0);
-
-		gl2.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-		gl2.glVertexPointer(2, GL2.GL_FLOAT, 0, floatBuff);
-		gl2.glDrawArrays(GL2.GL_QUADS, 0, 4);
-		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		 ByteBuffer quadPoints = ByteBuffer.allocateDirect(4 * 2 * 4);
+		 quadPoints.order(ByteOrder.nativeOrder());
+		 FloatBuffer floatBuff = quadPoints.asFloatBuffer();
+		 floatBuff.put(x1);
+		 floatBuff.put(y1);
+		
+		 floatBuff.put(x1);
+		 floatBuff.put(y2);
+		
+		 floatBuff.put(x2);
+		 floatBuff.put(y2);
+		
+		 floatBuff.put(x2);
+		 floatBuff.put(y1);
+		
+		 floatBuff.position(0);
+		
+		 gl2.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		 gl2.glVertexPointer(2, GL2.GL_FLOAT, 0, floatBuff);
+		 gl2.glDrawArrays(GL2.GL_QUADS, 0, 4);
+		 gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	@Override
 	public void drawLine(float[] points, boolean loop) {
-		if (points.length % 3 != 0) {
-			throw new IllegalArgumentException(
-			        "Point array length needs to be multiple of 3.");
-		}
-		FloatBuffer floatBuff = generateFloatBuffer(points);
-		gl2.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-		gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, floatBuff);
-		gl2.glDrawArrays(loop ? GL2.GL_LINE_LOOP : GL2.GL_LINE_STRIP, 0,
-		        points.length / 3);
-		gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		 if (points.length % 3 != 0) {
+		 throw new IllegalArgumentException(
+		 "Point array length needs to be multiple of 3.");
+		 }
+		 FloatBuffer floatBuff = generateTemporaryFloatBuffer(points);
+		 gl2.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		 gl2.glVertexPointer(3, GL2.GL_FLOAT, 0, floatBuff);
+		 gl2.glDrawArrays(loop ? GL2.GL_LINE_LOOP : GL2.GL_LINE_STRIP, 0,
+		 points.length / 3);
+		 gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 	}
 
-	private FloatBuffer generateFloatBuffer(float[] points) {
-		ByteBuffer quadPoints = ByteBuffer.allocateDirect(points.length * 4);
-		quadPoints.order(ByteOrder.nativeOrder());
-		FloatBuffer floatBuff = quadPoints.asFloatBuffer();
-		floatBuff.put(points);
-		floatBuff.position(0);
-		return floatBuff;
+	private FloatBuffer reuseableBuffer = null;
+
+	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
+		if (reuseableBuffer == null
+		        || reuseableBuffer.capacity() < points.length) {
+			if (reuseableBuffer != null) {
+				System.out.println("reallocated! needed: " + points.length
+				        + ", got:" + reuseableBuffer.capacity());
+			}
+			ByteBuffer quadPoints =
+			        ByteBuffer.allocateDirect(points.length * 4);
+			quadPoints.order(ByteOrder.nativeOrder());
+			reuseableBuffer = quadPoints.asFloatBuffer();
+		} else {
+			reuseableBuffer.position(0);
+		}
+		reuseableBuffer.put(points);
+		reuseableBuffer.position(0);
+		return reuseableBuffer;
 	}
 
 	@Override
@@ -152,9 +164,10 @@ public class JOGLDrawContext implements GLDrawContext {
 	public void updateTexture(int textureIndex, int left, int bottom,
 	        int width, int height, ShortBuffer data) {
 
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureIndex);
-		gl2.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, left, bottom, width, height,
-		        GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		 gl2.glBindTexture(GL.GL_TEXTURE_2D, textureIndex);
+		 gl2.glTexSubImage2D(GL2.GL_TEXTURE_2D, 0, left, bottom, width,
+		 height,
+		 GL2.GL_RGBA, GL2.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
 	@Override
@@ -166,23 +179,23 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public void drawQuadsWithTexture(int textureid, float[] geometry) {
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
-
-		FloatBuffer buffer = generateFloatBuffer(geometry);
-
-		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
-		buffer.position(3);
-		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
-		gl2.glDrawArrays(GL2.GL_QUADS, 0, geometry.length / 5);
-
-		gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
+		 gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
+		
+		 FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
+		
+		 gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
+		 buffer.position(3);
+		 gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
+		 gl2.glDrawArrays(GL2.GL_QUADS, 0, geometry.length / 5);
+		
+		 gl2.glBindTexture(GL.GL_TEXTURE_2D, 0);
 	}
 
 	@Override
 	public void drawTrianglesWithTexture(int textureid, float[] geometry) {
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
 
-		FloatBuffer buffer = generateFloatBuffer(geometry);
+		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(3);
@@ -196,7 +209,7 @@ public class JOGLDrawContext implements GLDrawContext {
 	public void drawTrianglesWithTextureColored(int textureid, float[] geometry) {
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
 
-		FloatBuffer buffer = generateFloatBuffer(geometry);
+		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 8 * 4, buffer);
 		buffer.position(3);
