@@ -1,7 +1,5 @@
 package jsettlers.logic.map.random.landscape;
 
-import java.awt.Shape;
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -10,7 +8,6 @@ import jsettlers.logic.map.random.geometry.Point2D;
 public class MeshSite {
 
 	private MeshEdge[] edges = new MeshEdge[0];
-	private GeneralPath polygon;
 
 	private MeshLandscapeType landscape = MeshLandscapeType.UNSPECIFIED;
 
@@ -32,7 +29,6 @@ public class MeshSite {
 	 */
 	protected void setMeshEdges(MeshEdge[] edges) {
 		this.edges = edges;
-		polygon = null;
 	}
 
 	public Point2D getCenter() {
@@ -47,24 +43,6 @@ public class MeshSite {
 				y += point.getY();
 			}
 			return new Point2D(x / edges.length, y / edges.length);
-		}
-	}
-
-	public Shape getShape() {
-		if (edges.length > 0) {
-			if (polygon == null) {
-				polygon = new GeneralPath();
-				Vertex last = edges[edges.length - 1].getClockPoint(this);
-				polygon.moveTo(last.getX(), last.getY());
-				for (MeshEdge edge : edges) {
-					Vertex point = edge.getClockPoint(this);
-					polygon.lineTo(point.getX(), point.getY());
-				}
-				polygon.closePath();
-			}
-			return polygon;
-		} else {
-			throw new IllegalStateException("The edge was not initialized yet");
 		}
 	}
 

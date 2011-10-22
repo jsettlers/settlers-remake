@@ -1,6 +1,5 @@
 package jsettlers.logic.map.random.grid;
 
-import java.awt.Point;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +14,7 @@ import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.random.geometry.LineDrawer;
+import jsettlers.logic.map.random.geometry.Point;
 import jsettlers.logic.map.random.geometry.Point2D;
 import jsettlers.logic.map.random.landscape.LandscapeMesh;
 import jsettlers.logic.map.random.landscape.MeshEdge;
@@ -94,7 +94,7 @@ public class MapGrid {
 			Point center = site.getCenter().getIntPoint();
 			Queue<ISPosition2D> sitePoints =
 			        new ConcurrentLinkedQueue<ISPosition2D>();
-			sitePoints.offer(new ShortPoint2D(center.x, center.y));
+			sitePoints.offer(new ShortPoint2D(center.getX(), center.getY()));
 			ELandscapeType landscape =
 			        GridLandscapeType.convert(site.getLandscape());
 

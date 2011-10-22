@@ -1,7 +1,8 @@
 package jsettlers.logic.map.random;
 
-import java.awt.geom.Point2D;
 import java.util.Random;
+
+import jsettlers.logic.map.random.geometry.Point2D;
 
 /**
  * This class provides methods to generate random points.
@@ -22,7 +23,7 @@ public class RandomPointGenerator {
 		for (int i = 0; i < points; i++) {
 			float x = width * random.nextFloat();
 			float y = height * random.nextFloat();
-			result[i] = new Point2D.Float(x, y);
+			result[i] = new Point2D(x, y);
 		}
 		return result;
 	}

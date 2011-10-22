@@ -1,13 +1,13 @@
 package jsettlers.logic.map.random.voronoi;
 
-import java.awt.geom.Point2D;
+import jsettlers.logic.map.random.geometry.Point2D;
 
 public class CircleEvent implements VoronoiEvent {
 	private final BeachLinePart bottom;
 	private final BeachLinePart middle;
 	private final BeachLinePart top;
 	private double radius;
-	private Point2D.Double center;
+	private Point2D center;
 
 	public CircleEvent(BeachLinePart bottom, BeachLinePart middle,
 			BeachLinePart top) {
@@ -36,7 +36,7 @@ public class CircleEvent implements VoronoiEvent {
 			                * (ax - cx) + (cy * cy + cx * cx) * (bx - ax))
 			                / d;
 			this.radius = Math.sqrt((x - ax) * (x - ax) + (y - ay) * (y - ay));
-			this.center = new Point2D.Double(x, y);
+			this.center = new Point2D(x, y);
 		}
 		return this.center;
 	}

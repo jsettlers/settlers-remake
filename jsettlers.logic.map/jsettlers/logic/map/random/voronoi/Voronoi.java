@@ -1,6 +1,5 @@
 package jsettlers.logic.map.random.voronoi;
 
-import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -8,6 +7,7 @@ import java.util.PriorityQueue;
 import jsettlers.logic.map.random.geometry.MapAreaPoint;
 import jsettlers.logic.map.random.geometry.MapMeshEdge;
 import jsettlers.logic.map.random.geometry.Mesh;
+import jsettlers.logic.map.random.geometry.Point2D;
 
 /**
  * This creates a voronoi graph out of some points.

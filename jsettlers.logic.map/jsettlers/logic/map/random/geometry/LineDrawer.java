@@ -1,6 +1,5 @@
 package jsettlers.logic.map.random.geometry;
 
-import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,14 +32,14 @@ public class LineDrawer implements Iterable<ISPosition2D> {
 		LineIterator() {
 			pointIt = points.iterator();
 			Point first = pointIt.next();
-			current = new ShortPoint2D(first.x, first.y);
+			current = new ShortPoint2D(first.getX(), first.getY());
 			relaodTarget();
 		}
 
 		private void relaodTarget() {
 			if (pointIt.hasNext()) {
 				Point target = pointIt.next();
-				currentTarget = new ShortPoint2D(target.x, target.y);
+				currentTarget = new ShortPoint2D(target.getX(), target.getY());
 			} else {
 				currentTarget = null;
 			}

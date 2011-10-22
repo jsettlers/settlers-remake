@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.JFrame;
-
 import jsettlers.logic.map.random.generation.PlayerConnection;
 import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.random.grid.MapGrid;
@@ -16,7 +14,6 @@ import jsettlers.logic.map.random.instructions.ObjectInstruction;
 import jsettlers.logic.map.random.landscape.LandscapeMesh;
 import jsettlers.logic.map.random.settings.MapSettings;
 import jsettlers.logic.map.random.settings.PlayerSetting;
-import jsettlers.logic.map.random.visualize.MapGridVisualization;
 
 /**
  * <h1>generation progress</h1>
@@ -152,15 +149,4 @@ public class RandomMapEvaluator {
 		return grid;
 	}
 	
-	public static void main(String[] args) {
-		RandomMapFile file = RandomMapFile.getByName("test");
-		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 3);
-		evaluator.createMap(new Random());
-		
-		JFrame frame2 = new JFrame("grid");
-		frame2.getContentPane().add(new MapGridVisualization(evaluator.getGrid()));
-		frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame2.pack();
-		frame2.setVisible(true);
-    }
 }

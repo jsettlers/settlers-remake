@@ -1,7 +1,5 @@
 package jsettlers.logic.map.random.geometry;
 
-import java.awt.Point;
-
 public class Point2D {
 
 	private final double y;

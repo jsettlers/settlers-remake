@@ -1,7 +1,5 @@
 package jsettlers.logic.map.random.geometry;
 
-import java.awt.geom.Point2D;
-
 import jsettlers.logic.map.random.voronoi.VoronoiVertex;
 
 public class Mesh {
