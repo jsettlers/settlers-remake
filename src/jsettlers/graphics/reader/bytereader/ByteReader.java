@@ -1,7 +1,7 @@
 package jsettlers.graphics.reader.bytereader;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 /**
  * This class provides a little endian wrapper of a reader.
@@ -35,7 +35,7 @@ public class ByteReader {
 	 */
 	private byte[] cache = new byte[CACHE_SIZE];
 	
-	private final InputStream in;
+	private final RandomAccessFile in;
 
 	/**
 	 * Creates a new reader.
@@ -44,7 +44,7 @@ public class ByteReader {
 	 *            The in reader.
 	 * @throws IOException It an IO error occured.
 	 */
-	public ByteReader(InputStream in) throws IOException {
+	public ByteReader(RandomAccessFile in) throws IOException {
 		this.in = in;
 		jumpCachePosition(0);
 	}
@@ -77,7 +77,8 @@ public class ByteReader {
 			this.cachePosition = (int) positionInCache;
 		} else {
 			//we have to reload...
-			this.inputStreamPosition += this.in.skip(newCachePosition - this.inputStreamPosition); 
+			this.in.seek(newCachePosition);
+			this.inputStreamPosition = newCachePosition;
 			this.cacheStart = this.inputStreamPosition;
 			
 			this.inputStreamPosition += this.in.read(this.cache, 0, CACHE_SIZE);
@@ -108,7 +109,7 @@ public class ByteReader {
 			}
 			
 			//todo: save until where cache is valid, if file to long.
-			int length = Math.min(CACHE_SIZE - remaining, this.in.available());
+			int length = (int) Math.min(CACHE_SIZE - remaining, this.in.length() - this.in.getFilePointer());
 			this.inputStreamPosition += this.in.read(this.cache, remaining, length);
 			//TODO: store how long buffer is valid
 			this.cacheStart += this.cachePosition;

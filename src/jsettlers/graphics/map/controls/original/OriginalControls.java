@@ -1,9 +1,7 @@
 package jsettlers.graphics.map.controls.original;
 
 import go.graphics.GLDrawContext;
-
-import java.awt.Point;
-
+import go.graphics.UIPoint;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
@@ -101,7 +99,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public boolean containsPoint(Point position) {
+	public boolean containsPoint(UIPoint position) {
 		int width = uiBase.getPosition().getWidth();
 		int height = uiBase.getPosition().getHeight();
 		float uicenter = width * constants.UI_CENTERX;
@@ -114,7 +112,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public Action getActionFor(Point position) {
+	public Action getActionFor(UIPoint position) {
 		float relativex =
 		        (float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey =
@@ -148,7 +146,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public String getDescriptionFor(Point position) {
+	public String getDescriptionFor(UIPoint position) {
 		float relativex =
 		        (float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey =

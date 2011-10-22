@@ -1,9 +1,7 @@
 package jsettlers.graphics.map.controls;
 
 import go.graphics.GLDrawContext;
-
-import java.awt.Point;
-
+import go.graphics.UIPoint;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.graphics.action.Action;
 
@@ -19,11 +17,12 @@ public interface IControls {
 	
 	void resizeTo(int newWidth, int newHeight) ;
 
-	boolean containsPoint(Point position);
+	boolean containsPoint(UIPoint position);
 
-	Action getActionFor(Point position);
-
-	String getDescriptionFor(Point position);
+	String getDescriptionFor(UIPoint position);
 
 	void setMapViewport(MapRectangle screenArea);
+
+	Action getActionFor(UIPoint position);
+
 }

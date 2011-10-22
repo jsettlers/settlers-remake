@@ -1,10 +1,9 @@
 package jsettlers.graphics.map;
 
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GOPanEvent;
-
-import java.awt.Point;
 
 /**
  * This is a pan handler. It just saves the pan status for polling.
@@ -25,12 +24,12 @@ public class PanHandler implements GOModalEventHandler {
 	 */
 	public PanHandler(ScreenPosition context) {
 		this.context = context;
-		context.setPanProgress(this, new Point(0, 0));
+		context.setPanProgress(this, new UIPoint(0, 0));
 	}
 
 	@Override
 	public void aborted(GOEvent event) {
-		this.context.finishPanProgress(this, new Point(0, 0));
+		this.context.finishPanProgress(this, new UIPoint(0, 0));
 	}
 
 	@Override

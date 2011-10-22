@@ -1,8 +1,8 @@
 package jsettlers.graphics.image;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
 
-import java.awt.Color;
 import java.nio.ShortBuffer;
 
 /**

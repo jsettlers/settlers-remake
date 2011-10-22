@@ -1,7 +1,8 @@
 package jsettlers.graphics.map.geometry;
 
+import go.graphics.UIPoint;
+
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -216,8 +217,8 @@ public final class MapCoordinateConverter {
 	 *            The y coordinate
 	 * @return The position.
 	 */
-	public Point2D getView(int x, int y, int height) {
-		return new Point2D.Float(getViewX(x, y, height), getViewY(x, y, height));
+	public UIPoint getView(int x, int y, int height) {
+		return new UIPoint(getViewX(x, y, height), getViewY(x, y, height));
 	}
 
 	/**

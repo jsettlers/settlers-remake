@@ -1,10 +1,8 @@
 package jsettlers.graphics.map;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
-
-import java.awt.Color;
-import java.awt.geom.Point2D;
-
+import go.graphics.UIPoint;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
@@ -44,17 +42,28 @@ public class MapDrawContext {
 
 	private MapCoordinateConverter converter;
 	Color[] playerColors = new Color[] {
-	        Color.RED,
-	        Color.BLUE,
-	        Color.ORANGE,
-	        Color.YELLOW,
-	        Color.BLACK,
-	        Color.WHITE,
-	        Color.GRAY,
-	        Color.PINK,
-	        Color.CYAN,
-	        Color.LIGHT_GRAY,
-	        Color.DARK_GRAY,
+	        // red
+	        new Color(0xe50000),
+	        // blue
+	        new Color(0x0343df),
+	        // green
+	        new Color(0x15b01a),
+	        // yellow
+	        new Color(0xffff14),
+	        // purple
+	        new Color(0x7e1e9c),
+	        // teal
+	        new Color(0x029386),
+	        // orange
+	        new Color(0xf97306),
+	        // magenta
+	        new Color(0xc20078),
+	        // grey
+	        new Color(0x929591),
+	        // violet
+	        new Color(0x9a0eea),
+	        // olive
+	        new Color(0x6e750e),
 	};
 
 	// private long beginTime;
@@ -67,14 +76,16 @@ public class MapDrawContext {
 	 */
 	public MapDrawContext(IGraphicsGrid map) {
 		this.map = map;
-		float incline = DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
+		float incline =
+		        DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
 		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
 		int mapWidth = map.getWidth() * DrawConstants.DISTANCE_X;
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
 		this.converter =
 		        MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
-		        		DrawConstants.DISTANCE_Y, map.getWidth(), map.getHeight());
+		                DrawConstants.DISTANCE_Y, map.getWidth(),
+		                map.getHeight());
 
 	}
 
@@ -193,17 +204,21 @@ public class MapDrawContext {
 	 */
 	public ISPosition2D getPositionUnder(int screenx, int screeny) {
 		ISPosition2D currentPoint = converter.getMap(screenx, screeny);
-		Point2D desiredOnScreen = new Point2D.Float(screenx, screeny);
-		
-		Point2D onscreen = converter.getView(currentPoint.getX(), currentPoint.getY(), getHeight(currentPoint.getX(), currentPoint.getY()));
+		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
+
+		UIPoint onscreen =
+		        converter.getView(currentPoint.getX(), currentPoint.getY(),
+		                getHeight(currentPoint.getX(), currentPoint.getY()));
 		double currentbest = onscreen.distance(desiredOnScreen);
-		
+
 		boolean couldBeImproved;
 		do {
 			couldBeImproved = false;
-			
+
 			for (ISPosition2D p : new MapNeighboursArea(currentPoint)) {
-				onscreen = converter.getView(p.getX(), p.getY(), getHeight(p.getX(), p.getY()));
+				onscreen =
+				        converter.getView(p.getX(), p.getY(),
+				                getHeight(p.getX(), p.getY()));
 				double newDistance = onscreen.distance(desiredOnScreen);
 				if (newDistance < currentbest) {
 					currentbest = newDistance;
@@ -211,9 +226,9 @@ public class MapDrawContext {
 					couldBeImproved = true;
 				}
 			}
-			
+
 		} while (couldBeImproved);
-		
+
 		return currentPoint;
 	}
 

@@ -1,7 +1,6 @@
 package jsettlers.graphics.map.draw;
 
-import java.awt.Color;
-
+import go.graphics.Color;
 import jsettlers.common.movable.IMovable;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;

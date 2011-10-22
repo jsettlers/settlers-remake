@@ -1,8 +1,9 @@
 package jsettlers.graphics.map.minimap;
 
+import go.graphics.GLDrawContext;
+
 import java.nio.ShortBuffer;
 
-import go.graphics.GLDrawContext;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
@@ -84,7 +85,7 @@ public class Minimap {
 		}
 
 		context.color(1, 1, 1, 1);
-		context.drawQuadsWithTexture(imageIndex, new float[] {
+		context.drawQuadWithTexture(imageIndex, new float[] {
 		        0,
 		        0,
 		        0,

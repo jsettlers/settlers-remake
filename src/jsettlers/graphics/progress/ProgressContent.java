@@ -3,6 +3,8 @@ package jsettlers.graphics.progress;
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.event.GOEvent;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
 import java.util.LinkedList;
 
@@ -10,8 +12,6 @@ import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.EFontSize;
-import jsettlers.graphics.utils.TextDrawer;
 
 /**
  * This content displays progress information for wait screens.
@@ -32,6 +32,8 @@ public class ProgressContent implements SettlersContent {
 
 		gl.glPushMatrix();
 
+		System.out.println("draw progress: " + state.toString());
+		
 		Image image = provider.getGuiImage(2, 29);
 		gl.glScalef((float) width / image.getWidth(),
 		        (float) height / image.getHeight(), 0);
@@ -39,7 +41,7 @@ public class ProgressContent implements SettlersContent {
 
 		gl.glPopMatrix();
 
-		TextDrawer drawer = TextDrawer.getTextDrawer(EFontSize.HEADLINE);
+		TextDrawer drawer = gl.getTextDrawer(EFontSize.HEADLINE);
 
 		String text = Labels.getProgress(state);
 		drawer.renderCentered(width / 2, 40, text);

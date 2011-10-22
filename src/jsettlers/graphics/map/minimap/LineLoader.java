@@ -1,6 +1,7 @@
 package jsettlers.graphics.map.minimap;
 
-import java.awt.Color;
+import go.graphics.Color;
+
 import java.nio.ShortBuffer;
 
 import jsettlers.common.landscape.ELandscapeType;
@@ -92,8 +93,9 @@ class LineLoader implements Runnable {
 	}
 
 	private short toShortColor(Color color) {
-		return (short) ((color.getRed() >> 3) << 11
-		        | (color.getGreen() >> 3) << 6 | (color.getBlue() >> 3) << 1 | 1);
+		return (short) ((int) (color.getRed() * 0x1f) << 11
+		        | (int) (color.getGreen() * 0x1f) << 6
+		        | (int) (color.getBlue() * 0x1f) << 1 | 1);
 	}
 
 	private short getSettlerForArea(int mapminx, int mapminy, int mapmaxx,

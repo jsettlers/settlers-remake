@@ -1,7 +1,9 @@
 package jsettlers.graphics.map;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOEventHandlerProvoder;
@@ -11,10 +13,9 @@ import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 
 import jsettlers.common.map.IGraphicsGrid;
@@ -40,8 +41,6 @@ import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
-import jsettlers.graphics.utils.EFontSize;
-import jsettlers.graphics.utils.TextDrawer;
 
 /**
  * This is the main map content class. It manages the map drawing on the screen
@@ -135,8 +134,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		drawSelectionHint(gl);
 		controls.drawAt(gl);
 
-		drawFramerate();
-		drawTooltip();
+		drawFramerate(gl);
+		drawTooltip(gl);
 	}
 
 	private void adaptScreenSize(int newWidth, int newHeight) {
@@ -155,10 +154,10 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null
 		        && this.currentSelectionAreaEnd != null) {
-			int x1 = this.currentSelectionAreaStart.x;
-			int y1 = this.currentSelectionAreaStart.y;
-			int x2 = this.currentSelectionAreaEnd.x;
-			int y2 = this.currentSelectionAreaEnd.y;
+			float x1 = (float) this.currentSelectionAreaStart.getX();
+			float y1 = (float) this.currentSelectionAreaStart.getY();
+			float x2 = (float) this.currentSelectionAreaEnd.getX();
+			float y2 = (float) this.currentSelectionAreaEnd.getY();
 
 
 			gl.color(1, 1, 1, 1);
@@ -170,21 +169,21 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 
 	private long lastFrame = 0;
 
-	private Point currentSelectionAreaStart;
+	private UIPoint currentSelectionAreaStart;
 
-	private void drawFramerate() {
+	private void drawFramerate(GLDrawContext gl2) {
 		long currentFrame = System.nanoTime();
 		double framerate = 1000000000.0 / (currentFrame - this.lastFrame);
 		String frames = new DecimalFormat("###.##").format(framerate);
-		TextDrawer drawer = TextDrawer.getTextDrawer(EFontSize.NORMAL);
+		TextDrawer drawer = gl2.getTextDrawer(EFontSize.NORMAL);
 		drawer.drawString(200, 5, "FPS: " + frames);
 
 		this.lastFrame = currentFrame;
 	}
 
-	private void drawTooltip() {
+	private void drawTooltip(GLDrawContext gl) {
 		if (!tooltipString.isEmpty()) {
-			TextDrawer drawer = TextDrawer.getTextDrawer(EFontSize.NORMAL);
+			TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
 			drawer.drawString((int) mousePosition.getX(),
 			        (int) mousePosition.getY(), tooltipString);
 		}
@@ -279,13 +278,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 				0, 4, .5f,  0, 0,
 		};
 
-		float[] colorArray = new float[4];
 		for (ISPosition2D pos : tiles) {
 			Color color = map.getDebugColorAt(pos.getX(), pos.getY());
 			if (color != null) {
 				this.context.beginTileContext(pos);
-				gl.color(color.getComponents(colorArray));
-				gl.drawQuadsWithTexture(0, shape);
+				gl.color(color);
+				gl.drawQuadWithTexture(0, shape);
 				context.endTileContext();
 			}
 		}
@@ -331,28 +329,26 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		event.setHandler(new ActionHandler(action, getInterfaceConnector()));
 	}
 
-	private Action getActionForKeyboard(int keyCode) {
-		switch (keyCode) {
-			case KeyEvent.VK_F12:
+	private Action getActionForKeyboard(String keyCode) {
+		if ("F12".equalsIgnoreCase(keyCode)) {
 				return new Action(EActionType.FAST_FORWARD);
-			case KeyEvent.VK_PAUSE:
-			case KeyEvent.VK_P:
+		} else if ("P".equalsIgnoreCase(keyCode) || "PAUSE".equalsIgnoreCase(keyCode)) {
 				return new Action(EActionType.SPEED_TOGGLE_PAUSE);
-			case KeyEvent.VK_PLUS:
+		} else if ("+".equals(keyCode)) {
 				return new Action(EActionType.SPEED_FASTER);
-			case KeyEvent.VK_MINUS:
+		} else if ("-".equals(keyCode)) {
 				return new Action(EActionType.SPEED_SLOWER);
-			case KeyEvent.VK_SPACE:
+		} else if (" ".equals(keyCode)) {
 				return new Action(EActionType.SHOW_SELECTION);
-			case KeyEvent.VK_D:
+		} else if ("d".equalsIgnoreCase(keyCode)) {
 				return new Action(EActionType.DEBUG_ACTION);
-			case KeyEvent.VK_S:
+		} else if ("s".equalsIgnoreCase(keyCode)) {
 				return new Action(EActionType.STOP_WORKING);
-			case KeyEvent.VK_Q:
+		} else if ("q".equalsIgnoreCase(keyCode)) {
 				return new Action(EActionType.TOGGLE_DEBUG);
-
-		}
+		} else {
 		return null;
+		}
 	}
 
 	private GOEventHandler hoverHandler = new GOModalEventHandler() {
@@ -377,13 +373,13 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 
 	private String tooltipString = "";
 
-	private Point mousePosition = new Point(0, 0);
+	private UIPoint mousePosition = new UIPoint(0, 0);
 
 	private void handleHover(GOHoverEvent hoverEvent) {
 		hoverEvent.setHandler(hoverHandler);
 	}
 
-	protected void changeMousePosition(Point position) {
+	protected void changeMousePosition(UIPoint position) {
 		mousePosition = position;
 
 		if (controls.containsPoint(position)) {
@@ -397,7 +393,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 	}
 
 	private Action handleCommand(GOCommandEvent commandEvent) {
-		Point position = commandEvent.getCommandPosition();
+		UIPoint position = commandEvent.getCommandPosition();
 		if (controls.containsPoint(position)) {
 			return controls.getActionFor(position);
 		} else {
@@ -445,12 +441,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 
 	};
 
-	private Point currentSelectionAreaEnd;
+	private UIPoint currentSelectionAreaEnd;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
-	        Point position) {
+			UIPoint position) {
 		ISPosition2D onMap =
-		        this.context.getPositionOnScreen(position.x, position.y);
+		        this.context.getPositionOnScreen((int) position.getX(), (int) position.getY());
 		if (this.context.checkMapCoordinates(onMap.getX(), onMap.getY())) {
 			Action action;
 			if (commandEvent.isSelecting()) {
@@ -468,12 +464,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		this.currentSelectionAreaEnd = null;
 	}
 
-	private void updateSelectionArea(Point mousePosition, boolean finished) {
+	private void updateSelectionArea(UIPoint mousePosition, boolean finished) {
 		if (finished && currentSelectionAreaStart != null) {
-			int x1 = mousePosition.x;
-			int x2 = this.currentSelectionAreaStart.x;
-			int y1 = mousePosition.y;
-			int y2 = this.currentSelectionAreaStart.y;
+			int x1 = (int) mousePosition.getX();
+			int x2 = (int) this.currentSelectionAreaStart.getX();
+			int y1 = (int) mousePosition.getY();
+			int y2 = (int) this.currentSelectionAreaStart.getY();
 
 			if (x1 > x2) {
 				int temp = x1;

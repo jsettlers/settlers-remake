@@ -1,8 +1,8 @@
 package jsettlers.graphics.reader;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -161,10 +161,10 @@ public class DatFileReader implements DatFileSet {
 	 *             If an read error occurred.
 	 */
 	public DatFileReader(File file) throws IOException {
-		// System.out.println("reading file: " + file);
+		System.out.println("reading file: " + file + ", length: " + file.length());
 		ByteReader reader = null;
 		try {
-			reader = new ByteReader(new FileInputStream(file));
+			reader = new ByteReader(new RandomAccessFile(file, "r"));
 			readFromReader(file, reader);
 
 		} catch (IOException e) {
@@ -212,14 +212,16 @@ public class DatFileReader implements DatFileSet {
 
 		int[] sequenceIndexStarts =
 		        readSequenceIndexStarts(file.length(), reader);
+		Arrays.sort(sequenceIndexStarts);
 
 		for (int i = 0; i < SEQUENCE_TYPE_COUNT; i++) {
-			// System.out.println("Loading sequence stream " + i);
+			System.out.println("Loading sequence stream " + i);
 			try {
 				readSequencesAt(reader, sequenceIndexStarts[i]);
 			} catch (IOException e) {
 				System.err.println("Error while loading sequence"
 				        + ": " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		reader.close();

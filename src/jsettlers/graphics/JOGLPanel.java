@@ -2,13 +2,9 @@ package jsettlers.graphics;
 
 import go.graphics.area.Area;
 import go.graphics.region.Region;
-import go.graphics.swing.AreaContainer;
 
-import java.awt.Dimension;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.swing.JPanel;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.statistics.IStatisticable;
@@ -27,20 +23,18 @@ import jsettlers.graphics.progress.ProgressContent;
  */
 public class JOGLPanel {
 
-	private AreaContainer panel;
 	private Region region;
 
 	private SettlersContent content = null;
+	private Area area;
 
 	/**
 	 * Creates a new empty panel.
 	 */
 	public JOGLPanel() {
-		Area area = new Area();
+		area = new Area();
 		this.region = new Region(Region.POSITION_CENTER);
 		area.add(this.region);
-		this.panel = new AreaContainer(area);
-		this.panel.setPreferredSize(new Dimension(640, 480));
 	}
 
 	public synchronized ProgressConnector showProgress() {
@@ -91,8 +85,8 @@ public class JOGLPanel {
 		return content.getInterfaceConnector();
 	}
 
-	public JPanel getJOGLJPanel() {
-		return this.panel;
-	}
+	public Area getArea() {
+	    return area;
+    }
 
 }

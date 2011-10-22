@@ -1,6 +1,7 @@
 package jsettlers.graphics.map;
 
-import java.awt.Point;
+import go.graphics.UIPoint;
+
 import java.util.Hashtable;
 
 import jsettlers.common.position.IntRectangle;
@@ -17,8 +18,8 @@ public class ScreenPosition {
 	private int screenCenterX;
 	private int screenCenterY;
 
-	private Hashtable<Object, Point> panProgresses =
-	        new Hashtable<Object, Point>();
+	private Hashtable<Object, UIPoint> panProgresses =
+	        new Hashtable<Object, UIPoint>();
 
 	private int mapWidth;
 
@@ -89,9 +90,9 @@ public class ScreenPosition {
 
 		int xoffset = 0;
 		int yoffset = 0;
-		for (Point p : this.panProgresses.values()) {
-			xoffset += p.x;
-			yoffset += p.y;
+		for (UIPoint p : this.panProgresses.values()) {
+			xoffset += p.getX();
+			yoffset += p.getY();
 		}
 		setScreen(x - xoffset, y - yoffset, this.screen.getWidth(), this.screen
 		        .getHeight());
@@ -163,7 +164,7 @@ public class ScreenPosition {
 	 * @param distance
 	 *            The distance we panned.
 	 */
-	public void setPanProgress(Object key, Point distance) {
+	public void setPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.put(key, distance);
 		recalculateScreen();
 	}
@@ -176,9 +177,9 @@ public class ScreenPosition {
 	 * @param distance
 	 *            The actual distance when the event ended.
 	 */
-	public void finishPanProgress(Object key, Point distance) {
+	public void finishPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.remove(key);
-		setScreenCenter(this.screenCenterX - distance.x, this.screenCenterY - distance.y);
+		setScreenCenter((int) (this.screenCenterX - distance.getX()), (int) (this.screenCenterY - distance.getY()));
 	}
 
 	public IntRectangle getPosition() {

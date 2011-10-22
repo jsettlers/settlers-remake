@@ -1,6 +1,7 @@
 package jsettlers.graphics.action;
 
-import java.awt.Point;
+import go.graphics.UIPoint;
+
 import java.util.ArrayList;
 
 import jsettlers.common.position.IntRectangle;
@@ -56,10 +57,11 @@ public class ActionMap {
 	 * @return The action, or<code>null</code> if there is no registered action
 	 *         for that point.
 	 */
-	public Action getAction(Point pos) {
+	public Action getAction(UIPoint pos) {
 		for (PositionedAction action : this.actions) {
 			if (!action.getAction().isActive()
-			        && action.getPosition().contains(pos.x, pos.y)) {
+			        && action.getPosition().contains((int) pos.getX(),
+			                (int) pos.getY())) {
 				return action.getAction();
 			}
 		}

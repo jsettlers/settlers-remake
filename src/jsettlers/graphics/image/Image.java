@@ -1,8 +1,8 @@
 package jsettlers.graphics.image;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
 
-import java.awt.Color;
 import java.nio.ShortBuffer;
 
 /**
@@ -291,7 +291,7 @@ public class Image implements ImageDataPrivider {
 		                0,
 		        };
 		gl.color(1, 1, 1, 1);
-		gl.drawQuadsWithTexture(getTextureIndex(gl), coords);
+		gl.drawQuadWithTexture(getTextureIndex(gl), coords);
 	}
 
 	/**
@@ -354,10 +354,10 @@ public class Image implements ImageDataPrivider {
 		if (color == null) {
 			gl.color(1, 1, 1, 1);
 		} else {
-			gl.color(color.getRGBComponents(null));
+			gl.color(color);
 		}
 
-		gl.drawQuadsWithTexture(getTextureIndex(gl), getGeometry());
+		gl.drawQuadWithTexture(getTextureIndex(gl), getGeometry());
 		// gl.glEnable(GL.GL_TEXTURE_2D);
 		// bind(gl);
 		//

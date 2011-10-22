@@ -1,9 +1,7 @@
 package jsettlers.graphics.map.draw;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
-
-import java.awt.Color;
-
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;

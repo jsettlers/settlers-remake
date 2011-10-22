@@ -1,8 +1,7 @@
 package jsettlers.graphics.image;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
-
-import java.awt.Color;
 
 /**
  * This is the image of something that is displayed as an object on the map,
