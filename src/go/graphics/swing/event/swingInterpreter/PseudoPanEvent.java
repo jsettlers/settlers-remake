@@ -1,25 +1,24 @@
 package go.graphics.swing.event.swingInterpreter;
 
+import go.graphics.UIPoint;
 import go.graphics.event.SingleHandlerGoModalEvent;
 import go.graphics.event.mouse.GOPanEvent;
 
-import java.awt.Point;
-
 public class PseudoPanEvent extends SingleHandlerGoModalEvent implements GOPanEvent {
 
-	private final Point distance;
+	private final UIPoint distance;
 
 	public PseudoPanEvent(int x, int y) {
-	    this.distance = new Point(x, y);
+	    this.distance = new UIPoint(x, y);
     }
 
 	@Override
-	public Point getPanCenter() {
-		return new Point(0, 0);
+	public UIPoint getPanCenter() {
+		return new UIPoint(0, 0);
 	}
 
 	@Override
-	public Point getPanDistance() {
+	public UIPoint getPanDistance() {
 		return distance;
 	}
 	

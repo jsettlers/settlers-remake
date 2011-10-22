@@ -1,12 +1,12 @@
 package go.graphics.swing.event.swingInterpreter;
 
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOEventHandlerProvoder;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 import java.awt.Component;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -50,8 +50,8 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 	}
 
-	private Point convertToLocal(MouseEvent e) {
-		return new Point(e.getX(), e.getComponent().getHeight() - e.getY());
+	private UIPoint convertToLocal(MouseEvent e) {
+		return new UIPoint(e.getX(), e.getComponent().getHeight() - e.getY());
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	@Override
 	public void mousePressed(MouseEvent e) {
 		int mouseButton = e.getButton();
-		Point local = convertToLocal(e);
+		UIPoint local = convertToLocal(e);
 		if (mouseButton == MouseEvent.BUTTON1) {
 			startDraw(local);
 		} else {
@@ -90,7 +90,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		Point local = convertToLocal(e);
+		UIPoint local = convertToLocal(e);
 		updateDrawPosition(local);
 		updatePanPosition(local);
 		updateHoverPosition(local);
@@ -98,7 +98,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		Point local = convertToLocal(e);
+		UIPoint local = convertToLocal(e);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			endDraw(local);
 		} else if (panWithButton3 && e.getButton() == MouseEvent.BUTTON3) {
@@ -111,7 +111,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		startKeyEvent(e.getKeyCode());
+		startKeyEvent(KeyEvent.getKeyText(e.getKeyCode()));
 		/*
 		 * if (ongoingKeyEvent == null) { if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { ongoingKeyEvent.setHandler(getCancelHandler()); } else if
 		 * (e.getKeyCode() == KeyEvent.VK_UP) { ongoingKeyEvent.setHandler(getPanHandler(0, -KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_DOWN)

@@ -1,6 +1,7 @@
 package go.graphics.swing.test;
 
 import go.graphics.GLDrawContext;
+import go.graphics.UIPoint;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
@@ -12,7 +13,6 @@ import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map.Entry;
@@ -46,8 +46,8 @@ public class JoglTest {
 
 	private static class TestContent implements RegionContent {
 
-		private Hashtable<Object, ArrayList<Point>> draw =
-		        new Hashtable<Object, ArrayList<Point>>();
+		private Hashtable<Object, ArrayList<UIPoint>> draw =
+		        new Hashtable<Object, ArrayList<UIPoint>>();
 		private final Region region;
 
 		private TestContent(Region region) {
@@ -91,13 +91,13 @@ public class JoglTest {
 		@Override
 		public void handleEvent(GOEvent event) {
 			event.setHandler(handler);
-			draw.put(event, new ArrayList<Point>());
+			draw.put(event, new ArrayList<UIPoint>());
 			handler.eventDataChanged(event);
 		}
 
 		@Override
 		public void drawContent(GLDrawContext gl2, int width, int height) {
-			for (Entry<Object, ArrayList<Point>> e : draw.entrySet()) {
+			for (Entry<Object, ArrayList<UIPoint>> e : draw.entrySet()) {
 				if (e.getKey() instanceof GOHoverEvent) {
 					gl2.color(.7f, .0f, .0f, .5f);
 				} else if (e.getKey() instanceof GODrawEvent) {
@@ -114,9 +114,9 @@ public class JoglTest {
 
 				float[] points = new float[pointn * 3];
 				for (int i = 0; i < pointn; i++) {
-					Point point = e.getValue().get(i);
-					points[i * 3] = point.x;
-					points[i * 3 + 1] = point.y;
+					UIPoint point = e.getValue().get(i);
+					points[i * 3] = (float) point.getX();
+					points[i * 3 + 1] = (float) point.getY();
 					points[i * 3 + 2] = 0;
 				}
 
