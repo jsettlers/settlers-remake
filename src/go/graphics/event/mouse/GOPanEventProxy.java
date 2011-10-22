@@ -34,6 +34,6 @@ public class GOPanEventProxy extends GOEventProxy<GOPanEvent> implements GOPanEv
 	@Override
 	public UIPoint getPanDistance() {
 		UIPoint real = (this.baseEvent).getPanDistance();
-		return new UIPoint(real.getX() - this.displacement.getX(), real.getY() - this.displacement.getY());
+		return real;
 	}
 }

@@ -26,6 +26,8 @@ public class AbstractEventConverter {
 
 	private ConvertedHoverEvent ongoingHoverEvent;
 
+	private int PAN_PER_KEYPRESS = 50;
+
 	private LinkedList<EventReplacementRule> replace =
 	        new LinkedList<AbstractEventConverter.EventReplacementRule>();
 
@@ -176,9 +178,39 @@ public class AbstractEventConverter {
 
 	protected void endKeyEvent() {
 		if (ongoingKeyEvent != null) {
-			ongoingKeyEvent.released();
-			ongoingKeyEvent = null;
+			boolean replaced = replaceKeyEvent(ongoingKeyEvent);
+			if (replaced) {
+				ongoingKeyEvent.aborted();
+				ongoingKeyEvent = null;
+			} else {
+				ongoingKeyEvent.released();
+				ongoingKeyEvent = null;
+			}
 		}
+	}
+
+	protected boolean replaceKeyEvent(GOKeyEvent event) {
+		if ("DOWN".equalsIgnoreCase(event.getKeyCode())) {
+			doPan(0, PAN_PER_KEYPRESS);
+			return true;
+		} else if ("UP".equalsIgnoreCase(event.getKeyCode())) {
+			doPan(0, -PAN_PER_KEYPRESS);
+			return true;
+		} else if ("LEFT".equalsIgnoreCase(event.getKeyCode())) {
+			doPan(PAN_PER_KEYPRESS, 0);
+			return true;
+		} else if ("RIGHT".equalsIgnoreCase(event.getKeyCode())) {
+			doPan(-PAN_PER_KEYPRESS, 0);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void doPan(int x, int y) {
+		PseudoPanEvent event = new PseudoPanEvent(x, y);
+		this.handleEvent(event);
+		event.pan();
 	}
 
 	/**

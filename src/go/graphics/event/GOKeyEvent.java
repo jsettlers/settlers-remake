@@ -46,4 +46,11 @@ public class GOKeyEvent extends SingleHandlerGoEvent {
 	    this.setPhase(PHASE_STARTED);
 	    this.setPhase(PHASE_MODAL);
     }
+
+	public void aborted() {
+		if (getPhase() != PHASE_MODAL) {
+			throw new IllegalStateException("Key event in wrong state to be aborted.");
+		}
+	    setPhase(PHASE_ABORTED);
+    }
 }
