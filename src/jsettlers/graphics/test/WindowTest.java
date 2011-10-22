@@ -1,5 +1,7 @@
 package jsettlers.graphics.test;
 
+import go.graphics.swing.AreaContainer;
+
 import java.io.File;
 
 import javax.swing.JFrame;
@@ -33,7 +35,7 @@ public class WindowTest {
 		JFrame window = new JFrame("window test");
 
 		JOGLPanel content = new JOGLPanel();
-		window.add(content.getJOGLJPanel());
+		window.add(new AreaContainer(content.getArea()));
 
 		window.pack();
 		window.setSize(500, 500);

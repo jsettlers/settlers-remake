@@ -1,5 +1,6 @@
 package jsettlers.graphics.debug;
 
+import go.graphics.Color;
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -7,10 +8,11 @@ import go.graphics.event.GOKeyEvent;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.text.JOGLTextDrawer;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +30,6 @@ import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.reader.DatFileReader;
 import jsettlers.graphics.sequence.Sequence;
-import jsettlers.graphics.utils.EFontSize;
-import jsettlers.graphics.utils.TextDrawer;
 
 public class DatFileTester {
 
@@ -41,15 +41,7 @@ public class DatFileTester {
 	        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
 
 	private static final Color[] colors = new Color[] {
-	        Color.BLACK,
-	        Color.DARK_GRAY,
-	        Color.GRAY,
-	        Color.WHITE,
-	        Color.BLUE,
-	        Color.RED,
-	        Color.GREEN,
-	        Color.ORANGE,
-	        Color.YELLOW
+	        new Color(0xff0000)
 	};
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
@@ -217,22 +209,22 @@ public class DatFileTester {
 		@Override
 		public void handleEvent(GOEvent event) {
 			if (event instanceof GOKeyEvent) {
-				int keyCode = ((GOKeyEvent) event).getKeyCode();
-				if (keyCode == KeyEvent.VK_UP) {
+				String keyCode = ((GOKeyEvent) event).getKeyCode();
+				if ("UP".equalsIgnoreCase(keyCode)) {
 					offsetY -= 400;
-				} else if (keyCode == KeyEvent.VK_DOWN) {
+				} else if ("DOWN".equalsIgnoreCase(keyCode)) {
 					offsetY += 400;
-				} else if (keyCode == KeyEvent.VK_LEFT) {
+				} else if ("LEFT".equalsIgnoreCase(keyCode)) {
 					offsetX += 100;
-				} else if (keyCode == KeyEvent.VK_RIGHT) {
+				} else if ("RIGHT".equalsIgnoreCase(keyCode)) {
 					offsetX -= 100;
-				} else if (keyCode == KeyEvent.VK_L) {
+				} else if ("L".equalsIgnoreCase(keyCode)) {
 					mode = LANDSCAPE;
-				} else if (keyCode == KeyEvent.VK_S) {
+				} else if ("S".equalsIgnoreCase(keyCode)) {
 					mode = SETTLERS;
-				} else if (keyCode == KeyEvent.VK_G) {
+				} else if ("G".equalsIgnoreCase(keyCode)) {
 					mode = GUI;
-				} else if (keyCode == KeyEvent.VK_E) {
+				} else if ("E".equalsIgnoreCase(keyCode)) {
 					export();
 				}
 				region.requestRedraw();
@@ -261,7 +253,7 @@ public class DatFileTester {
 
 			int y = 0;
 			int seqIndex = 0;
-			TextDrawer drawer = TextDrawer.getTextDrawer(EFontSize.NORMAL);
+			TextDrawer drawer = JOGLTextDrawer.getTextDrawer(EFontSize.NORMAL);
 			for (Sequence<T> seq : sequences) {
 				int maxheight;
 
