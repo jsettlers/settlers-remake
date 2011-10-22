@@ -1,15 +1,16 @@
 package go.graphics.event.mouse;
 
-import java.awt.Point;
+import go.graphics.UIPoint;
 
 /**
  * This class proxys a mouse event with a given displacement.
  * 
  * @author michael
  */
-public class GOHoverEventProxy extends GOEventProxy<GOHoverEvent> implements GOHoverEvent {
+public class GOHoverEventProxy extends GOEventProxy<GOHoverEvent> implements
+        GOHoverEvent {
 
-	private final Point displacement;
+	private final UIPoint displacement;
 
 	/**
 	 * @param event
@@ -17,14 +18,15 @@ public class GOHoverEventProxy extends GOEventProxy<GOHoverEvent> implements GOH
 	 * @param displacement
 	 *            The top left border of the suparea of the parent area.
 	 */
-	public GOHoverEventProxy(GOHoverEvent event, Point displacement) {
+	public GOHoverEventProxy(GOHoverEvent event, UIPoint displacement) {
 		super(event);
 		this.displacement = displacement;
 	}
 
 	@Override
-	public Point getHoverPosition() {
-		Point real = (this.baseEvent).getHoverPosition();
-		return new Point(real.x - this.displacement.x, real.y - this.displacement.y);
+	public UIPoint getHoverPosition() {
+		UIPoint real = (this.baseEvent).getHoverPosition();
+		return new UIPoint(real.getX() - this.displacement.getX(), real.getY()
+		        - this.displacement.getY());
 	}
 }

@@ -1,6 +1,6 @@
 package go.graphics.event.mouse;
 
-import java.awt.Point;
+import go.graphics.UIPoint;
 
 /**
  * This class proxys a mouse event with a given displacement.
@@ -9,7 +9,7 @@ import java.awt.Point;
  */
 public class GODrawEventProxy extends GOEventProxy<GODrawEvent> implements GODrawEvent {
 
-	private final Point displacement;
+	private final UIPoint displacement;
 
 	/**
 	 * @param baseEvent
@@ -17,14 +17,14 @@ public class GODrawEventProxy extends GOEventProxy<GODrawEvent> implements GODra
 	 * @param displacement
 	 *            The top left border of the suparea of the parent area.
 	 */
-	public GODrawEventProxy(GODrawEvent baseEvent, Point displacement) {
+	public GODrawEventProxy(GODrawEvent baseEvent, UIPoint displacement) {
 		super(baseEvent);
 		this.displacement = displacement;
 	}
 
 	@Override
-	public Point getDrawPosition() {
-		Point real = (this.baseEvent).getDrawPosition();
-		return new Point(real.x - this.displacement.x, real.y - this.displacement.y);
+	public UIPoint getDrawPosition() {
+		UIPoint real = (this.baseEvent).getDrawPosition();
+		return new UIPoint(real.getX() - this.displacement.getX(), real.getY() - this.displacement.getY());
 	}
 }

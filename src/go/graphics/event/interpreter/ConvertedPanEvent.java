@@ -1,8 +1,7 @@
 package go.graphics.event.interpreter;
 
+import go.graphics.UIPoint;
 import go.graphics.event.mouse.GOPanEvent;
-
-import java.awt.Point;
 
 /**
  * This is a pan event that is converted from a normal swing mouse event.
@@ -11,7 +10,7 @@ import java.awt.Point;
  */
 class ConvertedPanEvent extends AbstractMouseEvent implements GOPanEvent {
 
-	private final Point original;
+	private final UIPoint original;
 
 	/**
 	 * Creates a new converted event.
@@ -19,18 +18,18 @@ class ConvertedPanEvent extends AbstractMouseEvent implements GOPanEvent {
 	 * @param point
 	 *            THe point the user first put his mouse to.
 	 */
-	protected ConvertedPanEvent(Point point) {
+	protected ConvertedPanEvent(UIPoint point) {
 		this.position = point;
 		this.original = point;
 	}
 
 	@Override
-	public Point getPanDistance() {
-		return new Point(position.x - original.x, position.y - original.y);
+	public UIPoint getPanDistance() {
+		return new UIPoint(position.getX() - original.getX(), position.getY() - original.getY());
 	}
 
 	@Override
-	public Point getPanCenter() {
+	public UIPoint getPanCenter() {
 		return original;
 	}
 }

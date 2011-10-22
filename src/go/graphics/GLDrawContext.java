@@ -1,5 +1,8 @@
 package go.graphics;
 
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
+
 import java.nio.ShortBuffer;
 
 /**
@@ -47,7 +50,7 @@ public interface GLDrawContext {
 	 */
 	void color(float red, float green, float blue, float alpha);
 
-	void color(float[] rgbComponents);
+	void color(Color color);
 
 	/**
 	 * Returns a texture id which is positive or 0. It returns a negative number
@@ -78,7 +81,7 @@ public interface GLDrawContext {
 	 * @param geometry
 	 *            A float array of the form: x,y,z,u,v
 	 */
-	void drawQuadsWithTexture(int textureid, float[] geometry);
+	void drawQuadWithTexture(int textureid, float[] geometry);
 	void drawTrianglesWithTexture(int textureid, float[] geometry);
 	void drawTrianglesWithTextureColored(int textureid, float[] geometry);
 
@@ -99,4 +102,6 @@ public interface GLDrawContext {
 	 */
 	void updateTexture(int textureIndex, int left, int bottom, int width,
             int height, ShortBuffer data);
+	
+	TextDrawer getTextDrawer(EFontSize size);
 }

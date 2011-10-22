@@ -1,8 +1,8 @@
 package go.graphics.event.mouse;
 
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 
-import java.awt.Point;
 
 /**
  * This is a pan event.
@@ -17,12 +17,12 @@ public interface GOPanEvent extends GOEvent {
 	 * The distance (as vector) the user panned.
 	 * @return The distance.
 	 */
-	Point getPanDistance();
+	UIPoint getPanDistance();
 	
 	/**
 	 * The center the user started panning.
 	 * @return The pan center.
 	 */
-	Point getPanCenter();
+	UIPoint getPanCenter();
 
 }

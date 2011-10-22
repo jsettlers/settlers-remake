@@ -1,12 +1,12 @@
 package go.graphics.event.interpreter;
 
+import go.graphics.UIPoint;
 import go.graphics.event.SingleHandlerGoModalEvent;
 
-import java.awt.Point;
 
 public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 
-	protected Point position;
+	protected UIPoint position;
 	private int mouseMoved = 0;
 	private long startTime = 0;
 
@@ -55,17 +55,17 @@ public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 	/**
 	 * Sets the mouse position as a given point.
 	 * 
-	 * @param position
+	 * @param current
 	 *            The position.
 	 */
-	protected void setMousePosition(final Point position) {
+	protected void setMousePosition(final UIPoint current) {
 		if (this.position != null) {
 			mouseMoved +=
-			        Math.abs(position.x - this.position.x)
-			                + Math.abs(position.y - this.position.y);
+			        Math.abs(current.getX() - this.position.getX())
+			                + Math.abs(current.getY() - this.position.getY());
 		}
 
-		this.position = position;
+		this.position = current;
 		if (getPhase() == PHASE_MODAL) {
 			fireModalDataRefreshed();
 		}

@@ -2,6 +2,7 @@ package go.graphics.area;
 
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
@@ -16,12 +17,9 @@ import go.graphics.event.mouse.GOPanEventProxy;
 import go.graphics.region.PositionedRegion;
 import go.graphics.region.Region;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 
 /**
  * This class represents an area. This is a rectangular part of the screen that
@@ -104,13 +102,22 @@ public class Area implements RedrawListener {
 		for (int i = 0; i < regionPositions.size(); i++) {
 			PositionedRegion position = regionPositions.get(i);
 
-			Rectangle content = position.getContent();
-			drawRegionAt(gl2, position.getRegion(), content);
-			Rectangle border = position.getBorder();
-			if (border != null) {
-				drawBorder(gl2, border);
-			}
+			drawRegionAt(gl2, position);
+			// Rectangle border = position.getBorder();
+			// if (border != null) {
+			// drawBorder(gl2, border);
+			// }
 		}
+	}
+
+	private void drawRegionAt(GLDrawContext gl2, PositionedRegion position) {
+		gl2.glPushMatrix();
+		gl2.glTranslatef(position.getLeft(), position.getBottom(), 0);
+
+		position.getRegion().drawRegion(gl2, position.getRight() - position.getLeft(),
+		        position.getTop() - position.getBottom());
+
+		gl2.glPopMatrix();
 	}
 
 	private void recalculateRegions() {
@@ -193,44 +200,20 @@ public class Area implements RedrawListener {
 		}
 	}
 
-	/**
-	 * Draws a border for a region.
-	 * 
-	 * @param gl2
-	 *            The context to draw on.
-	 * @param position
-	 *            The position oft the region to draw the border for.
-	 */
-	private void drawBorder(GLDrawContext gl2, Rectangle position) {
-		gl2.color(.5f, .5f, .5f, 1);
-
-		gl2.fillQuad(position.x, position.y, position.x + position.width, position.y + position.height);
-	}
-
-	private void drawRegionAt(GLDrawContext gl2, Region r, Rectangle position) {
-
-		gl2.glPushMatrix();
-		gl2.glTranslatef(position.x, position.y, 0);
-
-		// make stencil buffer drawable
-
-		/*gl2.glColorMask(false, false, false, false);
-		gl2.glDepthMask(false);
-		gl2.glEnable(GL2.GL_STENCIL_TEST);
-		gl2.glStencilFunc(GL2.GL_ALWAYS, 1, 0xFFFFFFFF); // draw stencil buffer
-		gl2.glStencilOp(GL2.GL_REPLACE, GL2.GL_REPLACE, GL2.GL_REPLACE);
-		gl2.glRecti(0, 0, position.width, position.height); // return to normal
-		// draw context
-		gl2.glColorMask(true, true, true, true);
-		gl2.glDepthMask(true);
-		gl2.glStencilFunc(GL2.GL_EQUAL, 1, 0xFFFFFFFF);
-		gl2.glStencilOp(GL2.GL_KEEP, GL2.GL_KEEP, GL2.GL_KEEP);*/
-
-		r.drawRegion(gl2, position.width, position.height);
-
-		/*gl2.glClear(GL2.GL_STENCIL_BUFFER_BIT);*/
-		gl2.glPopMatrix();
-	}
+//	/**
+//	 * Draws a border for a region.
+//	 * 
+//	 * @param gl2
+//	 *            The context to draw on.
+//	 * @param position
+//	 *            The position oft the region to draw the border for.
+//	 */
+//	private void drawBorder(GLDrawContext gl2, Rectangle position) {
+//		gl2.color(.5f, .5f, .5f, 1);
+//
+//		gl2.fillQuad(position.x, position.y, position.x + position.width,
+//		        position.y + position.height);
+//	}
 
 	/**
 	 * Handles a mouse event somewhere in the area and passes it on to the
@@ -245,11 +228,12 @@ public class Area implements RedrawListener {
 		}
 
 		for (int i = 0; i < regionPositions.size(); i++) {
-			Rectangle pos = regionPositions.get(i).getContent();
-			if (pos.contains(event.getDrawPosition())) {
+			PositionedRegion pos = regionPositions.get(i);
+			if (pos.contentContains(event.getDrawPosition())) {
 				setActiveRegion(regionPositions.get(i).getRegion());
 				GODrawEventProxy displacedEvent =
-				        new GODrawEventProxy(event, new Point(pos.x, pos.y));
+				        new GODrawEventProxy(event, new UIPoint(pos.getLeft(),
+				                pos.getBottom()));
 				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
 				break;
 			}
@@ -264,23 +248,23 @@ public class Area implements RedrawListener {
 		PositionedRegion currentRegion = null;
 		private SimpleHoverEvent sendEvent;
 
-		private void startWithRegion(Point areaPoint) {
+		private void startWithRegion(UIPoint areaPoint) {
 			sendEvent = new SimpleHoverEvent();
 			changePoint(areaPoint);
 			currentRegion.getRegion().handleEvent(sendEvent);
 			sendEvent.initialized();
 		}
 
-		private void endWithRegion(Point point) {
+		private void endWithRegion(UIPoint point) {
 			changePoint(point);
 			sendEvent.finish();
 			sendEvent = null;
 		}
 
-		private void changePoint(Point point) {
-			int x = point.x - currentRegion.getLeft();
-			int y = point.y - currentRegion.getBottom();
-			sendEvent.setMousePosition(new Point(x, y));
+		private void changePoint(UIPoint point) {
+			double x = point.getX() - currentRegion.getLeft();
+			double y = point.getY() - currentRegion.getBottom();
+			sendEvent.setMousePosition(new UIPoint(x, y));
 		}
 
 		@Override
@@ -307,7 +291,7 @@ public class Area implements RedrawListener {
 		@Override
 		public void eventDataChanged(GOEvent event) {
 			if (event instanceof GOHoverEvent) {
-				Point point = ((GOHoverEvent) event).getHoverPosition();
+				UIPoint point = ((GOHoverEvent) event).getHoverPosition();
 				PositionedRegion nextRegion = getUnder(point);
 				if (nextRegion != currentRegion) {
 					if (currentRegion != null) {
@@ -332,24 +316,23 @@ public class Area implements RedrawListener {
 		}
 
 		@Override
-		public Point getHoverPosition() {
+		public UIPoint getHoverPosition() {
 			return this.position;
 		}
 
 		@Override
-		protected void setMousePosition(Point position) {
+		protected void setMousePosition(UIPoint position) {
 			super.setMousePosition(position);
 		}
 	}
 
-	private PositionedRegion getUnder(Point p) {
+	private PositionedRegion getUnder(UIPoint p) {
 		if (regionPositions == null) {
 			recalculateRegions();
 		}
 
 		for (PositionedRegion region : regionPositions) {
-			Rectangle pos = region.getContent();
-			if (pos.contains(p)) {
+			if (region.contentContains(p)) {
 				return region;
 			}
 		}
@@ -358,10 +341,11 @@ public class Area implements RedrawListener {
 
 	public void handleCommandEvent(GOCommandEvent event) {
 		for (int i = 0; i < regionPositions.size(); i++) {
-			Rectangle pos = regionPositions.get(i).getContent();
-			if (pos.contains(event.getCommandPosition())) {
+			PositionedRegion pos = regionPositions.get(i);
+			if (pos.contentContains(event.getCommandPosition())) {
 				GOCommandEventProxy displacedEvent =
-				        new GOCommandEventProxy(event, new Point(pos.x, pos.y));
+				        new GOCommandEventProxy(event,
+				                new UIPoint(pos.getLeft(), pos.getBottom()));
 				setActiveRegion(regionPositions.get(i).getRegion());
 				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
 				break;
@@ -370,8 +354,8 @@ public class Area implements RedrawListener {
 	}
 
 	private void setActiveRegion(Region region) {
-	    activeRegion  = region;
-    }
+		activeRegion = region;
+	}
 
 	/**
 	 * Handles any known type of event.
@@ -399,21 +383,21 @@ public class Area implements RedrawListener {
 	private void handlePanEvent(GOPanEvent event) {
 		PositionedRegion foundPosition = getRegionAt(event.getPanCenter());
 
-		Point topLeft =
-		        new Point(foundPosition.getContent().x,
-		                foundPosition.getContent().y);
+		UIPoint topLeft =
+		        new UIPoint(foundPosition.getLeft(),
+		                foundPosition.getTop());
 
 		GOPanEventProxy displacedEvent = new GOPanEventProxy(event, topLeft);
 		foundPosition.getRegion().handleEvent(displacedEvent);
 	}
 
-	private PositionedRegion getRegionAt(Point eventPosition) {
+	private PositionedRegion getRegionAt(UIPoint eventPosition) {
 		Iterator<PositionedRegion> it = regionPositions.iterator();
 		PositionedRegion foundPosition = null;
 		while (it.hasNext() && foundPosition == null) {
 			PositionedRegion currentPos = it.next();
 			if (currentPos != null
-			        && currentPos.getContent().contains(eventPosition)) {
+			        && currentPos.contentContains(eventPosition)) {
 				foundPosition = currentPos;
 			}
 		}

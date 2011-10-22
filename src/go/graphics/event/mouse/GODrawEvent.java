@@ -1,8 +1,7 @@
 package go.graphics.event.mouse;
 
+import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
-
-import java.awt.Point;
 
 /**
  * This is a mouse event.
@@ -15,5 +14,5 @@ public interface GODrawEvent extends GOEvent {
 	 * gets the position the mouse is currently on. May not be null.
 	 * @return The point.
 	 */
-	Point getDrawPosition();
+	UIPoint getDrawPosition();
 }

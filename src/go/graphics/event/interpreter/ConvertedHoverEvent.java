@@ -1,9 +1,8 @@
 package go.graphics.event.interpreter;
 
 
+import go.graphics.UIPoint;
 import go.graphics.event.mouse.GOHoverEvent;
-
-import java.awt.Point;
 
 /**
  * This class converts swing mouse movements to go events.
@@ -13,12 +12,12 @@ import java.awt.Point;
 public class ConvertedHoverEvent extends AbstractMouseEvent implements
         GOHoverEvent {
 
-	public ConvertedHoverEvent(Point start) {
+	public ConvertedHoverEvent(UIPoint start) {
 		position = start;
 	}
 
 	@Override
-	public Point getHoverPosition() {
+	public UIPoint getHoverPosition() {
 		return position;
 	}
 

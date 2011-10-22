@@ -1,6 +1,6 @@
 package go.graphics.event.mouse;
 
-import java.awt.Point;
+import go.graphics.UIPoint;
 
 /**
  * This is a proxy that translates the pan event.
@@ -10,7 +10,7 @@ import java.awt.Point;
  */
 public class GOPanEventProxy extends GOEventProxy<GOPanEvent> implements GOPanEvent {
 
-	private final Point displacement;
+	private final UIPoint displacement;
 
 	/**
 	 * Creates a new pan proxy.
@@ -20,20 +20,20 @@ public class GOPanEventProxy extends GOEventProxy<GOPanEvent> implements GOPanEv
 	 * @param displaced
 	 *            The dsiplace vector.
 	 */
-	public GOPanEventProxy(GOPanEvent event, Point displaced) {
+	public GOPanEventProxy(GOPanEvent event, UIPoint displaced) {
 		super(event);
 		this.displacement = displaced;
 	}
 
 	@Override
-	public Point getPanCenter() {
-		Point real = (this.baseEvent).getPanCenter();
-		return new Point(real.x - this.displacement.x, real.y - this.displacement.y);
+	public UIPoint getPanCenter() {
+		UIPoint real = (this.baseEvent).getPanCenter();
+		return new UIPoint(real.getX() - this.displacement.getX(), real.getY() - this.displacement.getY());
 	}
 
 	@Override
-	public Point getPanDistance() {
-		Point real = (this.baseEvent).getPanDistance();
-		return new Point(real.x - this.displacement.x, real.y - this.displacement.y);
+	public UIPoint getPanDistance() {
+		UIPoint real = (this.baseEvent).getPanDistance();
+		return new UIPoint(real.getX() - this.displacement.getX(), real.getY() - this.displacement.getY());
 	}
 }

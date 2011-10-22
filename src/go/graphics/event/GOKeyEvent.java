@@ -6,13 +6,13 @@ package go.graphics.event;
  *
  */
 public class GOKeyEvent extends SingleHandlerGoEvent {
-	private final int keyCode;
+	private final String keyCode;
 
 	/**
 	 * Creates a new key event for a given key code.
 	 * @param keyCode The key code.
 	 */
-	public GOKeyEvent(int keyCode) {
+	public GOKeyEvent(String keyCode) {
 		this.keyCode = keyCode;
 	}
 
@@ -20,7 +20,7 @@ public class GOKeyEvent extends SingleHandlerGoEvent {
 	 * Gets the key code the event has.
 	 * @return The key code.
 	 */
-	public int getKeyCode() {
+	public String getKeyCode() {
 	    return keyCode;
     }
 

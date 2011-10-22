@@ -1,8 +1,7 @@
 package go.graphics.event.interpreter;
 
+import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
-
-import java.awt.Point;
 
 /**
  * This is a mouse vent that was converted to a go event.
@@ -17,12 +16,12 @@ public class ConvertedDrawEvent extends AbstractMouseEvent implements
 	 * @param point
 	 *            The point where it starts.
 	 */
-	public ConvertedDrawEvent(final Point point) {
+	public ConvertedDrawEvent(final UIPoint point) {
 		this.position = point;
 	}
 
 	@Override
-	public Point getDrawPosition() {
+	public UIPoint getDrawPosition() {
 		return this.position;
 	}
 }
