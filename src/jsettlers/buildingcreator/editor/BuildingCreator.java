@@ -1,6 +1,7 @@
 package jsettlers.buildingcreator.editor;
 
-import java.awt.Color;
+import go.graphics.swing.AreaContainer;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import javax.swing.JTextArea;
 import jsettlers.buildingcreator.editor.jobeditor.PersonJobEditor;
 import jsettlers.buildingcreator.editor.map.BuildingtestMap;
 import jsettlers.buildingcreator.editor.map.PseudoTile;
+import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
@@ -96,7 +98,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 		JPanel root = new JPanel();
 		root.setLayout(new BoxLayout(root, BoxLayout.X_AXIS));
-		root.add(mapPanel.getJOGLJPanel());
+		root.add(new AreaContainer(mapPanel.getArea()));
 		root.add(menu);
 
 		window = new JFrame("Edit " + type.toString());
@@ -258,32 +260,32 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 		RelativePoint relative = absoluteToRelative(pos);
 		if (definition.getBlockedStatus(relative)) {
-			colors.add(new Color(110, 0, 0));
+			colors.add(new Color(.5f, 0, 0, 1));
 		} else if (definition.getProtectedStatus(relative)) {
-			colors.add(Color.RED);
+			colors.add(new Color(0xff0000));
 		}
 
 		if (definition.getBuildmarkStatus(relative)) {
-			colors.add(new Color(150, 102, 51));
+			colors.add(new Color(0xd1b26f));
 		}
 
 		if (definition.getDoor().equals(relative)) {
-			colors.add(new Color(80, 80, 250));
+			colors.add(new Color(0x029386));
 		}
 
 		if (definition.getFlag().equals(relative)) {
-			colors.add(new Color(0, 0, 150));
+			colors.add(new Color(0x75bbfd));
 		}
 
 		if (definition.getStack(relative) != null) {
-			colors.add(Color.GREEN);
+			colors.add(new Color(0x96f97b));
 			tile.setStack(new MapStack(definition.getStack(relative)));
 		} else {
 			tile.setStack(null);
 		}
 		
 		if (definition.getBricklayerStatus(relative)) {
-			colors.add(Color.YELLOW);
+			colors.add(new Color(0xffff14));
 		}
 
 		if (!colors.isEmpty()) {

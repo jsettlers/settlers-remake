@@ -1,8 +1,7 @@
 package jsettlers.buildingcreator.editor.map;
 
-import java.awt.Color;
-
 import jsettlers.buildingcreator.editor.BuildingDefinition;
+import jsettlers.common.Color;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
