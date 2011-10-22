@@ -70,7 +70,7 @@ public interface IBuildingsGrid {
 
 	IMovableGrid getMovableGrid();
 
-	void requestDigger(FreeMapArea buildingArea, byte heightAvg);
+	void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount);
 
 	void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction);
 

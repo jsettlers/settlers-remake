@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition.datastructures;
+package jsettlers.logic.map.newGrid.partition.manager.datastructures;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,7 +22,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T> {
 		data = new ArrayList<T>();
 	}
 
-	public void set(T object) {
+	public void insert(T object) {
 		data.add(object);
 	}
 

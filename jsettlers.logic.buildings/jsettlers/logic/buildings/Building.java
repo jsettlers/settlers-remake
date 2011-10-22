@@ -183,10 +183,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.buildingArea = new FreeMapArea(positions);
 
 		this.heightAvg = (byte) (heightSum / blocked.length);
-		int numberOfDiggers = (int) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
+		byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
 
-		for (int i = 0; i < numberOfDiggers; i++)
-			grid.requestDigger(this.buildingArea, this.heightAvg);
+		grid.requestDiggers(this.buildingArea, this.heightAvg, numberOfDiggers);
 	}
 
 	private boolean isFlatened() {

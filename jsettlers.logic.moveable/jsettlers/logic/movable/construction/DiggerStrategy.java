@@ -1,9 +1,9 @@
 package jsettlers.logic.movable.construction;
 
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.management.workers.construction.DiggerRequest;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -11,7 +11,9 @@ import jsettlers.logic.movable.PathableStrategy;
 
 public class DiggerStrategy extends PathableStrategy implements IManageableDigger {
 
-	private DiggerRequest request;
+	private boolean wentThere = false;
+	private FreeMapArea buildingArea;
+	private byte targetHeight;
 
 	public DiggerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -26,7 +28,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	@Override
 	public boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			if (request != null) {
+			if (buildingArea != null) {
 				tryToDigg();
 				return true;
 			} else {
@@ -39,20 +41,18 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 
 	@Override
 	protected void pathRequestFailed() {
-		if (request != null) {
+		if (buildingArea != null) {
 			// TODO rerequest the worker request
-			request = null;
+			buildingArea = null;
 			super.getGrid().addJobless(this);
 		}
 		super.setAction(EAction.NO_ACTION, -1);
 	}
 
-	boolean wentThere = false;
-
 	@Override
 	protected boolean actionFinished() {
 		if (!super.actionFinished()) {
-			if (request != null) {
+			if (buildingArea != null) {
 				executeDigg();
 				tryToDigg();
 			} else {
@@ -63,12 +63,12 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private void executeDigg() {
-		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(request.getHeightAvg() - super.getGrid().getHeightAt(super.getPos()))));
+		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(targetHeight - super.getGrid().getHeightAt(super.getPos()))));
 		super.getGrid().setMarked(super.getPos(), false);
 	}
 
 	private ISPosition2D getDiggablePosition() {
-		for (ISPosition2D pos : request.getPositions()) {
+		for (ISPosition2D pos : buildingArea) {
 			if (needsToChangeHeight(pos) && !super.getGrid().isMarked(pos)) {
 				return pos;
 			}
@@ -77,7 +77,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private boolean needsToChangeHeight(ISPosition2D pos) {
-		if (super.getGrid().getHeightAt(pos) != request.getHeightAvg()) {
+		if (super.getGrid().getHeightAt(pos) != targetHeight) {
 			return true;
 		}
 		return false;
@@ -92,7 +92,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	private void tryToDigg() {
 		if (needsToChangeHeight(super.getPos()) && wentThere) {
 			super.setAction(EAction.ACTION1, 1);
-		} else if (request != null) {
+		} else if (buildingArea != null) {
 			ISPosition2D diggablePos = getDiggablePosition();
 			if (diggablePos != null) {
 				wentThere = false;
@@ -100,27 +100,26 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 				super.calculatePathTo(diggablePos);
 			} else {
 				super.setAction(EAction.NO_ACTION, -1);
-				request = null;
+				buildingArea = null;
 				super.getGrid().addJobless(this);
 			}
 		}
 	}
 
 	@Override
-	public EMovableType getMovableType() {
+	protected EMovableType getMovableType() {
 		return EMovableType.DIGGER;
 	}
 
-	// @Override FIXME
-	// public void setWorkerRequest(AbstractConstructionWorkerRequest curr) {
-	// assert curr instanceof DiggerRequest;
-	// this.request = (DiggerRequest) curr;
-	// wentThere = false;
-	// }
+	@Override
+	public void setDiggerJob(FreeMapArea buildingArea, byte targetHeight) {
+		this.buildingArea = buildingArea;
+		this.targetHeight = targetHeight;
+		wentThere = false;
+	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) {
-		// TODO implement stopping of work
+	protected void stopOrStartWorking(boolean stop) { // diggers don't stop working
 	}
 
 	@Override

@@ -136,10 +136,10 @@ public interface IMovableGrid {
 	 * 
 	 * @param position
 	 *            position the height should be changed.
-	 * @param newHeight
-	 *            new height to be set to the given position.
+	 * @param delta
+	 *            delta the height should be changed at the given position.
 	 */
-	void changeHeightAt(ISPosition2D position, byte newHeight);
+	void changeHeightAt(ISPosition2D position, byte delta);
 
 	/**
 	 * Sets a marker to this position.

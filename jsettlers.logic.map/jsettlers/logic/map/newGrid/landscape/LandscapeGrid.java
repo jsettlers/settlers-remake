@@ -32,4 +32,8 @@ public class LandscapeGrid {
 	public void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
 		this.landscapeGrid[x][y] = landscapeType;
 	}
+
+	public void changeHeightAt(short x, short y, byte delta) {
+		this.heightGrid[x][y] += delta;
+	}
 }

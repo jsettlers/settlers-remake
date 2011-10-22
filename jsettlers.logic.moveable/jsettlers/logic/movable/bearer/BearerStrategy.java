@@ -5,7 +5,6 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.management.bearer.job.BearerToWorkerWithMaterialJob;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -13,10 +12,10 @@ import jsettlers.logic.movable.PathableStrategy;
 
 public class BearerStrategy extends PathableStrategy implements IManageableBearer {
 	private EBearerState state = EBearerState.JOBLESS;
-	private BearerToWorkerWithMaterialJob toWorkerJob;
 	private ISPosition2D offer;
 	private ISPosition2D request;
 	private EMaterialType materialType;
+	private EMovableType movableType;
 
 	public BearerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -28,25 +27,6 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		return true;
 	}
 
-	private void initJob() {
-		switch (state) {
-		case CARRY_INIT:
-			state = EBearerState.CARRY_TAKE;
-			super.calculatePathTo(offer);
-			break;
-
-		default:
-			assert false : "wrong state for initializing job";
-		}
-
-		// (state == EBearerState.CARRY_INIT) {
-		//
-		// } else if (this.toWorkerJob != null) {
-		// state = EBearerState.TAKE;
-		// super.calculatePathTo(toWorkerJob.getFirstPos());
-		// }
-	}
-
 	@Override
 	protected void pathRequestFailed() {
 		switch (state) {
@@ -56,16 +36,13 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		case CARRY_DROP:
 			// grid.requestMaterial(carryJob.getRequest()); FIXME implement reOffering of request
 		}
-		// } else if (toWorkerJob != null) {
-		// super.getGrid().pushMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
-		// // GameManager.requestMovable(toWorkerJob.getMovableType(), super.getPlayer()); FIXME
-		// }
 	}
 
 	@Override
 	protected void pathFinished() {
 		switch (state) {
 		case CARRY_TAKE:
+		case CONVERT_TAKE:
 			super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
 			super.setMaterial(materialType);
 			break;
@@ -73,20 +50,23 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 			break;
 		}
-		// } else if (toWorkerJob != null) {
-		// super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-		// } else {
-		// System.err.println("BearerStrategy.pathFinished() called, but no job set");
-		// }
 	}
 
 	@Override
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			if (state == EBearerState.CARRY_INIT) {
-				initJob();
+			switch (state) {
+			case CARRY_INIT:
+				this.state = EBearerState.CARRY_TAKE;
+				super.calculatePathTo(offer);
 				return true;
-			} else {
+
+			case CONVERT_INIT:
+				this.state = EBearerState.CONVERT_TAKE;
+				super.calculatePathTo(offer);
+				return true;
+
+			default:
 				return false;
 			}
 		}
@@ -112,19 +92,17 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			case CARRY_INIT:
 				super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
 				break;
+
+			case CONVERT_TAKE:
+				super.getGrid().popMaterial(super.getPos(), movableType.getTool());
+				super.convertTo(movableType);
+				super.setAction(EAction.NO_ACTION, -1);
+				break;
+
 			default:
 				super.setAction(EAction.NO_ACTION, -1);
 				break;
 			}
-			// } else if (toWorkerJob != null) {
-			// super.getGrid().popMaterial(super.getPos(), toWorkerJob.getOffer().getMaterialType());
-			// toWorkerJob.getOffer().setFulfilled();
-			// super.setAction(EAction.NO_ACTION, -1);
-			// super.convertTo(toWorkerJob.getMovableType());
-			// toWorkerJob = null;
-			// } else {
-			// super.setAction(EAction.NO_ACTION, -1);
-			// }
 		}
 		return true;
 	}
@@ -140,18 +118,10 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		CARRY_DROP,
 		JOBLESS,
 
-	}
+		CONVERT_INIT,
+		CONVERT_TAKE,
 
-	// @Override
-	// public void setToWorkerJob(BearerToWorkerJob job) {
-	// BearerToWorkerJob toWorkerJob = job;
-	// if (!(job instanceof BearerToWorkerWithMaterialJob)) {
-	// super.convertTo(toWorkerJob.getMovableType());
-	// } else {
-	// this.toWorkerJob = (BearerToWorkerWithMaterialJob) toWorkerJob;
-	// this.state = EBearerState.INIT;
-	// }
-	// }
+	}
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
@@ -169,6 +139,19 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		this.request = request;
 		this.materialType = materialType;
 		this.state = EBearerState.CARRY_INIT;
+	}
+
+	@Override
+	public void becomeWorker(EMovableType movableType) {
+		super.convertTo(movableType);
+	}
+
+	@Override
+	public void becomeWorker(EMovableType movableType, ISPosition2D offer) {
+		this.offer = offer;
+		this.movableType = movableType;
+		this.materialType = movableType.getTool();
+		this.state = EBearerState.CONVERT_INIT;
 	}
 
 }

@@ -1,9 +1,14 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 
 /**
  * This class holds the metadata of a partition.
@@ -63,6 +68,18 @@ public class Partition {
 
 	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
 		manager.request(position, materialType, priority);
+	}
+
+	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
+		manager.requestDiggers(buildingArea, heightAvg, amount);
+	}
+
+	public void addJobless(IManageableDigger digger) {
+		manager.addJobless(digger);
+	}
+
+	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		manager.requestBricklayer(building, bricklayerTargetPos, direction);
 	}
 
 }

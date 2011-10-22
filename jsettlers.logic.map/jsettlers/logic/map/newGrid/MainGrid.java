@@ -138,7 +138,7 @@ public class MainGrid {
 
 	public static MainGrid create(String filename, byte players, Random random) {
 		RandomMapFile file = RandomMapFile.getByName(filename);
-		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
+		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 1);
 		evaluator.createMap(random);
 		MapGrid mapGrid = evaluator.getGrid();
 		
@@ -165,7 +165,8 @@ public class MainGrid {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
 		} else if (object instanceof MovableObject) {
-			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
+			if (((MovableObject) object).getType() == EMovableType.BEARER)
+				createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}
 	}
 
@@ -592,8 +593,8 @@ public class MainGrid {
 		}
 
 		@Override
-		public void changeHeightAt(ISPosition2D position, byte newHeight) {
-			landscapeGrid.setHeightAt(position.getX(), position.getY(), newHeight);
+		public void changeHeightAt(ISPosition2D position, byte delta) {
+			landscapeGrid.changeHeightAt(position.getX(), position.getY(), delta);
 		}
 
 		@Override
@@ -653,20 +654,18 @@ public class MainGrid {
 
 		@Override
 		public void addJobless(IManageableWorker buildingWorkerStrategy) {
-			// TODO Auto-generated method stub
+			partitionsGrid.addJobless(buildingWorkerStrategy);
 
 		}
 
 		@Override
 		public void addJobless(IManageableBricklayer bricklayer) {
-			// TODO Auto-generated method stub
-
+			partitionsGrid.addJobless(bricklayer);
 		}
 
 		@Override
 		public void addJobless(IManageableDigger digger) {
-			// TODO Auto-generated method stub
-
+			partitionsGrid.addJobless(digger);
 		}
 	}
 
@@ -765,15 +764,13 @@ public class MainGrid {
 		}
 
 		@Override
-		public void requestDigger(FreeMapArea buildingArea, byte heightAvg) {
-			// TODO Auto-generated method stub
-
+		public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
+			partitionsGrid.requestDiggers(buildingArea, heightAvg, amount);
 		}
 
 		@Override
 		public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
-			// TODO Auto-generated method stub
-
+			partitionsGrid.requestBricklayer(building, bricklayerTargetPos, direction);
 		}
 
 		@Override
@@ -783,8 +780,7 @@ public class MainGrid {
 
 		@Override
 		public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
-			// TODO Auto-generated method stub
-
+			partitionsGrid.requestBuildingWorker(workerType, workerBuilding);
 		}
 
 		private class RequestStackGrid implements IRequestsStackGrid {

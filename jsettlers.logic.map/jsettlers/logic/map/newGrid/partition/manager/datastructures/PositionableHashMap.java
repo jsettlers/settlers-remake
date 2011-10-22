@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition.datastructures;
+package jsettlers.logic.map.newGrid.partition.manager.datastructures;
 
 import java.util.Hashtable;
 import java.util.Iterator;

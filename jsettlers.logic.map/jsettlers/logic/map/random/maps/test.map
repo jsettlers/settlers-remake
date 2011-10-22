@@ -47,7 +47,7 @@ type = TOWER
 # todo: occupy
 
 [settler]
-count = 30
+count = 6
 type = BEARER
 tight = 2
 group = true

@@ -1,12 +1,20 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
+import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 
 /**
  * This class handles the partitions of the map.
@@ -56,6 +64,10 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	public short getPartition(short x, short y) {
 		return this.partitions[x][y];
+	}
+
+	private Partition getPartitionObject(ISPosition2D pos) {
+		return getPartitionObject(getPartition(pos));
 	}
 
 	private Partition getPartitionObject(short x, short y) {
@@ -203,10 +215,38 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	}
 
 	public void addJobless(IManageableBearer manageable) {
-		getPartitionObject(manageable.getPos().getX(), manageable.getPos().getY()).addJobless(manageable);
+		getPartitionObject(manageable.getPos()).addJobless(manageable);
+	}
+
+	public void addJobless(IManageableWorker buildingWorkerStrategy) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addJobless(IManageableBricklayer bricklayer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addJobless(IManageableDigger digger) {
+		getPartitionObject(digger.getPos()).addJobless(digger);
 	}
 
 	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-		getPartitionObject(position.getX(), position.getY()).request(position, materialType, priority);
+		getPartitionObject(position).request(position, materialType, priority);
 	}
+
+	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
+		getPartitionObject(buildingArea.get(0)).requestDiggers(buildingArea, heightAvg, amount);
+	}
+
+	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		getPartitionObject(building.getPos()).requestBricklayer(building, bricklayerTargetPos, direction);
+	}
+
+	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
