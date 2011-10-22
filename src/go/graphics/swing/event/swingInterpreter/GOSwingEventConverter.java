@@ -5,6 +5,7 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOEventHandlerProvoder;
 import go.graphics.event.interpreter.AbstractEventConverter;
+import go.graphics.event.interpreter.PseudoPanEvent;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -21,8 +22,6 @@ import java.awt.event.MouseMotionListener;
 public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
-
-	private static final int KEYPAN = 20;
 
 	private static final double MOUSE_TIME_TRSHOLD = 5;
 
@@ -101,6 +100,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		UIPoint local = convertToLocal(e);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			endDraw(local);
+			
 		} else if (panWithButton3 && e.getButton() == MouseEvent.BUTTON3) {
 			endPan(local);
 
@@ -111,7 +111,29 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		startKeyEvent(KeyEvent.getKeyText(e.getKeyCode()));
+		String text = KeyEvent.getKeyText(e.getKeyCode());
+		if (text == null || text.length() != 1) {
+			switch (e.getKeyCode()) {
+				case KeyEvent.VK_LEFT:
+					text = "LEFT";
+					break;
+				case KeyEvent.VK_RIGHT:
+					text = "RIGHT";
+					break;
+				case KeyEvent.VK_DOWN:
+					text = "DOWN";
+					break;
+				case KeyEvent.VK_UP:
+					text = "UP";
+					break;
+				case KeyEvent.VK_PAUSE:
+					text = "PAUSE";
+					break;
+				default:
+					text = "";
+			}
+		}
+		startKeyEvent(text);
 		/*
 		 * if (ongoingKeyEvent == null) { if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { ongoingKeyEvent.setHandler(getCancelHandler()); } else if
 		 * (e.getKeyCode() == KeyEvent.VK_UP) { ongoingKeyEvent.setHandler(getPanHandler(0, -KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_DOWN)
