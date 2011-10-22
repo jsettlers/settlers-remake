@@ -1,7 +1,6 @@
 package jsettlers.logic.algorithms.landmarks;
 
-import java.awt.Color;
-
+import jsettlers.common.Color;
 import jsettlers.common.position.ISPosition2D;
 
 /**
