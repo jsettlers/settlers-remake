@@ -1,7 +1,6 @@
 package jsettlers.common.map;
 
-import java.awt.Color;
-
+import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;

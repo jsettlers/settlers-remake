@@ -1,6 +1,6 @@
 package jsettlers.common.landscape;
 
-import java.awt.Color;
+import go.graphics.Color;
 
 public enum ELandscapeType {
 	GRASS(0, new Color(0x3f9b0b)),
