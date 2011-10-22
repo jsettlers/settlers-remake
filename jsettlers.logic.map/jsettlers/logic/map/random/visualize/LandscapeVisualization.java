@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.GeneralPath;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -22,6 +24,7 @@ import jsettlers.logic.map.random.landscape.LandscapeMesh;
 import jsettlers.logic.map.random.landscape.MeshEdge;
 import jsettlers.logic.map.random.landscape.MeshLandscapeType;
 import jsettlers.logic.map.random.landscape.MeshSite;
+import jsettlers.logic.map.random.landscape.Vertex;
 
 public class LandscapeVisualization extends JPanel {
 
@@ -48,7 +51,7 @@ public class LandscapeVisualization extends JPanel {
 
 		for (MeshSite site : mesh.getSites()) {
 			g2d.setColor(landscapeColor(site.getLandscape()));
-			g2d.fill(site.getShape());
+			g2d.fill(getShape(site));
 		}
 
 		g2d.setColor(Color.GRAY);
@@ -59,20 +62,41 @@ public class LandscapeVisualization extends JPanel {
 		}
 	}
 
+	private Shape getShape(MeshSite site) {
+		MeshEdge[] edges = site.getEdges();
+		if (edges.length > 0) {
+			GeneralPath polygon = null;
+			// TODO: cache
+			if (polygon == null) {
+				polygon = new GeneralPath();
+				Vertex last = edges[edges.length - 1].getClockPoint(site);
+				polygon.moveTo(last.getX(), last.getY());
+				for (MeshEdge edge : edges) {
+					Vertex point = edge.getClockPoint(site);
+					polygon.lineTo(point.getX(), point.getY());
+				}
+				polygon.closePath();
+			}
+			return polygon;
+		} else {
+			throw new IllegalStateException("The edge was not initialized yet");
+		}
+	}
+
 	public static Color landscapeColor(MeshLandscapeType landscape) {
 		switch (landscape) {
 			case GRASS:
 				return new Color(0.133f, 0.545f, 0.133f);
-				
+
 			case MOUNTAIN:
 				return Color.DARK_GRAY;
-				
+
 			case SEA:
 				return Color.BLUE;
-				
+
 			case SAND:
 				return Color.YELLOW;
-				
+
 			case DESERT:
 				return new Color(200, 255, 10);
 
@@ -96,7 +120,7 @@ public class LandscapeVisualization extends JPanel {
 		LandBaseInstruction base = new LandBaseInstruction();
 		base.setParameter("type", "sea");
 		base.execute(mesh, starts, new Random());
-		
+
 		PlayerBaseInstruction instr = new PlayerBaseInstruction();
 		instr.setParameter("size", "10000000");
 		instr.setParameter("distance", "0-300");
@@ -130,14 +154,14 @@ public class LandscapeVisualization extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		MapGrid grid = MapGrid.createFromLandscapeMesh(mesh, new Random());
-		
+
 		ObjectInstruction objinstr = new BuildingInstruction();
 		objinstr.setParameter("distance", "0");
 		objinstr.setParameter("type", "TOWER");
 		objinstr.execute(grid, starts, new Random());
-		
+
 		objinstr = new SettlerInstruction();
 		objinstr.setParameter("distance", "10");
 		objinstr.setParameter("dy", "10");
@@ -168,7 +192,7 @@ public class LandscapeVisualization extends JPanel {
 		objinstr.setParameter("dx", "5..15");
 		objinstr.setParameter("dy", "5..15");
 		objinstr.execute(grid, starts, new Random());
-		
+
 		JFrame frame2 = new JFrame("grid");
 		frame2.getContentPane().add(new MapGridVisualization(grid));
 		frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

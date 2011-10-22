@@ -3,10 +3,14 @@ package jsettlers.logic.map.random.visualize;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.Random;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.logic.map.random.RandomMapEvaluator;
+import jsettlers.logic.map.random.RandomMapFile;
 import jsettlers.logic.map.random.grid.MapGrid;
 import jsettlers.logic.map.random.grid.MapObject;
 import jsettlers.logic.map.random.grid.MapStoneObject;
@@ -94,4 +98,16 @@ public class MapGridVisualization extends JPanel {
 				return Color.BLACK;
 		}
 	}
+
+	public static void main(String[] args) {
+		RandomMapFile file = RandomMapFile.getByName("test");
+		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 3);
+		evaluator.createMap(new Random());
+		
+		JFrame frame2 = new JFrame("grid");
+		frame2.getContentPane().add(new MapGridVisualization(evaluator.getGrid()));
+		frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame2.pack();
+		frame2.setVisible(true);
+    }
 }
