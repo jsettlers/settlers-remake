@@ -26,7 +26,7 @@ public class AbstractEventConverter {
 
 	private ConvertedHoverEvent ongoingHoverEvent;
 
-	private int PAN_PER_KEYPRESS = 50;
+	private int PAN_PER_KEYPRESS = 20;
 
 	private LinkedList<EventReplacementRule> replace =
 	        new LinkedList<AbstractEventConverter.EventReplacementRule>();
@@ -168,49 +168,43 @@ public class AbstractEventConverter {
 		return commandEvent.getHandler() != null;
 	}
 
-	protected void startKeyEvent(String string) {
+	protected synchronized void startKeyEvent(String string) {
 		if (ongoingKeyEvent == null) {
 			ongoingKeyEvent = new GOKeyEvent(string);
+			replaceKeyEvent(ongoingKeyEvent);
 			handleEvent(ongoingKeyEvent);
 			ongoingKeyEvent.started();
 		}
 	}
 
-	protected void endKeyEvent() {
+	protected synchronized void endKeyEvent(String string) {
 		if (ongoingKeyEvent != null) {
-			boolean replaced = replaceKeyEvent(ongoingKeyEvent);
-			if (replaced) {
-				ongoingKeyEvent.aborted();
-				ongoingKeyEvent = null;
-			} else {
-				ongoingKeyEvent.released();
-				ongoingKeyEvent = null;
-			}
+			ongoingKeyEvent.released();
+			ongoingKeyEvent = null;
 		}
 	}
 
-	protected boolean replaceKeyEvent(GOKeyEvent event) {
+	protected synchronized boolean replaceKeyEvent(GOKeyEvent event) {
 		if ("DOWN".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(0, PAN_PER_KEYPRESS);
+			doPan(event, 0, PAN_PER_KEYPRESS);
 			return true;
 		} else if ("UP".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(0, -PAN_PER_KEYPRESS);
+			doPan(event, 0, -PAN_PER_KEYPRESS);
 			return true;
 		} else if ("LEFT".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(PAN_PER_KEYPRESS, 0);
+			doPan(event, PAN_PER_KEYPRESS, 0);
 			return true;
 		} else if ("RIGHT".equalsIgnoreCase(event.getKeyCode())) {
-			doPan(-PAN_PER_KEYPRESS, 0);
+			doPan(event, -PAN_PER_KEYPRESS, 0);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private void doPan(int x, int y) {
-		PseudoPanEvent event = new PseudoPanEvent(x, y);
-		this.handleEvent(event);
-		event.pan();
+	private void doPan(GOKeyEvent event, int x, int y) {
+		PseudoPanEvent pan = new PseudoPanEvent(event, x, y);
+		this.handleEvent(pan);
 	}
 
 	/**
