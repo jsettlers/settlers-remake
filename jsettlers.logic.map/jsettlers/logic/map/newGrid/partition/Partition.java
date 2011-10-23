@@ -3,12 +3,16 @@ package jsettlers.logic.map.newGrid.partition;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 
 /**
  * This class holds the metadata of a partition.
@@ -66,6 +70,14 @@ public class Partition {
 		manager.addJobless(manageable);
 	}
 
+	public void addJobless(IManageableBricklayer bricklayer) {
+		manager.addJobless(bricklayer);
+	}
+
+	public void addJobless(IManageableWorker worker) {
+		manager.addJobless(worker);
+	}
+
 	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
 		manager.request(position, materialType, priority);
 	}
@@ -80,6 +92,10 @@ public class Partition {
 
 	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		manager.requestBricklayer(building, bricklayerTargetPos, direction);
+	}
+
+	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
+		manager.requestBuildingWorker(workerType, workerBuilding);
 	}
 
 }

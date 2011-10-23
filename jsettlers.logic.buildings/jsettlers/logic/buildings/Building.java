@@ -244,7 +244,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private boolean isMaterialAvailable() {
-		// TODO Auto-generated method stub
+		if (stacks == null)
+			return true;
+
+		for (RequestStack stack : stacks) {
+			if (stack.hasMaterial())
+				return true;
+		}
+
 		return false;
 	}
 

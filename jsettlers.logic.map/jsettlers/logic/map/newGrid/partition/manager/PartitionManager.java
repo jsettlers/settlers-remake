@@ -12,6 +12,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.workers.WorkerBuilding;
+import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
@@ -29,20 +31,23 @@ import synchronic.timer.NetworkTimer;
  * 
  */
 public class PartitionManager implements INetworkTimerable {
-	private PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
-	private PriorityQueue<Request<EMaterialType>> materialRequests = new PriorityQueue<PartitionManager.Request<EMaterialType>>();
-	private PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
+	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
+	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
-	private PriorityQueue<Request<EMovableType>> workerRequests = new PriorityQueue<PartitionManager.Request<EMovableType>>();
-	private PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
+	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
+	private final PriorityQueue<Request<EMaterialType>> materialRequests = new PriorityQueue<PartitionManager.Request<EMaterialType>>();
+	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
-	private LinkedList<DiggerRequest> diggerRequests = new LinkedList<PartitionManager.DiggerRequest>();
-	private PositionableList<IManageableDigger> joblessDiggers = new PositionableList<IManageableDigger>();
+	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<WorkerRequest>();
+	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
 
-	private LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<PartitionManager.BricklayerRequest>();
-	private PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
+	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<PartitionManager.DiggerRequest>();
+	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<IManageableDigger>();
 
-	private LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<PartitionManager.WorkerCreationRequest>();
+	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<PartitionManager.BricklayerRequest>();
+	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
+
+	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<PartitionManager.WorkerCreationRequest>();
 
 	public PartitionManager() {
 		NetworkTimer.schedule(this, (short) 2);
@@ -75,6 +80,10 @@ public class PartitionManager implements INetworkTimerable {
 		bricklayerRequests.offer(new BricklayerRequest(building, bricklayerTargetPos, direction));
 	}
 
+	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
+		workerRequests.offer(new WorkerRequest(workerType, workerBuilding));
+	}
+
 	public IManageableBearer removeJobless(ISPosition2D position) {
 		return joblessBearer.removeObjectAt(position);
 	}
@@ -85,6 +94,14 @@ public class PartitionManager implements INetworkTimerable {
 
 	public void addJobless(IManageableDigger digger) {
 		joblessDiggers.insert(digger);
+	}
+
+	public void addJobless(IManageableBricklayer bricklayer) {
+		joblessBricklayers.insert(bricklayer);
+	}
+
+	public void addJobless(IManageableWorker worker) {
+		joblessWorkers.insert(worker);
 	}
 
 	/**
@@ -137,8 +154,6 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
-
 	@Override
 	public void timerEvent() {
 		handleMaterialRequest();
@@ -146,6 +161,65 @@ public class PartitionManager implements INetworkTimerable {
 		handleWorkerCreationRequest();
 
 		handleDiggerRequest();
+		handleBricklayerRequest();
+
+		handleWorkerRequest();
+	}
+
+	private void handleWorkerRequest() {
+		WorkerRequest workerRequest = workerRequests.poll();
+		if (workerRequest != null) {
+			movableTypeAcceptor.movableType = workerRequest.movableType;
+			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPosition(), movableTypeAcceptor);
+
+			if (worker != null) {
+				worker.setWorkerJob(workerRequest.building);
+			} else {
+				if (!workerRequest.creationRequested) {
+					workerRequest.creationRequested = true;
+					createNewTooluser(workerRequest.movableType, workerRequest.getPosition());
+				}
+				workerRequests.offerLast(workerRequest);
+			}
+		}
+	}
+
+	private void handleBricklayerRequest() {
+		BricklayerRequest bricklayerRequest = bricklayerRequests.poll();
+		if (bricklayerRequest != null) {
+			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPosition());
+			if (bricklayer != null) {
+				bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction);
+			} else {
+				if (!bricklayerRequest.creationRequested) {
+					bricklayerRequest.creationRequested = true;
+					createNewTooluser(EMovableType.BRICKLAYER, bricklayerRequest.getPosition());
+				}
+				bricklayerRequests.offerLast(bricklayerRequest);
+			}
+		}
+	}
+
+	private void handleMaterialRequest() {
+		if (!materialRequests.isEmpty()) {
+			Request<EMaterialType> request = materialRequests.poll();
+
+			materialTypeAcceptor.materialType = request.requested;
+			Offer offer = materialOffers.getObjectNextTo(request.position, materialTypeAcceptor);
+
+			if (offer == null) {
+				reofferRequest(request);
+			} else {
+				IManageableBearer manageable = joblessBearer.removeObjectNextTo(offer.position);
+
+				if (manageable != null) {
+					reduceOfferAmount(offer);
+					manageable.executeJob(offer.position, request.position, offer.materialType);
+				} else {
+					reofferRequest(request);
+				}
+			}
+		}
 	}
 
 	private void handleWorkerCreationRequest() {
@@ -189,8 +263,6 @@ public class PartitionManager implements INetworkTimerable {
 				if (request.amount > request.creationRequested) {
 					request.creationRequested++;
 					createNewTooluser(EMovableType.DIGGER, request.getPosition());
-				} else {
-					diggerRequests.addLast(request);
 				}
 			}
 
@@ -202,28 +274,6 @@ public class PartitionManager implements INetworkTimerable {
 
 	private void createNewTooluser(EMovableType movableType, ISPosition2D position) {
 		workerCreationRequests.addLast(new WorkerCreationRequest(movableType, position));
-	}
-
-	private void handleMaterialRequest() {
-		if (!materialRequests.isEmpty()) {
-			Request<EMaterialType> request = materialRequests.poll();
-
-			materialTypeAcceptor.materialType = request.requested;
-			Offer offer = materialOffers.getObjectNextTo(request.position, materialTypeAcceptor);
-
-			if (offer == null) {
-				reofferRequest(request);
-			} else {
-				IManageableBearer manageable = joblessBearer.removeObjectNextTo(offer.position);
-
-				if (manageable != null) {
-					reduceOfferAmount(offer);
-					manageable.executeJob(offer.position, request.position, offer.materialType);
-				} else {
-					reofferRequest(request);
-				}
-			}
-		}
 	}
 
 	private void reduceOfferAmount(Offer offer) {
@@ -279,10 +329,10 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private class DiggerRequest {
-		private final FreeMapArea buildingArea;
-		private final byte heightAvg;
-		private byte amount;
-		private byte creationRequested = 0;
+		final FreeMapArea buildingArea;
+		final byte heightAvg;
+		byte amount;
+		byte creationRequested = 0;
 
 		public DiggerRequest(FreeMapArea buildingArea, byte heightAvg, byte amount) {
 			this.buildingArea = buildingArea;
@@ -296,9 +346,10 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private class BricklayerRequest {
-		private final Building building;
-		private final ShortPoint2D bricklayerTargetPos;
-		private final EDirection direction;
+		boolean creationRequested = false;
+		final Building building;
+		final ShortPoint2D bricklayerTargetPos;
+		final EDirection direction;
 
 		public BricklayerRequest(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 			this.building = building;
@@ -312,8 +363,8 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private class WorkerCreationRequest {
-		private final EMovableType movableType;
-		private final ISPosition2D position;
+		final EMovableType movableType;
+		final ISPosition2D position;
 
 		public WorkerCreationRequest(EMovableType movableType, ISPosition2D position) {
 			this.movableType = movableType;
@@ -327,6 +378,30 @@ public class PartitionManager implements INetworkTimerable {
 		@Override
 		public final boolean isAccepted(Offer offer) {
 			return this.materialType == offer.materialType;
+		}
+	}
+
+	private class MovableTypeAcceptor implements IAcceptor<IManageableWorker> {
+		EMovableType movableType = null;
+
+		@Override
+		public final boolean isAccepted(IManageableWorker worker) {
+			return this.movableType == worker.getMovableType();
+		}
+	}
+
+	private class WorkerRequest {
+		final EMovableType movableType;
+		final IWorkerRequestBuilding building;
+		boolean creationRequested = false;
+
+		public WorkerRequest(EMovableType movableType, IWorkerRequestBuilding building) {
+			this.building = building;
+			this.movableType = movableType;
+		}
+
+		public ISPosition2D getPosition() {
+			return building.getDoor();
 		}
 	}
 

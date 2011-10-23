@@ -1,8 +1,9 @@
 package jsettlers.logic.movable.construction;
 
 import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.management.workers.construction.BricklayerRequest;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.movable.IMovableGrid;
@@ -11,8 +12,10 @@ import jsettlers.logic.movable.PathableStrategy;
 
 public class BricklayerStrategy extends PathableStrategy implements IManageableBricklayer {
 
-	private BricklayerRequest bricklayerRequest;
 	private IConstructableBuilding constructionSite;
+	private ShortPoint2D bricklayerTargetPos;
+	private EDirection lookDirection;
+	private boolean wentThere;
 
 	public BricklayerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -27,8 +30,8 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			if (bricklayerRequest != null) {
-				super.calculatePathTo(bricklayerRequest.getPos());
+			if (constructionSite != null) {
+				super.calculatePathTo(bricklayerTargetPos);
 			}
 		}
 		return true;
@@ -36,9 +39,11 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 
 	@Override
 	protected void pathRequestFailed() {
-		if (bricklayerRequest != null) {
+		if (constructionSite != null) {
 			// TODO rerequest the worker request
-			bricklayerRequest = null;
+			constructionSite = null;
+			bricklayerTargetPos = null;
+			lookDirection = null;
 			super.getGrid().addJobless(this);
 		}
 	}
@@ -46,7 +51,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected boolean actionFinished() {
 		if (!super.actionFinished()) {
-			if (constructionSite != null) {
+			if (wentThere && constructionSite != null) {
 				tryToBuild();
 			} else {
 				super.setAction(EAction.NO_ACTION, -1);
@@ -60,6 +65,8 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 			super.setAction(EAction.ACTION1, 1);
 		} else {
 			constructionSite = null;
+			bricklayerTargetPos = null;
+			lookDirection = null;
 			super.getGrid().addJobless(this);
 			super.setAction(EAction.NO_ACTION, -1);
 		}
@@ -67,10 +74,9 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 
 	@Override
 	protected void pathFinished() {
-		if (bricklayerRequest != null) {
-			constructionSite = bricklayerRequest.getConstructionSite();
-			super.setDirection(bricklayerRequest.getLookDirection());
-			bricklayerRequest = null;
+		if (constructionSite != null) {
+			wentThere = true;
+			super.setDirection(lookDirection);
 			tryToBuild();
 		} else {
 			super.setAction(EAction.NO_ACTION, -1);
@@ -82,13 +88,6 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 		return EMovableType.BRICKLAYER;
 	}
 
-	// @Override FIXME
-	// public void setWorkerRequest(AbstractConstructionWorkerRequest curr) {
-	// assert curr instanceof BricklayerRequest;
-	// this.bricklayerRequest = (BricklayerRequest) curr;
-	// this.constructionSite = null;
-	// }
-
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
 		// TODO implement stopping of work
@@ -97,6 +96,14 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected boolean isGotoJobable() {
 		return false;
+	}
+
+	@Override
+	public void setBricklayerJob(IConstructableBuilding constructionSite, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		this.constructionSite = constructionSite;
+		this.bricklayerTargetPos = bricklayerTargetPos;
+		this.lookDirection = direction;
+		this.wentThere = false;
 	}
 
 }

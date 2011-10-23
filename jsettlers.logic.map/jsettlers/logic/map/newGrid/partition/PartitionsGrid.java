@@ -218,14 +218,12 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		getPartitionObject(manageable.getPos()).addJobless(manageable);
 	}
 
-	public void addJobless(IManageableWorker buildingWorkerStrategy) {
-		// TODO Auto-generated method stub
-
+	public void addJobless(IManageableWorker worker) {
+		getPartitionObject(worker.getPos()).addJobless(worker);
 	}
 
 	public void addJobless(IManageableBricklayer bricklayer) {
-		// TODO Auto-generated method stub
-
+		getPartitionObject(bricklayer.getPos()).addJobless(bricklayer);
 	}
 
 	public void addJobless(IManageableDigger digger) {
@@ -245,8 +243,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	}
 
 	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
-		// TODO Auto-generated method stub
-
+		getPartitionObject(workerBuilding.getPos()).requestBuildingWorker(workerType, workerBuilding);
 	}
 
 }

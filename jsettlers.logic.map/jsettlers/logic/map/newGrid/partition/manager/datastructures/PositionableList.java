@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -31,26 +32,10 @@ public class PositionableList<T extends ILocatable> implements Iterable<T> {
 	 * 
 	 * @param position
 	 *            position to be used to find the nearest accepted neighbor around it.
-	 * @return accepted object that's nearest to position
+	 * @return object that's nearest to position
 	 */
 	public T removeObjectNextTo(ISPosition2D position) {
-		float bestDistance = Float.MAX_VALUE;
-		T currBest = null;
-
-		for (T currEntry : data) {
-			ISPosition2D currPosition = currEntry.getPos();
-			float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
-
-			if (bestDistance > currDist) {
-				bestDistance = currDist;
-				currBest = currEntry;
-			}
-		}
-
-		if (currBest != null)
-			data.remove(currBest);
-
-		return currBest;
+		return removeObjectNextTo(position, null);
 	}
 
 	@Override
@@ -68,6 +53,39 @@ public class PositionableList<T extends ILocatable> implements Iterable<T> {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Finds the object that's closest to the given position and removes it.
+	 * 
+	 * @param position
+	 *            position to be used to find the nearest accepted neighbor around it.
+	 * @param acceptor
+	 *            if acceptor != null => the result is accepted by the acceptor. <br>
+	 *            if result == null every entry is accepted.
+	 * @return accepted object that's nearest to position
+	 */
+	public T removeObjectNextTo(ISPosition2D position, IAcceptor<T> acceptor) {
+		float bestDistance = Float.MAX_VALUE;
+		T currBest = null;
+
+		for (T currEntry : data) {
+			if (acceptor != null && !acceptor.isAccepted(currEntry))
+				continue;
+
+			ISPosition2D currPosition = currEntry.getPos();
+			float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
+
+			if (bestDistance > currDist) {
+				bestDistance = currDist;
+				currBest = currEntry;
+			}
+		}
+
+		if (currBest != null)
+			data.remove(currBest);
+
+		return currBest;
 	}
 
 }

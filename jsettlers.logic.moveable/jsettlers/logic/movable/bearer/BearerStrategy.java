@@ -95,8 +95,8 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 
 			case CONVERT_TAKE:
 				super.getGrid().popMaterial(super.getPos(), movableType.getTool());
-				super.convertTo(movableType);
 				super.setAction(EAction.NO_ACTION, -1);
+				super.convertTo(movableType);
 				break;
 
 			default:

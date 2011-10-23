@@ -122,7 +122,7 @@ public class MainGrid {
 				landscapeGrid.setHeightAt(x, y, mapGrid.getLandscapeHeight(x, y));
 			}
 		}
-		
+
 		// tow passes, we might need the base grid tiles to add blocking, ... status
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -132,7 +132,7 @@ public class MainGrid {
 				}
 			}
 		}
-		
+
 		System.out.println("grid filled");
 	}
 
@@ -141,7 +141,7 @@ public class MainGrid {
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 1);
 		evaluator.createMap(random);
 		MapGrid mapGrid = evaluator.getGrid();
-		
+
 		System.out.println("Generated random map");
 
 		return new MainGrid(mapGrid);
@@ -653,8 +653,8 @@ public class MainGrid {
 		}
 
 		@Override
-		public void addJobless(IManageableWorker buildingWorkerStrategy) {
-			partitionsGrid.addJobless(buildingWorkerStrategy);
+		public void addJobless(IManageableWorker worker) {
+			partitionsGrid.addJobless(worker);
 
 		}
 
@@ -819,9 +819,7 @@ public class MainGrid {
 
 		@Override
 		public IBuilding getBuildingAt(ISPosition2D position) {
-			// return objectsGrid.getMapObjectAt(position.getX(), position.getY(), EMapObjectType.BUILDING);
-			// FIXME make buildings to IMapObjects
-			return null;
+			return (IBuilding) objectsGrid.getMapObjectAt(position.getX(), position.getY(), EMapObjectType.BUILDING);
 		}
 
 		@Override

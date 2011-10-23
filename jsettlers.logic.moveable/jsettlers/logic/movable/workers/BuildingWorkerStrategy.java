@@ -313,14 +313,6 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		return movableType;
 	}
 
-	// @Override
-	// public void setWorkerRequest(BuildingWorkerRequest request) { // FIXME add method set requests
-	// this.building = request.getBuilding();
-	// this.currentJob = building.getBuildingType().getStartJob();
-	// this.done = false;
-	// pathOrActionFinished();
-	// }
-
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
 		// don't care
@@ -329,6 +321,14 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	@Override
 	protected boolean isGotoJobable() {
 		return false;
+	}
+
+	@Override
+	public void setWorkerJob(IWorkerRequestBuilding building) {
+		this.building = building;
+		this.currentJob = building.getBuildingType().getStartJob();
+		this.done = false;
+		pathOrActionFinished();
 	}
 
 }
