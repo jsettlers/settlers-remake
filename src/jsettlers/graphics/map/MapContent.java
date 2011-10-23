@@ -73,7 +73,8 @@ import jsettlers.graphics.map.selection.ISelectionSet;
  * 
  * @author michael
  */
-public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMapInterfaceListener {
+public class MapContent implements SettlersContent, GOEventHandlerProvoder,
+        IMapInterfaceListener {
 	private boolean ENABLE_DEBUG = false;
 
 	private final IGraphicsGrid map;
@@ -120,12 +121,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 	}
 
 	@Override
-    public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
+	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
 		adaptScreenSize(newWidth, newHeight);
 		this.objectDrawer.increaseAnimationStep();
 
 		this.context.begin(gl);
-		
+
 		drawBackground();
 		drawMain();
 		this.context.end();
@@ -139,7 +140,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 	}
 
 	private void adaptScreenSize(int newWidth, int newHeight) {
-	    if (newWidth != this.context.getScreen().getWidth()
+		if (newWidth != this.context.getScreen().getWidth()
 		        || newHeight != this.context.getScreen().getHeight()) {
 			resizeTo(newWidth, newHeight);
 		}
@@ -149,7 +150,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 			        new ScreenChangeAction(context.getScreenArea()));
 		}
 		oldScreen = newScreen;
-    }
+	}
 
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null
@@ -159,10 +160,9 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 			float x2 = (float) this.currentSelectionAreaEnd.getX();
 			float y2 = (float) this.currentSelectionAreaEnd.getY();
 
-
 			gl.color(1, 1, 1, 1);
 			gl.drawLine(new float[] {
-					x1, y1,0,x2, y1,0,x2, y2,0,x1, y2,0
+			        x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0
 			}, true);
 		}
 	}
@@ -212,8 +212,9 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 			IMovable movable = map.getMovableAt(x, y);
 			if (movable != null) {
 				if (movable.getAction() == EAction.WALKING) {
-					ISPosition2D origin =movable
-			                .getDirection().getInverseDirection().getNextHexPoint(pos);
+					ISPosition2D origin =
+					        movable.getDirection().getInverseDirection()
+					                .getNextHexPoint(pos);
 					if (origin == null) {
 						origin = pos;
 					}
@@ -240,21 +241,23 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 			}
 		}
 
-//		if (map.getConstructionPreviewBuilding() != null) {
-//			Sequence<? extends Image> sequence =
-//			        ImageProvider.getInstance().getSettlerSequence(4, 5);
-//			float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
-//
-//			ISPosition2D underMouse = this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
-//			IHexTile tile = map.getTile(underMouse);
-//			if (tile != null) {
-//				context.beginTileContext(tile);
-//				for (ImageLink image : map.getConstructionPreviewBuilding().getImages()) {
-//					ImageProvider.getInstance().getImage(image).draw(context.getGl());
-//				}
-//				context.endTileContext();
-//			}
-//		}
+		// if (map.getConstructionPreviewBuilding() != null) {
+		// Sequence<? extends Image> sequence =
+		// ImageProvider.getInstance().getSettlerSequence(4, 5);
+		// float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
+		//
+		// ISPosition2D underMouse =
+		// this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
+		// IHexTile tile = map.getTile(underMouse);
+		// if (tile != null) {
+		// context.beginTileContext(tile);
+		// for (ImageLink image :
+		// map.getConstructionPreviewBuilding().getImages()) {
+		// ImageProvider.getInstance().getImage(image).draw(context.getGl());
+		// }
+		// context.endTileContext();
+		// }
+		// }
 
 		if (needDrawDebug) {
 			drawDebugColors();
@@ -266,17 +269,50 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 		        new MapShapeFilter(context.getScreenArea(), map.getWidth(),
 		                map.getHeight());
 		GLDrawContext gl = this.context.getGl();
-		
-		float[] shape = new float[] {
-				0, 4, .5f, 0, 0,
-				-3, 2, .5f,  0, 0,
-				-3, -2, .5f,  0, 0,
-				0, -4, .5f,  0, 0,
-				0, -4, .5f,  0, 0,
-				3, -2, .5f,  0, 0,
-				3, 2, .5f, 0, 0,
-				0, 4, .5f,  0, 0,
-		};
+
+		float[] shape =
+		        new float[] {
+		                0,
+		                4,
+		                .5f,
+		                0,
+		                0,
+		                -3,
+		                2,
+		                .5f,
+		                0,
+		                0,
+		                -3,
+		                -2,
+		                .5f,
+		                0,
+		                0,
+		                0,
+		                -4,
+		                .5f,
+		                0,
+		                0,
+		                0,
+		                -4,
+		                .5f,
+		                0,
+		                0,
+		                3,
+		                -2,
+		                .5f,
+		                0,
+		                0,
+		                3,
+		                2,
+		                .5f,
+		                0,
+		                0,
+		                0,
+		                4,
+		                .5f,
+		                0,
+		                0,
+		        };
 
 		for (ISPosition2D pos : tiles) {
 			Color color = map.getDebugColorAt(pos.getX(), pos.getY());
@@ -331,23 +367,24 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 
 	private Action getActionForKeyboard(String keyCode) {
 		if ("F12".equalsIgnoreCase(keyCode)) {
-				return new Action(EActionType.FAST_FORWARD);
-		} else if ("P".equalsIgnoreCase(keyCode) || "PAUSE".equalsIgnoreCase(keyCode)) {
-				return new Action(EActionType.SPEED_TOGGLE_PAUSE);
+			return new Action(EActionType.FAST_FORWARD);
+		} else if ("P".equalsIgnoreCase(keyCode)
+		        || "PAUSE".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.SPEED_TOGGLE_PAUSE);
 		} else if ("+".equals(keyCode)) {
-				return new Action(EActionType.SPEED_FASTER);
+			return new Action(EActionType.SPEED_FASTER);
 		} else if ("-".equals(keyCode)) {
-				return new Action(EActionType.SPEED_SLOWER);
+			return new Action(EActionType.SPEED_SLOWER);
 		} else if (" ".equals(keyCode)) {
-				return new Action(EActionType.SHOW_SELECTION);
+			return new Action(EActionType.SHOW_SELECTION);
 		} else if ("d".equalsIgnoreCase(keyCode)) {
-				return new Action(EActionType.DEBUG_ACTION);
+			return new Action(EActionType.DEBUG_ACTION);
 		} else if ("s".equalsIgnoreCase(keyCode)) {
-				return new Action(EActionType.STOP_WORKING);
+			return new Action(EActionType.STOP_WORKING);
 		} else if ("q".equalsIgnoreCase(keyCode)) {
-				return new Action(EActionType.TOGGLE_DEBUG);
+			return new Action(EActionType.TOGGLE_DEBUG);
 		} else {
-		return null;
+			return null;
 		}
 	}
 
@@ -444,9 +481,10 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 	private UIPoint currentSelectionAreaEnd;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
-			UIPoint position) {
+	        UIPoint position) {
 		ISPosition2D onMap =
-		        this.context.getPositionOnScreen((int) position.getX(), (int) position.getY());
+		        this.context.getPositionOnScreen((int) position.getX(),
+		                (int) position.getY());
 		if (this.context.checkMapCoordinates(onMap.getX(), onMap.getY())) {
 			Action action;
 			if (commandEvent.isSelecting()) {
@@ -519,17 +557,16 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder, IMap
 	}
 
 	@Override
-    public void action(Action action) {
-	    if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
-	    	ENABLE_DEBUG = !ENABLE_DEBUG;
-	    } else if (action.getActionType() == EActionType.PAN_TO) {
-	    	PanToAction panAction = (PanToAction) action;
-	    	scrollTo(panAction.getCenter(), false);
-	    } else if (action.getActionType() == EActionType.SCREEN_CHANGE) {
-	    	ScreenChangeAction screenAction = (ScreenChangeAction) action;
-	    	controls.setMapViewport(screenAction.getScreenArea());
-	    }
-    }
-
+	public void action(Action action) {
+		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
+			ENABLE_DEBUG = !ENABLE_DEBUG;
+		} else if (action.getActionType() == EActionType.PAN_TO) {
+			PanToAction panAction = (PanToAction) action;
+			scrollTo(panAction.getCenter(), false);
+		} else if (action.getActionType() == EActionType.SCREEN_CHANGE) {
+			ScreenChangeAction screenAction = (ScreenChangeAction) action;
+			controls.setMapViewport(screenAction.getScreenArea());
+		}
+	}
 
 }
