@@ -5,7 +5,6 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOEventHandlerProvoder;
 import go.graphics.event.interpreter.AbstractEventConverter;
-import go.graphics.event.interpreter.PseudoPanEvent;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -111,7 +110,23 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		String text = KeyEvent.getKeyText(e.getKeyCode());
+		String text = getKeyName(e);
+		startKeyEvent(text);
+		/*
+		 * if (ongoingKeyEvent == null) { if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { ongoingKeyEvent.setHandler(getCancelHandler()); } else if
+		 * (e.getKeyCode() == KeyEvent.VK_UP) { ongoingKeyEvent.setHandler(getPanHandler(0, -KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+		 * { ongoingKeyEvent.setHandler(getPanHandler(0, KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+		 * ongoingKeyEvent.setHandler(getPanHandler(KEYPAN, 0)); } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+		 * ongoingKeyEvent.setHandler(getPanHandler(-KEYPAN, 0)); }
+		 * 
+		 * provider.handleEvent(ongoingKeyEvent);
+		 * 
+		 * ongoingKeyEvent.started(); }
+		 */
+	}
+
+	private String getKeyName(KeyEvent e) {
+	    String text = KeyEvent.getKeyText(e.getKeyCode());
 		if (text == null || text.length() != 1) {
 			switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
@@ -129,46 +144,30 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 				case KeyEvent.VK_PAUSE:
 					text = "PAUSE";
 					break;
+				case KeyEvent.VK_F1:
+					text = "F1";
+					break;
+				case KeyEvent.VK_F2:
+					text = "F2";
+					break;
+				case KeyEvent.VK_F11:
+					text = "F11";
+					break;
+				case KeyEvent.VK_F12:
+					text = "F12";
+					break;
+				case KeyEvent.VK_PLUS:
+					text = "+";
+					break;
+				case KeyEvent.VK_MINUS:
+					text = "-";
+					break;
 				default:
 					text = "";
 			}
 		}
-		startKeyEvent(text);
-		/*
-		 * if (ongoingKeyEvent == null) { if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { ongoingKeyEvent.setHandler(getCancelHandler()); } else if
-		 * (e.getKeyCode() == KeyEvent.VK_UP) { ongoingKeyEvent.setHandler(getPanHandler(0, -KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_DOWN)
-		 * { ongoingKeyEvent.setHandler(getPanHandler(0, KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-		 * ongoingKeyEvent.setHandler(getPanHandler(KEYPAN, 0)); } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-		 * ongoingKeyEvent.setHandler(getPanHandler(-KEYPAN, 0)); }
-		 * 
-		 * provider.handleEvent(ongoingKeyEvent);
-		 * 
-		 * ongoingKeyEvent.started(); }
-		 */
-	}
-
-	private GOEventHandler getPanHandler(final int x, final int y) {
-		return new GOEventHandler() {
-			@Override
-			public void phaseChanged(GOEvent event) {
-			}
-
-			@Override
-			public void finished(GOEvent event) {
-				panBy(x, y);
-			}
-
-			@Override
-			public void aborted(GOEvent event) {
-			}
-		};
-	}
-
-	protected void panBy(int x, int y) {
-		PseudoPanEvent event = new PseudoPanEvent(x, y);
-		handleEvent(event);
-		event.pan();
-	}
+	    return text;
+    }
 
 	private GOEventHandler getCancelHandler() {
 		return new GOEventHandler() {
@@ -189,7 +188,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		endKeyEvent();
+		endKeyEvent(getKeyName(e));
 	}
 
 	@Override
