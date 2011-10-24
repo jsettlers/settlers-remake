@@ -19,8 +19,6 @@ public class BuildingDrawer {
 
 	private static final int FILE = 13;
 
-	private static final int BUILD_SIZE = 10;
-
 	private ImageProvider imageProvider = ImageProvider.getInstance();
 
 	/**
@@ -77,8 +75,8 @@ public class BuildingDrawer {
 		addToArray(tris, 1, 1, 0, image);
 		addToArray(tris, 2, 0, toplineBottom, image);
 		addToArray(tris, 3, 1, 0, image);
-		addToArray(tris, 2, 1, toplineBottom, image);
-		addToArray(tris, 2, 0, toplineBottom, image);
+		addToArray(tris, 4, 1, toplineBottom, image);
+		addToArray(tris, 5, 0, toplineBottom, image);
 		
 		for (int i = 0; i < tiles; i++) {
 			addToArray(tris, 6 + i*3, 1.0f / tiles * i, toplineBottom, image);
