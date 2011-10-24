@@ -14,6 +14,7 @@ import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -50,8 +51,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_FLAG = "flag";
 	private static final String TAG_BRICKLAYER = "bricklayer";
 	private static final String ATTR_DIRECTION = "direction";
-	private static final Object TAG_BUILDMARK = "buildmark";
-	private static final Object TAG_IMAGE = "image";
+	private static final String TAG_BUILDMARK = "buildmark";
+	private static final String TAG_IMAGE = "image";
+	private static final String TAG_GROUNDTYE = "ground";
 	private final Document document;
 
 	private final ArrayList<RelativePoint> blocked =
@@ -80,6 +82,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ImageLink guiimage = new ImageLink(EImageLinkType.GUI, 1, 0, 0);
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
+	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
 
 	public BuildingFile(String buildingName) {
 		document = createDocument(buildingName);
@@ -128,6 +131,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 			readImageLink(buildingName, element);
 		} else if (TAG_BUILDMARK.equals(tagName)) {
 			buildmarks.add(readRelativeTile(buildingName, element));
+		} else if (TAG_GROUNDTYE.equals(tagName)) {
+			groundtypes.add(ELandscapeType.valueOf(element.getAttribute("groundtype")));
 		}
 	}
 
@@ -356,4 +361,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 	public RelativePoint[] getBuildmarks() {
 		return buildmarks.toArray(new RelativePoint[buildmarks.size()]);
 	}
+
+	public ELandscapeType[] getGroundtypes() {
+	    return groundtypes.toArray(new ELandscapeType[groundtypes.size()]);
+    }
 }

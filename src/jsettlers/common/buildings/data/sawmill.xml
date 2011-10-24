@@ -1,6 +1,9 @@
 <?xml version="1.1" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd">
 <building worker="SAWMILLER">
+	<ground groundtype="GRASS"/>
+	<ground groundtype="EARTH"/>
+	<ground groundtype="FLATTENED"/>
 	<blocked dx="4" dy="4" block="true" />
 	<blocked dx="5" dy="3" block="true" />
 	<blocked dx="4" dy="1" block="true" />
@@ -99,6 +102,8 @@
 	<buildmark dx="-2" dy="-4" />
 	<buildmark dx="3" dy="4" />
 	<buildmark dx="5" dy="3" />
+	
+	<image file="14" type="GUI" for="GUI" image="0" sequence="6" />
 
 	<startjob name="gohome"/>
 	

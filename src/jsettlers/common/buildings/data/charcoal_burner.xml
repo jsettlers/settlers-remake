@@ -1,5 +1,8 @@
 <!DOCTYPE building SYSTEM "building.dtd">
 <building worker="CHARCOAL_BURNER">
+	<ground groundtype="GRASS"/>
+	<ground groundtype="EARTH"/>
+	<ground groundtype="FLATTENED"/>
 	<blocked dx="-1" dy="2" block="true" />
 	<blocked dx="-2" dy="1" block="true" />
 	<blocked dx="0" dy="2" block="true" />
@@ -81,6 +84,9 @@
 	<buildmark dx="-2" dy="1" />
 	<buildmark dx="0" dy="2" />
 	<buildmark dx="1" dy="1" />
+
+	<image file="14" for="GUI" type="GUI" sequence="27" image="0"/>
+
 	<startjob name="gohome" />
 
 	<!-- go home -->

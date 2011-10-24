@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd" >
-<building worker="">	<blocked dx="-1" dy="0" block="true" />
+<building worker="">
+	<ground groundtype="GRASS"/>
+	<ground groundtype="EARTH"/>
+	<ground groundtype="FLATTENED"/>
+	
+	<blocked dx="-1" dy="0" block="true" />
 	<blocked dx="0" dy="1" block="true" />
 	<blocked dx="2" dy="2" block="true" />
 	<blocked dx="2" dy="1" block="true" />
@@ -50,4 +55,6 @@
 	<buildmark dx="-1" dy="0" />
 	<buildmark dx="-1" dy="-2" />
 	<buildmark dx="0" dy="-2" />
+	
+	<image file="14" type="GUI" for="GUI" image="0" sequence="54" />
 </building>

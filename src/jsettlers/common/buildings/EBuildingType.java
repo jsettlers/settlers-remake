@@ -4,6 +4,7 @@ import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.loader.BuildingFile;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 
@@ -76,6 +77,8 @@ public enum EBuildingType {
 	private final RelativePoint[] buildmarks;
 
 	private final ImageLink[] buildImages;
+	
+	private final ELandscapeType[] groundtypes;
 
 	EBuildingType(int imageIndex) {
 		this.imageIndex = imageIndex;
@@ -106,6 +109,7 @@ public enum EBuildingType {
 		}
 
 		buildmarks = file.getBuildmarks();
+		groundtypes = file.getGroundtypes();
 
 		this.numberOfConstructionMaterials =
 		        calculateNumberOfConstructionMaterials();
@@ -205,4 +209,8 @@ public enum EBuildingType {
 	public ImageLink[] getBuildImages() {
 		return buildImages;
 	}
+	
+	public ELandscapeType[] getGroundtypes() {
+	    return groundtypes;
+    }
 }

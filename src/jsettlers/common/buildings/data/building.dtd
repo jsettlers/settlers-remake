@@ -67,14 +67,33 @@
 	RIVER|
 	ENEMY)
 ">
-
-<!ELEMENT building (blocked+, door, stack*, bricklayer+, flag, buildmark*, image*, startjob?, job*) >
+<!ENTITY % groundtype "(
+	GRASS|
+	DRY_GRASS|
+	DESERT|
+	EARTH|
+	MOUNTAIN|
+	SNOW|
+	WATER|
+	SAND|
+	FLATTENED|
+	RIVER1|
+	RIVER2|
+	RIVER3|
+	RIVER4|
+	MOUNTAINBORDER
+)">
+<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, image*, startjob?, job*) >
 
 <!ATTLIST building
    worker CDATA #REQUIRED
    workradius CDATA #IMPLIED
 >
 
+<!ELEMENT ground EMPTY>
+<!ATTLIST ground
+	groundtype %groundtype; #REQUIRED
+>
 
 <!ELEMENT blocked EMPTY>
 <!ATTLIST blocked

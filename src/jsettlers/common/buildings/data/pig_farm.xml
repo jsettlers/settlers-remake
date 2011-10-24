@@ -1,6 +1,9 @@
 <?xml version="1.1" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd">
 <building worker="FARMER" workradius="10">
+	<ground groundtype="GRASS"/>
+	<ground groundtype="EARTH"/>
+	<ground groundtype="FLATTENED"/>
 	<blocked dx="1" dy="5" />
 	<blocked dx="2" dy="5" />
 	<blocked dx="2" dy="4" />
@@ -68,6 +71,7 @@
 	<bricklayer dx="6" dy="3" direction="NORTH_WEST"/>
 	
 	<flag dx="-1" dy="-1"/>
+	<image file="14" type="GUI" for="GUI" image="0" sequence="66" />
 	
 	<startjob name="gohome"/>
 	

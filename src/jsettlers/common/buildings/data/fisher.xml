@@ -1,5 +1,8 @@
 <!DOCTYPE building SYSTEM "building.dtd">
 <building worker="FISHERMAN" workradius="30">
+	<ground groundtype="GRASS"/>
+	<ground groundtype="EARTH"/>
+	<ground groundtype="FLATTENED"/>
 	<blocked dx="-1" dy="1" block="true" />
 	<blocked dx="-1" dy="0" block="true" />
 	<blocked dx="-1" dy="-1" block="true" />
@@ -51,6 +54,8 @@
 	<buildmark dx="-1" dy="-2" />
 	<buildmark dx="2" dy="0" />
 	<buildmark dx="2" dy="3" />
+	
+	<image file="14" for="GUI" type="GUI" sequence="18" image="0"/>
 	
 	<startjob name="gohome"/>
 
