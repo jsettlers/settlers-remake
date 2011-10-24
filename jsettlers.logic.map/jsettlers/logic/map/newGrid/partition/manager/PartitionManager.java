@@ -184,49 +184,11 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private void handleBricklayerRequest() {
-		BricklayerRequest bricklayerRequest = bricklayerRequests.poll();
-		if (bricklayerRequest != null) {
-			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPosition());
-			if (bricklayer != null) {
-				bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction);
-			} else {
-				if (!bricklayerRequest.creationRequested) {
-					bricklayerRequest.creationRequested = true;
-					createNewTooluser(EMovableType.BRICKLAYER, bricklayerRequest.getPosition());
-				}
-				bricklayerRequests.offerLast(bricklayerRequest);
-			}
-		}
-	}
-
-	private void handleMaterialRequest() {
-		if (!materialRequests.isEmpty()) {
-			Request<EMaterialType> request = materialRequests.poll();
-
-			materialTypeAcceptor.materialType = request.requested;
-			Offer offer = materialOffers.getObjectNextTo(request.position, materialTypeAcceptor);
-
-			if (offer == null) {
-				reofferRequest(request);
-			} else {
-				IManageableBearer manageable = joblessBearer.removeObjectNextTo(offer.position);
-
-				if (manageable != null) {
-					reduceOfferAmount(offer);
-					manageable.executeJob(offer.position, request.position, offer.materialType);
-				} else {
-					reofferRequest(request);
-				}
-			}
-		}
-	}
-
 	private void handleWorkerCreationRequest() {
 		WorkerCreationRequest workerRequest = workerCreationRequests.poll();
 		if (workerRequest != null) {
 			EMaterialType tool = workerRequest.movableType.getTool();
-			if (tool != null) {
+			if (tool != EMaterialType.NO_MATERIAL) {
 				this.materialTypeAcceptor.materialType = tool;
 				Offer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
 				if (offer != null) {
@@ -268,6 +230,44 @@ public class PartitionManager implements INetworkTimerable {
 
 			if (request.amount > 0) {
 				diggerRequests.addLast(request);
+			}
+		}
+	}
+
+	private void handleBricklayerRequest() {
+		BricklayerRequest bricklayerRequest = bricklayerRequests.poll();
+		if (bricklayerRequest != null) {
+			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPosition());
+			if (bricklayer != null) {
+				bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction);
+			} else {
+				if (!bricklayerRequest.creationRequested) {
+					bricklayerRequest.creationRequested = true;
+					createNewTooluser(EMovableType.BRICKLAYER, bricklayerRequest.getPosition());
+				}
+				bricklayerRequests.offerLast(bricklayerRequest);
+			}
+		}
+	}
+
+	private void handleMaterialRequest() {
+		if (!materialRequests.isEmpty()) {
+			Request<EMaterialType> request = materialRequests.poll();
+
+			materialTypeAcceptor.materialType = request.requested;
+			Offer offer = materialOffers.getObjectNextTo(request.position, materialTypeAcceptor);
+
+			if (offer == null) {
+				reofferRequest(request);
+			} else {
+				IManageableBearer manageable = joblessBearer.removeObjectNextTo(offer.position);
+
+				if (manageable != null) {
+					reduceOfferAmount(offer);
+					manageable.executeJob(offer.position, request.position, offer.materialType);
+				} else {
+					reofferRequest(request);
+				}
 			}
 		}
 	}
@@ -326,6 +326,11 @@ public class PartitionManager implements INetworkTimerable {
 			if (priority > Byte.MIN_VALUE)
 				priority--;
 		}
+
+		@Override
+		public String toString() {
+			return requested + "   " + position + "    " + priority;
+		}
 	}
 
 	private class DiggerRequest {
@@ -370,6 +375,11 @@ public class PartitionManager implements INetworkTimerable {
 			this.movableType = movableType;
 			this.position = position;
 		}
+
+		@Override
+		public String toString() {
+			return movableType + "    " + position;
+		}
 	}
 
 	private class MaterialTypeAcceptor implements IAcceptor<Offer> {
@@ -402,6 +412,11 @@ public class PartitionManager implements INetworkTimerable {
 
 		public ISPosition2D getPosition() {
 			return building.getDoor();
+		}
+
+		@Override
+		public String toString() {
+			return movableType + "    " + creationRequested + "     " + building.getBuildingType();
 		}
 	}
 
