@@ -82,10 +82,6 @@ public class JOGLDrawContext implements GLDrawContext {
 	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
 		if (reuseableBuffer == null
 		        || reuseableBuffer.capacity() < points.length) {
-			if (reuseableBuffer != null) {
-				System.out.println("reallocated! needed: " + points.length
-				        + ", got:" + reuseableBuffer.capacity());
-			}
 			ByteBuffer quadPoints =
 			        ByteBuffer.allocateDirect(points.length * 4);
 			quadPoints.order(ByteOrder.nativeOrder());
