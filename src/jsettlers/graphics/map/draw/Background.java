@@ -726,10 +726,8 @@ public class Background {
 				texture =
 				        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE,
 				                buffer);
-				System.out.println("Got background texture");
 			} else {
 				imageProvider.preload(LAND_FILE);
-				System.out.println("request texture load");
 			}
 
 		}

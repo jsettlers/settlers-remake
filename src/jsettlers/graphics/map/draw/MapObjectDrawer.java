@@ -348,7 +348,6 @@ public class MapObjectDrawer {
 	        float progress) {
 		int treeType = getTreeType(pos);
 		int imageStep = 0;
-		System.out.println("progress:" + progress);
 
 		// TODO
 		if (progress < IMapObject.TREE_CUT_1) {

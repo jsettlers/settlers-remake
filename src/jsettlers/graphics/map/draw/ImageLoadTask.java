@@ -76,7 +76,6 @@ public class ImageLoadTask implements Runnable {
 		try {
 			while (true) {
 				Integer next = filesToLoad.take();
-				System.out.println("got file: " + next);
 
 				String numberString = String.format("%02d", next.intValue());
 				String fileName = FILE_PREFIX + numberString + FILE_SUFFIX;

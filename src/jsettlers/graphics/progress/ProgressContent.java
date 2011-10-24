@@ -31,8 +31,6 @@ public class ProgressContent implements SettlersContent {
 		provider.waitForPreload(2);
 
 		gl.glPushMatrix();
-
-		System.out.println("draw progress: " + state.toString());
 		
 		Image image = provider.getGuiImage(2, 29);
 		gl.glScalef((float) width / image.getWidth(),

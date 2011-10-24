@@ -34,7 +34,10 @@ public class BuildingBuildContent implements ContentFactory {
 	                EBuildingType.BIG_TOWER,
 	                EBuildingType.CASTLE,
 	                EBuildingType.LOOKOUT_TOWER,
-	                EBuildingType.WEAPONSMITH
+	                EBuildingType.WEAPONSMITH,
+	                EBuildingType.BARRACK,
+	                EBuildingType.DOCKYARD,
+	                EBuildingType.HOSPITAL
 	        };
 	public static final EBuildingType[] socialBuildings = new EBuildingType[] {
 	        EBuildingType.SMALL_LIVINGHOUSE,
