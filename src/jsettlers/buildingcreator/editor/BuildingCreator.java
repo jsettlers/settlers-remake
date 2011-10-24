@@ -297,9 +297,9 @@ public class BuildingCreator implements IMapInterfaceListener {
 	}
 
 	private Color mixColors(ArrayList<Color> colors) {
-		int bluesum = 0;
-		int redsum = 0;
-		int greensum = 0;
+		float bluesum = 0;
+		float redsum = 0;
+		float greensum = 0;
 		for (Color color : colors) {
 			bluesum += color.getBlue();
 			redsum += color.getRed();
