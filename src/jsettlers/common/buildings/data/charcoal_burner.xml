@@ -85,7 +85,7 @@
 	<buildmark dx="0" dy="2" />
 	<buildmark dx="1" dy="1" />
 
-	<image file="14" for="GUI" type="GUI" sequence="27" image="0"/>
+	<image file="14" for="GUI" type="GUI" sequence="81" image="0"/>
 
 	<startjob name="gohome" />
 

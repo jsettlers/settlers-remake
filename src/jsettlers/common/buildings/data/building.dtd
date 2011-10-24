@@ -88,6 +88,7 @@
 <!ATTLIST building
    worker CDATA #REQUIRED
    workradius CDATA #IMPLIED
+   viewdistance CDATA #IMPLIED
 >
 
 <!ELEMENT ground EMPTY>

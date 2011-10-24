@@ -79,6 +79,8 @@ public enum EBuildingType {
 	private final ImageLink[] buildImages;
 	
 	private final ELandscapeType[] groundtypes;
+	
+	private final int viewdistance;
 
 	EBuildingType(int imageIndex) {
 		this.imageIndex = imageIndex;
@@ -110,6 +112,7 @@ public enum EBuildingType {
 
 		buildmarks = file.getBuildmarks();
 		groundtypes = file.getGroundtypes();
+		viewdistance = file.getViewdistance();
 
 		this.numberOfConstructionMaterials =
 		        calculateNumberOfConstructionMaterials();
@@ -212,5 +215,9 @@ public enum EBuildingType {
 	
 	public ELandscapeType[] getGroundtypes() {
 	    return groundtypes;
+    }
+
+	public int getViewDistance() {
+	    return viewdistance;
     }
 }

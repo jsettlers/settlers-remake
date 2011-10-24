@@ -17,8 +17,8 @@ import jsettlers.common.position.ISPosition2D;
  */
 public class MapCircle implements IMapArea {
 	private final float radius;
-	private final short cy;
-	private final short cx;
+	private final int cy;
+	private final int cx;
 
 	/**
 	 * Factor so that d((0,0), (1,1)) is almoast 1.
@@ -29,7 +29,7 @@ public class MapCircle implements IMapArea {
 		this(pos.getX(), pos.getY(), radius);
 	}
 
-	public MapCircle(short cx, short cy, float radius) {
+	public MapCircle(int cx, int cy, float radius) {
 		this.cx = cx;
 		this.cy = cy;
 		this.radius = radius;
@@ -86,16 +86,20 @@ public class MapCircle implements IMapArea {
 	public double distanceToCenter(int x, int y) {
 		return Math.sqrt(squaredDistanceToCenter(x, y));
 	}
+	
+	public boolean isCloserToCenter(int x, int y, int minradius) {
+		return squaredDistanceToCenter(x, y) < minradius * minradius;
+	}
 
 	public double getRadius() {
 	    return radius;
     }
 
 	public short getCenterY() {
-	    return cy;
+	    return (short) cy;
     }
 
 	public short getCenterX() {
-	    return cx;
+	    return (short) cx;
     }
 }

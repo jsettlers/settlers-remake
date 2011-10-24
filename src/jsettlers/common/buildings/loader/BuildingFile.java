@@ -82,7 +82,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ImageLink guiimage = new ImageLink(EImageLinkType.GUI, 1, 0, 0);
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
-	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
+	private ArrayList<ELandscapeType> groundtypes =
+	        new ArrayList<ELandscapeType>();
+	private int viewdistance = 0;
 
 	public BuildingFile(String buildingName) {
 		document = createDocument(buildingName);
@@ -132,7 +134,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 		} else if (TAG_BUILDMARK.equals(tagName)) {
 			buildmarks.add(readRelativeTile(buildingName, element));
 		} else if (TAG_GROUNDTYE.equals(tagName)) {
-			groundtypes.add(ELandscapeType.valueOf(element.getAttribute("groundtype")));
+			groundtypes.add(ELandscapeType.valueOf(element
+			        .getAttribute("groundtype")));
 		}
 	}
 
@@ -149,7 +152,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 				guiimage = imageLink;
 			} else if ("BUILD".equals(forState)) {
 				buildImages.add(imageLink);
-			}else {
+			} else {
 				images.add(imageLink);
 			}
 		} catch (NumberFormatException e) {
@@ -228,6 +231,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 		if (root.getAttribute("workradius").matches("\\d+")) {
 			this.workradius = Integer.parseInt(root.getAttribute("workradius"));
+		}
+		if (root.getAttribute("viewdistance").matches("\\d+")) {
+			this.viewdistance =
+			        Integer.parseInt(root.getAttribute("viewdistance"));
 		}
 	}
 
@@ -363,6 +370,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 	}
 
 	public ELandscapeType[] getGroundtypes() {
-	    return groundtypes.toArray(new ELandscapeType[groundtypes.size()]);
-    }
+		return groundtypes.toArray(new ELandscapeType[groundtypes.size()]);
+	}
+
+	public int getViewdistance() {
+		return viewdistance;
+	}
 }
