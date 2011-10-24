@@ -47,7 +47,7 @@ type = TOWER
 # todo: occupy
 
 [settler]
-count = 20
+count = 30
 type = BEARER
 tight = 2
 group = true
@@ -67,6 +67,15 @@ distance = 10
 [settler]
 count = 5
 type = BRICKLAYER
+tight = 1
+group = true
+dx = 10
+dy = -10
+distance = 10
+
+[settler]
+count = 5
+type = SMITH
 tight = 1
 group = true
 dx = 10
