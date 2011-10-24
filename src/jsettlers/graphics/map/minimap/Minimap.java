@@ -9,6 +9,7 @@ import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.map.draw.FogOfWar;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
@@ -107,20 +108,22 @@ public class Minimap {
 		        0,
 		        1,
 		});
-		
+
 		drawViewmark(context);
 	}
 
 	private void drawViewmark(GLDrawContext context) {
-	    int lineStartX = mapViewport.getLineStartX(0);
+		int lineStartX = mapViewport.getLineStartX(0);
 		int firstY = mapViewport.getLineY(0);
 		float minviewx = converter.getViewX(lineStartX, firstY, 0) * width;
 		float maxviewy = converter.getViewY(lineStartX, firstY, 0) * height;
 		float maxviewx =
-		        converter.getViewX(mapViewport.getLineEndX(0), firstY, 0) * width;
+		        converter.getViewX(mapViewport.getLineEndX(0), firstY, 0)
+		                * width;
 		float minviewy =
 		        converter.getViewY(lineStartX,
-		                mapViewport.getLineY(mapViewport.getLines()), 0) * height;
+		                mapViewport.getLineY(mapViewport.getLines()), 0)
+		                * height;
 		context.drawLine(new float[] {
 		        minviewx,
 		        minviewy,
@@ -135,7 +138,7 @@ public class Minimap {
 		        maxviewy,
 		        0,
 		}, true);
-    }
+	}
 
 	public int getWidth() {
 		return width;
@@ -196,5 +199,9 @@ public class Minimap {
 	public void setMapViewport(MapRectangle rect) {
 		mapViewport = rect;
 	}
+
+	public FogOfWar getFog() {
+	    return context.getFogOfWar();
+    }
 
 }

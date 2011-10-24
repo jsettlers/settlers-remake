@@ -161,7 +161,6 @@ public class DatFileReader implements DatFileSet {
 	 *             If an read error occurred.
 	 */
 	public DatFileReader(File file) throws IOException {
-		System.out.println("reading file: " + file + ", length: " + file.length());
 		ByteReader reader = null;
 		try {
 			reader = new ByteReader(new RandomAccessFile(file, "r"));
@@ -215,7 +214,6 @@ public class DatFileReader implements DatFileSet {
 		Arrays.sort(sequenceIndexStarts);
 
 		for (int i = 0; i < SEQUENCE_TYPE_COUNT; i++) {
-			System.out.println("Loading sequence stream " + i);
 			try {
 				readSequencesAt(reader, sequenceIndexStarts[i]);
 			} catch (IOException e) {

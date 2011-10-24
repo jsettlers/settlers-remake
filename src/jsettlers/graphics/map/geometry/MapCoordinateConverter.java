@@ -201,8 +201,6 @@ public final class MapCoordinateConverter {
 		float mapendx = mapx + .5f / this.xscale;
 		float mapendy = mapy + .5f / this.yscale;
 
-		System.out.println("map part: (" + mapstartx + "|" + mapstarty + "), ("
-		        + mapendx + "|" + mapendy + ")");
 		return new Parallelogram(roundUpShort(mapstartx),
 		        roundUpShort(mapstarty), roundUpShort(mapendx - 1),
 		        roundUpShort(mapendy - 1));

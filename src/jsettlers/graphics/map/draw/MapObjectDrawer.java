@@ -72,7 +72,7 @@ public class MapObjectDrawer {
 	private static final int STONE = 31;
 
 	int animationStep = 0;
-	
+
 	private final BuildingDrawer buildingDrawer = new BuildingDrawer();
 
 	private final ImageProvider imageProvider = ImageProvider.getInstance();
@@ -90,108 +90,125 @@ public class MapObjectDrawer {
 	 *            The object (tree, ...) to draw.
 	 */
 	public void drawMapObject(MapDrawContext context, IGraphicsGrid map,
-	        ISPosition2D pos, IMapObject object) {		
+	        ISPosition2D pos, IMapObject object) {
 		EMapObjectType type = object.getObjectType();
 
 		float progress = object.getStateProgress();
 
+		byte fogstatus =
+		        context.getFogOfWar().getVisibleStatus(pos.getX(), pos.getY());
+		if (fogstatus == 0) {
+			return; //break
+		}
+		Color color = getColor(context, fogstatus);
+
 		if (type == EMapObjectType.ARROW) {
-			drawArrow(context, map, (IArrowMapObject) object);
+			drawArrow(context, map, (IArrowMapObject) object, color);
 		} else {
 			context.beginTileContext(pos);
 			switch (type) {
 				case TREE_ADULT:
-					drawTree(context, pos);
+					drawTree(context, pos, color);
 					break;
 
 				case TREE_DEAD:
-					drawFallingTree(context, pos, progress);
+					drawFallingTree(context, pos, progress, color);
 					break;
 
 				case TREE_GROWING:
-					drawGrowingTree(context, pos, progress);
+					drawGrowingTree(context, pos, progress, color);
 					break;
 
 				case CORN_GROWING:
-					drawGrowingCorn(context, object);
+					drawGrowingCorn(context, object, color);
 					break;
 
 				case CORN_ADULT:
-					drawCorn(context, object);
+					drawCorn(context, object, color);
 					break;
 
 				case CORN_DEAD:
-					drawDeadCorn(context);
+					drawDeadCorn(context, color);
 					break;
 
 				case WAVES:
-					drawWaves(context);
+					drawWaves(context, color);
 					break;
 
 				case STONE:
-					drawStones(context, object);
+					drawStones(context, object, color);
 					break;
 
 				case GHOST:
-					drawPlayerableByProgress(context, 12, 27, object);
+					drawPlayerableByProgress(context, 12, 27, object, color);
 					break;
 
 				case FOUND_COAL:
-					drawByProgress(context, FILE, 94, object.getStateProgress());
+					drawByProgress(context, FILE, 94,
+					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_GEMSTONE:
-					drawByProgress(context, FILE, 94, object.getStateProgress());
+					drawByProgress(context, FILE, 94,
+					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_GOLD:
-					drawByProgress(context, FILE, 94, object.getStateProgress());
+					drawByProgress(context, FILE, 94,
+					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_IRON:
-					drawByProgress(context, FILE, 94, object.getStateProgress());
+					drawByProgress(context, FILE, 94,
+					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_BRIMSTONE:
-					drawByProgress(context, FILE, 94, object.getStateProgress());
+					drawByProgress(context, FILE, 94,
+					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_NOTHING:
-					drawByProgress(context, FILE, 94, object.getStateProgress());
+					drawByProgress(context, FILE, 94,
+					        object.getStateProgress(), color);
 					break;
 
 				case BUILDINGSITE_SIGN:
-					drawByProgress(context, FILE, 93, object.getStateProgress());
+					drawByProgress(context, FILE, 93,
+					        object.getStateProgress(), color);
 					break;
 
 				case BUILDINGSITE_POST:
-					drawByProgress(context, FILE, 92, object.getStateProgress());
+					drawByProgress(context, FILE, 92,
+					        object.getStateProgress(), color);
 					break;
 
 				case WORKAREA_MARK:
-					drawByProgress(context, FILE, 91, object.getStateProgress());
+					drawByProgress(context, FILE, 91,
+					        object.getStateProgress(), color);
 					break;
 
 				case FLAG_DOOR:
-					drawPlayerableWaving(context, 13, 63, object);
+					drawPlayerableWaving(context, 13, 63, object, color);
 					break;
-					
+
 				case CONSTRUCTION_MARK:
-					drawByProgress(context, 4, 6, object.getStateProgress());
+					drawByProgress(context, 4, 6, object.getStateProgress(),
+					        color);
 					break;
 
 				case FLAG_ROOF:
 					// TODO: better flag positioning
 					context.getGl().glTranslatef(0, 0, 0.2f);
-					drawPlayerableWaving(context, 13, 64, object);
+					drawPlayerableWaving(context, 13, 64, object, color);
 					break;
-					
+
 				case BUILDING:
-					buildingDrawer.draw(context, (IBuilding) object);
+					buildingDrawer.draw(context, (IBuilding) object, color);
 					break;
-					
+
 				case STACK_OBJECT:
-					drawStack(context, (IStackMapObject)object);
+					drawStack(context, (IStackMapObject) object, color);
 					break;
 
 				default:
@@ -205,14 +222,15 @@ public class MapObjectDrawer {
 	}
 
 	private void drawPlayerableByProgress(MapDrawContext context, int file,
-	        int sequenceIndex, IMapObject object) {
+	        int sequenceIndex, IMapObject object, Color basecolor) {
 		Sequence<? extends Image> sequence =
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index =
 		        Math.min((int) (object.getStateProgress() * sequence.length()),
 		                sequence.length() - 1);
 		Color color = getColor(context, object);
-		sequence.getImage(index).draw(context.getGl(), color);
+		sequence.getImage(index).draw(context.getGl(),
+		        color.multiply(basecolor.getAlpha()));
 	}
 
 	private Color getColor(MapDrawContext context, IMapObject object) {
@@ -224,27 +242,28 @@ public class MapObjectDrawer {
 	}
 
 	private void drawPlayerableWaving(MapDrawContext context, int file,
-	        int sequenceIndex, IMapObject object) {
+	        int sequenceIndex, IMapObject object, Color basecolor) {
 		Sequence<? extends Image> sequence =
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index = animationStep % sequence.length();
 		Color color = getColor(context, object);
-		sequence.getImage(index).draw(context.getGl(), color);
+		sequence.getImage(index).draw(context.getGl(),
+		        color.multiply(basecolor.getRed()));
 	}
 
 	private void drawByProgress(MapDrawContext context, int file,
-	        int sequenceIndex, float progress) {
+	        int sequenceIndex, float progress, Color color) {
 
 		Sequence<? extends Image> sequence =
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index =
 		        Math.min((int) (progress * sequence.length()),
 		                sequence.length() - 1);
-		sequence.getImage(index).draw(context.getGl());
+		sequence.getImage(index).draw(context.getGl(), color);
 	}
 
 	private void drawArrow(MapDrawContext context, IGraphicsGrid map,
-	        IArrowMapObject object) {
+	        IArrowMapObject object, Color color) {
 		int sequence = 0;
 		switch (object.getDirection()) {
 			case SOUTH_WEST:
@@ -285,45 +304,47 @@ public class MapObjectDrawer {
 		}
 
 		this.imageProvider.getSettlerSequence(FILE, sequence)
-		        .getImageSafe(index).draw(context.getGl());
+		        .getImageSafe(index).draw(context.getGl(), color);
 		context.endTileContext();
 	}
 
-	private void drawStones(MapDrawContext context, IMapObject object) {
+	private void drawStones(MapDrawContext context, IMapObject object,
+	        Color color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, STONE);
 		int stones = (int) (seq.length() - object.getStateProgress() - 1);
-		seq.getImageSafe(stones).draw(context.getGl());
+		seq.getImageSafe(stones).draw(context.getGl(), color);
 	}
 
-	private void drawWaves(MapDrawContext context) {
+	private void drawWaves(MapDrawContext context, Color color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, WAVES);
-		seq.getImageSafe(15).draw(context.getGl());
+		seq.getImageSafe(15).draw(context.getGl(), color);
 	}
 
-	private void drawDeadCorn(MapDrawContext context) {
+	private void drawDeadCorn(MapDrawContext context, Color color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
-		seq.getImageSafe(CORN_DEAD_STEP).draw(context.getGl());
+		seq.getImageSafe(CORN_DEAD_STEP).draw(context.getGl(), color);
 	}
 
-	private void drawGrowingCorn(MapDrawContext context, IMapObject object) {
+	private void drawGrowingCorn(MapDrawContext context, IMapObject object,
+	        Color color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
 		int step = (int) (object.getStateProgress() * CORN_GROW_STEPS);
-		seq.getImageSafe(step).draw(context.getGl());
+		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
-	private void drawCorn(MapDrawContext context, IMapObject object) {
+	private void drawCorn(MapDrawContext context, IMapObject object, Color color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
 		int step = CORN_GROW_STEPS;
-		seq.getImageSafe(step).draw(context.getGl());
+		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
 	private void drawGrowingTree(MapDrawContext context, ISPosition2D pos,
-	        float progress) {
+	        float progress, Color color) {
 		Image image;
 		if (progress < 0.33) {
 			Sequence<? extends Image> seq =
@@ -341,11 +362,11 @@ public class MapObjectDrawer {
 				image = seq.getImageSafe(TREE_MEDIUM);
 			}
 		}
-		image.draw(context.getGl());
+		image.draw(context.getGl(), color);
 	}
 
 	private void drawFallingTree(MapDrawContext context, ISPosition2D pos,
-	        float progress) {
+	        float progress, Color color) {
 		int treeType = getTreeType(pos);
 		int imageStep = 0;
 
@@ -372,10 +393,10 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE,
 		                sequenceIndexForChangingTree(treeType));
-		seq.getImageSafe(imageStep).draw(context.getGl());
+		seq.getImageSafe(imageStep).draw(context.getGl(), color);
 	}
 
-	private void drawTree(MapDrawContext context, ISPosition2D pos) {
+	private void drawTree(MapDrawContext context, ISPosition2D pos, Color color) {
 		int treeType = getTreeType(pos);
 		int treeSecondary = get01(pos);
 		Sequence<? extends Image> seq =
@@ -383,7 +404,7 @@ public class MapObjectDrawer {
 		                + treeSecondary + ALIVE_TREE_OFFSET);
 
 		int step = getAnimationStep(pos) % seq.length();
-		seq.getImageSafe(step).draw(context.getGl());
+		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
 	/**
@@ -439,10 +460,12 @@ public class MapObjectDrawer {
 	 * @param object
 	 *            The stack to draw.
 	 */
-	public void drawStack(MapDrawContext context, IStackMapObject object) {
+	public void drawStack(MapDrawContext context, IStackMapObject object,
+	        Color color) {
 		byte elements = object.getSize();
 		if (elements > 0) {
-			drawStackAtScreen(context.getGl(), object.getMaterialType(), elements);
+			drawStackAtScreen(context.getGl(), object.getMaterialType(),
+			        elements, color);
 		}
 	}
 
@@ -456,12 +479,17 @@ public class MapObjectDrawer {
 	 * @param count
 	 *            The number of elements on the stack
 	 */
-	public void drawStackAtScreen(GLDrawContext glDrawContext,
-	        EMaterialType material, int count) {
+	private void drawStackAtScreen(GLDrawContext glDrawContext,
+	        EMaterialType material, int count, Color color) {
 		int stackIndex = material.getStackIndex();
 
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, stackIndex);
-		seq.getImageSafe(count - 1).draw(glDrawContext);
+		seq.getImageSafe(count - 1).draw(glDrawContext, color);
+	}
+
+	private Color getColor(MapDrawContext context, int fogstatus) {
+		float color = (float) fogstatus / FogOfWar.VISIBLE;
+		return new Color(color, color, color, 1);
 	}
 }

@@ -7,9 +7,12 @@ import java.nio.ShortBuffer;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.IMovable;
+import jsettlers.graphics.map.draw.FogOfWar;
 
 class LineLoader implements Runnable {
-	static final short TRANSPARENT = 0;
+	private static final short TRANSPARENT = 0;
+
+	private static final short BLACK = 0x01;
 
 	/**
      * 
@@ -67,9 +70,23 @@ class LineLoader implements Runnable {
 			if (mapminx != 0 && mapmaxx == mapminx) {
 				mapminx = mapmaxx - 1;
 			}
-			short color = getSettlerForArea(mapminx, mapminy, mapmaxx, mapmaxy);
+			int centerx = (mapmaxx + mapminx) / 2;
+			int centery = (mapmaxy + mapminy) / 2;
+			
+			short color = TRANSPARENT;
+			if (minimap.getFog().isVisible(centerx, centery)) {
+				color = getSettlerForArea(mapminx, mapminy, mapmaxx, mapmaxy);
+			}
+			
 			if (color == TRANSPARENT) {
-				color = getLandscapeForArea(mapminx, mapminy, mapmaxx, mapmaxy);
+				float basecolor = (float) minimap.getFog().getVisibleStatus(centerx, centery)
+				        / FogOfWar.VISIBLE;
+				if (basecolor >= 0) {
+					color = getLandscapeForArea(mapminx, mapminy, mapmaxx, mapmaxy, basecolor);
+				}
+			}
+			if (color == TRANSPARENT) {
+				color = BLACK;
 			}
 			data.put(color);
 		}
@@ -77,19 +94,16 @@ class LineLoader implements Runnable {
 	}
 
 	private short getLandscapeForArea(int mapminx, int mapminy, int mapmaxx,
-	        int mapmaxy) {
-		// int maxy = Math.min(minimap.getMap().getHeight(), mapmaxy);
-		// int maxx = Math.min(minimap.getMap().getHeight(), mapmaxx);
-
+	        int mapmaxy, float basecolor) {
 		int centerx = (mapmaxx + mapminx) / 2;
 		int centery = (mapmaxy + mapminy) / 2;
 
 		IGraphicsGrid map = this.minimap.getContext().getMap();
-		return getColorForLandscape(map.getLandscapeTypeAt(centerx, centery));
+		return getColorForLandscape(map.getLandscapeTypeAt(centerx, centery), basecolor);
 	}
 
-	private short getColorForLandscape(ELandscapeType landscape) {
-		return toShortColor(landscape.getColor());
+	private short getColorForLandscape(ELandscapeType landscape, float basecolor) {
+		return toShortColor(landscape.getColor().multiply(basecolor));
 	}
 
 	private short toShortColor(Color color) {

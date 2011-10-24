@@ -11,6 +11,7 @@ import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.map.draw.DrawConstants;
+import jsettlers.graphics.map.draw.FogOfWar;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
@@ -66,6 +67,8 @@ public class MapDrawContext {
 	        new Color(0x6e750e),
 	};
 
+	private final FogOfWar fogOfWar;
+
 	// private long beginTime;
 
 	/**
@@ -87,6 +90,7 @@ public class MapDrawContext {
 		                DrawConstants.DISTANCE_Y, map.getWidth(),
 		                map.getHeight());
 
+		this.fogOfWar = new FogOfWar(map);
 	}
 
 	/**
@@ -392,5 +396,9 @@ public class MapDrawContext {
 
 	public IGraphicsGrid getMap() {
 		return map;
+	}
+	
+	public FogOfWar getFogOfWar() {
+		return fogOfWar;
 	}
 }

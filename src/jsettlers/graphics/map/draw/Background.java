@@ -726,8 +726,10 @@ public class Background {
 				texture =
 				        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE,
 				                buffer);
+				System.out.println("Got background texture");
 			} else {
 				imageProvider.preload(LAND_FILE);
+				System.out.println("request texture load");
 			}
 
 		}
@@ -966,6 +968,7 @@ public class Background {
 	 * 3 verteces.
 	 */
 	private float[] geometryBuffer = new float[1];
+	private int[] geometryHash = new int[1];
 	private MapRectangle oldBufferPosition = null;
 	private int bufferwidth = 1;; // in map points.
 	private int bufferheight = 1; // in map points.
@@ -980,6 +983,7 @@ public class Background {
 			bufferheight = area.getLines();
 			int count = bufferheight * (bufferwidth * 2 * 3 * VERTEX_SIZE);
 			geometryBuffer = new float[count];
+			geometryHash = new int[count];
 			oldBufferPosition = null;
 		}
 
@@ -989,11 +993,13 @@ public class Background {
 			int maxx = area.getLineEndX(line) + 1;
 			for (int x = minx; x < maxx; x++) {
 				if (oldBufferPosition == null
-				        || !oldBufferPosition.contains(x, y)) {
-					int pointOffset =
-					        getBufferPosition(y, x);
-					addTrianglesToGeometry(context, geometryBuffer,
-					        pointOffset, x, y);
+				        || !oldBufferPosition.contains(x, y)
+				        || geometryHash[getBufferPosition(y, x)] != getContextHash(
+				                context, x, y)) {
+					int pointOffset = getBufferPosition(y, x);
+					addTrianglesToGeometry(context, geometryBuffer, pointOffset
+					        * 2 * 3 * VERTEX_SIZE, x, y);
+					geometryHash[pointOffset] = getContextHash(context, x, y);
 				}
 			}
 		}
@@ -1003,18 +1009,35 @@ public class Background {
 		return geometryBuffer;
 	}
 
+	private int getContextHash(MapDrawContext context, int x, int y) {
+		return getHash(context, x + 1, y + 1) * 104729
+		        + getHash(context, x + 1, y) * 104729
+		        + getHash(context, x, y + 1) * 7919 + getHash(context, x, y);
+	}
+
+	private int getHash(MapDrawContext context, int x, int y) {
+		if (x < 0 || x >= context.getMap().getWidth() || y < 0
+		        || y >= context.getMap().getHeight()) {
+			return 0;
+		} else {
+			return context.getMap().getLandscapeTypeAt(x, y).ordinal() * 10000
+			        + context.getMap().getHeightAt(x, y) * 100
+			        + context.getFogOfWar().getVisibleStatus(x, y);
+		}
+	}
+
 	private int getBufferPosition(int y, int x) {
 		int linepos = y % bufferheight;
 		int colpos = x % bufferwidth;
-		if (linepos < 0) {
+		while (linepos < 0) {
 			linepos += bufferheight;
 		}
-		if (colpos < 0) {
+		while (colpos < 0) {
 			colpos += bufferwidth;
 		}
-		
-	    return (linepos * bufferwidth + colpos) * 2 * 3 * VERTEX_SIZE;
-    }
+
+		return (linepos * bufferwidth + colpos);
+	}
 
 	/**
 	 * Adds the two triangles for a point to the list of verteces
@@ -1034,17 +1057,17 @@ public class Background {
 			        x, y);
 		} else {
 			// manually do everything...
-			addPointToGeometry(context, geometry, offset, x, y);
-			addPointToGeometry(context, geometry, offset + VERTEX_SIZE, x,
+			addBlackPointToGeometry(context, geometry, offset, x, y);
+			addBlackPointToGeometry(context, geometry, offset + VERTEX_SIZE, x,
 			        y + 1);
-			addPointToGeometry(context, geometry, offset + 2 * VERTEX_SIZE,
-			        x + 1, y + 1);
-			addPointToGeometry(context, geometry, offset + 3 * VERTEX_SIZE, x,
-			        y);
-			addPointToGeometry(context, geometry, offset + 4 * VERTEX_SIZE,
-			        x + 1, y + 1);
-			addPointToGeometry(context, geometry, offset + 5 * VERTEX_SIZE,
-			        x + 1, y);
+			addBlackPointToGeometry(context, geometry,
+			        offset + 2 * VERTEX_SIZE, x + 1, y + 1);
+			addBlackPointToGeometry(context, geometry,
+			        offset + 3 * VERTEX_SIZE, x, y);
+			addBlackPointToGeometry(context, geometry,
+			        offset + 4 * VERTEX_SIZE, x + 1, y + 1);
+			addBlackPointToGeometry(context, geometry,
+			        offset + 5 * VERTEX_SIZE, x + 1, y);
 		}
 	}
 
@@ -1103,6 +1126,16 @@ public class Background {
 		addVertexcolor(context, geometry, offset + 5, x, y);
 	}
 
+	private void addBlackPointToGeometry(MapDrawContext context,
+	        float[] geometry, int offset, int x, int y) {
+		geometry[offset] = x;
+		geometry[offset + 1] = y;
+		geometry[offset + 2] = context.getHeight(x, y);
+		geometry[offset + 5] = 0;
+		geometry[offset + 6] = 0;
+		geometry[offset + 7] = 0;
+	}
+
 	private void addTriangle2ToGeometry(MapDrawContext context,
 	        float[] geometry, int offset, int x, int y) {
 		ELandscapeType leftlandscape = context.getLandscape(x, y);
@@ -1144,7 +1177,8 @@ public class Background {
 		float color;
 
 		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0
-		        || y >= context.getMap().getHeight() - 2) {
+		        || y >= context.getMap().getHeight() - 2
+		        || context.getFogOfWar().getVisibleStatus(x, y) <= 0) {
 			color = 0;
 		} else {
 			int height1 = context.getHeight(x, y);
@@ -1155,6 +1189,9 @@ public class Background {
 			} else if (color < 0.4f) {
 				color = 0.4f;
 			}
+			color *=
+			        (float) context.getFogOfWar().getVisibleStatus(x, y)
+			                / FogOfWar.VISIBLE;
 		}
 		geometry[offset] = color;
 		geometry[offset + 1] = color;
