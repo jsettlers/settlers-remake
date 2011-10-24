@@ -39,7 +39,7 @@ public class Color {
 	}
 
 	public int getRGB() {
-		return ((int) (alpha * 255) & 0xff) << 16
+		return ((int) (alpha * 255) & 0xff) << 24
 		        | ((int) (red * 255) & 0xff) << 16
 		        | ((int) (green * 255) & 0xff) << 8
 		        | ((int) (blue * 255) & 0xff);
