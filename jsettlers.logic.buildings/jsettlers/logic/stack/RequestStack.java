@@ -37,4 +37,12 @@ public class RequestStack {
 		return true;
 	}
 
+	public ISPosition2D getPosition() {
+		return position;
+	}
+
+	public EMaterialType getMaterialType() {
+		return materialType;
+	}
+
 }

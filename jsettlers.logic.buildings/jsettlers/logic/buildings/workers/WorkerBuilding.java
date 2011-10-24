@@ -2,9 +2,11 @@ package jsettlers.logic.buildings.workers;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
+import jsettlers.logic.stack.RequestStack;
 
 public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
@@ -62,5 +64,15 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	@Override
 	public ISPosition2D getWorkAreaCenter() {
 		return workAreaCenter;
+	}
+
+	@Override
+	public void popMaterial(ISPosition2D position, EMaterialType material) {
+		for (RequestStack stack : super.stacks) {
+			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
+				stack.pop();
+				break;
+			}
+		}
 	}
 }

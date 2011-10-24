@@ -1,5 +1,6 @@
 package jsettlers.logic.management.workers.building;
 
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.management.workers.IWorkerBuilding;
@@ -19,4 +20,6 @@ public interface IWorkerRequestBuilding extends IWorkerBuilding, IPlayerable {
 	ISPosition2D getDoor();
 
 	ISPosition2D getWorkAreaCenter();
+
+	void popMaterial(ISPosition2D position, EMaterialType material);
 }

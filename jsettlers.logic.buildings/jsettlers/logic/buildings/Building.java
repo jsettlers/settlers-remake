@@ -45,7 +45,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private short delayCtr = 0;
 	private final EBuildingType type;
-	private List<RequestStack> stacks;
+	protected List<RequestStack> stacks;
 
 	protected Building(EBuildingType type, byte player) {
 		this.type = type;

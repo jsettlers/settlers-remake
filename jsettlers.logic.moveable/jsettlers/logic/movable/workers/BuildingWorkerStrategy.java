@@ -112,7 +112,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 		case TAKE:
 			super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-			super.getGrid().popMaterial(super.getPos(), currentJob.getMaterial());
+			this.building.popMaterial(super.getPos(), currentJob.getMaterial());
 			break;
 
 		case DROP:

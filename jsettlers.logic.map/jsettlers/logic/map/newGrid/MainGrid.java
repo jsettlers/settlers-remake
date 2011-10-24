@@ -138,7 +138,7 @@ public class MainGrid {
 
 	public static MainGrid create(String filename, byte players, Random random) {
 		RandomMapFile file = RandomMapFile.getByName(filename);
-		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 1);
+		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
 		evaluator.createMap(random);
 		MapGrid mapGrid = evaluator.getGrid();
 
@@ -165,8 +165,7 @@ public class MainGrid {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
 		} else if (object instanceof MovableObject) {
-			if (((MovableObject) object).getType() == EMovableType.BEARER)
-				createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
+			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}
 	}
 
@@ -265,7 +264,8 @@ public class MainGrid {
 				return !blockedGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
 
 			case CUTTABLE_TREE:
-				return isInBounds(x, y) && objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)
+				return isInBounds((short) (x - 1), (short) (y - 1))
+						&& objectsGrid.hasCuttableObject((short) (x - 1), (short) (y - 1), EMapObjectType.TREE_ADULT)
 						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculateable) && !isMarked(x, y);
 
 			case PLANTABLE_TREE:
@@ -392,7 +392,8 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			return debugColors[x][y];
+			// return debugColors[x][y];
+			return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
 		@Override
