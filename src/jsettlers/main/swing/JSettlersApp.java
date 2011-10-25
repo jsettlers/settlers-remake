@@ -3,19 +3,24 @@ package jsettlers.main.swing;
 import go.graphics.swing.AreaContainer;
 
 import java.awt.Dimension;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.JoglLibraryPathInitializer;
+import synchronic.timer.NetworkTimer;
 
 public class JSettlersApp {
 	static { // sets the native library path for the system dependent jogl libs
 		JoglLibraryPathInitializer.initLibraryPath();
 	}
-	
-	public static void main(String[] args) {
+
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		new Thread(new SettlersGame()).start();
+		NetworkTimer.loadLogging("logs/2011_10_25-20_35_36.log");
+		// NetworkTimer.activateLogging("logs");
 	}
 
 	private static class SettlersGame extends jsettlers.main.JSettlersApp {
