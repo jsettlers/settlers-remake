@@ -94,6 +94,7 @@ public class DijkstraAlgorithm implements IDijkstraAlgorithm {
 				map.markAsClosed(x, y);
 
 				if (map.fitsSearchType(x, y, type, requester)) {
+					map.fitsSearchType(x, y, type, requester);
 					return new ShortPoint2D(x, y); // position found
 				}
 
@@ -105,9 +106,10 @@ public class DijkstraAlgorithm implements IDijkstraAlgorithm {
 
 					if (map.isInBounds(neighborX, neighborY)) {
 						DijkstraNode neighbor = nodes[neighborY][neighborX];
-						if (neighbor.inList != closedList && neighbor.inList != openList) {
+						if (neighbor.inList != closedList && neighbor.inList != openList && !map.isBlocked(requester, neighborX, neighborY)) {
 							neighbor.inList = openList;
-							neighbor.depth = currNode.depth + 1;
+							neighbor.depth = (int) Math.hypot(cX - neighborX, cY - neighborY);
+							neighbor.parent = currNode;
 							nextList.add(neighbor);
 
 							map.markAsOpen(neighbor.x, neighbor.y);

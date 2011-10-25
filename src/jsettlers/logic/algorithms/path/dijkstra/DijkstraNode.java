@@ -11,9 +11,11 @@ public class DijkstraNode implements MinHeapable {
 	/** The y coordinate of the node */
 	short y;
 
-	int depth = 0;
+	float depth = 0;
 
 	int inList = 0;
+
+	DijkstraNode parent = null;
 
 	/** index in open list */
 	int heapIdx = -1;
