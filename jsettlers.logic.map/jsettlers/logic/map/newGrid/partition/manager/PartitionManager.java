@@ -9,6 +9,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
@@ -51,6 +52,10 @@ public class PartitionManager implements INetworkTimerable {
 
 	public PartitionManager() {
 		NetworkTimer.schedule(this, (short) 2);
+	}
+
+	public void stop() {
+		NetworkTimer.remove(this);
 	}
 
 	public boolean addOffer(ISPosition2D position, EMaterialType materialType) {
@@ -111,18 +116,55 @@ public class PartitionManager implements INetworkTimerable {
 	 * @param newManager
 	 *            new manager of the given position <br>
 	 *            NOTE: the new manager MUST NOT be null!
+	 * @param newHasSamePlayer
 	 */
-	public void removePositionTo(ISPosition2D position, PartitionManager newManager) {
+	public void removePositionTo(ISPosition2D position, PartitionManager newManager, boolean newHasSamePlayer) {
 		Offer removedOffer = materialOffers.removeObjectAt(position);
-		if (removedOffer != null) {
-			newManager.materialOffers.set(position, removedOffer); // the new manager can not have any offers at that position, because he just
-																	// occupied it
+		if (removedOffer != null) {// the new manager can not have any offers at that position, because he just occupied it
+			newManager.materialOffers.set(position, removedOffer);
 		}
 
 		java.util.Iterator<Request<EMaterialType>> requestIter = materialRequests.iterator();
 		while (requestIter.hasNext()) {
-			if (requestIter.next().position.equals(position)) {
+			Request<EMaterialType> currRequest = requestIter.next();
+			if (currRequest.position.equals(position)) {
 				requestIter.remove();
+				if (newHasSamePlayer) {
+					newManager.materialRequests.offer(currRequest);
+				}
+			}
+		}
+
+		if (newHasSamePlayer) {
+			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
+			if (bearer != null)
+				newManager.addJobless(bearer);
+			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectAt(position);
+			if (bricklayer != null)
+				newManager.addJobless(bricklayer);
+			IManageableDigger digger = joblessDiggers.removeObjectAt(position);
+			if (digger != null)
+				newManager.addJobless(digger);
+			IManageableWorker worker = joblessWorkers.removeObjectAt(position);
+			if (worker != null)
+				newManager.addJobless(worker);
+		}
+
+		removePositionTo(position, this.bricklayerRequests, newManager.bricklayerRequests, newHasSamePlayer);
+		removePositionTo(position, this.diggerRequests, newManager.diggerRequests, newHasSamePlayer);
+		removePositionTo(position, this.workerCreationRequests, newManager.workerCreationRequests, newHasSamePlayer);
+		removePositionTo(position, this.workerRequests, newManager.workerRequests, newHasSamePlayer);
+	}
+
+	private <T extends ILocatable> void removePositionTo(ISPosition2D pos, LinkedList<T> fromList, LinkedList<T> toList, boolean newHasSamePlayer) {
+		Iterator<T> iter = fromList.iterator();
+		while (iter.hasNext()) {
+			T curr = iter.next();
+			if (curr.getPos().equals(pos)) {
+				iter.remove();
+				if (newHasSamePlayer) {
+					toList.offer(curr);
+				}
 			}
 		}
 	}
@@ -170,14 +212,14 @@ public class PartitionManager implements INetworkTimerable {
 		WorkerRequest workerRequest = workerRequests.poll();
 		if (workerRequest != null) {
 			movableTypeAcceptor.movableType = workerRequest.movableType;
-			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPosition(), movableTypeAcceptor);
+			IManageableWorker worker = joblessWorkers.removeObjectNextTo(workerRequest.getPos(), movableTypeAcceptor);
 
 			if (worker != null) {
 				worker.setWorkerJob(workerRequest.building);
 			} else {
 				if (!workerRequest.creationRequested) {
 					workerRequest.creationRequested = true;
-					createNewTooluser(workerRequest.movableType, workerRequest.getPosition());
+					createNewTooluser(workerRequest.movableType, workerRequest.getPos());
 				}
 				workerRequests.offerLast(workerRequest);
 			}
@@ -216,7 +258,7 @@ public class PartitionManager implements INetworkTimerable {
 	private void handleDiggerRequest() {
 		DiggerRequest request = diggerRequests.poll();
 		if (request != null) {
-			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPosition());
+			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPos());
 			if (digger != null) {
 				digger.setDiggerJob(request.buildingArea, request.heightAvg);
 				request.amount--;
@@ -224,7 +266,7 @@ public class PartitionManager implements INetworkTimerable {
 			} else {
 				if (request.amount > request.creationRequested) {
 					request.creationRequested++;
-					createNewTooluser(EMovableType.DIGGER, request.getPosition());
+					createNewTooluser(EMovableType.DIGGER, request.getPos());
 				}
 			}
 
@@ -237,13 +279,13 @@ public class PartitionManager implements INetworkTimerable {
 	private void handleBricklayerRequest() {
 		BricklayerRequest bricklayerRequest = bricklayerRequests.poll();
 		if (bricklayerRequest != null) {
-			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPosition());
+			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPos());
 			if (bricklayer != null) {
 				bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction);
 			} else {
 				if (!bricklayerRequest.creationRequested) {
 					bricklayerRequest.creationRequested = true;
-					createNewTooluser(EMovableType.BRICKLAYER, bricklayerRequest.getPosition());
+					createNewTooluser(EMovableType.BRICKLAYER, bricklayerRequest.getPos());
 				}
 				bricklayerRequests.offerLast(bricklayerRequest);
 			}
@@ -284,7 +326,7 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private void reofferRequest(Request<EMaterialType> request) {
-		request.decreasePriority();
+		// request.decreasePriority();
 		materialRequests.add(request);
 	}
 
@@ -333,7 +375,7 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class DiggerRequest {
+	private class DiggerRequest implements ILocatable {
 		final FreeMapArea buildingArea;
 		final byte heightAvg;
 		byte amount;
@@ -345,12 +387,13 @@ public class PartitionManager implements INetworkTimerable {
 			this.amount = amount;
 		}
 
-		public ISPosition2D getPosition() {
+		@Override
+		public ISPosition2D getPos() {
 			return buildingArea.get(0);
 		}
 	}
 
-	private class BricklayerRequest {
+	private class BricklayerRequest implements ILocatable {
 		boolean creationRequested = false;
 		final Building building;
 		final ShortPoint2D bricklayerTargetPos;
@@ -362,12 +405,13 @@ public class PartitionManager implements INetworkTimerable {
 			this.direction = direction;
 		}
 
-		public final ISPosition2D getPosition() {
+		@Override
+		public final ISPosition2D getPos() {
 			return building.getPos();
 		}
 	}
 
-	private class WorkerCreationRequest {
+	private class WorkerCreationRequest implements ILocatable {
 		final EMovableType movableType;
 		final ISPosition2D position;
 
@@ -379,6 +423,11 @@ public class PartitionManager implements INetworkTimerable {
 		@Override
 		public String toString() {
 			return movableType + "    " + position;
+		}
+
+		@Override
+		public ISPosition2D getPos() {
+			return position;
 		}
 	}
 
@@ -400,7 +449,7 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class WorkerRequest {
+	private class WorkerRequest implements ILocatable {
 		final EMovableType movableType;
 		final IWorkerRequestBuilding building;
 		boolean creationRequested = false;
@@ -410,7 +459,8 @@ public class PartitionManager implements INetworkTimerable {
 			this.movableType = movableType;
 		}
 
-		public ISPosition2D getPosition() {
+		@Override
+		public ISPosition2D getPos() {
 			return building.getDoor();
 		}
 

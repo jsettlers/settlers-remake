@@ -162,7 +162,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 	private void relabelPartition(short inX, short inY, short oldPartition, short newPartition) {
 		final short MAX_LENGTH = 1000;
-		final short[] pointsBuffer = new short[MAX_LENGTH];
+		final short[] pointsBuffer = new short[MAX_LENGTH]; // array is used to reduce the number of recursions
 		pointsBuffer[0] = inX;
 		pointsBuffer[1] = inY;
 		short length = 2;

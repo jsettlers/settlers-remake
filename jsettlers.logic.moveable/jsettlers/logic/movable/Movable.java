@@ -60,7 +60,6 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 	@Override
 	public byte getPlayer() {
-
 		return player;
 	}
 
@@ -276,7 +275,6 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			this.nextTile = nextTile;
 			this.state = EMovableState.WAITING_FOR_FREE_TILE;
 		} else {
-			System.out.println();
 		}
 	}
 

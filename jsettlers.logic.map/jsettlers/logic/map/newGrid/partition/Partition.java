@@ -47,7 +47,10 @@ public class Partition {
 	public void removePositionTo(ISPosition2D position, Partition newPartitionObject) {
 		this.decrement();
 		newPartitionObject.increment();
-		this.manager.removePositionTo(position, newPartitionObject.manager);
+		this.manager.removePositionTo(position, newPartitionObject.manager, newPartitionObject.player == this.player);
+
+		if (isEmpty())
+			manager.stop();
 	}
 
 	public boolean isEmpty() {

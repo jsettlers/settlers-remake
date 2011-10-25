@@ -150,7 +150,7 @@ public class MainGrid {
 	private void addMapObject(short x, short y, MapObject object) {
 		ISPosition2D pos = new ShortPoint2D(x, y);
 		if (object instanceof MapTreeObject) {
-			if (isInBounds(x, (short) (y + 1))) {
+			if (isInBounds(x, y) && movablePathfinderGrid.isTreePlantable(x, y)) {
 				mapObjectsManager.executeSearchType(pos, ESearchType.PLANTABLE_TREE);
 			}
 		} else if (object instanceof MapStoneObject) {
@@ -243,12 +243,12 @@ public class MainGrid {
 
 		@Override
 		public void markAsOpen(short x, short y) {
-
+			debugColors[x][y] = Color.BLUE;
 		}
 
 		@Override
 		public void markAsClosed(short x, short y) {
-
+			debugColors[x][y] = Color.RED;
 		}
 
 		@Override
@@ -330,13 +330,15 @@ public class MainGrid {
 			return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2 || type == ELandscapeType.RIVER3 || type == ELandscapeType.RIVER4;
 		}
 
-		private boolean isTreePlantable(short x, short y) {
+		boolean isTreePlantable(short x, short y) {
 			return landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.GRASS && !blockedGrid.isBlocked(x, y) && !hasBlockedNeighbor(x, y);
 		}
 
 		private boolean hasBlockedNeighbor(short x, short y) {
 			for (EDirection currDir : EDirection.values()) {
-				if (blockedGrid.isBlocked(currDir.getNextTileX(x), currDir.getNextTileY(y)))
+				short currX = currDir.getNextTileX(x);
+				short currY = currDir.getNextTileY(y);
+				if (!isInBounds(currX, currY) || blockedGrid.isBlocked(currX, currY))
 					return true;
 			}
 
@@ -392,8 +394,8 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			// return debugColors[x][y];
-			return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
+			return debugColors[x][y];
+			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
 		@Override
