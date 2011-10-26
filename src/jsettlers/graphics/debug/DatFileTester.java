@@ -17,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ShortBuffer;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -28,7 +27,8 @@ import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
-import jsettlers.graphics.reader.DatFileReader;
+import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
 
 public class DatFileTester {
@@ -41,14 +41,14 @@ public class DatFileTester {
 	        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
 
 	private static final Color[] colors = new Color[] {
-	        new Color(0xff0000)
+		new Color(0xff0000)
 	};
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
 	private static int datFileIndex = 10;
 
-	private DatFileReader reader;
+	private AdvancedDatFileReader reader;
 
 	private Region region;
 
@@ -205,6 +205,10 @@ public class DatFileTester {
 		private int offsetY = 400;
 		private int offsetX = 200;
 		private int mode = SETTLERS;
+		
+		public Content() {
+			printHelp();
+		}
 
 		@Override
 		public void handleEvent(GOEvent event) {
@@ -234,27 +238,27 @@ public class DatFileTester {
 		@Override
 		public void drawContent(GLDrawContext gl2, int width, int height) {
 			if (mode == SETTLERS) {
-				List<Sequence<SettlerImage>> sequences = reader.getSettlers();
+				SequenceList<SettlerImage> sequences = reader.getSettlers();
 				drawSequences(gl2, width, height, sequences);
 			} else if (mode == GUI) {
-				List<Sequence<GuiImage>> sequences = reader.getGuis();
-				drawSequences(gl2, width, height, sequences);
+				Sequence<GuiImage> sequences = reader.getGuis();
+				drawSequence(gl2, width, height, 0, sequences);
 			} else {
-				List<Sequence<LandscapeImage>> sequences =
-				        reader.getLandscapes();
-				drawSequences(gl2, width, height, sequences);
+				Sequence<LandscapeImage> sequences = reader.getLandscapes();
+				drawSequence(gl2, width, height, 0, sequences);
 			}
 
 		}
 
 		private <T extends Image> void drawSequences(GLDrawContext gl2,
-		        int width, int height, List<Sequence<T>> sequences) {
+		        int width, int height, SequenceList<T> sequences) {
 			gl2.glTranslatef(offsetX, offsetY, 0);
 
 			int y = 0;
 			int seqIndex = 0;
 			TextDrawer drawer = JOGLTextDrawer.getTextDrawer(EFontSize.NORMAL);
-			for (Sequence<T> seq : sequences) {
+			for (int i = 0; i < sequences.size(); i++) {
+				Sequence<T> seq = sequences.get(i);
 				int maxheight;
 
 				maxheight = drawSequence(gl2, width, height, y, seq);
@@ -270,9 +274,9 @@ public class DatFileTester {
 		private <T extends Image> int drawSequence(GLDrawContext gl2,
 		        int width, int height, int y, Sequence<T> seq) {
 			int maxheight = 0;
-			int index = 0;
 			int x = 0;
-			for (T image : seq) {
+			for (int index = 0; index < seq.length(); index++) {
+				T image = seq.getImage(index);
 				maxheight = Math.max(maxheight, image.getHeight());
 
 				if (x > -offsetX - 100 && x < -offsetX + width + 100
@@ -280,7 +284,6 @@ public class DatFileTester {
 					drawImage(gl2, y, index, x, image);
 				}
 				x += 100;
-				index++;
 			}
 			return maxheight;
 		}
@@ -312,12 +315,8 @@ public class DatFileTester {
 
 		private void drawPoint(GLDrawContext gl2, int x, int y) {
 			// TODO Auto-generated method stub
-
 		}
-
-		private void showSettlers(GLDrawContext gl) {
-		}
-
+		
 		private void printHelp() {
 			System.out
 			        .println("HELP:\nUse arrow keys to navigate.\nS shows settlers. \nG shows gui images. \nB shows Background. \nE exports as png");
@@ -328,7 +327,7 @@ public class DatFileTester {
 		File file =
 		        new File(FILE.replace("%", String.format("%02d", datFileIndex)));
 
-		reader = new DatFileReader(file);
+		reader = new AdvancedDatFileReader(file);
 	}
 
 	protected void export() {
@@ -344,27 +343,30 @@ public class DatFileTester {
 
 	private void exportTo(File dir) {
 		export(reader.getSettlers(), new File(dir, "settlers"));
-		export(reader.getGuis(), new File(dir, "gui"));
-		export(reader.getLandscapes(), new File(dir, "landscape"));
+		exportSequence(new File(dir, "gui"), 0, reader.getGuis());
+		exportSequence(new File(dir, "landscape"), 1, reader.getLandscapes());
 	}
 
-	private <T extends Image> void export(List<Sequence<T>> settlers, File dir) {
-		int i = 0;
-		for (Sequence<T> seq : settlers) {
-			File seqdir = new File(dir, i + "");
-			seqdir.mkdirs();
-			int j = 0;
-			for (Image image : seq) {
-				export(image, new File(seqdir, j + ".png"));
-				if (image instanceof SettlerImage && ((SettlerImage) image).getTorso() != null) {
-					export(((SettlerImage) image).getTorso(), new File(seqdir, j + "_torso.png"));
-				}
-				j++;
-			}
-
-			i++;
+	private <T extends Image> void export(SequenceList<T> sequences, File dir) {
+		for (int index = 0; index < sequences.size(); index++) {
+			Sequence<T> seq = sequences.get(index);
+			exportSequence(dir, index, seq);
 		}
 	}
+
+	private <T extends Image> void exportSequence(File dir, int index, Sequence<T> seq) {
+	    File seqdir = new File(dir, index + "");
+	    seqdir.mkdirs();
+	    for(int j = 0; j < seq.length(); j++) {
+	    	T image = seq.getImage(j);
+	    	export(image, new File(seqdir, j + ".png"));
+	    	if (image instanceof SettlerImage
+	    	        && ((SettlerImage) image).getTorso() != null) {
+	    		export(((SettlerImage) image).getTorso(), new File(seqdir,
+	    		        j + "_torso.png"));
+	    	}
+	    }
+    }
 
 	private void export(Image image, File file) {
 		// does not work if gpu does not support non-power-of-two
@@ -383,7 +385,8 @@ public class DatFileTester {
 			rgbArray[i] = new Color(red, green, blue, alpha).getRGB();
 		}
 
-		rendered.setRGB(0, 0, image.getWidth(), image.getHeight(), rgbArray, -image.getWidth() + image.getHeight() * image.getWidth(),
+		rendered.setRGB(0, 0, image.getWidth(), image.getHeight(), rgbArray,
+		        -image.getWidth() + image.getHeight() * image.getWidth(),
 		        -image.getWidth());
 
 		try {
