@@ -74,6 +74,10 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 
 	protected void calculatePathTo(ISPosition2D target) {
 		Path path = super.getGrid().getAStar().findPath(this, target);
+		initCalculatedPath(path);
+	}
+
+	private void initCalculatedPath(Path path) {
 		if (path == null) {
 			this.path = null;
 			pathRequestFailed();
@@ -94,13 +98,9 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 		this.path = path;
 	}
 
-	protected void calculateDijkstraPath(ISPosition2D centerPos, short searchRadius, ESearchType type) {
-		ISPosition2D targetPos = super.getGrid().getDijkstra().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
-		if (targetPos == null) {
-			pathRequestFailed();
-		} else {
-			calculatePathTo(targetPos);
-		}
+	protected void calculateDijkstraPath(ISPosition2D centerPos, short maxRadius, ESearchType type) {
+		Path path = super.getGrid().getDijkstra().find(this, centerPos.getX(), centerPos.getY(), (short) 1, maxRadius, type);
+		initCalculatedPath(path);
 	}
 
 	protected void calculateInAreaPath(ISPosition2D centerPos, short searchRadius, ESearchType type) {

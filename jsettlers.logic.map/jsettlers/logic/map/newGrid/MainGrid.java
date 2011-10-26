@@ -30,8 +30,9 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
-import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
+import jsettlers.logic.algorithms.path.dijkstra.INewDijkstraPathMap;
+import jsettlers.logic.algorithms.path.dijkstra.NewDijkstraAlgorithm;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -520,14 +521,14 @@ public class MainGrid {
 		}
 	}
 
-	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid {
+	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, INewDijkstraPathMap {
 		private final HexAStar aStar;
-		private final DijkstraAlgorithm dijkstra;
+		private final NewDijkstraAlgorithm dijkstra;
 		private final InAreaFinder inAreaFinder;
 
 		public MovablePathfinderGrid() {
 			aStar = new HexAStar(this);
-			dijkstra = new DijkstraAlgorithm(this);
+			dijkstra = new NewDijkstraAlgorithm(this, aStar);
 			inAreaFinder = new InAreaFinder(this);
 		}
 
@@ -636,7 +637,7 @@ public class MainGrid {
 		}
 
 		@Override
-		public DijkstraAlgorithm getDijkstra() {
+		public NewDijkstraAlgorithm getDijkstra() {
 			return dijkstra;
 		}
 
@@ -669,6 +670,11 @@ public class MainGrid {
 		@Override
 		public void addJobless(IManageableDigger digger) {
 			partitionsGrid.addJobless(digger);
+		}
+
+		@Override
+		public void setDijkstraSearched(short x, short y) {
+			super.markAsOpen(x, y);
 		}
 	}
 

@@ -7,7 +7,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
+import jsettlers.logic.algorithms.path.dijkstra.NewDijkstraAlgorithm;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
@@ -251,13 +251,13 @@ public interface IMovableGrid {
 	HexAStar getAStar();
 
 	/**
-	 * Gives a {@link DijkstraAlgorithm} algorithm.
+	 * Gives a {@link NewDijkstraAlgorithm} algorithm.
 	 * <p />
-	 * NOTE: This {@link DijkstraAlgorithm} can only be used in a {@link NetworkTimer} synchronous way.
+	 * NOTE: This {@link NewDijkstraAlgorithm} can only be used in a {@link NetworkTimer} synchronous way.
 	 * 
-	 * @return {@link DijkstraAlgorithm} algorithm.
+	 * @return {@link NewDijkstraAlgorithm} algorithm.
 	 */
-	DijkstraAlgorithm getDijkstra();
+	NewDijkstraAlgorithm getDijkstra();
 
 	/**
 	 * Gives a {@link InAreaFinder} algorithm.

@@ -5,6 +5,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -25,7 +26,12 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 		if (enemyPos != null || delayCtr > Constants.MOVABLE_INTERRUPTS_PER_SECOND * 2) {
 			delayCtr = 0;
 
-			enemyPos = super.getGrid().getDijkstra().find(this, super.getPos().getX(), super.getPos().getY(), getSearchRadius(), ESearchType.ENEMY);
+			Path path = super.getGrid().getDijkstra()
+					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, getSearchRadius(), ESearchType.ENEMY);
+			if (path != null)
+				enemyPos = path.getLastTile();
+			else
+				enemyPos = null;
 		} else {
 			delayCtr++;
 			enemyPos = null;
