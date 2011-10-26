@@ -1,11 +1,10 @@
 package jsettlers.logic.algorithms.path.dijkstra;
 
-import java.util.LinkedList;
-
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.wrapper.InvalidStartPositionException;
 
 /**
@@ -14,125 +13,57 @@ import jsettlers.logic.algorithms.path.wrapper.InvalidStartPositionException;
  * @author Andreas Eberle
  * 
  */
-public class DijkstraAlgorithm implements IDijkstraAlgorithm {
-	private static final int NO_LIST = -1;
+public class DijkstraAlgorithm {
 
-	private final DijkstraNode[][] nodes;
 	private final IDijkstraPathMap map;
-	private int openList = 1;
-	private int closedList = 2;
 	private final short height, width;
+	private final HexAStar aStar;
 
-	private LinkedList<DijkstraNode> currentList = new LinkedList<DijkstraNode>();
-	private LinkedList<DijkstraNode> nextList = new LinkedList<DijkstraNode>();
-
-	public DijkstraAlgorithm(IDijkstraPathMap map) {
+	public DijkstraAlgorithm(IDijkstraPathMap map, HexAStar aStar) {
 		this.map = map;
+		this.aStar = aStar;
 		height = map.getHeight();
 		width = map.getWidth();
-
-		nodes = new DijkstraNode[height][width];
-
-		for (short y = 0; y < height; y++) {
-			for (short x = 0; x < width; x++) {
-				nodes[y][x] = new DijkstraNode(x, y);
-			}
-		}
 	}
 
-	/**
-	 * 
-	 * @param requester
-	 *            IReqeuster that requests this search
-	 * @param cX
-	 *            center x
-	 * @param cY
-	 *            center y
-	 * @param searchRadius
-	 *            radius to be searched
-	 * @param type
-	 *            type to be searched
-	 * @return position of found thing of given type, or null if nothing could be found in the search radius.
-	 */
-	@Override
-	public synchronized ISPosition2D find(IPathCalculateable requester, final short cX, final short cY, final short searchRadius,
+	private static final byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
+	private static final byte[] directionIncreaseY = { 0, -1, -1, 0, 1, 1 };
+
+	public synchronized Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
 			final ESearchType type) {
-		if (!map.isInBounds(cX, cY)) {
+		if (!isInBounds(cX, cY)) {
 			throw new InvalidStartPositionException(cX, cY);
 		}
 
-		if (closedList > Integer.MAX_VALUE - 10) {
-			openList = 1;
-			closedList = 2;
-			resetListOfNodes();
-		} else {
-			openList += 2;
-			closedList += 2;
-		}
-
-		currentList.clear();
-		nextList.clear();
-
-		initStartNode(cX, cY);
-
-		short[][] neighbors = null;
-
-		while (!nextList.isEmpty()) {
-			currentList = nextList;
-			nextList = new LinkedList<DijkstraNode>();
-
-			for (DijkstraNode currNode : currentList) {
-				currNode.inList = closedList;
-
-				if (currNode.depth > searchRadius) {
-					return null;
-				}
-
-				short x = currNode.x;
-				short y = currNode.y;
-
-				map.markAsClosed(x, y);
-
-				if (map.fitsSearchType(x, y, type, requester)) {
-					map.fitsSearchType(x, y, type, requester);
-					return new ShortPoint2D(x, y); // position found
-				}
-
-				neighbors = map.getNeighbors(x, y, neighbors);
-
-				for (int i = 0; i < neighbors.length; i++) {
-					short neighborX = neighbors[i][0];
-					short neighborY = neighbors[i][1];
-
-					if (map.isInBounds(neighborX, neighborY)) {
-						DijkstraNode neighbor = nodes[neighborY][neighborX];
-						if (neighbor.inList != closedList && neighbor.inList != openList && !map.isBlocked(requester, neighborX, neighborY)) {
-							neighbor.inList = openList;
-							neighbor.depth = (int) Math.hypot(cX - neighborX, cY - neighborY);
-							neighbor.parent = currNode;
-							nextList.add(neighbor);
-
-							map.markAsOpen(neighbor.x, neighbor.y);
+		for (short radius = minRadius; radius < maxRadius; radius++) {
+			short x = cX, y = (short) (cY + radius);
+			for (byte direction = 0; direction < 6; direction++) {
+				byte dx = directionIncreaseX[direction];
+				byte dy = directionIncreaseY[direction];
+				for (short length = 0; length < radius; length++) {
+					x += dx;
+					y += dy;
+					if (isInBounds(x, y)) {
+						map.setDijkstraSearched(x, y);
+						if (map.fitsSearchType(x, y, type, requester)) {
+							Path path = findPath(requester, x, y);
+							if (path != null)
+								return path;
 						}
 					}
 				}
 			}
 		}
+
 		return null;
 	}
 
-	private void initStartNode(short sx, short sy) {
-		nextList.add(nodes[sy][sx]);
-		nodes[sy][sx].inList = openList;
-		nodes[sy][sx].depth = 0;
+	private Path findPath(IPathCalculateable requester, short tx, short ty) {
+		ISPosition2D pos = requester.getPos();
+		return aStar.findPath(requester, pos.getX(), pos.getY(), tx, ty);
 	}
 
-	private void resetListOfNodes() {
-		for (short y = 0; y < height; y++) {
-			for (short x = 0; x < width; x++) {
-				nodes[y][x].inList = NO_LIST;
-			}
-		}
+	private boolean isInBounds(short x, short y) {
+		return 0 <= x && x <= width && 0 <= y && y <= height;
 	}
-
 }

@@ -4,7 +4,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import random.RandomSingleton;
 
 /**
@@ -16,10 +15,14 @@ import random.RandomSingleton;
  * 
  */
 public class InAreaFinder {
-	private final IDijkstraPathMap map;
+	private final IInAreaFinderMap map;
+	private final short width;
+	private final short height;
 
-	public InAreaFinder(IDijkstraPathMap map) {
+	public InAreaFinder(IInAreaFinderMap map) {
 		this.map = map;
+		this.width = map.getWidth();
+		this.height = map.getHeight();
 	}
 
 	/**
@@ -41,10 +44,14 @@ public class InAreaFinder {
 			short tileX = (short) (Math.cos(angle) * radius + centerX);
 			short tileY = (short) (Math.sin(angle) * radius + centerY);
 
-			if (map.isInBounds(tileX, tileY) && !map.isBlocked(requester, tileX, tileY) && map.fitsSearchType(tileX, tileY, searched, requester)) {
+			if (isInBounds(tileX, tileY) && !map.isBlocked(requester, tileX, tileY) && map.fitsSearchType(tileX, tileY, searched, requester)) {
 				return new ShortPoint2D(tileX, tileY);
 			}
 		}
 		return null;
+	}
+
+	private boolean isInBounds(short x, short y) {
+		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 }

@@ -1,12 +1,12 @@
 package jsettlers.logic.algorithms.path.astar;
 
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.heap.MinHeap;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.wrapper.InvalidStartPositionException;
-import jsettlers.logic.algorithms.path.wrapper.requests.AbstractAStarRequest;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -25,6 +25,9 @@ public class HexAStar {
 
 	private MinHeap<AStarNode> open = new MinHeap<AStarNode>(AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
 
+	private final byte[] xDeltaArray;
+	private final byte[] yDeltaArray;
+
 	public HexAStar(IAStarPathMap map) {
 		this.map = map;
 		height = map.getHeight();
@@ -37,12 +40,9 @@ public class HexAStar {
 				nodes[y][x] = new AStarNode(x, y);
 			}
 		}
-	}
 
-	private short[][] neighbors;
-
-	public Path findPath(AbstractAStarRequest request) {
-		return findPath(request.getRequester(), request.getSx(), request.getSy(), request.getAStarTx(), request.getAStarTy());
+		xDeltaArray = EDirection.getXDeltaArray();
+		yDeltaArray = EDirection.getYDeltaArray();
 	}
 
 	public Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
@@ -79,11 +79,9 @@ public class HexAStar {
 				break;
 			}
 
-			neighbors = map.getNeighbors(x, y, neighbors);
-
-			for (int i = 0; i < neighbors.length; i++) {
-				short neighborX = neighbors[i][0];
-				short neighborY = neighbors[i][1];
+			for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+				short neighborX = (short) (x + xDeltaArray[i]);
+				short neighborY = (short) (y + yDeltaArray[i]);
 
 				if (isValidPosition(requester, neighborX, neighborY)) {
 					AStarNode neighbor = nodes[neighborY][neighborX];
@@ -95,8 +93,6 @@ public class HexAStar {
 								neighbor.depth = currNode.depth + 1;
 								neighbor.parent = currNode;
 								open.siftUp(neighbor);
-
-								// System.out.println("heap check: " + open.doFullHeapCheck());
 							}
 						} else {
 							neighbor.cost = newCosts;

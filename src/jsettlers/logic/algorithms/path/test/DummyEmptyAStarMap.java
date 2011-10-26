@@ -1,6 +1,5 @@
 package jsettlers.logic.algorithms.path.test;
 
-import jsettlers.common.movable.EDirection;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 
@@ -29,21 +28,6 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 	@Override
 	public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 		return blocked[x][y];
-	}
-
-	@Override
-	public short[][] getNeighbors(short x, short y, short[][] neighbors) {
-		EDirection[] directions = EDirection.values();
-		if (neighbors == null || neighbors.length != directions.length) {
-			neighbors = new short[directions.length][2];
-		}
-
-		for (int i = 0; i < directions.length; i++) {
-			neighbors[i][0] = directions[i].getNextTileX(x);
-			neighbors[i][1] = directions[i].getNextTileY(y);
-		}
-
-		return neighbors;
 	}
 
 	@Override
