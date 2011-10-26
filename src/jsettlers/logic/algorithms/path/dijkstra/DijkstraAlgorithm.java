@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.path.dijkstra;
 
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -19,6 +20,9 @@ public class DijkstraAlgorithm {
 	private final short height, width;
 	private final HexAStar aStar;
 
+	private static final byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
+	private static final byte[] directionIncreaseY = { 0, 1, 1, 0, -1, -1 };
+
 	public DijkstraAlgorithm(IDijkstraPathMap map, HexAStar aStar) {
 		this.map = map;
 		this.aStar = aStar;
@@ -26,16 +30,15 @@ public class DijkstraAlgorithm {
 		width = map.getWidth();
 	}
 
-	private byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
-	private byte[] directionIncreaseY = { 0, 1, 1, 0, -1, -1 };
-
 	public synchronized Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
 			final ESearchType type) {
 		if (!isInBounds(cX, cY)) {
 			throw new InvalidStartPositionException(cX, cY);
 		}
-		
-		for (short radius = minRadius; radius < maxRadius; radius++) {
+
+		MapCircle circle = new MapCircle(cX, cY, maxRadius);
+		// TODO @Michael find out how much the radius must be bigger to be larger than the circle
+		for (short radius = minRadius; radius < maxRadius + 3; radius++) {
 			short x = cX, y = (short) (cY - radius);
 			for (byte direction = 0; direction < 6; direction++) {
 				byte dx = directionIncreaseX[direction];
@@ -43,7 +46,7 @@ public class DijkstraAlgorithm {
 				for (short length = 0; length < radius; length++) {
 					x += dx;
 					y += dy;
-					if (isInBounds(x, y)) {
+					if (circle.contains(x, y) && isInBounds(x, y)) {
 						map.setDijkstraSearched(x, y);
 						if (map.fitsSearchType(x, y, type, requester)) {
 							Path path = findPath(requester, x, y);
