@@ -26,17 +26,17 @@ public class DijkstraAlgorithm {
 		width = map.getWidth();
 	}
 
-	private static final byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
-	private static final byte[] directionIncreaseY = { 0, -1, -1, 0, 1, 1 };
+	private byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
+	private byte[] directionIncreaseY = { 0, 1, 1, 0, -1, -1 };
 
 	public synchronized Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
 			final ESearchType type) {
 		if (!isInBounds(cX, cY)) {
 			throw new InvalidStartPositionException(cX, cY);
 		}
-
+		
 		for (short radius = minRadius; radius < maxRadius; radius++) {
-			short x = cX, y = (short) (cY + radius);
+			short x = cX, y = (short) (cY - radius);
 			for (byte direction = 0; direction < 6; direction++) {
 				byte dx = directionIncreaseX[direction];
 				byte dy = directionIncreaseY[direction];
