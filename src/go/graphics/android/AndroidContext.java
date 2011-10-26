@@ -16,6 +16,7 @@ public class AndroidContext implements GLDrawContext {
 
 	private final GL10 gl;
 
+	
 	public AndroidContext(GL10 gl) {
 		this.gl = gl;
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
