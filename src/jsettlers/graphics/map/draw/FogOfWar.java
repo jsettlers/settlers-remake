@@ -103,8 +103,6 @@ public class FogOfWar {
 			for (int x = 0; x < map.getWidth(); x++) {
 				int distance = getViewDistanceForPosition(x, mapy);
 				if (distance > 0) {
-					System.out.println("drawing view circle around " + x + ","
-					        + mapy);
 					bufferdrawer.drawCircleToBuffer(x, mapy, distance);
 				}
 			}
@@ -169,7 +167,6 @@ public class FogOfWar {
 		}
 
 		private void doNextLine(int sweepline) {
-			System.out.println("doing map line: " + sweepline);
 			moveToFromBuffer(sweepline - BUFFER_HEIGHT / 2, sweepline
 			        + BUFFER_HEIGHT / 2);
 			applyBufferLine(sweepline);
@@ -186,10 +183,6 @@ public class FogOfWar {
 		private void moveToFromBuffer(int lastliney, int frontliney) {
 			int lastbuffery = bufferPos(lastliney);
 			int frontbuffery = bufferPos(frontliney);
-			System.out.println("for map line " + frontliney + " use buffer "
-			        + frontbuffery);
-			System.out.println("for map line " + lastliney + " use buffer "
-			        + lastbuffery);
 			for (int x = 0; x < map.getWidth(); x++) {
 				sight[x][lastliney] = buffer[x][lastbuffery];
 				buffer[x][frontbuffery] = dimDown(sight[x][frontliney]);
