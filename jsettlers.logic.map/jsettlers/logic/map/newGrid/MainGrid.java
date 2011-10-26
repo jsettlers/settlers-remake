@@ -394,7 +394,8 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			return debugColors[x][y];
+			return new Color(partitionsGrid.getPartition((short) x, (short) y) * 0.2f, 0, 0, 1);
+			// return debugColors[x][y];
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
@@ -407,7 +408,6 @@ public class MainGrid {
 		public byte getPlayerAt(int x, int y) {
 			return partitionsGrid.getPlayerAt((short) x, (short) y);
 		}
-
 	}
 
 	private class MapObjectsManagerGrid implements IMapObjectsManagerGrid {

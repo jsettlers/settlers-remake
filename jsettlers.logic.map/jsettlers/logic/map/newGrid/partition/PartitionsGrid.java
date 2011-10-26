@@ -90,6 +90,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	public void setPartition(ISPosition2D position, short newPartition) {
 		Partition newPartitionObject = getPartitionObject(newPartition);
 
+		short oldPartition = getPartition(position);
 		getPartitionObject(position.getX(), position.getY()).removePositionTo(position, newPartitionObject);
 
 		this.partitions[position.getX()][position.getY()] = newPartition;
@@ -170,6 +171,10 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		while (length > 0) {
 			short y = pointsBuffer[--length];
 			short x = pointsBuffer[--length];
+			if (partitions[x][y] != oldPartition) {
+				continue; // the partition may already have changed.
+			}
+
 			setPartition(new ShortPoint2D(x, y), newPartition);
 
 			for (byte i = 0; i < 12; i += 2) {
