@@ -22,7 +22,7 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.test.DummyEmptyPathfinderMap;
+import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 import synchronic.timer.NetworkTimer;
 
 public class PartitionsGridTestingWnd extends JFrame {
@@ -59,7 +59,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 	 * Create the frame.
 	 */
 	public PartitionsGridTestingWnd() {
-		map = new PartitionsGrid(WIDTH, HEIGHT, new DummyEmptyPathfinderMap(WIDTH, HEIGHT) {
+		map = new PartitionsGrid(WIDTH, HEIGHT, new DummyEmptyAStarMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 				return map.getPlayerAt(x, y) != requester.getPlayer();
