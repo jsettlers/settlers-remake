@@ -27,12 +27,12 @@ import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
-import jsettlers.logic.algorithms.path.dijkstra.INewDijkstraPathMap;
-import jsettlers.logic.algorithms.path.dijkstra.NewDijkstraAlgorithm;
+import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -192,7 +192,7 @@ public class MainGrid {
 		buildingsGrid.placeNewMovable(pos, new Movable(movablePathfinderGrid, pos, type, player));
 	}
 
-	private class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap {
+	private class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap {
 		@Override
 		public short getHeight() {
 			return height;
@@ -212,21 +212,6 @@ public class MainGrid {
 		protected boolean isLandscapeBlocking(short x, short y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
 			return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
-		}
-
-		@Override
-		public short[][] getNeighbors(short x, short y, short[][] neighbors) {
-			EDirection[] directions = EDirection.values();
-			if (neighbors == null || neighbors.length != directions.length) {
-				neighbors = new short[directions.length][2];
-			}
-
-			for (int i = 0; i < directions.length; i++) {
-				neighbors[i][0] = directions[i].getNextTileX(x);
-				neighbors[i][1] = directions[i].getNextTileY(y);
-			}
-
-			return neighbors;
 		}
 
 		@Override
@@ -250,6 +235,11 @@ public class MainGrid {
 		@Override
 		public void markAsClosed(short x, short y) {
 			debugColors[x][y] = Color.RED;
+		}
+
+		@Override
+		public void setDijkstraSearched(short x, short y) {
+			markAsOpen(x, y);
 		}
 
 		@Override
@@ -521,14 +511,14 @@ public class MainGrid {
 		}
 	}
 
-	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, INewDijkstraPathMap {
+	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid {
 		private final HexAStar aStar;
-		private final NewDijkstraAlgorithm dijkstra;
+		private final DijkstraAlgorithm dijkstra;
 		private final InAreaFinder inAreaFinder;
 
 		public MovablePathfinderGrid() {
 			aStar = new HexAStar(this);
-			dijkstra = new NewDijkstraAlgorithm(this, aStar);
+			dijkstra = new DijkstraAlgorithm(this, aStar);
 			inAreaFinder = new InAreaFinder(this);
 		}
 
@@ -637,7 +627,7 @@ public class MainGrid {
 		}
 
 		@Override
-		public NewDijkstraAlgorithm getDijkstra() {
+		public DijkstraAlgorithm getDijkstra() {
 			return dijkstra;
 		}
 
@@ -672,10 +662,6 @@ public class MainGrid {
 			partitionsGrid.addJobless(digger);
 		}
 
-		@Override
-		public void setDijkstraSearched(short x, short y) {
-			super.markAsOpen(x, y);
-		}
 	}
 
 	private class BordersThreadGrid implements IBordersThreadGrid {
