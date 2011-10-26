@@ -6,13 +6,13 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.dijkstra.INewDijkstraPathMap;
-import jsettlers.logic.algorithms.path.dijkstra.NewDijkstraAlgorithm;
+import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
+import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 
 public class SimpleDijkstraTester {
 	public static void main(String args[]) {
-		INewDijkstraPathMap map = new INewDijkstraPathMap() {
+		IDijkstraPathMap map = new IDijkstraPathMap() {
 			@Override
 			public short getHeight() {
 				return 200;
@@ -42,7 +42,7 @@ public class SimpleDijkstraTester {
 		DummyEmptyAStarMap aStarMap = new DummyEmptyAStarMap((short) 200, (short) 200);
 		aStarMap.setBlocked(120, 100, true);
 
-		NewDijkstraAlgorithm dijkstra = new NewDijkstraAlgorithm(map, new HexAStar(aStarMap));
+		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new HexAStar(aStarMap));
 
 		IPathCalculateable requester = new IPathCalculateable() {
 
