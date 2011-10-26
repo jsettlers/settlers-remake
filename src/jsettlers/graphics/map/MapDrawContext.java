@@ -1,8 +1,8 @@
 package jsettlers.graphics.map;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;

@@ -11,8 +11,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.reader.DatFileSet;
+import jsettlers.graphics.reader.SequenceList;
+import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
@@ -27,7 +30,7 @@ public final class ImageProvider {
 
 	private Hashtable<Integer, DatFileSet> images =
 	        new Hashtable<Integer, DatFileSet>();
-	
+
 	private BitSet requestedFiles = new BitSet();
 
 	/**
@@ -84,7 +87,7 @@ public final class ImageProvider {
 		if (set != null && set.getSettlers().size() > seqnumber) {
 			return set.getSettlers().get(seqnumber);
 		} else {
-			return Sequence.getNullSequence();
+			return ArraySequence.getNullSequence();
 		}
 	}
 
@@ -116,10 +119,12 @@ public final class ImageProvider {
 		DatFileSet set = tryGetFileSet(file);
 
 		if (set != null) {
-			return set.getLandscapes().get(seqnumber).getImageSafe(0);
-		} else {
-			return NullImage.getInstance();
+			Sequence<LandscapeImage> landscapes = set.getLandscapes();
+			if (seqnumber < landscapes.length()) {
+				return landscapes.getImageSafe(seqnumber);
+			}
 		}
+		return NullImage.getInstance();
 	}
 
 	/**
@@ -134,8 +139,8 @@ public final class ImageProvider {
 	public Image getGuiImage(int file, int seqnumber) {
 		DatFileSet set = tryGetFileSet(file);
 
-		if (set != null && seqnumber < set.getGuis().size()) {
-			return set.getGuis().get(seqnumber).getImageSafe(0);
+		if (set != null) {
+			return set.getGuis().getImageSafe(seqnumber);
 		} else {
 			return NullImage.getInstance();
 		}
@@ -201,7 +206,7 @@ public final class ImageProvider {
 	}
 
 	public boolean isPreloaded(int filenumber) {
-	    return images.containsKey(Integer.valueOf(filenumber));
-    }
+		return images.containsKey(Integer.valueOf(filenumber));
+	}
 
 }

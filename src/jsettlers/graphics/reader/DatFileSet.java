@@ -20,34 +20,21 @@ import jsettlers.graphics.sequence.Sequence;
  * @author michael
  */
 public interface DatFileSet {
-	
-	/**
-	 * Gets a list of torsos in the dat file.
-	 * @return The unmodifiable list.
-	 */
-	List<Sequence<Torso>> getTorsos();
-
 	/**
 	 * Gets a list of settlers in the dat file.
 	 * @return The unmodifiable list.
 	 */
-	List<Sequence<SettlerImage>> getSettlers();
+	SequenceList<SettlerImage> getSettlers();
 
 	/**
 	 * Gets a list of landscape tiles in the dat file.
 	 * @return The unmodifiable list.
 	 */
-	List<Sequence<LandscapeImage>> getLandscapes();
-
-	/**
-	 * Gets a list of shadow tiles in the dat file.
-	 * @return The unmodifiable list.
-	 */
-	List<Sequence<ShadowImage>> getShadows();
+	Sequence<LandscapeImage> getLandscapes();
 
 	/**
 	 * Gets a list of gui images.
 	 * @return The unmodifiable list.
 	 */
-	List<Sequence<GuiImage>> getGuis();
+	Sequence<GuiImage> getGuis();
 }

@@ -18,28 +18,35 @@ public class FogOfWar {
 
 	private final byte[][] sight;
 
-	private static final byte EXPLORED = 5;
+	private static final byte EXPLORED = 10;
 
-	public static final byte VISIBLE = 10;
+	public static final byte VISIBLE = 20;
 
 	/**
 	 * Longest distance any unit may look
 	 */
-	private static final byte MAX_VIEWDISTANCE = 50;
+	private static final byte MAX_VIEWDISTANCE = 55;
 
-	private static final byte MOVABLE_VIEWDISTANCE = 10;
+	private static final byte MOVABLE_VIEWDISTANCE = 8;
 
-	private static final int PADDING = 5;
+	private static final int PADDING = 10;
 
 	public FogOfWar(IGraphicsGrid map) {
+		this(map, false);
+	}
+	public FogOfWar(IGraphicsGrid map, boolean exploredOnStart) {
 		this.map = map;
 		sight = new byte[map.getWidth()][map.getHeight()];
-
-		// for (int x = 0; x < map.getWidth(); x++) {
-		// for (int y = 0; y < map.getHeight(); y++) {
-		// sight[x][y] = 0;
-		// }
-		// }
+		
+		byte defaultSight = 0;
+		if (exploredOnStart) {
+			defaultSight = EXPLORED;
+		}
+		for (int x = 0; x < map.getWidth(); x++) {
+			for (int y = 0; y < map.getHeight(); y++) {
+				sight[x][y] = defaultSight;
+			}
+		}
 		rebuildAll(sight);
 
 		if (map.getHeight() > 3 * MAX_VIEWDISTANCE) {
@@ -66,33 +73,24 @@ public class FogOfWar {
 	 */
 	private class FogCorrectionThread extends Thread {
 		private static final int BUFFER_HEIGHT = MAX_VIEWDISTANCE * 2;
-		int lastline = 0;
-		/**
-		 * Center sweep line
-		 */
-		int currentsweepline = MAX_VIEWDISTANCE;
-
-		int frontline = 2 * MAX_VIEWDISTANCE;
-
-		int bufferoffset = 0;
-
 		byte[][] buffer;
+
+		private CircleDrawer bufferdrawer;
 
 		private FogCorrectionThread() {
 			super("advanced fog of war correction");
+
 			buffer = new byte[map.getWidth()][BUFFER_HEIGHT];
-			for (int y = 0; y < BUFFER_HEIGHT; y++) {
-				for (int x = 0; x < map.getWidth(); x++) {
-					if (sight[x][y] < EXPLORED) {
-						buffer[x][y] = sight[x][y];
+			bufferdrawer = new CircleDrawer(buffer) {
+				@Override
+				protected int convertY(int mapy) {
+					if (mapy > 0 && mapy < map.getHeight()) {
+						return bufferPos(mapy);
 					} else {
-						buffer[x][y] = EXPLORED;
+						return -1;
 					}
 				}
-			}
-			for (int y = 0; y < BUFFER_HEIGHT; y++) {
-				applyBufferLine(y, y);
-			}
+			};
 		}
 
 		/**
@@ -101,99 +99,162 @@ public class FogOfWar {
 		 * @param buffery
 		 * @param mapy
 		 */
-		private void applyBufferLine(int mapy, int buffery) {
+		private void applyBufferLine(int mapy) {
 			for (int x = 0; x < map.getWidth(); x++) {
 				int distance = getViewDistanceForPosition(x, mapy);
 				if (distance > 0) {
-					drawVisibleCircleToBuffer(x, buffery, distance);
+					System.out.println("drawing view circle around " + x + ","
+					        + mapy);
+					bufferdrawer.drawCircleToBuffer(x, mapy, distance);
 				}
 			}
 		}
 
-		/**
-		 * This function has duplicated code!
-		 * 
-		 * @param x
-		 * @param buffery
-		 * @param distance
-		 */
-		private void drawVisibleCircleToBuffer(int x, int buffery, int distance) {
-			MapCircle circle =
-			        new MapCircle(x, MAX_VIEWDISTANCE, Math.min(distance
-			                + PADDING, MAX_VIEWDISTANCE));
-			for (ISPosition2D pos : circle) {
-				int currentx = pos.getX();
-				int currenty = pos.getY();
-				if (currentx >= 0 && currentx < map.getWidth() && currenty >= 0
-				        && currenty < BUFFER_HEIGHT) {
-					if (circle.isCloserToCenter(currentx, currenty, distance)) {
-						buffer[currentx][bufferPos(currenty)] = VISIBLE;
-					} else {
-						double pointdistance =
-						        circle.distanceToCenter(currentx, currenty);
-						byte newsight =
-						        (byte) (VISIBLE - (pointdistance - distance)
-						                / PADDING * VISIBLE);
-						if (buffer[currentx][bufferPos(currenty)] < newsight) {
-							buffer[currentx][bufferPos(currenty)] = newsight;
-						}
-					}
-				}
-			}
-		}
-
-		private int bufferPos(int y) {
-			return (y + bufferoffset) % BUFFER_HEIGHT;
+		private int bufferPos(int mapy) {
+			return mapy % BUFFER_HEIGHT;
 		}
 
 		@Override
 		public void run() {
 			while (true) {
-				for (int i = 0; i < 20; i++) {
-					doNextLine();
+				loadFirstBuffer();
+				for (int sweepline = BUFFER_HEIGHT / 2; sweepline < map
+				        .getHeight() - BUFFER_HEIGHT / 2; sweepline++) {
+					doNextLine(sweepline);
+					if (sweepline % 32 == 0) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 				}
+				loadLastBuffer();
+
 				try {
-					Thread.sleep(100);
+					Thread.sleep(200);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
-		private void doNextLine() {
-			moveLastLine();
-			applyBufferLine(currentsweepline, BUFFER_HEIGHT / 2);
-
-			lastline = increase(lastline);
-			currentsweepline = increase(currentsweepline);
-			frontline = increase(frontline);
-			bufferoffset++;
-			if (bufferoffset >= BUFFER_HEIGHT) {
-				bufferoffset = 0;
+		private void loadLastBuffer() {
+			for (int mapy = map.getHeight() - BUFFER_HEIGHT / 2; mapy < map
+			        .getHeight(); mapy++) {
+				applyBufferLine(mapy);
 			}
-		}
 
-		/**
-		 * Moves the line from the buffer to the map.
-		 */
-		private void moveLastLine() {
-			for (int x = 0; x < map.getWidth(); x++) {
-				sight[x][lastline] = buffer[x][bufferoffset];
-				if (sight[x][frontline] > EXPLORED) {
-					buffer[x][bufferoffset] = EXPLORED;
-				} else {
-					buffer[x][bufferoffset] = sight[x][frontline];
+			for (int mapy = map.getHeight() - BUFFER_HEIGHT; mapy < map
+			        .getHeight(); mapy++) {
+				for (int x = 0; x < map.getWidth(); x++) {
+					sight[x][mapy] = buffer[x][bufferPos(mapy)];
 				}
 			}
 		}
 
-		private int increase(int line) {
-			if (line < map.getHeight() - 1) {
-				return line + 1;
-			} else {
-				return 0;
+		/**
+		 * Loads the buffer for the map.
+		 */
+		private void loadFirstBuffer() {
+			for (int y = 0; y < BUFFER_HEIGHT; y++) {
+				for (int x = 0; x < map.getWidth(); x++) {
+					buffer[x][y] = dimDown(sight[x][y]);
+				}
+			}
+
+			for (int y = 0; y < BUFFER_HEIGHT / 2; y++) {
+				applyBufferLine(y);
 			}
 		}
+
+		private void doNextLine(int sweepline) {
+			System.out.println("doing map line: " + sweepline);
+			moveToFromBuffer(sweepline - BUFFER_HEIGHT / 2, sweepline
+			        + BUFFER_HEIGHT / 2);
+			applyBufferLine(sweepline);
+		}
+
+		/**
+		 * Moves the line from the buffer to the map.
+		 * 
+		 * @param lastliney
+		 *            The last line of the buffer to convert to the map.
+		 * @param frontline
+		 *            The line of the buffer to load to it.
+		 */
+		private void moveToFromBuffer(int lastliney, int frontliney) {
+			int lastbuffery = bufferPos(lastliney);
+			int frontbuffery = bufferPos(frontliney);
+			System.out.println("for map line " + frontliney + " use buffer "
+			        + frontbuffery);
+			System.out.println("for map line " + lastliney + " use buffer "
+			        + lastbuffery);
+			for (int x = 0; x < map.getWidth(); x++) {
+				sight[x][lastliney] = buffer[x][lastbuffery];
+				buffer[x][frontbuffery] = dimDown(sight[x][frontliney]);
+			}
+		}
+	}
+
+	private byte dimDown(byte oldvalue) {
+		if (oldvalue > EXPLORED) {
+			return (byte) (oldvalue - 1);
+		} else {
+			return oldvalue;
+		}
+	}
+
+	private class CircleDrawer {
+		private final byte[][] buffer;
+
+		private CircleDrawer(byte[][] buffer) {
+			this.buffer = buffer;
+		}
+
+		protected int convertY(int mapy) {
+			return mapy;
+		}
+
+		/**
+		 * Draws a circle to the buffer line. Each point is only brightened and
+		 * onyl drawn if its x coordinate is in [0, mapWidth - 1] and its
+		 * computed y coordinate is bigger than 0.
+		 */
+		private void drawCircleToBuffer(int bufferx, int buffery,
+		        int viewdistance) {
+			MapCircle circle =
+			        new MapCircle(bufferx, buffery, Math.min(viewdistance
+			                + PADDING, MAX_VIEWDISTANCE));
+			for (ISPosition2D pos : circle) {
+				int currentx = pos.getX();
+				int currenty = pos.getY();
+				int currentbuffery = convertY(currenty);
+				if (currentx >= 0 && currentx < map.getWidth()
+				        && currentbuffery >= 0) {
+					double distance =
+					        circle.distanceToCenter(currentx, currenty);
+					byte newsight;
+					if (circle.isCloserToCenter(currentx, currenty,
+					        viewdistance)) {
+						newsight = VISIBLE;
+					} else {
+						newsight =
+						        (byte) (VISIBLE - (distance - viewdistance)
+						                / PADDING * VISIBLE);
+
+					}
+					increaseBufferAt(currentx, currentbuffery, newsight);
+				}
+			}
+		}
+
+		private void increaseBufferAt(int currentx, int bufferPos, byte newsight) {
+			if (buffer[currentx][bufferPos] < newsight) {
+				buffer[currentx][bufferPos] = newsight;
+			}
+		}
+
 	}
 
 	private class SimpleCorrectionTread extends Thread {
@@ -253,11 +314,19 @@ public class FogOfWar {
 	}
 
 	private void rebuildAll(byte[][] buffer) {
+		CircleDrawer drawer = new CircleDrawer(buffer) {
+			@Override
+			protected int convertY(int mapy) {
+				if (mapy < map.getHeight()) {
+					return mapy;
+				} else {
+					return -1;
+				}
+			}
+		};
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getWidth(); y++) {
-				if (buffer[x][y] > EXPLORED) {
-					buffer[x][y] = EXPLORED;
-				}
+				buffer[x][y] = dimDown(buffer[x][y]);
 			}
 		}
 
@@ -265,34 +334,35 @@ public class FogOfWar {
 			for (int y = 0; y < map.getWidth(); y++) {
 				int distance = getViewDistanceForPosition(x, y);
 				if (distance > 0) {
-					drawCircleAround(x, y, distance, buffer);
+					drawer.drawCircleToBuffer(x, y, distance);
 				}
 			}
 		}
 	}
 
-	private void drawCircleAround(int x, int y, int distance, byte[][] buffer) {
-		MapCircle circle = new MapCircle(x, y, distance + PADDING);
-		for (ISPosition2D pos : circle) {
-			int currentx = pos.getX();
-			int currenty = pos.getY();
-			if (currentx >= 0 && currentx < map.getWidth() && currenty >= 0
-			        && currenty < map.getHeight()) {
-				if (circle.isCloserToCenter(currentx, currenty, distance)) {
-					buffer[currentx][currenty] = VISIBLE;
-				} else {
-					double pointdistance =
-					        circle.distanceToCenter(currentx, currenty);
-					byte newsight =
-					        (byte) (VISIBLE - (pointdistance - distance)
-					                / PADDING * VISIBLE);
-					if (buffer[currentx][currenty] < newsight) {
-						buffer[currentx][currenty] = newsight;
-					}
-				}
-			}
-		}
-	}
+	// private void drawCircleAround(int x, int y, int distance, byte[][]
+	// buffer) {
+	// MapCircle circle = new MapCircle(x, y, distance + PADDING);
+	// for (ISPosition2D pos : circle) {
+	// int currentx = pos.getX();
+	// int currenty = pos.getY();
+	// if (currentx >= 0 && currentx < map.getWidth() && currenty >= 0
+	// && currenty < map.getHeight()) {
+	// if (circle.isCloserToCenter(currentx, currenty, distance)) {
+	// buffer[currentx][currenty] = VISIBLE;
+	// } else {
+	// double pointdistance =
+	// circle.distanceToCenter(currentx, currenty);
+	// byte newsight =
+	// (byte) (VISIBLE - (pointdistance - distance)
+	// / PADDING * VISIBLE);
+	// if (buffer[currentx][currenty] < newsight) {
+	// buffer[currentx][currenty] = newsight;
+	// }
+	// }
+	// }
+	// }
+	// }
 
 	public void pause() {
 
