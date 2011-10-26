@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.WindowManager;
 
 public class JsettlersActivity extends Activity {
 
@@ -33,6 +34,8 @@ public class JsettlersActivity extends Activity {
 		new Thread(game).start();
 		super.onStart();
 		System.out.println("got on start");
+
+		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	private class SettlersGame extends JSettlersApp {
@@ -54,10 +57,11 @@ public class JsettlersActivity extends Activity {
 			this.area = area;
 		}
 
+		@Override
 		public void run() {
 			System.out.println("added GL view");
 			glView = new GOSurfaceView(JsettlersActivity.this, area);
-			//glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+			// glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 			setContentView(glView);
 		}
 	}
@@ -65,12 +69,12 @@ public class JsettlersActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-//		glView.onPause();
+		// glView.onPause();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-//		glView.onPause();
+		// glView.onPause();
 	}
 }
