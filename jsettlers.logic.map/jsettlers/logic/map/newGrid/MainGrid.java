@@ -31,8 +31,8 @@ import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
-import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
+import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -385,8 +385,8 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			return new Color(partitionsGrid.getPartition((short) x, (short) y) * 0.2f, 0, 0, 1);
-			// return debugColors[x][y];
+			// return new Color(partitionsGrid.getPartition((short) x, (short) y) * 0.2f, 0, 0, 1);
+			return debugColors[x][y];
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 

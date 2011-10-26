@@ -41,7 +41,7 @@ distance = 20-90
 
 [building]
 count = 1
-dx = 0
+dx = -20
 dy = 0
 type = TOWER
 distance = 0
