@@ -64,6 +64,6 @@ public class DijkstraAlgorithm {
 	}
 
 	private boolean isInBounds(short x, short y) {
-		return 0 <= x && x <= width && 0 <= y && y <= height;
+		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 }
