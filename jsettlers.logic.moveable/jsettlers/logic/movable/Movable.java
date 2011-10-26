@@ -240,7 +240,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				state = EMovableState.FINISHED_ACTION;
 				strategy.actionFinished();
 				if (state == EMovableState.FINISHED_ACTION) {
-					System.out.println("blöd");
+					System.out.println("blÃ¶d");
 					strategy.actionFinished();
 				}
 			}

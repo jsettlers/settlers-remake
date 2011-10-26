@@ -9,6 +9,9 @@ public class GridLandscapeType {
 	}
 
 	public static ELandscapeType convert(MeshLandscapeType landscape) {
+		if (landscape == null) {
+			return ELandscapeType.GRASS;
+		}
 		switch (landscape) {
 			case DESERT:
 				return ELandscapeType.DESERT;
@@ -18,6 +21,7 @@ public class GridLandscapeType {
 
 			case SAND:
 				return ELandscapeType.SAND;
+				
 			case SEA:
 				return ELandscapeType.WATER;
 

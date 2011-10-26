@@ -30,7 +30,8 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
 
-public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
+public abstract class Building extends AbstractHexMapObject implements
+        IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
 	private final byte player;
 	private EBuildingState state = EBuildingState.CREATED;
 
@@ -90,8 +91,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() > 0) {
-				result.add(new LimittedRequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), currStack
-						.requiredForBuild()));
+				result.add(new LimittedRequestStack(grid.getRequestStackGrid(),
+				        currStack.calculatePoint(this.pos),
+				        currStack.getType(), currStack.requiredForBuild()));
 			}
 		}
 
@@ -105,25 +107,33 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() == 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType()));
+				result.add(new RequestStack(grid.getRequestStackGrid(),
+				        currStack.calculatePoint(this.pos), currStack.getType()));
 			}
 		}
 
 		return result;
 	}
 
-	private void placeAdditionalMapObjects(IBuildingsGrid grid, ISPosition2D pos, boolean place) {
+	private void placeAdditionalMapObjects(IBuildingsGrid grid,
+	        ISPosition2D pos, boolean place) {
 		if (place) {
-			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, (byte) -1);
+			grid.getMapObjectsManager().addSimpleMapObject(pos,
+			        EMapObjectType.BUILDINGSITE_SIGN, false, (byte) -1);
 		} else {
-			grid.getMapObjectsManager().removeMapObjectType(pos, EMapObjectType.BUILDINGSITE_SIGN);
+			grid.getMapObjectsManager().removeMapObjectType(pos,
+			        EMapObjectType.BUILDINGSITE_SIGN);
 		}
 
 		for (RelativePoint curr : type.getBuildmarks()) {
 			if (place) {
-				grid.getMapObjectsManager().addSimpleMapObject(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST, false, (byte) -1);
+				grid.getMapObjectsManager().addSimpleMapObject(
+				        curr.calculatePoint(pos),
+				        EMapObjectType.BUILDINGSITE_POST, false, (byte) -1);
 			} else {
-				grid.getMapObjectsManager().removeMapObjectType(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST);
+				grid.getMapObjectsManager().removeMapObjectType(
+				        curr.calculatePoint(pos),
+				        EMapObjectType.BUILDINGSITE_POST);
 			}
 		}
 	}
@@ -151,9 +161,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		ISPosition2D flagPosition = type.getFlag().calculatePoint(pos);
 
 		if (place) {
-			grid.getMapObjectsManager().addSimpleMapObject(flagPosition, getFlagType(), false, player);
+			grid.getMapObjectsManager().addSimpleMapObject(flagPosition,
+			        getFlagType(), false, player);
 		} else {
-			grid.getMapObjectsManager().removeMapObjectType(flagPosition, getFlagType());
+			grid.getMapObjectsManager().removeMapObjectType(flagPosition,
+			        getFlagType());
 		}
 	}
 
@@ -164,7 +176,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		positionAt(grid, pos);
 
-		finishConstruction();
+		if (this.pos != null) {
+			finishConstruction();
+		}
 	}
 
 	private void requestDiggers() {
@@ -183,7 +197,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.buildingArea = new FreeMapArea(positions);
 
 		this.heightAvg = (byte) (heightSum / blocked.length);
-		byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
+		byte numberOfDiggers =
+		        (byte) Math.ceil(((float) blocked.length)
+		                / Constants.TILES_PER_DIGGER);
 
 		grid.requestDiggers(this.buildingArea, this.heightAvg, numberOfDiggers);
 	}
@@ -200,46 +216,46 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public void timerEvent() {
 		switch (state) {
-		case CREATED:
-			assert false : "this should never happen!";
-			break;
-		case POSITIONED:
-			if (waitedSecond()) {
-				if (isFlatened()) {
-					placeAdditionalMapObjects(grid, pos, false);
+			case CREATED:
+				assert false : "this should never happen!";
+				break;
+			case POSITIONED:
+				if (waitedSecond()) {
+					if (isFlatened()) {
+						placeAdditionalMapObjects(grid, pos, false);
 
-					this.state = EBuildingState.WAITING_FOR_MATERIAL;
-					System.out.println("flatened!");
+						this.state = EBuildingState.WAITING_FOR_MATERIAL;
+						System.out.println("flatened!");
+					}
 				}
-			}
-			break;
+				break;
 
-		case WAITING_FOR_MATERIAL:
-			if (waitedSecond()) {
-				if (isMaterialAvailable()) {
-					requestBricklayers();
-					state = EBuildingState.BRICKLAYERS_REQUESTED;
+			case WAITING_FOR_MATERIAL:
+				if (waitedSecond()) {
+					if (isMaterialAvailable()) {
+						requestBricklayers();
+						state = EBuildingState.BRICKLAYERS_REQUESTED;
+					}
 				}
-			}
-			break;
+				break;
 
-		case BRICKLAYERS_REQUESTED:
-			// the state changes are handled by tryToTakeMaterial()
-			break;
+			case BRICKLAYERS_REQUESTED:
+				// the state changes are handled by tryToTakeMaterial()
+				break;
 
-		case CONSTRUCTED:
-			if (door != null) {
-				IHexMovable movableAtDoor = grid.getMovable(door);
-				if (movableAtDoor != null) {
-					movableAtDoor.push(null);
+			case CONSTRUCTED:
+				if (door != null) {
+					IHexMovable movableAtDoor = grid.getMovable(door);
+					if (movableAtDoor != null) {
+						movableAtDoor.push(null);
+					}
 				}
-			}
-			subTimerEvent();
-			break;
+				subTimerEvent();
+				break;
 
-		case DESTROYED:
+			case DESTROYED:
 
-			break;
+				break;
 		}
 	}
 
@@ -260,7 +276,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void requestBricklayers() {
 		RelativeBricklayer[] bricklayers = type.getBricklayers();
 		for (RelativeBricklayer curr : bricklayers) {
-			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
+			grid.requestBricklayer(this,
+			        curr.getPosition().calculatePoint(pos), curr.getDirection());
 		}
 	}
 
@@ -275,39 +292,41 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public static Building getBuilding(EBuildingType type, byte player) {
 		switch (type) {
-		case BIG_LIVINGHOUSE:
-			return new BigLivinghouse(player);
-		case MEDIUM_LIVINGHOUSE:
-			return new MediumLivinghouse(player);
-		case SMALL_LIVINGHOUSE:
-			return new SmallLivinghouse(player);
-		case CHARCOAL_BURNER:
-		case COALMINE:
-		case BAKER:
-		case FARM:
-		case FISHER:
-		case FORESTER:
-		case GOLDMELT:
-		case GOLDMINE:
-		case IRONMELT:
-		case IRONMINE:
-		case LUMBERJACK:
-		case MILL:
-		case PIG_FARM:
-		case SAWMILL:
-		case SLAUGHTERHOUSE:
-		case STONECUTTER:
-		case TOOLSMITH:
-		case WEAPONSMITH:
-		case WATERWORKS:
-		case WINEGROWER:
-			return new WorkerBuilding(type, player);
+			case BIG_LIVINGHOUSE:
+				return new BigLivinghouse(player);
+			case MEDIUM_LIVINGHOUSE:
+				return new MediumLivinghouse(player);
+			case SMALL_LIVINGHOUSE:
+				return new SmallLivinghouse(player);
+			case CHARCOAL_BURNER:
+			case COALMINE:
+			case BAKER:
+			case FARM:
+			case FISHER:
+			case FORESTER:
+			case GOLDMELT:
+			case GOLDMINE:
+			case IRONMELT:
+			case IRONMINE:
+			case LUMBERJACK:
+			case MILL:
+			case PIG_FARM:
+			case SAWMILL:
+			case SLAUGHTERHOUSE:
+			case STONECUTTER:
+			case TOOLSMITH:
+			case WEAPONSMITH:
+			case WATERWORKS:
+			case WINEGROWER:
+				return new WorkerBuilding(type, player);
 
-		case TOWER:
-			return new Tower(player);
+			case TOWER:
+				return new Tower(player);
 
-		default:
-			System.err.println("couldn't create new building, because type is unknown: " + type);
+			default:
+				System.err
+				        .println("couldn't create new building, because type is unknown: "
+				                + type);
 		}
 
 		return new TestBuilding(player, type);
@@ -335,7 +354,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		delayCtr--;
-		constructionProgress += 1f / (Constants.BRICKLAYER_ACTIONS_PER_MATERIAL * getBuildingType().getNumberOfConstructionMaterials());
+		constructionProgress +=
+		        1f / (Constants.BRICKLAYER_ACTIONS_PER_MATERIAL * getBuildingType()
+		                .getNumberOfConstructionMaterials());
 		if (delayCtr > 0) {
 			return true;
 		} else {
@@ -428,7 +449,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		// TODO Auto-generated method stub
 	}
 
-	public void setWorkAreaCenter(@SuppressWarnings("unused") ISPosition2D workAreaCenter) {
+	public void setWorkAreaCenter(
+	        @SuppressWarnings("unused") ISPosition2D workAreaCenter) {
 	}
 
 	/**
@@ -461,15 +483,19 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return null;
 	}
 
-	private void addOrRemoveMarkObject(boolean draw, IBuildingsGrid grid, ISPosition2D pos, float progress) {
+	private void addOrRemoveMarkObject(boolean draw, IBuildingsGrid grid,
+	        ISPosition2D pos, float progress) {
 		if (draw) {
-			grid.getMapObjectsManager().addBuildingWorkAreaObject(pos, progress);
+			grid.getMapObjectsManager()
+			        .addBuildingWorkAreaObject(pos, progress);
 		} else {
-			grid.getMapObjectsManager().removeMapObjectType(pos, EMapObjectType.WORKAREA_MARK);
+			grid.getMapObjectsManager().removeMapObjectType(pos,
+			        EMapObjectType.WORKAREA_MARK);
 		}
 	}
 
-	private MapShapeFilter getCircle(IBuildingsGrid grid, ISPosition2D center, float radius) {
+	private MapShapeFilter getCircle(IBuildingsGrid grid, ISPosition2D center,
+	        float radius) {
 		MapCircle baseCircle = new MapCircle(center, radius);
 		MapCircleBorder border = new MapCircleBorder(baseCircle);
 		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());

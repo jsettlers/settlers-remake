@@ -41,9 +41,35 @@ distance = 20-90
 
 [building]
 count = 1
-x = 0
-y = 0
+dx = 0
+dy = 0
 type = TOWER
+distance = 0
+# todo: occupy
+
+[building]
+count = 1
+dx = 60
+dy = 0
+type = TOWER
+on=sand
+distance = 0
+# todo: occupy
+
+[building]
+count = 2
+dx = 0
+dy = -5
+type = LUMBERJACK
+distance = 20
+# todo: occupy
+
+[building]
+count = 2
+dx = -10
+dy = -10
+type = SAWMILL
+distance = 20
 # todo: occupy
 
 [settler]
