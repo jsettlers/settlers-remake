@@ -225,10 +225,6 @@ public class MinHeap<T extends MinHeapable> {
 		if (!siftUp(last, idx)) {
 			siftDown(last, idx);
 		}
-
-		// if (!doFullHeapCheck()) {
-		// System.out.println("err");
-		// }
 	}
 
 	/**
