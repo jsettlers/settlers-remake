@@ -59,12 +59,20 @@ public class PartitionsGridTestingWnd extends JFrame {
 	 * Create the frame.
 	 */
 	public PartitionsGridTestingWnd() {
-		map = new PartitionsGrid(WIDTH, HEIGHT, new DummyEmptyAStarMap(WIDTH, HEIGHT) {
+		DummyEmptyAStarMap aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 				return map.getPlayerAt(x, y) != requester.getPlayer();
 			}
-		});
+		};
+		IPartitionableGrid partitionableGrid = new IPartitionableGrid() {
+			@Override
+			public boolean isBlocked(short currX, short currY) {
+				return false;
+			}
+		};
+
+		map = new PartitionsGrid(WIDTH, HEIGHT, partitionableGrid, aStarMap);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 500);
@@ -135,7 +143,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 
 		for (short x = 0; x < WIDTH; x++) {
 			for (short y = 0; y < HEIGHT; y++) {
-				short partition = map.getPartition(x, y);
+				short partition = map.getPartitionAt(x, y);
 				if (partition >= 0) {
 					g.setColor(partitionColors[partition]);
 					g.drawLine(x + 20, this.getHeight() - y - 20, x + 20, this.getHeight() - y - 20);
