@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.map.random.instructions.GenerationInstruction;
 import jsettlers.logic.map.random.instructions.MetaInstruction;
 
@@ -27,9 +28,10 @@ public class RandomMapFile {
 	private List<GenerationInstruction> instructions =
 	        new ArrayList<GenerationInstruction>();
 
-	public RandomMapFile(URL resource) {
+	private RandomMapFile(String name) {
 		try {
-			InputStream stream = resource.openStream();
+		    String file = "maps/" + name.replaceAll("[\\.\\/\\\\]", "") + ".map";
+			InputStream stream = ResourceManager.getFile(file);
 			LineNumberReader reader =
 			        new LineNumberReader(new InputStreamReader(stream));
 			readNextSection(reader);
@@ -80,10 +82,7 @@ public class RandomMapFile {
 		return instructions;
 	}
 
-	public static RandomMapFile getByName(String string) {
-	    String file = "maps/" + string.replaceAll("[\\.\\/\\\\]", "") + ".map";
-		URL resource = RandomMapFile.class.getResource(file);
-		//TODO: catch null pointer if file does not exist
-	    return new RandomMapFile(resource);
+	public static RandomMapFile getByName(String name) {
+	    return new RandomMapFile(name);
     }
 }
