@@ -14,7 +14,6 @@ import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.reader.DatFileSet;
-import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
