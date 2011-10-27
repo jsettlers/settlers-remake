@@ -94,34 +94,33 @@ public class PartitionsAlgorithm {
 	 *            old partition of the removed position
 	 */
 	private void removeFromOldPartition(final ISPosition2D position, final short oldPartition) {
-		ISPosition2D lastPosition = EDirection.values()[5].getNextHexPoint(position);
-		boolean lastWasOldPartion = map.getPartition(lastPosition) == oldPartition;
-
 		ISPosition2D[] disconnected = new ISPosition2D[3]; // at maximum 3 neighbors can be disconnected on the hex grid
 		byte disconnectedCtr = 0;
 
-		if (lastWasOldPartion) {
-			disconnected[disconnectedCtr] = lastPosition;
-			disconnectedCtr++;
-		}
+		boolean lastWasOldPartition = false;
 
 		for (EDirection dir : EDirection.values()) {
 			ISPosition2D currPos = dir.getNextHexPoint(position);
 			short currPartition = map.getPartition(currPos);
 
-			if (lastWasOldPartion) {
+			if (lastWasOldPartition) {
 				if (currPartition == oldPartition) {
 					// nothing to do, it's connected
 				} else { // it's not connected
-					lastWasOldPartion = false;
+					lastWasOldPartition = false;
 				}
 			} else {
 				if (currPartition == oldPartition) {
-					lastWasOldPartion = true;
+					lastWasOldPartition = true;
 					disconnected[disconnectedCtr] = currPos;
 					disconnectedCtr++;
 				}// else: not the oldPartition, so ignore it
 			}
+		}
+
+		ISPosition2D lastPosition = EDirection.values()[5].getNextHexPoint(position);
+		if (map.getPartition(lastPosition) == oldPartition) {
+			disconnectedCtr--;
 		}
 
 		if (disconnectedCtr > 1) {

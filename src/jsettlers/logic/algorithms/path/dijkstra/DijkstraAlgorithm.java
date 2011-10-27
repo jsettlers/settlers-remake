@@ -36,9 +36,9 @@ public class DijkstraAlgorithm {
 			throw new InvalidStartPositionException(cX, cY);
 		}
 
-		MapCircle circle = new MapCircle(cX, cY, maxRadius);
+		MapCircle circle = new MapCircle(cX, cY, maxRadius / MapCircle.Y_SCALE);
 		// TODO @Michael find out how much the radius must be bigger to be larger than the circle
-		for (short radius = minRadius; radius < maxRadius + 3; radius++) {
+		for (short radius = minRadius; radius < maxRadius; radius++) {
 			short x = cX, y = (short) (cY - radius);
 			for (byte direction = 0; direction < 6; direction++) {
 				byte dx = directionIncreaseX[direction];

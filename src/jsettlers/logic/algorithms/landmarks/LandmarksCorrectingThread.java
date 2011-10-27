@@ -41,15 +41,16 @@ public class LandmarksCorrectingThread extends Thread {
 	}
 
 	private void checkLandmarks(ISPosition2D startPos) {
-		byte startPlayer = map.getPlayerAt(startPos);
+		byte startPlayer = map.getPlayerAt(startPos.getX(), startPos.getY());
+		short startPartition = map.getPartitionAt(startPos.getX(), startPos.getY());
 
 		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
 		for (EDirection startDirection : allBlockedDirections) {
-			checkLandmarks(startPos, startPlayer, startDirection);
+			checkLandmarks(startPos, startPlayer, startPartition, startDirection);
 		}
 	}
 
-	private void checkLandmarks(ISPosition2D startPos, byte startPlayer, EDirection startDirection) {
+	private void checkLandmarks(ISPosition2D startPos, byte startPlayer, short startPartition, EDirection startDirection) {
 		if (map.isBlocked(startPos.getX(), startPos.getY()))
 			return;
 
@@ -70,18 +71,18 @@ public class LandmarksCorrectingThread extends Thread {
 			map.setDebugColor(neighborPos.getX(), neighborPos.getY(), colors[(int) (Math.random() * colors.length)]);
 
 			if (!map.isInBounds(neighborPos.getX(), neighborPos.getY())) {
-				takeOverBlockedLand(blockedBorder, startPlayer);
+				takeOverBlockedLand(blockedBorder, startPlayer, startPartition);
 				break;
 			} else if (map.isBlocked(neighborPos.getX(), neighborPos.getY())) {
 				blocked = neighborPos;
 				blockedDir = neighborDir;
 				blockedBorder.add(blocked);
-			} else if (map.getPlayerAt(neighborPos) == startPlayer) {
+			} else if (map.getPlayerAt(neighborPos.getX(), neighborPos.getY()) == startPlayer) {
 				currBase = neighborPos;
 				blockedDir = EDirection.getDirection(currBase, blocked);
 
 				if (neighborPos.equals(startPos)) {
-					takeOverBlockedLand(blockedBorder, startPlayer);
+					takeOverBlockedLand(blockedBorder, startPlayer, startPartition);
 					break;
 				}
 			} else {
@@ -90,12 +91,12 @@ public class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private void takeOverBlockedLand(LinkedList<ISPosition2D> blockedBorder, byte startPlayer) {
+	private void takeOverBlockedLand(LinkedList<ISPosition2D> blockedBorder, byte startPlayer, short startPartition) {
 		for (ISPosition2D curr : blockedBorder) {
 			short y = curr.getY();
 			for (short x = curr.getX();; x++) {
 				if (map.isBlocked(x, y)) {
-					map.setPlayerAt(x, y, startPlayer);
+					map.setPlayerAt(x, y, startPlayer, startPartition);
 				} else {
 					break;
 				}
