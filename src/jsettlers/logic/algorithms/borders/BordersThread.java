@@ -51,10 +51,11 @@ public class BordersThread implements Runnable {
 					byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
 					boolean neighborIsBorder = false;
 
+					if (neighborPlayer != player) {
+						isBorder = true;
+					}
+
 					if (neighborPlayer >= 0) { // this position is occupied by a player
-						if (neighborPlayer != player) {
-							isBorder = true;
-						}
 
 						for (EDirection currNeighborDir : EDirection.values()) {
 							short nextX = currNeighborDir.getNextTileX(currNeighborX);
