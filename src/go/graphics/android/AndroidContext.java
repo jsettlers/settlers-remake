@@ -34,6 +34,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
+		System.out.println("fillQuad");
 		float[] quadData = new float[] {
 				x1, y1, 0,
 				x2, y1, 0,
@@ -105,6 +106,7 @@ public class AndroidContext implements GLDrawContext {
 	
 	@Override
 	public void drawLine(float[] points, boolean loop) {
+		System.out.println("drawLine");
 		if (points.length % 3 != 0) {
 			throw new IllegalArgumentException(
 			        "Point array length needs to be multiple of 3.");
@@ -119,6 +121,7 @@ public class AndroidContext implements GLDrawContext {
 	
 	@Override
 	public void drawQuadWithTexture(int textureid, float[] geometry) {
+		System.out.println("drawQuadWithTexture");
 		if (quadEleementBuffer == null) {
 			quadEleementBuffer = ByteBuffer.allocateDirect(6);
 			quadEleementBuffer.put((byte) 0);
@@ -145,6 +148,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void drawTrianglesWithTexture(int textureid, float[] geometry) {
+		System.out.println("drawTrianglesWithTexture");
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureid);
 
 		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
@@ -159,6 +163,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void drawTrianglesWithTextureColored(int textureid, float[] geometry) {
+		System.out.println("drawTrianglesWithTextureColored");
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureid);
 
 		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);

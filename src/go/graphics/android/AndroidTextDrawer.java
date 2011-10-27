@@ -21,4 +21,22 @@ public class AndroidTextDrawer implements TextDrawer {
 	    
     }
 
+	@Override
+    public double getWidth(String string) {
+	    // TODO Auto-generated method stub
+	    return 20;
+    }
+
+	@Override
+    public double getHeight(String string) {
+	    // TODO Auto-generated method stub
+	    return 20;
+    }
+
+	@Override
+    public void setColor(float red, float green, float blue, float alpha) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
 }
