@@ -19,6 +19,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.resources.ResourceManager;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,7 +37,7 @@ import org.xml.sax.SAXException;
 public class BuildingFile implements BuildingJobDataProvider {
 
 	private static final String BUILDING_DTD = "building.dtd";
-	private static final String DATA_DIR = "../data/";
+	private static final String DATA_DIR = "buildings/";
 	private static final String TAG_JOB = "job";
 	private static final String TAG_STARTJOB = "startjob";
 	private static final String TAG_DOOR = "door";
@@ -239,14 +240,14 @@ public class BuildingFile implements BuildingJobDataProvider {
 	}
 
 	private Document createDocument(String buildingName) {
-		InputStream stream =
-		        getClass().getResourceAsStream(
-		                DATA_DIR + buildingName.toLowerCase() + ".xml");
-
 		DocumentBuilder builder = getDocumentBuilder();
 
 		Document document;
 		try {
+			InputStream stream =
+			        ResourceManager.getFile(DATA_DIR
+			                + buildingName.toLowerCase() + ".xml");
+
 			document = builder.parse(stream);
 			stream.close();
 		} catch (SAXException e) {
@@ -271,8 +272,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 				public InputSource resolveEntity(String publicId,
 				        String systemId) throws SAXException, IOException {
 					if (systemId.contains(BUILDING_DTD)) {
-						return new InputSource(this.getClass()
-						        .getResourceAsStream(DATA_DIR + BUILDING_DTD));
+						return new InputSource(ResourceManager.getFile(DATA_DIR
+						        + BUILDING_DTD));
 					} else {
 						return null;
 					}
