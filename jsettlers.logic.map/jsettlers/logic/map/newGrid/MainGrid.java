@@ -43,6 +43,7 @@ import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
+import jsettlers.logic.map.newGrid.partition.IPartitionableGrid;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
@@ -102,7 +103,7 @@ public class MainGrid {
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.movableGrid = new MovableGrid(width, height);
 		this.blockedGrid = new BlockedGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, movablePathfinderGrid);
+		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionsManagementGrid(), movablePathfinderGrid);
 
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
@@ -192,6 +193,11 @@ public class MainGrid {
 		buildingsGrid.placeNewMovable(pos, new Movable(movablePathfinderGrid, pos, type, player));
 	}
 
+	protected boolean isLandscapeBlocking(short x, short y) {
+		ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
+		return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
+	}
+
 	private class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap {
 		@Override
 		public short getHeight() {
@@ -207,11 +213,6 @@ public class MainGrid {
 		public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y)
 					|| (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
-		}
-
-		protected boolean isLandscapeBlocking(short x, short y) {
-			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
 		}
 
 		@Override
@@ -385,8 +386,9 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			// return new Color(partitionsGrid.getPartition((short) x, (short) y) * 0.2f, 0, 0, 1);
-			return debugColors[x][y];
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// return debugColors[x][y];
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
@@ -462,13 +464,14 @@ public class MainGrid {
 		}
 
 		@Override
-		public byte getPlayerAt(ISPosition2D position) {
-			return partitionsGrid.getPlayerAt(position);
+		public byte getPlayerAt(short x, short y) {
+			return partitionsGrid.getPlayerAt(x, y);
 		}
 
 		@Override
-		public void setPlayerAt(short x, short y, byte newPlayer) {
-			changePlayerAt(new ShortPoint2D(x, y), newPlayer); // TODO check if creation of ShortPoint2D can be avoided
+		public void setPlayerAt(short x, short y, byte newPlayer, short partition) {
+			partitionsGrid.setPlayerAndPartitionAt(x, y, newPlayer, partition);
+			bordersThread.checkPosition(new ShortPoint2D(x, y));
 		}
 
 		@Override
@@ -480,6 +483,11 @@ public class MainGrid {
 		@Override
 		public boolean isInBounds(short x, short y) {
 			return MainGrid.this.isInBounds(x, y);
+		}
+
+		@Override
+		public short getPartitionAt(short x, short y) {
+			return partitionsGrid.getPartitionAt(x, y);
 		}
 	}
 
@@ -544,7 +552,7 @@ public class MainGrid {
 
 		@Override
 		public boolean isBlocked(short x, short y) {
-			return blockedGrid.isBlocked(x, y) || super.isLandscapeBlocking(x, y);
+			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);
 		}
 
 		@Override
@@ -841,7 +849,14 @@ public class MainGrid {
 		public void setScreen(IMapArea screenArea) {
 			constructionMarksCalculator.setScreen(screenArea);
 		}
+	}
 
+	class PartitionsManagementGrid implements IPartitionableGrid {
+
+		@Override
+		public boolean isBlocked(short x, short y) {
+			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);
+		}
 	}
 
 }

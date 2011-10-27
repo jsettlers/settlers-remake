@@ -119,8 +119,6 @@ public class PartitionManager implements INetworkTimerable {
 	 * @param newHasSamePlayer
 	 */
 	public void removePositionTo(ISPosition2D position, PartitionManager newManager, boolean newHasSamePlayer) {
-		assert this != newManager : "ERROR: newManager can not be the same as this manager!!";
-
 		Offer removedOffer = materialOffers.removeObjectAt(position);
 		if (removedOffer != null) {// the new manager can not have any offers at that position, because he just occupied it
 			newManager.materialOffers.set(position, removedOffer);

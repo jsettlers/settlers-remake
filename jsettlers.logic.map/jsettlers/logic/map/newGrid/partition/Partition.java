@@ -36,15 +36,21 @@ public class Partition {
 		this.counter = size;
 	}
 
-	private void decrement() {
+	void decrement() {
 		counter--;
 	}
 
-	private void increment() {
+	public void increment() {
 		counter++;
 	}
 
 	public void removePositionTo(ISPosition2D position, Partition newPartitionObject) {
+		if (this == newPartitionObject) {
+			System.out.println("AAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRGGGGGGGGGGHHHHHHHHHHHHhh");
+		}
+
+		assert this != newPartitionObject : "ERROR: newManager can not be the same as this manager!!";
+
 		this.decrement();
 		newPartitionObject.increment();
 		this.manager.removePositionTo(position, newPartitionObject.manager, newPartitionObject.player == this.player);
