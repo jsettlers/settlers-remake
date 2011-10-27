@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE building SYSTEM "building.dtd">
+<building worker="MINER" workradius="0" viewdistance="25">
+	<ground groundtype="MOUNTAIN" />
+
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="1" dy="3" block="false" />
+	<blocked dx="2" dy="4" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="3" dy="3" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="3" dy="1" block="false" />
+	<blocked dx="2" dy="0" block="false" />
+	<blocked dx="1" dy="-1" block="false" />
+	<blocked dx="0" dy="-2" block="false" />
+	<blocked dx="-1" dy="-2" block="false" />
+	<blocked dx="-2" dy="-2" block="false" />
+	<blocked dx="-2" dy="-1" block="false" />
+	<blocked dx="-2" dy="0" block="false" />
+	<blocked dx="-2" dy="1" block="false" />
+	<blocked dx="-1" dy="2" block="false" />
+	<blocked dx="0" dy="3" block="false" />
+	<blocked dx="1" dy="4" block="false" />
+	<door dx="2" dy="1" />
+	<stack dx="1" dy="4" material="STONE" buildrequired="2" />
+	<stack dx="3" dy="4" material="PLANK" buildrequired="3" />
+	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
+	<bricklayer dx="1" dy="3" direction="NORTH_EAST" />
+	<bricklayer dx="3" dy="3" direction="NORTH_WEST" />
+	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
+	<flag dx="1" dy="-1" />
+	<buildmark dx="-1" dy="1" />
+	<buildmark dx="2" dy="3" />
+	<buildmark dx="2" dy="1" />
+	<buildmark dx="-1" dy="-1" />
+
+	<image file="14" for="GUI" type="GUI" sequence="9" image="0"/>
+</building>

@@ -1,0 +1,231 @@
+<?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
+<building worker="MELTER" workradius="0">
+	<ground groundtype="GRASS" />
+	<ground groundtype="EARTH" />
+	<ground groundtype="FLATTENED" />
+	<blocked dx="-3" dy="1" block="true" />
+	<blocked dx="-2" dy="2" block="true" />
+	<blocked dx="-1" dy="3" block="true" />
+	<blocked dx="0" dy="4" block="true" />
+	<blocked dx="1" dy="4" block="true" />
+	<blocked dx="2" dy="4" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="2" dy="-1" block="true" />
+	<blocked dx="2" dy="-2" block="true" />
+	<blocked dx="3" dy="-1" block="true" />
+	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="-1" dy="2" block="true" />
+	<blocked dx="0" dy="3" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-3" dy="0" block="true" />
+	<blocked dx="-3" dy="-1" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="1" dy="-2" block="true" />
+	<blocked dx="1" dy="-3" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-3" block="true" />
+	<blocked dx="0" dy="-4" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="-1" dy="-4" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-2" dy="-4" block="true" />
+	<blocked dx="-2" dy="-5" block="true" />
+	<blocked dx="-2" dy="-6" block="true" />
+	<blocked dx="-3" dy="-2" block="true" />
+	<blocked dx="-3" dy="-3" block="true" />
+	<blocked dx="-1" dy="-5" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="-3" dy="-4" block="false" />
+	<blocked dx="-3" dy="-5" block="false" />
+	<blocked dx="-3" dy="-6" block="false" />
+	<blocked dx="-3" dy="-7" block="false" />
+	<blocked dx="-2" dy="-7" block="false" />
+	<blocked dx="0" dy="-5" block="false" />
+	<blocked dx="-1" dy="-6" block="false" />
+	<blocked dx="2" dy="-3" block="false" />
+	<blocked dx="1" dy="-4" block="false" />
+	<blocked dx="3" dy="-2" block="false" />
+	<blocked dx="4" dy="-1" block="false" />
+	<blocked dx="4" dy="0" block="false" />
+	<blocked dx="4" dy="1" block="false" />
+	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="3" dy="1" block="false" />
+	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="4" dy="3" block="false" />
+	<blocked dx="3" dy="3" block="false" />
+	<blocked dx="4" dy="4" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="0" dy="5" block="false" />
+	<blocked dx="1" dy="5" block="false" />
+	<blocked dx="2" dy="5" block="false" />
+	<blocked dx="3" dy="5" block="false" />
+	<blocked dx="4" dy="5" block="false" />
+	<blocked dx="-1" dy="4" block="false" />
+	<blocked dx="-2" dy="3" block="false" />
+	<blocked dx="-3" dy="2" block="false" />
+	<blocked dx="-4" dy="1" block="false" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-4" dy="-1" block="false" />
+	<blocked dx="-4" dy="-2" block="false" />
+	<blocked dx="-4" dy="-3" block="false" />
+	<blocked dx="-4" dy="-4" block="false" />
+	<blocked dx="-4" dy="-5" block="false" />
+	<door dx="2" dy="0" />
+	<stack dx="-3" dy="2" material="COAL" buildrequired="0" />
+	<stack dx="3" dy="3" material="IRONORE" buildrequired="0" />
+	<stack dx="3" dy="5" material="PLANK" buildrequired="7" />
+	<stack dx="0" dy="5" material="STONE" buildrequired="4" />
+	<bricklayer dx="-1" dy="4" direction="NORTH_EAST" />
+	<bricklayer dx="-3" dy="2" direction="NORTH_EAST" />
+	<bricklayer dx="3" dy="0" direction="NORTH_WEST" />
+	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
+	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
+	<flag dx="0" dy="0" />
+
+	<image file="14" for="GUI" type="GUI" sequence="24" image="0"/>
+
+	<startjob name="gohome" />
+
+	<!-- going home job -->
+	<job name="gohome" type="GO_TO" successjob="hide" failjob="waithome"
+		dx="2" dy="0" />
+	<job name="waithome" type="WAIT" successjob="gohome" failjob="waithome"
+		time="1.0" />
+	<job name="hide" type="HIDE" successjob="reset" failjob="reset" />
+	<job name="reset" type="SET_MATERIAL" successjob="wait" failjob="wait"
+		material="NO_MATERIAL" />
+
+	<!-- pre start -->
+	<job name="wait" type="WAIT" successjob="checkA1" failjob="checkA1"
+		time="1.0" />
+	<job name="checkA1" type="AVAILABLE" successjob="checkA2" failjob="wait"
+		dx="-3" dy="2" material="COAL" />
+	<job name="checkA2" type="AVAILABLE" successjob="checkA3" failjob="wait"
+		dx="3" dy="3" material="IRONORE" />
+	<job name="checkA3" type="NOT_FULL" successjob="outofdoor" failjob="wait"
+		dx="3" dy="1" material="IRON" />
+
+	<!-- go to the iron stack -->
+	<job name="outofdoor" type="WALK" successjob="toore1" failjob="gohome"
+		direction="SOUTH_EAST" />
+
+	<!-- go to the ore stack -->
+	<job name="toore1" type="WALK" successjob="toore2" failjob="gohome"
+		direction="SOUTH_WEST" />
+	<job name="toore2" type="WALK" successjob="takeore1" failjob="gohome"
+		direction="SOUTH_WEST" />
+
+	<!-- take ore -->
+	<job name="takeore1" type="DROP" successjob="takeore2" failjob="gohome"
+		material="NO_MATERIAL" />
+	<job name="takeore2" type="SET_MATERIAL" successjob="takeore3"
+		failjob="gohome" material="IRONORE" />
+	<job name="takeore3" type="TAKE" successjob="goputore0" failjob="gohome"
+		material="IRONORE" />
+
+	<!-- put it into the melt -->
+	<job name="goputore0" type="WALK" successjob="goputore1" failjob="gohome"
+		direction="SOUTH_WEST" />
+	<job name="goputore1" type="WALK" successjob="goputore2" failjob="gohome"
+		direction="SOUTH_WEST" />
+	<job name="goputore2" type="WALK" successjob="goputore3" failjob="gohome"
+		direction="WEST" />
+	<job name="goputore3" type="WALK" successjob="goputore4" failjob="gohome"
+		direction="WEST" />
+	<job name="goputore4" type="WALK" successjob="goputore5" failjob="gohome"
+		direction="WEST" />
+	<job name="goputore5" type="WALK" successjob="goputore6" failjob="gohome"
+		direction="NORTH_WEST" />
+	<job name="goputore6" type="WALK" successjob="goputore7" failjob="gohome"
+		direction="NORTH_WEST" />
+	<job name="goputore7" type="LOOK_AT" successjob="goputore8"
+		failjob="gohome" direction="NORTH_EAST" />
+	<job name="goputore8" type="DROP" successjob="goputore9" failjob="gohome"
+		material="NO_MATERIAL" />
+	<job name="goputore9" type="SET_MATERIAL" successjob="goputore10"
+		failjob="gohome" material="NO_MATERIAL" />
+	<job name="goputore10" type="TAKE" successjob="putcoal1" failjob="gohome"
+		material="NO_MATERIAL" />
+
+	<!-- add some coal -->
+	<job name="putcoal1" type="LOOK_AT" successjob="putcoal2" failjob="gohome"
+		direction="NORTH_WEST" />
+	<job name="putcoal2" type="DROP" successjob="putcoal3" failjob="gohome"
+		material="NO_MATERIAL" />
+	<job name="putcoal3" type="SET_MATERIAL" successjob="putcoal4"
+		failjob="gohome" material="COAL" />
+	<job name="putcoal4" type="TAKE" successjob="putcoal5" failjob="gohome"
+		material="COAL" />
+	<job name="putcoal5" type="LOOK_AT" successjob="putcoal6" failjob="gohome"
+		direction="NORTH_EAST" />
+	<job name="putcoal6" type="DROP" successjob="putcoal7" failjob="gohome"
+		material="NO_MATERIAL" />
+	<job name="putcoal7" type="SET_MATERIAL" successjob="putcoal8"
+		failjob="gohome" material="NO_MATERIAL" />
+	<job name="putcoal8" type="TAKE" successjob="gopot1" failjob="gohome"
+		material="NO_MATERIAL" />
+
+	<!-- go in front of the melting pot -->
+	<job name="gopot1" type="WALK" successjob="gopot2" failjob="gohome"
+		direction="SOUTH_EAST" />
+	<job name="gopot2" type="WALK" successjob="gopot3" failjob="gohome"
+		direction="SOUTH_EAST" />
+	<job name="gopot3" type="WALK" successjob="gopot4" failjob="gohome"
+		direction="EAST" />
+	<job name="gopot4" type="WALK" successjob="gopot5" failjob="gohome"
+		direction="EAST" />
+	<job name="gopot5" type="WALK" successjob="gopot6" failjob="gohome"
+		direction="EAST" />
+	<job name="gopot6" type="LOOK_AT" successjob="gopot7" failjob="gohome"
+		direction="NORTH_WEST" />
+	<job name="gopot7" type="WAIT" successjob="takeiron1" failjob="gohome"
+		time="1.5" />
+
+	<!-- take the iron -->
+	<job name="takeiron1" type="DROP" successjob="takeiron2" failjob="gohome"
+		material="NO_MATERIAL" />
+	<job name="takeiron2" type="SET_MATERIAL" successjob="takeiron3"
+		failjob="gohome" material="COAL" />
+	<job name="takeiron3" type="TAKE" successjob="bringiron1" failjob="gohome"
+		material="NO_MATERIAL" />
+	<job name="bringiron1" type="WALK" successjob="bringiron2" failjob="gohome"
+		direction="NORTH_EAST" />
+	<job name="bringiron2" type="WALK" successjob="bringiron3" failjob="gohome"
+		direction="NORTH_EAST" />
+	<job name="bringiron3" type="WALK" successjob="bringiron4" failjob="gohome"
+		direction="NORTH_EAST" />
+	<job name="bringiron4" type="WALK" successjob="bringiron5" failjob="gohome"
+		direction="NORTH_EAST" />
+	<job name="bringiron5" type="DROP" successjob="bringiron6" failjob="gohome"
+		material="IRON" />
+	<job name="bringiron6" type="SET_MATERIAL" successjob="bringiron7"
+		failjob="gohome" material="NO_MATERIAL" />
+	<job name="bringiron7" type="TAKE" successjob="checkB1" failjob="gohome"
+		material="NO_MATERIAL" />
+
+	<!-- do not disappear if there is still stuff left -->
+	<job name="checkB1" type="AVAILABLE" successjob="checkB2" failjob="gohome"
+		dx="-3" dy="2" material="COAL" />
+	<job name="checkB2" type="AVAILABLE" successjob="checkB3" failjob="gohome"
+		dx="3" dy="3" material="IRONORE" />
+	<job name="checkB3" type="NOT_FULL" successjob="toore1" failjob="gohome"
+		dx="3" dy="1" material="IRON" />
+
+
+</building>
