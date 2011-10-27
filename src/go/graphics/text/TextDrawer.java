@@ -12,7 +12,7 @@ public interface TextDrawer {
 	 * @param text
 	 *            The text to render.
 	 */
-	public abstract void renderCentered(int cx, int cy, String text);
+	void renderCentered(int cx, int cy, String text);
 
 	/**
 	 * Draws a string
@@ -24,6 +24,11 @@ public interface TextDrawer {
 	 * @param string
 	 *            The string to render
 	 */
-	public abstract void drawString(int x, int y, String string);
+	void drawString(int x, int y, String string);
+	
+	double getWidth(String string);
+	
+	double getHeight(String string);
 
+	void setColor(float red, float green, float blue, float alpha);
 }
