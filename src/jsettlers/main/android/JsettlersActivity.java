@@ -21,6 +21,7 @@ public class JsettlersActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ResourceManager.setProvider(new ResourceProvider());
 		setContentView(R.layout.main);
 		System.out.println("started");
 	}

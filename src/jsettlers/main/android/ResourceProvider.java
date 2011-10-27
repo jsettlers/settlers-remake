@@ -8,7 +8,8 @@ import android.content.res;
 import jsettlers.common.resources.IResourceProvider;
 
 public class ResourceProvider implements IResourceProvider {
-
+	private final AssetManager assetmanager;
+	
 	public ResourceProvider() {
 		assetmanager = new AssetManager();
 	}
