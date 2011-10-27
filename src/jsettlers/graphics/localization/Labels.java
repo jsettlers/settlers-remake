@@ -1,10 +1,14 @@
 package jsettlers.graphics.localization;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.progress.EProgressState;
 
@@ -24,10 +28,14 @@ public final class Labels {
 		if (labels == null) {
 			// TODO: changeable locale?
 			Locale currentLocale = Locale.GERMAN;
-			labels =
-			        ResourceBundle.getBundle(
-			                "jsettlers.graphics.localization.labels",
-			                currentLocale);
+			
+			try {
+			InputStream instream = ResourceManager.getFile("localization/labels_de.properties");
+			labels = new PropertyResourceBundle(instream);
+			} catch (IOException e) {
+				System.err.println("Could not load locale");
+				e.printStackTrace();
+			}
 		}
 		return labels;
 	}
@@ -40,7 +48,12 @@ public final class Labels {
 	 * @return The localized string
 	 */
 	public static String getString(String key) {
-		return getLabels().getString(key);
+		ResourceBundle labels = getLabels();
+		if (labels == null) {
+			return key;
+		} else {
+			return labels.getString(key);
+		}
 	}
 
 	/**

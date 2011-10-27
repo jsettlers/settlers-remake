@@ -12,6 +12,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
 
@@ -35,11 +36,10 @@ public final class SettlerImageMap {
 
 	private final SettlerImageMapItem[][][][] map;
 
-	private Pattern linePattern =
-	        Pattern.compile("\\s*([\\w\\*]+)\\s*," + "\\s*([\\w\\*]+)\\s*,"
-	                + "\\s*([\\w\\*]+)\\s*," + "\\s*([\\w\\*]+)\\s*"
-	                + "=\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*,"
-	                + "\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*");
+	private Pattern linePattern = Pattern.compile("\\s*([\\w\\*]+)\\s*,"
+	        + "\\s*([\\w\\*]+)\\s*," + "\\s*([\\w\\*]+)\\s*,"
+	        + "\\s*([\\w\\*]+)\\s*" + "=\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*,"
+	        + "\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*");
 
 	private final int types;
 
@@ -60,8 +60,13 @@ public final class SettlerImageMap {
 		this.map =
 		        new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];
 
-		InputStream file = getClass().getResourceAsStream("images.txt");
-		readFromFile(file);
+		try {
+			InputStream file = ResourceManager.getFile("images/movables.txt");
+			readFromFile(file);
+		} catch (IOException e) {
+			System.err.println("Error reading image file. "
+			        + "Settler images might not work.");
+		}
 	}
 
 	/**
@@ -289,8 +294,8 @@ public final class SettlerImageMap {
 	 */
 	public Image getImageForSettler(IMovable movable) {
 		return getImageForSettler(movable.getMovableType(),
-		        movable.getAction(), movable.getMaterial(), movable
-		                .getDirection(), movable.getMoveProgress());
+		        movable.getAction(), movable.getMaterial(),
+		        movable.getDirection(), movable.getMoveProgress());
 	}
 
 	/**

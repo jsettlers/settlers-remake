@@ -103,4 +103,8 @@ public class ActionMap {
 		}
 	}
 
+	public void removeAll() {
+	    this.actions.clear();
+    }
+
 }

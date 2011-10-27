@@ -102,5 +102,10 @@ public enum EActionType {
 	 * <p>
 	 * The action must be an instance of {@link PanToAction}
 	 */
-	PAN_TO,
+	PAN_TO, 
+	
+	/**
+	 * Toggles the build menu.
+	 */
+	TOGGLE_BUILD_MENU,
 }

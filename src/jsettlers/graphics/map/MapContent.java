@@ -37,6 +37,7 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
+import jsettlers.graphics.map.controls.small.SmallControls;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
@@ -110,6 +111,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		this.context = new MapDrawContext(map);
 
 		controls = new OriginalControls(context);
+		//controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
@@ -354,7 +356,9 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			}
 		} else if (event instanceof GODrawEvent) {
 			GODrawEvent drawEvent = (GODrawEvent) event;
-			handleDraw(drawEvent);
+			if (!controls.handleDrawEvent(drawEvent)) {
+				handleDraw(drawEvent);
+			}
 		} else if (event instanceof GOHoverEvent) {
 			GOHoverEvent hoverEvent = (GOHoverEvent) event;
 			handleHover(hoverEvent);
@@ -558,6 +562,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 
 	@Override
 	public void action(Action action) {
+		controls.action(action);
 		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
 			ENABLE_DEBUG = !ENABLE_DEBUG;
 		} else if (action.getActionType() == EActionType.PAN_TO) {

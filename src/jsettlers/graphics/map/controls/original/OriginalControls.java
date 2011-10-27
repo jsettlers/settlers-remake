@@ -2,6 +2,7 @@ package jsettlers.graphics.map.controls.original;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
@@ -158,4 +159,16 @@ public class OriginalControls implements IControls {
 	public void setMapViewport(MapRectangle screenArea) {
 		minimap.setMapViewport(screenArea);
 	}
+
+	@Override
+    public void action(Action action) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	@Override
+    public boolean handleDrawEvent(GODrawEvent event) {
+		//TODO: minimap draw.
+	    return false;
+    }
 }

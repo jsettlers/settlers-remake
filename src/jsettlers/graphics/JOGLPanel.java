@@ -80,7 +80,6 @@ public class JOGLPanel {
 				JOGLPanel.this.region.requestRedraw();
 			}
 		}, 10, 50);
-		// this.panel.setAutoAnimate(true);
 
 		return content.getInterfaceConnector();
 	}

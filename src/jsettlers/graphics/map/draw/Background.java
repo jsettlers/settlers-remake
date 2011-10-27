@@ -1235,19 +1235,6 @@ public class Background {
 	// gl.glEnd();
 	// }
 
-	private int computeChecksum(MapDrawContext context) {
-		IMapArea area = context.getScreenArea();
-		int hash = 0;
-		for (ISPosition2D pos : area) {
-			/*
-			 * IHexTile tile = context.getTile(pos); if (tile != null) { int key
-			 * = tile.getHeight() << 16 + tile.getLandscapeType() .ordinal();
-			 * hash += key; hash += (hash << 12); hash ^= hash >> 10; }
-			 */
-		}
-		return hash;
-	}
-
 	/**
 	 * Newly creates the buffer.
 	 * 
