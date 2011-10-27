@@ -16,9 +16,9 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 public final class JOGLTextDrawer implements TextDrawer {
 
 	private static final String FONTNAME = "Arial";
-	
-	private static JOGLTextDrawer[] instances =
-	        new JOGLTextDrawer[EFontSize.values().length];
+
+	private static JOGLTextDrawer[] instances = new JOGLTextDrawer[EFontSize
+	        .values().length];
 
 	private final TextRenderer renderer;
 
@@ -30,27 +30,36 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 */
 	private JOGLTextDrawer(EFontSize size) {
 		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, size.getSize());
-		this.renderer =
-		        new TextRenderer(font, true, true, null, true);
+		this.renderer = new TextRenderer(font, true, true, null, true);
 	}
 
-	/* (non-Javadoc)
-     * @see go.graphics.swing.text.TextDrawer#renderCentered(int, int, java.lang.String)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see go.graphics.swing.text.TextDrawer#renderCentered(int, int,
+	 * java.lang.String)
+	 */
 	@Override
-    public void renderCentered(int cx, int cy, String text) {
+	public void renderCentered(int cx, int cy, String text) {
 		Rectangle2D textBounds = this.renderer.getBounds(text);
 		int halfWidth = (int) (textBounds.getWidth() / 2);
 		int halfHeight = (int) (textBounds.getHeight() / 2);
 		drawString(cx - halfWidth, cy - halfHeight, text);
 	}
+	
+	/**
+	 * TODO: we should remove this.
+	 */
+	public void setColor(float red, float green, float blue, float alpha) {
+		this.renderer.setColor(red, green, blue, alpha);
+	}
 
-	/* (non-Javadoc)
-     * @see go.graphics.swing.text.TextDrawer#drawString(int, int, java.lang.String)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see go.graphics.swing.text.TextDrawer#drawString(int, int,
+	 * java.lang.String)
+	 */
 	@Override
-    public void drawString(int x, int y, String string) {
-		this.renderer.setColor(1, 1, 1, 1);
+	public void drawString(int x, int y, String string) {
 		this.renderer.begin3DRendering();
 		this.renderer.draw3D(string, x, y, 0, 1);
 		this.renderer.end3DRendering();
@@ -69,5 +78,17 @@ public final class JOGLTextDrawer implements TextDrawer {
 			instances[size.ordinal()] = new JOGLTextDrawer(size);
 		}
 		return instances[size.ordinal()];
+	}
+
+	@Override
+	public double getWidth(String string) {
+		Rectangle2D textBounds = this.renderer.getBounds(string);
+		return textBounds.getWidth();
+	}
+
+	@Override
+	public double getHeight(String string) {
+		Rectangle2D textBounds = this.renderer.getBounds(string);
+		return textBounds.getHeight();
 	}
 }
