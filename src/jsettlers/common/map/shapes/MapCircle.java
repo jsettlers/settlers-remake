@@ -23,7 +23,7 @@ public class MapCircle implements IMapArea {
 	/**
 	 * Factor so that d((0,0), (1,1)) is almoast 1.
 	 */
-	final static float Y_SCALE = (float) Math.sqrt(3) / 2.0f * .999999f;
+	public final static float Y_SCALE = (float) Math.sqrt(3) / 2.0f * .999999f;
 
 	public MapCircle(ISPosition2D pos, float radius) {
 		this(pos.getX(), pos.getY(), radius);
@@ -67,13 +67,13 @@ public class MapCircle implements IMapArea {
 
 	/**
 	 * Gets the half with of a line, roundend.
-	 * @param relativey The x coordinate of the line relative to the center
+	 * 
+	 * @param relativey
+	 *            The x coordinate of the line relative to the center
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
 	protected float getHalfLineWidth(int relativey) {
-		double maximum =
-		        Math.sqrt(radius * radius - relativey * MapCircle.Y_SCALE
-		                * relativey * MapCircle.Y_SCALE);
+		double maximum = Math.sqrt(radius * radius - relativey * MapCircle.Y_SCALE * relativey * MapCircle.Y_SCALE);
 		if (relativey % 2 == 0) {
 			// round to tiles.
 			return (float) Math.floor(maximum);
@@ -86,20 +86,20 @@ public class MapCircle implements IMapArea {
 	public double distanceToCenter(int x, int y) {
 		return Math.sqrt(squaredDistanceToCenter(x, y));
 	}
-	
+
 	public boolean isCloserToCenter(int x, int y, int minradius) {
 		return squaredDistanceToCenter(x, y) < minradius * minradius;
 	}
 
 	public double getRadius() {
-	    return radius;
-    }
+		return radius;
+	}
 
 	public short getCenterY() {
-	    return (short) cy;
-    }
+		return (short) cy;
+	}
 
 	public short getCenterX() {
-	    return (short) cx;
-    }
+		return (short) cx;
+	}
 }
