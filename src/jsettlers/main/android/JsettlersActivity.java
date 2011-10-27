@@ -5,6 +5,7 @@ import go.graphics.area.Area;
 
 import java.io.File;
 
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.main.JSettlersApp;
 import android.app.Activity;
@@ -21,22 +22,31 @@ public class JsettlersActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ResourceManager.setProvider(new ResourceProvider());
+		
 		setContentView(R.layout.main);
 		System.out.println("started");
 	}
 
 	@Override
 	protected void onStart() {
-		SettlersGame game = new SettlersGame();
-		game.addImagePath(getExternalFilesDir(null));
-		game.addImagePath(Environment.getExternalStorageDirectory());
-		game.addImagePath(new File(Environment.getExternalStorageDirectory(), "JSettlers"));
-		new Thread(game).start();
 		super.onStart();
+		File storage = Environment.getExternalStorageDirectory();
+		File jsettlersdir = new File(storage, "JSettlers");
+		File[] files = new File[] {
+				getExternalFilesDir(null),storage,jsettlersdir,new File(jsettlersdir, "GFX"),
+		};
+		
+		ResourceManager.setProvider(new ResourceProvider(files));
+		SettlersGame game = new SettlersGame();
+		
+		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		for (File file : files) {
+			game.addImagePath(file);
+		}
+		
+		new Thread(game).start();
 		System.out.println("got on start");
 
-		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	private class SettlersGame extends JSettlersApp {
@@ -62,7 +72,7 @@ public class JsettlersActivity extends Activity {
 		public void run() {
 			System.out.println("added GL view");
 			glView = new GOSurfaceView(JsettlersActivity.this, area);
-			// glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+			//glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 			setContentView(glView);
 		}
 	}
