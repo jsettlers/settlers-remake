@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.JoglLibraryPathInitializer;
 import synchronic.timer.NetworkTimer;
@@ -18,6 +19,7 @@ public class JSettlersApp {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+		ResourceManager.setProvider(new ResourceProvider());
 		new Thread(new SettlersGame()).start();
 		NetworkTimer.loadLogging("logs/2011_10_25-20_35_36.log");
 		// NetworkTimer.activateLogging("logs");
