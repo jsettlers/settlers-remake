@@ -7,9 +7,7 @@ import java.nio.ShortBuffer;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.IntRectangle;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
@@ -710,7 +708,22 @@ public class Background {
 
 	private static final int EXTRA_PADDING = 50;
 
-	ImageProvider imageProvider = ImageProvider.getInstance();
+	private static final int HASH_INVALID = 0x80000000;
+
+	private static final byte DIM_MAX = 20;
+
+	private ImageProvider imageProvider = ImageProvider.getInstance();
+
+	/**
+	 * The geometry buffer. It has a length of bufferwidth * bufferheight * 2 *
+	 * 3 verteces.
+	 */
+	private float[] geometryBuffer = new float[VERTEX_SIZE * 6];
+	private int[] geometryHash = new int[1];
+	private byte[] fogOfWarStatus = new byte[1];
+	private MapRectangle oldBufferPosition = null;
+	private int bufferwidth = 1;; // in map points.
+	private int bufferheight = 1; // in map points.
 
 	private int texture = -1;
 
@@ -961,16 +974,6 @@ public class Background {
 		gl.glPopMatrix();
 	}
 
-	/**
-	 * The geometry buffer. It has a length of bufferwidth * bufferheight * 2 *
-	 * 3 verteces.
-	 */
-	private float[] geometryBuffer = new float[1];
-	private int[] geometryHash = new int[1];
-	private MapRectangle oldBufferPosition = null;
-	private int bufferwidth = 1;; // in map points.
-	private int bufferheight = 1; // in map points.
-
 	private float[] getGeometry(MapDrawContext context) {
 		IntRectangle screen =
 		        context.getScreen().getPosition().bigger(EXTRA_PADDING);
@@ -979,8 +982,9 @@ public class Background {
 		        || area.getLines() != bufferheight) {
 			bufferwidth = area.getLineLength() + 1;
 			bufferheight = area.getLines();
-			int count = bufferheight * (bufferwidth * 2 * 3 * VERTEX_SIZE);
-			geometryBuffer = new float[count];
+			int count = bufferheight * (bufferwidth);
+			geometryBuffer = new float[count * 2 * 3 * VERTEX_SIZE];
+			fogOfWarStatus = new byte[count * 4];
 			geometryHash = new int[count];
 			oldBufferPosition = null;
 		}
@@ -991,13 +995,11 @@ public class Background {
 			int maxx = area.getLineEndX(line) + 1;
 			for (int x = minx; x < maxx; x++) {
 				if (oldBufferPosition == null
-				        || !oldBufferPosition.contains(x, y)
-				        || geometryHash[getBufferPosition(y, x)] != getContextHash(
-				                context, x, y)) {
-					int pointOffset = getBufferPosition(y, x);
-					addTrianglesToGeometry(context, geometryBuffer, pointOffset
-					        * 2 * 3 * VERTEX_SIZE, x, y);
-					geometryHash[pointOffset] = getContextHash(context, x, y);
+				        || !oldBufferPosition.contains(x, y)) {
+					redrawPoint(context, x, y, false);
+				} else if (geometryHash[getBufferPosition(y, x)] != getContextHash(
+				        context, x, y)) {
+					redrawPoint(context, x, y, true);
 				}
 			}
 		}
@@ -1005,6 +1007,82 @@ public class Background {
 		oldBufferPosition = area;
 
 		return geometryBuffer;
+	}
+
+	private void redrawPoint(MapDrawContext context, int x, int y,
+	        boolean wasVisible) {
+		int pointOffset = getBufferPosition(y, x);
+		boolean redrawNextTime = false;
+		if (x >= 0 && y >= 0 && x < context.getMap().getWidth() - 1
+		        && y < context.getMap().getHeight() - 1) {
+			if (wasVisible) {
+				boolean finishedDimming = true;
+				finishedDimming &=
+				                dimFogOfWarBuffer(context, (pointOffset * 4),
+				                        x, y);
+				finishedDimming &=
+				        dimFogOfWarBuffer(context, (pointOffset * 4) + 1,
+				                x + 1, y);
+				finishedDimming &=
+				        dimFogOfWarBuffer(context, (pointOffset * 4) + 2, x,
+				                y + 1);
+				finishedDimming &=
+				        dimFogOfWarBuffer(context, (pointOffset * 4) + 3,
+				                x + 1, y + 1);
+				redrawNextTime = !finishedDimming;
+			} else {
+				addFogOfWarBuffer(context, (pointOffset * 4), x, y);
+				addFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
+				addFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
+				addFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
+			}
+			addTrianglesToGeometry(context, geometryBuffer, pointOffset * 2 * 3
+			        * VERTEX_SIZE, x, y, pointOffset * 4);
+		} else {
+			addPseudoTrianglesToGeometry(context, geometryBuffer, pointOffset
+			        * 2 * 3 * VERTEX_SIZE, x, y);
+		}
+		if (redrawNextTime) {
+			geometryHash[pointOffset] = HASH_INVALID;
+		} else {
+			// TODO: compute hash once.
+			geometryHash[pointOffset] = getContextHash(context, x, y);
+		}
+	}
+
+	private void addFogOfWarBuffer(MapDrawContext context, int offset, int x,
+	        int y) {
+		fogOfWarStatus[offset] = context.getFogOfWar().getVisibleStatus(x, y);
+	}
+
+	/**
+	 * Dims the fog of war buffer
+	 * 
+	 * @param context
+	 * @param offset
+	 * @param x
+	 * @param y
+	 * @return true if and only if the dim has finished.
+	 */
+	private boolean dimFogOfWarBuffer(MapDrawContext context, int offset,
+	        int x, int y) {
+		byte newFog = context.getFogOfWar().getVisibleStatus(x, y);
+		fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+		return fogOfWarStatus[offset] == newFog;
+	}
+
+	private byte dim(byte value, byte dimTo) {
+		if (value < dimTo - DIM_MAX) {
+			return (byte) (dimTo - DIM_MAX);
+		} else if (value > dimTo + DIM_MAX) {
+			return (byte) (dimTo + DIM_MAX);
+		} else if (value > dimTo) {
+			return (byte) (value - 1);
+		} else if (value < dimTo) {
+			return (byte) (value + 1);
+		} else {
+			return value;
+		}
 	}
 
 	private int getContextHash(MapDrawContext context, int x, int y) {
@@ -1045,28 +1123,29 @@ public class Background {
 	 * @param offset
 	 * @param x
 	 * @param y
+	 * @param fogOfWar
 	 */
 	private void addTrianglesToGeometry(MapDrawContext context,
-	        float[] geometry, int offset, int x, int y) {
-		if (x >= 0 && y >= 0 && x < context.getMap().getWidth() - 1
-		        && y < context.getMap().getHeight() - 1) {
-			addTriangle1ToGeometry(context, geometry, offset, x, y);
-			addTriangle2ToGeometry(context, geometry, offset + 3 * VERTEX_SIZE,
-			        x, y);
-		} else {
-			// manually do everything...
-			addBlackPointToGeometry(context, geometry, offset, x, y);
-			addBlackPointToGeometry(context, geometry, offset + VERTEX_SIZE, x,
-			        y + 1);
-			addBlackPointToGeometry(context, geometry,
-			        offset + 2 * VERTEX_SIZE, x + 1, y + 1);
-			addBlackPointToGeometry(context, geometry,
-			        offset + 3 * VERTEX_SIZE, x, y);
-			addBlackPointToGeometry(context, geometry,
-			        offset + 4 * VERTEX_SIZE, x + 1, y + 1);
-			addBlackPointToGeometry(context, geometry,
-			        offset + 5 * VERTEX_SIZE, x + 1, y);
-		}
+	        float[] geometry, int offset, int x, int y, int fogBase) {
+		addTriangle1ToGeometry(context, geometry, offset, x, y, fogBase);
+		addTriangle2ToGeometry(context, geometry, offset + 3 * VERTEX_SIZE, x,
+		        y, fogBase);
+	}
+
+	private void addPseudoTrianglesToGeometry(MapDrawContext context,
+	        float[] geometry, int offset, int x, int y) { // manually do
+		                                                  // everything...
+		addBlackPointToGeometry(context, geometry, offset, x, y);
+		addBlackPointToGeometry(context, geometry, offset + VERTEX_SIZE, x,
+		        y + 1);
+		addBlackPointToGeometry(context, geometry, offset + 2 * VERTEX_SIZE,
+		        x + 1, y + 1);
+		addBlackPointToGeometry(context, geometry, offset + 3 * VERTEX_SIZE, x,
+		        y);
+		addBlackPointToGeometry(context, geometry, offset + 4 * VERTEX_SIZE,
+		        x + 1, y + 1);
+		addBlackPointToGeometry(context, geometry, offset + 5 * VERTEX_SIZE,
+		        x + 1, y);
 	}
 
 	// private boolean useRenderbuffer(GL2 gl) {
@@ -1083,7 +1162,7 @@ public class Background {
 	 * @param y
 	 */
 	private void addTriangle1ToGeometry(MapDrawContext context,
-	        float[] geometry, int offset, int x, int y) {
+	        float[] geometry, int offset, int x, int y, int fogBase) {
 		ELandscapeType toplandscape = context.getLandscape(x, y);
 		ELandscapeType leftlandscape = context.getLandscape(x, y + 1);
 		ELandscapeType rightlandscape = context.getLandscape(x + 1, y + 1);
@@ -1105,23 +1184,23 @@ public class Background {
 			textureindex = getBorder(toplandscape, leftlandscape, useSecond);
 		}
 
-		addPointToGeometry(context, geometry, offset, x, y);
-		addPointToGeometry(context, geometry, offset + VERTEX_SIZE, x, y + 1);
+		addPointToGeometry(context, geometry, offset, x, y, fogBase + 0);
+		addPointToGeometry(context, geometry, offset + VERTEX_SIZE, x, y + 1,
+		        fogBase + 2);
 		addPointToGeometry(context, geometry, offset + 2 * VERTEX_SIZE, x + 1,
-		        y + 1);
+		        y + 1, fogBase + 3);
 		int[] positions = TEXTURE_POSITIONS[textureindex];
-		// FIXME: 3 is hardcoded uv-coord offset
 		texturePos.addCoordsTo(geometry, offset + 3, VERTEX_SIZE, x, y,
 		        positions[0] * TEXTURE_GRID, positions[1] * TEXTURE_GRID,
 		        TEXTURE_SIZE);
 	}
 
 	private void addPointToGeometry(MapDrawContext context, float[] geometry,
-	        int offset, int x, int y) {
+	        int offset, int x, int y, int fogOffset) {
 		geometry[offset] = x;
 		geometry[offset + 1] = y;
 		geometry[offset + 2] = context.getHeight(x, y);
-		addVertexcolor(context, geometry, offset + 5, x, y);
+		addVertexcolor(context, geometry, offset + 5, x, y, fogOffset);
 	}
 
 	private void addBlackPointToGeometry(MapDrawContext context,
@@ -1135,7 +1214,7 @@ public class Background {
 	}
 
 	private void addTriangle2ToGeometry(MapDrawContext context,
-	        float[] geometry, int offset, int x, int y) {
+	        float[] geometry, int offset, int x, int y, int fogBase) {
 		ELandscapeType leftlandscape = context.getLandscape(x, y);
 		ELandscapeType bottomlandscape = context.getLandscape(x + 1, y + 1);
 		ELandscapeType rightlandscape = context.getLandscape(x + 1, y);
@@ -1158,20 +1237,19 @@ public class Background {
 			textureindex = getBorder(rightlandscape, leftlandscape, useSecond);
 		}
 
-		addPointToGeometry(context, geometry, offset, x, y);
+		addPointToGeometry(context, geometry, offset, x, y, fogBase + 0);
 		addPointToGeometry(context, geometry, offset + VERTEX_SIZE, x + 1,
-		        y + 1);
+		        y + 1, fogBase + 3);
 		addPointToGeometry(context, geometry, offset + 2 * VERTEX_SIZE, x + 1,
-		        y);
+		        y, fogBase + 1);
 		int[] positions = TEXTURE_POSITIONS[textureindex];
-		// FIXME: 3 is hardcoded uv-coord offset
 		texturePos.addCoordsTo(geometry, offset + 3, VERTEX_SIZE, x, y,
 		        positions[0] * TEXTURE_GRID, positions[1] * TEXTURE_GRID,
 		        TEXTURE_SIZE);
 	}
 
 	private void addVertexcolor(MapDrawContext context, float[] geometry,
-	        int offset, int x, int y) {
+	        int offset, int x, int y, int fogOffset) {
 		float color;
 
 		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0
@@ -1187,9 +1265,7 @@ public class Background {
 			} else if (color < 0.4f) {
 				color = 0.4f;
 			}
-			color *=
-			        (float) context.getFogOfWar().getVisibleStatus(x, y)
-			                / FogOfWar.VISIBLE;
+			color *= (float) fogOfWarStatus[fogOffset] / FogOfWar.VISIBLE;
 		}
 		geometry[offset] = color;
 		geometry[offset + 1] = color;

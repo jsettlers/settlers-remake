@@ -17,23 +17,29 @@ public class SettlerImage extends Image {
 
 	/**
 	 * {@inheritDoc:Image#Image(ImageDataPrivider)}
-	 * @param data The data to use.
+	 * 
+	 * @param data
+	 *            The data to use.
 	 */
 	public SettlerImage(ImageDataPrivider data) {
 		super(data);
 	}
-	
+
 	@Override
 	public void draw(GLDrawContext gl, Color color) {
-	    super.draw(gl, null);
-	    if (this.torso != null) {
-	    	this.torso.draw(gl, color);
-	    }
+		if (this.torso != null) {
+			super.draw(gl, null);
+			this.torso.draw(gl, color);
+		} else {
+			super.draw(gl, color);
+		}
 	}
 
 	/**
 	 * Sets the image overlay.
-	 * @param torso The torso. May be null.
+	 * 
+	 * @param torso
+	 *            The torso. May be null.
 	 */
 	public void setTorso(Image torso) {
 		this.torso = torso;
@@ -41,6 +47,7 @@ public class SettlerImage extends Image {
 
 	/**
 	 * Gets the torso for this image.
+	 * 
 	 * @return The torso.
 	 */
 	public Image getTorso() {

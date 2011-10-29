@@ -18,9 +18,9 @@ public class FogOfWar {
 
 	private final byte[][] sight;
 
-	private static final byte EXPLORED = 10;
+	public static final byte EXPLORED = 50;
 
-	public static final byte VISIBLE = 20;
+	public static final byte VISIBLE = 100;
 
 	/**
 	 * Longest distance any unit may look
@@ -192,7 +192,7 @@ public class FogOfWar {
 
 	private byte dimDown(byte oldvalue) {
 		if (oldvalue > EXPLORED) {
-			return (byte) (oldvalue - 1);
+			return EXPLORED;
 		} else {
 			return oldvalue;
 		}
