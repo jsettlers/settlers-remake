@@ -129,6 +129,7 @@ public abstract class MovableStrategy {
 	protected abstract void setGotoJob(GotoJob gotoJob);
 
 	protected void convertTo(EMovableType movableType) {
+		this.movable.setMaterial(EMaterialType.NO_MATERIAL);
 		this.movable.setStrategy(getTypeStrategy(grid, movableType, movable));
 	}
 
