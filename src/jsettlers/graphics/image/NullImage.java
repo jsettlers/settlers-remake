@@ -90,6 +90,10 @@ public class NullImage extends Image {
 
 	private static GuiImage guiinstance;
 
+	/**
+	 * Gets an empty landscape image.
+	 * @return The imge instance.
+	 */
 	public static LandscapeImage getForLandscape() {
 		if (landscapeinstance == null) {
 			landscapeinstance = new LandscapeImage(nullproivder);
@@ -97,6 +101,10 @@ public class NullImage extends Image {
 		return landscapeinstance;
 	}
 
+	/**
+	 * Gets an empty gui image.
+	 * @return The imge instance.
+	 */
 	public static GuiImage getForGui() {
 		if (guiinstance == null) {
 			guiinstance = new GuiImage(nullproivder);

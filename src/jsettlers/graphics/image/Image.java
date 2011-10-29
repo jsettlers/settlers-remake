@@ -25,9 +25,6 @@ public class Image implements ImageDataPrivider {
 
 	private int texture = -1;
 
-	private static int elementBufferId = 0;
-	private int vertexBufferId = 0;
-
 	/**
 	 * Creates a new image by the given buffer.
 	 * 

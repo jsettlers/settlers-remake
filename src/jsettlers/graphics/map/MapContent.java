@@ -37,7 +37,6 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
-import jsettlers.graphics.map.controls.small.SmallControls;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;

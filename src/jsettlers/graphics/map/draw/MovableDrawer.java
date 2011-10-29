@@ -32,17 +32,6 @@ public class MovableDrawer {
 	}
 
 	private void drawImage(MapDrawContext context, IMovable movable, Image image) {
-		/*
-		 * ISPosition2D currentPos = context.getTile(movable.getPos());
-		 * ISPosition2D nextPos = context.getTileInDirection(currentPos,
-		 * movable.getDirection()); int x; int y; if (nextPos != null &&
-		 * isWalking) { float progress = movable.getMoveProgress(); x = (int)
-		 * ((1 - progress) * context.getT(currentPos) + progress
-		 * context.getX(nextPos)); y = (int) ((1 - progress) *
-		 * context.getY(currentPos) + progress context.getY(nextPos)); } else {
-		 * x = context.getX(currentPos); y = context.getY(currentPos); }
-		 */
-
 		Color color = context.getPlayerColor(movable.getPlayer());
 
 		// draw settler

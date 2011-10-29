@@ -488,6 +488,12 @@ public class MapObjectDrawer {
 		seq.getImageSafe(count - 1).draw(glDrawContext, color);
 	}
 
+	/**
+	 * Gets the gray color for a given fog.
+	 * @param context
+	 * @param fogstatus
+	 * @return
+	 */
 	private Color getColor(MapDrawContext context, int fogstatus) {
 		float color = (float) fogstatus / FogOfWar.VISIBLE;
 		return new Color(color, color, color, 1);

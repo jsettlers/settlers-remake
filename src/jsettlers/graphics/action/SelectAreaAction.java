@@ -20,6 +20,10 @@ public class SelectAreaAction extends Action {
 		this.area = area;
 	}
 
+	/**
+	 * Gets the selected area.
+	 * @return The area.
+	 */
 	public IMapArea getArea() {
 	    return this.area;
     }

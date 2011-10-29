@@ -98,12 +98,34 @@ public enum ETextureOrientation {
 		this.relativecoords = relativecoords;
 	}
 
+	/**
+	 * Adds the coordinates of this texture direction to an array.
+	 * 
+	 * @param array
+	 *            The array to add the coordinates to.
+	 * @param offset
+	 *            The offset in the array.
+	 * @param stride
+	 *            The stride. Subseqent edges are placed after this distance.
+	 * @param x
+	 *            The x coordinate of the top (if two, left) triangle point
+	 * @param y
+	 *            The y coordinate of the top (if two, left) triangle point
+	 * @param dx
+	 *            The texture offset to add in x direction to the uv coordinate
+	 * @param dy
+	 *            The texture offset to add in y direction to the uv coordinate
+	 * @param texturesize
+	 *            The size of the texture.
+	 */
 	public void addCoordsTo(float[] array, int offset, int stride, int x,
 	        int y, int dx, int dy, int texturesize) {
 		int adddx = 0;
 		int adddy = 0;
 		if (continous) {
-			adddx = x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X / 2;
+			adddx =
+			        x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X
+			                / 2;
 			adddy = y * DrawConstants.DISTANCE_Y;
 			adddx = realModulo(adddx, CONTINOUS_SIZE);
 			adddy = realModulo(adddy, CONTINOUS_SIZE);

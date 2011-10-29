@@ -2,7 +2,6 @@ package jsettlers.graphics.localization;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -19,6 +18,8 @@ import jsettlers.graphics.progress.EProgressState;
  */
 public final class Labels {
 
+	private static final String GERMAN = "de";
+
 	private Labels() {
 	}
 
@@ -26,12 +27,13 @@ public final class Labels {
 
 	private static ResourceBundle getLabels() {
 		if (labels == null) {
-			// TODO: changeable locale?
-			Locale currentLocale = Locale.GERMAN;
-			
+			String currentLocale = GERMAN;
+
 			try {
-			InputStream instream = ResourceManager.getFile("localization/labels_de.properties");
-			labels = new PropertyResourceBundle(instream);
+				String filename =
+				        "localization/labels_" + currentLocale + ".properties";
+				InputStream instream = ResourceManager.getFile(filename);
+				labels = new PropertyResourceBundle(instream);
 			} catch (IOException e) {
 				System.err.println("Could not load locale");
 				e.printStackTrace();
@@ -82,14 +84,16 @@ public final class Labels {
 
 	/**
 	 * Gets the name for an action type.
-	 * @param action The action type.
+	 * 
+	 * @param action
+	 *            The action type.
 	 * @return The localized name.
 	 */
 	public static String getName(EActionType action) {
 		return getString("action_" + action);
-    }
+	}
 
 	public static String getProgress(EProgressState loading) {
 		return getString("progress_" + loading);
-    }
+	}
 }

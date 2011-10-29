@@ -750,7 +750,7 @@ public class Background {
 	/**
 	 * Generates the texture data.
 	 * 
-	 * @param data
+	 * @param data The texture data buffer.
 	 */
 	private void addTextures(short[] data) {
 		for (int index = 0; index < TEXTURE_POSITIONS.length; index++) {
@@ -762,6 +762,12 @@ public class Background {
 		}
 	}
 
+	/**
+	 * Copys a image to the texture position.
+	 * @param data The data to copy to
+	 * @param image The image to copy
+	 * @param texturepos The texture position
+	 */
 	private void copyImageAt(short[] data, Image image, int[] texturepos) {
 		int startx = texturepos[0] * TEXTURE_GRID;
 		int starty = texturepos[1] * TEXTURE_GRID;
@@ -781,12 +787,12 @@ public class Background {
 	 * Copys the left top image corner to the buffer at (x, y), assuming the
 	 * buffer is a TEXTURE_SIZE wide image.
 	 * 
-	 * @param data
-	 * @param image
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
+	 * @param data The data to copy to
+	 * @param image The image to copy from
+	 * @param x The x coordinate in the destination buffer
+	 * @param y The y coordinate in the destination buffer
+	 * @param width The width of the area to copy
+	 * @param height The height of the area to copy
 	 */
 	private void copyImage(short[] data, Image image, int x, int y, int width,
 	        int height) {
@@ -799,12 +805,12 @@ public class Background {
 	}
 
 	/**
-	 * gets the image number of the border
+	 * Gets the image number of the border
 	 * 
-	 * @param useSecond
-	 * @param left
-	 * @param bottom
-	 * @return
+	 * @param outer The outer landscape (that has two triangle edges).
+	 * @param inner The inner landscape.
+	 * @param useSecond If it is true, the secondary texture is used.
+	 * @return The texture.
 	 */
 	private int getBorder(ELandscapeType outer, ELandscapeType inner,
 	        boolean useSecond) {
@@ -974,6 +980,11 @@ public class Background {
 		gl.glPopMatrix();
 	}
 
+	/**
+	 * Gets the geometry of the background as array.
+	 * @param context The context to use.
+	 * @return The geometry as float array.
+	 */
 	private float[] getGeometry(MapDrawContext context) {
 		IntRectangle screen =
 		        context.getScreen().getPosition().bigger(EXTRA_PADDING);
@@ -1009,6 +1020,13 @@ public class Background {
 		return geometryBuffer;
 	}
 
+	/**
+	 * Redraws a point on the map to the buffer.
+	 * @param context The context
+	 * @param x The x coordinate of the point
+	 * @param y The y coordinate of the point
+	 * @param wasVisible true if and only if the point was already in the buffer.
+	 */
 	private void redrawPoint(MapDrawContext context, int x, int y,
 	        boolean wasVisible) {
 		int pointOffset = getBufferPosition(y, x);
@@ -1058,10 +1076,10 @@ public class Background {
 	/**
 	 * Dims the fog of war buffer
 	 * 
-	 * @param context
-	 * @param offset
-	 * @param x
-	 * @param y
+	 * @param context The context
+	 * @param offset The fog of war buffer offset
+	 * @param x The x coordinate of the tile
+	 * @param y The y coordinate of the tile.
 	 * @return true if and only if the dim has finished.
 	 */
 	private boolean dimFogOfWarBuffer(MapDrawContext context, int offset,

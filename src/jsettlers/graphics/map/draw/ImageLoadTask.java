@@ -14,6 +14,11 @@ import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
+/**
+ * This is a image loader. It is currently unused.
+ * @author michael
+ *
+ */
 public class ImageLoadTask implements Runnable {
 
 	private static final String FILE_SUFFIX = ".7c003e01f.dat";

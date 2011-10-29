@@ -58,6 +58,12 @@ public class FogOfWar {
 		}
 	}
 
+	/**
+	 * Gets the visible status of a map pint
+	 * @param x The x coordinate of the point in 0..(mapWidth - 1)
+	 * @param y The y coordinate of the point in 0..(mapHeight - 1)
+	 * @return The status from 0 to visible.
+	 */
 	public byte getVisibleStatus(int x, int y) {
 		return sight[x][y];
 	}
@@ -332,30 +338,6 @@ public class FogOfWar {
 			}
 		}
 	}
-
-	// private void drawCircleAround(int x, int y, int distance, byte[][]
-	// buffer) {
-	// MapCircle circle = new MapCircle(x, y, distance + PADDING);
-	// for (ISPosition2D pos : circle) {
-	// int currentx = pos.getX();
-	// int currenty = pos.getY();
-	// if (currentx >= 0 && currentx < map.getWidth() && currenty >= 0
-	// && currenty < map.getHeight()) {
-	// if (circle.isCloserToCenter(currentx, currenty, distance)) {
-	// buffer[currentx][currenty] = VISIBLE;
-	// } else {
-	// double pointdistance =
-	// circle.distanceToCenter(currentx, currenty);
-	// byte newsight =
-	// (byte) (VISIBLE - (pointdistance - distance)
-	// / PADDING * VISIBLE);
-	// if (buffer[currentx][currenty] < newsight) {
-	// buffer[currentx][currenty] = newsight;
-	// }
-	// }
-	// }
-	// }
-	// }
 
 	public void pause() {
 

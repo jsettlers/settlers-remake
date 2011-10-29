@@ -71,11 +71,11 @@ public class JoglLoader {
 		return ".so";
 	}
 
-	private static void addUnloadTask() {
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
-			}
-		}, "jogl cleanup task"));
-	}
+//	private static void addUnloadTask() {
+//		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+//			public void run() {
+//			}
+//		}, "jogl cleanup task"));
+//	}
 
 }

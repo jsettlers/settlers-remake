@@ -45,31 +45,33 @@ public class UIList {
 	}
 
 	public void drawAtScreen(GL2 gl) {
-		int contentright = this.bounds.getX2() - SCROLLBAR_WIDTH;
+		int contentright = this.bounds.getMaxX() - SCROLLBAR_WIDTH;
 
 		drawScrollbar(gl);
-		
+
 		int y = 0;
 		for (UIListItem item : this.items) {
 			int itemHeight = item.getHeight();
-			int maxy = this.bounds.getY2() + this.currenty - y;
+			int maxy = this.bounds.getMaxY() + this.currenty - y;
 			int miny = maxy - itemHeight;
-			
-			if (miny < this.bounds.getY2() && maxy > this.bounds.getY1()) {
-				IntRectangle rect = new IntRectangle(this.bounds.getX1(), miny, contentright, maxy);
+
+			if (miny < this.bounds.getMaxY() && maxy > this.bounds.getMinY()) {
+				IntRectangle rect =
+				        new IntRectangle(this.bounds.getMinX(), miny,
+				                contentright, maxy);
 				item.drawAt(gl, rect);
 			}
-			
+
 			y += itemHeight;
 		}
 	}
 
 	private void drawScrollbar(GL2 gl) {
-		int left = this.bounds.getX2() - SCROLLBAR_WIDTH;
-		int right = this.bounds.getX2();
+		int left = this.bounds.getMaxX() - SCROLLBAR_WIDTH;
+		int right = this.bounds.getMaxX();
 		int middle = (left + right) / 2;
-		int top = this.bounds.getY2();
-		int bottom = this.bounds.getY1();
+		int top = this.bounds.getMaxY();
+		int bottom = this.bounds.getMinY();
 
 		gl.glBegin(GL.GL_TRIANGLES);
 		gl.glVertex2i(middle, top);
@@ -89,12 +91,14 @@ public class UIList {
 		gl.glEnd();
 
 		// the scroll position indicator
-		float scroolbarHeightFactor = (float) this.bounds.getHeight() / this.listHeight;
+		float scroolbarHeightFactor =
+		        (float) this.bounds.getHeight() / this.listHeight;
 
 		int barHeight =
 		        (int) (scroolbarHeightFactor * (this.bounds.getHeight() - 2 * SCROLL_BAR_Y));
 		int bartop =
-		        top - SCROLL_BAR_Y - (int) (scroolbarHeightFactor * this.currenty);
+		        top - SCROLL_BAR_Y
+		                - (int) (scroolbarHeightFactor * this.currenty);
 
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glVertex2i(right, bartop);
