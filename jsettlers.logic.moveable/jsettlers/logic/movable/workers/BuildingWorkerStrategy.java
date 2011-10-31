@@ -210,6 +210,9 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 				}
 			}
 			return false;
+		} else if (currentJob.getSearchType() == ESearchType.CUTTABLE_STONE) {
+			//TODO: allow settler to face stone.
+			return false;
 		} else {
 			return false;
 		}
