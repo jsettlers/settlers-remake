@@ -24,6 +24,7 @@ public class Image implements ImageDataPrivider {
 	protected final int offsetY;
 
 	private int texture = -1;
+	private int geometryindex = -1;
 
 	/**
 	 * Creates a new image by the given buffer.
@@ -354,7 +355,7 @@ public class Image implements ImageDataPrivider {
 			gl.color(color);
 		}
 
-		gl.drawQuadWithTexture(getTextureIndex(gl), getGeometry());
+		gl.drawQuadWithTexture(getTextureIndex(gl), getGeometryIndex(gl));
 		// gl.glEnable(GL.GL_TEXTURE_2D);
 		// bind(gl);
 		//
@@ -417,6 +418,17 @@ public class Image implements ImageDataPrivider {
 		        0,
 		        (float) height / textureHeight,
 		};
+	}
+	
+	protected int setGeometryIndex(int geometryindex) {
+		return geometryindex;
+	}
+	
+	protected int getGeometryIndex(GLDrawContext context) {
+		if (!context.isGeometryValid(geometryindex)) {
+			geometryindex = context.storeGeometry(getGeometry());
+		}
+		return geometryindex;
 	}
 
 	public float getTextureScaleX() {

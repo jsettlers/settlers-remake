@@ -18,6 +18,8 @@ public class FogOfWar {
 
 	private final byte[][] sight;
 
+	private boolean enabled = true;
+
 	public static final byte EXPLORED = 50;
 
 	public static final byte VISIBLE = 100;
@@ -34,10 +36,11 @@ public class FogOfWar {
 	public FogOfWar(IGraphicsGrid map) {
 		this(map, false);
 	}
+
 	public FogOfWar(IGraphicsGrid map, boolean exploredOnStart) {
 		this.map = map;
 		sight = new byte[map.getWidth()][map.getHeight()];
-		
+
 		byte defaultSight = 0;
 		if (exploredOnStart) {
 			defaultSight = EXPLORED;
@@ -60,12 +63,19 @@ public class FogOfWar {
 
 	/**
 	 * Gets the visible status of a map pint
-	 * @param x The x coordinate of the point in 0..(mapWidth - 1)
-	 * @param y The y coordinate of the point in 0..(mapHeight - 1)
+	 * 
+	 * @param x
+	 *            The x coordinate of the point in 0..(mapWidth - 1)
+	 * @param y
+	 *            The y coordinate of the point in 0..(mapHeight - 1)
 	 * @return The status from 0 to visible.
 	 */
 	public byte getVisibleStatus(int x, int y) {
-		return sight[x][y];
+		if (enabled) {
+			return sight[x][y];
+		} else {
+			return VISIBLE;
+		}
 	}
 
 	/**
@@ -353,5 +363,9 @@ public class FogOfWar {
 
 	public boolean isVisible(int centerx, int centery) {
 		return sight[centerx][centery] >= VISIBLE;
+	}
+
+	public void toggleEnabled() {
+		enabled = !enabled;
 	}
 }

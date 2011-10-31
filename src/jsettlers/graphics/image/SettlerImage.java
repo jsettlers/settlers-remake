@@ -54,4 +54,15 @@ public class SettlerImage extends Image {
 		return this.torso;
 	}
 
+	@Override
+	protected int getGeometryIndex(GLDrawContext context) {
+		int index = super.getGeometryIndex(context);
+		if (torso != null && torso.getWidth() == getWidth()
+		        && torso.getHeight() == getHeight()
+		        && torso.getOffsetX() == getOffsetX()
+		        && torso.getOffsetY() == getOffsetY()) {
+			torso.setGeometryIndex(index);
+		}
+		return index;
+	}
 }

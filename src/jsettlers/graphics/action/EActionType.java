@@ -107,5 +107,10 @@ public enum EActionType {
 	/**
 	 * Toggles the build menu.
 	 */
-	TOGGLE_BUILD_MENU,
+	TOGGLE_BUILD_MENU, 
+	
+	/**
+	 * Toggles fog of war.
+	 */
+	TOGGLE_FOG_OF_WAR,
 }

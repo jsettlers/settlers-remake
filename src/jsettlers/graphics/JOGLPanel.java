@@ -79,7 +79,7 @@ public class JOGLPanel {
 				// TODO: this is only for testing
 				JOGLPanel.this.region.requestRedraw();
 			}
-		}, 10, 50);
+		}, 10, 10);
 
 		return content.getInterfaceConnector();
 	}

@@ -110,7 +110,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		this.context = new MapDrawContext(map);
 
 		controls = new OriginalControls(context);
-		//controls = new SmallControls();
+		// controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
@@ -386,6 +386,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			return new Action(EActionType.STOP_WORKING);
 		} else if ("q".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_DEBUG);
+		} else if ("w".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
 		} else {
 			return null;
 		}
@@ -564,6 +566,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		controls.action(action);
 		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
 			ENABLE_DEBUG = !ENABLE_DEBUG;
+		} else if (action.getActionType() == EActionType.TOGGLE_FOG_OF_WAR) {
+			context.getFogOfWar().toggleEnabled();
 		} else if (action.getActionType() == EActionType.PAN_TO) {
 			PanToAction panAction = (PanToAction) action;
 			scrollTo(panAction.getCenter(), false);
