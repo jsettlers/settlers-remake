@@ -675,6 +675,11 @@ public class MainGrid {
 			partitionsGrid.addJobless(digger);
 		}
 
+		@Override
+        public void changeLandscapeAt(ISPosition2D pos, ELandscapeType type) {
+	        landscapeGrid.setLandscapeTypeAt(pos.getX(), pos.getY(), type);
+        }
+
 	}
 
 	private class BordersThreadGrid implements IBordersThreadGrid {

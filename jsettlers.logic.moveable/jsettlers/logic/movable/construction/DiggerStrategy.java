@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.construction;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
@@ -64,6 +65,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 
 	private void executeDigg() {
 		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(targetHeight - super.getGrid().getHeightAt(super.getPos()))));
+		super.getGrid().changeLandscapeAt(super.getPos(), ELandscapeType.FLATTENED);
 		super.getGrid().setMarked(super.getPos(), false);
 	}
 

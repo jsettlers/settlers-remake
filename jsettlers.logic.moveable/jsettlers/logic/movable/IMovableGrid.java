@@ -275,4 +275,6 @@ public interface IMovableGrid {
 	void addJobless(IManageableBricklayer bricklayer);
 
 	void addJobless(IManageableDigger digger);
+
+	void changeLandscapeAt(ISPosition2D pos, ELandscapeType type);
 }
