@@ -18,6 +18,8 @@ public interface IPartionsAlgorithmMap {
 	 */
 	short getPartition(final ISPosition2D position);
 
+	short getPartition(short x, short y);
+
 	/**
 	 * 
 	 * @param position
@@ -29,44 +31,55 @@ public interface IPartionsAlgorithmMap {
 	/**
 	 * Sets the given partition to the given position.
 	 * 
-	 * @param position
-	 *            the position the new partition value should be set
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
 	 * @param partition
 	 *            partition to be set to the position
 	 */
-	void setPartition(final ISPosition2D position, final short partition);
+	void setPartition(final short x, final short y, final short partition);
 
 	/**
 	 * Merges two partitions specified by the given positions.
 	 * 
-	 * @param firstPos
-	 *            a position of first partition
-	 * @param secondPos
-	 *            a position of the second partition
+	 * @param x1
+	 *            x coordinate of first position
+	 * @param y1
+	 *            y coordinate of first position
+	 * @param x2
+	 *            x coordinate of second position
+	 * @param y2
+	 *            y coordinate of second position
+	 * 
 	 * @return returns the partition of the result of the merge
 	 */
-	short mergePartitions(final ISPosition2D firstPos, final ISPosition2D secondPos);
+	short mergePartitions(final short x1, final short y1, final short x2, final short y2);
 
 	/**
 	 * Creates a new partition for the given position and the given team.
 	 * 
-	 * @param position
-	 *            position that needs a new partition
+	 * @param x
+	 *            x coordinate of position
+	 * @param y
+	 *            y coordinate of position
 	 * @param player
 	 *            player that owns the partition
 	 */
-	void createPartition(final ISPosition2D position, final byte player);
+	void createPartition(final short x, final short y, final byte player);
 
 	/**
 	 * Disconnects the partition of the two positions.
 	 * 
-	 * @param changedPosition
-	 *            position that has been changed
+	 * @param x
+	 *            x coordinate of position
+	 * @param y
+	 *            y coordinate of position
 	 * @param firstPos
 	 *            position of first partition
 	 * @param secondPos
 	 *            position of second partition
 	 */
-	void dividePartition(final ISPosition2D changedPosition, final ISPosition2D firstPos, final ISPosition2D secondPos);
+	void dividePartition(final short x, final short y, final ISPosition2D firstPos, final ISPosition2D secondPos);
 
 }

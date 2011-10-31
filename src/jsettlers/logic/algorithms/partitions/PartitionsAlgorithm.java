@@ -37,20 +37,22 @@ public class PartitionsAlgorithm {
 	 * Calculates the new partition for the given position.<br>
 	 * It also merges or divides partitions if it became necessary by the given change to position.
 	 * 
-	 * @param position
-	 *            position that needs to get a new partition
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
 	 * @param newPlayer
 	 *            the player that is now occupying the given position.
 	 */
-	public void calculateNewPartition(ISPosition2D position, byte newPlayer) {
-		short oldPartition = map.getPartition(position);
-
-		if (oldPartition != -1) {
-			removeFromOldPartition(position, oldPartition);
-		}
+	public void calculateNewPartition(short x, short y, byte newPlayer) {
+		short oldPartition = map.getPartition(x, y);
 
 		if (newPlayer != -1) { // if the new player is really a player
-			addToNewPartiton(position, newPlayer);
+			addToNewPartiton(x, y, newPlayer);
+		}
+
+		if (oldPartition != -1) {
+			removeFromOldPartition(x, y, oldPartition);
 		}
 	}
 
@@ -63,25 +65,24 @@ public class PartitionsAlgorithm {
 	 * @param newPlayer
 	 *            player that is now occupying the position
 	 */
-	private void addToNewPartiton(final ISPosition2D changedPosition, final byte newPlayer) {
+	private void addToNewPartiton(final short x, final short y, final byte newPlayer) {
 		short newPartition = -1;
 
-		for (ISPosition2D currPos : new MapNeighboursArea(changedPosition)) {
+		for (ISPosition2D currPos : new MapNeighboursArea(x, y)) {
 			if (map.getPlayerAt(currPos) == newPlayer) {
 				if (newPartition == -1) { // neighbor has same player and we have no partition found yet -> add to the same partition
 					newPartition = map.getPartition(currPos);
-					map.setPartition(changedPosition, newPartition);
-					assert map.getPartition(changedPosition) == newPartition;
+					map.setPartition(x, y, newPartition);
 				} else {
 					if (map.getPartition(currPos) != newPartition) { // neighbor is an other partition but has same player
-						newPartition = map.mergePartitions(currPos, changedPosition);
+						newPartition = map.mergePartitions(currPos.getX(), currPos.getY(), x, y);
 					}// else: neighbor has same player and same partition
 				}
 			}
 		}
 
 		if (newPartition == -1) { // no partition found -> create one
-			map.createPartition(changedPosition, newPlayer);
+			map.createPartition(x, y, newPlayer);
 		}
 	}
 
@@ -93,14 +94,14 @@ public class PartitionsAlgorithm {
 	 * @param oldPartition
 	 *            old partition of the removed position
 	 */
-	private void removeFromOldPartition(final ISPosition2D position, final short oldPartition) {
+	private void removeFromOldPartition(final short x, final short y, final short oldPartition) {
 		ISPosition2D[] disconnected = new ISPosition2D[3]; // at maximum 3 neighbors can be disconnected on the hex grid
 		byte disconnectedCtr = 0;
 
 		boolean lastWasOldPartition = false;
 
 		for (EDirection dir : EDirection.values()) {
-			ISPosition2D currPos = dir.getNextHexPoint(position);
+			ISPosition2D currPos = dir.getNextHexPoint(x, y);
 			short currPartition = map.getPartition(currPos);
 
 			if (lastWasOldPartition) {
@@ -118,7 +119,7 @@ public class PartitionsAlgorithm {
 			}
 		}
 
-		ISPosition2D lastPosition = EDirection.values()[5].getNextHexPoint(position);
+		ISPosition2D lastPosition = EDirection.values()[5].getNextHexPoint(x, y);
 		if (map.getPartition(lastPosition) == oldPartition) {
 			disconnectedCtr--;
 		}
@@ -126,14 +127,14 @@ public class PartitionsAlgorithm {
 		if (disconnectedCtr > 1) {
 			byte oldPlayer = map.getPlayerAt(disconnected[0]);
 			if (!existsPathBetween(disconnected[1], disconnected[0], oldPlayer)) { // [0] and [1] are not connected
-				map.dividePartition(position, disconnected[1], disconnected[0]);
+				map.dividePartition(x, y, disconnected[1], disconnected[0]);
 
 				if (disconnectedCtr == 3) {
 					if (!existsPathBetween(disconnected[2], disconnected[1], oldPlayer)) { // [2] and [1] are not connected
-						map.dividePartition(position, disconnected[2], disconnected[1]);
+						map.dividePartition(x, y, disconnected[2], disconnected[1]);
 
 						if (existsPathBetween(disconnected[2], disconnected[0], oldPlayer)) { // [2] and [0] are not connected
-							map.dividePartition(position, disconnected[2], disconnected[0]);
+							map.dividePartition(x, y, disconnected[2], disconnected[0]);
 						} else {
 							// [2] and [0] are connected
 						}
@@ -146,7 +147,7 @@ public class PartitionsAlgorithm {
 			} else { // [0] and [1] are connected
 				if (disconnectedCtr == 3) {
 					if (!existsPathBetween(disconnected[2], disconnected[1], oldPlayer)) { // but [2] is not connected to [0] and [1]
-						map.dividePartition(position, disconnected[2], disconnected[1]);
+						map.dividePartition(x, y, disconnected[2], disconnected[1]);
 					} else {
 						// [0], [1], [2] are connected
 					}
