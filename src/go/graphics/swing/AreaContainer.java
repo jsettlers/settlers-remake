@@ -23,9 +23,9 @@ import javax.swing.JPanel;
  * This class lets you embed areas into swing components.
  * 
  * @author michael
- * 
  */
-public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvoder {
+public class AreaContainer extends JPanel implements RedrawListener,
+        GOEventHandlerProvoder {
 
 	/**
 	 * 
@@ -34,6 +34,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	private final Area area;
 
 	private GLCanvas canvas;
+	private JOGLDrawContext context;
 
 	/**
 	 * creates a new area conaainer
@@ -55,12 +56,14 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		canvas.addGLEventListener(new GLEventListener() {
 
 			@Override
-			public void reshape(GLAutoDrawable gl, int x, int y, int width, int height) {
+			public void reshape(GLAutoDrawable gl, int x, int y, int width,
+			        int height) {
 				resizeArea(gl.getGL().getGL2(), x, y, width, height);
 			}
 
 			@Override
 			public void init(GLAutoDrawable arg0) {
+				arg0.getGL().setSwapInterval(0);
 			}
 
 			@Override
@@ -120,7 +123,10 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 
 		gl2.glLoadIdentity();
 
-		GLDrawContext context = new JOGLDrawContext(gl2);
+		if (context == null) {
+			context = new JOGLDrawContext(gl2);
+		}
+		context.startFrame();
 		area.drawArea(context);
 	}
 
