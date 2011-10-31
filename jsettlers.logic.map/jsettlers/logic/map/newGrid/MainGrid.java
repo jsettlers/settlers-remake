@@ -296,7 +296,7 @@ public class MainGrid {
 
 		private boolean hasProtectedNeighbor(short x, short y) {
 			for (EDirection currDir : EDirection.values()) {
-				if (blockedGrid.isPortected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
+				if (blockedGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
 			}
 			return false;
@@ -339,7 +339,7 @@ public class MainGrid {
 
 		private boolean isCornPlantable(short x, short y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !blockedGrid.isPortected(x, y)
+			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !blockedGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y) && !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT)
@@ -500,7 +500,7 @@ public class MainGrid {
 		@Override
 		public boolean isBuildingPlaceable(ISPosition2D position, byte player) {
 			short x = position.getX(), y = position.getY();
-			return MainGrid.this.isInBounds(x, y) && !blockedGrid.isBlocked(x, y) && partitionsGrid.getPlayerAt(x, y) == player;
+			return MainGrid.this.isInBounds(x, y) && !blockedGrid.isProtected(x, y) && !blockedGrid.isBlocked(x, y) && partitionsGrid.getPlayerAt(x, y) == player;
 		}
 
 		@Override
@@ -722,7 +722,7 @@ public class MainGrid {
 		private boolean setProtectedState(FreeMapArea area, boolean setProtected) {
 			boolean isFree = true;
 			for (ISPosition2D protect : area) {
-				if (!isInBounds(protect.getX(), protect.getY()) || (blockedGrid.isPortected(protect.getX(), protect.getY()) == setProtected)) {
+				if (!isInBounds(protect.getX(), protect.getY()) || (blockedGrid.isProtected(protect.getX(), protect.getY()) == setProtected)) {
 					isFree = false;
 				}
 			}

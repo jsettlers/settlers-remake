@@ -35,7 +35,7 @@ public class BlockedGrid {
 		this.markedGrid[x][y] = marked;
 	}
 
-	public boolean isPortected(short x, short y) {
+	public boolean isProtected(short x, short y) {
 		return this.protectedGrid[x][y];
 	}
 
