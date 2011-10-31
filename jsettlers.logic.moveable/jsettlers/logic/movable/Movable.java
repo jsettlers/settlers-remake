@@ -258,9 +258,12 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
 		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_STEP_PROBABILITY) {
 			for (EDirection curr : EDirection.values()) { // push all movables around this movable
-				IHexMovable movable = grid.getMovable(curr.getNextHexPoint(pos));
+				ISPosition2D point = curr.getNextHexPoint(pos);
+				if (grid.isInBounds(point)) {
+				IHexMovable movable = grid.getMovable(point);
 				if (movable != null) {
 					movable.push(this);
+				}
 				}
 			}
 		}
