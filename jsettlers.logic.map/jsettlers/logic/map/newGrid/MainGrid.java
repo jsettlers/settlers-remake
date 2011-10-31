@@ -282,7 +282,7 @@ public class MainGrid {
 				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
 
 			case FISHABLE:
-				return hasNeighbourLandscape(x, y, ELandscapeType.WATER);
+				return hasSamePlayer(x, y, pathCalculateable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER);
 
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
@@ -517,6 +517,11 @@ public class MainGrid {
 		public byte getHeightAt(ISPosition2D pos) {
 			return landscapeGrid.getHeightAt(pos.getX(), pos.getY());
 		}
+
+		@Override
+        public ELandscapeType getLandscapeTypeAt(ISPosition2D pos) {
+	        return landscapeGrid.getLandscapeTypeAt(pos.getX(), pos.getY());
+        }
 	}
 
 	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid {

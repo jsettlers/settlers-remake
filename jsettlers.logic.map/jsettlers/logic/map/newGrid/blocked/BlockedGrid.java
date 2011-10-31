@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.blocked;
 
+import java.util.BitSet;
+
 /**
  * Grid that's storing the blocked information for fast access.
  * 
