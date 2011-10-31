@@ -184,7 +184,7 @@ public class MainGrid {
 	}
 
 	private void changePlayerAt(ISPosition2D position, byte player) {
-		partitionsGrid.changePlayerAt(position, player);
+		partitionsGrid.changePlayerAt(position.getX(), position.getY(), player);
 		bordersThread.checkPosition(position);
 		landmarksCorrectionThread.addLandmarkedPosition(position);
 	}
@@ -464,17 +464,6 @@ public class MainGrid {
 		}
 
 		@Override
-		public byte getPlayerAt(short x, short y) {
-			return partitionsGrid.getPlayerAt(x, y);
-		}
-
-		@Override
-		public void setPlayerAt(short x, short y, byte newPlayer, short partition) {
-			partitionsGrid.setPlayerAndPartitionAt(x, y, newPlayer, partition);
-			bordersThread.checkPosition(new ShortPoint2D(x, y));
-		}
-
-		@Override
 		public void setDebugColor(short x, short y, Color color) {
 			if (isInBounds(x, y))
 				debugColors[x][y] = color;
@@ -489,6 +478,12 @@ public class MainGrid {
 		public short getPartitionAt(short x, short y) {
 			return partitionsGrid.getPartitionAt(x, y);
 		}
+
+		@Override
+		public void setPartitionAndPlayerAt(short x, short y, short partition) {
+			partitionsGrid.setPartitionAndPlayerAt(x, y, partition);
+			bordersThread.checkPosition(new ShortPoint2D(x, y));
+		}
 	}
 
 	private class ConstructionMarksGrid implements IConstructionMarkableMap {
@@ -500,7 +495,8 @@ public class MainGrid {
 		@Override
 		public boolean isBuildingPlaceable(ISPosition2D position, byte player) {
 			short x = position.getX(), y = position.getY();
-			return MainGrid.this.isInBounds(x, y) && !blockedGrid.isProtected(x, y) && !blockedGrid.isBlocked(x, y) && partitionsGrid.getPlayerAt(x, y) == player;
+			return MainGrid.this.isInBounds(x, y) && !blockedGrid.isProtected(x, y) && !blockedGrid.isBlocked(x, y)
+					&& partitionsGrid.getPlayerAt(x, y) == player;
 		}
 
 		@Override
@@ -519,9 +515,9 @@ public class MainGrid {
 		}
 
 		@Override
-        public ELandscapeType getLandscapeTypeAt(ISPosition2D pos) {
-	        return landscapeGrid.getLandscapeTypeAt(pos.getX(), pos.getY());
-        }
+		public ELandscapeType getLandscapeTypeAt(ISPosition2D pos) {
+			return landscapeGrid.getLandscapeTypeAt(pos.getX(), pos.getY());
+		}
 	}
 
 	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid {
@@ -676,9 +672,9 @@ public class MainGrid {
 		}
 
 		@Override
-        public void changeLandscapeAt(ISPosition2D pos, ELandscapeType type) {
-	        landscapeGrid.setLandscapeTypeAt(pos.getX(), pos.getY(), type);
-        }
+		public void changeLandscapeAt(ISPosition2D pos, ELandscapeType type) {
+			landscapeGrid.setLandscapeTypeAt(pos.getX(), pos.getY(), type);
+		}
 
 	}
 
@@ -862,10 +858,14 @@ public class MainGrid {
 	}
 
 	class PartitionsManagementGrid implements IPartitionableGrid {
-
 		@Override
 		public boolean isBlocked(short x, short y) {
 			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);
+		}
+
+		@Override
+		public void changedPartitionAt(short x, short y) {
+			landmarksCorrectionThread.addLandmarkedPosition(new ShortPoint2D(x, y));
 		}
 	}
 

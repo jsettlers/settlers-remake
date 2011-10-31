@@ -44,16 +44,12 @@ public class Partition {
 		counter++;
 	}
 
-	public void removePositionTo(ISPosition2D position, Partition newPartitionObject) {
-		if (this == newPartitionObject) {
-			System.out.println("AAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRGGGGGGGGGGHHHHHHHHHHHHhh");
-		}
-
+	public void removePositionTo(final short x, final short y, final Partition newPartitionObject) {
 		assert this != newPartitionObject : "ERROR: newManager can not be the same as this manager!!";
 
 		this.decrement();
 		newPartitionObject.increment();
-		this.manager.removePositionTo(position, newPartitionObject.manager, newPartitionObject.player == this.player);
+		this.manager.removePositionTo(x, y, newPartitionObject.manager, newPartitionObject.player == this.player);
 
 		if (isEmpty())
 			manager.stop();

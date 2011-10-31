@@ -110,15 +110,18 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	/**
-	 * 
-	 * @param position
-	 *            position to be removed from this manager and added to the given manager
+	 * @param x
+	 *            x coordinate of the position to be removed from this manager and added to the given manager
+	 * @param y
+	 *            y coordinate of the position to be removed from this manager and added to the given manager
 	 * @param newManager
 	 *            new manager of the given position <br>
 	 *            NOTE: the new manager MUST NOT be null!
 	 * @param newHasSamePlayer
 	 */
-	public void removePositionTo(ISPosition2D position, PartitionManager newManager, boolean newHasSamePlayer) {
+	public void removePositionTo(final short x, final short y, PartitionManager newManager, boolean newHasSamePlayer) {
+		ShortPoint2D position = new ShortPoint2D(x, y);
+
 		Offer removedOffer = materialOffers.removeObjectAt(position);
 		if (removedOffer != null) {// the new manager can not have any offers at that position, because he just occupied it
 			newManager.materialOffers.set(position, removedOffer);
@@ -131,6 +134,8 @@ public class PartitionManager implements INetworkTimerable {
 				requestIter.remove();
 				if (newHasSamePlayer) {
 					newManager.materialRequests.offer(currRequest);
+				} else {
+					System.out.println("merge but has not same player");
 				}
 			}
 		}
