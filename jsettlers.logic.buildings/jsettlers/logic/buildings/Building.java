@@ -305,7 +305,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new WorkerBuilding(type, player);
 
 		case TOWER:
-			return new Tower(player);
+		case BIG_TOWER:
+		case CASTLE:
+			return new OccupyingBuilding(type, player);
 
 		default:
 			System.err.println("couldn't create new building, because type is unknown: " + type);

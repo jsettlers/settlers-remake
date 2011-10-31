@@ -58,6 +58,8 @@ public interface IBuildingsGrid {
 
 	/**
 	 * Positions the given movable at the given position.
+	 * <p>
+	 * This method does not register the movable as workless.
 	 * 
 	 * @param position
 	 *            position the movable should be positioned.

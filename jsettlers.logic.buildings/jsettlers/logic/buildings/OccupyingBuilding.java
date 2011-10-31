@@ -15,7 +15,7 @@ import jsettlers.common.position.ISPosition2D;
  * @author michael
  * 
  */
-public abstract class OccupyingBuilding extends Building {
+public class OccupyingBuilding extends Building {
 
 	private static final float RADIUS = 40;
 
@@ -52,4 +52,10 @@ public abstract class OccupyingBuilding extends Building {
 	@Override
 	protected void positionedEvent(ISPosition2D pos) {
 	}
+
+	@Override
+    public boolean isOccupied() {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 }
