@@ -6,10 +6,17 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 
 public class MapNeighboursArea implements IMapArea {
-	private final ISPosition2D center;
+	private final short x;
+	private final short y;
 
 	public MapNeighboursArea(ISPosition2D center) {
-		this.center = center;
+		this.x = center.getX();
+		this.y = center.getY();
+	}
+
+	public MapNeighboursArea(final short x, final short y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
@@ -37,8 +44,7 @@ public class MapNeighboursArea implements IMapArea {
 
 		@Override
 		public ISPosition2D next() {
-			return EDirection.values()[directionIndex++]
-			        .getNextHexPoint(center);
+			return EDirection.values()[directionIndex++].getNextHexPoint(x, y);
 		}
 
 		@Override
