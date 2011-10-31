@@ -85,9 +85,9 @@
 	<job name="go_to_crop" type="GO_TO" successjob="take1" failjob="gohome"
 		dx="2" dy="2" />
 	<job name="take1" type="DROP" successjob="changeMat1" failjob="gohome"
-		material="CROP" />
+		material="NO_MATERIAL" />
 	<job name="changeMat1" type="SET_MATERIAL" successjob="take2"
-		failjob="gohome" material="NO_MATERIAL" />
+		failjob="gohome" material="CROP" />
 	<job name="take2" type="TAKE" successjob="go_back" failjob="gohome"
 		material="CROP" />
 	<job name="go_back" type="GO_TO" successjob="hide1" failjob="gohome"
