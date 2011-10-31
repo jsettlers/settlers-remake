@@ -18,6 +18,7 @@ public enum EMovableType {
 	PIG_FARMER(EMaterialType.NO_MATERIAL),
 	SLAUGHTERER(EMaterialType.AXE),
 	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL),
+	WATERWORKER(EMaterialType.NO_MATERIAL),
 
 	BRICKLAYER(EMaterialType.HAMMER),
 	DIGGER(EMaterialType.BLADE),
