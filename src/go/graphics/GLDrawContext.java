@@ -82,8 +82,13 @@ public interface GLDrawContext {
 	 *            A float array of the form: x,y,z,u,v
 	 */
 	void drawQuadWithTexture(int textureid, float[] geometry);
+	void drawQuadWithTexture(int textureid, int geometryindex);
+	
 	void drawTrianglesWithTexture(int textureid, float[] geometry);
+	void drawTrianglesWithTexture(int textureid, int geometryindex);
+	
 	void drawTrianglesWithTextureColored(int textureid, float[] geometry);
+	void drawTrianglesWithTextureColored(int textureid, int geometryindex);
 
 	int makeWidthValid(int width);
 
@@ -104,4 +109,8 @@ public interface GLDrawContext {
             int height, ShortBuffer data);
 	
 	TextDrawer getTextDrawer(EFontSize size);
+	
+	int storeGeometry(float[] geometry);
+	boolean isGeometryValid(int geometryindex);
+	void removeGeometry(int geometryindex);
 }
