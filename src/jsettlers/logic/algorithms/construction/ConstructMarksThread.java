@@ -1,6 +1,7 @@
 package jsettlers.logic.algorithms.construction;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.IMapArea;
@@ -21,11 +22,12 @@ public class ConstructMarksThread extends Thread {
 	/**
 	 * area of tiles to be checked.
 	 */
-	private static IMapArea mapArea = null;
-	private static boolean refreshNeeded = false;
-	private static EBuildingType buildingType = null;
+	private IMapArea mapArea = null;
+	private EBuildingType buildingType = null;
 	private final IConstructionMarkableMap map;
 	private final byte player;
+	
+	private IMapArea lastArea = null; 
 
 	public ConstructMarksThread(IConstructionMarkableMap map, byte player) {
 		super("constrMarks");
@@ -37,28 +39,32 @@ public class ConstructMarksThread extends Thread {
 
 	@Override
 	public void run() {
-		int timeSinceLastRefresh = 0;
 		while (true) {
 			try {
-				if (buildingType != null) {
-					if (refreshNeeded || timeSinceLastRefresh >= AlgorithmConstants.CONSTRUCT_MARKS_MAX_REFRESH_TIME) {
-						if (!NetworkTimer.isPausing()) {
-							StopWatch watch = new MilliStopWatch();
-							watch.start();
-
-							calculateConstructMarks();
-
-							watch.stop("calculation of construction marks");
-							refreshNeeded = false;
-						}
-						timeSinceLastRefresh = 0;
+				synchronized (this) {
+					while (buildingType == null) {
+						this.wait();
 					}
-				} else {
-					refreshNeeded = true;
+                }
+				
+				
+				while (buildingType != null) {
+					if (!NetworkTimer.isPausing()) {
+						StopWatch watch = new MilliStopWatch();
+						watch.start();
+
+						calculateConstructMarks();
+
+						watch.stop("calculation of construction marks");
+					}
+					synchronized (this) {
+						wait(AlgorithmConstants.CONSTRUCT_MARKS_MAX_REFRESH_TIME);
+                    }
 				}
+				removeConstructionMarks(mapArea);
+				lastArea = null;
 
 				Thread.sleep(30);
-				timeSinceLastRefresh += 30;
 			} catch (Throwable e) { // this thread must never be destroyed due to errors
 				e.printStackTrace();
 			}
@@ -72,10 +78,37 @@ public class ConstructMarksThread extends Thread {
 
 		RelativePoint[] usedPositions = buildingType.getProtectedTiles();
 
+		if (lastArea != null) {
+			removeConstructionMarks(lastArea, mapArea);
+		}
 		for (ISPosition2D pos : mapArea) {
 			map.setConstructMarking(pos, calculateConstrMarkVal(usedPositions, pos));
 		}
+		lastArea = mapArea;
 	}
+
+	/**
+	 * Removes all construction marks in the given area.
+	 * @param area The area to remove the marks
+	 */
+	private void removeConstructionMarks(IMapArea area) {
+	    for (ISPosition2D pos : area) {
+	    	map.setConstructMarking(pos, (byte) -1);
+	    }
+    }
+
+	/**
+	 * Removes all construction marks in the given area.
+	 * @param area The area to remove the marks
+	 * @param notIn The area of marks that should be skipped.
+	 */
+	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
+	    for (ISPosition2D pos : area) {
+	    	if (!notIn.contains(pos)) {
+	    		map.setConstructMarking(pos, (byte) -1);
+	    	}
+	    }
+    }
 
 	private byte calculateConstrMarkVal(RelativePoint[] usedPositions, ISPosition2D position) {
 		int sum = 0;
@@ -83,7 +116,7 @@ public class ConstructMarksThread extends Thread {
 		for (RelativePoint curr : usedPositions) {
 			ISPosition2D currPos = curr.calculatePoint(position);
 
-			if (!map.isBuildingPlaceable(currPos, player)) {
+			if (!map.isBuildingPlaceable(currPos, player) || !isAllowedLandscape(map.getLandscapeTypeAt(currPos))) {
 				return -1;
 			}
 			sum += map.getHeightAt(currPos);
@@ -98,17 +131,27 @@ public class ConstructMarksThread extends Thread {
 		return (byte) (diff / usedPositions.length);
 	}
 
+	private boolean isAllowedLandscape(ELandscapeType landscapeType) {
+	    ELandscapeType[] groundtypes = buildingType.getGroundtypes();
+		for (int i = 0; i < groundtypes.length; i++) {
+	    	if (groundtypes[i] == landscapeType) {
+	    		return true;
+	    	}
+	    }
+		return false;
+    }
+
 	public void setScreen(IMapArea mapArea) {
-		ConstructMarksThread.mapArea = new MapShapeFilter(mapArea, map.getWidth(), map.getHeight());
+		this.mapArea = new MapShapeFilter(mapArea, map.getWidth(), map.getHeight());
 		refreshMarkings();
 	}
 
 	public void setBuildingType(EBuildingType type) {
-		ConstructMarksThread.buildingType = type;
+		buildingType = type;
 		refreshMarkings();
 	}
 
-	public void refreshMarkings() {
-		refreshNeeded = true;
+	public synchronized void refreshMarkings() {
+		this.notifyAll();
 	}
 }

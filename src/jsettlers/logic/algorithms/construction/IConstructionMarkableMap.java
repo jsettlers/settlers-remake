@@ -1,12 +1,12 @@
 package jsettlers.logic.algorithms.construction;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ISPosition2D;
 
 /**
  * Interface offering the methods needed by {@link ConstructMarksThread}.
  * 
  * @author Andreas Eberle
- * 
  */
 public interface IConstructionMarkableMap {
 
@@ -33,13 +33,11 @@ public interface IConstructionMarkableMap {
 	boolean isBuildingPlaceable(ISPosition2D position, byte player);
 
 	/**
-	 * 
 	 * @return width of map.
 	 */
 	short getWidth();
 
 	/**
-	 * 
 	 * @return height of map
 	 */
 	short getHeight();
@@ -52,4 +50,13 @@ public interface IConstructionMarkableMap {
 	 * @return height of the tile at the fiven position
 	 */
 	byte getHeightAt(ISPosition2D pos);
+
+	/**
+	 * Gets the landscape type at the given position.
+	 * 
+	 * @param pos
+	 *            position to be looked for
+	 * @return The landscape at that position.
+	 */
+	ELandscapeType getLandscapeTypeAt(ISPosition2D pos);
 }
