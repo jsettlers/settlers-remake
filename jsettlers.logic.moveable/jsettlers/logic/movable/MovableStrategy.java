@@ -70,6 +70,8 @@ public abstract class MovableStrategy {
 		case BAKER:
 		case PIG_FARMER:
 		case CHARCOAL_BURNER:
+		case SLAUGHTERER:
+		case WATERWORKER:
 			return new BuildingWorkerStrategy(grid, movable, type);
 
 		case SWORDSMAN_L1:
