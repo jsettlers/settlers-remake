@@ -6,9 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,24 +14,31 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import jsettlers.common.map.shapes.HexBorderArea;
-import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 import synchronic.timer.NetworkTimer;
 
 public class PartitionsGridTestingWnd extends JFrame {
-	private static final short HEIGHT = 400;
-	private static final short WIDTH = 400;
+	private static final Color[] partitionColors = { Color.ORANGE, Color.RED, Color.BLUE, Color.CYAN, Color.GREEN, Color.LIGHT_GRAY, Color.DARK_GRAY,
+			Color.MAGENTA, Color.PINK, Color.YELLOW };
+	private static final int X_OFFSET = 30;
+	private static final int Y_OFFSET = 170;
+
+	private final short BLOCK_SIZE = 60;
+
+	private static final short HEIGHT = 3;
+	private static final short WIDTH = 3;
 
 	private static final long serialVersionUID = 1L;
 
 	private JPanel contentPane;
 	private JTextField textField;
+	private JButton btnRepaint;
 
-	PartitionsGrid map;
+	private PartitionsGrid partitionsGrid;
+	private DummyEmptyAStarMap aStarMap;
 
 	/**
 	 * Launch the application.
@@ -45,56 +49,85 @@ public class PartitionsGridTestingWnd extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					PartitionsGridTestingWnd frame = new PartitionsGridTestingWnd();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				final PartitionsGridTestingWnd frame = new PartitionsGridTestingWnd();
+				frame.setVisible(true);
+
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						initiateTests(frame);
+					}
+				}).start();
+
 			}
 		});
+	}
+
+	private static void initiateTests(PartitionsGridTestingWnd frame) {
+		PartitionsGrid partitionsGrid = frame.partitionsGrid;
+
+		partitionsGrid.changePlayerAt((short) 1, (short) 0, (byte) 0);
+		partitionsGrid.changePlayerAt((short) 2, (short) 2, (byte) 0);
+		partitionsGrid.changePlayerAt((short) 1, (short) 2, (byte) 0);
+		partitionsGrid.changePlayerAt((short) 2, (short) 0, (byte) 0);
+
+		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
+		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
+		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
+
+		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
+
+		frame.aStarMap.setBlocked(1, 1, true);
+
+		partitionsGrid.changePlayerAt((short) 1, (short) 1, (byte) 0);
+
+		System.out.println("--------------------------(expected nothing)");
+
+		partitionsGrid.changePlayerAt((short) 0, (short) 1, (byte) 0);
+
+		System.out.println("--------------------------(expected nothing)");
+
+		partitionsGrid.changePlayerAt((short) 0, (short) 0, (byte) 0);
+
+		System.out.println();
+
 	}
 
 	/**
 	 * Create the frame.
 	 */
 	public PartitionsGridTestingWnd() {
-		DummyEmptyAStarMap aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT) {
+		aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-				return map.getPlayerAt(x, y) != requester.getPlayer();
+				return super.isBlocked(requester, x, y) || requester != null && partitionsGrid.getPlayerAt(x, y) != requester.getPlayer();
 			}
 		};
 		IPartitionableGrid partitionableGrid = new IPartitionableGrid() {
 			@Override
-			public boolean isBlocked(short currX, short currY) {
-				return false;
+			public boolean isBlocked(short x, short y) {
+				return aStarMap.isBlocked(null, x, y);
 			}
 
 			@Override
 			public void changedPartitionAt(short x, short y) {
 				// TODO Auto-generated method stub
 			}
+
+			@Override
+			public void setDebugColor(short x, short y, jsettlers.common.Color color) {
+				// TODO Auto-generated method stub
+			}
 		};
 
-		map = new PartitionsGrid(WIDTH, HEIGHT, partitionableGrid, aStarMap);
+		partitionsGrid = new PartitionsGrid(WIDTH, HEIGHT, partitionableGrid, aStarMap);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 500);
 		contentPane = new JPanel();
-		contentPane.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent arg0) {
-				setPlayer(arg0.getX(), arg0.getY());
-			}
-
-		});
-		contentPane.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				setPlayer(arg0.getX(), arg0.getY());
-			}
-		});
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -120,44 +153,29 @@ public class PartitionsGridTestingWnd extends JFrame {
 		contentPane.add(btnRepaint);
 	}
 
-	private void setPlayer(int mouseX, int mouseY) {
-		short x = (short) (mouseX - 20);
-		short y = (short) (this.getHeight() - mouseY - 40);
-
-		if (map.isInBounds(x, y)) {
-			byte player = new Byte(textField.getText());
-			ISPosition2D position = new ShortPoint2D(x, y);
-			map.changePlayerAt(position.getX(), position.getY(), player);
-
-			for (ISPosition2D currPos : new MapNeighboursArea(position)) {
-				map.changePlayerAt(currPos.getX(), currPos.getY(), player);
-			}
-
-			for (ISPosition2D currPos : new HexBorderArea(position, (short) 2)) {
-				map.changePlayerAt(currPos.getX(), currPos.getY(), player);
-			}
-		}
-		repaint();
-	}
-
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 
 		Graphics2D g = (Graphics2D) graphics;
+		g.translate(0, 300);
 
 		for (short x = 0; x < WIDTH; x++) {
 			for (short y = 0; y < HEIGHT; y++) {
-				short partition = map.getPartitionAt(x, y);
+				short partition = partitionsGrid.getPartitionAt(x, y);
+				int drawX = x * BLOCK_SIZE + X_OFFSET + (HEIGHT - y) * BLOCK_SIZE / 2;
+				int drawY = -(HEIGHT - y) * BLOCK_SIZE + Y_OFFSET;
 				if (partition >= 0) {
 					g.setColor(partitionColors[partition]);
-					g.drawLine(x + 20, this.getHeight() - y - 20, x + 20, this.getHeight() - y - 20);
+					g.fillRect(drawX, drawY, BLOCK_SIZE, -BLOCK_SIZE);
+				} else {
+					g.setColor(Color.BLACK);
+					g.drawRect(drawX, drawY, BLOCK_SIZE, -BLOCK_SIZE);
 				}
+
+				g.setColor(Color.WHITE);
+				g.drawString(x + "|" + y, drawX + BLOCK_SIZE / 2, drawY - BLOCK_SIZE / 2);
 			}
 		}
 	}
-
-	private static final Color[] partitionColors = { Color.ORANGE, Color.BLACK, Color.RED, Color.BLUE, Color.CYAN, Color.GREEN, Color.LIGHT_GRAY,
-			Color.DARK_GRAY, Color.MAGENTA, Color.PINK, Color.YELLOW };
-	private JButton btnRepaint;
 }
