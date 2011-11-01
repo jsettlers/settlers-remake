@@ -88,4 +88,9 @@ public class PositionableList<T extends ILocatable> implements Iterable<T> {
 		return currBest;
 	}
 
+	@Override
+	public String toString() {
+		return data.toString();
+	}
+
 }

@@ -126,7 +126,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 			relabelPartition(x2, y2, secondPartition, firstPartition);
 		} else {
 			newPartition = secondPartition;
-
 			relabelPartition(x1, y1, firstPartition, secondPartition);
 		}
 
@@ -210,6 +209,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return isInBounds(position.getX(), position.getY());
 	}
 
+	@Override
 	public boolean isInBounds(short x, short y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
@@ -262,6 +262,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		getPartitionObject(x, y).decrement();
 		partitions[x][y] = partition;
 		getPartitionObject(partition).increment();
+	}
+
+	@Override
+	public boolean isBlockedForPeople(short x, short y) {
+		return grid.isBlocked(x, y);
 	}
 
 }

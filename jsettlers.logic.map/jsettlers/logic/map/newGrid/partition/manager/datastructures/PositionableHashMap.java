@@ -92,6 +92,11 @@ public class PositionableHashMap<T> implements Iterable<T> {
 		return data.values().iterator();
 	}
 
+	@Override
+	public String toString() {
+		return data.toString();
+	}
+
 	/**
 	 * This interface can be used to specify objects that should be accepted and objects that shouldn't.
 	 * 

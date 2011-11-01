@@ -4,7 +4,7 @@ import jsettlers.common.Color;
 
 public interface IPartitionableGrid {
 
-	boolean isBlocked(short currX, short currY);
+	boolean isBlocked(short x, short y);
 
 	void changedPartitionAt(short x, short y);
 
