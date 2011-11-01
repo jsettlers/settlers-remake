@@ -334,13 +334,13 @@ public class FogOfWar {
 			}
 		};
 		for (int x = 0; x < map.getWidth(); x++) {
-			for (int y = 0; y < map.getWidth(); y++) {
+			for (int y = 0; y < map.getHeight(); y++) {
 				buffer[x][y] = dimDown(buffer[x][y]);
 			}
 		}
 
 		for (int x = 0; x < map.getWidth(); x++) {
-			for (int y = 0; y < map.getWidth(); y++) {
+			for (int y = 0; y < map.getHeight(); y++) {
 				int distance = getViewDistanceForPosition(x, y);
 				if (distance > 0) {
 					drawer.drawCircleToBuffer(x, y, distance);
