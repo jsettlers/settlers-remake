@@ -69,15 +69,14 @@ public class PartitionsAlgorithm {
 		short newPartition = -1;
 
 		for (ISPosition2D currPos : new MapNeighboursArea(x, y)) {
-			if (map.getPlayerAt(currPos) == newPlayer && !this.map.isBlockedForPeople(currPos.getX(), currPos.getY())) {
+			if (map.getPlayerAt(currPos) == newPlayer) {
 				if (newPartition == -1) { // neighbor has same player and we have no partition found yet -> add to the same partition
 					newPartition = map.getPartition(currPos);
 					map.setPartition(x, y, newPartition);
-
 					if (this.map.isBlockedForPeople(x, y)) {
 						break;
 					}
-				} else {
+				} else if (!this.map.isBlockedForPeople(currPos.getX(), currPos.getY())) {
 					if (map.getPartition(currPos) != newPartition) { // neighbor is an other partition but has same player
 						newPartition = map.mergePartitions(currPos.getX(), currPos.getY(), x, y);
 					}// else: neighbor has same player and same partition
