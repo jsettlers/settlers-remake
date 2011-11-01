@@ -265,7 +265,7 @@ public class MainGrid {
 						&& hasSamePlayer(x, (short) (y + 1), pathCalculateable) && !isMarked(x, y);
 
 			case PLANTABLE_CORN:
-				return isCornPlantable(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
+				return isCornPlantable(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y) && !blockedGrid.isProtected(x, y);
 
 			case CUTTABLE_CORN:
 				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
