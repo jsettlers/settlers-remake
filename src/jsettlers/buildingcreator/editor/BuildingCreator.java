@@ -6,6 +6,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -30,6 +33,8 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.resources.IResourceProvider;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SelectAction;
@@ -52,6 +57,20 @@ public class BuildingCreator implements IMapInterfaceListener {
 	private JLabel positionDisplayer;
 
 	private BuildingCreator() {
+		ResourceManager.setProvider(new IResourceProvider() {
+			@Override
+			public InputStream getFile(String name) throws IOException {
+				String currentParentFolder =
+				        new File(new File("").getAbsolutePath()).getParent()
+				                .replace('\\', '/');
+				String path =
+				        currentParentFolder + "/jsettlers.common/resources/";
+				System.out.println(path);
+				File file = new File(path + name);
+				return new FileInputStream(file);
+			}
+		});
+		
 		EBuildingType type = askType();
 
 		definition = new BuildingDefinition(type);
@@ -62,7 +81,6 @@ public class BuildingCreator implements IMapInterfaceListener {
 				reloadColor(new ShortPoint2D(x, y));
 			}
 		}
-
 		JOGLPanel mapPanel = new JOGLPanel();
 		MapInterfaceConnector connector = mapPanel.showHexMap(map, null);
 		connector.addListener(this);
@@ -283,7 +301,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 		} else {
 			tile.setStack(null);
 		}
-		
+
 		if (definition.getBricklayerStatus(relative)) {
 			colors.add(new Color(0xffff14));
 		}
