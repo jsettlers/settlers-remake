@@ -13,6 +13,7 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap;
@@ -36,7 +37,7 @@ public class PartitionManager implements INetworkTimerable {
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
-	private final PriorityQueue<Request<EMaterialType>> materialRequests = new PriorityQueue<PartitionManager.Request<EMaterialType>>();
+	private final LinkedList<Request<EMaterialType>> materialRequests = new LinkedList<PartitionManager.Request<EMaterialType>>();
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
 	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<WorkerRequest>();
@@ -49,6 +50,7 @@ public class PartitionManager implements INetworkTimerable {
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
 
 	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<PartitionManager.WorkerCreationRequest>();
+	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<PartitionManager.SoilderCreationRequest>();
 
 	public PartitionManager() {
 		NetworkTimer.schedule(this, (short) 2);
@@ -87,6 +89,10 @@ public class PartitionManager implements INetworkTimerable {
 
 	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
 		workerRequests.offer(new WorkerRequest(workerType, workerBuilding));
+	}
+
+	public void requestSoilderable(ISPosition2D weaponPosition, Barrack barrack) {
+		soilderCreationRequests.offer(new SoilderCreationRequest(weaponPosition, barrack));
 	}
 
 	public IManageableBearer removeJobless(ISPosition2D position) {
@@ -206,10 +212,11 @@ public class PartitionManager implements INetworkTimerable {
 		handleMaterialRequest();
 
 		handleWorkerCreationRequest();
+		handleSoilderCreationRequest();
 
 		handleDiggerRequest();
 		handleBricklayerRequest();
-
+		
 		handleWorkerRequest();
 	}
 
@@ -256,6 +263,18 @@ public class PartitionManager implements INetworkTimerable {
 				} else {
 					workerCreationRequests.addLast(workerRequest);
 				}
+			}
+		}
+	}
+	
+	private void handleSoilderCreationRequest() {
+		SoilderCreationRequest soilderRequest = soilderCreationRequests.poll();
+		if (soilderRequest != null) {
+			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(soilderRequest.position);
+			if (manageableBearer != null) {
+				manageableBearer.becomeSoilder(soilderRequest.getWeaponPosition(), soilderRequest.getBarrack());
+			} else {
+				soilderCreationRequests.addLast(soilderRequest);
 			}
 		}
 	}
@@ -331,7 +350,8 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private void reofferRequest(Request<EMaterialType> request) {
-		// request.decreasePriority();
+		//TODO: decrease priority, do something else, ...
+		//request.decreasePriority();
 		materialRequests.add(request);
 	}
 
@@ -356,7 +376,7 @@ public class PartitionManager implements INetworkTimerable {
 	private class Request<T> implements Comparable<Request<T>> {
 		final ISPosition2D position;
 		final T requested;
-		byte priority = 1;
+		byte priority = 100;
 
 		public Request(ISPosition2D position, T requested, byte priority) {
 			this.position = position;
@@ -370,7 +390,7 @@ public class PartitionManager implements INetworkTimerable {
 		}
 
 		public void decreasePriority() {
-			if (priority > Byte.MIN_VALUE)
+			if (priority > 0)
 				priority--;
 		}
 
@@ -434,6 +454,34 @@ public class PartitionManager implements INetworkTimerable {
 		public ISPosition2D getPos() {
 			return position;
 		}
+	}
+
+	private class SoilderCreationRequest implements ILocatable {
+		private final ISPosition2D position;
+		private final Barrack barrack;
+
+		public SoilderCreationRequest(ISPosition2D position, Barrack barrack) {
+			this.position = position;
+			this.barrack = barrack;
+		}
+
+		public ISPosition2D getWeaponPosition() {
+	        return this.position;
+        }
+
+		@Override
+		public String toString() {
+			return "SoilderCreationRequest[" + position + "]";
+		}
+
+		@Override
+		public ISPosition2D getPos() {
+			return position;
+		}
+		
+		public Barrack getBarrack() {
+	        return barrack;
+        }
 	}
 
 	private class MaterialTypeAcceptor implements IAcceptor<Offer> {

@@ -11,4 +11,6 @@ public interface IRequestsStackGrid {
 
 	void popMaterial(ISPosition2D position, EMaterialType materialType);
 
+	int getStackSize(ISPosition2D position, EMaterialType materialType);
+
 }

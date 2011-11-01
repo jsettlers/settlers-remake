@@ -313,6 +313,15 @@ public class MapObjectsManager implements ITimerable {
 
 		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
 	}
+	
+	public int getStackSize(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
+		if (stackObject == null) {
+			return 0;
+		} else {
+			return stackObject.getSize();
+		}
+	}
 
 	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
 		addMapObject(position, newBuilding);

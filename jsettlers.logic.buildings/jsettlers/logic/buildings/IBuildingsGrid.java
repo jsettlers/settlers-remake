@@ -5,6 +5,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
@@ -79,4 +80,6 @@ public interface IBuildingsGrid {
 	IRequestsStackGrid getRequestStackGrid();
 
 	void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding);
+
+	void requestSoilderable(ISPosition2D position, Barrack barrack);
 }

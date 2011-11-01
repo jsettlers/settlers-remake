@@ -334,7 +334,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		this.strategy.setGotoJob(gotoJob);
 	}
 
-	void setStrategy(MovableStrategy strategy) {
+	public void setStrategy(MovableStrategy strategy) {
 		ActivePlayer.get().reduceOwned(player, this.strategy.getMovableType());
 		this.strategy = strategy;
 	}

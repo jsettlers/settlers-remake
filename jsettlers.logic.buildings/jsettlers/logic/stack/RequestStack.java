@@ -45,4 +45,8 @@ public class RequestStack {
 		return materialType;
 	}
 
+	public int getStackSize() {
+	    return grid.getStackSize(position, materialType);
+    }
+
 }

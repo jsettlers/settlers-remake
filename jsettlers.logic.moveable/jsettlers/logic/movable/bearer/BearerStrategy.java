@@ -4,11 +4,13 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
+import jsettlers.logic.movable.soldiers.BecomeSoldierStrategy;
 
 public class BearerStrategy extends PathableStrategy implements IManageableBearer {
 	private EBearerState state = EBearerState.JOBLESS;
@@ -144,6 +146,11 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	@Override
 	public void becomeWorker(EMovableType movableType) {
 		super.convertTo(movableType);
+	}
+	
+	@Override
+	public void becomeSoilder(ISPosition2D weaponPosition, Barrack barrack) {
+		this.movable.setStrategy(new BecomeSoldierStrategy(getGrid(), movable, weaponPosition, barrack));
 	}
 
 	@Override

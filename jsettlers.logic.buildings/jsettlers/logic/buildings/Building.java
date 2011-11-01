@@ -16,6 +16,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
@@ -308,6 +309,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case BIG_TOWER:
 		case CASTLE:
 			return new OccupyingBuilding(type, player);
+			
+		case BARRACK:
+			return new Barrack(player);
 
 		default:
 			System.err.println("couldn't create new building, because type is unknown: " + type);

@@ -35,6 +35,7 @@ import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
+import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.blocked.BlockedGrid;
@@ -785,6 +786,11 @@ public class MainGrid {
 		public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
 			partitionsGrid.requestBuildingWorker(workerType, workerBuilding);
 		}
+		
+		@Override
+		public void requestSoilderable(ISPosition2D position, Barrack barrack) {
+			partitionsGrid.requestSoilderable(position, barrack);
+		}
 
 		private class RequestStackGrid implements IRequestsStackGrid {
 			@Override
@@ -801,6 +807,12 @@ public class MainGrid {
 			public void popMaterial(ISPosition2D position, EMaterialType materialType) {
 				mapObjectsManager.popMaterial(position, materialType);
 			}
+
+			@Override
+            public int getStackSize(ISPosition2D position,
+                    EMaterialType materialType) {
+	            return mapObjectsManager.getStackSize(position, materialType);
+            }
 		}
 	}
 

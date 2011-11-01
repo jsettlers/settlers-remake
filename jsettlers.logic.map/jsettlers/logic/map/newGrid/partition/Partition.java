@@ -7,6 +7,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
@@ -102,5 +103,9 @@ public class Partition {
 	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
 		manager.requestBuildingWorker(workerType, workerBuilding);
 	}
+
+	public void requestSoilderable(ISPosition2D weaponPosition, Barrack barrack) {
+	    manager.requestSoilderable(weaponPosition, barrack);
+    }
 
 }
