@@ -3,7 +3,6 @@ package jsettlers.logic.algorithms.landmarks;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import jsettlers.common.Color;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 
@@ -60,14 +59,9 @@ public class LandmarksCorrectingThread extends Thread {
 		LinkedList<ISPosition2D> blockedBorder = new LinkedList<ISPosition2D>();
 		blockedBorder.add(blocked);
 
-		map.setDebugColor(startPos.getX(), startPos.getY(), new Color(0xff0000));
-		Color[] colors = { new Color(0xff0000), new Color(0x000000), new Color(0x00ff00), new Color(0xffff00) };
-
 		while (true) {
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
 			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
-
-			map.setDebugColor(neighborPos.getX(), neighborPos.getY(), colors[(int) (Math.random() * colors.length)]);
 
 			if (!map.isInBounds(neighborPos.getX(), neighborPos.getY())) {
 				takeOverBlockedLand(blockedBorder, startPartition);
