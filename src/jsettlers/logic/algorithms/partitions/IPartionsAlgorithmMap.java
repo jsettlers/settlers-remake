@@ -82,4 +82,8 @@ public interface IPartionsAlgorithmMap {
 	 */
 	void dividePartition(final short x, final short y, final ISPosition2D firstPos, final ISPosition2D secondPos);
 
+	boolean isInBounds(short x, short y);
+
+	boolean isBlockedForPeople(short x, short y);
+
 }
