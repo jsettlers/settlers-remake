@@ -32,4 +32,6 @@ public interface IGuiInputGrid {
 	void setBuildingType(EBuildingType buildingType);
 
 	void setScreen(IMapArea screenArea);
+
+	void resetDebugColors();
 }

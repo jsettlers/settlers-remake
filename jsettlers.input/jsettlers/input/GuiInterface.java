@@ -157,6 +157,10 @@ public class GuiInterface implements IMapInterfaceListener {
 			grid.setScreen(((ScreenChangeAction) action).getScreenArea());
 			break;
 
+		case TOGGLE_DEBUG:
+			grid.resetDebugColors();
+			break;
+
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}

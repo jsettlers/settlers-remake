@@ -1,5 +1,6 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import jsettlers.common.Color;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -96,6 +97,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 
 		Partition oldPartitionObject = getPartitionObject(x, y);
 		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
+		grid.setDebugColor(x, y, Color.GREEN);
 
 		this.partitions[x][y] = newPartition;
 

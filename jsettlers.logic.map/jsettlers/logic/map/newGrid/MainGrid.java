@@ -386,9 +386,9 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-			// return debugColors[x][y];
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			return debugColors[x][y];
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
@@ -461,12 +461,6 @@ public class MainGrid {
 		@Override
 		public boolean isBlocked(short x, short y) {
 			return blockedGrid.isBlocked(x, y);
-		}
-
-		@Override
-		public void setDebugColor(short x, short y, Color color) {
-			if (isInBounds(x, y))
-				debugColors[x][y] = color;
 		}
 
 		@Override
@@ -855,6 +849,15 @@ public class MainGrid {
 		public void setScreen(IMapArea screenArea) {
 			constructionMarksCalculator.setScreen(screenArea);
 		}
+
+		@Override
+		public void resetDebugColors() {
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					debugColors[x][y] = null;
+				}
+			}
+		}
 	}
 
 	class PartitionsManagementGrid implements IPartitionableGrid {
@@ -866,6 +869,11 @@ public class MainGrid {
 		@Override
 		public void changedPartitionAt(short x, short y) {
 			landmarksCorrectionThread.addLandmarkedPosition(new ShortPoint2D(x, y));
+		}
+
+		@Override
+		public void setDebugColor(final short x, final short y, Color color) {
+			debugColors[x][y] = color;
 		}
 	}
 
