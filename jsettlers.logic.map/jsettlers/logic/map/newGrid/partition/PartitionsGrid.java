@@ -210,7 +210,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return isInBounds(position.getX(), position.getY());
 	}
 
-	@Override
 	public boolean isInBounds(short x, short y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
@@ -265,7 +264,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		getPartitionObject(partition).increment();
 	}
 
-	@Override
 	public boolean isBlockedForPeople(short x, short y) {
 		return grid.isBlocked(x, y);
 	}

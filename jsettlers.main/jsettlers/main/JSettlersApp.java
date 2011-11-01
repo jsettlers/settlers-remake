@@ -1,8 +1,6 @@
 package jsettlers.main;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
 
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -20,41 +18,35 @@ import random.RandomSingleton;
 
 public abstract class JSettlersApp implements Runnable {
 
-	private static final int[] PRELOAD_FILES = new int[] {
-	        2, 0, 1, 3, 10, 11, 12, 13
-	};
+	private static final int[] PRELOAD_FILES = new int[] { 2, 0, 1, 3, 10, 11, 12, 13 };
 
 	private static final byte PLAYERS = 3;
 
 	private final String networkmode;
-
 	private final String host;
 
+	private final boolean randomMap;
+
 	protected JSettlersApp() {
-		this("single", "");
+		this("single", "", true);
 	}
 
-	protected JSettlersApp(String networkmode, String host) {
+	protected JSettlersApp(String networkmode, String host, boolean randomMap) {
 		this.networkmode = networkmode;
 		this.host = host;
+		this.randomMap = randomMap;
 	}
 
 	public void addImagePath(File file) {
 		ImageProvider provider = ImageProvider.getInstance();
 		provider.addLookupPath(file);
-    }
-	
+	}
+
+	@Override
 	public void run() {
 		INetworkManager manager = null;
-        try {
-	        manager = startNetworkManager(networkmode, host);
-        } catch (UnknownHostException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
+
+		manager = startNetworkManager(networkmode, host);
 
 		ActivePlayer.instantiate((byte) 0);
 
@@ -65,8 +57,7 @@ public abstract class JSettlersApp implements Runnable {
 
 		// Schedule image loading while the other stuff is waiting
 		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
+		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
 		for (int i : PRELOAD_FILES) {
@@ -78,16 +69,20 @@ public abstract class JSettlersApp implements Runnable {
 
 		progress.setProgressState(EProgressState.LOADING_MAP);
 
-		MainGrid grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
+		MainGrid grid;
+
+		if (randomMap) {
+			grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
+		} else {
+			grid = MainGrid.createForDebugging();
+		}
 
 		progress.setProgressState(EProgressState.LOADING_IMAGES);
 		for (int i : PRELOAD_FILES) {
 			provider.waitForPreload(i);
 		}
 
-		MapInterfaceConnector connector =
-		        content.showHexMap(grid.getGraphicsGrid(), ActivePlayer.get()
-		                .getStatistics());
+		MapInterfaceConnector connector = content.showHexMap(grid.getGraphicsGrid(), ActivePlayer.get().getStatistics());
 		new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 		manager.startGameTimer();
@@ -95,8 +90,7 @@ public abstract class JSettlersApp implements Runnable {
 
 	protected abstract void startGui(JOGLPanel content);
 
-	private INetworkManager startNetworkManager(String networkmode, String host)
-	        throws UnknownHostException, IOException {
+	private INetworkManager startNetworkManager(String networkmode, String host) {
 		INetworkManager manager;
 		if (networkmode.equalsIgnoreCase("single")) {
 			manager = new NullNetworkManager();

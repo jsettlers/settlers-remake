@@ -139,6 +139,44 @@ public class MainGrid {
 		System.out.println("grid filled");
 	}
 
+	public static MainGrid createForDebugging() {
+		MainGrid grid = new MainGrid((short) 200, (short) 100);
+
+		for (short x = 0; x < grid.width; x++) {
+			for (short y = 0; y < grid.height; y++) {
+				grid.landscapeGrid.setLandscapeTypeAt(x, y, ELandscapeType.GRASS);
+				grid.landscapeGrid.setHeightAt(x, y, (byte) 0);
+			}
+		}
+
+		Building tower = Building.getBuilding(EBuildingType.TOWER, (byte) 0);
+		tower.appearAt(grid.buildingsGrid, new ShortPoint2D(55, 50));
+
+		tower = Building.getBuilding(EBuildingType.TOWER, (byte) 0);
+		tower.appearAt(grid.buildingsGrid, new ShortPoint2D(145, 50));
+
+		grid.placeStack(new ShortPoint2D(30, 50), EMaterialType.PLANK, 8);
+		grid.placeStack(new ShortPoint2D(32, 50), EMaterialType.PLANK, 8);
+		grid.placeStack(new ShortPoint2D(34, 50), EMaterialType.PLANK, 8);
+		grid.placeStack(new ShortPoint2D(36, 50), EMaterialType.PLANK, 8);
+		grid.placeStack(new ShortPoint2D(30, 40), EMaterialType.STONE, 8);
+		grid.placeStack(new ShortPoint2D(32, 40), EMaterialType.STONE, 8);
+		grid.placeStack(new ShortPoint2D(34, 40), EMaterialType.STONE, 8);
+		grid.placeStack(new ShortPoint2D(36, 40), EMaterialType.STONE, 8);
+		grid.placeStack(new ShortPoint2D(34, 30), EMaterialType.HAMMER, 1);
+		grid.placeStack(new ShortPoint2D(36, 30), EMaterialType.BLADE, 1);
+
+		grid.placeStack(new ShortPoint2D(38, 30), EMaterialType.AXE, 1);
+		grid.placeStack(new ShortPoint2D(40, 30), EMaterialType.SAW, 1);
+
+		for (int i = 0; i < 10; i++) {
+			grid.createNewMovableAt(new ShortPoint2D(60 + 2 * i, 50), EMovableType.BEARER, (byte) 0);
+		}
+		grid.createNewMovableAt(new ShortPoint2D(50, 50), EMovableType.PIONEER, (byte) 0);
+
+		return grid;
+	}
+
 	public static MainGrid create(String filename, byte players, Random random) {
 		RandomMapFile file = RandomMapFile.getByName(filename);
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
@@ -159,16 +197,18 @@ public class MainGrid {
 		} else if (object instanceof MapStoneObject) {
 			mapObjectsManager.addStone(pos, ((MapStoneObject) object).getCapacity());
 		} else if (object instanceof StackObject) {
-			EMaterialType type = ((StackObject) object).getType();
-
-			for (int i = 0; i < ((StackObject) object).getCount(); i++) {
-				movablePathfinderGrid.pushMaterial(pos, type, true);
-			}
+			placeStack(pos, ((StackObject) object).getType(), ((StackObject) object).getCount());
 		} else if (object instanceof BuildingObject) {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
 		} else if (object instanceof MovableObject) {
 			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
+		}
+	}
+
+	private void placeStack(ISPosition2D pos, EMaterialType materialType, int count) {
+		for (int i = 0; i < count; i++) {
+			movablePathfinderGrid.pushMaterial(pos, materialType, true);
 		}
 	}
 
@@ -387,9 +427,9 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-			return debugColors[x][y];
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// return debugColors[x][y];
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
