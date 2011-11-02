@@ -13,7 +13,6 @@ import jsettlers.logic.movable.soldiers.PikemanStrategy;
 import jsettlers.logic.movable.soldiers.SwordsmanStrategy;
 import jsettlers.logic.movable.specialists.PioneerStrategy;
 import jsettlers.logic.movable.workers.BuildingWorkerStrategy;
-import jsettlers.logic.player.ActivePlayer;
 
 /**
  * This is the strategy that tells a movable the next steps it has to do.
@@ -49,7 +48,6 @@ public abstract class MovableStrategy {
 	 * @return
 	 */
 	static MovableStrategy getTypeStrategy(IMovableGrid grid, EMovableType type, Movable movable) {
-		ActivePlayer.get().increaseOwned(movable.getPlayer(), type);
 		switch (type) {
 		case BEARER:
 			return new BearerStrategy(grid, movable);

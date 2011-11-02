@@ -1,10 +1,10 @@
-package jsettlers.logic.player;
+package jsettlers.logic.map.newGrid.partition;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
 
-public class PlayerStatistics implements IStatisticable {
+public class PartitionsStatistics implements IStatisticable {
 	private final int[] numberOfMaterials = new int[EMaterialType.values().length];
 	private final int[] numberOfMovables = new int[EMovableType.values().length];
 	private int joblessBearer = 0;

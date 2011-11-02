@@ -9,7 +9,6 @@ import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
 import jsettlers.logic.map.newGrid.MainGrid;
-import jsettlers.logic.player.ActivePlayer;
 import jsettlers.logic.timer.Timer100Milli;
 import network.INetworkManager;
 import network.NetworkManager;
@@ -25,13 +24,31 @@ public abstract class JSettlersApp implements Runnable {
 	private final String networkmode;
 	private final String host;
 
-	private final boolean randomMap;
+	private final String randomMap;
 
 	protected JSettlersApp() {
-		this("single", "", true);
+		this("single", "", "test");
 	}
 
-	protected JSettlersApp(String networkmode, String host, boolean randomMap) {
+	/**
+	 * 
+	 * @param networkmode
+	 *            possible values are:<br>
+	 *            <dl>
+	 *            <dt>"single"</dt>
+	 *            <dd>leading to a single player game</dd>
+	 *            <dt>"host"</dt>
+	 *            <dd>opening a host for a multiplayer game</dd>
+	 *            <dt>"client"</dt>
+	 *            <dd>opening a connection to the given host.</dd>
+	 *            </dl>
+	 * @param host
+	 *            host to connect to.
+	 * @param randomMap
+	 *            name of the random map or <br>
+	 *            null if the debugging map should be loaded.
+	 */
+	protected JSettlersApp(String networkmode, String host, String randomMap) {
 		this.networkmode = networkmode;
 		this.host = host;
 		this.randomMap = randomMap;
@@ -47,8 +64,6 @@ public abstract class JSettlersApp implements Runnable {
 		INetworkManager manager = null;
 
 		manager = startNetworkManager(networkmode, host);
-
-		ActivePlayer.instantiate((byte) 0);
 
 		JOGLPanel content = new JOGLPanel();
 		startGui(content);
@@ -71,7 +86,7 @@ public abstract class JSettlersApp implements Runnable {
 
 		MainGrid grid;
 
-		if (randomMap) {
+		if (randomMap != null && !randomMap.isEmpty()) {
 			grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
 		} else {
 			grid = MainGrid.createForDebugging();
@@ -82,7 +97,7 @@ public abstract class JSettlersApp implements Runnable {
 			provider.waitForPreload(i);
 		}
 
-		MapInterfaceConnector connector = content.showHexMap(grid.getGraphicsGrid(), ActivePlayer.get().getStatistics());
+		MapInterfaceConnector connector = content.showHexMap(grid.getGraphicsGrid(), null);
 		new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 		manager.startGameTimer();
@@ -95,10 +110,10 @@ public abstract class JSettlersApp implements Runnable {
 		if (networkmode.equalsIgnoreCase("single")) {
 			manager = new NullNetworkManager();
 		} else {
-			if (host.equalsIgnoreCase("host")) {
-				manager = new NetworkManager(60);
+			if (networkmode.equalsIgnoreCase("host")) {
+				manager = new NetworkManager(6666);
 			} else {
-				manager = new NetworkManager("localhost", 60);
+				manager = new NetworkManager("localhost", 6666);
 			}
 		}
 

@@ -2,7 +2,6 @@ package jsettlers.logic.map.newGrid.partition.manager;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
@@ -212,11 +211,11 @@ public class PartitionManager implements INetworkTimerable {
 		handleMaterialRequest();
 
 		handleWorkerCreationRequest();
-		handleSoilderCreationRequest();
+		handleSoldierCreationRequest();
 
 		handleDiggerRequest();
 		handleBricklayerRequest();
-		
+
 		handleWorkerRequest();
 	}
 
@@ -266,8 +265,8 @@ public class PartitionManager implements INetworkTimerable {
 			}
 		}
 	}
-	
-	private void handleSoilderCreationRequest() {
+
+	private void handleSoldierCreationRequest() {
 		SoilderCreationRequest soilderRequest = soilderCreationRequests.poll();
 		if (soilderRequest != null) {
 			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(soilderRequest.position);
@@ -350,8 +349,8 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private void reofferRequest(Request<EMaterialType> request) {
-		//TODO: decrease priority, do something else, ...
-		//request.decreasePriority();
+		// TODO: decrease priority, do something else, ...
+		// request.decreasePriority();
 		materialRequests.add(request);
 	}
 
@@ -387,11 +386,6 @@ public class PartitionManager implements INetworkTimerable {
 		@Override
 		public int compareTo(Request<T> other) {
 			return other.priority - this.priority;
-		}
-
-		public void decreasePriority() {
-			if (priority > 0)
-				priority--;
 		}
 
 		@Override
@@ -466,8 +460,8 @@ public class PartitionManager implements INetworkTimerable {
 		}
 
 		public ISPosition2D getWeaponPosition() {
-	        return this.position;
-        }
+			return this.position;
+		}
 
 		@Override
 		public String toString() {
@@ -478,10 +472,10 @@ public class PartitionManager implements INetworkTimerable {
 		public ISPosition2D getPos() {
 			return position;
 		}
-		
+
 		public Barrack getBarrack() {
-	        return barrack;
-        }
+			return barrack;
+		}
 	}
 
 	private class MaterialTypeAcceptor implements IAcceptor<Offer> {

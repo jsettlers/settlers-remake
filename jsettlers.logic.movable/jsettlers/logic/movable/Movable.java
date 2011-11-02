@@ -11,7 +11,6 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
-import jsettlers.logic.player.ActivePlayer;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
@@ -99,7 +98,6 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		this.health = 0;
 		grid.movableLeft(pos, this);
 		movablesByID.remove(this.getID());
-		ActivePlayer.get().reduceOwned(player, this.strategy.getMovableType());
 
 		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.GHOST, 1, player);
 	}
@@ -260,10 +258,10 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			for (EDirection curr : EDirection.values()) { // push all movables around this movable
 				ISPosition2D point = curr.getNextHexPoint(pos);
 				if (grid.isInBounds(point)) {
-				IHexMovable movable = grid.getMovable(point);
-				if (movable != null) {
-					movable.push(this);
-				}
+					IHexMovable movable = grid.getMovable(point);
+					if (movable != null) {
+						movable.push(this);
+					}
 				}
 			}
 		}
@@ -335,7 +333,6 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	public void setStrategy(MovableStrategy strategy) {
-		ActivePlayer.get().reduceOwned(player, this.strategy.getMovableType());
 		this.strategy = strategy;
 	}
 
