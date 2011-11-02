@@ -130,7 +130,7 @@ public class BecomeSoldierStrategy extends PathableStrategy {
 
 	private void abort() {
 		// become a bearer again
-		//TODO: tell barrack that we aborted.
+		barrack.abortedForPosition(weaponPosition);
 		this.movable.setStrategy(new BearerStrategy(getGrid(), movable));
 	}
 

@@ -8,6 +8,11 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.stack.RequestStack;
 
+/**
+ * This is the barrack building. It requests bearers to become soilders.
+ * 
+ * @author michael
+ */
 public class Barrack extends Building {
 	private boolean stoppedWorking = false;
 
@@ -89,9 +94,27 @@ public class Barrack extends Building {
 		}
 	}
 
+	/**
+	 * Gets the flag position.
+	 * 
+	 * @return The point in map space.
+	 */
 	public ISPosition2D getFlag() {
 		RelativePoint flag = getBuildingType().getFlag();
-	    return calculateRealPoint(flag.getDx(), flag.getDy());
-    }
+		return calculateRealPoint(flag.getDx(), flag.getDy());
+	}
+
+	/**
+	 * Called by a bearer that aborted to become a soilder.
+	 * 
+	 * @param weaponPosition
+	 */
+	public void abortedForPosition(ISPosition2D weaponPosition) {
+		for (RequestStack stack : super.stacks) {
+			if (stack.getPosition() == weaponPosition) {
+				requestFullfilled(stack.getMaterialType());
+			}
+		}
+	}
 
 }
