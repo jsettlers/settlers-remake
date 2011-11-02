@@ -3,6 +3,8 @@ package jsettlers.main.swing;
 import go.graphics.swing.AreaContainer;
 
 import java.awt.Dimension;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 
@@ -15,14 +17,27 @@ public class JSettlersApp {
 		JoglLibraryPathInitializer.initLibraryPath();
 	}
 
-	public static void main(String[] args) {
+	/**
+	 * 
+	 * @param args
+	 *            args can have no entries or <br>
+	 *            args[0] must be "host" or "client"
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		ResourceManager.setProvider(new ResourceProvider());
-		new Thread(new SettlersGame()).start();
-		// NetworkTimer.loadLogging("logs/2011_10_25-20_35_36.log");
+		new Thread(new SettlersGame(args.length > 0 ? args[0] : "single")).start();
+		// NetworkTimer.loadLogging("logs/2011_11_02-11_39_44.log");
 		// NetworkTimer.activateLogging("logs");
 	}
 
 	private static class SettlersGame extends jsettlers.main.JSettlersApp {
+		public SettlersGame(String networkMode) {
+			super(networkMode, "localhost", "test");
+		}
+
 		@Override
 		protected void startGui(JOGLPanel content) {
 			JFrame jsettlersWnd = new JFrame("jsettlers");

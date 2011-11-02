@@ -26,7 +26,7 @@ public class DebuggingJSettlersApp {
 
 	private static class SettlersGame extends jsettlers.main.JSettlersApp {
 		public SettlersGame() {
-			super("single", "", false);
+			super("single", "", null);
 		}
 
 		@Override
