@@ -28,7 +28,7 @@ public class PioneerStrategy extends PathableStrategy {
 
 	@Override
 	protected void setCalculatedPath(Path path) {
-		super.getGrid().setMarked(super.getPos(), false);
+		super.getGrid().setMarked(path.getTargetPos(), false);
 		super.setCalculatedPath(path);
 	}
 
@@ -130,4 +130,11 @@ public class PioneerStrategy extends PathableStrategy {
 		super.setAction(EAction.NO_ACTION, -1);
 	}
 
+	@Override
+	protected void killedEvent() {
+		ISPosition2D targetPos = super.getTargetPos();
+		if (targetPos != null) {
+			super.getGrid().setMarked(targetPos, false);
+		}
+	}
 }

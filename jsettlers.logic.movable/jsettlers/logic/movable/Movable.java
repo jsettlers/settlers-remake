@@ -38,7 +38,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 	private MovableStrategy strategy;
 	private float progressIncrease = 0.1f;
-	private ISPosition2D nextTile;
+	private ISPosition2D nextPos;
 	private IHexMovable pushedFrom;
 
 	public Movable(IMovableGrid grid, ISPosition2D pos, EMovableType type, byte player) {
@@ -96,6 +96,11 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	@Override
 	public void kill() {
 		MovableTimer.remove(this);
+		strategy.killedEvent();
+		grid.setMarked(pos, false);
+		if (nextPos != null)
+			grid.setMarked(nextPos, false);
+
 		this.health = 0;
 		grid.movableLeft(pos, this);
 		movablesByID.remove(this.getID());
@@ -143,7 +148,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			break;
 
 		case WAITING_FOR_FREE_TILE:
-			if (from.getPos().equals(this.nextTile)) {
+			if (from.getPos().equals(this.nextPos)) {
 				if (from.getNextTile() != null) { // if the other one didn't just push us in nothingToDo action
 					// exchange the two movables
 					initGoingToNextTile();
@@ -151,7 +156,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				}
 
 			} else {
-				IHexMovable movableOnNextTile = grid.getMovable(nextTile);
+				IHexMovable movableOnNextTile = grid.getMovable(nextPos);
 				if (movableOnNextTile != null) { // next tile is free, we can move!
 					state = EMovableState.PUSHED_AND_WAITING;
 					pushedFrom = from;
@@ -205,9 +210,9 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	@Override
 	public void initGoingToNextTile() {
 		grid.movableLeft(pos, this);
-		grid.movableEntered(this.nextTile, this);
-		this.pos = this.nextTile;
-		this.nextTile = null;
+		grid.movableEntered(this.nextPos, this);
+		this.pos = this.nextPos;
+		this.nextPos = null;
 		this.progress = 0;
 		this.action = EAction.WALKING;
 		this.state = EMovableState.EXECUTING_ACTION;
@@ -227,7 +232,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 		case PUSHED_AND_WAITING:
 		case WAITING_FOR_FREE_TILE:
-			IHexMovable movableOnNextTile = grid.getMovable(nextTile);
+			IHexMovable movableOnNextTile = grid.getMovable(nextPos);
 			if (movableOnNextTile == null) { // next tile is free, we can move!
 				initGoingToNextTile();
 			} else {
@@ -284,7 +289,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		EDirection newDir = EDirection.getDirection(pos, nextTile);
 		if (newDir != null) { // TODO @Andreas: check if this is needed
 			setDirection(newDir);
-			this.nextTile = nextTile;
+			this.nextPos = nextTile;
 			this.state = EMovableState.WAITING_FOR_FREE_TILE;
 		} else {
 		}
@@ -400,13 +405,13 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 	@Override
 	public ISPosition2D getNextTile() {
-		return nextTile;
+		return nextPos;
 	}
-	
+
 	@Override
 	public boolean isRightstep() {
-	    return isRightstep;
-    }
+		return isRightstep;
+	}
 
 	/**
 	 * Lets this movable wait for the given period of time. After the time elapsed, actionFinished() will be called.

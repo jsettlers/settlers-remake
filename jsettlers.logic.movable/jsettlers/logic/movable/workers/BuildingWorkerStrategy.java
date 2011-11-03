@@ -52,7 +52,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		if (currentJob != null
 				&& (currentJob.getType() == EBuildingJobType.PRE_SEARCH || currentJob.getType() == EBuildingJobType.PRE_SEARCH_IN_AREA)) {
 			this.path = path;
-			super.getGrid().setMarked(path.getLastTile(), true);
+			super.getGrid().setMarked(path.getTargetPos(), true);
 			jobFinished();
 		} else {
 			super.setCalculatedPath(path);
@@ -270,7 +270,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 			this.done = true;
 		} else {
-			super.getGrid().setMarked(path.getLastTile(), false);
+			super.getGrid().setMarked(path.getTargetPos(), false);
 			path = null;
 			super.setAction(EAction.NO_ACTION, -1);
 			jobFinished();// start next action

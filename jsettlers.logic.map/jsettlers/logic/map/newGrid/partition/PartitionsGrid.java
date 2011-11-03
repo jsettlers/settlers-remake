@@ -184,11 +184,12 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 			}
 
 			setPartition(x, y, newPartition);
+			boolean currIsBlocked = grid.isBlocked(x, y);
 
 			for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 				short currX = (short) (x + neighborX[i]);
 				short currY = (short) (y + neighborY[i]);
-				if (isInBounds(currX, currY) && partitions[currX][currY] == oldPartition && !grid.isBlocked(currX, currY)) {
+				if (isInBounds(currX, currY) && partitions[currX][currY] == oldPartition && (!currIsBlocked || grid.isBlocked(currX, currY))) {
 					if (length < MAX_LENGTH) {
 						pointsBuffer[length++] = currX;
 						pointsBuffer[length++] = currY;
@@ -210,6 +211,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return isInBounds(position.getX(), position.getY());
 	}
 
+	@Override
 	public boolean isInBounds(short x, short y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
@@ -264,12 +266,13 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		getPartitionObject(partition).increment();
 	}
 
+	@Override
 	public boolean isBlockedForPeople(short x, short y) {
 		return grid.isBlocked(x, y);
 	}
 
 	public void requestSoilderable(ISPosition2D position, Barrack barrack) {
 		getPartitionObject(position).requestSoilderable(position, barrack);
-    }
+	}
 
 }

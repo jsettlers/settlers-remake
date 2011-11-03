@@ -162,4 +162,7 @@ public abstract class MovableStrategy {
 
 	protected void leaveBlockedPosition() {
 	}
+
+	protected void killedEvent() {
+	}
 }

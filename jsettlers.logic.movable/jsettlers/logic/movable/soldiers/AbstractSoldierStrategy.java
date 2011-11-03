@@ -75,7 +75,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 			Path path = super.getGrid().getDijkstra()
 					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, getSearchRadius(), ESearchType.ENEMY);
 			if (path != null)
-				enemyPos = path.getLastTile();
+				enemyPos = path.getTargetPos();
 			else
 				enemyPos = null;
 		} else {
