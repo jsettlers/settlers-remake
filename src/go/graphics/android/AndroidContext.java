@@ -8,27 +8,20 @@ import go.graphics.text.TextDrawer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES10;
 import android.opengl.GLUtils;
 
 public class AndroidContext implements GLDrawContext {
+	
+	private ArrayList<float[]> geometries = new ArrayList<float[]>();
 
-<<<<<<< .mine
 	public AndroidContext() {
 		GLES10.glEnableClientState(GLES10.GL_VERTEX_ARRAY);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-=======
-	private final GL10 gl;
-
-	public AndroidContext(GL10 gl) {
-		this.gl = gl;
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
->>>>>>> .r651
 
 		GLES10.glAlphaFunc(GLES10.GL_GREATER, 0.1f);
 		GLES10.glEnable(GLES10.GL_ALPHA_TEST);
@@ -43,7 +36,6 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
 		System.out.println("fillQuad");
-<<<<<<< .mine
 		float[] quadData =
 		        new float[] {
 		                x1,
@@ -65,21 +57,13 @@ public class AndroidContext implements GLDrawContext {
 		                y2,
 		                0,
 		        };
-=======
-		float[] quadData = new float[] { x1, y1, 0, x2, y1, 0, x1, y2, 0, x1, y2, 0, x2, y1, 0, x2, y2, 0, };
->>>>>>> .r651
+
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(quadData);
-<<<<<<< .mine
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 0, floatBuff);
 		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, quadData.length / 3);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-=======
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, floatBuff);
-		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, quadData.length / 3);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
->>>>>>> .r651
+
 	}
 
 	@Override
@@ -116,19 +100,13 @@ public class AndroidContext implements GLDrawContext {
 	private ByteBuffer quadEleementBuffer;
 
 	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
-<<<<<<< .mine
 		if (reuseableBuffer == null
 		        || reuseableBuffer.position(0).capacity() < points.length) {
-=======
-		if (reuseableBuffer == null || reuseableBuffer.capacity() < points.length) {
->>>>>>> .r651
+
 			if (reuseableBuffer != null) {
-<<<<<<< .mine
 				System.out.println("reallocated! needed: " + points.length
 				        + ", old:" + reuseableBuffer.capacity());
-=======
-				System.out.println("reallocated! needed: " + points.length + ", got:" + reuseableBuffer.capacity());
->>>>>>> .r651
+
 			}
 			ByteBuffer quadPoints = ByteBuffer.allocateDirect(points.length * 4);
 			quadPoints.order(ByteOrder.nativeOrder());
@@ -148,18 +126,11 @@ public class AndroidContext implements GLDrawContext {
 			throw new IllegalArgumentException("Point array length needs to be multiple of 3.");
 		}
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(points);
-<<<<<<< .mine
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 0, floatBuff);
 		GLES10.glDrawArrays(loop ? GLES10.GL_LINE_LOOP : GLES10.GL_LINE_STRIP,
 		        0, points.length / 3);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
-=======
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, floatBuff);
-		gl.glDrawArrays(loop ? GL10.GL_LINE_LOOP : GL10.GL_LINE_STRIP, 0, points.length / 3);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
->>>>>>> .r651
 	}
 
 	@Override
@@ -178,19 +149,11 @@ public class AndroidContext implements GLDrawContext {
 
 		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
-<<<<<<< .mine
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, buffer);
 		FloatBuffer texbuffer = buffer.duplicate();
 		texbuffer.position(3);
 		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, texbuffer);
 
-=======
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 5 * 4, buffer);
-		buffer.position(3);
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 5 * 4, buffer);
-		buffer.position(0);
-
->>>>>>> .r651
 		quadEleementBuffer.position(0);
 		GLES10.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
 		        quadEleementBuffer);
@@ -254,6 +217,8 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public int generateTexture(int width, int height, ShortBuffer data) {
 		System.out.println("Generating texture");
+		//TESTING CODE!
+		
 		// ByteBuffer bb = ByteBuffer.allocateDirect(width * height * 4);
 		// bb.order(ByteOrder.BIG_ENDIAN);
 		// IntBuffer ib = bb.asIntBuffer();
@@ -273,7 +238,6 @@ public class AndroidContext implements GLDrawContext {
 			return -1;
 		}
 
-<<<<<<< .mine
 		Bitmap bitmap = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_4444);
 		bitmap.eraseColor(0xff888888);
 		System.out.println("generated bitmap");
@@ -287,10 +251,6 @@ public class AndroidContext implements GLDrawContext {
 		bitmap.recycle();
 
 		checkGLError();
-=======
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, texture);
-		gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_SHORT_5_5_5_1, data);
->>>>>>> .r651
 		setTextureParameters();
 		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_WRAP_S,
 		        GLES10.GL_REPEAT);
@@ -322,26 +282,16 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void updateTexture(int textureIndex, int left, int bottom, int width, int height, ShortBuffer data) {
-
-<<<<<<< .mine
 		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, textureIndex);
 		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width,
 		        height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
-=======
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIndex);
-		gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, left, bottom, width, height, GL10.GL_RGBA, GL10.GL_UNSIGNED_SHORT_5_5_5_1, data);
->>>>>>> .r651
 	}
 
 	@Override
 	public void deleteTexture(int textureid) {
-<<<<<<< .mine
 		GLES10.glDeleteTextures(1, new int[] {
 			textureid
 		}, 0);
-=======
-		gl.glDeleteTextures(1, new int[] { textureid }, 0);
->>>>>>> .r651
 	}
 
 	@Override
@@ -356,32 +306,28 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void drawQuadWithTexture(int textureid, int geometryindex) {
-		// TODO Auto-generated method stub
-
+		drawQuadWithTexture(textureid, geometries.get(geometryindex));
 	}
 
 	@Override
 	public void drawTrianglesWithTexture(int textureid, int geometryindex) {
-		// TODO Auto-generated method stub
-
+		drawTrianglesWithTexture(textureid, geometries.get(geometryindex));
 	}
 
 	@Override
 	public void drawTrianglesWithTextureColored(int textureid, int geometryindex) {
-		// TODO Auto-generated method stub
-
+		drawTrianglesWithTextureColored(textureid, geometries.get(geometryindex));
 	}
 
 	@Override
 	public int storeGeometry(float[] geometry) {
-		// TODO Auto-generated method stub
-		return 0;
+		geometries.add(geometry);
+		return geometries.size() - 1;
 	}
 
 	@Override
 	public boolean isGeometryValid(int geometryindex) {
-		// TODO Auto-generated method stub
-		return false;
+		return geometryindex >= 0 && geometryindex < geometries.size();
 	}
 
 	@Override
