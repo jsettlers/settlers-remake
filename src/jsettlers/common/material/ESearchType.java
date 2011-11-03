@@ -19,7 +19,6 @@ public enum ESearchType {
 
 	CUTTABLE_STONE,
 
-
 	PLANTABLE_TREE,
 
 	PLANTABLE_CORN,
@@ -33,6 +32,8 @@ public enum ESearchType {
 	 */
 	RIVER,
 
-	ENEMY
+	ENEMY,
+
+	NON_BLOCKED
 
 }
