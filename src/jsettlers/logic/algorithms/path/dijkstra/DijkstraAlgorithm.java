@@ -33,7 +33,7 @@ public class DijkstraAlgorithm {
 	public synchronized Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
 			final ESearchType type) {
 		if (!isInBounds(cX, cY)) {
-			throw new InvalidStartPositionException(cX, cY);
+			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", cX, cY);
 		}
 
 		MapCircle circle = new MapCircle(cX, cY, maxRadius / MapCircle.Y_SCALE);

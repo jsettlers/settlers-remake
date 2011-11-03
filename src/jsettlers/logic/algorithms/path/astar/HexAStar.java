@@ -46,10 +46,15 @@ public class HexAStar {
 	}
 
 	public Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
-		if (!map.isInBounds(sx, sy) || isBlocked(requester, sx, sy)) {
-			throw new InvalidStartPositionException(sx, sy);
+		final boolean blockedAtStart;
+		if (!map.isInBounds(sx, sy)) {
+			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
 		} else if (!map.isInBounds(tx, ty) || isBlocked(requester, tx, ty)) {
 			return null; // target can not be reached
+		} else if (isBlocked(requester, sx, sy)) {
+			blockedAtStart = true;
+		} else {
+			blockedAtStart = false;
 		}
 
 		if (closedList > Integer.MAX_VALUE - 10) {
@@ -83,7 +88,7 @@ public class HexAStar {
 				short neighborX = (short) (x + xDeltaArray[i]);
 				short neighborY = (short) (y + yDeltaArray[i]);
 
-				if (isValidPosition(requester, neighborX, neighborY)) {
+				if (isValidPosition(requester, neighborX, neighborY, blockedAtStart)) {
 					AStarNode neighbor = nodes[neighborY][neighborX];
 					if (neighbor.inList != closedList) {
 						float newCosts = currNode.cost + map.getCost(currNode.x, currNode.y, neighbor.x, neighbor.y);
@@ -138,8 +143,8 @@ public class HexAStar {
 		nodes[sy][sx].heuristic = map.getHeuristicCost(sx, sy, tx, ty);
 	}
 
-	private final boolean isValidPosition(IPathCalculateable requester, short x, short y) {
-		return map.isInBounds(x, y) && !isBlocked(requester, x, y);
+	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
+		return map.isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
 	}
 
 	private final boolean isBlocked(IPathCalculateable requester, short x, short y) {
