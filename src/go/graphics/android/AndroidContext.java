@@ -16,7 +16,6 @@ public class AndroidContext implements GLDrawContext {
 
 	private final GL10 gl;
 
-	
 	public AndroidContext(GL10 gl) {
 		this.gl = gl;
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
@@ -35,19 +34,11 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
 		System.out.println("fillQuad");
-		float[] quadData = new float[] {
-				x1, y1, 0,
-				x2, y1, 0,
-				x1, y2, 0,
-				x1, y2, 0,
-				x2, y1, 0,
-				x2, y2, 0,
-		};
+		float[] quadData = new float[] { x1, y1, 0, x2, y1, 0, x1, y2, 0, x1, y2, 0, x2, y1, 0, x2, y2, 0, };
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(quadData);
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, floatBuff);
-		gl.glDrawArrays(GL10.GL_TRIANGLES, 0,
-				quadData.length / 3);
+		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, quadData.length / 3);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	}
 
@@ -78,22 +69,18 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void color(Color color) {
-		color(color.getRed(), color.getGreen(), color.getBlue(),
-		        color.getAlpha());
+		color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 
 	private FloatBuffer reuseableBuffer = null;
 	private ByteBuffer quadEleementBuffer;
 
 	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
-		if (reuseableBuffer == null
-		        || reuseableBuffer.capacity() < points.length) {
+		if (reuseableBuffer == null || reuseableBuffer.capacity() < points.length) {
 			if (reuseableBuffer != null) {
-				System.out.println("reallocated! needed: " + points.length
-				        + ", got:" + reuseableBuffer.capacity());
+				System.out.println("reallocated! needed: " + points.length + ", got:" + reuseableBuffer.capacity());
 			}
-			ByteBuffer quadPoints =
-			        ByteBuffer.allocateDirect(points.length * 4);
+			ByteBuffer quadPoints = ByteBuffer.allocateDirect(points.length * 4);
 			quadPoints.order(ByteOrder.nativeOrder());
 			reuseableBuffer = quadPoints.asFloatBuffer();
 		} else {
@@ -103,22 +90,20 @@ public class AndroidContext implements GLDrawContext {
 		reuseableBuffer.position(0);
 		return reuseableBuffer;
 	}
-	
+
 	@Override
 	public void drawLine(float[] points, boolean loop) {
 		System.out.println("drawLine");
 		if (points.length % 3 != 0) {
-			throw new IllegalArgumentException(
-			        "Point array length needs to be multiple of 3.");
+			throw new IllegalArgumentException("Point array length needs to be multiple of 3.");
 		}
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(points);
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, floatBuff);
-		gl.glDrawArrays(loop ? GL10.GL_LINE_LOOP : GL10.GL_LINE_STRIP, 0,
-		        points.length / 3);
+		gl.glDrawArrays(loop ? GL10.GL_LINE_LOOP : GL10.GL_LINE_STRIP, 0, points.length / 3);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	}
-	
+
 	@Override
 	public void drawQuadWithTexture(int textureid, float[] geometry) {
 		System.out.println("drawQuadWithTexture");
@@ -139,7 +124,7 @@ public class AndroidContext implements GLDrawContext {
 		buffer.position(3);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 5 * 4, buffer);
 		buffer.position(0);
-		
+
 		quadEleementBuffer.position(0);
 		gl.glDrawElements(GL10.GL_TRIANGLES, 6, GL10.GL_UNSIGNED_BYTE, quadEleementBuffer);
 
@@ -181,7 +166,6 @@ public class AndroidContext implements GLDrawContext {
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
 	}
 
-
 	private int getPowerOfTwo(int value) {
 		int guess = 1;
 		while (guess < value) {
@@ -189,7 +173,7 @@ public class AndroidContext implements GLDrawContext {
 		}
 		return guess;
 	}
-	
+
 	@Override
 	public int makeWidthValid(int width) {
 		return getPowerOfTwo(width);
@@ -213,8 +197,7 @@ public class AndroidContext implements GLDrawContext {
 		}
 
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, texture);
-		gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, width, height, 0,
-				GL10.GL_RGBA, GL10.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_SHORT_5_5_5_1, data);
 		setTextureParameters();
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
 
@@ -222,27 +205,23 @@ public class AndroidContext implements GLDrawContext {
 	}
 
 	/**
-	 * Sets the texture parameters, assuming that the texture was just created
-	 * and is bound.
+	 * Sets the texture parameters, assuming that the texture was just created and is bound.
 	 */
 	private void setTextureParameters() {
 	}
 
 	@Override
-	public void updateTexture(int textureIndex, int left, int bottom,
-	        int width, int height, ShortBuffer data) {
+	public void updateTexture(int textureIndex, int left, int bottom, int width, int height, ShortBuffer data) {
 
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, textureIndex);
-		gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, left, bottom, width, height,
-		        GL10.GL_RGBA, GL10.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		gl.glTexSubImage2D(GL10.GL_TEXTURE_2D, 0, left, bottom, width, height, GL10.GL_RGBA, GL10.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
 	@Override
 	public void deleteTexture(int textureid) {
-		gl.glDeleteTextures(1, new int[] {
-			textureid
-		}, 0);
+		gl.glDeleteTextures(1, new int[] { textureid }, 0);
 	}
+
 	@Override
 	public void glMultMatrixf(float[] matrix, int offset) {
 		gl.glMultMatrixf(matrix, offset);
@@ -251,6 +230,42 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public TextDrawer getTextDrawer(EFontSize size) {
 		return AndroidTextDrawer.getInstance(size);
+	}
+
+	@Override
+	public void drawQuadWithTexture(int textureid, int geometryindex) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void drawTrianglesWithTexture(int textureid, int geometryindex) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void drawTrianglesWithTextureColored(int textureid, int geometryindex) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int storeGeometry(float[] geometry) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isGeometryValid(int geometryindex) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeGeometry(int geometryindex) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
