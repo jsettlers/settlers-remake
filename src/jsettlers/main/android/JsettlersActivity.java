@@ -72,7 +72,7 @@ public class JsettlersActivity extends Activity {
 		public void run() {
 			System.out.println("added GL view");
 			glView = new GOSurfaceView(JsettlersActivity.this, area);
-			//glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+			glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 			setContentView(glView);
 		}
 	}
