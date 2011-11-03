@@ -56,7 +56,7 @@ public class Path {
 		return path[1];
 	}
 
-	public ISPosition2D getLastTile() {
+	public ISPosition2D getTargetPos() {
 		return path[path.length - 1];
 	}
 }
