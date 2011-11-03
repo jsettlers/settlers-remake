@@ -34,4 +34,6 @@ public interface IGuiInputGrid {
 	void setScreen(IMapArea screenArea);
 
 	void resetDebugColors();
+
+	boolean canConstructAt(ISPosition2D pos, EBuildingType type);
 }

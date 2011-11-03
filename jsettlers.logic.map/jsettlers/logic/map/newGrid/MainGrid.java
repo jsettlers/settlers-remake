@@ -104,7 +104,7 @@ public class MainGrid {
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.movableGrid = new MovableGrid(width, height);
 		this.blockedGrid = new BlockedGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionsManagementGrid(), movablePathfinderGrid);
+		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid(), movablePathfinderGrid);
 
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
@@ -766,9 +766,9 @@ public class MainGrid {
 		public boolean setBuilding(ISPosition2D position, Building newBuilding) {
 			if (MainGrid.this.isInBounds(position.getX(), position.getY())) {
 				FreeMapArea area = new FreeMapArea(position, newBuilding.getBuildingType().getProtectedTiles());
-				boolean protectWorked = setProtectedState(area, true);
 
-				if (protectWorked) {
+				if (canConstructAt(area)) {
+					setProtectedState(area, true);
 					mapObjectsManager.addBuildingTo(position, newBuilding);
 					return true;
 				} else {
@@ -779,27 +779,31 @@ public class MainGrid {
 			}
 		}
 
-		private boolean setProtectedState(FreeMapArea area, boolean setProtected) {
+		private void setProtectedState(FreeMapArea area, boolean setProtected) {
+			for (ISPosition2D curr : area) {
+				if (MainGrid.this.isInBounds(curr.getX(), curr.getY()))
+					blockedGrid.setProtected(curr.getX(), curr.getY(), setProtected);
+			}
+		}
+
+		private boolean canConstructAt(FreeMapArea area) {
 			boolean isFree = true;
-			for (ISPosition2D protect : area) {
-				if (!isInBounds(protect.getX(), protect.getY()) || (blockedGrid.isProtected(protect.getX(), protect.getY()) == setProtected)) {
+
+			for (ISPosition2D curr : area) {
+				short x = curr.getX();
+				short y = curr.getY();
+				if (!isInBounds(x, y) || blockedGrid.isProtected(x, y) || blockedGrid.isBlocked(x, y)) {
 					isFree = false;
 				}
 			}
-			if (!isFree) {
-				return false;
-			} else {
-				for (ISPosition2D protect : area) {
-					blockedGrid.setProtected(protect.getX(), protect.getY(), setProtected);
-				}
-				return true;
-			}
+			return isFree;
 		}
 
 		@Override
 		public void setBlocked(FreeMapArea area, boolean blocked) {
-			for (ISPosition2D curr : area) { // FIXME @Andreas
-				blockedGrid.setBlocked(curr.getX(), curr.getY(), blocked);
+			for (ISPosition2D curr : area) {
+				if (MainGrid.this.isInBounds(curr.getX(), curr.getY()))
+					blockedGrid.setBlocked(curr.getX(), curr.getY(), blocked);
 			}
 		}
 
@@ -884,6 +888,7 @@ public class MainGrid {
 				return mapObjectsManager.getStackSize(position, materialType);
 			}
 		}
+
 	}
 
 	private class GUIInputGrid implements IGuiInputGrid {
@@ -940,9 +945,14 @@ public class MainGrid {
 				}
 			}
 		}
+
+		@Override
+		public boolean canConstructAt(ISPosition2D pos, EBuildingType type) {
+			return objectsGrid.hasMapObjectType(pos.getX(), pos.getY(), EMapObjectType.CONSTRUCTION_MARK);
+		}
 	}
 
-	class PartitionsManagementGrid implements IPartitionableGrid {
+	class PartitionableGrid implements IPartitionableGrid {
 		@Override
 		public boolean isBlocked(short x, short y) {
 			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);

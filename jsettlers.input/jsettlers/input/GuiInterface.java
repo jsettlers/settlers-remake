@@ -253,10 +253,14 @@ public class GuiInterface implements IMapInterfaceListener {
 			switch (activeAction.getActionType()) {
 			case BUILD:
 				EBuildingType type = previewBuilding;
-				previewBuilding = null;
-				grid.setBuildingType(null);
-				scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos, type));
-				break;
+				if (grid.canConstructAt(pos, type)) {
+					previewBuilding = null;
+					grid.setBuildingType(null);
+					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos, type));
+					break;
+				} else {
+					return; // prevent resetting the current action
+				}
 			case SET_WORK_AREA:
 				if (currentSelection.getSize() > 0) {
 					ISelectable selected = currentSelection.iterator().next();
