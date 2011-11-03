@@ -268,7 +268,7 @@ public class MainGrid {
 
 		@Override
 		public float getCost(short sx, short sy, short tx, short ty) {
-			return Constants.TILE_PATHFINDER_COST;
+			return Constants.TILE_PATHFINDER_COST * (blockedGrid.isProtected(sx, sy) ? 1.7f : 1);
 		}
 
 		@Override
@@ -327,8 +327,9 @@ public class MainGrid {
 			case FISHABLE:
 				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER);
 
-			case NON_BLOCKED:
-				return !blockedGrid.isBlocked(x, y) && !isLandscapeBlocking(x, y) && hasSamePlayer(x, y, pathCalculable);
+			case NON_BLOCKED_OR_PROTECTED:
+				return !(blockedGrid.isProtected(x, y) || blockedGrid.isBlocked(x, y)) && !isLandscapeBlocking(x, y)
+						&& hasSamePlayer(x, y, pathCalculable);
 
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
@@ -434,9 +435,12 @@ public class MainGrid {
 		public Color getDebugColorAt(int x, int y) {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-			// return debugColors[x][y];
-			return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new Color(
-					0, 0, 1, 1) : null);
+
+			return debugColors[x][y];
+
+			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new
+			// Color(
+			// 0, 0, 1, 1) : null);
 		}
 
 		@Override
@@ -718,13 +722,13 @@ public class MainGrid {
 		}
 
 		@Override
-        public void placeSmoke(ISPosition2D pos, boolean place) {
+		public void placeSmoke(ISPosition2D pos, boolean place) {
 			if (place) {
 				mapObjectsManager.addSimpleMapObject(pos, EMapObjectType.SMOKE, false, (byte) 0);
 			} else {
 				mapObjectsManager.removeMapObjectType(pos, EMapObjectType.SMOKE);
 			}
-        }
+		}
 
 		@Override
 		public boolean isProtected(short x, short y) {

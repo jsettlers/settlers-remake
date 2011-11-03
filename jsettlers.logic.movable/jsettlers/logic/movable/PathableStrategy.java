@@ -125,6 +125,6 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 
 	@Override
 	public void leaveBlockedPosition() {
-		calculateDijkstraPath(super.getPos(), (short) 200, ESearchType.NON_BLOCKED);
+		calculateDijkstraPath(super.getPos(), (short) 200, ESearchType.NON_BLOCKED_OR_PROTECTED);
 	}
 }
