@@ -19,7 +19,6 @@ public class ResourceProvider implements IResourceProvider {
 	
 	@Override
     public InputStream getFile(String name) throws IOException {
-		System.out.println(path.toString());
 		File file = new File(path + name);
 	    return new FileInputStream(file);
     }
