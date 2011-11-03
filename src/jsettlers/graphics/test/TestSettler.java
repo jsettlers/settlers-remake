@@ -103,4 +103,10 @@ public class TestSettler implements IMovable {
 	public void stopOrStartWorking(boolean stop) {
 
 	}
+
+	@Override
+    public boolean isRightstep() {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 }

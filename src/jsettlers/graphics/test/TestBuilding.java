@@ -22,12 +22,7 @@ public class TestBuilding implements IBuilding {
 	public void increaseConstructed() {
 		this.constructed += 0.005f;
 	}
-
-	@Override
-	public int getActionImgIdx() {
-		return this.actionImage++;
-	}
-
+	
 	@Override
 	public EBuildingType getBuildingType() {
 		return this.image;
