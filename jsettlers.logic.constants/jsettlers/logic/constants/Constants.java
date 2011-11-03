@@ -28,13 +28,13 @@ public final class Constants {
 	public static final float TREE_GROWTH_PER_INTERRUPT = 0.005F;
 	public static final float TREE_DECOMPOSE_PER_INTERRUPT = 0.002F;
 
-	public static final float CORN_GROWTH_PER_INTERRUPT = 0.0002f;
+	public static final float CORN_GROWTH_PER_INTERRUPT = 0.00004f;
 
 	public static final byte MOVABLE_INTERRUPTS_PER_SECOND = 17;
 
 	public static final short MOVABLE_DELAY = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
 
-	public static float MOVABLE_STEP_DURATION = 0.9f;
+	public static float MOVABLE_STEP_DURATION = 0.82f;
 
 	public static final float MOVABLE_TURN_PROBABILITY = 0.003F;
 	public static final float MOVABLE_NO_ACTION_STEP_PROBABILITY = 0.05F;

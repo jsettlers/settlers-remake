@@ -170,7 +170,6 @@ public class MapObjectsManager implements ITimerable {
 
 		if (removed != null) {
 			setBlockedForObject(pos, removed, false);
-			AbstractHexMapObject object = getTile(pos).getMapObject(mapObjectType);
 		}
 	}
 
@@ -313,7 +312,7 @@ public class MapObjectsManager implements ITimerable {
 
 		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
 	}
-	
+
 	public int getStackSize(ISPosition2D position, EMaterialType materialType) {
 		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
 		if (stackObject == null) {

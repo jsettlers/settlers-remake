@@ -113,7 +113,7 @@ public abstract class JSettlersApp implements Runnable {
 			if (networkmode.equalsIgnoreCase("host")) {
 				manager = new NetworkManager(6666);
 			} else {
-				manager = new NetworkManager("localhost", 6666);
+				manager = new NetworkManager(host, 6666);
 			}
 		}
 
