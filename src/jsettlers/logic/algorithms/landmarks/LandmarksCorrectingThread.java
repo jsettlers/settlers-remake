@@ -59,7 +59,7 @@ public class LandmarksCorrectingThread extends Thread {
 		LinkedList<ISPosition2D> blockedBorder = new LinkedList<ISPosition2D>();
 		blockedBorder.add(blocked);
 
-		while (true) {
+		for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
 			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
 
