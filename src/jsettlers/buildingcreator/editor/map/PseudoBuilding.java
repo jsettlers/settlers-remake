@@ -17,11 +17,6 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-	public int getActionImgIdx() {
-		return 0;
-	}
-
-	@Override
 	public EBuildingType getBuildingType() {
 		return type;
 	}
