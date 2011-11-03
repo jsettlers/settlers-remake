@@ -2,7 +2,9 @@ package jsettlers.graphics.map.draw;
 
 import go.graphics.Color;
 import go.graphics.GLDrawContext;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
@@ -71,9 +73,15 @@ public class MapObjectDrawer {
 
 	private static final int STONE = 31;
 
-	int animationStep = 0;
+	private static final int SELECTMARK_SEQUENCE = 11;
 
-	private final BuildingDrawer buildingDrawer = new BuildingDrawer();
+	private static final int SELECTMARK_FILE = 4;
+
+	private static final int MILL_FILE = 13;
+
+	private static final int MILL_SEQ = 15;
+
+	int animationStep = 0;
 
 	private final ImageProvider imageProvider = ImageProvider.getInstance();
 
@@ -98,7 +106,7 @@ public class MapObjectDrawer {
 		byte fogstatus =
 		        context.getFogOfWar().getVisibleStatus(pos.getX(), pos.getY());
 		if (fogstatus == 0) {
-			return; //break
+			return; // break
 		}
 		Color color = getColor(context, fogstatus);
 
@@ -198,17 +206,20 @@ public class MapObjectDrawer {
 					break;
 
 				case FLAG_ROOF:
-					// TODO: better flag positioning
 					context.getGl().glTranslatef(0, 0, 0.2f);
 					drawPlayerableWaving(context, 13, 64, object, color);
 					break;
 
 				case BUILDING:
-					buildingDrawer.draw(context, (IBuilding) object, color);
+					draw(context, (IBuilding) object, color);
 					break;
 
 				case STACK_OBJECT:
 					drawStack(context, (IStackMapObject) object, color);
+					break;
+
+				case SMOKE:
+					drawByProgress(context, 13, 42, progress, color);
 					break;
 
 				default:
@@ -490,6 +501,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Gets the gray color for a given fog.
+	 * 
 	 * @param context
 	 * @param fogstatus
 	 * @return
@@ -498,4 +510,118 @@ public class MapObjectDrawer {
 		float color = (float) fogstatus / FogOfWar.VISIBLE;
 		return new Color(color, color, color, 1);
 	}
+
+	/**
+	 * Draws a given buildng to the context.
+	 * 
+	 * @param context
+	 * @param building
+	 * @param color
+	 *            Gray color shade
+	 */
+	private void draw(MapDrawContext context, IBuilding building, Color color) {
+		EBuildingType type = building.getBuildingType();
+
+		float state = building.getStateProgress();
+		float maskState;
+		if (state < 0.5f) {
+			maskState = state * 2;
+			for (ImageLink link : type.getBuildImages()) {
+				Image image = imageProvider.getImage(link);
+				drawWithConstructionMask(context, maskState, image, color);
+			}
+
+		} else if (state < 0.99) {
+			maskState = state * 2 - 1;
+			for (ImageLink link : type.getBuildImages()) {
+				Image image = imageProvider.getImage(link);
+				image.draw(context.getGl(), color);
+			}
+
+			for (ImageLink link : type.getImages()) {
+				Image image = imageProvider.getImage(link);
+				drawWithConstructionMask(context, maskState, image, color);
+			}
+		} else {
+
+			if (type == EBuildingType.MILL
+			        && ((IBuilding.Mill) building).isWorking()) {
+				Sequence<? extends Image> seq =
+				        this.imageProvider.getSettlerSequence(MILL_FILE,
+				                MILL_SEQ);
+
+				if (seq.length() > 0) {
+				int i = getAnimationStep(building.getPos()) / 2;
+				int step = i % seq.length();
+				seq.getImageSafe(step).draw(context.getGl(), color);
+				}
+			} else {
+				for (ImageLink link : type.getImages()) {
+					Image image = imageProvider.getImage(link);
+					image.draw(context.getGl(), color);
+				}
+			}
+		}
+
+		if (building.isSelected()) {
+			drawBuildingSelectMarker(context);
+		}
+	}
+
+	private void drawBuildingSelectMarker(MapDrawContext context) {
+		context.getGl().glTranslatef(0, 20, .2f);
+		Image image =
+		        imageProvider.getSettlerSequence(SELECTMARK_FILE,
+		                SELECTMARK_SEQUENCE).getImageSafe(0);
+		image.draw(context.getGl());
+	}
+
+	private void drawWithConstructionMask(MapDrawContext context,
+	        float maskState, Image image, Color color) {
+		// number of tiles in x direction, can be adjustet for performance
+		int tiles = 6;
+
+		float toplineBottom = maskState;
+		float toplineTop = Math.min(1, toplineBottom + .1f);
+
+		float[] tris = new float[(tiles + 2) * 3 * 5];
+
+		addPointToArray(tris, 0, 0, 0, image);
+		addPointToArray(tris, 1, 1, 0, image);
+		addPointToArray(tris, 2, 0, toplineBottom, image);
+		addPointToArray(tris, 3, 1, 0, image);
+		addPointToArray(tris, 4, 1, toplineBottom, image);
+		addPointToArray(tris, 5, 0, toplineBottom, image);
+
+		for (int i = 0; i < tiles; i++) {
+			addPointToArray(tris, 6 + i * 3, 1.0f / tiles * i, toplineBottom,
+			        image);
+			addPointToArray(tris, 7 + i * 3, 1.0f / tiles * (i + 1),
+			        toplineBottom, image);
+			addPointToArray(tris, 8 + i * 3, 1.0f / tiles * (i + .5f),
+			        toplineTop, image);
+		}
+
+		GLDrawContext gl = context.getGl();
+		gl.color(color);
+		gl.drawTrianglesWithTexture(image.getTextureIndex(gl), tris);
+	}
+
+	private void addPointToArray(float[] array, int pointindex, float u,
+	        float v, Image image) {
+		int left = image.getOffsetX();
+		int top = -image.getOffsetY();
+		int bottom = top - image.getHeight();
+
+		int x = left + (int) (image.getWidth() * u);
+		int y = bottom + (int) (image.getHeight() * v);
+
+		int offset = pointindex * 5;
+		array[offset] = x;
+		array[offset + 1] = y;
+		array[offset + 2] = 0;
+		array[offset + 3] = u * image.getTextureScaleX();
+		array[offset + 4] = v * image.getTextureScaleY();
+	}
+
 }
