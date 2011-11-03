@@ -128,7 +128,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 				jobFailed();
 			}
 			break;
-			
+
 		case DROP:
 			dropAction();
 			break;
@@ -202,21 +202,22 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 				jobFailed();
 			}
 			break;
-			
+
 		case SMOKE_ON:
 		case SMOKE_OFF:
 			ISPosition2D pos = getCurrentJobPos();
 			super.getGrid().placeSmoke(pos, currentJob.getType() == EBuildingJobType.SMOKE_ON);
 			jobFinished();
 			break;
-			
+
 		case START_WORKING:
 		case STOP_WORKING:
 			if (building instanceof MillBuilding) {
 				((MillBuilding) building).setWorking(currentJob.getType() == EBuildingJobType.START_WORKING);
 			}
 			jobFinished();
-			
+			break;
+
 		default:
 			System.err.println("unknown job type in BuildingWorkerStrategy: " + currentJob.getType());
 			break;
@@ -224,8 +225,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	private ISPosition2D getCurrentJobPos() {
-	    return building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
-    }
+		return building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
+	}
 
 	private boolean isProductive() {
 		// TODO: weight
@@ -243,12 +244,15 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.CUTTABLE_STONE) {
-			//TODO: allow settler to face stone.
+			// TODO: allow settler to face stone.
 			return true;
 		} else if (currentJob.getSearchType() == ESearchType.RIVER) {
 			for (EDirection direction : EDirection.values()) {
 				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
-				if (super.getGrid().isInBounds(pos) && (super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER1 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER2 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER3 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER4)) {
+				if (super.getGrid().isInBounds(pos)
+						&& (super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER1
+								|| super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER2
+								|| super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER3 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER4)) {
 					super.setDirection(direction);
 					return true;
 				}
