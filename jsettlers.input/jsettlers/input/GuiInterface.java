@@ -158,7 +158,7 @@ public class GuiInterface implements IMapInterfaceListener {
 			break;
 
 		case TOGGLE_DEBUG:
-			grid.resetDebugColors();
+			// grid.resetDebugColors();
 			break;
 
 		default:

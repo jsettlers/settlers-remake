@@ -194,7 +194,7 @@ public class MainGrid {
 		ISPosition2D pos = new ShortPoint2D(x, y);
 		if (object instanceof MapTreeObject) {
 			if (isInBounds(x, y) && movablePathfinderGrid.isTreePlantable(x, y)) {
-				mapObjectsManager.executeSearchType(pos, ESearchType.PLANTABLE_TREE);
+				mapObjectsManager.executeSearchType(new ShortPoint2D(x, y - 1), ESearchType.PLANTABLE_TREE);
 			}
 		} else if (object instanceof MapStoneObject) {
 			mapObjectsManager.addStone(pos, ((MapStoneObject) object).getCapacity());
@@ -241,7 +241,7 @@ public class MainGrid {
 		return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
 	}
 
-	private class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap {
+	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap {
 		@Override
 		public short getHeight() {
 			return height;
@@ -377,8 +377,9 @@ public class MainGrid {
 			for (EDirection currDir : EDirection.values()) {
 				short currX = currDir.getNextTileX(x);
 				short currY = currDir.getNextTileY(y);
-				if (!isInBounds(currX, currY) || blockedGrid.isBlocked(currX, currY))
+				if (!isInBounds(currX, currY) || blockedGrid.isBlocked(currX, currY)) {
 					return true;
+				}
 			}
 
 			return false;
@@ -433,10 +434,10 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// return debugColors[x][y];
+			return debugColors[x][y];
 
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new
 			// Color(
