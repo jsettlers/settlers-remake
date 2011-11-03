@@ -48,7 +48,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	@Override
 	protected void setCalculatedPath(Path path) {
-		if (currentJob.getType() == EBuildingJobType.PRE_SEARCH || currentJob.getType() == EBuildingJobType.PRE_SEARCH_IN_AREA) {
+		if (currentJob != null
+				&& (currentJob.getType() == EBuildingJobType.PRE_SEARCH || currentJob.getType() == EBuildingJobType.PRE_SEARCH_IN_AREA)) {
 			this.path = path;
 			super.getGrid().setMarked(path.getLastTile(), true);
 			jobFinished();
@@ -80,7 +81,11 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	@Override
 	protected void pathFinished() {
-		pathOrActionFinished();
+		if (currentJob != null) {
+			pathOrActionFinished();
+		} else {
+			super.setAction(EAction.NO_ACTION, -1);
+		}
 	}
 
 	private void pathOrActionFinished() {
@@ -211,7 +216,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.CUTTABLE_STONE) {
-			//TODO: allow settler to face stone.
+			// TODO: allow settler to face stone.
 			return false;
 		} else {
 			return false;

@@ -351,7 +351,7 @@ public class PartitionManager implements INetworkTimerable {
 	private void reofferRequest(Request<EMaterialType> request) {
 		// TODO: decrease priority, do something else, ...
 		// request.decreasePriority();
-		materialRequests.add(request);
+		materialRequests.offerLast(request);
 	}
 
 	private class Offer {

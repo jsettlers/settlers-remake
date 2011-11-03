@@ -82,4 +82,6 @@ public interface IBuildingsGrid {
 	void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding);
 
 	void requestSoilderable(ISPosition2D position, Barrack barrack);
+
+	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 }

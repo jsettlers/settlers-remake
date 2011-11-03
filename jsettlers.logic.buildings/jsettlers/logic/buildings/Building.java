@@ -135,6 +135,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			this.pos = pos;
 			this.grid = grid;
 
+			this.buildingArea = new FreeMapArea(this.pos, type.getBlockedTiles());
+
 			this.door = getBuildingType().getDoorTile().calculatePoint(pos);
 
 			Timer100Milli.add(this);
@@ -166,6 +168,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		positionAt(grid, pos);
 
 		if (this.pos != null) {
+			grid.setBlocked(buildingArea, true);
 			finishConstruction();
 		}
 	}
@@ -182,8 +185,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		Collections.shuffle(positions, RandomSingleton.get());
-
-		this.buildingArea = new FreeMapArea(positions);
 
 		this.heightAvg = (byte) (heightSum / blocked.length);
 		byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
@@ -210,7 +211,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			if (waitedSecond()) {
 				if (isFlatened()) {
 					placeAdditionalMapObjects(grid, pos, false);
-
+					grid.setBlocked(buildingArea, true);
 					this.state = EBuildingState.WAITING_FOR_MATERIAL;
 				}
 			}
@@ -309,7 +310,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case BIG_TOWER:
 		case CASTLE:
 			return new OccupyingBuilding(type, player);
-			
+
 		case BARRACK:
 			return new Barrack(player);
 
