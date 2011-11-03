@@ -22,11 +22,6 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	public int getActionImgIdx() {
-		return 0;
-	}
-
-	@Override
 	public EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}

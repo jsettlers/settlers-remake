@@ -278,5 +278,12 @@ public interface IMovableGrid {
 
 	void changeLandscapeAt(ISPosition2D pos, ELandscapeType type);
 
+	/**
+	 * Places or removes a smoke object.
+	 * @param pos The position to place the object.
+	 * @param place If the object should be placed (true) or removed (false)
+	 */
+	void placeSmoke(ISPosition2D pos, boolean place);
+
 	boolean isProtected(short x, short y);
 }

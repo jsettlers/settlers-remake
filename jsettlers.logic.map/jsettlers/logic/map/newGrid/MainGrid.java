@@ -718,6 +718,15 @@ public class MainGrid {
 		}
 
 		@Override
+        public void placeSmoke(ISPosition2D pos, boolean place) {
+			if (place) {
+				mapObjectsManager.addSimpleMapObject(pos, EMapObjectType.SMOKE, false, (byte) 0);
+			} else {
+				mapObjectsManager.removeMapObjectType(pos, EMapObjectType.SMOKE);
+			}
+        }
+
+		@Override
 		public boolean isProtected(short x, short y) {
 			return blockedGrid.isProtected(x, y);
 		}

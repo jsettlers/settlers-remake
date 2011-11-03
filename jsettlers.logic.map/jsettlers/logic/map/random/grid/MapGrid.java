@@ -79,7 +79,6 @@ public class MapGrid {
 				edgeMap[width - 1][y] = mesh.getEdges()[0];
 			}
 		}
-		System.out.println("fixed borders");
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -88,7 +87,6 @@ public class MapGrid {
 				}
 			}
 		}
-		System.out.println("added site borders");
 
 		for (MeshSite site : mesh.getSites()) {
 			Point center = site.getCenter().getIntPoint();

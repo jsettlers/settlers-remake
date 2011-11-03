@@ -32,6 +32,11 @@ public class GridLandscapeType {
 	}
 
 	public static ELandscapeType forEdge(MeshEdge edge) {
+		if (edge.isRiver()) {
+			System.out.println("River found!");
+			return ELandscapeType.RIVER2;
+		}
+		
 		if (edge.getLeft() == null) {
 			return convert(edge.getRight().getLandscape());
 		} else if (edge.getRight() == null) {

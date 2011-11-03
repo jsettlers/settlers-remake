@@ -32,4 +32,8 @@ public class Point2D {
 	public Point getIntPoint() {
 	    return new Point((int) Math.round(x), (int) Math.round(y));
     }
+	
+	public double getDirectionTo(Point2D point) {
+		return Math.atan2(y - point.y, x - point.x);
+	}
 }

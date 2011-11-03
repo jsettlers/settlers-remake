@@ -16,11 +16,6 @@ public class TestBuilding extends Building {
 	}
 
 	@Override
-	public int getActionImgIdx() {
-		return 0;
-	}
-
-	@Override
 	public void stopOrStartWorking(boolean stop) {
 	}
 

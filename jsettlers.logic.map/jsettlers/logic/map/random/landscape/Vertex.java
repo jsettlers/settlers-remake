@@ -1,7 +1,7 @@
 package jsettlers.logic.map.random.landscape;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.logic.map.random.geometry.Point2D;
@@ -11,9 +11,11 @@ import jsettlers.logic.map.random.geometry.Point2D;
  * 
  * @author michael
  */
-public class Vertex extends Point2D {
+public class Vertex extends Point2D implements Comparable<Vertex>{
 
-	private HashSet<MeshEdge> edges = new HashSet<MeshEdge>();
+	private LinkedList<MeshEdge> edges = new LinkedList<MeshEdge>();
+	
+	private float height = Float.POSITIVE_INFINITY;
 
 	public Vertex(double x, double y) {
 		super(x, y);
@@ -24,6 +26,10 @@ public class Vertex extends Point2D {
 			edges.add(edge);
 		}
 	}
+	
+	public LinkedList<MeshEdge> getEdges() {
+	    return edges;
+    }
 
 	public List<MeshSite> getNeighbourSites() {
 		synchronized (edges) {
@@ -37,4 +43,17 @@ public class Vertex extends Point2D {
 			return sites;
 		}
 	}
+
+	public float getHeight() {
+	    return height;
+    }
+
+	public void setHeight(float height) {
+	    this.height = height;
+    }
+
+	@Override
+    public int compareTo(Vertex o) {
+	    return Float.compare(height, o.height);
+    }
 }

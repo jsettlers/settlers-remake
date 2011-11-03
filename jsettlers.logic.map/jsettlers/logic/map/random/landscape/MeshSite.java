@@ -5,7 +5,12 @@ import java.util.HashSet;
 
 import jsettlers.logic.map.random.geometry.Point2D;
 
-public class MeshSite {
+/**
+ * This is a area in the landscape mesh.
+ * 
+ * @author michael
+ */
+public class MeshSite implements Comparable<MeshSite> {
 
 	private MeshEdge[] edges = new MeshEdge[0];
 
@@ -14,7 +19,7 @@ public class MeshSite {
 	private byte height = 0;
 
 	private boolean fixed = false;
-	
+
 	private HillPolicy hillPolicy = HillPolicy.FLAT;
 
 	private boolean temporaryFlag = false;
@@ -33,7 +38,7 @@ public class MeshSite {
 
 	public Point2D getCenter() {
 		if (edges.length == 0) {
-			return new Point2D(0,0);
+			return new Point2D(0, 0);
 		} else {
 			double x = 0;
 			double y = 0;
@@ -54,10 +59,10 @@ public class MeshSite {
 	public MeshLandscapeType getLandscape() {
 		return landscape;
 	}
-	
+
 	public HillPolicy getHillPolicy() {
-	    return hillPolicy;
-    }
+		return hillPolicy;
+	}
 
 	public void setHeight(byte height) {
 		this.height = height;
@@ -124,7 +129,18 @@ public class MeshSite {
 	}
 
 	public MeshEdge[] getEdges() {
-	    return edges;
-    }
+		return edges;
+	}
+
+	@Override
+	public int compareTo(MeshSite other) {
+		if (this.height < other.height) {
+			return 1;
+		} else if (this.height > other.height) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
 
 }

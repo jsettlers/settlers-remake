@@ -2,6 +2,7 @@ package jsettlers.logic.map.random;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 import jsettlers.logic.map.random.generation.PlayerConnection;
@@ -12,6 +13,10 @@ import jsettlers.logic.map.random.instructions.LandInstruction;
 import jsettlers.logic.map.random.instructions.MetaInstruction;
 import jsettlers.logic.map.random.instructions.ObjectInstruction;
 import jsettlers.logic.map.random.landscape.LandscapeMesh;
+import jsettlers.logic.map.random.landscape.MeshEdge;
+import jsettlers.logic.map.random.landscape.MeshLandscapeType;
+import jsettlers.logic.map.random.landscape.MeshSite;
+import jsettlers.logic.map.random.landscape.Vertex;
 import jsettlers.logic.map.random.settings.MapSettings;
 import jsettlers.logic.map.random.settings.PlayerSetting;
 
@@ -74,11 +79,66 @@ public class RandomMapEvaluator {
 
 		addLandscapes(landscapeMesh);
 
+		computeHeights(landscapeMesh);
+
 		MapGrid grid = MapGrid.createFromLandscapeMesh(landscapeMesh, random);
 
 		addObjects(grid);
-		
+
 		this.grid = grid;
+	}
+
+	private void computeHeights(LandscapeMesh landscapeMesh) {
+		PriorityQueue<Vertex> settled = new PriorityQueue<Vertex>();
+
+		for (MeshSite site : landscapeMesh.getSites()) {
+			if (site.getLandscape() == MeshLandscapeType.SEA) {
+				for (MeshEdge edge : site.getEdges()) {
+					Vertex setVertex = edge.getClockPoint(site);
+					setVertex.setHeight(0);
+					settled.add(setVertex);
+				}
+			}
+		}
+
+		settleAll(settled);
+
+		while (true) {
+			Vertex unsettled = getUnsettled(landscapeMesh);
+			if (unsettled == null) {
+				break;
+			}
+			
+			unsettled.setHeight(0);
+			settled.add(unsettled);
+			settleAll(settled);
+		}
+	}
+
+	private Vertex getUnsettled(LandscapeMesh landscapeMesh) {
+		for (MeshEdge edge : landscapeMesh.getEdges()) {
+			if (edge.getEnd().getHeight() == Float.POSITIVE_INFINITY) {
+				return edge.getEnd();
+			}
+			if (edge.getStart().getHeight() == Float.POSITIVE_INFINITY) {
+				return edge.getStart();
+			}
+		}
+		return null;
+	}
+
+	private void settleAll(PriorityQueue<Vertex> settled) {
+		while (!settled.isEmpty()) {
+			Vertex vertex = settled.poll();
+			for (MeshEdge edge : vertex.getEdges()) {
+				Vertex newVertex = edge.getOppositePoint(vertex);
+				float newHeight = vertex.getHeight() + edge.getMaxIncline();
+				if (newVertex.getHeight() > newHeight) {
+					newVertex.setHeight(newHeight);
+					settled.add(newVertex);
+				}
+			}
+		}
 	}
 
 	private void addObjects(MapGrid grid) {
@@ -103,7 +163,7 @@ public class RandomMapEvaluator {
 	}
 
 	private void createPlayerStarts(int players) {
-	    playerStarts = new PlayerStart[players];
+		playerStarts = new PlayerStart[players];
 		int i = 0;
 		for (PlayerSetting playerSetting : settings.getPlayers()) {
 			double alpha = (double) i / players * 2 * Math.PI;
@@ -115,10 +175,10 @@ public class RandomMapEvaluator {
 			                playerSetting.getAlliance());
 			i++;
 		}
-    }
+	}
 
 	private void connectPlayers(int players) {
-	    PlayerConnection[] playerConnections;
+		PlayerConnection[] playerConnections;
 		if (players > 1) {
 			playerConnections = new PlayerConnection[players];
 			for (int j = 0; j < players; j++) {
@@ -129,7 +189,7 @@ public class RandomMapEvaluator {
 		} else {
 			playerConnections = new PlayerConnection[0];
 		}
-    }
+	}
 
 	/**
 	 * The real landscape adding
@@ -141,12 +201,12 @@ public class RandomMapEvaluator {
 			instruction.execute(landscapeMesh, playerStarts, random);
 		}
 	}
-	
+
 	public MapGrid getGrid() {
 		if (grid == null) {
 			throw new IllegalStateException("Grid was not created");
 		}
 		return grid;
 	}
-	
+
 }

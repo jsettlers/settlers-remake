@@ -24,6 +24,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	private final IMovableGrid grid;
 	private ISPosition2D pos;
 	private byte player;
+	private boolean isRightstep;
 	private float health = 1.0f;
 	private EDirection direction;
 
@@ -211,6 +212,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		this.action = EAction.WALKING;
 		this.state = EMovableState.EXECUTING_ACTION;
 		this.progressIncrease = getProgressIncrease(Constants.MOVABLE_STEP_DURATION);
+		isRightstep = !isRightstep;
 	}
 
 	@Override
@@ -400,6 +402,11 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	public ISPosition2D getNextTile() {
 		return nextTile;
 	}
+	
+	@Override
+	public boolean isRightstep() {
+	    return isRightstep;
+    }
 
 	/**
 	 * Lets this movable wait for the given period of time. After the time elapsed, actionFinished() will be called.

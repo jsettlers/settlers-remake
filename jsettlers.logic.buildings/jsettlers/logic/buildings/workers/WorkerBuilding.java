@@ -27,11 +27,6 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public int getActionImgIdx() {
-		return 0;
-	}
-
-	@Override
 	public void stopOrStartWorking(boolean stop) {
 		// TODO Auto-generated method stub
 	}
@@ -43,7 +38,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	protected void positionedEvent(ISPosition2D pos) {
-		this.workAreaCenter = pos;
+		workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
 	}
 
 	@Override
@@ -67,12 +62,13 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public void popMaterial(ISPosition2D position, EMaterialType material) {
+	public boolean popMaterial(ISPosition2D position, EMaterialType material) {
 		for (RequestStack stack : super.stacks) {
 			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
 				stack.pop();
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 }

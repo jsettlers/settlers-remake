@@ -1,5 +1,10 @@
 package jsettlers.logic.map.random.landscape;
 
+/**
+ * This are the types of the landscapes on the landscape mesh.
+ * @author michael
+ *
+ */
 public enum MeshLandscapeType {
 	UNSPECIFIED,
 	

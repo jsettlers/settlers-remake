@@ -130,6 +130,8 @@ public abstract class GenerationInstruction {
 			return new PlayerObjectInstruction();
 		} else if (name.equals("global")) {
 			return new LandBaseInstruction();
+		} else if (name.equals("playerriver")) {
+			return new PlayerRiverInstruction();
 		} else {
 			throw new IllegalArgumentException(typeName
 			        + " is no valid instruction type");

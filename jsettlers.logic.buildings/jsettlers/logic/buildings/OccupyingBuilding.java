@@ -32,11 +32,6 @@ public class OccupyingBuilding extends Building {
 	}
 
 	@Override
-	public int getActionImgIdx() {
-		return 0;
-	}
-
-	@Override
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}

@@ -20,6 +20,7 @@ import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
+import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.workers.construction.IConstructableBuilding;
@@ -295,7 +296,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case IRONMELT:
 		case IRONMINE:
 		case LUMBERJACK:
-		case MILL:
 		case PIG_FARM:
 		case SAWMILL:
 		case SLAUGHTERHOUSE:
@@ -306,11 +306,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case WINEGROWER:
 			return new WorkerBuilding(type, player);
 
+		case MILL:
+			return new MillBuilding(type, player);
+
 		case TOWER:
 		case BIG_TOWER:
 		case CASTLE:
 			return new OccupyingBuilding(type, player);
-
+			
 		case BARRACK:
 			return new Barrack(player);
 

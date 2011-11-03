@@ -1,5 +1,10 @@
 package jsettlers.logic.map.random.landscape;
 
+/**
+ * This is a edge between two landscape sites.
+ * @author michael
+ *
+ */
 public class MeshEdge {
 	private static final float GLOBAL_MAX_INCLINE = 1;
 	private final MeshSite left;
@@ -7,6 +12,7 @@ public class MeshEdge {
 	private final Vertex start;
 	private final Vertex end;
 	private float maxIncline = GLOBAL_MAX_INCLINE;
+	private boolean isRiver;
 
 	public MeshEdge(MeshSite left, MeshSite right, Vertex start, Vertex end) {
 		this.left = left;
@@ -106,4 +112,12 @@ public class MeshEdge {
 			this.maxIncline = maxIncline;
 		}
 	}
+
+	public boolean isRiver() {
+	    return isRiver;
+    }
+
+	public void setRiver(boolean isRiver) {
+	    this.isRiver = isRiver;
+    }
 }

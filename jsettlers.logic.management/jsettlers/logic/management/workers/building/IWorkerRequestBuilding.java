@@ -21,5 +21,5 @@ public interface IWorkerRequestBuilding extends IWorkerBuilding, IPlayerable {
 
 	ISPosition2D getWorkAreaCenter();
 
-	void popMaterial(ISPosition2D position, EMaterialType material);
+	boolean popMaterial(ISPosition2D position, EMaterialType material);
 }

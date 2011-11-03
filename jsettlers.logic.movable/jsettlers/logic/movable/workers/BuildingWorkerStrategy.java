@@ -10,6 +10,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
@@ -120,6 +121,14 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			this.building.popMaterial(super.getPos(), currentJob.getMaterial());
 			break;
 
+		case REMOTETAKE:
+			if (this.building.popMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
+			break;
+			
 		case DROP:
 			dropAction();
 			break;
@@ -179,7 +188,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			break;
 
 		case AVAILABLE:
-			if (super.getGrid().canPop(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()), currentJob.getMaterial())) {
+			if (super.getGrid().canPop(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -187,18 +196,36 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			break;
 
 		case NOT_FULL:
-			if (super.getGrid().canPush(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()), currentJob.getMaterial())) {
+			if (super.getGrid().canPush(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
 			}
 			break;
-
+			
+		case SMOKE_ON:
+		case SMOKE_OFF:
+			ISPosition2D pos = getCurrentJobPos();
+			super.getGrid().placeSmoke(pos, currentJob.getType() == EBuildingJobType.SMOKE_ON);
+			jobFinished();
+			break;
+			
+		case START_WORKING:
+		case STOP_WORKING:
+			if (building instanceof MillBuilding) {
+				((MillBuilding) building).setWorking(currentJob.getType() == EBuildingJobType.START_WORKING);
+			}
+			jobFinished();
+			
 		default:
 			System.err.println("unknown job type in BuildingWorkerStrategy: " + currentJob.getType());
 			break;
 		}
 	}
+
+	private ISPosition2D getCurrentJobPos() {
+	    return building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
+    }
 
 	private boolean isProductive() {
 		// TODO: weight
@@ -216,8 +243,17 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.CUTTABLE_STONE) {
-			// TODO: allow settler to face stone.
-			return false;
+			//TODO: allow settler to face stone.
+			return true;
+		} else if (currentJob.getSearchType() == ESearchType.RIVER) {
+			for (EDirection direction : EDirection.values()) {
+				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
+				if (super.getGrid().isInBounds(pos) && (super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER1 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER2 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER3 || super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER4)) {
+					super.setDirection(direction);
+					return true;
+				}
+			}
+			return true;
 		} else {
 			return false;
 		}
@@ -245,19 +281,19 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	private void searchInAreaAction() {
-		super.setPos(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()));
+		super.setPos(getCurrentJobPos());
 		super.calculateInAreaPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
 	private void searchAction() {
-		super.setPos(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()));
+		super.setPos(getCurrentJobPos());
 		super.calculateDijkstraPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
 	private void gotoAction() {
 		if (!done) {
 			this.done = true;
-			super.calculatePathTo(building.calculateRealPoint(currentJob.getDx(), currentJob.getDy()));
+			super.calculatePathTo(getCurrentJobPos());
 		} else {
 			super.setAction(EAction.NO_ACTION, -1);
 			jobFinished();// start next action
@@ -265,7 +301,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	private void showAction() {
-		ISPosition2D pos = building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
+		ISPosition2D pos = getCurrentJobPos();
 		if (!super.getGrid().isBlocked(this, pos.getX(), pos.getY())) {
 			super.setPos(pos);
 			super.setVisible(true);
