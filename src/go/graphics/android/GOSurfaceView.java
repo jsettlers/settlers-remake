@@ -46,7 +46,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener {
 
 		private void generateContext(GL10 gl) {
 			if (context == null) {
-				context = new AndroidContext(gl);
+				context = new AndroidContext();
 			}
 		}
 
