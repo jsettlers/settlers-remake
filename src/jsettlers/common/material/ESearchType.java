@@ -34,6 +34,6 @@ public enum ESearchType {
 
 	ENEMY,
 
-	NON_BLOCKED
+	NON_BLOCKED_OR_PROTECTED
 
 }
