@@ -219,7 +219,8 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		switch (state) {
 		case NO_ACTION:
 			nothingTodoAction();
-			strategy.noActionEvent();
+			if (state == EMovableState.NO_ACTION)// the state might have changed in because of leaving a blocked position.
+				strategy.noActionEvent();
 			break;
 
 		case PUSHED_AND_WAITING:
@@ -238,7 +239,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				state = EMovableState.FINISHED_ACTION;
 				strategy.actionFinished();
 				if (state == EMovableState.FINISHED_ACTION) {
-					System.out.println("blÃ¶d");
+					System.out.println("blöd");
 					strategy.actionFinished();
 				}
 			}
@@ -252,6 +253,14 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	private void nothingTodoAction() {
+		if (grid.isProtected(pos.getX(), pos.getY())) {
+			strategy.leaveBlockedPosition();
+		} else {
+			goStepOrTurnRandom();
+		}
+	}
+
+	private void goStepOrTurnRandom() {
 		if (RandomSingleton.nextF() < Constants.MOVABLE_TURN_PROBABILITY) {
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
 		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_STEP_PROBABILITY) {

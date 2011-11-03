@@ -159,4 +159,7 @@ public abstract class MovableStrategy {
 	protected IMovableGrid getGrid() {
 		return grid;
 	}
+
+	protected void leaveBlockedPosition() {
+	}
 }

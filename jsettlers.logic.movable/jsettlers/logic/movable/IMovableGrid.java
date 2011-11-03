@@ -277,4 +277,6 @@ public interface IMovableGrid {
 	void addJobless(IManageableDigger digger);
 
 	void changeLandscapeAt(ISPosition2D pos, ELandscapeType type);
+
+	boolean isProtected(short x, short y);
 }

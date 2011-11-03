@@ -174,6 +174,8 @@ public class MainGrid {
 		}
 		grid.createNewMovableAt(new ShortPoint2D(50, 50), EMovableType.PIONEER, (byte) 0);
 
+		grid.createNewMovableAt(new ShortPoint2D(60, 60), EMovableType.SWORDSMAN_L3, (byte) 0);
+
 		return grid;
 	}
 
@@ -290,40 +292,43 @@ public class MainGrid {
 		}
 
 		@Override
-		public boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculateable) {
+		public boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculable) {
 			switch (searchType) {
 
 			case FOREIGN_GROUND:
-				return !blockedGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
+				return !blockedGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))
 						&& objectsGrid.hasCuttableObject((short) (x - 1), (short) (y - 1), EMapObjectType.TREE_ADULT)
-						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculateable) && !isMarked(x, y);
+						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_TREE:
 				return y < height - 1 && isTreePlantable(x, (short) (y + 1)) && !hasProtectedNeighbor(x, (short) (y + 1))
-						&& hasSamePlayer(x, (short) (y + 1), pathCalculateable) && !isMarked(x, y);
+						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_CORN:
-				return isCornPlantable(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y) && !blockedGrid.isProtected(x, y);
+				return isCornPlantable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y) && !blockedGrid.isProtected(x, y);
 
 			case CUTTABLE_CORN:
-				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
+				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case CUTTABLE_STONE:
 				return y < height - 1 && x < width - 2 && objectsGrid.hasCuttableObject((short) (x - 2), (short) (y - 1), EMapObjectType.STONE)
-						&& hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
+						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case ENEMY:
 				IMovable movable = movableGrid.getMovableAt(x, y);
-				return movable != null && movable.getPlayer() != pathCalculateable.getPlayer();
+				return movable != null && movable.getPlayer() != pathCalculable.getPlayer();
 
 			case RIVER:
-				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculateable) && !isMarked(x, y);
+				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case FISHABLE:
-				return hasSamePlayer(x, y, pathCalculateable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER);
+				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER);
+
+			case NON_BLOCKED:
+				return !blockedGrid.isBlocked(x, y) && !isLandscapeBlocking(x, y) && hasSamePlayer(x, y, pathCalculable);
 
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
@@ -427,9 +432,9 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-			// return debugColors[x][y];
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			return debugColors[x][y];
 			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : null;
 		}
 
@@ -711,6 +716,11 @@ public class MainGrid {
 			landscapeGrid.setLandscapeTypeAt(pos.getX(), pos.getY(), type);
 		}
 
+		@Override
+		public boolean isProtected(short x, short y) {
+			return blockedGrid.isProtected(x, y);
+		}
+
 	}
 
 	private class BordersThreadGrid implements IBordersThreadGrid {
@@ -826,7 +836,7 @@ public class MainGrid {
 		public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
 			partitionsGrid.requestBuildingWorker(workerType, workerBuilding);
 		}
-		
+
 		@Override
 		public void requestSoilderable(ISPosition2D position, Barrack barrack) {
 			partitionsGrid.requestSoilderable(position, barrack);
@@ -849,10 +859,9 @@ public class MainGrid {
 			}
 
 			@Override
-            public int getStackSize(ISPosition2D position,
-                    EMaterialType materialType) {
-	            return mapObjectsManager.getStackSize(position, materialType);
-            }
+			public int getStackSize(ISPosition2D position, EMaterialType materialType) {
+				return mapObjectsManager.getStackSize(position, materialType);
+			}
 		}
 	}
 

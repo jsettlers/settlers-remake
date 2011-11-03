@@ -22,22 +22,6 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 		this.type = type;
 	}
 
-	private void checkForEnemies() {
-		if (enemyPos != null || delayCtr > Constants.MOVABLE_INTERRUPTS_PER_SECOND * 2) {
-			delayCtr = 0;
-
-			Path path = super.getGrid().getDijkstra()
-					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, getSearchRadius(), ESearchType.ENEMY);
-			if (path != null)
-				enemyPos = path.getLastTile();
-			else
-				enemyPos = null;
-		} else {
-			delayCtr++;
-			enemyPos = null;
-		}
-	}
-
 	@Override
 	protected void gotHitEvent() {
 		super.abortPath();
@@ -82,6 +66,22 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 			}
 		}
 		super.setAction(EAction.NO_ACTION, -1);
+	}
+
+	private void checkForEnemies() {
+		if (enemyPos != null || delayCtr > Constants.MOVABLE_INTERRUPTS_PER_SECOND * 2) {
+			delayCtr = 0;
+
+			Path path = super.getGrid().getDijkstra()
+					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, getSearchRadius(), ESearchType.ENEMY);
+			if (path != null)
+				enemyPos = path.getLastTile();
+			else
+				enemyPos = null;
+		} else {
+			delayCtr++;
+			enemyPos = null;
+		}
 	}
 
 	protected abstract boolean canHit(ISPosition2D enemyPos);

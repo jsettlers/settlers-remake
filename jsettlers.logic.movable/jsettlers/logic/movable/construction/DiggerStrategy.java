@@ -87,8 +87,12 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 
 	@Override
 	protected void pathFinished() {
-		wentThere = true;
-		tryToDigg();
+		if (buildingArea != null) {
+			wentThere = true;
+			tryToDigg();
+		} else {
+			super.setAction(EAction.NO_ACTION, -1);
+		}
 	}
 
 	private void tryToDigg() {

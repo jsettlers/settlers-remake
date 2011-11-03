@@ -51,6 +51,8 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		case CARRY_DROP:
 			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 			break;
+		default:
+			super.setAction(EAction.NO_ACTION, -1); // can happen if bearer leaves protected position
 		}
 	}
 
@@ -147,7 +149,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	public void becomeWorker(EMovableType movableType) {
 		super.convertTo(movableType);
 	}
-	
+
 	@Override
 	public void becomeSoilder(ISPosition2D weaponPosition, Barrack barrack) {
 		this.movable.setStrategy(new BecomeSoldierStrategy(getGrid(), movable, weaponPosition, barrack));

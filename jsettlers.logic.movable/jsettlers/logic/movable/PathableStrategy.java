@@ -123,4 +123,8 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 
 	protected abstract boolean isGotoJobable();
 
+	@Override
+	public void leaveBlockedPosition() {
+		calculateDijkstraPath(super.getPos(), (short) 200, ESearchType.NON_BLOCKED);
+	}
 }
