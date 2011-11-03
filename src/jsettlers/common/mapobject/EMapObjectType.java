@@ -77,5 +77,10 @@ public enum EMapObjectType {
 	 * <p />
 	 * {@link IMapObject}s of this type must implement {@link IBuildingMapObject}.
 	 */
-	BUILDING
+	BUILDING, 
+	
+	/**
+	 * Simple smoke
+	 */
+	SMOKE
 }

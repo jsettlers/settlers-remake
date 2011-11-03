@@ -53,4 +53,10 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable {
 	 * @return health of a movable
 	 */
 	public float getHealth();
+
+	/**
+	 * Returns alternating true and false on every step.
+	 * @return
+	 */
+	boolean isRightstep();
 }

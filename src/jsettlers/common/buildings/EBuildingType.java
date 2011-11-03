@@ -16,10 +16,14 @@ import jsettlers.common.position.RelativePoint;
 public enum EBuildingType {
 	STONECUTTER(3), FORESTER(7), LUMBERJACK(0), SAWMILL(1),
 
-	COALMINE(5), IRONMINE(4), GOLDMINE(6), GOLDMELT(8), IRONMELT(9), TOOLSMITH(
+	COALMINE(6), IRONMINE(4), GOLDMINE(5), GOLDMELT(8), IRONMELT(9), TOOLSMITH(
 	        10), WEAPONSMITH(11),
 
-	FARM(21), PIG_FARM(20), MILL(14), // 13 => rotating
+	FARM(21), PIG_FARM(20), 
+	/**
+	 * Needs to implement {@link IBuilding.Mill}
+	 */
+	MILL(14), // 13 => rotating
 	WATERWORKS(19),
 	SLAUGHTERHOUSE(13),
 	BAKER(23),
@@ -103,7 +107,7 @@ public enum EBuildingType {
 				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
 			};
 			buildImages = new ImageLink[] {
-					new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
+					new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1)
 				};
 		} else {
 			images = tempimages;

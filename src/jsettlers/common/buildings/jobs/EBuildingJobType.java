@@ -211,5 +211,27 @@ public enum EBuildingJobType {
 	 * If the settler should be productive, this method succeds, it fails
 	 * otherwise.
 	 */
-	IS_PRODUCTIVE
+	IS_PRODUCTIVE,
+	
+	/**
+	 * Puts a smoke thing at a given position.
+	 */
+	SMOKE_ON,
+	
+	/**
+	 * Removes the smoke.
+	 */
+	SMOKE_OFF, 
+	
+	/**
+	 * Building starts working
+	 */
+	START_WORKING,
+	STOP_WORKING,
+	
+	/**
+	 * pop a material at a given position.
+	 */
+	REMOTETAKE
 }
+

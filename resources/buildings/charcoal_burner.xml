@@ -4,7 +4,7 @@
 	<ground groundtype="GRASS"/>
 	<ground groundtype="EARTH"/>
 	<ground groundtype="FLATTENED"/>
-	<blocked dx="-1" dy="2" block="true" />
+		<blocked dx="-1" dy="2" block="true" />
 	<blocked dx="-2" dy="1" block="true" />
 	<blocked dx="0" dy="2" block="true" />
 	<blocked dx="0" dy="1" block="true" />
@@ -32,11 +32,17 @@
 	<blocked dx="2" dy="-1" block="true" />
 	<blocked dx="3" dy="-1" block="true" />
 	<blocked dx="-2" dy="-2" block="true" />
-	<blocked dx="0" dy="-2" block="true" />
 	<blocked dx="1" dy="-2" block="true" />
 	<blocked dx="2" dy="-2" block="true" />
 	<blocked dx="3" dy="3" block="true" />
-	<blocked dx="0" dy="-1" block="false" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-3" block="true" />
+	<blocked dx="1" dy="-3" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="4" dy="-1" block="true" />
+	<blocked dx="3" dy="-2" block="true" />
+	<blocked dx="2" dy="-3" block="true" />
 	<blocked dx="1" dy="2" block="false" />
 	<blocked dx="2" dy="3" block="false" />
 	<blocked dx="3" dy="4" block="false" />
@@ -46,13 +52,7 @@
 	<blocked dx="6" dy="3" block="false" />
 	<blocked dx="6" dy="2" block="false" />
 	<blocked dx="5" dy="0" block="false" />
-	<blocked dx="4" dy="-1" block="false" />
-	<blocked dx="3" dy="-2" block="false" />
-	<blocked dx="2" dy="-3" block="false" />
-	<blocked dx="1" dy="-3" block="false" />
-	<blocked dx="0" dy="-3" block="false" />
 	<blocked dx="-1" dy="-3" block="false" />
-	<blocked dx="-1" dy="-2" block="false" />
 	<blocked dx="-2" dy="-3" block="false" />
 	<blocked dx="-3" dy="-3" block="false" />
 	<blocked dx="-3" dy="-2" block="false" />
@@ -66,10 +66,17 @@
 	<blocked dx="1" dy="4" block="false" />
 	<blocked dx="0" dy="4" block="false" />
 	<blocked dx="2" dy="2" block="false" />
-	<door dx="2" dy="2" />
+	<blocked dx="0" dy="-4" block="false" />
+	<blocked dx="-1" dy="-4" block="false" />
+	<blocked dx="1" dy="-4" block="false" />
+	<blocked dx="2" dy="-4" block="false" />
+	<blocked dx="3" dy="-3" block="false" />
+	<blocked dx="4" dy="-2" block="false" />
+	<blocked dx="5" dy="-1" block="false" />
+	<door dx="0" dy="1" />
 	<stack dx="0" dy="4" material="STONE" buildrequired="3" />
 	<stack dx="3" dy="4" material="PLANK" buildrequired="4" />
-	<stack dx="1" dy="4" material="PLANK" buildrequired="0" />
+	<stack dx="6" dy="4" material="PLANK" buildrequired="0" />
 	<bricklayer dx="2" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="6" dy="4" direction="NORTH_WEST" />
 	<bricklayer dx="6" dy="2" direction="NORTH_WEST" />
@@ -91,6 +98,8 @@
 	<startjob name="gohome" />
 
 	<!-- go home -->
+	<job name="resetandgohome"  type="SET_MATERIAL" successjob="resetandgohome2" failjob="resetandgohome2" material="NO_MATERIAL"/>
+	<job name="resetandgohome2" type="SMOKE_OFF"     successjob="gohome" failjob="gohome" dx="-3" dy="-4" />
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="gohome_wait"
 		dx="2" dy="2" />
 	<!-- go home failed, retry -->
@@ -101,42 +110,125 @@
 	<job name="hide" type="HIDE" successjob="reset" failjob="gohome_wait" />
 	<job name="reset" type="SET_MATERIAL" successjob="wait_at_home"
 		failjob="wait_at_home" material="NO_MATERIAL" />
-	<job name="wait_at_home" type="WAIT" successjob="checkplank" failjob="wait_at_home"
+	<job name="wait_at_home" type="WAIT" successjob="checkcoal" failjob="wait_at_home"
 		time="1" />
 
-	<job name="checkplank" type="AVAILABLE" successjob="checkcoal"
-		failjob="wait_at_home" dx="1" dy="4" material="PLANK" />
-	<job name="checkcoal" type="NOT_FULL" successjob="show"
-		failjob="wait_at_home" dx="4" dy="4" material="COAL" />
+	<job name="checkcoal" type="NOT_FULL" successjob="A_reset"
+		failjob="wait_at_home" dx="3" dy="4" material="COAL" />
 
-	<job name="show" type="SHOW" successjob="walkA1" failjob="gohome" dx="2" dy="2"/>
-	<job name="walkA1" type="WALK" successjob="walkA2" failjob="walkA2" direction="SOUTH_WEST"/>
-	<job name="walkA2" type="WALK" successjob="walkA3" failjob="walkA3" direction="SOUTH_WEST" />
 
-	<job name="walkA3" type="WALK" successjob="take1" failjob="gohome" direction="WEST" />
+	<job name="A_reset"     type="SET_MATERIAL" successjob="A_available" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="A_available" type="AVAILABLE" successjob="A_show"	failjob="wait_at_home" dx="6" dy="4" material="PLANK" />
+	<job name="A_show"      type="SHOW" successjob="A_walkA1" failjob="gohome" dx="0" dy="1"/>
+	<job name="A_walkA1"    type="WALK" successjob="A_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="A_walkA2"    type="WALK" successjob="A_walkA3" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="A_walkA3"    type="WALK" successjob="A_walkA4" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="A_walkA4"    type="WALK" successjob="A_walkA5" failjob="gohome" direction="EAST"/>
+	<job name="A_walkA5"    type="WALK" successjob="A_walkA6" failjob="gohome" direction="EAST" />
+	<job name="A_walkA6"    type="WALK" successjob="A_take1"  failjob="gohome" direction="EAST" />
 	
-	<job name="take1" type="DROP" successjob="take2" failjob="gohome" material="NO_MATERIAL" />
-	<job name="take2" type="SET_MATERIAL" successjob="take3" failjob="gohome" material="PLANK" />
-	<job name="take3" type="TAKE" successjob="walkB1" failjob="gohome" material="PLANK" />
+	<job name="A_take1"     type="DROP"         successjob="A_take2"  failjob="resetandgohome" material="NO_MATERIAL" />
+	<job name="A_take2"     type="SET_MATERIAL" successjob="A_take3"  failjob="resetandgohome" material="PLANK" />
+	<job name="A_take3"     type="TAKE"         successjob="A_walkB1" failjob="resetandgohome" material="PLANK" />
 	
-	<job name="walkB1" type="WALK" successjob="walkB2" failjob="gohome" direction="NORTH_EAST" />
-	<job name="walkB2" type="WALK" successjob="walkB3" failjob="gohome" direction="NORTH_EAST" />
-	<job name="walkB3" type="LOOK_AT" successjob="work1" failjob="gohome" direction="NORTH_WEST" />
-	<job name="work1" type="DROP" successjob="work2" failjob="gohome" material="NO_MATERIAL"/>
-	<job name="work2" type="SET_MATERIAL" successjob="work3" failjob="gohome" material="NO_MATERIAL"/>
-	<job name="work3" type="TAKE" successjob="work4" failjob="gohome" material="NO_MATERIAL"/>
-	<job name="work4" type="WAIT" successjob="work5" failjob="gohome" time="2"/>
-	<job name="work5" type="DROP" successjob="work6" failjob="gohome" material="NO_MATERIAL"/>
-	<job name="work6" type="SET_MATERIAL" successjob="work7" failjob="gohome" material="COAL"/>
-	<job name="work7" type="TAKE" successjob="walkC1" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="A_walkB1"    type="WALK" successjob="A_walkB2" failjob="resetandgohome" direction="WEST" />
+	<job name="A_walkB2"    type="WALK" successjob="A_walkB3" failjob="resetandgohome" direction="WEST" />
+	<job name="A_walkB3"    type="WALK" successjob="A_walkB4" failjob="resetandgohome" direction="WEST" />
+	<job name="A_walkB4"    type="WALK" successjob="A_walkB5" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="A_walkB5"    type="WALK" successjob="A_walkB6" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="A_walkB6"    type="WALK" successjob="A_hide"   failjob="resetandgohome" direction="NORTH_WEST" />
 	
-	<job name="walkC1" type="WALK" successjob="walkC2" failjob="gohome" direction="SOUTH_EAST" />
-	<job name="walkC2" type="WALK" successjob="drop1" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="A_hide"      type="HIDE"         successjob="A_wait"      failjob="resetandgohome"/>
+	<job name="A_wait"      type="WAIT"         successjob="B_reset"     failjob="resetandgohome" time=".5"/>
+		
+	<job name="B_reset"     type="SET_MATERIAL" successjob="B_available" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="B_available" type="AVAILABLE" successjob="B_show"	failjob="wait_at_home" dx="6" dy="4" material="PLANK" />
+	<job name="B_show"      type="SHOW" successjob="B_walkA1" failjob="gohome" dx="0" dy="1"/>
+	<job name="B_walkA1"    type="WALK" successjob="B_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="B_walkA2"    type="WALK" successjob="B_walkA3" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="B_walkA3"    type="WALK" successjob="B_walkA4" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="B_walkA4"    type="WALK" successjob="B_walkA5" failjob="gohome" direction="EAST"/>
+	<job name="B_walkA5"    type="WALK" successjob="B_walkA6" failjob="gohome" direction="EAST" />
+	<job name="B_walkA6"    type="WALK" successjob="B_take1"  failjob="gohome" direction="EAST" />
 	
-	<job name="drop1" type="DROP" successjob="drop2" failjob="gohome" material="COAL" />
-	<job name="drop2" type="SET_MATERIAL" successjob="drop3" failjob="gohome" material="NO_MATERIAL" />
-	<job name="drop3" type="TAKE" successjob="walkD1" failjob="gohome" material="NO_MATERIAL" />
+	<job name="B_take1"     type="DROP"         successjob="B_take2"  failjob="resetandgohome" material="NO_MATERIAL" />
+	<job name="B_take2"     type="SET_MATERIAL" successjob="B_take3"  failjob="resetandgohome" material="PLANK" />
+	<job name="B_take3"     type="TAKE"         successjob="B_walkB1" failjob="resetandgohome" material="PLANK" />
 	
-	<job name="walkD1" type="WALK" successjob="walkD2" failjob="gohome" direction="NORTH_WEST" />
-	<job name="walkD2" type="WALK" successjob="hide" failjob="gohome" direction="NORTH_EAST" />
+	<job name="B_walkB1"    type="WALK" successjob="B_walkB2" failjob="resetandgohome" direction="WEST" />
+	<job name="B_walkB2"    type="WALK" successjob="B_walkB3" failjob="resetandgohome" direction="WEST" />
+	<job name="B_walkB3"    type="WALK" successjob="B_walkB4" failjob="resetandgohome" direction="WEST" />
+	<job name="B_walkB4"    type="WALK" successjob="B_walkB5" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="B_walkB5"    type="WALK" successjob="B_walkB6" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="B_walkB6"    type="WALK" successjob="B_hide"   failjob="resetandgohome" direction="NORTH_WEST" />
+	
+	<job name="B_hide"      type="HIDE"         successjob="B_wait"      failjob="resetandgohome"/>
+	<job name="B_wait"      type="WAIT"         successjob="smoke_on"     failjob="resetandgohome" time=".5"/>
+	
+	<job name="smoke_on"    type="SMOKE_ON"     successjob="B_wait2" failjob="B_wait2" dx="-3" dy="-4" />
+	<job name="B_wait2"     type="WAIT"         successjob="C_reset"     failjob="resetandgohome" time=".5"/>
+	
+	<job name="C_reset"     type="SET_MATERIAL" successjob="C_available" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="C_available" type="AVAILABLE" successjob="C_show"	failjob="wait_at_home" dx="6" dy="4" material="PLANK" />
+	<job name="C_show"      type="SHOW" successjob="C_walkA1" failjob="gohome" dx="0" dy="1"/>
+	<job name="C_walkA1"    type="WALK" successjob="C_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="C_walkA2"    type="WALK" successjob="C_walkA3" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="C_walkA3"    type="WALK" successjob="C_walkA4" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="C_walkA4"    type="WALK" successjob="C_walkA5" failjob="gohome" direction="EAST"/>
+	<job name="C_walkA5"    type="WALK" successjob="C_walkA6" failjob="gohome" direction="EAST" />
+	<job name="C_walkA6"    type="WALK" successjob="C_take1"  failjob="gohome" direction="EAST" />
+	
+	<job name="C_take1"     type="DROP"         successjob="C_take2"  failjob="resetandgohome" material="NO_MATERIAL" />
+	<job name="C_take2"     type="SET_MATERIAL" successjob="C_take3"  failjob="resetandgohome" material="PLANK" />
+	<job name="C_take3"     type="TAKE"         successjob="C_walkB1" failjob="resetandgohome" material="PLANK" />
+	
+	<job name="C_walkB1"    type="WALK" successjob="C_walkB2" failjob="resetandgohome" direction="WEST" />
+	<job name="C_walkB2"    type="WALK" successjob="C_walkB3" failjob="resetandgohome" direction="WEST" />
+	<job name="C_walkB3"    type="WALK" successjob="C_walkB4" failjob="resetandgohome" direction="WEST" />
+	<job name="C_walkB4"    type="WALK" successjob="C_walkB5" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="C_walkB5"    type="WALK" successjob="C_walkB6" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="C_walkB6"    type="WALK" successjob="C_hide"   failjob="resetandgohome" direction="NORTH_WEST" />
+	
+	<job name="C_hide"      type="HIDE"         successjob="C_wait"      failjob="resetandgohome"/>
+	<job name="C_wait"      type="WAIT"         successjob="D_reset"     failjob="resetandgohome" time=".5"/>
+		
+	<job name="D_reset"     type="SET_MATERIAL" successjob="D_available" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="D_available" type="AVAILABLE" successjob="D_show"	failjob="wait_at_home" dx="6" dy="4" material="PLANK" />
+	<job name="D_show"      type="SHOW" successjob="D_walkA1" failjob="gohome" dx="0" dy="1"/>
+	<job name="D_walkA1"    type="WALK" successjob="D_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="D_walkA2"    type="WALK" successjob="D_walkA3" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="D_walkA3"    type="WALK" successjob="D_walkA4" failjob="gohome" direction="SOUTH_EAST" />
+	<job name="D_walkA4"    type="WALK" successjob="D_walkA5" failjob="gohome" direction="EAST"/>
+	<job name="D_walkA5"    type="WALK" successjob="D_walkA6" failjob="gohome" direction="EAST" />
+	<job name="D_walkA6"    type="WALK" successjob="D_take1"  failjob="gohome" direction="EAST" />
+	
+	<job name="D_take1"     type="DROP"         successjob="D_take2"  failjob="resetandgohome" material="NO_MATERIAL" />
+	<job name="D_take2"     type="SET_MATERIAL" successjob="D_take3"  failjob="resetandgohome" material="PLANK" />
+	<job name="D_take3"     type="TAKE"         successjob="D_walkB1" failjob="resetandgohome" material="PLANK" />
+	
+	<job name="D_walkB1"    type="WALK" successjob="D_walkB2" failjob="resetandgohome" direction="WEST" />
+	<job name="D_walkB2"    type="WALK" successjob="D_walkB3" failjob="resetandgohome" direction="WEST" />
+	<job name="D_walkB3"    type="WALK" successjob="D_walkB4" failjob="resetandgohome" direction="WEST" />
+	<job name="D_walkB4"    type="WALK" successjob="D_walkB5" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="D_walkB5"    type="WALK" successjob="D_walkB6" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="D_walkB6"    type="WALK" successjob="D_hide"   failjob="resetandgohome" direction="NORTH_WEST" />
+	
+	<job name="D_hide"      type="HIDE"         successjob="D_wait"      failjob="resetandgohome"/>
+	<job name="D_wait"      type="WAIT"         successjob="smoke_off"     failjob="resetandgohome" time=".5"/>
+		
+	<job name="smoke_off"    type="SMOKE_OFF"     successjob="Z_reset" failjob="Z_reset" dx="-3" dy="-4" />
+
+	<job name="Z_reset"     type="SET_MATERIAL" successjob="Z_show" failjob="resetandgohome" material="COAL"/>
+	<job name="Z_show"      type="SHOW" successjob="Z_walkA1" failjob="resetandgohome" dx="0" dy="1"/>
+	<job name="Z_walkA1"    type="WALK" successjob="Z_walkA2" failjob="resetandgohome" direction="SOUTH_EAST"/>
+	<job name="Z_walkA2"    type="WALK" successjob="Z_walkA3" failjob="resetandgohome" direction="SOUTH_EAST" />
+	<job name="Z_walkA3"    type="WALK" successjob="Z_drop1" failjob="resetandgohome" direction="SOUTH_EAST" />
+
+	<job name="Z_drop1"     type="DROP"         successjob="Z_drop2"  failjob="resetandgohome" material="COAL" />
+	<job name="Z_drop2"     type="SET_MATERIAL" successjob="Z_drop3"  failjob="resetandgohome" material="NO_MATERIAL" />
+	<job name="Z_drop3"     type="TAKE"         successjob="Z_walkB1" failjob="resetandgohome" material="NO_MATERIAL" />
+
+	<job name="Z_walkB1"    type="WALK" successjob="Z_walkB2" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="Z_walkB2"    type="WALK" successjob="Z_walkB3" failjob="resetandgohome" direction="NORTH_WEST" />
+	<job name="Z_walkB3"    type="WALK" successjob="hide" failjob="resetandgohome" direction="NORTH_WEST" />
 </building>

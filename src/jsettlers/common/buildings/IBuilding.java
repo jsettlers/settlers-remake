@@ -9,12 +9,8 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	public EBuildingType getBuildingType();
 
 	public boolean isOccupied();
-
-	/**
-	 * 
-	 * @return -1 if no action img should be displayed<br>
-	 *         idx of current action image
-	 */
-	public int getActionImgIdx();
-
+	
+	interface Mill extends IBuilding {
+		boolean isWorking();
+	}
 }

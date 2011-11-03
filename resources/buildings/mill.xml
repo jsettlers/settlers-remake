@@ -45,8 +45,9 @@
 	<blocked dx="-3" dy="-2" block="false" />
 	<blocked dx="-3" dy="-3" block="false" />
 	<door dx="-1" dy="1" />
+	<!-- materials checked with original -->
 	<stack dx="2" dy="2" material="CROP" buildrequired="0" />
-	<stack dx="0" dy="3" material="PLANK" buildrequired="6" />
+	<stack dx="0" dy="3" material="PLANK" buildrequired="3" />
 	<stack dx="2" dy="3" material="STONE" buildrequired="3" />
 	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
@@ -92,9 +93,11 @@
 		material="CROP" />
 	<job name="go_back" type="GO_TO" successjob="hide1" failjob="gohome"
 		dx="-1" dy="2" />
-	<job name="hide1" type="HIDE" successjob="makeflour" failjob="start" />
-	<job name="makeflour" type="WAIT" successjob="changeMat2" failjob="start"
-		time="2.0" />
+	<job name="hide1" type="HIDE" successjob="startwork" failjob="start" />
+	<job name="startwork" type="START_WORKING" successjob="makeflour" failjob="makeflour"/>
+	<job name="makeflour" type="WAIT" successjob="stopwork" failjob="start"
+		time="6.0" />
+	<job name="stopwork" type="STOP_WORKING" successjob="changeMat2" failjob="changeMat2"/>
 	<job name="changeMat2" type="SET_MATERIAL" successjob="get_flour"
 		failjob="hide" material="FLOUR" />
 	<job name="get_flour" type="GO_TO" successjob="look" failjob="gohome"

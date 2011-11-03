@@ -1,84 +1,154 @@
 <?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
 <building worker="MINER" workradius="0">
 	<ground groundtype="MOUNTAIN" />
-
-	<blocked dx="1" dy="3" />
-	<blocked dx="2" dy="3" />
-	<blocked dx="1" dy="2" />
-	<blocked dx="1" dy="1" />
-	<blocked dx="0" dy="0" />
-	<blocked dx="-1" dy="-1" />
-	<blocked dx="-1" dy="0" />
-	<blocked dx="-1" dy="1" />
-	<blocked dx="0" dy="1" />
-	<blocked dx="-2" dy="0" />
-	<blocked dx="-2" dy="1" />
-	<blocked dx="-2" dy="-1" />
-	<blocked dx="-2" dy="-2" />
-	<blocked dx="2" dy="2" />
-	<blocked dx="2" dy="1" />
-	<blocked dx="3" dy="1" />
-	<blocked dx="2" dy="0" />
-	<blocked dx="1" dy="-1" />
-	<blocked dx="1" dy="0" />
-	<blocked dx="0" dy="-1" />
-	<blocked dx="-1" dy="-2" />
-
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="3" dy="1" block="true" />
+	<blocked dx="2" dy="0" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="4" dy="3" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="3" dy="3" block="false" />
+	<blocked dx="4" dy="4" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="3" dy="5" block="false" />
+	<blocked dx="2" dy="4" block="false" />
+	<blocked dx="2" dy="5" block="false" />
+	<blocked dx="1" dy="4" block="false" />
+	<blocked dx="0" dy="3" block="false" />
+	<blocked dx="0" dy="2" block="false" />
+	<blocked dx="-1" dy="2" block="false" />
+	<blocked dx="-2" dy="1" block="false" />
+	<blocked dx="-3" dy="0" block="false" />
+	<blocked dx="-3" dy="-1" block="false" />
+	<blocked dx="-3" dy="-2" block="false" />
+	<blocked dx="-3" dy="-3" block="false" />
+	<blocked dx="-3" dy="-4" block="false" />
+	<blocked dx="-2" dy="-4" block="false" />
+	<blocked dx="-1" dy="-4" block="false" />
+	<blocked dx="0" dy="-3" block="false" />
+	<blocked dx="1" dy="-2" block="false" />
+	<blocked dx="2" dy="-1" block="false" />
+	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="4" dy="1" block="false" />
 	<door dx="0" dy="2" />
-
-	<stack dx="0" dy="3" material="PLANK" buildrequired="5" />
-	<stack dx="3" dy="5" material="STONE" buildrequired="2" />
-
+	<!-- materials checked with original -->
+	<stack dx="0" dy="3" material="PLANK" buildrequired="4" />
+	<stack dx="3" dy="5" material="STONE" buildrequired="1" />
+	<stack dx="3" dy="4" material="BREAD" buildrequired="0" />
+	<stack dx="3" dy="2" material="MEAT" buildrequired="0" />
+	<stack dx="4" dy="2" material="FISH" buildrequired="0" />
 	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="3" dy="4" direction="NORTH_WEST" />
 	<bricklayer dx="4" dy="3" direction="NORTH_WEST" />
 	<bricklayer dx="4" dy="2" direction="NORTH_WEST" />
-	
-	<flag dx="-2" dy="-3" />
+	<flag dx="0" dy="0" />
+	<buildmark dx="-2" dy="0" />
+	<buildmark dx="-2" dy="-3" />
+	<buildmark dx="1" dy="3" />
+	<buildmark dx="1" dy="0" />
+	<buildmark dx="3" dy="1" />
 
 	<image file="14" for="GUI" type="GUI" sequence="45" image="0"/>
+	<image file="13" for="FINAL" type="SETTLER" sequence="4" image="0"/>
+	<image file="13" for="BUILD" type="SETTLER" sequence="4" image="1"/>
 
 	<!-- going home job -->
-	<!-- Es fehlt eine Zufallsregel, die die Lebensmittel und den noch vorhandenen 
-		Erz zusammen bringt. Für andere Minen kopieren und umändern. -->
 	<startjob name="gohome" />
-	<job name="gohome" type="GO_TO" successjob="hide" failjob="waithome"
+	<job name="gohome" type="GO_TO" successjob="hide" failjob="hide"
 		dx="0" dy="2" />
-	<job name="waithome" type="WAIT" successjob="gohome" failjob="waithome"
-		time="10" />
-	<job name="hide" type="HIDE" successjob="wait" failjob="gohome" />
-	<job name="wait" type="WAIT" successjob="check" failjob="gohome"
-		time="10" />
-	<job name="check" type="NOT_FULL" successjob="getironore" failjob="noironore"
-		dx="0" dy="4" />
+		
+	
+	<job name="hide" type="HIDE" successjob="A_wait" failjob="A_wait" />
+	
+	<!-- Wait for MEAT -->
+	<job name="A_wait" type="WAIT" successjob="A_checkfood" failjob="A_checkfood"	time="10" />
+	<job name="A_checkfood" type="AVAILABLE" successjob="mine_meat" failjob="B_wait" material="MEAT" dx="3" dy="2"/>
+	
+	<!-- Wait some more for MEAT -->
+	<job name="B_wait" type="WAIT" successjob="B_checkfood" failjob="B_checkfood"	time="10" />
+	<job name="B_checkfood" type="AVAILABLE" successjob="mine_meat" failjob="C_wait" material="MEAT" dx="3" dy="2"/>
 
-	<job name="getironore" type="SET_MATERIAL" successjob="show_full"
+	<!-- Wait for BREAD -->
+	<job name="C_wait" type="WAIT" successjob="C_checkfood1" failjob="C_checkfood1"	time="10" />
+	<job name="C_checkfood1" type="AVAILABLE" successjob="mine_meat" failjob="C_checkfood2" material="MEAT" dx="3" dy="2"/>
+	<job name="C_checkfood2" type="AVAILABLE" successjob="mine_bread" failjob="D_wait" material="BREAD" dx="3" dy="4"/>
+	
+	<!-- Wait for FISH -->
+	<job name="D_wait" type="WAIT" successjob="D_checkfood1" failjob="D_checkfood1"	time="10" />
+	<job name="D_checkfood1" type="AVAILABLE" successjob="mine_meat" failjob="D_checkfood2" material="MEAT" dx="3" dy="2"/>
+	<job name="D_checkfood2" type="AVAILABLE" successjob="mine_bread" failjob="D_checkfood3" material="BREAD" dx="3" dy="4"/>
+	<job name="D_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" material="FISH" dx="4" dy="2"/>
+	
+	<!-- Wait for FISH -->
+	<job name="E_wait" type="WAIT" successjob="D_checkfood1" failjob="E_checkfood1"	time="10" />
+	<job name="E_checkfood1" type="AVAILABLE" successjob="mine_meat" failjob="E_checkfood2" material="MEAT" dx="3" dy="2"/>
+	<job name="E_checkfood2" type="AVAILABLE" successjob="mine_bread" failjob="E_checkfood3" material="BREAD" dx="3" dy="4"/>
+	<job name="E_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="F_wait" material="FISH" dx="4" dy="2"/>
+	
+	<!-- just do it -->
+	<job name="F_wait" type="WAIT" successjob="mine" failjob="mine"	time="30" />
+	
+	<job name="mine_meat" type="REMOTETAKE" successjob="mine" failjob="F_wait" material="MEAT" dx="3" dy="2"/>
+	<job name="mine_bread" type="REMOTETAKE" successjob="mine" failjob="F_wait" material="BREAD" dx="3" dy="4"/>
+	<job name="mine_fish" type="REMOTETAKE" successjob="mine" failjob="F_wait" material="FISH" dx="4" dy="2"/>
+	
+	<job name="mine" type="IS_PRODUCTIVE" successjob="successful" failjob="noironore1"/>
+
+	<!-- successful mining -->
+	<job name="successful" type="NOT_FULL" successjob="successfuls" failjob="successfuls"
+		dx="0" dy="4" material="IRONORE"/>
+	<job name="successfuls" type="SET_MATERIAL" successjob="show_full"
 		failjob="gohome" material="IRONORE" />
-	<job name="show_full" type="SHOW" successjob="getironore1" failjob="gohome"
+	<job name="show_full" type="SHOW" successjob="successful1" failjob="gohome"
 		dx="0" dy="2" />
-	<job name="getironore1" type="GO_TO" successjob="getironore2"
-		failjob="gohome" dx="0" dy="4" />
-	<job name="getironore2" type="LOOK_AT" successjob="getironore3"
+	<job name="successful1" type="WALK" successjob="successful2"
 		failjob="gohome" direction="SOUTH_WEST" />
-	<job name="getironore3" type="DROP" successjob="getironore4"
+	<job name="successful2" type="WALK" successjob="successful3"
+		failjob="gohome" direction="SOUTH_WEST" />
+	<job name="successful3" type="LOOK_AT" successjob="successful4"
+		failjob="gohome" direction="SOUTH_WEST" />
+	<job name="successful4" type="DROP" successjob="successful5"
 		failjob="gohome" material="IRONORE" />
-	<job name="getironore4" type="SET_MATERIAL" successjob="gohome"
+	<job name="successful5" type="SET_MATERIAL" successjob="successful6"
 		failjob="gohome" material="NO_MATERIAL" />
+	<job name="successful6" type="TAKE" successjob="successful7"
+		failjob="gohome" material="NO_MATERIAL" />
+	<job name="successful7" type="WALK" successjob="successful8"
+		failjob="gohome" direction="NORTH_EAST" />
+	<job name="successful8" type="WALK" successjob="hide"
+		failjob="hide" direction="NORTH_EAST" />
 
-	<job name="noironore" type="SET_MATERIAL" successjob="show_leer"
+	<!-- failed mining -->
+	<job name="noironore1" type="SET_MATERIAL" successjob="noironore2"
 		failjob="gohome" material="BASKET" />
-	<job name="show_leer" type="SHOW" successjob="noironore1" failjob="gohome"
+	<job name="noironore2" type="SHOW" successjob="noironore4" failjob="gohome"
 		dx="0" dy="2" />
-	<job name="noironore1" type="GO_TO" successjob="noironore2"
-		failjob="hide" dx="0" dy="4" />
-	<job name="noironore2" type="LOOK_AT" successjob="noironore3"
-		failjob="hide" direction="SOUTH_WEST" />
-	<job name="noironore3" type="PLAY_ACTION1" successjob="noironore4"
-		failjob="hide" time="5.0" />
-	<job name="noironore4" type="SET_MATERIAL" successjob="gohome"
-		failjob="gohome" material="BASKET" />
-
-
-
+	<job name="noironore4" type="WALK" successjob="noironore5"
+		failjob="gohome" direction="SOUTH_WEST" />
+	<job name="noironore5" type="LOOK_AT" successjob="noironore6"
+		failjob="gohome" direction="SOUTH_WEST" />
+	<job name="noironore6" type="PLAY_ACTION1" successjob="noironore7"
+		failjob="gohome" time="5.0" />
+	<job name="noironore7" type="WALK" successjob="hide"
+		failjob="hide" direction="NORTH_EAST" />
 </building>

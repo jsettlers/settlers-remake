@@ -52,7 +52,12 @@
 	AVAILABLE|
 	NOT_FULL|
 	LOOK_AT_SEARCHED|
-	IS_PRODUCTIVE)
+	IS_PRODUCTIVE|
+	SMOKE_ON|
+	SMOKE_OFF|
+	START_WORKING|
+	STOP_WORKING|
+	REMOTETAKE)
 ">
 <!ENTITY % direction "(EAST| SOUTH_EAST| SOUTH_WEST| WEST | NORTH_WEST | NORTH_EAST)
 ">
@@ -83,7 +88,7 @@
 	RIVER4|
 	MOUNTAINBORDER
 )">
-<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, image*, startjob?, job*) >
+<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, workcenter?, buildmark*, image*, startjob?, job*) >
 
 <!ATTLIST building
    worker CDATA #REQUIRED
@@ -94,6 +99,12 @@
 <!ELEMENT ground EMPTY>
 <!ATTLIST ground
 	groundtype %groundtype; #REQUIRED
+>
+
+<!ELEMENT workcenter EMPTY>
+<!ATTLIST workcenter
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
 >
 
 <!ELEMENT blocked EMPTY>

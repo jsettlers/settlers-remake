@@ -39,6 +39,11 @@ on = grass
 size = 4000
 distance = 50-120
 
+[playerriver]
+on = grass,sand
+length = 100
+distance = 30-100
+
 [building]
 count = 1
 dx = 0

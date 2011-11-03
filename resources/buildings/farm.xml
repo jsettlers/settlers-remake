@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd">
-<building worker="FARMER" workradius="10">
+<building worker="FARMER" workradius="6">
 	<ground groundtype="GRASS"/>
 	<ground groundtype="EARTH"/>
 	<ground groundtype="FLATTENED"/>
@@ -75,8 +75,9 @@
 	<blocked dx="-3" dy="-5" />
 	<door dx="-1" dy="4" />
 	
-	<stack dx="1" dy="6" material="PLANK" buildrequired="10" />
-	<stack dx="4" dy="6" material="STONE" buildrequired="5" />
+	<!-- materials checked with original -->
+	<stack dx="1" dy="6" material="PLANK" buildrequired="6" />
+	<stack dx="4" dy="6" material="STONE" buildrequired="6" />
 	
 	<bricklayer dx="-2" dy="4" direction="NORTH_EAST"/>
 	<bricklayer dx="0" dy="5" direction="NORTH_EAST"/>
@@ -86,6 +87,8 @@
 	<bricklayer dx="6" dy="2" direction="WEST"/>
 	
 	<flag dx="-4" dy="1" />
+	
+	<workcenter dx="7" dy="14"/>
 
 	<image file="14" for="GUI" type="GUI" sequence="69" image="0"/>
 	
