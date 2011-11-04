@@ -46,7 +46,7 @@ public class DatFileTester {
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
-	private static int datFileIndex = 11;
+	private static int datFileIndex = 6;
 
 	private AdvancedDatFileReader reader;
 
