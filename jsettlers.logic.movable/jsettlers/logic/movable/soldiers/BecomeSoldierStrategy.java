@@ -12,16 +12,13 @@ import jsettlers.logic.movable.PathableStrategy;
 import jsettlers.logic.movable.bearer.BearerStrategy;
 
 /**
- * Lets the bearer go to a weapon stack at a barrack, pick it up and then go to
- * its door and become a soldier.
+ * Lets the bearer go to a weapon stack at a barrack, pick it up and then go to its door and become a soldier.
  * 
  * @author michael
  */
 public class BecomeSoldierStrategy extends PathableStrategy {
 
-	private static final EMaterialType[] WEAPONS = new EMaterialType[] {
-	        EMaterialType.BOW, EMaterialType.SWORD, EMaterialType.SPEAR,
-	};
+	private static final EMaterialType[] WEAPONS = new EMaterialType[] { EMaterialType.BOW, EMaterialType.SWORD, EMaterialType.SPEAR, };
 
 	private final ISPosition2D weaponPosition;
 
@@ -29,8 +26,7 @@ public class BecomeSoldierStrategy extends PathableStrategy {
 
 	private final Barrack barrack;
 
-	public BecomeSoldierStrategy(IMovableGrid grid, Movable movable,
-	        ISPosition2D weaponPosition, Barrack barrack) {
+	public BecomeSoldierStrategy(IMovableGrid grid, Movable movable, ISPosition2D weaponPosition, Barrack barrack) {
 		super(grid, movable);
 		this.weaponPosition = weaponPosition;
 		this.barrack = barrack;
@@ -51,30 +47,31 @@ public class BecomeSoldierStrategy extends PathableStrategy {
 
 	private void nextState() {
 		switch (nextState) {
-			case TAKE_DROP:
-				nextState = EState.CONVERT;
-				super.setAction(EAction.DROP,
-				        Constants.MOVABLE_TAKE_DROP_DURATION);
-				break;
+		case TAKE_DROP:
+			nextState = EState.CONVERT;
+			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+			break;
 
-			case CONVERT:
-				EMaterialType took = null;
-				for (EMaterialType type : WEAPONS) {
-					if (super.getGrid().popMaterial(weaponPosition, type)) {
-						took = type;
-						break;
-					}
+		case CONVERT:
+			EMaterialType took = null;
+			for (EMaterialType type : WEAPONS) {
+				if (super.getGrid().popMaterial(weaponPosition, type)) {
+					took = type;
+					break;
 				}
-				if (took != null) {
-					barrack.requestFullfilled(took);
-					super.convertTo(getTypeForMaterial(took));
-				} else {
-					abort();
-				}
-				break;
+			}
+			if (took != null) {
+				barrack.requestFullfilled(took);
+				super.setAction(EAction.NO_ACTION, -1);
+				super.convertTo(getTypeForMaterial(took));
+			} else {
+				abort();
+			}
+			break;
 
-			default:
-				break;
+		default:
+			super.setAction(EAction.NO_ACTION, -1);
+			break;
 		}
 	}
 
@@ -82,13 +79,13 @@ public class BecomeSoldierStrategy extends PathableStrategy {
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
 			switch (nextState) {
-				case GO_TO_BARRACK:
-					nextState = EState.TAKE_DROP;
-					ISPosition2D flag = barrack.getFlag();
-					super.calculatePathTo(flag);
-					return true;
-				default:
-					return false;
+			case GO_TO_BARRACK:
+				nextState = EState.TAKE_DROP;
+				ISPosition2D flag = barrack.getFlag();
+				super.calculatePathTo(flag);
+				return true;
+			default:
+				return false;
 			}
 		}
 		return true;
@@ -132,6 +129,7 @@ public class BecomeSoldierStrategy extends PathableStrategy {
 		// become a bearer again
 		barrack.abortedForPosition(weaponPosition);
 		this.movable.setStrategy(new BearerStrategy(getGrid(), movable));
+		super.setAction(EAction.NO_ACTION, -1);
 	}
 
 	private enum EState {

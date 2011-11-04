@@ -62,7 +62,6 @@ import jsettlers.logic.map.random.grid.StackObject;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.IMapObjectsManagerGrid;
-import jsettlers.logic.objects.IMapObjectsManagerTile;
 import jsettlers.logic.objects.MapObjectsManager;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
@@ -400,7 +399,7 @@ public class MainGrid {
 
 	}
 
-	private class GraphicsGrid implements IGraphicsGrid {
+	class GraphicsGrid implements IGraphicsGrid {
 
 		@Override
 		public short getHeight() {
@@ -456,45 +455,40 @@ public class MainGrid {
 	}
 
 	private class MapObjectsManagerGrid implements IMapObjectsManagerGrid {
+
 		@Override
-		public IMapObjectsManagerTile getTile(final short x, final short y) {
-			return new IMapObjectsManagerTile() { // TODO remove the tile and replace it with single methods
+		public void setLandscape(short x, short y, ELandscapeType landscapeType) {
+			landscapeGrid.setLandscapeTypeAt(x, y, landscapeType);
+		}
 
-				@Override
-				public void setLandscape(ELandscapeType landscapeType) {
-					landscapeGrid.setLandscapeTypeAt(x, y, landscapeType);
-				}
+		@Override
+		public void setBlocked(short x, short y, boolean blocked) {
+			blockedGrid.setBlocked(x, y, blocked);
+		}
 
-				@Override
-				public void setBlocked(boolean blocked) {
-					blockedGrid.setBlocked(x, y, blocked);
-				}
+		@Override
+		public AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+			return objectsGrid.removeMapObjectType(x, y, mapObjectType);
+		}
 
-				@Override
-				public AbstractHexMapObject removeMapObjectType(EMapObjectType mapObjectType) {
-					return objectsGrid.removeMapObjectType(x, y, mapObjectType);
-				}
+		@Override
+		public boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
+			return objectsGrid.removeMapObject(x, y, mapObject);
+		}
 
-				@Override
-				public boolean removeMapObject(AbstractHexMapObject mapObject) {
-					return objectsGrid.removeMapObject(x, y, mapObject);
-				}
+		@Override
+		public boolean isBlocked(short x, short y) {
+			return blockedGrid.isBlocked(x, y);
+		}
 
-				@Override
-				public boolean isBlocked() {
-					return blockedGrid.isBlocked(x, y);
-				}
+		@Override
+		public AbstractHexMapObject getMapObject(short x, short y, EMapObjectType mapObjectType) {
+			return objectsGrid.getMapObjectAt(x, y, mapObjectType);
+		}
 
-				@Override
-				public AbstractHexMapObject getMapObject(EMapObjectType mapObjectType) {
-					return objectsGrid.getMapObjectAt(x, y, mapObjectType);
-				}
-
-				@Override
-				public void addMapObject(AbstractHexMapObject mapObject) {
-					objectsGrid.addMapObjectAt(x, y, mapObject);
-				}
-			};
+		@Override
+		public void addMapObject(short x, short y, AbstractHexMapObject mapObject) {
+			objectsGrid.addMapObjectAt(x, y, mapObject);
 		}
 
 		@Override
@@ -505,6 +499,11 @@ public class MainGrid {
 		@Override
 		public short getHeight() {
 			return height;
+		}
+
+		@Override
+		public boolean isInBounds(short x, short y) {
+			return MainGrid.this.isInBounds(x, y);
 		}
 
 	}

@@ -2,7 +2,7 @@
  JSettlers CHANGE REQUESTS
 --------------------------------
 
-CR-001 [ ]                  --       BUG: killing a pioneer results in a tile that can not be occupied (because it's left marked)
+CR-001 [ ]                  --       
 CR-002 [ ]                  --       
 
 

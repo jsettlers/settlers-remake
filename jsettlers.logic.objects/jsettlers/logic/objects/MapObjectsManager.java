@@ -88,13 +88,14 @@ public class MapObjectsManager implements ITimerable {
 	}
 
 	private void cutStone(ISPosition2D pos) {
-		IMapObjectsManagerTile tile = getTile((short) (pos.getX() - 2), (short) (pos.getY() - 1));
-		AbstractHexMapObject stone = tile.getMapObject(EMapObjectType.STONE);
+		short x = (short) (pos.getX() - 2);
+		short y = (short) (pos.getY() - 1);
+		AbstractHexMapObject stone = grid.getMapObject(x, y, EMapObjectType.STONE);
 		stone.cutOff();
 
 		if (!stone.canBeCut()) {
 			addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, (byte) -1);
-			tile.removeMapObjectType(EMapObjectType.STONE);
+			grid.removeMapObjectType(x, y, EMapObjectType.STONE);
 		}
 	}
 
@@ -106,10 +107,9 @@ public class MapObjectsManager implements ITimerable {
 	}
 
 	private boolean plantCorn(ISPosition2D pos) {
-		IMapObjectsManagerTile tile = getTile(pos);
-		tile.setLandscape(ELandscapeType.EARTH);
-		for (ISPosition2D cur : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
-			getTile(cur).setLandscape(ELandscapeType.EARTH);
+		grid.setLandscape(pos.getX(), pos.getY(), ELandscapeType.EARTH);
+		for (ISPosition2D curr : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
+			grid.setLandscape(curr.getX(), curr.getY(), ELandscapeType.EARTH);
 		}
 		Corn corn = new Corn(pos);
 		addMapObject(pos, corn);
@@ -120,9 +120,10 @@ public class MapObjectsManager implements ITimerable {
 	}
 
 	private boolean cutCorn(ISPosition2D pos) {
-		IMapObjectsManagerTile tile = getTile(pos);
-		if (tile != null) { // TODO remove the cast
-			AbstractObjectsManagerObject corn = (AbstractObjectsManagerObject) tile.getMapObject(EMapObjectType.CORN_ADULT);
+		short x = pos.getX();
+		short y = pos.getY();
+		if (grid.isInBounds(x, y)) {
+			AbstractObjectsManagerObject corn = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.CORN_ADULT);
 			if (corn.cutOff()) {
 				timingQueue.offer(new TimeEvent(corn, Corn.REMOVE_DURATION, true));
 				return true;
@@ -132,9 +133,10 @@ public class MapObjectsManager implements ITimerable {
 	}
 
 	private boolean cutTree(ISPosition2D pos) {
-		IMapObjectsManagerTile tile = getTile((short) (pos.getX() - 1), (short) (pos.getY() - 1));
-		if (tile != null) {
-			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) tile.getMapObject(EMapObjectType.TREE_ADULT);
+		short x = (short) (pos.getX() - 1);
+		short y = (short) (pos.getY() - 1);
+		if (grid.isInBounds(x, y)) {
+			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.TREE_ADULT);
 			if (tree.cutOff()) {
 				timingQueue.offer(new TimeEvent(tree, Tree.DECOMPOSE_DURATION, true));
 				return true;
@@ -143,30 +145,23 @@ public class MapObjectsManager implements ITimerable {
 		return false;
 	}
 
-	private IMapObjectsManagerTile getTile(short x, short y) {
-		return grid.getTile(x, y);
-	}
-
-	private IMapObjectsManagerTile getTile(ISPosition2D pos) {
-		return grid.getTile(pos.getX(), pos.getY());
-	}
-
 	private boolean addMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			IMapObjectsManagerTile tile = getTile(point.calculatePoint(pos));
-			if (tile == null || tile.isBlocked()) {
+			short x = point.calculatePoint(pos).getX();
+			short y = point.calculatePoint(pos).getY();
+			if (!grid.isInBounds(x, y) || grid.isBlocked(x, y)) {
 				return false;
 			}
 		}
 
-		getTile(pos).addMapObject(mapObject);
+		grid.addMapObject(pos.getX(), pos.getY(), mapObject);
 
 		setBlockedForObject(pos, mapObject, true);
 		return true;
 	}
 
 	public void removeMapObjectType(ISPosition2D pos, EMapObjectType mapObjectType) {
-		AbstractHexMapObject removed = getTile(pos).removeMapObjectType(mapObjectType);
+		AbstractHexMapObject removed = grid.removeMapObjectType(pos.getX(), pos.getY(), mapObjectType);
 
 		if (removed != null) {
 			setBlockedForObject(pos, removed, false);
@@ -174,7 +169,7 @@ public class MapObjectsManager implements ITimerable {
 	}
 
 	public void removeMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
-		boolean removed = getTile(pos).removeMapObject(mapObject);
+		boolean removed = grid.removeMapObject(pos.getX(), pos.getY(), mapObject);
 
 		if (removed) {
 			setBlockedForObject(pos, mapObject, false);
@@ -183,9 +178,10 @@ public class MapObjectsManager implements ITimerable {
 
 	private void setBlockedForObject(ISPosition2D pos, AbstractHexMapObject mapObject, boolean blocked) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			IMapObjectsManagerTile tile = getTile(point.calculatePoint(pos));
-			if (tile != null) {
-				tile.setBlocked(blocked);
+			short x = point.calculatePoint(pos).getX();
+			short y = point.calculatePoint(pos).getY();
+			if (grid.isInBounds(x, y)) {
+				grid.setBlocked(x, y, blocked);
 			}
 		}
 	}
@@ -213,6 +209,78 @@ public class MapObjectsManager implements ITimerable {
 		SelfDeletingMapObject object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
 		addMapObject(pos, object);
 		timingQueue.add(new TimeEvent(object, duration, true));
+	}
+
+	public void setConstructionMarking(ISPosition2D pos, byte value) {
+		if (value >= 0) {
+			ConstructionMarkObject markObject = (ConstructionMarkObject) grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.CONSTRUCTION_MARK);
+			if (markObject == null) {
+				addMapObject(pos, new ConstructionMarkObject(value));
+			} else {
+				markObject.setConstructionValue(value);
+			}
+		} else {
+			removeMapObjectType(pos, EMapObjectType.CONSTRUCTION_MARK);
+		}
+	}
+
+	public boolean canPush(ISPosition2D position, EMaterialType material) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+
+		return stackObject == null || stackObject.getMaterialType() == material && !stackObject.isFull();
+	}
+
+	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+
+		if (stackObject == null) {
+			grid.addMapObject(position.getX(), position.getY(), new StackMapObject(materialType, (byte) 1));
+			return true;
+		} else {
+			if (stackObject.getMaterialType() != materialType || stackObject.isFull()) { // TODO reuse empty stack objects
+				return false;
+			} else {
+				stackObject.increment();
+				return true;
+			}
+		}
+	}
+
+	public boolean popMaterial(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+
+		if (stackObject == null) {
+			return false;
+		} else {
+			if (stackObject.getMaterialType() != materialType || stackObject.isEmpty()) {
+				return false;
+			} else {
+				stackObject.decrement();
+				if (stackObject.isEmpty()) { // remove empty stack object
+					removeMapObject(position, stackObject);
+				}
+				return true;
+			}
+		}
+	}
+
+	public boolean canPop(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+
+		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
+	}
+
+	public int getStackSize(ISPosition2D position, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+		if (stackObject == null) {
+			return 0;
+		} else {
+			return stackObject.getSize();
+		}
+	}
+
+	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
+		addMapObject(position, newBuilding);
 	}
 
 	private static class TimeEvent implements Comparable<TimeEvent> {
@@ -252,78 +320,4 @@ public class MapObjectsManager implements ITimerable {
 		}
 
 	}
-
-	public void setConstructionMarking(ISPosition2D pos, byte value) {
-		IMapObjectsManagerTile tile = grid.getTile(pos.getX(), pos.getY());
-		if (value >= 0) {
-			ConstructionMarkObject markObject = (ConstructionMarkObject) tile.getMapObject(EMapObjectType.CONSTRUCTION_MARK);
-			if (markObject == null) {
-				addMapObject(pos, new ConstructionMarkObject(value));
-			} else {
-				markObject.setConstructionValue(value);
-			}
-		} else {
-			removeMapObjectType(pos, EMapObjectType.CONSTRUCTION_MARK);
-		}
-	}
-
-	public boolean canPush(ISPosition2D position, EMaterialType material) {
-		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
-
-		return stackObject == null || stackObject.getMaterialType() == material && !stackObject.isFull();
-	}
-
-	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
-
-		if (stackObject == null) {
-			grid.getTile(position.getX(), position.getY()).addMapObject(new StackMapObject(materialType, (byte) 1));
-			return true;
-		} else {
-			if (stackObject.getMaterialType() != materialType || stackObject.isFull()) { // TODO reuse empty stack objects
-				return false;
-			} else {
-				stackObject.increment();
-				return true;
-			}
-		}
-	}
-
-	public boolean popMaterial(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
-
-		if (stackObject == null) {
-			return false;
-		} else {
-			if (stackObject.getMaterialType() != materialType || stackObject.isEmpty()) {
-				return false;
-			} else {
-				stackObject.decrement();
-				if (stackObject.isEmpty()) { // remove empty stack object
-					removeMapObject(position, stackObject);
-				}
-				return true;
-			}
-		}
-	}
-
-	public boolean canPop(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
-
-		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
-	}
-
-	public int getStackSize(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = (StackMapObject) grid.getTile(position.getX(), position.getY()).getMapObject(EMapObjectType.STACK_OBJECT);
-		if (stackObject == null) {
-			return 0;
-		} else {
-			return stackObject.getSize();
-		}
-	}
-
-	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
-		addMapObject(position, newBuilding);
-	}
-
 }
