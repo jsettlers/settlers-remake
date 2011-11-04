@@ -286,4 +286,10 @@ public interface IMovableGrid {
 	void placeSmoke(ISPosition2D pos, boolean place);
 
 	boolean isProtected(short x, short y);
+
+	void placePig(ISPosition2D pos, boolean place);
+
+	boolean isPigThere(ISPosition2D pos);
+
+	boolean isPigAdult(ISPosition2D pos);
 }

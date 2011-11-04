@@ -92,7 +92,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	private void pathOrActionFinished() {
 		assert currentJob != null : "currentJob should not be null here";
 
-		switch (currentJob.getType()) {
+		EBuildingJobType type = currentJob.getType();
+		switch (type) {
 		case WAIT:
 			super.setWaiting(currentJob.getTime());
 			break;
@@ -205,21 +206,55 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 		case SMOKE_ON:
 		case SMOKE_OFF:
+		{
 			ISPosition2D pos = getCurrentJobPos();
-			super.getGrid().placeSmoke(pos, currentJob.getType() == EBuildingJobType.SMOKE_ON);
+			super.getGrid().placeSmoke(pos, type == EBuildingJobType.SMOKE_ON);
 			jobFinished();
 			break;
-
+		}
+		
 		case START_WORKING:
 		case STOP_WORKING:
 			if (building instanceof MillBuilding) {
-				((MillBuilding) building).setWorking(currentJob.getType() == EBuildingJobType.START_WORKING);
+				((MillBuilding) building).setWorking(type == EBuildingJobType.START_WORKING);
 			}
 			jobFinished();
 			break;
-
+			
+		case PIG_IS_ADULT:
+		{
+			ISPosition2D pos = getCurrentJobPos();
+			if (super.getGrid().isPigAdult(pos)) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
+			break;
+		}
+		
+		case PIG_IS_THERE:
+		{
+			ISPosition2D pos = getCurrentJobPos();
+			if (super.getGrid().isPigThere(pos)) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
+			jobFinished();
+			break;
+		}
+		
+		case PIG_PLACE:
+		case PIG_REMOVE:
+		{
+			ISPosition2D pos = getCurrentJobPos();
+			super.getGrid().placePig(pos, type == EBuildingJobType.PIG_PLACE);
+			jobFinished();
+			break;
+		}
+			
 		default:
-			System.err.println("unknown job type in BuildingWorkerStrategy: " + currentJob.getType());
+			System.err.println("unknown job type in BuildingWorkerStrategy: " + type);
 			break;
 		}
 	}

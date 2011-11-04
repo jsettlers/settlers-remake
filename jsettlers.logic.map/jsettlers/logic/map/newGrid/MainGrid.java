@@ -735,6 +735,21 @@ public class MainGrid {
 			return blockedGrid.isProtected(x, y);
 		}
 
+		@Override
+        public void placePig(ISPosition2D pos, boolean place) {
+			mapObjectsManager.placePig(pos, place);
+        }
+
+		@Override
+        public boolean isPigThere(ISPosition2D pos) {
+			return mapObjectsManager.pigIsThere(pos);
+        }
+
+		@Override
+        public boolean isPigAdult(ISPosition2D pos) {
+			return mapObjectsManager.pigIsAdult(pos);
+        }
+
 	}
 
 	private class BordersThreadGrid implements IBordersThreadGrid {
