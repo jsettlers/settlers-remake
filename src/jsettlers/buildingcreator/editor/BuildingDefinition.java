@@ -54,6 +54,7 @@ public class BuildingDefinition {
 		bricklayers.addAll(Arrays.asList(type.getBricklayers()));
 
 		door = type.getDoorTile();
+		flag = type.getFlag();
 		stacks.addAll(Arrays.asList(type.getRequestStacks()));
 	}
 
