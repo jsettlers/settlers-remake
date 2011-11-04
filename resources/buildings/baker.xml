@@ -131,13 +131,15 @@
 	<job name="C_work6" type="SMOKE_OFF"     successjob="C_work7" failjob="gohome" dx="-3" dy="-4"/>
 	<job name="C_work7" type="PLAY_ACTION1"  successjob="C_walkB1" failjob="gohome" time="1"/>
 	
-	<job name="C_walkB1" type="WALK"         successjob="C_drop1" failjob="gohome" direction="NORTH_WEST"/>
-	
+	<job name="C_walkB1" type="WALK"         successjob="C_walkB2" failjob="gohome" direction="NORTH_WEST"/>
+	<job name="C_walkB2" type="WALK"         successjob="C_drop1" failjob="gohome" direction="NORTH_WEST"/>
+    
 	<job name="C_drop1"  type="DROP"         successjob="C_drop2"  failjob="gohome" material="BREAD"/>
 	<job name="C_drop2"  type="SET_MATERIAL" successjob="C_drop3"  failjob="gohome" material="NO_MATERIAL"/>
-	<job name="C_drop3"  type="TAKE"         successjob="C_walkC1" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="C_drop3"  type="TAKE"         successjob="C_walkC0" failjob="gohome" material="NO_MATERIAL"/>
 
-	<job name="C_walkC1" type="WALK"         successjob="C_walkC2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="C_walkC0" type="WALK"         successjob="C_walkC1" failjob="gohome" direction="SOUTH_EAST"/>
+    <job name="C_walkC1" type="WALK"         successjob="C_walkC2" failjob="gohome" direction="SOUTH_EAST"/>
 	<job name="C_walkC2" type="WALK"         successjob="C_walkC3" failjob="gohome" direction="SOUTH_EAST"/>
 	<job name="C_walkC3" type="WALK"         successjob="C_walkC4" failjob="gohome" direction="SOUTH_EAST"/>
 	<job name="C_walkC4" type="WALK"         successjob="C_walkC5" failjob="gohome" direction="EAST"/>

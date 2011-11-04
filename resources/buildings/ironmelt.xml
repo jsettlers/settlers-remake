@@ -49,7 +49,7 @@
 	<blocked dx="-3" dy="-2" block="true" />
 	<blocked dx="-3" dy="-3" block="true" />
 	<blocked dx="-1" dy="-5" block="true" />
-	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="2" dy="3" block="false" />
 	<blocked dx="-3" dy="-4" block="false" />
 	<blocked dx="-3" dy="-5" block="false" />
 	<blocked dx="-3" dy="-6" block="false" />
