@@ -13,6 +13,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
@@ -284,6 +285,28 @@ public class MapObjectsManager implements ITimerable {
 	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
 		addMapObject(position, newBuilding);
 	}
+	
+	public void placePig(ISPosition2D pos, boolean place) {
+		if (place) {
+			AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
+			if (pig == null) {
+				addMapObject(pos, new PigObject());
+			}
+		} else {
+			removeMapObjectType(pos, EMapObjectType.PIG);
+		}
+    }
+
+	public boolean pigIsThere(ISPosition2D pos) {
+		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
+	    return pig != null;
+    }
+
+	public boolean pigIsAdult(ISPosition2D pos) {
+		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
+	    return pig != null && pig.canBeCut();
+    }
+
 
 	private static class TimeEvent implements Comparable<TimeEvent> {
 		private final AbstractObjectsManagerObject mapObject;
