@@ -82,5 +82,10 @@ public enum EMapObjectType {
 	/**
 	 * Simple smoke
 	 */
-	SMOKE
+	SMOKE, 
+	
+	/**
+	 * A pig. Progress is ignored.
+	 */
+	PIG
 }

@@ -5,9 +5,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.Attributes;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
@@ -21,14 +25,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.resources.ResourceManager;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 /**
  * This class represents a building's xml file.
  * 
@@ -37,7 +33,9 @@ import org.xml.sax.SAXException;
 public class BuildingFile implements BuildingJobDataProvider {
 
 	private static final String BUILDING_DTD = "building.dtd";
+
 	private static final String DATA_DIR = "buildings/";
+	private static final String TAG_BUILDING = "building";
 	private static final String TAG_JOB = "job";
 	private static final String TAG_STARTJOB = "startjob";
 	private static final String TAG_DOOR = "door";
@@ -55,7 +53,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_BUILDMARK = "buildmark";
 	private static final String TAG_IMAGE = "image";
 	private static final String TAG_GROUNDTYE = "ground";
-	private final Document document;
 
 	private final ArrayList<RelativePoint> blocked =
 	        new ArrayList<RelativePoint>();
@@ -86,69 +83,93 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ArrayList<ELandscapeType> groundtypes =
 	        new ArrayList<ELandscapeType>();
 	private int viewdistance = 0;
+	private final String buildingName;
 
 	public BuildingFile(String buildingName) {
-		document = createDocument(buildingName);
-
-		readDocument(buildingName);
-	}
-
-	private void readDocument(String buildingName) {
-		Element root = document.getDocumentElement();
-		readAttributes(root);
-
-		NodeList nodes = root.getChildNodes();
-		for (int i = 0; i < nodes.getLength(); i++) {
-			Node node = nodes.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				Element element = (Element) node;
-				readElement(buildingName, element);
-			}
-		}
-	}
-
-	private void readElement(String buildingName, Element element) {
-		String tagName = element.getTagName();
-		if (TAG_JOB.equals(tagName)) {
-			String name = element.getAttribute(ATTR_JOBNAME);
-			jobElements.put(name, new JobElementWrapper(element));
-		} else if (TAG_STARTJOB.equals(tagName)) {
-			startJobName = element.getAttribute(ATTR_JOBNAME);
-		} else if (TAG_DOOR.equals(tagName)) {
-			door = readRelativeTile(buildingName, element);
-		} else if (TAG_WORKCENTER.equals(tagName)) {
-			workCenter = readRelativeTile(buildingName, element);
-		} else if (TAG_FLAG.equals(tagName)) {
-			flag = readRelativeTile(buildingName, element);
-		} else if (TAG_BLOCKED.equals(tagName)) {
-			RelativePoint point = readRelativeTile(buildingName, element);
-			if ("true".equals(element.getAttribute("block"))) {
-				blocked.add(point);
-			}
-			protectedTiles.add(point);
-		} else if (TAG_STACK.equals(tagName)) {
-			readRelativeStack(buildingName, element);
-		} else if (TAG_BRICKLAYER.equals(tagName)) {
-			readRelativeBricklayer(buildingName, element);
-		} else if (TAG_IMAGE.equals(tagName)) {
-			readImageLink(buildingName, element);
-		} else if (TAG_BUILDMARK.equals(tagName)) {
-			buildmarks.add(readRelativeTile(buildingName, element));
-		} else if (TAG_GROUNDTYE.equals(tagName)) {
-			groundtypes.add(ELandscapeType.valueOf(element
-			        .getAttribute("groundtype")));
-		}
-	}
-
-	private void readImageLink(String buildingName, Element element) {
+		this.buildingName = buildingName;
 		try {
-			int file = Integer.parseInt(element.getAttribute("file"));
-			int sequence = Integer.parseInt(element.getAttribute("sequence"));
-			int image = Integer.parseInt(element.getAttribute("image"));
+
+			XMLReader xr = XMLReaderFactory.createXMLReader();
+			xr.setContentHandler(new SaxHandler());
+			xr.setEntityResolver(new EntityResolver() {
+
+				@Override
+				public InputSource resolveEntity(String publicId,
+				        String systemId) throws SAXException, IOException {
+					if (systemId.contains(BUILDING_DTD)) {
+						return new InputSource(ResourceManager.getFile(DATA_DIR
+						        + BUILDING_DTD));
+					} else {
+						return null;
+					}
+				}
+			});
+
+			InputStream stream =
+			        ResourceManager.getFile(DATA_DIR
+			                + buildingName.toLowerCase() + ".xml");
+			xr.parse(new InputSource(stream));
+		} catch (Exception e) {
+			// error
+			loadDefault();
+		}
+	}
+
+	private class SaxHandler extends DefaultHandler {
+
+		@Override
+		public void startElement(String uri, String localName, String qName,
+		        Attributes attributes) throws SAXException {
+			String tagName = qName;
+			if (TAG_BUILDING.equals(tagName)) {
+				readAttributes(attributes);
+			} else if (TAG_JOB.equals(tagName)) {
+				String name = attributes.getValue(ATTR_JOBNAME);
+				jobElements.put(name, new JobElementWrapper(attributes));
+			} else if (TAG_STARTJOB.equals(tagName)) {
+				startJobName = attributes.getValue(ATTR_JOBNAME);
+			} else if (TAG_DOOR.equals(tagName)) {
+				door = readRelativeTile(attributes);
+			} else if (TAG_WORKCENTER.equals(tagName)) {
+				workCenter = readRelativeTile(attributes);
+			} else if (TAG_FLAG.equals(tagName)) {
+				flag = readRelativeTile(attributes);
+			} else if (TAG_BLOCKED.equals(tagName)) {
+				RelativePoint point = readRelativeTile(attributes);
+				if ("true".equals(attributes.getValue("block"))) {
+					blocked.add(point);
+				}
+				protectedTiles.add(point);
+			} else if (TAG_STACK.equals(tagName)) {
+				readRelativeStack(attributes);
+			} else if (TAG_BRICKLAYER.equals(tagName)) {
+				readRelativeBricklayer(attributes);
+			} else if (TAG_IMAGE.equals(tagName)) {
+				readImageLink(attributes);
+			} else if (TAG_BUILDMARK.equals(tagName)) {
+				buildmarks.add(readRelativeTile(attributes));
+			} else if (TAG_GROUNDTYE.equals(tagName)) {
+				groundtypes.add(ELandscapeType.valueOf(attributes
+				        .getValue("groundtype")));
+			}
+		}
+	}
+
+	private void loadDefault() {
+		blocked.add(new RelativePoint(0, 0));
+		protectedTiles.add(new RelativePoint(0, 0));
+		System.err.println("Building file defect: " + buildingName);
+	}
+
+	private void readImageLink(Attributes attributes) {
+		try {
+			int file = Integer.parseInt(attributes.getValue("file"));
+			int sequence = Integer.parseInt(attributes.getValue("sequence"));
+			int image = Integer.parseInt(attributes.getValue("image"));
 			EImageLinkType type =
-			        EImageLinkType.valueOf(element.getAttribute("type"));
+			        EImageLinkType.valueOf(attributes.getValue("type"));
 			ImageLink imageLink = new ImageLink(type, file, sequence, image);
-			String forState = element.getAttribute("for");
+			String forState = attributes.getValue("for");
 			if ("GUI".equals(forState)) {
 				guiimage = imageLink;
 			} else if ("BUILD".equals(forState)) {
@@ -165,12 +186,12 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
-	private void readRelativeBricklayer(String buildingName, Element element) {
+	private void readRelativeBricklayer(Attributes attributes) {
 		try {
-			int dx = Integer.parseInt(element.getAttribute(ATTR_DX));
-			int dy = Integer.parseInt(element.getAttribute(ATTR_DY));
+			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
+			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
 			EDirection direction =
-			        EDirection.valueOf(element.getAttribute(ATTR_DIRECTION));
+			        EDirection.valueOf(attributes.getValue(ATTR_DIRECTION));
 
 			bricklayers.add(new RelativeBricklayer(dx, dy, direction));
 
@@ -183,10 +204,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
-	private RelativePoint readRelativeTile(String buildingName, Element element) {
+	private RelativePoint readRelativeTile(Attributes attributes) {
 		try {
-			int dx = Integer.parseInt(element.getAttribute(ATTR_DX));
-			int dy = Integer.parseInt(element.getAttribute(ATTR_DY));
+			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
+			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
 
 			return new RelativePoint(dx, dy);
 
@@ -198,14 +219,14 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
-	private void readRelativeStack(String buildingName, Element element) {
+	private void readRelativeStack(Attributes attributes) {
 		try {
-			int dx = Integer.parseInt(element.getAttribute(ATTR_DX));
-			int dy = Integer.parseInt(element.getAttribute(ATTR_DY));
+			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
+			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
 			EMaterialType type =
-			        EMaterialType.valueOf(element.getAttribute(ATTR_MATERIAl));
+			        EMaterialType.valueOf(attributes.getValue(ATTR_MATERIAl));
 			short requiredForBuild =
-			        Short.parseShort(element.getAttribute(ATTR_BUILDREQUIRED));
+			        Short.parseShort(attributes.getValue(ATTR_BUILDREQUIRED));
 
 			stacks.add(new RelativeStack(dx, dy, type, requiredForBuild));
 
@@ -218,9 +239,14 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
-	private void readAttributes(Element root) {
-		String workerName = root.getAttribute("worker");
-		if (workerName == "") {
+	/**
+	 * Read from a building tag
+	 * 
+	 * @param attributes
+	 */
+	private void readAttributes(Attributes attributes) {
+		String workerName = attributes.getValue("worker");
+		if (workerName == null || workerName.isEmpty()) {
 			this.workerType = null;
 		} else {
 			try {
@@ -230,73 +256,20 @@ public class BuildingFile implements BuildingJobDataProvider {
 				this.workerType = EMovableType.BEARER;
 			}
 		}
-		if (root.getAttribute("workradius").matches("\\d+")) {
-			this.workradius = Integer.parseInt(root.getAttribute("workradius"));
+		String workradius = attributes.getValue("workradius");
+		if (workradius != null && workradius.matches("\\d+")) {
+			this.workradius = Integer.parseInt(workradius);
 		}
-		if (root.getAttribute("viewdistance").matches("\\d+")) {
-			this.viewdistance =
-			        Integer.parseInt(root.getAttribute("viewdistance"));
+		String viewdistance = attributes.getValue("viewdistance");
+		if (viewdistance != null && viewdistance.matches("\\d+")) {
+			this.viewdistance = Integer.parseInt(viewdistance);
 		}
-	}
-
-	private Document createDocument(String buildingName) {
-		DocumentBuilder builder = getDocumentBuilder();
-
-		Document document;
-		try {
-			InputStream stream =
-			        ResourceManager.getFile(DATA_DIR
-			                + buildingName.toLowerCase() + ".xml");
-
-			document = builder.parse(stream);
-			stream.close();
-		} catch (SAXException e) {
-			document = createEmptyDocument(builder);
-		} catch (IllegalArgumentException e) {
-			document = createEmptyDocument(builder);
-		} catch (IOException e) {
-			document = createEmptyDocument(builder);
-		}
-		return document;
-	}
-
-	private DocumentBuilder getDocumentBuilder() {
-		final DocumentBuilderFactory factory =
-		        DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder;
-		try {
-			builder = factory.newDocumentBuilder();
-			builder.setEntityResolver(new EntityResolver() {
-
-				@Override
-				public InputSource resolveEntity(String publicId,
-				        String systemId) throws SAXException, IOException {
-					if (systemId.contains(BUILDING_DTD)) {
-						return new InputSource(ResourceManager.getFile(DATA_DIR
-						        + BUILDING_DTD));
-					} else {
-						return null;
-					}
-				}
-			});
-		} catch (final ParserConfigurationException e) {
-			throw new RuntimeException("ParserConfigurationException: "
-			        + e.getMessage());
-		}
-		return builder;
-	}
-
-	private Document createEmptyDocument(DocumentBuilder builder) {
-		Document document;
-		document = builder.newDocument();
-		document.appendChild(document.createElement("building"));
-		return document;
 	}
 
 	public IBuildingJob getStartJob() {
 		if (startJob == null) {
 			try {
-				if (startJobName == "") {
+				if (startJobName == null || startJobName.isEmpty()) {
 					startJob = SimpleBuildingJob.createFallback();
 				} else {
 					startJob =
@@ -304,9 +277,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 					                startJobName);
 				}
 			} catch (Exception e) {
-				System.err
-				        .println("Error while creating job list, using fallback. Message: "
-				                + e);
+				System.err.println("Error while creating job list for "
+				        + buildingName + ", using fallback. Message: " + e);
+				e.printStackTrace();
 				startJob = SimpleBuildingJob.createFallback();
 			}
 		}

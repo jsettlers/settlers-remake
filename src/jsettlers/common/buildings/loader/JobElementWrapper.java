@@ -5,7 +5,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 
-import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
 
 public class JobElementWrapper implements BuildingJobData {
 	private static final String SUCCESSJOB = "successjob";
@@ -14,20 +14,35 @@ public class JobElementWrapper implements BuildingJobData {
 	private static final String DY = "dy";
 	private static final String DX = "dx";
 	private static final String DIRECTION = "direction";
-	private static final String TYPE2 = "type";
+	private static final String TYPE = "type";
 	private static final String ATTR_TIME = "time";
 	private static final String SEARCH = "search";
-	private final Element element;
+
 	private final EBuildingJobType type;
+	private short dx;
+	private short dy;
+	private EMaterialType material;
+	private ESearchType searchType;
+	private String successjob;
+	private String failjob;
+	private float time;
+	private EDirection direction;
 
-	JobElementWrapper(Element element) {
-		this.element = element;
-
-		type = getType(element);
+	JobElementWrapper(Attributes attributes) {
+		type = getType(attributes);
+		dx = (short) getAttributeAsInt(attributes, DX);
+		dy = (short) getAttributeAsInt(attributes, DY);
+		material = getMaterial(attributes);
+		searchType = getSearchType(attributes);
+		successjob = attributes.getValue(SUCCESSJOB);
+		failjob = attributes.getValue(FAILJOB);
+		time = getAttributeAsFloat(attributes, ATTR_TIME);
+		direction = getDirection(attributes);
 	}
 
-	private EBuildingJobType getType(Element element) throws IllegalAccessError {
-		String typeString = element.getAttribute(TYPE2);
+	private EBuildingJobType getType(Attributes attributes)
+	        throws IllegalAccessError {
+		String typeString = attributes.getValue(TYPE);
 		try {
 			return EBuildingJobType.valueOf(typeString);
 		} catch (IllegalArgumentException e) {
@@ -37,8 +52,12 @@ public class JobElementWrapper implements BuildingJobData {
 
 	@Override
 	public EDirection getDirection() {
-		String string = element.getAttribute(DIRECTION);
-		if (string.isEmpty()) {
+		return direction;
+	}
+
+	private EDirection getDirection(Attributes attributes) {
+		String string = attributes.getValue(DIRECTION);
+		if (string == null) {
 			return null;
 		} else {
 			try {
@@ -49,15 +68,9 @@ public class JobElementWrapper implements BuildingJobData {
 		}
 	}
 
-	@Override
-	public short getDx() {
-		String attribute = DX;
-		return (short) getAttributeAsInt(attribute);
-	}
-
-	private int getAttributeAsInt(String attribute) {
-		String string = element.getAttribute(attribute);
-		if (string.isEmpty()) {
+	private int getAttributeAsInt(Attributes attributes, String attribute) {
+		String string = attributes.getValue(attribute);
+		if (string == null) {
 			return 0;
 		} else {
 			try {
@@ -69,15 +82,18 @@ public class JobElementWrapper implements BuildingJobData {
 	}
 
 	@Override
-	public short getDy() {
-		String attribute = DY;
-		return (short) getAttributeAsInt(attribute);
+	public short getDx() {
+		return dx;
 	}
 
 	@Override
-	public EMaterialType getMaterial() {
-		String string = element.getAttribute(MATERIAL);
-		if (string.isEmpty()) {
+	public short getDy() {
+		return dy;
+	}
+
+	private EMaterialType getMaterial(Attributes attributes) {
+		String string = attributes.getValue(MATERIAL);
+		if (string == null) {
 			return null;
 		} else {
 			try {
@@ -89,9 +105,13 @@ public class JobElementWrapper implements BuildingJobData {
 	}
 
 	@Override
-	public ESearchType getSearchType() {
-		String string = element.getAttribute(SEARCH);
-		if (string.isEmpty()) {
+	public EMaterialType getMaterial() {
+		return material;
+	}
+
+	public ESearchType getSearchType(Attributes attributes) {
+		String string = attributes.getValue(SEARCH);
+		if (string == null) {
 			return null;
 		} else {
 			try {
@@ -103,24 +123,28 @@ public class JobElementWrapper implements BuildingJobData {
 	}
 
 	@Override
+	public ESearchType getSearchType() {
+		return searchType;
+	}
+
+	@Override
 	public String getNextFailJob() {
-		return element.getAttribute(FAILJOB);
+		return failjob;
 	}
 
 	@Override
 	public String getNextSucessJob() {
-		return element.getAttribute(SUCCESSJOB);
+		return successjob;
 	}
 
 	@Override
 	public float getTime() {
-		String attribute = ATTR_TIME;
-		return getAttributeAsFloat(attribute);
+		return time;
 	}
 
-	private float getAttributeAsFloat(String attribute) {
-		String string = element.getAttribute(attribute);
-		if (string.isEmpty()) {
+	private float getAttributeAsFloat(Attributes attributes, String attribute) {
+		String string = attributes.getValue(attribute);
+		if (string == null) {
 			return 0f;
 		} else {
 			try {

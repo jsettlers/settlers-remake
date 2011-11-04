@@ -225,7 +225,15 @@ tight = 1
 dx = 3
 dy = 3
 capacity = 8
-material = bow
+material = water
+distance = 5..10
+[stack]
+count = 1
+tight = 1
+dx = 3
+dy = 3
+capacity = 8
+material = crop
 distance = 5..10
 
 [stack]

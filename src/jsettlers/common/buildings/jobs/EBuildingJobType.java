@@ -232,6 +232,26 @@ public enum EBuildingJobType {
 	/**
 	 * pop a material at a given position.
 	 */
-	REMOTETAKE
+	REMOTETAKE,
+	
+	/**
+	 * Places a pig at (dx, dy)
+	 */
+	PIG_PLACE,
+	
+	/**
+	 * Removes a pig at (dx, dy)
+	 */
+	PIG_REMOVE,
+	
+	/**
+	 * Succeeds only if there is an adult pig at (dx, dy)
+	 */
+	PIG_IS_ADULT,
+	
+	/**
+	 * Succeeds if there is a pig at (dx, dy)
+	 */
+	PIG_IS_THERE,
 }
 
