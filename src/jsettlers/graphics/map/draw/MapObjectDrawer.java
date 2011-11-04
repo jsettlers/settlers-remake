@@ -13,6 +13,7 @@ import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.sequence.Sequence;
@@ -80,6 +81,10 @@ public class MapObjectDrawer {
 	private static final int MILL_FILE = 13;
 
 	private static final int MILL_SEQ = 15;
+
+	private static final int PIG_SEQ = 0;
+
+	private static final int ANIMALS_FILE = 6;
 
 	int animationStep = 0;
 
@@ -220,6 +225,19 @@ public class MapObjectDrawer {
 
 				case SMOKE:
 					drawByProgress(context, 13, 42, progress, color);
+					break;
+
+				case PIG:
+
+					Sequence<? extends Image> seq =
+					        this.imageProvider.getSettlerSequence(ANIMALS_FILE,
+					                PIG_SEQ);
+
+					if (seq.length() > 0) {
+						int i = getAnimationStep(pos);
+						int step = i % seq.length();
+						seq.getImageSafe(step).draw(context.getGl(), color);
+					}
 					break;
 
 				default:
@@ -551,9 +569,9 @@ public class MapObjectDrawer {
 				                MILL_SEQ);
 
 				if (seq.length() > 0) {
-				int i = getAnimationStep(building.getPos()) / 2;
-				int step = i % seq.length();
-				seq.getImageSafe(step).draw(context.getGl(), color);
+					int i = getAnimationStep(building.getPos());
+					int step = i % seq.length();
+					seq.getImageSafe(step).draw(context.getGl(), color);
 				}
 			} else {
 				for (ImageLink link : type.getImages()) {
