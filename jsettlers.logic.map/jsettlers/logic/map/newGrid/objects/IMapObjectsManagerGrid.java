@@ -1,4 +1,4 @@
-package jsettlers.logic.objects;
+package jsettlers.logic.map.newGrid.objects;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.EMapObjectType;

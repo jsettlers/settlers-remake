@@ -1,6 +1,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
 import random.RandomSingleton;
 import synchronic.timer.NetworkTimer;
 

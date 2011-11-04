@@ -43,6 +43,8 @@ import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
+import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
+import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
 import jsettlers.logic.map.newGrid.partition.IPartitionableGrid;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
@@ -61,8 +63,6 @@ import jsettlers.logic.map.random.grid.MovableObject;
 import jsettlers.logic.map.random.grid.StackObject;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.objects.IMapObjectsManagerGrid;
-import jsettlers.logic.objects.MapObjectsManager;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**

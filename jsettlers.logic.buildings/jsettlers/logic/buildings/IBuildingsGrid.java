@@ -8,8 +8,8 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.movable.IMovableGrid;
-import jsettlers.logic.objects.MapObjectsManager;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**

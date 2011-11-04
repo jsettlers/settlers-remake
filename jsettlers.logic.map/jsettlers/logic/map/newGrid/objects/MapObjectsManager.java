@@ -1,4 +1,4 @@
-package jsettlers.logic.objects;
+package jsettlers.logic.map.newGrid.objects;
 
 import java.util.PriorityQueue;
 
@@ -13,6 +13,8 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.objects.SelfDeletingMapObject;
+import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;

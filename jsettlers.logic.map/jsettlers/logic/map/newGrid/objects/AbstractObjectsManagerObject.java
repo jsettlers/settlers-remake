@@ -1,4 +1,4 @@
-package jsettlers.logic.objects;
+package jsettlers.logic.map.newGrid.objects;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
