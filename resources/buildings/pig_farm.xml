@@ -3,114 +3,114 @@
 <building worker="PIG_FARMER" workradius="0">
     <ground groundtype="GRASS" />
     <ground groundtype="EARTH" />
-    <ground groundtype="FLATTENED" />
+    <ground groundtype="FLATTENED" />	
     <blocked dx="2" dy="5" block="true" />
-    <blocked dx="2" dy="4" block="true" />
-    <blocked dx="3" dy="5" block="true" />
-    <blocked dx="4" dy="5" block="true" />
-    <blocked dx="5" dy="3" block="true" />
-    <blocked dx="4" dy="4" block="true" />
-    <blocked dx="5" dy="2" block="true" />
-    <blocked dx="4" dy="3" block="true" />
-    <blocked dx="4" dy="2" block="true" />
-    <blocked dx="5" dy="1" block="true" />
-    <blocked dx="6" dy="2" block="true" />
-    <blocked dx="4" dy="1" block="true" />
-    <blocked dx="4" dy="0" block="true" />
-    <blocked dx="3" dy="-1" block="true" />
-    <blocked dx="2" dy="-2" block="true" />
-    <blocked dx="1" dy="-2" block="true" />
-    <blocked dx="1" dy="-3" block="true" />
-    <blocked dx="1" dy="-1" block="true" />
-    <blocked dx="1" dy="0" block="true" />
-    <blocked dx="0" dy="3" block="true" />
-    <blocked dx="0" dy="1" block="true" />
-    <blocked dx="0" dy="0" block="true" />
-    <blocked dx="0" dy="-1" block="true" />
-    <blocked dx="0" dy="-2" block="true" />
-    <blocked dx="0" dy="-3" block="true" />
-    <blocked dx="-1" dy="-4" block="true" />
-    <blocked dx="-2" dy="-5" block="true" />
-    <blocked dx="-2" dy="-4" block="true" />
-    <blocked dx="-2" dy="-3" block="true" />
-    <blocked dx="-2" dy="-2" block="true" />
-    <blocked dx="-3" dy="-3" block="true" />
-    <blocked dx="-3" dy="-4" block="true" />
-    <blocked dx="-3" dy="-2" block="true" />
-    <blocked dx="-3" dy="-1" block="true" />
-    <blocked dx="-3" dy="0" block="true" />
-    <blocked dx="-3" dy="1" block="true" />
-    <blocked dx="-2" dy="-1" block="true" />
-    <blocked dx="-2" dy="0" block="true" />
-    <blocked dx="-2" dy="1" block="true" />
-    <blocked dx="-1" dy="-3" block="true" />
-    <blocked dx="-1" dy="-2" block="true" />
-    <blocked dx="-1" dy="-1" block="true" />
-    <blocked dx="-1" dy="0" block="true" />
-    <blocked dx="0" dy="-4" block="true" />
-    <blocked dx="-1" dy="1" block="true" />
-    <blocked dx="-1" dy="2" block="true" />
-    <blocked dx="0" dy="2" block="true" />
-    <blocked dx="2" dy="-1" block="true" />
-    <blocked dx="3" dy="0" block="true" />
-    <blocked dx="3" dy="4" block="true" />
-    <blocked dx="5" dy="5" block="false" />
-    <blocked dx="3" dy="6" block="false" />
-    <blocked dx="4" dy="6" block="false" />
-    <blocked dx="5" dy="6" block="false" />
-    <blocked dx="5" dy="4" block="false" />
-    <blocked dx="6" dy="6" block="false" />
-    <blocked dx="6" dy="5" block="false" />
-    <blocked dx="6" dy="4" block="false" />
-    <blocked dx="6" dy="3" block="false" />
-    <blocked dx="7" dy="4" block="false" />
-    <blocked dx="7" dy="3" block="false" />
-    <blocked dx="7" dy="2" block="false" />
-    <blocked dx="6" dy="1" block="false" />
-    <blocked dx="5" dy="0" block="false" />
-    <blocked dx="4" dy="-1" block="false" />
-    <blocked dx="3" dy="-2" block="false" />
-    <blocked dx="2" dy="-3" block="false" />
-    <blocked dx="1" dy="-4" block="false" />
-    <blocked dx="0" dy="-5" block="false" />
-    <blocked dx="-1" dy="-5" block="false" />
-    <blocked dx="-2" dy="-6" block="false" />
-    <blocked dx="-3" dy="-6" block="false" />
-    <blocked dx="-3" dy="-5" block="false" />
-    <blocked dx="-4" dy="-5" block="false" />
-    <blocked dx="-4" dy="-4" block="false" />
-    <blocked dx="-4" dy="-3" block="false" />
-    <blocked dx="-4" dy="-2" block="false" />
-    <blocked dx="-4" dy="-1" block="false" />
-    <blocked dx="-4" dy="0" block="false" />
-    <blocked dx="-4" dy="1" block="false" />
-    <blocked dx="-3" dy="2" block="false" />
-    <blocked dx="0" dy="5" block="false" />
-    <blocked dx="1" dy="6" block="false" />
-    <blocked dx="2" dy="6" block="false" />
-    <blocked dx="2" dy="7" block="false" />
-    <blocked dx="3" dy="7" block="false" />
-    <blocked dx="4" dy="7" block="false" />
-    <blocked dx="5" dy="7" block="false" />
-    <blocked dx="6" dy="7" block="false" />
-    <blocked dx="-1" dy="4" block="false" />
-    <blocked dx="-1" dy="3" block="false" />
-    <blocked dx="-2" dy="2" block="false" />
-    <blocked dx="-2" dy="3" block="false" />
-    <blocked dx="1" dy="4" block="false" />
-    <blocked dx="0" dy="4" block="false" />
-    <blocked dx="1" dy="3" block="false" />
-    <blocked dx="1" dy="2" block="false" />
-    <blocked dx="1" dy="1" block="false" />
-    <blocked dx="2" dy="1" block="false" />
-    <blocked dx="2" dy="2" block="false" />
-    <blocked dx="2" dy="3" block="false" />
-    <blocked dx="3" dy="3" block="false" />
-    <blocked dx="3" dy="2" block="false" />
-    <blocked dx="3" dy="1" block="false" />
-    <blocked dx="2" dy="0" block="false" />
-    <blocked dx="1" dy="5" block="false" />
-    <!-- real dor is at dx="1" dy="2", but blocked -->
+	<blocked dx="2" dy="4" block="true" />
+	<blocked dx="3" dy="5" block="true" />
+	<blocked dx="4" dy="5" block="true" />
+	<blocked dx="5" dy="3" block="true" />
+	<blocked dx="4" dy="4" block="true" />
+	<blocked dx="5" dy="2" block="true" />
+	<blocked dx="4" dy="3" block="true" />
+	<blocked dx="4" dy="2" block="true" />
+	<blocked dx="5" dy="1" block="true" />
+	<blocked dx="6" dy="2" block="true" />
+	<blocked dx="4" dy="1" block="true" />
+	<blocked dx="4" dy="0" block="true" />
+	<blocked dx="3" dy="-1" block="true" />
+	<blocked dx="2" dy="-2" block="true" />
+	<blocked dx="1" dy="-2" block="true" />
+	<blocked dx="1" dy="-3" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-3" block="true" />
+	<blocked dx="-1" dy="-4" block="true" />
+	<blocked dx="-2" dy="-5" block="true" />
+	<blocked dx="-2" dy="-4" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-3" dy="-3" block="true" />
+	<blocked dx="-3" dy="-4" block="true" />
+	<blocked dx="-3" dy="-2" block="true" />
+	<blocked dx="-3" dy="-1" block="true" />
+	<blocked dx="-3" dy="0" block="true" />
+	<blocked dx="-3" dy="1" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="0" dy="-4" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="-1" dy="2" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="2" dy="-1" block="true" />
+	<blocked dx="3" dy="0" block="true" />
+	<blocked dx="3" dy="4" block="true" />
+	<blocked dx="2" dy="0" block="true" />
+	<blocked dx="3" dy="1" block="true" />
+	<blocked dx="3" dy="2" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="3" dy="3" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="1" dy="4" block="true" />
+	<blocked dx="0" dy="3" block="true" />
+	<blocked dx="5" dy="5" block="false" />
+	<blocked dx="3" dy="6" block="false" />
+	<blocked dx="4" dy="6" block="false" />
+	<blocked dx="5" dy="6" block="false" />
+	<blocked dx="5" dy="4" block="false" />
+	<blocked dx="6" dy="6" block="false" />
+	<blocked dx="6" dy="5" block="false" />
+	<blocked dx="6" dy="4" block="false" />
+	<blocked dx="6" dy="3" block="false" />
+	<blocked dx="7" dy="4" block="false" />
+	<blocked dx="7" dy="3" block="false" />
+	<blocked dx="7" dy="2" block="false" />
+	<blocked dx="6" dy="1" block="false" />
+	<blocked dx="5" dy="0" block="false" />
+	<blocked dx="4" dy="-1" block="false" />
+	<blocked dx="3" dy="-2" block="false" />
+	<blocked dx="2" dy="-3" block="false" />
+	<blocked dx="1" dy="-4" block="false" />
+	<blocked dx="0" dy="-5" block="false" />
+	<blocked dx="-1" dy="-5" block="false" />
+	<blocked dx="-2" dy="-6" block="false" />
+	<blocked dx="-3" dy="-6" block="false" />
+	<blocked dx="-3" dy="-5" block="false" />
+	<blocked dx="-4" dy="-5" block="false" />
+	<blocked dx="-4" dy="-4" block="false" />
+	<blocked dx="-4" dy="-3" block="false" />
+	<blocked dx="-4" dy="-2" block="false" />
+	<blocked dx="-4" dy="-1" block="false" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-4" dy="1" block="false" />
+	<blocked dx="-3" dy="2" block="false" />
+	<blocked dx="0" dy="5" block="false" />
+	<blocked dx="1" dy="6" block="false" />
+	<blocked dx="2" dy="6" block="false" />
+	<blocked dx="2" dy="7" block="false" />
+	<blocked dx="3" dy="7" block="false" />
+	<blocked dx="4" dy="7" block="false" />
+	<blocked dx="5" dy="7" block="false" />
+	<blocked dx="6" dy="7" block="false" />
+	<blocked dx="-1" dy="4" block="false" />
+	<blocked dx="-1" dy="3" block="false" />
+	<blocked dx="-2" dy="2" block="false" />
+	<blocked dx="-2" dy="3" block="false" />
+	<blocked dx="0" dy="4" block="false" />
+	<blocked dx="1" dy="5" block="false" />
+    <!-- real door is at dx="1" dy="2", but blocked -->
     <door dx="0" dy="4" />
 
     <stack dx="5" dy="5" material="CROP" buildrequired="0" />
@@ -139,26 +139,25 @@
     <startjob name="gohome" />
 
     <!-- going home job -->
-    <job name="gohome" type="GO_TO" successjob="gohome2" failjob="waitgohome" dx="0" dy="4" />
-    <job name="waitgohome" type="WAIT" successjob="gohome" failjob="waitgohome" time="1" />
+    <job name="gohome" type="GO_TO" successjob="gohome2" failjob="hide" dx="0" dy="4" />
     <job name="gohome2" type="WALK" successjob="gohome3" failjob="hide" direction="EAST" />
     <job name="gohome3" type="WALK" successjob="gohome4" failjob="hide" direction="NORTH_EAST" />
     <job name="gohome4" type="WALK" successjob="gohome5" failjob="hide" direction="NORTH_EAST" />
-    <job name="gohome5" type="LOOK_AT" successjob="gohome2" failjob="hide" direction="NORTH_WEST" />
+    <job name="gohome5" type="LOOK_AT" successjob="gohome6" failjob="hide" direction="NORTH_WEST" />
     <job name="gohome6" type="WAIT" successjob="hide" failjob="hide" time=".2" />
     <job name="hide" type="HIDE" successjob="PIG1_wait" failjob="PIG1_wait" />
 
     <!-- PIG1 at 2, 2 -->
     <!-- wait some time -->
-    <job name="PIG1_wait" type="WAIT" successjob="PIG1_checkcrop" failjob="PIG1_checkcrop" time="1" />
-    <job name="PIG1_checkcrop" type="AVAILABLE" successjob="PIG1_checkwater" failjob="PIG1_wait" dx="5" dy="5" material="CROP" />
-    <job name="PIG1_checkwater" type="AVAILABLE" successjob="PIG1_checkpigs" failjob="PIG1_wait" dx="3" dy="6" material="WATER" />
+    <job name="PIG1_wait" type="WAIT" successjob="PIG1_checkpigs" failjob="PIG1_checkpigs" time="3" />
     <job name="PIG1_checkpigs" type="NOT_FULL" successjob="PIG1_isKillable" failjob="PIG1_isNPlaceable" dx="-2" dy="3" material="PIG" />
 
     <job name="PIG1_isKillable" type="PIG_IS_ADULT" successjob="KILL1_start" failjob="PIG2_isKillable" dx="2" dy="2" />
     <job name="PIG2_isKillable" type="PIG_IS_ADULT" successjob="KILL2_start" failjob="PIG3_isKillable" dx="2" dy="1" />
     <job name="PIG3_isKillable" type="PIG_IS_ADULT" successjob="KILL3_start" failjob="PIG4_isKillable" dx="2" dy="0" />
-    <job name="PIG4_isKillable" type="PIG_IS_ADULT" successjob="KILL4_start" failjob="PIG1_isNPlaceable" dx="3" dy="1" />
+    <job name="PIG4_isKillable" type="PIG_IS_ADULT" successjob="KILL4_start" failjob="PIG1_checkwater" dx="3" dy="1" />
+    <job name="PIG1_checkcrop" type="AVAILABLE" successjob="PIG1_checkwater" failjob="PIG1_wait" dx="5" dy="5" material="CROP" />
+    <job name="PIG1_checkwater" type="AVAILABLE" successjob="PIG1_isNPlaceable" failjob="PIG1_wait" dx="3" dy="6" material="WATER" />
     <job name="PIG1_isNPlaceable" type="PIG_IS_THERE" successjob="PIG2_isNPlaceable" failjob="A_start" dx="2" dy="2" />
     <job name="PIG2_isNPlaceable" type="PIG_IS_THERE" successjob="PIG3_isNPlaceable" failjob="A_start" dx="2" dy="1" />
     <job name="PIG3_isNPlaceable" type="PIG_IS_THERE" successjob="PIG4_isNPlaceable" failjob="A_start" dx="2" dy="0" />
@@ -193,9 +192,11 @@
     <job name="A_walkB9" type="WALK" successjob="A_walkB10" failjob="gohome" direction="NORTH_EAST" />
     <job name="A_walkB10" type="WALK" successjob="A_walkB11" failjob="gohome" direction="EAST" />
     <job name="A_walkB11" type="WALK" successjob="A_walkB12" failjob="gohome" direction="NORTH_EAST" />
-    <job name="A_walkB12" type="WALK" successjob="hide" failjob="gohome" direction="NORTH_WEST" />
+    <job name="A_walkB12" type="WALK" successjob="A_hide" failjob="gohome" direction="NORTH_WEST" />
+    <job name="A_hide" type="HIDE" successjob="B_wait" failjob="B_wait" />
 
     <!-- go get water -->
+    <job name="B_wait" type="WAIT" successjob="B_start" failjob="B_start" time="3" />
     <job name="B_start" type="SET_MATERIAL" successjob="B_show" failjob="hide" material="NO_MATERIAL" />
     <job name="B_show" type="SHOW" successjob="B_walkA1" failjob="hide" dx="0" dy="1" />
     <job name="B_walkA1" type="WALK" successjob="B_walkA2" failjob="gohome" direction="SOUTH_EAST" />
@@ -214,7 +215,6 @@
     <job name="B_walkB5" type="WALK" successjob="B_walkB6" failjob="gohome" direction="NORTH_EAST" />
     <job name="B_walkB6" type="WALK" successjob="B_hide" failjob="gohome" direction="NORTH_WEST" />
     <job name="B_hide" type="HIDE" successjob="PIG1_tryplace" failjob="gohome" />
-
 
     <!-- place pig -->
     <job name="PIG1_tryplace" type="PIG_IS_THERE" successjob="PIG2_tryplace" failjob="PLACE1" dx="2" dy="2" />
