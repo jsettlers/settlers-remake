@@ -85,6 +85,8 @@ public enum EBuildingType {
 	private final ELandscapeType[] groundtypes;
 	
 	private final int viewdistance;
+	
+	private final OccupyerPlace[] occupyerPlaces;
 
 	EBuildingType(int imageIndex) {
 		this.imageIndex = imageIndex;
@@ -99,6 +101,7 @@ public enum EBuildingType {
 		workcenter = file.getWorkcenter();
 		flag = file.getFlag();
 		bricklayers = file.getBricklayers();
+		occupyerPlaces = file.getOccupyerPlaces();
 		guiImage = file.getGuiImage();
 		ImageLink[] tempimages = file.getImages();
 		if (tempimages.length == 0) {
@@ -224,4 +227,8 @@ public enum EBuildingType {
 	public int getViewDistance() {
 	    return viewdistance;
     }
+	
+	public OccupyerPlace[] getOccupyerPlaces() {
+		return occupyerPlaces;
+	}
 }

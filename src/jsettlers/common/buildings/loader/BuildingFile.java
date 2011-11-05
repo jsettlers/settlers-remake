@@ -13,6 +13,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupyerPlace.EType;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.buildings.jobs.IBuildingJob;
@@ -41,6 +43,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_DOOR = "door";
 	private static final String TAG_BLOCKED = "blocked";
 	private static final String TAG_STACK = "stack";
+	private static final String TAG_OCCUPYER = "occupyer";
 	private static final String ATTR_JOBNAME = "name";
 	private static final String ATTR_DX = "dx";
 	private static final String ATTR_DY = "dy";
@@ -82,6 +85,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
 	private ArrayList<ELandscapeType> groundtypes =
 	        new ArrayList<ELandscapeType>();
+	private ArrayList<OccupyerPlace> occupyerplaces =
+	        new ArrayList<OccupyerPlace>();
 	private int viewdistance = 0;
 	private final String buildingName;
 
@@ -151,6 +156,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 			} else if (TAG_GROUNDTYE.equals(tagName)) {
 				groundtypes.add(ELandscapeType.valueOf(attributes
 				        .getValue("groundtype")));
+			} else if (TAG_OCCUPYER.equals(tagName)) {
+				addOccupyer(attributes);
 			}
 		}
 	}
@@ -159,6 +166,24 @@ public class BuildingFile implements BuildingJobDataProvider {
 		blocked.add(new RelativePoint(0, 0));
 		protectedTiles.add(new RelativePoint(0, 0));
 		System.err.println("Building file defect: " + buildingName);
+	}
+
+	private void addOccupyer(Attributes attributes) {
+		try {
+			int x = Integer.parseInt(attributes.getValue("x"));
+			int y = Integer.parseInt(attributes.getValue("y"));
+			EType type =
+			        OccupyerPlace.EType.valueOf(attributes.getValue("type"));
+			OccupyerPlace place = new OccupyerPlace(x, y, type);
+			occupyerplaces.add(place);
+		} catch (NumberFormatException e) {
+			System.err.println("Warning: illegal number "
+			        + "for occupyer x/y attribute, in definiton for "
+			        + buildingName);
+		} catch (IllegalArgumentException e) {
+			System.err.println("Illegal occupyer position name in "
+			        + buildingName);
+		}
 	}
 
 	private void readImageLink(Attributes attributes) {
@@ -178,9 +203,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 				images.add(imageLink);
 			}
 		} catch (NumberFormatException e) {
-			System.err
-			        .println("Warning: illegal number for image link attribute, in definiton for "
-			                + buildingName);
+			System.err.println("Warning: illegal number "
+			        + "for image link attribute, in definiton for "
+			        + buildingName);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Illegal image link name in " + buildingName);
 		}
@@ -212,9 +237,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 			return new RelativePoint(dx, dy);
 
 		} catch (NumberFormatException e) {
-			System.err
-			        .println("Warning: illegal number for relative tile attribute, in definiton for "
-			                + buildingName);
+			System.err.println("Warning: illegal number "
+			        + "for relative tile attribute, in definiton for "
+			        + buildingName);
 			return new RelativePoint(0, 0);
 		}
 	}
@@ -231,9 +256,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 			stacks.add(new RelativeStack(dx, dy, type, requiredForBuild));
 
 		} catch (NumberFormatException e) {
-			System.err
-			        .println("Warning: illegal number for stack attribute, in definiton for "
-			                + buildingName);
+			System.err.println("Warning: illegal number "
+			        + "for stack attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Illegal material name in " + buildingName);
 		}
@@ -349,5 +373,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	public int getViewdistance() {
 		return viewdistance;
+	}
+
+	public OccupyerPlace[] getOccupyerPlaces() {
+		return occupyerplaces.toArray(new OccupyerPlace[occupyerplaces.size()]);
 	}
 }
