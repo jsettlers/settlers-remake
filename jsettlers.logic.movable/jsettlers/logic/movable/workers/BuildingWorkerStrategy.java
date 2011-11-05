@@ -240,7 +240,6 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			} else {
 				jobFailed();
 			}
-			jobFinished();
 			break;
 		}
 		
@@ -341,13 +340,9 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	private void showAction() {
 		ISPosition2D pos = getCurrentJobPos();
-		if (!super.getGrid().isBlocked(this, pos.getX(), pos.getY())) {
 			super.setPos(pos);
 			super.setVisible(true);
 			jobFinished();
-		} else {
-			jobFailed();
-		}
 	}
 
 	private void walkAction() {
@@ -368,12 +363,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	@Override
 	protected void goToTile(ISPosition2D nextPos) {
 		if (!done) {
-			if (!super.getGrid().isBlocked(this, nextPos.getX(), nextPos.getY())) {
-				super.goToTile(nextPos);
-				done = true;
-			} else {
-				jobFailed(); // start next action
-			}
+			super.goToTile(nextPos);
+			done = true;
 		} else {
 			jobFinished(); // start next action
 		}
