@@ -4,7 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
 
 public class MediumLivinghouse extends SpawnBuilding {
-	static final int PRODUCE_LIMIT = 20;
+	static final int PRODUCE_LIMIT = 30;
 
 	public MediumLivinghouse(byte player) {
 		super(EBuildingType.MEDIUM_LIVINGHOUSE, player);
