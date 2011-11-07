@@ -3,10 +3,6 @@ package jsettlers.common.position;
 import java.io.Serializable;
 
 public class ShortPoint2D implements ISPosition2D, Serializable {
-
-	/**
-     * 
-     */
 	private static final long serialVersionUID = -6227987796843655750L;
 
 	protected final short x;
@@ -18,8 +14,7 @@ public class ShortPoint2D implements ISPosition2D, Serializable {
 	}
 
 	/**
-	 * NOTE: the values of the parameters will be casted to (short). This
-	 * constructor is just to save typing!
+	 * NOTE: the values of the parameters will be casted to (short). This constructor is just to save typing!
 	 * 
 	 * @param x
 	 *            x coordinate
