@@ -10,6 +10,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  */
 public abstract class GrowingObject extends ProgressingObject {
+	private static final long serialVersionUID = -5886720986614326428L;
 
 	private EMapObjectType state;
 

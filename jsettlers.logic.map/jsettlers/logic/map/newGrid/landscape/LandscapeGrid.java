@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.landscape;
 
+import java.io.Serializable;
+
 import jsettlers.common.landscape.ELandscapeType;
 
 /**
@@ -8,7 +10,9 @@ import jsettlers.common.landscape.ELandscapeType;
  * @author Andreas Eberle
  * 
  */
-public class LandscapeGrid {
+public class LandscapeGrid implements Serializable {
+	private static final long serialVersionUID = -751261669662036483L;
+
 	private final byte[][] heightGrid;
 	private final ELandscapeType[][] landscapeGrid;
 

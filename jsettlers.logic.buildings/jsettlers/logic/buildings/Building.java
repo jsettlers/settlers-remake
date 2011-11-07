@@ -33,6 +33,8 @@ import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
 
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
+	private static final long serialVersionUID = 4379555028512391595L;
+
 	private final byte player;
 	private EBuildingState state = EBuildingState.CREATED;
 
@@ -313,7 +315,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case BIG_TOWER:
 		case CASTLE:
 			return new OccupyingBuilding(type, player);
-			
+
 		case BARRACK:
 			return new Barrack(player);
 

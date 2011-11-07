@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.interfaces;
 
+import java.io.Serializable;
+
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
@@ -9,7 +11,9 @@ import jsettlers.common.position.RelativePoint;
  * 
  * @author Andreas Eberle
  */
-public abstract class AbstractHexMapObject implements IMapObject {
+public abstract class AbstractHexMapObject implements IMapObject, Serializable {
+	private static final long serialVersionUID = 8466636267395026602L;
+
 	private static final RelativePoint[] NO_BLOCKING = new RelativePoint[] {};
 	private static final RelativePoint[] SELF_BLOCKING = new RelativePoint[] { new RelativePoint(0, 0) };
 	/**

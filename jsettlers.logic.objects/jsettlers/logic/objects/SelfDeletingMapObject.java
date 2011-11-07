@@ -11,6 +11,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  */
 public class SelfDeletingMapObject extends ProgressingObject implements IPlayerable {
+	private static final long serialVersionUID = 261552015645456635L;
 
 	private final EMapObjectType type;
 	private final byte player;

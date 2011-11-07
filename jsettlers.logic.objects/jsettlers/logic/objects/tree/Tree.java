@@ -12,6 +12,8 @@ import jsettlers.logic.objects.GrowingObject;
  * 
  */
 public class Tree extends GrowingObject {
+	private static final long serialVersionUID = 8241068714975746824L;
+
 	/**
 	 * time a tree needs to grow
 	 */

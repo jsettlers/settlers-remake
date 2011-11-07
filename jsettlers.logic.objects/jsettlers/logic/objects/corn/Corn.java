@@ -11,6 +11,7 @@ import jsettlers.logic.objects.GrowingObject;
  * 
  */
 public class Corn extends GrowingObject {
+	private static final long serialVersionUID = -7535441306083940418L;
 
 	public static final float GROWTH_DURATION = 3 * 60;
 	public static final float DECOMPOSE_DURATION = 2 * 60;

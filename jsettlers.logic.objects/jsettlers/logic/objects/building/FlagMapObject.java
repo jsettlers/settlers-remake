@@ -5,6 +5,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 public class FlagMapObject extends AbstractHexMapObject implements IPlayerable {
+	private static final long serialVersionUID = 3898658161529753794L;
 
 	private final EMapObjectType flagType;
 	private final byte player;

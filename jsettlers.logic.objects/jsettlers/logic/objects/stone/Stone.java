@@ -5,6 +5,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 public class Stone extends AbstractHexMapObject {
+	private static final long serialVersionUID = 2470787539788090906L;
 
 	private static final int MAX_CAPACITY = 12;
 	public static final float DECOMPOSE_DELAY = 150;

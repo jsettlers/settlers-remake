@@ -11,6 +11,7 @@ import synchronic.timer.NetworkTimer;
  * 
  */
 public abstract class ProgressingObject extends AbstractObjectsManagerObject {
+	private static final long serialVersionUID = 62117014829414034L;
 
 	private int startTime;
 	private int duration;

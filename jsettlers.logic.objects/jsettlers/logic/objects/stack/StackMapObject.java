@@ -13,6 +13,7 @@ import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
  * 
  */
 public class StackMapObject extends AbstractHexMapObject implements IStackMapObject {
+	private static final long serialVersionUID = -5471566113368524172L;
 
 	private final EMaterialType materialType;
 	private byte size;

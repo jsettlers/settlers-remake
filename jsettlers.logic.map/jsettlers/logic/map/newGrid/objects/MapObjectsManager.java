@@ -98,7 +98,7 @@ public class MapObjectsManager implements ITimerable {
 
 		if (!stone.canBeCut()) {
 			addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, (byte) -1);
-			grid.removeMapObjectType(x, y, EMapObjectType.STONE);
+			removeMapObjectType(new ShortPoint2D(x, y), EMapObjectType.STONE);
 		}
 	}
 
@@ -238,6 +238,7 @@ public class MapObjectsManager implements ITimerable {
 
 		if (stackObject == null) {
 			grid.addMapObject(position.getX(), position.getY(), new StackMapObject(materialType, (byte) 1));
+			grid.setProtected(position.getX(), position.getY(), true);
 			return true;
 		} else {
 			if (stackObject.getMaterialType() != materialType || stackObject.isFull()) { // TODO reuse empty stack objects
@@ -261,6 +262,7 @@ public class MapObjectsManager implements ITimerable {
 				stackObject.decrement();
 				if (stackObject.isEmpty()) { // remove empty stack object
 					removeMapObject(position, stackObject);
+					grid.setProtected(position.getX(), position.getY(), false);
 				}
 				return true;
 			}
@@ -285,7 +287,7 @@ public class MapObjectsManager implements ITimerable {
 	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
 		addMapObject(position, newBuilding);
 	}
-	
+
 	public void placePig(ISPosition2D pos, boolean place) {
 		if (place) {
 			AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
@@ -295,18 +297,17 @@ public class MapObjectsManager implements ITimerable {
 		} else {
 			removeMapObjectType(pos, EMapObjectType.PIG);
 		}
-    }
+	}
 
 	public boolean pigIsThere(ISPosition2D pos) {
 		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
-	    return pig != null;
-    }
+		return pig != null;
+	}
 
 	public boolean pigIsAdult(ISPosition2D pos) {
 		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
-	    return pig != null && pig.canBeCut();
-    }
-
+		return pig != null && pig.canBeCut();
+	}
 
 	private static class TimeEvent implements Comparable<TimeEvent> {
 		private final AbstractObjectsManagerObject mapObject;

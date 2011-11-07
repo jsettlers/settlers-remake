@@ -14,6 +14,8 @@ import jsettlers.logic.stack.RequestStack;
  * @author michael
  */
 public class Barrack extends Building {
+	private static final long serialVersionUID = -6541972855836598068L;
+
 	private boolean stoppedWorking = false;
 
 	private int requestedSwordmen = 0;

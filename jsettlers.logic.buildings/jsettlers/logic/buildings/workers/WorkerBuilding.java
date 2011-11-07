@@ -8,7 +8,13 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 import jsettlers.logic.stack.RequestStack;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
+	private static final long serialVersionUID = 7050284039312172046L;
 
 	private ISPosition2D workAreaCenter;
 

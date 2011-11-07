@@ -25,4 +25,6 @@ public interface IMapObjectsManagerGrid {
 
 	boolean isInBounds(short x, short y);
 
+	void setProtected(short x, short y, boolean protect);
+
 }

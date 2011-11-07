@@ -223,11 +223,11 @@ public class GuiInterface implements IMapInterfaceListener {
 		IBuilding foundBuilding = null;
 
 		for (ISPosition2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
-			IMovable movable = grid.getMovable(curr);
+			IMovable movable = grid.getMovable(curr.getX(), curr.getY());
 			if (movable != null) {
 				foundMovables.add(movable);
 			}
-			IBuilding building = grid.getBuildingAt(curr);
+			IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
 			if (building != null) {
 				foundBuilding = building;
 			}
@@ -281,9 +281,23 @@ public class GuiInterface implements IMapInterfaceListener {
 
 	private void select(ISPosition2D pos) {
 		if (grid.isInBounds(pos)) {
-			IHexMovable m = grid.getMovable(pos);
-			if (m != null) {
-				setSelection(new SettlerSelection(Collections.singletonList(m)));
+			short x = pos.getX();
+			short y = pos.getY();
+
+			IHexMovable m1 = grid.getMovable((short) (x + 1), (short) (y + 1));
+			IHexMovable m2 = grid.getMovable((x), (short) (y + 1));
+			IHexMovable m3 = grid.getMovable(x, y);
+			IHexMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
+
+			if (m1 != null) {
+				setSelection(new SettlerSelection(Collections.singletonList(m1)));
+			} else if (m2 != null) {
+				setSelection(new SettlerSelection(Collections.singletonList(m2)));
+			} else if (m3 != null) {
+				setSelection(new SettlerSelection(Collections.singletonList(m3)));
+			} else if (m4 != null) {
+				setSelection(new SettlerSelection(Collections.singletonList(m4)));
+
 			} else {
 				// search buildings
 				IBuilding building = getBuildingAround(pos);
@@ -299,7 +313,10 @@ public class GuiInterface implements IMapInterfaceListener {
 	private IBuilding getBuildingAround(ISPosition2D pos) {
 		for (ISPosition2D curr : new MapCircle(pos.getX(), pos.getY(), 5)) {
 			if (grid.isInBounds(curr)) {
-				return grid.getBuildingAt(curr);
+				IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
+				if (building != null) {
+					return building;
+				}
 			}
 		}
 		return null;

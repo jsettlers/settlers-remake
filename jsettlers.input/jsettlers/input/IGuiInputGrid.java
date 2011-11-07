@@ -15,13 +15,11 @@ import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
  */
 public interface IGuiInputGrid {
 
-	IHexMovable getMovable(ISPosition2D position);
-
 	short getWidth();
 
 	short getHeight();
 
-	IBuilding getBuildingAt(ISPosition2D position);
+	IBuilding getBuildingAt(short x, short y);
 
 	boolean isInBounds(ISPosition2D position);
 
@@ -36,4 +34,6 @@ public interface IGuiInputGrid {
 	void resetDebugColors();
 
 	boolean canConstructAt(ISPosition2D pos, EBuildingType type);
+
+	IHexMovable getMovable(short x, short y);
 }

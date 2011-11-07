@@ -72,15 +72,15 @@ import jsettlers.logic.stack.IRequestsStackGrid;
  * 
  */
 public class MainGrid {
+	protected final short width;
+	protected final short height;
+
 	protected final LandscapeGrid landscapeGrid;
 	protected final ObjectsGrid objectsGrid;
 	protected final PartitionsGrid partitionsGrid;
 	protected final MovableGrid movableGrid;
 	protected final BlockedGrid blockedGrid;
 	protected final Color[][] debugColors;
-
-	protected final short width;
-	protected final short height;
 
 	protected final MovablePathfinderGrid movablePathfinderGrid;
 	private final IGraphicsGrid graphicsGrid;
@@ -90,6 +90,30 @@ public class MainGrid {
 	private final BordersThread bordersThread;
 	private final BuildingsGrid buildingsGrid;
 	private final IGuiInputGrid guiInputGrid;
+
+	public MainGrid(short width, short height, LandscapeGrid landscapeGrid, BlockedGrid blockedGrid, ObjectsGrid objectsGrid) {
+		this.width = width;
+		this.height = height;
+		this.landscapeGrid = landscapeGrid;
+		this.blockedGrid = blockedGrid;
+		this.objectsGrid = objectsGrid;
+
+		this.movablePathfinderGrid = new MovablePathfinderGrid();
+		this.graphicsGrid = new GraphicsGrid();
+		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
+
+		this.movableGrid = new MovableGrid(width, height);
+		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid(), movablePathfinderGrid);
+
+		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
+		this.bordersThread = new BordersThread(new BordersThreadGrid());
+		this.constructionMarksCalculator = new ConstructMarksThread(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
+		// dynamically
+		this.buildingsGrid = new BuildingsGrid();
+		this.guiInputGrid = new GUIInputGrid();
+
+		this.debugColors = new Color[width][height];
+	}
 
 	public MainGrid(short width, short height) {
 		this.width = width;
@@ -191,6 +215,7 @@ public class MainGrid {
 
 	private void addMapObject(short x, short y, MapObject object) {
 		ISPosition2D pos = new ShortPoint2D(x, y);
+
 		if (object instanceof MapTreeObject) {
 			if (isInBounds(x, y) && movablePathfinderGrid.isTreePlantable(x, y)) {
 				mapObjectsManager.executeSearchType(new ShortPoint2D(x, y - 1), ESearchType.PLANTABLE_TREE);
@@ -436,11 +461,10 @@ public class MainGrid {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return debugColors[x][y];
+			// return debugColors[x][y];
 
-			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new
-			// Color(
-			// 0, 0, 1, 1) : null);
+			return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new Color(
+					0, 0, 1, 1) : null);
 		}
 
 		@Override
@@ -504,6 +528,11 @@ public class MainGrid {
 		@Override
 		public boolean isInBounds(short x, short y) {
 			return MainGrid.this.isInBounds(x, y);
+		}
+
+		@Override
+		public void setProtected(short x, short y, boolean protect) {
+			blockedGrid.setProtected(x, y, protect);
 		}
 
 	}
@@ -736,19 +765,19 @@ public class MainGrid {
 		}
 
 		@Override
-        public void placePig(ISPosition2D pos, boolean place) {
+		public void placePig(ISPosition2D pos, boolean place) {
 			mapObjectsManager.placePig(pos, place);
-        }
+		}
 
 		@Override
-        public boolean isPigThere(ISPosition2D pos) {
+		public boolean isPigThere(ISPosition2D pos) {
 			return mapObjectsManager.pigIsThere(pos);
-        }
+		}
 
 		@Override
-        public boolean isPigAdult(ISPosition2D pos) {
+		public boolean isPigAdult(ISPosition2D pos) {
 			return mapObjectsManager.pigIsAdult(pos);
-        }
+		}
 
 	}
 
@@ -908,8 +937,8 @@ public class MainGrid {
 
 	private class GUIInputGrid implements IGuiInputGrid {
 		@Override
-		public IHexMovable getMovable(ISPosition2D position) {
-			return movableGrid.getMovableAt(position.getX(), position.getY());
+		public IHexMovable getMovable(short x, short y) {
+			return movableGrid.getMovableAt(x, y);
 		}
 
 		@Override
@@ -923,8 +952,8 @@ public class MainGrid {
 		}
 
 		@Override
-		public IBuilding getBuildingAt(ISPosition2D position) {
-			return (IBuilding) objectsGrid.getMapObjectAt(position.getX(), position.getY(), EMapObjectType.BUILDING);
+		public IBuilding getBuildingAt(short x, short y) {
+			return (IBuilding) objectsGrid.getMapObjectAt(x, y, EMapObjectType.BUILDING);
 		}
 
 		@Override

@@ -7,7 +7,13 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.Movable;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public abstract class SpawnBuilding extends Building {
+	private static final long serialVersionUID = 7584783336566602225L;
 
 	private byte delayCtr = 0;
 	private int produced = 0;

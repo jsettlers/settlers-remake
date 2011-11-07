@@ -8,6 +8,8 @@ import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.objects.ProgressingObject;
 
 public class ArrowObject extends ProgressingObject implements IArrowMapObject {
+	private static final long serialVersionUID = 1702902724559733166L;
+
 	private static final float SECONDS_PER_TILE = 0.03f;
 
 	public static final float DECOMPOSE_DELAY = 60;

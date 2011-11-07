@@ -1,12 +1,16 @@
 package jsettlers.logic.map.newGrid.blocked;
 
+import java.io.Serializable;
+
 /**
  * Grid that's storing the blocked information for fast access.
  * 
  * @author Andreas Eberle
  * 
  */
-public class BlockedGrid {
+public class BlockedGrid implements Serializable {
+	private static final long serialVersionUID = -413005884613149208L;
+
 	private final boolean[][] blockedGrid;
 	private final boolean[][] markedGrid;
 	private final boolean[][] protectedGrid;

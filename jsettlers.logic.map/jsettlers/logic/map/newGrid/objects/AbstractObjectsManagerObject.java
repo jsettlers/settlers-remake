@@ -9,6 +9,7 @@ import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
  * 
  */
 public abstract class AbstractObjectsManagerObject extends AbstractHexMapObject {
+	private static final long serialVersionUID = 6013184372588966504L;
 
 	private final ISPosition2D pos;
 

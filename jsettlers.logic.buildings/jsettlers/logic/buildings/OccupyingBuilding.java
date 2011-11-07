@@ -16,6 +16,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  */
 public class OccupyingBuilding extends Building {
+	private static final long serialVersionUID = 5267249978497095473L;
 
 	private static final float RADIUS = 40;
 
@@ -49,8 +50,8 @@ public class OccupyingBuilding extends Building {
 	}
 
 	@Override
-    public boolean isOccupied() {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	public boolean isOccupied() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

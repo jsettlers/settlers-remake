@@ -32,7 +32,7 @@ public class TaskExecutor {
 		switch (guiTask.getGuiAction()) {
 		case SET_WORK_AREA: {
 			WorkAreaGuiTask task = (WorkAreaGuiTask) guiTask;
-			setWorkArea(task.getPosition(), task.getBuildingPos());
+			setWorkArea(task.getPosition(), task.getBuildingPos().getX(), task.getBuildingPos().getY());
 		}
 			break;
 
@@ -74,8 +74,8 @@ public class TaskExecutor {
 		}
 	}
 
-	private void setWorkArea(ISPosition2D pos, ISPosition2D buildingPos) {
-		Building building = (Building) grid.getBuildingAt(buildingPos);
+	private void setWorkArea(ISPosition2D pos, short buildingX, short buildingY) {
+		Building building = (Building) grid.getBuildingAt(buildingX, buildingY);
 
 		if (building != null) {
 			building.drawWorkAreaCircle(false);

@@ -5,6 +5,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ISPosition2D;
 
 public class TestBuilding extends Building {
+	private static final long serialVersionUID = -1043442154922289693L;
 
 	protected TestBuilding(byte player, EBuildingType type) {
 		super(type, player);

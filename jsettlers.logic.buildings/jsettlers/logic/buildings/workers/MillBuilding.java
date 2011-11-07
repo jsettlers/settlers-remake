@@ -3,7 +3,13 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 
+/**
+ * 
+ * @author michael
+ * 
+ */
 public class MillBuilding extends WorkerBuilding implements IBuilding.Mill {
+	private static final long serialVersionUID = -8586862770507050382L;
 
 	private boolean working;
 
@@ -16,8 +22,8 @@ public class MillBuilding extends WorkerBuilding implements IBuilding.Mill {
 		return working;
 	}
 
-	public void setWorking(boolean b) {
-		working = b;
+	public void setWorking(boolean working) {
+		this.working = working;
 	}
 
 }
