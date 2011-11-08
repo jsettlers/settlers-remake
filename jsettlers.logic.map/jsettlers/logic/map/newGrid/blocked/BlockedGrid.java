@@ -1,6 +1,7 @@
 package jsettlers.logic.map.newGrid.blocked;
 
 import java.io.Serializable;
+import java.util.BitSet;
 
 /**
  * Grid that's storing the blocked information for fast access.
@@ -11,38 +12,42 @@ import java.io.Serializable;
 public class BlockedGrid implements Serializable {
 	private static final long serialVersionUID = -413005884613149208L;
 
-	private final boolean[][] blockedGrid;
-	private final boolean[][] markedGrid;
-	private final boolean[][] protectedGrid;
+	private final short width;
+
+	private final BitSet blockedGrid;
+	private final BitSet markedGrid;
+	private final BitSet protectedGrid;
 
 	public BlockedGrid(short width, short height) {
-		this.blockedGrid = new boolean[width][height];
-		this.markedGrid = new boolean[width][height];
-		this.protectedGrid = new boolean[width][height];
+		this.width = width;
+
+		this.blockedGrid = new BitSet(width * height);
+		this.protectedGrid = new BitSet(width * height);
+		this.markedGrid = new BitSet(width * height);
 	}
 
 	public boolean isBlocked(short x, short y) {
-		return this.blockedGrid[x][y];
+		return blockedGrid.get(x * width + y);
 	}
 
 	public void setBlocked(short x, short y, boolean blocked) {
-		this.blockedGrid[x][y] = blocked;
+		this.blockedGrid.set(x * width + y, blocked);
 	}
 
 	public boolean isMarked(short x, short y) {
-		return this.markedGrid[x][y];
+		return this.markedGrid.get(x * width + y);
 	}
 
 	public void setMarked(short x, short y, boolean marked) {
-		this.markedGrid[x][y] = marked;
+		this.markedGrid.set(x * width + y, marked);
 	}
 
 	public boolean isProtected(short x, short y) {
-		return this.protectedGrid[x][y];
+		return this.protectedGrid.get(x * width + y);
 	}
 
 	public void setProtected(short x, short y, boolean setProtected) {
-		this.protectedGrid[x][y] = setProtected;
+		this.protectedGrid.set(x * width + y, setProtected);
 	}
 
 }
