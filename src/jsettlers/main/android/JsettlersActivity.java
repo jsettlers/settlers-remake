@@ -7,46 +7,68 @@ import java.io.File;
 
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JOGLPanel;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.main.JSettlersApp;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Window;
 import android.view.WindowManager;
 
 public class JsettlersActivity extends Activity {
 
 	private GLSurfaceView glView;
 
+	private boolean started = false;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		setContentView(R.layout.main);
-		System.out.println("started");
+
+		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+		if (!started) {
+			startGame();
+			started = true;
+		}
+	}
+
+	private void startGame() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
-		File[] files = new File[] {
-				getExternalFilesDir(null),storage,jsettlersdir,new File(jsettlersdir, "GFX"),
-		};
-		
+		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
+		File[] files =
+		        new File[] {
+		                getExternalFilesDir(null),
+		                storage,
+		                jsettlersdir,
+		                new File(jsettlersdir, "GFX"),
+		                michael,
+		                new File(michael, "GFX")
+		        };
+
 		ResourceManager.setProvider(new ResourceProvider(files));
 		SettlersGame game = new SettlersGame();
-		
-		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+		super.getWindow().addFlags(
+		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		for (File file : files) {
 			game.addImagePath(file);
 		}
-		
-		new Thread(game).start();
-		System.out.println("got on start");
 
+		new Thread(game).start();
 	}
 
 	private class SettlersGame extends JSettlersApp {
@@ -56,25 +78,38 @@ public class JsettlersActivity extends Activity {
 
 		@Override
 		protected void startGui(JOGLPanel content) {
-			System.out.println("request adding of GL view");
 			runOnUiThread(new SetAreaTask(content.getArea()));
 		}
 	}
 
-	private class SetAreaTask implements Runnable {
-		private final Area area;
+	private Area area;
 
-		public SetAreaTask(Area area) {
-			this.area = area;
+	private class SetAreaTask implements Runnable {
+
+		public SetAreaTask(Area area2) {
+			area = area2;
 		}
 
 		@Override
 		public void run() {
-			System.out.println("added GL view");
+			initView();
+		}
+	}
+
+	private void initView() {
+		if (area != null) {
+			ImageProvider.getInstance().invalidateAll();
 			glView = new GOSurfaceView(JsettlersActivity.this, area);
-			glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+			glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS
+			        | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 			setContentView(glView);
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		initView();
 	}
 
 	@Override
