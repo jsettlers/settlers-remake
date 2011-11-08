@@ -262,6 +262,14 @@ public class AbstractEventConverter {
 		}
 		return false;
 	}
+	
+	protected boolean drawStarted() {
+	    return ongoingDrawEvent != null;
+    }
+	
+	protected boolean panStarted() {
+	    return ongoingPanEvent != null;
+    }
 
 	/**
 	 * a rule on when to replace short draw, hover or pan events with other
