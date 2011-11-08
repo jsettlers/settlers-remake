@@ -11,6 +11,7 @@ import jsettlers.common.position.ISPosition2D;
  * @author michael
  */
 public class MapShapeFilter implements IMapArea {
+	private static final long serialVersionUID = 3531866238303135719L;
 
 	private final IMapArea base;
 	private final int width;

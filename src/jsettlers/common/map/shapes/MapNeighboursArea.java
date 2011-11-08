@@ -6,6 +6,8 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 
 public class MapNeighboursArea implements IMapArea {
+	private static final long serialVersionUID = -6205409596340280969L;
+
 	private final short x;
 	private final short y;
 

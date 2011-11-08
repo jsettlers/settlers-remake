@@ -16,6 +16,8 @@ import jsettlers.common.position.SRectangle;
  * @author Andreas Eberle
  */
 public class FreeMapArea implements IMapArea {
+	private static final long serialVersionUID = 6331090134655931952L;
+
 	private final List<ISPosition2D> positions;
 	private final short xOffset;
 	private final short yOffset;

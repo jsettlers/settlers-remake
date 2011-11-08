@@ -12,6 +12,8 @@ import jsettlers.common.position.ShortPoint2D;
  * @author michael
  */
 public class MapRectangle implements IMapArea {
+	private static final long serialVersionUID = -5451513891892255692L;
+
 	private final short minx;
 	private final short miny;
 	private final short width;
@@ -40,12 +42,12 @@ public class MapRectangle implements IMapArea {
 			return false;
 		}
 		return true;
-    }
+	}
 
 	public boolean containsLine(int y) {
 		return y >= miny && y < miny + height;
-    }
-	
+	}
+
 	@Override
 	public Iterator<ISPosition2D> iterator() {
 		return new RectangleIterator();
@@ -82,7 +84,7 @@ public class MapRectangle implements IMapArea {
 	public short getLines() {
 		return height;
 	}
-	
+
 	public short getLineLength() {
 		return width;
 	}
@@ -109,15 +111,13 @@ public class MapRectangle implements IMapArea {
 				}
 				return pos;
 			} else {
-				throw new NoSuchElementException(
-				        "There are no more elements in the shape");
+				throw new NoSuchElementException("There are no more elements in the shape");
 			}
 		}
 
 		@Override
 		public void remove() {
-			throw new UnsupportedOperationException(
-			        "Cannot remove tiles from a Shape");
+			throw new UnsupportedOperationException("Cannot remove tiles from a Shape");
 		}
 	}
 

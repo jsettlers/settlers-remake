@@ -1,5 +1,6 @@
 package jsettlers.common.map.shapes;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import jsettlers.common.position.ISPosition2D;
@@ -9,7 +10,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  * @author michael
  */
-public interface IMapArea extends Iterable<ISPosition2D> {
+public interface IMapArea extends Iterable<ISPosition2D>, Serializable {
 	/**
 	 * Checks whether the given position is contained by the shape.
 	 * <p>
@@ -21,14 +22,12 @@ public interface IMapArea extends Iterable<ISPosition2D> {
 	boolean contains(ISPosition2D position);
 
 	/**
-	 * Gets an iterator for the shape that returns all tiles that are contained
-	 * by this shape.
+	 * Gets an iterator for the shape that returns all tiles that are contained by this shape.
 	 * <p>
-	 * The iterator iterates over all positions for which
-	 * {@link #contains(ISPosition2D)} returns true and returns each position
-	 * exactly one.
+	 * The iterator iterates over all positions for which {@link #contains(ISPosition2D)} returns true and returns each position exactly one.
 	 * 
 	 * @return An Iterator over the area in the shape.
 	 */
+	@Override
 	public Iterator<ISPosition2D> iterator();
 }

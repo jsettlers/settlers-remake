@@ -16,6 +16,8 @@ import jsettlers.common.position.ISPosition2D;
  * @author michael
  */
 public class MapCircle implements IMapArea {
+	private static final long serialVersionUID = 1L;
+
 	private final float radius;
 	private final int cy;
 	private final int cx;

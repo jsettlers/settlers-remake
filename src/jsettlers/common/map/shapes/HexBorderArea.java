@@ -11,6 +11,7 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  */
 public class HexBorderArea implements IMapArea {
+	private static final long serialVersionUID = -5609476544086214928L;
 
 	private final short radius;
 	private short centerX;

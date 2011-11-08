@@ -14,6 +14,8 @@ import jsettlers.common.position.ShortPoint2D;
  * @author michael
  */
 public class Parallelogram implements IMapArea {
+	private static final long serialVersionUID = -8093699931739836499L;
+
 	private final short minx;
 	private final short miny;
 	private final short maxx;
@@ -63,18 +65,18 @@ public class Parallelogram implements IMapArea {
 	public Iterator<ISPosition2D> iterator() {
 		return new ParallelogramIterator();
 	}
-	
+
 	class ParallelogramIterator implements Iterator<ISPosition2D> {
 		int x = minx;
 		int y = miny;
-		
+
 		@Override
-        public boolean hasNext() {
-	        return y <= maxy && x <= maxx; //maxx check for empty.
-        }
-		
+		public boolean hasNext() {
+			return y <= maxy && x <= maxx; // maxx check for empty.
+		}
+
 		@Override
-        public ISPosition2D next() {
+		public ISPosition2D next() {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
@@ -84,15 +86,15 @@ public class Parallelogram implements IMapArea {
 				x = minx;
 				y++;
 			}
-	        return position;
-        }
-		
+			return position;
+		}
+
 		@Override
-        public void remove() {
-	        throw new UnsupportedOperationException();
-        }
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer();
