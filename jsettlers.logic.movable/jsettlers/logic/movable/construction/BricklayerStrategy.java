@@ -4,8 +4,8 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.management.workers.construction.IConstructableBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
@@ -40,7 +40,6 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected void pathRequestFailed() {
 		if (constructionSite != null) {
-			// TODO rerequest the worker request
 			constructionSite = null;
 			bricklayerTargetPos = null;
 			lookDirection = null;
@@ -75,6 +74,10 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected void pathFinished() {
 		if (constructionSite != null) {
+			if (!super.getPos().equals(bricklayerTargetPos)) {
+				System.out.println("bricklayer error");
+			}
+
 			wentThere = true;
 			super.setDirection(lookDirection);
 			tryToBuild();

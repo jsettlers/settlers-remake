@@ -1,6 +1,8 @@
 package jsettlers.main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -9,6 +11,7 @@ import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.newGrid.MainGridSerializer;
 import jsettlers.logic.timer.Timer100Milli;
 import network.INetworkManager;
 import network.NetworkManager;
@@ -89,7 +92,24 @@ public abstract class JSettlersApp implements Runnable {
 		if (randomMap != null && !randomMap.isEmpty()) {
 			grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
 		} else {
-			grid = MainGrid.createForDebugging();
+			MainGridSerializer serializer = new MainGridSerializer();
+			try {
+				grid = serializer.load();
+			} catch (Exception e) {
+				e.printStackTrace();
+				grid = null;
+			}
+
+			if (grid == null) {
+				grid = MainGrid.createForDebugging();
+				try {
+					serializer.save(grid);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		progress.setProgressState(EProgressState.LOADING_IMAGES);

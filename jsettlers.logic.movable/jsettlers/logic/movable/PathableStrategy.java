@@ -39,7 +39,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 
 	private boolean checkGotoJob() {
 		if (gotoJob != null) {
-			calculatePathTo(gotoJob.getFirstPos());
+			calculatePathTo(gotoJob.getPosition());
 			gotoJob = null;
 			return true;
 		} else {

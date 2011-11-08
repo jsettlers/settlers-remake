@@ -1,9 +1,8 @@
 package jsettlers.logic.movable;
 
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.management.IJob;
 
-public class GotoJob implements IJob {
+public class GotoJob {
 
 	private final ISPosition2D pos;
 
@@ -11,8 +10,7 @@ public class GotoJob implements IJob {
 		this.pos = pos;
 	}
 
-	@Override
-	public ISPosition2D getFirstPos() {
+	public ISPosition2D getPosition() {
 		return pos;
 	}
 

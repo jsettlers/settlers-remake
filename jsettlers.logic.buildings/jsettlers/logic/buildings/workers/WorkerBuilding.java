@@ -5,7 +5,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.stack.RequestStack;
 
 /**

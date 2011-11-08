@@ -2,7 +2,7 @@ package jsettlers.logic.map.newGrid.partition.manager.manageables;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.management.workers.construction.IConstructableBuilding;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 
 public interface IManageableBricklayer extends IManageable {
 

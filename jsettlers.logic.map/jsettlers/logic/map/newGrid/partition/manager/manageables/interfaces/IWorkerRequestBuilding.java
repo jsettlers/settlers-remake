@@ -1,9 +1,8 @@
-package jsettlers.logic.management.workers.building;
+package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.management.workers.IWorkerBuilding;
 
 /**
  * interface for a building that want's to request a worker

@@ -14,7 +14,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.spawn.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.management.workers.building.IWorkerRequestBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
@@ -22,6 +21,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
 

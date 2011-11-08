@@ -1,4 +1,4 @@
-package jsettlers.logic.management.workers;
+package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ISPosition2D;

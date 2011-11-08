@@ -1,5 +1,6 @@
 package jsettlers.logic.map.newGrid;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import jsettlers.common.Color;
@@ -292,7 +293,7 @@ public class MainGrid {
 
 		@Override
 		public float getCost(short sx, short sy, short tx, short ty) {
-			return Constants.TILE_PATHFINDER_COST * (blockedGrid.isProtected(sx, sy) ? 1.7f : 1);
+			return Constants.TILE_PATHFINDER_COST * (blockedGrid.isProtected(sx, sy) ? 2.5f : 1);
 		}
 
 		@Override
@@ -798,7 +799,9 @@ public class MainGrid {
 		}
 	}
 
-	private class BuildingsGrid implements IBuildingsGrid {
+	private class BuildingsGrid implements IBuildingsGrid, Serializable {
+		private static final long serialVersionUID = -5567034251907577276L;
+
 		private final RequestStackGrid requestStackGrid = new RequestStackGrid();
 
 		@Override
@@ -911,7 +914,9 @@ public class MainGrid {
 			partitionsGrid.requestSoilderable(position, barrack);
 		}
 
-		private class RequestStackGrid implements IRequestsStackGrid {
+		private class RequestStackGrid implements IRequestsStackGrid, Serializable {
+			private static final long serialVersionUID = 1278397366408051067L;
+
 			@Override
 			public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
 				partitionsGrid.request(position, materialType, priority);

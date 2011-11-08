@@ -2,7 +2,7 @@
  JSettlers CHANGE REQUESTS
 --------------------------------
 
-CR-001 [ ]                  --       
-CR-002 [ ]                  --       
+CR-001 [ ]                  --       bricklayer doesn't react correctly, when target is blocked
+CR-002 [ ]                  --       movables can leave their players area
 
 

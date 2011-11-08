@@ -1,7 +1,6 @@
-package jsettlers.logic.management.workers.construction;
+package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 
 import jsettlers.common.player.IPlayerable;
-import jsettlers.logic.management.workers.IWorkerBuilding;
 
 public interface IConstructableBuilding extends IWorkerBuilding, IPlayerable {
 	boolean tryToTakeMaterial();
