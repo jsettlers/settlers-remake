@@ -37,6 +37,7 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
+import jsettlers.graphics.map.controls.small.SmallControls;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
@@ -110,7 +111,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		this.context = new MapDrawContext(map);
 
 		controls = new OriginalControls(context);
-		// controls = new SmallControls();
+		//controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);

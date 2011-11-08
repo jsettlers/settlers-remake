@@ -27,10 +27,8 @@ public class ProgressContent implements SettlersContent {
 
 	@Override
 	public void drawContent(GLDrawContext gl, int width, int height) {
-		provider.preload(2);
-		provider.waitForPreload(2);
-
 		gl.glPushMatrix();
+		
 		
 		Image image = provider.getGuiImage(2, 29);
 		gl.glScalef((float) width / image.getWidth(),

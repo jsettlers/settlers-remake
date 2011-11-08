@@ -208,4 +208,14 @@ public final class ImageProvider {
 		return images.containsKey(Integer.valueOf(filenumber));
 	}
 
+	/**
+	 * marks all loaded images as invalid. TODO: ensure that they get deleted
+	 */
+	public void invalidateAll() {
+		synchronized (requestedFiles) {
+			this.images.clear();
+			requestedFiles.clear();
+		}
+	}
+
 }

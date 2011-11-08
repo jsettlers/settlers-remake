@@ -704,7 +704,7 @@ public class Background {
 	/**
 	 * How many floats are needed per vertex
 	 */
-	private static final short VERTEX_SIZE = 8;
+	private static final short VERTEX_SIZE = 9;
 
 	private static final int EXTRA_PADDING = 50;
 
@@ -1229,6 +1229,7 @@ public class Background {
 		geometry[offset + 5] = 0;
 		geometry[offset + 6] = 0;
 		geometry[offset + 7] = 0;
+		geometry[offset + 8] = 1;
 	}
 
 	private void addTriangle2ToGeometry(MapDrawContext context,
@@ -1288,6 +1289,7 @@ public class Background {
 		geometry[offset] = color;
 		geometry[offset + 1] = color;
 		geometry[offset + 2] = color;
+		geometry[offset + 3] = 1f;
 	}
 
 	// private void drawWithRenderbuffer(MapDrawContext context) {

@@ -50,10 +50,8 @@ public class BuildingButton extends Button {
 		        getDetailedImage(buildingImage, position.getWidth(),
 		                position.getHeight());
 
-		gl.glPushMatrix();
-		gl.glTranslatef(getPosition().getCenterX(), getPosition().getCenterY(),
-		        0);
-		image.drawAt(gl, 0, 0);
-		gl.glPopMatrix();
+		image.drawImageAtRect(gl, getPosition().getMinX(),
+                getPosition().getMinY(), getPosition().getMaxX(),
+                getPosition().getMaxY());
 	}
 }

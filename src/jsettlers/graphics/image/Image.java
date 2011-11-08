@@ -263,8 +263,8 @@ public class Image implements ImageDataPrivider {
 		return this.texture;
 	}
 
-	public void drawImageAtRect(GLDrawContext gl, int minX, int minY, int maxX,
-	        int maxY) {
+	public void drawImageAtRect(GLDrawContext gl, float minX, float minY, float maxX,
+	        float maxY) {
 		float[] coords =
 		        new float[] {
 		                minX,
@@ -276,16 +276,16 @@ public class Image implements ImageDataPrivider {
 		                maxY,
 		                0,
 		                0,
-		                1,
+		                (float) height / textureHeight,
 		                maxX,
 		                maxY,
 		                0,
-		                1,
-		                1,
+		                (float) width / textureWidth,
+		                (float) height / textureHeight,
 		                maxX,
 		                minY,
 		                0,
-		                1,
+		                (float) width / textureWidth,
 		                0,
 		        };
 		gl.color(1, 1, 1, 1);

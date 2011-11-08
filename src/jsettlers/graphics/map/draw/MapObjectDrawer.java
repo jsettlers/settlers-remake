@@ -288,7 +288,7 @@ public class MapObjectDrawer {
 		int index =
 		        Math.min((int) (progress * sequence.length()),
 		                sequence.length() - 1);
-		sequence.getImage(index).draw(context.getGl(), color);
+		sequence.getImageSafe(index).draw(context.getGl(), color);
 	}
 
 	private void drawArrow(MapDrawContext context, IGraphicsGrid map,
