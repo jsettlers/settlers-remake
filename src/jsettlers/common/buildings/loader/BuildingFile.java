@@ -116,6 +116,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
 			// error
+			e.printStackTrace();
 			loadDefault();
 		}
 	}

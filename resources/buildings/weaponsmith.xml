@@ -103,7 +103,9 @@
 	<job name="checkhome1" type="AVAILABLE" material="IRON" dx="3" dy="3"
 		successjob="checkhome2" failjob="waithome" />
 	<job name="checkhome2" type="AVAILABLE" material="COAL" dx="-2" dy="2"
-		successjob="go_to_work1" failjob="waithome" />
+		successjob="checkhome3" failjob="waithome" />
+    <job name="checkhome3" type="NOT_FULL" material="SWORD" dx="4"
+        dy="1" successjob="go_to_work1" failjob="go_inside" />
 
 	<job name="go_to_work1" type="SHOW" dx="3" dy="0" successjob="go_to_work2"
 		failjob="waithome" />
@@ -211,13 +213,18 @@
 		successjob="check_continue1" failjob="go_to_door" />
 
 	<job name="check_continue1" type="AVAILABLE" material="IRON" dx="3"
-		dy="3" successjob="check_continue2" failjob="waithome" />
+		dy="3" successjob="check_continue2" failjob="go_inside" />
 	<job name="check_continue2" type="AVAILABLE" material="COAL" dx="-2"
-		dy="2" successjob="go_continue1" failjob="waithome" />
+		dy="2" successjob="check_continue3" failjob="go_inside" />
+    <job name="check_continue3" type="NOT_FULL" material="SWORD" dx="4"
+        dy="1" successjob="go_continue1" failjob="go_inside" />
 	<job name="go_continue1" type="WALK" direction="SOUTH_WEST"
 		successjob="go_continue2" failjob="go_to_door" />
 	<job name="go_continue2" type="WALK" direction="SOUTH_WEST"
 		successjob="go_continue3" failjob="go_to_door" />
 	<job name="go_continue3" type="WALK" direction="WEST"
 		successjob="pickiron1" failjob="go_to_door" />
+        
+    <job name="go_inside" type="WALK" direction="NORTH_WEST"
+        successjob="hide" failjob="hide" />
 </building>
