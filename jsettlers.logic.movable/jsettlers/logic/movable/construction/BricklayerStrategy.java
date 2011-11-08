@@ -15,7 +15,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	private IConstructableBuilding constructionSite;
 	private ShortPoint2D bricklayerTargetPos;
 	private EDirection lookDirection;
-	private boolean wentThere;
+	public boolean startedGoing;
 
 	public BricklayerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -32,6 +32,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 		if (!super.noActionEvent()) {
 			if (constructionSite != null) {
 				super.calculatePathTo(bricklayerTargetPos);
+				startedGoing = true;
 			}
 		}
 		return true;
@@ -50,7 +51,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected boolean actionFinished() {
 		if (!super.actionFinished()) {
-			if (wentThere && constructionSite != null) {
+			if (startedGoing && constructionSite != null) {
 				tryToBuild();
 			} else {
 				super.setAction(EAction.NO_ACTION, -1);
@@ -73,12 +74,11 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 
 	@Override
 	protected void pathFinished() {
-		if (constructionSite != null) {
+		if (constructionSite != null && startedGoing) {
 			if (!super.getPos().equals(bricklayerTargetPos)) {
 				System.out.println("bricklayer error");
 			}
 
-			wentThere = true;
 			super.setDirection(lookDirection);
 			tryToBuild();
 		} else {
@@ -106,7 +106,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 		this.constructionSite = constructionSite;
 		this.bricklayerTargetPos = bricklayerTargetPos;
 		this.lookDirection = direction;
-		this.wentThere = false;
+		this.startedGoing = false;
 	}
 
 }
