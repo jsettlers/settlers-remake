@@ -1,9 +1,5 @@
 package go.graphics.android;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
 import go.graphics.area.Area;
@@ -19,11 +15,10 @@ import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
-GOEventHandlerProvoder {
+public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEventHandlerProvoder {
 
 	private final Area area;
-	
+
 	private final ActionAdapter actionAdapter = new ActionAdapter(this);
 
 	public GOSurfaceView(Context context, Area area) {
@@ -50,17 +45,16 @@ GOEventHandlerProvoder {
 		private static final float PAN_SIZE = .7f;
 
 		protected ActionAdapter(GOEventHandlerProvoder provider) {
-	        super(provider);
+			super(provider);
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD, CLICK_MOVE_TRESHOLD));
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, CLICK_TIME_TRSHOLD, CLICK_MOVE_TRESHOLD));
-        }
-		
+		}
+
 		public void onTouchEvent(MotionEvent e) {
 			UIPoint local = convertToLocal(e);
-			
+
 			boolean isPan = panStarted() || e.getPointerCount() > 1 || e.getSize(0) > PAN_SIZE;
-			
-			
+
 			if (isPan) {
 				if (drawStarted()) {
 					abortDraw();
@@ -68,27 +62,32 @@ GOEventHandlerProvoder {
 				if (!panStarted()) {
 					startPan(local);
 				}
-				
+
 				if (e.getAction() == MotionEvent.ACTION_MOVE) {
 					updatePanPosition(local);
 				} else if (e.getAction() == MotionEvent.ACTION_UP) {
 					endPan(local);
 				}
 			} else {
-			if (e.getAction() == MotionEvent.ACTION_DOWN) {
-				startDraw(local);
-			} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-				updateDrawPosition(local);
-			} else if (e.getAction() == MotionEvent.ACTION_UP) {
-				endDraw(local);
+				if (e.getAction() == MotionEvent.ACTION_DOWN) {
+					startDraw(local);
+				} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
+					updateDrawPosition(local);
+				} else if (e.getAction() == MotionEvent.ACTION_UP) {
+					endDraw(local);
+				}
 			}
-			}
-        }
+		}
 
 		private UIPoint convertToLocal(MotionEvent e) {
 			return new UIPoint(e.getX(), getHeight() - e.getY());
-        }
-		
+		}
+
+		public void fireKey(String key) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 
 	private class Renderer implements GLSurfaceView.Renderer {
@@ -125,8 +124,12 @@ GOEventHandlerProvoder {
 	}
 
 	@Override
-    public void handleEvent(GOEvent event) {
+	public void handleEvent(GOEvent event) {
 		area.handleEvent(event);
-    }
+	}
+
+	public void fireKey(String key) {
+		actionAdapter.fireKey(key);
+	}
 
 }
