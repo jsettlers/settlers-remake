@@ -59,10 +59,9 @@ public class ConstructMarksThread extends Thread {
 						wait(AlgorithmConstants.CONSTRUCT_MARKS_MAX_REFRESH_TIME);
 					}
 				}
-				removeConstructionMarks(mapArea);
+				removeConstructionMarks(lastArea);
 				lastArea = null;
 
-				Thread.sleep(30);
 			} catch (Throwable e) { // this thread must never be destroyed due to errors
 				e.printStackTrace();
 			}
