@@ -93,11 +93,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	public BuildingFile(String buildingName) {
 		this.buildingName = buildingName;
 		try {
-
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			xr.setContentHandler(new SaxHandler());
 			xr.setEntityResolver(new EntityResolver() {
-
 				@Override
 				public InputSource resolveEntity(String publicId,
 				        String systemId) throws SAXException, IOException {
@@ -115,8 +113,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 			                + buildingName.toLowerCase() + ".xml");
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
-			// error
-			e.printStackTrace();
+			System.err.println("Error loading building file for "
+			        + buildingName + ":" + e.getMessage());
 			loadDefault();
 		}
 	}
