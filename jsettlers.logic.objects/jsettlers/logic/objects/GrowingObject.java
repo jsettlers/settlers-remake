@@ -22,7 +22,7 @@ public abstract class GrowingObject extends ProgressingObject {
 		this.adult = adult;
 		this.dead = dead;
 
-		state = growing;
+		this.state = growing;
 		super.setDuration(getGrowthDuration());
 	}
 

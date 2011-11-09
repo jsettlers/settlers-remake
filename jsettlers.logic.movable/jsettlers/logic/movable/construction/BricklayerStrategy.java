@@ -75,10 +75,6 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	@Override
 	protected void pathFinished() {
 		if (constructionSite != null && startedGoing) {
-			if (!super.getPos().equals(bricklayerTargetPos)) {
-				System.out.println("bricklayer error");
-			}
-
 			super.setDirection(lookDirection);
 			tryToBuild();
 		} else {

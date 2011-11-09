@@ -4,5 +4,13 @@
 
 CR-001 [x]  rev 678         --       bricklayer doesn't react correctly, when target is blocked
 CR-002 [ ]                  --       movables can leave their players area
+CR-003 [ ]                  --       check if there are holes in the protected fields of iron melt and big living house
+CR-004 [ ]                  --       trees should be adult at the beginning
+CR-005 [ ]                  --       weaponsmith leaves the grid!
+CR-006 [ ]                  --       
+CR-007 [ ]                  --       
+CR-008 [ ]                  --       
+CR-009 [ ]                  --       
+CR-010 [ ]                  --       
 
 

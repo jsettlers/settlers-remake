@@ -289,6 +289,11 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		EDirection newDir = EDirection.getDirection(pos, nextTile);
 		if (newDir != null) { // TODO @Andreas: check if this is needed
 			setDirection(newDir);
+
+			if (!this.grid.isInBounds(nextTile)) {
+				System.err.println("movable is directed to leave the grid!");
+			}
+
 			this.nextPos = nextTile;
 			this.state = EMovableState.WAITING_FOR_FREE_TILE;
 		} else {
@@ -340,11 +345,6 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	public void setGotoJob(GotoJob gotoJob) {
-		// if (nextTile != null) { TODO @Andreas check if this is still needed
-		// action = EAction.CALCULATING;
-		// progressIncrease = -1;
-		// nextTile = null;
-		// }
 		this.strategy.setGotoJob(gotoJob);
 	}
 

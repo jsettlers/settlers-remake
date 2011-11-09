@@ -22,6 +22,7 @@ import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.corn.Corn;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
+import jsettlers.logic.objects.tree.AdultTree;
 import jsettlers.logic.objects.tree.Tree;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
@@ -193,6 +194,10 @@ public class MapObjectsManager implements ITimerable {
 		addMapObject(pos, new Stone(capacity));
 	}
 
+	public void plantAdultTree(ISPosition2D pos) {
+		addMapObject(pos, new AdultTree(pos));
+	}
+
 	public void addArrowObject(IHexMovable enemyPos, ISPosition2D ownPos, float strength) {
 		ArrowObject arrow = new ArrowObject(enemyPos, ownPos, strength);
 		addMapObject(enemyPos.getPos(), arrow);
@@ -346,4 +351,5 @@ public class MapObjectsManager implements ITimerable {
 		}
 
 	}
+
 }
