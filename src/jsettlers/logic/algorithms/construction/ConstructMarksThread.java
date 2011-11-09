@@ -69,16 +69,17 @@ public class ConstructMarksThread extends Thread {
 	}
 
 	private void calculateConstructMarks() {
-		if (buildingType == null || mapArea == null) {
+		IMapArea localMapArea = this.mapArea;
+		if (buildingType == null || localMapArea == null) {
 			return;
 		}
 
 		RelativePoint[] usedPositions = buildingType.getProtectedTiles();
 
 		if (lastArea != null) {
-			removeConstructionMarks(lastArea, mapArea);
+			removeConstructionMarks(lastArea, localMapArea);
 		}
-		for (ISPosition2D pos : mapArea) {
+		for (ISPosition2D pos : localMapArea) {
 			short x = pos.getX();
 			short y = pos.getY();
 
@@ -90,7 +91,7 @@ public class ConstructMarksThread extends Thread {
 			}
 			map.setConstructMarking(pos, value);
 		}
-		lastArea = mapArea;
+		lastArea = localMapArea;
 	}
 
 	/**
