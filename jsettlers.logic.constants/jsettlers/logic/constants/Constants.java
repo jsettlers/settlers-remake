@@ -34,7 +34,7 @@ public final class Constants {
 
 	public static final short MOVABLE_DELAY = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
 
-	public static float MOVABLE_STEP_DURATION = 0.3f;
+	public static float MOVABLE_STEP_DURATION = 0.4f;
 
 	public static final float MOVABLE_TURN_PROBABILITY = 0.003F;
 	public static final float MOVABLE_NO_ACTION_STEP_PROBABILITY = 0.05F;
