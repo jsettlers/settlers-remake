@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Loading...</string>
     <string name="app_name">Jsettlers</string>
+    <string name="f12_string">F12</string>
 </resources>
