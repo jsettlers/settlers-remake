@@ -117,8 +117,12 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	@Override
 	protected final void setGotoJob(GotoJob job) {
 		if (isGotoJobable()) {
+			doPreGotoJobActions();
 			this.gotoJob = job;
 		}
+	}
+
+	protected void doPreGotoJobActions() {
 	}
 
 	protected abstract boolean isGotoJobable();

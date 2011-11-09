@@ -60,16 +60,21 @@ public class TaskExecutor {
 	 * @param list
 	 */
 	private void moveSelectedTo(ISPosition2D pos, List<Integer> list) {
-		float radius = (float) (Math.sqrt(list.size() / 3.14f)) * 2;
-		MapCircle mapCircle = new MapCircle(pos, radius);
+		if (list.size() == 1) {
+			Movable currMovable = Movable.getMovableByID(list.get(0));
+			currMovable.setGotoJob(new GotoJob(pos));
+		} else {
+			float radius = (float) (Math.sqrt(list.size() / 3.14f)) * 2;
+			MapCircle mapCircle = new MapCircle(pos, radius);
 
-		Iterator<ISPosition2D> circleIter = mapCircle.iterator();
-		for (Integer currID : list) {
-			Movable currMovable = Movable.getMovableByID(currID);
-			if (currMovable != null) {
-				GotoJob job = new GotoJob(circleIter.next());
-				circleIter.next();
-				currMovable.setGotoJob(job);
+			Iterator<ISPosition2D> circleIter = mapCircle.iterator();
+			for (Integer currID : list) {
+				Movable currMovable = Movable.getMovableByID(currID);
+				if (currMovable != null) {
+					GotoJob job = new GotoJob(circleIter.next());
+					circleIter.next();
+					currMovable.setGotoJob(job);
+				}
 			}
 		}
 	}

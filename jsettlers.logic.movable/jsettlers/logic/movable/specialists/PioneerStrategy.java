@@ -28,7 +28,7 @@ public class PioneerStrategy extends PathableStrategy {
 
 	@Override
 	protected void setCalculatedPath(Path path) {
-		super.getGrid().setMarked(path.getTargetPos(), false);
+		super.getGrid().setMarked(path.getTargetPos(), true);
 		super.setCalculatedPath(path);
 	}
 
@@ -51,7 +51,7 @@ public class PioneerStrategy extends PathableStrategy {
 		if (!super.actionFinished()) {
 			if (centerPos != null) {
 				if (!going) {
-					super.getGrid().setMarked(super.getPos(), false);
+					unmarkTargetPos();
 					super.getGrid().changePlayerAt(super.getPos(), super.getPlayer());
 					requestNewPath();
 				} else {
@@ -72,9 +72,18 @@ public class PioneerStrategy extends PathableStrategy {
 	}
 
 	@Override
-	protected boolean isGotoJobable() {
+	protected void doPreGotoJobActions() {
+		stopWorkAndReleaseMarked();
+	}
+
+	private void stopWorkAndReleaseMarked() {
+		unmarkTargetPos();
 		centerPos = null;
 		going = true;
+	}
+
+	@Override
+	protected boolean isGotoJobable() {
 		return true;
 	}
 
@@ -118,9 +127,10 @@ public class PioneerStrategy extends PathableStrategy {
 		if (stop) {
 			this.centerPos = null;
 			super.setAction(EAction.NO_ACTION, -1);
+			stopWorkAndReleaseMarked();
 		} else {
-			centerPos = super.getPos();
-			going = true;
+			this.centerPos = super.getPos();
+			this.going = false;
 		}
 	}
 
@@ -132,9 +142,15 @@ public class PioneerStrategy extends PathableStrategy {
 
 	@Override
 	protected void killedEvent() {
+		unmarkTargetPos();
+	}
+
+	private void unmarkTargetPos() {
 		ISPosition2D targetPos = super.getTargetPos();
 		if (targetPos != null) {
 			super.getGrid().setMarked(targetPos, false);
+		} else {
+			super.getGrid().setMarked(super.getPos(), false);
 		}
 	}
 }

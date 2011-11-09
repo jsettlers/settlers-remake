@@ -14,7 +14,6 @@ public class GotoTestStrategy extends PathableStrategy {
 
 	@Override
 	public boolean needsPlayersGround() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -35,8 +34,6 @@ public class GotoTestStrategy extends PathableStrategy {
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

@@ -195,13 +195,13 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 		for (int i = 0; i < directions; i++) {
 			ISPosition2D newPos = EDirection.values()[(i + offset) % directions].getNextHexPoint(pos);
-			if (!grid.isBlocked(newPos.getX(), newPos.getY()) && grid.getMovable(newPos) == null) {
+			if (grid.isInBounds(newPos) && !grid.isBlocked(newPos.getX(), newPos.getY()) && grid.getMovable(newPos) == null) {
 				goToTile(newPos);
 				return;
 			}
 		}
 
-		if (from != null) {
+		if (from != null) {// nothing found, exchange positions
 			this.goToTile(EDirection.getApproxDirection(pos, from.getPos()).getNextHexPoint(pos));
 			// this ensures that there is no issue with an movable that pushed and left its position -> direction == null
 		}
