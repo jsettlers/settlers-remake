@@ -30,8 +30,20 @@ public class BlockedGrid implements Serializable {
 		return blockedGrid.get(x * width + y);
 	}
 
-	public void setBlocked(short x, short y, boolean blocked) {
+	/**
+	 * sets this position blocked and protected.
+	 * 
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
+	 * @param blocked
+	 *            the position will be set to blocked and protected if blocked == true<br>
+	 *            otherwise it will be set to unblocked and unprotected.
+	 */
+	public void setBlockedAndProtected(short x, short y, boolean blocked) {
 		this.blockedGrid.set(x * width + y, blocked);
+		this.setProtected(x, y, blocked);
 	}
 
 	public boolean isMarked(short x, short y) {

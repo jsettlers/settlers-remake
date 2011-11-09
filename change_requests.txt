@@ -7,7 +7,7 @@ CR-002 [ ]                  --       movables can leave their players area
 CR-003 [ ]                  --       check if there are holes in the protected fields of iron melt and big living house
 CR-004 [x]  rev 679         --       trees should be adult at the beginning
 CR-005 [ ]                  --       weaponsmith leaves the grid!
-CR-006 [ ]                  --       
+CR-006 [ ]                  --       constants responsible for movement of movables need to be corrected
 CR-007 [ ]                  --       
 CR-008 [ ]                  --       
 CR-009 [ ]                  --       

@@ -19,6 +19,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
@@ -91,6 +92,7 @@ public class MainGrid {
 	private final BordersThread bordersThread;
 	private final BuildingsGrid buildingsGrid;
 	private final IGuiInputGrid guiInputGrid;
+	private final ConstructionMarksGrid constructionMarksGrid;
 
 	public MainGrid(short width, short height, LandscapeGrid landscapeGrid, BlockedGrid blockedGrid, ObjectsGrid objectsGrid) {
 		this.width = width;
@@ -108,7 +110,8 @@ public class MainGrid {
 
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
-		this.constructionMarksCalculator = new ConstructMarksThread(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
+		this.constructionMarksGrid = new ConstructionMarksGrid();
+		this.constructionMarksCalculator = new ConstructMarksThread(constructionMarksGrid, (byte) 0); // TODO player needs to be set
 		// dynamically
 		this.buildingsGrid = new BuildingsGrid();
 		this.guiInputGrid = new GUIInputGrid();
@@ -132,7 +135,8 @@ public class MainGrid {
 
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
-		this.constructionMarksCalculator = new ConstructMarksThread(new ConstructionMarksGrid(), (byte) 0); // TODO player needs to be set
+		this.constructionMarksGrid = new ConstructionMarksGrid();
+		this.constructionMarksCalculator = new ConstructMarksThread(constructionMarksGrid, (byte) 0); // TODO player needs to be set
 		// dynamically
 		this.buildingsGrid = new BuildingsGrid();
 		this.guiInputGrid = new GUIInputGrid();
@@ -459,14 +463,13 @@ public class MainGrid {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return debugColors[x][y];
 
-			// return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new
-			// Color(
-			// 0, 0, 1, 1) : null);
+			return blockedGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (blockedGrid.isProtected((short) x, (short) y) ? new Color(
+					0, 0, 1, 1) : null);
 		}
 
 		@Override
@@ -489,7 +492,7 @@ public class MainGrid {
 
 		@Override
 		public void setBlocked(short x, short y, boolean blocked) {
-			blockedGrid.setBlocked(x, y, blocked);
+			blockedGrid.setBlockedAndProtected(x, y, blocked);
 		}
 
 		@Override
@@ -569,13 +572,6 @@ public class MainGrid {
 		}
 
 		@Override
-		public boolean isBuildingPlaceable(ISPosition2D position, byte player) {
-			short x = position.getX(), y = position.getY();
-			return MainGrid.this.isInBounds(x, y) && !blockedGrid.isProtected(x, y) && !blockedGrid.isBlocked(x, y)
-					&& partitionsGrid.getPlayerAt(x, y) == player;
-		}
-
-		@Override
 		public short getWidth() {
 			return width;
 		}
@@ -586,13 +582,32 @@ public class MainGrid {
 		}
 
 		@Override
-		public byte getHeightAt(ISPosition2D pos) {
-			return landscapeGrid.getHeightAt(pos.getX(), pos.getY());
+		public byte getHeightAt(short x, short y) {
+			return landscapeGrid.getHeightAt(x, y);
 		}
 
 		@Override
-		public ELandscapeType getLandscapeTypeAt(ISPosition2D pos) {
-			return landscapeGrid.getLandscapeTypeAt(pos.getX(), pos.getY());
+		public boolean canConstructAt(short x, short y, EBuildingType type, byte player) {
+			ELandscapeType[] landscapes = type.getGroundtypes();
+			for (RelativePoint curr : type.getProtectedTiles()) {
+				short currX = curr.calculateX(x);
+				short currY = curr.calculateY(y);
+				if (!MainGrid.this.isInBounds(currX, currY) || blockedGrid.isProtected(currX, currY)
+						|| partitionsGrid.getPlayerAt(currX, currY) != player || !isAllowedLandscape(currX, currY, landscapes)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private boolean isAllowedLandscape(short x, short y, ELandscapeType[] landscapes) {
+			ELandscapeType landscapeAt = landscapeGrid.getLandscapeTypeAt(x, y);
+			for (byte i = 0; i < landscapes.length; i++) {
+				if (landscapeAt == landscapes[i]) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
@@ -851,7 +866,7 @@ public class MainGrid {
 		public void setBlocked(FreeMapArea area, boolean blocked) {
 			for (ISPosition2D curr : area) {
 				if (MainGrid.this.isInBounds(curr.getX(), curr.getY()))
-					blockedGrid.setBlocked(curr.getX(), curr.getY(), blocked);
+					blockedGrid.setBlockedAndProtected(curr.getX(), curr.getY(), blocked);
 			}
 		}
 
@@ -998,7 +1013,7 @@ public class MainGrid {
 
 		@Override
 		public boolean canConstructAt(ISPosition2D pos, EBuildingType type) {
-			return objectsGrid.hasMapObjectType(pos.getX(), pos.getY(), EMapObjectType.CONSTRUCTION_MARK);
+			return constructionMarksGrid.canConstructAt(pos.getX(), pos.getY(), type, partitionsGrid.getPlayerAt(pos));
 		}
 	}
 
