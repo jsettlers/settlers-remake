@@ -39,11 +39,11 @@ public class RelativePoint implements Serializable {
 		return new ShortPoint2D((short) (start.getX() + dx), (short) (start.getY() + dy));
 	}
 
-	public short calculateX(short x) {
+	public final short calculateX(short x) {
 		return (short) (x + dx);
 	}
 
-	public short calculateY(short y) {
+	public final short calculateY(short y) {
 		return (short) (y + dy);
 	}
 
