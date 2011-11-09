@@ -1,6 +1,6 @@
 package jsettlers.logic.algorithms.construction;
 
-import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ISPosition2D;
 
 /**
@@ -21,18 +21,6 @@ public interface IConstructionMarkableMap {
 	void setConstructMarking(ISPosition2D pos, byte value);
 
 	/**
-	 * Checks if a building can be positioned at the given position
-	 * 
-	 * @param position
-	 *            position to be checked.
-	 * @param player
-	 *            player
-	 * @return true if a building can be positioned at the given position<br>
-	 *         false otherwise.
-	 */
-	boolean isBuildingPlaceable(ISPosition2D position, byte player);
-
-	/**
 	 * @return width of map.
 	 */
 	short getWidth();
@@ -45,18 +33,28 @@ public interface IConstructionMarkableMap {
 	/**
 	 * gets the height of the given tile position.
 	 * 
-	 * @param pos
-	 *            position to be looked for
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
 	 * @return height of the tile at the fiven position
 	 */
-	byte getHeightAt(ISPosition2D pos);
+	byte getHeightAt(short x, short y);
 
 	/**
-	 * Gets the landscape type at the given position.
+	 * Checks if the given building type can be build at the given position
 	 * 
-	 * @param pos
-	 *            position to be looked for
-	 * @return The landscape at that position.
+	 * @param x
+	 *            x coordinate of the target position
+	 * @param y
+	 *            y coordinate of the target position
+	 * @param type
+	 *            type of building to be checked.
+	 * @param player
+	 *            player
+	 * @return true if a building can be positioned at the given position<br>
+	 *         false otherwise.
 	 */
-	ELandscapeType getLandscapeTypeAt(ISPosition2D pos);
+	boolean canConstructAt(short x, short y, EBuildingType type, byte player);
+
 }
