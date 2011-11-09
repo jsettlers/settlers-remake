@@ -9,6 +9,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  */
 public class AdultTree extends Tree {
+	private static final long serialVersionUID = 5956923025331740093L;
 
 	/**
 	 * Creates a new adult Tree.
