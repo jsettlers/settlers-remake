@@ -8,6 +8,8 @@ import jsettlers.logic.algorithms.heap.MinHeapable;
  * A single node in the search graph
  */
 public class AStarNode implements MinHeapable, ISPosition2D {
+	private static final long serialVersionUID = -8082228881037942236L;
+
 	/** The x coordinate of the node */
 	short x;
 	/** The y coordinate of the node */
@@ -92,10 +94,10 @@ public class AStarNode implements MinHeapable, ISPosition2D {
 	public boolean equals(ISPosition2D other) {
 		return other.getX() == x && other.getY() == y;
 	}
-	
+
 	@Override
 	public int hashCode() {
-	    return ShortPoint2D.hashCode(x, y);
+		return ShortPoint2D.hashCode(x, y);
 	}
 
 	@Override
