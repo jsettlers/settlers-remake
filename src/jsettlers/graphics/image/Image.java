@@ -86,139 +86,6 @@ public class Image implements ImageDataPrivider {
 	}
 
 	/**
-	 * Generates a texture if no texture was generated yet.
-	 * 
-	 * @param gl
-	 *            The gl context
-	 */
-	// protected void tryGenerateTexture(GL2 gl) {
-	// if (this.texture == 0) {
-	// generateTexture(gl);
-	// }
-	// }
-
-	/**
-	 * Generates the texture. If there is already a texture, the old one is
-	 * deleted first.
-	 * 
-	 * @param gl
-	 *            The gl context
-	 * @return The success status
-	 * @see #tryGenerateTexture(GL2)
-	 */
-	// protected boolean generateTexture(GL2 gl) {
-	// if (this.texture != 0) {
-	// gl.glDeleteTextures(1, new int[] {
-	// this.texture
-	// }, 0);
-	// }
-	//
-	// // 1 byte aligned.
-	// gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-	//
-	// int[] textureIndexes = new int[1];
-	// gl.glGenTextures(1, textureIndexes, 0);
-	// this.texture = textureIndexes[0];
-	// if (this.texture == 0) {
-	// // FIXME: Error?
-	// return false;
-	// }
-	//
-	// gl.glBindTexture(GL.GL_TEXTURE_2D, this.texture);
-	//
-	// if (textureWidth == 0) {
-	// textureWidth = TextureCalculator.supportedTextureSize(gl, width);
-	// textureHeight = TextureCalculator.supportedTextureSize(gl, height);
-	// if (textureHeight != height || textureWidth != width) {
-	// adaptDataToTextureSize();
-	// }
-	// }
-	//
-	// this.data.rewind();
-	// texImage2D(gl);
-	//
-	// setTextureParameters(gl);
-	//
-	// return true;
-	// }
-
-	// private void generateVBOs(GL2 gl) {
-	// gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-	// if (elementBufferId == 0) {
-	// // two triangles
-	// byte[] elements = new byte[] {
-	// 0, 1, 3, 1, 3, 2
-	// };
-	// ByteBuffer buffer = ByteBuffer.wrap(elements);
-	//
-	// int[] elementBufferIds = new int[] {
-	// 0
-	// };
-	// gl.glGenBuffers(0, elementBufferIds, 0);
-	// elementBufferId = elementBufferIds[0];
-	//
-	// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, elementBufferId);
-	// gl.glBufferData(GL2.GL_ELEMENT_ARRAY_BUFFER, 6, buffer,
-	// GL.GL_STATIC_DRAW);
-	// }
-	//
-	// if (vertexBufferId != 0) {
-	// gl.glDeleteBuffers(1, new int[] {
-	// vertexBufferId
-	// }, 0);
-	// }
-	// int[] vertexBuffIds = new int[] {
-	// 0
-	// };
-	// gl.glGenBuffers(1, vertexBuffIds, 0);
-	// vertexBufferId = vertexBuffIds[0];
-	//
-	// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
-	// gl.glBufferData(GL.GL_ARRAY_BUFFER, 5 * 4 * Buffers.SIZEOF_FLOAT, null,
-	// GL.GL_DYNAMIC_DRAW);
-	// ByteBuffer buffer =
-	// gl.glMapBuffer(GL.GL_ARRAY_BUFFER, GL.GL_WRITE_ONLY);
-	// // FloatBuffer buffer = FloatBuffer.allocate(5 * 4);
-	// loadBuffer(buffer);
-	// gl.glUnmapBuffer(GL.GL_ARRAY_BUFFER);
-	//
-	// // buffer.rewind();
-	// // gl.glBufferData(GL.GL_ARRAY_BUFFER, 5 * 4 * Buffers.SIZEOF_FLOAT,
-	// // buffer, GL.GL_STATIC_DRAW);
-	// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-	// gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-	// }
-
-	// private void loadBuffer(ByteBuffer buffer) {
-	// int left = getOffsetX();
-	// int top = -getOffsetY();
-	// // bottom left
-	// buffer.putFloat(0);
-	// buffer.putFloat(0);
-	// buffer.putFloat(left);
-	// buffer.putFloat(top - this.height);
-	// buffer.putFloat(0);
-	// // top left
-	// buffer.putFloat((float) width / textureWidth);
-	// buffer.putFloat(0);
-	// buffer.putFloat(left + this.width);
-	// buffer.putFloat(top - this.height);
-	// buffer.putFloat(0);
-	// // top right
-	// buffer.putFloat((float) width / textureWidth);
-	// buffer.putFloat((float) height / textureHeight);
-	// buffer.putFloat(left + this.width);
-	// buffer.putFloat(top);
-	// buffer.putFloat(0);
-	// // bottom right
-	// buffer.putFloat(0);
-	// buffer.putFloat((float) height / textureHeight);
-	// buffer.putFloat(left);
-	// buffer.putFloat(top);
-	// buffer.putFloat(0);
-	// }
-
-	/**
 	 * Converts the current data to match the pwer of two size.
 	 */
 	protected void adaptDataToTextureSize() {
@@ -355,37 +222,9 @@ public class Image implements ImageDataPrivider {
 			gl.color(color);
 		}
 
-		gl.drawQuadWithTexture(getTextureIndex(gl), getGeometryIndex(gl));
-		// gl.glEnable(GL.GL_TEXTURE_2D);
-		// bind(gl);
-		//
-		// if (vertexBufferId == 0) {
-		// generateVBOs(gl);
-		// }
-		//
-		// gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		// gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-		//
-		// if (gl.isExtensionAvailable("GL_ARB_vertex_buffer_object")) {
-		// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexBufferId);
-		// gl.glTexCoordPointer(2, GL.GL_FLOAT, 5 * 4, 0);
-		// gl.glVertexPointer(3, GL.GL_FLOAT, 20, 8);
-		// } else {
-		// ByteBuffer buffer =
-		// ByteBuffer.allocateDirect(5 * 4 * Buffers.SIZEOF_FLOAT);
-		// loadBuffer(buffer);
-		// buffer.position(0);
-		// gl.glTexCoordPointer(2, GL.GL_FLOAT, 5 * 4, buffer);
-		// buffer.position(8);
-		// gl.glVertexPointer(3, GL.GL_FLOAT, 20, buffer);
-		// }
-
-		// gl.glDrawArrays(GL2.GL_QUADS, 0, 4);
-		// gl.glDisable(GL.GL_TEXTURE_2D);
-
-		// gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-		// gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-
+//		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl), 2);
+		
+		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometry());
 		return;
 	}
 
@@ -393,18 +232,6 @@ public class Image implements ImageDataPrivider {
 		int left = getOffsetX();
 		int top = -getOffsetY();
 		return new float[] {
-		        // bottom left
-		        left,
-		        top - this.height,
-		        0,
-		        0,
-		        0,
-		        // top left
-		        left + this.width,
-		        top - this.height,
-		        0,
-		        (float) width / textureWidth,
-		        0,
 		        // top right
 		        left + this.width,
 		        top,
@@ -417,6 +244,31 @@ public class Image implements ImageDataPrivider {
 		        0,
 		        0,
 		        (float) height / textureHeight,
+		        // top left
+		        left + this.width,
+		        top - this.height,
+		        0,
+		        (float) width / textureWidth,
+		        0,
+
+		        // top left
+		        left + this.width,
+		        top - this.height,
+		        0,
+		        (float) width / textureWidth,
+		        0,
+		        // bottom right
+		        left,
+		        top,
+		        0,
+		        0,
+		        (float) height / textureHeight,
+		        // bottom left
+		        left,
+		        top - this.height,
+		        0,
+		        0,
+		        0,
 		};
 	}
 	

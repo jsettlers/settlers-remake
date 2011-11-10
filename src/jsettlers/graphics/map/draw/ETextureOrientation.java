@@ -1,5 +1,7 @@
 package jsettlers.graphics.map.draw;
 
+import java.nio.ByteBuffer;
+
 /**
  * All texture types a texture can have.
  * 
@@ -88,7 +90,7 @@ public enum ETextureOrientation {
 	        DrawConstants.TEXTUREUNIT_Y
 	});
 
-	private static final int CONTINOUS_SIZE = 128;
+	static final int CONTINOUS_SIZE = 128;
 
 	private final boolean continous;
 	private final float[] relativecoords;
@@ -98,58 +100,11 @@ public enum ETextureOrientation {
 		this.relativecoords = relativecoords;
 	}
 
-	/**
-	 * Adds the coordinates of this texture direction to an array.
-	 * 
-	 * @param array
-	 *            The array to add the coordinates to.
-	 * @param offset
-	 *            The offset in the array.
-	 * @param stride
-	 *            The stride. Subseqent edges are placed after this distance.
-	 * @param x
-	 *            The x coordinate of the top (if two, left) triangle point
-	 * @param y
-	 *            The y coordinate of the top (if two, left) triangle point
-	 * @param dx
-	 *            The texture offset to add in x direction to the uv coordinate
-	 * @param dy
-	 *            The texture offset to add in y direction to the uv coordinate
-	 * @param texturesize
-	 *            The size of the texture.
-	 */
-	public void addCoordsTo(float[] array, int offset, int stride, int x,
-	        int y, int dx, int dy, int texturesize) {
-		int adddx = 0;
-		int adddy = 0;
-		if (continous) {
-			adddx =
-			        x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X
-			                / 2;
-			adddy = y * DrawConstants.DISTANCE_Y;
-			adddx = realModulo(adddx, CONTINOUS_SIZE);
-			adddy = realModulo(adddy, CONTINOUS_SIZE);
-		}
-		adddx += dx;
-		adddy += dy;
+	public boolean isContinous() {
+	    return continous;
+    }
 
-		array[offset] = (relativecoords[0] + adddx) / (float) texturesize;
-		array[offset + 1] = (relativecoords[1] + adddy) / (float) texturesize;
-		array[offset + stride] =
-		        (relativecoords[2] + adddx) / (float) texturesize;
-		array[offset + stride + 1] =
-		        (relativecoords[3] + adddy) / (float) texturesize;
-		array[offset + 2 * stride] =
-		        (relativecoords[4] + adddx) / (float) texturesize;
-		array[offset + 2 * stride + 1] =
-		        (relativecoords[5] + adddy) / (float) texturesize;
-	}
-
-	private int realModulo(int number, int modulo) {
-		if (number >= 0) {
-			return number % modulo;
-		} else {
-			return number % modulo + modulo;
-		}
-	}
+	public float[] getRelativecoords() {
+	    return relativecoords;
+    }
 }
