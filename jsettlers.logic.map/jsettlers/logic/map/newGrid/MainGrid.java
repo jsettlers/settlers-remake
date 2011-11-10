@@ -37,7 +37,7 @@ import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.spawn.Barrack;
+import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.blocked.BlockedGrid;
@@ -297,7 +297,7 @@ public class MainGrid {
 
 		@Override
 		public float getCost(short sx, short sy, short tx, short ty) {
-			return Constants.TILE_PATHFINDER_COST * (blockedGrid.isProtected(sx, sy) ? 2.5f : 1);
+			return Constants.TILE_PATHFINDER_COST * (blockedGrid.isProtected(sx, sy) ? 3.5f : 1);
 		}
 
 		@Override
@@ -926,8 +926,8 @@ public class MainGrid {
 		}
 
 		@Override
-		public void requestSoilderable(ISPosition2D position, Barrack barrack) {
-			partitionsGrid.requestSoilderable(position, barrack);
+		public void requestSoilderable(Barrack barrack) {
+			partitionsGrid.requestSoilderable(barrack);
 		}
 
 		private class RequestStackGrid implements IRequestsStackGrid, Serializable {
@@ -949,7 +949,7 @@ public class MainGrid {
 			}
 
 			@Override
-			public int getStackSize(ISPosition2D position, EMaterialType materialType) {
+			public byte getStackSize(ISPosition2D position, EMaterialType materialType) {
 				return mapObjectsManager.getStackSize(position, materialType);
 			}
 		}

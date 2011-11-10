@@ -12,7 +12,7 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.spawn.Barrack;
+import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
@@ -90,8 +90,8 @@ public class PartitionManager implements INetworkTimerable {
 		workerRequests.offer(new WorkerRequest(workerType, workerBuilding));
 	}
 
-	public void requestSoilderable(ISPosition2D weaponPosition, Barrack barrack) {
-		soilderCreationRequests.offer(new SoilderCreationRequest(weaponPosition, barrack));
+	public void requestSoilderable(Barrack barrack) {
+		soilderCreationRequests.offer(new SoilderCreationRequest(barrack));
 	}
 
 	public IManageableBearer removeJobless(ISPosition2D position) {
@@ -269,9 +269,9 @@ public class PartitionManager implements INetworkTimerable {
 	private void handleSoldierCreationRequest() {
 		SoilderCreationRequest soilderRequest = soilderCreationRequests.poll();
 		if (soilderRequest != null) {
-			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(soilderRequest.position);
+			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(soilderRequest.getPos());
 			if (manageableBearer != null) {
-				manageableBearer.becomeSoilder(soilderRequest.getWeaponPosition(), soilderRequest.getBarrack());
+				manageableBearer.becomeSoldier(soilderRequest.getBarrack());
 			} else {
 				soilderCreationRequests.addLast(soilderRequest);
 			}
@@ -451,26 +451,20 @@ public class PartitionManager implements INetworkTimerable {
 	}
 
 	private class SoilderCreationRequest implements ILocatable {
-		private final ISPosition2D position;
 		private final Barrack barrack;
 
-		public SoilderCreationRequest(ISPosition2D position, Barrack barrack) {
-			this.position = position;
+		public SoilderCreationRequest(Barrack barrack) {
 			this.barrack = barrack;
-		}
-
-		public ISPosition2D getWeaponPosition() {
-			return this.position;
 		}
 
 		@Override
 		public String toString() {
-			return "SoilderCreationRequest[" + position + "]";
+			return "SoilderCreationRequest[" + barrack + "|" + barrack.getDoor() + "]";
 		}
 
 		@Override
 		public ISPosition2D getPos() {
-			return position;
+			return barrack.getDoor();
 		}
 
 		public Barrack getBarrack() {

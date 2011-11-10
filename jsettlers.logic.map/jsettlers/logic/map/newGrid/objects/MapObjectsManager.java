@@ -280,7 +280,7 @@ public class MapObjectsManager implements ITimerable {
 		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
 	}
 
-	public int getStackSize(ISPosition2D position, EMaterialType materialType) {
+	public byte getStackSize(ISPosition2D position, EMaterialType materialType) {
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
 		if (stackObject == null) {
 			return 0;

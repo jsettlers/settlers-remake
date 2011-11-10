@@ -8,9 +8,9 @@ CR-003 [ ]                  --       check if there are holes in the protected f
 CR-004 [x]  rev 679   ae    --       trees should be adult at the beginning
 CR-005 [ ]                  --       weaponsmith leaves the grid!
 CR-006 [x]  rev 681   ae    --       constants responsible for movement of movables need to be corrected
-CR-007 [ ]                  --       if a digger can't reach the target, reoffer the request and make it possible for the others to do the complete work
-CR-008 [ ]                  --       
-CR-009 [ ]                  --       
+CR-007 [x]  rev 689   ae    --       if a digger can't reach the target, reoffer the request and make it possible for the others to do the complete work
+CR-008 [ ]                  --       corn farm has no construction poles.
+CR-009 [ ]                  --       barrack does not request new weapons
 CR-010 [ ]                  --       
 
 

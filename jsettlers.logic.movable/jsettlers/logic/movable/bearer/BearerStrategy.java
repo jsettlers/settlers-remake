@@ -4,13 +4,12 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.buildings.spawn.Barrack;
+import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
-import jsettlers.logic.movable.soldiers.BecomeSoldierStrategy;
 
 public class BearerStrategy extends PathableStrategy implements IManageableBearer {
 	private EBearerState state = EBearerState.JOBLESS;
@@ -18,6 +17,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	private ISPosition2D request;
 	private EMaterialType materialType;
 	private EMovableType movableType;
+	private Barrack barrack;
 
 	public BearerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -48,9 +48,23 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
 			super.setMaterial(materialType);
 			break;
+
 		case CARRY_DROP:
 			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 			break;
+
+		case SOLDIER_CONVERT:
+			EMovableType movableType = barrack.popWeaponForBearer();
+			if (movableType == null) { // weapon got missing, make us a bearer again
+				this.state = EBearerState.JOBLESS;
+				this.barrack = null;
+				super.getGrid().addJobless(this);
+			} else {
+				super.convertTo(movableType);
+			}
+			super.setAction(EAction.NO_ACTION, -1);
+			break;
+
 		default:
 			super.setAction(EAction.NO_ACTION, -1); // can happen if bearer leaves protected position
 		}
@@ -68,6 +82,11 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			case CONVERT_INIT:
 				this.state = EBearerState.CONVERT_TAKE;
 				super.calculatePathTo(offer);
+				return true;
+
+			case SOLDIER_INIT:
+				this.state = EBearerState.SOLDIER_CONVERT;
+				super.calculatePathTo(barrack.getDoor());
 				return true;
 
 			default:
@@ -125,6 +144,9 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		CONVERT_INIT,
 		CONVERT_TAKE,
 
+		SOLDIER_INIT,
+		SOLDIER_CONVERT,
+
 	}
 
 	@Override
@@ -151,8 +173,9 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	@Override
-	public void becomeSoilder(ISPosition2D weaponPosition, Barrack barrack) {
-		this.movable.setStrategy(new BecomeSoldierStrategy(getGrid(), movable, weaponPosition, barrack));
+	public void becomeSoldier(Barrack barrack) {
+		this.barrack = barrack;
+		this.state = EBearerState.SOLDIER_INIT;
 	}
 
 	@Override

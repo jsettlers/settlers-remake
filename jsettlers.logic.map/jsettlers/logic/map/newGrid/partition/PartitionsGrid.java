@@ -11,7 +11,7 @@ import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.spawn.Barrack;
+import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
@@ -271,8 +271,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		return grid.isBlocked(x, y);
 	}
 
-	public void requestSoilderable(ISPosition2D position, Barrack barrack) {
-		getPartitionObject(position).requestSoilderable(position, barrack);
+	public void requestSoilderable(Barrack barrack) {
+		getPartitionObject(barrack.getDoor()).requestSoilderable(barrack);
 	}
 
 }

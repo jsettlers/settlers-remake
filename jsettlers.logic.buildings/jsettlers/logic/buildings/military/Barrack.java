@@ -1,8 +1,9 @@
-package jsettlers.logic.buildings.spawn;
+package jsettlers.logic.buildings.military;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.buildings.Building;
@@ -18,9 +19,7 @@ public class Barrack extends Building {
 
 	private boolean stoppedWorking = false;
 
-	private int requestedSwordmen = 0;
-	private int requestedBowmen = 0;
-	private int requestedPikemen = 0;
+	private int requestedBearer = 0;
 
 	public Barrack(byte player) {
 		super(EBuildingType.BARRACK, player);
@@ -44,24 +43,18 @@ public class Barrack extends Building {
 	@Override
 	protected void subTimerEvent() {
 		if (!stoppedWorking) {
+			int availableWeapons = 0;
+
 			for (RequestStack stack : super.stacks) {
-				int stacksize = stack.getStackSize();
-				if (stack.getMaterialType() == EMaterialType.BOW) {
-					while (requestedBowmen < stacksize) {
-						grid.requestSoilderable(stack.getPosition(), this);
-						requestedBowmen++;
-					}
-				} else if (stack.getMaterialType() == EMaterialType.SWORD) {
-					while (requestedSwordmen < stacksize) {
-						grid.requestSoilderable(stack.getPosition(), this);
-						requestedSwordmen++;
-					}
-				} else if (stack.getMaterialType() == EMaterialType.SPEAR) {
-					while (requestedPikemen < stacksize) {
-						grid.requestSoilderable(stack.getPosition(), this);
-						requestedPikemen++;
-					}
+				if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
+						|| stack.getMaterialType() == EMaterialType.SPEAR) {
+					availableWeapons += stack.getStackSize();
 				}
+			}
+
+			while (requestedBearer < availableWeapons) {
+				grid.requestSoilderable(this);
+				requestedBearer++;
 			}
 		}
 	}
@@ -77,21 +70,6 @@ public class Barrack extends Building {
 	}
 
 	/**
-	 * Called when a material was taken.
-	 * 
-	 * @param took
-	 */
-	public void requestFullfilled(EMaterialType took) {
-		if (took == EMaterialType.BOW) {
-			requestedBowmen--;
-		} else if (took == EMaterialType.SWORD) {
-			requestedSwordmen--;
-		} else if (took == EMaterialType.SPEAR) {
-			requestedPikemen--;
-		}
-	}
-
-	/**
 	 * Gets the flag position.
 	 * 
 	 * @return The point in map space.
@@ -101,17 +79,34 @@ public class Barrack extends Building {
 		return calculateRealPoint(flag.getDx(), flag.getDy());
 	}
 
-	/**
-	 * Called by a bearer that aborted to become a soilder.
-	 * 
-	 * @param weaponPosition
-	 */
-	public void abortedForPosition(ISPosition2D weaponPosition) {
+	public EMovableType popWeaponForBearer() {
 		for (RequestStack stack : super.stacks) {
-			if (stack.getPosition() == weaponPosition) {
-				requestFullfilled(stack.getMaterialType());
+			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
+					|| stack.getMaterialType() == EMaterialType.SPEAR) {
+				stack.pop();
+				requestedBearer--;
+				return getSoldierType(stack.getMaterialType());
 			}
+		}
+
+		return null;
+	}
+
+	private EMovableType getSoldierType(EMaterialType materialType) {
+		switch (materialType) {
+		case SWORD:
+			return EMovableType.SWORDSMAN_L1;
+		case BOW:
+			return EMovableType.BOWMAN_L1;
+		case SPEAR:
+			return EMovableType.PIKEMAN_L1;
+		default:
+			return null;
 		}
 	}
 
+	@Override
+	public ISPosition2D getDoor() {
+		return super.getDoor();
+	}
 }

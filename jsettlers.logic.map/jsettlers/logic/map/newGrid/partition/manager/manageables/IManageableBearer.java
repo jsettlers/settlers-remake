@@ -4,7 +4,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.buildings.spawn.Barrack;
+import jsettlers.logic.buildings.military.Barrack;
 
 public interface IManageableBearer extends IManageable, ILocatable {
 
@@ -14,6 +14,6 @@ public interface IManageableBearer extends IManageable, ILocatable {
 
 	void becomeWorker(EMovableType movableType, ISPosition2D offer);
 
-	void becomeSoilder(ISPosition2D weaponPosition, Barrack barrack);
+	void becomeSoldier(Barrack barrack);
 
 }
