@@ -84,8 +84,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener, GOEv
 		}
 
 		public void fireKey(String key) {
-			// TODO Auto-generated method stub
-
+			startKeyEvent(key);
+			endKeyEvent(key);
 		}
 
 	}
