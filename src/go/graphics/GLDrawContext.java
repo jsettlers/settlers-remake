@@ -3,6 +3,8 @@ package go.graphics;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /**
@@ -85,10 +87,10 @@ public interface GLDrawContext {
 	void drawQuadWithTexture(int textureid, int geometryindex);
 	
 	void drawTrianglesWithTexture(int textureid, float[] geometry);
-	void drawTrianglesWithTexture(int textureid, int geometryindex);
+	void drawTrianglesWithTexture(int textureid, int geometryindex, int triangleCount);
 	
 	void drawTrianglesWithTextureColored(int textureid, float[] geometry);
-	void drawTrianglesWithTextureColored(int textureid, int geometryindex);
+	void drawTrianglesWithTextureColored(int textureid, int geometryindex, int triangleCount);
 
 	int makeWidthValid(int width);
 
@@ -113,4 +115,15 @@ public interface GLDrawContext {
 	int storeGeometry(float[] geometry);
 	boolean isGeometryValid(int geometryindex);
 	void removeGeometry(int geometryindex);
+	
+	GLBuffer startWriteGeometry(int geometryindex);
+	void endWriteGeometry(int geometryindex);
+
+	int generateGeometry(int bytes);
+	
+	interface GLBuffer {
+		void putFloat(float f);
+		void putByte(byte b);
+		void position(int position);
+	}
 }
