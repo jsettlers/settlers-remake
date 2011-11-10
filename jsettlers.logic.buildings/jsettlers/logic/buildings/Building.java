@@ -26,13 +26,14 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
+import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.stack.LimittedRequestStack;
 import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
 
-public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable {
+public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable {
 	private static final long serialVersionUID = 4379555028512391595L;
 
 	private final byte player;
@@ -486,6 +487,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		MapCircle baseCircle = new MapCircle(center, radius);
 		MapCircleBorder border = new MapCircleBorder(baseCircle);
 		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());
+	}
+
+	@Override
+	public void debug() {
+		System.out.println("debug");
 	}
 
 }

@@ -27,10 +27,16 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	@Override
-	public boolean noActionEvent() {
+	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
 			if (buildingArea != null) {
-				tryToDigg();
+				ISPosition2D pos = getDiggablePosition();
+				if (pos != null) {
+					super.calculatePathTo(pos);
+				} else {
+					buildingArea = null;
+					super.getGrid().addJobless(this);
+				}
 				return true;
 			} else {
 				return false;
@@ -101,12 +107,12 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 		} else if (buildingArea != null) {
 			ISPosition2D diggablePos = getDiggablePosition();
 			if (diggablePos != null) {
-				wentThere = false;
+				this.wentThere = false;
 				super.getGrid().setMarked(diggablePos, true);
 				super.calculatePathTo(diggablePos);
 			} else {
 				super.setAction(EAction.NO_ACTION, -1);
-				buildingArea = null;
+				this.buildingArea = null;
 				super.getGrid().addJobless(this);
 			}
 		}
@@ -121,7 +127,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	public void setDiggerJob(FreeMapArea buildingArea, byte targetHeight) {
 		this.buildingArea = buildingArea;
 		this.targetHeight = targetHeight;
-		wentThere = false;
+		this.wentThere = false;
 	}
 
 	@Override

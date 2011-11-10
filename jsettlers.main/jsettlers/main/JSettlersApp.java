@@ -89,6 +89,21 @@ public abstract class JSettlersApp implements Runnable {
 
 		MainGrid grid;
 
+		grid = createMainGrid();
+
+		progress.setProgressState(EProgressState.LOADING_IMAGES);
+		for (int i : PRELOAD_FILES) {
+			provider.waitForPreload(i);
+		}
+
+		MapInterfaceConnector connector = content.showHexMap(grid.getGraphicsGrid(), null);
+		new GuiInterface(connector, manager, grid.getGuiInputGrid());
+
+		manager.startGameTimer();
+	}
+
+	private MainGrid createMainGrid() {
+		MainGrid grid;
 		if (randomMap != null && !randomMap.isEmpty()) {
 			grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
 		} else {
@@ -111,16 +126,7 @@ public abstract class JSettlersApp implements Runnable {
 				}
 			}
 		}
-
-		progress.setProgressState(EProgressState.LOADING_IMAGES);
-		for (int i : PRELOAD_FILES) {
-			provider.waitForPreload(i);
-		}
-
-		MapInterfaceConnector connector = content.showHexMap(grid.getGraphicsGrid(), null);
-		new GuiInterface(connector, manager, grid.getGuiInputGrid());
-
-		manager.startGameTimer();
+		return grid;
 	}
 
 	protected abstract void startGui(JOGLPanel content);
