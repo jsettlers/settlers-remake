@@ -76,6 +76,7 @@ public class GuiInterface implements IMapInterfaceListener {
 			EBuildingType buildingType = ((BuildAction) action).getBuilding();
 			System.err.println("build: " + buildingType);
 			this.previewBuilding = buildingType; // FIXME implement a way to give graphics grid the preview building
+			connector.setPreviewBuildingType(buildingType);
 			grid.setBuildingType(buildingType);
 			setActiveAction(action);
 			break;
@@ -253,10 +254,12 @@ public class GuiInterface implements IMapInterfaceListener {
 			switch (activeAction.getActionType()) {
 			case BUILD:
 				EBuildingType type = previewBuilding;
-				if (grid.canConstructAt(pos, type)) {
+				ISPosition2D pos2 = grid.getConstructablePositionAround(pos, type);
+				if (pos2 != null) {
 					previewBuilding = null;
 					grid.setBuildingType(null);
-					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos, type));
+					connector.setPreviewBuildingType(null);
+					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos2, type));
 					break;
 				} else {
 					return; // prevent resetting the current action

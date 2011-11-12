@@ -319,7 +319,7 @@ public class MainGrid {
 		public boolean isInBounds(short x, short y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
-
+		
 		@Override
 		public boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculable) {
 			switch (searchType) {
@@ -1012,8 +1012,18 @@ public class MainGrid {
 		}
 
 		@Override
-		public boolean canConstructAt(ISPosition2D pos, EBuildingType type) {
-			return constructionMarksGrid.canConstructAt(pos.getX(), pos.getY(), type, partitionsGrid.getPlayerAt(pos));
+		public ISPosition2D getConstructablePositionAround(ISPosition2D pos, EBuildingType type) {
+			byte player = partitionsGrid.getPlayerAt(pos);
+			if (constructionMarksGrid.canConstructAt(pos.getX(), pos.getY(), type, player)) {
+				return pos;
+			} else {
+				for (ISPosition2D neighbour : new MapNeighboursArea(pos)) {
+					if (constructionMarksGrid.canConstructAt(neighbour.getX(), neighbour.getY(), type, player)) {
+						return neighbour;
+					}
+				}
+				return null;
+			}
 		}
 	}
 
