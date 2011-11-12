@@ -15,4 +15,16 @@ public class Color extends go.graphics.Color {
 	public Color(int i) {
 		super(i);
 	}
+
+	public Color multiply(float f) {
+		float alpha = getAlpha();
+		if (f == 1 && alpha == 1) {
+			return this;
+		} else if (f == 0 && alpha == 1) {
+			return Color.BLACK;
+		} else {
+		return new Color(Math.min(getRed() * f, 1), Math.min(getGreen() * f, 1), Math.min(
+		        getBlue() * f, 1), alpha);
+		}
+	}
 }
