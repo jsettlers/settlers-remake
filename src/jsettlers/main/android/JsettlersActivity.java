@@ -47,16 +47,25 @@ public class JsettlersActivity extends Activity {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files = new File[] { getExternalFilesDir(null), storage, jsettlersdir, new File(jsettlersdir, "GFX"), michael,
-				new File(michael, "GFX") };
+		File[] files =
+		        new File[] {
+		                getExternalFilesDir(null),
+		                storage,
+		                jsettlersdir,
+		                new File(jsettlersdir, "GFX"),
+		                michael,
+		                new File(michael, "GFX")
+		        };
 
 		ResourceManager.setProvider(new ResourceProvider(files));
 		SettlersGame game = new SettlersGame();
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		super.getWindow().addFlags(
+		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		for (File file : files) {
 			game.addImagePath(file);
@@ -94,7 +103,8 @@ public class JsettlersActivity extends Activity {
 		if (area != null) {
 			ImageProvider.getInstance().invalidateAll();
 			glView = new GOSurfaceView(JsettlersActivity.this, area);
-			glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+			glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS
+			        | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 			setContentView(glView);
 		}
 	}
@@ -108,13 +118,17 @@ public class JsettlersActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		// glView.onPause();
+		if (glView != null) {
+			glView.onPause();
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// glView.onPause();
+		if (glView != null) {
+			glView.onPause();
+		}
 	}
 
 	@Override
@@ -128,11 +142,11 @@ public class JsettlersActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.f12btn:
-			glView.fireKey("F12");
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.f12btn:
+				glView.fireKey("F12");
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 }
