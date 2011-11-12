@@ -40,9 +40,4 @@ public class Color {
 		        | ((int) (green * 255) & 0xff) << 8
 		        | ((int) (blue * 255) & 0xff);
 	}
-
-	public Color multiply(float f) {
-		return new Color(Math.min(red * f, 1), Math.min(green * f, 1), Math.min(
-		        blue * f, 1), alpha);
-	}
 }
