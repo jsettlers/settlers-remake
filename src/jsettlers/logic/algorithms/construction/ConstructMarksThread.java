@@ -69,29 +69,31 @@ public class ConstructMarksThread extends Thread {
 	}
 
 	private void calculateConstructMarks() {
-		IMapArea localMapArea = this.mapArea;
-		if (buildingType == null || localMapArea == null) {
+		IMapArea currMapArea = this.mapArea; // local variables needed to prevent errors caused by synchronization
+		EBuildingType currBuildingType = this.buildingType;
+
+		if (currBuildingType == null || currMapArea == null) {
 			return;
 		}
 
-		RelativePoint[] usedPositions = buildingType.getProtectedTiles();
+		RelativePoint[] usedPositions = currBuildingType.getProtectedTiles();
 
 		if (lastArea != null) {
-			removeConstructionMarks(lastArea, localMapArea);
+			removeConstructionMarks(lastArea, currMapArea);
 		}
-		for (ISPosition2D pos : localMapArea) {
+		for (ISPosition2D pos : currMapArea) {
 			short x = pos.getX();
 			short y = pos.getY();
 
 			byte value;
-			if (map.canConstructAt(x, y, buildingType, player)) {
+			if (map.canConstructAt(x, y, currBuildingType, player)) {
 				value = calculateConstrMarkVal(x, y, usedPositions);
 			} else {
 				value = -1;
 			}
 			map.setConstructMarking(pos, value);
 		}
-		lastArea = localMapArea;
+		lastArea = currMapArea;
 	}
 
 	/**
