@@ -1,7 +1,7 @@
 package jsettlers.graphics.map.draw;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
+import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
@@ -13,7 +13,6 @@ import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.sequence.Sequence;
