@@ -1,5 +1,6 @@
 package jsettlers.graphics.map.controls.original.panel;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.map.controls.original.IOriginalConstants;
 import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
@@ -58,6 +59,10 @@ public class MainPanel extends UIPanel {
 
 	private IOriginalConstants constants;
 
+	private EContentType activeContent;
+
+	private EBuildingType activeBuilding;
+
 	public MainPanel() {
 		useConstants(new SmallOriginalConstants());
 		setContent(EContentType.BUILD_NORMAL);
@@ -101,6 +106,9 @@ public class MainPanel extends UIPanel {
 
 		contentContainer.removeAll();
 		contentContainer.addChild(type.getPanel(), 0, 0, 1, 1);
+		activeContent = type;
+		
+		activeContent.getContextListener().displayBuildingBuild(activeBuilding);
 	}
 
 	private void setButtonsActive(TabButton[] buttons, EContentType type) {
@@ -150,4 +158,9 @@ public class MainPanel extends UIPanel {
 		        constants.CONTENT_BOTTOM, constants.CONTENT_RIGHT,
 		        constants.CONTENT_TOP);
 	}
+
+	public void displayBuildingBuild(EBuildingType type) {
+	    activeBuilding = type;
+	    activeContent.getContextListener().displayBuildingBuild(type);
+    }
 }

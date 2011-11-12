@@ -1,5 +1,6 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -43,6 +44,13 @@ public enum EContentType {
 		} else {
 			return factory.getPanel();
 		}
+	}
+	
+	public IContextListener getContextListener() {
+		if (factory != null) {
+			return factory.getContextListener();
+		}
+		return null;
 	}
 
 	public ESecondaryTabType getTabs() {

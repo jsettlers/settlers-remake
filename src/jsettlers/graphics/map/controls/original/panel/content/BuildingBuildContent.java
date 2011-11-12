@@ -1,9 +1,12 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import java.util.ArrayList;
+
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
-public class BuildingBuildContent implements ContentFactory {
+public class BuildingBuildContent implements ContentFactory, IContextListener {
 	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
 	        EBuildingType.LUMBERJACK,
 	        EBuildingType.SAWMILL,
@@ -49,6 +52,8 @@ public class BuildingBuildContent implements ContentFactory {
 	private static final int COLUMNS = 2;
 
 	private final UIPanel panel;
+	
+	private final ArrayList<BuildingButton> buttons = new ArrayList<BuildingButton>();
 
 	private BuildingBuildContent(EBuildingType[] buildings) {
 		panel = new UIPanel();
@@ -62,6 +67,17 @@ public class BuildingBuildContent implements ContentFactory {
 			int col = i % COLUMNS;
 			panel.addChild(button, col * colWidth, 1 - (row + 1) * rowHeight,
 			        (col + 1) * colWidth, 1 - row * rowHeight);
+			buttons.add(button);
+		}
+	}
+	
+	/**
+	 * Sets the active building the user wants to build.
+	 * @param type The type. May be <code>null</code>
+	 */
+	private void setActiveBuilding(EBuildingType type) {
+		for (BuildingButton button : buttons) {
+			button.setActive(button.getBuildingType() == type);
 		}
 	}
 
@@ -85,4 +101,14 @@ public class BuildingBuildContent implements ContentFactory {
 	public static BuildingBuildContent getSocial() {
 		return new BuildingBuildContent(socialBuildings);
 	}
+
+	@Override
+    public IContextListener getContextListener() {
+	    return this;
+    }
+
+	@Override
+    public void displayBuildingBuild(EBuildingType type) {
+	    setActiveBuilding(type);
+    }
 }

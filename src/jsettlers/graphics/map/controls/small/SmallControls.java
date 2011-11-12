@@ -3,6 +3,7 @@ package jsettlers.graphics.map.controls.small;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -128,5 +129,11 @@ public class SmallControls implements IControls {
 			return false;
 		}
 	}
+
+	@Override
+    public void displayBuildingBuild(EBuildingType type) {
+	    // TODO Auto-generated method stub
+	    
+    }
 
 }

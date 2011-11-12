@@ -22,10 +22,16 @@ public class BuildingButton extends Button {
 
 	private final static ImageLink activeMark = new ImageLink(
 	        EImageLinkType.GUI, 3, 123, 0);
+	
+	public static int ITEM_WIDTH = 60;
+	public static int ITEM_HEIGHT = 36;
+
+	private final EBuildingType buildingType;
 
 	public BuildingButton(EBuildingType buildingType) {
 		super(new BuildAction(buildingType), null, null, Labels
 		        .getName(buildingType));
+		this.buildingType = buildingType;
 		buildingImage = buildingType.getGuiImage();
 	}
 
@@ -49,9 +55,14 @@ public class BuildingButton extends Button {
 		Image image =
 		        getDetailedImage(buildingImage, position.getWidth(),
 		                position.getHeight());
-
-		image.drawImageAtRect(gl, getPosition().getMinX(),
-                getPosition().getMinY(), getPosition().getMaxX(),
-                getPosition().getMaxY());
+		
+		float width = (float) image.getWidth() / ITEM_WIDTH * getPosition().getWidth();
+		float height = (float) image.getHeight() / ITEM_HEIGHT * getPosition().getHeight();
+		
+		image.drawCentered(gl, getPosition().getCenterX(), getPosition().getCenterY(), width, height);
 	}
+	
+	public EBuildingType getBuildingType() {
+	    return buildingType;
+    }
 }

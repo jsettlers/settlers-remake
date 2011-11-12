@@ -18,6 +18,7 @@ import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
@@ -577,5 +578,9 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			controls.setMapViewport(screenAction.getScreenArea());
 		}
 	}
+
+	public void setPreviewBuildingType(EBuildingType buildingType) {
+	    controls.displayBuildingBuild(buildingType);
+    }
 
 }

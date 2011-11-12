@@ -291,4 +291,33 @@ public class Image implements ImageDataPrivider {
 		return (float) height / textureHeight;
 	}
 
+	public void drawCentered(GLDrawContext gl, int centerX, int centerY,
+            float width2, float height2) {
+		float[] coords =
+		        new float[] {
+		                centerX - width2 / 2,
+		                centerY - height2 / 2,
+		                0,
+		                0,
+		                0,
+		                centerX - width2 / 2,
+		                centerY + height2 / 2,
+		                0,
+		                0,
+		                (float) height / textureHeight,
+		                centerX + width2 / 2,
+		                centerY + height2 / 2,
+		                0,
+		                (float) width / textureWidth,
+		                (float) height / textureHeight,
+		                centerX + width2 / 2,
+		                centerY - height2 / 2,
+		                0,
+		                (float) width / textureWidth,
+		                0,
+		        };
+		gl.color(1, 1, 1, 1);
+		gl.drawQuadWithTexture(getTextureIndex(gl), coords);
+    }
+
 }
