@@ -1,5 +1,7 @@
 package jsettlers.graphics.map;
 
+import java.util.Iterator;
+
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import jsettlers.common.Color;
@@ -10,6 +12,7 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.draw.FogOfWar;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
@@ -218,8 +221,8 @@ public class MapDrawContext {
 	 * @return The map position under the screen point.
 	 */
 	public ISPosition2D getPositionOnScreen(float x, float y) {
-		return getPositionUnder(x / zoom + this.screen.getLeft(),
-		        y / zoom + this.screen.getBottom());
+		return getPositionUnder(x / zoom + this.screen.getLeft(), y / zoom
+		        + this.screen.getBottom());
 	}
 
 	/**
@@ -335,8 +338,98 @@ public class MapDrawContext {
 		float drawx2 = x2 / zoom + this.screen.getLeft();
 		float drawy1 = y1 / zoom + this.screen.getBottom();
 		float drawy2 = y2 / zoom + this.screen.getBottom();
-		return this.converter.getMapForScreen(new FloatRectangle(drawx1,
-		        drawy1, drawx2, drawy2));
+		return new HeightedMapRectangle(new FloatRectangle(drawx1, drawy1,
+		        drawx2, drawy2));
+	}
+
+	private class HeightedMapRectangle implements IMapArea {
+		/**
+         * FIXME: This class is nor serializeable
+         */
+        private static final long serialVersionUID = 5868822981883722458L;
+		
+        /**
+		 * Helper rectangle.
+		 */
+		MapRectangle base;
+		private final FloatRectangle drawRect;
+
+		/**
+		 * Creates a new IMapArea that contains the points that are in the
+		 * rectangle on the screen.
+		 * 
+		 * @param drawRect
+		 *            The rectangle in draw space
+		 */
+		public HeightedMapRectangle(FloatRectangle drawRect) {
+			this.drawRect = drawRect;
+			base = converter.getMapForScreen(drawRect);
+		}
+
+		@Override
+		public boolean contains(ISPosition2D point) {
+			int height = getHeight(point.getX(), point.getY());
+			float x = converter.getViewX(point.getX(), point.getY(), height);
+			float y = converter.getViewY(point.getX(), point.getY(), height);
+			return drawRect.contains(x, y);
+		}
+
+		@Override
+		public Iterator<ISPosition2D> iterator() {
+			return new MyIterator();
+		}
+
+		private class MyIterator implements Iterator<ISPosition2D> {
+			/**
+			 * How many lines to search at least.
+			 */
+			private static final int MIN_SEARCH_LINES = 20;
+			private ShortPoint2D next;
+			private int currentLine = 0;
+			private int currentX;
+
+			private MyIterator() {
+				currentX = base.getLineStartX(0);
+				next = new ShortPoint2D(currentX, base.getLineY(0));
+				if (!contains(next)) {
+					next = searchNext();
+				}
+			}
+
+			private ShortPoint2D searchNext() {
+	            int startLine = currentLine;
+	            while (startLine >= currentLine - 2 || currentLine < MIN_SEARCH_LINES) {
+	            	currentX++;
+	            	if (currentX > base.getLineEndX(currentLine)) {
+	            		currentLine++;
+	            		currentX = base.getLineStartX(currentLine);
+	            	}
+	            	ShortPoint2D point = new ShortPoint2D(currentX, base.getLineY(currentLine));
+	            	if (contains(point)) {
+	            		return point;
+	            	}
+	            }
+	            return null;
+            }
+
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
+
+			@Override
+			public ISPosition2D next() {
+				ShortPoint2D ret = next;
+				next = searchNext();
+				return ret;
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		}
+
 	}
 
 	public MapRectangle getScreenArea() {
@@ -345,12 +438,8 @@ public class MapDrawContext {
 
 	public void scrollTo(ISPosition2D point) {
 		int height = getHeight(point.getX(), point.getY());
-		float x =
-		        converter.getViewX(point.getX(), point.getY(),
-		                height);
-		float y =
-		        converter.getViewY(point.getX(), point.getY(),
-		                height);
+		float x = converter.getViewX(point.getX(), point.getY(), height);
+		float y = converter.getViewY(point.getX(), point.getY(), height);
 		screen.setScreenCenter(x, y);
 	}
 

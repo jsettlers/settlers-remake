@@ -39,7 +39,6 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
-import jsettlers.graphics.map.controls.small.SmallControls;
 import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
@@ -503,14 +502,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 	}
 
 	private void handleDraw(GODrawEvent drawEvent) {
-		// Point start = drawEvent.getMousePosition();
-		// if (this.mapInterface.isOnSidebar(start)) {
-		// click on interface. TODO
-		// this.mapInterface.handleDraw(drawEvent);
-		// } else {
-		// handle map click
 		handleDrawOnMap(drawEvent);
-		// }
 	}
 
 	private void handleDrawOnMap(GODrawEvent drawEvent) {
