@@ -6,34 +6,14 @@ package jsettlers.common.position;
  * 
  * @author michael
  */
-public class IntRectangle {
-	private final int minx, miny, maxx, maxy;
+public class FloatRectangle {
+	private final float minx, miny, maxx, maxy;
 
-	public IntRectangle(int minx, int miny, int maxx, int maxy) {
+	public FloatRectangle(float minx, float miny, float maxx, float maxy) {
 		this.minx = minx;
 		this.miny = miny;
 		this.maxx = maxx;
 		this.maxy = maxy;
-	}
-
-	@Deprecated
-	public int getX1() {
-		return minx;
-	}
-
-	@Deprecated
-	public int getY1() {
-		return miny;
-	}
-
-	@Deprecated
-	public int getX2() {
-		return maxx;
-	}
-
-	@Deprecated
-	public int getY2() {
-		return maxy;
 	}
 
 	/**
@@ -41,7 +21,7 @@ public class IntRectangle {
 	 * 
 	 * @return The x coordinate.
 	 */
-	public int getMinX() {
+	public float getMinX() {
 		return minx;
 	}
 
@@ -50,7 +30,7 @@ public class IntRectangle {
 	 * 
 	 * @return The y coordinate.
 	 */
-	public int getMinY() {
+	public float getMinY() {
 		return miny;
 	}
 
@@ -60,7 +40,7 @@ public class IntRectangle {
 	 * 
 	 * @return The x coordinate.
 	 */
-	public int getMaxX() {
+	public float getMaxX() {
 		return maxx;
 	}
 
@@ -70,7 +50,7 @@ public class IntRectangle {
 	 * 
 	 * @return The x coordinate.
 	 */
-	public int getMaxY() {
+	public float getMaxY() {
 		return maxy;
 	}
 
@@ -80,7 +60,7 @@ public class IntRectangle {
 	 * 
 	 * @return The width
 	 */
-	public int getWidth() {
+	public float getWidth() {
 		return maxx - minx;
 	}
 
@@ -90,7 +70,7 @@ public class IntRectangle {
 	 * 
 	 * @return The height
 	 */
-	public int getHeight() {
+	public float getHeight() {
 		return maxy - miny;
 	}
 
@@ -99,7 +79,7 @@ public class IntRectangle {
 	 * 
 	 * @return The center.
 	 */
-	public int getCenterX() {
+	public float getCenterX() {
 		return (minx + maxx) / 2;
 	}
 
@@ -108,7 +88,7 @@ public class IntRectangle {
 	 * 
 	 * @return The center.
 	 */
-	public int getCenterY() {
+	public float getCenterY() {
 		return (miny + maxy) / 2;
 	}
 
@@ -121,7 +101,7 @@ public class IntRectangle {
 	 *            The y coordinate to check
 	 * @return If the point is inside.
 	 */
-	public boolean contains(int x, int y) {
+	public boolean contains(float x, float y) {
 		return x >= minx && x < maxx && y >= miny && y < maxy;
 	}
 
@@ -135,32 +115,35 @@ public class IntRectangle {
 	 *            negative, the rectangle is made smaller.
 	 * @return The bigger rectangle.
 	 */
-	public IntRectangle bigger(int border) {
-		return new IntRectangle(minx - border, miny - border, maxx + border,
+	public FloatRectangle bigger(float border) {
+		return new FloatRectangle(minx - border, miny - border, maxx + border,
 		        maxy + border);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof IntRectangle) {
-			return equals((IntRectangle) obj);
+		if (obj instanceof FloatRectangle) {
+			return equals((FloatRectangle) obj);
 		} else {
 			return false;
 		}
 	}
 
-	private boolean equals(IntRectangle rect) {
+	private boolean equals(FloatRectangle rect) {
 		return rect.minx == minx && rect.miny == miny && rect.maxx == maxx
 		        && rect.maxy == maxy;
 	}
-	
+
 	@Override
 	public String toString() {
-	    return "rect[minx=" + minx + ",miny=" + miny +",maxx="+ maxx +",maxy="+ maxy + "]";
+		return "rect[minx=" + minx + ",miny=" + miny + ",maxx=" + maxx
+		        + ",maxy=" + maxy + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return minx * 104729 + miny * 4900099 + maxx * 135084239 + maxy;
+		return Float.floatToIntBits(minx) * 104729 + Float.floatToIntBits(miny)
+		        * 4900099 + Float.floatToIntBits(maxx) * 135084239
+		        + Float.floatToIntBits(maxy);
 	}
 }
