@@ -31,6 +31,8 @@ public class AbstractEventConverter {
 	private LinkedList<EventReplacementRule> replace =
 	        new LinkedList<AbstractEventConverter.EventReplacementRule>();
 
+	private ConvertedZoomEvent ongoingZoomEvent;
+
 	protected AbstractEventConverter(GOEventHandlerProvoder provider) {
 		this.provider = provider;
 	}
@@ -113,6 +115,28 @@ public class AbstractEventConverter {
 				ongoingPanEvent.released();
 				ongoingPanEvent = null;
 			}
+		}
+	}
+	
+	protected void startZoom() {
+		if (ongoingZoomEvent == null) {
+			ongoingZoomEvent = new ConvertedZoomEvent();
+			handleEvent(ongoingZoomEvent);
+			ongoingZoomEvent.initialized();
+		}
+	}
+	
+	protected void updateZoomFactor(float factor) {
+		if (ongoingZoomEvent != null) {
+			ongoingZoomEvent.setZoomFactor(factor);
+		}
+	}
+
+	protected void endZoomEvent(float factor) {
+		if (ongoingZoomEvent != null) {
+			ongoingZoomEvent.setZoomFactor(factor);
+			ongoingZoomEvent.released();
+			ongoingZoomEvent = null;
 		}
 	}
 

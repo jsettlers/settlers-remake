@@ -14,6 +14,7 @@ import go.graphics.event.mouse.GODrawEventProxy;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
 import go.graphics.event.mouse.GOPanEventProxy;
+import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.region.PositionedRegion;
 import go.graphics.region.Region;
 
@@ -374,6 +375,10 @@ public class Area implements RedrawListener {
 		} else if (event instanceof GOHoverEvent) {
 			handleHoverEvent((GOHoverEvent) event);
 		} else if (event instanceof GOKeyEvent) {
+			if (activeRegion != null) {
+				activeRegion.handleEvent(event);
+			}
+		} else if (event instanceof GOZoomEvent) {
 			if (activeRegion != null) {
 				activeRegion.handleEvent(event);
 			}
