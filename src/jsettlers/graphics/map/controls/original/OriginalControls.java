@@ -146,9 +146,8 @@ public class OriginalControls implements IControls {
 		                / (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
 		                / constants.MINIMAP_HEIGHT;
 		ISPosition2D clickPosition =
-		        minimap.getClickPosition(minimapx, minimapy);
-		if (minimap.getContext().checkMapCoordinates(clickPosition.getX(),
-		        clickPosition.getY())) {
+		        minimap.getClickPositionIfOnMap(minimapx, minimapy);
+		if (clickPosition != null) {
 			return new PanToAction(clickPosition);
 		} else {
 			return null;

@@ -179,6 +179,17 @@ public class Minimap {
 	public MapDrawContext getContext() {
 		return context;
 	}
+	
+	public ISPosition2D getClickPositionIfOnMap(float relativex, float relativey) {
+		int x = converter.getMapX(relativex, relativey);
+		int y = converter.getMapY(relativex, relativey);
+		
+		if (context.checkMapCoordinates(x, y)) {
+			return new ShortPoint2D(x, y);
+		} else {
+			return null;
+		}
+	}
 
 	public ISPosition2D getClickPosition(float relativex, float relativey) {
 		int x = converter.getMapX(relativex, relativey);
