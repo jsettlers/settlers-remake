@@ -39,7 +39,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 * java.lang.String)
 	 */
 	@Override
-	public void renderCentered(int cx, int cy, String text) {
+	public void renderCentered(float cx, float cy, String text) {
 		Rectangle2D textBounds = this.renderer.getBounds(text);
 		int halfWidth = (int) (textBounds.getWidth() / 2);
 		int halfHeight = (int) (textBounds.getHeight() / 2);
@@ -59,7 +59,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 * java.lang.String)
 	 */
 	@Override
-	public void drawString(int x, int y, String string) {
+	public void drawString(float x, float y, String string) {
 		this.renderer.begin3DRendering();
 		this.renderer.draw3D(string, x, y, 0, 1);
 		this.renderer.end3DRendering();

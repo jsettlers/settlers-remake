@@ -12,13 +12,15 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 /**
  * This class listens to swing events, converts them to a go events and sends them to handlers.
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener {
+public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -43,6 +45,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		component.addKeyListener(this);
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
+		component.addMouseWheelListener(this);
 
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
@@ -150,6 +153,18 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 				case KeyEvent.VK_F2:
 					text = "F2";
 					break;
+				case KeyEvent.VK_F3:
+					text = "F3";
+					break;
+				case KeyEvent.VK_F4:
+					text = "F4";
+					break;
+				case KeyEvent.VK_F5:
+					text = "F5";
+					break;
+				case KeyEvent.VK_F6:
+					text = "F6";
+					break;
 				case KeyEvent.VK_F11:
 					text = "F11";
 					break;
@@ -194,4 +209,11 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	@Override
 	public void keyTyped(KeyEvent e) {
 	}
+
+	@Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+	    float factor = (float) Math.exp(-e.getUnitsToScroll() / 20.0);
+	    startZoom();
+	    endZoomEvent(factor);
+    }
 }
