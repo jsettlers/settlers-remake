@@ -80,12 +80,12 @@
     <job name="hide" type="HIDE" successjob="A_wait" failjob="A_wait" />
 
     <!-- Wait for FISH -->
-    <job name="A_wait" type="WAIT" successjob="A_checkore" failjob="A_checkore" time="10" />
+    <job name="A_wait" type="WAIT" successjob="A_checkore" failjob="A_checkore" time="3" />
     <job name="A_checkore" type="NOT_FULL" successjob="A_checkfood" failjob="B_wait" dx="-1" dy="4" material="GOLDORE" />
     <job name="A_checkfood" type="AVAILABLE" successjob="mine_fish" failjob="B_wait" dx="2" dy="4" material="FISH" />
 
     <!-- Wait some more for FISH -->
-    <job name="B_wait" type="WAIT" successjob="B_checkore" failjob="B_checkore" time="10" />
+    <job name="B_wait" type="WAIT" successjob="B_checkore" failjob="B_checkore" time="7" />
     <job name="B_checkore" type="NOT_FULL" successjob="C_wait" failjob="C_wait" dx="-1" dy="4" material="GOLDORE" />
     <job name="B_checkfood" type="AVAILABLE" successjob="mine_fish" failjob="C_wait" dx="2" dy="4" material="FISH" />
 

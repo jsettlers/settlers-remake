@@ -49,6 +49,7 @@
 	<blocked dx="-3" dy="-2" block="true" />
 	<blocked dx="-3" dy="-3" block="true" />
 	<blocked dx="-1" dy="-5" block="true" />
+	<blocked dx="2" dy="0" block="false" />
 	<blocked dx="2" dy="3" block="false" />
 	<blocked dx="-3" dy="-4" block="false" />
 	<blocked dx="-3" dy="-5" block="false" />
@@ -97,6 +98,12 @@
 	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
 	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
 	<flag dx="0" dy="0" />
+	<buildmark dx="-3" dy="1" />
+	<buildmark dx="-1" dy="2" />
+	<buildmark dx="1" dy="1" />
+	<buildmark dx="2" dy="2" />
+	<buildmark dx="3" dy="-1" />
+	<buildmark dx="-2" dy="-6" />
 
 	<image file="14" for="GUI" type="GUI" sequence="24" image="0"/>
 

@@ -4,8 +4,7 @@
 	<ground groundtype="GRASS"/>
 	<ground groundtype="EARTH"/>
 	<ground groundtype="FLATTENED"/>
-	
-	<blocked dx="-1" dy="0" block="true" />
+		<blocked dx="-1" dy="0" block="true" />
 	<blocked dx="0" dy="1" block="true" />
 	<blocked dx="2" dy="2" block="true" />
 	<blocked dx="2" dy="1" block="true" />
@@ -18,7 +17,7 @@
 	<blocked dx="1" dy="1" block="true" />
 	<blocked dx="1" dy="0" block="true" />
 	<blocked dx="1" dy="2" block="true" />
-	<blocked dx="0" dy="0" block="false" />
+	<blocked dx="0" dy="0" block="true" />
 	<blocked dx="-1" dy="-3" block="false" />
 	<blocked dx="0" dy="-3" block="false" />
 	<blocked dx="1" dy="-2" block="false" />
@@ -55,6 +54,6 @@
 	<buildmark dx="-1" dy="0" />
 	<buildmark dx="-1" dy="-2" />
 	<buildmark dx="0" dy="-2" />
-	
+
 	<image file="14" type="GUI" for="GUI" image="0" sequence="54" />
 </building>

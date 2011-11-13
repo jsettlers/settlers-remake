@@ -2,6 +2,7 @@
 <building worker="MINER" workradius="0">
     <ground groundtype="MOUNTAIN" />
     <blocked dx="1" dy="3" block="true" />
+    <blocked dx="0" dy="-2" block="true" />
     <blocked dx="2" dy="3" block="true" />
     <blocked dx="1" dy="2" block="true" />
     <blocked dx="1" dy="1" block="true" />
@@ -80,12 +81,12 @@
     <job name="hide" type="HIDE" successjob="A_wait" failjob="A_wait" />
 
     <!-- Wait for MEAT -->
-    <job name="A_wait" type="WAIT" successjob="A_checkore" failjob="A_checkore" time="10" />
+    <job name="A_wait" type="WAIT" successjob="A_checkore" failjob="A_checkore" time="3" />
     <job name="A_checkore" type="NOT_FULL" successjob="A_checkfood" failjob="B_wait" dx="0" dy="4" material="IRONORE" />
     <job name="A_checkfood" type="AVAILABLE" successjob="mine_meat" failjob="B_wait" material="MEAT" dx="3" dy="2" />
 
     <!-- Wait some more for MEAT -->
-    <job name="B_wait" type="WAIT" successjob="B_checkore" failjob="B_checkore" time="10" />
+    <job name="B_wait" type="WAIT" successjob="B_checkore" failjob="B_checkore" time="7" />
     <job name="B_checkore" type="NOT_FULL" successjob="B_checkfood" failjob="C_wait" dx="0" dy="4" material="IRONORE" />
     <job name="B_checkfood" type="AVAILABLE" successjob="mine_meat" failjob="C_wait" material="MEAT" dx="3" dy="2" />
 

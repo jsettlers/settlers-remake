@@ -5,6 +5,7 @@
 	<ground groundtype="EARTH"/>
 	<ground groundtype="FLATTENED"/>
 
+    <blocked dx="0" dy="0" block="true" />
 	<blocked dx="1" dy="1" block="true" />
 	<blocked dx="1" dy="2" block="true" />
 	<blocked dx="0" dy="1" block="true" />

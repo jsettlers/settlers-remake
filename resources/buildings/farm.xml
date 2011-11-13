@@ -4,8 +4,8 @@
 	<ground groundtype="GRASS"/>
 	<ground groundtype="EARTH"/>
 	<ground groundtype="FLATTENED"/>
-	<blocked dx="-2" dy="3" block="true" />
-	<blocked dx="-3" dy="3" block="true" />
+	
+    <blocked dx="-2" dy="3" block="true" />
 	<blocked dx="-3" dy="2" block="true" />
 	<blocked dx="-3" dy="1" block="true" />
 	<blocked dx="-3" dy="0" block="true" />
@@ -18,7 +18,6 @@
 	<blocked dx="-4" dy="-4" block="true" />
 	<blocked dx="-2" dy="-4" block="true" />
 	<blocked dx="-1" dy="-3" block="true" />
-	<blocked dx="0" dy="-3" block="true" />
 	<blocked dx="1" dy="-1" block="true" />
 	<blocked dx="2" dy="-1" block="true" />
 	<blocked dx="3" dy="0" block="true" />
@@ -69,25 +68,71 @@
 	<blocked dx="-2" dy="0" block="true" />
 	<blocked dx="-2" dy="1" block="true" />
 	<blocked dx="-2" dy="2" block="true" />
-	<blocked dx="-4" dy="-1" block="true" />
 	<blocked dx="-2" dy="-3" block="true" />
 	<blocked dx="-3" dy="-4" block="true" />
+	<blocked dx="-4" dy="-5" block="true" />
 	<blocked dx="-3" dy="-5" block="true" />
+	<blocked dx="-3" dy="3" block="false" />
+	<blocked dx="-2" dy="4" block="false" />
+	<blocked dx="-1" dy="5" block="false" />
+	<blocked dx="-1" dy="4" block="false" />
+	<blocked dx="0" dy="6" block="false" />
+	<blocked dx="1" dy="6" block="false" />
+	<blocked dx="2" dy="6" block="false" />
+	<blocked dx="2" dy="5" block="false" />
+	<blocked dx="2" dy="4" block="false" />
+	<blocked dx="3" dy="5" block="false" />
+	<blocked dx="4" dy="6" block="false" />
+	<blocked dx="3" dy="6" block="false" />
+	<blocked dx="5" dy="7" block="false" />
+	<blocked dx="6" dy="8" block="false" />
+	<blocked dx="6" dy="7" block="false" />
+	<blocked dx="7" dy="8" block="false" />
+	<blocked dx="7" dy="7" block="false" />
+	<blocked dx="7" dy="6" block="false" />
+	<blocked dx="7" dy="5" block="false" />
+	<blocked dx="7" dy="4" block="false" />
+	<blocked dx="6" dy="2" block="false" />
+	<blocked dx="5" dy="0" block="false" />
+	<blocked dx="4" dy="-1" block="false" />
+	<blocked dx="3" dy="-2" block="false" />
+	<blocked dx="3" dy="-1" block="false" />
+	<blocked dx="2" dy="-2" block="false" />
+	<blocked dx="1" dy="-2" block="false" />
+	<blocked dx="0" dy="-3" block="false" />
+	<blocked dx="-1" dy="-4" block="false" />
+	<blocked dx="-2" dy="-5" block="false" />
+	<blocked dx="-3" dy="-6" block="false" />
+	<blocked dx="-4" dy="-6" block="false" />
+	<blocked dx="-5" dy="-6" block="false" />
+	<blocked dx="-5" dy="-5" block="false" />
+	<blocked dx="-5" dy="-4" block="false" />
+	<blocked dx="-5" dy="-3" block="false" />
+	<blocked dx="-5" dy="-1" block="false" />
+	<blocked dx="-5" dy="-2" block="false" />
+	<blocked dx="-4" dy="-1" block="false" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-4" dy="1" block="false" />
+	<blocked dx="0" dy="5" block="false" />
 	<door dx="-1" dy="4" />
-	
-	<!-- materials checked with original -->
+    <!-- materials checked with original -->
 	<stack dx="1" dy="6" material="PLANK" buildrequired="6" />
 	<stack dx="4" dy="6" material="STONE" buildrequired="6" />
-	
-	<bricklayer dx="-2" dy="4" direction="NORTH_EAST"/>
-	<bricklayer dx="0" dy="5" direction="NORTH_EAST"/>
-	<bricklayer dx="2" dy="5" direction="NORTH_WEST"/>
-	<bricklayer dx="6" dy="7" direction="NORTH_WEST"/>
-	<bricklayer dx="7" dy="5" direction="NORTH_WEST"/>
-	<bricklayer dx="6" dy="2" direction="WEST"/>
-	
+	<bricklayer dx="-2" dy="4" direction="NORTH_EAST" />
+	<bricklayer dx="0" dy="5" direction="NORTH_EAST" />
+	<bricklayer dx="2" dy="5" direction="NORTH_WEST" />
+	<bricklayer dx="6" dy="7" direction="NORTH_WEST" />
+	<bricklayer dx="7" dy="5" direction="NORTH_WEST" />
+	<bricklayer dx="6" dy="2" direction="WEST" />
 	<flag dx="-4" dy="1" />
-	
+	<buildmark dx="-3" dy="2" />
+	<buildmark dx="0" dy="4" />
+	<buildmark dx="2" dy="3" />
+	<buildmark dx="3" dy="0" />
+	<buildmark dx="-3" dy="-5" />
+	<buildmark dx="6" dy="3" />
+	<buildmark dx="5" dy="6" />
+
 	<workcenter dx="7" dy="14"/>
 
 	<image file="14" for="GUI" type="GUI" sequence="69" image="0"/>

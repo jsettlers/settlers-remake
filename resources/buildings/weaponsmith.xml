@@ -105,7 +105,7 @@
 	<job name="checkhome2" type="AVAILABLE" material="COAL" dx="-2" dy="2"
 		successjob="checkhome3" failjob="waithome" />
     <job name="checkhome3" type="NOT_FULL" material="SWORD" dx="4"
-        dy="1" successjob="go_to_work1" failjob="go_inside" />
+        dy="1" successjob="go_to_work1" failjob="waithome" />
 
 	<job name="go_to_work1" type="SHOW" dx="3" dy="0" successjob="go_to_work2"
 		failjob="waithome" />
@@ -210,8 +210,9 @@
 	<job name="drop_weapon2" type="SET_MATERIAL" material="NO_MATERIAL"
 		successjob="drop_weapon3" failjob="go_to_door" />
 	<job name="drop_weapon3" type="TAKE" material="NO_MATERIAL"
-		successjob="check_continue1" failjob="go_to_door" />
+		successjob="go_inside" failjob="go_to_door" />
 
+<!-- deactivated -->
 	<job name="check_continue1" type="AVAILABLE" material="IRON" dx="3"
 		dy="3" successjob="check_continue2" failjob="go_inside" />
 	<job name="check_continue2" type="AVAILABLE" material="COAL" dx="-2"
