@@ -720,7 +720,7 @@ public class Background {
 	/**
 	 * Offset of color definition in bytes, relative to vertex start
 	 */
-	private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
+	//private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
 
 	private ImageProvider imageProvider = ImageProvider.getInstance();
 

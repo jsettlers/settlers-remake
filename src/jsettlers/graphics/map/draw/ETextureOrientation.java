@@ -1,7 +1,5 @@
 package jsettlers.graphics.map.draw;
 
-import java.nio.ByteBuffer;
-
 /**
  * All texture types a texture can have.
  * 
