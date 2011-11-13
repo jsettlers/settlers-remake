@@ -10,13 +10,13 @@ public class AndroidTextDrawer implements TextDrawer {
     }
 
 	@Override
-    public void renderCentered(int cx, int cy, String text) {
+    public void renderCentered(float cx, float cy, String text) {
 	    // TODO Auto-generated method stub
 	    
     }
 
 	@Override
-    public void drawString(int x, int y, String string) {
+    public void drawString(float x, float y, String string) {
 	    // TODO Auto-generated method stub
 	    
     }
