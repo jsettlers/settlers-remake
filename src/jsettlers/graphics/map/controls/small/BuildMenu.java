@@ -9,7 +9,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionMap;
 import jsettlers.graphics.action.BuildAction;
@@ -85,17 +85,17 @@ public class BuildMenu extends UIPanel {
 		dy -= LINE_PADDING;
 
 		// draw the buildings
-		int buildingsperline =
+		float buildingsperline =
 		        Math.max(BUILDINGS_PER_LINE, BUILDINGS_PER_LINE
 		                * getPosition().getWidth() / getPosition().getHeight());
-		int buildingButtonSize = getPosition().getWidth() / buildingsperline;
+		float buildingButtonSize = getPosition().getWidth() / buildingsperline;
 		for (int i = 0; i < section.buildings.length; i++) {
-			int topy = i / buildingsperline * buildingButtonSize;
-			int leftx = i % buildingsperline * buildingButtonSize;
+			float topy = i / buildingsperline * buildingButtonSize;
+			float leftx = i % buildingsperline * buildingButtonSize;
 
-			int bottom = dy - topy - buildingButtonSize;
-			int texttop = (int) (bottom + textheight);
-			int top = dy - topy;
+			float bottom = dy - topy - buildingButtonSize;
+			float texttop = (int) (bottom + textheight);
+			float top = dy - topy;
 			EBuildingType buildingType = section.buildings[i];
 			gl.color(1, 1, 1, 1);
 			drawAtRectAspect(
@@ -108,7 +108,7 @@ public class BuildMenu extends UIPanel {
 
 			if (actionMapInvalid) {
 				actionMap.addAction(new BuildAction(buildingType),
-				        new IntRectangle(leftx, bottom, leftx
+				        new FloatRectangle(leftx, bottom, leftx
 				                + buildingButtonSize, top));
 			}
 		}
@@ -121,7 +121,7 @@ public class BuildMenu extends UIPanel {
 	}
 
 	@Override
-	public void setPosition(IntRectangle position) {
+	public void setPosition(FloatRectangle position) {
 		super.setPosition(position);
 		actionMapInvalid = true;
 	}

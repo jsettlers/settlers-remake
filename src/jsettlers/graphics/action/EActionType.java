@@ -112,5 +112,20 @@ public enum EActionType {
 	/**
 	 * Toggles fog of war.
 	 */
-	TOGGLE_FOG_OF_WAR,
+	TOGGLE_FOG_OF_WAR, 
+	
+	/**
+	 * Zoom in
+	 */
+	ZOOM_IN,
+	
+	/**
+	 * Zoom out
+	 */
+	ZOOM_OUT, 
+	
+	/**
+	 * Save the game
+	 */
+	SAVE,
 }

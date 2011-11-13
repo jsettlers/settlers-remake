@@ -4,7 +4,7 @@ import go.graphics.UIPoint;
 
 import java.util.ArrayList;
 
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.utils.Button;
 
 /**
@@ -45,7 +45,7 @@ public class ActionMap {
 	 * @param position
 	 *            The position this action is used for.
 	 */
-	public void addAction(Action action, IntRectangle position) {
+	public void addAction(Action action, FloatRectangle position) {
 		this.actions.add(new PositionedAction(action, position));
 	}
 
@@ -75,10 +75,10 @@ public class ActionMap {
 	 */
 	private class PositionedAction {
 		private final Action action;
-		private final IntRectangle position;
+		private final FloatRectangle position;
 		private final Button button;
 
-		public PositionedAction(Action action, IntRectangle position) {
+		public PositionedAction(Action action, FloatRectangle position) {
 			this.action = action;
 			this.position = position;
 			this.button = null;
@@ -94,7 +94,7 @@ public class ActionMap {
 			return this.action;
 		}
 
-		public IntRectangle getPosition() {
+		public FloatRectangle getPosition() {
 			if (this.button == null) {
 				return this.position;
 			} else {

@@ -8,7 +8,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.Parallelogram;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -228,7 +228,7 @@ public final class MapCoordinateConverter {
 	 *            The y position in draw space
 	 * @return The map point
 	 */
-	public ISPosition2D getMap(int x, int y) {
+	public ISPosition2D getMap(float x, float y) {
 		return new ShortPoint2D(getMapX(x, y), getMapY(x, y));
 	}
 
@@ -259,7 +259,7 @@ public final class MapCoordinateConverter {
 	 *            The screen positions
 	 * @return A MapRectangle
 	 */
-	public MapRectangle getMapForScreen(IntRectangle screen) {
+	public MapRectangle getMapForScreen(FloatRectangle screen) {
 		float width = screen.getWidth() * this.inverse[M_00];
 		float height = -screen.getHeight() * this.inverse[M_11];
 		float minx = getMapX(screen.getMinX(), screen.getMaxY());

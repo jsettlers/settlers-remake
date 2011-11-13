@@ -6,7 +6,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
@@ -60,7 +60,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public void resizeTo(int newWidth, int newHeight) {
+	public void resizeTo(float newWidth, float newHeight) {
 		IOriginalConstants newConstants;
 		if (newHeight <= 480) {
 			newConstants = new SmallOriginalConstants();
@@ -74,7 +74,7 @@ public class OriginalControls implements IControls {
 			mainPanel.useConstants(constants);
 		}
 		int width = (int) (newHeight / constants.UI_RATIO);
-		this.uiBase.setPosition(new IntRectangle(0, 0, width, newHeight));
+		this.uiBase.setPosition(new FloatRectangle(0, 0, width, newHeight));
 
 		minimap.setSize(
 		        (int) (constants.MINIMAP_WIDTH * width),
@@ -102,8 +102,8 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public boolean containsPoint(UIPoint position) {
-		int width = uiBase.getPosition().getWidth();
-		int height = uiBase.getPosition().getHeight();
+		float width = uiBase.getPosition().getWidth();
+		float height = uiBase.getPosition().getHeight();
 		float uicenter = width * constants.UI_CENTERX;
 		float m =
 		        1 / (1 - constants.UI_CENTERX) / width

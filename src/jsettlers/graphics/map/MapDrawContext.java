@@ -9,7 +9,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.draw.FogOfWar;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
@@ -69,6 +69,8 @@ public class MapDrawContext {
 
 	private final FogOfWar fogOfWar;
 
+	private float zoom;
+
 	// private long beginTime;
 
 	/**
@@ -96,13 +98,17 @@ public class MapDrawContext {
 	/**
 	 * Sets the size of the context to width/height.
 	 * 
-	 * @param width
+	 * @param newWidth
 	 *            The width.
-	 * @param height
+	 * @param newHeight
 	 *            The height.
+	 * @param zoom
 	 */
-	public void setSize(int width, int height) {
-		this.screen.setSize(width, height);
+	public void setSize(float windowWidth, float windowHeight, float zoom) {
+		this.zoom = zoom;
+		float newWidth = windowWidth / zoom;
+		float newHeight = windowHeight / zoom;
+		this.screen.setSize(newWidth, newHeight);
 	}
 
 	/**
@@ -131,6 +137,7 @@ public class MapDrawContext {
 		// beginTime = System.nanoTime();
 
 		gl2.glPushMatrix();
+		gl2.glScalef(zoom, zoom, 1);
 		gl2.glTranslatef(-this.screen.getLeft(), -this.screen.getBottom(), 0);
 	}
 
@@ -153,41 +160,6 @@ public class MapDrawContext {
 	}
 
 	/**
-	 * Gets the x position in draw space of a map position, including height.
-	 * 
-	 * @param position
-	 *            The position in map space.
-	 * @return The x coordinate of the position in draw space.
-	 */
-	// public int getX(ISPosition2D position) {
-	// return (int) this.converter.getViewX(position);
-	// }
-
-	/**
-	 * Gets the y position in draw space of a map position, including height.
-	 * <p>
-	 * Faster than {@link #getY(ISPosition2D)}.
-	 * 
-	 * @param tile
-	 *            The tile to get the position for.
-	 * @return The y coordinate of its position in draw space.
-	 */
-	// public int getY(IHexTile tile) {
-	// return (int) this.converter.getViewY(tile);
-	// }
-
-	/**
-	 * Gets the y position in draw space of a map position, including height.
-	 * 
-	 * @param position
-	 *            The position in map space.
-	 * @return The y coordinate of the position in draw space.
-	 */
-	// public int getY(ISPosition2D position) {
-	// return getY(this.map.getTile(position));
-	// }
-
-	/**
 	 * Gets the region of the draw space that is drawn on the screen and
 	 * therefore rendered.
 	 * 
@@ -206,7 +178,7 @@ public class MapDrawContext {
 	 *            The y coordinate in draw space.
 	 * @return The map position under the point.
 	 */
-	public ISPosition2D getPositionUnder(int screenx, int screeny) {
+	public ISPosition2D getPositionUnder(float screenx, float screeny) {
 		ISPosition2D currentPoint = converter.getMap(screenx, screeny);
 		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
 
@@ -245,9 +217,9 @@ public class MapDrawContext {
 	 *            The y coordinate in screen space.
 	 * @return The map position under the screen point.
 	 */
-	public ISPosition2D getPositionOnScreen(int x, int y) {
-		return getPositionUnder(x + this.screen.getLeft(),
-		        y + this.screen.getBottom());
+	public ISPosition2D getPositionOnScreen(float x, float y) {
+		return getPositionUnder(x / zoom + this.screen.getLeft(),
+		        y / zoom + this.screen.getBottom());
 	}
 
 	/**
@@ -359,12 +331,12 @@ public class MapDrawContext {
 	 * @return The rectangle on the map
 	 */
 	public IMapArea getRectangleOnScreen(int x1, int y1, int x2, int y2) {
-		int drawx1 = x1 + this.screen.getLeft();
-		int drawx2 = x2 + this.screen.getLeft();
-		int drawy1 = y1 + this.screen.getBottom();
-		int drawy2 = y2 + this.screen.getBottom();
-		return this.converter.getMapForScreen(new IntRectangle(drawx1, drawy1,
-		        drawx2, drawy2));
+		float drawx1 = x1 / zoom + this.screen.getLeft();
+		float drawx2 = x2 / zoom + this.screen.getLeft();
+		float drawy1 = y1 / zoom + this.screen.getBottom();
+		float drawy2 = y2 / zoom + this.screen.getBottom();
+		return this.converter.getMapForScreen(new FloatRectangle(drawx1,
+		        drawy1, drawx2, drawy2));
 	}
 
 	public MapRectangle getScreenArea() {
@@ -373,12 +345,12 @@ public class MapDrawContext {
 
 	public void scrollTo(ISPosition2D point) {
 		int height = getHeight(point.getX(), point.getY());
-		int x =
-		        Math.round(converter.getViewX(point.getX(), point.getY(),
-		                height));
-		int y =
-		        Math.round(converter.getViewY(point.getX(), point.getY(),
-		                height));
+		float x =
+		        converter.getViewX(point.getX(), point.getY(),
+		                height);
+		float y =
+		        converter.getViewY(point.getX(), point.getY(),
+		                height);
 		screen.setScreenCenter(x, y);
 	}
 
@@ -397,7 +369,7 @@ public class MapDrawContext {
 	public IGraphicsGrid getMap() {
 		return map;
 	}
-	
+
 	public FogOfWar getFogOfWar() {
 		return fogOfWar;
 	}

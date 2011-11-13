@@ -4,19 +4,19 @@ import go.graphics.UIPoint;
 
 import java.util.Hashtable;
 
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 
 public class ScreenPosition {
 
 	private static final int TOPBORDER = 100;
 
-	private IntRectangle screen = new IntRectangle(0, 0, 1, 1);
+	private FloatRectangle screen = new FloatRectangle(0, 0, 1, 1);
 
 	/**
 	 * The x coordinate of the current screen, without extra panning.
 	 */
-	private int screenCenterX;
-	private int screenCenterY;
+	private float screenCenterX;
+	private float screenCenterY;
 
 	private Hashtable<Object, UIPoint> panProgresses =
 	        new Hashtable<Object, UIPoint>();
@@ -32,8 +32,10 @@ public class ScreenPosition {
 	 * additional border.
 	 * 
 	 * @param mapWidth
-	 * @param mapHeight The width in pixel
-	 * @param incline The incline of the parallelogram side.
+	 * @param mapHeight
+	 *            The width in pixel
+	 * @param incline
+	 *            The incline of the parallelogram side.
 	 */
 	public ScreenPosition(int mapWidth, int mapHeight, float incline) {
 		this.mapWidth = mapWidth;
@@ -41,7 +43,7 @@ public class ScreenPosition {
 		this.incline = incline;
 	}
 
-	private int clamp(int min, int max, int value) {
+	private float clamp(float min, float max, float value) {
 		if (min > max) {
 			return (min + max) / 2;
 		} else if (value < min) {
@@ -56,15 +58,16 @@ public class ScreenPosition {
 	/**
 	 * Sets the size of the context to width/height.
 	 * 
-	 * @param width
+	 * @param newWidth
 	 *            The width.
-	 * @param height
+	 * @param newHeight
 	 *            The height.
+	 * @param zoom 
 	 */
-	public void setSize(int width, int height) {
-		int x = this.screen.getCenterX();
-		int y = this.screen.getCenterY();
-		setScreen(x, y, width, height);
+	public void setSize(float newWidth, float newHeight)  {
+		float x = this.screen.getCenterX();
+		float y = this.screen.getCenterY();
+		setScreen(x, y, newWidth, newHeight);
 	}
 
 	/**
@@ -75,18 +78,19 @@ public class ScreenPosition {
 	 * @param y
 	 *            Y in pixels.
 	 */
-	public void setScreenCenter(int x, int y) {
+	public void setScreenCenter(float x, float y) {
 		this.screenCenterX = x;
 		this.screenCenterY = y;
 		recalculateScreen();
 	}
 
 	/**
-	 * Recalculates the x and y position of the screen.
+	 * Recalculates the x and y position of the screen by the current pan
+	 * values.
 	 */
 	private void recalculateScreen() {
-		int x = this.screenCenterX;
-		int y = this.screenCenterY;
+		float x = this.screenCenterX;
+		float y = this.screenCenterY;
 
 		int xoffset = 0;
 		int yoffset = 0;
@@ -94,8 +98,8 @@ public class ScreenPosition {
 			xoffset += p.getX();
 			yoffset += p.getY();
 		}
-		setScreen(x - xoffset, y - yoffset, this.screen.getWidth(), this.screen
-		        .getHeight());
+		setScreen(x - xoffset, y - yoffset, this.screen.getWidth(),
+		        this.screen.getHeight());
 
 		this.screenCenterX = this.screen.getCenterX() + xoffset;
 		this.screenCenterY = this.screen.getCenterY() + yoffset;
@@ -106,53 +110,55 @@ public class ScreenPosition {
 	 * 
 	 * @param centerx
 	 * @param centery
-	 * @param width
-	 * @param height
+	 * @param newWidth
+	 * @param newHeight
 	 */
-	private void setScreen(int centerx, int centery, int width, int height) {
+	private void setScreen(float centerx, float centery, float newWidth,
+	        float newHeight) {
 		// clamp to top and bottom
 
 		// top = height in px.
 		int top = this.mapHeight + TOPBORDER;
 		int bottom = 0;
 
-		int newCenterY = clamp(bottom + height / 2, top - height / 2, centery);
-		int miny = newCenterY - height / 2;
-		int maxy = miny + height;
+		float newCenterY =
+		        clamp(bottom + newHeight / 2, top - newHeight / 2, centery);
+		float miny = newCenterY - newHeight / 2;
+		float maxy = miny + newHeight;
 
 		// calculate left/right according to current y pos.
 		int left = (int) (this.incline * miny);
-		int right =
-		        (int) (this.incline * maxy) + this.mapWidth;
+		int right = (int) (this.incline * maxy) + this.mapWidth;
 
-		int newCenterX = clamp(left + width / 2, right - width / 2, centerx);
-		int minx = newCenterX - width / 2;
-		int maxx = minx + width;
+		float newCenterX =
+		        clamp(left + newWidth / 2, right - newWidth / 2, centerx);
+		float minx = newCenterX - newWidth / 2;
+		float maxx = minx + newWidth;
 
-		this.screen = new IntRectangle(minx, miny, maxx, maxy);
+		this.screen = new FloatRectangle(minx, miny, maxx, maxy);
 	}
 
-	public int getBottom() {
+	public float getBottom() {
 		return this.screen.getMinY();
 	}
 
-	public int getTop() {
+	public float getTop() {
 		return this.screen.getMaxY();
 	}
 
-	public int getLeft() {
+	public float getLeft() {
 		return this.screen.getMinX();
 	}
 
-	public int getRight() {
+	public float getRight() {
 		return this.screen.getMaxX();
 	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return this.screen.getWidth();
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return this.screen.getHeight();
 	}
 
@@ -179,11 +185,12 @@ public class ScreenPosition {
 	 */
 	public void finishPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.remove(key);
-		setScreenCenter((int) (this.screenCenterX - distance.getX()), (int) (this.screenCenterY - distance.getY()));
+		setScreenCenter((int) (this.screenCenterX - distance.getX()),
+		        (int) (this.screenCenterY - distance.getY()));
 	}
 
-	public IntRectangle getPosition() {
-	    return this.screen;
-    }
+	public FloatRectangle getPosition() {
+		return this.screen;
+	}
 
 }

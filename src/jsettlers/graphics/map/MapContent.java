@@ -13,6 +13,7 @@ import go.graphics.event.command.GOCommandEvent;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
+import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -26,7 +27,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionHandler;
@@ -94,12 +95,21 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 	 */
 	private MapInterfaceConnector connector;
 
-	private IntRectangle oldScreen;
+	private FloatRectangle oldScreen;
 
 	/**
 	 * The controls that represent the interface.
 	 */
 	private final IControls controls;
+
+	/**
+	 * zoom factor. The smaller the smaller the settlers get.
+	 */
+	private float zoom = 1;
+
+	private int windowWidth = 1;
+
+	private int windowHeight = 1;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -112,20 +122,30 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		this.context = new MapDrawContext(map);
 
 		controls = new OriginalControls(context);
-		//controls = new SmallControls();
+		// controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
 	}
 
-	private void resizeTo(int newWidth, int newHeight) {
-		this.context.setSize(newWidth, newHeight);
-		this.controls.resizeTo(newWidth, newHeight);
+	private void resizeTo(int newWindowWidth, int newWindowHeight) {
+		windowWidth = newWindowWidth;
+		windowHeight = newWindowHeight;
+		this.controls.resizeTo(windowWidth, windowHeight);
+		reapplyContentSizes();
+	}
+
+	private void reapplyContentSizes() {
+		this.context.setSize(windowWidth, windowHeight, zoom);
 	}
 
 	@Override
 	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
-		adaptScreenSize(newWidth, newHeight);
+		if (newWidth != windowWidth || newHeight != windowHeight) {
+			resizeTo(newWidth, newHeight);
+		}
+
+		adaptScreenSize();
 		this.objectDrawer.increaseAnimationStep();
 
 		this.context.begin(gl);
@@ -142,12 +162,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		drawTooltip(gl);
 	}
 
-	private void adaptScreenSize(int newWidth, int newHeight) {
-		if (newWidth != this.context.getScreen().getWidth()
-		        || newHeight != this.context.getScreen().getHeight()) {
-			resizeTo(newWidth, newHeight);
-		}
-		IntRectangle newScreen = context.getScreen().getPosition();
+	private void adaptScreenSize() {
+		FloatRectangle newScreen = context.getScreen().getPosition();
 		if (!newScreen.equals(oldScreen)) {
 			getInterfaceConnector().fireAction(
 			        new ScreenChangeAction(context.getScreenArea()));
@@ -363,7 +379,41 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		} else if (event instanceof GOHoverEvent) {
 			GOHoverEvent hoverEvent = (GOHoverEvent) event;
 			handleHover(hoverEvent);
+		} else if (event instanceof GOZoomEvent) {
+			GOZoomEvent zoomEvent = (GOZoomEvent) event;
+			handleZoom(zoomEvent);
 		}
+	}
+
+	private void handleZoom(GOZoomEvent zoomEvent) {
+		zoomEvent.setHandler(new GOModalEventHandler() {
+			float startzoom = zoom;
+
+			@Override
+			public void phaseChanged(GOEvent event) {
+			}
+
+			@Override
+			public void finished(GOEvent event) {
+				eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			}
+
+			private void eventDataChanged(float zoomFactor) {
+				System.out.println("Zooming by " + zoomFactor);
+				float newZoom = startzoom * zoomFactor;
+				setZoom(newZoom);
+			}
+
+			@Override
+			public void aborted(GOEvent event) {
+				eventDataChanged(1);
+			}
+
+			@Override
+			public void eventDataChanged(GOEvent event) {
+				eventDataChanged(((GOZoomEvent) event).getZoomFactor());
+			}
+		});
 	}
 
 	private void fireActionEvent(GOEvent event, Action action) {
@@ -390,6 +440,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			return new Action(EActionType.TOGGLE_DEBUG);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
+		} else if ("F5".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.ZOOM_IN);
+		} else if ("F6".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.ZOOM_OUT);
+		} else if ("F2".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.SAVE);
 		} else {
 			return null;
 		}
@@ -489,9 +545,12 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {
+		
+		float x = (float) position.getX();
+		float y = (float) position.getY();
 		ISPosition2D onMap =
-		        this.context.getPositionOnScreen((int) position.getX(),
-		                (int) position.getY());
+		        this.context.getPositionOnScreen(x,
+		                y);
 		if (this.context.checkMapCoordinates(onMap.getX(), onMap.getY())) {
 			Action action;
 			if (commandEvent.isSelecting()) {
@@ -576,11 +635,30 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		} else if (action.getActionType() == EActionType.SCREEN_CHANGE) {
 			ScreenChangeAction screenAction = (ScreenChangeAction) action;
 			controls.setMapViewport(screenAction.getScreenArea());
+		} else if (action.getActionType() == EActionType.ZOOM_IN) {
+			if (zoom < 1.1) {
+				setZoom(zoom * 2);
+			}
+		} else if (action.getActionType() == EActionType.ZOOM_OUT) {
+			if (zoom > 0.6) {
+				setZoom(zoom / 2);
+			}
 		}
 	}
 
+	private void setZoom(float newzoom) {
+		if (newzoom < .3f) {
+			this.zoom = .3f;
+		} else if (newzoom > 3f) {
+			this.zoom = 3f;
+		} else {
+			this.zoom = newzoom;
+		}
+		reapplyContentSizes();
+	}
+
 	public void setPreviewBuildingType(EBuildingType buildingType) {
-	    controls.displayBuildingBuild(buildingType);
-    }
+		controls.displayBuildingBuild(buildingType);
+	}
 
 }

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -23,7 +23,7 @@ public class UIPanel implements UIElement {
 
 	private LinkedList<ChildLink> children =
 	        new LinkedList<UIPanel.ChildLink>();
-	private IntRectangle position = new IntRectangle(0, 0, 1, 1);
+	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
 	private ImageLink background;
 
@@ -61,9 +61,13 @@ public class UIPanel implements UIElement {
 
 	/**
 	 * Adds a child to the center of the panel.
-	 * @param child The child to add.
-	 * @param width The relative width of the child (0..1).
-	 * @param height The relative height of the child (0..1).
+	 * 
+	 * @param child
+	 *            The child to add.
+	 * @param width
+	 *            The relative width of the child (0..1).
+	 * @param height
+	 *            The relative height of the child (0..1).
 	 */
 	public void addChildCentered(UIElement child, float width, float height) {
 		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2,
@@ -86,7 +90,7 @@ public class UIPanel implements UIElement {
 	protected void drawBackground(GLDrawContext gl) {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
-			IntRectangle position = getPosition();
+			FloatRectangle position = getPosition();
 			Image image = ImageProvider.getInstance().getImage(link);
 			drawAtRect(gl, image, position);
 		}
@@ -102,14 +106,14 @@ public class UIPanel implements UIElement {
 	 * @param position
 	 *            The position to draw the image at
 	 */
-	protected void drawAtRect(GLDrawContext gl, Image image, IntRectangle position) {
-		int minX = position.getMinX();
-		int minY = position.getMinY();
-		int maxX = position.getMaxX();
-		int maxY = position.getMaxY();
+	protected void drawAtRect(GLDrawContext gl, Image image,
+	        FloatRectangle position) {
+		float minX = position.getMinX();
+		float minY = position.getMinY();
+		float maxX = position.getMaxX();
+		float maxY = position.getMaxY();
 		image.drawImageAtRect(gl, minX, minY, maxX, maxY);
 	}
-
 
 	/**
 	 * Gets a detailed GUI image.
@@ -119,7 +123,7 @@ public class UIPanel implements UIElement {
 	 * For settler sequences, assumes the same for the next two sequence
 	 * members.
 	 */
-	protected Image getDetailedImage(ImageLink link, int width, int height) {
+	protected Image getDetailedImage(ImageLink link, float width, float height) {
 		Image image = ImageProvider.getInstance().getImage(link);
 		ImageLink currentLink = link;
 
@@ -162,10 +166,9 @@ public class UIPanel implements UIElement {
 			this.bottom = bottom;
 		}
 
-		public void drawAt(GLDrawContext gl, int width, int height) {
-			child.setPosition(new IntRectangle((int) (left * width),
-			        (int) (bottom * height), (int) (right * width),
-			        (int) (top * height)));
+		public void drawAt(GLDrawContext gl, float width, float height) {
+			child.setPosition(new FloatRectangle((left * width),
+			        (bottom * height), (right * width), (top * height)));
 			child.drawAt(gl);
 		}
 
@@ -193,11 +196,11 @@ public class UIPanel implements UIElement {
 	}
 
 	@Override
-	public void setPosition(IntRectangle position) {
+	public void setPosition(FloatRectangle position) {
 		this.position = position;
 	}
 
-	public IntRectangle getPosition() {
+	public FloatRectangle getPosition() {
 		return position;
 	}
 

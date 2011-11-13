@@ -8,7 +8,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
 import go.graphics.GLDrawContext.GLBuffer;
@@ -977,7 +977,7 @@ public class Background {
 	public void drawMapContent(MapDrawContext context) {
 //		float[] geometry = getGeometry(context);
 		GLDrawContext gl = context.getGl();
-		IntRectangle screen =
+		FloatRectangle screen =
 		        context.getScreen().getPosition().bigger(EXTRA_PADDING);
 		MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
 		if (!gl.isGeometryValid(geometryindex)||screenArea.getLineLength() + 1 != bufferwidth

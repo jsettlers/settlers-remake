@@ -7,7 +7,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
@@ -45,27 +45,27 @@ public class SmallControls implements IControls {
 	}
 
 	@Override
-	public void resizeTo(int newWidth, int newHeight) {
+	public void resizeTo(float newWidth, float newHeight) {
 		if (newWidth < newHeight) {
 			// portrait
-			int scrollsize = newWidth / 2;
-			int buttonsize = scrollsize / 2;
-			scrollArea.setPosition(new IntRectangle(newWidth - scrollsize, 0,
+			float scrollsize = newWidth / 2;
+			float buttonsize = scrollsize / 2;
+			scrollArea.setPosition(new FloatRectangle(newWidth - scrollsize, 0,
 			        newWidth, scrollsize));
-			buildMenuOpener.setPosition(new IntRectangle(0, 0, buttonsize,
+			buildMenuOpener.setPosition(new FloatRectangle(0, 0, buttonsize,
 			        buttonsize));
-			buildMenu.setPosition(new IntRectangle(0, buttonsize, newWidth,
+			buildMenu.setPosition(new FloatRectangle(0, buttonsize, newWidth,
 			        newHeight));
 		} else {
 			// landscape
-			int scrollsize = newHeight / 2;
-			int buttonsize = scrollsize / 2;
-			scrollArea.setPosition(new IntRectangle(newWidth - scrollsize, 0,
+			float scrollsize = newHeight / 2;
+			float buttonsize = scrollsize / 2;
+			scrollArea.setPosition(new FloatRectangle(newWidth - scrollsize, 0,
 			        newWidth, scrollsize));
-			buildMenuOpener.setPosition(new IntRectangle(newWidth - buttonsize,
+			buildMenuOpener.setPosition(new FloatRectangle(newWidth - buttonsize,
 			        newHeight - 2 * buttonsize, newWidth, newHeight
 			                - buttonsize));
-			buildMenu.setPosition(new IntRectangle(0, 0, newWidth - buttonsize,
+			buildMenu.setPosition(new FloatRectangle(0, 0, newWidth - buttonsize,
 			        newHeight));
 		}
 	}

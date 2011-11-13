@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
@@ -51,7 +51,7 @@ public class BuildingButton extends Button {
 
 	@Override
 	protected void drawBackground(GLDrawContext gl) {
-		IntRectangle position = getPosition();
+		FloatRectangle position = getPosition();
 		Image image =
 		        getDetailedImage(buildingImage, position.getWidth(),
 		                position.getHeight());

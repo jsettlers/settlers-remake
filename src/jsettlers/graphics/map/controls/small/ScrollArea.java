@@ -10,8 +10,8 @@ public class ScrollArea extends UIPanel {
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
-		int centerX = getPosition().getCenterX();
-		int centerY = getPosition().getCenterY();
+		float centerX = getPosition().getCenterX();
+		float centerY = getPosition().getCenterY();
 		float radius = centerX - getPosition().getMinX();
 		
 		float[] points = new float[3 * CIRCLEPOINTS];

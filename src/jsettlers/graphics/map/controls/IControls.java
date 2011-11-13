@@ -32,7 +32,7 @@ public interface IControls extends IMapInterfaceListener {
 	 * @param newHeight
 	 *            The new height
 	 */
-	void resizeTo(int newWidth, int newHeight);
+	void resizeTo(float newWidth, float newHeight);
 
 	/**
 	 * Checks if a point is on the ui

@@ -1,11 +1,11 @@
 package jsettlers.graphics.utils;
 
 import go.graphics.GLDrawContext;
-import jsettlers.common.position.IntRectangle;
+import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 
 public interface UIElement {
-	void setPosition(IntRectangle position);
+	void setPosition(FloatRectangle position);
 
 	void drawAt(GLDrawContext gl);
 	

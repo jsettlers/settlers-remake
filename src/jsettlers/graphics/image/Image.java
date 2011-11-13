@@ -291,7 +291,7 @@ public class Image implements ImageDataPrivider {
 		return (float) height / textureHeight;
 	}
 
-	public void drawCentered(GLDrawContext gl, int centerX, int centerY,
+	public void drawCentered(GLDrawContext gl, float centerX, float centerY,
             float width2, float height2) {
 		float[] coords =
 		        new float[] {
