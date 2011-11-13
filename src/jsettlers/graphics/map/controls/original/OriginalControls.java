@@ -2,6 +2,8 @@ package jsettlers.graphics.map.controls.original;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+import go.graphics.event.GOEvent;
+import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -122,12 +124,12 @@ public class OriginalControls implements IControls {
 		Action action;
 		if (relativey > constants.UI_CENTERY) {
 			action = getForMinimap(relativex, relativey);
+			startMapPosition = null; // to prevent it from jumping back.
 		} else {
 			action = uiBase.getAction(relativex, relativey);
 		}
 		if (action != null
 		        && action.getActionType() == EActionType.CHANGE_PANEL) {
-			// TODO; can we fire the action and catch it later?
 			mainPanel.setContent(((ChangePanelAction) action).getContent());
 			return null;
 		} else {
@@ -135,7 +137,7 @@ public class OriginalControls implements IControls {
 		}
 	}
 
-	private Action getForMinimap(float relativex, float relativey) {
+	private PanToAction getForMinimap(float relativex, float relativey) {
 		float minimapx =
 		        (relativex - constants.MINIMAP_BOTTOMLEFT_X)
 		                / constants.MINIMAP_WIDTH;
@@ -143,8 +145,14 @@ public class OriginalControls implements IControls {
 		        ((relativey - constants.UI_CENTERY)
 		                / (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
 		                / constants.MINIMAP_HEIGHT;
-		ISPosition2D clickPosition = minimap.getClickPosition(minimapx, minimapy);
-		return new PanToAction(clickPosition);
+		ISPosition2D clickPosition =
+		        minimap.getClickPosition(minimapx, minimapy);
+		if (minimap.getContext().checkMapCoordinates(clickPosition.getX(),
+		        clickPosition.getY())) {
+			return new PanToAction(clickPosition);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -162,19 +170,74 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-    public void action(Action action) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void action(Action action) {
+
+	}
+
+	private ISPosition2D startMapPosition;
 
 	@Override
-    public boolean handleDrawEvent(GODrawEvent event) {
-		//TODO: minimap draw.
-	    return false;
-    }
+	public boolean handleDrawEvent(GODrawEvent event) {
+		if (!containsPoint(event.getDrawPosition())) {
+			return false;
+		}
+
+		Action action = getActionForDraw(event);
+		if (action != null) {
+			MapDrawContext context = minimap.getContext();
+			float y = context.getScreen().getHeight() / 2;
+			float x = context.getScreen().getWidth() / 2;
+			startMapPosition = context.getPositionOnScreen(x, y);
+			event.setHandler(new DrawMinimapHandler());
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private PanToAction getActionForDraw(GODrawEvent event) {
+		UIPoint position = event.getDrawPosition();
+
+		float width = this.uiBase.getPosition().getWidth();
+		float relativex = (float) position.getX() / width;
+		float height = this.uiBase.getPosition().getHeight();
+		float relativey = (float) position.getY() / height;
+
+		return getForMinimap(relativex, relativey);
+	}
+
+	private class DrawMinimapHandler implements GOModalEventHandler {
+		@Override
+		public void phaseChanged(GOEvent event) {
+		}
+
+		@Override
+		public void finished(GOEvent event) {
+			PanToAction action = getActionForDraw((GODrawEvent) event);
+			if (action != null) {
+				minimap.getContext().scrollTo(action.getCenter());
+			}
+		}
+
+		@Override
+		public void aborted(GOEvent event) {
+			if (startMapPosition != null) {
+				minimap.getContext().scrollTo(startMapPosition);
+			}
+		}
+
+		@Override
+		public void eventDataChanged(GOEvent event) {
+			PanToAction action = getActionForDraw((GODrawEvent) event);
+			if (action != null) {
+				minimap.getContext().scrollTo(action.getCenter());
+			}
+		}
+
+	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {
-	    mainPanel.displayBuildingBuild(type);
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+		mainPanel.displayBuildingBuild(type);
+	}
 }
