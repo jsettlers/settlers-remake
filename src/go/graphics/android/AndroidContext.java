@@ -2,7 +2,6 @@ package go.graphics.android;
 
 import go.graphics.Color;
 import go.graphics.GLDrawContext;
-import go.graphics.GLDrawContext.GLBuffer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
