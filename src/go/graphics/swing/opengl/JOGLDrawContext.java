@@ -219,12 +219,12 @@ public class JOGLDrawContext implements GLDrawContext {
 		drawTrianglesWithTexture(textureid, buffer, geometry.length / 5 / 3);
 	}
 
-	private void drawTrianglesWithTexture(int textureid, Buffer buffer,
+	private void drawTrianglesWithTexture(int textureid, ByteBuffer buffer,
 	        int triangles) {
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
 
 		gl2.glVertexPointer(3, GL2.GL_FLOAT, 5 * 4, buffer);
-		buffer.position(3);
+		buffer.position(3 * 4);
 		gl2.glTexCoordPointer(2, GL2.GL_FLOAT, 5 * 4, buffer);
 		gl2.glDrawArrays(GL2.GL_TRIANGLES, 0, triangles * 3);
 	}
