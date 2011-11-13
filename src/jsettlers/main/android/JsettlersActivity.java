@@ -149,4 +149,8 @@ public class JsettlersActivity extends Activity {
 				return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	protected void onStop() {
+		System.exit(0);
+	};
 }

@@ -17,11 +17,10 @@ public class ResourceProvider implements IResourceProvider {
 	@Override
 	public InputStream getFile(String name) throws IOException {
 		String[] parts = name.split("/");
-		System.out.println("Seraching " + name);
 		for (File dir : dirs) {
 			File found = searchFileIn(dir, parts);
 			if (found != null) {
-				System.out.println("Found it in " + dir.getAbsolutePath());
+				System.out.println("Found file in " + dir.getAbsolutePath());
 				return new FileInputStream(found);
 			}
 		}
