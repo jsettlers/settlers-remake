@@ -108,4 +108,8 @@ public class Partition {
 		manager.requestSoilderable(barrack);
 	}
 
+	public void mergeInto(Partition newPartition) {
+		manager.mergeInto(newPartition.manager);
+	}
+
 }

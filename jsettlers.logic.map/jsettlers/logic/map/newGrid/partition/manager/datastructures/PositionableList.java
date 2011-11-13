@@ -93,4 +93,8 @@ public class PositionableList<T extends ILocatable> implements Iterable<T> {
 		return data.toString();
 	}
 
+	public void addAll(PositionableList<T> joblessBearer) {
+		this.data.addAll(joblessBearer.data);
+	}
+
 }

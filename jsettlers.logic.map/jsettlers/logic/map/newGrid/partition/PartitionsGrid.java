@@ -119,15 +119,21 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		assert firstPartition != -1 && secondPartition != -1 : "-1 partitions can not be merged!!";
 		assert x1 != x2 || y1 != y2 : "can not merge two equal partitions";
 
+		Partition firstObject = partitionObjects[firstPartition];
+		Partition secondObject = partitionObjects[secondPartition];
+
 		short newPartition;
 
 		// for better performance, relabel the smaller partition
-		if (partitionObjects[firstPartition].getNumberOfElements() > partitionObjects[secondPartition].getNumberOfElements()) {
+		if (firstObject.getNumberOfElements() > secondObject.getNumberOfElements()) {
 			newPartition = firstPartition;
-			relabelPartition(x2, y2, secondPartition, firstPartition);
+			relabelPartition(x2, y2, secondPartition, firstPartition, true);
+			secondObject.mergeInto(firstObject);
 		} else {
 			newPartition = secondPartition;
-			relabelPartition(x1, y1, firstPartition, secondPartition);
+			relabelPartition(x1, y1, firstPartition, secondPartition, true);
+			firstObject.mergeInto(secondObject);
+
 		}
 
 		return newPartition;
@@ -162,14 +168,25 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 		short oldPartition = getPartition(firstPos);
 
 		partitions[x][y] = -1;// this is needed, because the new partition is not determined yet
-		relabelPartition(secondPos.getX(), secondPos.getY(), oldPartition, newPartition);
+		relabelPartition(secondPos.getX(), secondPos.getY(), oldPartition, newPartition, false);
 		partitions[x][y] = oldPartition;
 	}
 
 	private final byte[] neighborX = EDirection.getXDeltaArray();
 	private final byte[] neighborY = EDirection.getYDeltaArray();
 
-	private void relabelPartition(short inX, short inY, short oldPartition, short newPartition) {
+	/**
+	 * 
+	 * @param inX
+	 * @param inY
+	 * @param oldPartition
+	 * @param newPartition
+	 * @param justRelabel
+	 *            if true, only the partition will be changed.<br>
+	 *            if false, the partition will be changed and for every changed position the contents of that position in the old manager will be
+	 *            moved to the new manager.
+	 */
+	private void relabelPartition(short inX, short inY, short oldPartition, short newPartition, boolean justRelabel) {
 		final short MAX_LENGTH = 1000;
 		final short[] pointsBuffer = new short[MAX_LENGTH]; // array is used to reduce the number of recursions
 		pointsBuffer[0] = inX;
@@ -183,7 +200,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 				continue; // the partition may already have changed.
 			}
 
-			setPartition(x, y, newPartition);
+			if (justRelabel) {
+				this.partitions[x][y] = newPartition;
+			} else {
+				setPartition(x, y, newPartition);
+			}
 			boolean currIsBlocked = grid.isBlocked(x, y);
 
 			for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
@@ -194,7 +215,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 						pointsBuffer[length++] = currX;
 						pointsBuffer[length++] = currY;
 					} else {
-						relabelPartition(currX, currY, oldPartition, newPartition);
+						relabelPartition(currX, currY, oldPartition, newPartition, justRelabel);
 					}
 				}
 			}

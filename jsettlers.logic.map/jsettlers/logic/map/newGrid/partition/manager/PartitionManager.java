@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -179,31 +178,18 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	/**
-	 * 
-	 * @param area
-	 *            area to be removed from this manager and added to the given manager
-	 * @param newManager
-	 *            new manager of the given position <br>
-	 *            NOTE: the new manager MUST NOT be null!
-	 */
-	public void removeAreaTo(IMapArea area, PartitionManager newManager) {
-		Iterator<Offer> offerIter = materialOffers.iterator();
-
-		while (offerIter.hasNext()) {
-			Offer currOffer = offerIter.next();
-			if (area.contains(currOffer.position)) {
-				// the new manager can not have any offers at that position, because he just occupied it
-				newManager.materialOffers.set(currOffer.position, currOffer);
-			}
-		}
-
-		Iterator<Request<EMaterialType>> requestIter = materialRequests.iterator();
-		while (requestIter.hasNext()) {
-			if (area.contains(requestIter.next().position)) {
-				requestIter.remove();
-			}
-		}
+	public void mergeInto(PartitionManager newManager) {
+		newManager.bricklayerRequests.addAll(this.bricklayerRequests);
+		newManager.diggerRequests.addAll(this.diggerRequests);
+		newManager.joblessBearer.addAll(this.joblessBearer);
+		newManager.joblessBricklayers.addAll(this.joblessBricklayers);
+		newManager.joblessDiggers.addAll(this.joblessDiggers);
+		newManager.joblessWorkers.addAll(this.joblessWorkers);
+		newManager.materialOffers.addAll(this.materialOffers);
+		newManager.materialRequests.addAll(this.materialRequests);
+		newManager.soilderCreationRequests.addAll(this.soilderCreationRequests);
+		newManager.workerCreationRequests.addAll(this.workerCreationRequests);
+		newManager.workerRequests.addAll(this.workerRequests);
 	}
 
 	@Override

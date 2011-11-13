@@ -108,4 +108,8 @@ public class PositionableHashMap<T> implements Iterable<T> {
 		public boolean isAccepted(T object);
 	}
 
+	public void addAll(PositionableHashMap<T> materialOffers) {
+		this.data.putAll(materialOffers.data);
+	}
+
 }
