@@ -248,9 +248,11 @@ public class OriginalControls implements IControls {
 		mainPanel.displayBuildingBuild(type);
 	}
 
+	boolean lastSelectionWasNull = true;
 	@Override
 	public void displaySelection(ISelectionSet selection) {
 		if (selection instanceof SettlerSelection) {
+			lastSelectionWasNull = false;
 			SettlerSelection settlerSelection = (SettlerSelection) selection;
 			if (SoilderSelection.isFor(settlerSelection)) {
 				mainPanel.setContent(new SoilderSelection(settlerSelection));
@@ -260,9 +262,11 @@ public class OriginalControls implements IControls {
 				mainPanel.setContent(new BearerSelection(settlerSelection));
 			}
 		} else if (selection instanceof BuildingSelection) {
+			lastSelectionWasNull = false;
 			mainPanel.setContent(new BuildingSelectionPanel(
 			        (BuildingSelection) selection));
-		} else {
+		} else if (!lastSelectionWasNull) {
+			lastSelectionWasNull = true;
 			mainPanel.setContent(EContentType.EMPTY);
 		}
 	}
