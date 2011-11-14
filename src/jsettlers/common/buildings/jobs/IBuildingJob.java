@@ -1,5 +1,7 @@
 package jsettlers.common.buildings.jobs;
 
+import java.io.Serializable;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
@@ -11,7 +13,7 @@ import jsettlers.common.movable.EDirection;
  * 
  * @author michael
  */
-public interface IBuildingJob {
+public interface IBuildingJob extends Serializable {
 	/**
 	 * Gets the type of this job.
 	 * 

@@ -12,6 +12,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 
 public class SimpleBuildingJob implements IBuildingJob {
+	private static final long serialVersionUID = -3559927463430244087L;
 
 	private final short dx;
 
@@ -32,7 +33,9 @@ public class SimpleBuildingJob implements IBuildingJob {
 
 	/**
 	 * Creates a new simple building job with the given data.
-	 * @param data The data
+	 * 
+	 * @param data
+	 *            The data
 	 */
 	private SimpleBuildingJob(BuildingJobData data) {
 		type = data.getType();
