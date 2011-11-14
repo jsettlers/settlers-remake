@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -69,6 +70,11 @@ public class BuildingCreator implements IMapInterfaceListener {
 				File file = new File(path + name);
 				return new FileInputStream(file);
 			}
+
+			@Override
+            public OutputStream writeFile(String name) throws IOException {
+	            return null;
+            }
 		});
 
 		EBuildingType type = askType();
