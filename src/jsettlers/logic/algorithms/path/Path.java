@@ -1,8 +1,12 @@
 package jsettlers.logic.algorithms.path;
 
+import java.io.Serializable;
+
 import jsettlers.common.position.ISPosition2D;
 
-public class Path {
+public class Path implements Serializable {
+	private static final long serialVersionUID = 1869164120660594918L;
+
 	private final ISPosition2D[] path;
 
 	private short walkIdx = 1;
