@@ -13,22 +13,21 @@ public class ResourceProvider implements IResourceProvider {
 	private String path;
 
 	public ResourceProvider() {
-		String currentParentFolder =
-		        new File(new File("").getAbsolutePath()).getParent().replace(
-		                '\\', '/');
+		String currentParentFolder = new File(new File("").getAbsolutePath()).getParent().replace('\\', '/');
 		path = currentParentFolder + "/jsettlers.common/resources/";
 	}
-	
-	@Override
-    public InputStream getFile(String name) throws IOException {
-		File file = new File(path + name);
-	    return new FileInputStream(file);
-    }
 
 	@Override
-    public OutputStream writeFile(String name) throws IOException {
+	public InputStream getFile(String name) throws IOException {
 		File file = new File(path + name);
-	    return new FileOutputStream(file);
-    }
-	
+		return new FileInputStream(file);
+	}
+
+	@Override
+	public OutputStream writeFile(String name) throws IOException {
+		File file = new File(path + name);
+		file.getParentFile().mkdirs();
+		return new FileOutputStream(file);
+	}
+
 }
