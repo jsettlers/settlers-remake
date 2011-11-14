@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.progress.EProgressState;
@@ -57,6 +58,18 @@ public final class Labels {
 			return labels.getString(key);
 		}
 	}
+
+	/**
+	 * Gets the name of a movable
+	 * 
+	 * @param type
+	 *            The movable type
+	 * @return The name.
+	 */
+	public static String getName(EMovableType type) {
+		return getString("movable_" + type);
+	}
+
 
 	/**
 	 * Gets the name of a building

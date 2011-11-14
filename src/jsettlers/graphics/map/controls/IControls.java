@@ -7,6 +7,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.IMapInterfaceListener;
+import jsettlers.graphics.map.selection.ISelectionSet;
 
 /**
  * Classes that implement this are capable of displaying the full game controls
@@ -86,4 +87,10 @@ public interface IControls extends IMapInterfaceListener {
 	 * @param type The type the user wants to build.
 	 */
 	void displayBuildingBuild(EBuildingType type);
+	
+	/**
+	 * Changes the selection for the map.
+	 * @param selection the selections.
+	 */
+	void displaySelection(ISelectionSet selection);
 }

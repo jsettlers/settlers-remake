@@ -7,6 +7,11 @@ public interface ContentFactory {
 
 	UIPanel getPanel();
 
+	/**
+	 * Gets a listener that is notified of context changes. May be null.
+	 * 
+	 * @return
+	 */
 	IContextListener getContextListener();
-	
+
 }

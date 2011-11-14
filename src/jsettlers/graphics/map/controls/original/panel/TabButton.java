@@ -4,6 +4,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
 import jsettlers.graphics.utils.Button;
 
 /**
@@ -28,7 +29,7 @@ public class TabButton extends Button {
 		this.content = content;
 	}
 
-	public void setActiveByContent(EContentType content) {
+	public void setActiveByContent(IContentProvider content) {
 		setActive(content.equals(this.content));
 	}
 

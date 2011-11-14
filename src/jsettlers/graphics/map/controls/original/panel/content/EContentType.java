@@ -4,11 +4,11 @@ import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
- * This is the main content type
+ * This are the main content types
  * 
  * @author michael
  */
-public enum EContentType {
+public enum EContentType implements IContentProvider {
 	EMPTY(ESecondaryTabType.NONE, null),
 
 	BUILD_NORMAL(ESecondaryTabType.BUILD, BuildingBuildContent.getNormal()),

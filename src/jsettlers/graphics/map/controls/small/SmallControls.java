@@ -12,6 +12,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
+import jsettlers.graphics.map.selection.ISelectionSet;
 
 /**
  * These controls provide:
@@ -132,6 +133,12 @@ public class SmallControls implements IControls {
 
 	@Override
     public void displayBuildingBuild(EBuildingType type) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	@Override
+    public void displaySelection(ISelectionSet selection) {
 	    // TODO Auto-generated method stub
 	    
     }

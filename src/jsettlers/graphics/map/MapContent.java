@@ -445,6 +445,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			return new Action(EActionType.ZOOM_OUT);
 		} else if ("F2".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SAVE);
+		} else if ("DELETE".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.DESTROY);
 		} else {
 			return null;
 		}
@@ -597,6 +599,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 	}
 
 	public void setSelection(ISelectionSet selection) {
+		controls.displaySelection(selection);
 	}
 
 	public void scrollTo(ISPosition2D point, boolean mark) {

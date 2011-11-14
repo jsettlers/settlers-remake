@@ -5,6 +5,7 @@ import jsettlers.graphics.map.controls.original.IOriginalConstants;
 import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
+import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -59,7 +60,7 @@ public class MainPanel extends UIPanel {
 
 	private IOriginalConstants constants;
 
-	private EContentType activeContent;
+	private IContentProvider activeContent;
 
 	private EBuildingType activeBuilding;
 
@@ -93,7 +94,7 @@ public class MainPanel extends UIPanel {
 
 	}
 
-	public void setContent(EContentType type) {
+	public void setContent(IContentProvider type) {
 		showSecondaryTabs(type.getTabs());
 
 		if (type.getTabs() == ESecondaryTabType.BUILD) {
@@ -107,11 +108,14 @@ public class MainPanel extends UIPanel {
 		contentContainer.removeAll();
 		contentContainer.addChild(type.getPanel(), 0, 0, 1, 1);
 		activeContent = type;
-		
-		activeContent.getContextListener().displayBuildingBuild(activeBuilding);
+
+		IContextListener listener = activeContent.getContextListener();
+		if (listener != null) {
+			listener.displayBuildingBuild(activeBuilding);
+		}
 	}
 
-	private void setButtonsActive(TabButton[] buttons, EContentType type) {
+	private void setButtonsActive(TabButton[] buttons, IContentProvider type) {
 		for (TabButton button : buttons) {
 			button.setActiveByContent(type);
 		}
@@ -160,7 +164,10 @@ public class MainPanel extends UIPanel {
 	}
 
 	public void displayBuildingBuild(EBuildingType type) {
-	    activeBuilding = type;
-	    activeContent.getContextListener().displayBuildingBuild(type);
-    }
+		activeBuilding = type;
+		IContextListener listener = activeContent.getContextListener();
+		if (listener != null) {
+			listener.displayBuildingBuild(type);
+		}
+	}
 }

@@ -169,7 +169,7 @@ public class Image implements ImageDataPrivider {
 	 * @param y
 	 *            The y position of the center
 	 */
-	public void drawAt(GLDrawContext gl, int x, int y) {
+	public void drawAt(GLDrawContext gl, float x, float y) {
 		drawAt(gl, x, y, null);
 	}
 
@@ -185,7 +185,7 @@ public class Image implements ImageDataPrivider {
 	 * @param color
 	 *            The player number.
 	 */
-	public void drawAt(GLDrawContext gl, int x, int y, Color color) {
+	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
 		gl.glPushMatrix();
 		gl.glTranslatef(x, y, 0);
 		draw(gl, color);

@@ -127,5 +127,34 @@ public enum EActionType {
 	/**
 	 * Save the game
 	 */
-	SAVE,
+	SAVE, 
+	/**
+	 * Converts bearer to pioneer of the selection.
+	 */
+	CONVERT_ONE_PIONEER,
+	/**
+	 * Converts all selected bearers to pioneers.
+	 */
+	CONVERT_ALL_PIONEER,
+	/**
+	 * Converts bearer to thieves of the selection.
+	 */
+	CONVERT_ONE_THIEF,
+	/**
+	 * Converts all selected thieves to pioneers.
+	 */
+	CONVERT_ALL_THIEF,
+	/**
+	 * Converts bearer to geologist of the selection.
+	 */
+	CONVERT_ONE_GEOLOGIST,
+	/**
+	 * Converts all selected geologist to pioneers.
+	 */
+	CONVERT_ALL_GEOLOGIST, 
+	/**
+	 * Converts selected Pioneers back to bearers.
+	 */
+	CONVERT_TO_BEARERS,
+	
 }

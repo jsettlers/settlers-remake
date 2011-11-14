@@ -16,7 +16,15 @@ import jsettlers.graphics.action.PanToAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
+import jsettlers.graphics.map.controls.original.panel.content.BearerSelection;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingSelectionPanel;
+import jsettlers.graphics.map.controls.original.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
+import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
 import jsettlers.graphics.map.minimap.Minimap;
+import jsettlers.graphics.map.selection.BuildingSelection;
+import jsettlers.graphics.map.selection.ISelectionSet;
+import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.graphics.utils.UIPanel;
 
 public class OriginalControls implements IControls {
@@ -238,5 +246,24 @@ public class OriginalControls implements IControls {
 	@Override
 	public void displayBuildingBuild(EBuildingType type) {
 		mainPanel.displayBuildingBuild(type);
+	}
+
+	@Override
+	public void displaySelection(ISelectionSet selection) {
+		if (selection instanceof SettlerSelection) {
+			SettlerSelection settlerSelection = (SettlerSelection) selection;
+			if (SoilderSelection.isFor(settlerSelection)) {
+				mainPanel.setContent(new SoilderSelection(settlerSelection));
+			} else if (SpecialistSelection.isFor(settlerSelection)) {
+				mainPanel.setContent(new SpecialistSelection(settlerSelection));
+			} else {
+				mainPanel.setContent(new BearerSelection(settlerSelection));
+			}
+		} else if (selection instanceof BuildingSelection) {
+			mainPanel.setContent(new BuildingSelectionPanel(
+			        (BuildingSelection) selection));
+		} else {
+			mainPanel.setContent(EContentType.EMPTY);
+		}
 	}
 }
