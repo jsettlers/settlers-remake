@@ -21,6 +21,8 @@ public class LandmarksCorrectingThread extends Thread {
 		super("LandmarksCorrectingThread");
 		this.map = map;
 
+		this.setDaemon(true);
+
 		this.start();
 	}
 

@@ -33,6 +33,7 @@ public class ConstructMarksThread extends Thread {
 		this.map = map;
 		this.player = player;
 
+		this.setDaemon(true);
 		this.start();
 	}
 

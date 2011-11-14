@@ -29,6 +29,7 @@ public class BordersThread implements Runnable {
 
 		Thread thread = new Thread(this);
 		thread.setName("bordersThread");
+		thread.setDaemon(true);
 		thread.start();
 	}
 
