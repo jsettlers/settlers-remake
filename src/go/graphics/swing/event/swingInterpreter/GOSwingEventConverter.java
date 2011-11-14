@@ -165,6 +165,18 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 				case KeyEvent.VK_F6:
 					text = "F6";
 					break;
+				case KeyEvent.VK_F7:
+					text = "F7";
+					break;
+				case KeyEvent.VK_F8:
+					text = "F8";
+					break;
+				case KeyEvent.VK_F9:
+					text = "F9";
+					break;
+				case KeyEvent.VK_F10:
+					text = "F10";
+					break;
 				case KeyEvent.VK_F11:
 					text = "F11";
 					break;
@@ -176,6 +188,12 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 					break;
 				case KeyEvent.VK_MINUS:
 					text = "-";
+					break;
+				case KeyEvent.VK_DELETE:
+					text = "DELETE";
+					break;
+				case KeyEvent.VK_SPACE:
+					text = "SPACE";
 					break;
 				default:
 					text = "";
