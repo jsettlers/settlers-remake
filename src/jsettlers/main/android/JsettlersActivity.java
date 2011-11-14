@@ -47,8 +47,15 @@ public class JsettlersActivity extends Activity {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files = new File[] { getExternalFilesDir(null), storage, jsettlersdir, new File(jsettlersdir, "GFX"), michael,
-				new File(michael, "GFX") };
+		File[] files =
+		        new File[] {
+		                getExternalFilesDir(null), //<- output dir
+		                storage,
+		                jsettlersdir,
+		                new File(jsettlersdir, "GFX"),
+		                michael,
+		                new File(michael, "GFX")
+		        };
 
 		ResourceManager.setProvider(new ResourceProvider(files));
 		SettlersGame game = new SettlersGame();

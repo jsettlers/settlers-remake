@@ -2,8 +2,10 @@ package jsettlers.main.android;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import jsettlers.common.resources.IResourceProvider;
 
@@ -43,5 +45,11 @@ public class ResourceProvider implements IResourceProvider {
 			return null;
 		}
 	}
+
+	@Override
+    public OutputStream writeFile(String name) throws IOException {
+		String path = dirs[0].getAbsolutePath() + "/" + name;
+		return new FileOutputStream(path);
+    }
 
 }
