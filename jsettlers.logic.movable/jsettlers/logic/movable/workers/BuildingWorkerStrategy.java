@@ -216,7 +216,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		case START_WORKING:
 		case STOP_WORKING:
 			if (building instanceof MillBuilding) {
-				((MillBuilding) building).setWorking(type == EBuildingJobType.START_WORKING);
+				((MillBuilding) building).setRotating(type == EBuildingJobType.START_WORKING);
 			}
 			jobFinished();
 			break;

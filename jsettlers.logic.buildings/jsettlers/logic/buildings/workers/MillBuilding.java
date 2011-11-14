@@ -11,19 +11,19 @@ import jsettlers.common.buildings.IBuilding;
 public class MillBuilding extends WorkerBuilding implements IBuilding.Mill {
 	private static final long serialVersionUID = -8586862770507050382L;
 
-	private boolean working;
+	private boolean rotating;
 
 	public MillBuilding(EBuildingType type, byte player) {
 		super(type, player);
 	}
 
 	@Override
-	public boolean isWorking() {
-		return working;
+	public boolean isRotating() {
+		return rotating;
 	}
 
-	public void setWorking(boolean working) {
-		this.working = working;
+	public void setRotating(boolean rotating) {
+		this.rotating = rotating;
 	}
 
 }

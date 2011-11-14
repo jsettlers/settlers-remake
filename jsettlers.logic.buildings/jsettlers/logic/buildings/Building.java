@@ -493,5 +493,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void debug() {
 		System.out.println("debug");
 	}
+	
+	@Override
+	public boolean isWorking() {
+	    return false;
+	}
 
 }

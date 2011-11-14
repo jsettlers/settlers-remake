@@ -18,6 +18,8 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	private ISPosition2D workAreaCenter;
 
+	private boolean isWorking = true;;
+
 	public WorkerBuilding(EBuildingType type, byte player) {
 		super(type, player);
 	}
@@ -34,7 +36,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
-		// TODO Auto-generated method stub
+		isWorking  = !stop;
 	}
 
 	@Override
@@ -76,5 +78,10 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean isWorking() {
+	    return isWorking;
 	}
 }

@@ -6,11 +6,26 @@ CR-001 [x]  rev 678   ae    --       bricklayer doesn't react correctly, after a
 CR-002 [ ]                  --       movables can leave their players area
 CR-003 [ ]                  --       check if there are holes in the protected fields of iron melt and big living house
 CR-004 [x]  rev 679   ae    --       trees should be adult at the beginning
-CR-005 [ ]                  --       weaponsmith leaves the grid!
+CR-005 [x]  rev 699   mz    --       weaponsmith leaves the grid!
 CR-006 [x]  rev 681   ae    --       constants responsible for movement of movables need to be corrected
 CR-007 [x]  rev 689   ae    --       if a digger can't reach the target, reoffer the request and make it possible for the others to do the complete work
-CR-008 [ ]                  --       corn farm has no construction poles.
+CR-008 [x]  rev 699   mz    --       corn farm has no construction poles.
 CR-009 [ ]                  --       barrack does not request new weapons
-CR-010 [ ]                  --       
-
-
+CR-010 [ ]                  --       allow soldiers to occupy buildings.
+CR-011 [ ]                  --       disallow pioneers to take land that is protected by a tower
+CR-012 [ ]                  --       make pioneers listen to the stop command
+CR-013 [ ]                  --       introduce different soldier strategies: do nothing, stand, defensive (go back to where you were, do not go far) and agressive
+CR-014 [ ]                  --       allow pioneers to be converted to bearers.
+CR-015 [ ]                  --       allow bearers to be converted to specialists
+CR-016 [ ]                  --       make a thief strategy
+CR-017 [ ]                  --       make a map editor
+CR-018 [ ]                  --       make bearers unkillable
+CR-019 [ ]                  --       introduce different selection levels: soldiers, specialistst and bearers.
+CR-020 [ ]                  --       add a priority for different goods to be transported by bearers.
+CR-021 [ ]                  --       add a priority for the buildings, in which they receive goods.
+CR-022 [ ]                  --       Make buildings destructable
+CR-023 [ ]                  --       Do not dig on mountains (mine construction)
+CR-024 [ ]                  --       When people that can walk on foreign ground are pushed away by a protected tile, they should search the nearest free tile, not the nearest one with the players ground.
+CR-025 [ ]                  --       Make fog of war consume less CPU and move it to logic.
+CR-026 [ ]                  --       Some Workers (e.g. Lomberjack) go crazy when they are cut of their house. Recheck all fail jobs.
+CR-027 [ ]                  --       
