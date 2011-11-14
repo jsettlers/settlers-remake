@@ -23,7 +23,7 @@ public class ResourceManager {
 			throw new IOException("No resource provider set.");
 		}
 	}
-	
+
 	public static OutputStream writeFile(String filename) throws IOException {
 		if (provider != null) {
 			return provider.writeFile(filename);
