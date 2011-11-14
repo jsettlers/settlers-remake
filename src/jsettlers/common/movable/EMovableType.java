@@ -40,8 +40,9 @@ public enum EMovableType {
 	BOWMAN_L3(EMaterialType.BOW),
 
 	DONKEY(EMaterialType.NO_MATERIAL),
-	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL);
-	
+	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL),
+	GEOLOGIST(EMaterialType.NO_MATERIAL);
+
 	private final EMaterialType tool;
 
 	EMovableType(EMaterialType tool) {
@@ -49,7 +50,6 @@ public enum EMovableType {
 	}
 
 	/**
-	 * 
 	 * @return the tool this settler needs to do his job.
 	 */
 	public EMaterialType getTool() {

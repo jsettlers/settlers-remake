@@ -44,7 +44,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable,
 		 * 
 		 * @return True if the mill is working.
 		 */
-		boolean isWorking();
+		boolean isRotating();
 	}
 
 	/**
@@ -56,4 +56,10 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable,
 	interface Occupyed extends IBuilding {
 		List<IBuildingOccupyer> getOccupyers();
 	}
+
+	/**
+	 * if the building is currently working
+	 * @return true if working is enabled (no matter if it really works)
+	 */
+	public boolean isWorking();
 }

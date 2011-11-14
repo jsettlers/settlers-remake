@@ -8,6 +8,8 @@ import jsettlers.common.position.ISPosition2D;
 /**
  * This defines an area on the map of a given shape.
  * 
+ * TODO: Not all map Areas are serializable
+ * 
  * @author michael
  */
 public interface IMapArea extends Iterable<ISPosition2D>, Serializable {
