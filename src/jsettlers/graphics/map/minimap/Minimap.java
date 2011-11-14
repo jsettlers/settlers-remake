@@ -49,7 +49,10 @@ public class Minimap {
 		converter =
 		        new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1,
 		                1);
-		new Thread(new LineLoader(this), "minimap loader").start();
+		Thread minimapThread =
+		        new Thread(new LineLoader(this), "minimap loader");
+		minimapThread.setDaemon(true);
+		minimapThread.start();
 	}
 
 	public void setSize(int width, int height) {
@@ -179,11 +182,11 @@ public class Minimap {
 	public MapDrawContext getContext() {
 		return context;
 	}
-	
+
 	public ISPosition2D getClickPositionIfOnMap(float relativex, float relativey) {
 		int x = converter.getMapX(relativex, relativey);
 		int y = converter.getMapY(relativex, relativey);
-		
+
 		if (context.checkMapCoordinates(x, y)) {
 			return new ShortPoint2D(x, y);
 		} else {
@@ -212,7 +215,7 @@ public class Minimap {
 	}
 
 	public FogOfWar getFog() {
-	    return context.getFogOfWar();
-    }
+		return context.getFogOfWar();
+	}
 
 }

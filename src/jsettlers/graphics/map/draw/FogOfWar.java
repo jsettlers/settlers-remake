@@ -107,6 +107,8 @@ public class FogOfWar {
 					}
 				}
 			};
+
+			super.setDaemon(true);
 		}
 
 		/**
@@ -271,6 +273,7 @@ public class FogOfWar {
 
 		public SimpleCorrectionTread() {
 			super("simple fog of war correction");
+			super.setDaemon(true);
 		}
 
 		@Override
