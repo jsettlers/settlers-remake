@@ -1,9 +1,6 @@
 package jsettlers.logic.map.newGrid;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,19 +8,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import jsettlers.common.resources.ResourceManager;
 import synchronic.timer.NetworkTimer;
 
 public class GameSerializer {
-	private final String saveFile = "save/test.sav";
+	private static final String QUICK_SAVE_FILE = "save/quicksave.sav";
 
 	public GameSerializer() {
 	}
 
 	public void save(MainGrid grid) throws FileNotFoundException, IOException {
-		new File(saveFile).delete();
-		new File(saveFile).getParentFile().mkdirs();
-
-		ZipOutputStream zipOutStream = new ZipOutputStream(new FileOutputStream(saveFile));
+		ZipOutputStream zipOutStream = new ZipOutputStream(ResourceManager.writeFile(QUICK_SAVE_FILE));
 		zipOutStream.putNextEntry(new ZipEntry("savefile"));
 
 		ObjectOutputStream oos = new ObjectOutputStream(zipOutStream);
@@ -47,20 +42,16 @@ public class GameSerializer {
 	}
 
 	public MainGrid load() throws FileNotFoundException, IOException, ClassNotFoundException {
-		if (new File(saveFile).exists()) {
-			ZipInputStream zipInStream = new ZipInputStream(new FileInputStream(saveFile));
-			zipInStream.getNextEntry();
+		ZipInputStream zipInStream = new ZipInputStream(ResourceManager.getFile(QUICK_SAVE_FILE));
+		zipInStream.getNextEntry();
 
-			ObjectInputStream ois = new ObjectInputStream(zipInStream);
-			NetworkTimer.get().setPausing(true);
+		ObjectInputStream ois = new ObjectInputStream(zipInStream);
+		NetworkTimer.get().setPausing(true);
 
-			NetworkTimer.setGameTime(ois.readInt());
-			MainGrid grid = (MainGrid) ois.readObject();
+		NetworkTimer.setGameTime(ois.readInt());
+		MainGrid grid = (MainGrid) ois.readObject();
 
-			NetworkTimer.get().setPausing(false);
-			return grid;
-		} else {
-			return null;
-		}
+		NetworkTimer.get().setPausing(false);
+		return grid;
 	}
 }
