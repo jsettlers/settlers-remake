@@ -4,13 +4,13 @@ import java.util.List;
 
 import jsettlers.input.EGuiAction;
 
-public class DestroyMovablesAction extends SimpleGuiTask {
-	private static final long serialVersionUID = 3607849657705611288L;
+public class MovableGuiTask extends SimpleGuiTask {
+	private static final long serialVersionUID = 1L;
 
 	private final List<Integer> selection;
 
-	public DestroyMovablesAction(List<Integer> selection) {
-		super(EGuiAction.DESTROY_MOVABLES);
+	public MovableGuiTask(EGuiAction action, List<Integer> selection) {
+		super(action);
 		this.selection = selection;
 	}
 
@@ -22,4 +22,5 @@ public class DestroyMovablesAction extends SimpleGuiTask {
 	public List<Integer> getSelection() {
 		return selection;
 	}
+
 }

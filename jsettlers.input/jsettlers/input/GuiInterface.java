@@ -27,9 +27,9 @@ import jsettlers.graphics.map.selection.BuildingSelection;
 import jsettlers.graphics.map.selection.EmptySelection;
 import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.map.selection.SettlerSelection;
-import jsettlers.input.task.DestroyBuildingAction;
-import jsettlers.input.task.DestroyMovablesAction;
+import jsettlers.input.task.DestroyBuildingGuiTask;
 import jsettlers.input.task.GeneralGuiTask;
+import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.TaskExecutor;
@@ -116,6 +116,12 @@ public class GuiInterface implements IMapInterfaceListener {
 				NetworkTimer.setGameSpeed(1.0f);
 			break;
 
+		case FAST_FORWARD:
+			if (!manager.isMultiplayer()) {
+				NetworkTimer.get().fastForward();
+			}
+			break;
+
 		case SELECT_POINT:
 			handleSelectPointAction((SelectAction) action);
 			break;
@@ -129,12 +135,6 @@ public class GuiInterface implements IMapInterfaceListener {
 			ISPosition2D pos = moveToAction.getPosition();
 
 			moveTo(pos);
-			break;
-
-		case FAST_FORWARD:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.get().fastForward();
-			}
 			break;
 
 		case SET_WORK_AREA:
@@ -177,9 +177,9 @@ public class GuiInterface implements IMapInterfaceListener {
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
 		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			manager.scheduleTask(new DestroyBuildingAction(((Building) currentSelection.iterator().next()).getPos()));
+			manager.scheduleTask(new DestroyBuildingGuiTask(((Building) currentSelection.iterator().next()).getPos()));
 		} else {
-			manager.scheduleTask(new DestroyMovablesAction(getIDsOfSelected()));
+			manager.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
 		}
 	}
 
@@ -207,9 +207,7 @@ public class GuiInterface implements IMapInterfaceListener {
 	 *            if false, they will start working
 	 */
 	private void stopOrStartWorkingAction(boolean stop) {
-		for (ISelectable curr : currentSelection) {
-			curr.stopOrStartWorking(stop);
-		}
+		manager.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, getIDsOfSelected()));
 	}
 
 	private void moveTo(ISPosition2D pos) {

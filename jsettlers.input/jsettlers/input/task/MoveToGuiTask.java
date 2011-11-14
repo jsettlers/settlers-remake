@@ -5,16 +5,14 @@ import java.util.List;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.input.EGuiAction;
 
-public class MoveToGuiTask extends SimpleGuiTask {
+public class MoveToGuiTask extends MovableGuiTask {
 	private static final long serialVersionUID = 1L;
 
 	private final ISPosition2D pos;
-	private final List<Integer> selection;
 
 	public MoveToGuiTask(ISPosition2D pos, List<Integer> selection) {
-		super(EGuiAction.MOVE_TO);
+		super(EGuiAction.MOVE_TO, selection);
 		this.pos = pos;
-		this.selection = selection;
 	}
 
 	@Override
@@ -24,10 +22,6 @@ public class MoveToGuiTask extends SimpleGuiTask {
 
 	public ISPosition2D getPosition() {
 		return pos;
-	}
-
-	public List<Integer> getSelection() {
-		return selection;
 	}
 
 }

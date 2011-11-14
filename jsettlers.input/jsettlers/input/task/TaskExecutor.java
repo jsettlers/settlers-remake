@@ -7,6 +7,7 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.input.EGuiAction;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.GotoJob;
@@ -51,7 +52,7 @@ public class TaskExecutor {
 		}
 			break;
 
-		case QUICK_SAVE: {
+		case QUICK_SAVE:
 			try {
 				grid.save();
 			} catch (FileNotFoundException e) {
@@ -59,20 +60,29 @@ public class TaskExecutor {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
 			break;
 
 		case DESTROY_BUILDING: {
-			ISPosition2D buildingPos = ((DestroyBuildingAction) guiTask).getPosition();
+			ISPosition2D buildingPos = ((DestroyBuildingGuiTask) guiTask).getPosition();
 			((Building) grid.getBuildingAt(buildingPos.getX(), buildingPos.getY())).kill();
 		}
 			break;
 
-		case DESTROY_MOVABLES: {
-			killSelectedMovables(((DestroyMovablesAction) guiTask).getSelection());
-		}
+		case DESTROY_MOVABLES:
+			killSelectedMovables(((MovableGuiTask) guiTask).getSelection());
 			break;
 
+		case START_WORKING:
+		case STOP_WORKING:
+			stopOrStartWorking(((MovableGuiTask) guiTask).getSelection(), guiTask.getGuiAction() == EGuiAction.STOP_WORKING);
+			break;
+
+		}
+	}
+
+	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
+		for (Integer currID : selectedMovables) {
+			Movable.getMovableByID(currID).stopOrStartWorking(stop);
 		}
 	}
 
