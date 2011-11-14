@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/f12btn" android:title="@string/f12_string" />
+    <item android:id="@+id/savebtn" android:title="@string/save_string"></item>
 </menu>
