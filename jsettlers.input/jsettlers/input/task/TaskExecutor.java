@@ -62,6 +62,23 @@ public class TaskExecutor {
 		}
 			break;
 
+		case DESTROY_BUILDING: {
+			ISPosition2D buildingPos = ((DestroyBuildingAction) guiTask).getPosition();
+			((Building) grid.getBuildingAt(buildingPos.getX(), buildingPos.getY())).kill();
+		}
+			break;
+
+		case DESTROY_MOVABLES: {
+			killSelectedMovables(((DestroyMovablesAction) guiTask).getSelection());
+		}
+			break;
+
+		}
+	}
+
+	private void killSelectedMovables(List<Integer> selectedMovables) {
+		for (Integer currID : selectedMovables) {
+			Movable.getMovableByID(currID).kill();
 		}
 	}
 

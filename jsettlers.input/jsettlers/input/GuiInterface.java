@@ -27,6 +27,8 @@ import jsettlers.graphics.map.selection.BuildingSelection;
 import jsettlers.graphics.map.selection.EmptySelection;
 import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.map.selection.SettlerSelection;
+import jsettlers.input.task.DestroyBuildingAction;
+import jsettlers.input.task.DestroyMovablesAction;
 import jsettlers.input.task.GeneralGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
@@ -140,7 +142,7 @@ public class GuiInterface implements IMapInterfaceListener {
 			break;
 
 		case DESTROY:
-			// TODO handle destroy actions of buildings
+			destroySelected();
 			break;
 
 		case STOP_WORKING:
@@ -168,6 +170,16 @@ public class GuiInterface implements IMapInterfaceListener {
 
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+		}
+	}
+
+	private void destroySelected() {
+		if (currentSelection == null || currentSelection.getSize() == 0) {
+			return;
+		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
+			manager.scheduleTask(new DestroyBuildingAction(((Building) currentSelection.iterator().next()).getPos()));
+		} else {
+			manager.scheduleTask(new DestroyMovablesAction(getIDsOfSelected()));
 		}
 	}
 
@@ -201,6 +213,12 @@ public class GuiInterface implements IMapInterfaceListener {
 	}
 
 	private void moveTo(ISPosition2D pos) {
+		List<Integer> selectedIds = getIDsOfSelected();
+
+		scheduleTask(new MoveToGuiTask(pos, selectedIds));
+	}
+
+	private List<Integer> getIDsOfSelected() {
 		List<Integer> selectedIds = new LinkedList<Integer>();
 
 		for (ISelectable curr : currentSelection) {
@@ -208,8 +226,7 @@ public class GuiInterface implements IMapInterfaceListener {
 				selectedIds.add(((IIDable) curr).getID());
 			}
 		}
-
-		scheduleTask(new MoveToGuiTask(EGuiAction.MOVE_TO, pos, selectedIds));
+		return selectedIds;
 	}
 
 	private void setActiveAction(Action action) {

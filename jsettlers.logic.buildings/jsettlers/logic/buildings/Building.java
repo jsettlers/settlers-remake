@@ -446,6 +446,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public void kill() {
+		System.out.println("building killed");
 		// TODO Auto-generated method stub
 	}
 

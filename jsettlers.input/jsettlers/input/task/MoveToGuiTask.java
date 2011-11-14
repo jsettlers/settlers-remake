@@ -11,8 +11,8 @@ public class MoveToGuiTask extends SimpleGuiTask {
 	private final ISPosition2D pos;
 	private final List<Integer> selection;
 
-	public MoveToGuiTask(EGuiAction guiAction, ISPosition2D pos, List<Integer> selection) {
-		super(guiAction);
+	public MoveToGuiTask(ISPosition2D pos, List<Integer> selection) {
+		super(EGuiAction.MOVE_TO);
 		this.pos = pos;
 		this.selection = selection;
 	}
