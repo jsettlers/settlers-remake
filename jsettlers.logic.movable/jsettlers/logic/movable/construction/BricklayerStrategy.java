@@ -100,10 +100,14 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 
 	@Override
 	public void setBricklayerJob(IConstructableBuilding constructionSite, ShortPoint2D bricklayerTargetPos, EDirection direction) {
-		this.constructionSite = constructionSite;
-		this.bricklayerTargetPos = bricklayerTargetPos;
-		this.lookDirection = direction;
-		this.startedGoing = false;
+		if (!constructionSite.isConstructionFinished()) {
+			this.constructionSite = constructionSite;
+			this.bricklayerTargetPos = bricklayerTargetPos;
+			this.lookDirection = direction;
+			this.startedGoing = false;
+		} else {
+			super.getGrid().addJobless(this);
+		}
 	}
 
 }

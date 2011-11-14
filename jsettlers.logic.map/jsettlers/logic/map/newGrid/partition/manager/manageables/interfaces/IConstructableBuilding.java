@@ -4,4 +4,6 @@ import jsettlers.common.player.IPlayerable;
 
 public interface IConstructableBuilding extends IWorkerBuilding, IPlayerable {
 	boolean tryToTakeMaterial();
+
+	boolean isConstructionFinished();
 }

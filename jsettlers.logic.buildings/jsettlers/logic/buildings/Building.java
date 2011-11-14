@@ -500,10 +500,15 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void debug() {
 		System.out.println("debug");
 	}
-	
+
 	@Override
 	public boolean isWorking() {
-	    return false;
+		return false;
+	}
+
+	@Override
+	public boolean isConstructionFinished() {
+		return constructionProgress == 1;
 	}
 
 }
