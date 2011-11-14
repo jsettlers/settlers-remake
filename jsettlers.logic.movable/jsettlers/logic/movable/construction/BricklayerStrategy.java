@@ -89,8 +89,8 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) {
-		// TODO implement stopping of work
+	protected boolean isPathStopable() {
+		return false;
 	}
 
 	@Override

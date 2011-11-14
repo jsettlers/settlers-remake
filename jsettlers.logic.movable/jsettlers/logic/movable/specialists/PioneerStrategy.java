@@ -126,9 +126,9 @@ public class PioneerStrategy extends PathableStrategy {
 
 	@Override
 	protected void stopOrStartWorking(boolean stop) {
+		super.stopOrStartWorking(stop);
 		if (stop) {
 			this.centerPos = null;
-			super.setAction(EAction.NO_ACTION, -1);
 			stopWorkAndReleaseMarked();
 		} else {
 			this.centerPos = super.getPos();
@@ -154,5 +154,10 @@ public class PioneerStrategy extends PathableStrategy {
 		} else {
 			super.getGrid().setMarked(super.getPos(), false);
 		}
+	}
+
+	@Override
+	protected boolean isPathStopable() {
+		return true;
 	}
 }

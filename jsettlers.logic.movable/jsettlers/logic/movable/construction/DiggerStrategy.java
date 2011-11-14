@@ -132,7 +132,8 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) { // diggers don't stop working
+	protected boolean isPathStopable() {
+		return false;
 	}
 
 	@Override

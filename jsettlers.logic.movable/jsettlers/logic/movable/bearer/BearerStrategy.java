@@ -152,8 +152,8 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) {
-		// don't care
+	protected boolean isPathStopable() {
+		return false;
 	}
 
 	@Override

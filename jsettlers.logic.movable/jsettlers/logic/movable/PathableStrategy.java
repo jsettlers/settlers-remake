@@ -140,4 +140,23 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 			return null;
 		}
 	}
+
+	/**
+	 * NOTE: subclasses overriding this method MUST call super.stopOrStartWorking(boolean)!!
+	 */
+	@Override
+	protected void stopOrStartWorking(boolean stop) {
+		if (stop && isFollowingPath() && isPathStopable()) {
+			abortPath();
+		}
+	}
+
+	/**
+	 * This method specifies what to do if this {@link PathableStrategy} is currently following a path and stopOrStartWorking(boolean) is called.
+	 * 
+	 * @return if the result is true, the path will be abort<br>
+	 *         if false, nothing will happend.
+	 */
+	protected abstract boolean isPathStopable();
+
 }

@@ -34,11 +34,12 @@ public class GotoTestStrategy extends PathableStrategy {
 	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) {
+	protected boolean isGotoJobable() {
+		return true;
 	}
 
 	@Override
-	protected boolean isGotoJobable() {
+	protected boolean isPathStopable() {
 		return true;
 	}
 }

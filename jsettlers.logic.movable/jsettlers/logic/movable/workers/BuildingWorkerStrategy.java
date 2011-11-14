@@ -385,11 +385,6 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) {
-		// don't care
-	}
-
-	@Override
 	protected boolean isGotoJobable() {
 		return false;
 	}
@@ -400,6 +395,11 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		this.currentJob = building.getBuildingType().getStartJob();
 		this.done = false;
 		pathOrActionFinished();
+	}
+
+	@Override
+	protected boolean isPathStopable() {
+		return false;
 	}
 
 }

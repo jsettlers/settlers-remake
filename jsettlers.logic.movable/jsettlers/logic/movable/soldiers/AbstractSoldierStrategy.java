@@ -133,13 +133,11 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 	}
 
 	@Override
-	protected void stopOrStartWorking(boolean stop) {
-		if (stop) {
-			super.abortPath();
-		}
+	protected void pathRequestFailed() {
 	}
 
 	@Override
-	protected void pathRequestFailed() {
+	protected boolean isPathStopable() {
+		return true;
 	}
 }
