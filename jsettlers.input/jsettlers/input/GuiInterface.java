@@ -162,6 +162,10 @@ public class GuiInterface implements IMapInterfaceListener {
 			// grid.resetDebugColors();
 			break;
 
+		case SAVE:
+			manager.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
+			break;
+
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}

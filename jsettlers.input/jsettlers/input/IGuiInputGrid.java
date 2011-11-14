@@ -1,5 +1,8 @@
 package jsettlers.input;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.IMapArea;
@@ -8,8 +11,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 
 /**
- * This interface defines the methods needed by the GUI to interact with the
- * grid.
+ * This interface defines the methods needed by the GUI to interact with the grid.
  * 
  * @author Andreas Eberle
  */
@@ -36,16 +38,15 @@ public interface IGuiInputGrid {
 	IHexMovable getMovable(short x, short y);
 
 	/**
-	 * Gets a position where the building can be constructed some points around
-	 * pos.
+	 * Gets a position where the building can be constructed some points around pos.
 	 * 
 	 * @param pos
 	 *            THe position
 	 * @param type
 	 *            The type of the building
-	 * @return <code>null</code> if no position was found, the position
-	 *         otherwise.
+	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
-	ISPosition2D getConstructablePositionAround(ISPosition2D pos,
-	        EBuildingType type);
+	ISPosition2D getConstructablePositionAround(ISPosition2D pos, EBuildingType type);
+
+	void save() throws FileNotFoundException, IOException;
 }

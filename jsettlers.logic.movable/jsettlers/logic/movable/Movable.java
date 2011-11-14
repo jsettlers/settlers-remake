@@ -1,5 +1,8 @@
 package jsettlers.logic.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 
 import jsettlers.common.mapobject.EMapObjectType;
@@ -15,7 +18,9 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
 
-public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable {
+public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable {
+	private static final long serialVersionUID = 6588554296128443814L;
+
 	private static int nextID = Integer.MIN_VALUE;
 	private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
 
@@ -34,7 +39,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 	private EMaterialType material = EMaterialType.NO_MATERIAL;
 
-	private boolean selected;
+	transient private boolean selected;
 
 	private MovableStrategy strategy;
 	private float progressIncrease = 0.1f;
@@ -52,6 +57,20 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 		MovableTimer.add(this);
 		movablesByID.put(id, this);
+	}
+
+	/**
+	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
+	 * 
+	 * @param ois
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		movablesByID.put(this.id, this);
+		nextID = Math.max(nextID, this.id + 1);
+		MovableTimer.add(this);
 	}
 
 	private int getNewID() {
@@ -427,4 +446,5 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		this.action = EAction.NO_ACTION;
 		this.state = EMovableState.EXECUTING_ACTION;
 	}
+
 }

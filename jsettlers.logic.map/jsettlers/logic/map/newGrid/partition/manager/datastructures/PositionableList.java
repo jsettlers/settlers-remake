@@ -1,5 +1,6 @@
 package jsettlers.logic.map.newGrid.partition.manager.datastructures;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,7 +16,8 @@ import jsettlers.logic.map.newGrid.partition.manager.datastructures.Positionable
  * 
  * @param <T>
  */
-public class PositionableList<T extends ILocatable> implements Iterable<T> {
+public class PositionableList<T extends ILocatable> implements Iterable<T>, Serializable {
+	private static final long serialVersionUID = 414099060331344505L;
 
 	private ArrayList<T> data;
 

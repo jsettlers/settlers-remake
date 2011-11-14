@@ -17,6 +17,8 @@ import jsettlers.logic.movable.Movable;
  * 
  */
 public class BowmanStrategy extends AbstractSoldierStrategy {
+	private static final long serialVersionUID = 4101130971112016217L;
+
 	public BowmanStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
 		super(grid, movable, type);
 	}

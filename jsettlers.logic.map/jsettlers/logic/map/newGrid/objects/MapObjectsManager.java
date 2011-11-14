@@ -1,5 +1,8 @@
 package jsettlers.logic.map.newGrid.objects;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
@@ -34,12 +37,19 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class MapObjectsManager implements ITimerable {
+public class MapObjectsManager implements ITimerable, Serializable {
+	private static final long serialVersionUID = 1833055351956872224L;
+
 	private final IMapObjectsManagerGrid grid;
 	private final PriorityQueue<TimeEvent> timingQueue = new PriorityQueue<TimeEvent>();
 
 	public MapObjectsManager(IMapObjectsManagerGrid grid) {
 		this.grid = grid;
+		Timer100Milli.add(this);
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		ois.defaultReadObject();
 		Timer100Milli.add(this);
 	}
 
@@ -314,7 +324,9 @@ public class MapObjectsManager implements ITimerable {
 		return pig != null && pig.canBeCut();
 	}
 
-	private static class TimeEvent implements Comparable<TimeEvent> {
+	private static class TimeEvent implements Comparable<TimeEvent>, Serializable {
+		private static final long serialVersionUID = -4439126418530597713L;
+
 		private final AbstractObjectsManagerObject mapObject;
 		private final int eventTime;
 		private final boolean shouldRemove;

@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import java.io.Serializable;
+
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -21,7 +23,8 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
  * @author Andreas Eberle
  * 
  */
-public class Partition {
+public class Partition implements Serializable {
+	private static final long serialVersionUID = -2087692347209993840L;
 
 	private int counter = 0;
 	private final byte player;

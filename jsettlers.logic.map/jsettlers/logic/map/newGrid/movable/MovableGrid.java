@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.movable;
 
+import java.io.Serializable;
+
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
@@ -10,7 +12,9 @@ import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
  * @author Andreas Eberle
  * 
  */
-public class MovableGrid {
+public class MovableGrid implements Serializable {
+	private static final long serialVersionUID = 7003522358013103962L;
+
 	private final IHexMovable[][] movableGrid;
 
 	public MovableGrid(short width, short height) {

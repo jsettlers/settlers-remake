@@ -20,6 +20,7 @@ import jsettlers.logic.movable.PathableStrategy;
 import random.RandomSingleton;
 
 public class BuildingWorkerStrategy extends PathableStrategy implements IManageableWorker {
+	private static final long serialVersionUID = 4541691091116877212L;
 
 	private final EMovableType movableType;
 	private IBuildingJob currentJob;
@@ -205,14 +206,13 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			break;
 
 		case SMOKE_ON:
-		case SMOKE_OFF:
-		{
+		case SMOKE_OFF: {
 			ISPosition2D pos = getCurrentJobPos();
 			super.getGrid().placeSmoke(pos, type == EBuildingJobType.SMOKE_ON);
 			jobFinished();
 			break;
 		}
-		
+
 		case START_WORKING:
 		case STOP_WORKING:
 			if (building instanceof MillBuilding) {
@@ -220,9 +220,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			jobFinished();
 			break;
-			
-		case PIG_IS_ADULT:
-		{
+
+		case PIG_IS_ADULT: {
 			ISPosition2D pos = getCurrentJobPos();
 			if (super.getGrid().isPigAdult(pos)) {
 				jobFinished();
@@ -231,9 +230,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			break;
 		}
-		
-		case PIG_IS_THERE:
-		{
+
+		case PIG_IS_THERE: {
 			ISPosition2D pos = getCurrentJobPos();
 			if (super.getGrid().isPigThere(pos)) {
 				jobFinished();
@@ -242,16 +240,15 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			break;
 		}
-		
+
 		case PIG_PLACE:
-		case PIG_REMOVE:
-		{
+		case PIG_REMOVE: {
 			ISPosition2D pos = getCurrentJobPos();
 			super.getGrid().placePig(pos, type == EBuildingJobType.PIG_PLACE);
 			jobFinished();
 			break;
 		}
-			
+
 		default:
 			System.err.println("unknown job type in BuildingWorkerStrategy: " + type);
 			break;
@@ -340,9 +337,9 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	private void showAction() {
 		ISPosition2D pos = getCurrentJobPos();
-			super.setPos(pos);
-			super.setVisible(true);
-			jobFinished();
+		super.setPos(pos);
+		super.setVisible(true);
+		jobFinished();
 	}
 
 	private void walkAction() {

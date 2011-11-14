@@ -5,6 +5,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 
 public class LimittedRequestStack extends RequestStack {
+	private static final long serialVersionUID = -8778043264123900036L;
 
 	private final short requestedAmount;
 	private short stillToBeRequested;

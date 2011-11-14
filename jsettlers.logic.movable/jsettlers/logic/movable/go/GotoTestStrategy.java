@@ -7,6 +7,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class GotoTestStrategy extends PathableStrategy {
+	private static final long serialVersionUID = -3136081232637436096L;
 
 	protected GotoTestStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);

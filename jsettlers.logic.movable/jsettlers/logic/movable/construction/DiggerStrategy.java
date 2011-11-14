@@ -11,6 +11,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class DiggerStrategy extends PathableStrategy implements IManageableDigger {
+	private static final long serialVersionUID = -4662839529813216429L;
 
 	private boolean wentThere = false;
 	private FreeMapArea buildingArea;

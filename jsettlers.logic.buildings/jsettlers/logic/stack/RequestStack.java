@@ -1,10 +1,13 @@
 package jsettlers.logic.stack;
 
+import java.io.Serializable;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 
-public class RequestStack {
+public class RequestStack implements Serializable {
+	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ISPosition2D position;
 	private final EMaterialType materialType;

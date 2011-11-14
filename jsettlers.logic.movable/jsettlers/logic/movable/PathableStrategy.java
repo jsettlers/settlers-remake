@@ -6,6 +6,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 
 public abstract class PathableStrategy extends MovableStrategy implements IPathCalculateable {
+	private static final long serialVersionUID = -358317723044015560L;
 
 	protected PathableStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);

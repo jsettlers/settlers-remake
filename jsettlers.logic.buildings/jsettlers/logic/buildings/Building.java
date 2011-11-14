@@ -1,5 +1,7 @@
 package jsettlers.logic.buildings;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +43,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private ISPosition2D pos;
 	private ISPosition2D door;
-	private boolean selected;
+	transient private boolean selected;
 	protected IBuildingsGrid grid;
 
 	private float constructionProgress = 0.0f;
@@ -55,6 +57,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	protected Building(EBuildingType type, byte player) {
 		this.type = type;
 		this.player = player;
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		ois.defaultReadObject();
+		Timer100Milli.add(this); // the building is added to the timer in positionAt(..)
 	}
 
 	@Override

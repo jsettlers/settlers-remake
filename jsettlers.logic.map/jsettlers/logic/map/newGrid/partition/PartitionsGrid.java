@@ -1,5 +1,9 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
 import jsettlers.common.Color;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
@@ -24,7 +28,8 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
  * @author Andreas Eberle
  * 
  */
-public final class PartitionsGrid implements IPartionsAlgorithmMap {
+public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable {
+	private static final long serialVersionUID = 8919380724171427679L;
 
 	private final short width;
 	private final short height;
@@ -35,13 +40,16 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 	 */
 	private final Partition[] partitionObjects = new Partition[1024]; // TODO make the array grow dynamically
 	private final Partition nullPartition;
-	private final PartitionsAlgorithm partitionsAlgorithm;
+	transient private PartitionsAlgorithm partitionsAlgorithm;
 	private final IPartitionableGrid grid;
+
+	private final IAStarPathMap pathfinderMap;
 
 	public PartitionsGrid(final short width, final short height, IPartitionableGrid grid, IAStarPathMap pathfinderMap) {
 		this.width = width;
 		this.height = height;
 		this.grid = grid;
+		this.pathfinderMap = pathfinderMap;
 		this.partitions = new short[width][height];
 		this.borders = new boolean[width][height];
 		this.partitionsAlgorithm = new PartitionsAlgorithm(this, pathfinderMap);
@@ -52,6 +60,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap {
 				this.partitions[x][y] = -1;
 			}
 		}
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		ois.defaultReadObject();
+		this.partitionsAlgorithm = new PartitionsAlgorithm(this, pathfinderMap);
 	}
 
 	@Override

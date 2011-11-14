@@ -12,6 +12,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public abstract class AbstractSoldierStrategy extends PathableStrategy {
+	private static final long serialVersionUID = 9000857936712315432L;
 
 	private int delayCtr = Integer.MAX_VALUE;
 	private ISPosition2D enemyPos;

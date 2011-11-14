@@ -1,5 +1,8 @@
 package jsettlers.logic.map.newGrid.partition.manager;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -30,7 +33,9 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class PartitionManager implements INetworkTimerable {
+public class PartitionManager implements INetworkTimerable, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
@@ -51,6 +56,10 @@ public class PartitionManager implements INetworkTimerable {
 	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<PartitionManager.SoilderCreationRequest>();
 
 	public PartitionManager() {
+		schedule();
+	}
+
+	private void schedule() {
 		NetworkTimer.schedule(this, (short) 2);
 	}
 
@@ -340,7 +349,9 @@ public class PartitionManager implements INetworkTimerable {
 		materialRequests.offerLast(request);
 	}
 
-	private class Offer {
+	private class Offer implements Serializable {
+		private static final long serialVersionUID = 8516955442065220998L;
+
 		ISPosition2D position;
 		EMaterialType materialType;
 		byte amount = 0;
@@ -358,7 +369,9 @@ public class PartitionManager implements INetworkTimerable {
 
 	}
 
-	private class Request<T> implements Comparable<Request<T>> {
+	private class Request<T> implements Comparable<Request<T>>, Serializable {
+		private static final long serialVersionUID = -3427364937835501076L;
+
 		final ISPosition2D position;
 		final T requested;
 		byte priority = 100;
@@ -380,7 +393,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class DiggerRequest implements ILocatable {
+	private class DiggerRequest implements ILocatable, Serializable {
+		private static final long serialVersionUID = -3781604767367556333L;
+
 		final FreeMapArea buildingArea;
 		final byte heightAvg;
 		byte amount;
@@ -398,7 +413,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class BricklayerRequest implements ILocatable {
+	private class BricklayerRequest implements ILocatable, Serializable {
+		private static final long serialVersionUID = -1673422793657988587L;
+
 		boolean creationRequested = false;
 		final Building building;
 		final ShortPoint2D bricklayerTargetPos;
@@ -416,7 +433,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class WorkerCreationRequest implements ILocatable {
+	private class WorkerCreationRequest implements ILocatable, Serializable {
+		private static final long serialVersionUID = 3047014371520017602L;
+
 		final EMovableType movableType;
 		final ISPosition2D position;
 
@@ -436,7 +455,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class SoilderCreationRequest implements ILocatable {
+	private class SoilderCreationRequest implements ILocatable, Serializable {
+		private static final long serialVersionUID = -3108188242025391145L;
+
 		private final Barrack barrack;
 
 		public SoilderCreationRequest(Barrack barrack) {
@@ -458,7 +479,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class MaterialTypeAcceptor implements IAcceptor<Offer> {
+	private class MaterialTypeAcceptor implements IAcceptor<Offer>, Serializable {
+		private static final long serialVersionUID = 635444536013281565L;
+
 		EMaterialType materialType = null;
 
 		@Override
@@ -467,7 +490,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class MovableTypeAcceptor implements IAcceptor<IManageableWorker> {
+	private class MovableTypeAcceptor implements IAcceptor<IManageableWorker>, Serializable {
+		private static final long serialVersionUID = 111392803354934224L;
+
 		EMovableType movableType = null;
 
 		@Override
@@ -476,7 +501,9 @@ public class PartitionManager implements INetworkTimerable {
 		}
 	}
 
-	private class WorkerRequest implements ILocatable {
+	private class WorkerRequest implements ILocatable, Serializable {
+		private static final long serialVersionUID = 6420250669583553112L;
+
 		final EMovableType movableType;
 		final IWorkerRequestBuilding building;
 		boolean creationRequested = false;
@@ -495,6 +522,11 @@ public class PartitionManager implements INetworkTimerable {
 		public String toString() {
 			return movableType + "    " + creationRequested + "     " + building.getBuildingType();
 		}
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		schedule();
 	}
 
 }

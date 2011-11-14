@@ -1,5 +1,6 @@
 package jsettlers.logic.map.newGrid.partition.manager.datastructures;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -14,7 +15,8 @@ import jsettlers.common.position.ISPosition2D;
  * 
  * @param <T>
  */
-public class PositionableHashMap<T> implements Iterable<T> {
+public class PositionableHashMap<T> implements Iterable<T>, Serializable {
+	private static final long serialVersionUID = 5748990341167824377L;
 
 	private Hashtable<ISPosition2D, T> data;
 

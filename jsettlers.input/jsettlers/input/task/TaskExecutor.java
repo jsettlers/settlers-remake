@@ -1,5 +1,7 @@
 package jsettlers.input.task;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +48,17 @@ public class TaskExecutor {
 		case MOVE_TO: {
 			MoveToGuiTask task = (MoveToGuiTask) guiTask;
 			moveSelectedTo(task.getPosition(), task.getSelection());
+		}
+			break;
+
+		case QUICK_SAVE: {
+			try {
+				grid.save();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 			break;
 

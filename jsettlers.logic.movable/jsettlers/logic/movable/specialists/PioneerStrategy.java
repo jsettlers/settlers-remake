@@ -12,6 +12,8 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class PioneerStrategy extends PathableStrategy {
+	private static final long serialVersionUID = -796883209827059830L;
+
 	private static final byte SEARCH_RADIUS = (byte) 15;
 
 	private ISPosition2D centerPos;

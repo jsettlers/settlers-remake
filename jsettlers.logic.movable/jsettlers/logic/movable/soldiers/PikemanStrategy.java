@@ -17,6 +17,8 @@ import jsettlers.logic.movable.Movable;
  * 
  */
 public class PikemanStrategy extends AbstractSoldierStrategy {
+	private static final long serialVersionUID = -7925690240480881781L;
+
 	public PikemanStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
 		super(grid, movable, type);
 	}

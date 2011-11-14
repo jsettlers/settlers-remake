@@ -1,5 +1,7 @@
 package jsettlers.logic.movable;
 
+import java.io.Serializable;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
@@ -20,7 +22,9 @@ import jsettlers.logic.movable.workers.BuildingWorkerStrategy;
  * @author michael
  * 
  */
-public abstract class MovableStrategy {
+public abstract class MovableStrategy implements Serializable {
+	private static final long serialVersionUID = 7544560296926609429L;
+
 	protected final Movable movable;
 	private final IMovableGrid grid;
 

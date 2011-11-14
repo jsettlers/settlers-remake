@@ -1,5 +1,8 @@
 package jsettlers.logic.map.newGrid;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -73,7 +76,9 @@ import jsettlers.logic.stack.IRequestsStackGrid;
  * @author Andreas Eberle
  * 
  */
-public class MainGrid {
+public class MainGrid implements Serializable {
+	private static final long serialVersionUID = 3824511313693431423L;
+
 	protected final short width;
 	protected final short height;
 
@@ -82,49 +87,24 @@ public class MainGrid {
 	protected final PartitionsGrid partitionsGrid;
 	protected final MovableGrid movableGrid;
 	protected final BlockedGrid blockedGrid;
-	protected final Color[][] debugColors;
+	transient protected Color[][] debugColors;
 
 	protected final MovablePathfinderGrid movablePathfinderGrid;
-	private final IGraphicsGrid graphicsGrid;
 	protected final MapObjectsManager mapObjectsManager;
-	private final LandmarksCorrectingThread landmarksCorrectionThread;
-	private final ConstructMarksThread constructionMarksCalculator;
-	private final BordersThread bordersThread;
 	private final BuildingsGrid buildingsGrid;
-	private final IGuiInputGrid guiInputGrid;
-	private final ConstructionMarksGrid constructionMarksGrid;
 
-	public MainGrid(short width, short height, LandscapeGrid landscapeGrid, BlockedGrid blockedGrid, ObjectsGrid objectsGrid) {
-		this.width = width;
-		this.height = height;
-		this.landscapeGrid = landscapeGrid;
-		this.blockedGrid = blockedGrid;
-		this.objectsGrid = objectsGrid;
-
-		this.movablePathfinderGrid = new MovablePathfinderGrid();
-		this.graphicsGrid = new GraphicsGrid();
-		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
-
-		this.movableGrid = new MovableGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid(), movablePathfinderGrid);
-
-		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
-		this.bordersThread = new BordersThread(new BordersThreadGrid());
-		this.constructionMarksGrid = new ConstructionMarksGrid();
-		this.constructionMarksCalculator = new ConstructMarksThread(constructionMarksGrid, (byte) 0); // TODO player needs to be set
-		// dynamically
-		this.buildingsGrid = new BuildingsGrid();
-		this.guiInputGrid = new GUIInputGrid();
-
-		this.debugColors = new Color[width][height];
-	}
+	transient private IGraphicsGrid graphicsGrid;
+	transient private LandmarksCorrectingThread landmarksCorrectionThread;
+	transient private ConstructionMarksGrid constructionMarksGrid;
+	transient private ConstructMarksThread constructionMarksCalculator;
+	transient private BordersThread bordersThread;
+	transient private IGuiInputGrid guiInputGrid;
 
 	public MainGrid(short width, short height) {
 		this.width = width;
 		this.height = height;
 
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
-		this.graphicsGrid = new GraphicsGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
 		this.landscapeGrid = new LandscapeGrid(width, height);
@@ -133,15 +113,26 @@ public class MainGrid {
 		this.blockedGrid = new BlockedGrid(width, height);
 		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid(), movablePathfinderGrid);
 
-		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
-		this.bordersThread = new BordersThread(new BordersThreadGrid());
-		this.constructionMarksGrid = new ConstructionMarksGrid();
-		this.constructionMarksCalculator = new ConstructMarksThread(constructionMarksGrid, (byte) 0); // TODO player needs to be set
-		// dynamically
 		this.buildingsGrid = new BuildingsGrid();
+
+		initAdditionalGrids();
+	}
+
+	private void initAdditionalGrids() {
+		this.graphicsGrid = new GraphicsGrid();
+		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
+		this.constructionMarksGrid = new ConstructionMarksGrid();
+		this.constructionMarksCalculator = new ConstructMarksThread(constructionMarksGrid, (byte) 0);
+		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
 
 		this.debugColors = new Color[width][height];
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+
+		initAdditionalGrids();
 	}
 
 	private MainGrid(MapGrid mapGrid) {
@@ -270,7 +261,9 @@ public class MainGrid {
 		return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
 	}
 
-	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap {
+	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
+		private static final long serialVersionUID = -2775530442375843213L;
+
 		@Override
 		public short getHeight() {
 			return height;
@@ -319,7 +312,7 @@ public class MainGrid {
 		public boolean isInBounds(short x, short y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
-		
+
 		@Override
 		public boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculable) {
 			switch (searchType) {
@@ -484,6 +477,7 @@ public class MainGrid {
 	}
 
 	private class MapObjectsManagerGrid implements IMapObjectsManagerGrid {
+		private static final long serialVersionUID = 6223899915568781576L;
 
 		@Override
 		public void setLandscape(short x, short y, ELandscapeType landscapeType) {
@@ -611,12 +605,23 @@ public class MainGrid {
 		}
 	}
 
-	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid {
-		private final HexAStar aStar;
-		private final DijkstraAlgorithm dijkstra;
-		private final InAreaFinder inAreaFinder;
+	private class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
+		private static final long serialVersionUID = 4006228724969442801L;
+
+		transient private HexAStar aStar;
+		transient private DijkstraAlgorithm dijkstra;
+		transient private InAreaFinder inAreaFinder;
 
 		public MovablePathfinderGrid() {
+			initPathfinders();
+		}
+
+		private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+			ois.defaultReadObject();
+			initPathfinders();
+		}
+
+		private void initPathfinders() {
 			aStar = new HexAStar(this);
 			dijkstra = new DijkstraAlgorithm(this, aStar);
 			inAreaFinder = new InAreaFinder(this);
@@ -1025,9 +1030,17 @@ public class MainGrid {
 				return null;
 			}
 		}
+
+		@Override
+		public void save() throws FileNotFoundException, IOException {
+			GameSerializer serializer = new GameSerializer();
+			serializer.save(MainGrid.this);
+		}
 	}
 
-	class PartitionableGrid implements IPartitionableGrid {
+	class PartitionableGrid implements IPartitionableGrid, Serializable {
+		private static final long serialVersionUID = 5631266851555264047L;
+
 		@Override
 		public boolean isBlocked(short x, short y) {
 			return blockedGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);

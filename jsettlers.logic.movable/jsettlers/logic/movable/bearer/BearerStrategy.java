@@ -12,6 +12,8 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class BearerStrategy extends PathableStrategy implements IManageableBearer {
+	private static final long serialVersionUID = -3470280673016494554L;
+
 	private EBearerState state = EBearerState.JOBLESS;
 	private ISPosition2D offer;
 	private ISPosition2D request;

@@ -11,6 +11,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
 public class BricklayerStrategy extends PathableStrategy implements IManageableBricklayer {
+	private static final long serialVersionUID = -5076159171851148099L;
 
 	private IConstructableBuilding constructionSite;
 	private ShortPoint2D bricklayerTargetPos;
