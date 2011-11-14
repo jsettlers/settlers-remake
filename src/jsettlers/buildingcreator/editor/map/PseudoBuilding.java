@@ -65,4 +65,10 @@ public class PseudoBuilding implements IBuilding {
 	    return null;
     }
 
+	@Override
+    public boolean isWorking() {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
 }

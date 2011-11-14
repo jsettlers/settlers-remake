@@ -70,7 +70,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 				return new FileInputStream(file);
 			}
 		});
-		
+
 		EBuildingType type = askType();
 
 		definition = new BuildingDefinition(type);
@@ -138,6 +138,12 @@ public class BuildingCreator implements IMapInterfaceListener {
 				                "Select building type", "Building Type",
 				                JOptionPane.QUESTION_MESSAGE, null,
 				                ToolType.values(), tool);
+				
+				for (int x = 0; x < map.getWidth(); x++) {
+					for (int y = 0; y < map.getWidth(); y++) {
+						reloadColor(new ShortPoint2D(x, y));
+					}
+				}
 			}
 		});
 		return button;
@@ -191,7 +197,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 			if (tool == ToolType.SET_BLOCKED) {
 				toogleUsedTile(relative);
-			} else if (tool == ToolType.SET_DOOOR) {
+			} else if (tool == ToolType.SET_DOOR) {
 				setDoor(relative);
 			} else if (tool == ToolType.ADD_STACK) {
 				addStack(relative);
@@ -278,32 +284,42 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 		RelativePoint relative = absoluteToRelative(pos);
 		if (definition.getBlockedStatus(relative)) {
-			colors.add(new Color(.5f, 0, 0, 1));
+			colors.add(new Color(0x0343df));
 		} else if (definition.getProtectedStatus(relative)) {
-			colors.add(new Color(0xff0000));
-		}
-
-		if (definition.getBuildmarkStatus(relative)) {
-			colors.add(new Color(0xd1b26f));
-		}
-
-		if (definition.getDoor().equals(relative)) {
-			colors.add(new Color(0x029386));
-		}
-
-		if (definition.getFlag().equals(relative)) {
 			colors.add(new Color(0x75bbfd));
 		}
 
-		if (definition.getStack(relative) != null) {
-			colors.add(new Color(0x96f97b));
-			tile.setStack(new MapStack(definition.getStack(relative)));
-		} else {
-			tile.setStack(null);
+		if (tool == ToolType.SET_BUILDMARK) {
+			if (definition.getBuildmarkStatus(relative)) {
+				colors.add(new Color(0xf97306));
+			}
 		}
 
-		if (definition.getBricklayerStatus(relative)) {
-			colors.add(new Color(0xffff14));
+		if (tool == ToolType.SET_DOOR) {
+			if (definition.getDoor().equals(relative)) {
+				colors.add(new Color(0xf97306));
+			}
+		}
+
+		if (tool == ToolType.SET_FLAG) {
+			if (definition.getFlag().equals(relative)) {
+				colors.add(new Color(0xf97306));
+			}
+		}
+
+		if (tool == ToolType.ADD_STACK || tool == ToolType.REMOVE_STACK) {
+			if (definition.getStack(relative) != null) {
+				colors.add(new Color(0xf97306));
+				tile.setStack(new MapStack(definition.getStack(relative)));
+			} else {
+				tile.setStack(null);
+			}
+		}
+
+		if (tool == ToolType.BRICKLAYER_NE || tool == ToolType.BRICKLAYER_NW) {
+			if (definition.getBricklayerStatus(relative)) {
+				colors.add(new Color(0xf97306));
+			}
 		}
 
 		if (!colors.isEmpty()) {
