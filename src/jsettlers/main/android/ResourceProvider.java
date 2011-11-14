@@ -26,10 +26,8 @@ public class ResourceProvider implements IResourceProvider {
 				return new FileInputStream(found);
 			}
 		}
-		System.err.println("File " + name
-		        + " not found. Place it in JSettlers dir!");
-		throw new IOException("File " + name
-		        + " not found. Place it in JSettlers dir!");
+		System.err.println("File " + name + " not found. Place it in JSettlers dir!");
+		throw new IOException("File " + name + " not found. Place it in JSettlers dir!");
 	}
 
 	private File searchFileIn(File dir, String[] parts) {
@@ -47,9 +45,10 @@ public class ResourceProvider implements IResourceProvider {
 	}
 
 	@Override
-    public OutputStream writeFile(String name) throws IOException {
-		String path = dirs[0].getAbsolutePath() + "/" + name;
-		return new FileOutputStream(path);
-    }
+	public OutputStream writeFile(String name) throws IOException {
+		File outFile = new File(dirs[0].getAbsolutePath() + "/" + name);
+		outFile.getParentFile().mkdirs();
+		return new FileOutputStream(outFile);
+	}
 
 }
