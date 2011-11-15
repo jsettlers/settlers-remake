@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import jsettlers.common.Color;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
@@ -52,8 +53,7 @@ public class TestMap implements IGraphicsGrid {
 		for (int i = 0; i < WIDTH * HEIGHT; i++) {
 			int x = i % WIDTH;
 			int y = i / WIDTH;
-			TestTile tile =
-			        new TestTile((short) x, (short) y, this.heights[x][y]);
+			TestTile tile = new TestTile((short) x, (short) y, this.heights[x][y]);
 			this.tiles.add(tile);
 		}
 
@@ -168,9 +168,7 @@ public class TestMap implements IGraphicsGrid {
 			TestTile tile = getTile(cx, cy);
 
 			EMovableType type = getRandomSettlerType();
-			TestSettler settler =
-			        new TestSettler(getRandomDirection(), type, tile,
-			                (byte) (Math.random() * 8));
+			TestSettler settler = new TestSettler(getRandomDirection(), type, tile, (byte) (Math.random() * 8));
 			if (type == EMovableType.BEARER) {
 				settler.setMaterial(getRandomMaterial());
 			}
@@ -183,80 +181,79 @@ public class TestMap implements IGraphicsGrid {
 		if (Math.random() < .6) {
 			return EMovableType.BEARER;
 		} else {
-			return EMovableType.values()[(int) (Math.random() * EMovableType
-			        .values().length)];
+			return EMovableType.values()[(int) (Math.random() * EMovableType.values().length)];
 		}
 	}
 
 	private EDirection getRandomDirection() {
 		int random = (int) (Math.random() * 6);
 		switch (random) {
-			case 0:
-				return EDirection.EAST;
-			case 1:
-				return EDirection.NORTH_EAST;
-			case 2:
-				return EDirection.NORTH_WEST;
-			case 3:
-				return EDirection.WEST;
-			case 4:
-				return EDirection.SOUTH_WEST;
-			default:
-				return EDirection.SOUTH_EAST;
+		case 0:
+			return EDirection.EAST;
+		case 1:
+			return EDirection.NORTH_EAST;
+		case 2:
+			return EDirection.NORTH_WEST;
+		case 3:
+			return EDirection.WEST;
+		case 4:
+			return EDirection.SOUTH_WEST;
+		default:
+			return EDirection.SOUTH_EAST;
 		}
 	}
 
 	private EMaterialType getRandomMaterial() {
 		int random = (int) (Math.random() * 23);
 		switch (random) {
-			case 0:
-				return EMaterialType.AXE;
-			case 1:
-				return EMaterialType.BOW;
-			case 2:
-				return EMaterialType.BREAD;
-			case 3:
-				return EMaterialType.COAL;
-			case 4:
-				return EMaterialType.CROP;
-			case 5:
-				return EMaterialType.FISH;
-			case 6:
-				return EMaterialType.FISHINGROD;
-			case 7:
-				return EMaterialType.FLOUR;
-			case 8:
-				return EMaterialType.GOLD;
-			case 9:
-				return EMaterialType.GOLDORE;
-			case 10:
-				return EMaterialType.HAMMER;
-			case 11:
-				return EMaterialType.IRON;
-			case 12:
-				return EMaterialType.IRONORE;
-			case 13:
-				return EMaterialType.MEAT;
-			case 14:
-				return EMaterialType.NO_MATERIAL;
-			case 15:
-				return EMaterialType.PICK;
-			case 16:
-				return EMaterialType.PIG;
-			case 17:
-				return EMaterialType.PLANK;
-			case 18:
-				return EMaterialType.SAW;
-			case 19:
-				return EMaterialType.SCYTHE;
-			case 20:
-				return EMaterialType.SPEAR;
-			case 21:
-				return EMaterialType.SWORD;
-			case 22:
-				return EMaterialType.WATER;
-			default:
-				return EMaterialType.TRUNK;
+		case 0:
+			return EMaterialType.AXE;
+		case 1:
+			return EMaterialType.BOW;
+		case 2:
+			return EMaterialType.BREAD;
+		case 3:
+			return EMaterialType.COAL;
+		case 4:
+			return EMaterialType.CROP;
+		case 5:
+			return EMaterialType.FISH;
+		case 6:
+			return EMaterialType.FISHINGROD;
+		case 7:
+			return EMaterialType.FLOUR;
+		case 8:
+			return EMaterialType.GOLD;
+		case 9:
+			return EMaterialType.GOLDORE;
+		case 10:
+			return EMaterialType.HAMMER;
+		case 11:
+			return EMaterialType.IRON;
+		case 12:
+			return EMaterialType.IRONORE;
+		case 13:
+			return EMaterialType.MEAT;
+		case 14:
+			return EMaterialType.NO_MATERIAL;
+		case 15:
+			return EMaterialType.PICK;
+		case 16:
+			return EMaterialType.PIG;
+		case 17:
+			return EMaterialType.PLANK;
+		case 18:
+			return EMaterialType.SAW;
+		case 19:
+			return EMaterialType.SCYTHE;
+		case 20:
+			return EMaterialType.SPEAR;
+		case 21:
+			return EMaterialType.SWORD;
+		case 22:
+			return EMaterialType.WATER;
+		default:
+			return EMaterialType.TRUNK;
 		}
 	}
 
@@ -274,8 +271,7 @@ public class TestMap implements IGraphicsGrid {
 			MapCircle circle = new MapCircle((short) cx, (short) cy, (float) r);
 
 			for (ISPosition2D pos : new MapShapeFilter(circle, WIDTH, HEIGHT)) {
-				double add =
-				        (r - circle.distanceToCenter(pos.getX(), pos.getY())) / 5;
+				double add = (r - circle.distanceToCenter(pos.getX(), pos.getY())) / 5;
 				this.heights[pos.getX()][pos.getY()] += (byte) add;
 			}
 		}
@@ -295,13 +291,11 @@ public class TestMap implements IGraphicsGrid {
 	private void removeCanyons() {
 		for (int y = 0; y < HEIGHT - 2; y++) {
 			for (int x = 0; x < WIDTH - 2; x++) {
-				if (this.heights[x + 1][y] < this.heights[x][y]
-				        && this.heights[x + 1][y] < this.heights[x + 2][y]) {
+				if (this.heights[x + 1][y] < this.heights[x][y] && this.heights[x + 1][y] < this.heights[x + 2][y]) {
 					this.heights[x + 1][y] = this.heights[x][y];
 				}
 
-				if (this.heights[x][y + 1] < this.heights[x][y]
-				        && this.heights[x][y + 1] < this.heights[x][y + 2]) {
+				if (this.heights[x][y + 1] < this.heights[x][y] && this.heights[x][y + 1] < this.heights[x][y + 2]) {
 					this.heights[x][y + 1] = this.heights[x][y];
 				}
 			}
@@ -342,25 +336,18 @@ public class TestMap implements IGraphicsGrid {
 				continue;
 			}
 
-			while (current != null
-			        && current.getLandscapeType() != ELandscapeType.WATER) {
+			while (current != null && current.getLandscapeType() != ELandscapeType.WATER) {
 				current.setRiver(true);
 
-				List<EDirection> directions =
-				        Arrays.asList(EDirection.values());
+				List<EDirection> directions = Arrays.asList(EDirection.values());
 				Collections.shuffle(directions);
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
-					TestTile tile =
-					        this.getTile(possibleDirection
-					                .getNextHexPoint(current));
-					if (tile != null && tile.getHeight() <= current.getHeight()
-					        && tile.getLandscapeType() != ELandscapeType.RIVER1
-					        && tile.getLandscapeType() != ELandscapeType.RIVER2
-					        && tile.getLandscapeType() != ELandscapeType.RIVER3
-					        && tile.getLandscapeType() != ELandscapeType.RIVER4
-					        && getNeighbourRiverCount(tile) < 2) {
-						goTo = (TestTile) tile;
+					TestTile tile = this.getTile(possibleDirection.getNextHexPoint(current));
+					if (tile != null && tile.getHeight() <= current.getHeight() && tile.getLandscapeType() != ELandscapeType.RIVER1
+							&& tile.getLandscapeType() != ELandscapeType.RIVER2 && tile.getLandscapeType() != ELandscapeType.RIVER3
+							&& tile.getLandscapeType() != ELandscapeType.RIVER4 && getNeighbourRiverCount(tile) < 2) {
+						goTo = tile;
 						break;
 					}
 				}
@@ -375,10 +362,8 @@ public class TestMap implements IGraphicsGrid {
 		for (EDirection dir : EDirection.values()) {
 			TestTile toTest = this.getTile(dir.getNextHexPoint(tile));
 			if (toTest != null
-			        && (toTest.getLandscapeType() == ELandscapeType.RIVER1
-			                || toTest.getLandscapeType() == ELandscapeType.RIVER2
-			                || toTest.getLandscapeType() == ELandscapeType.RIVER3 || toTest
-			                .getLandscapeType() == ELandscapeType.RIVER4)) {
+					&& (toTest.getLandscapeType() == ELandscapeType.RIVER1 || toTest.getLandscapeType() == ELandscapeType.RIVER2
+							|| toTest.getLandscapeType() == ELandscapeType.RIVER3 || toTest.getLandscapeType() == ELandscapeType.RIVER4)) {
 				rivers++;
 			}
 		}
@@ -404,26 +389,20 @@ public class TestMap implements IGraphicsGrid {
 		for (TestSettler settler : this.settlers) {
 			settler.increaseProgress();
 			if (settler.moveOn()) {
-				TestTile newPosition =
-				        (TestTile) this.getTile(settler.getDirection()
-				                .getNextHexPoint(settler.getPos()));
+				TestTile newPosition = this.getTile(settler.getDirection().getNextHexPoint(settler.getPos()));
 				if (newPosition == null) {
 					// should not happen
 					EDirection direction = getRandomDirection();
 					settler.setDirection(direction);
 				} else {
 
-					TestTile nextPosition =
-					        (TestTile) this.getTile(settler.getDirection()
-					                .getNextHexPoint(newPosition));
+					TestTile nextPosition = this.getTile(settler.getDirection().getNextHexPoint(newPosition));
 
 					((TestTile) settler.getPos()).setMovable(null);
 					newPosition.setMovable(settler);
 					settler.setPosition(newPosition);
 
-					if (nextPosition == null
-					        || nextPosition.getMovable() != null
-					        || nextPosition.getLandscapeType() == ELandscapeType.WATER) {
+					if (nextPosition == null || nextPosition.getMovable() != null || nextPosition.getLandscapeType() == ELandscapeType.WATER) {
 						// may not move...
 						EDirection direction = getRandomDirection();
 						settler.setDirection(direction);
@@ -504,5 +483,15 @@ public class TestMap implements IGraphicsGrid {
 	@Override
 	public byte getPlayerAt(int x, int y) {
 		return 0;
+	}
+
+	@Override
+	public byte getVisibleStatus(int x, int y) {
+		return CommonConstants.FOG_OF_WAR_VISIBLE;
+	}
+
+	@Override
+	public boolean isFogOfWarVisible(int x, int y) {
+		return true;
 	}
 }
