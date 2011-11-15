@@ -89,4 +89,16 @@ public interface IGraphicsGrid {
 	 *         otherwise: the player number occupying this position.
 	 */
 	byte getPlayerAt(int x, int y);
+
+	/**
+	 * 
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
+	 * @return visibility value defined by the fog of war algorithm
+	 */
+	byte getVisibleStatus(int x, int y);
+
+	boolean isFogOfWarVisible(int x, int y);
 }
