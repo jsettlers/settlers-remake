@@ -23,7 +23,7 @@ import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.MillBuilding;
-import jsettlers.logic.buildings.workers.Mine;
+import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
@@ -516,7 +516,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case IRONMINE:
 		case GOLDMINE:
 		case COALMINE:
-			return new Mine(type, player);
+			return new MineBuilding(type, player);
 
 		default:
 			System.err.println("couldn't create new building, because type is unknown: " + type);

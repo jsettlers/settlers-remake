@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.blocked;
+package jsettlers.logic.map.newGrid.flags;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -9,7 +9,7 @@ import java.util.BitSet;
  * @author Andreas Eberle
  * 
  */
-public class BlockedGrid implements Serializable {
+public class FlagsGrid implements Serializable {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
@@ -18,7 +18,7 @@ public class BlockedGrid implements Serializable {
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
 
-	public BlockedGrid(short width, short height) {
+	public FlagsGrid(short width, short height) {
 		this.width = width;
 
 		this.blockedGrid = new BitSet(width * height);
