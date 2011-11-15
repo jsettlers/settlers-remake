@@ -29,6 +29,8 @@ import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
+import jsettlers.logic.algorithms.fogofwar.FogOfWar;
+import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -92,6 +94,7 @@ public class MainGrid implements Serializable {
 	protected final MovablePathfinderGrid movablePathfinderGrid;
 	protected final MapObjectsManager mapObjectsManager;
 	private final BuildingsGrid buildingsGrid;
+	private final FogOfWar fogOfWar;
 
 	transient private IGraphicsGrid graphicsGrid;
 	transient private LandmarksCorrectingThread landmarksCorrectionThread;
@@ -114,6 +117,7 @@ public class MainGrid implements Serializable {
 		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid(), movablePathfinderGrid);
 
 		this.buildingsGrid = new BuildingsGrid();
+		this.fogOfWar = new FogOfWar(width, height); // TODO @Andreas implement new interface for fog of war
 
 		initAdditionalGrids();
 	}
@@ -127,6 +131,8 @@ public class MainGrid implements Serializable {
 		this.guiInputGrid = new GUIInputGrid();
 
 		this.debugColors = new Color[width][height];
+
+		this.fogOfWar.startThread(new FogOfWarGrid());
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -473,6 +479,16 @@ public class MainGrid implements Serializable {
 		@Override
 		public byte getPlayerAt(int x, int y) {
 			return partitionsGrid.getPlayerAt((short) x, (short) y);
+		}
+
+		@Override
+		public byte getVisibleStatus(int x, int y) {
+			return fogOfWar.getVisibleStatus(x, y);
+		}
+
+		@Override
+		public boolean isFogOfWarVisible(int x, int y) {
+			return fogOfWar.isVisible(x, y);
 		}
 	}
 
@@ -1055,6 +1071,30 @@ public class MainGrid implements Serializable {
 		public void setDebugColor(final short x, final short y, Color color) {
 			debugColors[x][y] = color;
 		}
+	}
+
+	private class FogOfWarGrid implements IFogOfWarGrid {
+
+		@Override
+		public short getHeight() {
+			return height;
+		}
+
+		@Override
+		public short getWidth() {
+			return width;
+		}
+
+		@Override
+		public IMovable getMovableAt(int x, int y) {
+			return movableGrid.getMovableAt((short) x, (short) y);
+		}
+
+		@Override
+		public IMapObject getMapObjectsAt(int x, int y) {
+			return objectsGrid.getObjectsAt((short) x, (short) y);
+		}
+
 	}
 
 }
