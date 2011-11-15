@@ -68,4 +68,5 @@ public abstract class SpawnBuilding extends Building {
 	@Override
 	protected void positionedEvent(ISPosition2D pos) {
 	}
+
 }

@@ -36,7 +36,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
-		isWorking  = !stop;
+		isWorking = !stop;
 	}
 
 	@Override
@@ -79,9 +79,10 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean isWorking() {
-	    return isWorking;
+		return isWorking;
 	}
+
 }

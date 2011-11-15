@@ -24,8 +24,8 @@ CR-019 [ ]                  --       introduce different selection levels: soldi
 CR-020 [ ]                  --       add a priority for different goods to be transported by bearers.
 CR-021 [ ]                  --       add a priority for the buildings, in which they receive goods.
 CR-022 [ ]                  --       Make buildings destructable
-CR-023 [ ]                  --       Do not dig on mountains (mine construction)
-CR-024 [ ]                  --       When people that can walk on foreign ground are pushed away by a protected tile, they should search the nearest free tile, not the nearest one with the players ground.
+CR-023 [x]  rev 724    ae   --       Do not dig on mountains (mine construction)
+CR-024 [x]  rev 723    ae   --       When people that can walk on foreign ground are pushed away by a protected tile, they should search the nearest free tile, not the nearest one with the players ground.
 CR-025 [ ]                  --       Make fog of war consume less CPU
 CR-026 [ ]                  --       Some Workers (e.g. Lumberjack) go crazy when they are cut of their house. Recheck all fail jobs.
 CR-027 [x]  rev 719    ae   --       bricklayer walks to buildings that are already constructed (gets the job after the building has been constructed

@@ -54,4 +54,5 @@ public class OccupyingBuilding extends Building {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 }

@@ -109,4 +109,5 @@ public class Barrack extends Building {
 	public ISPosition2D getDoor() {
 		return super.getDoor();
 	}
+
 }

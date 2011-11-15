@@ -23,6 +23,7 @@ import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.MillBuilding;
+import jsettlers.logic.buildings.workers.Mine;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
@@ -185,31 +186,41 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private void requestDiggers() {
-		RelativePoint[] blocked = getBuildingType().getBlockedTiles();
-		LinkedList<ISPosition2D> positions = new LinkedList<ISPosition2D>();
-		int heightSum = 0;
+		if (shouldBeFlatened()) {
+			RelativePoint[] blocked = getBuildingType().getBlockedTiles();
+			LinkedList<ISPosition2D> positions = new LinkedList<ISPosition2D>();
+			int heightSum = 0;
 
-		for (RelativePoint curr : blocked) {
-			ISPosition2D currPos = curr.calculatePoint(this.pos);
-			positions.add(currPos);
-			heightSum += this.grid.getHeightAt(currPos);
+			for (RelativePoint curr : blocked) {
+				ISPosition2D currPos = curr.calculatePoint(this.pos);
+				positions.add(currPos);
+				heightSum += this.grid.getHeightAt(currPos);
+			}
+
+			Collections.shuffle(positions, RandomSingleton.get());
+
+			this.heightAvg = (byte) (heightSum / blocked.length);
+			byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
+
+			grid.requestDiggers(this.buildingArea, this.heightAvg, numberOfDiggers);
 		}
+	}
 
-		Collections.shuffle(positions, RandomSingleton.get());
-
-		this.heightAvg = (byte) (heightSum / blocked.length);
-		byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
-
-		grid.requestDiggers(this.buildingArea, this.heightAvg, numberOfDiggers);
+	protected boolean shouldBeFlatened() {
+		return true;
 	}
 
 	private boolean isFlatened() {
-		for (ISPosition2D pos : buildingArea) {
-			if (grid.getHeightAt(pos) != heightAvg) {
-				return false;
+		if (shouldBeFlatened()) {
+			for (ISPosition2D pos : buildingArea) {
+				if (grid.getHeightAt(pos) != heightAvg) {
+					return false;
+				}
 			}
+			return true;
+		} else {
+			return true;
 		}
-		return true;
 	}
 
 	@Override
@@ -285,53 +296,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return true;
 		}
 		return false;
-	}
-
-	public static Building getBuilding(EBuildingType type, byte player) {
-		switch (type) {
-		case BIG_LIVINGHOUSE:
-			return new BigLivinghouse(player);
-		case MEDIUM_LIVINGHOUSE:
-			return new MediumLivinghouse(player);
-		case SMALL_LIVINGHOUSE:
-			return new SmallLivinghouse(player);
-		case CHARCOAL_BURNER:
-		case COALMINE:
-		case BAKER:
-		case FARM:
-		case FISHER:
-		case FORESTER:
-		case GOLDMELT:
-		case GOLDMINE:
-		case IRONMELT:
-		case IRONMINE:
-		case LUMBERJACK:
-		case PIG_FARM:
-		case SAWMILL:
-		case SLAUGHTERHOUSE:
-		case STONECUTTER:
-		case TOOLSMITH:
-		case WEAPONSMITH:
-		case WATERWORKS:
-		case WINEGROWER:
-			return new WorkerBuilding(type, player);
-
-		case MILL:
-			return new MillBuilding(type, player);
-
-		case TOWER:
-		case BIG_TOWER:
-		case CASTLE:
-			return new OccupyingBuilding(type, player);
-
-		case BARRACK:
-			return new Barrack(player);
-
-		default:
-			System.err.println("couldn't create new building, because type is unknown: " + type);
-		}
-
-		return new TestBuilding(player, type);
 	}
 
 	@Override
@@ -512,4 +476,52 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return constructionProgress == 1;
 	}
 
+	public static Building getBuilding(EBuildingType type, byte player) {
+		switch (type) {
+		case BIG_LIVINGHOUSE:
+			return new BigLivinghouse(player);
+		case MEDIUM_LIVINGHOUSE:
+			return new MediumLivinghouse(player);
+		case SMALL_LIVINGHOUSE:
+			return new SmallLivinghouse(player);
+		case CHARCOAL_BURNER:
+		case BAKER:
+		case FARM:
+		case FISHER:
+		case FORESTER:
+		case GOLDMELT:
+		case IRONMELT:
+		case LUMBERJACK:
+		case PIG_FARM:
+		case SAWMILL:
+		case SLAUGHTERHOUSE:
+		case STONECUTTER:
+		case TOOLSMITH:
+		case WEAPONSMITH:
+		case WATERWORKS:
+		case WINEGROWER:
+			return new WorkerBuilding(type, player);
+
+		case MILL:
+			return new MillBuilding(type, player);
+
+		case TOWER:
+		case BIG_TOWER:
+		case CASTLE:
+			return new OccupyingBuilding(type, player);
+
+		case BARRACK:
+			return new Barrack(player);
+
+		case IRONMINE:
+		case GOLDMINE:
+		case COALMINE:
+			return new Mine(type, player);
+
+		default:
+			System.err.println("couldn't create new building, because type is unknown: " + type);
+		}
+
+		return new TestBuilding(player, type);
+	}
 }
