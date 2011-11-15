@@ -26,8 +26,8 @@ import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionHandler;
@@ -539,12 +539,10 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {
-		
+
 		float x = (float) position.getX();
 		float y = (float) position.getY();
-		ISPosition2D onMap =
-		        this.context.getPositionOnScreen(x,
-		                y);
+		ISPosition2D onMap = this.context.getPositionOnScreen(x, y);
 		if (this.context.checkMapCoordinates(onMap.getX(), onMap.getY())) {
 			Action action;
 			if (commandEvent.isSelecting()) {
@@ -623,7 +621,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
 			ENABLE_DEBUG = !ENABLE_DEBUG;
 		} else if (action.getActionType() == EActionType.TOGGLE_FOG_OF_WAR) {
-			context.getFogOfWar().toggleEnabled();
+			// context.getFogOfWar().toggleEnabled();
+			// FIXME @Andreas toggle fog of war needs to be send to logic
 		} else if (action.getActionType() == EActionType.PAN_TO) {
 			PanToAction panAction = (PanToAction) action;
 			scrollTo(panAction.getCenter(), false);

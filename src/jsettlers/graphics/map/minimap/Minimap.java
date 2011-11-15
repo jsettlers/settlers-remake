@@ -9,7 +9,6 @@ import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.MapDrawContext;
-import jsettlers.graphics.map.draw.FogOfWar;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
@@ -212,10 +211,6 @@ public class Minimap {
 
 	public void setMapViewport(MapRectangle rect) {
 		mapViewport = rect;
-	}
-
-	public FogOfWar getFog() {
-		return context.getFogOfWar();
 	}
 
 }

@@ -1,9 +1,11 @@
 package jsettlers.graphics.map.draw;
 
 import go.graphics.GLDrawContext;
+import go.graphics.GLDrawContext.GLBuffer;
 
 import java.nio.ShortBuffer;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.landscape.ELandscapeType;
@@ -11,7 +13,6 @@ import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
-import go.graphics.GLDrawContext.GLBuffer;
 
 /**
  * The map background
@@ -702,7 +703,6 @@ public class Background {
 	        // ...
 	        };
 
-
 	private static final short FLOAT_SIZE = 4;
 	/**
 	 * How many bytes are needed per vertex
@@ -715,12 +715,14 @@ public class Background {
 
 	private static final byte DIM_MAX = 20;
 
-	private static final byte[] BLACK = new byte[] {0,0,0,(byte) 255};
+	private static final byte[] BLACK = new byte[] {
+	        0, 0, 0, (byte) 255
+	};
 
 	/**
 	 * Offset of color definition in bytes, relative to vertex start
 	 */
-	//private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
+	// private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
 
 	private ImageProvider imageProvider = ImageProvider.getInstance();
 
@@ -759,7 +761,8 @@ public class Background {
 	/**
 	 * Generates the texture data.
 	 * 
-	 * @param data The texture data buffer.
+	 * @param data
+	 *            The texture data buffer.
 	 */
 	private void addTextures(short[] data) {
 		for (int index = 0; index < TEXTURE_POSITIONS.length; index++) {
@@ -773,9 +776,13 @@ public class Background {
 
 	/**
 	 * Copys a image to the texture position.
-	 * @param data The data to copy to
-	 * @param image The image to copy
-	 * @param texturepos The texture position
+	 * 
+	 * @param data
+	 *            The data to copy to
+	 * @param image
+	 *            The image to copy
+	 * @param texturepos
+	 *            The texture position
 	 */
 	private void copyImageAt(short[] data, Image image, int[] texturepos) {
 		int startx = texturepos[0] * TEXTURE_GRID;
@@ -796,12 +803,18 @@ public class Background {
 	 * Copys the left top image corner to the buffer at (x, y), assuming the
 	 * buffer is a TEXTURE_SIZE wide image.
 	 * 
-	 * @param data The data to copy to
-	 * @param image The image to copy from
-	 * @param x The x coordinate in the destination buffer
-	 * @param y The y coordinate in the destination buffer
-	 * @param width The width of the area to copy
-	 * @param height The height of the area to copy
+	 * @param data
+	 *            The data to copy to
+	 * @param image
+	 *            The image to copy from
+	 * @param x
+	 *            The x coordinate in the destination buffer
+	 * @param y
+	 *            The y coordinate in the destination buffer
+	 * @param width
+	 *            The width of the area to copy
+	 * @param height
+	 *            The height of the area to copy
 	 */
 	private void copyImage(short[] data, Image image, int x, int y, int width,
 	        int height) {
@@ -816,9 +829,12 @@ public class Background {
 	/**
 	 * Gets the image number of the border
 	 * 
-	 * @param outer The outer landscape (that has two triangle edges).
-	 * @param inner The inner landscape.
-	 * @param useSecond If it is true, the secondary texture is used.
+	 * @param outer
+	 *            The outer landscape (that has two triangle edges).
+	 * @param inner
+	 *            The inner landscape.
+	 * @param useSecond
+	 *            If it is true, the secondary texture is used.
 	 * @return The texture.
 	 */
 	private int getBorder(ELandscapeType outer, ELandscapeType inner,
@@ -975,16 +991,18 @@ public class Background {
 	 *            The context to draw at.
 	 */
 	public void drawMapContent(MapDrawContext context) {
-//		float[] geometry = getGeometry(context);
+		// float[] geometry = getGeometry(context);
 		GLDrawContext gl = context.getGl();
 		FloatRectangle screen =
 		        context.getScreen().getPosition().bigger(EXTRA_PADDING);
-		MapRectangle screenArea = context.getConverter().getMapForScreen(screen);
-		if (!gl.isGeometryValid(geometryindex)||screenArea.getLineLength() + 1 != bufferwidth
+		MapRectangle screenArea =
+		        context.getConverter().getMapForScreen(screen);
+		if (!gl.isGeometryValid(geometryindex)
+		        || screenArea.getLineLength() + 1 != bufferwidth
 		        || screenArea.getLines() != bufferheight) {
 			regenerateGeometry(gl, screenArea);
 		}
-		
+
 		GLBuffer boundbuffer = gl.startWriteGeometry(geometryindex);
 		reloadGeometry(boundbuffer, screenArea, context);
 		gl.endWriteGeometry(geometryindex);
@@ -992,33 +1010,38 @@ public class Background {
 		gl.glScalef(1, 1, 0);
 		gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
 		gl.color(1, 1, 1, 1);
-		gl.drawTrianglesWithTextureColored(getTexture(context.getGl()), geometryindex, geometrytirs);
+		gl.drawTrianglesWithTextureColored(getTexture(context.getGl()),
+		        geometryindex, geometrytirs);
 
 		gl.glPopMatrix();
 	}
 
 	private void regenerateGeometry(GLDrawContext gl, MapRectangle screenArea) {
-	    if (gl.isGeometryValid(geometryindex)) {
-	    	gl.removeGeometry(geometryindex);
-	    }
-	    bufferwidth = screenArea.getLineLength() + 1;
-	    bufferheight = screenArea.getLines();
+		if (gl.isGeometryValid(geometryindex)) {
+			gl.removeGeometry(geometryindex);
+		}
+		bufferwidth = screenArea.getLineLength() + 1;
+		bufferheight = screenArea.getLines();
 		int count = bufferheight * (bufferwidth);
 		fogOfWarStatus = new byte[count * 4];
 		geometryHash = new int[count];
 		oldBufferPosition = null;
 		geometrytirs = count * 2;
-	    
-	    geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
-    }
+
+		geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
+	}
 
 	/**
 	 * Gets the geometry of the background as array.
-	 * @param boundbuffer The buffer of opengl.
-	 * @param context The context to use.
+	 * 
+	 * @param boundbuffer
+	 *            The buffer of opengl.
+	 * @param context
+	 *            The context to use.
 	 * @return The geometry as float array.
 	 */
-	private void reloadGeometry(GLBuffer boundbuffer, MapRectangle area, MapDrawContext context) {
+	private void reloadGeometry(GLBuffer boundbuffer, MapRectangle area,
+	        MapDrawContext context) {
 		for (int line = 0; line < bufferheight; line++) {
 			int y = area.getLineY(line);
 			int minx = area.getLineStartX(line);
@@ -1039,26 +1062,30 @@ public class Background {
 
 	/**
 	 * Redraws a point on the map to the buffer.
-	 * @param boundbuffer The buffer to use
-	 * @param context The context
-	 * @param x The x coordinate of the point
-	 * @param y The y coordinate of the point
-	 * @param wasVisible true if and only if the point was already in the buffer.
+	 * 
+	 * @param boundbuffer
+	 *            The buffer to use
+	 * @param context
+	 *            The context
+	 * @param x
+	 *            The x coordinate of the point
+	 * @param y
+	 *            The y coordinate of the point
+	 * @param wasVisible
+	 *            true if and only if the point was already in the buffer.
 	 */
-	private void redrawPoint(GLBuffer boundbuffer, MapDrawContext context, int x, int y,
-	        boolean wasVisible) {
+	private void redrawPoint(GLBuffer boundbuffer, MapDrawContext context,
+	        int x, int y, boolean wasVisible) {
 		int pointOffset = getBufferPosition(y, x);
-		boundbuffer.position(pointOffset * 2 * 3
-			        * VERTEX_SIZE);
-		
+		boundbuffer.position(pointOffset * 2 * 3 * VERTEX_SIZE);
+
 		boolean redrawNextTime = false;
 		if (x >= 0 && y >= 0 && x < context.getMap().getWidth() - 1
 		        && y < context.getMap().getHeight() - 1) {
 			if (wasVisible) {
 				boolean finishedDimming = true;
 				finishedDimming &=
-				                dimFogOfWarBuffer(context, (pointOffset * 4),
-				                        x, y);
+				        dimFogOfWarBuffer(context, (pointOffset * 4), x, y);
 				finishedDimming &=
 				        dimFogOfWarBuffer(context, (pointOffset * 4) + 1,
 				                x + 1, y);
@@ -1075,10 +1102,10 @@ public class Background {
 				addFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
 				addFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
 			}
-			addTrianglesToGeometry(context, boundbuffer, 1, x, y, pointOffset * 4);
+			addTrianglesToGeometry(context, boundbuffer, 1, x, y,
+			        pointOffset * 4);
 		} else {
-			addPseudoTrianglesToGeometry(context, boundbuffer
-			       , x, y);
+			addPseudoTrianglesToGeometry(context, boundbuffer, x, y);
 		}
 		if (redrawNextTime) {
 			geometryHash[pointOffset] = HASH_INVALID;
@@ -1090,21 +1117,25 @@ public class Background {
 
 	private void addFogOfWarBuffer(MapDrawContext context, int offset, int x,
 	        int y) {
-		fogOfWarStatus[offset] = context.getFogOfWar().getVisibleStatus(x, y);
+		fogOfWarStatus[offset] = context.getVisibleStatus(x, y);
 	}
 
 	/**
 	 * Dims the fog of war buffer
 	 * 
-	 * @param context The context
-	 * @param offset The fog of war buffer offset
-	 * @param x The x coordinate of the tile
-	 * @param y The y coordinate of the tile.
+	 * @param context
+	 *            The context
+	 * @param offset
+	 *            The fog of war buffer offset
+	 * @param x
+	 *            The x coordinate of the tile
+	 * @param y
+	 *            The y coordinate of the tile.
 	 * @return true if and only if the dim has finished.
 	 */
 	private boolean dimFogOfWarBuffer(MapDrawContext context, int offset,
 	        int x, int y) {
-		byte newFog = context.getFogOfWar().getVisibleStatus(x, y);
+		byte newFog = context.getVisibleStatus(x, y);
 		fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
 		return fogOfWarStatus[offset] == newFog;
 	}
@@ -1136,7 +1167,7 @@ public class Background {
 		} else {
 			return context.getMap().getLandscapeTypeAt(x, y).ordinal() * 10000
 			        + context.getMap().getHeightAt(x, y) * 100
-			        + context.getFogOfWar().getVisibleStatus(x, y);
+			        + context.getVisibleStatus(x, y);
 		}
 	}
 
@@ -1166,24 +1197,18 @@ public class Background {
 	private void addTrianglesToGeometry(MapDrawContext context,
 	        GLBuffer buffer, int offset, int x, int y, int fogBase) {
 		addTriangle1ToGeometry(context, buffer, x, y, fogBase);
-		addTriangle2ToGeometry(context, buffer, x,
-		        y, fogBase);
+		addTriangle2ToGeometry(context, buffer, x, y, fogBase);
 	}
 
 	private void addPseudoTrianglesToGeometry(MapDrawContext context,
 	        GLBuffer buffer, int x, int y) { // manually do
-		                                                  // everything...
+		                                     // everything...
 		addBlackPointToGeometry(context, buffer, x, y);
-		addBlackPointToGeometry(context, buffer, x,
-		        y + 1);
-		addBlackPointToGeometry(context, buffer ,
-		        x + 1, y + 1);
-		addBlackPointToGeometry(context, buffer, x,
-		        y);
-		addBlackPointToGeometry(context, buffer, 
-		        x + 1, y + 1);
-		addBlackPointToGeometry(context, buffer, 
-		        x + 1, y);
+		addBlackPointToGeometry(context, buffer, x, y + 1);
+		addBlackPointToGeometry(context, buffer, x + 1, y + 1);
+		addBlackPointToGeometry(context, buffer, x, y);
+		addBlackPointToGeometry(context, buffer, x + 1, y + 1);
+		addBlackPointToGeometry(context, buffer, x + 1, y);
 	}
 
 	// private boolean useRenderbuffer(GL2 gl) {
@@ -1200,7 +1225,7 @@ public class Background {
 	 * @param y
 	 */
 	private void addTriangle1ToGeometry(MapDrawContext context,
-			GLBuffer buffer, int x, int y, int fogBase) {
+	        GLBuffer buffer, int x, int y, int fogBase) {
 		ELandscapeType toplandscape = context.getLandscape(x, y);
 		ELandscapeType leftlandscape = context.getLandscape(x, y + 1);
 		ELandscapeType rightlandscape = context.getLandscape(x + 1, y + 1);
@@ -1222,7 +1247,7 @@ public class Background {
 			textureindex = getBorder(toplandscape, leftlandscape, useSecond);
 		}
 
-		//texture position
+		// texture position
 		int adddx = 0;
 		int adddy = 0;
 		if (texturePos.isContinous()) {
@@ -1236,37 +1261,35 @@ public class Background {
 		int[] positions = TEXTURE_POSITIONS[textureindex];
 		adddx += positions[0] * TEXTURE_GRID;
 		adddy += positions[1] * TEXTURE_GRID;
-		
+
 		float[] relativeTexCoords = texturePos.getRelativecoords();
 
 		{
-			float u = (relativeTexCoords[0] + adddx) / (float) TEXTURE_SIZE;
-			float v = (relativeTexCoords[1] + adddy) / (float) TEXTURE_SIZE;
+			float u = (relativeTexCoords[0] + adddx) / TEXTURE_SIZE;
+			float v = (relativeTexCoords[1] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y, u, v, fogBase + 0);
 		}
 		{
-			float u = (relativeTexCoords[2] + adddx) / (float) TEXTURE_SIZE;
-			float v = (relativeTexCoords[3] + adddy) / (float) TEXTURE_SIZE;
-		addPointToGeometry(context, buffer, x,
-		        y + 1, u, v, fogBase + 2);
+			float u = (relativeTexCoords[2] + adddx) / TEXTURE_SIZE;
+			float v = (relativeTexCoords[3] + adddy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, x, y + 1, u, v, fogBase + 2);
 		}
 		{
-			float u = (relativeTexCoords[4] + adddx) / (float) TEXTURE_SIZE;
-			float v = (relativeTexCoords[5] + adddy) / (float) TEXTURE_SIZE;
-		addPointToGeometry(context, buffer, x + 1,
-		        y + 1, u, v, fogBase + 3);
+			float u = (relativeTexCoords[4] + adddx) / TEXTURE_SIZE;
+			float v = (relativeTexCoords[5] + adddy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
 		}
 	}
 
 	private void addPointToGeometry(MapDrawContext context, GLBuffer buffer,
-	         int x, int y, float u, float v, int fogOffset) {
+	        int x, int y, float u, float v, int fogOffset) {
 		buffer.putFloat(x);
 		buffer.putFloat(y);
 		buffer.putFloat(context.getHeight(x, y));
-		
+
 		buffer.putFloat(u);
 		buffer.putFloat(v);
-		
+
 		addVertexcolor(context, buffer, x, y, fogOffset);
 	}
 
@@ -1307,8 +1330,7 @@ public class Background {
 			textureindex = getBorder(rightlandscape, leftlandscape, useSecond);
 		}
 
-
-		//texture position
+		// texture position
 		int adddx = 0;
 		int adddy = 0;
 		if (texturePos.isContinous()) {
@@ -1322,29 +1344,26 @@ public class Background {
 		int[] positions = TEXTURE_POSITIONS[textureindex];
 		adddx += positions[0] * TEXTURE_GRID;
 		adddy += positions[1] * TEXTURE_GRID;
-		
+
 		float[] relativeTexCoords = texturePos.getRelativecoords();
 
 		{
-			float u = (relativeTexCoords[0] + adddx) / (float) TEXTURE_SIZE;
-			float v = (relativeTexCoords[1] + adddy) / (float) TEXTURE_SIZE;
+			float u = (relativeTexCoords[0] + adddx) / TEXTURE_SIZE;
+			float v = (relativeTexCoords[1] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y, u, v, fogBase + 0);
 		}
 		{
-			float u = (relativeTexCoords[2] + adddx) / (float) TEXTURE_SIZE;
-			float v = (relativeTexCoords[3] + adddy) / (float) TEXTURE_SIZE;
-		addPointToGeometry(context, buffer, x + 1,
-		        y + 1, u, v, fogBase + 3);
+			float u = (relativeTexCoords[2] + adddx) / TEXTURE_SIZE;
+			float v = (relativeTexCoords[3] + adddy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
 		}
 		{
-			float u = (relativeTexCoords[4] + adddx) / (float) TEXTURE_SIZE;
-			float v = (relativeTexCoords[5] + adddy) / (float) TEXTURE_SIZE;
-		addPointToGeometry(context, buffer, x + 1,
-		        y, u, v, fogBase + 1);
+			float u = (relativeTexCoords[4] + adddx) / TEXTURE_SIZE;
+			float v = (relativeTexCoords[5] + adddy) / TEXTURE_SIZE;
+			addPointToGeometry(context, buffer, x + 1, y, u, v, fogBase + 1);
 		}
-		
-	}
 
+	}
 
 	private int realModulo(int number, int modulo) {
 		if (number >= 0) {
@@ -1354,13 +1373,13 @@ public class Background {
 		}
 	}
 
-	private void addVertexcolor(MapDrawContext context, GLBuffer buffer,
-	        int x, int y, int fogOffset) {
+	private void addVertexcolor(MapDrawContext context, GLBuffer buffer, int x,
+	        int y, int fogOffset) {
 		byte color;
 
 		if (x <= 0 || x >= context.getMap().getWidth() - 2 || y <= 0
 		        || y >= context.getMap().getHeight() - 2
-		        || context.getFogOfWar().getVisibleStatus(x, y) <= 0) {
+		        || context.getVisibleStatus(x, y) <= 0) {
 			color = 0;
 		} else {
 			int height1 = context.getHeight(x, y);
@@ -1371,11 +1390,13 @@ public class Background {
 			} else if (fcolor < 0.4f) {
 				fcolor = 0.4f;
 			}
-			fcolor *= (float) fogOfWarStatus[fogOffset] / FogOfWar.VISIBLE;
+			fcolor *=
+			        (float) fogOfWarStatus[fogOffset]
+			                / CommonConstants.FOG_OF_WAR_VISIBLE;
 			fcolor *= 255f;
 			color = (byte) (int) fcolor;
 		}
-		
+
 		buffer.putByte(color);
 		buffer.putByte(color);
 		buffer.putByte(color);

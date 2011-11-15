@@ -1,20 +1,20 @@
 package jsettlers.graphics.map;
 
-import java.util.Iterator;
-
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+
+import java.util.Iterator;
+
 import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.draw.DrawConstants;
-import jsettlers.graphics.map.draw.FogOfWar;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
@@ -70,8 +70,6 @@ public class MapDrawContext {
 	        new Color(0x6e750e),
 	};
 
-	private final FogOfWar fogOfWar;
-
 	private float zoom;
 
 	// private long beginTime;
@@ -94,8 +92,6 @@ public class MapDrawContext {
 		        MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
 		                DrawConstants.DISTANCE_Y, map.getWidth(),
 		                map.getHeight());
-
-		this.fogOfWar = new FogOfWar(map);
 	}
 
 	/**
@@ -344,11 +340,11 @@ public class MapDrawContext {
 
 	private class HeightedMapRectangle implements IMapArea {
 		/**
-         * FIXME: This class is nor serializeable
-         */
-        private static final long serialVersionUID = 5868822981883722458L;
-		
-        /**
+		 * FIXME: This class is nor serializeable
+		 */
+		private static final long serialVersionUID = 5868822981883722458L;
+
+		/**
 		 * Helper rectangle.
 		 */
 		MapRectangle base;
@@ -397,20 +393,23 @@ public class MapDrawContext {
 			}
 
 			private ShortPoint2D searchNext() {
-	            int startLine = currentLine;
-	            while (startLine >= currentLine - 2 || currentLine < MIN_SEARCH_LINES) {
-	            	currentX++;
-	            	if (currentX > base.getLineEndX(currentLine)) {
-	            		currentLine++;
-	            		currentX = base.getLineStartX(currentLine);
-	            	}
-	            	ShortPoint2D point = new ShortPoint2D(currentX, base.getLineY(currentLine));
-	            	if (contains(point)) {
-	            		return point;
-	            	}
-	            }
-	            return null;
-            }
+				int startLine = currentLine;
+				while (startLine >= currentLine - 2
+				        || currentLine < MIN_SEARCH_LINES) {
+					currentX++;
+					if (currentX > base.getLineEndX(currentLine)) {
+						currentLine++;
+						currentX = base.getLineStartX(currentLine);
+					}
+					ShortPoint2D point =
+					        new ShortPoint2D(currentX,
+					                base.getLineY(currentLine));
+					if (contains(point)) {
+						return point;
+					}
+				}
+				return null;
+			}
 
 			@Override
 			public boolean hasNext() {
@@ -455,11 +454,16 @@ public class MapDrawContext {
 		}
 	}
 
+	public byte getVisibleStatus(int x, int y) {
+		return map.getVisibleStatus(x, y);
+	}
+
+	public boolean isFogOfWarVisible(int x, int y) {
+		return map.isFogOfWarVisible(x, y);
+	}
+
 	public IGraphicsGrid getMap() {
 		return map;
 	}
 
-	public FogOfWar getFogOfWar() {
-		return fogOfWar;
-	}
 }

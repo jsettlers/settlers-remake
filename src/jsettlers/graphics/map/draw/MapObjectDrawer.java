@@ -2,6 +2,7 @@ package jsettlers.graphics.map.draw;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.ImageLink;
@@ -107,8 +108,7 @@ public class MapObjectDrawer {
 
 		float progress = object.getStateProgress();
 
-		byte fogstatus =
-		        context.getFogOfWar().getVisibleStatus(pos.getX(), pos.getY());
+		byte fogstatus = context.getVisibleStatus(pos.getX(), pos.getY());
 		if (fogstatus == 0) {
 			return; // break
 		}
@@ -524,7 +524,7 @@ public class MapObjectDrawer {
 	 * @return
 	 */
 	private Color getColor(MapDrawContext context, int fogstatus) {
-		float color = (float) fogstatus / FogOfWar.VISIBLE;
+		float color = (float) fogstatus / CommonConstants.FOG_OF_WAR_VISIBLE;
 		return new Color(color, color, color, 1);
 	}
 

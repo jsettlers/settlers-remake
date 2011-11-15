@@ -4,10 +4,10 @@ import go.graphics.Color;
 
 import java.nio.ShortBuffer;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.IMovable;
-import jsettlers.graphics.map.draw.FogOfWar;
 
 class LineLoader implements Runnable {
 	private static final short TRANSPARENT = 0;
@@ -72,17 +72,21 @@ class LineLoader implements Runnable {
 			}
 			int centerx = (mapmaxx + mapminx) / 2;
 			int centery = (mapmaxy + mapminy) / 2;
-			
+
 			short color = TRANSPARENT;
-			if (minimap.getFog().isVisible(centerx, centery)) {
+			if (minimap.getContext().isFogOfWarVisible(centerx, centery)) {
 				color = getSettlerForArea(mapminx, mapminy, mapmaxx, mapmaxy);
 			}
-			
+
 			if (color == TRANSPARENT) {
-				float basecolor = (float) minimap.getFog().getVisibleStatus(centerx, centery)
-				        / FogOfWar.VISIBLE;
+				float basecolor =
+				        (float) minimap.getContext().getVisibleStatus(centerx,
+				                centery)
+				                / CommonConstants.FOG_OF_WAR_VISIBLE;
 				if (basecolor >= 0) {
-					color = getLandscapeForArea(mapminx, mapminy, mapmaxx, mapmaxy, basecolor);
+					color =
+					        getLandscapeForArea(mapminx, mapminy, mapmaxx,
+					                mapmaxy, basecolor);
 				}
 			}
 			if (color == TRANSPARENT) {
@@ -99,7 +103,8 @@ class LineLoader implements Runnable {
 		int centery = (mapmaxy + mapminy) / 2;
 
 		IGraphicsGrid map = this.minimap.getContext().getMap();
-		return getColorForLandscape(map.getLandscapeTypeAt(centerx, centery), basecolor);
+		return getColorForLandscape(map.getLandscapeTypeAt(centerx, centery),
+		        basecolor);
 	}
 
 	private short getColorForLandscape(ELandscapeType landscape, float basecolor) {
