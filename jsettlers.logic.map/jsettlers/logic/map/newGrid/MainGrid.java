@@ -357,7 +357,7 @@ public class MainGrid implements Serializable {
 
 			case NON_BLOCKED_OR_PROTECTED:
 				return !(blockedGrid.isProtected(x, y) || blockedGrid.isBlocked(x, y)) && !isLandscapeBlocking(x, y)
-						&& hasSamePlayer(x, y, pathCalculable);
+						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable));
 
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
