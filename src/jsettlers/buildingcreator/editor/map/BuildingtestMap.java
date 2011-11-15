@@ -2,6 +2,7 @@ package jsettlers.buildingcreator.editor.map;
 
 import jsettlers.buildingcreator.editor.BuildingDefinition;
 import jsettlers.common.Color;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -80,6 +81,16 @@ public class BuildingtestMap implements IGraphicsGrid {
 
 	public PseudoTile getTile(ISPosition2D pos) {
 		return tiles[pos.getX()][pos.getY()];
+	}
+
+	@Override
+	public byte getVisibleStatus(int x, int y) {
+		return CommonConstants.FOG_OF_WAR_VISIBLE;
+	}
+
+	@Override
+	public boolean isFogOfWarVisible(int x, int y) {
+		return true;
 	}
 
 }
