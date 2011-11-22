@@ -20,7 +20,9 @@ public class UIList<T extends UIListItem> implements UIElement {
 	public UIList(List<T> items, float itemheight) {
 		this.items = items;
 		this.itemheight = itemheight;
-
+		if (items.size() > 0) {
+			activeItem = items.get(0);
+		}
 	}
 
 	@Override

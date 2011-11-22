@@ -435,8 +435,10 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			return new Action(EActionType.DEBUG_ACTION);
 		} else if ("s".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.STOP_WORKING);
-		} else if ("q".equalsIgnoreCase(keyCode)) {
+		} else if ("e".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_DEBUG);
+		} else if ("q".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
 		} else if ("F5".equalsIgnoreCase(keyCode)) {

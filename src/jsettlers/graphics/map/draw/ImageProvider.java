@@ -99,7 +99,8 @@ public final class ImageProvider {
 	 */
 	private DatFileSet tryGetFileSet(int file) {
 		Integer valueOf = Integer.valueOf(file);
-		loadDatFile(valueOf);
+		
+		waitForPreload(file);
 
 		DatFileSet set = this.images.get(valueOf);
 		return set;
@@ -115,6 +116,8 @@ public final class ImageProvider {
 	 * @return The image, or an empty image.
 	 */
 	public Image getLandscapeImage(int file, int seqnumber) {
+		waitForPreload(file);
+		
 		DatFileSet set = tryGetFileSet(file);
 
 		if (set != null) {
@@ -136,6 +139,8 @@ public final class ImageProvider {
 	 * @return The image.
 	 */
 	public Image getGuiImage(int file, int seqnumber) {
+		//TEMP
+		waitForPreload(file);
 		DatFileSet set = tryGetFileSet(file);
 
 		if (set != null) {

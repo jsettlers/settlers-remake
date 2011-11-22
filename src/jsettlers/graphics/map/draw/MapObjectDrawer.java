@@ -115,7 +115,7 @@ public class MapObjectDrawer {
 		Color color = getColor(context, fogstatus);
 
 		if (type == EMapObjectType.ARROW) {
-			drawArrow(context, map, (IArrowMapObject) object, color);
+			drawArrow(context, (IArrowMapObject) object, color);
 		} else {
 			context.beginTileContext(pos);
 			switch (type) {
@@ -261,7 +261,7 @@ public class MapObjectDrawer {
 		        color.multiply(basecolor.getAlpha()));
 	}
 
-	private Color getColor(MapDrawContext context, IMapObject object) {
+	private static Color getColor(MapDrawContext context, IMapObject object) {
 		Color color = null;
 		if (object instanceof IPlayerable) {
 			color = context.getPlayerColor(((IPlayerable) object).getPlayer());
@@ -290,8 +290,8 @@ public class MapObjectDrawer {
 		sequence.getImageSafe(index).draw(context.getGl(), color);
 	}
 
-	private void drawArrow(MapDrawContext context, IGraphicsGrid map,
-	        IArrowMapObject object, Color color) {
+	private void drawArrow(MapDrawContext context, IArrowMapObject object,
+	        Color color) {
 		int sequence = 0;
 		switch (object.getDirection()) {
 			case SOUTH_WEST:
@@ -441,11 +441,11 @@ public class MapObjectDrawer {
 	 * @param pos
 	 * @return
 	 */
-	private int get01(ISPosition2D pos) {
+	private static int get01(ISPosition2D pos) {
 		return (pos.getX() * 677 + pos.getY()) % 2;
 	}
 
-	private int sequenceIndexForChangingTree(int treeType) {
+	private static int sequenceIndexForChangingTree(int treeType) {
 		return treeType * 3 + CHANGING_TREE_OFFSET;
 	}
 
@@ -465,7 +465,7 @@ public class MapObjectDrawer {
 		        .getImageSafe(0).draw(gl, color);
 	}
 
-	private int getTreeType(ISPosition2D pos) {
+	private static int getTreeType(ISPosition2D pos) {
 		return (pos.getX() * 251 + pos.getY() * 233) % TREE_TYPES;
 	}
 
@@ -523,7 +523,7 @@ public class MapObjectDrawer {
 	 * @param fogstatus
 	 * @return
 	 */
-	private Color getColor(MapDrawContext context, int fogstatus) {
+	private static Color getColor(MapDrawContext context, int fogstatus) {
 		float color = (float) fogstatus / CommonConstants.FOG_OF_WAR_VISIBLE;
 		return new Color(color, color, color, 1);
 	}
@@ -593,7 +593,7 @@ public class MapObjectDrawer {
 		image.draw(context.getGl());
 	}
 
-	private void drawWithConstructionMask(MapDrawContext context,
+	private static void drawWithConstructionMask(MapDrawContext context,
 	        float maskState, Image image, Color color) {
 		// number of tiles in x direction, can be adjustet for performance
 		int tiles = 6;
@@ -624,7 +624,7 @@ public class MapObjectDrawer {
 		gl.drawTrianglesWithTexture(image.getTextureIndex(gl), tris);
 	}
 
-	private void addPointToArray(float[] array, int pointindex, float u,
+	private static void addPointToArray(float[] array, int pointindex, float u,
 	        float v, Image image) {
 		int left = image.getOffsetX();
 		int top = -image.getOffsetY();

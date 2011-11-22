@@ -168,6 +168,11 @@ public enum EActionType {
 	/**
 	 * GUI internal. Implements ExecutableAction
 	 */
-	EXECUTABLE,
+	EXECUTABLE, 
+	
+	/**
+	 * Exit the game. Does not ask any more.
+	 */
+	EXIT,
 	
 }

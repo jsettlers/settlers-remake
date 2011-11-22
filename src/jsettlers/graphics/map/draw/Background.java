@@ -740,6 +740,9 @@ public class Background {
 
 	private int getTexture(GLDrawContext context) {
 		if (texture < 0) {
+			//TODO: asynchron
+			imageProvider.waitForPreload(LAND_FILE);
+			
 			if (imageProvider.isPreloaded(LAND_FILE)) {
 				short[] data = new short[TEXTURE_SIZE * TEXTURE_SIZE];
 				for (int i = 0; i < data.length; i++) {

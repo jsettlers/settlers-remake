@@ -9,8 +9,6 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.command.GOCommandEvent;
 import go.graphics.text.EFontSize;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
@@ -19,8 +17,6 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
-import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen implements SettlersContent {
@@ -99,15 +95,15 @@ public class StartScreen implements SettlersContent {
 						connector.startNewGame(gameSettings);
 					}
 				}
-
+				break;
+				
 			case LOAD_GAME:
 				ILoadableGame load = getLoadableGame();
 				if (load != null) {
 					connector.loadGame(load);
 				}
-
-			default:
 				break;
+
 		}
 	}
 

@@ -2,6 +2,7 @@ package jsettlers.graphics.localization;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -55,7 +56,11 @@ public final class Labels {
 		if (labels == null) {
 			return key;
 		} else {
-			return labels.getString(key);
+			try {
+				return labels.getString(key);
+			} catch (MissingResourceException e) {
+				return key;
+			}
 		}
 	}
 
@@ -69,7 +74,6 @@ public final class Labels {
 	public static String getName(EMovableType type) {
 		return getString("movable_" + type);
 	}
-
 
 	/**
 	 * Gets the name of a building

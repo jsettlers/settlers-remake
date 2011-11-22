@@ -1,11 +1,8 @@
 package jsettlers.graphics.startscreen;
 
-import go.graphics.GLDrawContext;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
@@ -60,6 +57,7 @@ public class NewGamePanel extends UIPanel {
 		MapListItem item = list.getActiveItem();
 
 		if (item != null) {
+			//TODO: allow user to select count
 			return new GameSettings(item.getMap(), 3);
 		} else {
 			return null;
