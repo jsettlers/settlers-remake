@@ -7,6 +7,10 @@ import jsettlers.graphics.action.Action;
 public interface UIElement {
 	void setPosition(FloatRectangle position);
 
+	/**
+	 * Draws the element at the given position.
+	 * @param gl
+	 */
 	void drawAt(GLDrawContext gl);
 	
 	Action getAction(float relativex, float relativey);

@@ -155,6 +155,19 @@ public enum EActionType {
 	/**
 	 * Converts selected Pioneers back to bearers.
 	 */
-	CONVERT_TO_BEARERS,
+	CONVERT_TO_BEARERS, 
+	/**
+	 * Start menu constants, never used in game
+	 */
+	SHOW_START_NEW,
+	SHOW_LOAD,
+	SHOW_START_NETWORK,
+	SHOW_CONNECT_NETWORK,
+	SHOW_RECOVER_NETWORK, START_NEW_GAME, LOAD_GAME, 
+	
+	/**
+	 * GUI internal. Implements ExecutableAction
+	 */
+	EXECUTABLE,
 	
 }

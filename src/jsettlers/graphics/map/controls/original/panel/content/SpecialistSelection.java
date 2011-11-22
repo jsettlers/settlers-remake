@@ -33,10 +33,10 @@ public class SpecialistSelection implements IContentProvider {
 
 		SoilderSelection.addRowsToPanel(panel, selection, specialists);
 		
-		UIPanel kill = new UILabeledButton("stop", new Action(EActionType.STOP_WORKING));
+		UIPanel stop = new UILabeledButton("stop", new Action(EActionType.STOP_WORKING));
 		UIPanel work = new UILabeledButton("work", new Action(EActionType.START_WORKING));
 
-		panel.addChild(kill, .1f, .1f, .5f, .2f);
+		panel.addChild(stop, .1f, .1f, .5f, .2f);
 		panel.addChild(work, .5f, .1f, .9f, .2f);
 		
 		if (selection.getMovableCount(EMovableType.PIONEER) > 0) {

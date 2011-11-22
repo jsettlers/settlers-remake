@@ -12,6 +12,8 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.progress.ProgressContent;
+import jsettlers.graphics.startscreen.IStartScreenConnector;
+import jsettlers.graphics.startscreen.StartScreen;
 
 /**
  * This is the jogl panel that displays the game content.
@@ -82,6 +84,10 @@ public class JOGLPanel {
 		}, 10, 10);
 
 		return content.getInterfaceConnector();
+	}
+	
+	public synchronized void showStartScreen(IStartScreenConnector connector) {
+		changeContent(new StartScreen(connector));		
 	}
 
 	public Area getArea() {
