@@ -195,6 +195,9 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 				case KeyEvent.VK_SPACE:
 					text = "SPACE";
 					break;
+				case KeyEvent.VK_ESCAPE:
+					text = "ESCAPE";
+					break;
 				default:
 					text = "";
 			}
