@@ -1,5 +1,8 @@
 package jsettlers.common.buildings;
 
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.loader.BuildingFile;
 import jsettlers.common.images.EImageLinkType;
@@ -19,7 +22,7 @@ public enum EBuildingType {
 	COALMINE(6), IRONMINE(4), GOLDMINE(5), GOLDMELT(8), IRONMELT(9), TOOLSMITH(
 	        10), WEAPONSMITH(11),
 
-	FARM(21), PIG_FARM(20), 
+	FARM(21), PIG_FARM(20),
 	/**
 	 * Needs to implement {@link IBuilding.Mill}
 	 */
@@ -81,11 +84,11 @@ public enum EBuildingType {
 	private final RelativePoint[] buildmarks;
 
 	private final ImageLink[] buildImages;
-	
+
 	private final ELandscapeType[] groundtypes;
-	
+
 	private final int viewdistance;
-	
+
 	private final OccupyerPlace[] occupyerPlaces;
 
 	EBuildingType(int imageIndex) {
@@ -110,8 +113,8 @@ public enum EBuildingType {
 				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
 			};
 			buildImages = new ImageLink[] {
-					new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1)
-				};
+				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1)
+			};
 		} else {
 			images = tempimages;
 			buildImages = file.getBuildImages();
@@ -219,16 +222,40 @@ public enum EBuildingType {
 	public ImageLink[] getBuildImages() {
 		return buildImages;
 	}
-	
+
 	public ELandscapeType[] getGroundtypes() {
-	    return groundtypes;
-    }
+		return groundtypes;
+	}
 
 	public int getViewDistance() {
-	    return viewdistance;
-    }
-	
+		return viewdistance;
+	}
+
 	public OccupyerPlace[] getOccupyerPlaces() {
 		return occupyerPlaces;
+	}
+
+	public IBuildingJob getJobByName(String jobname) {
+		HashSet<String> visited = new HashSet<String>();
+
+		ConcurrentLinkedQueue<IBuildingJob> queue =
+		        new ConcurrentLinkedQueue<IBuildingJob>();
+		queue.add(startJob);
+
+		while (!queue.isEmpty()) {
+			IBuildingJob job = queue.poll();
+			if (visited.contains(job.getName())) {
+				continue;
+			}
+			if (job.getName().equals(jobname)) {
+				return job;
+			}
+			visited.add(job.getName());
+
+			queue.add(job.getNextFailJob());
+			queue.add(job.getNextSucessJob());
+		}
+		throw new IllegalArgumentException(
+		        "This building has no job with name " + jobname);
 	}
 }

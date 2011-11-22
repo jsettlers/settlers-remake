@@ -17,6 +17,7 @@ public class JobElementWrapper implements BuildingJobData {
 	private static final String TYPE = "type";
 	private static final String ATTR_TIME = "time";
 	private static final String SEARCH = "search";
+	private static final String NAME = "name";
 
 	private final EBuildingJobType type;
 	private short dx;
@@ -27,6 +28,7 @@ public class JobElementWrapper implements BuildingJobData {
 	private String failjob;
 	private float time;
 	private EDirection direction;
+	private String name;
 
 	JobElementWrapper(Attributes attributes) {
 		type = getType(attributes);
@@ -34,6 +36,7 @@ public class JobElementWrapper implements BuildingJobData {
 		dy = (short) getAttributeAsInt(attributes, DY);
 		material = getMaterial(attributes);
 		searchType = getSearchType(attributes);
+		name = attributes.getValue(NAME);
 		successjob = attributes.getValue(SUCCESSJOB);
 		failjob = attributes.getValue(FAILJOB);
 		time = getAttributeAsFloat(attributes, ATTR_TIME);
@@ -159,5 +162,10 @@ public class JobElementWrapper implements BuildingJobData {
 	public EBuildingJobType getType() {
 		return type;
 	}
+
+	@Override
+    public String getName() {
+	    return name;
+    }
 
 }

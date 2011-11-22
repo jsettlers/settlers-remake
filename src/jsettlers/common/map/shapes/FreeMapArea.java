@@ -1,7 +1,7 @@
 package jsettlers.common.map.shapes;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.position.ISPosition2D;
@@ -56,8 +56,8 @@ public class FreeMapArea implements IMapArea {
 		this(convertRelative(pos, relativePoints));
 	}
 
-	private static LinkedList<ISPosition2D> convertRelative(ISPosition2D pos, RelativePoint[] relativePoints) {
-		LinkedList<ISPosition2D> list = new LinkedList<ISPosition2D>();
+	private static ArrayList<ISPosition2D> convertRelative(ISPosition2D pos, RelativePoint[] relativePoints) {
+		ArrayList<ISPosition2D> list = new ArrayList<ISPosition2D>();
 
 		for (RelativePoint relative : relativePoints) {
 			list.add(relative.calculatePoint(pos));

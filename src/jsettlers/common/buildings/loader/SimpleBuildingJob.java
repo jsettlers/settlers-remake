@@ -12,8 +12,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 
 public class SimpleBuildingJob implements IBuildingJob {
-	private static final long serialVersionUID = -3559927463430244087L;
-
 	private final short dx;
 
 	private final short dy;
@@ -31,6 +29,8 @@ public class SimpleBuildingJob implements IBuildingJob {
 	private IBuildingJob successJob;
 	private IBuildingJob failJob;
 
+	private final String name;
+
 	/**
 	 * Creates a new simple building job with the given data.
 	 * 
@@ -45,6 +45,7 @@ public class SimpleBuildingJob implements IBuildingJob {
 		material = data.getMaterial();
 		direction = data.getDirection();
 		search = data.getSearchType();
+		name = data.getName();
 	}
 
 	private SimpleBuildingJob(EBuildingJobType type, int time) {
@@ -55,6 +56,7 @@ public class SimpleBuildingJob implements IBuildingJob {
 		this.material = null;
 		this.direction = null;
 		this.search = null;
+		name = "";
 	}
 
 	@Override
@@ -182,4 +184,9 @@ public class SimpleBuildingJob implements IBuildingJob {
 	public ESearchType getSearchType() {
 		return search;
 	}
+
+	@Override
+    public String getName() {
+	    return name;
+    }
 }

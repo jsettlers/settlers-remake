@@ -72,4 +72,10 @@ public interface BuildingJobData {
 	 */
 	ESearchType getSearchType();
 
+	/**
+	 * Gets the name of the job
+	 * @return The name.
+	 */
+	String getName();
+
 }
