@@ -1,12 +1,12 @@
 package jsettlers.logic.map.newGrid;
 
+import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import jsettlers.common.resources.ResourceManager;
 import synchronic.timer.NetworkTimer;
@@ -18,10 +18,10 @@ public class GameSerializer {
 	}
 
 	public void save(MainGrid grid) throws FileNotFoundException, IOException {
-		ZipOutputStream zipOutStream = new ZipOutputStream(ResourceManager.writeFile(QUICK_SAVE_FILE));
-		zipOutStream.putNextEntry(new ZipEntry("savefile"));
+		
+		GZIPOutputStream zipOutStream = new GZIPOutputStream(ResourceManager.writeFile(QUICK_SAVE_FILE));
 
-		ObjectOutputStream oos = new ObjectOutputStream(zipOutStream);
+		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(zipOutStream));
 
 		NetworkTimer.get().setPausing(true);
 		try {
@@ -33,17 +33,13 @@ public class GameSerializer {
 		oos.writeObject(grid);
 
 		oos.flush();
-
-		zipOutStream.closeEntry();
-
 		oos.close();
 
 		NetworkTimer.get().setPausing(false);
 	}
 
 	public MainGrid load() throws FileNotFoundException, IOException, ClassNotFoundException {
-		ZipInputStream zipInStream = new ZipInputStream(ResourceManager.getFile(QUICK_SAVE_FILE));
-		zipInStream.getNextEntry();
+		GZIPInputStream zipInStream = new GZIPInputStream(ResourceManager.getFile(QUICK_SAVE_FILE));
 
 		ObjectInputStream ois = new ObjectInputStream(zipInStream);
 		NetworkTimer.get().setPausing(true);
@@ -54,4 +50,6 @@ public class GameSerializer {
 		NetworkTimer.get().setPausing(false);
 		return grid;
 	}
+	
+	
 }

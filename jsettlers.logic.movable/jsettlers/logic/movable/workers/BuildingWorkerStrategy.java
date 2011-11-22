@@ -1,5 +1,9 @@
 package jsettlers.logic.movable.workers;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.ELandscapeType;
@@ -23,7 +27,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	private static final long serialVersionUID = 4541691091116877212L;
 
 	private final EMovableType movableType;
-	private IBuildingJob currentJob;
+	private transient IBuildingJob currentJob;
 
 	private boolean done;
 	private IWorkerRequestBuilding building;
@@ -401,5 +405,24 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	protected boolean isPathStopable() {
 		return false;
 	}
+	
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		if (currentJob == null) {
+			stream.writeObject(null);
+		} else {
+			stream.writeObject(currentJob.getName());
+		}
+    }
+
+	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	    stream.defaultReadObject();
+		String jobname = (String) stream.readObject();
+		if (jobname == null) {
+			currentJob = null;
+		} else {
+			currentJob = building.getBuildingType().getJobByName(jobname);
+		}
+    }
 
 }

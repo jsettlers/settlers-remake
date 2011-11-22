@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import jsettlers.common.SerializableLinkedList;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -40,20 +41,20 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
-	private final LinkedList<Request<EMaterialType>> materialRequests = new LinkedList<PartitionManager.Request<EMaterialType>>();
+	private final SerializableLinkedList<Request<EMaterialType>> materialRequests = new SerializableLinkedList<PartitionManager.Request<EMaterialType>>();
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
-	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<WorkerRequest>();
+	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
 
-	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<PartitionManager.DiggerRequest>();
+	private final SerializableLinkedList<DiggerRequest> diggerRequests = new SerializableLinkedList<PartitionManager.DiggerRequest>();
 	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<IManageableDigger>();
 
-	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<PartitionManager.BricklayerRequest>();
+	private final SerializableLinkedList<BricklayerRequest> bricklayerRequests = new SerializableLinkedList<PartitionManager.BricklayerRequest>();
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
 
-	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<PartitionManager.WorkerCreationRequest>();
-	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<PartitionManager.SoilderCreationRequest>();
+	private final SerializableLinkedList<WorkerCreationRequest> workerCreationRequests = new SerializableLinkedList<PartitionManager.WorkerCreationRequest>();
+	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<PartitionManager.SoilderCreationRequest>();
 
 	public PartitionManager() {
 		schedule();

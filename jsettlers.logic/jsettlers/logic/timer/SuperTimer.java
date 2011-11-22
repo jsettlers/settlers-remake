@@ -1,16 +1,16 @@
 package jsettlers.logic.timer;
 
-import java.util.LinkedList;
+import jsettlers.common.SerializableLinkedList;
 
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
 
 public abstract class SuperTimer<T extends ITimerable> implements INetworkTimerable {
-	private static final LinkedList<SuperTimer<? extends ITimerable>> timers = new LinkedList<SuperTimer<? extends ITimerable>>();
+	private static final SerializableLinkedList<SuperTimer<? extends ITimerable>> timers = new SerializableLinkedList<SuperTimer<? extends ITimerable>>();
 
-	protected final LinkedList<T> timerables = new LinkedList<T>();
-	private final LinkedList<T> newToList = new LinkedList<T>();
-	private final LinkedList<T> removeList = new LinkedList<T>();
+	protected final SerializableLinkedList<T> timerables = new SerializableLinkedList<T>();
+	private final SerializableLinkedList<T> newToList = new SerializableLinkedList<T>();
+	private final SerializableLinkedList<T> removeList = new SerializableLinkedList<T>();
 
 	protected SuperTimer(short interruptDelay) {
 		NetworkTimer.schedule(this, interruptDelay);
