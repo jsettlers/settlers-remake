@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/f12btn" android:title="@string/f12_string" />
-    <item android:id="@+id/savebtn" android:title="@string/save_string"></item>
+    <item android:id="@+id/pausebtn" android:title="@string/pause_string"></item><item android:id="@+id/savebtn" android:title="@string/save_string"></item>
+    <item android:id="@+id/loadbtn" android:title="@string/load_string"></item><group android:id="@+id/selection">
+        <item android:id="@+id/stop" android:title="@string/stop_string"></item>
+        <item android:id="@+id/kill" android:title="@string/kill_string"></item>
+    </group>
+    
+    
 </menu>

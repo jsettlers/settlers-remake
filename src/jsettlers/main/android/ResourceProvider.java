@@ -30,7 +30,7 @@ public class ResourceProvider implements IResourceProvider {
 		throw new IOException("File " + name + " not found. Place it in JSettlers dir!");
 	}
 
-	private File searchFileIn(File dir, String[] parts) {
+	private static File searchFileIn(File dir, String[] parts) {
 		File current = dir;
 		for (String part : parts) {
 			if (!part.isEmpty() && !part.startsWith(".")) {
