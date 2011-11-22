@@ -1,41 +1,23 @@
 package jsettlers.main;
 
-import java.io.File;
-
-import network.NullNetworkManager;
-
-import random.RandomSingleton;
 import jsettlers.graphics.JOGLPanel;
-import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
-import jsettlers.input.GuiInterface;
-import jsettlers.logic.map.newGrid.MainGrid;
-import jsettlers.logic.timer.Timer100Milli;
+import jsettlers.main.JSettlersGame.Listener;
 
 /**
  * This is the new main game class
  * 
  * @author michael
  */
-public class ManagedJSettlers {
+public class ManagedJSettlers implements Listener {
 
 	private JOGLPanel content;
+	private JSettlersGame ongoingGame;
 
 	public synchronized void start(IGuiStarter starter) {
 		content = new JOGLPanel();
 		starter.startGui(content);
-
-		// Schedule image loading while the other stuff is waiting
-		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
-		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
-		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
-		RandomSingleton.load(2132134L);
 
 		showMainScreen();
 	}
@@ -120,56 +102,57 @@ public class ManagedJSettlers {
 		}
 
 		@Override
-        public void addNetworkGameListener(INetworkGameListener gameListener) {
-	        // TODO Auto-generated method stub
-	        
-        }
+		public void addNetworkGameListener(INetworkGameListener gameListener) {
+			// TODO Auto-generated method stub
+
+		}
 
 		@Override
-        public void removeNetworkGameListener(INetworkGameListener gameListener) {
-	        // TODO Auto-generated method stub
-	        
-        }
+		public void removeNetworkGameListener(INetworkGameListener gameListener) {
+			// TODO Auto-generated method stub
+
+		}
 
 		@Override
-        public void startGameServer(IGameSettings game, String name) {
-	        // TODO Auto-generated method stub
-	        
-        }
+		public void startGameServer(IGameSettings game, String name) {
+			// TODO Auto-generated method stub
+
+		}
 
 		@Override
-        public void exitGame() {
-	        // TODO Auto-generated method stub
-	        
-        }
+		public void exitGame() {
+			System.exit(0);
+		}
 
 	}
 
 	synchronized void startGame(IGameSettings game) {
-		NullNetworkManager manager = new NullNetworkManager();
-		ProgressConnector progress = content.showProgress();
-		Timer100Milli.start();
-
-		progress.setProgressState(EProgressState.LOADING_MAP);
-
-		MainGrid grid = createGameGrid(game);
-
-		progress.setProgressState(EProgressState.LOADING_IMAGES);
-
-		MapInterfaceConnector connector =
-		        content.showHexMap(grid.getGraphicsGrid(), null);
-		new GuiInterface(connector, manager, grid.getGuiInputGrid());
-
-		manager.startGameTimer();
+		if (ongoingGame != null) {
+			ongoingGame.setListener(null);
+			ongoingGame.stop();
+		}
+		ongoingGame = new JSettlersGame(content, game, 123456l);
+		ongoingGame.setListener(this);
+		ongoingGame.start();
 	}
 
-	private MainGrid createGameGrid(IGameSettings game) {
-		return MainGrid.create(game.getMap().getName(),
-		        (byte) game.getPlayerCount(), RandomSingleton.get());
-	}
-
+	/**
+	 * Allows the ui to be started.
+	 * 
+	 * @author michael
+	 */
 	public interface IGuiStarter {
 		void startGui(JOGLPanel content);
+	}
+
+	/**
+	 * Game ended from inside the game.
+	 */
+	@Override
+	public void gameEnded() {
+		ongoingGame.setListener(null);
+		ongoingGame = null;
+		showMainScreen();
 	}
 
 }

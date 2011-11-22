@@ -16,9 +16,12 @@ import network.NetworkManager;
 import network.NullNetworkManager;
 import random.RandomSingleton;
 
+@Deprecated
 public abstract class JSettlersApp implements Runnable {
 
-	private static final int[] PRELOAD_FILES = new int[] { 2, 0, 1, 3, 10, 11, 12, 13 };
+	private static final int[] PRELOAD_FILES = new int[] {
+	        2, 0, 1, 3, 10, 11, 12, 13
+	};
 
 	private static final byte PLAYERS = 3;
 
@@ -27,12 +30,17 @@ public abstract class JSettlersApp implements Runnable {
 
 	private final String randomMap;
 
+	private boolean stop_startphaseEnded = false;
+	private boolean stopped = false;
+	private Object stopMutex = new Object();
+
+	private INetworkManager manager;
+
 	protected JSettlersApp() {
 		this("single", "", "test");
 	}
 
 	/**
-	 * 
 	 * @param networkmode
 	 *            possible values are:<br>
 	 *            <dl>
@@ -62,8 +70,6 @@ public abstract class JSettlersApp implements Runnable {
 
 	@Override
 	public void run() {
-		INetworkManager manager = null;
-
 		manager = startNetworkManager(networkmode, host);
 
 		JOGLPanel content = new JOGLPanel();
@@ -73,7 +79,8 @@ public abstract class JSettlersApp implements Runnable {
 
 		// Schedule image loading while the other stuff is waiting
 		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
+		provider.addLookupPath(new File(
+		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
 		for (int i : PRELOAD_FILES) {
@@ -88,20 +95,27 @@ public abstract class JSettlersApp implements Runnable {
 		MainGrid grid = createMainGrid();
 
 		progress.setProgressState(EProgressState.LOADING_IMAGES);
-		for (int i : PRELOAD_FILES) {
-			provider.waitForPreload(i);
-		}
-
-		MapInterfaceConnector connector = content.showHexMap(grid.getGraphicsGrid(), null);
+		
+		MapInterfaceConnector connector =
+		        content.showHexMap(grid.getGraphicsGrid(), null);
 		new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 		manager.startGameTimer();
+		
+		//TODO: allow user to stop game before this happens.
+		synchronized (stopMutex) {
+			stop_startphaseEnded = false;
+			if (stopped) {
+				executeStop();
+			}
+			onStop();
+        }
 	}
 
 	private MainGrid createMainGrid() {
 		MainGrid grid;
 		if (randomMap != null && !randomMap.isEmpty()) {
-			grid = MainGrid.create("test", PLAYERS, RandomSingleton.get());
+			grid = MainGrid.create(randomMap, PLAYERS, RandomSingleton.get());
 		} else {
 			GameSerializer serializer = new GameSerializer();
 			try {
@@ -120,7 +134,7 @@ public abstract class JSettlersApp implements Runnable {
 
 	protected abstract void startGui(JOGLPanel content);
 
-	private INetworkManager startNetworkManager(String networkmode, String host) {
+	private static INetworkManager startNetworkManager(String networkmode, String host) {
 		INetworkManager manager;
 		if (networkmode.equalsIgnoreCase("single")) {
 			manager = new NullNetworkManager();
@@ -134,5 +148,31 @@ public abstract class JSettlersApp implements Runnable {
 
 		manager.waitForInit();
 		return manager;
+	}
+
+	/**
+	 * Stops the game.
+	 */
+	public final void stop() {
+		boolean stopSend = false;
+		synchronized (stopMutex) {
+			if (!stopped && stop_startphaseEnded) {
+				executeStop();
+				this.stopped = true;
+				stopSend = true;
+			}
+		}
+		if (stopSend) {
+			onStop();
+		}
+	}
+
+	private void executeStop() {
+	    manager.close();
+	    Timer100Milli.stop();
+    }
+
+	protected void onStop() {
+
 	}
 }
