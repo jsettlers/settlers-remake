@@ -76,7 +76,7 @@ public abstract class GenerationInstruction {
 		parameters.put(key, value);
 	}
 
-	private String evaluateValue(String value, Random random) {
+	private static String evaluateValue(String value, Random random) {
 		String[] alternatives = value.split("\\|");
 		String choosen;
 		if (alternatives.length > 1) {

@@ -102,7 +102,7 @@ public class PlayerRiverInstruction extends LandInstruction {
 		return false;
 	}
 
-	private Vertex getSeaBorder(MeshSite sea) {
+	private static Vertex getSeaBorder(MeshSite sea) {
 		if (sea != null && sea.getEdges().length > 0) {
 			Vertex current = sea.getEdges()[0].getStart();
 			double direction = sea.getCenter().getDirectionTo(current);

@@ -88,7 +88,7 @@ public class RandomMapEvaluator {
 		this.grid = grid;
 	}
 
-	private void computeHeights(LandscapeMesh landscapeMesh) {
+	private static void computeHeights(LandscapeMesh landscapeMesh) {
 		PriorityQueue<Vertex> settled = new PriorityQueue<Vertex>();
 
 		for (MeshSite site : landscapeMesh.getSites()) {
@@ -115,7 +115,7 @@ public class RandomMapEvaluator {
 		}
 	}
 
-	private Vertex getUnsettled(LandscapeMesh landscapeMesh) {
+	private static Vertex getUnsettled(LandscapeMesh landscapeMesh) {
 		for (MeshEdge edge : landscapeMesh.getEdges()) {
 			if (edge.getEnd().getHeight() == Float.POSITIVE_INFINITY) {
 				return edge.getEnd();
@@ -127,7 +127,7 @@ public class RandomMapEvaluator {
 		return null;
 	}
 
-	private void settleAll(PriorityQueue<Vertex> settled) {
+	private static void settleAll(PriorityQueue<Vertex> settled) {
 		while (!settled.isEmpty()) {
 			Vertex vertex = settled.poll();
 			for (MeshEdge edge : vertex.getEdges()) {

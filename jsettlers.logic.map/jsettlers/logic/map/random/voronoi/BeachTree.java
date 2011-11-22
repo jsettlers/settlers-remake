@@ -18,7 +18,7 @@ public class BeachTree implements Beach {
 		if (isEmpty()) {
 			root = new BeachLinePart(point);
 		} else {
-			double y = point.getY();
+//			double y = point.getY();
 			// TODO
 		}
 	}

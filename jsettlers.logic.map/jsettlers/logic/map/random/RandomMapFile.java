@@ -69,7 +69,7 @@ public class RandomMapFile {
 
 	}
 
-	private String getNexLine(BufferedReader reader) throws IOException {
+	private static String getNexLine(BufferedReader reader) throws IOException {
 		String line = "";
 		while (line != null && (line.isEmpty() || line.startsWith("#"))) {
 			line = reader.readLine();

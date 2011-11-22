@@ -28,7 +28,7 @@ public class NoiseSet {
 		        interpolate(v3, v4, yfract), xfract);
 	}
 
-	private float interpolate(float start, float end, float fractional) {
+	private static float interpolate(float start, float end, float fractional) {
 		// return start * (1-fractional) + end * (fractional);
 		float f = (1 - (float) Math.cos(fractional * Math.PI)) * .5f;
 
