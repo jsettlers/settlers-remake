@@ -16,6 +16,12 @@ public class ResourceManager {
 		ResourceManager.provider = provider;
 	}
 
+	/**
+	 * Gets the file. Throws a io exception if the file does not exist.
+	 * @param filename
+	 * @return
+	 * @throws IOException
+	 */
 	public static InputStream getFile(String filename) throws IOException {
 		if (provider != null) {
 			return provider.getFile(filename);
