@@ -181,6 +181,8 @@ public class GuiInterface implements IMapInterfaceListener {
 		} else {
 			manager.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
 		}
+		currentSelection = new EmptySelection();
+		connector.setSelection(currentSelection);
 	}
 
 	private void showSelection() {

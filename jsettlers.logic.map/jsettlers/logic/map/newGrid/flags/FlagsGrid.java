@@ -18,7 +18,7 @@ public class FlagsGrid implements Serializable {
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
 
-	public FlagsGrid(short width, short height) {
+	public FlagsGrid(final short width, final short height) {
 		this.width = width;
 
 		this.blockedGrid = new BitSet(width * height);
