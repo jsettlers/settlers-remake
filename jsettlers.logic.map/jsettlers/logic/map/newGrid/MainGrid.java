@@ -892,6 +892,24 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
+		public void removeBuildingAt(ISPosition2D pos) {
+			IBuilding building = (IBuilding) objectsGrid.getMapObjectAt(pos.getX(), pos.getY(), EMapObjectType.BUILDING);
+			mapObjectsManager.removeMapObjectType(pos, EMapObjectType.BUILDING);
+
+			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
+			for (ISPosition2D curr : area) {
+				if (isInBounds(curr.getX(), curr.getY())) {
+					flagsGrid.setBlockedAndProtected(curr.getX(), curr.getY(), false);
+				}
+			}
+		}
+
+		@Override
+		public void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos) {
+			partitionsGrid.freeOccupiedArea(occupied, pos);
+		}
+
+		@Override
 		public void setBlocked(FreeMapArea area, boolean blocked) {
 			for (ISPosition2D curr : area) {
 				if (MainGrid.this.isInBounds(curr.getX(), curr.getY()))
@@ -995,15 +1013,6 @@ public class MainGrid implements Serializable {
 			}
 		}
 
-		@Override
-		public void removeBuildingAt(ISPosition2D pos) {
-			mapObjectsManager.removeMapObjectType(pos, EMapObjectType.BUILDING);
-		}
-
-		@Override
-		public void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos) {
-			partitionsGrid.freeOccupiedArea(occupied, pos);
-		}
 	}
 
 	private class GUIInputGrid implements IGuiInputGrid {

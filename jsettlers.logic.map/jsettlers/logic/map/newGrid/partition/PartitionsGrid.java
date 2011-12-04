@@ -322,10 +322,14 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		for (ISPosition2D curr : toBeOccupied) {
 			short x = curr.getX();
 			short y = curr.getY();
-			if (getPartitionAt(x, y) != newPartition && towers[x][y] <= 0) {
-				towers[x][y]++;
+			short partitionAt = getPartitionAt(x, y);
+
+			if (partitionAt != newPartition && towers[x][y] <= 0) {
 				occupiedPositions.add(curr);
 				setPartition(x, y, newPartition);
+			}
+			if (getPlayerAt(x, y) == newPlayer) {
+				towers[x][y]++;
 			}
 		}
 
