@@ -16,6 +16,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
 /**
  * This class holds the metadata of a partition.
@@ -87,8 +88,8 @@ public class Partition implements Serializable {
 		manager.addJobless(worker);
 	}
 
-	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-		manager.request(position, materialType, priority);
+	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
+		manager.request(requester, materialType, priority);
 	}
 
 	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
@@ -113,6 +114,10 @@ public class Partition implements Serializable {
 
 	public void mergeInto(Partition newPartition) {
 		manager.mergeInto(newPartition.manager);
+	}
+
+	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+		manager.releaseRequestsAt(position, materialType);
 	}
 
 }

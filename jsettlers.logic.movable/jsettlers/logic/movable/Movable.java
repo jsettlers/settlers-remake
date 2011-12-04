@@ -239,14 +239,22 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		isRightstep = !isRightstep;
 	}
 
+	private byte noActionDelay = 0;
+
 	@Override
 	public void timerEvent() {
 		// System.out.println(state + "\t" + action + "\t\t" + pos + "\t" + nextTile + "\t" + progress);
 		switch (state) {
 		case NO_ACTION:
-			nothingTodoAction();
-			if (state == EMovableState.NO_ACTION)// the state might have changed in because of leaving a blocked position.
-				strategy.noActionEvent();
+			if (noActionDelay <= 0) {
+				noActionDelay = (byte) RandomSingleton.getInt(5, Constants.MOVABLE_INTERRUPTS_PER_SECOND);
+
+				nothingTodoAction();
+				if (state == EMovableState.NO_ACTION)// the state might have changed in because of leaving a blocked position.
+					strategy.noActionEvent();
+			} else {
+				noActionDelay--;
+			}
 			break;
 
 		case PUSHED_AND_WAITING:
@@ -289,7 +297,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	private void goStepOrTurnRandom() {
 		if (RandomSingleton.nextF() < Constants.MOVABLE_TURN_PROBABILITY) {
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
-		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_STEP_PROBABILITY) {
+		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_NEIGHBOR_PUSH_PROBABILITY) {
 			for (EDirection curr : EDirection.values()) { // push all movables around this movable
 				ISPosition2D point = curr.getNextHexPoint(pos);
 				if (grid.isInBounds(point)) {

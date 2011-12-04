@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Random;
 
 import jsettlers.common.Color;
@@ -14,6 +15,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -59,6 +61,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
 import jsettlers.logic.map.random.grid.BuildingObject;
@@ -324,7 +327,8 @@ public class MainGrid implements Serializable {
 			switch (searchType) {
 
 			case FOREIGN_GROUND:
-				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y)
+						&& !partitionsGrid.isEnforcedByTower(x, y);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))
@@ -356,8 +360,8 @@ public class MainGrid implements Serializable {
 				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER);
 
 			case NON_BLOCKED_OR_PROTECTED:
-				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y)) && !isLandscapeBlocking(x, y)
-						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable));
+				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y))
+						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
@@ -817,6 +821,10 @@ public class MainGrid implements Serializable {
 			return mapObjectsManager.pigIsAdult(pos);
 		}
 
+		@Override
+		public boolean isEnforcedByTower(ISPosition2D pos) {
+			return partitionsGrid.isEnforcedByTower(pos.getX(), pos.getY());
+		}
 	}
 
 	private class BordersThreadGrid implements IBordersThreadGrid {
@@ -892,11 +900,6 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void setPlayerAt(ISPosition2D position, byte player) {
-			changePlayerAt(position, player);
-		}
-
-		@Override
 		public short getWidth() {
 			return width;
 		}
@@ -951,12 +954,19 @@ public class MainGrid implements Serializable {
 			partitionsGrid.requestSoilderable(barrack);
 		}
 
+		@Override
+		public void occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte player) {
+			List<ISPosition2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, occupiersPosition, player);
+			bordersThread.checkPositions(occupiedPositions);
+			landmarksCorrectionThread.addLandmarkedPositions(occupiedPositions);
+		}
+
 		private class RequestStackGrid implements IRequestsStackGrid, Serializable {
 			private static final long serialVersionUID = 1278397366408051067L;
 
 			@Override
-			public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-				partitionsGrid.request(position, materialType, priority);
+			public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
+				partitionsGrid.request(requester, materialType, priority);
 			}
 
 			@Override
@@ -973,8 +983,27 @@ public class MainGrid implements Serializable {
 			public byte getStackSize(ISPosition2D position, EMaterialType materialType) {
 				return mapObjectsManager.getStackSize(position, materialType);
 			}
+
+			@Override
+			public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+				partitionsGrid.releaseRequestsAt(position, materialType);
+
+				byte stackSize = mapObjectsManager.getStackSize(position, materialType);
+				for (byte i = 0; i < stackSize; i++) {
+					partitionsGrid.pushMaterial(position, materialType);
+				}
+			}
 		}
 
+		@Override
+		public void removeBuildingAt(ISPosition2D pos) {
+			mapObjectsManager.removeMapObjectType(pos, EMapObjectType.BUILDING);
+		}
+
+		@Override
+		public void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos) {
+			partitionsGrid.freeOccupiedArea(occupied, pos);
+		}
 	}
 
 	private class GUIInputGrid implements IGuiInputGrid {

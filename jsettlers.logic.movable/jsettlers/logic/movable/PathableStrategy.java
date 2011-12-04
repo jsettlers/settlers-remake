@@ -1,6 +1,7 @@
 package jsettlers.logic.movable;
 
 import jsettlers.common.material.ESearchType;
+import jsettlers.common.movable.EAction;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
@@ -51,16 +52,39 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	private boolean goPathStep() {
 		if (path != null) {
 			if (!path.isFinished()) {
-				ISPosition2D nextTile = path.nextStep();
-				super.goToTile(nextTile);
-				return true;
+				if (checkGoStepPrecondition()) {
+					ISPosition2D nextTile = path.nextStep();
+					super.goToTile(nextTile);
+				} else {
+					abortPath();
+					pathAbortedEvent();
+				}
 			} else {
 				path = null;
 				pathFinished();
-				return true;
 			}
+			return true;
 		} else
 			return false;
+	}
+
+	/**
+	 * This methods can be used by subclasses if they abort a path via {@link #checkGoStepPrecondition()} to handle the abort.
+	 * <p />
+	 * NOTE: THIS METHOD MUST SET a new action to the movable.
+	 */
+	protected void pathAbortedEvent() {
+		super.setAction(EAction.NO_ACTION, -1);
+	}
+
+	/**
+	 * This method can be used by subclasses to do checks and maybe interrupt a path before the movable does the next step.
+	 * 
+	 * @return true if the next step can be done,<br>
+	 *         false if the path should be aborted. ( {@link #pathAbortedEvent() } will be called)
+	 */
+	protected boolean checkGoStepPrecondition() {
+		return true;
 	}
 
 	protected abstract void pathFinished();

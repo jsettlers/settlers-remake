@@ -24,6 +24,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import synchronic.timer.INetworkTimerable;
 import synchronic.timer.NetworkTimer;
@@ -41,7 +42,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
-	private final SerializableLinkedList<Request<EMaterialType>> materialRequests = new SerializableLinkedList<PartitionManager.Request<EMaterialType>>();
+	private final SerializableLinkedList<Request> materialRequests = new SerializableLinkedList<PartitionManager.Request>();
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
@@ -61,7 +62,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	private void schedule() {
-		NetworkTimer.schedule(this, (short) 2);
+		NetworkTimer.schedule(this, (short) 10);
 	}
 
 	public void stop() {
@@ -83,8 +84,8 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-		materialRequests.offer(new Request<EMaterialType>(position, materialType, priority));
+	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
+		materialRequests.offer(new Request(requester, materialType, priority));
 	}
 
 	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
@@ -141,10 +142,10 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 			newManager.materialOffers.set(position, removedOffer);
 		}
 
-		java.util.Iterator<Request<EMaterialType>> requestIter = materialRequests.iterator();
+		java.util.Iterator<Request> requestIter = materialRequests.iterator();
 		while (requestIter.hasNext()) {
-			Request<EMaterialType> currRequest = requestIter.next();
-			if (currRequest.position.equals(position)) {
+			Request currRequest = requestIter.next();
+			if (currRequest.getPos().equals(position)) {
 				requestIter.remove();
 				if (newHasSamePlayer) {
 					newManager.materialRequests.offer(currRequest);
@@ -313,10 +314,10 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 
 	private void handleMaterialRequest() {
 		if (!materialRequests.isEmpty()) {
-			Request<EMaterialType> request = materialRequests.poll();
+			Request request = materialRequests.poll();
 
 			materialTypeAcceptor.materialType = request.requested;
-			Offer offer = materialOffers.getObjectNextTo(request.position, materialTypeAcceptor);
+			Offer offer = materialOffers.getObjectNextTo(request.getPos(), materialTypeAcceptor);
 
 			if (offer == null) {
 				reofferRequest(request);
@@ -325,7 +326,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 
 				if (manageable != null) {
 					reduceOfferAmount(offer);
-					manageable.executeJob(offer.position, request.position, offer.materialType);
+					manageable.executeJob(offer.position, request.requester, offer.materialType);
 				} else {
 					reofferRequest(request);
 				}
@@ -344,7 +345,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private void reofferRequest(Request<EMaterialType> request) {
+	private void reofferRequest(Request request) {
 		// TODO: decrease priority, do something else, ...
 		// request.decreasePriority();
 		materialRequests.offerLast(request);
@@ -370,27 +371,32 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 
 	}
 
-	private class Request<T> implements Comparable<Request<T>>, Serializable {
+	private class Request implements Comparable<Request>, Serializable, ILocatable {
 		private static final long serialVersionUID = -3427364937835501076L;
 
-		final ISPosition2D position;
-		final T requested;
+		final IMaterialRequester requester;
+		final EMaterialType requested;
 		byte priority = 100;
 
-		public Request(ISPosition2D position, T requested, byte priority) {
-			this.position = position;
+		public Request(IMaterialRequester requester, EMaterialType requested, byte priority) {
+			this.requester = requester;
 			this.requested = requested;
 			this.priority = priority;
 		}
 
 		@Override
-		public int compareTo(Request<T> other) {
+		public int compareTo(Request other) {
 			return other.priority - this.priority;
 		}
 
 		@Override
 		public String toString() {
-			return requested + "   " + position + "    " + priority;
+			return requested + "   " + requester.getPos() + "    " + priority;
+		}
+
+		@Override
+		public ISPosition2D getPos() {
+			return requester.getPos();
 		}
 	}
 
@@ -528,6 +534,16 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		schedule();
+	}
+
+	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+		Iterator<Request> iter = materialRequests.iterator();
+		while (iter.hasNext()) {
+			Request curr = iter.next();
+			if (curr.requested == materialType && curr.getPos().equals(position)) {
+				iter.remove();
+			}
+		}
 	}
 
 }

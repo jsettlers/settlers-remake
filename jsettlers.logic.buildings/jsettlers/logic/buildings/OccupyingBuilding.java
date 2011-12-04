@@ -26,10 +26,12 @@ public class OccupyingBuilding extends Building {
 
 	@Override
 	protected void constructionFinishedEvent() {
-		MapShapeFilter occupying = new MapShapeFilter(new MapCircle(super.getPos(), RADIUS), grid.getWidth(), grid.getHeight());
-		for (ISPosition2D currPos : occupying) {
-			grid.setPlayerAt(currPos, getPlayer());
-		}
+		MapShapeFilter occupying = getOccupyablePositions();
+		grid.occupyArea(occupying, super.getPos(), super.getPlayer());
+	}
+
+	private MapShapeFilter getOccupyablePositions() {
+		return new MapShapeFilter(new MapCircle(super.getPos(), RADIUS), grid.getWidth(), grid.getHeight());
 	}
 
 	@Override
@@ -55,4 +57,9 @@ public class OccupyingBuilding extends Building {
 		return false;
 	}
 
+	@Override
+	protected void killedEvent() {
+		MapShapeFilter occupied = getOccupyablePositions();
+		grid.freeOccupiedArea(occupied, super.getPos());
+	}
 }

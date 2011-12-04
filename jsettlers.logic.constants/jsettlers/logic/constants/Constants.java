@@ -23,12 +23,7 @@ public final class Constants {
 	public static final short WIDTH = 400;
 	public static final short HEIGHT = 700;
 
-	public static final int MAX_STONE_SIZE = 12;
-
-	public static final float TREE_GROWTH_PER_INTERRUPT = 0.005F;
-	public static final float TREE_DECOMPOSE_PER_INTERRUPT = 0.002F;
-
-	public static final float CORN_GROWTH_PER_INTERRUPT = 0.00004f;
+	public static final int MAX_STONE_SIZE = 14;
 
 	public static final byte MOVABLE_INTERRUPTS_PER_SECOND = 17;
 
@@ -36,8 +31,8 @@ public final class Constants {
 
 	public static float MOVABLE_STEP_DURATION = 0.4f;
 
-	public static final float MOVABLE_TURN_PROBABILITY = 0.003F;
-	public static final float MOVABLE_NO_ACTION_STEP_PROBABILITY = 0.05F;
+	public static final float MOVABLE_TURN_PROBABILITY = 0.06F;
+	public static final float MOVABLE_NO_ACTION_NEIGHBOR_PUSH_PROBABILITY = 0.2F;
 
 	public static final float MOVABLE_TAKE_DROP_DURATION = 0.5f;
 

@@ -39,4 +39,10 @@ public class LimittedRequestStack extends RequestStack {
 	public boolean isFullfilled() {
 		return poppedMaterials >= requestedAmount;
 	}
+
+	@Override
+	public void requestFailed() {
+		super.requestFailed();
+		stillToBeRequested++;
+	}
 }

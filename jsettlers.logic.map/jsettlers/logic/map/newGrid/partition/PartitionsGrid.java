@@ -3,9 +3,12 @@ package jsettlers.logic.map.newGrid.partition;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import jsettlers.common.Color;
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -21,6 +24,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
 /**
  * This class handles the partitions of the map.
@@ -34,6 +38,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	private final short width;
 	private final short height;
 	private final short[][] partitions;
+	private final byte[][] towers;
 	private final boolean[][] borders;
 	/**
 	 * This array stores the partition objects handled by this class.<br>
@@ -51,6 +56,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		this.grid = grid;
 		this.pathfinderMap = pathfinderMap;
 		this.partitions = new short[width][height];
+		this.towers = new byte[width][height];
 		this.borders = new boolean[width][height];
 		this.partitionsAlgorithm = new PartitionsAlgorithm(this, pathfinderMap);
 		this.nullPartition = new Partition((byte) -1, height * width);
@@ -278,8 +284,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(digger.getPos()).addJobless(digger);
 	}
 
-	public void request(ISPosition2D position, EMaterialType materialType, byte priority) {
-		getPartitionObject(position).request(position, materialType, priority);
+	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
+		getPartitionObject(requester.getPos()).request(requester, materialType, priority);
 	}
 
 	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
@@ -294,12 +300,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(workerBuilding.getPos()).requestBuildingWorker(workerType, workerBuilding);
 	}
 
-	public void setPlayerAndPartitionAt(short x, short y, short partition) {
-		getPartitionObject(x, y).decrement();
-		partitions[x][y] = partition;
-		getPartitionObject(partition).increment();
-	}
-
 	@Override
 	public boolean isBlockedForPeople(short x, short y) {
 		return grid.isBlocked(x, y);
@@ -309,4 +309,45 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(barrack.getDoor()).requestSoilderable(barrack);
 	}
 
+	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+		getPartitionObject(position).releaseRequestsAt(position, materialType);
+	}
+
+	public List<ISPosition2D> occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte newPlayer) {
+		changePlayerAt(occupiersPosition.getX(), occupiersPosition.getY(), newPlayer);
+
+		short newPartition = getPartition(occupiersPosition);
+		List<ISPosition2D> occupiedPositions = new ArrayList<ISPosition2D>();
+
+		for (ISPosition2D curr : toBeOccupied) {
+			short x = curr.getX();
+			short y = curr.getY();
+			if (getPartitionAt(x, y) != newPartition && towers[x][y] <= 0) {
+				towers[x][y]++;
+				occupiedPositions.add(curr);
+				setPartition(x, y, newPartition);
+			}
+		}
+
+		return occupiedPositions;
+	}
+
+	public boolean isEnforcedByTower(short x, short y) {
+		return towers[x][y] > 0;
+	}
+
+	public void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D occupiersPosition) {
+		short partiton = getPartition(occupiersPosition);
+
+		for (ISPosition2D curr : occupied) {
+			short x = curr.getX();
+			short y = curr.getY();
+			if (getPartitionAt(x, y) == partiton) {
+				towers[x][y]--;
+				if (towers[x][y] <= 0) {
+					// TODO check towers next to this
+				}
+			}
+		}
+	}
 }

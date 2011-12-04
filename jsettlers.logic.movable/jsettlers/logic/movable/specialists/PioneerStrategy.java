@@ -40,7 +40,7 @@ public class PioneerStrategy extends PathableStrategy {
 			centerPos = super.getPos();
 		}
 
-		if (super.getGrid().getPlayerAt(super.getPos()) != super.getPlayer()) {
+		if (super.getGrid().getPlayerAt(super.getPos()) != super.getPlayer() && !super.getGrid().isEnforcedByTower(super.getPos())) {
 			super.setAction(EAction.ACTION1, Constants.PIONEER_ACTION_DURATION);
 			going = false;
 		} else {
@@ -103,7 +103,6 @@ public class PioneerStrategy extends PathableStrategy {
 	}
 
 	private ISPosition2D getCloseForeignTile() {
-		byte myPlayer = super.getPlayer();
 		ISPosition2D bestNeighbour = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
 
@@ -111,8 +110,7 @@ public class PioneerStrategy extends PathableStrategy {
 		for (EDirection sateliteDir : EDirection.values()) {
 			ISPosition2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
 
-			if (super.getGrid().isInBounds(satelitePos) && super.getGrid().getPlayerAt(satelitePos) != myPlayer
-					&& !super.getGrid().isBlocked(this, satelitePos.getX(), satelitePos.getY()) && !super.getGrid().isMarked(satelitePos)) {
+			if (super.getGrid().isInBounds(satelitePos) && isOccupyablePosition(satelitePos)) {
 				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
@@ -122,6 +120,10 @@ public class PioneerStrategy extends PathableStrategy {
 
 		}
 		return bestNeighbour;
+	}
+
+	private boolean isOccupyablePosition(ISPosition2D position) {
+		return super.getGrid().fitsSearchType(position, ESearchType.FOREIGN_GROUND, this);
 	}
 
 	@Override

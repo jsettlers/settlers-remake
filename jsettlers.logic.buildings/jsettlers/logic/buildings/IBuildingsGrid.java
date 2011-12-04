@@ -1,6 +1,7 @@
 package jsettlers.logic.buildings;
 
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
@@ -30,8 +31,6 @@ public interface IBuildingsGrid {
 	byte getHeightAt(ISPosition2D position);
 
 	boolean setBuilding(ISPosition2D position, Building newBuilding); // FIXME create interface for Building to be used by the grid
-
-	void setPlayerAt(ISPosition2D position, byte player);
 
 	/**
 	 * Gives the width of the grid.
@@ -84,4 +83,16 @@ public interface IBuildingsGrid {
 	void requestSoilderable(Barrack barrack);
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
+
+	void occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte player);
+
+	void removeBuildingAt(ISPosition2D pos);
+
+	/**
+	 * this method removes the enforcement in the given area
+	 * 
+	 * @param occupied
+	 * @param pos
+	 */
+	void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos);
 }

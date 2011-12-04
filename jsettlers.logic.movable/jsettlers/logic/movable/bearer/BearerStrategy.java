@@ -7,6 +7,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
@@ -16,7 +17,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 
 	private EBearerState state = EBearerState.JOBLESS;
 	private ISPosition2D offer;
-	private ISPosition2D request;
+	private IMaterialRequester requester;
 	private EMaterialType materialType;
 	private EMovableType movableType;
 	private Barrack barrack;
@@ -33,13 +34,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 
 	@Override
 	protected void pathRequestFailed() {
-		switch (state) {
-		case CARRY_TAKE:
-			super.getGrid().pushMaterial(super.getPos(), materialType, true);
-			// no break here!
-		case CARRY_DROP:
-			// grid.requestMaterial(carryJob.getRequest()); FIXME implement reOffering of request
-		}
+		pathAbortedEvent();
 	}
 
 	@Override
@@ -104,7 +99,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			switch (state) {
 			case CARRY_TAKE:
 				super.getGrid().popMaterial(super.getPos(), materialType);
-				super.calculatePathTo(request);
+				super.calculatePathTo(requester.getPos());
 				state = EBearerState.CARRY_DROP;
 				break;
 			case CARRY_DROP:
@@ -122,6 +117,16 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 				super.getGrid().popMaterial(super.getPos(), movableType.getTool());
 				super.setAction(EAction.NO_ACTION, -1);
 				super.convertTo(movableType);
+				break;
+
+			case ABORTED:
+				if (materialType != null) {
+					super.getGrid().pushMaterial(super.getPos(), materialType, true);
+					super.setMaterial(EMaterialType.NO_MATERIAL);
+				}
+				this.state = EBearerState.JOBLESS;
+				super.getGrid().addJobless(this);
+				super.setAction(EAction.NO_ACTION, -1);
 				break;
 
 			default:
@@ -142,6 +147,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		CARRY_TAKE,
 		CARRY_DROP,
 		JOBLESS,
+		ABORTED,
 
 		CONVERT_INIT,
 		CONVERT_TAKE,
@@ -162,9 +168,40 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	@Override
-	public void executeJob(ISPosition2D offer, ISPosition2D request, EMaterialType materialType) {
+	protected boolean checkGoStepPrecondition() {
+		return requester == null || requester.isActive();
+	}
+
+	@Override
+	protected void pathAbortedEvent() {
+		switch (state) {
+		case CARRY_DROP:
+			this.state = EBearerState.ABORTED;
+			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+			this.requester.requestFailed();
+			break;
+
+		default:
+			this.state = EBearerState.JOBLESS;
+			super.getGrid().addJobless(this);
+			super.setAction(EAction.NO_ACTION, -1);
+			break;
+		}
+
+		this.requester = null;
+	}
+
+	@Override
+	protected void killedEvent() {
+		if (requester != null) {
+			requester.requestFailed();
+		}
+	}
+
+	@Override
+	public void executeJob(ISPosition2D offer, IMaterialRequester requester, EMaterialType materialType) {
 		this.offer = offer;
-		this.request = request;
+		this.requester = requester;
 		this.materialType = materialType;
 		this.state = EBearerState.CARRY_INIT;
 	}

@@ -27,7 +27,6 @@ import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
-import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.stack.LimittedRequestStack;
@@ -253,12 +252,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			break;
 
 		case CONSTRUCTED:
-			if (door != null) {
-				IHexMovable movableAtDoor = grid.getMovable(door);
-				if (movableAtDoor != null) {
-					movableAtDoor.push(null);
-				}
-			}
 			subTimerEvent();
 			break;
 
@@ -411,7 +404,25 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public void kill() {
 		System.out.println("building killed");
-		// TODO Auto-generated method stub
+		Timer100Milli.remove(this);
+		releaseRequestStacks();
+
+		grid.removeBuildingAt(pos);
+		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, 5, player);
+		drawWorkAreaCircle(false);
+		placeAdditionalMapObjects(grid, pos, false);
+		placeFlag(false);
+
+		killedEvent();
+	}
+
+	protected void killedEvent() {
+	}
+
+	private void releaseRequestStacks() {
+		for (RequestStack curr : stacks) {
+			curr.releaseRequests();
+		}
 	}
 
 	public void setWorkAreaCenter(@SuppressWarnings("unused") ISPosition2D workAreaCenter) {

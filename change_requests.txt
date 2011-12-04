@@ -30,4 +30,13 @@ CR-025 [ ]                  --       Make fog of war consume less CPU
 CR-026 [ ]                  --       Some Workers (e.g. Lumberjack) go crazy when they are cut of their house. Recheck all fail jobs.
 CR-027 [x]  rev 719    ae   --       bricklayer walks to buildings that are already constructed (gets the job after the building has been constructed
 CR-028 [x]  rev 722    ae   --       Move fog of war to logic and algorithms
-CR-029 [ ]                  --       
+CR-029 [ ]             ae   --       Slow down tick rate of NetworkTimer
+CR-030 [ ]                  --       pig farmer leaves his position when working on third pig
+CR-031 [ ]                  --       
+CR-032 [ ]                  --       
+CR-033 [ ]                  --       
+CR-034 [ ]                  --       
+CR-035 [ ]                  --       
+CR-036 [ ]                  --       
+CR-037 [ ]                  --       
+CR-038 [ ]                  --       

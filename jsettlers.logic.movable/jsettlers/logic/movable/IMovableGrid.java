@@ -280,8 +280,11 @@ public interface IMovableGrid {
 
 	/**
 	 * Places or removes a smoke object.
-	 * @param pos The position to place the object.
-	 * @param place If the object should be placed (true) or removed (false)
+	 * 
+	 * @param pos
+	 *            The position to place the object.
+	 * @param place
+	 *            If the object should be placed (true) or removed (false)
 	 */
 	void placeSmoke(ISPosition2D pos, boolean place);
 
@@ -292,4 +295,6 @@ public interface IMovableGrid {
 	boolean isPigThere(ISPosition2D pos);
 
 	boolean isPigAdult(ISPosition2D pos);
+
+	boolean isEnforcedByTower(ISPosition2D pos);
 }

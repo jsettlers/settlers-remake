@@ -249,6 +249,8 @@ public class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+		assert materialType != null : "material type can never be null here";
+
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
 
 		if (stackObject == null) {
