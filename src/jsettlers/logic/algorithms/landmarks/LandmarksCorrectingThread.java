@@ -1,6 +1,7 @@
 package jsettlers.logic.algorithms.landmarks;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.movable.EDirection;
@@ -35,7 +36,10 @@ public class LandmarksCorrectingThread extends Thread {
 				} catch (InterruptedException e) {
 				}
 			} else {
-				ISPosition2D startPos = queue.poll();
+				ISPosition2D startPos;
+				synchronized (queue) {
+					startPos = queue.poll();
+				}
 				checkLandmarks(startPos);
 			}
 		}
@@ -113,6 +117,14 @@ public class LandmarksCorrectingThread extends Thread {
 	}
 
 	public void addLandmarkedPosition(ISPosition2D pos) {
-		queue.offer(pos);
+		synchronized (queue) {
+			queue.offer(pos);
+		}
+	}
+
+	public void addLandmarkedPositions(List<ISPosition2D> occupiedPositions) {
+		synchronized (queue) {
+			queue.addAll(occupiedPositions);
+		}
 	}
 }

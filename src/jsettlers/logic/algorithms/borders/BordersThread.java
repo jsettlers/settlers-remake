@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.borders;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -37,7 +38,11 @@ public class BordersThread implements Runnable {
 	public void run() {
 		while (!canceled) {
 			if (!positionsQueue.isEmpty()) {
-				ISPosition2D position = positionsQueue.poll();
+				ISPosition2D position;
+				synchronized (positionsQueue) {
+					position = positionsQueue.poll();
+				}
+
 				byte player = grid.getPlayer(position.getX(), position.getY());
 				boolean isBorder = false;
 
@@ -84,10 +89,19 @@ public class BordersThread implements Runnable {
 	}
 
 	public void checkPosition(ISPosition2D position) {
-		this.positionsQueue.offer(position);
+		synchronized (positionsQueue) {
+			this.positionsQueue.offer(position);
+		}
+	}
+
+	public void checkPositions(List<ISPosition2D> occupiedPositions) {
+		synchronized (positionsQueue) {
+			this.positionsQueue.addAll(occupiedPositions);
+		}
 	}
 
 	public void cancel() {
 		this.canceled = true;
 	}
+
 }
