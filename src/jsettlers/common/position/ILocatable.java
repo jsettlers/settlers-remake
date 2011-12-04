@@ -10,7 +10,7 @@ import java.util.List;
  * 
  */
 public interface ILocatable {
-	public ISPosition2D getPos();
+	ISPosition2D getPos();
 
 	static class Methods {
 		/**
