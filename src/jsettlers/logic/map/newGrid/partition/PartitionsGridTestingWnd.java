@@ -15,9 +15,11 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import synchronic.timer.NetworkTimer;
 
 public class PartitionsGridTestingWnd extends JFrame {
@@ -75,10 +77,10 @@ public class PartitionsGridTestingWnd extends JFrame {
 		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
 		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
 
-		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
-		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
-		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
-		partitionsGrid.request(new ShortPoint2D(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new TestMaterialRequester(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new TestMaterialRequester(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new TestMaterialRequester(2, 0), EMaterialType.STONE, (byte) 1);
+		partitionsGrid.request(new TestMaterialRequester(2, 0), EMaterialType.STONE, (byte) 1);
 
 		frame.aStarMap.setBlocked(1, 1, true);
 
@@ -177,5 +179,31 @@ public class PartitionsGridTestingWnd extends JFrame {
 				g.drawString(x + "|" + y, drawX + BLOCK_SIZE / 2, drawY - BLOCK_SIZE / 2);
 			}
 		}
+	}
+
+	private static class TestMaterialRequester implements IMaterialRequester {
+
+		private final ISPosition2D pos;
+
+		TestMaterialRequester(int x, int y) {
+			this.pos = new ShortPoint2D(x, y);
+		}
+
+		@Override
+		public ISPosition2D getPos() {
+			return pos;
+		}
+
+		@Override
+		public boolean isActive() {
+			return true;
+		}
+
+		@Override
+		public void requestFailed() {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 }
