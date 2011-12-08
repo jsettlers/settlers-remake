@@ -50,7 +50,6 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	@Override
 	protected void constructionFinishedEvent() {
 		grid.requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
-		super.placeFlag(true);
 	}
 
 	@Override
@@ -86,6 +85,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	@Override
 	public void occupyBuilding(IManageableWorker worker) {
 		this.worker = worker;
+		super.placeFlag(true);
 	}
 
 	@Override
