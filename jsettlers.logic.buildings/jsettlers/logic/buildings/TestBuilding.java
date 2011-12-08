@@ -12,11 +12,6 @@ public class TestBuilding extends Building {
 	}
 
 	@Override
-	public boolean isOccupied() {
-		return false;
-	}
-
-	@Override
 	public void stopOrStartWorking(boolean stop) {
 	}
 

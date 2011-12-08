@@ -33,11 +33,6 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public boolean isOccupied() {
-		return false;
-	}
-
-	@Override
 	public void stopOrStartWorking(boolean stop) {
 		isWorking = !stop;
 	}

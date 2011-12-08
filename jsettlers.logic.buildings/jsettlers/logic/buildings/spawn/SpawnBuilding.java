@@ -23,11 +23,6 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	public boolean isOccupied() {
-		return super.isConstructionFinished();
-	}
-
-	@Override
 	public EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}

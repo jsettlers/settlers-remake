@@ -1,6 +1,10 @@
 package jsettlers.logic.buildings;
 
+import java.util.List;
+
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -15,7 +19,7 @@ import jsettlers.common.position.ISPosition2D;
  * @author michael
  * 
  */
-public class OccupyingBuilding extends Building {
+public class OccupyingBuilding extends Building implements IBuilding.IOccupyed {
 	private static final long serialVersionUID = 5267249978497095473L;
 
 	private static final float RADIUS = 40;
@@ -52,14 +56,14 @@ public class OccupyingBuilding extends Building {
 	}
 
 	@Override
-	public boolean isOccupied() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	protected void killedEvent() {
 		MapShapeFilter occupied = getOccupyablePositions();
 		grid.freeOccupiedArea(occupied, super.getPos());
+	}
+
+	@Override
+	public List<IBuildingOccupyer> getOccupyers() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
