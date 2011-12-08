@@ -32,11 +32,6 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-	public boolean isOccupied() {
-		return true;
-	}
-
-	@Override
 	public byte getPlayer() {
 		return 0;
 	}
@@ -56,19 +51,19 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-    public EMapObjectType getObjectType() {
-	    return EMapObjectType.BUILDING;
-    }
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.BUILDING;
+	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    return null;
-    }
+	public IMapObject getNextObject() {
+		return null;
+	}
 
 	@Override
-    public boolean isWorking() {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	public boolean isWorking() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }
