@@ -5,8 +5,8 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.heap.MinHeap;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.wrapper.InvalidStartPositionException;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid

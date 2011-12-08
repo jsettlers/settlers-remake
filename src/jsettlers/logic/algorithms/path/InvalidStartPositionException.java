@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.path.wrapper;
+package jsettlers.logic.algorithms.path;
 
 public class InvalidStartPositionException extends IllegalArgumentException {
 	private static final long serialVersionUID = 1L;

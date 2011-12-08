@@ -39,7 +39,7 @@ public class InAreaFinder {
 
 		for (int i = 0; i < 100; i++) {
 			double angle = RandomSingleton.nextD() * 2 * Math.PI; // get an angle in the interval [0, 2PI]
-			double radius = Math.pow(RandomSingleton.nextD(), 3.5) * searchRadius; // get a radius in the interval [0, pixelRadius]
+			double radius = Math.pow(RandomSingleton.nextD(), 3.9) * searchRadius; // get a radius in the interval [0, pixelRadius]
 
 			short tileX = (short) (Math.cos(angle) * radius + centerX);
 			short tileY = (short) (Math.sin(angle) * radius + centerY);

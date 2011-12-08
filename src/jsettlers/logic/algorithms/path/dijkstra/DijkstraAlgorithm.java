@@ -4,9 +4,9 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.wrapper.InvalidStartPositionException;
 
 /**
  * this class implements a strict dijkstra algorithm
