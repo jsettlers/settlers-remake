@@ -94,6 +94,21 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		}
 	}
 
+	@Override
+	protected boolean noActionEvent() {
+		if (!super.noActionEvent()) {
+			if (currentJob != null) {
+				pathOrActionFinished();
+			} else {
+				if (!done) {
+					checkForDroppingMaterial();
+					done = true;
+				}
+			}
+		}
+		return true;
+	}
+
 	private void pathOrActionFinished() {
 		assert currentJob != null : "currentJob should not be null here";
 
@@ -398,14 +413,14 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		this.building = building;
 		this.currentJob = building.getBuildingType().getStartJob();
 		this.done = false;
-		pathOrActionFinished();
+		this.building.occupyBuilding(this);
 	}
 
 	@Override
 	protected boolean isPathStopable() {
 		return false;
 	}
-	
+
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();
 		if (currentJob == null) {
@@ -413,16 +428,41 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		} else {
 			stream.writeObject(currentJob.getName());
 		}
-    }
+	}
 
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-	    stream.defaultReadObject();
+		stream.defaultReadObject();
 		String jobname = (String) stream.readObject();
 		if (jobname == null) {
 			currentJob = null;
 		} else {
 			currentJob = building.getBuildingType().getJobByName(jobname);
 		}
-    }
+	}
+
+	@Override
+	public void buildingDestroyed() {
+		this.currentJob = null;
+
+		if (super.isFollowingPath()) {
+			super.abortPath();
+			done = false;
+		} else {
+			checkForDroppingMaterial();
+			done = true;
+		}
+
+		super.setVisible(true);
+	}
+
+	private void checkForDroppingMaterial() {
+		EMaterialType material = super.getMaterial();
+		if (material != null && material != EMaterialType.NO_MATERIAL) {
+			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+			super.setMaterial(EMaterialType.NO_MATERIAL);
+			super.getGrid().pushMaterial(super.getPos(), material, true);
+		}
+		super.getGrid().addJobless(this);
+	}
 
 }

@@ -9,4 +9,6 @@ public interface IManageableWorker extends IManageable {
 
 	void setWorkerJob(IWorkerRequestBuilding building);
 
+	void buildingDestroyed();
+
 }

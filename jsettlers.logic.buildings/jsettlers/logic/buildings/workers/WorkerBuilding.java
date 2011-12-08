@@ -5,6 +5,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.stack.RequestStack;
 
@@ -18,7 +19,9 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	private ISPosition2D workAreaCenter;
 
-	private boolean isWorking = true;;
+	private boolean isWorking = true;
+
+	private IManageableWorker worker;;
 
 	public WorkerBuilding(EBuildingType type, byte player) {
 		super(type, player);
@@ -83,6 +86,19 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	@Override
 	public boolean isWorking() {
 		return isWorking;
+	}
+
+	@Override
+	public void occupyBuilding(IManageableWorker worker) {
+		this.worker = worker;
+	}
+
+	@Override
+	protected void killedEvent() {
+		if (worker != null) {
+			this.worker.buildingDestroyed();
+			this.worker = null;
+		}
 	}
 
 }

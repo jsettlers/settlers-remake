@@ -169,4 +169,8 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected void killedEvent() {
 	}
+
+	protected EMaterialType getMaterial() {
+		return movable.getMaterial();
+	}
 }
