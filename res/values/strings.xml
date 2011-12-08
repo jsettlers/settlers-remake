@@ -8,4 +8,6 @@
     <string name="kill_string">Töten</string>
     <string name="load_string">Laden</string>
     <string name="pause_string">Pause</string>
+    <string name="plus_string">+</string>
+    <string name="minus_string">-</string>
 </resources>

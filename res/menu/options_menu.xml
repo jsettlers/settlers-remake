@@ -6,6 +6,8 @@
         <item android:id="@+id/stop" android:title="@string/stop_string"></item>
         <item android:id="@+id/kill" android:title="@string/kill_string"></item>
     </group>
+    <item android:title="@string/plus_string" android:id="@+id/speedup"></item>
+    <item android:id="@+id/slowdown" android:title="@string/minus_string"></item>
     
     
 </menu>

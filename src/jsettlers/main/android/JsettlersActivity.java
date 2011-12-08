@@ -40,7 +40,7 @@ public class JsettlersActivity extends Activity implements IGuiStarter {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		
+
 		addImageLookups();
 
 		keepScreenOn();
@@ -53,37 +53,31 @@ public class JsettlersActivity extends Activity implements IGuiStarter {
 	}
 
 	private void keepScreenOn() {
-	    requestWindowFeature(Window.FEATURE_NO_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
+	}
 
 	private void addImageLookups() {
-	    File storage = Environment.getExternalStorageDirectory();
+		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files =
-		        new File[] {
-		                getExternalFilesDir(null), //<- output dir
-		                storage,
-		                jsettlersdir,
-		                new File(jsettlersdir, "GFX"),
-		                michael,
-		                new File(michael, "GFX")
-		        };
-		
+		File[] files = new File[] { getExternalFilesDir(null), // <- output dir
+				storage, jsettlersdir, new File(jsettlersdir, "GFX"), michael, new File(michael, "GFX") };
+
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
 		}
 		ResourceManager.setProvider(new ResourceProvider(files));
-    }
+	}
 
 	private Area area;
 
 	private class SetAreaTask implements Runnable {
 
 		private Area area2;
+
 		public SetAreaTask(Area area2) {
 			this.area2 = area2;
 		}
@@ -149,6 +143,19 @@ public class JsettlersActivity extends Activity implements IGuiStarter {
 		case R.id.pausebtn:
 			glView.fireKey("PAUSE");
 			return true;
+		case R.id.speedup:
+			glView.fireKey("+");
+			return true;
+		case R.id.slowdown:
+			glView.fireKey("-");
+			return true;
+		case R.id.kill:
+			glView.fireKey("DELETE");
+			return true;
+		case R.id.stop:
+			glView.fireKey("STOP");
+			return true;
+
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -160,7 +167,7 @@ public class JsettlersActivity extends Activity implements IGuiStarter {
 	}
 
 	@Override
-    public void startGui(JOGLPanel content) {
+	public void startGui(JOGLPanel content) {
 		this.runOnUiThread(new SetAreaTask(content.getArea()));
-    };
+	};
 }
