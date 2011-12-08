@@ -15,8 +15,7 @@ import jsettlers.common.selectable.ISelectable;
  * 
  * @author michael
  */
-public interface IBuilding extends IMapObject, IPlayerable, ISelectable,
-        ILocatable {
+public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocatable {
 
 	/**
 	 * Gets the type definition for the building.
@@ -26,19 +25,11 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable,
 	public EBuildingType getBuildingType();
 
 	/**
-	 * TODO: do we need this?
-	 * 
-	 * @return
-	 */
-	public boolean isOccupied();
-
-	/**
-	 * This is a mill building. An animation is shown when {@link #isWorking()}
-	 * returns true.
+	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
 	 * 
 	 * @author michael
 	 */
-	interface Mill extends IBuilding {
+	interface IMill extends IBuilding {
 		/**
 		 * If the woking animation of the mill should be shown.
 		 * 
@@ -48,17 +39,17 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable,
 	}
 
 	/**
-	 * This interface should be implemented by towers that can have occupying
-	 * people in them.
+	 * This interface should be implemented by towers that can have occupying people in them.
 	 * 
 	 * @author michael
 	 */
-	interface Occupyed extends IBuilding {
+	interface IOccupyed extends IBuilding {
 		List<IBuildingOccupyer> getOccupyers();
 	}
 
 	/**
 	 * if the building is currently working
+	 * 
 	 * @return true if working is enabled (no matter if it really works)
 	 */
 	public boolean isWorking();
