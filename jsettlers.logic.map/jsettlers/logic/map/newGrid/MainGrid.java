@@ -61,6 +61,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
@@ -966,8 +967,8 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
-			partitionsGrid.requestDiggers(buildingArea, heightAvg, amount);
+		public void requestDiggers(IDiggerRequester requester, byte amount) {
+			partitionsGrid.requestDiggers(requester, amount);
 		}
 
 		@Override

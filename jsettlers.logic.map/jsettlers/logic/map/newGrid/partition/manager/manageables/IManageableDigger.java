@@ -1,9 +1,9 @@
 package jsettlers.logic.map.newGrid.partition.manager.manageables;
 
-import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 
 public interface IManageableDigger extends IManageable {
 
-	void setDiggerJob(FreeMapArea buildingArea, byte targetHeight);
+	void setDiggerJob(IDiggerRequester requester);
 
 }

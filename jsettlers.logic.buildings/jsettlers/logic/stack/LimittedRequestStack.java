@@ -45,4 +45,8 @@ public class LimittedRequestStack extends RequestStack {
 		super.requestFailed();
 		stillToBeRequested++;
 	}
+
+	public int getNumberOfPopped() {
+		return poppedMaterials;
+	}
 }

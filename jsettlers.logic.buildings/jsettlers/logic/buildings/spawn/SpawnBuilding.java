@@ -24,7 +24,7 @@ public abstract class SpawnBuilding extends Building {
 
 	@Override
 	public boolean isOccupied() {
-		return super.isConstructed();
+		return super.isConstructionFinished();
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.stack.LimittedRequestStack;
 import jsettlers.logic.stack.RequestStack;
@@ -35,7 +36,8 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
 
-public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable {
+public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable,
+		IDiggerRequester {
 	private static final long serialVersionUID = 4379555028512391595L;
 
 	private final byte player;
@@ -201,7 +203,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			this.heightAvg = (byte) (heightSum / blocked.length);
 			byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
 
-			grid.requestDiggers(this.buildingArea, this.heightAvg, numberOfDiggers);
+			grid.requestDiggers(this, numberOfDiggers);
 		}
 	}
 
@@ -391,8 +393,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		BRICKLAYERS_REQUESTED
 	}
 
-	protected boolean isConstructed() {
-		return state == EBuildingState.CONSTRUCTED;
+	@Override
+	public boolean isConstructionFinished() {
+		return state == EBuildingState.CONSTRUCTED || state == EBuildingState.DESTROYED;
 	}
 
 	protected abstract EMapObjectType getFlagType();
@@ -405,7 +408,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void kill() {
 		System.out.println("building killed");
 		Timer100Milli.remove(this);
+
+		placeReusableMaterials();
 		releaseRequestStacks();
+
+		this.state = EBuildingState.DESTROYED;
 
 		grid.removeBuildingAt(pos);
 		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, 5, player);
@@ -413,18 +420,27 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		placeAdditionalMapObjects(grid, pos, false);
 		placeFlag(false);
 
-		placeReusableMaterials();
-
 		killedEvent();
 	}
 
 	private void placeReusableMaterials() {
 		int posIdx = 0;
-		for (RelativeStack curr : type.getRequestStacks()) {
-			if (curr.requiredForBuild() > 0) {
-				ISPosition2D position = this.buildingArea.get(posIdx);
+		if (isConstructionFinished()) {
+			for (RelativeStack curr : type.getRequestStacks()) {
+				if (curr.requiredForBuild() > 0) {
+					ISPosition2D position = this.buildingArea.get(posIdx);
+					posIdx += 2;
+					grid.pushMaterialsTo(position, curr.getType(), (byte) Math.min(curr.requiredForBuild() / 2, Constants.STACK_SIZE));
+				}
+			}
+		} else {
+			for (RequestStack stack : stacks) {
 				posIdx += 2;
-				grid.pushMaterialsTo(position, curr.getType(), (byte) Math.min(curr.requiredForBuild() / 2, Constants.STACK_SIZE));
+				int numberOfPopped = ((LimittedRequestStack) stack).getNumberOfPopped() / 2;
+				if (numberOfPopped > 0) {
+					ISPosition2D position = this.buildingArea.get(posIdx);
+					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(numberOfPopped, Constants.STACK_SIZE));
+				}
 			}
 		}
 	}
@@ -436,6 +452,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (RequestStack curr : stacks) {
 			curr.releaseRequests();
 		}
+		stacks = new LinkedList<RequestStack>();
 	}
 
 	public void setWorkAreaCenter(@SuppressWarnings("unused") ISPosition2D workAreaCenter) {
@@ -496,8 +513,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public boolean isConstructionFinished() {
-		return constructionProgress == 1;
+	public boolean isActive() {
+		return !isConstructionFinished();
+	}
+
+	@Override
+	public FreeMapArea getBuildingArea() {
+		return this.buildingArea;
+	}
+
+	@Override
+	public byte getHeight() {
+		return this.heightAvg;
 	}
 
 	public static Building getBuilding(EBuildingType type, byte player) {

@@ -1,11 +1,11 @@
 package jsettlers.logic.movable.construction;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
@@ -14,8 +14,8 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	private static final long serialVersionUID = -4662839529813216429L;
 
 	private boolean wentThere = false;
-	private FreeMapArea buildingArea;
-	private byte targetHeight;
+
+	private IDiggerRequester requester;
 
 	public DiggerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -30,12 +30,12 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	@Override
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			if (buildingArea != null) {
+			if (requester != null) {
 				ISPosition2D pos = getDiggablePosition();
 				if (pos != null) {
 					super.calculatePathTo(pos);
 				} else {
-					buildingArea = null;
+					requester = null;
 					super.getGrid().addJobless(this);
 				}
 				return true;
@@ -49,18 +49,17 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 
 	@Override
 	protected void pathRequestFailed() {
-		if (buildingArea != null) {
-			// TODO rerequest the worker request
-			buildingArea = null;
-			super.getGrid().addJobless(this);
+		if (requester != null) {
+			cancelRequest();
+		} else {
+			super.setAction(EAction.NO_ACTION, -1);
 		}
-		super.setAction(EAction.NO_ACTION, -1);
 	}
 
 	@Override
 	protected boolean actionFinished() {
 		if (!super.actionFinished()) {
-			if (buildingArea != null) {
+			if (requester != null) {
 				executeDigg();
 				tryToDigg();
 			} else {
@@ -71,13 +70,13 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private void executeDigg() {
-		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(targetHeight - super.getGrid().getHeightAt(super.getPos()))));
+		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(requester.getHeight() - super.getGrid().getHeightAt(super.getPos()))));
 		super.getGrid().changeLandscapeAt(super.getPos(), ELandscapeType.FLATTENED);
 		super.getGrid().setMarked(super.getPos(), false);
 	}
 
 	private ISPosition2D getDiggablePosition() {
-		for (ISPosition2D pos : buildingArea) {
+		for (ISPosition2D pos : requester.getBuildingArea()) {
 			if (needsToChangeHeight(pos) && !super.getGrid().isMarked(pos)) {
 				return pos;
 			}
@@ -86,7 +85,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private boolean needsToChangeHeight(ISPosition2D pos) {
-		if (super.getGrid().getHeightAt(pos) != targetHeight) {
+		if (super.getGrid().getHeightAt(pos) != requester.getHeight()) {
 			return true;
 		}
 		return false;
@@ -94,7 +93,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 
 	@Override
 	protected void pathFinished() {
-		if (buildingArea != null) {
+		if (requester != null) {
 			wentThere = true;
 			tryToDigg();
 		} else {
@@ -103,20 +102,28 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private void tryToDigg() {
-		if (needsToChangeHeight(super.getPos()) && wentThere) {
-			super.setAction(EAction.ACTION1, 1);
-		} else if (buildingArea != null) {
-			ISPosition2D diggablePos = getDiggablePosition();
-			if (diggablePos != null) {
-				this.wentThere = false;
-				super.getGrid().setMarked(diggablePos, true);
-				super.calculatePathTo(diggablePos);
-			} else {
-				super.setAction(EAction.NO_ACTION, -1);
-				this.buildingArea = null;
-				super.getGrid().addJobless(this);
+		if (requester.isActive()) {
+			if (needsToChangeHeight(super.getPos()) && wentThere) {
+				super.setAction(EAction.ACTION1, 1);
+			} else if (requester != null) {
+				ISPosition2D diggablePos = getDiggablePosition();
+				if (diggablePos != null) {
+					this.wentThere = false;
+					super.getGrid().setMarked(diggablePos, true);
+					super.calculatePathTo(diggablePos);
+				} else {
+					cancelRequest();
+				}
 			}
+		} else {
+			cancelRequest();
 		}
+	}
+
+	private void cancelRequest() {
+		super.setAction(EAction.NO_ACTION, -1);
+		this.requester = null;
+		super.getGrid().addJobless(this);
 	}
 
 	@Override
@@ -125,9 +132,8 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	@Override
-	public void setDiggerJob(FreeMapArea buildingArea, byte targetHeight) {
-		this.buildingArea = buildingArea;
-		this.targetHeight = targetHeight;
+	public void setDiggerJob(IDiggerRequester requester) {
+		this.requester = requester;
 		this.wentThere = false;
 	}
 
@@ -141,4 +147,19 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 		return false;
 	}
 
+	@Override
+	protected boolean checkGoStepPrecondition() {
+		return requester == null || requester.isActive();
+	}
+
+	@Override
+	protected void pathAbortedEvent() {
+		if (requester != null) {
+			cancelRequest();
+		} else {
+			System.err.println("bricklayer abort path but that should not happen here!");
+			super.setAction(EAction.NO_ACTION, -1);
+		}
+
+	}
 }

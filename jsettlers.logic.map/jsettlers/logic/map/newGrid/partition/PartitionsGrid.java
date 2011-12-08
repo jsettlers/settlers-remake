@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.Color;
-import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -24,6 +23,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
 /**
@@ -288,8 +288,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(requester.getPos()).request(requester, materialType, priority);
 	}
 
-	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
-		getPartitionObject(buildingArea.get(0)).requestDiggers(buildingArea, heightAvg, amount);
+	public void requestDiggers(IDiggerRequester requester, byte amount) {
+		getPartitionObject(requester.getBuildingArea().get(0)).requestDiggers(requester, amount);
 	}
 
 	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {

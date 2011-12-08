@@ -110,4 +110,23 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 		}
 	}
 
+	@Override
+	protected boolean checkGoStepPrecondition() {
+		return constructionSite == null || !constructionSite.isConstructionFinished();
+	}
+
+	@Override
+	protected void pathAbortedEvent() {
+		if (constructionSite.isConstructionFinished()) {
+			constructionSite = null;
+			bricklayerTargetPos = null;
+
+			super.setAction(EAction.NO_ACTION, -1);
+			super.getGrid().addJobless(this);
+		} else {
+			System.err.println("bricklayer abort path but that should not happen here!");
+			super.setAction(EAction.NO_ACTION, -1);
+		}
+
+	}
 }

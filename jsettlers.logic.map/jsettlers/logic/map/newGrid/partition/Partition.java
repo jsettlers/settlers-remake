@@ -2,7 +2,6 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.io.Serializable;
 
-import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -16,6 +15,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
 /**
@@ -92,8 +92,8 @@ public class Partition implements Serializable {
 		manager.request(requester, materialType, priority);
 	}
 
-	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
-		manager.requestDiggers(buildingArea, heightAvg, amount);
+	public void requestDiggers(IDiggerRequester requester, byte amount) {
+		manager.requestDiggers(requester, amount);
 	}
 
 	public void addJobless(IManageableDigger digger) {

@@ -11,6 +11,7 @@ import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
@@ -73,7 +74,7 @@ public interface IBuildingsGrid {
 
 	IMovableGrid getMovableGrid();
 
-	void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount);
+	void requestDiggers(IDiggerRequester requester, byte amount);
 
 	void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction);
 

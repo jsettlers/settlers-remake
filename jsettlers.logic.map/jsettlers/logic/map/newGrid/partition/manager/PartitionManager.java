@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import jsettlers.common.SerializableLinkedList;
-import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -24,6 +23,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import synchronic.timer.INetworkTimerable;
@@ -88,8 +88,8 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		materialRequests.offer(new Request(requester, materialType, priority));
 	}
 
-	public void requestDiggers(FreeMapArea buildingArea, byte heightAvg, byte amount) {
-		diggerRequests.offer(new DiggerRequest(buildingArea, heightAvg, amount));
+	public void requestDiggers(IDiggerRequester requester, byte amount) {
+		diggerRequests.offer(new DiggerRequest(requester, amount));
 	}
 
 	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
@@ -280,7 +280,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		if (request != null) {
 			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPos());
 			if (digger != null) {
-				digger.setDiggerJob(request.buildingArea, request.heightAvg);
+				digger.setDiggerJob(request.requester);
 				request.amount--;
 				request.creationRequested--;
 			} else {
@@ -403,20 +403,18 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	private class DiggerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -3781604767367556333L;
 
-		final FreeMapArea buildingArea;
-		final byte heightAvg;
+		final IDiggerRequester requester;
 		byte amount;
 		byte creationRequested = 0;
 
-		public DiggerRequest(FreeMapArea buildingArea, byte heightAvg, byte amount) {
-			this.buildingArea = buildingArea;
-			this.heightAvg = heightAvg;
+		public DiggerRequest(IDiggerRequester requester, byte amount) {
+			this.requester = requester;
 			this.amount = amount;
 		}
 
 		@Override
 		public ISPosition2D getPos() {
-			return buildingArea.get(0);
+			return requester.getBuildingArea().get(0);
 		}
 	}
 

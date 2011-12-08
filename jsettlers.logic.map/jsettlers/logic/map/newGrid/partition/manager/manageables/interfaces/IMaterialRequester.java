@@ -10,18 +10,14 @@ import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
  * @author Andreas Eberle
  * 
  */
-public interface IMaterialRequester extends ILocatable {
+public interface IMaterialRequester extends ILocatable, IRequester {
 	/**
 	 * @return the position where the requested material should be delivered.
 	 */
 	@Override
 	ISPosition2D getPos();
 
-	/**
-	 * 
-	 * @return true if the request is still active,<br>
-	 *         false if the request has been canceled.
-	 */
+	@Override
 	boolean isActive();
 
 	/**
