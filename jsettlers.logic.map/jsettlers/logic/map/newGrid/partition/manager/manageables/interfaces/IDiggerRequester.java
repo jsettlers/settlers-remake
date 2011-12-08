@@ -7,7 +7,7 @@ public interface IDiggerRequester extends IRequester {
 	FreeMapArea getBuildingArea();
 
 	@Override
-	boolean isActive();
+	boolean isRequestActive();
 
 	byte getHeight();
 }

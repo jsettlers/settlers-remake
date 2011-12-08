@@ -7,5 +7,5 @@ public interface IRequester {
 	 * @return true if the request is still active<br>
 	 *         false if the request has been canceled.
 	 */
-	boolean isActive();
+	boolean isRequestActive();
 }

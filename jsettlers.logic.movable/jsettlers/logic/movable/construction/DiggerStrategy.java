@@ -102,7 +102,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private void tryToDigg() {
-		if (requester.isActive()) {
+		if (requester.isRequestActive()) {
 			if (needsToChangeHeight(super.getPos()) && wentThere) {
 				super.setAction(EAction.ACTION1, 1);
 			} else if (requester != null) {
@@ -149,7 +149,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 
 	@Override
 	protected boolean checkGoStepPrecondition() {
-		return requester == null || requester.isActive();
+		return requester == null || requester.isRequestActive();
 	}
 
 	@Override

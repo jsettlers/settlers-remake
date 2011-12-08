@@ -513,7 +513,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public boolean isActive() {
+	public boolean isRequestActive() {
 		return !isConstructionFinished();
 	}
 
@@ -525,6 +525,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public byte getHeight() {
 		return this.heightAvg;
+	}
+
+	public final boolean isNotDestroyed() {
+		return state != EBuildingState.DESTROYED;
 	}
 
 	public static Building getBuilding(EBuildingType type, byte player) {

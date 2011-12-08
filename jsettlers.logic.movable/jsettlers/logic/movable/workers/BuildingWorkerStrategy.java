@@ -409,14 +409,6 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	@Override
-	public void setWorkerJob(IWorkerRequestBuilding building) {
-		this.building = building;
-		this.currentJob = building.getBuildingType().getStartJob();
-		this.done = false;
-		this.building.occupyBuilding(this);
-	}
-
-	@Override
 	protected boolean isPathStopable() {
 		return false;
 	}
@@ -446,12 +438,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 		if (super.isFollowingPath()) {
 			super.abortPath();
-			done = false;
-		} else {
-			checkForDroppingMaterial();
-			done = true;
 		}
-
+		this.done = false;
 		super.setVisible(true);
 	}
 
@@ -463,6 +451,35 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			super.getGrid().pushMaterial(super.getPos(), material, true);
 		}
 		super.getGrid().addJobless(this);
+	}
+
+	@Override
+	public void setWorkerJob(IWorkerRequestBuilding building) {
+		if (building.isNotDestroyed()) {
+			this.building = building;
+			this.currentJob = building.getBuildingType().getStartJob();
+			this.done = false;
+			this.building.occupyBuilding(this);
+		} else {
+			super.getGrid().addJobless(this);
+		}
+	}
+
+	@Override
+	protected boolean checkGoStepPrecondition() {
+		return building == null || building.isNotDestroyed();
+	}
+
+	@Override
+	protected void pathAbortedEvent() {
+		if (building != null) {
+			currentJob = null;
+			building = null;
+		} else {
+			System.err.println("bricklayer abort path but that should not happen here!");
+			super.setAction(EAction.NO_ACTION, -1);
+		}
+
 	}
 
 }

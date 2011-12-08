@@ -169,7 +169,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 
 	@Override
 	protected boolean checkGoStepPrecondition() {
-		return requester == null || requester.isActive();
+		return requester == null || requester.isRequestActive();
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class RequestStack implements Serializable, IMaterialRequester {
 	}
 
 	@Override
-	public boolean isActive() {
+	public boolean isRequestActive() {
 		return requesting;
 	}
 

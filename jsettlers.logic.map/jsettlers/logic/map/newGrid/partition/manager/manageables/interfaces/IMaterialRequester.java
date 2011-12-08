@@ -18,7 +18,7 @@ public interface IMaterialRequester extends ILocatable, IRequester {
 	ISPosition2D getPos();
 
 	@Override
-	boolean isActive();
+	boolean isRequestActive();
 
 	/**
 	 * This method is called when a bearer wasn't able to finish the request.

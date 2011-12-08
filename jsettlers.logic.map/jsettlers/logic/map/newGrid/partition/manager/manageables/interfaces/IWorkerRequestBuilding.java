@@ -1,5 +1,6 @@
 package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
@@ -11,7 +12,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
  * @author Andreas Eberle
  * 
  */
-public interface IWorkerRequestBuilding extends IWorkerBuilding, IPlayerable {
+public interface IWorkerRequestBuilding extends IPlayerable {
 
 	/**
 	 * 
@@ -24,4 +25,10 @@ public interface IWorkerRequestBuilding extends IWorkerBuilding, IPlayerable {
 	boolean popMaterial(ISPosition2D position, EMaterialType material);
 
 	void occupyBuilding(IManageableWorker worker);
+
+	ISPosition2D calculateRealPoint(short dx, short dy);
+
+	EBuildingType getBuildingType();
+
+	boolean isNotDestroyed();
 }
