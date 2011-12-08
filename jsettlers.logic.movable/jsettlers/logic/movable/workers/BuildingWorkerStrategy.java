@@ -217,7 +217,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			break;
 
 		case NOT_FULL:
-			if (super.getGrid().canPush(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (super.getGrid().canPush(getCurrentJobPos())) {
 				jobFinished();
 			} else {
 				jobFailed();

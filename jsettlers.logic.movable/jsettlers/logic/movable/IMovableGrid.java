@@ -234,12 +234,10 @@ public interface IMovableGrid {
 	 * 
 	 * @param position
 	 *            position to be checked.
-	 * @param material
-	 *            {@link EMaterialType}to be checked.
 	 * @return true if it can be pushed to the given position<br>
 	 *         false otherwise.
 	 */
-	boolean canPush(ISPosition2D position, EMaterialType material);
+	boolean canPush(ISPosition2D position);
 
 	/**
 	 * Gives a {@link HexAStar} algorithm.

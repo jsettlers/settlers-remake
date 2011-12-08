@@ -9,8 +9,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * This is the landscape mesh. It contains of Landscape tiles and their
- * connections.
+ * This is the landscape mesh. It contains of Landscape tiles and their connections.
  * <p>
  * Each tile has a border.
  * 
@@ -27,8 +26,7 @@ public class LandscapeMesh {
 
 	private final int height;
 
-	private LandscapeMesh(int width, int height, MeshSite[] sites,
-	        MeshEdge[] edges) {
+	private LandscapeMesh(int width, int height, MeshSite[] sites, MeshEdge[] edges) {
 		this.width = width;
 		this.height = height;
 		this.sites = sites;
@@ -75,18 +73,15 @@ public class LandscapeMesh {
 						continue EDGELOOP;
 					}
 				}
-				throw new IllegalArgumentException(
-				        "The edges of the site are not continuous");
+				throw new IllegalArgumentException("The edges of the site are not continuous");
 			}
 			site.setMeshEdges(edges);
 		} else {
-			throw new IllegalArgumentException(
-			        "Each site must have at least 3 edges");
+			throw new IllegalArgumentException("Each site must have at least 3 edges");
 		}
 	}
 
-	public static LandscapeMesh getRandomMesh(int width, int height,
-	        Random random) {
+	public static LandscapeMesh getRandomMesh(int width, int height, @SuppressWarnings("unused") Random random) {
 		int xsites = Math.max(width / 20, 1);
 		int ysites = Math.max(height / 20, 1);
 
@@ -103,9 +98,7 @@ public class LandscapeMesh {
 		Vertex[][] borderPoints = new Vertex[(xsites + 1)][(ysites + 1)];
 		for (int x = 0; x < xsites + 1; x++) {
 			for (int y = 0; y < ysites + 1; y++) {
-				borderPoints[x][y] =
-				        new Vertex((double) width / xsites * x, (double) height
-				                / ysites * y);
+				borderPoints[x][y] = new Vertex((double) width / xsites * x, (double) height / ysites * y);
 			}
 		}
 
@@ -113,37 +106,24 @@ public class LandscapeMesh {
 		// horizontal borders
 		for (int x = 0; x < xsites; x++) {
 			// first line
-			edges.add(new MeshEdge(xySites[x * 2][0], null,
-			        borderPoints[x][ysites - 0],
-			        borderPoints[x + 1][ysites - 0]));
+			edges.add(new MeshEdge(xySites[x * 2][0], null, borderPoints[x][ysites - 0], borderPoints[x + 1][ysites - 0]));
 			for (int y = 1; y < ysites; y++) {
-				edges.add(new MeshEdge(xySites[x * 2][y],
-				        xySites[x * 2 + 1][y - 1], borderPoints[x][ysites - y],
-				        borderPoints[x + 1][ysites - y]));
+				edges.add(new MeshEdge(xySites[x * 2][y], xySites[x * 2 + 1][y - 1], borderPoints[x][ysites - y], borderPoints[x + 1][ysites - y]));
 			}
 			// last line
-			edges.add(new MeshEdge(null, xySites[x * 2 + 1][ysites - 1],
-			        borderPoints[x][ysites - ysites],
-			        borderPoints[x + 1][ysites - ysites]));
+			edges.add(new MeshEdge(null, xySites[x * 2 + 1][ysites - 1], borderPoints[x][ysites - ysites], borderPoints[x + 1][ysites - ysites]));
 		}
 		// vertical borders: / and \
 		for (int y = 0; y < ysites; y++) {
 			// first line
-			edges.add(new MeshEdge(null, xySites[0][y], borderPoints[0][ysites
-			        - y], borderPoints[0][ysites - (y + 1)]));
+			edges.add(new MeshEdge(null, xySites[0][y], borderPoints[0][ysites - y], borderPoints[0][ysites - (y + 1)]));
 			for (int x = 1; x < xsites * 2; x++) {
-				edges.add(new MeshEdge(xySites[x - 1][y], xySites[x][y],
-				        borderPoints[(x + 1) / 2][ysites - y],
-				        borderPoints[x / 2][ysites - (y + 1)]));
+				edges.add(new MeshEdge(xySites[x - 1][y], xySites[x][y], borderPoints[(x + 1) / 2][ysites - y], borderPoints[x / 2][ysites - (y + 1)]));
 			}
-			edges.add(new MeshEdge(xySites[xsites * 2 - 1][y], null,
-			        borderPoints[xsites][ysites - y],
-			        borderPoints[xsites][ysites - (y + 1)]));
+			edges.add(new MeshEdge(xySites[xsites * 2 - 1][y], null, borderPoints[xsites][ysites - y], borderPoints[xsites][ysites - (y + 1)]));
 		}
 
-		LandscapeMesh mesh =
-		        new LandscapeMesh(width, height, sites,
-		                edges.toArray(new MeshEdge[edges.size()]));
+		LandscapeMesh mesh = new LandscapeMesh(width, height, sites, edges.toArray(new MeshEdge[edges.size()]));
 		return mesh;
 	}
 
@@ -174,8 +154,7 @@ public class LandscapeMesh {
 	 * @param size
 	 * @return
 	 */
-	public MeshSite[] getSitesWithCriterium(SiteCriterium criterium,
-	        Random random, int size) {
+	public MeshSite[] getSitesWithCriterium(SiteCriterium criterium, Random random, int size) {
 		List<MeshSite> leftOver = getPossibleSites(criterium);
 		List<MeshSite> found = null;
 		int foundSize = 0;
@@ -227,8 +206,7 @@ public class LandscapeMesh {
 	 * @param start
 	 * @param list
 	 */
-	private void addUnflagedNeighboursToQueue(MeshSite start,
-	        Queue<MeshSite> list, List<MeshSite> allowed) {
+	private void addUnflagedNeighboursToQueue(MeshSite start, Queue<MeshSite> list, List<MeshSite> allowed) {
 		for (MeshSite site : start.getNeighbours()) {
 			if (allowed.contains(site) && !site.isTemporaryFlag()) {
 				list.add(site);

@@ -1,6 +1,5 @@
 package jsettlers.logic.map.random.voronoi;
 
-
 /**
  * This is a tree that orders the items by y-coordinate.
  * 
@@ -14,11 +13,11 @@ public class BeachTree implements Beach {
 	}
 
 	@Override
-    public void add(VoronioSite point, CircleEventManager mgr) {
+	public void add(VoronioSite point, CircleEventManager mgr) {
 		if (isEmpty()) {
 			root = new BeachLinePart(point);
 		} else {
-//			double y = point.getY();
+			// double y = point.getY();
 			// TODO
 		}
 	}
@@ -36,6 +35,7 @@ public class BeachTree implements Beach {
 	 *            The current arc
 	 * @return The arc below the current
 	 */
+	@Override
 	public BeachLinePart getBottom(BeachLinePart current) {
 		// TODO Auto-generated method stub
 		return null;
@@ -48,6 +48,7 @@ public class BeachTree implements Beach {
 	 *            The current arc
 	 * @return The arc above the current
 	 */
+	@Override
 	public BeachLinePart getTop(BeachLinePart current) {
 		// TODO Auto-generated method stub
 		return null;
@@ -58,10 +59,9 @@ public class BeachTree implements Beach {
 	 * 
 	 * @param middle
 	 *            The middle point
-	 * @return The found separator, or <code>null</code> if it was the topmost
-	 *         line.
+	 * @return The found separator, or <code>null</code> if it was the topmost line.
 	 */
-	public BeachSeparator findSeparatorAbove(BeachLinePart middle) {
+	public BeachSeparator findSeparatorAbove(@SuppressWarnings("unused") BeachLinePart middle) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -71,10 +71,9 @@ public class BeachTree implements Beach {
 	 * 
 	 * @param middle
 	 *            The middle point
-	 * @return The found separator, or <code>null</code> if it was the topmost
-	 *         line.
+	 * @return The found separator, or <code>null</code> if it was the topmost line.
 	 */
-	public BeachSeparator findSeparatorBelow(BeachLinePart middle) {
+	public BeachSeparator findSeparatorBelow(@SuppressWarnings("unused") BeachLinePart middle) {
 		// TODO Auto-generated method stub
 		return null;
 	}
