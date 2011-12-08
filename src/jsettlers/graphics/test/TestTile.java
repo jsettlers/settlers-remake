@@ -10,6 +10,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 public class TestTile implements ISPosition2D {
+	private static final long serialVersionUID = 1L;
 
 	private final short y;
 	private final short x;
@@ -91,10 +92,10 @@ public class TestTile implements ISPosition2D {
 	public boolean equals(ISPosition2D other) {
 		return other.getX() == this.x && other.getY() == this.y;
 	}
-	
+
 	@Override
 	public int hashCode() {
-	    return ShortPoint2D.hashCode(x, y);
+		return ShortPoint2D.hashCode(x, y);
 	}
 
 	public void setBuilding(TestBuilding building) {

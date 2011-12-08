@@ -11,7 +11,6 @@ public class TestBuilding implements IBuilding {
 	private final ISPosition2D position;
 	private float constructed;
 	private final EBuildingType image;
-	private int actionImage = 0;
 
 	TestBuilding(ISPosition2D position, EBuildingType image) {
 		this.position = position;
@@ -22,7 +21,7 @@ public class TestBuilding implements IBuilding {
 	public void increaseConstructed() {
 		this.constructed += 0.005f;
 	}
-	
+
 	@Override
 	public EBuildingType getBuildingType() {
 		return this.image;
@@ -31,11 +30,6 @@ public class TestBuilding implements IBuilding {
 	@Override
 	public ISPosition2D getPos() {
 		return this.position;
-	}
-
-	@Override
-	public boolean isOccupied() {
-		return false;
 	}
 
 	@Override
@@ -65,19 +59,19 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
-    public EMapObjectType getObjectType() {
-	    return EMapObjectType.BUILDING;
-    }
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.BUILDING;
+	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    return null;
-    }
+	public IMapObject getNextObject() {
+		return null;
+	}
 
 	@Override
-    public boolean isWorking() {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	public boolean isWorking() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

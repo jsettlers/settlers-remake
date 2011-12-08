@@ -195,7 +195,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 		}
 
 		@Override
-		public boolean isActive() {
+		public boolean isRequestActive() {
 			return true;
 		}
 
