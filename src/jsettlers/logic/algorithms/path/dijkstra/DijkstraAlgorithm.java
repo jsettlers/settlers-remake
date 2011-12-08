@@ -14,7 +14,7 @@ import jsettlers.logic.algorithms.path.astar.HexAStar;
  * @author Andreas Eberle
  * 
  */
-public class DijkstraAlgorithm {
+public final class DijkstraAlgorithm {
 
 	private final IDijkstraPathMap map;
 	private final short height, width;
@@ -30,7 +30,7 @@ public class DijkstraAlgorithm {
 		width = map.getWidth();
 	}
 
-	public synchronized Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
+	public final Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
 			final ESearchType type) {
 		if (!isInBounds(cX, cY)) {
 			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", cX, cY);
@@ -61,12 +61,12 @@ public class DijkstraAlgorithm {
 		return null;
 	}
 
-	private Path findPath(IPathCalculateable requester, short tx, short ty) {
+	private final Path findPath(IPathCalculateable requester, short tx, short ty) {
 		ISPosition2D pos = requester.getPos();
 		return aStar.findPath(requester, pos.getX(), pos.getY(), tx, ty);
 	}
 
-	private boolean isInBounds(short x, short y) {
+	private final boolean isInBounds(short x, short y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 }

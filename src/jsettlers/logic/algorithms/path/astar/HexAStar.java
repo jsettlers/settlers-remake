@@ -45,7 +45,7 @@ public class HexAStar {
 		yDeltaArray = EDirection.getYDeltaArray();
 	}
 
-	public Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
+	public final Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
 		final boolean blockedAtStart;
 		if (!map.isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
@@ -134,7 +134,7 @@ public class HexAStar {
 		return null;
 	}
 
-	private void initStartNode(short sx, short sy, short tx, short ty) {
+	private final void initStartNode(short sx, short sy, short tx, short ty) {
 		open.insert(nodes[sy][sx]);
 		nodes[sy][sx].inList = openList;
 		nodes[sy][sx].depth = 0;
@@ -151,7 +151,7 @@ public class HexAStar {
 		return map.isBlocked(requester, x, y);
 	}
 
-	private void resetListOfNodes() {
+	private final void resetListOfNodes() {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				nodes[y][x].inList = NO_LIST;
@@ -159,7 +159,7 @@ public class HexAStar {
 		}
 	}
 
-	public Path findPath(IPathCalculateable requester, ISPosition2D target) {
+	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
 		ISPosition2D pos = requester.getPos();
 		return findPath(requester, pos.getX(), pos.getY(), target.getX(), target.getY());
 	}
