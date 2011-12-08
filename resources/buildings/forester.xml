@@ -81,7 +81,7 @@
 	<job name="waithome" 	type="WAIT" 				successjob="gohome" 		failjob="waithome" 	time="1.0"/>
 	<job name="hide" 		type="HIDE" 				successjob="start" 			failjob="start"/>
 	
-	<job name="start" 		type="WAIT" 				successjob="set_tree" 		failjob="show" 		time="1.0"/>
+	<job name="start" 		type="WAIT" 				successjob="set_tree" 		failjob="show" 		time="40"/>
 	<job name="set_tree" 	type="SET_MATERIAL" 		successjob="presearch" 		failjob="presearch" material="TRUNK"/>
 	<job name="presearch" 	type="PRE_SEARCH_IN_AREA" 	successjob="show" 			failjob="start" 	search="PLANTABLE_TREE" dx="3" dy="2"/>
 	
@@ -89,7 +89,7 @@
 	
 	<job name="search" 		type="FOLLOW_SEARCHED"		successjob="look" 			failjob="hide" 		/>
 	<job name="look" 		type="LOOK_AT" 				successjob="plant" 			failjob="gohome" 	direction="NORTH_WEST"/>
-	<job name="plant" 		type="PLAY_ACTION1" 		successjob="unset_tree" 	failjob="gohome"	time="3.0"/>
+	<job name="plant" 		type="PLAY_ACTION1" 		successjob="unset_tree" 	failjob="gohome"	time="0.5"/>
 	<job name="unset_tree" 	type="SET_MATERIAL" 		successjob="execute" 		failjob="gohome" 	material="NO_MATERIAL"/>
 	<job name="execute" 	type="EXECUTE" 				successjob="gohome" 		failjob="gohome" 	search="PLANTABLE_TREE"/>
 	

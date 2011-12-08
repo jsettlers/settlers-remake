@@ -95,7 +95,7 @@
 	<job name="hide" type="HIDE" successjob="start" failjob="start" />
 
 	<job name="start" type="WAIT" successjob="check" failjob="show"
-		time="1" />
+		time="3" />
 	<job name="check" type="NOT_FULL" successjob="presearch" failjob="hide"
 		dx="0" dy="3" material="TRUNK" />
 
