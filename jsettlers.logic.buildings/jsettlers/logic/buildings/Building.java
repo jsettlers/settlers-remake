@@ -413,7 +413,20 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		placeAdditionalMapObjects(grid, pos, false);
 		placeFlag(false);
 
+		placeReusableMaterials();
+
 		killedEvent();
+	}
+
+	private void placeReusableMaterials() {
+		int posIdx = 0;
+		for (RelativeStack curr : type.getRequestStacks()) {
+			if (curr.requiredForBuild() > 0) {
+				ISPosition2D position = this.buildingArea.get(posIdx);
+				posIdx += 2;
+				grid.pushMaterialsTo(position, curr.getType(), (byte) Math.min(curr.requiredForBuild() / 2, Constants.STACK_SIZE));
+			}
+		}
 	}
 
 	protected void killedEvent() {

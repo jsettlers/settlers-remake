@@ -325,8 +325,15 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			short partitionAt = getPartitionAt(x, y);
 
 			if (partitionAt != newPartition && towers[x][y] <= 0) {
-				occupiedPositions.add(curr);
-				setPartition(x, y, newPartition);
+				if (partitionAt < 0) {
+					setPartition(x, y, newPartition);
+					occupiedPositions.add(curr);
+				} else if (partitionObjects[partitionAt].getPlayer() == newPlayer) {
+					newPartition = this.mergePartitions(x, y, occupiersPosition.getX(), occupiersPosition.getY());
+				} else {
+					occupiedPositions.add(curr);
+					this.partitionsAlgorithm.calculateNewPartition(x, y, newPlayer);
+				}
 			}
 			if (getPlayerAt(x, y) == newPlayer) {
 				towers[x][y]++;
@@ -336,12 +343,13 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return occupiedPositions;
 	}
 
-	public boolean isEnforcedByTower(short x, short y) {
+	public final boolean isEnforcedByTower(short x, short y) {
 		return towers[x][y] > 0;
 	}
 
-	public void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D occupiersPosition) {
+	public List<ISPosition2D> freeOccupiedArea(MapShapeFilter occupied, ISPosition2D occupiersPosition) {
 		short partiton = getPartition(occupiersPosition);
+		List<ISPosition2D> totallyFreePositions = new ArrayList<ISPosition2D>();
 
 		for (ISPosition2D curr : occupied) {
 			short x = curr.getX();
@@ -349,9 +357,12 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			if (getPartitionAt(x, y) == partiton) {
 				towers[x][y]--;
 				if (towers[x][y] <= 0) {
-					// TODO check towers next to this
+					totallyFreePositions.add(curr);
+					towers[x][y] = 0; // just to ensure that the array is ok (<0 would be wrong)
 				}
 			}
 		}
+
+		return totallyFreePositions;
 	}
 }

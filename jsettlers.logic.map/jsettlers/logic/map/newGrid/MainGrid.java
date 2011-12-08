@@ -466,13 +466,14 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public Color getDebugColorAt(int x, int y) {
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return debugColors[x][y];
 
-			return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0,
-					1, 1) : null);
+			// return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0,
+			// 0,
+			// 1, 1) : null);
 		}
 
 		@Override
@@ -855,6 +856,13 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
+		public void pushMaterialsTo(ISPosition2D position, EMaterialType type, byte numberOf) {
+			for (int i = 0; i < numberOf; i++) {
+				movablePathfinderGrid.pushMaterial(position, type, true);
+			}
+		}
+
+		@Override
 		public boolean setBuilding(ISPosition2D position, Building newBuilding) {
 			if (MainGrid.this.isInBounds(position.getX(), position.getY())) {
 				FreeMapArea area = new FreeMapArea(position, newBuilding.getBuildingType().getProtectedTiles());
@@ -905,8 +913,18 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
+		public void occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte player) {
+			List<ISPosition2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, occupiersPosition, player);
+			bordersThread.checkPositions(occupiedPositions);
+			landmarksCorrectionThread.addLandmarkedPositions(occupiedPositions);
+		}
+
+		@Override
 		public void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos) {
-			partitionsGrid.freeOccupiedArea(occupied, pos);
+			List<ISPosition2D> totallyFreed = partitionsGrid.freeOccupiedArea(occupied, pos);
+			if (!totallyFreed.isEmpty()) {
+				// FIXME check for towers that would already occupy this location
+			}
 		}
 
 		@Override
@@ -972,13 +990,6 @@ public class MainGrid implements Serializable {
 			partitionsGrid.requestSoilderable(barrack);
 		}
 
-		@Override
-		public void occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte player) {
-			List<ISPosition2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, occupiersPosition, player);
-			bordersThread.checkPositions(occupiedPositions);
-			landmarksCorrectionThread.addLandmarkedPositions(occupiedPositions);
-		}
-
 		private class RequestStackGrid implements IRequestsStackGrid, Serializable {
 			private static final long serialVersionUID = 1278397366408051067L;
 
@@ -1012,7 +1023,6 @@ public class MainGrid implements Serializable {
 				}
 			}
 		}
-
 	}
 
 	private class GUIInputGrid implements IGuiInputGrid {

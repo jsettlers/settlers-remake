@@ -28,9 +28,7 @@ public class ManagedJSettlers implements Listener {
 
 	private class StartConnector implements IStartScreenConnector {
 
-		private final IMapItem[] MAPS = new IMapItem[] {
-			new MapItem()
-		};
+		private final IMapItem[] MAPS = new IMapItem[] { new MapItem() };
 
 		@Override
 		public IMapItem[] getMaps() {
@@ -131,7 +129,7 @@ public class ManagedJSettlers implements Listener {
 			ongoingGame.setListener(null);
 			ongoingGame.stop();
 		}
-		ongoingGame = new JSettlersGame(content, game, 123456l);
+		ongoingGame = new JSettlersGame(content, game, 123456L);
 		ongoingGame.setListener(this);
 		ongoingGame.start();
 	}

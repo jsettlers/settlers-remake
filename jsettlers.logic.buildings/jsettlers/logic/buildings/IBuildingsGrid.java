@@ -2,6 +2,7 @@ package jsettlers.logic.buildings;
 
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
@@ -95,4 +96,6 @@ public interface IBuildingsGrid {
 	 * @param pos
 	 */
 	void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos);
+
+	void pushMaterialsTo(ISPosition2D position, EMaterialType type, byte numberOf);
 }

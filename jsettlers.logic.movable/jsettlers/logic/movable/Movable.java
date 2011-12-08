@@ -254,6 +254,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 					strategy.noActionEvent();
 			} else {
 				noActionDelay--;
+				strategy.noActionEvent();
 			}
 			break;
 
