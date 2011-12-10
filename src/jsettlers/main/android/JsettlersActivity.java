@@ -145,8 +145,10 @@ public class JsettlersActivity extends Activity implements IGuiStarter {
 			return true;
 		case R.id.speedup:
 			glView.fireKey("+");
+			glView.fireKey("+");
 			return true;
 		case R.id.slowdown:
+			glView.fireKey("-");
 			glView.fireKey("-");
 			return true;
 		case R.id.kill:
