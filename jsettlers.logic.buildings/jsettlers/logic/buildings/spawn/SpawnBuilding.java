@@ -36,11 +36,11 @@ public abstract class SpawnBuilding extends Building {
 		if (produced < getProduceLimit()) {
 
 			if (delayCtr > 20) {
-				if (super.grid.getMovable(super.getDoor()) == null) {
+				if (super.getGrid().getMovable(super.getDoor()) == null) {
 					delayCtr = 0;
 
-					super.grid.placeNewMovable(getDoor(),
-							new Movable(super.grid.getMovableGrid(), super.getDoor(), getMovableType(), super.getPlayer()));
+					super.getGrid().placeNewMovable(getDoor(),
+							new Movable(super.getGrid().getMovableGrid(), super.getDoor(), getMovableType(), super.getPlayer()));
 					// Movable created = getDoor().getMovable();
 					produced++;
 				}

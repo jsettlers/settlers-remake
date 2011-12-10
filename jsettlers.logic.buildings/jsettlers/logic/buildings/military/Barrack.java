@@ -40,7 +40,7 @@ public class Barrack extends Building {
 		if (!stoppedWorking) {
 			int availableWeapons = 0;
 
-			for (RequestStack stack : super.stacks) {
+			for (RequestStack stack : super.getStacks()) {
 				if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
 						|| stack.getMaterialType() == EMaterialType.SPEAR) {
 					availableWeapons += stack.getStackSize();
@@ -48,7 +48,7 @@ public class Barrack extends Building {
 			}
 
 			while (requestedBearer < availableWeapons) {
-				grid.requestSoilderable(this);
+				super.getGrid().requestSoilderable(this);
 				requestedBearer++;
 			}
 		}
@@ -75,7 +75,7 @@ public class Barrack extends Building {
 	}
 
 	public EMovableType popWeaponForBearer() {
-		for (RequestStack stack : super.stacks) {
+		for (RequestStack stack : super.getStacks()) {
 			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
 					|| stack.getMaterialType() == EMaterialType.SPEAR) {
 				stack.pop();

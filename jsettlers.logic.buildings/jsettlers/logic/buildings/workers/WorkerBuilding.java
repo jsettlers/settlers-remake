@@ -49,7 +49,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	protected void constructionFinishedEvent() {
-		grid.requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
+		super.getGrid().requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	public boolean popMaterial(ISPosition2D position, EMaterialType material) {
-		for (RequestStack stack : super.stacks) {
+		for (RequestStack stack : super.getStacks()) {
 			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
 				stack.pop();
 				return true;

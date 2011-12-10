@@ -46,7 +46,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private ISPosition2D pos;
 	private ISPosition2D door;
 	transient private boolean selected;
-	protected IBuildingsGrid grid;
+	private IBuildingsGrid grid;
 
 	private float constructionProgress = 0.0f;
 	private FreeMapArea buildingArea;
@@ -54,7 +54,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private short delayCtr = 0;
 	private final EBuildingType type;
-	protected List<RequestStack> stacks;
+	private List<RequestStack> stacks;
 
 	protected Building(EBuildingType type, byte player) {
 		this.type = type;
@@ -258,7 +258,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			break;
 
 		case DESTROYED:
-
 			break;
 		}
 	}
@@ -275,6 +274,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
+	/**
+	 * This method will be called every 100 ms when the building has finished construction and is not destroyed yet.
+	 */
 	protected abstract void subTimerEvent();
 
 	private void requestBricklayers() {
@@ -578,5 +580,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		return new TestBuilding(player, type);
+	}
+
+	public IBuildingsGrid getGrid() {
+		return grid;
+	}
+
+	protected List<RequestStack> getStacks() {
+		return stacks;
 	}
 }
