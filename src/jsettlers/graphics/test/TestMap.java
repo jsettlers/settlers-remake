@@ -12,6 +12,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
@@ -493,5 +494,11 @@ public class TestMap implements IGraphicsGrid {
 	@Override
 	public boolean isFogOfWarVisible(int x, int y) {
 		return true;
+	}
+
+	@Override
+	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+		// TODO Auto-generated method stub
+
 	}
 }
