@@ -494,8 +494,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public boolean isFogOfWarVisible(int x, int y) {
-			// TODO Auto-generated method stub
-			return false;
+			return fogOfWar.isVisible(x, y);
 		}
 
 		@Override
