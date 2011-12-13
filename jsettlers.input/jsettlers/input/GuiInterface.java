@@ -131,10 +131,15 @@ public class GuiInterface implements IMapInterfaceListener {
 			break;
 
 		case MOVE_TO:
-			MoveToAction moveToAction = (MoveToAction) action;
-			ISPosition2D pos = moveToAction.getPosition();
+			if (previewBuilding != null) { // cancel building creation
+				cancelBuildingCreation();
+				setActiveAction(null);
+			} else {
+				MoveToAction moveToAction = (MoveToAction) action;
+				ISPosition2D pos = moveToAction.getPosition();
 
-			moveTo(pos);
+				moveTo(pos);
+			}
 			break;
 
 		case SET_WORK_AREA:
@@ -171,6 +176,12 @@ public class GuiInterface implements IMapInterfaceListener {
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
+	}
+
+	private void cancelBuildingCreation() {
+		previewBuilding = null;
+		grid.setBuildingType(null);
+		connector.setPreviewBuildingType(null);
 	}
 
 	private void destroySelected() {
@@ -277,9 +288,7 @@ public class GuiInterface implements IMapInterfaceListener {
 				EBuildingType type = previewBuilding;
 				ISPosition2D pos2 = grid.getConstructablePositionAround(pos, type);
 				if (pos2 != null) {
-					previewBuilding = null;
-					grid.setBuildingType(null);
-					connector.setPreviewBuildingType(null);
+					cancelBuildingCreation();
 					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos2, type));
 					break;
 				} else {
