@@ -11,6 +11,7 @@ import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
@@ -493,8 +494,15 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public boolean isFogOfWarVisible(int x, int y) {
-			return fogOfWar.isVisible(x, y);
+			// TODO Auto-generated method stub
+			return false;
 		}
+
+		@Override
+		public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+			landscapeGrid.setBackgroundListener(backgroundListener);
+		}
+
 	}
 
 	class MapObjectsManagerGrid implements IMapObjectsManagerGrid {
