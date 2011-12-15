@@ -197,6 +197,11 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		}
 	}
 
+	@Override
+	public final boolean canOccupyBuilding() {
+		return tower == null;
+	}
+
 	/**
 	 * enum to define the states of a soldier.
 	 * 
@@ -208,4 +213,5 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		WATCHING,
 		IN_TOWER
 	}
+
 }

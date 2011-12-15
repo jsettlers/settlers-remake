@@ -53,4 +53,5 @@ public interface IHexMovable extends IMovable {
 	 */
 	boolean setOccupyableBuilding(IOccupyableBuilding building);
 
+	boolean canOccupyBuilding();
 }

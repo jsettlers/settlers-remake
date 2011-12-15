@@ -367,11 +367,11 @@ public class MainGrid implements Serializable {
 						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
 			case SOLDIER_BOWMAN:
-				return isSoldierAt(x, y, searchType);
+				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 			case SOLDIER_SWORDSMAN:
-				return isSoldierAt(x, y, searchType);
+				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 			case SOLDIER_PIKEMAN:
-				return isSoldierAt(x, y, searchType);
+				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
@@ -379,20 +379,24 @@ public class MainGrid implements Serializable {
 			}
 		}
 
-		private boolean isSoldierAt(short x, short y, ESearchType searchType) {
-			IMovable movable = movableGrid.getMovableAt(x, y);
+		private boolean isSoldierAt(short x, short y, ESearchType searchType, byte player) {
+			IHexMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
 			} else {
-				EMovableType type = movable.getMovableType();
-				switch (searchType) {
-				case SOLDIER_BOWMAN:
-					return type == EMovableType.BOWMAN_L1 || type == EMovableType.BOWMAN_L2 || type == EMovableType.BOWMAN_L3;
-				case SOLDIER_SWORDSMAN:
-					return type == EMovableType.SWORDSMAN_L1 || type == EMovableType.SWORDSMAN_L2 || type == EMovableType.SWORDSMAN_L3;
-				case SOLDIER_PIKEMAN:
-					return type == EMovableType.PIKEMAN_L1 || type == EMovableType.PIKEMAN_L2 || type == EMovableType.PIKEMAN_L3;
-				default:
+				if (movable.getPlayer() == player && movable.canOccupyBuilding()) {
+					EMovableType type = movable.getMovableType();
+					switch (searchType) {
+					case SOLDIER_BOWMAN:
+						return type == EMovableType.BOWMAN_L1 || type == EMovableType.BOWMAN_L2 || type == EMovableType.BOWMAN_L3;
+					case SOLDIER_SWORDSMAN:
+						return type == EMovableType.SWORDSMAN_L1 || type == EMovableType.SWORDSMAN_L2 || type == EMovableType.SWORDSMAN_L3;
+					case SOLDIER_PIKEMAN:
+						return type == EMovableType.PIKEMAN_L1 || type == EMovableType.PIKEMAN_L2 || type == EMovableType.PIKEMAN_L3;
+					default:
+						return false;
+					}
+				} else {
 					return false;
 				}
 			}

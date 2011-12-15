@@ -470,6 +470,11 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		}
 	}
 
+	@Override
+	public boolean canOccupyBuilding() {
+		return strategy.canOccupyBuilding();
+	}
+
 	void setSleeping(boolean sleep) {
 		if (sleep) {
 			assert state == EMovableState.NO_ACTION || state == EMovableState.FINISHED_ACTION : "can't go sleeping while doing something";

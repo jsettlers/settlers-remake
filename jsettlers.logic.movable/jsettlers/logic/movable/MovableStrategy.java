@@ -179,4 +179,8 @@ public abstract class MovableStrategy implements Serializable {
 		movable.setSleeping(sleep);
 	}
 
+	protected boolean canOccupyBuilding() {
+		return false;
+	}
+
 }
