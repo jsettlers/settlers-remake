@@ -11,6 +11,7 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.random.grid.MapGrid;
 import jsettlers.logic.map.random.instructions.BuildingInstruction;
@@ -155,7 +156,7 @@ public class LandscapeVisualization extends JPanel {
 		frame.pack();
 		frame.setVisible(true);
 
-		MapGrid grid = MapGrid.createFromLandscapeMesh(mesh, new Random());
+		MapGrid grid = MapGrid.createFromLandscapeMesh(mesh, new Random(), new ShortPoint2D[] {});
 
 		ObjectInstruction objinstr = new BuildingInstruction();
 		objinstr.setParameter("distance", "0");
