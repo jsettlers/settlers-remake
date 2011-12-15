@@ -294,7 +294,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.CUTTABLE_STONE) {
-			super.setDirection(EDirection.NORTH_EAST);
+			super.setDirection(EDirection.NORTH_WEST);
 			return true;
 		} else if (currentJob.getSearchType() == ESearchType.RIVER) {
 			for (EDirection direction : EDirection.values()) {

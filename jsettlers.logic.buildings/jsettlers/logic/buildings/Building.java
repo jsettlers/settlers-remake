@@ -185,6 +185,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			grid.setBlocked(buildingArea, true);
 			finishConstruction();
 		}
+		appearedEvent();
+	}
+
+	protected void appearedEvent() {
 	}
 
 	private void requestDiggers() {

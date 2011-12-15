@@ -46,13 +46,11 @@ import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.Barrack;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
-import jsettlers.logic.map.newGrid.interfaces.IOccupyableBuilding;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
 import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
@@ -236,11 +234,6 @@ public class MainGrid implements Serializable {
 		} else if (object instanceof BuildingObject) {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
-			if (building instanceof IOccupyableBuilding) {
-				Movable soldier = new Movable(movablePathfinderGrid, ((OccupyingBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1,
-						building.getPlayer());
-				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
-			}
 		} else if (object instanceof MovableObject) {
 			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}

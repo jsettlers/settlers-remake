@@ -42,6 +42,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private DijkstraContinuableRequest request;
 	private byte delayCtr = 0;
 
+	private boolean occupiedArea;
+
 	public OccupyingBuilding(EBuildingType type, byte player) {
 		super(type, player);
 
@@ -59,6 +61,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	protected final void constructionFinishedEvent() {
+	}
+
+	@Override
+	protected void appearedEvent() {
+		occupyArea();
 	}
 
 	private MapShapeFilter getOccupyablePositions() {
@@ -104,7 +111,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	protected void killedEvent() {
-		if (!occupiers.isEmpty()) {
+		if (occupiedArea) {
 			MapShapeFilter occupied = getOccupyablePositions();
 			super.getGrid().freeOccupiedArea(occupied, super.getPos());
 		}
@@ -130,8 +137,14 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			}
 		}
 
-		MapShapeFilter occupying = getOccupyablePositions();
-		super.getGrid().occupyArea(occupying, super.getPos(), super.getPlayer());
+		occupyArea();
+	}
+
+	private void occupyArea() {
+		if (!occupiedArea) {
+			MapShapeFilter occupying = getOccupyablePositions();
+			super.getGrid().occupyArea(occupying, super.getPos(), super.getPlayer());
+		}
 	}
 
 	@Override
