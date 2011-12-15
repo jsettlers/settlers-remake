@@ -48,7 +48,7 @@ public class MapCircle implements IMapArea {
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public CircleIterator iterator() {
 		return new CircleIterator(this);
 	}
 
