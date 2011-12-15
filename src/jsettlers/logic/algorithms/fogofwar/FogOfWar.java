@@ -6,11 +6,11 @@ import java.io.Serializable;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.map.shapes.CircleIterator;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 
 /**
  * This class holds the fog of war for a given map and player.
@@ -207,7 +207,7 @@ public class FogOfWar implements Serializable {
 		}
 	}
 
-	private byte dimDown(byte oldvalue) {
+	private static byte dimDown(byte oldvalue) {
 		if (oldvalue > CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return CommonConstants.FOG_OF_WAR_EXPLORED;
 		} else {
@@ -230,11 +230,14 @@ public class FogOfWar implements Serializable {
 		 * Draws a circle to the buffer line. Each point is only brightened and onyl drawn if its x coordinate is in [0, mapWidth - 1] and its
 		 * computed y coordinate is bigger than 0.
 		 */
-		private void drawCircleToBuffer(int bufferx, int buffery, int viewdistance) {
+		protected void drawCircleToBuffer(int bufferx, int buffery, int viewdistance) {
 			MapCircle circle = new MapCircle(bufferx, buffery, Math.min(viewdistance + PADDING, MAX_VIEWDISTANCE));
-			for (ISPosition2D pos : circle) {
-				int currentx = pos.getX();
-				int currenty = pos.getY();
+			CircleIterator iterator = circle.iterator();
+			while (iterator.hasNext()) {
+				int point = iterator.nextXY();
+				int currentx = point & 0xffff;
+				int currenty = point >> 16;
+			
 				int currentbuffery = convertY(currenty);
 				if (currentx >= 0 && currentx < grid.getWidth() && currentbuffery >= 0) {
 					double distance = circle.distanceToCenter(currentx, currenty);
@@ -244,7 +247,6 @@ public class FogOfWar implements Serializable {
 					} else {
 						newsight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (distance - viewdistance) / PADDING
 								* CommonConstants.FOG_OF_WAR_VISIBLE);
-
 					}
 					increaseBufferAt(currentx, currentbuffery, newsight);
 				}
@@ -308,7 +310,7 @@ public class FogOfWar implements Serializable {
 		}
 	}
 
-	private int getViewForBuilding(IBuilding baseobject) {
+	private static int getViewForBuilding(IBuilding baseobject) {
 		if (baseobject.getStateProgress() > .999f) {
 			return baseobject.getBuildingType().getViewDistance();
 		} else {
