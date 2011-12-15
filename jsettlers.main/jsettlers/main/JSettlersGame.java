@@ -1,7 +1,7 @@
 package jsettlers.main;
 
 import random.RandomSingleton;
-import jsettlers.graphics.JOGLPanel;
+import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceListener;
@@ -11,6 +11,9 @@ import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.input.GuiInterface;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.random.RandomMapEvaluator;
+import jsettlers.logic.map.random.RandomMapFile;
+import jsettlers.logic.map.random.grid.MapGrid;
 import jsettlers.logic.timer.Timer100Milli;
 import network.INetworkManager;
 import network.NullNetworkManager;
@@ -27,7 +30,7 @@ public class JSettlersGame {
 
 	private boolean stopped = false;
 	private Object stopMutex = new Object();
-	private final JOGLPanel content;
+	private final ISettlersGameDisplay content;
 
 	private Listener listener;
 
@@ -37,7 +40,7 @@ public class JSettlersGame {
 	 * @param map
 	 *            The name of the random map and some settings
 	 */
-	public JSettlersGame(JOGLPanel content, IGameSettings map, long randomSheed) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameSettings map, long randomSheed) {
 		this.content = content;
 		this.map = map;
 		this.randomSheed = randomSheed;
@@ -63,17 +66,22 @@ public class JSettlersGame {
 
 			progress.setProgressState(EProgressState.LOADING_MAP);
 
-			MainGrid grid =
-			        MainGrid.create(map.getMap().getName(),
-			                (byte) map.getPlayerCount(), RandomSingleton.get());
+			/** random map */
+			RandomMapFile file = RandomMapFile.getByName(map.getMap().getName());
+			RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), (byte) map.getPlayerCount());
+			evaluator.createMap(RandomSingleton.get());
+			MapGrid mapGrid = evaluator.getGrid();
+			
+			MainGrid grid = MainGrid.create(mapGrid);
 
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
 			MapInterfaceConnector connector =
-			        content.showHexMap(grid.getGraphicsGrid(), null);
+			        content.showGameMap(grid.getGraphicsGrid(), null);
 			new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 			connector.addListener(this);
+			connector.scrollTo(mapGrid.getStartPoint(0), false);
 			manager.startGameTimer();
 
 			// TODO: allow user to stop game before this happens.

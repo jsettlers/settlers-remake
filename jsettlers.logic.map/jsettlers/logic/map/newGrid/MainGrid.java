@@ -209,14 +209,17 @@ public class MainGrid implements Serializable {
 		return grid;
 	}
 
+	@Deprecated
 	public static MainGrid create(String filename, byte players, Random random) {
 		RandomMapFile file = RandomMapFile.getByName(filename);
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
 		evaluator.createMap(random);
 		MapGrid mapGrid = evaluator.getGrid();
 
-		System.out.println("Generated random map");
-
+		return new MainGrid(mapGrid);
+	}
+	
+	public static MainGrid create(MapGrid mapGrid) {
 		return new MainGrid(mapGrid);
 	}
 

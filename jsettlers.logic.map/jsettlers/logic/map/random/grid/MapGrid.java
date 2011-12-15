@@ -37,8 +37,10 @@ public class MapGrid {
 
 	private Hashtable<MeshEdge, List<Point>> noisyEdges =
 	        new Hashtable<MeshEdge, List<Point>>();
+	private final ShortPoint2D[] playerstarts;
 
-	private MapGrid(LandscapeMesh mesh, Random random) {
+	private MapGrid(LandscapeMesh mesh, Random random, ShortPoint2D[] playerstarts) {
+		this.playerstarts = playerstarts;
 		this.width = mesh.getWidth();
 		this.height = mesh.getHeight();
 		types = new ELandscapeType[width][height];
@@ -189,8 +191,8 @@ public class MapGrid {
 	}
 
 	public static MapGrid createFromLandscapeMesh(LandscapeMesh mesh,
-	        Random random) {
-		return new MapGrid(mesh, random);
+	        Random random, ShortPoint2D[] playerstarts) {
+		return new MapGrid(mesh, random, playerstarts);
 	}
 
 	public int getWidth() {
@@ -238,5 +240,18 @@ public class MapGrid {
 
 	public byte getLandscapeHeight(short x, short y) {
 		return (byte) Math.max(0, 10 + heightGenerator.getNoise(x, y) * 25);
+    }
+
+	/**
+	 * Gets the start point of player i. Always returns a valid point.
+	 * @param i
+	 * @return
+	 */
+	public ISPosition2D getStartPoint(int i) {
+	    if (i < 0 || i >= playerstarts.length) {
+	    	return new ShortPoint2D(getWidth() / 2, getHeight() / 2);
+	    } else {
+	    	return playerstarts[i];
+	    }
     }
 }

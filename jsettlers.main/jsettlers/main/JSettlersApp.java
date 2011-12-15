@@ -97,7 +97,7 @@ public abstract class JSettlersApp implements Runnable {
 		progress.setProgressState(EProgressState.LOADING_IMAGES);
 		
 		MapInterfaceConnector connector =
-		        content.showHexMap(grid.getGraphicsGrid(), null);
+		        content.showGameMap(grid.getGraphicsGrid(), null);
 		new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 		manager.startGameTimer();

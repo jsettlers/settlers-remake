@@ -81,7 +81,7 @@ public class RandomMapEvaluator {
 
 		computeHeights(landscapeMesh);
 
-		MapGrid grid = MapGrid.createFromLandscapeMesh(landscapeMesh, random);
+		MapGrid grid = MapGrid.createFromLandscapeMesh(landscapeMesh, random, playerStarts);
 
 		addObjects(grid);
 

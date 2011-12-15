@@ -1,5 +1,6 @@
 package jsettlers.main;
 
+import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
@@ -12,13 +13,18 @@ import jsettlers.main.JSettlersGame.Listener;
  */
 public class ManagedJSettlers implements Listener {
 
-	private JOGLPanel content;
+	private ISettlersGameDisplay content;
 	private JSettlersGame ongoingGame;
 
+	@Deprecated
 	public synchronized void start(IGuiStarter starter) {
-		content = new JOGLPanel();
-		starter.startGui(content);
-
+		JOGLPanel content2 = new JOGLPanel();
+		starter.startGui(content2);
+		start(content2);
+	}
+	
+	public synchronized void start(ISettlersGameDisplay content) {
+		this.content = content;
 		showMainScreen();
 	}
 
@@ -139,6 +145,7 @@ public class ManagedJSettlers implements Listener {
 	 * 
 	 * @author michael
 	 */
+	@Deprecated
 	public interface IGuiStarter {
 		void startGui(JOGLPanel content);
 	}
