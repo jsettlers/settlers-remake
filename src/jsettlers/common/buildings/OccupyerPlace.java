@@ -7,11 +7,11 @@ package jsettlers.common.buildings;
  */
 public class OccupyerPlace {
 
-	private final EType type;
+	private final ESoldierType type;
 	private final int y;
 	private final int x;
 
-	public OccupyerPlace(int x, int y, EType type) {
+	public OccupyerPlace(int x, int y, ESoldierType type) {
 		this.x = x;
 		this.y = y;
 		this.type = type;
@@ -20,10 +20,9 @@ public class OccupyerPlace {
 	/**
 	 * gets the type of the occupyer.
 	 * 
-	 * @return {@link EType#INSIDE} if it is a person that is inside,
-	 *         {@link EType#BOWMAN} if it is a bowman on the roof.
+	 * @return {@link ESoldierType#INFANTARY} if it is a person that is inside, {@link ESoldierType#BOWMAN} if it is a bowman on the roof.
 	 */
-	public EType getType() {
+	public ESoldierType getType() {
 		return type;
 	}
 
@@ -46,11 +45,12 @@ public class OccupyerPlace {
 	}
 
 	/**
-	 * The type a place can have.
+	 * The type a soldier can have.
 	 * 
 	 * @author michael
 	 */
-	public enum EType {
-		INSIDE, BOWMAN
+	public enum ESoldierType {
+		INFANTARY,
+		BOWMAN
 	}
 }

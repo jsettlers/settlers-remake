@@ -14,7 +14,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.EType;
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.buildings.jobs.IBuildingJob;
@@ -171,8 +171,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 		try {
 			int x = Integer.parseInt(attributes.getValue("x"));
 			int y = Integer.parseInt(attributes.getValue("y"));
-			EType type =
-			        OccupyerPlace.EType.valueOf(attributes.getValue("type"));
+			ESoldierType type =
+			        OccupyerPlace.ESoldierType.valueOf(attributes.getValue("type"));
 			OccupyerPlace place = new OccupyerPlace(x, y, type);
 			occupyerplaces.add(place);
 		} catch (NumberFormatException e) {
