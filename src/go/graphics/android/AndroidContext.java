@@ -186,7 +186,7 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, 0);
 	}
 
-	private int getPowerOfTwo(int value) {
+	private static int getPowerOfTwo(int value) {
 		int guess = 1;
 		while (guess < value) {
 			guess *= 2;
@@ -305,6 +305,7 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glLoadIdentity();
 
 		GLES10.glScalef(2f / width, 2f / height, 0);
+		//TODO: do not scale depth by 0.
 
 		GLES10.glTranslatef(-width / 2, -height / 2, 0);
 

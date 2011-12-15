@@ -44,7 +44,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	}
 
 	private class ActionAdapter extends AbstractEventConverter {
-
 		private static final double CLICK_MOVE_TRESHOLD = 20;
 		private static final double CLICK_TIME_TRSHOLD = 1;
 		private static final float ZOOMSTART = 1.5f;
