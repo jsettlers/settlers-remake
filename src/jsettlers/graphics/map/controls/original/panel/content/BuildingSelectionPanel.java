@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.EType;
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.action.Action;
@@ -80,7 +80,7 @@ public class BuildingSelectionPanel implements IContentProvider {
 	    for (OccupyerPlace place : occupyerPlaces) {
 	    	ImageLink link = SOILDER_MISSING;
 	    	Button button = new Button(null, link, link, "");
-	    	if (place.getType() == EType.BOWMAN) {
+	    	if (place.getType() == ESoldierType.BOWMAN) {
 	    		float left = topindex * .1f + .3f;
 	    		panel.addChild(button, left, .6f, left + .1f, .65f);
 	    		topindex++;
