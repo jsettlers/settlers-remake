@@ -105,7 +105,7 @@
 	<job name="search_stone" 	type="FOLLOW_SEARCHED" 	successjob="look_at_stone" 	failjob="gohome" 		/>
 	
 	<!-- hack the stone -->
-	<job name="look_at_stone" 	type="LOOK_AT" 			successjob="hit_stone1" 	failjob="gohome" 		direction="NORTH_WEST"/>
+	<job name="look_at_stone" 	type="LOOK_AT" 			successjob="hit_stone1" 	failjob="gohome" 		direction="SOUTH_WEST"/>
 	<job name="hit_stone1" 		type="PLAY_ACTION1" 	successjob="hit_stone2" 	failjob="gohome" 		time="0.75"/>
 	<job name="hit_stone2" 		type="PLAY_ACTION1" 	successjob="hit_stone3" 	failjob="gohome" 		time="0.75"/>
 	<job name="hit_stone3" 		type="PLAY_ACTION1" 	successjob="hit_stone4" 	failjob="gohome" 		time="0.75"/>
