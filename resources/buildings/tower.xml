@@ -58,7 +58,7 @@
 	<image file="14" type="GUI" for="GUI" image="0" sequence="54" />
     
     <!-- TODO: check coordinates -->
-    <occupyer x="0" type="INSIDE" y="0"/>
+    <occupyer x="0" type="INFANTARY" y="0"/>
     <occupyer x="10" type="BOWMAN" y="30"/>
     <occupyer x="-10" type="BOWMAN" y="30"/>
 </building>
