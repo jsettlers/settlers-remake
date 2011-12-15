@@ -126,6 +126,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			if (curr.getType() == soldier.getSoldierType()) {
 				emptyPlaces.remove(curr);
 				occupiers.add(new TowerOccupyer(curr, soldier));
+				break;
 			}
 		}
 
