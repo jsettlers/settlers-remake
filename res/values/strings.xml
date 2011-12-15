@@ -10,4 +10,12 @@
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
     <string name="minus_string">-</string>
+    <string name="please_wait">Bitte warten</string>
+    <string name="local_game">Einzelspieler</string>
+    <string name="local_game_new">Neues Spiel</string>
+    <string name="local_game_load">Spielstand laden</string>
+    <string name="network_game">Netzwerkspiel</string>
+    <string name="network_game_new">Einleiten</string>
+    <string name="network_game_join">Beitreten</string>
+    <string name="network_game_load">Wiederherstellen</string>
 </resources>
