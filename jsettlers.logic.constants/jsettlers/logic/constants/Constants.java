@@ -59,4 +59,6 @@ public final class Constants {
 
 	public static final int TILES_PER_DIGGER = 15;
 
+	public static final short TOWER_SOLDIER_SEARCH_AREA = 30;
+
 }

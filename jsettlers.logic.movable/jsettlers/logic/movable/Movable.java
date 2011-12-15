@@ -14,6 +14,8 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IOccupyableBuilding;
+import jsettlers.logic.movable.soldiers.AbstractSoldierStrategy;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
@@ -284,6 +286,8 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			System.out.println("finished_action");
 			break;
 
+		case SLEEPING:
+			break;
 		}
 	}
 
@@ -376,14 +380,14 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		this.strategy.setGotoJob(gotoJob);
 	}
 
-	public void setStrategy(MovableStrategy strategy) {
-		this.strategy = strategy;
-	}
-
 	void setPos(ISPosition2D pos) {
 		grid.movableLeft(this.pos, this);
 		this.pos = pos;
 		this.progress = 0;
+	}
+
+	void setStrategy(MovableStrategy strategy) {
+		this.strategy = strategy;
 	}
 
 	void setVisible(boolean visible) {
@@ -454,6 +458,26 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		this.progress = 0;
 		this.action = EAction.NO_ACTION;
 		this.state = EMovableState.EXECUTING_ACTION;
+	}
+
+	@Override
+	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+		if (strategy instanceof AbstractSoldierStrategy) {
+			((AbstractSoldierStrategy) strategy).setOccupyableBuilding(building);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void setSleeping(boolean sleep) {
+		if (sleep) {
+			assert state == EMovableState.NO_ACTION || state == EMovableState.FINISHED_ACTION : "can't go sleeping while doing something";
+			state = EMovableState.SLEEPING;
+		} else {
+			state = EMovableState.NO_ACTION;
+		}
+		action = EAction.NO_ACTION;
 	}
 
 }

@@ -42,4 +42,14 @@ public interface IHexMovable extends IMovable {
 	IHexMovable getPushedFrom();
 
 	ISPosition2D getNextTile();
+
+	/**
+	 * 
+	 * @param building
+	 *            the occupyable building that requests this movable
+	 * @return true if this movable was a soldier<br>
+	 *         false if it is no soldier
+	 */
+	boolean setOccupyableBuilding(IOccupyableBuilding building);
+
 }

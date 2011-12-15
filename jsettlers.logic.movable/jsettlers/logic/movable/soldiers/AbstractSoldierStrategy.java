@@ -6,17 +6,24 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.interfaces.IOccupyableBuilding;
+import jsettlers.logic.movable.GotoJob;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
-public abstract class AbstractSoldierStrategy extends PathableStrategy {
+public abstract class AbstractSoldierStrategy extends PathableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 9000857936712315432L;
 
 	private int delayCtr = Integer.MAX_VALUE;
 	private ISPosition2D enemyPos;
 	private final EMovableType type;
+
+	private IOccupyableBuilding tower = null;
+
+	private ESoldierState state = ESoldierState.WATCHING;
 
 	protected AbstractSoldierStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
 		super(grid, movable);
@@ -33,7 +40,17 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 	@Override
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			checkEnemies();
+			switch (state) {
+			case WATCHING:
+				checkEnemies();
+				break;
+			case IN_TOWER:
+				break;
+
+			default:
+				System.err.println("AbstractSoldierStrategy.noActionEvent(): state=" + state);
+				break;
+			}
 		}
 		return true;
 	}
@@ -41,10 +58,34 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 	@Override
 	protected boolean actionFinished() {
 		if (!super.actionFinished()) {
-			checkEnemies();
+			switch (state) {
+			case WATCHING:
+				checkEnemies();
+				break;
+
+			default:
+				System.out.println("AbstractSoldierStrategy.actionFinished(): state=" + state);
+				super.setAction(EAction.NO_ACTION, -1);
+				break;
+			}
 		}
 
 		return true;
+	}
+
+	@Override
+	protected void pathFinished() {
+		switch (state) {
+		case WATCHING:
+			super.setAction(EAction.NO_ACTION, -1);
+			break;
+		case GO_TO_TOWER:
+			state = ESoldierState.IN_TOWER;
+			super.setVisible(false);
+			super.setSleeping(true);
+			tower.setSoldier(this);
+			break;
+		}
 	}
 
 	private void checkEnemies() {
@@ -117,27 +158,54 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy {
 	}
 
 	@Override
-	protected void pathFinished() {
-		super.setAction(EAction.NO_ACTION, -1);
-		// nothing to do here
-	}
-
-	@Override
-	protected EMovableType getMovableType() {
+	public EMovableType getMovableType() {
 		return type;
 	}
 
 	@Override
 	protected boolean isGotoJobable() {
-		return true;
+		return state != ESoldierState.GO_TO_TOWER;
 	}
 
 	@Override
 	protected void pathRequestFailed() {
+		switch (state) {
+		case GO_TO_TOWER:
+			tower = null;
+			state = ESoldierState.WATCHING;
+			System.out.println("path request failed");
+			break;
+		}
 	}
 
 	@Override
 	protected boolean isPathStopable() {
-		return true;
+		return state != ESoldierState.GO_TO_TOWER;
+	}
+
+	@Override
+	public void setOccupyableBuilding(IOccupyableBuilding building) {
+		super.setGotoJob(new GotoJob(building.getDoor()));
+		this.tower = building;
+		this.state = ESoldierState.GO_TO_TOWER;
+	}
+
+	@Override
+	protected final void killedEvent() {
+		if (tower != null) {
+			tower.requestFailed(getMovableType());
+		}
+	}
+
+	/**
+	 * enum to define the states of a soldier.
+	 * 
+	 * @author Andreas Eberle
+	 * 
+	 */
+	private static enum ESoldierState {
+		GO_TO_TOWER,
+		WATCHING,
+		IN_TOWER
 	}
 }

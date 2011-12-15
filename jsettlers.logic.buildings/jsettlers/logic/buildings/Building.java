@@ -19,6 +19,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.buildings.military.Barrack;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;

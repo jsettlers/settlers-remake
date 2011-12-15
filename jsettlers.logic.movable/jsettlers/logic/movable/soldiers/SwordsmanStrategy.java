@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.soldiers;
 
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -41,4 +42,8 @@ public class SwordsmanStrategy extends AbstractSoldierStrategy {
 		return EDirection.getDirection(this.getPos(), enemyPos) != null;
 	}
 
+	@Override
+	public ESoldierType getSoldierType() {
+		return ESoldierType.INFANTARY;
+	}
 }

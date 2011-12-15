@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.soldiers;
 
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -41,6 +42,11 @@ public class BowmanStrategy extends AbstractSoldierStrategy {
 	@Override
 	protected boolean canHit(ISPosition2D enemyPos) {
 		return Math.hypot(super.getPos().getX() - enemyPos.getX(), super.getPos().getY() - enemyPos.getY()) <= Constants.BOWMAN_FIRE_RADIUS;
+	}
+
+	@Override
+	public ESoldierType getSoldierType() {
+		return ESoldierType.BOWMAN;
 	}
 
 }

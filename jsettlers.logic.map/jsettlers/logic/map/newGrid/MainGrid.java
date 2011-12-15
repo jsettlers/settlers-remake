@@ -46,11 +46,13 @@ import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.Barrack;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
 import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.interfaces.IOccupyableBuilding;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
 import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
@@ -234,6 +236,11 @@ public class MainGrid implements Serializable {
 		} else if (object instanceof BuildingObject) {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
+			if (building instanceof IOccupyableBuilding) {
+				Movable soldier = new Movable(movablePathfinderGrid, ((OccupyingBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1,
+						building.getPlayer());
+				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
+			}
 		} else if (object instanceof MovableObject) {
 			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}
@@ -351,9 +358,10 @@ public class MainGrid implements Serializable {
 				return y < height - 1 && x < width - 2 && objectsGrid.hasCuttableObject((short) (x - 2), (short) (y - 1), EMapObjectType.STONE)
 						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
-			case ENEMY:
+			case ENEMY: {
 				IMovable movable = movableGrid.getMovableAt(x, y);
 				return movable != null && movable.getPlayer() != pathCalculable.getPlayer();
+			}
 
 			case RIVER:
 				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
@@ -365,9 +373,35 @@ public class MainGrid implements Serializable {
 				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y))
 						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
+			case SOLDIER_BOWMAN:
+				return isSoldierAt(x, y, searchType);
+			case SOLDIER_SWORDSMAN:
+				return isSoldierAt(x, y, searchType);
+			case SOLDIER_PIKEMAN:
+				return isSoldierAt(x, y, searchType);
+
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
 				return false;
+			}
+		}
+
+		private boolean isSoldierAt(short x, short y, ESearchType searchType) {
+			IMovable movable = movableGrid.getMovableAt(x, y);
+			if (movable == null) {
+				return false;
+			} else {
+				EMovableType type = movable.getMovableType();
+				switch (searchType) {
+				case SOLDIER_BOWMAN:
+					return type == EMovableType.BOWMAN_L1 || type == EMovableType.BOWMAN_L2 || type == EMovableType.BOWMAN_L3;
+				case SOLDIER_SWORDSMAN:
+					return type == EMovableType.SWORDSMAN_L1 || type == EMovableType.SWORDSMAN_L2 || type == EMovableType.SWORDSMAN_L3;
+				case SOLDIER_PIKEMAN:
+					return type == EMovableType.PIKEMAN_L1 || type == EMovableType.PIKEMAN_L2 || type == EMovableType.PIKEMAN_L3;
+				default:
+					return false;
+				}
 			}
 		}
 
@@ -471,10 +505,11 @@ public class MainGrid implements Serializable {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// return debugColors[x][y];
+			return debugColors[x][y];
 
-			return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0,
-					1, 1) : null);
+			// return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0,
+			// 0,
+			// 1, 1) : null);
 		}
 
 		@Override
@@ -637,7 +672,7 @@ public class MainGrid implements Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		transient private HexAStar aStar;
-		transient private DijkstraAlgorithm dijkstra;
+		transient DijkstraAlgorithm dijkstra;
 		transient private InAreaFinder inAreaFinder;
 
 		public MovablePathfinderGrid() {
@@ -997,6 +1032,11 @@ public class MainGrid implements Serializable {
 			partitionsGrid.requestSoilderable(barrack);
 		}
 
+		@Override
+		public final DijkstraAlgorithm getDijkstra() {
+			return movablePathfinderGrid.dijkstra;
+		}
+
 		private class RequestStackGrid implements IRequestsStackGrid, Serializable {
 			private static final long serialVersionUID = 1278397366408051067L;
 
@@ -1030,6 +1070,7 @@ public class MainGrid implements Serializable {
 				}
 			}
 		}
+
 	}
 
 	class GUIInputGrid implements IGuiInputGrid {

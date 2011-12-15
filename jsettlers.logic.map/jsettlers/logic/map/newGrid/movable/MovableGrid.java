@@ -21,21 +21,22 @@ public class MovableGrid implements Serializable {
 		this.movableGrid = new IHexMovable[width][height];
 	}
 
-	public IHexMovable getMovableAt(short x, short y) {
+	public final IHexMovable getMovableAt(short x, short y) {
 		return this.movableGrid[x][y];
 	}
 
-	public void setMovable(short x, short y, IHexMovable movable) {
+	public final void setMovable(short x, short y, IHexMovable movable) {
 		this.movableGrid[x][y] = movable;
 	}
 
-	public void movableLeft(ISPosition2D position, IHexMovable movable) {
+	public final void movableLeft(ISPosition2D position, IHexMovable movable) {
 		if (this.movableGrid[position.getX()][position.getY()] == movable) {
 			this.movableGrid[position.getX()][position.getY()] = null;
 		}
 	}
 
-	public void movableEntered(ISPosition2D position, IHexMovable movable) {
+	public final void movableEntered(ISPosition2D position, IHexMovable movable) {
 		this.movableGrid[position.getX()][position.getY()] = movable;
 	}
+
 }

@@ -25,7 +25,7 @@ import jsettlers.logic.movable.workers.BuildingWorkerStrategy;
 public abstract class MovableStrategy implements Serializable {
 	private static final long serialVersionUID = 7544560296926609429L;
 
-	protected final Movable movable;
+	private final Movable movable;
 	private final IMovableGrid grid;
 
 	/**
@@ -104,7 +104,8 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	/**
-	 * is called after the action set by setAction() has been finished
+	 * is called after the action set by setAction() has been finished.<br>
+	 * NOTE: THIS METHOD MUST SET A NEW EAction!!
 	 * 
 	 * @return true if the action has been consumed by the method call (used for subclasses)
 	 */
@@ -173,4 +174,9 @@ public abstract class MovableStrategy implements Serializable {
 	protected EMaterialType getMaterial() {
 		return movable.getMaterial();
 	}
+
+	protected void setSleeping(boolean sleep) {
+		movable.setSleeping(sleep);
+	}
+
 }

@@ -7,6 +7,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
@@ -99,4 +100,9 @@ public interface IBuildingsGrid {
 	void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos);
 
 	void pushMaterialsTo(ISPosition2D position, EMaterialType type, byte numberOf);
+
+	/**
+	 * @return dijkstra algorithm to be used by buildings.
+	 */
+	DijkstraAlgorithm getDijkstra();
 }
