@@ -41,7 +41,8 @@ public class AndroidContext implements GLDrawContext {
 		                y2,
 		                0,
 		        };
-
+		
+		glBindTexture(0);
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(quadData);
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 3 * 4, floatBuff);
@@ -90,7 +91,6 @@ public class AndroidContext implements GLDrawContext {
 			if (reuseableBuffer != null) {
 				System.out.println("reallocated! needed: " + points.length
 				        + ", old:" + reuseableBuffer.capacity());
-
 			}
 			ByteBuffer quadPoints =
 			        ByteBuffer.allocateDirect(points.length * 4);
@@ -110,6 +110,7 @@ public class AndroidContext implements GLDrawContext {
 			throw new IllegalArgumentException(
 			        "Point array length needs to be multiple of 3.");
 		}
+		glBindTexture(0);
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(points);
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 0, floatBuff);
@@ -118,13 +119,21 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 	}
 
+	private int lastTexture = 0;
+	private void glBindTexture(int texture) {
+	    if (texture != lastTexture) {
+	    	GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, texture);
+	    	lastTexture = texture;
+	    }
+    }
+
 	@Override
 	public void drawQuadWithTexture(int textureid, float[] geometry) {
 		if (quadEleementBuffer == null) {
 			generateQuadElementBuffer();
 		}
 		quadEleementBuffer.position(0);
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, textureid);
+		glBindTexture(textureid);
 
 		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
@@ -135,8 +144,6 @@ public class AndroidContext implements GLDrawContext {
 
 		GLES10.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
 		        quadEleementBuffer);
-
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, 0);
 	}
 
 	private void generateQuadElementBuffer() {
@@ -151,7 +158,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void drawTrianglesWithTexture(int textureid, float[] geometry) {
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, textureid);
+		glBindTexture(textureid);
 
 		FloatBuffer buffer = generateTemporaryFloatBuffer(geometry);
 
@@ -160,13 +167,11 @@ public class AndroidContext implements GLDrawContext {
 		texbuffer.position(3);
 		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, texbuffer);
 		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, geometry.length / 5);
-
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, 0);
 	}
 
 	@Override
 	public void drawTrianglesWithTextureColored(int textureid, float[] geometry) {
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, textureid);
+		glBindTexture(textureid);
 
 		GLES10.glEnableClientState(GLES10.GL_COLOR_ARRAY);
 
@@ -182,8 +187,6 @@ public class AndroidContext implements GLDrawContext {
 
 		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, geometry.length / 9);
 		GLES10.glDisableClientState(GLES10.GL_COLOR_ARRAY);
-
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, 0);
 	}
 
 	private static int getPowerOfTwo(int value) {
@@ -216,13 +219,12 @@ public class AndroidContext implements GLDrawContext {
 			return -1;
 		}
 
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, texture);
+		glBindTexture(texture);
 		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_RGBA, width,
 		        height, 0, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1,
 		        data);
 
 		setTextureParameters();
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, 0);
 		return texture;
 	}
 
@@ -244,7 +246,7 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public void updateTexture(int textureIndex, int left, int bottom,
 	        int width, int height, ShortBuffer data) {
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, textureIndex);
+		glBindTexture(textureIndex);
 		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width,
 		        height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
@@ -273,7 +275,7 @@ public class AndroidContext implements GLDrawContext {
 		}
 		quadEleementBuffer.position(0);
 		
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, textureid);
+		glBindTexture(textureid);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex);
 		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, 0);
@@ -282,7 +284,6 @@ public class AndroidContext implements GLDrawContext {
 		GLES11.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
 		        quadEleementBuffer);
 
-		GLES10.glBindTexture(GLES10.GL_TEXTURE_2D, 0);
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
 
