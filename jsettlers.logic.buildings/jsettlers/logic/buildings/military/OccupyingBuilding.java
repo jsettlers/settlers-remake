@@ -18,8 +18,7 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
-import jsettlers.logic.map.newGrid.interfaces.IOccupyableBuilding;
+import jsettlers.logic.map.newGrid.movable.IHexMovable;
 
 /**
  * Temporary tower building.

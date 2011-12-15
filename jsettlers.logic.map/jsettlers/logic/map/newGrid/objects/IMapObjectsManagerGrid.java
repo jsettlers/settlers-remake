@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 public interface IMapObjectsManagerGrid extends Serializable {
 	AbstractHexMapObject getMapObject(short x, short y, EMapObjectType mapObjectType);

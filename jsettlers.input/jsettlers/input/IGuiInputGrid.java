@@ -8,7 +8,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.movable.IHexMovable;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.

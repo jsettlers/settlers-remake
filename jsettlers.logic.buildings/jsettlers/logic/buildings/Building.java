@@ -27,7 +27,7 @@ import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.IDebugable;

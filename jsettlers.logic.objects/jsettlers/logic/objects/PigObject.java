@@ -1,7 +1,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 import synchronic.timer.NetworkTimer;
 
 /**

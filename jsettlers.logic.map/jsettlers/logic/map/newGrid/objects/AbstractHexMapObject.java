@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.interfaces;
+package jsettlers.logic.map.newGrid.objects;
 
 import java.io.Serializable;
 

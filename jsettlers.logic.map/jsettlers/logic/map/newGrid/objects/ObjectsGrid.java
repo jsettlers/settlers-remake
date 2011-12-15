@@ -5,7 +5,6 @@ import java.io.Serializable;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
 
 /**
  * This grid stores the objects located at each position.

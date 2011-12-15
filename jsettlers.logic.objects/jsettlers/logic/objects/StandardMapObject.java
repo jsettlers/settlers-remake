@@ -2,7 +2,7 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 
 public class StandardMapObject extends AbstractHexMapObject implements IPlayerable {
 	private static final long serialVersionUID = -7696456932966558840L;

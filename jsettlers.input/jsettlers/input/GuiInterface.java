@@ -35,7 +35,7 @@ import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.TaskExecutor;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.newGrid.interfaces.IHexMovable;
+import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.movable.IIDable;
 import network.INetworkManager;

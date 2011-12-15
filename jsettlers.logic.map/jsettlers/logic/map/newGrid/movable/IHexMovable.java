@@ -1,7 +1,8 @@
-package jsettlers.logic.map.newGrid.interfaces;
+package jsettlers.logic.map.newGrid.movable;
 
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.buildings.military.IOccupyableBuilding;
 
 /**
  * Defines a movable on the hex grid.

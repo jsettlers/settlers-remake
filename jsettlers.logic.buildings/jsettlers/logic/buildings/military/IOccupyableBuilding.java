@@ -1,8 +1,7 @@
-package jsettlers.logic.map.newGrid.interfaces;
+package jsettlers.logic.buildings.military;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 
 public interface IOccupyableBuilding {
 

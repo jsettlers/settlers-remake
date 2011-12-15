@@ -1,7 +1,7 @@
 package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.newGrid.interfaces.AbstractHexMapObject;
+import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 
 public class BuildingWorkAreaMarkObject extends AbstractHexMapObject {
 	private static final long serialVersionUID = 8892749217187685868L;
