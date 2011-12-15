@@ -103,8 +103,8 @@ public class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private void cutStone(ISPosition2D pos) {
-		short x = (short) (pos.getX() - 2);
-		short y = (short) (pos.getY() - 1);
+		short x = (short) (pos.getX() - 1);
+		short y = (short) (pos.getY() + 1);
 		AbstractHexMapObject stone = grid.getMapObject(x, y, EMapObjectType.STONE);
 		stone.cutOff();
 
