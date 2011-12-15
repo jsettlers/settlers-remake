@@ -155,7 +155,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			break;
 
 		case PRE_SEARCH:
-			searchAction();
+			searchDijkstraAction();
 			break;
 
 		case PRE_SEARCH_IN_AREA:
@@ -294,7 +294,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.CUTTABLE_STONE) {
-			// TODO: allow settler to face stone.
+			super.setDirection(EDirection.NORTH_EAST);
 			return true;
 		} else if (currentJob.getSearchType() == ESearchType.RIVER) {
 			for (EDirection direction : EDirection.values()) {
@@ -339,7 +339,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		super.calculateInAreaPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
-	private void searchAction() {
+	private void searchDijkstraAction() {
 		super.setPos(getCurrentJobPos());
 		super.calculateDijkstraPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}

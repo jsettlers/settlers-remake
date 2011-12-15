@@ -37,8 +37,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private final LinkedList<IBuildingOccupyer> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
-
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
+
+	private DijkstraContinuableRequest request;
+	private byte delayCtr = 0;
 
 	public OccupyingBuilding(EBuildingType type, byte player) {
 		super(type, player);
@@ -71,9 +73,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
 	}
-
-	private DijkstraContinuableRequest request;
-	private byte delayCtr = 0;
 
 	@Override
 	protected void subTimerEvent() {
