@@ -23,7 +23,7 @@ import jsettlers.graphics.startscreen.StartScreen;
  * @see JOGLPanel#showHexMap(IHexMap)
  * @author michael
  */
-public class JOGLPanel {
+public class JOGLPanel implements ISettlersGameDisplay {
 
 	private Region region;
 
@@ -69,7 +69,7 @@ public class JOGLPanel {
 	 * @return The connector to access the view and add event listenrs
 	 * @see MapInterfaceConnector
 	 */
-	public synchronized MapInterfaceConnector showHexMap(
+	public synchronized MapInterfaceConnector showGameMap(
 	        final IGraphicsGrid map, IStatisticable playerStatistics) {
 		MapContent content = new MapContent(map);
 		changeContent(content);
