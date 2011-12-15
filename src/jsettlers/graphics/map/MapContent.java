@@ -22,12 +22,14 @@ import java.text.DecimalFormat;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionHandler;
@@ -148,17 +150,26 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		this.objectDrawer.increaseAnimationStep();
 
 		this.context.begin(gl);
-
+		long start = System.currentTimeMillis();
 		drawBackground();
+		long bgtime = System.currentTimeMillis() - start;
+
+		start = System.currentTimeMillis();
 		drawMain();
 		this.context.end();
+		long foregroundtime = System.currentTimeMillis() - start;
 
+		start = System.currentTimeMillis();
 		gl.glTranslatef(0, 0, .5f);
 		drawSelectionHint(gl);
 		controls.drawAt(gl);
 
 		drawFramerate(gl);
 		drawTooltip(gl);
+		long uitime = System.currentTimeMillis() - start;
+
+		System.out.println("Background: " + bgtime + "ms, Foreground: "
+		        + foregroundtime + "ms, UI: " + uitime + "ms");
 	}
 
 	private void adaptScreenSize() {
@@ -213,49 +224,24 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 	 */
 	private void drawMain() {
 		boolean needDrawDebug = false;
+		short height = map.getHeight();
+		short width = map.getWidth();
+		MapRectangle area =
+		        this.context.getConverter().getMapForScreen(
+		                this.context.getScreen().getPosition().bigger(30));
 
-		IMapArea tiles =
-		        new MapShapeFilter(this.context.getConverter().getMapForScreen(
-		                this.context.getScreen().getPosition().bigger(30)),
-		                map.getWidth(), map.getHeight());
-		for (ISPosition2D pos : tiles) {
-			short x = pos.getX();
-			short y = pos.getY();
-			IMapObject object = map.getMapObjectsAt(x, y);
-			if (object != null) {
-				this.objectDrawer.drawMapObject(this.context, this.map, pos,
-				        object);
+		for (int line = 0; line < area.getLines(); line++) {
+			int y = area.getLineY(line);
+			if (y < 0) {
+				continue;
+			}
+			if (y >= height) {
+				break;
 			}
 
-			IMovable movable = map.getMovableAt(x, y);
-			if (movable != null) {
-				if (movable.getAction() == EAction.WALKING) {
-					ISPosition2D origin =
-					        movable.getDirection().getInverseDirection()
-					                .getNextHexPoint(pos);
-					if (origin == null) {
-						origin = pos;
-					}
-					this.context.beginBetweenTileContext(origin, pos,
-					        movable.getMoveProgress());
-					this.movableDrawer.draw(this.context, movable);
-					this.context.endTileContext();
-				} else {
-					this.context.beginTileContext(pos);
-					this.movableDrawer.draw(this.context, movable);
-					this.context.endTileContext();
-				}
-			}
-
-			if (ENABLE_DEBUG && map.getDebugColorAt(x, y) != null) {
-				needDrawDebug = true;
-			}
-
-			if (map.isBorder(x, y)) {
-				this.context.beginTileContext(pos);
-				byte player = map.getPlayerAt(x, y);
-				objectDrawer.drawPlayerBorderObject(context, player);
-				this.context.endTileContext();
+			int endX = Math.min(area.getLineEndX(line), width - 1);
+			for (int x = Math.max(area.getLineStartX(line), 0); x <= endX; x++) {
+				needDrawDebug = drawTile(needDrawDebug, x, y);
 			}
 		}
 
@@ -280,6 +266,42 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		if (needDrawDebug) {
 			drawDebugColors();
 		}
+	}
+
+	private boolean drawTile(boolean needDrawDebug, int x, int y) {
+		IMapObject object = map.getMapObjectsAt(x, y);
+		if (object != null) {
+			this.objectDrawer
+			        .drawMapObject(this.context, this.map, x, y, object);
+		}
+
+		IMovable movable = map.getMovableAt(x, y);
+		if (movable != null) {
+			if (movable.getAction() == EAction.WALKING) {
+				int originx = x - movable.getDirection().getGridDeltaX();
+				int originy = y - movable.getDirection().getGridDeltaY();
+				this.context.beginBetweenTileContext(originx, originy, x, y,
+				        movable.getMoveProgress());
+				this.movableDrawer.draw(this.context, movable);
+				this.context.endTileContext();
+			} else {
+				this.context.beginTileContext(x, y);
+				this.movableDrawer.draw(this.context, movable);
+				this.context.endTileContext();
+			}
+		}
+
+		if (ENABLE_DEBUG && map.getDebugColorAt(x, y) != null) {
+			needDrawDebug = true;
+		}
+
+		if (map.isBorder(x, y)) {
+			this.context.beginTileContext(x, y);
+			byte player = map.getPlayerAt(x, y);
+			objectDrawer.drawPlayerBorderObject(context, player);
+			this.context.endTileContext();
+		}
+		return needDrawDebug;
 	}
 
 	private void drawDebugColors() {
@@ -333,9 +355,11 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		        };
 
 		for (ISPosition2D pos : tiles) {
-			Color color = map.getDebugColorAt(pos.getX(), pos.getY());
+			short x = pos.getX();
+			short y = pos.getY();
+			Color color = map.getDebugColorAt(x, y);
 			if (color != null) {
-				this.context.beginTileContext(pos);
+				this.context.beginTileContext(x, y);
 				gl.color(color);
 				gl.drawQuadWithTexture(0, shape);
 				context.endTileContext();

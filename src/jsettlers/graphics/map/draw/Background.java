@@ -787,7 +787,7 @@ public class Background {
 	 * @param texturepos
 	 *            The texture position
 	 */
-	private void copyImageAt(short[] data, Image image, int[] texturepos) {
+	private static void copyImageAt(short[] data, Image image, int[] texturepos) {
 		int startx = texturepos[0] * TEXTURE_GRID;
 		int starty = texturepos[1] * TEXTURE_GRID;
 		int maxx = startx + texturepos[2] * TEXTURE_GRID;
@@ -819,7 +819,7 @@ public class Background {
 	 * @param height
 	 *            The height of the area to copy
 	 */
-	private void copyImage(short[] data, Image image, int x, int y, int width,
+	private static void copyImage(short[] data, Image image, int x, int y, int width,
 	        int height) {
 		short[] sourceData = image.getData().array();
 		for (int dy = 0; dy < height && dy < image.getHeight(); dy++) {
@@ -840,7 +840,7 @@ public class Background {
 	 *            If it is true, the secondary texture is used.
 	 * @return The texture.
 	 */
-	private int getBorder(ELandscapeType outer, ELandscapeType inner,
+	private static int getBorder(ELandscapeType outer, ELandscapeType inner,
 	        boolean useSecond) {
 		int index;
 
@@ -1004,6 +1004,7 @@ public class Background {
 		        || screenArea.getLineLength() + 1 != bufferwidth
 		        || screenArea.getLines() != bufferheight) {
 			regenerateGeometry(gl, screenArea);
+			oldBufferPosition = null;
 		}
 
 		GLBuffer boundbuffer = gl.startWriteGeometry(geometryindex);
@@ -1028,7 +1029,6 @@ public class Background {
 		int count = bufferheight * (bufferwidth);
 		fogOfWarStatus = new byte[count * 4];
 		geometryHash = new int[count];
-		oldBufferPosition = null;
 		geometrytirs = count * 2;
 
 		geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
@@ -1143,7 +1143,7 @@ public class Background {
 		return fogOfWarStatus[offset] == newFog;
 	}
 
-	private byte dim(byte value, byte dimTo) {
+	private static byte dim(byte value, byte dimTo) {
 		if (value < dimTo - DIM_MAX) {
 			return (byte) (dimTo - DIM_MAX);
 		} else if (value > dimTo + DIM_MAX) {
@@ -1157,13 +1157,13 @@ public class Background {
 		}
 	}
 
-	private int getContextHash(MapDrawContext context, int x, int y) {
+	private static int getContextHash(MapDrawContext context, int x, int y) {
 		return getHash(context, x + 1, y + 1) * 104729
 		        + getHash(context, x + 1, y) * 104729
 		        + getHash(context, x, y + 1) * 7919 + getHash(context, x, y);
 	}
 
-	private int getHash(MapDrawContext context, int x, int y) {
+	private static int getHash(MapDrawContext context, int x, int y) {
 		if (x < 0 || x >= context.getMap().getWidth() || y < 0
 		        || y >= context.getMap().getHeight()) {
 			return 0;
@@ -1203,7 +1203,7 @@ public class Background {
 		addTriangle2ToGeometry(context, buffer, x, y, fogBase);
 	}
 
-	private void addPseudoTrianglesToGeometry(MapDrawContext context,
+	private static void addPseudoTrianglesToGeometry(MapDrawContext context,
 	        GLBuffer buffer, int x, int y) { // manually do
 		                                     // everything...
 		addBlackPointToGeometry(context, buffer, x, y);
@@ -1296,7 +1296,7 @@ public class Background {
 		addVertexcolor(context, buffer, x, y, fogOffset);
 	}
 
-	private void addBlackPointToGeometry(MapDrawContext context,
+	private static void addBlackPointToGeometry(MapDrawContext context,
 	        GLBuffer buffer, int x, int y) {
 		buffer.putFloat(x);
 		buffer.putFloat(y);
@@ -1368,7 +1368,7 @@ public class Background {
 
 	}
 
-	private int realModulo(int number, int modulo) {
+	private static int realModulo(int number, int modulo) {
 		if (number >= 0) {
 			return number % modulo;
 		} else {

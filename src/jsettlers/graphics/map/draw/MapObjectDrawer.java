@@ -103,32 +103,32 @@ public class MapObjectDrawer {
 	 *            The object (tree, ...) to draw.
 	 */
 	public void drawMapObject(MapDrawContext context, IGraphicsGrid map,
-	        ISPosition2D pos, IMapObject object) {
+	        int x, int y, IMapObject object) {
+		byte fogstatus = context.getVisibleStatus(x, y);
+		if (fogstatus == 0) {
+			return; // break
+		}
+		Color color = getColor(fogstatus);
+
 		EMapObjectType type = object.getObjectType();
 
 		float progress = object.getStateProgress();
 
-		byte fogstatus = context.getVisibleStatus(pos.getX(), pos.getY());
-		if (fogstatus == 0) {
-			return; // break
-		}
-		Color color = getColor(context, fogstatus);
-
 		if (type == EMapObjectType.ARROW) {
 			drawArrow(context, (IArrowMapObject) object, color);
 		} else {
-			context.beginTileContext(pos);
+			context.beginTileContext(x, y);
 			switch (type) {
 				case TREE_ADULT:
-					drawTree(context, pos, color);
+					drawTree(context, x, y, color);
 					break;
 
 				case TREE_DEAD:
-					drawFallingTree(context, pos, progress, color);
+					drawFallingTree(context, x, y, progress, color);
 					break;
 
 				case TREE_GROWING:
-					drawGrowingTree(context, pos, progress, color);
+					drawGrowingTree(context, x, y, progress, color);
 					break;
 
 				case CORN_GROWING:
@@ -215,7 +215,7 @@ public class MapObjectDrawer {
 					break;
 
 				case BUILDING:
-					draw(context, (IBuilding) object, color);
+					draw(context, x, y, (IBuilding) object, color);
 					break;
 
 				case STACK_OBJECT:
@@ -233,7 +233,7 @@ public class MapObjectDrawer {
 					                PIG_SEQ);
 
 					if (seq.length() > 0) {
-						int i = getAnimationStep(pos);
+						int i = getAnimationStep(x, y);
 						int step = i % seq.length();
 						seq.getImageSafe(step).draw(context.getGl(), color);
 					}
@@ -245,7 +245,7 @@ public class MapObjectDrawer {
 			context.endTileContext();
 		}
 		if (object.getNextObject() != null) {
-			drawMapObject(context, map, pos, object.getNextObject());
+			drawMapObject(context, map, x, y, object.getNextObject());
 		}
 	}
 
@@ -324,7 +324,7 @@ public class MapObjectDrawer {
 
 		ISPosition2D start = object.getSource();
 		ISPosition2D end = object.getTarget();
-		context.beginBetweenTileContext(start, end, progress);
+		context.beginBetweenTileContext(start.getX(), start.getY(), end.getX(), end.getY(), progress);
 		context.getGl()
 		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, 0);
 		if (progress >= 1) {
@@ -371,7 +371,7 @@ public class MapObjectDrawer {
 		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
-	private void drawGrowingTree(MapDrawContext context, ISPosition2D pos,
+	private void drawGrowingTree(MapDrawContext context, int x, int y,
 	        float progress, Color color) {
 		Image image;
 		if (progress < 0.33) {
@@ -380,7 +380,7 @@ public class MapObjectDrawer {
 			                SMALL_GROWING_TREE);
 			image = seq.getImageSafe(0);
 		} else {
-			int treeType = getTreeType(pos);
+			int treeType = getTreeType(x, y);
 			Sequence<? extends Image> seq =
 			        this.imageProvider.getSettlerSequence(FILE,
 			                sequenceIndexForChangingTree(treeType));
@@ -393,9 +393,9 @@ public class MapObjectDrawer {
 		image.draw(context.getGl(), color);
 	}
 
-	private void drawFallingTree(MapDrawContext context, ISPosition2D pos,
+	private void drawFallingTree(MapDrawContext context, int x, int y,
 	        float progress, Color color) {
-		int treeType = getTreeType(pos);
+		int treeType = getTreeType(x,y);
 		int imageStep = 0;
 
 		// TODO
@@ -424,14 +424,14 @@ public class MapObjectDrawer {
 		seq.getImageSafe(imageStep).draw(context.getGl(), color);
 	}
 
-	private void drawTree(MapDrawContext context, ISPosition2D pos, Color color) {
-		int treeType = getTreeType(pos);
-		int treeSecondary = get01(pos);
+	private void drawTree(MapDrawContext context, int x, int y, Color color) {
+		int treeType = getTreeType(x, y);
+		int treeSecondary = get01(x,y);
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, treeType * 3
 		                + treeSecondary + ALIVE_TREE_OFFSET);
 
-		int step = getAnimationStep(pos) % seq.length();
+		int step = getAnimationStep(x,y) % seq.length();
 		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
@@ -441,8 +441,8 @@ public class MapObjectDrawer {
 	 * @param pos
 	 * @return
 	 */
-	private static int get01(ISPosition2D pos) {
-		return (pos.getX() * 677 + pos.getY()) % 2;
+	private static int get01(int x, int y) {
+		return (x * 677 + y) % 2;
 	}
 
 	private static int sequenceIndexForChangingTree(int treeType) {
@@ -465,12 +465,12 @@ public class MapObjectDrawer {
 		        .getImageSafe(0).draw(gl, color);
 	}
 
-	private static int getTreeType(ISPosition2D pos) {
-		return (pos.getX() * 251 + pos.getY() * 233) % TREE_TYPES;
+	private static int getTreeType(int x, int y) {
+		return (x * 251 + y * 233) % TREE_TYPES;
 	}
 
-	private int getAnimationStep(ISPosition2D pos) {
-		return this.animationStep + pos.getX() * 167 + pos.getY() * 41;
+	private int getAnimationStep(int x, int y) {
+		return this.animationStep + x * 167 + y * 41;
 	}
 
 	/**
@@ -519,11 +519,10 @@ public class MapObjectDrawer {
 	/**
 	 * Gets the gray color for a given fog.
 	 * 
-	 * @param context
 	 * @param fogstatus
 	 * @return
 	 */
-	private static Color getColor(MapDrawContext context, int fogstatus) {
+	private static Color getColor(int fogstatus) {
 		float color = (float) fogstatus / CommonConstants.FOG_OF_WAR_VISIBLE;
 		return new Color(color, color, color, 1);
 	}
@@ -536,7 +535,7 @@ public class MapObjectDrawer {
 	 * @param color
 	 *            Gray color shade
 	 */
-	private void draw(MapDrawContext context, IBuilding building, Color color) {
+	private void draw(MapDrawContext context, int x, int y, IBuilding building, Color color) {
 		EBuildingType type = building.getBuildingType();
 
 		float state = building.getStateProgress();
@@ -568,7 +567,7 @@ public class MapObjectDrawer {
 				                MILL_SEQ);
 
 				if (seq.length() > 0) {
-					int i = getAnimationStep(building.getPos());
+					int i = getAnimationStep(x, y);
 					int step = i % seq.length();
 					seq.getImageSafe(step).draw(context.getGl(), color);
 				}

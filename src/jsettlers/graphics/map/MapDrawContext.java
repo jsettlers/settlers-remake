@@ -270,10 +270,8 @@ public class MapDrawContext {
 	 * @param pos
 	 *            The tile to draw.
 	 */
-	public void beginTileContext(ISPosition2D pos) {
+	public void beginTileContext(int x, int y) {
 		this.gl.glPushMatrix();
-		short x = pos.getX();
-		short y = pos.getY();
 		int height = getHeight(x, y);
 		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
 		        this.converter.getViewY(x, y, height), 0);
@@ -298,21 +296,17 @@ public class MapDrawContext {
 	 * @param progress
 	 *            The progress between those two bytes.
 	 */
-	public void beginBetweenTileContext(ISPosition2D tile,
-	        ISPosition2D destination, float progress) {
+	public void beginBetweenTileContext(int startx, int starty,
+	        int destinationx, int destinationy, float progress) {
 		this.gl.glPushMatrix();
-		short tx = tile.getX();
-		short ty = tile.getY();
-		float theight = getHeight(tx, ty);
-		short dx = destination.getX();
-		short dy = destination.getY();
-		float dheight = getHeight(dx, dy);
+		float theight = getHeight(startx, starty);
+		float dheight = getHeight(destinationx, destinationy);
 		float x =
-		        (1 - progress) * this.converter.getViewX(tx, ty, theight)
-		                + progress * this.converter.getViewX(dx, dy, dheight);
+		        (1 - progress) * this.converter.getViewX(startx, starty, theight)
+		                + progress * this.converter.getViewX(destinationx, destinationy, dheight);
 		float y =
-		        (1 - progress) * this.converter.getViewY(tx, ty, theight)
-		                + progress * this.converter.getViewY(dx, dy, dheight);
+		        (1 - progress) * this.converter.getViewY(startx, starty, theight)
+		                + progress * this.converter.getViewY(destinationx, destinationy, dheight);
 		this.gl.glTranslatef(x, y, 0);
 	}
 
