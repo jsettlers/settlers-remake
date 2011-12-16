@@ -88,7 +88,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			}
 		}
 		JOGLPanel mapPanel = new JOGLPanel();
-		MapInterfaceConnector connector = mapPanel.showHexMap(map, null);
+		MapInterfaceConnector connector = mapPanel.showGameMap(map, null);
 		connector.addListener(this);
 
 		JPanel menu = new JPanel();
