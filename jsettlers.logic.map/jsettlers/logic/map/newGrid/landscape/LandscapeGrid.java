@@ -63,7 +63,9 @@ public class LandscapeGrid implements Serializable {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	private class NullBackgroundListener implements IGraphicsBackgroundListener {
+	private class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+		private static final long serialVersionUID = -332117701485179252L;
+
 		@Override
 		public final void backgroundChangedAt(short x, short y) {
 		}

@@ -1,5 +1,6 @@
 package jsettlers.logic.buildings.military;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -188,7 +189,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return searchType;
 	}
 
-	private class TowerOccupyer implements IBuildingOccupyer {
+	private class TowerOccupyer implements IBuildingOccupyer, Serializable {
+		private static final long serialVersionUID = -1491427078923346232L;
+
 		private final OccupyerPlace place;
 		private final IBuildingOccupyableMovable soldier;
 
