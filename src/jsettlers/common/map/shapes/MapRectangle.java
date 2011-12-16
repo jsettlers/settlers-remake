@@ -11,13 +11,13 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author michael
  */
-public class MapRectangle implements IMapArea {
+public final class MapRectangle implements IMapArea {
 	private static final long serialVersionUID = -5451513891892255692L;
 
 	private final short minx;
 	private final short miny;
-	private final short width;
-	private final short height;
+	final short width;
+	final short height;
 
 	public MapRectangle(short minx, short miny, short width, short height) {
 		if (width < 0 || height < 0) {
@@ -30,11 +30,11 @@ public class MapRectangle implements IMapArea {
 	}
 
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public final boolean contains(ISPosition2D position) {
 		return contains(position.getX(), position.getY());
 	}
 
-	public boolean contains(int x, int y) {
+	public final boolean contains(int x, int y) {
 		if (!containsLine(y)) {
 			return false;
 		}
@@ -44,16 +44,16 @@ public class MapRectangle implements IMapArea {
 		return true;
 	}
 
-	public boolean containsLine(int y) {
+	public final boolean containsLine(int y) {
 		return y >= miny && y < miny + height;
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public final Iterator<ISPosition2D> iterator() {
 		return new RectangleIterator();
 	}
 
-	private int getOffsetForLine(int line) {
+	private final int getOffsetForLine(int line) {
 		return line / 2;
 	}
 
@@ -63,7 +63,7 @@ public class MapRectangle implements IMapArea {
 	 * @param line
 	 *            The line relative to the first line of this rectangle.
 	 */
-	public int getLineStartX(int line) {
+	public final int getLineStartX(int line) {
 		return minx + getOffsetForLine(line);
 	}
 
@@ -73,19 +73,19 @@ public class MapRectangle implements IMapArea {
 	 * @param line
 	 *            The line relative to the first line of this rectangle.
 	 */
-	public int getLineEndX(int line) {
+	public final int getLineEndX(int line) {
 		return getLineStartX(line) + this.width - 1;
 	}
 
-	public int getLineY(int line) {
+	public final int getLineY(int line) {
 		return miny + line;
 	}
 
-	public short getLines() {
+	public final short getLines() {
 		return height;
 	}
 
-	public short getLineLength() {
+	public final short getLineLength() {
 		return width;
 	}
 
