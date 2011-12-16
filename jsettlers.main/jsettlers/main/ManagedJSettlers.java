@@ -94,7 +94,13 @@ public class ManagedJSettlers implements Listener {
 
 		@Override
 		public void loadGame(ILoadableGame load) {
-			// @MICHAEL TODO load game
+			if (ongoingGame != null) {
+				ongoingGame.setListener(null);
+				ongoingGame.stop();
+			}
+			ongoingGame = new JSettlersGame(content, load, 123456L);
+			ongoingGame.setListener(ManagedJSettlers.this);
+			ongoingGame.start();
 		}
 
 		@Override

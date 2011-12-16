@@ -32,11 +32,10 @@ public class MapGrid {
 	private final MapObject[][] objects;
 	private final int height;
 	private final int width;
-	
+
 	private final NoiseGenerator heightGenerator = new NoiseGenerator();
 
-	private Hashtable<MeshEdge, List<Point>> noisyEdges =
-	        new Hashtable<MeshEdge, List<Point>>();
+	private Hashtable<MeshEdge, List<Point>> noisyEdges = new Hashtable<MeshEdge, List<Point>>();
 	private final ShortPoint2D[] playerstarts;
 
 	private MapGrid(LandscapeMesh mesh, Random random, ShortPoint2D[] playerstarts) {
@@ -92,11 +91,9 @@ public class MapGrid {
 
 		for (MeshSite site : mesh.getSites()) {
 			Point center = site.getCenter().getIntPoint();
-			Queue<ISPosition2D> sitePoints =
-			        new ConcurrentLinkedQueue<ISPosition2D>();
+			Queue<ISPosition2D> sitePoints = new ConcurrentLinkedQueue<ISPosition2D>();
 			sitePoints.offer(new ShortPoint2D(center.getX(), center.getY()));
-			ELandscapeType landscape =
-			        GridLandscapeType.convert(site.getLandscape());
+			ELandscapeType landscape = GridLandscapeType.convert(site.getLandscape());
 
 			while (!sitePoints.isEmpty()) {
 				ISPosition2D point = sitePoints.poll();
@@ -162,16 +159,14 @@ public class MapGrid {
 			return points;
 		} else {
 			points.add(startPoint.getIntPoint());
-			addSubdivided(points, startPoint, endPoint, edge.getLeft()
-			        .getCenter(), edge.getRight().getCenter(), random);
+			addSubdivided(points, startPoint, endPoint, edge.getLeft().getCenter(), edge.getRight().getCenter(), random);
 			points.add(endPoint.getIntPoint());
 			return points;
 		}
 
 	}
 
-	private void addSubdivided(LinkedList<Point> points, Point2D start,
-	        Point2D end, Point2D left, Point2D right, Random random) {
+	private void addSubdivided(LinkedList<Point> points, Point2D start, Point2D end, Point2D left, Point2D right, Random random) {
 		if (start.distanceSquared(end) < MINDISTANCE * MINDISTANCE) {
 			return;
 		}
@@ -190,8 +185,7 @@ public class MapGrid {
 		addSubdivided(points, middle, end, left2, right2, random);
 	}
 
-	public static MapGrid createFromLandscapeMesh(LandscapeMesh mesh,
-	        Random random, ShortPoint2D[] playerstarts) {
+	public static MapGrid createFromLandscapeMesh(LandscapeMesh mesh, Random random, ShortPoint2D[] playerstarts) {
 		return new MapGrid(mesh, random, playerstarts);
 	}
 
@@ -225,11 +219,9 @@ public class MapGrid {
 	}
 
 	public void reserveArea(int x, int y, int radius) {
-		for (ISPosition2D pos : new MapShapeFilter(new MapCircle((short) x,
-		        (short) y, radius), width, height)) {
+		for (ISPosition2D pos : new MapShapeFilter(new MapCircle((short) x, (short) y, radius), width, height)) {
 			if (objects[pos.getX()][pos.getY()] == null) {
-				objects[pos.getX()][pos.getY()] =
-				        PlaceholderObject.getInstance();
+				objects[pos.getX()][pos.getY()] = PlaceholderObject.getInstance();
 			}
 		}
 	}
@@ -240,18 +232,19 @@ public class MapGrid {
 
 	public byte getLandscapeHeight(short x, short y) {
 		return (byte) Math.max(0, 10 + heightGenerator.getNoise(x, y) * 25);
-    }
+	}
 
 	/**
-	 * Gets the start point of player i. Always returns a valid point.
-	 * @param i
+	 * Gets the start point of the given player. Always returns a valid point.
+	 * 
+	 * @param player
 	 * @return
 	 */
-	public ISPosition2D getStartPoint(int i) {
-	    if (i < 0 || i >= playerstarts.length) {
-	    	return new ShortPoint2D(getWidth() / 2, getHeight() / 2);
-	    } else {
-	    	return playerstarts[i];
-	    }
-    }
+	public ISPosition2D getStartPoint(int player) {
+		if (player < 0 || player >= playerstarts.length) {
+			return new ShortPoint2D(getWidth() / 2, getHeight() / 2);
+		} else {
+			return playerstarts[player];
+		}
+	}
 }

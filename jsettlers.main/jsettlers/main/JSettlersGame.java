@@ -1,6 +1,7 @@
 package jsettlers.main;
 
-import random.RandomSingleton;
+import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -9,7 +10,9 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
+import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.input.GuiInterface;
+import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
@@ -17,6 +20,7 @@ import jsettlers.logic.map.random.grid.MapGrid;
 import jsettlers.logic.timer.Timer100Milli;
 import network.INetworkManager;
 import network.NullNetworkManager;
+import random.RandomSingleton;
 
 /**
  * This is a running jsettlers game. It can be started and then stopped once.
@@ -25,7 +29,7 @@ import network.NullNetworkManager;
  */
 public class JSettlersGame {
 
-	private final IGameSettings map;
+	private final IGameSettings mapSettings;
 	private final long randomSheed;
 
 	private boolean stopped = false;
@@ -33,6 +37,8 @@ public class JSettlersGame {
 	private final ISettlersGameDisplay content;
 
 	private Listener listener;
+	@SuppressWarnings("unused")
+	private final ILoadableGame loadableGame;
 
 	/**
 	 * Creates a new game by a given random mapname.
@@ -42,8 +48,16 @@ public class JSettlersGame {
 	 */
 	public JSettlersGame(ISettlersGameDisplay content, IGameSettings map, long randomSheed) {
 		this.content = content;
-		this.map = map;
+		this.mapSettings = map;
+		this.loadableGame = null;
 		this.randomSheed = randomSheed;
+	}
+
+	public JSettlersGame(ISettlersGameDisplay content, ILoadableGame loadableGame, long randomSheed) {
+		this.content = content;
+		this.loadableGame = loadableGame;
+		this.randomSheed = randomSheed;
+		this.mapSettings = null;
 	}
 
 	/**
@@ -66,22 +80,36 @@ public class JSettlersGame {
 
 			progress.setProgressState(EProgressState.LOADING_MAP);
 
-			/** random map */
-			RandomMapFile file = RandomMapFile.getByName(map.getMap().getName());
-			RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), (byte) map.getPlayerCount());
-			evaluator.createMap(RandomSingleton.get());
-			MapGrid mapGrid = evaluator.getGrid();
-			
-			MainGrid grid = MainGrid.create(mapGrid);
+			ISPosition2D startPoint;
+			MainGrid grid;
+
+			if (mapSettings != null) {
+				/** random map */
+				RandomMapFile file = RandomMapFile.getByName(mapSettings.getMap().getName());
+				RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), (byte) mapSettings.getPlayerCount());
+				evaluator.createMap(RandomSingleton.get());
+				MapGrid mapGrid = evaluator.getGrid();
+
+				grid = MainGrid.create(mapGrid);
+				startPoint = mapGrid.getStartPoint(0);
+			} else {
+				GameSerializer gameSerializer = new GameSerializer();
+				try {
+					grid = gameSerializer.load();
+				} catch (Exception e) {
+					e.printStackTrace();
+					grid = null;
+				}
+				startPoint = new ShortPoint2D(0, 0);
+			}
 
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
-			MapInterfaceConnector connector =
-			        content.showGameMap(grid.getGraphicsGrid(), null);
+			MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
 			new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 			connector.addListener(this);
-			connector.scrollTo(mapGrid.getStartPoint(0), false);
+			connector.scrollTo(startPoint, false);
 			manager.startGameTimer();
 
 			// TODO: allow user to stop game before this happens.

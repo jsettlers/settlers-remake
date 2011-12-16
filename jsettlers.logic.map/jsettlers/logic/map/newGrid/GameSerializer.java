@@ -14,6 +14,7 @@ import jsettlers.common.resources.ResourceManager;
 import synchronic.timer.NetworkTimer;
 
 public class GameSerializer {
+
 	private static final String QUICK_SAVE_FILE = "save/quicksave";
 	private static final String NORMAL_EXTENSION = ".sav";
 	private static final String GZIP_EXTENSION = ".sav.gz";
@@ -46,8 +47,6 @@ public class GameSerializer {
 				try {
 					oos.writeInt(NetworkTimer.getGameTime());
 					oos.writeObject(grid);
-
-					System.out.println("SAVE: serialisation done!!");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -62,7 +61,7 @@ public class GameSerializer {
 		NetworkTimer.get().setPausing(false);
 	}
 
-	public MainGrid load() throws IOException, ClassNotFoundException {
+	public MainGrid load() throws IOException, InterruptedException {
 		InputStream inStream;
 		try {
 			inStream = ResourceManager.getFile(QUICK_SAVE_FILE + NORMAL_EXTENSION);
@@ -71,14 +70,36 @@ public class GameSerializer {
 			inStream = new GZIPInputStream(gzipped);
 		}
 
-		ObjectInputStream ois = new ObjectInputStream(inStream);
+		final ObjectInputStream ois = new ObjectInputStream(inStream);
 		NetworkTimer.get().setPausing(true);
 
-		NetworkTimer.setGameTime(ois.readInt());
-		MainGrid grid = (MainGrid) ois.readObject();
+		LoadRunnable runnable = new LoadRunnable(ois);
+		Thread t = new Thread(null, runnable, "LoadThread", 256 * 1024);
+		t.start();
+		t.join();
 
 		NetworkTimer.get().setPausing(false);
-		return grid;
+		return runnable.grid;
 	}
 
+	private final class LoadRunnable implements Runnable {
+		private final ObjectInputStream ois;
+		MainGrid grid = null;
+
+		private LoadRunnable(ObjectInputStream ois) {
+			this.ois = ois;
+		}
+
+		@Override
+		public void run() {
+			try {
+				NetworkTimer.setGameTime(ois.readInt());
+				grid = (MainGrid) ois.readObject();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
