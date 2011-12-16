@@ -5,6 +5,11 @@ import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuilding.IOccupyed;
+import jsettlers.common.buildings.IBuildingOccupyer;
+import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
+import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -12,6 +17,7 @@ import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.image.Image;
@@ -24,6 +30,9 @@ import jsettlers.graphics.sequence.Sequence;
  * @author michael
  */
 public class MapObjectDrawer {
+
+	private static final ImageLink INSIDE_BUILDING_RIGHT = new ImageLink(EImageLinkType.SETTLER, 12, 28, 1);
+	private static final ImageLink INSIDE_BUILDING_LEFT = new ImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int FILE = 1;
 
@@ -102,8 +111,8 @@ public class MapObjectDrawer {
 	 * @param object
 	 *            The object (tree, ...) to draw.
 	 */
-	public void drawMapObject(MapDrawContext context, IGraphicsGrid map,
-	        int x, int y, IMapObject object) {
+	public void drawMapObject(MapDrawContext context, IGraphicsGrid map, int x,
+	        int y, IMapObject object) {
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -153,6 +162,11 @@ public class MapObjectDrawer {
 
 				case GHOST:
 					drawPlayerableByProgress(context, 12, 27, object, color);
+					break;
+
+				case BUILDING_DECONSTRUCTION_SMOKE:
+					drawByProgress(context, 12, 38, object.getStateProgress(),
+					        color);
 					break;
 
 				case FOUND_COAL:
@@ -215,7 +229,7 @@ public class MapObjectDrawer {
 					break;
 
 				case BUILDING:
-					draw(context, x, y, (IBuilding) object, color);
+					drawBuilding(context, x, y, (IBuilding) object, color);
 					break;
 
 				case STACK_OBJECT:
@@ -227,13 +241,12 @@ public class MapObjectDrawer {
 					break;
 
 				case PIG:
-
 					Sequence<? extends Image> seq =
 					        this.imageProvider.getSettlerSequence(ANIMALS_FILE,
 					                PIG_SEQ);
 
 					if (seq.length() > 0) {
-						int i = getAnimationStep(x, y);
+						int i = getAnimationStep(x, y) / 2;
 						int step = i % seq.length();
 						seq.getImageSafe(step).draw(context.getGl(), color);
 					}
@@ -324,7 +337,8 @@ public class MapObjectDrawer {
 
 		ISPosition2D start = object.getSource();
 		ISPosition2D end = object.getTarget();
-		context.beginBetweenTileContext(start.getX(), start.getY(), end.getX(), end.getY(), progress);
+		context.beginBetweenTileContext(start.getX(), start.getY(), end.getX(),
+		        end.getY(), progress);
 		context.getGl()
 		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, 0);
 		if (progress >= 1) {
@@ -395,7 +409,7 @@ public class MapObjectDrawer {
 
 	private void drawFallingTree(MapDrawContext context, int x, int y,
 	        float progress, Color color) {
-		int treeType = getTreeType(x,y);
+		int treeType = getTreeType(x, y);
 		int imageStep = 0;
 
 		// TODO
@@ -426,12 +440,12 @@ public class MapObjectDrawer {
 
 	private void drawTree(MapDrawContext context, int x, int y, Color color) {
 		int treeType = getTreeType(x, y);
-		int treeSecondary = get01(x,y);
+		int treeSecondary = get01(x, y);
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, treeType * 3
 		                + treeSecondary + ALIVE_TREE_OFFSET);
 
-		int step = getAnimationStep(x,y) % seq.length();
+		int step = getAnimationStep(x, y) % seq.length();
 		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
@@ -535,7 +549,8 @@ public class MapObjectDrawer {
 	 * @param color
 	 *            Gray color shade
 	 */
-	private void draw(MapDrawContext context, int x, int y, IBuilding building, Color color) {
+	private void drawBuilding(MapDrawContext context, int x, int y,
+	        IBuilding building, Color color) {
 		EBuildingType type = building.getBuildingType();
 
 		float state = building.getStateProgress();
@@ -572,8 +587,18 @@ public class MapObjectDrawer {
 					seq.getImageSafe(step).draw(context.getGl(), color);
 				}
 			} else {
-				for (ImageLink link : type.getImages()) {
-					Image image = imageProvider.getImage(link);
+				ImageLink[] images = type.getImages();
+				if (images.length > 0) {
+					Image image = imageProvider.getImage(images[0]);
+					image.draw(context.getGl(), color);
+				}
+
+				if (building instanceof IBuilding.IOccupyed) {
+					drawOccupyers(context, (IBuilding.IOccupyed) building);
+				}
+
+				for (int i = 1; i < images.length; i++) {
+					Image image = imageProvider.getImage(images[i]);
 					image.draw(context.getGl(), color);
 				}
 			}
@@ -581,6 +606,26 @@ public class MapObjectDrawer {
 
 		if (building.isSelected()) {
 			drawBuildingSelectMarker(context);
+		}
+	}
+
+	private void drawOccupyers(MapDrawContext context, IOccupyed building) {
+		for (IBuildingOccupyer occupyer : building.getOccupyers()) {
+			OccupyerPlace place = occupyer.getPlace();
+			GLDrawContext gl = context.getGl();
+			
+			gl.glPushMatrix();
+			gl.glTranslatef(place.getX(), place.getY(), 0);
+			
+			if (place.getType() == ESoldierType.INFANTARY) {
+				ImageLink image = place.looksRight() ?
+						INSIDE_BUILDING_RIGHT :
+							INSIDE_BUILDING_RIGHT;
+				imageProvider.getImage(image).draw(gl);
+			} else {
+				new MovableDrawer().draw(context, occupyer.getMovable());
+			}
+			gl.glPopMatrix();
 		}
 	}
 
