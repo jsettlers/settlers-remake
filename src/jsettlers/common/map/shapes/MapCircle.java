@@ -1,7 +1,5 @@
 package jsettlers.common.map.shapes;
 
-import java.util.Iterator;
-
 import jsettlers.common.position.ISPosition2D;
 
 /**
@@ -19,8 +17,8 @@ public class MapCircle implements IMapArea {
 	private static final long serialVersionUID = 1L;
 
 	private final float radius;
-	private final int cy;
-	private final int cx;
+	private final short cy;
+	private final short cx;
 
 	/**
 	 * Factor so that d((0,0), (1,1)) is almoast 1.
@@ -32,23 +30,23 @@ public class MapCircle implements IMapArea {
 	}
 
 	public MapCircle(int cx, int cy, float radius) {
-		this.cx = cx;
-		this.cy = cy;
+		this.cx = (short) cx;
+		this.cy = (short) cy;
 		this.radius = radius;
 	}
 
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public final boolean contains(ISPosition2D position) {
 		return contains(position.getX(), position.getY());
 	}
 
-	public boolean contains(int x, int y) {
+	public final boolean contains(int x, int y) {
 		float distance = squaredDistanceToCenter(x, y);
 		return distance <= radius * radius;
 	}
 
 	@Override
-	public CircleIterator iterator() {
+	public final CircleIterator iterator() {
 		return new CircleIterator(this);
 	}
 
@@ -61,9 +59,9 @@ public class MapCircle implements IMapArea {
 	 *            The y coordinate
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
-	private float squaredDistanceToCenter(int x, int y) {
-		int dx = x - getCenterX();
-		int dy = y - getCenterY();
+	private final float squaredDistanceToCenter(int x, int y) {
+		int dx = x - cx;
+		int dy = y - cy;
 		return (.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy;
 	}
 
@@ -85,23 +83,23 @@ public class MapCircle implements IMapArea {
 		}
 	}
 
-	public double distanceToCenter(int x, int y) {
+	public final double distanceToCenter(int x, int y) {
 		return Math.sqrt(squaredDistanceToCenter(x, y));
 	}
 
-	public boolean isCloserToCenter(int x, int y, int minradius) {
+	public final boolean isCloserToCenter(int x, int y, int minradius) {
 		return squaredDistanceToCenter(x, y) < minradius * minradius;
 	}
 
-	public double getRadius() {
+	public final double getRadius() {
 		return radius;
 	}
 
-	public short getCenterY() {
-		return (short) cy;
+	public final short getCenterY() {
+		return cy;
 	}
 
-	public short getCenterX() {
-		return (short) cx;
+	public final short getCenterX() {
+		return cx;
 	}
 }

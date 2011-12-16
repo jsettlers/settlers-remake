@@ -36,17 +36,17 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 	public boolean hasNext() {
 		return currenty < radius / MapCircle.Y_SCALE && currentx != Float.NaN;
 	}
-	
+
 	/**
 	 * gets the x, y coordinate, packed into an long: x << 16 + y
 	 */
 	public int nextXY() {
 		int y = currenty + centery;
 		int x = computeNextXAndProgress();
-		
-		return (int) y << 16 | ((int) x & (int) 0xffff);
+
+		return y << 16 | (x & 0xffff);
 	}
-	
+
 	@Override
 	public ISPosition2D next() {
 		int y = currenty + centery;
@@ -56,7 +56,7 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 	}
 
 	private int computeNextXAndProgress() {
-	    assert radius / MapCircle.Y_SCALE >= Math.abs(currenty);
+		assert radius / MapCircle.Y_SCALE >= Math.abs(currenty);
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
@@ -70,8 +70,8 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 			currentLineHalfWidth = circle.getHalfLineWidth(currenty);
 			currentx = -currentLineHalfWidth;
 		}
-	    return x;
-    }
+		return x;
+	}
 
 	@Override
 	public void remove() {
