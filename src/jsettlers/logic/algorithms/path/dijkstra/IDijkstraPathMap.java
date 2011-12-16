@@ -5,10 +5,6 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 
 public interface IDijkstraPathMap {
 
-	short getHeight();
-
-	short getWidth();
-
 	boolean fitsSearchType(short x, short y, ESearchType type, IPathCalculateable requester);
 
 	void setDijkstraSearched(short x, short y);

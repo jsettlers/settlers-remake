@@ -5,10 +5,6 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 
 public interface IInAreaFinderMap {
 
-	short getWidth();
-
-	short getHeight();
-
 	boolean isBlocked(IPathCalculateable requester, short tileX, short tileY);
 
 	boolean fitsSearchType(short tileX, short tileY, ESearchType searched, IPathCalculateable requester);

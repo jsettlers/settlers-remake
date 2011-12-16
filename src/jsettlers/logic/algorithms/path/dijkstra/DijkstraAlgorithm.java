@@ -23,12 +23,11 @@ public final class DijkstraAlgorithm {
 	private final short height, width;
 	private final HexAStar aStar;
 
-	public DijkstraAlgorithm(IDijkstraPathMap map, HexAStar aStar) {
+	public DijkstraAlgorithm(IDijkstraPathMap map, HexAStar aStar, short width, short height) {
 		this.map = map;
 		this.aStar = aStar;
-		this.height = map.getHeight();
-		this.width = map.getWidth();
-
+		this.width = width;
+		this.height = height;
 	}
 
 	public final Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,

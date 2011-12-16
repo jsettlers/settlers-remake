@@ -14,7 +14,7 @@ import jsettlers.logic.algorithms.path.Path;
  * @author Andreas Eberle
  * 
  */
-public class HexAStar {
+public final class HexAStar {
 	private static final int NO_LIST = -1;
 
 	private final AStarNode[][] nodes;
@@ -28,10 +28,10 @@ public class HexAStar {
 	private final byte[] xDeltaArray;
 	private final byte[] yDeltaArray;
 
-	public HexAStar(IAStarPathMap map) {
+	public HexAStar(IAStarPathMap map, short width, short height) {
 		this.map = map;
-		height = map.getHeight();
-		width = map.getWidth();
+		this.width = width;
+		this.height = height;
 
 		nodes = new AStarNode[height][width];
 
@@ -47,9 +47,9 @@ public class HexAStar {
 
 	public final Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
 		final boolean blockedAtStart;
-		if (!map.isInBounds(sx, sy)) {
+		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
-		} else if (!map.isInBounds(tx, ty) || isBlocked(requester, tx, ty)) {
+		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)) {
 			return null; // target can not be reached
 		} else if (isBlocked(requester, sx, sy)) {
 			blockedAtStart = true;
@@ -144,7 +144,11 @@ public class HexAStar {
 	}
 
 	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
-		return map.isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
+		return isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
+	}
+
+	private final boolean isInBounds(short x, short y) {
+		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
 	private final boolean isBlocked(IPathCalculateable requester, short x, short y) {

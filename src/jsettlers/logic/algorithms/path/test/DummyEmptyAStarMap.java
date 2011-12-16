@@ -3,26 +3,18 @@ package jsettlers.logic.algorithms.path.test;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 
+/**
+ * Dummy map for testing purposes of AStar.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class DummyEmptyAStarMap implements IAStarPathMap {
 
-	private final short width;
-	private final short height;
 	private final boolean[][] blocked;
 
 	public DummyEmptyAStarMap(short width, short height) {
-		this.width = width;
-		this.height = height;
 		this.blocked = new boolean[width][height];
-	}
-
-	@Override
-	public short getHeight() {
-		return height;
-	}
-
-	@Override
-	public short getWidth() {
-		return width;
 	}
 
 	@Override
@@ -43,11 +35,6 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 	@Override
 	public void markAsClosed(short x, short y) {
 
-	}
-
-	@Override
-	public boolean isInBounds(short x, short y) {
-		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
 	@Override

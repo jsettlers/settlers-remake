@@ -5,7 +5,6 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 
 /**
  * Calculates the partitions of the Map and combines partitions of the same player when they get in contact with each other or divides partitions that
@@ -24,12 +23,12 @@ public class PartitionsAlgorithm {
 	 * 
 	 * @param partitionsMap
 	 *            The {@link PartitionsAlgorithm} is operating on this map.
-	 * @param aStarMap
-	 *            This is the map the AStar operates on
+	 * @param aStar
+	 *            This is the aStar used by the algorithm.
 	 */
-	public PartitionsAlgorithm(final IPartionsAlgorithmMap partitionsMap, final IAStarPathMap aStarMap) {
+	public PartitionsAlgorithm(final IPartionsAlgorithmMap partitionsMap, final HexAStar aStar) {
 		this.grid = partitionsMap;
-		this.aStar = new HexAStar(aStarMap);
+		this.aStar = aStar;
 		this.aStarPathable = new AStarPathable();
 	}
 
