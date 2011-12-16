@@ -46,6 +46,7 @@ import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.Barrack;
+import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
@@ -237,6 +238,10 @@ public class MainGrid implements Serializable {
 		} else if (object instanceof BuildingObject) {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
+			if (building instanceof IOccupyableBuilding) {
+				Movable soldier = createNewMovableAt(((IOccupyableBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
+				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
+			}
 		} else if (object instanceof MovableObject) {
 			createNewMovableAt(pos, ((MovableObject) object).getType(), ((MovableObject) object).getPlayer());
 		}
@@ -266,8 +271,10 @@ public class MainGrid implements Serializable {
 		landmarksCorrectionThread.addLandmarkedPosition(position);
 	}
 
-	public void createNewMovableAt(ISPosition2D pos, EMovableType type, byte player) {
-		buildingsGrid.placeNewMovable(pos, new Movable(movablePathfinderGrid, pos, type, player));
+	public final Movable createNewMovableAt(ISPosition2D pos, EMovableType type, byte player) {
+		Movable movable = new Movable(movablePathfinderGrid, pos, type, player);
+		buildingsGrid.placeNewMovable(pos, movable);
+		return movable;
 	}
 
 	protected boolean isLandscapeBlocking(short x, short y) {
