@@ -81,7 +81,7 @@ public class JOGLPanel implements ISettlersGameDisplay {
 				// TODO: this is only for testing
 				JOGLPanel.this.region.requestRedraw();
 			}
-		}, 10, 10);
+		}, 10, 33);
 
 		return content.getInterfaceConnector();
 	}
