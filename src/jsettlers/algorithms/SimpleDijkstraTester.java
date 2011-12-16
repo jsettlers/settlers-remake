@@ -6,23 +6,16 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
+import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 
 public class SimpleDijkstraTester {
+	private static final short WIDTH = (short) 200;
+	private static final short HEIGHT = (short) 200;
+
 	public static void main(String args[]) {
 		IDijkstraPathMap map = new IDijkstraPathMap() {
-			@Override
-			public short getHeight() {
-				return 200;
-			}
-
-			@Override
-			public short getWidth() {
-				return 200;
-			}
-
 			@Override
 			public boolean fitsSearchType(short x, short y, ESearchType type, IPathCalculateable requester) {
 				if (x == 120 && y == 100)
@@ -39,10 +32,10 @@ public class SimpleDijkstraTester {
 			public void setDijkstraSearched(short x, short y) {
 			}
 		};
-		DummyEmptyAStarMap aStarMap = new DummyEmptyAStarMap((short) 200, (short) 200);
+		DummyEmptyAStarMap aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT);
 		aStarMap.setBlocked(120, 100, true);
 
-		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new HexAStar(aStarMap));
+		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new HexAStar(aStarMap, WIDTH, HEIGHT), WIDTH, HEIGHT);
 
 		IPathCalculateable requester = new IPathCalculateable() {
 
