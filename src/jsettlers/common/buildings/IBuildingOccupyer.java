@@ -1,6 +1,7 @@
 package jsettlers.common.buildings;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 
 /**
  * This interface allows the graphics to get the occupyer in a building.
@@ -9,10 +10,10 @@ import jsettlers.common.movable.EMovableType;
  */
 public interface IBuildingOccupyer {
 	/**
-	 * gets the type of the movable
+	 * gets the movable
 	 * @return The type.
 	 */
-	public EMovableType getMovableType();
+	public IMovable getMovable();
 	
 	/**
 	 * The place the occupyer was placed
