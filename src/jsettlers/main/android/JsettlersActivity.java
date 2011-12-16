@@ -5,6 +5,7 @@ import go.graphics.area.Area;
 import go.graphics.region.Region;
 
 import java.io.File;
+import java.util.Date;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
@@ -16,6 +17,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
+import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.ManagedJSettlers;
 import android.app.Activity;
@@ -65,25 +67,17 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	private void keepScreenOn() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		super.getWindow().addFlags(
-		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	private void addImageLookups() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files = new File[] {
-		        getExternalFilesDir(null), // <- output dir
-		        storage,
-		        jsettlersdir,
-		        new File(jsettlersdir, "GFX"),
-		        michael,
-		        new File(michael, "GFX")
-		};
+		File[] files = new File[] { jsettlersdir, // <- output dir
+				storage, jsettlersdir, new File(jsettlersdir, "GFX"), michael, new File(michael, "GFX") };
 
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
@@ -149,35 +143,35 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-			case R.id.f12btn:
-				glView.fireKey("F12");
-				return true;
-			case R.id.savebtn:
-				glView.fireKey("F2");
-				return true;
-			case R.id.loadbtn:
-				glView.fireKey("q");
-				return true;
-			case R.id.pausebtn:
-				glView.fireKey("PAUSE");
-				return true;
-			case R.id.speedup:
-				glView.fireKey("+");
-				glView.fireKey("+");
-				return true;
-			case R.id.slowdown:
-				glView.fireKey("-");
-				glView.fireKey("-");
-				return true;
-			case R.id.kill:
-				glView.fireKey("DELETE");
-				return true;
-			case R.id.stop:
-				glView.fireKey("STOP");
-				return true;
+		case R.id.f12btn:
+			glView.fireKey("F12");
+			return true;
+		case R.id.savebtn:
+			glView.fireKey("F2");
+			return true;
+		case R.id.loadbtn:
+			glView.fireKey("q");
+			return true;
+		case R.id.pausebtn:
+			glView.fireKey("PAUSE");
+			return true;
+		case R.id.speedup:
+			glView.fireKey("+");
+			glView.fireKey("+");
+			return true;
+		case R.id.slowdown:
+			glView.fireKey("-");
+			glView.fireKey("-");
+			return true;
+		case R.id.kill:
+			glView.fireKey("DELETE");
+			return true;
+		case R.id.stop:
+			glView.fireKey("STOP");
+			return true;
 
-			default:
-				return super.onOptionsItemSelected(item);
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -189,13 +183,13 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	@Override
 	public ProgressConnector showProgress() {
 		disposeGLView();
-		
+
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				displayedStartScreen = null;
-				
+
 				setContentView(R.layout.progress);
 			}
 		});
@@ -209,19 +203,18 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 		setContentView(R.layout.startmenu);
 	}
-	
+
 	/**
 	 * Onclick listener
 	 */
-	public void startGameButtonClicked(View target) {
+	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
 			displayedStartScreen.startNewGame(new IGameSettings() {
-				
 				@Override
 				public int getPlayerCount() {
 					return 3;
 				}
-				
+
 				@Override
 				public IMapItem getMap() {
 					return displayedStartScreen.getMaps()[0];
@@ -229,19 +222,37 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 			});
 		}
 	}
-	
+
+	/**
+	 * Onclick listener
+	 */
+	public void loadGameButtonClicked(@SuppressWarnings("unused") View target) {
+		if (displayedStartScreen != null) {
+			displayedStartScreen.loadGame(new ILoadableGame() {
+				@Override
+				public String getName() {
+					return "quicksave";
+				}
+
+				@Override
+				public Date getSaveTime() {
+					return null;
+				}
+			});
+		}
+	}
+
 	/**
 	 * Hides the gl view, deletes all references. Needs not be on ui thread
 	 */
 	private void disposeGLView() {
-	    glView = null;
-    }
+		glView = null;
+	}
 
 	@Override
-	public MapInterfaceConnector showGameMap(IGraphicsGrid map,
-	        IStatisticable playerStatistics) {
+	public MapInterfaceConnector showGameMap(IGraphicsGrid map, IStatisticable playerStatistics) {
 		displayedStartScreen = null;
-		
+
 		final MapContent content = new MapContent(map);
 		this.runOnUiThread(new Runnable() {
 			@Override
@@ -251,9 +262,8 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 				region.setContent(content);
 				area.add(region);
 				glView = new GOSurfaceView(JsettlersActivity.this, area);
-				glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS
-				        | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
-				
+				glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+
 				setContentView(glView);
 			}
 		});

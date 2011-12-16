@@ -47,6 +47,7 @@ public class ResourceProvider implements IResourceProvider {
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
 		File outFile = new File(dirs[0].getAbsolutePath() + "/" + name);
+		System.err.println("--------------------------------" + outFile.getAbsolutePath());
 		outFile.getParentFile().mkdirs();
 		return new FileOutputStream(outFile);
 	}

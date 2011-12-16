@@ -33,6 +33,7 @@
             android:id="@+id/local_game_load"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="loadGameButtonClicked"
             android:text="@string/local_game_load" />
     </LinearLayout>
 
