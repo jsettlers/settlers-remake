@@ -1,5 +1,7 @@
 package jsettlers.logic.algorithms.path.dijkstra;
 
+import java.io.Serializable;
+
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ISPosition2D;
@@ -71,7 +73,9 @@ public final class DijkstraAlgorithm {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	public static class DijkstraContinuableRequest {
+	public static class DijkstraContinuableRequest implements Serializable {
+		private static final long serialVersionUID = -1350601280043056439L;
+
 		final short minRadius;
 		final short maxRadius;
 		final IPathCalculateable requester;
