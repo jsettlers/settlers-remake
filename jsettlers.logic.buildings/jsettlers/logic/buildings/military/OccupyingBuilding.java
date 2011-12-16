@@ -93,8 +93,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				if (request == null) {
 					request = new DijkstraContinuableRequest(this, super.getPos().getX(), super.getPos().getY(), (short) 1,
 							Constants.TOWER_SOLDIER_SEARCH_AREA);
-					request.setSearchType(searchedSoldiers.peek());
 				}
+				request.setSearchType(searchedSoldiers.peek());
+
 				Path path = super.getGrid().getDijkstra().find(request);
 				if (path != null) {
 					System.out.println("soldier found");
