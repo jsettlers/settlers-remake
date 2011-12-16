@@ -22,7 +22,7 @@ public class GameSerializer {
 	public GameSerializer() {
 	}
 
-	public void save(MainGrid grid) throws FileNotFoundException, IOException {
+	public void save(final MainGrid grid) throws FileNotFoundException, IOException, InterruptedException {
 		OutputStream file;
 		if (SAVE_USE_GZIP) {
 			OutputStream unzipped = ResourceManager.writeFile(QUICK_SAVE_FILE + GZIP_EXTENSION);
@@ -31,7 +31,7 @@ public class GameSerializer {
 			file = ResourceManager.writeFile(QUICK_SAVE_FILE + NORMAL_EXTENSION);
 		}
 
-		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(file));
+		final ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(file));
 
 		NetworkTimer.get().setPausing(true);
 		try {
@@ -39,8 +39,22 @@ public class GameSerializer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		oos.writeInt(NetworkTimer.getGameTime());
-		oos.writeObject(grid);
+
+		Thread t = new Thread(null, new Runnable() {
+			@Override
+			public void run() {
+				try {
+					oos.writeInt(NetworkTimer.getGameTime());
+					oos.writeObject(grid);
+
+					System.out.println("SAVE: serialisation done!!");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}, "SaveThread", 256 * 1024);
+		t.start();
+		t.join();
 
 		oos.flush();
 		oos.close();
@@ -56,7 +70,7 @@ public class GameSerializer {
 			InputStream gzipped = ResourceManager.getFile(QUICK_SAVE_FILE + GZIP_EXTENSION);
 			inStream = new GZIPInputStream(gzipped);
 		}
-		
+
 		ObjectInputStream ois = new ObjectInputStream(inStream);
 		NetworkTimer.get().setPausing(true);
 
@@ -66,5 +80,5 @@ public class GameSerializer {
 		NetworkTimer.get().setPausing(false);
 		return grid;
 	}
-	
+
 }

@@ -17,12 +17,12 @@ import jsettlers.logic.movable.PathableStrategy;
 public abstract class AbstractSoldierStrategy extends PathableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 9000857936712315432L;
 
-	private int delayCtr = Integer.MAX_VALUE;
-	private ISPosition2D enemyPos;
 	private final EMovableType type;
 
-	private IOccupyableBuilding tower = null;
+	private int delayCtr = Integer.MAX_VALUE;
+	private ISPosition2D enemyPos;
 
+	private IOccupyableBuilding tower = null;
 	private ESoldierState state = ESoldierState.WATCHING;
 
 	protected AbstractSoldierStrategy(IMovableGrid grid, Movable movable, EMovableType type) {

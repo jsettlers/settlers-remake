@@ -48,5 +48,5 @@ public interface IGuiInputGrid {
 	 */
 	ISPosition2D getConstructablePositionAround(ISPosition2D pos, EBuildingType type);
 
-	void save() throws FileNotFoundException, IOException;
+	void save() throws FileNotFoundException, IOException, InterruptedException;
 }

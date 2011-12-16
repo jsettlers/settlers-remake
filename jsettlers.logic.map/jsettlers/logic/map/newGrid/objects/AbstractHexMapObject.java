@@ -19,7 +19,7 @@ public abstract class AbstractHexMapObject implements IMapObject, Serializable {
 	/**
 	 * next map object to build a list of map objects
 	 */
-	private AbstractHexMapObject next;
+	private transient AbstractHexMapObject next = null;
 
 	public abstract boolean cutOff();
 

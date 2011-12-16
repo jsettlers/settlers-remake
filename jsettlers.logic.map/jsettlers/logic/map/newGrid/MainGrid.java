@@ -109,6 +109,29 @@ public class MainGrid implements Serializable {
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
 
+	// private void writeObject(ObjectOutputStream oos) throws IOException {
+	// oos.writeInt(width);
+	// oos.writeInt(height);
+	// oos.writeObject(movablePathfinderGrid);
+	// System.out.println("movablePathfinderGrid written");
+	// oos.writeObject(landscapeGrid);
+	// System.err.println("landscapeGrid written");
+	// oos.writeObject(objectsGrid);
+	// System.err.println("objectsGrid written");
+	// oos.writeObject(partitionsGrid);
+	// System.out.println("partitionsGrid written");
+	// oos.writeObject(movableGrid);
+	// System.out.println("movableGrid written");
+	// oos.writeObject(flagsGrid);
+	// System.out.println("flagsGrid written");
+	// oos.writeObject(mapObjectsManager);
+	// System.out.println("mapObjectsManager written");
+	// oos.writeObject(buildingsGrid);
+	// System.out.println("buildingsGrid written");
+	// oos.writeObject(fogOfWar);
+	// System.out.println("fogOfWar written");
+	// }
+
 	public MainGrid(short width, short height) {
 		this.width = width;
 		this.height = height;
@@ -120,7 +143,7 @@ public class MainGrid implements Serializable {
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.movableGrid = new MovableGrid(width, height);
 		this.flagsGrid = new FlagsGrid(width, height);
-		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid(), movablePathfinderGrid);
+		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid());
 
 		this.buildingsGrid = new BuildingsGrid();
 		this.fogOfWar = new FogOfWar(width, height); // TODO @Andreas implement new interface for fog of war
@@ -139,12 +162,14 @@ public class MainGrid implements Serializable {
 		this.debugColors = new Color[width][height];
 
 		this.fogOfWar.startThread(new FogOfWarGrid());
+
+		this.partitionsGrid.initPartitionsAlgorithm(movablePathfinderGrid.aStar);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-
 		initAdditionalGrids();
+
 	}
 
 	private MainGrid(MapGrid mapGrid) {
@@ -662,7 +687,7 @@ public class MainGrid implements Serializable {
 	class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
-		transient private HexAStar aStar;
+		transient HexAStar aStar;
 		transient DijkstraAlgorithm dijkstra;
 		transient private InAreaFinder inAreaFinder;
 
@@ -1137,7 +1162,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void save() throws FileNotFoundException, IOException {
+		public final void save() throws FileNotFoundException, IOException, InterruptedException {
 			GameSerializer serializer = new GameSerializer();
 			serializer.save(MainGrid.this);
 		}
@@ -1160,6 +1185,7 @@ public class MainGrid implements Serializable {
 		public final void setDebugColor(final short x, final short y, Color color) {
 			debugColors[x][y] = color;
 		}
+
 	}
 
 	class FogOfWarGrid implements IFogOfWarGrid {

@@ -3,7 +3,6 @@ package jsettlers.main;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.main.JSettlersGame.Listener;
 
 /**
@@ -22,7 +21,7 @@ public class ManagedJSettlers implements Listener {
 		starter.startGui(content2);
 		start(content2);
 	}
-	
+
 	public synchronized void start(ISettlersGameDisplay content) {
 		this.content = content;
 		showMainScreen();
@@ -84,13 +83,18 @@ public class ManagedJSettlers implements Listener {
 
 		@Override
 		public void startNewGame(IGameSettings game) {
-			startGame(game);
+			if (ongoingGame != null) {
+				ongoingGame.setListener(null);
+				ongoingGame.stop();
+			}
+			ongoingGame = new JSettlersGame(content, game, 123456L);
+			ongoingGame.setListener(ManagedJSettlers.this);
+			ongoingGame.start();
 		}
 
 		@Override
 		public void loadGame(ILoadableGame load) {
-			// TODO Auto-generated method stub
-
+			// @MICHAEL TODO load game
 		}
 
 		@Override
@@ -128,16 +132,6 @@ public class ManagedJSettlers implements Listener {
 			System.exit(0);
 		}
 
-	}
-
-	synchronized void startGame(IGameSettings game) {
-		if (ongoingGame != null) {
-			ongoingGame.setListener(null);
-			ongoingGame.stop();
-		}
-		ongoingGame = new JSettlersGame(content, game, 123456L);
-		ongoingGame.setListener(this);
-		ongoingGame.start();
 	}
 
 	/**

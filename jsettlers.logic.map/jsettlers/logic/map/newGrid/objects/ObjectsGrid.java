@@ -1,5 +1,8 @@
 package jsettlers.logic.map.newGrid.objects;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import jsettlers.common.mapobject.EMapObjectType;
@@ -15,10 +18,48 @@ import jsettlers.common.position.ISPosition2D;
 public class ObjectsGrid implements Serializable {
 	private static final long serialVersionUID = 2919416226544282748L;
 
-	private final AbstractHexMapObject[][] objectsGrid;
+	private AbstractHexMapObject[][] objectsGrid;
 
 	public ObjectsGrid(short width, short height) {
 		this.objectsGrid = new AbstractHexMapObject[width][height];
+	}
+
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		int width = objectsGrid.length;
+		int height = objectsGrid[0].length;
+		oos.writeInt(width);
+		oos.writeInt(height);
+
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
+				AbstractHexMapObject currObject = getObjectsAt(x, y);
+
+				while (currObject != null) {
+					oos.writeObject(currObject);
+					currObject = currObject.getNextObject();
+				}
+				oos.writeObject(null);
+			}
+		}
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		int width = ois.readInt();
+		int height = ois.readInt();
+		objectsGrid = new AbstractHexMapObject[width][height];
+
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
+				AbstractHexMapObject currObject = (AbstractHexMapObject) ois.readObject();
+				objectsGrid[x][y] = currObject;
+
+				while (currObject != null) {
+					AbstractHexMapObject newObject = (AbstractHexMapObject) ois.readObject();
+					currObject.addMapObject(newObject);
+					currObject = newObject;
+				}
+			}
+		}
 	}
 
 	public AbstractHexMapObject getObjectsAt(short x, short y) {

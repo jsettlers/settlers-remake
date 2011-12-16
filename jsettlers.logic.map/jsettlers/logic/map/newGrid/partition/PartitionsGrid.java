@@ -1,7 +1,5 @@
 package jsettlers.logic.map.newGrid.partition;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -49,17 +46,13 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	transient private PartitionsAlgorithm partitionsAlgorithm;
 	private final IPartitionableGrid grid;
 
-	private final IAStarPathMap pathfinderMap;
-
-	public PartitionsGrid(final short width, final short height, IPartitionableGrid grid, IAStarPathMap pathfinderMap) {
+	public PartitionsGrid(final short width, final short height, IPartitionableGrid grid) {
 		this.width = width;
 		this.height = height;
 		this.grid = grid;
-		this.pathfinderMap = pathfinderMap;
 		this.partitions = new short[width][height];
 		this.towers = new byte[width][height];
 		this.borders = new boolean[width][height];
-		initPartitionsAlgorithm(width, height, pathfinderMap);
 		this.nullPartition = new Partition((byte) -1, height * width);
 
 		for (short x = 0; x < width; x++) {
@@ -69,13 +62,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		}
 	}
 
-	private final void initPartitionsAlgorithm(final short width, final short height, IAStarPathMap pathfinderMap) {
-		this.partitionsAlgorithm = new PartitionsAlgorithm(this, new HexAStar(pathfinderMap, width, height));
-	}
-
-	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		ois.defaultReadObject();
-		initPartitionsAlgorithm(width, height, pathfinderMap);
+	public final void initPartitionsAlgorithm(HexAStar aStar) {
+		this.partitionsAlgorithm = new PartitionsAlgorithm(this, aStar);
 	}
 
 	@Override
