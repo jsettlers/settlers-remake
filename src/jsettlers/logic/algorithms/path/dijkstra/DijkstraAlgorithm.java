@@ -78,7 +78,7 @@ public final class DijkstraAlgorithm {
 		final IPathCalculateable requester;
 		final short cX;
 		final short cY;
-		final ESearchType searchType;
+		ESearchType searchType;
 
 		short radius;
 
@@ -94,6 +94,10 @@ public final class DijkstraAlgorithm {
 			this.radius = 0;
 		}
 
+		public DijkstraContinuableRequest(final IPathCalculateable requester, short cX, short cY, short minRadius, short maxRadius) {
+			this(requester, cX, cY, minRadius, maxRadius, null);
+		}
+
 		final short getRadiusSteps() {
 			return 3;
 		}
@@ -104,6 +108,10 @@ public final class DijkstraAlgorithm {
 
 		void setRadius(short radius) {
 			this.radius = (short) (radius - this.minRadius + 1);
+		}
+
+		public void setSearchType(ESearchType searchType) {
+			this.searchType = searchType;
 		}
 	}
 
