@@ -44,7 +44,7 @@ public class WindowTest {
 
 		// Window content = new Window();
 
-		MapInterfaceConnector connector = content.showHexMap(map, null);
+		MapInterfaceConnector connector = content.showGameMap(map, null);
 
 		connector.addListener(new IMapInterfaceListener() {
 
