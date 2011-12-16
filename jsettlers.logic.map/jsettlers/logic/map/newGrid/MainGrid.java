@@ -99,7 +99,7 @@ public class MainGrid implements Serializable {
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager mapObjectsManager;
 	final BuildingsGrid buildingsGrid;
-	private final FogOfWar fogOfWar;
+	final FogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
 	transient LandmarksCorrectingThread landmarksCorrectionThread;
@@ -218,7 +218,7 @@ public class MainGrid implements Serializable {
 
 		return new MainGrid(mapGrid);
 	}
-	
+
 	public static MainGrid create(MapGrid mapGrid) {
 		return new MainGrid(mapGrid);
 	}
@@ -279,16 +279,6 @@ public class MainGrid implements Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
 		@Override
-		public short getHeight() {
-			return height;
-		}
-
-		@Override
-		public short getWidth() {
-			return width;
-		}
-
-		@Override
 		public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 			return flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y)
 					|| (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
@@ -308,27 +298,22 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void markAsOpen(short x, short y) {
+		public final void markAsOpen(short x, short y) {
 			debugColors[x][y] = Color.BLUE;
 		}
 
 		@Override
-		public void markAsClosed(short x, short y) {
+		public final void markAsClosed(short x, short y) {
 			debugColors[x][y] = Color.RED;
 		}
 
 		@Override
-		public void setDijkstraSearched(short x, short y) {
+		public final void setDijkstraSearched(short x, short y) {
 			markAsOpen(x, y);
 		}
 
 		@Override
-		public boolean isInBounds(short x, short y) {
-			return MainGrid.this.isInBounds(x, y);
-		}
-
-		@Override
-		public boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculable) {
+		public final boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculable) {
 			switch (searchType) {
 
 			case FOREIGN_GROUND:
@@ -382,7 +367,7 @@ public class MainGrid implements Serializable {
 			}
 		}
 
-		private boolean isSoldierAt(short x, short y, ESearchType searchType, byte player) {
+		private final boolean isSoldierAt(short x, short y, ESearchType searchType, byte player) {
 			IHexMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
@@ -405,11 +390,11 @@ public class MainGrid implements Serializable {
 			}
 		}
 
-		private boolean isMarked(short x, short y) {
+		private final boolean isMarked(short x, short y) {
 			return flagsGrid.isMarked(x, y);
 		}
 
-		private boolean hasProtectedNeighbor(short x, short y) {
+		private final boolean hasProtectedNeighbor(short x, short y) {
 			for (EDirection currDir : EDirection.values()) {
 				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
@@ -417,7 +402,7 @@ public class MainGrid implements Serializable {
 			return false;
 		}
 
-		private boolean hasNeighbourLandscape(short x, short y, ELandscapeType landscape) {
+		private final boolean hasNeighbourLandscape(short x, short y, ELandscapeType landscape) {
 			for (ISPosition2D pos : new MapNeighboursArea(new ShortPoint2D(x, y))) {
 				short currX = pos.getX();
 				short currY = pos.getY();
@@ -437,11 +422,11 @@ public class MainGrid implements Serializable {
 			return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2 || type == ELandscapeType.RIVER3 || type == ELandscapeType.RIVER4;
 		}
 
-		boolean isTreePlantable(short x, short y) {
+		final boolean isTreePlantable(short x, short y) {
 			return landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.GRASS && !flagsGrid.isBlocked(x, y) && !hasBlockedNeighbor(x, y);
 		}
 
-		private boolean hasBlockedNeighbor(short x, short y) {
+		private final boolean hasBlockedNeighbor(short x, short y) {
 			for (EDirection currDir : EDirection.values()) {
 				short currX = currDir.getNextTileX(x);
 				short currY = currDir.getNextTileY(y);
@@ -453,7 +438,7 @@ public class MainGrid implements Serializable {
 			return false;
 		}
 
-		private boolean isCornPlantable(short x, short y) {
+		private final boolean isCornPlantable(short x, short y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
 			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y) && !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
@@ -462,46 +447,45 @@ public class MainGrid implements Serializable {
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING);
 		}
 
-		private boolean isCornCuttable(short x, short y) {
+		private final boolean isCornCuttable(short x, short y) {
 			return objectsGrid.hasCuttableObject(x, y, EMapObjectType.CORN_ADULT);
 		}
 
 	}
 
-	class GraphicsGrid implements IGraphicsGrid {
-
+	final class GraphicsGrid implements IGraphicsGrid {
 		@Override
-		public short getHeight() {
+		public final short getHeight() {
 			return height;
 		}
 
 		@Override
-		public short getWidth() {
+		public final short getWidth() {
 			return width;
 		}
 
 		@Override
-		public IMovable getMovableAt(int x, int y) {
+		public final IMovable getMovableAt(int x, int y) {
 			return movableGrid.getMovableAt((short) x, (short) y);
 		}
 
 		@Override
-		public IMapObject getMapObjectsAt(int x, int y) {
+		public final IMapObject getMapObjectsAt(int x, int y) {
 			return objectsGrid.getObjectsAt((short) x, (short) y);
 		}
 
 		@Override
-		public byte getHeightAt(int x, int y) {
+		public final byte getHeightAt(int x, int y) {
 			return landscapeGrid.getHeightAt((short) x, (short) y);
 		}
 
 		@Override
-		public ELandscapeType getLandscapeTypeAt(int x, int y) {
+		public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 			return landscapeGrid.getLandscapeTypeAt((short) x, (short) y);
 		}
 
 		@Override
-		public Color getDebugColorAt(int x, int y) {
+		public final Color getDebugColorAt(int x, int y) {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
@@ -513,27 +497,27 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isBorder(int x, int y) {
+		public final boolean isBorder(int x, int y) {
 			return partitionsGrid.isBorderAt((short) x, (short) y);
 		}
 
 		@Override
-		public byte getPlayerAt(int x, int y) {
+		public final byte getPlayerAt(int x, int y) {
 			return partitionsGrid.getPlayerAt((short) x, (short) y);
 		}
 
 		@Override
-		public byte getVisibleStatus(int x, int y) {
+		public final byte getVisibleStatus(int x, int y) {
 			return fogOfWar.getVisibleStatus(x, y);
 		}
 
 		@Override
-		public boolean isFogOfWarVisible(int x, int y) {
+		public final boolean isFogOfWarVisible(int x, int y) {
 			return fogOfWar.isVisible(x, y);
 		}
 
 		@Override
-		public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
 		}
 
@@ -685,9 +669,9 @@ public class MainGrid implements Serializable {
 		}
 
 		private final void initPathfinders() {
-			aStar = new HexAStar(this);
-			dijkstra = new DijkstraAlgorithm(this, aStar);
-			inAreaFinder = new InAreaFinder(this);
+			aStar = new HexAStar(this, width, height);
+			dijkstra = new DijkstraAlgorithm(this, aStar, width, height);
+			inAreaFinder = new InAreaFinder(this, width, height);
 		}
 
 		@Override
@@ -771,7 +755,9 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean isInBounds(ISPosition2D position) {
-			return isInBounds(position.getX(), position.getY());
+			final short x = position.getX();
+			final short y = position.getY();
+			return 0 <= x && x < width && 0 <= y && y < height;
 		}
 
 		@Override
@@ -1170,17 +1156,6 @@ public class MainGrid implements Serializable {
 	}
 
 	class FogOfWarGrid implements IFogOfWarGrid {
-
-		@Override
-		public final short getHeight() {
-			return height;
-		}
-
-		@Override
-		public final short getWidth() {
-			return width;
-		}
-
 		@Override
 		public final IMovable getMovableAt(int x, int y) {
 			return movableGrid.getMovableAt((short) x, (short) y);
@@ -1190,7 +1165,6 @@ public class MainGrid implements Serializable {
 		public final IMapObject getMapObjectsAt(int x, int y) {
 			return objectsGrid.getObjectsAt((short) x, (short) y);
 		}
-
 	}
 
 }

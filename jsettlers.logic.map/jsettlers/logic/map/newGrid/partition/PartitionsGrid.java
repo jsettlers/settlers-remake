@@ -15,6 +15,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
+import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
@@ -58,7 +59,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		this.partitions = new short[width][height];
 		this.towers = new byte[width][height];
 		this.borders = new boolean[width][height];
-		this.partitionsAlgorithm = new PartitionsAlgorithm(this, pathfinderMap);
+		initPartitionsAlgorithm(width, height, pathfinderMap);
 		this.nullPartition = new Partition((byte) -1, height * width);
 
 		for (short x = 0; x < width; x++) {
@@ -68,33 +69,37 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		}
 	}
 
+	private final void initPartitionsAlgorithm(final short width, final short height, IAStarPathMap pathfinderMap) {
+		this.partitionsAlgorithm = new PartitionsAlgorithm(this, new HexAStar(pathfinderMap, width, height));
+	}
+
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
-		this.partitionsAlgorithm = new PartitionsAlgorithm(this, pathfinderMap);
+		initPartitionsAlgorithm(width, height, pathfinderMap);
 	}
 
 	@Override
-	public byte getPlayerAt(ISPosition2D position) {
+	public final byte getPlayerAt(ISPosition2D position) {
 		return isInBounds(position) ? this.getPartitionObject(position.getX(), position.getY()).getPlayer() : -1;
 	}
 
-	public byte getPlayerAt(short x, short y) {
+	public final byte getPlayerAt(short x, short y) {
 		return getPartitionObject(x, y).getPlayer();
 	}
 
-	public short getPartitionAt(short x, short y) {
+	public final short getPartitionAt(short x, short y) {
 		return this.partitions[x][y];
 	}
 
-	private Partition getPartitionObject(ISPosition2D pos) {
+	private final Partition getPartitionObject(ISPosition2D pos) {
 		return getPartitionObject(getPartition(pos));
 	}
 
-	private Partition getPartitionObject(short x, short y) {
+	private final Partition getPartitionObject(short x, short y) {
 		return getPartitionObject(getPartitionAt(x, y));
 	}
 
-	private Partition getPartitionObject(short partition) {
+	private final Partition getPartitionObject(short partition) {
 		if (partition >= 0)
 			return this.partitionObjects[partition];
 		else
@@ -102,17 +107,17 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public short getPartition(ISPosition2D position) {
+	public final short getPartition(ISPosition2D position) {
 		return getPartition(position.getX(), position.getY());
 	}
 
 	@Override
-	public short getPartition(short x, short y) {
+	public final short getPartition(short x, short y) {
 		return this.partitions[x][y];
 	}
 
 	@Override
-	public void setPartition(final short x, final short y, short newPartition) {
+	public final void setPartition(final short x, final short y, short newPartition) {
 		Partition newPartitionObject = getPartitionObject(newPartition);
 
 		Partition oldPartitionObject = getPartitionObject(x, y);
@@ -124,7 +129,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		grid.changedPartitionAt(x, y);
 	}
 
-	public void setPartitionAndPlayerAt(short x, short y, short partition) {
+	public final void setPartitionAndPlayerAt(short x, short y, short partition) {
 		this.partitions[x][y] = partition;
 	}
 
@@ -159,18 +164,18 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public void createPartition(final short x, final short y, byte player) {
+	public final void createPartition(final short x, final short y, byte player) {
 		short partition = initializeNewPartition(player);
 		setPartition(x, y, partition);
 	}
 
-	private short initializeNewPartition(byte player) {
+	private final short initializeNewPartition(byte player) {
 		short partition = getFreePartitionIndex();
 		this.partitionObjects[partition] = new Partition(player);
 		return partition;
 	}
 
-	private short getFreePartitionIndex() {
+	private final short getFreePartitionIndex() {
 		for (short i = 0; i < this.partitionObjects.length; i++) {
 			if (this.partitionObjects[i] == null || this.partitionObjects[i].isEmpty())
 				return i;
@@ -181,7 +186,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public void dividePartition(final short x, final short y, ISPosition2D firstPos, ISPosition2D secondPos) {
+	public final void dividePartition(final short x, final short y, ISPosition2D firstPos, ISPosition2D secondPos) {
 		System.out.println("DIVIDE!!");
 		short newPartition = initializeNewPartition(getPlayerAt(firstPos));
 		short oldPartition = getPartition(firstPos);
@@ -241,79 +246,79 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		}
 	}
 
-	public void changePlayerAt(short x, short y, byte newPlayer) {
+	public final void changePlayerAt(short x, short y, byte newPlayer) {
 		if (getPlayerAt(x, y) != newPlayer) {
 			this.partitionsAlgorithm.calculateNewPartition(x, y, newPlayer);
 		}
 	}
 
-	private boolean isInBounds(ISPosition2D position) {
+	private final boolean isInBounds(ISPosition2D position) {
 		return isInBounds(position.getX(), position.getY());
 	}
 
 	@Override
-	public boolean isInBounds(short x, short y) {
+	public final boolean isInBounds(short x, short y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+	public final boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
 		return getPartitionObject(position.getX(), position.getY()).pushMaterial(position, materialType);
 	}
 
-	public void setBorderAt(short x, short y, boolean isBorder) {
+	public final void setBorderAt(short x, short y, boolean isBorder) {
 		this.borders[x][y] = isBorder;
 	}
 
-	public boolean isBorderAt(short x, short y) {
+	public final boolean isBorderAt(short x, short y) {
 		return borders[x][y];
 	}
 
-	public void addJobless(IManageableBearer manageable) {
+	public final void addJobless(IManageableBearer manageable) {
 		getPartitionObject(manageable.getPos()).addJobless(manageable);
 	}
 
-	public void addJobless(IManageableWorker worker) {
+	public final void addJobless(IManageableWorker worker) {
 		getPartitionObject(worker.getPos()).addJobless(worker);
 	}
 
-	public void addJobless(IManageableBricklayer bricklayer) {
+	public final void addJobless(IManageableBricklayer bricklayer) {
 		getPartitionObject(bricklayer.getPos()).addJobless(bricklayer);
 	}
 
-	public void addJobless(IManageableDigger digger) {
+	public final void addJobless(IManageableDigger digger) {
 		getPartitionObject(digger.getPos()).addJobless(digger);
 	}
 
-	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
+	public final void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
 		getPartitionObject(requester.getPos()).request(requester, materialType, priority);
 	}
 
-	public void requestDiggers(IDiggerRequester requester, byte amount) {
+	public final void requestDiggers(IDiggerRequester requester, byte amount) {
 		getPartitionObject(requester.getBuildingArea().get(0)).requestDiggers(requester, amount);
 	}
 
-	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+	public final void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		getPartitionObject(building.getPos()).requestBricklayer(building, bricklayerTargetPos, direction);
 	}
 
-	public void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
+	public final void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
 		getPartitionObject(workerBuilding.getPos()).requestBuildingWorker(workerType, workerBuilding);
 	}
 
 	@Override
-	public boolean isBlockedForPeople(short x, short y) {
+	public final boolean isBlockedForPeople(short x, short y) {
 		return grid.isBlocked(x, y);
 	}
 
-	public void requestSoilderable(Barrack barrack) {
+	public final void requestSoilderable(Barrack barrack) {
 		getPartitionObject(barrack.getDoor()).requestSoilderable(barrack);
 	}
 
-	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+	public final void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
 		getPartitionObject(position).releaseRequestsAt(position, materialType);
 	}
 
-	public List<ISPosition2D> occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte newPlayer) {
+	public final List<ISPosition2D> occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte newPlayer) {
 		changePlayerAt(occupiersPosition.getX(), occupiersPosition.getY(), newPlayer);
 
 		short newPartition = getPartition(occupiersPosition);
@@ -347,7 +352,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return towers[x][y] > 0;
 	}
 
-	public List<ISPosition2D> freeOccupiedArea(MapShapeFilter occupied, ISPosition2D occupiersPosition) {
+	public final List<ISPosition2D> freeOccupiedArea(MapShapeFilter occupied, ISPosition2D occupiersPosition) {
 		short partiton = getPartition(occupiersPosition);
 		List<ISPosition2D> totallyFreePositions = new ArrayList<ISPosition2D>();
 
