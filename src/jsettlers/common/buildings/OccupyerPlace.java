@@ -1,11 +1,14 @@
 package jsettlers.common.buildings;
 
+import java.io.Serializable;
+
 /**
  * A place an occuping person can be in a building.
  * 
  * @author michael
  */
-public class OccupyerPlace {
+public class OccupyerPlace implements Serializable {
+	private static final long serialVersionUID = 1355922428788608890L;
 
 	private final ESoldierType type;
 	private final int y;
@@ -55,6 +58,6 @@ public class OccupyerPlace {
 	}
 
 	public boolean looksRight() {
-	    return false; //TODO
-    }
+		return false; // TODO
+	}
 }
