@@ -109,6 +109,8 @@ public enum EBuildingType {
 		ImageLink[] tempimages = file.getImages();
 		if (tempimages.length == 0) {
 			// TODO: this can be removed if all images are converted
+			System.out.println("WARNING: Building " + this.toString()
+			        + " does not have an image definition.");
 			images = new ImageLink[] {
 				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
 			};

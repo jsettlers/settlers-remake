@@ -141,4 +141,6 @@
 
 
 	<image file="14" for="GUI" type="GUI" sequence="78" image="0" />
+    <image file="13" type="SETTLER" for="FINAL" image="0" sequence="26"/>
+    <image file="13" type="SETTLER" for="BUILD" image="1" sequence="26"/>
 </building>

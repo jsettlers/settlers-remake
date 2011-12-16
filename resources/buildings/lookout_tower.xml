@@ -49,4 +49,6 @@
 	<buildmark dx="-1" dy="-1" />
 
 	<image file="14" for="GUI" type="GUI" sequence="9" image="0"/>
+    <image file="13" type="SETTLER" for="FINAL" image="0" sequence="2"/>
+    <image file="13" type="SETTLER" for="BUILD" image="1" sequence="2"/>
 </building>

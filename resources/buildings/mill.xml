@@ -65,6 +65,8 @@
 	<buildmark dx="-2" dy="-2" />
 	
 	<image file="14" type="GUI" for="GUI" image="0" sequence="15" />
+    <image file="13" type="SETTLER" for="FINAL" image="0" sequence="14"/>
+    <image file="13" type="SETTLER" for="BUILD" image="1" sequence="14"/>
 
 	<startjob name="gohome" />
 

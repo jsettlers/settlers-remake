@@ -53,4 +53,8 @@ public class OccupyerPlace {
 		INFANTARY,
 		BOWMAN
 	}
+
+	public boolean looksRight() {
+	    return false; //TODO
+    }
 }
