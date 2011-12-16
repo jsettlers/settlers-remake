@@ -48,6 +48,7 @@ public enum EBuildingType {
 
 	DOCKYARD(45),
 	HARBUR(44),
+	STOCK(-1),
 	// 27: katapult
 
 	TEMPLE(31),
