@@ -202,6 +202,11 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		return tower == null;
 	}
 
+	@Override
+	public final Movable getMovable() {
+		return super.getMovable();
+	}
+
 	/**
 	 * enum to define the states of a soldier.
 	 * 

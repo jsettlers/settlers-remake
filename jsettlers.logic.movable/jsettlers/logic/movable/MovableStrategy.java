@@ -183,4 +183,7 @@ public abstract class MovableStrategy implements Serializable {
 		return false;
 	}
 
+	protected Movable getMovable() {
+		return movable;
+	}
 }

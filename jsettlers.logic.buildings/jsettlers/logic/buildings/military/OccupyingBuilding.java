@@ -12,6 +12,7 @@ import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
@@ -49,6 +50,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
 		occupiers = new LinkedList<IBuildingOccupyer>(); // for testing purposes
 		if (occupyerPlaces.length > 0) {
+			searchedSoldiers.add(ESearchType.SOLDIER_SWORDSMAN);
 			searchedSoldiers.add(ESearchType.SOLDIER_BOWMAN);
 			searchedSoldiers.add(ESearchType.SOLDIER_BOWMAN);
 
@@ -65,6 +67,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	protected void appearedEvent() {
 		occupyArea();
+		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 	}
 
 	private MapShapeFilter getOccupyablePositions() {
@@ -89,7 +92,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			if (!searchedSoldiers.isEmpty()) {
 				if (request == null) {
 					request = new DijkstraContinuableRequest(this, super.getPos().getX(), super.getPos().getY(), (short) 1,
-							Constants.TOWER_SOLDIER_SEARCH_AREA, searchedSoldiers.peek());
+							Constants.TOWER_SOLDIER_SEARCH_AREA);
+					request.setSearchType(searchedSoldiers.peek());
 				}
 				Path path = super.getGrid().getDijkstra().find(request);
 				if (path != null) {
@@ -153,6 +157,12 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public void requestFailed(EMovableType movableType) {
+		ESearchType searchType = getSearchType(movableType);
+		if (searchType != null)
+			searchedSoldiers.add(searchType);
+	}
+
+	private ESearchType getSearchType(EMovableType movableType) {
 		ESearchType searchType;
 
 		switch (movableType) {
@@ -172,10 +182,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			searchType = ESearchType.SOLDIER_PIKEMAN;
 			break;
 		default:
-			return;
+			return null;
 		}
-
-		searchedSoldiers.add(searchType);
+		return searchType;
 	}
 
 	private class TowerOccupyer implements IBuildingOccupyer {
@@ -193,9 +202,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		@Override
-		public EMovableType getMovableType() {
-			return soldier.getMovableType();
+		public IMovable getMovable() {
+			return soldier.getMovable();
 		}
+
 	}
 
 }
