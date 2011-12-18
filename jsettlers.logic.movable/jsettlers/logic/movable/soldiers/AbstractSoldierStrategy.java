@@ -191,6 +191,15 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	}
 
 	@Override
+	public void leaveOccupyableBuilding(ISPosition2D pos) {
+		this.setPos(pos);
+		this.tower = null;
+		this.state = ESoldierState.WATCHING;
+		super.setAction(EAction.NO_ACTION, -1);
+		super.setVisible(true);
+	}
+
+	@Override
 	protected final void killedEvent() {
 		if (tower != null) {
 			tower.requestFailed(getMovableType());

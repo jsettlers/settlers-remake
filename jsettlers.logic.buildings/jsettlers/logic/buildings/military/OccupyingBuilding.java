@@ -23,12 +23,11 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 
 /**
- * Temporary tower building.
+ * Tower building.
  * 
  * <p>
- * prototype!
  * 
- * @author michael
+ * @author Andreas Eberle
  * 
  */
 public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding {
@@ -36,7 +35,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private static final float RADIUS = 40;
 
-	private final LinkedList<IBuildingOccupyer> occupiers;
+	private final LinkedList<TowerOccupyer> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
 
@@ -49,7 +48,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		super(type, player);
 
 		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
-		occupiers = new LinkedList<IBuildingOccupyer>(); // for testing purposes
+		occupiers = new LinkedList<TowerOccupyer>(); // for testing purposes
 		if (occupyerPlaces.length > 0) {
 			searchedSoldiers.add(ESearchType.SOLDIER_SWORDSMAN);
 			searchedSoldiers.add(ESearchType.SOLDIER_BOWMAN);
@@ -119,11 +118,18 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		if (occupiedArea) {
 			MapShapeFilter occupied = getOccupyablePositions();
 			super.getGrid().freeOccupiedArea(occupied, super.getPos());
+
+			int idx = 0;
+			for (TowerOccupyer curr : occupiers) {
+				curr.soldier.leaveOccupyableBuilding(super.getBuildingArea().get(idx));
+				idx++;
+			}
+			occupiers.clear();
 		}
 	}
 
 	@Override
-	public List<IBuildingOccupyer> getOccupyers() {
+	public List<? extends IBuildingOccupyer> getOccupyers() {
 		return occupiers;
 	}
 
@@ -149,6 +155,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		if (!occupiedArea) {
 			MapShapeFilter occupying = getOccupyablePositions();
 			super.getGrid().occupyArea(occupying, super.getPos(), super.getPlayer());
+			occupiedArea = true;
 		}
 	}
 

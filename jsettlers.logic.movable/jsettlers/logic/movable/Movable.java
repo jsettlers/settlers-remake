@@ -340,7 +340,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	 *            NOTE: the duration will only be used if the action is of type TAKE, DROP or WALKING
 	 */
 	void setAction(EAction action, float duration) {
-		if (state != EMovableState.FINISHED_ACTION && state != EMovableState.NO_ACTION) {
+		if (state != EMovableState.FINISHED_ACTION && state != EMovableState.NO_ACTION && state != EMovableState.SLEEPING) {
 			throw new IllegalStateException("Current action has not been finished yet: " + this.state + "  " + action + "   " + getMovableType());
 		}
 
