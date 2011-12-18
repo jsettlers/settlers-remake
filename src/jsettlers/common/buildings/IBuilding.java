@@ -44,7 +44,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * @author michael
 	 */
 	interface IOccupyed extends IBuilding {
-		List<IBuildingOccupyer> getOccupyers();
+		List<? extends IBuildingOccupyer> getOccupyers();
 	}
 
 	/**
