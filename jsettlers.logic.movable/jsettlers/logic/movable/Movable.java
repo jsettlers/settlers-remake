@@ -216,7 +216,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 
 		for (int i = 0; i < directions; i++) {
 			ISPosition2D newPos = EDirection.values()[(i + offset) % directions].getNextHexPoint(pos);
-			if (grid.isInBounds(newPos) && !grid.isBlocked(newPos.getX(), newPos.getY()) && grid.getMovable(newPos) == null) {
+			if (grid.isAllowedForMovable(newPos.getX(), newPos.getY(), strategy)) {
 				goToTile(newPos);
 				return;
 			}

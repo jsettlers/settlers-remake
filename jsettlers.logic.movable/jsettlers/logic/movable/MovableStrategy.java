@@ -7,6 +7,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.movable.bearer.BearerStrategy;
 import jsettlers.logic.movable.construction.BricklayerStrategy;
 import jsettlers.logic.movable.construction.DiggerStrategy;
@@ -22,7 +23,7 @@ import jsettlers.logic.movable.workers.BuildingWorkerStrategy;
  * @author michael
  * 
  */
-public abstract class MovableStrategy implements Serializable {
+public abstract class MovableStrategy implements Serializable, IPathCalculateable {
 	private static final long serialVersionUID = 7544560296926609429L;
 
 	private final Movable movable;
@@ -123,11 +124,13 @@ public abstract class MovableStrategy implements Serializable {
 		this.movable.setMaterial(material);
 	}
 
-	protected ISPosition2D getPos() {
+	@Override
+	public ISPosition2D getPos() {
 		return this.movable.getPos();
 	}
 
-	protected byte getPlayer() {
+	@Override
+	public byte getPlayer() {
 		return this.movable.getPlayer();
 	}
 

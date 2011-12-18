@@ -295,4 +295,6 @@ public interface IMovableGrid {
 	boolean isPigAdult(ISPosition2D pos);
 
 	boolean isEnforcedByTower(ISPosition2D pos);
+
+	boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable);
 }

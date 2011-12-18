@@ -302,7 +302,7 @@ public class MainGrid implements Serializable {
 		return movable;
 	}
 
-	protected boolean isLandscapeBlocking(short x, short y) {
+	protected final boolean isLandscapeBlocking(short x, short y) {
 		ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
 		return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
 	}
@@ -325,7 +325,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public float getCost(short sx, short sy, short tx, short ty) {
+		public final float getCost(short sx, short sy, short tx, short ty) {
 			return Constants.TILE_PATHFINDER_COST * (flagsGrid.isProtected(sx, sy) ? 3.5f : 1);
 		}
 
@@ -445,11 +445,11 @@ public class MainGrid implements Serializable {
 			return false;
 		}
 
-		private boolean hasSamePlayer(short x, short y, IPathCalculateable requester) {
+		private final boolean hasSamePlayer(short x, short y, IPathCalculateable requester) {
 			return partitionsGrid.getPlayerAt(x, y) == requester.getPlayer();
 		}
 
-		private boolean isRiver(short x, short y) {
+		private final boolean isRiver(short x, short y) {
 			ELandscapeType type = landscapeGrid.getLandscapeTypeAt(x, y);
 			return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2 || type == ELandscapeType.RIVER3 || type == ELandscapeType.RIVER4;
 		}
@@ -885,6 +885,12 @@ public class MainGrid implements Serializable {
 		@Override
 		public final boolean isEnforcedByTower(ISPosition2D pos) {
 			return partitionsGrid.isEnforcedByTower(pos.getX(), pos.getY());
+		}
+
+		@Override
+		public boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable) {
+			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y) && !isLandscapeBlocking(x, y)
+					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer() == partitionsGrid.getPlayerAt(x, y));
 		}
 	}
 

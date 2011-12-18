@@ -110,7 +110,7 @@ public class PioneerStrategy extends PathableStrategy {
 		for (EDirection sateliteDir : EDirection.values()) {
 			ISPosition2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
 
-			if (super.getGrid().isInBounds(satelitePos) && isOccupyablePosition(satelitePos)) {
+			if (super.getGrid().isAllowedForMovable(satelitePos.getX(), satelitePos.getY(), this) && isOccupyablePosition(satelitePos)) {
 				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
