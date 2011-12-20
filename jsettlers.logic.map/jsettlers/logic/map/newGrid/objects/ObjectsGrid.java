@@ -35,7 +35,9 @@ public class ObjectsGrid implements Serializable {
 				AbstractHexMapObject currObject = getObjectsAt(x, y);
 
 				while (currObject != null) {
-					oos.writeObject(currObject);
+					if (currObject.getObjectType() != EMapObjectType.WORKAREA_MARK) {
+						oos.writeObject(currObject);
+					}
 					currObject = currObject.getNextObject();
 				}
 				oos.writeObject(null);
