@@ -72,6 +72,15 @@ dy = -10
 distance = 10
 
 [settler]
+count = 10
+type = GEOLOGIST
+tight = 1
+group = true
+dx = -20
+dy = -7
+distance = 10
+
+[settler]
 count = 5
 type = BRICKLAYER
 tight = 1
