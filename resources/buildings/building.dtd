@@ -148,9 +148,12 @@
 
 <!ELEMENT occupyer EMPTY>
 <!ATTLIST occupyer
-   x CDATA #REQUIRED
-   y CDATA #REQUIRED
+   offsetX CDATA #REQUIRED
+   offsetY CDATA #REQUIRED
    type (INFANTARY|BOWMAN) #REQUIRED
+   
+   soldierX CDATA #REQUIRED
+   soldierY CDATA #REQUIRED
 >
 
 <!ELEMENT startjob EMPTY>

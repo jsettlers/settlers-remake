@@ -2,6 +2,8 @@ package jsettlers.common.buildings;
 
 import java.io.Serializable;
 
+import jsettlers.common.position.RelativePoint;
+
 /**
  * A place an occuping person can be in a building.
  * 
@@ -11,13 +13,15 @@ public class OccupyerPlace implements Serializable {
 	private static final long serialVersionUID = 1355922428788608890L;
 
 	private final ESoldierType type;
-	private final int y;
-	private final int x;
+	private final int offsetY;
+	private final int offsetX;
+	private final RelativePoint position;
 
-	public OccupyerPlace(int x, int y, ESoldierType type) {
-		this.x = x;
-		this.y = y;
+	public OccupyerPlace(int offsetX, int offsetY, ESoldierType type, RelativePoint position) {
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
 		this.type = type;
+		this.position = position;
 	}
 
 	/**
@@ -25,7 +29,7 @@ public class OccupyerPlace implements Serializable {
 	 * 
 	 * @return {@link ESoldierType#INFANTARY} if it is a person that is inside, {@link ESoldierType#BOWMAN} if it is a bowman on the roof.
 	 */
-	public ESoldierType getType() {
+	public final ESoldierType getType() {
 		return type;
 	}
 
@@ -34,8 +38,8 @@ public class OccupyerPlace implements Serializable {
 	 * 
 	 * @return
 	 */
-	public int getX() {
-		return x;
+	public final int getOffsetX() {
+		return offsetX;
 	}
 
 	/**
@@ -43,8 +47,8 @@ public class OccupyerPlace implements Serializable {
 	 * 
 	 * @return
 	 */
-	public int getY() {
-		return y;
+	public final int getOffsetY() {
+		return offsetY;
 	}
 
 	/**
@@ -57,7 +61,11 @@ public class OccupyerPlace implements Serializable {
 		BOWMAN
 	}
 
-	public boolean looksRight() {
+	public final boolean looksRight() {
 		return false; // TODO
+	}
+
+	public final RelativePoint getPosition() {
+		return position;
 	}
 }
