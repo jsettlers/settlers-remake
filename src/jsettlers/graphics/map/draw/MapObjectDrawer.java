@@ -31,8 +31,10 @@ import jsettlers.graphics.sequence.Sequence;
  */
 public class MapObjectDrawer {
 
-	private static final ImageLink INSIDE_BUILDING_RIGHT = new ImageLink(EImageLinkType.SETTLER, 12, 28, 1);
-	private static final ImageLink INSIDE_BUILDING_LEFT = new ImageLink(EImageLinkType.SETTLER, 12, 28, 0);
+	private static final ImageLink INSIDE_BUILDING_RIGHT = new ImageLink(
+	        EImageLinkType.SETTLER, 12, 28, 1);
+	private static final ImageLink INSIDE_BUILDING_LEFT = new ImageLink(
+	        EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int FILE = 1;
 
@@ -165,7 +167,7 @@ public class MapObjectDrawer {
 					break;
 
 				case BUILDING_DECONSTRUCTION_SMOKE:
-					drawByProgress(context, 12, 38, object.getStateProgress(),
+					drawByProgress(context, 13, 38, object.getStateProgress(),
 					        color);
 					break;
 
@@ -175,27 +177,27 @@ public class MapObjectDrawer {
 					break;
 
 				case FOUND_GEMSTONE:
-					drawByProgress(context, FILE, 94,
+					drawByProgress(context, FILE, 95,
 					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_GOLD:
-					drawByProgress(context, FILE, 94,
+					drawByProgress(context, FILE, 96,
 					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_IRON:
-					drawByProgress(context, FILE, 94,
+					drawByProgress(context, FILE, 97,
 					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_BRIMSTONE:
-					drawByProgress(context, FILE, 94,
+					drawByProgress(context, FILE, 98,
 					        object.getStateProgress(), color);
 					break;
 
 				case FOUND_NOTHING:
-					drawByProgress(context, FILE, 94,
+					drawByProgress(context, FILE, 99,
 					        object.getStateProgress(), color);
 					break;
 
@@ -240,7 +242,31 @@ public class MapObjectDrawer {
 					drawByProgress(context, 13, 42, progress, color);
 					break;
 
-				case PIG:
+				case WINE:
+					drawByProgress(context, 1, 25, progress, color);
+					break;
+
+				case PLANT_DECORATION: {
+					int step = getAnimationStep(x, y) % 8;
+
+					Sequence<? extends Image> seq =
+					        this.imageProvider.getSettlerSequence(1, 27);
+
+					seq.getImageSafe(step).draw(context.getGl(), color);
+				}
+					break;
+					
+				case DESERT_DECORATION: {
+					int step = getAnimationStep(x, y) % 5 + 10;
+
+					Sequence<? extends Image> seq =
+					        this.imageProvider.getSettlerSequence(1, 27);
+
+					seq.getImageSafe(step).draw(context.getGl(), color);
+				}
+				break;
+
+				case PIG: {
 					Sequence<? extends Image> seq =
 					        this.imageProvider.getSettlerSequence(ANIMALS_FILE,
 					                PIG_SEQ);
@@ -250,6 +276,7 @@ public class MapObjectDrawer {
 						int step = i % seq.length();
 						seq.getImageSafe(step).draw(context.getGl(), color);
 					}
+				}
 					break;
 
 				default:
@@ -613,14 +640,14 @@ public class MapObjectDrawer {
 		for (IBuildingOccupyer occupyer : building.getOccupyers()) {
 			OccupyerPlace place = occupyer.getPlace();
 			GLDrawContext gl = context.getGl();
-			
+
 			gl.glPushMatrix();
 			gl.glTranslatef(place.getOffsetX(), place.getOffsetY(), 0);
-			
+
 			if (place.getType() == ESoldierType.INFANTARY) {
-				ImageLink image = place.looksRight() ?
-						INSIDE_BUILDING_RIGHT :
-							INSIDE_BUILDING_RIGHT;
+				ImageLink image =
+				        place.looksRight() ? INSIDE_BUILDING_RIGHT
+				                : INSIDE_BUILDING_RIGHT;
 				imageProvider.getImage(image).draw(gl);
 			} else {
 				new MovableDrawer().draw(context, occupyer.getMovable());
