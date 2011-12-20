@@ -1,5 +1,6 @@
 package jsettlers.logic.movable.soldiers;
 
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
@@ -19,7 +20,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 
 	private final EMovableType type;
 
-	private int delayCtr = Integer.MAX_VALUE;
+	private short delayCtr = Short.MAX_VALUE;
 	private ISPosition2D enemyPos;
 
 	private IOccupyableBuilding tower = null;
@@ -37,6 +38,10 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 
 	protected abstract short getSearchRadius();
 
+	protected final boolean isInTower() {
+		return state == ESoldierState.IN_TOWER;
+	}
+
 	@Override
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
@@ -45,6 +50,14 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 				checkEnemies();
 				break;
 			case IN_TOWER:
+				// TODO only check outer circle and enemy positions in the area
+				findEnemyPos(Constants.TOWER_SOLDIER_SEARCH_AREA, (short) (Constants.MOVABLE_INTERRUPTS_PER_SECOND * 5));
+				if (enemyPos != null) {
+					if (canHit(enemyPos)) {
+						executeHit(enemyPos);
+					}
+				}
+
 				break;
 
 			default:
@@ -61,6 +74,10 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 			switch (state) {
 			case WATCHING:
 				checkEnemies();
+				break;
+
+			case IN_TOWER:
+				super.setDontMove(true);
 				break;
 
 			default:
@@ -82,14 +99,19 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		case GO_TO_TOWER:
 			state = ESoldierState.IN_TOWER;
 			super.setVisible(false);
-			super.setSleeping(true);
 			tower.setSoldier(this);
+			if (getSoldierType() != ESoldierType.BOWMAN) {
+				super.setSleeping(true);
+			} else {
+				super.setPos(tower.getPosition(this));
+				super.setDontMove(true);
+			}
 			break;
 		}
 	}
 
 	private void checkEnemies() {
-		checkForEnemies();
+		findEnemyPos(getSearchRadius(), (short) (Constants.MOVABLE_INTERRUPTS_PER_SECOND * 3));
 
 		if (enemyPos != null) {
 			if (!canHit(enemyPos)) {
@@ -110,12 +132,12 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		super.setAction(EAction.NO_ACTION, -1);
 	}
 
-	private void checkForEnemies() {
-		if (enemyPos != null || delayCtr > Constants.MOVABLE_INTERRUPTS_PER_SECOND * 2) {
+	private void findEnemyPos(short searchRadius, short delay) {
+		if (enemyPos != null || delayCtr > delay) {
 			delayCtr = 0;
 
 			Path path = super.getGrid().getDijkstra()
-					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, getSearchRadius(), ESearchType.ENEMY);
+					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, searchRadius, ESearchType.ENEMY);
 			if (path != null)
 				enemyPos = path.getTargetPos();
 			else
@@ -200,6 +222,11 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	}
 
 	@Override
+	public void setSelected(boolean selected) {
+		super.setSelected(selected);
+	}
+
+	@Override
 	protected final void killedEvent() {
 		if (tower != null) {
 			tower.requestFailed(getMovableType());
@@ -209,11 +236,6 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	@Override
 	public final boolean canOccupyBuilding() {
 		return tower == null;
-	}
-
-	@Override
-	public final Movable getMovable() {
-		return super.getMovable();
 	}
 
 	/**

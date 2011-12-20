@@ -41,9 +41,10 @@ public final class Constants {
 	 */
 	public static final float PIONEER_ACTION_DURATION = 1.2f;
 
-	public static final short BOWMAN_SEARCH_RADIUS = 16;
+	public static final short BOWMAN_SEARCH_RADIUS = 20;
 
-	public static final float BOWMAN_FIRE_RADIUS = 10;
+	public static final float BOWMAN_FIRE_RADIUS = 15;
+	public static final float BOWMAN_FIRE_RADIUS_IN_TOWER = 28;
 
 	public static final short SOWRDSMAN_SEARCH_RADIUS = 13;
 

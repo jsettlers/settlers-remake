@@ -16,4 +16,6 @@ public interface IBuildingOccupyableMovable {
 	IMovable getMovable();
 
 	void leaveOccupyableBuilding(ISPosition2D pos);
+
+	void setSelected(boolean selected);
 }

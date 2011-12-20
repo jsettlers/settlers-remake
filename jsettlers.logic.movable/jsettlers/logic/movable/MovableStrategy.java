@@ -116,11 +116,11 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 		this.movable.goToTile(pos);
 	}
 
-	protected void setAction(EAction action, float duration) {
+	protected final void setAction(EAction action, float duration) {
 		this.movable.setAction(action, duration);
 	}
 
-	protected void setMaterial(EMaterialType material) {
+	protected final void setMaterial(EMaterialType material) {
 		this.movable.setMaterial(material);
 	}
 
@@ -136,20 +136,20 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 
 	protected abstract void setGotoJob(GotoJob gotoJob);
 
-	protected void convertTo(EMovableType movableType) {
+	protected final void convertTo(EMovableType movableType) {
 		this.movable.setMaterial(EMaterialType.NO_MATERIAL);
 		this.movable.setStrategy(getTypeStrategy(grid, movableType, movable));
 	}
 
-	protected void setPos(ISPosition2D pos) {
+	protected final void setPos(ISPosition2D pos) {
 		this.movable.setPos(pos);
 	}
 
-	protected void setVisible(boolean visible) {
+	protected final void setVisible(boolean visible) {
 		this.movable.setVisible(visible);
 	}
 
-	protected void setDirection(EDirection direction) {
+	protected final void setDirection(EDirection direction) {
 		this.movable.setDirection(direction);
 	}
 
@@ -160,11 +160,11 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 
 	protected abstract boolean noActionEvent();
 
-	protected void setWaiting(float time) {
+	protected final void setWaiting(float time) {
 		movable.setWaiting(time);
 	}
 
-	protected IMovableGrid getGrid() {
+	protected final IMovableGrid getGrid() {
 		return grid;
 	}
 
@@ -174,19 +174,27 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 	protected void killedEvent() {
 	}
 
-	protected EMaterialType getMaterial() {
+	protected final EMaterialType getMaterial() {
 		return movable.getMaterial();
 	}
 
-	protected void setSleeping(boolean sleep) {
-		movable.setSleeping(sleep);
+	protected final void setSleeping(boolean sleep) {
+		movable.setState(sleep ? EMovableState.SLEEPING : EMovableState.NO_ACTION);
+	}
+
+	public void setDontMove(boolean dontMove) {
+		movable.setState(dontMove ? EMovableState.DONT_MOVE : EMovableState.NO_ACTION);
 	}
 
 	protected boolean canOccupyBuilding() {
 		return false;
 	}
 
-	protected Movable getMovable() {
+	public final Movable getMovable() {
 		return movable;
+	}
+
+	protected void setSelected(boolean selected) {
+		movable.setSelected(selected);
 	}
 }

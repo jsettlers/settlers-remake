@@ -129,17 +129,17 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public List<? extends IBuildingOccupyer> getOccupyers() {
+	public final List<? extends IBuildingOccupyer> getOccupyers() {
 		return occupiers;
 	}
 
 	@Override
-	public boolean needsPlayersGround() { // soldiers don't need players ground.
+	public final boolean needsPlayersGround() { // soldiers don't need players ground.
 		return false;
 	}
 
 	@Override
-	public void setSoldier(IBuildingOccupyableMovable soldier) {
+	public final void setSoldier(IBuildingOccupyableMovable soldier) {
 		for (OccupyerPlace curr : emptyPlaces) {
 			if (curr.getType() == soldier.getSoldierType()) {
 				emptyPlaces.remove(curr);
@@ -151,7 +151,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		occupyArea();
 	}
 
-	private void occupyArea() {
+	private final void occupyArea() {
 		if (!occupiedArea) {
 			MapShapeFilter occupying = getOccupyablePositions();
 			super.getGrid().occupyArea(occupying, super.getPos(), super.getPlayer());
@@ -165,10 +165,28 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public void requestFailed(EMovableType movableType) {
+	public final void requestFailed(EMovableType movableType) {
 		ESearchType searchType = getSearchType(movableType);
 		if (searchType != null)
 			searchedSoldiers.add(searchType);
+	}
+
+	@Override
+	public final ISPosition2D getPosition(IBuildingOccupyableMovable soldier) {
+		for (TowerOccupyer curr : occupiers) {
+			if (curr.soldier == soldier) {
+				return curr.place.getPosition().calculatePoint(super.getPos());
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public void setSelected(boolean selected) {
+		super.setSelected(selected);
+		for (TowerOccupyer curr : occupiers) {
+			curr.soldier.setSelected(selected);
+		}
 	}
 
 	private ESearchType getSearchType(EMovableType movableType) {

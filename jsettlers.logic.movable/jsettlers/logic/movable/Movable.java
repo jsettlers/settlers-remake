@@ -260,6 +260,10 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 			}
 			break;
 
+		case DONT_MOVE:
+			strategy.noActionEvent();
+			break;
+
 		case PUSHED_AND_WAITING:
 		case WAITING_FOR_FREE_TILE:
 			IHexMovable movableOnNextTile = grid.getMovable(nextPos);
@@ -340,7 +344,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	 *            NOTE: the duration will only be used if the action is of type TAKE, DROP or WALKING
 	 */
 	void setAction(EAction action, float duration) {
-		if (state != EMovableState.FINISHED_ACTION && state != EMovableState.NO_ACTION && state != EMovableState.SLEEPING) {
+		if (!state.canSetAction) {
 			throw new IllegalStateException("Current action has not been finished yet: " + this.state + "  " + action + "   " + getMovableType());
 		}
 
@@ -452,7 +456,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	 *            time to be waited.
 	 */
 	void setWaiting(float time) {
-		assert state == EMovableState.NO_ACTION || state == EMovableState.FINISHED_ACTION : "can't wait in this state: " + state;
+		assert state.canSetAction : "can't wait in this state: " + state;
 
 		this.progressIncrease = getProgressIncrease(time);
 		this.progress = 0;
@@ -475,14 +479,13 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		return strategy.canOccupyBuilding();
 	}
 
-	void setSleeping(boolean sleep) {
-		if (sleep) {
-			assert state == EMovableState.NO_ACTION || state == EMovableState.FINISHED_ACTION : "can't go sleeping while doing something";
-			state = EMovableState.SLEEPING;
-		} else {
-			state = EMovableState.NO_ACTION;
+	void setState(EMovableState newState) {
+		assert this.state.canSetAction : "can't change state to " + newState + "  in current state: " + this.state;
+		this.state = newState;
+
+		if (newState.isLazyState) {
+			this.action = EAction.NO_ACTION;
 		}
-		action = EAction.NO_ACTION;
 	}
 
 }

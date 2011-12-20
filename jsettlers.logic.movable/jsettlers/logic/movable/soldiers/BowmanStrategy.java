@@ -25,12 +25,12 @@ public class BowmanStrategy extends AbstractSoldierStrategy {
 	}
 
 	@Override
-	protected short getSearchRadius() {
+	protected final short getSearchRadius() {
 		return Constants.BOWMAN_SEARCH_RADIUS;
 	}
 
 	@Override
-	protected void executeHit(ISPosition2D enemyPos) {
+	protected final void executeHit(ISPosition2D enemyPos) {
 		super.setAction(EAction.ACTION1, 0.8f);
 		EDirection dir = EDirection.getApproxDirection(super.getPos(), enemyPos);
 		if (dir != null)
@@ -40,12 +40,13 @@ public class BowmanStrategy extends AbstractSoldierStrategy {
 	}
 
 	@Override
-	protected boolean canHit(ISPosition2D enemyPos) {
-		return Math.hypot(super.getPos().getX() - enemyPos.getX(), super.getPos().getY() - enemyPos.getY()) <= Constants.BOWMAN_FIRE_RADIUS;
+	protected final boolean canHit(ISPosition2D enemyPos) {
+		float fireRadius = super.isInTower() ? Constants.BOWMAN_FIRE_RADIUS_IN_TOWER : Constants.BOWMAN_FIRE_RADIUS;
+		return Math.hypot(super.getPos().getX() - enemyPos.getX(), super.getPos().getY() - enemyPos.getY()) <= fireRadius;
 	}
 
 	@Override
-	public ESoldierType getSoldierType() {
+	public final ESoldierType getSoldierType() {
 		return ESoldierType.BOWMAN;
 	}
 

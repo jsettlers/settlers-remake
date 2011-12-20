@@ -11,4 +11,6 @@ public interface IOccupyableBuilding {
 
 	void requestFailed(EMovableType movableType);
 
+	ISPosition2D getPosition(IBuildingOccupyableMovable soldier);
+
 }
