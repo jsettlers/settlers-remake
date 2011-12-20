@@ -16,6 +16,8 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 	private ISPosition2D centerPos;
 	private boolean going = false;
 
+	private boolean secondActionDone;
+
 	public SpecialistStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
 	}
@@ -38,7 +40,7 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 		}
 
 		if (canWorkOnCurrPos()) {
-			super.setAction(EAction.ACTION1, getActionDuration());
+			super.setAction(EAction.ACTION1, getAction1Duration());
 			going = false;
 		} else {
 			unmarkTargetPos();
@@ -48,7 +50,7 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 
 	protected abstract boolean canWorkOnCurrPos();
 
-	protected abstract float getActionDuration();
+	protected abstract float getAction1Duration();
 
 	@Override
 	protected final boolean actionFinished() {
@@ -56,12 +58,19 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 			if (centerPos != null) {
 				if (!going) {
 					if (canWorkOnCurrPos()) {
-						executeAction();
+						if (hasTwoActions() && !secondActionDone) {
+							secondActionDone = true;
+							super.setAction(EAction.ACTION2, getAction2Duration());
+							return true; // needs to be done here to prevent unmarking
+						} else {
+							executeAction();
+							secondActionDone = false; // reset for next time
+						}
 					}
 					unmarkTargetPos();
 					requestNewPath();
 				} else {
-					super.setAction(EAction.ACTION1, getActionDuration());
+					super.setAction(EAction.ACTION1, getAction1Duration());
 					going = false;
 				}
 			} else {
@@ -71,6 +80,10 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 
 		return true;
 	}
+
+	protected abstract float getAction2Duration();
+
+	protected abstract boolean hasTwoActions();
 
 	protected abstract void executeAction();
 

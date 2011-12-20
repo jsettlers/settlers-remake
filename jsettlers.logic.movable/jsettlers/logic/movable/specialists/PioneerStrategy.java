@@ -53,7 +53,7 @@ public class PioneerStrategy extends SpecialistStrategy {
 	}
 
 	@Override
-	protected final float getActionDuration() {
+	protected final float getAction1Duration() {
 		return ACTION_DURATION;
 	}
 
@@ -65,6 +65,16 @@ public class PioneerStrategy extends SpecialistStrategy {
 	@Override
 	protected final ESearchType getSearchType() {
 		return ESearchType.FOREIGN_GROUND;
+	}
+
+	@Override
+	protected float getAction2Duration() {
+		return 0; // not needed
+	}
+
+	@Override
+	protected boolean hasTwoActions() {
+		return false;
 	}
 
 }

@@ -11,7 +11,8 @@ import jsettlers.logic.movable.Movable;
 public final class GeologistStrategy extends SpecialistStrategy {
 	private static final long serialVersionUID = -5571213409776666251L;
 
-	private static final float ACTION_DURATION = 1.4f;
+	private static final float ACTION1_DURATION = 1.4f;
+	private static final float ACTION2_DURATION = 1.5f;
 
 	public GeologistStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -70,13 +71,23 @@ public final class GeologistStrategy extends SpecialistStrategy {
 	}
 
 	@Override
-	protected final float getActionDuration() {
-		return ACTION_DURATION;
+	protected final float getAction1Duration() {
+		return ACTION1_DURATION;
 	}
 
 	@Override
 	protected final ESearchType getSearchType() {
 		return ESearchType.MOUNTAIN;
+	}
+
+	@Override
+	protected float getAction2Duration() {
+		return ACTION2_DURATION;
+	}
+
+	@Override
+	protected boolean hasTwoActions() {
+		return true;
 	}
 
 }
