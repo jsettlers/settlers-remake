@@ -615,7 +615,7 @@ public class MapObjectDrawer {
 			GLDrawContext gl = context.getGl();
 			
 			gl.glPushMatrix();
-			gl.glTranslatef(place.getX(), place.getY(), 0);
+			gl.glTranslatef(place.getOffsetX(), place.getOffsetY(), 0);
 			
 			if (place.getType() == ESoldierType.INFANTARY) {
 				ImageLink image = place.looksRight() ?
