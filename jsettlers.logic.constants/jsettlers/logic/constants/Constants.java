@@ -36,11 +36,6 @@ public final class Constants {
 
 	public static final float MOVABLE_TAKE_DROP_DURATION = 0.5f;
 
-	/**
-	 * duration of the pioneer action in seconds
-	 */
-	public static final float PIONEER_ACTION_DURATION = 1.2f;
-
 	public static final short BOWMAN_SEARCH_RADIUS = 20;
 
 	public static final float BOWMAN_FIRE_RADIUS = 15;

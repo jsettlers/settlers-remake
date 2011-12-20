@@ -15,8 +15,10 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.objects.PigObject;
+import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
@@ -227,6 +229,12 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		SelfDeletingMapObject object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
 		addMapObject(pos, object);
 		timingQueue.add(new TimeEvent(object, duration, true));
+	}
+
+	public void addRessourceSign(ISPosition2D pos, EResourceType resourceType, float amount) {
+		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, amount);
+		addMapObject(pos, object);
+		timingQueue.add(new TimeEvent(object, RessourceSignMapObject.getLivetime(), true));
 	}
 
 	public void setConstructionMarking(ISPosition2D pos, byte value) {

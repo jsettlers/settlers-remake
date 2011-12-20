@@ -8,6 +8,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
+import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
@@ -297,4 +298,10 @@ public interface IMovableGrid {
 	boolean isEnforcedByTower(ISPosition2D pos);
 
 	boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable);
+
+	EResourceType getResourceTypeAt(short x, short y);
+
+	byte getResourceAmountAt(short x, short y);
+
+	boolean canAddRessourceSign(ISPosition2D pos);
 }

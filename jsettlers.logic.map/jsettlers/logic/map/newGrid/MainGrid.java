@@ -50,6 +50,7 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
+import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
@@ -77,6 +78,7 @@ import jsettlers.logic.map.random.grid.StackObject;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.stack.IRequestsStackGrid;
+import random.RandomSingleton;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -169,7 +171,6 @@ public class MainGrid implements Serializable {
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		initAdditionalGrids();
-
 	}
 
 	private MainGrid(MapGrid mapGrid) {
@@ -179,6 +180,15 @@ public class MainGrid implements Serializable {
 			for (short x = 0; x < width; x++) {
 				landscapeGrid.setLandscapeTypeAt(x, y, mapGrid.getLandscape(x, y));
 				landscapeGrid.setHeightAt(x, y, mapGrid.getLandscapeHeight(x, y));
+
+				switch (mapGrid.getLandscape(x, y)) {
+				case MOUNTAIN:
+					landscapeGrid.setResourceAt(x, y, EResourceType.values()[RandomSingleton.getInt(0, 2)], (byte) RandomSingleton.getInt(-100, 127));
+					break;
+				case WATER:
+					landscapeGrid.setResourceAt(x, y, EResourceType.FISH, (byte) RandomSingleton.getInt(-100, 127));
+					break;
+				}
 			}
 		}
 
@@ -393,10 +403,22 @@ public class MainGrid implements Serializable {
 			case SOLDIER_PIKEMAN:
 				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 
+			case MOUNTAIN:
+				return isInBounds(x, y) && !flagsGrid.isMarked(x, y) && canAddRessourceSign(x, y);
+
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
 				return false;
 			}
+		}
+
+		protected final boolean canAddRessourceSign(short x, short y) {
+			return x % 2 == 0
+					&& y % 2 == 0
+					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
+					&& !(objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_COAL)
+							|| objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_IRON) || objectsGrid.hasMapObjectType(x, y,
+							EMapObjectType.FOUND_GOLD));
 		}
 
 		private final boolean isSoldierAt(short x, short y, ESearchType searchType, byte player) {
@@ -521,11 +543,10 @@ public class MainGrid implements Serializable {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return debugColors[x][y];
+			// return debugColors[x][y];
 
-			// return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0,
-			// 0,
-			// 1, 1) : null);
+			return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0,
+					1, 1) : (flagsGrid.isMarked((short) x, (short) y) ? new Color(0, 1, 0, 1) : null));
 		}
 
 		@Override
@@ -888,10 +909,26 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable) {
+		public final boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable) {
 			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y) && !isLandscapeBlocking(x, y)
 					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer() == partitionsGrid.getPlayerAt(x, y));
 		}
+
+		@Override
+		public final EResourceType getResourceTypeAt(short x, short y) {
+			return landscapeGrid.getResourceTypeAt(x, y);
+		}
+
+		@Override
+		public final byte getResourceAmountAt(short x, short y) {
+			return landscapeGrid.getResourceAmountAt(x, y);
+		}
+
+		@Override
+		public final boolean canAddRessourceSign(ISPosition2D pos) {
+			return super.canAddRessourceSign(pos.getX(), pos.getY());
+		}
+
 	}
 
 	class BordersThreadGrid implements IBordersThreadGrid {

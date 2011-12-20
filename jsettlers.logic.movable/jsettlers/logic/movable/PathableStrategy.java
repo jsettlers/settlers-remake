@@ -157,6 +157,12 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 		calculateDijkstraPath(super.getPos(), (short) 200, ESearchType.NON_BLOCKED_OR_PROTECTED);
 	}
 
+	/**
+	 * Gives the position the movable is currently walking to.
+	 * 
+	 * @return position this movable is walking to<br>
+	 *         null if the movable is currently not following any path.
+	 */
 	protected ISPosition2D getTargetPos() {
 		if (path != null) {
 			return path.getTargetPos();

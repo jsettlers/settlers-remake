@@ -16,45 +16,70 @@ public class LandscapeGrid implements Serializable {
 
 	private final byte[][] heightGrid;
 	private final ELandscapeType[][] landscapeGrid;
+	private final byte[][] resourceAmount;
+	private final EResourceType[][] resourceType;
 
-	private IGraphicsBackgroundListener backgroundListener;
+	private transient IGraphicsBackgroundListener backgroundListener;
 
 	public LandscapeGrid(short width, short height) {
 		this.heightGrid = new byte[width][height];
 		this.landscapeGrid = new ELandscapeType[width][height];
+		this.resourceAmount = new byte[width][height];
+		this.resourceType = new EResourceType[width][height];
 
 		setBackgroundListener(null);
 	}
 
-	public byte getHeightAt(short x, short y) {
+	public final byte getHeightAt(short x, short y) {
 		return heightGrid[x][y];
 	}
 
-	public void setHeightAt(short x, short y, byte height) {
+	public final void setHeightAt(short x, short y, byte height) {
 		this.heightGrid[x][y] = height;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public ELandscapeType getLandscapeTypeAt(short x, short y) {
+	public final ELandscapeType getLandscapeTypeAt(short x, short y) {
 		return landscapeGrid[x][y];
 	}
 
-	public void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
+	public final void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
 		this.landscapeGrid[x][y] = landscapeType;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public void changeHeightAt(short x, short y, byte delta) {
+	public final void changeHeightAt(short x, short y, byte delta) {
 		this.heightGrid[x][y] += delta;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+	public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 		if (backgroundListener != null) {
 			this.backgroundListener = backgroundListener;
 		} else {
 			this.backgroundListener = new NullBackgroundListener();
 		}
+	}
+
+	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
+		this.resourceType[x][y] = resourceType;
+		this.resourceAmount[x][y] = amount;
+	}
+
+	public final byte getResourceAmountAt(short x, short y) {
+		return resourceAmount[x][y];
+	}
+
+	public final EResourceType getResourceTypeAt(short x, short y) {
+		return resourceType[x][y];
+	}
+
+	public final boolean hasResourceAt(short x, short y, EResourceType resourceType) {
+		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x][y] > 0;
+	}
+
+	public final void pickResourceAt(short x, short y) {
+		resourceAmount[x][y]--;
 	}
 
 	/**

@@ -21,7 +21,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 	}
 
 	@Override
-	public final float getStateProgress() {
+	public float getStateProgress() {
 		float progress = (NetworkTimer.getGameTime() - startTime) / ((float) duration);
 		if (progress < 1) {
 			return progress;
