@@ -403,7 +403,6 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		public int compareTo(TimeEvent o) {
 			return this.eventTime - o.eventTime;
 		}
-
 	}
 
 }

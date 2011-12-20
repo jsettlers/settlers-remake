@@ -214,7 +214,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return searchType;
 	}
 
-	private class TowerOccupyer implements IBuildingOccupyer, Serializable {
+	private static class TowerOccupyer implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
 		private final OccupyerPlace place;

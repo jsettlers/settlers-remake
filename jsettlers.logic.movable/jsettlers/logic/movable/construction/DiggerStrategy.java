@@ -10,6 +10,12 @@ import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
+/**
+ * Movable strategy for diggers.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class DiggerStrategy extends PathableStrategy implements IManageableDigger {
 	private static final long serialVersionUID = -4662839529813216429L;
 

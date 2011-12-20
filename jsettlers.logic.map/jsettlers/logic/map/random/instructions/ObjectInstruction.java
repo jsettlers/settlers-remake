@@ -20,24 +20,17 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 			int startx = start.getX() + getIntParameter("dx", random);
 			int starty = start.getY() + getIntParameter("dy", random);
 
-			ELandscapeType onLandscape =
-			        GridLandscapeType.convert(MeshLandscapeType.parse(
-			                getParameter("on", random), null));
+			ELandscapeType onLandscape = GridLandscapeType.convert(MeshLandscapeType.parse(getParameter("on", random), null));
 			LandFilter filter = getPlaceFilter(onLandscape, grid);
 
-			boolean group =
-			        "true".equalsIgnoreCase(getParameter("group", random));
+			boolean group = "true".equalsIgnoreCase(getParameter("group", random));
 
 			int distance = getIntParameter("distance", random);
 
 			if (!group) {
-				matcher =
-				        new RandomMatcher(grid, startx, starty, distance,
-				                filter, random);
+				matcher = new RandomMatcher(grid, startx, starty, distance, filter, random);
 			} else {
-				matcher =
-				        new GroupMatcher(grid, startx, starty, distance,
-				                filter, random);
+				matcher = new GroupMatcher(grid, startx, starty, distance, filter, random);
 			}
 
 			int count = getIntParameter("count", random);
@@ -53,8 +46,7 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 		}
 	}
 
-	private class LandscapeFilter implements LandFilter {
-
+	private static class LandscapeFilter implements LandFilter {
 		private final ELandscapeType onLandscape;
 		private final MapGrid grid;
 
@@ -66,8 +58,7 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 		@Override
 		public boolean isPlaceable(ISPosition2D point) {
 			return grid.isObjectPlaceable(point.getX(), point.getY())
-			        && (onLandscape == null || onLandscape.equals(grid
-			                .getLandscape(point.getX(), point.getY())));
+					&& (onLandscape == null || onLandscape.equals(grid.getLandscape(point.getX(), point.getY())));
 		}
 	}
 
@@ -75,14 +66,13 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 		return new LandscapeFilter(onLandscape, grid);
 	}
 
-	protected void placeObject(MapGrid grid, PlayerStart start, int x, int y,
-	        Random random) {
+	protected void placeObject(MapGrid grid, PlayerStart start, int x, int y, Random random) {
 		grid.setMapObject(x, y, getObject(start, random));
 		grid.reserveArea(x, y, getIntParameter("tight", random));
 	}
 
 	@SuppressWarnings("unused")
-    protected MapObject getObject(PlayerStart start, Random random) {
+	protected MapObject getObject(PlayerStart start, Random random) {
 		return PlaceholderObject.getInstance();
 	}
 

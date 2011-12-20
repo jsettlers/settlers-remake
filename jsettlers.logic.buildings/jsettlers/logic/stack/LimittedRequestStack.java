@@ -8,7 +8,7 @@ public class LimittedRequestStack extends RequestStack {
 	private static final long serialVersionUID = -8778043264123900036L;
 
 	private final short requestedAmount;
-	private short stillToBeRequested;
+	private short stillToBeRequested = 0;
 	private short poppedMaterials = 0;
 
 	public LimittedRequestStack(IRequestsStackGrid grid, ISPosition2D position, EMaterialType materialType, short requestedAmount) {

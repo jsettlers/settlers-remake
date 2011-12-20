@@ -10,6 +10,12 @@ import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
 
+/**
+ * Movable strategy for bricklayers.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class BricklayerStrategy extends PathableStrategy implements IManageableBricklayer {
 	private static final long serialVersionUID = -5076159171851148099L;
 

@@ -82,7 +82,7 @@ public class GameSerializer {
 		return runnable.grid;
 	}
 
-	private final class LoadRunnable implements Runnable {
+	private static final class LoadRunnable implements Runnable {
 		private final ObjectInputStream ois;
 		MainGrid grid = null;
 
