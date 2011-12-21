@@ -639,7 +639,8 @@ public class MainGrid implements Serializable {
 	class LandmarksGrid implements ILandmarksThreadMap {
 		@Override
 		public boolean isBlocked(short x, short y) {
-			return flagsGrid.isBlocked(x, y);
+			ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
+			return flagsGrid.isBlocked(x, y) || landscape == ELandscapeType.WATER || landscape == ELandscapeType.SNOW;
 		}
 
 		@Override

@@ -41,6 +41,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		IDiggerRequester {
 	private static final long serialVersionUID = 4379555028512391595L;
 
+	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.5f;
+
 	private final byte player;
 	private EBuildingState state = EBuildingState.CREATED;
 
@@ -422,7 +424,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.state = EBuildingState.DESTROYED;
 
 		grid.removeBuildingAt(pos);
-		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, 5, player);
+		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION,
+				player);
 		drawWorkAreaCircle(false);
 		placeAdditionalMapObjects(grid, pos, false);
 		placeFlag(false);
