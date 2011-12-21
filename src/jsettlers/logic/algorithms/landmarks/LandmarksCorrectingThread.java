@@ -2,7 +2,7 @@ package jsettlers.logic.algorithms.landmarks;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
@@ -14,38 +14,35 @@ import jsettlers.common.position.ISPosition2D;
  * @author Andreas Eberle
  * 
  */
-public class LandmarksCorrectingThread extends Thread {
+public final class LandmarksCorrectingThread extends Thread {
 	private final ILandmarksThreadMap map;
-	private final ConcurrentLinkedQueue<ISPosition2D> queue = new ConcurrentLinkedQueue<ISPosition2D>();
+	private final LinkedBlockingQueue<ISPosition2D> queue = new LinkedBlockingQueue<ISPosition2D>();
 
 	public LandmarksCorrectingThread(ILandmarksThreadMap map) {
 		super("LandmarksCorrectingThread");
 		this.map = map;
 
 		this.setDaemon(true);
-
 		this.start();
 	}
 
 	@Override
-	public void run() {
+	public final void run() {
 		while (true) {
-			if (queue.isEmpty()) {
+
+			ISPosition2D startPos = null;
+			while (startPos == null) {
 				try {
-					Thread.sleep(1);
+					startPos = queue.take();
 				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-			} else {
-				ISPosition2D startPos;
-				synchronized (queue) {
-					startPos = queue.poll();
-				}
-				checkLandmarks(startPos);
 			}
+			checkLandmarks(startPos);
 		}
 	}
 
-	private void checkLandmarks(ISPosition2D startPos) {
+	private final void checkLandmarks(ISPosition2D startPos) {
 		short startPartition = map.getPartitionAt(startPos.getX(), startPos.getY());
 
 		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
@@ -54,7 +51,7 @@ public class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private void checkLandmarks(ISPosition2D startPos, short startPartition, EDirection startDirection) {
+	private final void checkLandmarks(ISPosition2D startPos, short startPartition, EDirection startDirection) {
 		if (map.isBlocked(startPos.getX(), startPos.getY()))
 			return;
 
@@ -76,9 +73,11 @@ public class LandmarksCorrectingThread extends Thread {
 				blocked = neighborPos;
 				blockedDir = neighborDir;
 				blockedBorder.add(blocked);
+				i = 0;
 			} else if (map.getPartitionAt(neighborPos.getX(), neighborPos.getY()) == startPartition) {
 				currBase = neighborPos;
 				blockedDir = EDirection.getDirection(currBase, blocked);
+				i = 0;
 
 				if (neighborPos.equals(startPos)) {
 					takeOverBlockedLand(blockedBorder, startPartition);
@@ -90,7 +89,7 @@ public class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private void takeOverBlockedLand(LinkedList<ISPosition2D> blockedBorder, short startPartition) {
+	private final void takeOverBlockedLand(LinkedList<ISPosition2D> blockedBorder, short startPartition) {
 		for (ISPosition2D curr : blockedBorder) {
 			short y = curr.getY();
 			for (short x = curr.getX();; x++) {
@@ -103,7 +102,7 @@ public class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private LinkedList<EDirection> getBlockedDirection(ISPosition2D position) {
+	private final LinkedList<EDirection> getBlockedDirection(ISPosition2D position) {
 		LinkedList<EDirection> blockedDirections = new LinkedList<EDirection>();
 
 		for (EDirection currDir : EDirection.values()) {
@@ -116,15 +115,11 @@ public class LandmarksCorrectingThread extends Thread {
 		return blockedDirections;
 	}
 
-	public void addLandmarkedPosition(ISPosition2D pos) {
-		synchronized (queue) {
-			queue.offer(pos);
-		}
+	public final void addLandmarkedPosition(ISPosition2D pos) {
+		queue.offer(pos);
 	}
 
-	public void addLandmarkedPositions(List<ISPosition2D> occupiedPositions) {
-		synchronized (queue) {
-			queue.addAll(occupiedPositions);
-		}
+	public final void addLandmarkedPositions(List<ISPosition2D> occupiedPositions) {
+		queue.addAll(occupiedPositions);
 	}
 }
