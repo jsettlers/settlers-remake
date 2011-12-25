@@ -305,10 +305,10 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glMatrixMode(GLES10.GL_MODELVIEW);
 		GLES10.glLoadIdentity();
 
-		GLES10.glScalef(2f / width, 2f / height, 0);
+		GLES10.glScalef(2f / width, 2f / height, -1);
 		//TODO: do not scale depth by 0.
 
-		GLES10.glTranslatef(-width / 2, -height / 2, 0);
+		GLES10.glTranslatef(-width / 2, -height / 2, .5f);
 
 		GLES10.glEnableClientState(GLES10.GL_VERTEX_ARRAY);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
@@ -327,7 +327,15 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public void drawTrianglesWithTexture(int textureid, int geometryindex,
 	        int triangleCount) {
-//TODO
+		GLES11.glBindTexture(GLES11.GL_TEXTURE_2D, textureid);
+
+		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex);
+		GLES11.glVertexPointer(3, GLES11.GL_FLOAT, 5 * 4, 0);
+		GLES11.glTexCoordPointer(2, GLES11.GL_FLOAT, 5 * 4, 3 * 4);
+
+		GLES11.glDrawArrays(GLES11.GL_TRIANGLES, 0, triangleCount * 3);
+
+		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
 
 	@Override

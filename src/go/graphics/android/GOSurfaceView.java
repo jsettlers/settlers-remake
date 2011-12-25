@@ -46,8 +46,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	private class ActionAdapter extends AbstractEventConverter {
 		private static final double CLICK_MOVE_TRESHOLD = 20;
 		private static final double CLICK_TIME_TRSHOLD = 1;
-		private static final float ZOOMSTART = 1.5f;
-		private static final double ZOOM_MIN_POINTERDISTANCE = 100;
+		private static final float ZOOMSTART = 2f;
+		private static final double ZOOM_MIN_POINTERDISTANCE = 150;
 
 		protected ActionAdapter(GOEventHandlerProvoder provider) {
 			super(provider);
@@ -113,8 +113,12 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 					Integer id = Integer.valueOf(e.getPointerId(index));
 					UIPoint start = panPointerStarts.remove(id);
 					if (start != null) {
-						endedPansX += e.getX(index) - start.getX();
-						endedPansY -= e.getY(index) - start.getY();
+						endedPansX +=
+						        (e.getX(index) - start.getX())
+						                / e.getPointerCount();
+						endedPansY -=
+						        (e.getY(index) - start.getY())
+						                / e.getPointerCount();
 					}
 
 				} else {
@@ -147,7 +151,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 					panPointerStarts.clear();
 					for (int i = 0; i < e.getPointerCount(); i++) {
 						Integer index = e.getPointerId(i);
-						panPointerStarts.put(index, new UIPoint(e.getX(i), e.getY(i)));
+						panPointerStarts.put(index,
+						        new UIPoint(e.getX(i), e.getY(i)));
 					}
 				} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
 					updateDrawPosition(convertToLocal(e, 0));
@@ -201,7 +206,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			}
 
 			UIPoint point =
-			        new UIPoint(panStart.getX() + dx, panStart.getY() + dy);
+			        new UIPoint(panStart.getX() + dx / e.getPointerCount(),
+			                panStart.getY() + dy / e.getPointerCount());
 			return point;
 		}
 
@@ -219,7 +225,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				x += start.getX();
 				y += start.getY();
 			}
-			return new UIPoint(x / values.size(), getHeight() - y / values.size());
+			return new UIPoint(x / values.size(), getHeight() - y
+			        / values.size());
 		}
 
 		private int getPointerIndex(MotionEvent e) {
@@ -248,7 +255,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		@Override
 		public void onDrawFrame(GL10 gl) {
-			GLES10.glClearColor(0, 0, 1, 1);
+			GLES10.glClearColor(0, 0, 0, 1);
 			GLES10.glClear(GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_COLOR_BUFFER_BIT);
 
 			area.drawArea(context);
