@@ -89,8 +89,8 @@ public class Region implements RedrawListener {
 	 *            The height of the region.
 	 */
 	public void drawRegion(GLDrawContext gl2, int width, int height) {
-		gl2.color(.3f, .3f, .3f, 1);
-		gl2.fillQuad(0,0, width, height);
+		//gl2.color(.3f, .3f, .3f, 1);
+		//gl2.fillQuad(0,0, width, height);
 
 		if (content != null) {
 			content.drawContent(gl2, width, height);
