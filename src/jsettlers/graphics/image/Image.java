@@ -222,9 +222,9 @@ public class Image implements ImageDataPrivider {
 			gl.color(color);
 		}
 
-//		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl), 2);
+		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl), 2);
 		
-		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometry());
+		//gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometry());
 		return;
 	}
 

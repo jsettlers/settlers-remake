@@ -26,7 +26,7 @@ public class SmallOriginalConstants extends IOriginalConstants {
 		UI_BG_SEQ_RIGHT =
 		        new ImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
 		                UI_BG_SEQINDEX_RIGHT, 0);
-
+ 
 		UI_TABS1_TOP = 1 - (float) 13 / 338;
 		UI_TABS1_BOTTOM = 1 - (float) 46 / 338;
 		UI_TABS1_SIDEMARGIN = (float) 8 / 136;

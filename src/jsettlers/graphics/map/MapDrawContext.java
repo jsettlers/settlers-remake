@@ -34,7 +34,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * 
  * @author michael
  */
-public class MapDrawContext {
+public final class MapDrawContext {
 
 	// private static final byte HEIGHT_FACTOR = 4;
 

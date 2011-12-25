@@ -4,11 +4,14 @@ import go.graphics.GLDrawContext;
 import go.graphics.GLDrawContext.GLBuffer;
 
 import java.nio.ShortBuffer;
+import java.util.BitSet;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IGraphicsBackgroundListener;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.image.Image;
@@ -19,7 +22,7 @@ import jsettlers.graphics.map.MapDrawContext;
  * 
  * @author michael
  */
-public class Background {
+public class Background implements IGraphicsBackgroundListener {
 
 	private static final int LAND_FILE = 0;
 
@@ -709,10 +712,6 @@ public class Background {
 	 */
 	private static final short VERTEX_SIZE = 6 * FLOAT_SIZE;
 
-	private static final int EXTRA_PADDING = 50;
-
-	private static final int HASH_INVALID = 0x80000000;
-
 	private static final byte DIM_MAX = 20;
 
 	private static final byte[] BLACK = new byte[] {
@@ -726,7 +725,6 @@ public class Background {
 
 	private ImageProvider imageProvider = ImageProvider.getInstance();
 
-	private int[] geometryHash = new int[1];
 	private byte[] fogOfWarStatus = new byte[1];
 	private MapRectangle oldBufferPosition = null;
 	private int bufferwidth = 1;; // in map points.
@@ -738,11 +736,13 @@ public class Background {
 
 	private int geometrytirs;
 
+	private BitSet geometryValid = new BitSet();
+
 	private int getTexture(GLDrawContext context) {
 		if (texture < 0) {
-			//TODO: asynchron
+			// TODO: asynchron
 			imageProvider.waitForPreload(LAND_FILE);
-			
+
 			if (imageProvider.isPreloaded(LAND_FILE)) {
 				short[] data = new short[TEXTURE_SIZE * TEXTURE_SIZE];
 				for (int i = 0; i < data.length; i++) {
@@ -819,8 +819,8 @@ public class Background {
 	 * @param height
 	 *            The height of the area to copy
 	 */
-	private static void copyImage(short[] data, Image image, int x, int y, int width,
-	        int height) {
+	private static void copyImage(short[] data, Image image, int x, int y,
+	        int width, int height) {
 		short[] sourceData = image.getData().array();
 		for (int dy = 0; dy < height && dy < image.getHeight(); dy++) {
 			System.arraycopy(sourceData, image.getWidth() * dy, data,
@@ -992,12 +992,11 @@ public class Background {
 	 * 
 	 * @param context
 	 *            The context to draw at.
+	 * @param screen2 
 	 */
-	public void drawMapContent(MapDrawContext context) {
+	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
 		// float[] geometry = getGeometry(context);
 		GLDrawContext gl = context.getGl();
-		FloatRectangle screen =
-		        context.getScreen().getPosition().bigger(EXTRA_PADDING);
 		MapRectangle screenArea =
 		        context.getConverter().getMapForScreen(screen);
 		if (!gl.isGeometryValid(geometryindex)
@@ -1011,6 +1010,7 @@ public class Background {
 		reloadGeometry(boundbuffer, screenArea, context);
 		gl.endWriteGeometry(geometryindex);
 		gl.glPushMatrix();
+		gl.glTranslatef(0, 0, -.1f);
 		gl.glScalef(1, 1, 0);
 		gl.glMultMatrixf(context.getConverter().getMatrixWithHeight(), 0);
 		gl.color(1, 1, 1, 1);
@@ -1024,14 +1024,23 @@ public class Background {
 		if (gl.isGeometryValid(geometryindex)) {
 			gl.removeGeometry(geometryindex);
 		}
-		bufferwidth = screenArea.getLineLength() + 1;
-		bufferheight = screenArea.getLines();
-		int count = bufferheight * (bufferwidth);
+		bufferwidth = niceRoundUp(screenArea.getLineLength() + 1);
+		bufferheight = niceRoundUp(screenArea.getLines());
+		int count = bufferheight * bufferwidth;
 		fogOfWarStatus = new byte[count * 4];
-		geometryHash = new int[count];
+		geometryValid = new BitSet(count);
 		geometrytirs = count * 2;
 
 		geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
+	}
+	
+	private static int niceRoundUp(int i) {
+//		int base = 1;
+//		while (i > base) {
+//			base *= 2;
+//		}
+//		return base;
+		return i;
 	}
 
 	/**
@@ -1045,17 +1054,52 @@ public class Background {
 	 */
 	private void reloadGeometry(GLBuffer boundbuffer, MapRectangle area,
 	        MapDrawContext context) {
+		boolean hasInvalidFields = !geometryValid.isEmpty();
+
+		int width = context.getMap().getWidth();
+		int height = context.getMap().getHeight();
+		int oldbuffertop = 0;
+		int oldbufferbottom = 0;
+		if (oldBufferPosition != null) {
+			oldbuffertop = oldBufferPosition.getLineY(0);
+			oldbufferbottom = oldbuffertop + bufferheight; // excluding
+		}
 		for (int line = 0; line < bufferheight; line++) {
+
 			int y = area.getLineY(line);
 			int minx = area.getLineStartX(line);
-			int maxx = area.getLineEndX(line) + 1;
+			int maxx = minx + bufferwidth;
+			int oldminx = 0;
+			int oldmaxx = 0; // excluding
+			if (y >= oldbuffertop && y < oldbufferbottom) {
+				oldminx = oldBufferPosition.getLineStartX(y - oldbuffertop);
+				oldmaxx = oldminx + bufferwidth;
+			}
+			boolean lineIsInMap = y >= 0 && y < height;
+
 			for (int x = minx; x < maxx; x++) {
-				if (oldBufferPosition == null
-				        || !oldBufferPosition.contains(x, y)) {
-					redrawPoint(boundbuffer, context, x, y, false);
-				} else if (geometryHash[getBufferPosition(y, x)] != getContextHash(
-				        context, x, y)) {
-					redrawPoint(boundbuffer, context, x, y, true);
+				int bufferPosition = getBufferPosition(y, x);
+				if (oldminx > x || oldmaxx <= x) {
+					redrawPoint(boundbuffer, context, x, y, false,
+					        bufferPosition);
+				} else if (lineIsInMap && x >= 0 && x < width) {
+					if (hasInvalidFields) {
+						boolean stillValid = false;
+						synchronized (this) {
+							stillValid = geometryValid.get(bufferPosition);
+							geometryValid.set(bufferPosition);
+						}
+						if (!stillValid) {
+							redrawPoint(boundbuffer, context, x, y, true,
+							        bufferPosition);
+						}
+					} else if (context.getVisibleStatus(x, y) != fogOfWarStatus[bufferPosition * 4]) {
+						redrawPoint(boundbuffer, context, x, y, true,
+						        bufferPosition);
+						invalidatePoint(x - 1, y); // only for next pass
+						invalidatePoint(x - 1, y - 1);
+						invalidatePoint(x - 1, y - 1);
+					}
 				}
 			}
 		}
@@ -1078,27 +1122,16 @@ public class Background {
 	 *            true if and only if the point was already in the buffer.
 	 */
 	private void redrawPoint(GLBuffer boundbuffer, MapDrawContext context,
-	        int x, int y, boolean wasVisible) {
-		int pointOffset = getBufferPosition(y, x);
+	        int x, int y, boolean wasVisible, int pointOffset) {
 		boundbuffer.position(pointOffset * 2 * 3 * VERTEX_SIZE);
 
-		boolean redrawNextTime = false;
 		if (x >= 0 && y >= 0 && x < context.getMap().getWidth() - 1
 		        && y < context.getMap().getHeight() - 1) {
 			if (wasVisible) {
-				boolean finishedDimming = true;
-				finishedDimming &=
-				        dimFogOfWarBuffer(context, (pointOffset * 4), x, y);
-				finishedDimming &=
-				        dimFogOfWarBuffer(context, (pointOffset * 4) + 1,
-				                x + 1, y);
-				finishedDimming &=
-				        dimFogOfWarBuffer(context, (pointOffset * 4) + 2, x,
-				                y + 1);
-				finishedDimming &=
-				        dimFogOfWarBuffer(context, (pointOffset * 4) + 3,
-				                x + 1, y + 1);
-				redrawNextTime = !finishedDimming;
+				dimFogOfWarBuffer(context, (pointOffset * 4), x, y);
+				dimFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
+				dimFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
+				dimFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
 			} else {
 				addFogOfWarBuffer(context, (pointOffset * 4), x, y);
 				addFogOfWarBuffer(context, (pointOffset * 4) + 1, x + 1, y);
@@ -1110,12 +1143,10 @@ public class Background {
 		} else {
 			addPseudoTrianglesToGeometry(context, boundbuffer, x, y);
 		}
-		if (redrawNextTime) {
-			geometryHash[pointOffset] = HASH_INVALID;
-		} else {
-			// TODO: compute hash once.
-			geometryHash[pointOffset] = getContextHash(context, x, y);
-		}
+	}
+
+	private synchronized void invalidatePoint(int x, int y) {
+		geometryValid.clear(getBufferPosition(y, x));
 	}
 
 	private void addFogOfWarBuffer(MapDrawContext context, int offset, int x,
@@ -1136,11 +1167,10 @@ public class Background {
 	 *            The y coordinate of the tile.
 	 * @return true if and only if the dim has finished.
 	 */
-	private boolean dimFogOfWarBuffer(MapDrawContext context, int offset,
-	        int x, int y) {
+	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x,
+	        int y) {
 		byte newFog = context.getVisibleStatus(x, y);
 		fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
-		return fogOfWarStatus[offset] == newFog;
 	}
 
 	private static byte dim(byte value, byte dimTo) {
@@ -1157,24 +1187,7 @@ public class Background {
 		}
 	}
 
-	private static int getContextHash(MapDrawContext context, int x, int y) {
-		return getHash(context, x + 1, y + 1) * 104729
-		        + getHash(context, x + 1, y) * 104729
-		        + getHash(context, x, y + 1) * 7919 + getHash(context, x, y);
-	}
-
-	private static int getHash(MapDrawContext context, int x, int y) {
-		if (x < 0 || x >= context.getMap().getWidth() || y < 0
-		        || y >= context.getMap().getHeight()) {
-			return 0;
-		} else {
-			return context.getMap().getLandscapeTypeAt(x, y).ordinal() * 10000
-			        + context.getMap().getHeightAt(x, y) * 100
-			        + context.getVisibleStatus(x, y);
-		}
-	}
-
-	private int getBufferPosition(int y, int x) {
+	private final int getBufferPosition(int y, int x) {
 		int linepos = y % bufferheight;
 		int colpos = x % bufferwidth;
 		while (linepos < 0) {
@@ -1404,6 +1417,13 @@ public class Background {
 		buffer.putByte(color);
 		buffer.putByte(color);
 		buffer.putByte((byte) 255);
+	}
+
+	@Override
+	public void backgroundChangedAt(short x, short y) {
+		if (oldBufferPosition != null && oldBufferPosition.contains(x, y)) {
+			invalidatePoint(x, y);
+		}
 	}
 
 	// private void drawWithRenderbuffer(MapDrawContext context) {

@@ -77,9 +77,11 @@ import jsettlers.graphics.map.selection.ISelectionSet;
  * 
  * @author michael
  */
-public class MapContent implements SettlersContent, GOEventHandlerProvoder,
+public final class MapContent implements SettlersContent, GOEventHandlerProvoder,
         IMapInterfaceListener {
 	private boolean ENABLE_DEBUG = false;
+	private static final int SCREEN_PADDING = 50;
+	private static final float OVERDRAW_BOTTOM_PX = 50;
 
 	private final IGraphicsGrid map;
 
@@ -127,6 +129,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
+		
+		map.setBackgroundListener(background);
 	}
 
 	private void resizeTo(int newWindowWidth, int newWindowHeight) {
@@ -151,11 +155,13 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 
 		this.context.begin(gl);
 		long start = System.currentTimeMillis();
-		drawBackground();
+		
+		FloatRectangle screen = this.context.getScreen().getPosition().bigger(SCREEN_PADDING);
+		drawBackground(screen);
 		long bgtime = System.currentTimeMillis() - start;
 
 		start = System.currentTimeMillis();
-		drawMain();
+		drawMain(screen);
 		this.context.end();
 		long foregroundtime = System.currentTimeMillis() - start;
 
@@ -222,15 +228,18 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 	 * Draws the main content (buildings, settlers, ...), assuming the context
 	 * is set up.
 	 */
-	private void drawMain() {
+	private void drawMain(FloatRectangle screen) {
 		boolean needDrawDebug = false;
 		short height = map.getHeight();
 		short width = map.getWidth();
 		MapRectangle area =
 		        this.context.getConverter().getMapForScreen(
-		                this.context.getScreen().getPosition().bigger(30));
+		                screen);
 
-		for (int line = 0; line < area.getLines(); line++) {
+		double bottomdrawy = screen.getMinY() - OVERDRAW_BOTTOM_PX;
+		
+		boolean linePartuallyVisible = true;
+		for (int line = 0; line < area.getLines() + 50 && linePartuallyVisible; line++) {
 			int y = area.getLineY(line);
 			if (y < 0) {
 				continue;
@@ -238,10 +247,18 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			if (y >= height) {
 				break;
 			}
+			linePartuallyVisible = false;
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
-			for (int x = Math.max(area.getLineStartX(line), 0); x <= endX; x++) {
-				needDrawDebug = drawTile(needDrawDebug, x, y);
+			int startX = Math.max(area.getLineStartX(line), 0);
+			for (int x = startX; x <= endX; x++) {
+				needDrawDebug |= drawTile(x, y);
+				if (!linePartuallyVisible) {
+					double drawspacey = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
+					if (drawspacey > bottomdrawy) {
+						linePartuallyVisible = true;
+					}
+				}
 			}
 		}
 
@@ -268,7 +285,7 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 		}
 	}
 
-	private boolean drawTile(boolean needDrawDebug, int x, int y) {
+	private boolean drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer
@@ -291,17 +308,13 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 			}
 		}
 
-		if (ENABLE_DEBUG && map.getDebugColorAt(x, y) != null) {
-			needDrawDebug = true;
-		}
-
 		if (map.isBorder(x, y)) {
 			this.context.beginTileContext(x, y);
 			byte player = map.getPlayerAt(x, y);
 			objectDrawer.drawPlayerBorderObject(context, player);
 			this.context.endTileContext();
 		}
-		return needDrawDebug;
+		return ENABLE_DEBUG && map.getDebugColorAt(x, y) != null;
 	}
 
 	private void drawDebugColors() {
@@ -373,8 +386,8 @@ public class MapContent implements SettlersContent, GOEventHandlerProvoder,
 	 * @param gl
 	 * @param screen2
 	 */
-	private void drawBackground() {
-		this.background.drawMapContent(this.context);
+	private void drawBackground(FloatRectangle screen) {
+		this.background.drawMapContent(this.context, screen);
 	}
 
 	@Override
