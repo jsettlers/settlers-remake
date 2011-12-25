@@ -53,7 +53,7 @@ public final class MapRectangle implements IMapArea {
 		return new RectangleIterator();
 	}
 
-	private final int getOffsetForLine(int line) {
+	private final static int getOffsetForLine(int line) {
 		return line / 2;
 	}
 

@@ -92,5 +92,5 @@ public enum EMapObjectType {
 	/**
 	 * cloud of smoke when a building get's torn down.
 	 */
-	BUILDING_DECONSTRUCTION_SMOKE
+	BUILDING_DECONSTRUCTION_SMOKE, WINE, PLANT_DECORATION, DESERT_DECORATION
 }
