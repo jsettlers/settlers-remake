@@ -6,40 +6,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 
 import android.content.res.Resources;
 
@@ -61,7 +49,6 @@ public class ResourceUpdater implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println("resourceupdater: starting http client");
 			DefaultHttpClient httpClient = createClient();
 
 			String serverrev = loadRevision(httpClient);
@@ -74,12 +61,10 @@ public class ResourceUpdater implements Runnable {
 				updateFiles(httpClient);
 			}
 
-			System.out.println("resourceupdater: received");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		setUpdating(false);
-		System.out.println("resourceupdater: finished");
 
 	}
 
@@ -91,13 +76,14 @@ public class ResourceUpdater implements Runnable {
 		ZipInputStream inputStream =
 		        new ZipInputStream(response.getEntity().getContent());
 		setUpdating(true);
+		
+		int files = 0;
 
 		byte[] buffer = new byte[1024];
 
 		ZipEntry entry;
 		while ((entry = inputStream.getNextEntry()) != null) {
 			String name = entry.getName();
-			System.out.println("Extracting " + name);
 			if (name.startsWith(RESOURCE_PREFIX)) {
 				String outfilename =
 				        destdir.getAbsolutePath() + "/"
@@ -114,7 +100,6 @@ public class ResourceUpdater implements Runnable {
 					File tmpfile = new File(outfilename + ".tmp");
 					tmpfile.deleteOnExit(); // <- if something fails
 					FileOutputStream out = new FileOutputStream(tmpfile);
-					System.out.println("Writing " + outfilename);
 
 					while (true) {
 						int len = inputStream.read(buffer);
@@ -125,14 +110,16 @@ public class ResourceUpdater implements Runnable {
 					}
 					out.close();
 					tmpfile.renameTo(outfile);
+					files++;
 				}
 			}
 		}
+		System.out.println("Updated " + files + " files");
 
 		setUpdating(false);
 	}
 
-	private String getMyVersion(File versionfile) throws FileNotFoundException {
+	private static String getMyVersion(File versionfile) throws FileNotFoundException {
 		if (versionfile.exists()) {
 			return getString(new FileInputStream(versionfile));
 		} else {
@@ -140,7 +127,7 @@ public class ResourceUpdater implements Runnable {
 		}
 	}
 
-	private String loadRevision(DefaultHttpClient httpClient)
+	private static String loadRevision(DefaultHttpClient httpClient)
 	        throws IOException, ClientProtocolException {
 		final String url = SERVER_ROOT + "revision.txt";
 		HttpGet httpRequest = new HttpGet(url);
