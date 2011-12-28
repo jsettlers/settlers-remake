@@ -67,22 +67,31 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	private void keepScreenOn() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		super.getWindow().addFlags(
+		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	private void addImageLookups() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files = new File[] { jsettlersdir, // <- output dir
-				storage, jsettlersdir, new File(jsettlersdir, "GFX"), michael, new File(michael, "GFX") };
+		File[] files = new File[] {
+		        getExternalFilesDir(null), // <- output dir, always writable
+		        jsettlersdir, 
+		        storage,
+		        jsettlersdir,
+		        new File(jsettlersdir, "GFX"),
+		        michael,
+		        new File(michael, "GFX")
+		};
 
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
 		}
-		ResourceManager.setProvider(new ResourceProvider(files));
+		ResourceManager.setProvider(new ResourceProvider(this, files));
 	}
 
 	// private Area area;
@@ -143,35 +152,35 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-		case R.id.f12btn:
-			glView.fireKey("F12");
-			return true;
-		case R.id.savebtn:
-			glView.fireKey("F2");
-			return true;
-		case R.id.loadbtn:
-			glView.fireKey("q");
-			return true;
-		case R.id.pausebtn:
-			glView.fireKey("PAUSE");
-			return true;
-		case R.id.speedup:
-			glView.fireKey("+");
-			glView.fireKey("+");
-			return true;
-		case R.id.slowdown:
-			glView.fireKey("-");
-			glView.fireKey("-");
-			return true;
-		case R.id.kill:
-			glView.fireKey("DELETE");
-			return true;
-		case R.id.stop:
-			glView.fireKey("STOP");
-			return true;
+			case R.id.f12btn:
+				glView.fireKey("F12");
+				return true;
+			case R.id.savebtn:
+				glView.fireKey("F2");
+				return true;
+			case R.id.loadbtn:
+				glView.fireKey("q");
+				return true;
+			case R.id.pausebtn:
+				glView.fireKey("PAUSE");
+				return true;
+			case R.id.speedup:
+				glView.fireKey("+");
+				glView.fireKey("+");
+				return true;
+			case R.id.slowdown:
+				glView.fireKey("-");
+				glView.fireKey("-");
+				return true;
+			case R.id.kill:
+				glView.fireKey("DELETE");
+				return true;
+			case R.id.stop:
+				glView.fireKey("STOP");
+				return true;
 
-		default:
-			return super.onOptionsItemSelected(item);
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -250,7 +259,8 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	}
 
 	@Override
-	public MapInterfaceConnector showGameMap(IGraphicsGrid map, IStatisticable playerStatistics) {
+	public MapInterfaceConnector showGameMap(IGraphicsGrid map,
+	        IStatisticable playerStatistics) {
 		displayedStartScreen = null;
 
 		final MapContent content = new MapContent(map);
@@ -262,7 +272,8 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 				region.setContent(content);
 				area.add(region);
 				glView = new GOSurfaceView(JsettlersActivity.this, area);
-				glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+				glView.setDebugFlags(GLSurfaceView.DEBUG_LOG_GL_CALLS
+				        | GLSurfaceView.DEBUG_CHECK_GL_ERROR);
 
 				setContentView(glView);
 			}

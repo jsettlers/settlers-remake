@@ -7,17 +7,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android.content.Context;
+
 import jsettlers.common.resources.IResourceProvider;
 
 public class ResourceProvider implements IResourceProvider {
 	private final File[] dirs;
+	private ResourceUpdater updater;
 
-	public ResourceProvider(File[] dirs) {
+	public ResourceProvider(Context context, File[] dirs) {
 		this.dirs = dirs;
+		this.updater = new ResourceUpdater(context.getResources(), dirs[0]);
+		new Thread(updater, "resource updater").start();
 	}
 
 	@Override
 	public InputStream getFile(String name) throws IOException {
+		try {
+	        this.updater.waitUntilUpdateFinished();
+        } catch (InterruptedException e) {
+        }
 		String[] parts = name.split("/");
 		for (File dir : dirs) {
 			File found = searchFileIn(dir, parts);
