@@ -19,10 +19,6 @@ import random.RandomSingleton;
 @Deprecated
 public abstract class JSettlersApp implements Runnable {
 
-	private static final int[] PRELOAD_FILES = new int[] {
-	        2, 0, 1, 3, 10, 11, 12, 13
-	};
-
 	private static final byte PLAYERS = 3;
 
 	private final String networkmode;
@@ -83,9 +79,6 @@ public abstract class JSettlersApp implements Runnable {
 		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
-		for (int i : PRELOAD_FILES) {
-			provider.preload(i);
-		}
 		RandomSingleton.load(2132134L);
 
 		Timer100Milli.start();

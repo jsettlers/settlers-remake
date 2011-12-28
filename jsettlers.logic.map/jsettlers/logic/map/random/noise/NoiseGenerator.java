@@ -6,9 +6,7 @@ public class NoiseGenerator {
 	private static final float FREQ_INCREASE = 2;
 	private final NoiseSet[] SETS = new NoiseSet[] {
 	        new NoiseSet(15731, 789221, 1376312589),
-	        new NoiseSet(15731, 789221, 2350883),
-	        new NoiseSet(15731, 789221, 1376312589),
-	        new NoiseSet(15731, 789221, 1376312589)
+	        new NoiseSet(15731, 789221, 2350883)
 	};
 
 	public float getNoise(int x, int y) {
