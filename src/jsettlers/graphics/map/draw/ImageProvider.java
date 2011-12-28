@@ -10,9 +10,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
-import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
+import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileSet;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
@@ -23,6 +24,10 @@ import jsettlers.graphics.sequence.Sequence;
  * @author michael
  */
 public final class ImageProvider {
+	private static final String FILE_SUFFIX = ".7c003e01f.dat";
+
+	private static final String FILE_PREFIX = "siedler3_";
+
 	private static final int THREADS = 3;
 
 	private static ImageProvider instance;
@@ -43,8 +48,7 @@ public final class ImageProvider {
 	private ImageProvider() {
 		for (int i = 0; i < THREADS; i++) {
 			Thread imageLoaderThread =
-			        new Thread(new ImageLoadTask(images, filesToLoad,
-			                lookupPaths), "image loader");
+			        new Thread(new ImageLoadTask(images, filesToLoad), "image loader");
 			imageLoaderThread.setDaemon(true);
 			imageLoaderThread.start();
 		}
@@ -81,7 +85,7 @@ public final class ImageProvider {
 	 *            The number of the sequence in the file.
 	 * @return The settler sequence.
 	 */
-	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
+	public Sequence<? extends SingleImage> getSettlerSequence(int file, int seqnumber) {
 		DatFileSet set = tryGetFileSet(file);
 		if (set != null && set.getSettlers().size() > seqnumber) {
 			return set.getSettlers().get(seqnumber);
@@ -115,7 +119,7 @@ public final class ImageProvider {
 	 *            It's sequence number.
 	 * @return The image, or an empty image.
 	 */
-	public Image getLandscapeImage(int file, int seqnumber) {
+	public SingleImage getLandscapeImage(int file, int seqnumber) {
 		waitForPreload(file);
 		
 		DatFileSet set = tryGetFileSet(file);
@@ -123,7 +127,7 @@ public final class ImageProvider {
 		if (set != null) {
 			Sequence<LandscapeImage> landscapes = set.getLandscapes();
 			if (seqnumber < landscapes.length()) {
-				return landscapes.getImageSafe(seqnumber);
+				return (SingleImage) landscapes.getImageSafe(seqnumber);
 			}
 		}
 		return NullImage.getInstance();
@@ -138,13 +142,13 @@ public final class ImageProvider {
 	 *            The image number.
 	 * @return The image.
 	 */
-	public Image getGuiImage(int file, int seqnumber) {
+	public SingleImage getGuiImage(int file, int seqnumber) {
 		//TEMP
 		waitForPreload(file);
 		DatFileSet set = tryGetFileSet(file);
 
 		if (set != null) {
-			return set.getGuis().getImageSafe(seqnumber);
+			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
 		} else {
 			return NullImage.getInstance();
 		}
@@ -157,7 +161,7 @@ public final class ImageProvider {
 	 *            The link that describes the image
 	 * @return The image or a null image.
 	 */
-	public Image getImage(ImageLink link) {
+	public SingleImage getImage(ImageLink link) {
 		if (link == null) {
 			return NullImage.getInstance();
 		} else if (link.getType() == EImageLinkType.GUI) {
@@ -165,7 +169,7 @@ public final class ImageProvider {
 		} else if (link.getType() == EImageLinkType.LANDSCAPE) {
 			return getLandscapeImage(link.getFile(), link.getSequence());
 		} else {
-			return getSettlerSequence(link.getFile(), link.getSequence())
+			return (SingleImage) getSettlerSequence(link.getFile(), link.getSequence())
 			        .getImageSafe(link.getImage());
 		}
 	}
@@ -222,5 +226,29 @@ public final class ImageProvider {
 			requestedFiles.clear();
 		}
 	}
+
+	private File findFileInPaths(String fileName) {
+		for (File path : this.lookupPaths) {
+			File searched = new File(path, fileName);
+			if (searched.isFile() && searched.canRead()) {
+				return searched;
+			}
+		}
+		return null;
+	}
+
+	public AdvancedDatFileReader getFileReader(int fileIndex) {
+		String numberString = String.format("%02d", fileIndex);
+		String fileName = FILE_PREFIX + numberString + FILE_SUFFIX;
+
+		File file = findFileInPaths(fileName);
+
+		if (file != null) {
+			return new AdvancedDatFileReader(file);
+		} else {
+			System.err.println("Could not find/load file " + fileName);
+			return null;
+		}
+    }
 
 }

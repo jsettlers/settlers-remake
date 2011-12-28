@@ -2,8 +2,10 @@ package jsettlers.graphics.reader.translator;
 
 import java.io.IOException;
 
+import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.ImageDataPrivider;
 import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> {
@@ -23,7 +25,7 @@ public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> 
     }
 
 	@Override
-    public LandscapeImage createImage(ImageDataPrivider data) {
-	    return new LandscapeImage(data);
+    public LandscapeImage createImage(ImageMetadata metadata, short[] array) {
+	    return new LandscapeImage(metadata, array);
     }
 }

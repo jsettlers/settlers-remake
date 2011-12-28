@@ -3,6 +3,7 @@ package jsettlers.graphics.utils;
 import go.graphics.GLDrawContext;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.SettlerImage;
 
 /**
@@ -26,7 +27,7 @@ public final class ButtonDrawer {
 	 * @param image
 	 *            The button.
 	 */
-	public static void drawButton(GLDrawContext gl, FloatRectangle position, Image image) {
+	public static void drawButton(GLDrawContext gl, FloatRectangle position, SingleImage image) {
 		gl.color(.3f, .3f, .3f, 1);
 		gl.fillQuad(position.getMinX(), position.getMinY(), position.getMaxX(),
 		        position.getMaxY());
@@ -50,7 +51,7 @@ public final class ButtonDrawer {
 	 *            The image to draw
 	 */
 	public static void drawScaledImage(GLDrawContext gl, FloatRectangle position,
-			Image image) {
+			SingleImage image) {
 
 		float maxXScale = (float) (position.getWidth()) / image.getWidth();
 		float maxYScale = (float) (position.getHeight()) / image.getHeight();

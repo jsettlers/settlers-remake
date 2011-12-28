@@ -1,5 +1,7 @@
 package jsettlers.graphics.image;
 
+import jsettlers.graphics.reader.ImageMetadata;
+
 
 /**
  * Class to draw triangles of landscape images.
@@ -17,7 +19,7 @@ package jsettlers.graphics.image;
  * 
  * @author michael
  */
-public class LandscapeImage extends Image {
+public class LandscapeImage extends SingleImage {
 	/**
 	 * States that you request the image in the top right border of the texture.
 	 */
@@ -28,8 +30,8 @@ public class LandscapeImage extends Image {
 	public static final int TRI_TOP = 4;
 	public static final int TRI_TOPLEFT = 5;
 
-	public LandscapeImage(ImageDataPrivider data) {
-		super(data);
+	public LandscapeImage(ImageMetadata metadata, short[] data) {
+		super(metadata, data);
 	}
 
 	/**

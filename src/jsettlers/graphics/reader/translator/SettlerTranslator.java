@@ -2,8 +2,10 @@ package jsettlers.graphics.reader.translator;
 
 import java.io.IOException;
 
+import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.ImageDataPrivider;
 import jsettlers.graphics.image.SettlerImage;
+import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
@@ -14,8 +16,8 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
 public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	@Override
-	public SettlerImage createImage(ImageDataPrivider data) {
-		return new SettlerImage(data);
+    public SettlerImage createImage(ImageMetadata metadata, short[] array) {
+		return new SettlerImage(metadata, array);
 	}
 
 	@Override

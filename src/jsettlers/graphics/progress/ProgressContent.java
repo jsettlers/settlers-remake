@@ -9,7 +9,7 @@ import go.graphics.text.TextDrawer;
 import java.util.LinkedList;
 
 import jsettlers.graphics.SettlersContent;
-import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 
@@ -30,7 +30,7 @@ public class ProgressContent implements SettlersContent {
 		gl.glPushMatrix();
 		
 		
-		Image image = provider.getGuiImage(2, 29);
+		SingleImage image = provider.getGuiImage(2, 29);
 		gl.glScalef((float) width / image.getWidth(),
 		        (float) height / image.getHeight(), 0);
 		image.drawAt(gl, 0, image.getHeight());

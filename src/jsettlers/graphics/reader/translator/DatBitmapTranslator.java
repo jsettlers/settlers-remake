@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.ImageDataPrivider;
+import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
@@ -45,6 +46,6 @@ public interface DatBitmapTranslator<T extends Image> {
 	 * @param data The data.
 	 * @return The image
 	 */
-	T createImage(ImageDataPrivider data);
+	T createImage(ImageMetadata metadata, short[] array);
 	
 }

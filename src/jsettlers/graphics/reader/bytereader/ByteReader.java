@@ -58,8 +58,10 @@ public class ByteReader {
 	public int read16() throws IOException {
 		assertCacheHolds(2);
 
-		byte byte0 = this.cache[this.cachePosition++];
-		byte byte1 = this.cache[this.cachePosition++];
+		int c = this.cachePosition;
+		int byte0 = this.cache[c];
+		int byte1 = this.cache[c + 1];
+		this.cachePosition = c + 2;
 
 		return (0xff & byte0) | ((0xff & byte1) << 8);
 	}

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.ImageDataPrivider;
+import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
@@ -24,8 +25,8 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 	}
 
 	@Override
-    public GuiImage createImage(ImageDataPrivider data) {
-	    return new GuiImage(data);
+    public GuiImage createImage(ImageMetadata metadata, short[] array) {
+	    return new GuiImage(metadata, array);
     }
 
 }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
@@ -180,7 +180,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	static final DatBitmapTranslator<Torso> TORSO_TRANSLATOR =
 	        new TorsoTranslator();
 
-	static final DatBitmapTranslator<LandscapeImage> LANDSCAPE_TRANSLATOR =
+	public static final DatBitmapTranslator<LandscapeImage> LANDSCAPE_TRANSLATOR =
 	        new LandscapeTranslator();
 
 	static final DatBitmapTranslator<ShadowImage> SHADOW_TRANSLATOR =
@@ -299,7 +299,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 	}
 
-	private int[] readSequenceIndexStarts(long filelength, ByteReader reader)
+	private static int[] readSequenceIndexStarts(long filelength, ByteReader reader)
 	        throws IOException {
 		reader.assumeToRead(FILE_START);
 		int fileSize = reader.read32();
@@ -504,7 +504,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 
 		@Override
-		public Image getImageSafe(int index) {
+		public SingleImage getImageSafe(int index) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();
@@ -517,6 +517,12 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 	}
 
+	public ByteReader getReaderForLandscape(int index) throws IOException {
+		initializeIfNeeded();		
+		reader.skipTo(landscapestarts[index]);
+		return reader;
+	}
+	
 	private void loadLandscapeImage(int index) {
 		try {
 			reader.skipTo(landscapestarts[index]);
@@ -553,7 +559,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 
 		@Override
-		public Image getImageSafe(int index) {
+		public SingleImage getImageSafe(int index) {
 			initializeIfNeeded();
 			if (index < 0 || index >= length()) {
 				return NullImage.getInstance();

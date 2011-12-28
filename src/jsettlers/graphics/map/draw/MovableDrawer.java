@@ -3,6 +3,7 @@ package jsettlers.graphics.map.draw;
 import go.graphics.Color;
 import jsettlers.common.movable.IMovable;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 import jsettlers.graphics.sequence.Sequence;
@@ -49,7 +50,7 @@ public class MovableDrawer {
 		                .getImageSafe(0);
 		image.drawAt(context.getGl(), 0, 20);
 
-		Sequence<? extends Image> sequence =
+		Sequence<? extends SingleImage> sequence =
 		        ImageProvider.getInstance().getSettlerSequence(4, 6);
 		int healthId =
 		        Math.min((int) ((1 - health) * sequence.length()), sequence

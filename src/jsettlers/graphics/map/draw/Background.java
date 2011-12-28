@@ -3,6 +3,7 @@ package jsettlers.graphics.map.draw;
 import go.graphics.GLDrawContext;
 import go.graphics.GLDrawContext.GLBuffer;
 
+import java.io.IOException;
 import java.nio.ShortBuffer;
 import java.util.BitSet;
 
@@ -11,11 +12,15 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.DatBitmapReader;
+import jsettlers.graphics.reader.ImageArrayProvider;
+import jsettlers.graphics.reader.ImageMetadata;
 
 /**
  * The map background
@@ -744,15 +749,20 @@ public class Background implements IGraphicsBackgroundListener {
 			imageProvider.waitForPreload(LAND_FILE);
 
 			if (imageProvider.isPreloaded(LAND_FILE)) {
+				long starttime = System.currentTimeMillis();
 				short[] data = new short[TEXTURE_SIZE * TEXTURE_SIZE];
-				for (int i = 0; i < data.length; i++) {
-					data[i] = 0x00ff;
+				try {
+					addTextures(data);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				addTextures(data);
 				ShortBuffer buffer = ShortBuffer.wrap(data);
 				texture =
 				        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE,
 				                buffer);
+
+				System.out.println("Background texture generated in "
+				        + (System.currentTimeMillis() - starttime) + "ms");
 			} else {
 				imageProvider.preload(LAND_FILE);
 			}
@@ -761,19 +771,66 @@ public class Background implements IGraphicsBackgroundListener {
 		return texture;
 	}
 
+	private class ImageWriter implements ImageArrayProvider {
+		int arrayoffset;
+		int cellsize;
+		short[] data;
+
+		// nothing to do. We assume images are a rectangle and have the right
+		// size.
+		@Override
+		public void startImage(int width, int height) throws IOException {
+		}
+
+		@Override
+		public void writeLine(short[] data, int length) throws IOException {
+			for (int i = 0; i < cellsize; i++) {
+				this.data[arrayoffset + i] = data[i % length];
+			}
+			arrayoffset += TEXTURE_SIZE;
+		}
+
+	}
+
 	/**
 	 * Generates the texture data.
 	 * 
 	 * @param data
 	 *            The texture data buffer.
+	 * @throws IOException
 	 */
-	private void addTextures(short[] data) {
-		for (int index = 0; index < TEXTURE_POSITIONS.length; index++) {
-			ImageLink link =
-			        new ImageLink(EImageLinkType.LANDSCAPE, LAND_FILE, index, 0);
-			Image image = imageProvider.getImage(link);
+	private void addTextures(short[] data) throws IOException {
+		AdvancedDatFileReader reader =
+		        ImageProvider.getInstance().getFileReader(LAND_FILE);
+		ImageWriter imageWriter = new ImageWriter();
+		imageWriter.data = data;
 
-			copyImageAt(data, image, TEXTURE_POSITIONS[index]);
+		ImageMetadata meta = new ImageMetadata();
+
+		for (int index = 0; index < TEXTURE_POSITIONS.length; index++) {
+			int[] position = TEXTURE_POSITIONS[index];
+			int x = position[0] * TEXTURE_GRID;
+			int y = position[1] * TEXTURE_GRID;
+			int start = y * TEXTURE_SIZE + x;
+			int cellsize = position[2] * TEXTURE_GRID;
+			imageWriter.arrayoffset = start;
+			imageWriter.cellsize = cellsize;
+			int end = (y + cellsize) * TEXTURE_SIZE + x;
+
+			DatBitmapReader.uncompressImage(
+			        reader.getReaderForLandscape(index),
+			        AdvancedDatFileReader.LANDSCAPE_TRANSLATOR, meta,
+			        imageWriter);
+
+			// freaky stuff
+			int arrayoffset = imageWriter.arrayoffset;
+			int l = arrayoffset - start;
+			while (arrayoffset < end) {
+				for (int i = 0; i < cellsize; i++) {
+					data[arrayoffset + i] = data[arrayoffset - l + i];
+				}
+				arrayoffset += TEXTURE_SIZE;
+			}
 		}
 	}
 
@@ -787,7 +844,8 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param texturepos
 	 *            The texture position
 	 */
-	private static void copyImageAt(short[] data, Image image, int[] texturepos) {
+	private static void copyImageAt(short[] data, SingleImage image,
+	        int[] texturepos) {
 		int startx = texturepos[0] * TEXTURE_GRID;
 		int starty = texturepos[1] * TEXTURE_GRID;
 		int maxx = startx + texturepos[2] * TEXTURE_GRID;
@@ -819,8 +877,8 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param height
 	 *            The height of the area to copy
 	 */
-	private static void copyImage(short[] data, Image image, int x, int y,
-	        int width, int height) {
+	private static void copyImage(short[] data, SingleImage image, int x,
+	        int y, int width, int height) {
 		short[] sourceData = image.getData().array();
 		for (int dy = 0; dy < height && dy < image.getHeight(); dy++) {
 			System.arraycopy(sourceData, image.getWidth() * dy, data,
@@ -992,7 +1050,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 * 
 	 * @param context
 	 *            The context to draw at.
-	 * @param screen2 
+	 * @param screen2
 	 */
 	public void drawMapContent(MapDrawContext context, FloatRectangle screen) {
 		// float[] geometry = getGeometry(context);
@@ -1033,13 +1091,13 @@ public class Background implements IGraphicsBackgroundListener {
 
 		geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
 	}
-	
+
 	private static int niceRoundUp(int i) {
-//		int base = 1;
-//		while (i > base) {
-//			base *= 2;
-//		}
-//		return base;
+		// int base = 1;
+		// while (i > base) {
+		// base *= 2;
+		// }
+		// return base;
 		return i;
 	}
 

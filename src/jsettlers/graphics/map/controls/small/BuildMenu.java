@@ -13,7 +13,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionMap;
 import jsettlers.graphics.action.BuildAction;
-import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -136,7 +136,7 @@ public class BuildMenu extends UIPanel {
 	 * @param right
 	 * @param top
 	 */
-	private void drawAtRectAspect(GLDrawContext gl, Image image, float left,
+	private void drawAtRectAspect(GLDrawContext gl, SingleImage image, float left,
 	        float bottom, float right, float top) {
 		float imageaspect = image.getWidth() / image.getHeight();
 		if ((right - left) / (top - bottom) > imageaspect) {

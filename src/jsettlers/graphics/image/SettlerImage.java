@@ -1,5 +1,6 @@
 package jsettlers.graphics.image;
 
+import jsettlers.graphics.reader.ImageMetadata;
 import go.graphics.Color;
 import go.graphics.GLDrawContext;
 
@@ -11,9 +12,9 @@ import go.graphics.GLDrawContext;
  * 
  * @author michael
  */
-public class SettlerImage extends Image {
+public class SettlerImage extends SingleImage {
 
-	private Image torso = null;
+	private SingleImage torso = null;
 
 	/**
 	 * {@inheritDoc:Image#Image(ImageDataPrivider)}
@@ -21,8 +22,8 @@ public class SettlerImage extends Image {
 	 * @param data
 	 *            The data to use.
 	 */
-	public SettlerImage(ImageDataPrivider data) {
-		super(data);
+	public SettlerImage(ImageMetadata metadata, short[] data) {
+		super(metadata, data);
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class SettlerImage extends Image {
 	 * @param torso
 	 *            The torso. May be null.
 	 */
-	public void setTorso(Image torso) {
+	public void setTorso(SingleImage torso) {
 		this.torso = torso;
 	}
 

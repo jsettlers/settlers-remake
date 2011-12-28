@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.NullImage;
 
 /**
@@ -13,7 +14,7 @@ import jsettlers.graphics.image.NullImage;
  * @param <T>
  */
 public final class ArraySequence<T extends Image> implements Iterable<T>, Sequence<T> {
-	private static Sequence<Image> nullSequence;
+	private static Sequence<SingleImage> nullSequence;
 	private final T[] images;
 
 	/**
@@ -65,9 +66,9 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 	 * 
 	 * @return The emepty sequence.
 	 */
-	public static Sequence<Image> getNullSequence() {
+	public static Sequence<SingleImage> getNullSequence() {
 		if (nullSequence == null) {
-			nullSequence = new ArraySequence<Image>(new Image[0]);
+			nullSequence = new ArraySequence<SingleImage>(new SingleImage[0]);
 		}
 		return nullSequence;
 	}

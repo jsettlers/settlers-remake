@@ -1,10 +1,8 @@
 package jsettlers.graphics.reader;
 
 import java.io.IOException;
-import java.nio.ShortBuffer;
 
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.ImageDataPrivider;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.reader.translator.DatBitmapTranslator;
 import jsettlers.graphics.reader.translator.HeaderType;
@@ -16,14 +14,9 @@ import jsettlers.graphics.reader.translator.HeaderType;
  *            The image type.
  * @author michael
  */
-public final class DatBitmapReader<T extends Image> implements
-        ImageDataPrivider {
+public final class DatBitmapReader<T extends Image> {
 
-	private int width;
-	private int height;
-	private int offsetX;
-	private int offsetY;
-	private final short[] data;
+	// private final short[] data;
 
 	/**
 	 * Creates a new reader that starts to read fom the given bytereader at its
@@ -36,10 +29,11 @@ public final class DatBitmapReader<T extends Image> implements
 	 * @throws IOException
 	 *             If an io error occurred.
 	 */
-	private DatBitmapReader(DatBitmapTranslator<T> translator, ByteReader reader)
-	        throws IOException {
-		this.data = uncompressImage(reader, translator);
-	}
+	// private DatBitmapReader(DatBitmapTranslator<T> translator, ByteReader
+	// reader)
+	// throws IOException {
+	// this.data = uncompressImage(reader, translator);
+	// }
 
 	/**
 	 * Assumes that there is an iamge starting at the beginning of reader, and
@@ -75,22 +69,27 @@ public final class DatBitmapReader<T extends Image> implements
 	 * 
 	 * @param reader
 	 * @param translator
-	 * @return
+	 * @param
+	 * @return The short array given, or null if the short array was not big
+	 *         enough.
 	 * @throws IOException
 	 */
-	private short[] uncompressImage(ByteReader reader,
-	        DatBitmapTranslator<T> translator) throws IOException {
+	public static <T extends Image> void uncompressImage(ByteReader reader,
+	        DatBitmapTranslator<T> translator, ImageMetadata metadata,
+	        ImageArrayProvider array) throws IOException {
 		long currentPos = reader.getReadBytes();
 		HeaderType headerType = translator.getHeaderType();
 
 		if (headerType == HeaderType.DISPLACED) {
-			reader.assumeToRead(new byte[] { 0x0c, 0, 0, 0 });
+			reader.assumeToRead(new byte[] {
+			        0x0c, 0, 0, 0
+			});
 		}
-		this.width = reader.read16();
-		this.height = reader.read16();
+		metadata.width = reader.read16();
+		metadata.height = reader.read16();
 		if (headerType == HeaderType.DISPLACED) {
-			this.offsetX = reader.read16signed();
-			this.offsetY = reader.read16signed();
+			metadata.offsetX = reader.read16signed();
+			metadata.offsetY = reader.read16signed();
 		} else if (headerType == HeaderType.GUI) {
 			// mysterious bytes
 			reader.read16();
@@ -105,23 +104,17 @@ public final class DatBitmapReader<T extends Image> implements
 			reader.read8();
 		}
 
-		if (this.width == 0 || this.height == 0) {
-			this.width = 1;
-			this.height = 1;
-			return new short[] { translator.getTransparentColor() };
-		}
+		array.startImage(metadata.width, metadata.height);
 
-		short[] newData;
 		try {
-			newData = readCompressedData(reader, translator);
+			readCompressedData(reader, translator, metadata.width,
+			        metadata.height, array);
 		} catch (IOException e) {
 			System.err.println("Error while loading image starting at "
 			        + currentPos
 			        + ". There is an error/overflow somewhere around "
 			        + reader.getReadBytes());
-			newData = new short[this.width * this.height];
 		}
-		return newData;
 	}
 
 	/**
@@ -132,99 +125,104 @@ public final class DatBitmapReader<T extends Image> implements
 	 * @return
 	 * @throws IOException
 	 */
-	private short[] readCompressedData(ByteReader reader,
-	        DatBitmapTranslator<T> translator) throws IOException {
-		short[] pixels = new short[this.width * this.height];
+	private static <T extends Image> void readCompressedData(
+	        ByteReader reader, DatBitmapTranslator<T> translator, int width,
+	        int lines, ImageArrayProvider array) throws IOException {
+		short transparent = translator.getTransparentColor();
+		//TODO: buffer the buffer but be thread safe!
+		short[] lineBuffer = new short[width];
 
-		int x = 0;
-		int y = this.height - 1;
+		for (int i = 0; i < lines; i++) {
+			boolean newLine = false;
 
-		while (y >= 0) {
-			int currentMeta = reader.read16();
+			int x = 0;
+			while (!newLine) {
+				int currentMeta = reader.read16();
 
-			int sequenceLength = currentMeta & 0xff;
-			int skip = (currentMeta & 0x7f00) >> 8;
-			boolean newLine = (currentMeta & 0x8000) != 0;
+				int sequenceLength = currentMeta & 0xff;
+				int skip = (currentMeta & 0x7f00) >> 8;
+				newLine = (currentMeta & 0x8000) != 0;
 
-			skipGivenBytes(translator, pixels, x, y, skip);
-			x += skip;
+				int skipend = x + skip;
+				while (x < skipend) {
+					lineBuffer[x] = transparent;
+					x++;
+				}
 
-			readPixels(reader, translator, pixels, x, y, sequenceLength);
-			x += sequenceLength;
-
-			if (newLine) {
-				fillRestOfLine(translator, pixels, x, y);
-				x = 0;
-				y--;
+				int readPartEnd = x + sequenceLength;
+				while (x < readPartEnd) {
+					lineBuffer[x] = translator.readUntransparentColor(reader);
+					x++;
+				}
 			}
-
-		}
-		return pixels;
-	}
-
-	private void fillRestOfLine(DatBitmapTranslator<T> translator,
-	        short[] pixels, int x, int y) {
-		int currentx = x;
-		while (currentx < this.width) {
-			pixels[y * this.width + currentx] =
-			        translator.getTransparentColor();
-			currentx++;
+			
+			array.writeLine(lineBuffer, x);
 		}
 	}
 
-	private int readPixels(ByteReader reader,
-	        DatBitmapTranslator<T> translator, short[] pixels, int x, int y,
-	        int sequenceLength) throws IOException {
-		for (int i = 0; i < sequenceLength; i++) {
-			int currentx = i + x;
-			if (currentx >= this.width) {
-				throw new IllegalArgumentException("The image line " + y
-				        + " exceeded width!");
-			}
-			pixels[y * this.width + currentx] =
-			        translator.readUntransparentColor(reader);
-		}
-		return x;
-	}
+	// private void fillRestOfLine(DatBitmapTranslator<T> translator,
+	// short[] pixels, int x, int y) {
+	// int currentx = x;
+	// while (currentx < this.width) {
+	// pixels[y * this.width + currentx] =
+	// translator.getTransparentColor();
+	// currentx++;
+	// }
+	// }
+	//
+	// private int readPixels(ByteReader reader,
+	// DatBitmapTranslator<T> translator, short[] pixels, int x, int y,
+	// int sequenceLength) throws IOException {
+	// for (int i = 0; i < sequenceLength; i++) {
+	// int currentx = i + x;
+	// if (currentx >= this.width) {
+	// throw new IllegalArgumentException("The image line " + y
+	// + " exceeded width!");
+	// }
+	// pixels[y * this.width + currentx] =
+	// translator.readUntransparentColor(reader);
+	// }
+	// return x;
+	// }
 
-	private int skipGivenBytes(DatBitmapTranslator<T> translator,
-	        short[] pixels, int x, int y, int skip) {
-		for (int i = 0; i < skip; i++) {
-			int currentx = i + x;
-			if (currentx >= this.width) {
-				throw new IllegalArgumentException(
-				        "Skipped out of image at line " + y + "!");
-			}
-			pixels[y * this.width + currentx] =
-			        translator.getTransparentColor();
-		}
-		return x;
-	}
+	// private int skipGivenBytes(DatBitmapTranslator<T> translator, int x, int
+	// skip) {
+	// for (int i = 0; i < skip; i++) {
+	// int currentx = i + x;
+	// // if (currentx >= this.width) {
+	// // throw new IllegalArgumentException(
+	// // "Skipped out of image at line " + y + "!");
+	// // }
+	// lineBuffer[currentx] =
+	// translator.getTransparentColor();
+	// }
+	// return x;
+	// }
 
-	@Override
-	public ShortBuffer getData() {
-		return ShortBuffer.wrap(this.data);
-	}
-
-	@Override
-	public int getWidth() {
-		return this.width;
-	}
-
-	@Override
-	public int getHeight() {
-		return this.height;
-	}
-
-	@Override
-	public int getOffsetX() {
-		return this.offsetX;
-	}
-
-	@Override
-	public int getOffsetY() {
-		return this.offsetY;
-	}
+//	@Override
+//	public ShortBuffer getData() {
+//		return ShortBuffer.wrap(this.data);
+//	}
+//
+//	@Override
+//	public int getWidth() {
+//		return this.width;
+//	}
+//
+//	@Override
+//	public int getHeight() {
+//		return this.height;
+//	}
+//
+//	@Override
+//	public int getOffsetX() {
+//		return this.offsetX;
+//	}
+//
+//	@Override
+//	public int getOffsetY() {
+//		return this.offsetY;
+//	}
 
 	/**
 	 * Gets an image form the reader.
@@ -242,8 +240,9 @@ public final class DatBitmapReader<T extends Image> implements
 	public static <T extends Image> T getImage(
 	        DatBitmapTranslator<T> translator, ByteReader reader)
 	        throws IOException {
-		DatBitmapReader<T> translated =
-		        new DatBitmapReader<T>(translator, reader);
-		return translator.createImage(translated);
+		ImageMetadata metadata = new ImageMetadata();
+		ShortArrayWriter array = new ShortArrayWriter();
+		uncompressImage(reader, translator, metadata, array);
+		return translator.createImage(metadata, array.getArray());
 	}
 }

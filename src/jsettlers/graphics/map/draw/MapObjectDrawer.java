@@ -17,10 +17,10 @@ import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.sequence.Sequence;
 
@@ -249,7 +249,7 @@ public class MapObjectDrawer {
 				case PLANT_DECORATION: {
 					int step = getAnimationStep(x, y) % 8;
 
-					Sequence<? extends Image> seq =
+					Sequence<? extends SingleImage> seq =
 					        this.imageProvider.getSettlerSequence(1, 27);
 
 					seq.getImageSafe(step).draw(context.getGl(), color);
@@ -259,7 +259,7 @@ public class MapObjectDrawer {
 				case DESERT_DECORATION: {
 					int step = getAnimationStep(x, y) % 5 + 10;
 
-					Sequence<? extends Image> seq =
+					Sequence<? extends SingleImage> seq =
 					        this.imageProvider.getSettlerSequence(1, 27);
 
 					seq.getImageSafe(step).draw(context.getGl(), color);
@@ -267,7 +267,7 @@ public class MapObjectDrawer {
 				break;
 
 				case PIG: {
-					Sequence<? extends Image> seq =
+					Sequence<? extends SingleImage> seq =
 					        this.imageProvider.getSettlerSequence(ANIMALS_FILE,
 					                PIG_SEQ);
 
@@ -291,7 +291,7 @@ public class MapObjectDrawer {
 
 	private void drawPlayerableByProgress(MapDrawContext context, int file,
 	        int sequenceIndex, IMapObject object, Color basecolor) {
-		Sequence<? extends Image> sequence =
+		Sequence<? extends SingleImage> sequence =
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index =
 		        Math.min((int) (object.getStateProgress() * sequence.length()),
@@ -311,7 +311,7 @@ public class MapObjectDrawer {
 
 	private void drawPlayerableWaving(MapDrawContext context, int file,
 	        int sequenceIndex, IMapObject object, Color basecolor) {
-		Sequence<? extends Image> sequence =
+		Sequence<? extends SingleImage> sequence =
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index = animationStep % sequence.length();
 		Color color = getColor(context, object);
@@ -322,7 +322,7 @@ public class MapObjectDrawer {
 	private void drawByProgress(MapDrawContext context, int file,
 	        int sequenceIndex, float progress, Color color) {
 
-		Sequence<? extends Image> sequence =
+		Sequence<? extends SingleImage> sequence =
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index =
 		        Math.min((int) (progress * sequence.length()),
@@ -379,34 +379,34 @@ public class MapObjectDrawer {
 
 	private void drawStones(MapDrawContext context, IMapObject object,
 	        Color color) {
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, STONE);
 		int stones = (int) (seq.length() - object.getStateProgress() - 1);
 		seq.getImageSafe(stones).draw(context.getGl(), color);
 	}
 
 	private void drawWaves(MapDrawContext context, Color color) {
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, WAVES);
 		seq.getImageSafe(15).draw(context.getGl(), color);
 	}
 
 	private void drawDeadCorn(MapDrawContext context, Color color) {
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
 		seq.getImageSafe(CORN_DEAD_STEP).draw(context.getGl(), color);
 	}
 
 	private void drawGrowingCorn(MapDrawContext context, IMapObject object,
 	        Color color) {
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
 		int step = (int) (object.getStateProgress() * CORN_GROW_STEPS);
 		seq.getImageSafe(step).draw(context.getGl(), color);
 	}
 
 	private void drawCorn(MapDrawContext context, IMapObject object, Color color) {
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
 		int step = CORN_GROW_STEPS;
 		seq.getImageSafe(step).draw(context.getGl(), color);
@@ -416,13 +416,13 @@ public class MapObjectDrawer {
 	        float progress, Color color) {
 		Image image;
 		if (progress < 0.33) {
-			Sequence<? extends Image> seq =
+			Sequence<? extends SingleImage> seq =
 			        this.imageProvider.getSettlerSequence(FILE,
 			                SMALL_GROWING_TREE);
 			image = seq.getImageSafe(0);
 		} else {
 			int treeType = getTreeType(x, y);
-			Sequence<? extends Image> seq =
+			Sequence<? extends SingleImage> seq =
 			        this.imageProvider.getSettlerSequence(FILE,
 			                sequenceIndexForChangingTree(treeType));
 			if (progress < 0.66) {
@@ -459,7 +459,7 @@ public class MapObjectDrawer {
 			imageStep = relativeStep + TREE_FALL_IMAGES + 3;
 		}
 
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE,
 		                sequenceIndexForChangingTree(treeType));
 		seq.getImageSafe(imageStep).draw(context.getGl(), color);
@@ -468,7 +468,7 @@ public class MapObjectDrawer {
 	private void drawTree(MapDrawContext context, int x, int y, Color color) {
 		int treeType = getTreeType(x, y);
 		int treeSecondary = get01(x, y);
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, treeType * 3
 		                + treeSecondary + ALIVE_TREE_OFFSET);
 
@@ -552,7 +552,7 @@ public class MapObjectDrawer {
 	        EMaterialType material, int count, Color color) {
 		int stackIndex = material.getStackIndex();
 
-		Sequence<? extends Image> seq =
+		Sequence<? extends SingleImage> seq =
 		        this.imageProvider.getSettlerSequence(FILE, stackIndex);
 		seq.getImageSafe(count - 1).draw(glDrawContext, color);
 	}
@@ -585,7 +585,7 @@ public class MapObjectDrawer {
 		if (state < 0.5f) {
 			maskState = state * 2;
 			for (ImageLink link : type.getBuildImages()) {
-				Image image = imageProvider.getImage(link);
+				SingleImage image = imageProvider.getImage(link);
 				drawWithConstructionMask(context, maskState, image, color);
 			}
 
@@ -597,14 +597,14 @@ public class MapObjectDrawer {
 			}
 
 			for (ImageLink link : type.getImages()) {
-				Image image = imageProvider.getImage(link);
+				SingleImage image = imageProvider.getImage(link);
 				drawWithConstructionMask(context, maskState, image, color);
 			}
 		} else {
 
 			if (type == EBuildingType.MILL
 			        && ((IBuilding.IMill) building).isWorking()) {
-				Sequence<? extends Image> seq =
+				Sequence<? extends SingleImage> seq =
 				        this.imageProvider.getSettlerSequence(MILL_FILE,
 				                MILL_SEQ);
 
@@ -665,7 +665,7 @@ public class MapObjectDrawer {
 	}
 
 	private static void drawWithConstructionMask(MapDrawContext context,
-	        float maskState, Image image, Color color) {
+	        float maskState, SingleImage image, Color color) {
 		// number of tiles in x direction, can be adjustet for performance
 		int tiles = 6;
 
@@ -696,7 +696,7 @@ public class MapObjectDrawer {
 	}
 
 	private static void addPointToArray(float[] array, int pointindex, float u,
-	        float v, Image image) {
+	        float v, SingleImage image) {
 		int left = image.getOffsetX();
 		int top = -image.getOffsetY();
 		int bottom = top - image.getHeight();

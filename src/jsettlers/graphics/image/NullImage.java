@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
+import jsettlers.graphics.reader.ImageMetadata;
+
 /**
  * This is a null image.
  * <p>
@@ -14,11 +16,19 @@ import java.nio.ShortBuffer;
  * 
  * @author michael
  */
-public class NullImage extends Image {
+public class NullImage extends SingleImage {
+	private static final short[] NULL_DATA = new short[] {0};
 	private static final int HALFSIZE = 3;
 	private static NullImage instance;
 	private static LandscapeImage landscapeinstance = null;
-
+	private static final ImageMetadata nullImageMeta = new ImageMetadata();
+	
+	static {
+		nullImageMeta.width = 1;
+		nullImageMeta.height = 1;
+		nullImageMeta.offsetX = 0;
+		nullImageMeta.offsetY = 0;
+	}
 	/**
 	 * Gets an instance of the null image.
 	 * 
@@ -57,36 +67,6 @@ public class NullImage extends Image {
 		}, true);
 	}
 
-	private static ImageDataPrivider nullproivder = new ImageDataPrivider() {
-		@Override
-		public int getWidth() {
-			return 1;
-		}
-
-		@Override
-		public int getOffsetY() {
-			return 0;
-		}
-
-		@Override
-		public int getOffsetX() {
-			return 0;
-		}
-
-		@Override
-		public int getHeight() {
-			return 1;
-		}
-
-		@Override
-		public ShortBuffer getData() {
-			ByteBuffer data = ByteBuffer.allocateDirect(2);
-			data.order(ByteOrder.nativeOrder());
-			data.putShort((short) 0x0);
-			data.rewind();
-			return data.asShortBuffer();
-		}
-	};
 
 	private static GuiImage guiinstance;
 
@@ -96,7 +76,7 @@ public class NullImage extends Image {
 	 */
 	public static LandscapeImage getForLandscape() {
 		if (landscapeinstance == null) {
-			landscapeinstance = new LandscapeImage(nullproivder);
+			landscapeinstance = new LandscapeImage(nullImageMeta, NULL_DATA);
 		}
 		return landscapeinstance;
 	}
@@ -107,7 +87,7 @@ public class NullImage extends Image {
 	 */
 	public static GuiImage getForGui() {
 		if (guiinstance == null) {
-			guiinstance = new GuiImage(nullproivder);
+			guiinstance = new GuiImage(nullImageMeta, NULL_DATA);
 		}
 		return guiinstance;
 	}

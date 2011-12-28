@@ -2,8 +2,10 @@ package jsettlers.graphics.reader.translator;
 
 import java.io.IOException;
 
+import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.ImageDataPrivider;
 import jsettlers.graphics.image.ShadowImage;
+import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
@@ -28,7 +30,7 @@ public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
 	}
 
 	@Override
-    public ShadowImage createImage(ImageDataPrivider data) {
-	    return new ShadowImage(data);
+    public ShadowImage createImage(ImageMetadata metadata, short[] array) {
+	    return new ShadowImage(metadata, array);
     }
 }

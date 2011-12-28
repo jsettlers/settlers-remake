@@ -7,6 +7,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.Button;
@@ -22,7 +23,7 @@ public class BuildingButton extends Button {
 
 	private final static ImageLink activeMark = new ImageLink(
 	        EImageLinkType.GUI, 3, 123, 0);
-	
+
 	public static int ITEM_WIDTH = 60;
 	public static int ITEM_HEIGHT = 36;
 
@@ -52,17 +53,25 @@ public class BuildingButton extends Button {
 	@Override
 	protected void drawBackground(GLDrawContext gl) {
 		FloatRectangle position = getPosition();
-		Image image =
+		Image image1 =
 		        getDetailedImage(buildingImage, position.getWidth(),
 		                position.getHeight());
-		
-		float width = (float) image.getWidth() / ITEM_WIDTH * getPosition().getWidth();
-		float height = (float) image.getHeight() / ITEM_HEIGHT * getPosition().getHeight();
-		
-		image.drawCentered(gl, getPosition().getCenterX(), getPosition().getCenterY(), width, height);
+		if (image1 instanceof SingleImage) {
+			SingleImage image = (SingleImage) image1;
+
+			float width =
+			        (float) image.getWidth() / ITEM_WIDTH
+			                * getPosition().getWidth();
+			float height =
+			        (float) image.getHeight() / ITEM_HEIGHT
+			                * getPosition().getHeight();
+
+			image.drawCentered(gl, getPosition().getCenterX(), getPosition()
+			        .getCenterY(), width, height);
+		}
 	}
-	
+
 	public EBuildingType getBuildingType() {
-	    return buildingType;
-    }
+		return buildingType;
+	}
 }
