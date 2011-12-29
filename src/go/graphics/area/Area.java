@@ -84,6 +84,7 @@ public class Area implements RedrawListener {
 
 	public void add(Region region) {
 		regions.add(region);
+		regionPositions = null;
 		region.addRedrawListener(this);
 	}
 
@@ -388,6 +389,10 @@ public class Area implements RedrawListener {
 	private void handlePanEvent(GOPanEvent event) {
 		PositionedRegion foundPosition = getRegionAt(event.getPanCenter());
 
+		if (foundPosition == null) {
+			return;
+		}
+		
 		UIPoint topLeft =
 		        new UIPoint(foundPosition.getLeft(),
 		                foundPosition.getTop());
