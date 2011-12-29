@@ -7,6 +7,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
@@ -79,6 +80,8 @@ public class JSettlersGame {
 			Timer100Milli.start();
 
 			progress.setProgressState(EProgressState.LOADING_MAP);
+			
+			ImageProvider.getInstance().startPreloading();
 
 			ISPosition2D startPoint;
 			MainGrid grid;

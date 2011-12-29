@@ -449,7 +449,7 @@ public class MainGrid implements Serializable {
 		}
 
 		private final boolean hasProtectedNeighbor(short x, short y) {
-			for (EDirection currDir : EDirection.values()) {
+			for (EDirection currDir : EDirection.valuesCached()) {
 				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
 			}

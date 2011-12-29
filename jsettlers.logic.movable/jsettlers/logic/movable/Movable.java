@@ -280,7 +280,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 				state = EMovableState.FINISHED_ACTION;
 				strategy.actionFinished();
 				if (state == EMovableState.FINISHED_ACTION) {
-					System.out.println("blöd");
+					System.out.println("blï¿½d");
 					strategy.actionFinished();
 				}
 			}
@@ -307,7 +307,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		if (RandomSingleton.nextF() < Constants.MOVABLE_TURN_PROBABILITY) {
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
 		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_NEIGHBOR_PUSH_PROBABILITY) {
-			for (EDirection curr : EDirection.values()) { // push all movables around this movable
+			for (EDirection curr : EDirection.valuesCached()) { // push all movables around this movable
 				ISPosition2D point = curr.getNextHexPoint(pos);
 				if (grid.isInBounds(point)) {
 					IHexMovable movable = grid.getMovable(point);
