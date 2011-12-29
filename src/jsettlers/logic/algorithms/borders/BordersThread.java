@@ -63,7 +63,7 @@ public class BordersThread implements Runnable {
 
 					if (neighborPlayer >= 0) { // this position is occupied by a player
 
-						for (EDirection currNeighborDir : EDirection.values()) {
+						for (EDirection currNeighborDir : EDirection.valuesCached()) {
 							short nextX = currNeighborDir.getNextTileX(currNeighborX);
 							short nextY = currNeighborDir.getNextTileY(currNeighborY);
 
