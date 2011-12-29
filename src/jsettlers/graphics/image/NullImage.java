@@ -3,8 +3,6 @@ package jsettlers.graphics.image;
 import go.graphics.Color;
 import go.graphics.GLDrawContext;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import jsettlers.graphics.reader.ImageMetadata;

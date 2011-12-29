@@ -3,8 +3,8 @@ package jsettlers.graphics.utils;
 import go.graphics.GLDrawContext;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.SettlerImage;
+import jsettlers.graphics.image.SingleImage;
 
 /**
  * This class provides utilities to draw buttons and images.

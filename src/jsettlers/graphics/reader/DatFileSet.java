@@ -1,8 +1,8 @@
 package jsettlers.graphics.reader;
 
 import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
@@ -21,7 +21,7 @@ public interface DatFileSet {
 	 * 
 	 * @return The unmodifiable list.
 	 */
-	SequenceList<SettlerImage> getSettlers();
+	SequenceList<Image> getSettlers();
 
 	/**
 	 * Gets a list of landscape tiles in the dat file.

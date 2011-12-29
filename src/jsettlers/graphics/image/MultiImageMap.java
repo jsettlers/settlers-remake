@@ -1,22 +1,167 @@
 package jsettlers.graphics.image;
 
+import go.graphics.GLDrawContext;
+
+import java.io.IOException;
+import java.nio.ShortBuffer;
+
+import jsettlers.graphics.map.draw.GLPreloadTask;
+import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.DatBitmapReader;
+import jsettlers.graphics.reader.ImageArrayProvider;
+import jsettlers.graphics.reader.ImageMetadata;
+import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
- * This is a map of multile images of one sequence.
- * It always contains the settler image and the torso
+ * This is a map of multile images of one sequence. It always contains the
+ * settler image and the torso
+ * 
  * @author michael
- *
  */
-public class MultiImageMap {
+public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
+	public static MultiImageMap anyInstance = null; // FIXME: only for testing
+
 	private final int width;
 	private final int height;
+	private int drawx = 0; // x coordinate of free space
+	private int linetop = 0;
+	private int linebottom = 0;
+	private int drawpointer = 0;
+	private boolean drawEnabled = false;
+	private boolean textureValid = false;
+	private int textureIndex = -1;
+	private short[] buffers;
 
 	public MultiImageMap(int width, int height) {
 		this.width = width;
 		this.height = height;
-		short[] buffer = new short[width * height];
+		buffers = new short[width * height];
+		anyInstance = this;
 	}
-	
-	
+
+	public void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
+	        Sequence<Image>[] addTo) throws IOException {
+		ImageMetadata settlermeta = new ImageMetadata();
+		ImageMetadata torsometa = new ImageMetadata();
+		for (int seqindex : sequenceIndexes) {
+			long[] settlers = dfr.getSettlerPointers(seqindex);
+			long[] torsos = dfr.getTorsoPointers(seqindex);
+
+			Image[] images = new Image[settlers.length];
+			for (int i = 0; i < settlers.length; i++) {
+				// System.out.println("Processing seq + " + seqindex +
+				// ", image " + i + ":");
+
+				ByteReader reader;
+				reader = dfr.getReaderForPointer(settlers[i]);
+				DatBitmapReader.uncompressImage(reader,
+				        AdvancedDatFileReader.SETTLER_TRANSLATOR, settlermeta,
+				        this);
+				int settlerx = drawx - settlermeta.width;
+				int settlery = linetop;
+
+				int torsox = 0;
+				int torsoy = 0;
+				if (torsos != null) {
+					reader = dfr.getReaderForPointer(torsos[i]);
+					if (reader != null) {
+						DatBitmapReader.uncompressImage(reader,
+						        AdvancedDatFileReader.TORSO_TRANSLATOR,
+						        torsometa, this);
+						torsox = drawx - torsometa.width;
+						torsoy = linetop;
+					}
+				}
+				// System.out.println("Got image Data: settlerx = " + settlerx +
+				// ", settlery = " + settlery + ", w=" + settlermeta.width +
+				// ", h=" + settlermeta.height);
+
+				images[i] =
+				        new MultiImageImage(this, settlermeta, settlerx,
+				                settlery, torsos == null ? null : torsometa,
+				                torsox, torsoy);
+			}
+			addTo[seqindex] = new ArraySequence<Image>(images);
+		}
+
+		// request a opengl rerender, or do it ourselves on the next image
+		// request
+		textureValid = false;
+		ImageProvider.getInstance().addPreloadTask(this);
+	}
+
+	@Override
+	public void startImage(int width, int height) throws IOException {
+		if (this.width < drawx + width) {
+			if (linebottom + height <= this.height) {
+				linetop = linebottom;
+				drawx = 0;
+			} else {
+				drawEnabled = false;
+				System.err.println("Error adding image to texture: "
+				        + "there is no space to open a new row");
+				return;
+			}
+		}
+
+		if (linetop + height < this.height) {
+			drawEnabled = true;
+			textureValid = false;
+			drawpointer = drawx + linetop * this.width;
+			drawx += width;
+			linebottom = Math.max(linebottom, linetop + height);
+		} else {
+			System.err.println("Error adding image to texture: "
+			        + "Line to low");
+			drawEnabled = false;
+			return;
+		}
+	}
+
+	@Override
+	public void writeLine(short[] data, int length) throws IOException {
+		if (drawEnabled) {
+			int dp = drawpointer;
+			System.arraycopy(data, 0, this.buffers, dp, length);
+			drawpointer = dp + this.width;
+		}
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	/**
+	 * Gets the texture index.
+	 * 
+	 * @param gl
+	 * @return
+	 */
+	public int getTexture(GLDrawContext gl) {
+		if (!textureValid) {
+			if (textureIndex > -1) {
+				gl.deleteTexture(textureIndex);
+			}
+			textureIndex =
+			        gl.generateTexture(width, height, ShortBuffer.wrap(buffers));
+			System.out.println("opengl Texture: " + textureIndex + ", thread: "
+			        + Thread.currentThread().toString());
+			if (textureIndex > -1) {
+				textureValid = true;
+			}
+		}
+		return textureIndex;
+	}
+
+	@Override
+	public void run(GLDrawContext context) {
+		getTexture(context);
+	}
 }

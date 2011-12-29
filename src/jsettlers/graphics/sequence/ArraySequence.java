@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.NullImage;
+import jsettlers.graphics.image.SingleImage;
 
 /**
  * This class defines an image sequence.

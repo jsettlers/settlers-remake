@@ -1,8 +1,8 @@
 package jsettlers.graphics.image;
 
-import jsettlers.graphics.reader.ImageMetadata;
 import go.graphics.Color;
 import go.graphics.GLDrawContext;
+import jsettlers.graphics.reader.ImageMetadata;
 
 /**
  * This is the image of something that is displayed as an object on the map,
@@ -36,6 +36,14 @@ public class SettlerImage extends SingleImage {
 		}
 	}
 
+	@Override
+	public void draw(GLDrawContext gl, Color color, float multiply) {
+	    super.draw(gl, null, multiply);
+		if (this.torso != null) {
+			this.torso.draw(gl, color, multiply);
+		}
+	}
+	
 	/**
 	 * Sets the image overlay.
 	 * 

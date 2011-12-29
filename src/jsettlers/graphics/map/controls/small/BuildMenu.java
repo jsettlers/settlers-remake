@@ -13,10 +13,11 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionMap;
 import jsettlers.graphics.action.BuildAction;
-import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.utils.ImageUtils;
 import jsettlers.graphics.utils.UIPanel;
 
 public class BuildMenu extends UIPanel {
@@ -98,11 +99,11 @@ public class BuildMenu extends UIPanel {
 			float top = dy - topy;
 			EBuildingType buildingType = section.buildings[i];
 			gl.color(1, 1, 1, 1);
-			drawAtRectAspect(
-			        gl,
+			Image image =
 			        ImageProvider.getInstance().getImage(
-			                buildingType.getBuildImages()[0]), leftx, texttop,
-			        leftx + buildingButtonSize, top);
+			                buildingType.getBuildImages()[0]);
+			ImageUtils.drawAtRectAspect(gl, image, leftx, texttop, leftx
+			        + buildingButtonSize, top);
 			textdrawer.renderCentered(leftx + buildingButtonSize / 2, bottom
 			        + (int) (textheight / 2), Labels.getName(buildingType));
 
@@ -124,44 +125,6 @@ public class BuildMenu extends UIPanel {
 	public void setPosition(FloatRectangle position) {
 		super.setPosition(position);
 		actionMapInvalid = true;
-	}
-
-	/**
-	 * Draws an image at a rect preserving the images aspect.
-	 * 
-	 * @param gl
-	 * @param image
-	 * @param left
-	 * @param bottom
-	 * @param right
-	 * @param top
-	 */
-	private void drawAtRectAspect(GLDrawContext gl, SingleImage image, float left,
-	        float bottom, float right, float top) {
-		float imageaspect = image.getWidth() / image.getHeight();
-		if ((right - left) / (top - bottom) > imageaspect) {
-			// image is too wide
-			float center = (left + right) / 2.0f;
-			float halfwidth = (top - bottom) / 2.0f * imageaspect;
-			left = center - halfwidth;
-			right = center + halfwidth;
-		} else {
-			float center = (bottom + top) / 2.0f;
-			float halfheight = (right - left) / 2.0f / imageaspect;
-			bottom = center - halfheight;
-			top = center + halfheight;
-		}
-
-		// @formatter:off
-		float[] rect = new float[] {
-				left,  bottom,  0, 0, 0,
-				left,  top,     0, 0, 1,
-				right, top,     0, 1, 1,
-				right, bottom,  0, 1, 0,
-		};
-		// @formatter:on
-
-		gl.drawQuadWithTexture(image.getTextureIndex(gl), rect);
 	}
 
 	private class Section {

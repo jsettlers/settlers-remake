@@ -29,7 +29,6 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionHandler;
@@ -77,8 +76,8 @@ import jsettlers.graphics.map.selection.ISelectionSet;
  * 
  * @author michael
  */
-public final class MapContent implements SettlersContent, GOEventHandlerProvoder,
-        IMapInterfaceListener {
+public final class MapContent implements SettlersContent,
+        GOEventHandlerProvoder, IMapInterfaceListener {
 	private boolean ENABLE_DEBUG = false;
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
@@ -129,7 +128,7 @@ public final class MapContent implements SettlersContent, GOEventHandlerProvoder
 
 		this.connector = new MapInterfaceConnector(this);
 		this.connector.addListener(this);
-		
+
 		map.setBackgroundListener(background);
 	}
 
@@ -155,8 +154,9 @@ public final class MapContent implements SettlersContent, GOEventHandlerProvoder
 
 		this.context.begin(gl);
 		long start = System.currentTimeMillis();
-		
-		FloatRectangle screen = this.context.getScreen().getPosition().bigger(SCREEN_PADDING);
+
+		FloatRectangle screen =
+		        this.context.getScreen().getPosition().bigger(SCREEN_PADDING);
 		drawBackground(screen);
 		long bgtime = System.currentTimeMillis() - start;
 
@@ -232,12 +232,10 @@ public final class MapContent implements SettlersContent, GOEventHandlerProvoder
 		boolean needDrawDebug = false;
 		short height = map.getHeight();
 		short width = map.getWidth();
-		MapRectangle area =
-		        this.context.getConverter().getMapForScreen(
-		                screen);
+		MapRectangle area = this.context.getConverter().getMapForScreen(screen);
 
 		double bottomdrawy = screen.getMinY() - OVERDRAW_BOTTOM_PX;
-		
+
 		boolean linePartuallyVisible = true;
 		for (int line = 0; line < area.getLines() + 50 && linePartuallyVisible; line++) {
 			int y = area.getLineY(line);
@@ -254,7 +252,9 @@ public final class MapContent implements SettlersContent, GOEventHandlerProvoder
 			for (int x = startX; x <= endX; x++) {
 				needDrawDebug |= drawTile(x, y);
 				if (!linePartuallyVisible) {
-					double drawspacey = this.context.getConverter().getViewY(x, y, this.context.getHeight(x, y));
+					double drawspacey =
+					        this.context.getConverter().getViewY(x, y,
+					                this.context.getHeight(x, y));
 					if (drawspacey > bottomdrawy) {
 						linePartuallyVisible = true;
 					}
@@ -283,13 +283,14 @@ public final class MapContent implements SettlersContent, GOEventHandlerProvoder
 		if (needDrawDebug) {
 			drawDebugColors();
 		}
+
 	}
 
 	private boolean drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
-			this.objectDrawer
-			        .drawMapObject(this.context, this.map, x, y, object);
+			this.objectDrawer.drawMapObject(this.context, this.map, x, y,
+			        object);
 		}
 
 		IMovable movable = map.getMovableAt(x, y);
@@ -456,7 +457,7 @@ public final class MapContent implements SettlersContent, GOEventHandlerProvoder
 		event.setHandler(new ActionHandler(action, getInterfaceConnector()));
 	}
 
-	private Action getActionForKeyboard(String keyCode) {
+	private static Action getActionForKeyboard(String keyCode) {
 		if ("F12".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FAST_FORWARD);
 		} else if ("P".equalsIgnoreCase(keyCode)

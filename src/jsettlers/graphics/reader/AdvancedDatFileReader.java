@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.image.MultiImageMap;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.ShadowImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.Torso;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.reader.translator.DatBitmapTranslator;
@@ -174,10 +176,10 @@ public class AdvancedDatFileReader implements DatFileSet {
 	// fullscreen images
 	static final int ID_GUIS = 0x11306;
 
-	static final DatBitmapTranslator<SettlerImage> SETTLER_TRANSLATOR =
+	public static final DatBitmapTranslator<SettlerImage> SETTLER_TRANSLATOR =
 	        new SettlerTranslator();
 
-	static final DatBitmapTranslator<Torso> TORSO_TRANSLATOR =
+	public static final DatBitmapTranslator<Torso> TORSO_TRANSLATOR =
 	        new TorsoTranslator();
 
 	public static final DatBitmapTranslator<LandscapeImage> LANDSCAPE_TRANSLATOR =
@@ -200,7 +202,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	/**
 	 * A list of loaded settler sequences.
 	 */
-	private Sequence<SettlerImage>[] settlersequences = null;
+	private Sequence<Image>[] settlersequences = null;
 	/**
 	 * An array with the same length as settlers.
 	 */
@@ -222,12 +224,15 @@ public class AdvancedDatFileReader implements DatFileSet {
 	private int[] guistarts;
 	private Sequence<GuiImage> guisequence = new GuiImageSequence();
 
+	private final SequenceList<Image> directSettlerList;
+
 	private static final byte[] START = new byte[] {
 	        0x02, 0x14, 0x00, 0x00, 0x08, 0x00, 0x00
 	};
 
 	public AdvancedDatFileReader(File file) {
 		this.file = file;
+		directSettlerList = new DirectSettlerSequenceList();
 	}
 
 	/**
@@ -256,7 +261,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		guiimages = new GuiImage[guistarts.length];
 
 		settlersequences =
-		        (Sequence<SettlerImage>[]) new Sequence[settlerstarts.length];
+		        (Sequence<Image>[]) new Sequence[settlerstarts.length];
 
 		int torsodifference = settlerstarts.length - torsostarts.length;
 		if (torsodifference != 0) {
@@ -299,8 +304,8 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 	}
 
-	private static int[] readSequenceIndexStarts(long filelength, ByteReader reader)
-	        throws IOException {
+	private static int[] readSequenceIndexStarts(long filelength,
+	        ByteReader reader) throws IOException {
 		reader.assumeToRead(FILE_START);
 		int fileSize = reader.read32();
 
@@ -400,23 +405,23 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	@Override
-	public SequenceList<SettlerImage> getSettlers() {
-		return new DirectSettlerSequenceList();
+	public SequenceList<Image> getSettlers() {
+		return directSettlerList;
 	}
 
-	private static final Sequence<SettlerImage> NULL_SETTLER_SEQUENCE =
-	        new ArraySequence<SettlerImage>(new SettlerImage[0]);
+	private static final Sequence<Image> NULL_SETTLER_SEQUENCE =
+	        new ArraySequence<Image>(new SettlerImage[0]);
 
-	private class DirectSettlerSequenceList implements
-	        SequenceList<SettlerImage> {
+	private class DirectSettlerSequenceList implements SequenceList<Image> {
 
 		@Override
-		public Sequence<SettlerImage> get(int index) {
+		public Sequence<Image> get(int index) {
 			initializeIfNeeded();
 			if (settlersequences[index] == null) {
 				settlersequences[index] = NULL_SETTLER_SEQUENCE;
-				// TODO: mark to load
 				try {
+					System.out.println("Loading Sequence number " + index);
+
 					loadSettlers(index);
 				} catch (Exception e) {
 				}
@@ -432,6 +437,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	private synchronized void loadSettlers(int index) throws IOException {
+
 		int position = settlerstarts[index];
 		long[] framePositions = readSequenceHeader(position);
 
@@ -453,7 +459,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 			}
 		}
 
-		settlersequences[index] = new ArraySequence<SettlerImage>(images);
+		settlersequences[index] = new ArraySequence<Image>(images);
 	}
 
 	private long[] readSequenceHeader(int position) throws IOException {
@@ -518,11 +524,11 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	public ByteReader getReaderForLandscape(int index) throws IOException {
-		initializeIfNeeded();		
+		initializeIfNeeded();
 		reader.skipTo(landscapestarts[index]);
 		return reader;
 	}
-	
+
 	private void loadLandscapeImage(int index) {
 		try {
 			reader.skipTo(landscapestarts[index]);
@@ -580,5 +586,41 @@ public class AdvancedDatFileReader implements DatFileSet {
 		} catch (IOException e) {
 			guiimages[index] = NullImage.getForGui();
 		}
+	}
+
+	public long[] getSettlerPointers(int seqindex) throws IOException {
+		initializeIfNeeded();
+		return readSequenceHeader(settlerstarts[seqindex]);
+	}
+
+	public long[] getTorsoPointers(int seqindex) throws IOException {
+		initializeIfNeeded();
+		int position = torsostarts[seqindex];
+		if (position >= 0) {
+			return readSequenceHeader(position);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Gets a reader positioned at the given settler
+	 * 
+	 * @param pointer
+	 * @return
+	 * @throws IOException
+	 */
+	public ByteReader getReaderForPointer(long pointer) throws IOException {
+		initializeIfNeeded();
+		reader.skipTo(pointer);
+		return reader;
+	}
+
+	public void generateImageMap(int width, int height, int[] sequences)
+	        throws IOException {
+		initializeIfNeeded();
+
+		MultiImageMap map = new MultiImageMap(width, height);
+		map.addSequences(this, sequences, settlersequences);
 	}
 }

@@ -7,8 +7,8 @@ import java.awt.geom.AffineTransform;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.Parallelogram;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**

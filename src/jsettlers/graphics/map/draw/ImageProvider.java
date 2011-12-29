@@ -1,20 +1,24 @@
 package jsettlers.graphics.map.draw;
 
+import go.graphics.GLDrawContext;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
-import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileSet;
+import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
@@ -27,31 +31,47 @@ public final class ImageProvider {
 	private static final String FILE_SUFFIX = ".7c003e01f.dat";
 
 	private static final String FILE_PREFIX = "siedler3_";
+	
+	private Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
 
-	private static final int THREADS = 3;
+	private static final DatFileSet EMPTY_SET = new DatFileSet() {
+		@Override
+		public SequenceList<Image> getSettlers() {
+			return new SequenceList<Image>() {
+				@Override
+				public Sequence<Image> get(int index) {
+					return null;
+				}
+
+				@Override
+				public int size() {
+					return 0;
+				}
+			};
+		}
+
+		@Override
+		public Sequence<LandscapeImage> getLandscapes() {
+			return new ArraySequence<LandscapeImage>(new LandscapeImage[0]);
+		}
+
+		@Override
+		public Sequence<GuiImage> getGuis() {
+			return new ArraySequence<GuiImage>(new GuiImage[0]);
+		}
+	};
 
 	private static ImageProvider instance;
 
-	private Hashtable<Integer, DatFileSet> images =
-	        new Hashtable<Integer, DatFileSet>();
-
-	private BitSet requestedFiles = new BitSet();
+	private Hashtable<Integer, AdvancedDatFileReader> readers =
+	        new Hashtable<Integer, AdvancedDatFileReader>();
 
 	/**
 	 * The lookup paths for the dat files.
 	 */
 	private List<File> lookupPaths = new ArrayList<File>();
 
-	private final BlockingQueue<Integer> filesToLoad =
-	        new LinkedBlockingQueue<Integer>();
-
 	private ImageProvider() {
-		for (int i = 0; i < THREADS; i++) {
-			Thread imageLoaderThread =
-			        new Thread(new ImageLoadTask(images, filesToLoad), "image loader");
-			imageLoaderThread.setDaemon(true);
-			imageLoaderThread.start();
-		}
 	}
 
 	/**
@@ -85,8 +105,8 @@ public final class ImageProvider {
 	 *            The number of the sequence in the file.
 	 * @return The settler sequence.
 	 */
-	public Sequence<? extends SingleImage> getSettlerSequence(int file, int seqnumber) {
-		DatFileSet set = tryGetFileSet(file);
+	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
+		DatFileSet set = getFileSet(file);
 		if (set != null && set.getSettlers().size() > seqnumber) {
 			return set.getSettlers().get(seqnumber);
 		} else {
@@ -101,13 +121,23 @@ public final class ImageProvider {
 	 *            The file number to search for.
 	 * @return The content as set or <code> null </code>
 	 */
-	private DatFileSet tryGetFileSet(int file) {
-		Integer valueOf = Integer.valueOf(file);
-		
-		waitForPreload(file);
-
-		DatFileSet set = this.images.get(valueOf);
+	public synchronized AdvancedDatFileReader getFileReader(int file) {
+		Integer integer = Integer.valueOf(file);
+		AdvancedDatFileReader set = this.readers.get(integer);
+		if (set == null) {
+			set = createFileReader(file);
+			this.readers.put(integer, set);
+		}
 		return set;
+	}
+
+	public synchronized DatFileSet getFileSet(int file) {
+		AdvancedDatFileReader set = getFileReader(file);
+		if (set != null) {
+			return set;
+		} else {
+			return EMPTY_SET;
+		}
 	}
 
 	/**
@@ -120,9 +150,7 @@ public final class ImageProvider {
 	 * @return The image, or an empty image.
 	 */
 	public SingleImage getLandscapeImage(int file, int seqnumber) {
-		waitForPreload(file);
-		
-		DatFileSet set = tryGetFileSet(file);
+		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
 			Sequence<LandscapeImage> landscapes = set.getLandscapes();
@@ -143,9 +171,7 @@ public final class ImageProvider {
 	 * @return The image.
 	 */
 	public SingleImage getGuiImage(int file, int seqnumber) {
-		//TEMP
-		waitForPreload(file);
-		DatFileSet set = tryGetFileSet(file);
+		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
 			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
@@ -161,7 +187,7 @@ public final class ImageProvider {
 	 *            The link that describes the image
 	 * @return The image or a null image.
 	 */
-	public SingleImage getImage(ImageLink link) {
+	public Image getImage(ImageLink link) {
 		if (link == null) {
 			return NullImage.getInstance();
 		} else if (link.getType() == EImageLinkType.GUI) {
@@ -169,62 +195,17 @@ public final class ImageProvider {
 		} else if (link.getType() == EImageLinkType.LANDSCAPE) {
 			return getLandscapeImage(link.getFile(), link.getSequence());
 		} else {
-			return (SingleImage) getSettlerSequence(link.getFile(), link.getSequence())
-			        .getImageSafe(link.getImage());
+			return getSettlerSequence(link.getFile(),
+			        link.getSequence()).getImageSafe(link.getImage());
 		}
-	}
-
-	/**
-	 * tries to load a dat file by a given number.
-	 * 
-	 * @param number
-	 *            The number of the dat file.
-	 * @return true on success.
-	 */
-	private void loadDatFile(int number) {
-		synchronized (requestedFiles) {
-			Integer key = Integer.valueOf(number);
-			if (!requestedFiles.get(number)) {
-				this.filesToLoad.offer(key);
-				requestedFiles.set(number);
-			}
-		}
-	}
-
-	/**
-	 * preloads the given file
-	 * 
-	 * @param filenumber
-	 */
-	public void preload(int filenumber) {
-		loadDatFile(filenumber);
-	}
-
-	public void waitForPreload(int filenumber) {
-		preload(filenumber);
-		synchronized (images) {
-			while (!isPreloaded(filenumber)) {
-				try {
-					images.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	public boolean isPreloaded(int filenumber) {
-		return images.containsKey(Integer.valueOf(filenumber));
 	}
 
 	/**
 	 * marks all loaded images as invalid. TODO: ensure that they get deleted
 	 */
 	public void invalidateAll() {
-		synchronized (requestedFiles) {
-			this.images.clear();
-			requestedFiles.clear();
-		}
+		readers.clear();
+		Background.invalidateTexture();
 	}
 
 	private File findFileInPaths(String fileName) {
@@ -237,7 +218,7 @@ public final class ImageProvider {
 		return null;
 	}
 
-	public AdvancedDatFileReader getFileReader(int fileIndex) {
+	private AdvancedDatFileReader createFileReader(int fileIndex) {
 		String numberString = String.format("%02d", fileIndex);
 		String fileName = FILE_PREFIX + numberString + FILE_SUFFIX;
 
@@ -249,6 +230,27 @@ public final class ImageProvider {
 			System.err.println("Could not find/load file " + fileName);
 			return null;
 		}
-    }
+	}
 
+	public void startPreloading() {
+		new Thread(new ImagePreloadTask(), "image preloader").start();
+	}
+
+	/**
+	 * Adds a preload task that is executed on the OpenGl thread with a opengl
+	 * context.
+	 * <p>
+	 * The task may never be executed.
+	 */
+	public void addPreloadTask(GLPreloadTask task) {
+		tasks.add(task);
+	}
+	
+	public void runPreloadTasks(GLDrawContext context) {
+		GLPreloadTask task;
+		while ((task = tasks.poll()) != null) {
+			System.out.println("running opengl preload task");
+			task.run(context);
+		}
+	}
 }

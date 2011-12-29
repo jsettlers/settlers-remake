@@ -132,48 +132,50 @@ public class SingleImage implements ImageDataPrivider, Image {
 		return this.texture;
 	}
 
-	public void drawImageAtRect(GLDrawContext gl, float minX, float minY, float maxX,
-	        float maxY) {
-		float[] coords =
-		        new float[] {
-		                minX,
-		                minY,
-		                0,
-		                0,
-		                0,
-		                minX,
-		                maxY,
-		                0,
-		                0,
-		                (float) height / textureHeight,
-		                maxX,
-		                maxY,
-		                0,
-		                (float) width / textureWidth,
-		                (float) height / textureHeight,
-		                maxX,
-		                minY,
-		                0,
-		                (float) width / textureWidth,
-		                0,
-		        };
+	static private float[] tmpBuffer = new float[] {
+	        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	};
+
+	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
+	        float right, float top) {
 		gl.color(1, 1, 1, 1);
-		gl.drawQuadWithTexture(getTextureIndex(gl), coords);
+
+		tmpBuffer[0] = left;
+		tmpBuffer[1] = top;
+
+		tmpBuffer[5] = left;
+		tmpBuffer[6] = bottom;
+		tmpBuffer[9] = (float) height / textureHeight;
+
+		tmpBuffer[10] = right;
+		tmpBuffer[11] = bottom;
+		tmpBuffer[13] = (float) width / textureWidth;
+		tmpBuffer[14] = (float) height / textureHeight;
+
+		tmpBuffer[15] = right;
+		tmpBuffer[16] = top;
+		tmpBuffer[18] = (float) width / textureWidth;
+
+		gl.drawQuadWithTexture(getTextureIndex(gl), tmpBuffer);
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext,
+	 * float, float)
+	 */
 	@Override
-    public void drawAt(GLDrawContext gl, float x, float y) {
+	public void drawAt(GLDrawContext gl, float x, float y) {
 		drawAt(gl, x, y, null);
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float, go.graphics.Color)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext,
+	 * float, float, go.graphics.Color)
+	 */
 	@Override
-    public void drawAt(GLDrawContext gl, float x, float y, Color color) {
+	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
 		gl.glPushMatrix();
 		gl.glTranslatef(x, y, 0);
 		draw(gl, color);
@@ -185,28 +187,37 @@ public class SingleImage implements ImageDataPrivider, Image {
 		return this.data;
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext)
-     */
+	/*
+	 * (non-Javadoc)
+	 * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext,
+	 * go.graphics.Color)
+	 */
 	@Override
-    public void draw(GLDrawContext gl) {
-		draw(gl, null);
-	}
-
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext, go.graphics.Color)
-     */
-	@Override
-    public void draw(GLDrawContext gl, Color color) {
+	public void draw(GLDrawContext gl, Color color) {
 		if (color == null) {
 			gl.color(1, 1, 1, 1);
 		} else {
 			gl.color(color);
 		}
 
-		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl), 2);
-		
-		//gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometry());
+		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl),
+		        2);
+
+		// gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometry());
+		return;
+	}
+
+	@Override
+	public void draw(GLDrawContext gl, Color color, float multiply) {
+		if (color == null) {
+			gl.color(multiply, multiply, multiply, 1);
+		} else {
+			gl.color(color.getRed() * multiply, color.getGreen() * multiply,
+			        color.getBlue() * multiply, color.getAlpha());
+		}
+
+		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl),
+		        2);
 		return;
 	}
 
@@ -219,45 +230,45 @@ public class SingleImage implements ImageDataPrivider, Image {
 		        top,
 		        0,
 		        (float) width / textureWidth,
-		        (float) height / textureHeight,
+		        0,
 		        // bottom right
 		        left,
 		        top,
 		        0,
 		        0,
-		        (float) height / textureHeight,
+		        0,
 		        // top left
 		        left + this.width,
 		        top - this.height,
 		        0,
 		        (float) width / textureWidth,
-		        0,
+		        (float) height / textureHeight,
 
 		        // top left
 		        left + this.width,
 		        top - this.height,
 		        0,
 		        (float) width / textureWidth,
-		        0,
+		        (float) height / textureHeight,
 		        // bottom right
 		        left,
 		        top,
 		        0,
 		        0,
-		        (float) height / textureHeight,
+		        0,
 		        // bottom left
 		        left,
 		        top - this.height,
 		        0,
 		        0,
-		        0,
+		        (float) height / textureHeight,
 		};
 	}
-	
+
 	protected int setGeometryIndex(int geometryindex) {
 		return geometryindex;
 	}
-	
+
 	protected int getGeometryIndex(GLDrawContext context) {
 		if (!context.isGeometryValid(geometryindex)) {
 			geometryindex = context.storeGeometry(getGeometry());
@@ -272,34 +283,4 @@ public class SingleImage implements ImageDataPrivider, Image {
 	public float getTextureScaleY() {
 		return (float) height / textureHeight;
 	}
-
-	public void drawCentered(GLDrawContext gl, float centerX, float centerY,
-            float width2, float height2) {
-		float[] coords =
-		        new float[] {
-		                centerX - width2 / 2,
-		                centerY - height2 / 2,
-		                0,
-		                0,
-		                0,
-		                centerX - width2 / 2,
-		                centerY + height2 / 2,
-		                0,
-		                0,
-		                (float) height / textureHeight,
-		                centerX + width2 / 2,
-		                centerY + height2 / 2,
-		                0,
-		                (float) width / textureWidth,
-		                (float) height / textureHeight,
-		                centerX + width2 / 2,
-		                centerY - height2 / 2,
-		                0,
-		                (float) width / textureWidth,
-		                0,
-		        };
-		gl.color(1, 1, 1, 1);
-		gl.drawQuadWithTexture(getTextureIndex(gl), coords);
-    }
-
 }

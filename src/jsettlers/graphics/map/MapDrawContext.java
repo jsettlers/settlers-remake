@@ -250,11 +250,6 @@ public final class MapDrawContext {
 		}
 	}
 
-	public void debugTime(String string) {
-		// System.out.println("Draw progress: " + string + " (time: "
-		// + (System.nanoTime() - beginTime) + ")");
-	}
-
 	/**
 	 * Gets the converter for the map coordinate system
 	 * 

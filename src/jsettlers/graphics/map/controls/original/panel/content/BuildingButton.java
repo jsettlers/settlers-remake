@@ -11,6 +11,7 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.utils.ImageUtils;
 
 /**
  * This is a button to construct a building.
@@ -53,22 +54,21 @@ public class BuildingButton extends Button {
 	@Override
 	protected void drawBackground(GLDrawContext gl) {
 		FloatRectangle position = getPosition();
-		Image image1 =
+		Image image =
 		        getDetailedImage(buildingImage, position.getWidth(),
 		                position.getHeight());
-		if (image1 instanceof SingleImage) {
-			SingleImage image = (SingleImage) image1;
 
-			float width =
-			        (float) image.getWidth() / ITEM_WIDTH
-			                * getPosition().getWidth();
-			float height =
-			        (float) image.getHeight() / ITEM_HEIGHT
-			                * getPosition().getHeight();
+		float width =
+		        (float) image.getWidth() / ITEM_WIDTH
+		                * getPosition().getWidth();
+		float height =
+		        (float) image.getHeight() / ITEM_HEIGHT
+		                * getPosition().getHeight();
 
-			image.drawCentered(gl, getPosition().getCenterX(), getPosition()
-			        .getCenterY(), width, height);
-		}
+		float cx = getPosition().getCenterX();
+		float cy = getPosition().getCenterY();
+		image.drawImageAtRect(gl, cx - width / 2, cy - height / 2, cx + width
+		        / 2, cy + height / 2);
 	}
 
 	public EBuildingType getBuildingType() {

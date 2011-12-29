@@ -8,7 +8,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
 
 /**
@@ -91,7 +91,7 @@ public class UIPanel implements UIElement {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
 			FloatRectangle position = getPosition();
-			SingleImage image = ImageProvider.getInstance().getImage(link);
+			Image image = ImageProvider.getInstance().getImage(link);
 			drawAtRect(gl, image, position);
 		}
 	}
@@ -106,7 +106,7 @@ public class UIPanel implements UIElement {
 	 * @param position
 	 *            The position to draw the image at
 	 */
-	protected void drawAtRect(GLDrawContext gl, SingleImage image,
+	protected void drawAtRect(GLDrawContext gl, Image image,
 	        FloatRectangle position) {
 		float minX = position.getMinX();
 		float minY = position.getMinY();
@@ -123,15 +123,15 @@ public class UIPanel implements UIElement {
 	 * For settler sequences, assumes the same for the next two sequence
 	 * members.
 	 */
-	protected SingleImage getDetailedImage(ImageLink link, float width, float height) {
-		SingleImage image = ImageProvider.getInstance().getImage(link);
+	protected Image getDetailedImage(ImageLink link, float width, float height) {
+		Image image = ImageProvider.getInstance().getImage(link);
 		ImageLink currentLink = link;
 
 		for (int i = 1; i < DETAIL_IMAGES
 		        && (image.getWidth() < width || image.getHeight() < height); i++) {
 			if (currentLink.getType() == EImageLinkType.SETTLER) {
 				image =
-				        (SingleImage) ImageProvider
+				        ImageProvider
 				                .getInstance()
 				                .getSettlerSequence(link.getFile(),
 				                        link.getSequence())

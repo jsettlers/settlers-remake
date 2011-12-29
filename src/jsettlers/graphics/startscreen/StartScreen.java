@@ -1,7 +1,5 @@
 package jsettlers.graphics.startscreen;
 
-import java.util.LinkedList;
-
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
@@ -9,6 +7,9 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.command.GOCommandEvent;
 import go.graphics.text.EFontSize;
+
+import java.util.LinkedList;
+
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;

@@ -8,14 +8,10 @@ import java.nio.ShortBuffer;
 import java.util.BitSet;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.image.LandscapeImage;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatBitmapReader;
@@ -728,14 +724,12 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	// private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
 
-	private ImageProvider imageProvider = ImageProvider.getInstance();
-
 	private byte[] fogOfWarStatus = new byte[1];
 	private MapRectangle oldBufferPosition = null;
 	private int bufferwidth = 1;; // in map points.
 	private int bufferheight = 1; // in map points.
 
-	private int texture = -1;
+	private static int texture = -1;
 
 	private int geometryindex = -1;
 
@@ -743,35 +737,59 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private BitSet geometryValid = new BitSet();
 
-	private int getTexture(GLDrawContext context) {
-		if (texture < 0) {
-			// TODO: asynchron
-			imageProvider.waitForPreload(LAND_FILE);
+	private static Object preloadMutex = new Object();
 
-			if (imageProvider.isPreloaded(LAND_FILE)) {
-				long starttime = System.currentTimeMillis();
-				short[] data = new short[TEXTURE_SIZE * TEXTURE_SIZE];
-				try {
-					addTextures(data);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				ShortBuffer buffer = ShortBuffer.wrap(data);
-				texture =
-				        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE,
-				                buffer);
+	private static short[] preloadedTexture = null;
 
-				System.out.println("Background texture generated in "
-				        + (System.currentTimeMillis() - starttime) + "ms");
-			} else {
-				imageProvider.preload(LAND_FILE);
+	private static short[] getTexture() {
+		short[] data = new short[TEXTURE_SIZE * TEXTURE_SIZE];
+		try {
+			addTextures(data);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	public static void preloadTexture() {
+		synchronized (preloadMutex) {
+			if (preloadedTexture == null) {
+				preloadedTexture = getTexture();
+				ImageProvider.getInstance().addPreloadTask(new GLPreloadTask() {
+
+					@Override
+					public void run(GLDrawContext context) {
+						getTexture(context);
+					}
+				});
 			}
+		}
+	}
 
+	private static int getTexture(GLDrawContext context) {
+		if (texture < 0) {
+			long starttime = System.currentTimeMillis();
+			short[] data;
+			synchronized (preloadMutex) {
+				if (preloadedTexture != null) {
+					data = preloadedTexture;
+					// free the array
+					preloadedTexture = null;
+				} else {
+					data = getTexture();
+				}
+			}
+			ShortBuffer buffer = ShortBuffer.wrap(data);
+			texture =
+			        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer);
+
+			System.out.println("Background texture generated in "
+			        + (System.currentTimeMillis() - starttime) + "ms");
 		}
 		return texture;
 	}
 
-	private class ImageWriter implements ImageArrayProvider {
+	private static class ImageWriter implements ImageArrayProvider {
 		int arrayoffset;
 		int cellsize;
 		short[] data;
@@ -799,7 +817,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 *            The texture data buffer.
 	 * @throws IOException
 	 */
-	private void addTextures(short[] data) throws IOException {
+	private static void addTextures(short[] data) throws IOException {
 		AdvancedDatFileReader reader =
 		        ImageProvider.getInstance().getFileReader(LAND_FILE);
 		ImageWriter imageWriter = new ImageWriter();
@@ -844,21 +862,21 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param texturepos
 	 *            The texture position
 	 */
-	private static void copyImageAt(short[] data, SingleImage image,
-	        int[] texturepos) {
-		int startx = texturepos[0] * TEXTURE_GRID;
-		int starty = texturepos[1] * TEXTURE_GRID;
-		int maxx = startx + texturepos[2] * TEXTURE_GRID;
-		int maxy = starty + texturepos[2] * TEXTURE_GRID;
-
-		for (int x = startx; x < maxx; x += image.getWidth()) {
-			for (int y = starty; y < maxy; y += image.getHeight()) {
-				int width = Math.min(image.getWidth(), maxx - x);
-				int height = Math.min(image.getHeight(), maxy - y);
-				copyImage(data, image, x, y, width, height);
-			}
-		}
-	}
+	// private static void copyImageAt(short[] data, SingleImage image,
+	// int[] texturepos) {
+	// int startx = texturepos[0] * TEXTURE_GRID;
+	// int starty = texturepos[1] * TEXTURE_GRID;
+	// int maxx = startx + texturepos[2] * TEXTURE_GRID;
+	// int maxy = starty + texturepos[2] * TEXTURE_GRID;
+	//
+	// for (int x = startx; x < maxx; x += image.getWidth()) {
+	// for (int y = starty; y < maxy; y += image.getHeight()) {
+	// int width = Math.min(image.getWidth(), maxx - x);
+	// int height = Math.min(image.getHeight(), maxy - y);
+	// copyImage(data, image, x, y, width, height);
+	// }
+	// }
+	// }
 
 	/**
 	 * Copys the left top image corner to the buffer at (x, y), assuming the
@@ -877,15 +895,15 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param height
 	 *            The height of the area to copy
 	 */
-	private static void copyImage(short[] data, SingleImage image, int x,
-	        int y, int width, int height) {
-		short[] sourceData = image.getData().array();
-		for (int dy = 0; dy < height && dy < image.getHeight(); dy++) {
-			System.arraycopy(sourceData, image.getWidth() * dy, data,
-			        TEXTURE_SIZE * (y + dy) + x, width);
-		}
-
-	}
+	// private static void copyImage(short[] data, SingleImage image, int x,
+	// int y, int width, int height) {
+	// short[] sourceData = image.getData().array();
+	// for (int dy = 0; dy < height && dy < image.getHeight(); dy++) {
+	// System.arraycopy(sourceData, image.getWidth() * dy, data,
+	// TEXTURE_SIZE * (y + dy) + x, width);
+	// }
+	//
+	// }
 
 	/**
 	 * Gets the image number of the border
@@ -1196,8 +1214,7 @@ public class Background implements IGraphicsBackgroundListener {
 				addFogOfWarBuffer(context, (pointOffset * 4) + 2, x, y + 1);
 				addFogOfWarBuffer(context, (pointOffset * 4) + 3, x + 1, y + 1);
 			}
-			addTrianglesToGeometry(context, boundbuffer, 1, x, y,
-			        pointOffset * 4);
+			addTrianglesToGeometry(context, boundbuffer, x, y, pointOffset * 4);
 		} else {
 			addPseudoTrianglesToGeometry(context, boundbuffer, x, y);
 		}
@@ -1269,7 +1286,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 * @param fogOfWar
 	 */
 	private void addTrianglesToGeometry(MapDrawContext context,
-	        GLBuffer buffer, int offset, int x, int y, int fogBase) {
+	        GLBuffer buffer, int x, int y, int fogBase) {
 		addTriangle1ToGeometry(context, buffer, x, y, fogBase);
 		addTriangle2ToGeometry(context, buffer, x, y, fogBase);
 	}
@@ -1482,6 +1499,10 @@ public class Background implements IGraphicsBackgroundListener {
 		if (oldBufferPosition != null && oldBufferPosition.contains(x, y)) {
 			invalidatePoint(x, y);
 		}
+	}
+
+	public static void invalidateTexture() {
+		texture = -1;
 	}
 
 	// private void drawWithRenderbuffer(MapDrawContext context) {

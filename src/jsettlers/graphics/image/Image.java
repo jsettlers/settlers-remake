@@ -32,14 +32,6 @@ public interface Image {
 	public abstract void drawAt(GLDrawContext gl, float x, float y, Color color);
 
 	/**
-	 * Draws the image around the center of the given gl context.
-	 * 
-	 * @param gl
-	 *            The gl context
-	 */
-	public abstract void draw(GLDrawContext gl);
-
-	/**
 	 * Draws the image around 0,0 with the given color.
 	 * 
 	 * @param gl
@@ -48,8 +40,24 @@ public interface Image {
 	 *            The color to use. If it is <code>null</code>, white is used.
 	 */
 	public abstract void draw(GLDrawContext gl, Color color);
-	
+
+	/**
+	 * Draws the image around 0,0 with the given color.
+	 * 
+	 * @param gl
+	 *            The gl context
+	 * @param color
+	 *            The color to use. If it is <code>null</code>, white is used.
+	 * @param multiply
+	 *            A number to multiply all color values with.
+	 */
+	public abstract void draw(GLDrawContext gl, Color color, float multiply);
+
 	public int getWidth();
+
 	public int getHeight();
+
+	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
+	        float maxX, float maxY);
 
 }

@@ -7,7 +7,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.image.SingleImage;
+import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
 
 public class GenericListItem implements UIListItem {
@@ -35,7 +35,7 @@ public class GenericListItem implements UIListItem {
 	public void drawAt(GLDrawContext gl) {
 		float minX = position.getMinX();
 		if (highlight) {
-			SingleImage image = ImageProvider.getInstance().getImage(SELECT_MARKER);
+			Image image = ImageProvider.getInstance().getImage(SELECT_MARKER);
 			image.drawImageAtRect(gl, minX, position.getMinY(),
 			        position.getMaxX(), position.getMaxY());
 		}

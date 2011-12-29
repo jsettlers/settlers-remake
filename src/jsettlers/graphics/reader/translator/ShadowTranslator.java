@@ -2,8 +2,6 @@ package jsettlers.graphics.reader.translator;
 
 import java.io.IOException;
 
-import jsettlers.graphics.image.GuiImage;
-import jsettlers.graphics.image.ImageDataPrivider;
 import jsettlers.graphics.image.ShadowImage;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
