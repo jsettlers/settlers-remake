@@ -2,9 +2,9 @@
 <resources>
     <string name="hello">Loading...</string>
     <string name="app_name">Jsettlers</string>
-    <string name="f12_string">F12</string>
-    <string name="save_string">save</string>
-    <string name="stop_string"></string>
+    <string name="f12_string">Vorspilen</string>
+    <string name="save_string">Speichern</string>
+    <string name="stop_string">Stop</string>
     <string name="kill_string">Töten</string>
     <string name="load_string">Laden</string>
     <string name="pause_string">Pause</string>

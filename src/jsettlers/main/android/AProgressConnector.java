@@ -1,6 +1,5 @@
 package jsettlers.main.android;
 
-import android.app.Activity;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import jsettlers.graphics.localization.Labels;
@@ -9,9 +8,9 @@ import jsettlers.graphics.progress.ProgressConnector;
 
 public class AProgressConnector extends ProgressConnector {
 
-	private final Activity activity;
+	private final JsettlersActivity activity;
 
-	public AProgressConnector(Activity activity) {
+	public AProgressConnector(JsettlersActivity activity) {
 		super(null);
 		this.activity = activity;
 	}
@@ -23,6 +22,7 @@ public class AProgressConnector extends ProgressConnector {
 			@Override
 			public void run() {
 				applyStateValues(state);
+				activity.preloadGlView();
 			}
 		});
 	}
