@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
@@ -37,13 +38,16 @@ public class DatFileTester {
 		JoglLibraryPathInitializer.initLibraryPath();
 	}
 
-	private static final String FILE = "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
+	private static final String FILE =
+	        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
 
-	private static final Color[] colors = new Color[] { new Color(0xffffff) };
+	private static final Color[] colors = new Color[] {
+		new Color(0xffffff)
+	};
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
-	private static int datFileIndex = 11;
+	private static int datFileIndex = 12;
 
 	private AdvancedDatFileReader reader;
 
@@ -235,7 +239,7 @@ public class DatFileTester {
 		@Override
 		public void drawContent(GLDrawContext gl2, int width, int height) {
 			if (mode == SETTLERS) {
-				SequenceList<SettlerImage> sequences = reader.getSettlers();
+				SequenceList<Image> sequences = reader.getSettlers();
 				drawSequences(gl2, width, height, sequences);
 			} else if (mode == GUI) {
 				Sequence<GuiImage> sequences = reader.getGuis();
@@ -247,7 +251,8 @@ public class DatFileTester {
 
 		}
 
-		private <T extends Image> void drawSequences(GLDrawContext gl2, int width, int height, SequenceList<T> sequences) {
+		private <T extends Image> void drawSequences(GLDrawContext gl2,
+		        int width, int height, SequenceList<T> sequences) {
 			gl2.glTranslatef(offsetX, offsetY, 0);
 
 			int y = 0;
@@ -267,27 +272,41 @@ public class DatFileTester {
 			}
 		}
 
-		private <T extends Image> int drawSequence(GLDrawContext gl2, int width, int height, int y, Sequence<T> seq) {
+		private <T extends Image> int drawSequence(GLDrawContext gl2,
+		        int width, int height, int y, Sequence<T> seq) {
 			int maxheight = 0;
 			int x = 0;
 			for (int index = 0; index < seq.length(); index++) {
 				T image = seq.getImage(index);
 				maxheight = Math.max(maxheight, image.getHeight());
 
-				if (x > -offsetX - 100 && x < -offsetX + width + 100 && y > -offsetY - 100 && y < -offsetY + height + 100) {
-					drawImage(gl2, y, index, x, image);
+				if (x > -offsetX - 100 && x < -offsetX + width + 100
+				        && y > -offsetY - 100 && y < -offsetY + height + 100) {
+					drawImage(gl2, y, index, x, (SingleImage) image);
 				}
 				x += 100;
 			}
 			return maxheight;
 		}
 
-		private void drawImage(GLDrawContext gl2, int y, int index, int x, Image image) {
-			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), colors[index % colors.length]);
+		private void drawImage(GLDrawContext gl2, int y, int index, int x,
+		        SingleImage image) {
+			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight()
+			        + image.getOffsetY(), colors[index % colors.length]);
 
 			gl2.color(1, 0, 0, 1);
-			float[] line = new float[] { x, y, 0, x, y + image.getHeight() + image.getOffsetY(), 0, x - image.getOffsetX(),
-					y + image.getHeight() + image.getOffsetY(), 0 };
+			float[] line =
+			        new float[] {
+			                x,
+			                y,
+			                0,
+			                x,
+			                y + image.getHeight() + image.getOffsetY(),
+			                0,
+			                x - image.getOffsetX(),
+			                y + image.getHeight() + image.getOffsetY(),
+			                0
+			        };
 			gl2.drawLine(line, false);
 			drawPoint(gl2, x, y);
 			drawPoint(gl2, x + image.getWidth(), y);
@@ -302,12 +321,13 @@ public class DatFileTester {
 
 		private void printHelp() {
 			System.out
-					.println("HELP:\nUse arrow keys to navigate.\nS shows settlers. \nG shows gui images. \nB shows Background. \nE exports as png");
+			        .println("HELP:\nUse arrow keys to navigate.\nS shows settlers. \nG shows gui images. \nB shows Background. \nE exports as png");
 		}
 	}
 
 	private void reloadDatFile() {
-		File file = new File(FILE.replace("%", String.format("%02d", datFileIndex)));
+		File file =
+		        new File(FILE.replace("%", String.format("%02d", datFileIndex)));
 
 		reader = new AdvancedDatFileReader(file);
 	}
@@ -336,21 +356,26 @@ public class DatFileTester {
 		}
 	}
 
-	private <T extends Image> void exportSequence(File dir, int index, Sequence<T> seq) {
+	private <T extends Image> void exportSequence(File dir, int index,
+	        Sequence<T> seq) {
 		File seqdir = new File(dir, index + "");
 		seqdir.mkdirs();
 		for (int j = 0; j < seq.length(); j++) {
 			T image = seq.getImage(j);
-			export(image, new File(seqdir, j + ".png"));
-			if (image instanceof SettlerImage && ((SettlerImage) image).getTorso() != null) {
-				export(((SettlerImage) image).getTorso(), new File(seqdir, j + "_torso.png"));
+			export((SingleImage) image, new File(seqdir, j + ".png"));
+			if (image instanceof SettlerImage
+			        && ((SettlerImage) image).getTorso() != null) {
+				export((SingleImage) ((SettlerImage) image).getTorso(),
+				        new File(seqdir, j + "_torso.png"));
 			}
 		}
 	}
 
-	private void export(Image image, File file) {
+	private void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
-		BufferedImage rendered = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage rendered =
+		        new BufferedImage(image.getWidth(), image.getHeight(),
+		                BufferedImage.TYPE_INT_ARGB);
 		ShortBuffer data = image.getData().duplicate();
 		data.rewind();
 		int[] rgbArray = new int[data.remaining()];
@@ -363,8 +388,9 @@ public class DatFileTester {
 			rgbArray[i] = new Color(red, green, blue, alpha).getRGB();
 		}
 
-		rendered.setRGB(0, 0, image.getWidth(), image.getHeight(), rgbArray, -image.getWidth() + image.getHeight() * image.getWidth(),
-				-image.getWidth());
+		rendered.setRGB(0, 0, image.getWidth(), image.getHeight(), rgbArray,
+		        -image.getWidth() + image.getHeight() * image.getWidth(),
+		        -image.getWidth());
 
 		try {
 			ImageIO.write(rendered, "png", file);

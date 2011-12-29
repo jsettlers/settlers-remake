@@ -26,9 +26,6 @@ public class WindowTest {
 		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 
-		provider.preload(0);
-		provider.preload(10);
-		provider.preload(1);
 
 		TestMap map = new TestMap();
 
