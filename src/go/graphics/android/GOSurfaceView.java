@@ -31,8 +31,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		this.area = area;
 
 		setRenderer(new Renderer());
-		// setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-
+		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		//api level 11 :-(
+		//super.setPreserveEGLContextOnPause(true);
 		area.addRedrawListener(this);
 	}
 
@@ -263,6 +264,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		@Override
 		public void onSurfaceChanged(GL10 gl, int width, int height) {
+			System.out.println("opengl suface changed");
 			area.setWidth(width);
 			area.setHeight(height);
 			context.reinit(width, height);
@@ -270,6 +272,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+			System.out.println("opengl suface created");
 		}
 
 	}
