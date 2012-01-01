@@ -2,7 +2,7 @@
 <resources>
     <string name="hello">Loading...</string>
     <string name="app_name">Jsettlers</string>
-    <string name="f12_string">Vorspilen</string>
+    <string name="f12_string">Vorspielen</string>
     <string name="save_string">Speichern</string>
     <string name="stop_string">Stop</string>
     <string name="kill_string">Töten</string>
