@@ -3,6 +3,7 @@ package go.graphics.android;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
 import go.graphics.area.Area;
@@ -25,12 +26,14 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	private final Area area;
 
 	private final ActionAdapter actionAdapter = new ActionAdapter(this);
+	
+	private AndroidContext drawcontext;
 
 	public GOSurfaceView(Context context, Area area) {
 		super(context);
 		this.area = area;
 
-		setRenderer(new Renderer());
+		setRenderer(new Renderer(context));
 		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 		//api level 11 :-(
 		//super.setPreserveEGLContextOnPause(true);
@@ -248,10 +251,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	}
 
 	private class Renderer implements GLSurfaceView.Renderer {
-		private AndroidContext context;
 
-		private Renderer() {
-			context = new AndroidContext();
+		private Renderer(Context acontext) {
+			drawcontext = new AndroidContext(acontext);
 		}
 
 		@Override
@@ -259,7 +261,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			GLES10.glClearColor(0, 0, 0, 1);
 			GLES10.glClear(GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_COLOR_BUFFER_BIT);
 
-			area.drawArea(context);
+			area.drawArea(drawcontext);
 		}
 
 		@Override
@@ -267,7 +269,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			System.out.println("opengl suface changed");
 			area.setWidth(width);
 			area.setHeight(height);
-			context.reinit(width, height);
+			drawcontext.reinit(width, height);
 		}
 
 		@Override
@@ -290,5 +292,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	public void fireKey(String key) {
 		actionAdapter.fireKey(key);
 	}
+
+	public GLDrawContext getDrawContext() {
+	    return drawcontext;
+    }
 
 }

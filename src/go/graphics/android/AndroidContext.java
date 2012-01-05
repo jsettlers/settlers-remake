@@ -10,12 +10,15 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import android.content.Context;
 import android.opengl.GLES10;
 import android.opengl.GLES11;
 
 public class AndroidContext implements GLDrawContext {
+	private final Context context;
 
-	public AndroidContext() {
+	public AndroidContext(Context context) {
+		this.context = context;
 	}
 
 	@Override
@@ -186,7 +189,7 @@ public class AndroidContext implements GLDrawContext {
 		texbuffer.position(3);
 		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 9 * 4, texbuffer);
 		FloatBuffer colorbuffer = buffer.duplicate(); // we need it selden enogh
-													  // to allocate a new one.
+		                                              // to allocate a new one.
 		colorbuffer.position(5);
 		GLES10.glColorPointer(4, GLES10.GL_FLOAT, 9 * 4, colorbuffer);
 
@@ -217,9 +220,7 @@ public class AndroidContext implements GLDrawContext {
 		// 1 byte aligned.
 		GLES10.glPixelStorei(GLES10.GL_UNPACK_ALIGNMENT, 1);
 
-		int[] textureIndexes = new int[1];
-		GLES10.glGenTextures(1, textureIndexes, 0);
-		int texture = textureIndexes[0];
+		int texture = genTextureIndex();
 		if (texture == 0) {
 			return -1;
 		}
@@ -233,11 +234,18 @@ public class AndroidContext implements GLDrawContext {
 		return texture;
 	}
 
+	private static int genTextureIndex() {
+		int[] textureIndexes = new int[1];
+		GLES10.glGenTextures(1, textureIndexes, 0);
+		int texture = textureIndexes[0];
+		return texture;
+	}
+
 	/**
 	 * Sets the texture parameters, assuming that the texture was just created
 	 * and is bound.
 	 */
-	private void setTextureParameters() {
+	private static void setTextureParameters() {
 		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D,
 		        GLES10.GL_TEXTURE_MAG_FILTER, GLES10.GL_LINEAR);
 		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D,
@@ -256,6 +264,36 @@ public class AndroidContext implements GLDrawContext {
 		        height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
+	public int generateTextureAlpha(int width, int height) {
+		// 1 byte aligned.
+		GLES10.glPixelStorei(GLES10.GL_UNPACK_ALIGNMENT, 1);
+
+		int texture = genTextureIndex();
+		if (texture == 0) {
+			return -1;
+		}
+
+		ByteBuffer data = ByteBuffer.allocateDirect(width * height);
+		while (data.hasRemaining()) {
+			data.put((byte) 0);
+		}
+		data.rewind();
+
+		glBindTexture(texture);
+		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_ALPHA, width,
+		        height, 0, GLES10.GL_ALPHA, GLES10.GL_UNSIGNED_BYTE, data);
+
+		setTextureParameters();
+		return texture;
+	}
+
+	public void updateTextureAlpha(int textureIndex, int left, int bottom,
+	        int width, int height, ByteBuffer data) {
+		glBindTexture(textureIndex);
+		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width,
+		        height, GLES10.GL_ALPHA, GLES10.GL_UNSIGNED_BYTE, data);
+	}
+
 	@Override
 	public void deleteTexture(int textureid) {
 		GLES10.glDeleteTextures(1, new int[] {
@@ -270,7 +308,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public TextDrawer getTextDrawer(EFontSize size) {
-		return AndroidTextDrawer.getInstance(size);
+		return AndroidTextDrawer.getInstance(size, this);
 	}
 
 	@Override
@@ -480,4 +518,9 @@ public class AndroidContext implements GLDrawContext {
 			        bufferlength, buffer);
 		}
 	}
+
+	public Context getAndroidContext() {
+		return context;
+	}
+
 }
