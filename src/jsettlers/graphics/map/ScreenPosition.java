@@ -43,7 +43,7 @@ public class ScreenPosition {
 		this.incline = incline;
 	}
 
-	private float clamp(float min, float max, float value) {
+	private static float clamp(float min, float max, float value) {
 		if (min > max) {
 			return (min + max) / 2;
 		} else if (value < min) {

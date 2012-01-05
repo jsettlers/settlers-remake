@@ -44,6 +44,8 @@ import jsettlers.graphics.map.draw.Background;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
+import jsettlers.graphics.messages.Message;
+import jsettlers.graphics.messages.Messenger;
 
 /**
  * This is the main map content class. It manages the map drawing on the screen
@@ -81,6 +83,10 @@ public final class MapContent implements SettlersContent,
 	private boolean ENABLE_DEBUG = false;
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
+	private static final int MAX_MESSAGES = 10;
+	private static final float MESSAGE_OFFSET_X = 200;
+	private static final int MESSAGE_OFFSET_Y = 30;
+	private static final int MESSAGE_LINEHIEGHT = 18;
 
 	private final IGraphicsGrid map;
 
@@ -112,6 +118,8 @@ public final class MapContent implements SettlersContent,
 	private int windowWidth = 1;
 
 	private int windowHeight = 1;
+
+	private Messenger messenger = new Messenger();
 
 	/**
 	 * Creates a new map content for the given map.
@@ -169,6 +177,7 @@ public final class MapContent implements SettlersContent,
 		gl.glTranslatef(0, 0, .5f);
 		drawSelectionHint(gl);
 		controls.drawAt(gl);
+		drawMessages(gl);
 
 		drawFramerate(gl);
 		drawTooltip(gl);
@@ -176,6 +185,51 @@ public final class MapContent implements SettlersContent,
 
 		System.out.println("Background: " + bgtime + "ms, Foreground: "
 		        + foregroundtime + "ms, UI: " + uitime + "ms");
+	}
+
+	private void drawMessages(GLDrawContext gl) {
+		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
+		// TODO: don't let logic wait until we rendered.
+		synchronized (messenger) {
+			int messageIndex = 0;
+			for (Message m : messenger.getMessages()) {
+				float x = MESSAGE_OFFSET_X;
+				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
+				if (m.getSender() >= 0) {
+					String name = getPlayername(m.getSender()) + ":";
+					jsettlers.common.Color color =
+					        context.getPlayerColor(m.getSender());
+					float width = (float) drawer.getWidth(name);
+					float bright =
+					        color.getRed() + color.getGreen() + color.getBlue();
+					if (bright < .9f) {
+						// black
+						gl.color(1, 1, 1, .5f);
+						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
+					} else if (bright < 2f) {
+						// bad visibility
+						gl.color(0, 0, 0, .5f);
+						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
+					}
+					gl.color(color);
+					drawer.drawString(x, y, name);
+					x += width + 10;
+				}
+
+				gl.color(1, 1, 1, 1);
+				drawer.drawString(x, y, m.getMessage());
+
+				messageIndex++;
+				if (messageIndex >= MAX_MESSAGES) {
+					break;
+				}
+			}
+		}
+	}
+
+	private String getPlayername(byte sender) {
+		// TODO
+		return "player " + sender;
 	}
 
 	private void adaptScreenSize() {
@@ -693,6 +747,12 @@ public final class MapContent implements SettlersContent,
 
 	public void setPreviewBuildingType(EBuildingType buildingType) {
 		controls.displayBuildingBuild(buildingType);
+	}
+
+	public void addMessage(Message message) {
+		synchronized (messenger) {
+			messenger.addMessage(message);
+		}
 	}
 
 }

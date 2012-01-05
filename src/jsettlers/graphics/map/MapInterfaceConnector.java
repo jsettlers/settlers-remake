@@ -8,6 +8,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionFirerer;
 import jsettlers.graphics.map.selection.ISelectionSet;
+import jsettlers.graphics.messages.Message;
 
 /**
  * This is the main interface connector.
@@ -112,4 +113,8 @@ public class MapInterfaceConnector implements ActionFireable {
 	public void setPreviewBuildingType(EBuildingType buildingType) {
 	    content.setPreviewBuildingType(buildingType);
     }
+	
+	public void showMessage(Message message) {
+		content.addMessage(message);
+	}
 }
