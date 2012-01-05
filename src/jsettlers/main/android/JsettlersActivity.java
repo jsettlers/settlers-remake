@@ -1,6 +1,5 @@
 package jsettlers.main.android;
 
-import go.graphics.android.AndroidContext;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
@@ -338,8 +337,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 			@Override
 			public void run() {
 				System.out.println("running opengl preload");
-				ImageProvider.getInstance().runPreloadTasks(
-				        new AndroidContext());
+				ImageProvider.getInstance().runPreloadTasks(glView.getDrawContext());
 			}
 		});
 	}
