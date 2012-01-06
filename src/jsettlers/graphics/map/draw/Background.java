@@ -792,6 +792,7 @@ public class Background implements IGraphicsBackgroundListener {
 	private static class ImageWriter implements ImageArrayProvider {
 		int arrayoffset;
 		int cellsize;
+		int maxoffset;
 		short[] data;
 
 		// nothing to do. We assume images are a rectangle and have the right
@@ -802,10 +803,13 @@ public class Background implements IGraphicsBackgroundListener {
 
 		@Override
 		public void writeLine(short[] data, int length) throws IOException {
-			for (int i = 0; i < cellsize; i++) {
-				this.data[arrayoffset + i] = data[i % length];
+			if (arrayoffset < maxoffset) { // TODO: ensure that there is enough
+										   // space for every texture
+				for (int i = 0; i < cellsize; i++) {
+					this.data[arrayoffset + i] = data[i % length];
+				}
+				arrayoffset += TEXTURE_SIZE;
 			}
-			arrayoffset += TEXTURE_SIZE;
 		}
 
 	}
@@ -831,9 +835,10 @@ public class Background implements IGraphicsBackgroundListener {
 			int y = position[1] * TEXTURE_GRID;
 			int start = y * TEXTURE_SIZE + x;
 			int cellsize = position[2] * TEXTURE_GRID;
+			int end = (y + cellsize) * TEXTURE_SIZE + x;
 			imageWriter.arrayoffset = start;
 			imageWriter.cellsize = cellsize;
-			int end = (y + cellsize) * TEXTURE_SIZE + x;
+			imageWriter.maxoffset = end;
 
 			DatBitmapReader.uncompressImage(
 			        reader.getReaderForLandscape(index),
