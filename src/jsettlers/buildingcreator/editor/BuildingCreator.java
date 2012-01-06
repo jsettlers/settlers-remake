@@ -1,5 +1,6 @@
 package jsettlers.buildingcreator.editor;
 
+import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 
 import java.awt.Dimension;
@@ -87,7 +88,20 @@ public class BuildingCreator implements IMapInterfaceListener {
 				reloadColor(new ShortPoint2D(x, y));
 			}
 		}
-		JOGLPanel mapPanel = new JOGLPanel();
+		JOGLPanel mapPanel = new JOGLPanel(new SoundPlayer() {
+			
+			@Override
+			public void playSound(int sound, float lvolume, float rvolume) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public int load(short[] loadSound) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		});
 		MapInterfaceConnector connector = mapPanel.showGameMap(map, null);
 		connector.addListener(this);
 
