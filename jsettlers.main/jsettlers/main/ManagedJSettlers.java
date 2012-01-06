@@ -15,13 +15,6 @@ public class ManagedJSettlers implements Listener {
 	private ISettlersGameDisplay content;
 	private JSettlersGame ongoingGame;
 
-	@Deprecated
-	public synchronized void start(IGuiStarter starter) {
-		JOGLPanel content2 = new JOGLPanel();
-		starter.startGui(content2);
-		start(content2);
-	}
-
 	public synchronized void start(ISettlersGameDisplay content) {
 		this.content = content;
 		showMainScreen();
@@ -140,15 +133,6 @@ public class ManagedJSettlers implements Listener {
 
 	}
 
-	/**
-	 * Allows the ui to be started.
-	 * 
-	 * @author michael
-	 */
-	@Deprecated
-	public interface IGuiStarter {
-		void startGui(JOGLPanel content);
-	}
 
 	/**
 	 * Game ended from inside the game.
