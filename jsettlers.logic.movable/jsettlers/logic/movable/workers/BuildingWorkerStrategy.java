@@ -434,6 +434,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		this.currentJob = null;
 
 		if (super.isFollowingPath()) {
+			super.getGrid().setMarked(super.getTargetPos(), false);
 			super.abortPath();
 		}
 		this.done = false;

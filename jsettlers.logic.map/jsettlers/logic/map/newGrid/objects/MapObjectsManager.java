@@ -64,7 +64,8 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		while (curr != null && curr.isOutDated(gameTime)) {
 			timingQueue.poll();
 			if (curr.shouldRemoveObject()) {
-				removeMapObject(curr.mapObject.getPos(), curr.mapObject);
+				ISPosition2D pos = curr.mapObject.getPos();
+				removeMapObject(pos.getX(), pos.getY(), curr.mapObject);
 			} else {
 				curr.getMapObject().changeState();
 			}
@@ -111,7 +112,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 
 		if (!stone.canBeCut()) {
 			addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, (byte) -1);
-			removeMapObjectType(new ShortPoint2D(x, y), EMapObjectType.STONE);
+			removeMapObjectType(x, y, EMapObjectType.STONE);
 		}
 	}
 
@@ -163,8 +164,8 @@ public class MapObjectsManager implements ITimerable, Serializable {
 
 	private boolean addMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			short x = point.calculatePoint(pos).getX();
-			short y = point.calculatePoint(pos).getY();
+			short x = point.calculateX(pos.getX());
+			short y = point.calculateY(pos.getY());
 			if (!grid.isInBounds(x, y) || grid.isBlocked(x, y)) {
 				return false;
 			}
@@ -172,32 +173,32 @@ public class MapObjectsManager implements ITimerable, Serializable {
 
 		grid.addMapObject(pos.getX(), pos.getY(), mapObject);
 
-		setBlockedForObject(pos, mapObject, true);
+		setBlockedForObject(pos.getX(), pos.getY(), mapObject, true);
 		return true;
 	}
 
-	public void removeMapObjectType(ISPosition2D pos, EMapObjectType mapObjectType) {
-		AbstractHexMapObject removed = grid.removeMapObjectType(pos.getX(), pos.getY(), mapObjectType);
+	public void removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+		AbstractHexMapObject removed = grid.removeMapObjectType(x, y, mapObjectType);
 
 		if (removed != null) {
-			setBlockedForObject(pos, removed, false);
+			setBlockedForObject(x, y, removed, false);
 		}
 	}
 
-	public void removeMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
-		boolean removed = grid.removeMapObject(pos.getX(), pos.getY(), mapObject);
+	public void removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
+		boolean removed = grid.removeMapObject(x, y, mapObject);
 
 		if (removed) {
-			setBlockedForObject(pos, mapObject, false);
+			setBlockedForObject(x, y, mapObject, false);
 		}
 	}
 
-	private void setBlockedForObject(ISPosition2D pos, AbstractHexMapObject mapObject, boolean blocked) {
+	private void setBlockedForObject(short oldX, short oldY, AbstractHexMapObject mapObject, boolean blocked) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			short x = point.calculatePoint(pos).getX();
-			short y = point.calculatePoint(pos).getY();
-			if (grid.isInBounds(x, y)) {
-				grid.setBlocked(x, y, blocked);
+			short newX = point.calculateX(oldX);
+			short newY = point.calculateY(oldY);
+			if (grid.isInBounds(newX, newY)) {
+				grid.setBlocked(newX, newY, blocked);
 			}
 		}
 	}
@@ -246,7 +247,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 				markObject.setConstructionValue(value);
 			}
 		} else {
-			removeMapObjectType(pos, EMapObjectType.CONSTRUCTION_MARK);
+			removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.CONSTRUCTION_MARK);
 		}
 	}
 
@@ -267,14 +268,20 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		return sum < Constants.STACK_SIZE;
 	}
 
-	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+	public final boolean canPop(short x, short y, EMaterialType materialType) {
+		StackMapObject stackObject = getStackAtPosition(x, y, materialType);
+
+		return stackObject != null && (stackObject.getMaterialType() == materialType || materialType == null) && !stackObject.isEmpty();
+	}
+
+	public boolean pushMaterial(short x, short y, EMaterialType materialType) {
 		assert materialType != null : "material type can never be null here";
 
-		StackMapObject stackObject = getStackAtPosition(position, materialType);
+		StackMapObject stackObject = getStackAtPosition(x, y, materialType);
 
 		if (stackObject == null) {
-			grid.addMapObject(position.getX(), position.getY(), new StackMapObject(materialType, (byte) 1));
-			grid.setProtected(position.getX(), position.getY(), true);
+			grid.addMapObject(x, y, new StackMapObject(materialType, (byte) 1));
+			grid.setProtected(x, y, true);
 			return true;
 		} else {
 			if (stackObject.isFull()) {
@@ -286,40 +293,48 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	public boolean popMaterial(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = getStackAtPosition(position, materialType);
+	public final boolean popMaterial(short x, short y, EMaterialType materialType) {
+		return popMaterialTypeAt(x, y, materialType) != null;
+	}
+
+	private EMaterialType popMaterialTypeAt(short x, short y, EMaterialType materialType) {
+		StackMapObject stackObject = getStackAtPosition(x, y, materialType);
 
 		if (stackObject == null) {
-			return false;
+			return null;
 		} else {
 			if (stackObject.isEmpty()) {
-				removeStackObject(position, stackObject);
-				return false;
+				removeStackObject(x, y, stackObject);
+				return null;
 			} else {
 				stackObject.decrement();
 				if (stackObject.isEmpty()) { // remove empty stack object
-					removeStackObject(position, stackObject);
+					removeStackObject(x, y, stackObject);
 				}
-				return true;
+				return stackObject.getMaterialType();
 			}
 		}
 	}
 
-	private void removeStackObject(ISPosition2D position, StackMapObject stackObject) {
-		removeMapObject(position, stackObject);
-		if (grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT) == null) {
-			grid.setProtected(position.getX(), position.getY(), false); // no other stack, so remove protected
+	public final EMaterialType getMaterialTypeAt(short x, short y) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
+
+		if (stackObject == null) {
+			return null;
+		} else {
+			return stackObject.getMaterialType();
 		}
 	}
 
-	public boolean canPop(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = getStackAtPosition(position, materialType);
-
-		return stackObject != null && stackObject.getMaterialType() == materialType && !stackObject.isEmpty();
+	private final void removeStackObject(short x, short y, StackMapObject stackObject) {
+		removeMapObject(x, y, stackObject);
+		if (grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT) == null) {
+			grid.setProtected(x, y, false); // no other stack, so remove protected
+		}
 	}
 
-	public byte getStackSize(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = getStackAtPosition(position, materialType);
+	public final byte getStackSize(short x, short y, EMaterialType materialType) {
+		StackMapObject stackObject = getStackAtPosition(x, y, materialType);
 		if (stackObject == null) {
 			return 0;
 		} else {
@@ -327,10 +342,28 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	private StackMapObject getStackAtPosition(ISPosition2D position, EMaterialType materialType) {
-		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+	public final boolean hasStealableMaterial(short x, short y) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
 
-		while (stackObject != null && stackObject.getMaterialType() != materialType) { // find correct stack
+		while (stackObject != null) { // find all stacks
+			if (stackObject.hasUnstolen()) {
+				return true;
+			}
+
+			stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
+		}
+
+		return false;
+	}
+
+	public final EMaterialType stealMaterialAt(short x, short y) {
+		return popMaterialTypeAt(x, y, null);
+	}
+
+	private StackMapObject getStackAtPosition(short x, short y, EMaterialType materialType) {
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
+
+		while (stackObject != null && stackObject.getMaterialType() != materialType && materialType != null) { // find correct stack
 			AbstractHexMapObject object = stackObject.getNextObject();
 			if (object != null) {
 				stackObject = (StackMapObject) object.getMapObject(EMapObjectType.STACK_OBJECT);
@@ -352,7 +385,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 				addMapObject(pos, new PigObject());
 			}
 		} else {
-			removeMapObjectType(pos, EMapObjectType.PIG);
+			removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.PIG);
 		}
 	}
 

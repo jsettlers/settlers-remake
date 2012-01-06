@@ -92,7 +92,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		diggerRequests.offer(new DiggerRequest(requester, amount));
 	}
 
-	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+	public void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
 		bricklayerRequests.offer(new BricklayerRequest(building, bricklayerTargetPos, direction));
 	}
 
@@ -423,10 +423,10 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 
 		boolean creationRequested = false;
 		final Building building;
-		final ShortPoint2D bricklayerTargetPos;
+		final ISPosition2D bricklayerTargetPos;
 		final EDirection direction;
 
-		public BricklayerRequest(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		public BricklayerRequest(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
 			this.building = building;
 			this.bricklayerTargetPos = bricklayerTargetPos;
 			this.direction = direction;
@@ -544,4 +544,18 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
+	/**
+	 * removes an offer of the given materialType if it exists.
+	 * 
+	 * @param pos
+	 *            position of the offer
+	 * @param materialType
+	 *            {@link EMaterialType} to be checked.
+	 */
+	public final void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+		Offer offer = this.materialOffers.getObjectAt(pos);
+		if (offer != null && offer.materialType == materialType) {
+			reduceOfferAmount(offer);
+		}
+	}
 }

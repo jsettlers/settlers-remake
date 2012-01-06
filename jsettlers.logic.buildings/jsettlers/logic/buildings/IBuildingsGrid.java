@@ -6,7 +6,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -77,7 +76,7 @@ public interface IBuildingsGrid {
 
 	void requestDiggers(IDiggerRequester requester, byte amount);
 
-	void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction);
+	void requestBricklayer(Building building, ISPosition2D position, EDirection direction);
 
 	IRequestsStackGrid getRequestStackGrid();
 

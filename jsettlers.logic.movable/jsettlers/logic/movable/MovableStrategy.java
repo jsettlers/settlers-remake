@@ -16,6 +16,7 @@ import jsettlers.logic.movable.soldiers.PikemanStrategy;
 import jsettlers.logic.movable.soldiers.SwordsmanStrategy;
 import jsettlers.logic.movable.specialists.GeologistStrategy;
 import jsettlers.logic.movable.specialists.PioneerStrategy;
+import jsettlers.logic.movable.specialists.ThiefStrategy;
 import jsettlers.logic.movable.workers.BuildingWorkerStrategy;
 
 /**
@@ -63,6 +64,9 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 
 		case GEOLOGIST:
 			return new GeologistStrategy(grid, movable);
+
+		case THIEF:
+			return new ThiefStrategy(grid, movable);
 
 		case LUMBERJACK:
 		case SAWMILLER:

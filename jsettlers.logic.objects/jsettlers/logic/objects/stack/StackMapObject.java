@@ -12,60 +12,78 @@ import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
  * @author Andreas Eberle
  * 
  */
-public class StackMapObject extends AbstractHexMapObject implements IStackMapObject {
+public final class StackMapObject extends AbstractHexMapObject implements IStackMapObject {
 	private static final long serialVersionUID = -5471566113368524172L;
 
 	private final EMaterialType materialType;
 	private byte size;
+	private byte markedStolen = 0;
 
 	public StackMapObject(EMaterialType materialType, byte size) {
 		this.materialType = materialType;
 		this.size = size;
 	}
 
-	public boolean isEmpty() {
+	public final boolean isEmpty() {
 		return size == 0;
 	}
 
-	public boolean isFull() {
+	public final boolean isFull() {
 		return size >= Constants.STACK_SIZE;
 	}
 
-	public void increment() {
+	public final void incrementStolenMarks() {
+		markedStolen++;
+	}
+
+	public final void decreaseStolenMarks() {
+		markedStolen--;
+	}
+
+	/**
+	 * 
+	 * @return true if the stack has a material that is not already marked by a thief.<br>
+	 *         false if all materials are already marked by thiefs.
+	 */
+	public final boolean hasUnstolen() {
+		return markedStolen < size;
+	}
+
+	public final void increment() {
 		size++;
 	}
 
-	public void decrement() {
+	public final void decrement() {
 		size--;
 	}
 
 	@Override
-	public EMapObjectType getObjectType() {
+	public final EMapObjectType getObjectType() {
 		return EMapObjectType.STACK_OBJECT;
 	}
 
 	@Override
-	public float getStateProgress() {
+	public final float getStateProgress() {
 		return 0;
 	}
 
 	@Override
-	public EMaterialType getMaterialType() {
+	public final EMaterialType getMaterialType() {
 		return materialType;
 	}
 
 	@Override
-	public byte getSize() {
+	public final byte getSize() {
 		return size;
 	}
 
 	@Override
-	public boolean cutOff() {
+	public final boolean cutOff() {
 		return false;
 	}
 
 	@Override
-	public boolean canBeCut() {
+	public final boolean canBeCut() {
 		return false;
 	}
 

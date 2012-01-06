@@ -10,7 +10,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
@@ -285,7 +284,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(requester.getBuildingArea().get(0)).requestDiggers(requester, amount);
 	}
 
-	public final void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+	public final void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
 		getPartitionObject(building.getPos()).requestBricklayer(building, bricklayerTargetPos, direction);
 	}
 
@@ -357,5 +356,9 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		}
 
 		return totallyFreePositions;
+	}
+
+	public void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+		getPartitionObject(pos).removeOfferAt(pos, materialType);
 	}
 }

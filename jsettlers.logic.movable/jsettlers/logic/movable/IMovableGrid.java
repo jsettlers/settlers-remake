@@ -304,4 +304,24 @@ public interface IMovableGrid {
 	byte getResourceAmountAt(short x, short y);
 
 	boolean canAddRessourceSign(ISPosition2D pos);
+
+	/**
+	 * Returns a {@link EMaterialType} available at the given position.
+	 * 
+	 * @param pos
+	 *            position to be checked.
+	 * @return an available {@link EMaterialType} at this position. <br>
+	 *         or null if no material is available
+	 */
+	EMaterialType getMaterialTypeAt(ISPosition2D pos);
+
+	/**
+	 * try to steal a material at the given position
+	 * 
+	 * @param pos
+	 *            at this position the thief tries to steal something
+	 * @return the {@link EMaterialType} of the stolen material<br>
+	 *         or null if none had been stolen.
+	 */
+	EMaterialType stealMaterialAt(ISPosition2D pos);
 }

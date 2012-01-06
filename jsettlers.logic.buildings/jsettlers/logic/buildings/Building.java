@@ -133,14 +133,15 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (place) {
 			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, (byte) -1);
 		} else {
-			grid.getMapObjectsManager().removeMapObjectType(pos, EMapObjectType.BUILDINGSITE_SIGN);
+			grid.getMapObjectsManager().removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.BUILDINGSITE_SIGN);
 		}
 
 		for (RelativePoint curr : type.getBuildmarks()) {
 			if (place) {
 				grid.getMapObjectsManager().addSimpleMapObject(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST, false, (byte) -1);
 			} else {
-				grid.getMapObjectsManager().removeMapObjectType(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST);
+				ISPosition2D postPos = curr.calculatePoint(pos);
+				grid.getMapObjectsManager().removeMapObjectType(postPos.getX(), postPos.getY(), EMapObjectType.BUILDINGSITE_POST);
 			}
 		}
 	}
@@ -172,7 +173,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (place) {
 			grid.getMapObjectsManager().addSimpleMapObject(flagPosition, getFlagType(), false, player);
 		} else {
-			grid.getMapObjectsManager().removeMapObjectType(flagPosition, getFlagType());
+			grid.getMapObjectsManager().removeMapObjectType(flagPosition.getX(), flagPosition.getY(), getFlagType());
 		}
 	}
 
@@ -502,7 +503,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (draw) {
 			grid.getMapObjectsManager().addBuildingWorkAreaObject(pos, progress);
 		} else {
-			grid.getMapObjectsManager().removeMapObjectType(pos, EMapObjectType.WORKAREA_MARK);
+			grid.getMapObjectsManager().removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.WORKAREA_MARK);
 		}
 	}
 

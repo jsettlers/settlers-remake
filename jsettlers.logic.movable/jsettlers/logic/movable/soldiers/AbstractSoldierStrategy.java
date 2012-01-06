@@ -195,9 +195,17 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		case GO_TO_TOWER:
 			tower = null;
 			state = ESoldierState.WATCHING;
+			delayCtr = 0;
 			System.out.println("path request failed");
 			break;
 		}
+	}
+
+	@Override
+	protected void pathAbortedEvent() {
+		state = ESoldierState.WATCHING;
+		tower = null;
+		delayCtr = 0;
 	}
 
 	@Override
@@ -236,6 +244,15 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	@Override
 	public final boolean canOccupyBuilding() {
 		return tower == null;
+	}
+
+	@Override
+	protected boolean checkGoStepPrecondition() {
+		if (tower != null) {
+			return tower.isNotDestroyed();
+		} else {
+			return true;
+		}
 	}
 
 	/**

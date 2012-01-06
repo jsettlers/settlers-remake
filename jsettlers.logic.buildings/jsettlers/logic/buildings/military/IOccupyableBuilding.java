@@ -13,4 +13,6 @@ public interface IOccupyableBuilding {
 
 	ISPosition2D getPosition(IBuildingOccupyableMovable soldier);
 
+	boolean isNotDestroyed();
+
 }

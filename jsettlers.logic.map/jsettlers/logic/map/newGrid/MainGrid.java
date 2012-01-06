@@ -24,6 +24,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -110,29 +111,6 @@ public class MainGrid implements Serializable {
 	transient ConstructMarksThread constructionMarksCalculator;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
-
-	// private void writeObject(ObjectOutputStream oos) throws IOException {
-	// oos.writeInt(width);
-	// oos.writeInt(height);
-	// oos.writeObject(movablePathfinderGrid);
-	// System.out.println("movablePathfinderGrid written");
-	// oos.writeObject(landscapeGrid);
-	// System.err.println("landscapeGrid written");
-	// oos.writeObject(objectsGrid);
-	// System.err.println("objectsGrid written");
-	// oos.writeObject(partitionsGrid);
-	// System.out.println("partitionsGrid written");
-	// oos.writeObject(movableGrid);
-	// System.out.println("movableGrid written");
-	// oos.writeObject(flagsGrid);
-	// System.out.println("flagsGrid written");
-	// oos.writeObject(mapObjectsManager);
-	// System.out.println("mapObjectsManager written");
-	// oos.writeObject(buildingsGrid);
-	// System.out.println("buildingsGrid written");
-	// oos.writeObject(fogOfWar);
-	// System.out.println("fogOfWar written");
-	// }
 
 	public MainGrid(short width, short height) {
 		this.width = width;
@@ -406,6 +384,9 @@ public class MainGrid implements Serializable {
 			case MOUNTAIN:
 				return isInBounds(x, y) && !flagsGrid.isMarked(x, y) && canAddRessourceSign(x, y);
 
+			case FOREIGN_MATERIAL:
+				return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
+
 			default:
 				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
 				return false;
@@ -657,6 +638,11 @@ public class MainGrid implements Serializable {
 		public void setPartitionAndPlayerAt(short x, short y, short partition) {
 			partitionsGrid.setPartitionAndPlayerAt(x, y, partition);
 			bordersThread.checkPosition(new ShortPoint2D(x, y));
+
+			AbstractHexMapObject building = objectsGrid.getMapObjectAt(x, y, EMapObjectType.BUILDING);
+			if (building != null && ((IPlayerable) building).getPlayer() != partitionsGrid.getPlayerAt(x, y)) {
+				((Building) building).kill();
+			}
 		}
 	}
 
@@ -760,7 +746,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean pushMaterial(ISPosition2D position, EMaterialType materialType, boolean offer) {
-			if (mapObjectsManager.pushMaterial(position, materialType)) {
+			if (mapObjectsManager.pushMaterial(position.getX(), position.getY(), materialType)) {
 				if (offer) {
 					partitionsGrid.pushMaterial(position, materialType);
 				}
@@ -771,12 +757,12 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean canPop(ISPosition2D position, EMaterialType material) {
-			return mapObjectsManager.canPop(position, material);
+			return mapObjectsManager.canPop(position.getX(), position.getY(), material);
 		}
 
 		@Override
 		public final boolean popMaterial(ISPosition2D position, EMaterialType materialType) {
-			if (mapObjectsManager.popMaterial(position, materialType)) {
+			if (mapObjectsManager.popMaterial(position.getX(), position.getY(), materialType)) {
 				return true;
 			} else
 				return false;
@@ -880,7 +866,7 @@ public class MainGrid implements Serializable {
 			if (place) {
 				mapObjectsManager.addSimpleMapObject(pos, EMapObjectType.SMOKE, false, (byte) 0);
 			} else {
-				mapObjectsManager.removeMapObjectType(pos, EMapObjectType.SMOKE);
+				mapObjectsManager.removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.SMOKE);
 			}
 		}
 
@@ -928,6 +914,20 @@ public class MainGrid implements Serializable {
 		@Override
 		public final boolean canAddRessourceSign(ISPosition2D pos) {
 			return super.canAddRessourceSign(pos.getX(), pos.getY());
+		}
+
+		@Override
+		public EMaterialType getMaterialTypeAt(ISPosition2D pos) {
+			return mapObjectsManager.getMaterialTypeAt(pos.getX(), pos.getY());
+		}
+
+		@Override
+		public EMaterialType stealMaterialAt(ISPosition2D pos) {
+			EMaterialType materialType = mapObjectsManager.stealMaterialAt(pos.getX(), pos.getY());
+			if (materialType != null) {
+				partitionsGrid.removeOfferAt(pos, materialType);
+			}
+			return materialType;
 		}
 
 	}
@@ -1006,7 +1006,7 @@ public class MainGrid implements Serializable {
 		@Override
 		public final void removeBuildingAt(ISPosition2D pos) {
 			IBuilding building = (IBuilding) objectsGrid.getMapObjectAt(pos.getX(), pos.getY(), EMapObjectType.BUILDING);
-			mapObjectsManager.removeMapObjectType(pos, EMapObjectType.BUILDING);
+			mapObjectsManager.removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.BUILDING);
 
 			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
 			for (ISPosition2D curr : area) {
@@ -1075,7 +1075,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		public final void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
 			partitionsGrid.requestBricklayer(building, bricklayerTargetPos, direction);
 		}
 
@@ -1109,24 +1109,24 @@ public class MainGrid implements Serializable {
 
 			@Override
 			public final boolean hasMaterial(ISPosition2D position, EMaterialType materialType) {
-				return mapObjectsManager.canPop(position, materialType);
+				return mapObjectsManager.canPop(position.getX(), position.getY(), materialType);
 			}
 
 			@Override
 			public final void popMaterial(ISPosition2D position, EMaterialType materialType) {
-				mapObjectsManager.popMaterial(position, materialType);
+				mapObjectsManager.popMaterial(position.getX(), position.getY(), materialType);
 			}
 
 			@Override
 			public final byte getStackSize(ISPosition2D position, EMaterialType materialType) {
-				return mapObjectsManager.getStackSize(position, materialType);
+				return mapObjectsManager.getStackSize(position.getX(), position.getY(), materialType);
 			}
 
 			@Override
 			public final void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
 				partitionsGrid.releaseRequestsAt(position, materialType);
 
-				byte stackSize = mapObjectsManager.getStackSize(position, materialType);
+				byte stackSize = mapObjectsManager.getStackSize(position.getX(), position.getY(), materialType);
 				for (byte i = 0; i < stackSize; i++) {
 					partitionsGrid.pushMaterial(position, materialType);
 				}

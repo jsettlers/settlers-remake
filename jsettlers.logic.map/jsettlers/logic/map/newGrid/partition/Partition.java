@@ -6,7 +6,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -100,7 +99,7 @@ public class Partition implements Serializable {
 		manager.addJobless(digger);
 	}
 
-	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+	public void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
 		manager.requestBricklayer(building, bricklayerTargetPos, direction);
 	}
 
@@ -118,6 +117,10 @@ public class Partition implements Serializable {
 
 	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
 		manager.releaseRequestsAt(position, materialType);
+	}
+
+	public void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+		manager.removeOfferAt(pos, materialType);
 	}
 
 }
