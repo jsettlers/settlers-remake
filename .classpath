@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/jogl.all.jar"/>
 	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/nativewindow.all.jar"/>
 	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/newt.all.jar"/>
+	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/joal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
