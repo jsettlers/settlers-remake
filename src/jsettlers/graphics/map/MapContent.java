@@ -14,10 +14,13 @@ import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
 import go.graphics.event.mouse.GOZoomEvent;
+import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -46,6 +49,7 @@ import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.messages.Message;
 import jsettlers.graphics.messages.Messenger;
+import jsettlers.graphics.sound.SoundManager;
 
 /**
  * This is the main map content class. It manages the map drawing on the screen
@@ -119,7 +123,8 @@ public final class MapContent implements SettlersContent,
 
 	private int windowHeight = 1;
 
-	private Messenger messenger = new Messenger();
+	private final Messenger messenger = new Messenger();
+	private final SoundManager soundmanager;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -127,9 +132,10 @@ public final class MapContent implements SettlersContent,
 	 * @param map
 	 *            The map.
 	 */
-	public MapContent(IGraphicsGrid map) {
+	public MapContent(IGraphicsGrid map, SoundPlayer player) {
 		this.map = map;
 		this.context = new MapDrawContext(map);
+		this.soundmanager = new SoundManager(player);
 
 		controls = new OriginalControls(context);
 		// controls = new SmallControls();
@@ -138,8 +144,17 @@ public final class MapContent implements SettlersContent,
 		this.connector.addListener(this);
 
 		map.setBackgroundListener(background);
-	}
 
+		// sound testing code
+//		new Timer().schedule(new TimerTask() {
+//			private int soundid = 0;
+//			@Override
+//			public void run() {
+//				soundmanager.playSound(soundid++);
+//			}
+//		}, 1000, 5000);
+	}
+	
 	private void resizeTo(int newWindowWidth, int newWindowHeight) {
 		windowWidth = newWindowWidth;
 		windowHeight = newWindowHeight;
@@ -211,12 +226,12 @@ public final class MapContent implements SettlersContent,
 						gl.color(0, 0, 0, .5f);
 						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
 					}
-					gl.color(color);
+					drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), 1);
 					drawer.drawString(x, y, name);
 					x += width + 10;
 				}
 
-				gl.color(1, 1, 1, 1);
+				drawer.setColor(1, 1, 1, 1);
 				drawer.drawString(x, y, m.getMessage());
 
 				messageIndex++;

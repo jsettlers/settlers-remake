@@ -2,6 +2,7 @@ package jsettlers.graphics;
 
 import go.graphics.area.Area;
 import go.graphics.region.Region;
+import go.graphics.sound.SoundPlayer;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,10 +31,13 @@ public class JOGLPanel implements ISettlersGameDisplay {
 	private SettlersContent content = null;
 	private Area area;
 
+	private final SoundPlayer player;
+
 	/**
 	 * Creates a new empty panel.
 	 */
-	public JOGLPanel() {
+	public JOGLPanel(SoundPlayer player) {
+		this.player = player;
 		area = new Area();
 		this.region = new Region(Region.POSITION_CENTER);
 		area.add(this.region);
@@ -71,7 +75,7 @@ public class JOGLPanel implements ISettlersGameDisplay {
 	 */
 	public synchronized MapInterfaceConnector showGameMap(
 	        final IGraphicsGrid map, IStatisticable playerStatistics) {
-		MapContent content = new MapContent(map);
+		MapContent content = new MapContent(map, player);
 		changeContent(content);
 
 		Timer timer = new Timer(true);
