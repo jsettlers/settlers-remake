@@ -43,6 +43,9 @@ public final class LandmarksCorrectingThread extends Thread {
 	}
 
 	private final void checkLandmarks(ISPosition2D startPos) {
+		if (map.isBlocked(startPos.getX(), startPos.getY()))
+			return;
+
 		short startPartition = map.getPartitionAt(startPos.getX(), startPos.getY());
 
 		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
@@ -52,9 +55,6 @@ public final class LandmarksCorrectingThread extends Thread {
 	}
 
 	private final void checkLandmarks(ISPosition2D startPos, short startPartition, EDirection startDirection) {
-		if (map.isBlocked(startPos.getX(), startPos.getY()))
-			return;
-
 		EDirection blockedDir = startDirection;
 
 		ISPosition2D blocked = blockedDir.getNextHexPoint(startPos);
