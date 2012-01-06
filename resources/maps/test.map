@@ -81,6 +81,15 @@ dy = -7
 distance = 10
 
 [settler]
+count = 10
+type = THIEF
+tight = 1
+group = true
+dx = -10
+dy = -15
+distance = 10
+
+[settler]
 count = 5
 type = BRICKLAYER
 tight = 1

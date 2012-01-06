@@ -25,6 +25,13 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	public EBuildingType getBuildingType();
 
 	/**
+	 * if the building is currently working
+	 * 
+	 * @return true if working is enabled (no matter if it really works)
+	 */
+	public boolean isWorking();
+
+	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
 	 * 
 	 * @author michael
@@ -47,10 +54,4 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		List<? extends IBuildingOccupyer> getOccupyers();
 	}
 
-	/**
-	 * if the building is currently working
-	 * 
-	 * @return true if working is enabled (no matter if it really works)
-	 */
-	public boolean isWorking();
 }

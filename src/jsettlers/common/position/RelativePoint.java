@@ -35,7 +35,7 @@ public class RelativePoint implements Serializable {
 	 * @param start
 	 * @return
 	 */
-	public ShortPoint2D calculatePoint(ISPosition2D start) {
+	public final ISPosition2D calculatePoint(ISPosition2D start) {
 		return new ShortPoint2D((short) (start.getX() + dx), (short) (start.getY() + dy));
 	}
 
@@ -47,7 +47,7 @@ public class RelativePoint implements Serializable {
 		return (short) (y + dy);
 	}
 
-	public static RelativePoint getRelativePoint(ISPosition2D start, ISPosition2D end) {
+	public static final RelativePoint getRelativePoint(ISPosition2D start, ISPosition2D end) {
 		short dx = (short) (end.getX() - start.getX());
 		short dy = (short) (end.getY() - start.getY());
 
@@ -55,7 +55,7 @@ public class RelativePoint implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public final boolean equals(Object o) {
 		if (o != null && (o instanceof RelativePoint)) {
 			RelativePoint other = (RelativePoint) o;
 			return other.getDy() == this.getDy() && other.getDx() == this.getDx();
@@ -64,20 +64,20 @@ public class RelativePoint implements Serializable {
 		}
 	}
 
-	public int getHashCode() {
+	public final int getHashCode() {
 		return getDy() << 16 + getDx();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "dx=" + getDx() + ", dy=" + getDy();
 	}
 
-	public short getDy() {
+	public final short getDy() {
 		return dy;
 	}
 
-	public short getDx() {
+	public final short getDx() {
 		return dx;
 	}
 

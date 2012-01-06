@@ -40,6 +40,11 @@ public enum ESearchType {
 	SOLDIER_SWORDSMAN,
 	SOLDIER_PIKEMAN,
 
-	MOUNTAIN
+	MOUNTAIN,
+
+	/**
+	 * Search type for thiefs to find a material on enemy ground.
+	 */
+	FOREIGN_MATERIAL
 
 }
