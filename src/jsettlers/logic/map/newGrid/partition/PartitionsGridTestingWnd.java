@@ -18,6 +18,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import synchronic.timer.NetworkTimer;
@@ -126,6 +127,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 		};
 
 		partitionsGrid = new PartitionsGrid(WIDTH, HEIGHT, partitionableGrid);
+		partitionsGrid.initPartitionsAlgorithm(new HexAStar(aStarMap, WIDTH, HEIGHT));
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 500);
