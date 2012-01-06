@@ -1,5 +1,6 @@
 package jsettlers.main.android;
 
+import go.graphics.android.AndroidSoundPlayer;
 import go.graphics.android.GOSurfaceView;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
@@ -15,6 +16,7 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.ProgressConnector;
+import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
@@ -100,6 +102,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
+			SoundManager.addLookupPath(new File(file, "Snd"));
 		}
 		ResourceManager.setProvider(new ResourceProvider(this, files));
 	}
@@ -249,6 +252,8 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	 */
 	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
+			IMapItem[] maps = displayedStartScreen.getMaps();
+			final IMapItem map = maps[0];
 			displayedStartScreen.startNewGame(new IGameSettings() {
 				@Override
 				public int getPlayerCount() {
@@ -257,7 +262,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 				@Override
 				public IMapItem getMap() {
-					return displayedStartScreen.getMaps()[0];
+					return map;
 				}
 			});
 		}
@@ -297,7 +302,9 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		displayedStartScreen = null;
 		state = EAndroidUIState.SHOW_ACTIVE_GAME;
 
-		final MapContent content = new MapContent(map);
+		AndroidSoundPlayer player = new AndroidSoundPlayer();
+		final MapContent content = new MapContent(map, player);
+		
 		this.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
