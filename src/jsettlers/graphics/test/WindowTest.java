@@ -1,5 +1,6 @@
 package jsettlers.graphics.test;
 
+import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 
 import java.io.File;
@@ -31,7 +32,20 @@ public class WindowTest {
 
 		JFrame window = new JFrame("window test");
 
-		JOGLPanel content = new JOGLPanel();
+		JOGLPanel content = new JOGLPanel(new SoundPlayer() {
+			
+			@Override
+			public void playSound(int sound, float lvolume, float rvolume) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public int load(short[] loadSound) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		});
 		window.add(new AreaContainer(content.getArea()));
 
 		window.pack();
