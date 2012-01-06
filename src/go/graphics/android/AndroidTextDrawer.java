@@ -59,6 +59,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	        0,
 	};
 	private int[] lastused;
+	private TextView renderer;
 
 	public AndroidTextDrawer(EFontSize size, AndroidContext context) {
 		this.size = size;
@@ -88,9 +89,6 @@ public class AndroidTextDrawer implements TextDrawer {
 
 		context.glPushMatrix();
 		context.glTranslatef(x, y, 0);
-		// context.color(1, 1, 0, 1);
-		// context.drawQuadWithTexture(0, texturepos);
-		context.color(1, 1, 1, 1);
 		context.drawQuadWithTexture(texture, texturepos);
 		context.glPopMatrix();
 	}
@@ -120,12 +118,12 @@ public class AndroidTextDrawer implements TextDrawer {
 		        Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
 		                Bitmap.Config.ALPHA_8);
 		Canvas canvas = new Canvas(bitmap);
-		TextView renderer = new TextView(context.getAndroidContext());
+		renderer = new TextView(context.getAndroidContext());
 		renderer.layout(0, 0, TEXTURE_WIDTH, lineheight);
-		renderer.setText(string);
 		renderer.setTextColor(Color.WHITE);
 		renderer.setSingleLine(true);
 		renderer.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.getSize());
+		renderer.setText(string);
 		renderer.draw(canvas);
 		canvas.translate(50, .8f * lineheight);
 		ByteBuffer dst = ByteBuffer.allocateDirect(lineheight * TEXTURE_WIDTH);
@@ -134,7 +132,6 @@ public class AndroidTextDrawer implements TextDrawer {
 
 		context.updateTextureAlpha(texture, 0, unnededline * lineheight,
 		        TEXTURE_WIDTH, lineheight, dst);
-		linewidths[unnededline] = renderer.getMeasuredWidth();
 
 		lastused[unnededline] = lastUsedCount++;
 		linestrings[unnededline] = string;
@@ -153,6 +150,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 			texturepos[1] = lineheight;
 			texturepos[16] = lineheight;
+			
 		}
 	}
 
@@ -170,7 +168,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	@Override
 	public void setColor(float red, float green, float blue, float alpha) {
-		// TODO
+		context.color(red, green, blue, alpha);
 	}
 
 	public static TextDrawer getInstance(EFontSize size, AndroidContext context) {
