@@ -23,6 +23,8 @@ import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.ManagedJSettlers;
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +38,10 @@ import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 
 public class JsettlersActivity extends Activity implements ISettlersGameDisplay {
+
+	private static final String PREFS_NAME = "PREFS";
+
+	private static final int SOUND_THREADS = 2;
 
 	private GOSurfaceView glView;
 
@@ -138,11 +144,17 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		restartMapContet();
 	}
 
+	private boolean gameWasPaused = false;
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		if (glView != null) {
 			glView.onPause();
+		}
+		if (state == EAndroidUIState.SHOW_ACTIVE_GAME) {
+			gameWasPaused = manager.isPaused();
+			manager.setPaused(true);
 		}
 	}
 
@@ -151,6 +163,9 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		super.onResume();
 		if (glView != null) {
 			glView.onPause();
+		}
+		if (state == EAndroidUIState.SHOW_ACTIVE_GAME) {
+			manager.setPaused(gameWasPaused);
 		}
 	}
 
@@ -215,7 +230,23 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	@Override
 	protected void onStop() {
+		super.onStop();
+		if (state == EAndroidUIState.SHOW_ACTIVE_GAME) {
+			String saveid = manager.saveAndStopCurrentGame();
+			if (saveid == null) {
+				saveid = "";
+			}
+
+			setGameToResume(saveid);
+		}
 		System.exit(0);
+	}
+
+	private void setGameToResume(String saveid) {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		Editor editor = settings.edit();
+		editor.putString("resumegame", saveid);
+		editor.commit();
 	}
 
 	@Override
@@ -242,9 +273,25 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public void showStartScreen(IStartScreenConnector connector) {
 		state = EAndroidUIState.SHOW_STARTSCREEN;
 		this.displayedStartScreen = connector;
-		disposeGLView();
+		runOnUiThread(new Runnable() {
 
-		setContentView(R.layout.startmenu);
+			@Override
+			public void run() {
+				disposeGLView();
+
+				setContentView(R.layout.startmenu);
+
+				// TODO: really look if there is a saved game with that name
+				SharedPreferences settings =
+				        getSharedPreferences(PREFS_NAME, 0);
+				String name = settings.getString("resumegame", "");
+
+				if (name.isEmpty() || true) {
+					findViewById(R.id.resume_game_button).setVisibility(
+					        View.INVISIBLE);
+				}
+			}
+		});
 	}
 
 	/**
@@ -263,6 +310,28 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 				@Override
 				public IMapItem getMap() {
 					return map;
+				}
+			});
+		}
+	}
+
+	/**
+	 * Onclick listener
+	 */
+	public void resumeGameButtonClicked(@SuppressWarnings("unused") View target) {
+		if (displayedStartScreen != null) {
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			final String name = settings.getString("resumegame", "");
+
+			displayedStartScreen.loadGame(new ILoadableGame() {
+				@Override
+				public String getName() {
+					return name;
+				}
+
+				@Override
+				public Date getSaveTime() {
+					return null;
 				}
 			});
 		}
@@ -302,12 +371,14 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		displayedStartScreen = null;
 		state = EAndroidUIState.SHOW_ACTIVE_GAME;
 
-		AndroidSoundPlayer player = new AndroidSoundPlayer();
+		AndroidSoundPlayer player = new AndroidSoundPlayer(SOUND_THREADS);
 		final MapContent content = new MapContent(map, player);
-		
+
 		this.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				setGameToResume("");
+
 				Region region = new Region(Region.POSITION_CENTER);
 				region.setContent(content);
 				area.add(region);
@@ -315,9 +386,10 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 				System.out.println("setting content");
 
 				View progress = findViewById(R.id.progressAllContnet);
-				//TODO: we should use progress.setVisibility(View.GONE); after the animation
+				// TODO: we should use progress.setVisibility(View.GONE); after
+				// the animation
 				AlphaAnimation anim = new AlphaAnimation(1, 0f);
-				anim.setDuration (1000);
+				anim.setDuration(1000);
 				anim.setFillAfter(true);
 				progress.startAnimation(anim);
 			}
@@ -338,13 +410,14 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 			glHolderView.addView(glView);
 		}
-		
+
 		System.out.println("requesting opengl preload");
 		glView.queueEvent(new Runnable() {
 			@Override
 			public void run() {
 				System.out.println("running opengl preload");
-				ImageProvider.getInstance().runPreloadTasks(glView.getDrawContext());
+				ImageProvider.getInstance().runPreloadTasks(
+				        glView.getDrawContext());
 			}
 		});
 	}

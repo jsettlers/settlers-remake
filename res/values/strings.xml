@@ -18,4 +18,6 @@
     <string name="network_game_new">Einleiten</string>
     <string name="network_game_join">Beitreten</string>
     <string name="network_game_load">Wiederherstellen</string>
+    <string name="local_game_resume">Weiterspielen</string>
+    <string name="game_title">Willkommen zu JSettlers</string>
 </resources>
