@@ -112,7 +112,7 @@ public class Area implements RedrawListener {
 		}
 	}
 
-	private void drawRegionAt(GLDrawContext gl2, PositionedRegion position) {
+	private static void drawRegionAt(GLDrawContext gl2, PositionedRegion position) {
 		gl2.glPushMatrix();
 		gl2.glTranslatef(position.getLeft(), position.getBottom(), 0);
 

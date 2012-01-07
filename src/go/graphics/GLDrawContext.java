@@ -3,8 +3,6 @@ package go.graphics;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /**
