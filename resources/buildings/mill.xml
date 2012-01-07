@@ -98,7 +98,7 @@
 	<job name="hide1" type="HIDE" successjob="startwork" failjob="start" />
 	<job name="startwork" type="START_WORKING" successjob="makeflour" failjob="makeflour"/>
 	<job name="makeflour" type="WAIT" successjob="stopwork" failjob="start"
-		time="6.0" />
+		time="2.5" />
 	<job name="stopwork" type="STOP_WORKING" successjob="changeMat2" failjob="changeMat2"/>
 	<job name="changeMat2" type="SET_MATERIAL" successjob="get_flour"
 		failjob="hide" material="FLOUR" />

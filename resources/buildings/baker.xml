@@ -135,7 +135,7 @@
 	<job name="C_walkB2" type="WALK"         successjob="C_drop1" failjob="gohome" direction="NORTH_WEST"/>
     
 	<job name="C_drop1"  type="DROP"         successjob="C_drop2"  failjob="gohome" material="BREAD"/>
-	<job name="C_drop2"  type="SET_MATERIAL" successjob="C_drop3"  failjob="gohome" material="NO_MATERIAL"/>
+	<job name="C_drop2"  type="SET_MATERIAL" successjob="C_drop3"  failjob="gohome" material="BLADE"/>
 	<job name="C_drop3"  type="TAKE"         successjob="C_walkC0" failjob="gohome" material="NO_MATERIAL"/>
 
 	<job name="C_walkC0" type="WALK"         successjob="C_walkC1" failjob="gohome" direction="SOUTH_EAST"/>
