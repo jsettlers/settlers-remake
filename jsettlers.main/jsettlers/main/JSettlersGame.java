@@ -45,6 +45,7 @@ public class JSettlersGame {
 	private Listener listener;
 	@SuppressWarnings("unused")
 	private final ILoadableGame loadableGame;
+	private MapInterfaceConnector gameConnector;
 
 	/**
 	 * Creates a new game by a given random mapname.
@@ -76,6 +77,7 @@ public class JSettlersGame {
 	}
 
 	private class GameRunner implements Runnable, IMapInterfaceListener {
+
 		@Override
 		public void run() {
 			INetworkManager manager = new NullNetworkManager();
@@ -115,7 +117,7 @@ public class JSettlersGame {
 				}
 				startPoint = new ShortPoint2D(0, 0);
 			}
-			
+
 			if (grid == null) {
 				listener.gameEnded();
 				return;
@@ -131,22 +133,23 @@ public class JSettlersGame {
 			connector.scrollTo(startPoint, false);
 			manager.startGameTimer();
 
-			// --- TESTING code start
+			gameConnector = connector;
 
-//			Timer t = new Timer();
-//			t.schedule(new TimerTask() {
-//				@Override
-//				public void run() {
-//					if (Math.random() < .5) {
-//					connector.showMessage(SimpleMessage.attacked(
-//					        (byte) (Math.random() * 10),
-//					        new ShortPoint2D(30, 30)));
-//					} else {
-//						connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
-//						        new ShortPoint2D(30, 30)));
-//					}
-//				}
-//			}, 100, 1000);
+			// --- TESTING code start
+//			 Timer t = new Timer();
+//			 t.schedule(new TimerTask() {
+//			 @Override
+//			 public void run() {
+//			 if (Math.random() < .5) {
+//			 connector.showMessage(SimpleMessage.attacked(
+//			 (byte) (Math.random() * 10),
+//			 new ShortPoint2D(30, 30)));
+//			 } else {
+//			 connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
+//			 new ShortPoint2D(30, 30)));
+//			 }
+//			 }
+//			 }, 100, 1000);
 			// --- TESTING code end
 
 			// TODO: allow user to stop game before this happens.
@@ -191,4 +194,20 @@ public class JSettlersGame {
 	public interface Listener {
 		void gameEnded();
 	}
+
+	public boolean isPaused() {
+		return true; // TODO: how do we know that the game is paused
+	}
+
+	public void setPaused(boolean b) {
+		if (gameConnector != null) {
+			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE
+			        : EActionType.SPEED_UNSET_PAUSE));
+		}
+	}
+
+	public String save() {
+		gameConnector.fireAction(new Action(EActionType.SAVE));
+	    return "savegame";
+    }
 }
