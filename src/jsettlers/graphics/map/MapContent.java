@@ -49,6 +49,7 @@ import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.messages.Message;
 import jsettlers.graphics.messages.Messenger;
+import jsettlers.graphics.sound.BackgroundSound;
 import jsettlers.graphics.sound.SoundManager;
 
 /**
@@ -125,6 +126,7 @@ public final class MapContent implements SettlersContent,
 
 	private final Messenger messenger = new Messenger();
 	private final SoundManager soundmanager;
+	private final BackgroundSound bgsound;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -136,6 +138,7 @@ public final class MapContent implements SettlersContent,
 		this.map = map;
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
+		bgsound = new BackgroundSound(context, soundmanager);
 
 		controls = new OriginalControls(context);
 		// controls = new SmallControls();
@@ -767,6 +770,14 @@ public final class MapContent implements SettlersContent,
 	public void addMessage(Message message) {
 		synchronized (messenger) {
 			messenger.addMessage(message);
+		}
+		switch (message.getType()) {
+			case ATTACKED:
+				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
+				break;
+
+			default:
+				break;
 		}
 	}
 

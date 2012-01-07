@@ -9,18 +9,49 @@ import java.util.ArrayList;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import go.graphics.sound.SoundPlayer;
 
+/**
+ * Some known sounds:
+ * <p>
+ * 1 (6 times): knock a tree <br>
+ * 2 (3 times): digg <br>
+ * 3 (twice): knock stone <br>
+ * 5: saw <br>
+ * 6: smith <br>
+ * 7: smith 12: farmer <br>
+ * 14: donkey <br>
+ * 30: sword Soldier <br>
+ * 31/32 (soldier ?) <br>
+ * 33 Bowman <br>
+ * 35 soldier killed <br>
+ * 39: pigs <br>
+ * 40: donkey <br>
+ * 41: donkey <br>
+ * 42: wind/mill: 2.5s <br>
+ * 56: lock <br>
+ * 57-59: notification sounds<br>
+ * 62: Ui klick <br>
+ * 68, 68b: Sea <br>
+ * 69, 69b: Bird <br>
+ * 70, 70b: Bird 71: Water (river) <br>
+ * 72 (+ alternaitves): moor <br>
+ * 73: wind <br>
+ * 74: crazy wind <br>
+ * 75 (3 times): thunder 76 (2 times): rain 80: You are beeing attacked 81:
+ * Mill, 82: older mill, 83: even older mill 84: catapult 85: Arrow shooting 86
+ * -90: canon shooting 91: fire 92: small fire 100 - 110: Attacked (same sound?)
+ * ? 111, 112: gong, 113 (4 times): kill (maya?)
+ * 
+ * @author michael
+ */
 public class SoundManager {
 
 	private static final int SEQUENCE_N = 118;
+	public static final int NOTIFY_ATTACKED = 80;
 	private final SoundPlayer player;
 
 	public SoundManager(SoundPlayer player) {
 		this.player = player;
-		try {
-			this.loadSounds();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		initialize();
 	}
 
 	/**
@@ -28,7 +59,7 @@ public class SoundManager {
 	 */
 	private static ArrayList<File> lookupPaths = new ArrayList<File>();
 	private int[] playerids;
-	private boolean initialized = false;
+	private boolean initializing = false;
 
 	private void loadSounds() throws FileNotFoundException, IOException {
 		File sndfile = null;
@@ -67,7 +98,7 @@ public class SoundManager {
 		        0x00
 		});
 
-		//int filesize = reader.read32();
+		// int filesize = reader.read32();
 
 		reader.skipTo(0x24);
 		int[] seqheaderstarts = new int[SEQUENCE_N];
@@ -78,53 +109,72 @@ public class SoundManager {
 		playerids = new int[SEQUENCE_N];
 		for (int i = 0; i < SEQUENCE_N; i++) {
 			reader.skipTo(seqheaderstarts[i]);
-			reader.read32();
-			int leftstart = reader.read32() + 20;
-			int rightstart = reader.read32() + 20;
-			int length = (rightstart - leftstart - 20) / 2;
+			int alternaitvecount = reader.read32();
+			int[] starts = new int[alternaitvecount];
+			for (int j = 0; j < alternaitvecount; j++) {
+				starts[j] = reader.read32();
+			}
+			if (starts.length == 0) {
+				playerids[i] = -1;
+				continue;
+			}
 
-			playerids[i] = player.load(loadSound(reader, leftstart, rightstart, length));
+			// only use 0 for now
+			reader.skipTo(starts[0]);
+
+			int length = reader.read32() / 2;
+			reader.read32();
+			reader.read32(); // mostly 22050
+			reader.read32(); // mostly 44100
+			reader.read32();
+			System.out.println("sound file " + i + ", startbyte: " + starts[0]
+			        + ", startsample: " + starts[0] / 2 + ", endsample: "
+			        + (starts[0] / 2 + length));
+
+			playerids[i] = player.load(loadSound(reader, length));
 		}
 	}
-	
-	private static short[] loadSound(ByteReader reader, int leftstart, int rightstart, int length) throws IOException {
+
+	private static short[] loadSound(ByteReader reader, int length)
+	        throws IOException {
 		if (length < 0) {
 			return new short[0];
 		}
-		short[] data = new short[length * 2];
-		reader.skipTo(leftstart);
+		short[] data = new short[length];
 		for (int i = 0; i < length; i++) {
-			data[i * 2] = (short) reader.read16signed();
+			data[i] = (short) reader.read16signed();
 		}
 
-		reader.skipTo(rightstart);
-		for (int i = 0; i < length; i++) {
-			data[i * 2 + 1] = (short) reader.read16signed();
-		}
-		
 		return data;
 	}
 
-	public void playSound(int soundid) {
-		initialize();
+	public void playSound(int soundid, float volume1, float volume2) {
+		initialize(); // <TODO: preload sounds
 
 		if (playerids != null && soundid >= 0 && soundid < SEQUENCE_N) {
-			player.playSound(playerids[soundid], 1, 1);
+			player.playSound(playerids[soundid], volume1, volume2);
 		}
 	}
 
 	private void initialize() {
-	    if (!initialized) {
-			try {
-				this.loadSounds();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+		synchronized (this) {
+			if (initializing) {
+				return;
 			}
-			initialized = true;
+			initializing = true;
 		}
-    }
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					loadSounds();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+		}, "sound loader").start();
+	}
 
 	public static void addLookupPath(File file) {
 		synchronized (lookupPaths) {

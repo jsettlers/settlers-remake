@@ -315,7 +315,7 @@ public class MapObjectDrawer {
 		        this.imageProvider.getSettlerSequence(file, sequenceIndex);
 		int index = animationStep % sequence.length();
 		Color color = getColor(context, object);
-		sequence.getImage(index).draw(context.getGl(), color, basecolor);
+		sequence.getImageSafe(index).draw(context.getGl(), color, basecolor);
 	}
 
 	private void drawByProgress(MapDrawContext context, int file,
@@ -511,7 +511,7 @@ public class MapObjectDrawer {
 	 * Increases the animation step for trees and other stuff.
 	 */
 	public void increaseAnimationStep() {
-		this.animationStep++;
+		this.animationStep = ((int) System.currentTimeMillis() / 100) & 0x7fffffff;
 	}
 
 	/**
