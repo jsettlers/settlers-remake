@@ -100,7 +100,7 @@ public class ThiefStrategy extends PathableStrategy {
 			break;
 		case WALKING_TO_MATERIAL:
 			if (super.getGrid().canPop(super.getPos(), null)) {
-				super.setAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
+				super.setAction(EAction.ACTION1, Constants.MOVABLE_TAKE_DROP_DURATION);
 				this.state = EThiefState.TAKING_MATERIAL;
 			} else {
 				initWalkBack();
@@ -111,7 +111,7 @@ public class ThiefStrategy extends PathableStrategy {
 			if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
 				if (super.getGrid().getPlayerAt(super.getPos()) == super.getPlayer()) {
 					this.state = EThiefState.DROPPING_MATERIAL;
-					super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+					super.setAction(EAction.ACTION1, 0);
 				}
 			} else {
 				resetState();
