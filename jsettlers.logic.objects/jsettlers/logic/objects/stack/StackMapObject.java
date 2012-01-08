@@ -36,7 +36,7 @@ public final class StackMapObject extends AbstractHexMapObject implements IStack
 		markedStolen++;
 	}
 
-	public final void decreaseStolenMarks() {
+	public final void decrementStolenMarks() {
 		markedStolen--;
 	}
 
@@ -47,6 +47,10 @@ public final class StackMapObject extends AbstractHexMapObject implements IStack
 	 */
 	public final boolean hasUnstolen() {
 		return markedStolen < size;
+	}
+
+	public final boolean hasStolenMarks() {
+		return markedStolen > 0;
 	}
 
 	public final void increment() {

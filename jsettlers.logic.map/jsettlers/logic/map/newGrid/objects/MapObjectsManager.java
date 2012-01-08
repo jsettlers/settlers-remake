@@ -257,12 +257,8 @@ public class MapObjectsManager implements ITimerable, Serializable {
 
 		while (stackObject != null) { // find correct stack
 			sum += stackObject.getSize();
-			AbstractHexMapObject object = stackObject.getNextObject();
-			if (object != null) {
-				stackObject = (StackMapObject) object.getMapObject(EMapObjectType.STACK_OBJECT);
-			} else {
-				stackObject = null;
-			}
+
+			stackObject = getNextStackObject(stackObject);
 		}
 
 		return sum < Constants.STACK_SIZE;
@@ -272,6 +268,39 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		StackMapObject stackObject = getStackAtPosition(x, y, materialType);
 
 		return stackObject != null && (stackObject.getMaterialType() == materialType || materialType == null) && !stackObject.isEmpty();
+	}
+
+	public final void markStolen(short x, short y, boolean mark) {
+		if (mark) {
+			StackMapObject stack = getStackAtPosition(x, y, null);
+			while (stack != null) {
+				if (stack.hasUnstolen()) {
+					stack.incrementStolenMarks();
+					break;
+				}
+
+				stack = getNextStackObject(stack);
+			}
+		} else {
+			StackMapObject stack = getStackAtPosition(x, y, null);
+			while (stack != null) {
+				if (stack.hasStolenMarks()) {
+					stack.decrementStolenMarks();
+					break;
+				}
+
+				stack = getNextStackObject(stack);
+			}
+		}
+	}
+
+	private final StackMapObject getNextStackObject(StackMapObject stack) {
+		AbstractHexMapObject next = stack.getNextObject();
+		if (next != null) {
+			return (StackMapObject) next.getMapObject(EMapObjectType.STACK_OBJECT);
+		} else {
+			return null;
+		}
 	}
 
 	public boolean pushMaterial(short x, short y, EMaterialType materialType) {
@@ -350,7 +379,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 				return true;
 			}
 
-			stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
+			stackObject = getNextStackObject(stackObject);
 		}
 
 		return false;
@@ -364,12 +393,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
 
 		while (stackObject != null && stackObject.getMaterialType() != materialType && materialType != null) { // find correct stack
-			AbstractHexMapObject object = stackObject.getNextObject();
-			if (object != null) {
-				stackObject = (StackMapObject) object.getMapObject(EMapObjectType.STACK_OBJECT);
-			} else {
-				stackObject = null;
-			}
+			stackObject = getNextStackObject(stackObject);
 		}
 		return stackObject;
 	}

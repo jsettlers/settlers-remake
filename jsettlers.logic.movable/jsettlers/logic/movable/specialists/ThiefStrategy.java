@@ -47,6 +47,8 @@ public class ThiefStrategy extends PathableStrategy {
 			switch (state) {
 			case TAKING_MATERIAL: {
 				EMaterialType materialType = super.getGrid().stealMaterialAt(super.getPos());
+				markStolen(super.getPos(), false);
+
 				if (materialType != null) {
 					super.setMaterial(materialType);
 					super.calculatePathTo(startPosition);
@@ -91,6 +93,10 @@ public class ThiefStrategy extends PathableStrategy {
 		case GOING_TO:
 			this.state = EThiefState.WALKING_TO_MATERIAL;
 			super.calculateDijkstraPath(super.getPos(), THIEF_SEARCH_RADIUS, ESearchType.FOREIGN_MATERIAL);
+
+			if (super.isFollowingPath()) {
+				markStolen(super.getTargetPos(), true);
+			}
 			break;
 		case WALKING_TO_MATERIAL:
 			if (super.getGrid().canPop(super.getPos(), null)) {
@@ -103,8 +109,10 @@ public class ThiefStrategy extends PathableStrategy {
 
 		case WALKING_BACK:
 			if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
-				this.state = EThiefState.DROPPING_MATERIAL;
-				super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+				if (super.getGrid().getPlayerAt(super.getPos()) == super.getPlayer()) {
+					this.state = EThiefState.DROPPING_MATERIAL;
+					super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+				}
 			} else {
 				resetState();
 				super.setAction(EAction.NO_ACTION, -1);
@@ -133,10 +141,26 @@ public class ThiefStrategy extends PathableStrategy {
 
 	@Override
 	protected final void doPreGotoJobActions() {
-		this.startPosition = super.getPos();
-		if (this.state == EThiefState.NOTHING_TO_DO) {
+		switch (state) {
+		case NOTHING_TO_DO:
+		case GOING_TO:
+		case DROPPING_MATERIAL:
+			this.startPosition = super.getPos();
 			this.state = EThiefState.GOING_TO;
+			break;
+		case WALKING_TO_MATERIAL:
+		case TAKING_MATERIAL:
+			markStolen(super.getTargetPos(), false);
+			this.state = EThiefState.GOING_TO;
+			break;
+
+		case WALKING_BACK:
+			break;
 		}
+	}
+
+	private final void markStolen(ISPosition2D pos, boolean mark) {
+		super.getGrid().getMapObjectsManager().markStolen(pos.getX(), pos.getY(), mark);
 	}
 
 	private static enum EThiefState {
