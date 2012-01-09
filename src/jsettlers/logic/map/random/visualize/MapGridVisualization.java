@@ -9,21 +9,21 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IMapData;
+import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
-import jsettlers.logic.map.random.grid.MapGrid;
-import jsettlers.logic.map.random.grid.MapObject;
-import jsettlers.logic.map.random.grid.MapStoneObject;
-import jsettlers.logic.map.random.grid.MapTreeObject;
 
 public class MapGridVisualization extends JPanel {
 	/**
      * 
      */
 	private static final long serialVersionUID = -6644377132896522388L;
-	private final MapGrid grid;
+	private final IMapData grid;
 
-	public MapGridVisualization(MapGrid grid) {
+	public MapGridVisualization(IMapData grid) {
 		this.grid = grid;
 
 	}
