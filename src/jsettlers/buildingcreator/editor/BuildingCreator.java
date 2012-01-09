@@ -62,20 +62,17 @@ public class BuildingCreator implements IMapInterfaceListener {
 		ResourceManager.setProvider(new IResourceProvider() {
 			@Override
 			public InputStream getFile(String name) throws IOException {
-				String currentParentFolder =
-				        new File(new File("").getAbsolutePath()).getParent()
-				                .replace('\\', '/');
-				String path =
-				        currentParentFolder + "/jsettlers.common/resources/";
+				String currentParentFolder = new File(new File("").getAbsolutePath()).getParent().replace('\\', '/');
+				String path = currentParentFolder + "/jsettlers.common/resources/";
 				System.out.println(path);
 				File file = new File(path + name);
 				return new FileInputStream(file);
 			}
 
 			@Override
-            public OutputStream writeFile(String name) throws IOException {
-	            return null;
-            }
+			public OutputStream writeFile(String name) throws IOException {
+				return null;
+			}
 		});
 
 		EBuildingType type = askType();
@@ -89,13 +86,13 @@ public class BuildingCreator implements IMapInterfaceListener {
 			}
 		}
 		JOGLPanel mapPanel = new JOGLPanel(new SoundPlayer() {
-			
+
 			@Override
 			public void playSound(int sound, float lvolume, float rvolume) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public int load(short[] loadSound) {
 				// TODO Auto-generated method stub
@@ -153,12 +150,9 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tool =
-				        (ToolType) JOptionPane.showInputDialog(null,
-				                "Select building type", "Building Type",
-				                JOptionPane.QUESTION_MESSAGE, null,
-				                ToolType.values(), tool);
-				
+				tool = (ToolType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
+						ToolType.values(), tool);
+
 				for (int x = 0; x < map.getWidth(); x++) {
 					for (int y = 0; y < map.getWidth(); y++) {
 						reloadColor(new ShortPoint2D(x, y));
@@ -172,16 +166,14 @@ public class BuildingCreator implements IMapInterfaceListener {
 	private void reloadActionList() {
 		actionList.removeAll();
 		for (String name : definition.getActionNames()) {
-			PersonJobEditor panel =
-			        new PersonJobEditor(name, definition.getActionByName(name));
+			PersonJobEditor panel = new PersonJobEditor(name, definition.getActionByName(name));
 			actionList.add(panel);
 		}
 		actionList.revalidate();
 	}
 
 	private void addNewAction() {
-		String acitonName =
-		        JOptionPane.showInputDialog(window, "Select job name");
+		String acitonName = JOptionPane.showInputDialog(window, "Select job name");
 		if (acitonName != null) {
 			definition.addAction(acitonName);
 			reloadActionList();
@@ -189,16 +181,13 @@ public class BuildingCreator implements IMapInterfaceListener {
 	}
 
 	private EBuildingType askType() {
-		return (EBuildingType) JOptionPane.showInputDialog(null,
-		        "Select building type", "Building Type",
-		        JOptionPane.QUESTION_MESSAGE, null, EBuildingType.values(),
-		        null);
+		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
+				EBuildingType.values(), null);
 	}
 
 	public static void main(String[] args) {
 		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
+		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 
 		new BuildingCreator();
@@ -211,9 +200,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			ISPosition2D pos = sAction.getPosition();
 			RelativePoint relative = absoluteToRelative(pos);
 
-			positionDisplayer.setText("x = "
-			        + (pos.getX() - BuildingtestMap.OFFSET) + ", y = "
-			        + (pos.getY() - BuildingtestMap.OFFSET));
+			positionDisplayer.setText("x = " + (pos.getX() - BuildingtestMap.OFFSET) + ", y = " + (pos.getY() - BuildingtestMap.OFFSET));
 
 			if (tool == ToolType.SET_BLOCKED) {
 				toogleUsedTile(relative);
@@ -242,17 +229,10 @@ public class BuildingCreator implements IMapInterfaceListener {
 	}
 
 	private void addStack(RelativePoint relative) {
-		EMaterialType material =
-		        (EMaterialType) JOptionPane.showInputDialog(null,
-		                "Select building type", "Building Type",
-		                JOptionPane.QUESTION_MESSAGE, null,
-		                EMaterialType.values(), tool);
-		Integer buildrequired =
-		        (Integer) JOptionPane.showInputDialog(null,
-		                "Select building type", "Building Type",
-		                JOptionPane.QUESTION_MESSAGE, null, new Integer[] {
-		                        0, 1, 2, 3, 4, 5, 6, 7, 8
-		                }, tool);
+		EMaterialType material = (EMaterialType) JOptionPane.showInputDialog(null, "Select building type", "Building Type",
+				JOptionPane.QUESTION_MESSAGE, null, EMaterialType.values(), tool);
+		Integer buildrequired = (Integer) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE,
+				null, new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, tool);
 		if (material != null && buildrequired != null) {
 			definition.setStack(relative, material, buildrequired.intValue());
 		}
@@ -275,16 +255,12 @@ public class BuildingCreator implements IMapInterfaceListener {
 	}
 
 	private ISPosition2D relativeToAbsolute(RelativePoint oldDoor) {
-		ISPosition2D oldPos =
-		        new ShortPoint2D(oldDoor.getDx() + BuildingtestMap.OFFSET,
-		                oldDoor.getDy() + BuildingtestMap.OFFSET);
+		ISPosition2D oldPos = new ShortPoint2D(oldDoor.getDx() + BuildingtestMap.OFFSET, oldDoor.getDy() + BuildingtestMap.OFFSET);
 		return oldPos;
 	}
 
 	private RelativePoint absoluteToRelative(ISPosition2D pos) {
-		RelativePoint tile =
-		        new RelativePoint(pos.getX() - BuildingtestMap.OFFSET,
-		                pos.getY() - BuildingtestMap.OFFSET);
+		RelativePoint tile = new RelativePoint(pos.getX() - BuildingtestMap.OFFSET, pos.getY() - BuildingtestMap.OFFSET);
 		return tile;
 	}
 
@@ -299,7 +275,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 	}
 
 	private void reloadColor(ISPosition2D pos) {
-		PseudoTile tile = (PseudoTile) map.getTile(pos);
+		PseudoTile tile = map.getTile(pos);
 		ArrayList<Color> colors = new ArrayList<Color>();
 
 		RelativePoint relative = absoluteToRelative(pos);
@@ -359,9 +335,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			redsum += color.getRed();
 			greensum += color.getGreen();
 		}
-		Color color =
-		        new Color(redsum / colors.size(), greensum / colors.size(),
-		                bluesum / colors.size(), 255);
+		Color color = new Color(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 255);
 		return color;
 	}
 

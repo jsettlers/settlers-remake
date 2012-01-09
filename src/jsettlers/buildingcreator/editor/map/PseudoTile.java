@@ -9,6 +9,8 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 public class PseudoTile implements ISPosition2D {
+	private static final long serialVersionUID = 4395226375012358841L;
+
 	private final int x;
 	private final int y;
 
@@ -57,7 +59,8 @@ public class PseudoTile implements ISPosition2D {
 	public boolean equals(ISPosition2D other) {
 		return other.getX() == x && other.getY() == y;
 	}
-	
+
+	@Override
 	public int hashCode() {
 		return ShortPoint2D.hashCode(x, y);
 	};
