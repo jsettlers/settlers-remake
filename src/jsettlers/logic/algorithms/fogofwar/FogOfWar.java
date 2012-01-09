@@ -11,13 +11,14 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayerable;
 
 /**
  * This class holds the fog of war for a given map and player.
  * 
  * @author michael
  */
-public class FogOfWar implements Serializable {
+public final class FogOfWar implements Serializable {
 	private static final long serialVersionUID = 1877994785778678510L;
 	/**
 	 * Longest distance any unit may look
@@ -27,6 +28,7 @@ public class FogOfWar implements Serializable {
 
 	static final int PADDING = 10;
 	private static final int UNOCCUPIED_VIEW_DISTANCE = 5;
+	private final byte player;
 
 	final short width;
 	final short height;
@@ -36,12 +38,13 @@ public class FogOfWar implements Serializable {
 	transient private IFogOfWarGrid grid;
 
 	public FogOfWar(short width, short height) {
-		this(width, height, false);
+		this(width, height, (byte) 0, false);
 	}
 
-	public FogOfWar(final short width, final short height, boolean exploredOnStart) {
+	public FogOfWar(final short width, final short height, final byte player, final boolean exploredOnStart) {
 		this.width = width;
 		this.height = height;
+		this.player = player;
 		this.sight = new byte[width][height];
 
 		byte defaultSight = 0;
@@ -99,7 +102,7 @@ public class FogOfWar implements Serializable {
 
 	int getViewDistanceForPosition(int x, int y) {
 		IMovable movable = grid.getMovableAt(x, y);
-		if (movable != null) {
+		if (movable != null && isPlayerOK(movable)) {
 			return MOVABLE_VIEWDISTANCE;
 		} else {
 			int view = 0;
@@ -107,6 +110,7 @@ public class FogOfWar implements Serializable {
 			while (baseobject != null) {
 				if (baseobject.getObjectType() == EMapObjectType.BUILDING) {
 					view = getViewForBuilding((IBuilding) baseobject);
+					break; // there is only one building at a position
 				}
 				baseobject = baseobject.getNextObject();
 			}
@@ -114,8 +118,8 @@ public class FogOfWar implements Serializable {
 		}
 	}
 
-	final static int getViewForBuilding(IBuilding baseobject) {
-		if (baseobject.getStateProgress() > .999f) {
+	final int getViewForBuilding(IBuilding baseobject) {
+		if (baseobject.getStateProgress() > .999f && isPlayerOK(baseobject)) {
 			if (baseobject.isOccupied()) {
 				return UNOCCUPIED_VIEW_DISTANCE;
 			} else {
@@ -124,6 +128,10 @@ public class FogOfWar implements Serializable {
 		} else {
 			return 0;
 		}
+	}
+
+	private final boolean isPlayerOK(IPlayerable playerable) {
+		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || playerable.getPlayer() == player);
 	}
 
 	void rebuildAll(byte[][] buffer) {
