@@ -62,8 +62,12 @@ public class PseudoBuilding implements IBuilding {
 
 	@Override
 	public boolean isWorking() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean isOccupied() {
+		return true;
 	}
 
 }
