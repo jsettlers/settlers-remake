@@ -5,6 +5,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.selectable.ISelectable;
+import jsettlers.common.sound.ISoundable;
 
 /**
  * Defines a Movable actor that can be drawn by jsettlers.graphics
@@ -12,7 +13,7 @@ import jsettlers.common.selectable.ISelectable;
  * @author Andreas Eberle
  * 
  */
-public interface IMovable extends IPlayerable, ISelectable, ILocatable {
+public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundable {
 	public EMovableType getMovableType();
 
 	public EAction getAction();
@@ -45,6 +46,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable {
 	 * 
 	 * @return position on grid
 	 */
+	@Override
 	public ISPosition2D getPos();
 
 	/**
@@ -56,6 +58,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable {
 
 	/**
 	 * Returns alternating true and false on every step.
+	 * 
 	 * @return
 	 */
 	boolean isRightstep();

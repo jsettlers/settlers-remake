@@ -7,6 +7,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.selectable.ISelectable;
+import jsettlers.common.sound.ISoundable;
 
 /**
  * This is a normal building.
@@ -32,11 +33,17 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	public boolean isWorking();
 
 	/**
+	 * 
+	 * @return true if this building is occupied or does not need to be occupied.
+	 */
+	public boolean isOccupied();
+
+	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
 	 * 
 	 * @author michael
 	 */
-	interface IMill extends IBuilding {
+	static interface IMill extends IBuilding, ISoundable {
 		/**
 		 * If the woking animation of the mill should be shown.
 		 * 
@@ -50,8 +57,9 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	 * 
 	 * @author michael
 	 */
-	interface IOccupyed extends IBuilding {
+	static interface IOccupyed extends IBuilding {
 		List<? extends IBuildingOccupyer> getOccupyers();
+
 	}
 
 }
