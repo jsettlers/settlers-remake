@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
@@ -48,21 +49,23 @@ import synchronic.timer.NetworkTimer;
  */
 public class GuiInterface implements IMapInterfaceListener {
 
-	private ISelectionSet currentSelection = new EmptySelection();
 	private final MapInterfaceConnector connector;
 
+	private final INetworkManager manager;
+	private final IGuiInputGrid grid;
+	private final byte player;
 	/**
 	 * The current active action that waits for the user to select a point.
 	 */
 	private Action activeAction = null;
-	private final INetworkManager manager;
-	private final IGuiInputGrid grid;
 	private EBuildingType previewBuilding;
+	private ISelectionSet currentSelection = new EmptySelection();
 
-	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IGuiInputGrid grid) {
+	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IGuiInputGrid grid, byte player) {
 		this.connector = connector;
 		this.manager = manager;
 		this.grid = grid;
+		this.player = player;
 		TaskExecutor.init(grid);
 		connector.addListener(this);
 	}
@@ -257,11 +260,11 @@ public class GuiInterface implements IMapInterfaceListener {
 
 		for (ISPosition2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
 			IMovable movable = grid.getMovable(curr.getX(), curr.getY());
-			if (movable != null) {
+			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayer() == player)) {
 				foundMovables.add(movable);
 			}
 			IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
-			if (building != null) {
+			if (building != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || building.getPlayer() == player)) {
 				foundBuilding = building;
 			}
 		}

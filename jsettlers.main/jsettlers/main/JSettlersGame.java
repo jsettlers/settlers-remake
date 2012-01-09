@@ -116,7 +116,7 @@ public class JSettlersGame {
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
-			new GuiInterface(connector, manager, grid.getGuiInputGrid());
+			new GuiInterface(connector, manager, grid.getGuiInputGrid(), (byte) 0);
 
 			connector.addListener(this);
 			connector.scrollTo(startPoint, false);

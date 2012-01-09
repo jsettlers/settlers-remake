@@ -24,7 +24,6 @@ public class ManagedJSettlers implements Listener {
 	}
 
 	private class StartConnector implements IStartScreenConnector {
-
 		private final IMapItem[] MAPS = new IMapItem[] { new MapItem() };
 
 		@Override
