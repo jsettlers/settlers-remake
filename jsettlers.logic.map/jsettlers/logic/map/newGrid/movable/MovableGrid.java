@@ -11,7 +11,7 @@ import jsettlers.common.position.ISPosition2D;
  * @author Andreas Eberle
  * 
  */
-public class MovableGrid implements Serializable {
+public final class MovableGrid implements Serializable {
 	private static final long serialVersionUID = 7003522358013103962L;
 
 	private final IHexMovable[][] movableGrid;

@@ -1212,7 +1212,7 @@ public class MainGrid implements Serializable {
 		}
 	}
 
-	class PartitionableGrid implements IPartitionableGrid, Serializable {
+	final class PartitionableGrid implements IPartitionableGrid, Serializable {
 		private static final long serialVersionUID = 5631266851555264047L;
 
 		@Override
@@ -1232,15 +1232,15 @@ public class MainGrid implements Serializable {
 
 	}
 
-	class FogOfWarGrid implements IFogOfWarGrid {
+	final class FogOfWarGrid implements IFogOfWarGrid {
 		@Override
-		public final IMovable getMovableAt(int x, int y) {
-			return movableGrid.getMovableAt((short) x, (short) y);
+		public final IMovable getMovableAt(short x, short y) {
+			return movableGrid.getMovableAt(x, y);
 		}
 
 		@Override
-		public final IMapObject getMapObjectsAt(int x, int y) {
-			return objectsGrid.getObjectsAt((short) x, (short) y);
+		public final IMapObject getMapObjectsAt(short x, short y) {
+			return objectsGrid.getObjectsAt(x, y);
 		}
 	}
 

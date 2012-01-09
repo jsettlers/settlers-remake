@@ -15,7 +15,7 @@ import jsettlers.common.position.ISPosition2D;
  * @author Andreas Eberle
  * 
  */
-public class ObjectsGrid implements Serializable {
+public final class ObjectsGrid implements Serializable {
 	private static final long serialVersionUID = 2919416226544282748L;
 
 	private AbstractHexMapObject[][] objectsGrid;
@@ -24,7 +24,7 @@ public class ObjectsGrid implements Serializable {
 		this.objectsGrid = new AbstractHexMapObject[width][height];
 	}
 
-	private void writeObject(ObjectOutputStream oos) throws IOException {
+	private final void writeObject(ObjectOutputStream oos) throws IOException {
 		int width = objectsGrid.length;
 		int height = objectsGrid[0].length;
 		oos.writeInt(width);
@@ -45,7 +45,7 @@ public class ObjectsGrid implements Serializable {
 		}
 	}
 
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		int width = ois.readInt();
 		int height = ois.readInt();
 		objectsGrid = new AbstractHexMapObject[width][height];
@@ -64,17 +64,17 @@ public class ObjectsGrid implements Serializable {
 		}
 	}
 
-	public AbstractHexMapObject getObjectsAt(short x, short y) {
+	public final AbstractHexMapObject getObjectsAt(short x, short y) {
 		return objectsGrid[x][y];
 	}
 
-	public AbstractHexMapObject getMapObjectAt(short x, short y, EMapObjectType mapObjectType) {
+	public final AbstractHexMapObject getMapObjectAt(short x, short y, EMapObjectType mapObjectType) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 
 		return mapObjectHead != null ? mapObjectHead.getMapObject(mapObjectType) : null;
 	}
 
-	public AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+	public final AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 
 		AbstractHexMapObject removed = null;
@@ -89,7 +89,7 @@ public class ObjectsGrid implements Serializable {
 		return removed;
 	}
 
-	public boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
+	public final boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 		if (mapObjectHead != null) {
 			boolean removed;
@@ -105,7 +105,7 @@ public class ObjectsGrid implements Serializable {
 			return false;
 	}
 
-	public void addMapObjectAt(short x, short y, AbstractHexMapObject mapObject) {
+	public final void addMapObjectAt(short x, short y, AbstractHexMapObject mapObject) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 
 		if (mapObjectHead == null) {
@@ -115,19 +115,19 @@ public class ObjectsGrid implements Serializable {
 		}
 	}
 
-	public boolean hasCuttableObject(short x, short y, EMapObjectType mapObjectType) {
+	public final boolean hasCuttableObject(short x, short y, EMapObjectType mapObjectType) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 
 		return mapObjectHead != null && mapObjectHead.hasCuttableObject(mapObjectType);
 	}
 
-	public boolean hasMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+	public final boolean hasMapObjectType(short x, short y, EMapObjectType mapObjectType) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x][y];
 
 		return mapObjectHead != null && mapObjectHead.hasMapObjectType(mapObjectType);
 	}
 
-	public boolean hasNeighborObjectType(short x, short y, EMapObjectType mapObjectType) {
+	public final boolean hasNeighborObjectType(short x, short y, EMapObjectType mapObjectType) {
 		EDirection[] directions = EDirection.valuesCached();
 
 		for (EDirection currDir : directions) {
