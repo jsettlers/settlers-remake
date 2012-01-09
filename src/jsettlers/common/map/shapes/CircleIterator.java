@@ -1,7 +1,6 @@
 package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
@@ -33,18 +32,26 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 	}
 
 	@Override
-	public boolean hasNext() {
+	public final boolean hasNext() {
 		return currenty < radius / MapCircle.Y_SCALE && currentx != Float.NaN;
 	}
 
 	/**
-	 * gets the x, y coordinate, packed into an long: x << 16 + y
+	 * NOTE: nextX() MUST BE CALLED after this call to progress to the next position.
+	 * 
+	 * @return gives the x of the current iterator position
 	 */
-	public int nextXY() {
-		int y = currenty + centery;
-		int x = computeNextXAndProgress();
+	public final int nextY() {
+		return currenty + centery;
+	}
 
-		return y << 16 | (x & 0xffff);
+	/**
+	 * NOTE: nextY() MUST BE CALLED before this method is called!
+	 * 
+	 * @return gives the x of the current iterator position
+	 */
+	public final int nextX() {
+		return computeNextXAndProgress();
 	}
 
 	@Override
@@ -55,12 +62,7 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 		return new ShortPoint2D(x, y);
 	}
 
-	private int computeNextXAndProgress() {
-		assert radius / MapCircle.Y_SCALE >= Math.abs(currenty);
-		if (!hasNext()) {
-			throw new NoSuchElementException();
-		}
-
+	private final int computeNextXAndProgress() {
 		int x = (int) Math.ceil(.5f * currenty + currentx) + centerx;
 
 		currentx++;

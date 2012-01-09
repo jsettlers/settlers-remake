@@ -59,12 +59,12 @@ public class MapCircle implements IMapArea {
 	 *            The y coordinate
 	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
 	 */
-	private final float squaredDistanceToCenter(int x, int y) {
+	public final float squaredDistanceToCenter(int x, int y) {
 		int dx = x - cx;
 		int dy = y - cy;
 		return (.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy;
 	}
-	
+
 	public static final float getDistance(int x1, int y1, int x2, int y2) {
 		int dx = x1 - x2;
 		int dy = y1 - y2;
