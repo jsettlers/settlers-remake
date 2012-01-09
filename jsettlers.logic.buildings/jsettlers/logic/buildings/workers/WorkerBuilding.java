@@ -96,4 +96,9 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 		}
 	}
 
+	@Override
+	public final boolean isOccupied() {
+		return worker != null;
+	}
+
 }

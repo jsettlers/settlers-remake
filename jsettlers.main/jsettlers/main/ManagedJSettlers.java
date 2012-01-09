@@ -1,7 +1,6 @@
 package jsettlers.main;
 
 import jsettlers.graphics.ISettlersGameDisplay;
-import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.main.JSettlersGame.Listener;
 
@@ -133,7 +132,6 @@ public class ManagedJSettlers implements Listener {
 
 	}
 
-
 	/**
 	 * Game ended from inside the game.
 	 */
@@ -146,29 +144,30 @@ public class ManagedJSettlers implements Listener {
 
 	/**
 	 * Sets the pause status of the ongoing game. Does noting if there is no game.
+	 * 
 	 * @param b
 	 */
 	public void setPaused(boolean b) {
-	    if (ongoingGame != null) {
-	    	ongoingGame.setPaused(b);
-	    }
-    }
-	
+		if (ongoingGame != null) {
+			ongoingGame.setPaused(b);
+		}
+	}
+
 	public boolean isPaused() {
 		if (ongoingGame != null) {
-	    	return ongoingGame.isPaused();
-	    }
+			return ongoingGame.isPaused();
+		}
 		return false;
 	}
 
 	public String saveAndStopCurrentGame() {
 		if (ongoingGame != null) {
-	    	String id = ongoingGame.save();
-	    	ongoingGame.stop();
-	    	return id;
-	    } else {
-	    return null;
-	    }
-    }
+			String id = ongoingGame.save();
+			ongoingGame.stop();
+			return id;
+		} else {
+			return null;
+		}
+	}
 
 }

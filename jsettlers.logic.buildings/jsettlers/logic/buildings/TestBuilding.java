@@ -32,4 +32,9 @@ public class TestBuilding extends Building {
 	protected void positionedEvent(ISPosition2D pos) {
 	}
 
+	@Override
+	public boolean isOccupied() {
+		return true;
+	}
+
 }

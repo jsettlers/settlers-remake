@@ -1,10 +1,6 @@
 package jsettlers.main;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import jsettlers.common.map.IMapData;
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.ISettlersGameDisplay;
@@ -13,7 +9,6 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
@@ -53,16 +48,14 @@ public class JSettlersGame {
 	 * @param map
 	 *            The name of the random map and some settings
 	 */
-	public JSettlersGame(ISettlersGameDisplay content, IGameSettings map,
-	        long randomSheed) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameSettings map, long randomSheed) {
 		this.content = content;
 		this.mapSettings = map;
 		this.loadableGame = null;
 		this.randomSheed = randomSheed;
 	}
 
-	public JSettlersGame(ISettlersGameDisplay content,
-	        ILoadableGame loadableGame, long randomSheed) {
+	public JSettlersGame(ISettlersGameDisplay content, ILoadableGame loadableGame, long randomSheed) {
 		this.content = content;
 		this.loadableGame = loadableGame;
 		this.randomSheed = randomSheed;
@@ -97,11 +90,8 @@ public class JSettlersGame {
 
 			if (mapSettings != null) {
 				/** random map */
-				RandomMapFile file =
-				        RandomMapFile.getByName(mapSettings.getMap().getName());
-				RandomMapEvaluator evaluator =
-				        new RandomMapEvaluator(file.getInstructions(),
-				                (byte) mapSettings.getPlayerCount());
+				RandomMapFile file = RandomMapFile.getByName(mapSettings.getMap().getName());
+				RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), (byte) mapSettings.getPlayerCount());
 				evaluator.createMap(RandomSingleton.get());
 				IMapData mapGrid = evaluator.getGrid();
 
@@ -125,8 +115,7 @@ public class JSettlersGame {
 
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
-			final MapInterfaceConnector connector =
-			        content.showGameMap(grid.getGraphicsGrid(), null);
+			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
 			new GuiInterface(connector, manager, grid.getGuiInputGrid());
 
 			connector.addListener(this);
@@ -136,20 +125,20 @@ public class JSettlersGame {
 			gameConnector = connector;
 
 			// --- TESTING code start
-//			 Timer t = new Timer();
-//			 t.schedule(new TimerTask() {
-//			 @Override
-//			 public void run() {
-//			 if (Math.random() < .5) {
-//			 connector.showMessage(SimpleMessage.attacked(
-//			 (byte) (Math.random() * 10),
-//			 new ShortPoint2D(30, 30)));
-//			 } else {
-//			 connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
-//			 new ShortPoint2D(30, 30)));
-//			 }
-//			 }
-//			 }, 100, 1000);
+			// Timer t = new Timer();
+			// t.schedule(new TimerTask() {
+			// @Override
+			// public void run() {
+			// if (Math.random() < .5) {
+			// connector.showMessage(SimpleMessage.attacked(
+			// (byte) (Math.random() * 10),
+			// new ShortPoint2D(30, 30)));
+			// } else {
+			// connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
+			// new ShortPoint2D(30, 30)));
+			// }
+			// }
+			// }, 100, 1000);
 			// --- TESTING code end
 
 			// TODO: allow user to stop game before this happens.
@@ -201,13 +190,12 @@ public class JSettlersGame {
 
 	public void setPaused(boolean b) {
 		if (gameConnector != null) {
-			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE
-			        : EActionType.SPEED_UNSET_PAUSE));
+			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE : EActionType.SPEED_UNSET_PAUSE));
 		}
 	}
 
 	public String save() {
 		gameConnector.fireAction(new Action(EActionType.SAVE));
-	    return "savegame";
-    }
+		return "savegame";
+	}
 }

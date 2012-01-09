@@ -20,7 +20,7 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
 
-public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable {
+public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable {
 	private static final long serialVersionUID = 6588554296128443814L;
 
 	private static int nextID = Integer.MIN_VALUE;
@@ -68,54 +68,54 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		movablesByID.put(this.id, this);
 		nextID = Math.max(nextID, this.id + 1);
 		MovableTimer.add(this);
 	}
 
-	private int getNewID() {
+	private final int getNewID() {
 		return nextID++;
 	}
 
 	@Override
-	public byte getPlayer() {
+	public final byte getPlayer() {
 		return player;
 	}
 
 	@Override
-	public EMovableType getMovableType() {
+	public final EMovableType getMovableType() {
 		return strategy.getMovableType();
 	}
 
 	@Override
-	public EAction getAction() {
+	public final EAction getAction() {
 		return action;
 	}
 
 	@Override
-	public EDirection getDirection() {
+	public final EDirection getDirection() {
 		return direction;
 	}
 
 	@Override
-	public float getMoveProgress() {
+	public final float getMoveProgress() {
 		return progress;
 	}
 
 	@Override
-	public EMaterialType getMaterial() {
+	public final EMaterialType getMaterial() {
 		return material;
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public final ISPosition2D getPos() {
 		return pos;
 	}
 
 	@Override
-	public void kill() {
+	public final void kill() {
 		MovableTimer.remove(this);
 		strategy.killedEvent();
 		grid.setMarked(pos, false);
@@ -130,17 +130,17 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	@Override
-	public void setSelected(boolean selected) {
+	public final void setSelected(boolean selected) {
 		this.selected = selected;
 	}
 
 	@Override
-	public boolean isSelected() {
+	public final boolean isSelected() {
 		return selected;
 	}
 
 	@Override
-	public void hit(float strength) {
+	public final void hit(float strength) {
 		health -= strength * 0.1f;
 		if (health <= 0) {
 			this.kill();
@@ -150,7 +150,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	@Override
-	public float getHealth() {
+	public final float getHealth() {
 		return health;
 	}
 
@@ -242,6 +242,8 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	private byte noActionDelay = 0;
+
+	private boolean soundPlayed;
 
 	@Override
 	public void timerEvent() {
@@ -365,6 +367,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		case ACTION1:
 		case ACTION2:
 			this.progress = 0;
+			this.soundPlayed = false;
 			this.state = EMovableState.EXECUTING_ACTION;
 			break;
 		}
@@ -375,26 +378,26 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 		return 1f / (duration * (Constants.MOVABLE_INTERRUPTS_PER_SECOND));
 	}
 
-	void setMaterial(EMaterialType material) {
+	final void setMaterial(EMaterialType material) {
 		assert material != null : "material can't be set to null!!!";
 		this.material = material;
 	}
 
-	public void setGotoJob(GotoJob gotoJob) {
+	public final void setGotoJob(GotoJob gotoJob) {
 		this.strategy.setGotoJob(gotoJob);
 	}
 
-	void setPos(ISPosition2D pos) {
+	final void setPos(ISPosition2D pos) {
 		grid.movableLeft(this.pos, this);
 		this.pos = pos;
 		this.progress = 0;
 	}
 
-	void setStrategy(MovableStrategy strategy) {
+	final void setStrategy(MovableStrategy strategy) {
 		this.strategy = strategy;
 	}
 
-	void setVisible(boolean visible) {
+	final void setVisible(boolean visible) {
 		if (visible) {
 			grid.movableEntered(pos, this);
 		} else {
@@ -403,7 +406,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	@Override
-	public int getID() {
+	public final int getID() {
 		return id;
 	}
 
@@ -415,37 +418,37 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	 * @return returns the movable with the given ID<br>
 	 *         or null if the id can not be found
 	 */
-	public static Movable getMovableByID(int id) {
+	public final static Movable getMovableByID(int id) {
 		return movablesByID.get(id);
 	}
 
-	void setDirection(EDirection direction) {
+	final void setDirection(EDirection direction) {
 		assert direction != null : "direction can never be null";
 		this.direction = direction;
 	}
 
 	@Override
-	public void debug() {
+	public final void debug() {
 		System.out.println("debug");
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
+	public final void stopOrStartWorking(boolean stop) {
 		strategy.stopOrStartWorking(stop);
 	}
 
 	@Override
-	public IHexMovable getPushedFrom() {
+	public final IHexMovable getPushedFrom() {
 		return pushedFrom;
 	}
 
 	@Override
-	public ISPosition2D getNextTile() {
+	public final ISPosition2D getNextTile() {
 		return nextPos;
 	}
 
 	@Override
-	public boolean isRightstep() {
+	public final boolean isRightstep() {
 		return isRightstep;
 	}
 
@@ -455,7 +458,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	 * @param time
 	 *            time to be waited.
 	 */
-	void setWaiting(float time) {
+	final void setWaiting(float time) {
 		assert state.canSetAction : "can't wait in this state: " + state;
 
 		this.progressIncrease = getProgressIncrease(time);
@@ -465,7 +468,7 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	@Override
-	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
 		if (strategy instanceof AbstractSoldierStrategy) {
 			((AbstractSoldierStrategy) strategy).setOccupyableBuilding(building);
 			return true;
@@ -475,17 +478,27 @@ public class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDeb
 	}
 
 	@Override
-	public boolean canOccupyBuilding() {
+	public final boolean canOccupyBuilding() {
 		return strategy.canOccupyBuilding();
 	}
 
-	void setState(EMovableState newState) {
+	final void setState(EMovableState newState) {
 		assert this.state.canSetAction : "can't change state to " + newState + "  in current state: " + this.state;
 		this.state = newState;
 
 		if (newState.isLazyState) {
 			this.action = EAction.NO_ACTION;
 		}
+	}
+
+	@Override
+	public final void setSoundPlayed() {
+		soundPlayed = true;
+	}
+
+	@Override
+	public final boolean isSoundPlayed() {
+		return soundPlayed;
 	}
 
 }

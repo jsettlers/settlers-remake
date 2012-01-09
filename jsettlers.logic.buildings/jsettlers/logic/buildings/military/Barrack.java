@@ -105,4 +105,9 @@ public class Barrack extends Building {
 		return super.getDoor();
 	}
 
+	@Override
+	public final boolean isOccupied() {
+		return true;
+	}
+
 }

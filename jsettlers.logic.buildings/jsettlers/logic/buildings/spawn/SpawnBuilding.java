@@ -23,7 +23,7 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	public EMapObjectType getFlagType() {
+	public final EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}
 
@@ -32,7 +32,7 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	protected void subTimerEvent() {
+	protected final void subTimerEvent() {
 		if (produced < getProduceLimit()) {
 
 			if (delayCtr > 20) {
@@ -55,13 +55,15 @@ public abstract class SpawnBuilding extends Building {
 	protected abstract int getProduceLimit();
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
-		// TODO Auto-generated method stub
-
+	public final void stopOrStartWorking(boolean stop) {
 	}
 
 	@Override
 	protected void positionedEvent(ISPosition2D pos) {
 	}
 
+	@Override
+	public final boolean isOccupied() {
+		return true;
+	}
 }
