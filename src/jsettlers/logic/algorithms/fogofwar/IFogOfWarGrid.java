@@ -11,8 +11,8 @@ import jsettlers.common.movable.IMovable;
  */
 public interface IFogOfWarGrid {
 
-	IMovable getMovableAt(int x, int y);
+	IMovable getMovableAt(short x, short y);
 
-	IMapObject getMapObjectsAt(int x, int y);
+	IMapObject getMapObjectsAt(short x, short y);
 
 }

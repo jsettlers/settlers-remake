@@ -92,7 +92,7 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
-	static byte dimDown(byte oldvalue) {
+	static final byte dimDown(byte oldvalue) {
 		if (oldvalue > CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return CommonConstants.FOG_OF_WAR_EXPLORED;
 		} else {
@@ -100,7 +100,7 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
-	int getViewDistanceForPosition(int x, int y) {
+	final int getViewDistanceForPosition(short x, short y) {
 		IMovable movable = grid.getMovableAt(x, y);
 		if (movable != null && isPlayerOK(movable)) {
 			return MOVABLE_VIEWDISTANCE;
@@ -134,25 +134,16 @@ public final class FogOfWar implements Serializable {
 		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || playerable.getPlayer() == player);
 	}
 
-	void rebuildAll(byte[][] buffer) {
-		CircleDrawer drawer = new CircleDrawer(buffer) {
-			@Override
-			protected int convertY(int mapy) {
-				if (mapy < height) {
-					return mapy;
-				} else {
-					return -1;
-				}
-			}
-		};
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+	final void rebuildAll(byte[][] buffer) {
+		CircleDrawer drawer = new CircleDrawer(buffer);
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
 				buffer[x][y] = dimDown(buffer[x][y]);
 			}
 		}
 
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
 				int distance = getViewDistanceForPosition(x, y);
 				if (distance > 0) {
 					drawer.drawCircleToBuffer(x, y, distance);
@@ -161,30 +152,27 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
-	public void pause() {
-
+	public final void pause() {
 	}
 
-	public void unpause() {
-
+	public final void unpause() {
 	}
 
-	public void end() {
-
+	public final void end() {
 	}
 
-	public boolean isVisible(int centerx, int centery) {
+	public final boolean isVisible(int centerx, int centery) {
 		return sight[centerx][centery] >= CommonConstants.FOG_OF_WAR_VISIBLE;
 	}
 
-	public void toggleEnabled() {
+	public final void toggleEnabled() {
 		enabled = !enabled;
 	}
 
-	private class SimpleCorrectionTread extends Thread {
+	final class SimpleCorrectionTread extends Thread {
 		byte[][] myBuffer;
 
-		public SimpleCorrectionTread() {
+		SimpleCorrectionTread() {
 			super("simple fog of war correction");
 			super.setDaemon(true);
 		}
@@ -204,7 +192,7 @@ public final class FogOfWar implements Serializable {
 			}
 		}
 
-		private void copyBuffer(byte[][] dest, byte[][] src) {
+		private final void copyBuffer(byte[][] dest, byte[][] src) {
 			for (int x = 0; x < dest.length; x++) {
 				for (int y = 0; y < dest[x].length; y++) {
 					dest[x][y] = src[x][y];
@@ -220,26 +208,20 @@ public final class FogOfWar implements Serializable {
 	 * 
 	 * @author michael
 	 */
-	private class FogCorrectionThread extends Thread {
-		private static final int BUFFER_HEIGHT = MAX_VIEWDISTANCE * 2;
+	final class FogCorrectionThread extends Thread {
+		/**
+		 * height of the buffer ( needs to be a power of two! )
+		 */
+		private final short BUFFER_HEIGHT = (short) Math.pow(2, Math.ceil(Math.log(MAX_VIEWDISTANCE * 2) / Math.log(2)));
 		byte[][] buffer;
 
 		private CircleDrawer bufferdrawer;
 
-		private FogCorrectionThread() {
+		FogCorrectionThread() {
 			super("advanced fog of war correction");
 
 			buffer = new byte[width][BUFFER_HEIGHT];
-			bufferdrawer = new CircleDrawer(buffer) {
-				@Override
-				protected int convertY(int mapy) {
-					if (mapy > 0 && mapy < height) {
-						return bufferPos(mapy);
-					} else {
-						return -1;
-					}
-				}
-			};
+			bufferdrawer = new CircleDrawer(buffer);
 
 			super.setDaemon(true);
 		}
@@ -250,8 +232,8 @@ public final class FogOfWar implements Serializable {
 		 * @param buffery
 		 * @param mapy
 		 */
-		private void applyBufferLine(int mapy) {
-			for (int x = 0; x < width; x++) {
+		private final void applyBufferLine(short mapy) {
+			for (short x = 0; x < width; x++) {
 				int distance = getViewDistanceForPosition(x, mapy);
 				if (distance > 0) {
 					bufferdrawer.drawCircleToBuffer(x, mapy, distance);
@@ -259,7 +241,7 @@ public final class FogOfWar implements Serializable {
 			}
 		}
 
-		private int bufferPos(int mapy) {
+		private final int bufferPos(int mapy) {
 			return mapy % BUFFER_HEIGHT;
 		}
 
@@ -267,7 +249,7 @@ public final class FogOfWar implements Serializable {
 		public void run() {
 			while (true) {
 				loadFirstBuffer();
-				for (int sweepline = BUFFER_HEIGHT / 2; sweepline < height - BUFFER_HEIGHT / 2; sweepline++) {
+				for (short sweepline = (short) (BUFFER_HEIGHT / 2); sweepline < height - BUFFER_HEIGHT / 2; sweepline++) {
 					doNextLine(sweepline);
 					if (sweepline % 32 == 0) {
 						try {
@@ -287,8 +269,8 @@ public final class FogOfWar implements Serializable {
 			}
 		}
 
-		private void loadLastBuffer() {
-			for (int mapy = height - BUFFER_HEIGHT / 2; mapy < height; mapy++) {
+		private final void loadLastBuffer() {
+			for (short mapy = (short) (height - BUFFER_HEIGHT / 2); mapy < height; mapy++) {
 				applyBufferLine(mapy);
 			}
 
@@ -302,19 +284,19 @@ public final class FogOfWar implements Serializable {
 		/**
 		 * Loads the buffer for the map.
 		 */
-		private void loadFirstBuffer() {
-			for (int y = 0; y < BUFFER_HEIGHT; y++) {
-				for (int x = 0; x < width; x++) {
+		private final void loadFirstBuffer() {
+			for (short y = 0; y < BUFFER_HEIGHT; y++) {
+				for (short x = 0; x < width; x++) {
 					buffer[x][y] = dimDown(sight[x][y]);
 				}
 			}
 
-			for (int y = 0; y < BUFFER_HEIGHT / 2; y++) {
+			for (short y = 0; y < BUFFER_HEIGHT / 2; y++) {
 				applyBufferLine(y);
 			}
 		}
 
-		private void doNextLine(int sweepline) {
+		private final void doNextLine(short sweepline) {
 			moveToFromBuffer(sweepline - BUFFER_HEIGHT / 2, sweepline + BUFFER_HEIGHT / 2);
 			applyBufferLine(sweepline);
 		}
@@ -327,7 +309,7 @@ public final class FogOfWar implements Serializable {
 		 * @param frontline
 		 *            The line of the buffer to load to it.
 		 */
-		private void moveToFromBuffer(int lastliney, int frontliney) {
+		private final void moveToFromBuffer(int lastliney, int frontliney) {
 			int lastbuffery = bufferPos(lastliney);
 			int frontbuffery = bufferPos(frontliney);
 			for (int x = 0; x < width; x++) {
@@ -337,47 +319,57 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
-	private class CircleDrawer {
+	class CircleDrawer {
 		private final byte[][] buffer;
+		private final int mask;
 
-		private CircleDrawer(byte[][] buffer) {
+		CircleDrawer(byte[][] buffer) {
 			this.buffer = buffer;
+
+			int bufferHeight = buffer[0].length;
+			byte usedBits = (byte) Math.ceil(Math.log(bufferHeight) / Math.log(2));
+
+			this.mask = (int) (Math.pow(2, usedBits) - 1);
 		}
 
-		protected int convertY(int mapy) {
-			return mapy;
+		private final int convertY(int mapy) {
+			if (mapy > 0 && mapy < height) {
+				return mapy & mask;
+			} else {
+				return -1;
+			}
 		}
 
 		/**
 		 * Draws a circle to the buffer line. Each point is only brightened and onyl drawn if its x coordinate is in [0, mapWidth - 1] and its
 		 * computed y coordinate is bigger than 0.
 		 */
-		protected void drawCircleToBuffer(int bufferx, int buffery, int viewdistance) {
-			MapCircle circle = new MapCircle(bufferx, buffery, Math.min(viewdistance + PADDING, MAX_VIEWDISTANCE));
+		final void drawCircleToBuffer(int bufferx, int buffery, int viewDistance) {
+			MapCircle circle = new MapCircle(bufferx, buffery, Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE));
+			final int squaredViewDistance = viewDistance * viewDistance;
 			CircleIterator iterator = circle.iterator();
 			while (iterator.hasNext()) {
-				int point = iterator.nextXY();
-				int currentx = point & 0xffff;
-				int currenty = point >> 16;
+				final int currentY = iterator.nextY();
+				final int currentX = iterator.nextX();
 
-				int currentbuffery = convertY(currenty);
-				if (currentx >= 0 && currentx < width && currentbuffery >= 0) {
-					double distance = circle.distanceToCenter(currentx, currenty);
-					byte newsight;
-					if (circle.isCloserToCenter(currentx, currenty, viewdistance)) {
-						newsight = CommonConstants.FOG_OF_WAR_VISIBLE;
+				int currentBufferY;
+				if (currentX >= 0 && currentX < width && (currentBufferY = convertY(currentY)) >= 0) {
+					double squaredDistance = circle.squaredDistanceToCenter(currentX, currentY);
+					byte newSight;
+					if (squaredDistance < squaredViewDistance) {
+						newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
 					} else {
-						newsight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (distance - viewdistance) / PADDING
+						newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - viewDistance) / PADDING
 								* CommonConstants.FOG_OF_WAR_VISIBLE);
 					}
-					increaseBufferAt(currentx, currentbuffery, newsight);
+					increaseBufferAt(currentX, currentBufferY, newSight);
 				}
 			}
 		}
 
-		private void increaseBufferAt(int currentx, int bufferPos, byte newsight) {
-			if (buffer[currentx][bufferPos] < newsight) {
-				buffer[currentx][bufferPos] = newsight;
+		private final void increaseBufferAt(int x, int y, byte newsight) {
+			if (buffer[x][y] < newsight) {
+				buffer[x][y] = newsight;
 			}
 		}
 
