@@ -64,6 +64,12 @@ public class MapCircle implements IMapArea {
 		int dy = y - cy;
 		return (.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy;
 	}
+	
+	public static final float getDistance(int x1, int y1, int x2, int y2) {
+		int dx = x1 - x2;
+		int dy = y1 - y2;
+		return (float) Math.sqrt((.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy);
+	}
 
 	/**
 	 * Gets the half with of a line, roundend.
