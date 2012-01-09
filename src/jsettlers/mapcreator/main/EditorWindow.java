@@ -13,7 +13,6 @@ import java.util.TimerTask;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -46,103 +45,49 @@ import jsettlers.mapcreator.tools.ToolNode;
 
 public class EditorWindow implements IMapInterfaceListener, ActionFireable {
 
-	//@formatter:off
-	private static final ToolNode TOOLBOX = new ToolBox("Werkzege",
-	        new ToolNode[] {
-		        new ToolBox("Landschaft", new ToolNode[] {
-		                new SetLandscapeTool(ELandscapeType.GRASS, false),
-		                new SetLandscapeTool(ELandscapeType.DRY_GRASS, false),
-		                new SetLandscapeTool(ELandscapeType.SAND, false),
-		                new SetLandscapeTool(ELandscapeType.WATER, false),
-		                new SetLandscapeTool(ELandscapeType.RIVER1, true),
-		                new SetLandscapeTool(ELandscapeType.RIVER2, true),
-		                new SetLandscapeTool(ELandscapeType.RIVER3, true),
-		                new SetLandscapeTool(ELandscapeType.RIVER4, true),
-		                new SetLandscapeTool(ELandscapeType.MOUNTAIN, false),
-		                new SetLandscapeTool(ELandscapeType.SNOW, false),
-		        }),
-		        new ToolBox("Höhen", new ToolNode[] {
-		        		new LandscapeHeightTool(),
-		        		new HeightAdder(true),
-		        		new HeightAdder(false),
-		        }),
-		        new ToolBox("Objekte", new ToolNode[] {
-		        		new PlaceMapObjectTool(MapTreeObject.getInstance()),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(0)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(2)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(4)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(5)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(6)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(7)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(8)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
-		        }),
-		        new ToolBox("Siedler", new ToolNode[] {
-				        new ToolBox("Arbeiter", new ToolNode[] {
-			        		new PlaceMovableTool(EMovableType.BEARER),
-			        		new PlaceMovableTool(EMovableType.BRICKLAYER),
-			        		new PlaceMovableTool(EMovableType.DIGGER),
-			        		new PlaceMovableTool(EMovableType.SMITH),
-				        }),
-				        new ToolBox("Arbeiter", new ToolNode[] {
-			        		new PlaceMovableTool(EMovableType.GEOLOGIST),
-			        		new PlaceMovableTool(EMovableType.PIONEER),
-			        		new PlaceMovableTool(EMovableType.THIEF)
-				        }),
-				        new ToolBox("Krieger", new ToolNode[] {
-			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L1),
-			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L2),
-			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L3),
-			        		new PlaceMovableTool(EMovableType.BOWMAN_L1),
-			        		new PlaceMovableTool(EMovableType.BOWMAN_L2),
-			        		new PlaceMovableTool(EMovableType.BOWMAN_L3),
-			        		new PlaceMovableTool(EMovableType.PIKEMAN_L1),
-			        		new PlaceMovableTool(EMovableType.PIKEMAN_L2),
-			        		new PlaceMovableTool(EMovableType.PIKEMAN_L3),
-				        }),
-		        }),
-		        new ToolBox("Materialien", new ToolNode[] {
-				        new ToolBox("Bauen", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.PLANK, 8),
-			        		new PlaceStackTool(EMaterialType.STONE, 8),
-			        		new PlaceStackTool(EMaterialType.TRUNK, 8),
-				        }),
-					    new ToolBox("Essen", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.BREAD, 8),
-			        		new PlaceStackTool(EMaterialType.CROP, 8),
-			        		new PlaceStackTool(EMaterialType.FISH, 8),
-			        		new PlaceStackTool(EMaterialType.FISHINGROD, 8),
-			        		new PlaceStackTool(EMaterialType.FLOUR, 8),
-			        		new PlaceStackTool(EMaterialType.PIG, 8),
-			        		new PlaceStackTool(EMaterialType.WATER, 8),
-			        		new PlaceStackTool(EMaterialType.WINE, 8),
-				        }),
-					    new ToolBox("Rohstoffe", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.COAL, 8),
-			        		new PlaceStackTool(EMaterialType.IRON, 8),
-			        		new PlaceStackTool(EMaterialType.IRONORE, 8),
-			        		new PlaceStackTool(EMaterialType.GOLD, 8),
-			        		new PlaceStackTool(EMaterialType.GOLDORE, 8),
-				        }),
-					    new ToolBox("Werkzeug", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.HAMMER, 8),
-			        		new PlaceStackTool(EMaterialType.BLADE, 8),
-			        		new PlaceStackTool(EMaterialType.AXE, 8),
-			        		new PlaceStackTool(EMaterialType.SAW, 8),
-			        		new PlaceStackTool(EMaterialType.PICK, 8),
-			        		new PlaceStackTool(EMaterialType.SCYTHE, 8),
-				        }),
-					    new ToolBox("Waffen", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.SWORD, 8),
-			        		new PlaceStackTool(EMaterialType.BOW, 8),
-			        		new PlaceStackTool(EMaterialType.SPEAR, 8),
-				        }),
-		        }),
-	        });
-	//@formatter:on
+	// @formatter:off
+	private static final ToolNode TOOLBOX = new ToolBox("Werkzege", new ToolNode[] {
+			new ToolBox("Landschaft", new ToolNode[] { new SetLandscapeTool(ELandscapeType.GRASS, false),
+					new SetLandscapeTool(ELandscapeType.DRY_GRASS, false), new SetLandscapeTool(ELandscapeType.SAND, false),
+					new SetLandscapeTool(ELandscapeType.WATER, false), new SetLandscapeTool(ELandscapeType.RIVER1, true),
+					new SetLandscapeTool(ELandscapeType.RIVER2, true), new SetLandscapeTool(ELandscapeType.RIVER3, true),
+					new SetLandscapeTool(ELandscapeType.RIVER4, true), new SetLandscapeTool(ELandscapeType.MOUNTAIN, false),
+					new SetLandscapeTool(ELandscapeType.SNOW, false), }),
+			new ToolBox("Höhen", new ToolNode[] { new LandscapeHeightTool(), new HeightAdder(true), new HeightAdder(false), }),
+			new ToolBox("Objekte", new ToolNode[] { new PlaceMapObjectTool(MapTreeObject.getInstance()),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(0)), new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(2)), new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(4)), new PlaceMapObjectTool(MapStoneObject.getInstance(5)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(6)), new PlaceMapObjectTool(MapStoneObject.getInstance(7)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(8)), new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(10)), }),
+			new ToolBox("Siedler", new ToolNode[] {
+					new ToolBox("Arbeiter", new ToolNode[] { new PlaceMovableTool(EMovableType.BEARER),
+							new PlaceMovableTool(EMovableType.BRICKLAYER), new PlaceMovableTool(EMovableType.DIGGER),
+							new PlaceMovableTool(EMovableType.SMITH), }),
+					new ToolBox("Arbeiter", new ToolNode[] { new PlaceMovableTool(EMovableType.GEOLOGIST),
+							new PlaceMovableTool(EMovableType.PIONEER), new PlaceMovableTool(EMovableType.THIEF) }),
+					new ToolBox("Krieger", new ToolNode[] { new PlaceMovableTool(EMovableType.SWORDSMAN_L1),
+							new PlaceMovableTool(EMovableType.SWORDSMAN_L2), new PlaceMovableTool(EMovableType.SWORDSMAN_L3),
+							new PlaceMovableTool(EMovableType.BOWMAN_L1), new PlaceMovableTool(EMovableType.BOWMAN_L2),
+							new PlaceMovableTool(EMovableType.BOWMAN_L3), new PlaceMovableTool(EMovableType.PIKEMAN_L1),
+							new PlaceMovableTool(EMovableType.PIKEMAN_L2), new PlaceMovableTool(EMovableType.PIKEMAN_L3), }), }),
+			new ToolBox("Materialien", new ToolNode[] {
+					new ToolBox("Bauen", new ToolNode[] { new PlaceStackTool(EMaterialType.PLANK, 8), new PlaceStackTool(EMaterialType.STONE, 8),
+							new PlaceStackTool(EMaterialType.TRUNK, 8), }),
+					new ToolBox("Essen", new ToolNode[] { new PlaceStackTool(EMaterialType.BREAD, 8), new PlaceStackTool(EMaterialType.CROP, 8),
+							new PlaceStackTool(EMaterialType.FISH, 8), new PlaceStackTool(EMaterialType.FISHINGROD, 8),
+							new PlaceStackTool(EMaterialType.FLOUR, 8), new PlaceStackTool(EMaterialType.PIG, 8),
+							new PlaceStackTool(EMaterialType.WATER, 8), new PlaceStackTool(EMaterialType.WINE, 8), }),
+					new ToolBox("Rohstoffe", new ToolNode[] { new PlaceStackTool(EMaterialType.COAL, 8), new PlaceStackTool(EMaterialType.IRON, 8),
+							new PlaceStackTool(EMaterialType.IRONORE, 8), new PlaceStackTool(EMaterialType.GOLD, 8),
+							new PlaceStackTool(EMaterialType.GOLDORE, 8), }),
+					new ToolBox("Werkzeug", new ToolNode[] { new PlaceStackTool(EMaterialType.HAMMER, 8), new PlaceStackTool(EMaterialType.BLADE, 8),
+							new PlaceStackTool(EMaterialType.AXE, 8), new PlaceStackTool(EMaterialType.SAW, 8),
+							new PlaceStackTool(EMaterialType.PICK, 8), new PlaceStackTool(EMaterialType.SCYTHE, 8), }),
+					new ToolBox("Waffen", new ToolNode[] { new PlaceStackTool(EMaterialType.SWORD, 8), new PlaceStackTool(EMaterialType.BOW, 8),
+							new PlaceStackTool(EMaterialType.SPEAR, 8), }), }), });
+	// @formatter:on
 	private final MapData data;
 	private final MapGraphics map;
 	private ELandscapeType currentLandscape = ELandscapeType.GRASS;
@@ -183,9 +128,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable {
 		window.setVisible(true);
 		window.setLocationRelativeTo(null);
 
-		MapContent content =
-		        new MapContent(map, new SwingSoundPlayer(),
-		                new MapEditorControls(new ActionFirerer(this)));
+		MapContent content = new MapContent(map, new SwingSoundPlayer(), new MapEditorControls(new ActionFirerer(this)));
 		MapInterfaceConnector connector = content.getInterfaceConnector();
 		region.setContent(content);
 
@@ -230,16 +173,14 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable {
 		toolshelf.addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent arg0) {
-				Object lastPathComponent =
-				        arg0.getNewLeadSelectionPath().getLastPathComponent();
+				Object lastPathComponent = arg0.getNewLeadSelectionPath().getLastPathComponent();
 				if (lastPathComponent instanceof Tool) {
 					changeTool((Tool) lastPathComponent);
 				}
 			}
 		});
 		toolshelf.setCellRenderer(new ToolRenderer());
-		toolshelf
-		        .setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		toolshelf.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 
 		return menu;
 	}
@@ -264,8 +205,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable {
 
 				ShapeType shape = getActiveShape();// TODO
 
-				tool.apply(data, shape, lineAction.getStart(),
-				        lineAction.getEnd(), lineAction.getUidy());
+				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
 			}
 		} else if (action instanceof StartDrawingAction) {
 			if (tool != null) {

@@ -31,8 +31,7 @@ public class HeightAdder implements Tool {
 	}
 
 	@Override
-	public void apply(MapData map, ShapeType shape, ISPosition2D start,
-	        ISPosition2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ISPosition2D start, ISPosition2D end, double uidx) {
 		if (alreadyadded == null) {
 			alreadyadded = new int[map.getWidth()][map.getHeight()];
 		}
@@ -42,12 +41,11 @@ public class HeightAdder implements Tool {
 		int factor = subtract ? -1 : 1;
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getWidth(); y++) {
-				int dheight =
-				        (int) (INCREASE_HEIGHT * influence[x][y] / Byte.MAX_VALUE);
+				int dheight = (INCREASE_HEIGHT * influence[x][y] / Byte.MAX_VALUE);
 				if (dheight == 0) {
 					continue;
 				}
-				
+
 				int apply;
 
 				if (alreadyadded[x][y] > dheight) {
