@@ -73,29 +73,29 @@ public class MapGridVisualization extends JPanel {
 			return Color.black;
 		}
 		switch (landscape) {
-			case GRASS:
-				return Color.GREEN;
+		case GRASS:
+			return Color.GREEN;
 
-			case MOUNTAIN:
-				return Color.DARK_GRAY;
+		case MOUNTAIN:
+			return Color.DARK_GRAY;
 
-			case MOUNTAINBORDER:
-				return Color.GRAY;
+		case MOUNTAINBORDER:
+			return Color.GRAY;
 
-			case WATER:
-				return Color.BLUE;
+		case WATER:
+			return Color.BLUE;
 
-			case SAND:
-				return Color.YELLOW;
+		case SAND:
+			return Color.YELLOW;
 
-			case RIVER1:
-			case RIVER2:
-			case RIVER3:
-			case RIVER4:
-				return Color.CYAN;
+		case RIVER1:
+		case RIVER2:
+		case RIVER3:
+		case RIVER4:
+			return Color.CYAN;
 
-			default:
-				return Color.BLACK;
+		default:
+			return Color.BLACK;
 		}
 	}
 
@@ -103,11 +103,11 @@ public class MapGridVisualization extends JPanel {
 		RandomMapFile file = RandomMapFile.getByName("test");
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 3);
 		evaluator.createMap(new Random());
-		
+
 		JFrame frame2 = new JFrame("grid");
 		frame2.getContentPane().add(new MapGridVisualization(evaluator.getGrid()));
 		frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame2.pack();
 		frame2.setVisible(true);
-    }
+	}
 }

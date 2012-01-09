@@ -44,7 +44,6 @@ public class TestBuilding implements IBuilding {
 
 	@Override
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -70,8 +69,12 @@ public class TestBuilding implements IBuilding {
 
 	@Override
 	public boolean isWorking() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean isOccupied() {
+		return true;
 	}
 
 }

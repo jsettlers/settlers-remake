@@ -16,8 +16,7 @@ public class TestSettler implements IMovable {
 	private EMaterialType material = EMaterialType.NO_MATERIAL;
 	private final EMovableType type;
 
-	public TestSettler(EDirection direction, EMovableType type, TestTile tile,
-	        byte player) {
+	public TestSettler(EDirection direction, EMovableType type, TestTile tile, byte player) {
 		this.type = type;
 		this.setDirection(direction);
 		this.setPosition(tile);
@@ -83,30 +82,33 @@ public class TestSettler implements IMovable {
 
 	@Override
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setSelected(boolean b) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public float getHealth() {
-		// TODO Auto-generated method stub
+	public final float getHealth() {
 		return 0;
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
-
+	public final void stopOrStartWorking(boolean stop) {
 	}
 
 	@Override
-    public boolean isRightstep() {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	public final boolean isRightstep() {
+		return false;
+	}
+
+	@Override
+	public final void setSoundPlayed() {
+	}
+
+	@Override
+	public final boolean isSoundPlayed() {
+		return true; // prevent playing of sound
+	}
 }
