@@ -511,7 +511,8 @@ public class MapObjectDrawer {
 	 * Increases the animation step for trees and other stuff.
 	 */
 	public void increaseAnimationStep() {
-		this.animationStep = ((int) System.currentTimeMillis() / 100) & 0x7fffffff;
+		this.animationStep =
+		        ((int) System.currentTimeMillis() / 100) & 0x7fffffff;
 	}
 
 	/**
@@ -594,7 +595,6 @@ public class MapObjectDrawer {
 				drawWithConstructionMask(context, maskState, image, color);
 			}
 		} else {
-
 			if (type == EBuildingType.MILL
 			        && ((IBuilding.IMill) building).isWorking()) {
 				Sequence<? extends Image> seq =
