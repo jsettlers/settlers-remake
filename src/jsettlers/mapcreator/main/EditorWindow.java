@@ -22,6 +22,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -80,10 +81,65 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable {
 		        		new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
 		        }),
 		        new ToolBox("Siedler", new ToolNode[] {
-		        		new PlaceMovableTool(EMovableType.BEARER),
-		        		new PlaceMovableTool(EMovableType.SWORDSMAN_L1),
-		        		new PlaceMovableTool(EMovableType.SWORDSMAN_L2),
-		        		new PlaceMovableTool(EMovableType.SWORDSMAN_L3),
+				        new ToolBox("Arbeiter", new ToolNode[] {
+			        		new PlaceMovableTool(EMovableType.BEARER),
+			        		new PlaceMovableTool(EMovableType.BRICKLAYER),
+			        		new PlaceMovableTool(EMovableType.DIGGER),
+			        		new PlaceMovableTool(EMovableType.SMITH),
+				        }),
+				        new ToolBox("Arbeiter", new ToolNode[] {
+			        		new PlaceMovableTool(EMovableType.GEOLOGIST),
+			        		new PlaceMovableTool(EMovableType.PIONEER),
+			        		new PlaceMovableTool(EMovableType.THIEF)
+				        }),
+				        new ToolBox("Krieger", new ToolNode[] {
+			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L1),
+			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L2),
+			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L3),
+			        		new PlaceMovableTool(EMovableType.BOWMAN_L1),
+			        		new PlaceMovableTool(EMovableType.BOWMAN_L2),
+			        		new PlaceMovableTool(EMovableType.BOWMAN_L3),
+			        		new PlaceMovableTool(EMovableType.PIKEMAN_L1),
+			        		new PlaceMovableTool(EMovableType.PIKEMAN_L2),
+			        		new PlaceMovableTool(EMovableType.PIKEMAN_L3),
+				        }),
+		        }),
+		        new ToolBox("Materialien", new ToolNode[] {
+				        new ToolBox("Bauen", new ToolNode[] {
+			        		new PlaceStackTool(EMaterialType.PLANK, 8),
+			        		new PlaceStackTool(EMaterialType.STONE, 8),
+			        		new PlaceStackTool(EMaterialType.TRUNK, 8),
+				        }),
+					    new ToolBox("Essen", new ToolNode[] {
+			        		new PlaceStackTool(EMaterialType.BREAD, 8),
+			        		new PlaceStackTool(EMaterialType.CROP, 8),
+			        		new PlaceStackTool(EMaterialType.FISH, 8),
+			        		new PlaceStackTool(EMaterialType.FISHINGROD, 8),
+			        		new PlaceStackTool(EMaterialType.FLOUR, 8),
+			        		new PlaceStackTool(EMaterialType.PIG, 8),
+			        		new PlaceStackTool(EMaterialType.WATER, 8),
+			        		new PlaceStackTool(EMaterialType.WINE, 8),
+				        }),
+					    new ToolBox("Rohstoffe", new ToolNode[] {
+			        		new PlaceStackTool(EMaterialType.COAL, 8),
+			        		new PlaceStackTool(EMaterialType.IRON, 8),
+			        		new PlaceStackTool(EMaterialType.IRONORE, 8),
+			        		new PlaceStackTool(EMaterialType.GOLD, 8),
+			        		new PlaceStackTool(EMaterialType.GOLDORE, 8),
+				        }),
+					    new ToolBox("Werkzeug", new ToolNode[] {
+			        		new PlaceStackTool(EMaterialType.HAMMER, 8),
+			        		new PlaceStackTool(EMaterialType.BLADE, 8),
+			        		new PlaceStackTool(EMaterialType.AXE, 8),
+			        		new PlaceStackTool(EMaterialType.SAW, 8),
+			        		new PlaceStackTool(EMaterialType.PICK, 8),
+			        		new PlaceStackTool(EMaterialType.SCYTHE, 8),
+				        }),
+					    new ToolBox("Waffen", new ToolNode[] {
+			        		new PlaceStackTool(EMaterialType.SWORD, 8),
+			        		new PlaceStackTool(EMaterialType.BOW, 8),
+			        		new PlaceStackTool(EMaterialType.SPEAR, 8),
+				        }),
 		        }),
 	        });
 	//@formatter:on

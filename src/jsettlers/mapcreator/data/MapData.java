@@ -10,6 +10,7 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
+import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.EDirection;
@@ -196,6 +197,8 @@ public class MapData implements IMapData {
 		} else if (object instanceof MovableObject) {
 			container =
 			        new MovableObjectContainer((MovableObject) object, x, y);
+		} else if (object instanceof StackObject) {
+			container = new StackContainer((StackObject) object);
 		} else {
 			return; // error!
 		}
