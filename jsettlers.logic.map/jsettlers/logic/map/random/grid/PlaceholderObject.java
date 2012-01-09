@@ -1,5 +1,7 @@
 package jsettlers.logic.map.random.grid;
 
+import jsettlers.common.map.object.MapObject;
+
 public class PlaceholderObject implements MapObject{
 	private static PlaceholderObject instance;
 

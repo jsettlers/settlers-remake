@@ -3,10 +3,10 @@ package jsettlers.logic.map.random.instructions;
 import java.util.Hashtable;
 import java.util.Random;
 
+import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.logic.map.random.generation.PlayerStart;
-import jsettlers.logic.map.random.grid.MapObject;
-import jsettlers.logic.map.random.grid.MapStoneObject;
-import jsettlers.logic.map.random.grid.MapTreeObject;
 
 public class PlayerObjectInstruction extends ObjectInstruction {
 

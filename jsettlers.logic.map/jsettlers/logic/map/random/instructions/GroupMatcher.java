@@ -7,15 +7,15 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.common.map.IMapData;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.random.grid.MapGrid;
 
 public class GroupMatcher extends TileMatcher {
 
-	public GroupMatcher(MapGrid grid, int startx, int starty, int distance,
+	public GroupMatcher(IMapData grid, int startx, int starty, int distance,
 	        LandFilter onLandscape, Random random) {
 		super(grid, startx, starty, distance, onLandscape, random);
 	}

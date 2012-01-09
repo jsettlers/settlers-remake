@@ -3,6 +3,7 @@ package jsettlers.main;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import jsettlers.common.map.IMapData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
@@ -22,7 +23,6 @@ import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
-import jsettlers.logic.map.random.grid.MapGrid;
 import jsettlers.logic.timer.Timer100Milli;
 import network.INetworkManager;
 import network.NullNetworkManager;
@@ -103,7 +103,7 @@ public class JSettlersGame {
 				        new RandomMapEvaluator(file.getInstructions(),
 				                (byte) mapSettings.getPlayerCount());
 				evaluator.createMap(RandomSingleton.get());
-				MapGrid mapGrid = evaluator.getGrid();
+				IMapData mapGrid = evaluator.getGrid();
 
 				grid = MainGrid.create(mapGrid);
 				startPoint = mapGrid.getStartPoint(0);

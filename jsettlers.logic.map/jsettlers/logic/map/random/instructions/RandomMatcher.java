@@ -3,12 +3,12 @@ package jsettlers.logic.map.random.instructions;
 import java.util.Iterator;
 import java.util.Random;
 
+import jsettlers.common.map.IMapData;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.random.grid.MapGrid;
 
 public class RandomMatcher extends TileMatcher {
-	public RandomMatcher(MapGrid grid, int startx, int starty, int distance,
+	public RandomMatcher(IMapData grid, int startx, int starty, int distance,
 	        LandFilter onLandscape, Random random) {
 		super(grid, startx, starty, distance, onLandscape, random);
 	}

@@ -13,6 +13,13 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.IMapData;
+import jsettlers.common.map.object.BuildingObject;
+import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
+import jsettlers.common.map.object.MovableObject;
+import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
@@ -69,13 +76,6 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDig
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
-import jsettlers.logic.map.random.grid.BuildingObject;
-import jsettlers.logic.map.random.grid.MapGrid;
-import jsettlers.logic.map.random.grid.MapObject;
-import jsettlers.logic.map.random.grid.MapStoneObject;
-import jsettlers.logic.map.random.grid.MapTreeObject;
-import jsettlers.logic.map.random.grid.MovableObject;
-import jsettlers.logic.map.random.grid.StackObject;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.stack.IRequestsStackGrid;
@@ -151,7 +151,7 @@ public class MainGrid implements Serializable {
 		initAdditionalGrids();
 	}
 
-	private MainGrid(MapGrid mapGrid) {
+	private MainGrid(IMapData mapGrid) {
 		this((short) mapGrid.getWidth(), (short) mapGrid.getHeight());
 
 		for (short y = 0; y < height; y++) {
@@ -228,12 +228,12 @@ public class MainGrid implements Serializable {
 		RandomMapFile file = RandomMapFile.getByName(filename);
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
 		evaluator.createMap(random);
-		MapGrid mapGrid = evaluator.getGrid();
+		IMapData mapGrid = evaluator.getGrid();
 
 		return new MainGrid(mapGrid);
 	}
 
-	public static MainGrid create(MapGrid mapGrid) {
+	public static MainGrid create(IMapData mapGrid) {
 		return new MainGrid(mapGrid);
 	}
 

@@ -3,10 +3,10 @@ package jsettlers.logic.map.random.instructions;
 import java.util.Hashtable;
 import java.util.Random;
 
+import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.map.random.generation.PlayerStart;
-import jsettlers.logic.map.random.grid.MapObject;
-import jsettlers.logic.map.random.grid.MovableObject;
 
 public class SettlerInstruction extends ObjectInstruction {
 	private static Hashtable<String, String> defaults = new Hashtable<String, String>();

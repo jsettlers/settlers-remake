@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.IMapData;
+import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
@@ -26,7 +28,7 @@ import jsettlers.logic.map.random.noise.NoiseGenerator;
  * 
  * @author michael
  */
-public class MapGrid {
+public class MapGrid implements IMapData {
 	private static final int MINDISTANCE = 2;
 	private final ELandscapeType[][] types;
 	private final MapObject[][] objects;
@@ -189,19 +191,35 @@ public class MapGrid {
 		return new MapGrid(mesh, random, playerstarts);
 	}
 
-	public int getWidth() {
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.random.grid.IMapData#getWidth()
+     */
+	@Override
+    public int getWidth() {
 		return width;
 	}
 
-	public int getHeight() {
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.random.grid.IMapData#getHeight()
+     */
+	@Override
+    public int getHeight() {
 		return height;
 	}
 
-	public ELandscapeType getLandscape(int x, int y) {
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.random.grid.IMapData#getLandscape(int, int)
+     */
+	@Override
+    public ELandscapeType getLandscape(int x, int y) {
 		return types[x][y];
 	}
 
-	public MapObject getMapObject(int x, int y) {
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.random.grid.IMapData#getMapObject(int, int)
+     */
+	@Override
+    public MapObject getMapObject(int x, int y) {
 		MapObject object = objects[x][y];
 		if (objects[x][y] instanceof PlaceholderObject) {
 			return null;
@@ -230,17 +248,19 @@ public class MapGrid {
 		return x >= 0 && x < width && y >= 0 && y < height && !isReserved(x, y);
 	}
 
-	public byte getLandscapeHeight(short x, short y) {
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.random.grid.IMapData#getLandscapeHeight(short, short)
+     */
+	@Override
+    public byte getLandscapeHeight(int x, int y) {
 		return (byte) Math.max(0, 10 + heightGenerator.getNoise(x, y) * 25);
 	}
 
-	/**
-	 * Gets the start point of the given player. Always returns a valid point.
-	 * 
-	 * @param player
-	 * @return
-	 */
-	public ISPosition2D getStartPoint(int player) {
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.random.grid.IMapData#getStartPoint(int)
+     */
+	@Override
+    public ISPosition2D getStartPoint(int player) {
 		if (player < 0 || player >= playerstarts.length) {
 			return new ShortPoint2D(getWidth() / 2, getHeight() / 2);
 		} else {

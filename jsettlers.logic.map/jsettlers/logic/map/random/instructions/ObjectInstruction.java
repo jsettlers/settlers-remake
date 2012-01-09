@@ -3,11 +3,11 @@ package jsettlers.logic.map.random.instructions;
 import java.util.Random;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.random.grid.GridLandscapeType;
 import jsettlers.logic.map.random.grid.MapGrid;
-import jsettlers.logic.map.random.grid.MapObject;
 import jsettlers.logic.map.random.grid.PlaceholderObject;
 import jsettlers.logic.map.random.landscape.MeshLandscapeType;
 

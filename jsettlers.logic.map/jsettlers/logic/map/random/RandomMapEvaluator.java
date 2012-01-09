@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+import jsettlers.common.map.IMapData;
 import jsettlers.logic.map.random.generation.PlayerConnection;
 import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.random.grid.MapGrid;
@@ -55,7 +56,7 @@ public class RandomMapEvaluator {
 
 	private final MapSettings settings;
 
-	private MapGrid grid;
+	private IMapData grid;
 
 	public RandomMapEvaluator(List<GenerationInstruction> instructions,
 	        int players) {
@@ -202,7 +203,7 @@ public class RandomMapEvaluator {
 		}
 	}
 
-	public MapGrid getGrid() {
+	public IMapData getGrid() {
 		if (grid == null) {
 			throw new IllegalStateException("Grid was not created");
 		}

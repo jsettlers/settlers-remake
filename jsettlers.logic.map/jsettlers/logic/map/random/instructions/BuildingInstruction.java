@@ -4,9 +4,9 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.map.random.generation.PlayerStart;
-import jsettlers.logic.map.random.grid.BuildingObject;
 import jsettlers.logic.map.random.grid.MapGrid;
 import jsettlers.logic.map.random.grid.PlaceholderObject;
 
