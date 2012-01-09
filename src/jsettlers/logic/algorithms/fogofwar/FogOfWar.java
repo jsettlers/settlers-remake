@@ -26,6 +26,7 @@ public class FogOfWar implements Serializable {
 	static final byte MOVABLE_VIEWDISTANCE = 8;
 
 	static final int PADDING = 10;
+	private static final int UNOCCUPIED_VIEW_DISTANCE = 5;
 
 	final short width;
 	final short height;
@@ -113,9 +114,13 @@ public class FogOfWar implements Serializable {
 		}
 	}
 
-	static int getViewForBuilding(IBuilding baseobject) {
+	final static int getViewForBuilding(IBuilding baseobject) {
 		if (baseobject.getStateProgress() > .999f) {
-			return baseobject.getBuildingType().getViewDistance();
+			if (baseobject.isOccupied()) {
+				return UNOCCUPIED_VIEW_DISTANCE;
+			} else {
+				return baseobject.getBuildingType().getViewDistance();
+			}
 		} else {
 			return 0;
 		}
