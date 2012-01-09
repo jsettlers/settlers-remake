@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.mapview;
 
 import jsettlers.common.Color;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
@@ -28,62 +29,52 @@ public class MapGraphics implements IGraphicsGrid {
 
 	@Override
 	public IMovable getMovableAt(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
+		return data.getMovableContainer(x, y);
 	}
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
+		return data.getMapObjectContainer(x, y);
 	}
 
 	@Override
 	public byte getHeightAt(int x, int y) {
-		// TODO Auto-generated method stub
-		return 0;
+		return data.getLandscapeHeight(x, y);
 	}
 
 	@Override
 	public ELandscapeType getLandscapeTypeAt(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
+		return data.getLandscape(x, y);
 	}
 
 	@Override
 	public Color getDebugColorAt(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
+		return data.getLandscape(x, y).getColor();
 	}
 
 	@Override
 	public boolean isBorder(int x, int y) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public byte getPlayerAt(int x, int y) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public byte getVisibleStatus(int x, int y) {
-		// TODO Auto-generated method stub
-		return 0;
+		return CommonConstants.FOG_OF_WAR_VISIBLE;
 	}
 
 	@Override
 	public boolean isFogOfWarVisible(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
-		// TODO Auto-generated method stub
-
+		data.setListener(backgroundListener);
 	}
 
 }
