@@ -19,8 +19,6 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -135,12 +133,21 @@ public final class MapContent implements SettlersContent,
 	 *            The map.
 	 */
 	public MapContent(IGraphicsGrid map, SoundPlayer player) {
+		this(map, player, null);
+	}
+
+	public MapContent(IGraphicsGrid map, SoundPlayer player, IControls controls) {
 		this.map = map;
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
 		bgsound = new BackgroundSound(context, soundmanager);
 
-		controls = new OriginalControls(context);
+		if (controls == null) {
+			this.controls = new OriginalControls();
+		} else {
+			this.controls = controls;
+		}
+		this.controls.setDrawContext(context);
 		// controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);
@@ -149,15 +156,15 @@ public final class MapContent implements SettlersContent,
 		map.setBackgroundListener(background);
 
 		// sound testing code
-//		new Timer().schedule(new TimerTask() {
-//			private int soundid = 0;
-//			@Override
-//			public void run() {
-//				soundmanager.playSound(soundid++);
-//			}
-//		}, 1000, 5000);
+		// new Timer().schedule(new TimerTask() {
+		// private int soundid = 0;
+		// @Override
+		// public void run() {
+		// soundmanager.playSound(soundid++);
+		// }
+		// }, 1000, 5000);
 	}
-	
+
 	private void resizeTo(int newWindowWidth, int newWindowHeight) {
 		windowWidth = newWindowWidth;
 		windowHeight = newWindowHeight;
@@ -229,7 +236,8 @@ public final class MapContent implements SettlersContent,
 						gl.color(0, 0, 0, .5f);
 						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
 					}
-					drawer.setColor(color.getRed(), color.getGreen(), color.getBlue(), 1);
+					drawer.setColor(color.getRed(), color.getGreen(),
+					        color.getBlue(), 1);
 					drawer.drawString(x, y, name);
 					x += width + 10;
 				}

@@ -735,7 +735,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private int geometrytirs;
 
-	private BitSet geometryValid = new BitSet();
+	private BitSet geometryInvalid = new BitSet();
 
 	private static Object preloadMutex = new Object();
 
@@ -804,7 +804,7 @@ public class Background implements IGraphicsBackgroundListener {
 		@Override
 		public void writeLine(short[] data, int length) throws IOException {
 			if (arrayoffset < maxoffset) { // TODO: ensure that there is enough
-										   // space for every texture
+				                           // space for every texture
 				for (int i = 0; i < cellsize; i++) {
 					this.data[arrayoffset + i] = data[i % length];
 				}
@@ -1109,7 +1109,7 @@ public class Background implements IGraphicsBackgroundListener {
 		bufferheight = niceRoundUp(screenArea.getLines());
 		int count = bufferheight * bufferwidth;
 		fogOfWarStatus = new byte[count * 4];
-		geometryValid = new BitSet(count);
+		geometryInvalid = new BitSet(count);
 		geometrytirs = count * 2;
 
 		geometryindex = gl.generateGeometry(geometrytirs * 3 * VERTEX_SIZE);
@@ -1135,7 +1135,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void reloadGeometry(GLBuffer boundbuffer, MapRectangle area,
 	        MapDrawContext context) {
-		boolean hasInvalidFields = !geometryValid.isEmpty();
+		boolean hasInvalidFields = !geometryInvalid.isEmpty();
 
 		int width = context.getMap().getWidth();
 		int height = context.getMap().getHeight();
@@ -1165,12 +1165,12 @@ public class Background implements IGraphicsBackgroundListener {
 					        bufferPosition);
 				} else if (lineIsInMap && x >= 0 && x < width) {
 					if (hasInvalidFields) {
-						boolean stillValid = false;
+						boolean invalid = false;
 						synchronized (this) {
-							stillValid = geometryValid.get(bufferPosition);
-							geometryValid.set(bufferPosition);
+							invalid = geometryInvalid.get(bufferPosition);
+							geometryInvalid.clear(bufferPosition);
 						}
-						if (!stillValid) {
+						if (invalid) {
 							redrawPoint(boundbuffer, context, x, y, true,
 							        bufferPosition);
 						}
@@ -1226,7 +1226,7 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	private synchronized void invalidatePoint(int x, int y) {
-		geometryValid.clear(getBufferPosition(y, x));
+		geometryInvalid.set(getBufferPosition(y, x));
 	}
 
 	private void addFogOfWarBuffer(MapDrawContext context, int offset, int x,
@@ -1480,7 +1480,7 @@ public class Background implements IGraphicsBackgroundListener {
 		} else {
 			int height1 = context.getHeight(x, y);
 			int height2 = context.getHeight(x, y + 1);
-			float fcolor = 0.9f + (height2 - height1) * .1f;
+			float fcolor = 0.9f + (height1 - height2) * .1f;
 			if (fcolor > 1.0f) {
 				fcolor = 1.0f;
 			} else if (fcolor < 0.4f) {
@@ -1501,8 +1501,19 @@ public class Background implements IGraphicsBackgroundListener {
 
 	@Override
 	public void backgroundChangedAt(short x, short y) {
-		if (oldBufferPosition != null && oldBufferPosition.contains(x, y)) {
-			invalidatePoint(x, y);
+		if (oldBufferPosition != null) {
+			if (oldBufferPosition.contains(x, y)) {
+				invalidatePoint(x, y);
+			}
+			if (oldBufferPosition.contains(x - 1, y)) {
+				invalidatePoint(x - 1, y);
+			}
+			if (oldBufferPosition.contains(x - 1, y - 1)) {
+				invalidatePoint(x - 1, y - 1);
+			}
+			if (oldBufferPosition.contains(x, y - 1)) {
+				invalidatePoint(x, y - 1);
+			}
 		}
 	}
 

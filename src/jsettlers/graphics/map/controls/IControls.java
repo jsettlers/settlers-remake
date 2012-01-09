@@ -7,6 +7,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.IMapInterfaceListener;
+import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.selection.ISelectionSet;
 
 /**
@@ -93,4 +94,10 @@ public interface IControls extends IMapInterfaceListener {
 	 * @param selection the selections.
 	 */
 	void displaySelection(ISelectionSet selection);
+	
+	/**
+	 * Gives the ui access to the draw context that is used to draw the map.
+	 * @param context
+	 */
+	void setDrawContext(MapDrawContext context);
 }

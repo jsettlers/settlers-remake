@@ -173,6 +173,11 @@ public enum EActionType {
 	/**
 	 * Exit the game. Does not ask any more.
 	 */
-	EXIT, SPEED_UNSET_PAUSE, SPEED_SET_PAUSE,
+	EXIT, SPEED_UNSET_PAUSE, SPEED_SET_PAUSE, 
+	
+	/**
+	 * Unspecified action.
+	 */
+	UNSPECIFIED,
 	
 }

@@ -37,8 +37,7 @@ public class OriginalControls implements IControls {
 
 	private IOriginalConstants constants;
 
-	public OriginalControls(MapDrawContext context) {
-		minimap = new Minimap(context);
+	public OriginalControls() {
 		constants = new SmallOriginalConstants();
 		uiBase = createInterface();
 		mainPanel.useConstants(constants);
@@ -94,10 +93,13 @@ public class OriginalControls implements IControls {
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		uiBase.drawAt(gl);
-		gl.glPushMatrix();
-		gl.glTranslatef(getMinimapLeft(), getMinimapBottom(), 0);
-		minimap.draw(gl);
-		gl.glPopMatrix();
+
+		if (minimap != null) {
+			gl.glPushMatrix();
+			gl.glTranslatef(getMinimapLeft(), getMinimapBottom(), 0);
+			minimap.draw(gl);
+			gl.glPopMatrix();
+		}
 	}
 
 	private float getMinimapLeft() {
@@ -130,7 +132,7 @@ public class OriginalControls implements IControls {
 		float relativey =
 		        (float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
-		if (relativey > constants.UI_CENTERY) {
+		if (minimap != null && relativey > constants.UI_CENTERY) {
 			action = getForMinimap(relativex, relativey);
 			startMapPosition = null; // to prevent it from jumping back.
 		} else {
@@ -173,7 +175,9 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public void setMapViewport(MapRectangle screenArea) {
-		minimap.setMapViewport(screenArea);
+		if (minimap != null) {
+			minimap.setMapViewport(screenArea);
+		}
 	}
 
 	@Override
@@ -190,8 +194,7 @@ public class OriginalControls implements IControls {
 		}
 
 		Action action = getActionForDraw(event);
-		if (action != null) {
-			MapDrawContext context = minimap.getContext();
+		if (action != null && context != null && minimap != null) {
 			float y = context.getScreen().getHeight() / 2;
 			float x = context.getScreen().getWidth() / 2;
 			startMapPosition = context.getPositionOnScreen(x, y);
@@ -249,6 +252,9 @@ public class OriginalControls implements IControls {
 	}
 
 	boolean lastSelectionWasNull = true;
+
+	private MapDrawContext context;
+
 	@Override
 	public void displaySelection(ISelectionSet selection) {
 		if (selection instanceof SettlerSelection) {
@@ -270,4 +276,10 @@ public class OriginalControls implements IControls {
 			mainPanel.setContent(EContentType.EMPTY);
 		}
 	}
+
+	public void setDrawContext(MapDrawContext context) {
+		this.context = context;
+		this.minimap = new Minimap(context);
+
+	};
 }

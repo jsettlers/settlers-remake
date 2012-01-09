@@ -11,6 +11,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.selection.ISelectionSet;
 
@@ -139,6 +140,12 @@ public class SmallControls implements IControls {
 
 	@Override
     public void displaySelection(ISelectionSet selection) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	@Override
+    public void setDrawContext(MapDrawContext context) {
 	    // TODO Auto-generated method stub
 	    
     }
