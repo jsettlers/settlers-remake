@@ -46,7 +46,7 @@ public class TestTile implements ISPosition2D {
 		if (isRiver()) {
 			return ELandscapeType.RIVER1;
 		} else if (this.height == 0) {
-			return ELandscapeType.WATER;
+			return ELandscapeType.WATER1;
 		} else if (this.height <= 3) {
 			return ELandscapeType.SAND;
 		} else if (this.height <= 10) {

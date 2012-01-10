@@ -337,7 +337,7 @@ public class TestMap implements IGraphicsGrid {
 				continue;
 			}
 
-			while (current != null && current.getLandscapeType() != ELandscapeType.WATER) {
+			while (current != null && current.getLandscapeType() != ELandscapeType.WATER1) {
 				current.setRiver(true);
 
 				List<EDirection> directions = Arrays.asList(EDirection.values());
@@ -380,7 +380,7 @@ public class TestMap implements IGraphicsGrid {
 			int count = (int) (Math.random() * 8 + 1);
 
 			TestTile tile = getTile(x, y);
-			if (tile.getLandscapeType() != ELandscapeType.WATER) {
+			if (tile.getLandscapeType() != ELandscapeType.WATER1) {
 				tile.setStack(new TestStack(type, count));
 			}
 		}
@@ -403,7 +403,7 @@ public class TestMap implements IGraphicsGrid {
 					newPosition.setMovable(settler);
 					settler.setPosition(newPosition);
 
-					if (nextPosition == null || nextPosition.getMovable() != null || nextPosition.getLandscapeType() == ELandscapeType.WATER) {
+					if (nextPosition == null || nextPosition.getMovable() != null || nextPosition.getLandscapeType() == ELandscapeType.WATER1) {
 						// may not move...
 						EDirection direction = getRandomDirection();
 						settler.setDirection(direction);

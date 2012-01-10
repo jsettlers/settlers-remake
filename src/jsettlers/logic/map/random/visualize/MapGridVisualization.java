@@ -82,8 +82,9 @@ public class MapGridVisualization extends JPanel {
 		case MOUNTAINBORDER:
 			return Color.GRAY;
 
-		case WATER:
+		case WATER1:
 			return Color.BLUE;
+
 
 		case SAND:
 			return Color.YELLOW;
