@@ -18,7 +18,7 @@ public class LandscapeFader {
 	                new FadableLandscapes(ELandscapeType.FLATTENED,
 	                        ELandscapeType.GRASS),
 	                new FadableLandscapes(ELandscapeType.SAND,
-	                        ELandscapeType.WATER),
+	                        ELandscapeType.WATER1),
 	                new FadableLandscapes(ELandscapeType.SNOW,
 	                        ELandscapeType.MOUNTAIN),
 	                new FadableLandscapes(ELandscapeType.MOUNTAIN,
@@ -27,6 +27,19 @@ public class LandscapeFader {
 	                        ELandscapeType.GRASS),
 
 	                new FadableLandscapes(ELandscapeType.RIVER1,
+	                        ELandscapeType.RIVER2),
+	                new FadableLandscapes(ELandscapeType.RIVER1,
+	                        ELandscapeType.RIVER3),
+	                new FadableLandscapes(ELandscapeType.RIVER1,
+	                        ELandscapeType.RIVER4),
+	                new FadableLandscapes(ELandscapeType.RIVER2,
+	                        ELandscapeType.RIVER3),
+	                new FadableLandscapes(ELandscapeType.RIVER2,
+	                        ELandscapeType.RIVER4),
+	                new FadableLandscapes(ELandscapeType.RIVER3,
+	                        ELandscapeType.RIVER4),
+
+	                new FadableLandscapes(ELandscapeType.RIVER1,
 	                        ELandscapeType.GRASS),
 	                new FadableLandscapes(ELandscapeType.RIVER2,
 	                        ELandscapeType.GRASS),
@@ -43,13 +56,13 @@ public class LandscapeFader {
 	                new FadableLandscapes(ELandscapeType.RIVER4,
 	                        ELandscapeType.SAND),
 	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.WATER),
+	                        ELandscapeType.WATER1),
 	                new FadableLandscapes(ELandscapeType.RIVER2,
-	                        ELandscapeType.WATER),
+	                        ELandscapeType.WATER1),
 	                new FadableLandscapes(ELandscapeType.RIVER3,
-	                        ELandscapeType.WATER),
+	                        ELandscapeType.WATER1),
 	                new FadableLandscapes(ELandscapeType.RIVER4,
-	                        ELandscapeType.WATER),
+	                        ELandscapeType.WATER1),
 	        };
 
 	private ELandscapeType[][][] fadeLandscapesBuffer =
@@ -57,6 +70,10 @@ public class LandscapeFader {
 	                .values().length][];
 
 	public boolean canFadeTo(ELandscapeType l1, ELandscapeType l2) {
+		if (l1 == l2) {
+			return true;
+		}
+		
 		FadableLandscapes searched = new FadableLandscapes(l1, l2);
 		for (FadableLandscapes fl : allowed) {
 			if (fl.equals(searched)) {

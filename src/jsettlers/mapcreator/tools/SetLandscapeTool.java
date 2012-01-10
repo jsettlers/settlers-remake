@@ -9,13 +9,14 @@ public class SetLandscapeTool implements Tool {
 
 	private static final ShapeType[] SHAPES = new ShapeType[] {
 		new PointShape(),
-		new NoisyLineCircleShape(),
-		new FuzzyLineCircleShape(),
+		new LineShape(),
 		new LineCircleShape(),
+		new NoisyLineCircleShape(),
 	};
 	
 	private static final ShapeType[] RIVERSHAPES = new ShapeType[] {
 		new PointShape(),
+		new LineShape(),
 	};
 
 	private final ELandscapeType type;

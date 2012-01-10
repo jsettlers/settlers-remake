@@ -1,5 +1,6 @@
 package jsettlers.mapcreator.tools;
 
+
 import jsettlers.common.position.ISPosition2D;
 
 /**
@@ -21,4 +22,6 @@ public interface ShapeType {
 	 * @return The (average) size in map units.
 	 */
 	int getSize();
+
+	String getName();
 }

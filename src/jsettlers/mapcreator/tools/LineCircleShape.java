@@ -33,7 +33,11 @@ public class LineCircleShape implements ShapeType {
 	}
 
 	public void setRadius(int radius) {
-		this.radius = radius;
-	}
+	    this.radius = radius;
+    }
 
+	@Override
+	public String getName() {
+	    return "circle line";
+	}
 }

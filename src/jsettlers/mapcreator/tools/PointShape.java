@@ -25,5 +25,10 @@ public class PointShape implements ShapeType {
     public int getSize() {
 	    return 1;
     }
+	
+	@Override
+	public String getName() {
+	    return "points";
+	}
 
 }

@@ -21,11 +21,17 @@ public class FuzzyLineCircleShape extends LineCircleShape {
 	protected double getSlopedRating(double distance) {
 		if (inner > .97) {
 			// to hard to compute
-			return distance < getRadius() ? Byte.MAX_VALUE : 0;
+			return Byte.MAX_VALUE;
 		}
-		double m = Byte.MAX_VALUE / ((1 - inner) * getRadius());
-		return (getRadius() - distance) * m;
+		// linear falloff:
+		//double m = Byte.MAX_VALUE / ((1 - inner) * getRadius());
+		//return (getRadius() - distance) * m;
 		
+		// cosine falloff:
+		//return (byte) Byte.MAX_VALUE * Math.cos(distance * Math.PI / getRadius() / 2);
+		
+		// even better:
+		return Byte.MAX_VALUE * (.5 * Math.cos(distance * Math.PI / getRadius()) + .5);
 	}
 
 	public void setInner(float inner) {
@@ -40,5 +46,10 @@ public class FuzzyLineCircleShape extends LineCircleShape {
 
 	public float getInner() {
 		return inner;
+	}
+	
+	@Override
+	public String getName() {
+	    return "fuzzy line";
 	}
 }

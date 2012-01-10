@@ -41,6 +41,7 @@ public class MapEditorControls implements IControls {
 		@Override
 		public void finished(GOEvent event) {
 			eventDataChanged(event);
+			firerer.fireAction(new EndDrawingAction(last));
 		}
 
 		@Override
@@ -75,7 +76,7 @@ public class MapEditorControls implements IControls {
 
 	@Override
 	public boolean containsPoint(UIPoint position) {
-		return false;
+		return true;
 	}
 
 	@Override

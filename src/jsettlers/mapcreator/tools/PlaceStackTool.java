@@ -1,8 +1,7 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.tools;
 
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.mapcreator.tools.PlaceMapObjectTool;
 
 public class PlaceStackTool extends PlaceMapObjectTool {
 

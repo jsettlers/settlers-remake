@@ -3,14 +3,17 @@ package jsettlers.mapcreator.tools;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.mapcreator.main.IPlayerSetter;
 
 public class PlaceMovableTool extends PlaceMapObjectTool {
 
 	private final EMovableType type;
+	private final IPlayerSetter player;
 
-	public PlaceMovableTool(EMovableType type) {
+	public PlaceMovableTool(EMovableType type, IPlayerSetter player) {
 		super(null);
 		this.type = type;
+		this.player = player;
 	}
 
 	@Override
@@ -20,6 +23,6 @@ public class PlaceMovableTool extends PlaceMapObjectTool {
 
 	@Override
 	public MapObject getObject() {
-	    return new MovableObject(type, (byte) 0);
+	    return new MovableObject(type, player.getActivePlayer());
 	}
 }

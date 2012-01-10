@@ -6,8 +6,7 @@ import jsettlers.mapcreator.data.MapData;
 
 public class PlaceMapObjectTool implements Tool {
 	private static final ShapeType[] SHAPES = new ShapeType[] {
-		new PointShape(),
-		new PointShape(),
+		new PointShape()
 	};
 
 	private final MapObject object;

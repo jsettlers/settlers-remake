@@ -18,4 +18,9 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 			return toByte((int) (sloped + add));
 		}
 	};
+	
+	@Override
+	public String getName() {
+	    return "noisy line";
+	}
 }

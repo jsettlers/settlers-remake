@@ -33,7 +33,7 @@ public class LandscapeHeightTool implements Tool {
 	public void apply(MapData map, ShapeType shape, ISPosition2D unused,
 	        ISPosition2D unused2, double uidx) {
 		
-		double factor = uidx / 1000f;
+		double factor = uidx / 10000f;
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getWidth(); y++) {
 				double dheight = factor * influences[x][y] + carry[x][y];

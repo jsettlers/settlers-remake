@@ -20,6 +20,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		new EditorWindow(300, 300);
+		new EditorWindow(300, 300, 4);
     }
 }
