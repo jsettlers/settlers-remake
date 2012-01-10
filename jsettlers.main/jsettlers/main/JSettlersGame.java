@@ -41,6 +41,7 @@ public class JSettlersGame {
 	@SuppressWarnings("unused")
 	private final ILoadableGame loadableGame;
 	private MapInterfaceConnector gameConnector;
+	private final IMapData mapData;
 
 	/**
 	 * Creates a new game by a given random mapname.
@@ -51,6 +52,16 @@ public class JSettlersGame {
 	public JSettlersGame(ISettlersGameDisplay content, IGameSettings map, long randomSheed) {
 		this.content = content;
 		this.mapSettings = map;
+		this.mapData = null;
+		this.loadableGame = null;
+		this.randomSheed = randomSheed;
+	}
+	
+	public JSettlersGame(ISettlersGameDisplay content, IMapData map,
+	        long randomSheed) {
+		this.content = content;
+		this.mapData = map;
+		this.mapSettings = null;
 		this.loadableGame = null;
 		this.randomSheed = randomSheed;
 	}
@@ -58,6 +69,7 @@ public class JSettlersGame {
 	public JSettlersGame(ISettlersGameDisplay content, ILoadableGame loadableGame, long randomSheed) {
 		this.content = content;
 		this.loadableGame = loadableGame;
+		this.mapData = null;
 		this.randomSheed = randomSheed;
 		this.mapSettings = null;
 	}
@@ -97,6 +109,9 @@ public class JSettlersGame {
 
 				grid = MainGrid.create(mapGrid);
 				startPoint = mapGrid.getStartPoint(0);
+			} else if (mapData != null){
+				grid = MainGrid.create(mapData);
+				startPoint = mapData.getStartPoint(0);
 			} else {
 				GameSerializer gameSerializer = new GameSerializer();
 				try {

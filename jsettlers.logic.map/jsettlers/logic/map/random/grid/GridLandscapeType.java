@@ -23,7 +23,7 @@ public class GridLandscapeType {
 				return ELandscapeType.SAND;
 				
 			case SEA:
-				return ELandscapeType.WATER;
+				return ELandscapeType.WATER1;
 
 			case GRASS:
 			default:

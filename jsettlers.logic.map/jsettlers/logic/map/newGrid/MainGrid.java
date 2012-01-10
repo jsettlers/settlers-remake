@@ -166,7 +166,7 @@ public class MainGrid implements Serializable {
 				case MOUNTAIN:
 					landscapeGrid.setResourceAt(x, y, EResourceType.values()[RandomSingleton.getInt(0, 2)], (byte) RandomSingleton.getInt(-100, 127));
 					break;
-				case WATER:
+				case WATER1:
 					landscapeGrid.setResourceAt(x, y, EResourceType.FISH, (byte) RandomSingleton.getInt(-100, 127));
 					break;
 				}
@@ -295,7 +295,7 @@ public class MainGrid implements Serializable {
 
 	protected final boolean isLandscapeBlocking(short x, short y) {
 		ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-		return landscapeType == ELandscapeType.WATER || landscapeType == ELandscapeType.SNOW;
+		return landscapeType == ELandscapeType.WATER1 || landscapeType == ELandscapeType.SNOW;
 	}
 
 	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -371,7 +371,7 @@ public class MainGrid implements Serializable {
 				return isRiver(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case FISHABLE:
-				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER);
+				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER1);
 
 			case NON_BLOCKED_OR_PROTECTED:
 				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y))
@@ -624,7 +624,7 @@ public class MainGrid implements Serializable {
 		@Override
 		public boolean isBlocked(short x, short y) {
 			ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
-			return flagsGrid.isBlocked(x, y) || landscape == ELandscapeType.WATER || landscape == ELandscapeType.SNOW;
+			return flagsGrid.isBlocked(x, y) || landscape == ELandscapeType.WATER1 || landscape == ELandscapeType.SNOW;
 		}
 
 		@Override

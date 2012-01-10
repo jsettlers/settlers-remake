@@ -267,4 +267,9 @@ public class MapGrid implements IMapData {
 			return playerstarts[player];
 		}
 	}
+
+	@Override
+    public int getPlayerCount() {
+	    return playerstarts.length;
+    }
 }
