@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -18,6 +19,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
@@ -38,10 +40,15 @@ import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
 
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable,
-		IDiggerRequester {
+		IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
 
-	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.5f;
+	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.2f;
+
+	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
+	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
+
+	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
 
 	private final byte player;
 	private EBuildingState state = EBuildingState.CREATED;
@@ -62,6 +69,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	protected Building(EBuildingType type, byte player) {
 		this.type = type;
 		this.player = player;
+
+		allBuildings.offer(this);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
@@ -404,7 +413,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public boolean isConstructionFinished() {
+	public final boolean isConstructionFinished() {
 		return state == EBuildingState.CONSTRUCTED || state == EBuildingState.DESTROYED;
 	}
 
@@ -430,6 +439,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		drawWorkAreaCircle(false);
 		placeAdditionalMapObjects(grid, pos, false);
 		placeFlag(false);
+
+		allBuildings.remove(this);
 
 		killedEvent();
 	}
@@ -597,5 +608,22 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	protected List<RequestStack> getStacks() {
 		return stacks;
+	}
+
+	public static ConcurrentLinkedQueue<? extends IViewDistancable> getAllBuildings() {
+		return allBuildings;
+	}
+
+	@Override
+	public final short getViewDistance() {
+		if (isConstructionFinished()) {
+			if (isOccupied()) {
+				return UNOCCUPIED_VIEW_DISTANCE;
+			} else {
+				return getBuildingType().getViewDistance();
+			}
+		} else {
+			return UNCONSTRUCTED_VIEW_DISTANCE;
+		}
 	}
 }

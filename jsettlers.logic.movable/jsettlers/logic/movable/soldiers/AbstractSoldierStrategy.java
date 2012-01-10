@@ -186,7 +186,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 
 	@Override
 	protected boolean isGotoJobable() {
-		return state != ESoldierState.GO_TO_TOWER;
+		return state != ESoldierState.GO_TO_TOWER && state != ESoldierState.IN_TOWER;
 	}
 
 	@Override

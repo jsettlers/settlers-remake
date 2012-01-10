@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -12,6 +13,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
@@ -20,11 +22,12 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
 
-public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable {
+public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable, IViewDistancable {
 	private static final long serialVersionUID = 6588554296128443814L;
 
 	private static int nextID = Integer.MIN_VALUE;
 	private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
+	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
 
 	private final int id;
 
@@ -59,6 +62,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 
 		MovableTimer.add(this);
 		movablesByID.put(id, this);
+		allMovables.offer(this);
 	}
 
 	/**
@@ -125,6 +129,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		this.health = 0;
 		grid.movableLeft(pos, this);
 		movablesByID.remove(this.getID());
+		allMovables.remove(this);
 
 		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.GHOST, 1, player);
 	}
@@ -411,7 +416,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	}
 
 	/**
-	 * Used for networking, to identify movables over the network.
+	 * Used for networking to identify movables over the network.
 	 * 
 	 * @param id
 	 *            id to be looked for
@@ -420,6 +425,10 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	 */
 	public final static Movable getMovableByID(int id) {
 		return movablesByID.get(id);
+	}
+
+	public static final ConcurrentLinkedQueue<Movable> getAllMovables() {
+		return allMovables;
 	}
 
 	final void setDirection(EDirection direction) {
@@ -499,6 +508,11 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	@Override
 	public final boolean isSoundPlayed() {
 		return soundPlayed;
+	}
+
+	@Override
+	public final short getViewDistance() {
+		return 8;
 	}
 
 }

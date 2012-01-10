@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
@@ -42,6 +43,7 @@ import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
+import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -1241,6 +1243,16 @@ public class MainGrid implements Serializable {
 		@Override
 		public final IMapObject getMapObjectsAt(short x, short y) {
 			return objectsGrid.getObjectsAt(x, y);
+		}
+
+		@Override
+		public ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
+			return Movable.getAllMovables();
+		}
+
+		@Override
+		public ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables() {
+			return Building.getAllBuildings();
 		}
 	}
 
