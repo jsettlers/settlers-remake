@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
@@ -31,7 +31,7 @@ public interface IGuiInputGrid {
 
 	void setBuildingType(EBuildingType buildingType);
 
-	void setScreen(IMapArea screenArea);
+	void setScreen(MapRectangle screenArea);
 
 	void resetDebugColors();
 

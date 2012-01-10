@@ -22,8 +22,8 @@ import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
@@ -41,9 +41,10 @@ import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
-import jsettlers.logic.algorithms.fogofwar.FogOfWar;
+import jsettlers.logic.algorithms.fogofwar.IFogOfWar;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
+import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -105,7 +106,7 @@ public class MainGrid implements Serializable {
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager mapObjectsManager;
 	final BuildingsGrid buildingsGrid;
-	final FogOfWar fogOfWar;
+	final IFogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
 	transient LandmarksCorrectingThread landmarksCorrectionThread;
@@ -128,7 +129,7 @@ public class MainGrid implements Serializable {
 		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid());
 
 		this.buildingsGrid = new BuildingsGrid();
-		this.fogOfWar = new FogOfWar(width, height); // TODO @Andreas implement new interface for fog of war
+		this.fogOfWar = new NewFogOfWar(width, height); // TODO @Andreas implement new interface for fog of war
 
 		initAdditionalGrids();
 	}
@@ -1179,7 +1180,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void setScreen(IMapArea screenArea) {
+		public final void setScreen(MapRectangle screenArea) {
 			constructionMarksCalculator.setScreen(screenArea);
 		}
 
