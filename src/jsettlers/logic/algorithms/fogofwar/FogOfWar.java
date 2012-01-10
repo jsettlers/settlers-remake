@@ -3,15 +3,19 @@ package jsettlers.logic.algorithms.fogofwar;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.CircleIterator;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
+import jsettlers.common.position.ISPosition2D;
 
 /**
  * This class holds the fog of war for a given map and player.
@@ -65,7 +69,8 @@ public final class FogOfWar implements Serializable {
 	public void startThread(IFogOfWarGrid grid) {
 		this.grid = grid;
 		if (height > 3 * MAX_VIEWDISTANCE) {
-			FogCorrectionThread thread = new FogCorrectionThread();
+			// FogCorrectionThread thread = new FogCorrectionThread();
+			NewFoWThread thread = new NewFoWThread();
 			thread.start();
 		} else {
 			SimpleCorrectionTread thread = new SimpleCorrectionTread();
@@ -86,14 +91,14 @@ public final class FogOfWar implements Serializable {
 	 */
 	public final byte getVisibleStatus(int x, int y) {
 		if (enabled) {
-			return sight[x][y];
+			return (byte) Math.min(sight[x][y], CommonConstants.FOG_OF_WAR_VISIBLE);
 		} else {
 			return CommonConstants.FOG_OF_WAR_VISIBLE;
 		}
 	}
 
 	static final byte dimDown(byte oldvalue) {
-		if (oldvalue > CommonConstants.FOG_OF_WAR_EXPLORED) {
+		if (oldvalue >= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return CommonConstants.FOG_OF_WAR_EXPLORED;
 		} else {
 			return oldvalue;
@@ -146,7 +151,7 @@ public final class FogOfWar implements Serializable {
 			for (short y = 0; y < height; y++) {
 				int distance = getViewDistanceForPosition(x, y);
 				if (distance > 0) {
-					drawer.drawCircleToBuffer(x, y, distance);
+					drawer.drawCircleToBuffer(x, y, distance, (byte) 0);
 				}
 			}
 		}
@@ -201,6 +206,77 @@ public final class FogOfWar implements Serializable {
 		}
 	}
 
+	final class NewFoWThread extends Thread {
+		private static final byte DIM_DOWN_SPEED = 10;
+		private final CircleDrawer drawer;
+
+		NewFoWThread() {
+			super("NewFoWThread");
+			this.drawer = new CircleDrawer(sight);
+			super.setDaemon(true);
+		}
+
+		@Override
+		public final void run() {
+			while (true) {
+				StopWatch watch = new MilliStopWatch();
+				watch.start();
+				rebuildSight();
+				watch.stop("NewFoWThread needed: ");
+
+				mySleep(800);
+			}
+		}
+
+		// private final BitSet changedSet = new BitSet(width * height);
+
+		private final void rebuildSight() {
+			ConcurrentLinkedQueue<? extends IViewDistancable> buildings = grid.getBuildingViewDistancables();
+			applyViewDistances(buildings);
+
+			ConcurrentLinkedQueue<? extends IViewDistancable> movables = grid.getMovableViewDistancables();
+			applyViewDistances(movables);
+
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					byte currSight = sight[x][y];
+
+					if (currSight >= CommonConstants.FOG_OF_WAR_EXPLORED) {
+						byte newSight = (byte) (currSight - DIM_DOWN_SPEED);
+						if (newSight < CommonConstants.FOG_OF_WAR_EXPLORED) {
+							sight[x][y] = CommonConstants.FOG_OF_WAR_EXPLORED;
+						} else {
+							sight[x][y] = newSight;
+						}
+					} else {
+						// don't change the value
+					}
+				}
+			}
+		}
+
+		private final void applyViewDistances(ConcurrentLinkedQueue<? extends IViewDistancable> objects) {
+			for (IViewDistancable curr : objects) {
+				if (isPlayerOK(curr)) {
+					short distance = curr.getViewDistance();
+					if (distance > 0) {
+						ISPosition2D pos = curr.getPos();
+						drawer.drawCircleToBuffer(pos.getX(), pos.getY(), distance, DIM_DOWN_SPEED);
+					}
+				}
+			}
+		}
+
+		private final void mySleep(int ms) {
+			try {
+				Thread.sleep(ms);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 	/**
 	 * This thread sweeps the map from top to bottom. It has a buffer of the distance MAX_VIEWDISTANCE behind and before the sweep line.
 	 * <p>
@@ -213,9 +289,9 @@ public final class FogOfWar implements Serializable {
 		 * height of the buffer ( needs to be a power of two! )
 		 */
 		private final short BUFFER_HEIGHT = (short) Math.pow(2, Math.ceil(Math.log(MAX_VIEWDISTANCE * 2) / Math.log(2)));
-		byte[][] buffer;
+		private final byte[][] buffer;
 
-		private CircleDrawer bufferdrawer;
+		private final CircleDrawer bufferdrawer;
 
 		FogCorrectionThread() {
 			super("advanced fog of war correction");
@@ -236,7 +312,7 @@ public final class FogOfWar implements Serializable {
 			for (short x = 0; x < width; x++) {
 				int distance = getViewDistanceForPosition(x, mapy);
 				if (distance > 0) {
-					bufferdrawer.drawCircleToBuffer(x, mapy, distance);
+					bufferdrawer.drawCircleToBuffer(x, mapy, distance, (byte) 0);
 				}
 			}
 		}
@@ -248,6 +324,9 @@ public final class FogOfWar implements Serializable {
 		@Override
 		public void run() {
 			while (true) {
+				StopWatch watch = new MilliStopWatch();
+				watch.start();
+
 				loadFirstBuffer();
 				for (short sweepline = (short) (BUFFER_HEIGHT / 2); sweepline < height - BUFFER_HEIGHT / 2; sweepline++) {
 					doNextLine(sweepline);
@@ -260,6 +339,8 @@ public final class FogOfWar implements Serializable {
 					}
 				}
 				loadLastBuffer();
+
+				watch.stop("FogCorrectionThread needed: ");
 
 				try {
 					Thread.sleep(200);
@@ -304,17 +385,17 @@ public final class FogOfWar implements Serializable {
 		/**
 		 * Moves the line from the buffer to the map.
 		 * 
-		 * @param lastliney
+		 * @param lastlineY
 		 *            The last line of the buffer to convert to the map.
 		 * @param frontline
 		 *            The line of the buffer to load to it.
 		 */
-		private final void moveToFromBuffer(int lastliney, int frontliney) {
-			int lastbuffery = bufferPos(lastliney);
-			int frontbuffery = bufferPos(frontliney);
+		private final void moveToFromBuffer(int lastlineY, int frontlineY) {
+			int lastbuffery = bufferPos(lastlineY);
+			int frontbuffery = bufferPos(frontlineY);
 			for (int x = 0; x < width; x++) {
-				sight[x][lastliney] = buffer[x][lastbuffery];
-				buffer[x][frontbuffery] = dimDown(sight[x][frontliney]);
+				sight[x][lastlineY] = buffer[x][lastbuffery];
+				buffer[x][frontbuffery] = dimDown(sight[x][frontlineY]);
 			}
 		}
 	}
@@ -341,10 +422,10 @@ public final class FogOfWar implements Serializable {
 		}
 
 		/**
-		 * Draws a circle to the buffer line. Each point is only brightened and onyl drawn if its x coordinate is in [0, mapWidth - 1] and its
-		 * computed y coordinate is bigger than 0.
+		 * Draws a circle to the buffer line. Each point is only brightened and onlydrawn if its x coordinate is in [0, mapWidth - 1] and its computed
+		 * y coordinate is bigger than 0.
 		 */
-		final void drawCircleToBuffer(int bufferx, int buffery, int viewDistance) {
+		final void drawCircleToBuffer(int bufferx, int buffery, int viewDistance, byte offset) {
 			MapCircle circle = new MapCircle(bufferx, buffery, Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE));
 			final int squaredViewDistance = viewDistance * viewDistance;
 			CircleIterator iterator = circle.iterator();
@@ -354,15 +435,17 @@ public final class FogOfWar implements Serializable {
 
 				int currentBufferY;
 				if (currentX >= 0 && currentX < width && (currentBufferY = convertY(currentY)) >= 0) {
-					double squaredDistance = circle.squaredDistanceToCenter(currentX, currentY);
-					byte newSight;
-					if (squaredDistance < squaredViewDistance) {
-						newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
-					} else {
-						newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - viewDistance) / PADDING
-								* CommonConstants.FOG_OF_WAR_VISIBLE);
+					if (buffer[currentX][currentBufferY] < CommonConstants.FOG_OF_WAR_VISIBLE + offset) {
+						double squaredDistance = circle.squaredDistanceToCenter(currentX, currentY);
+						byte newSight;
+						if (squaredDistance < squaredViewDistance) {
+							newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
+						} else {
+							newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - viewDistance) / PADDING
+									* CommonConstants.FOG_OF_WAR_VISIBLE);
+						}
+						increaseBufferAt(currentX, currentBufferY, (byte) (newSight + offset));
 					}
-					increaseBufferAt(currentX, currentBufferY, newSight);
 				}
 			}
 		}
