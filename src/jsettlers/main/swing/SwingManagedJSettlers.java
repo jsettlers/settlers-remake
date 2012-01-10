@@ -6,12 +6,16 @@ import java.io.FileNotFoundException;
 
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
+import jsettlers.common.map.IMapData;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
+import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
+import jsettlers.main.JSettlersGame;
 import jsettlers.main.ManagedJSettlers;
 
 import javax.swing.JFrame;
@@ -48,6 +52,17 @@ public class SwingManagedJSettlers {
 
 		// NetworkTimer.loadLogging("logs/2011_11_02-11_39_44.log");
 		// NetworkTimer.activateLogging("logs");
+	}
+	
+	/**
+	 * Directly starts a map window
+	 * @param mapname
+	 */
+	public static void startMap(IMapData data) {
+		ResourceManager.setProvider(new ResourceProvider());
+		//TODO: detect exit
+		JSettlersGame game = new JSettlersGame(getGui(), data , 123456L);
+		game.start();
 	}
 
 	private static ISettlersGameDisplay getGui() {
