@@ -80,7 +80,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
 	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
 	private ArrayList<OccupyerPlace> occupyerplaces = new ArrayList<OccupyerPlace>();
-	private int viewdistance = 0;
+	private short viewdistance = 0;
 	private final String buildingName;
 
 	public BuildingFile(String buildingName) {
@@ -258,7 +258,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 		String viewdistance = attributes.getValue("viewdistance");
 		if (viewdistance != null && viewdistance.matches("\\d+")) {
-			this.viewdistance = Integer.parseInt(viewdistance);
+			this.viewdistance = Short.parseShort(viewdistance);
 		}
 	}
 
@@ -340,7 +340,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 		return groundtypes.toArray(new ELandscapeType[groundtypes.size()]);
 	}
 
-	public int getViewdistance() {
+	public short getViewdistance() {
 		return viewdistance;
 	}
 

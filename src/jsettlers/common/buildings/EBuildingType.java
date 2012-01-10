@@ -17,12 +17,21 @@ import jsettlers.common.position.RelativePoint;
  * @author michael
  */
 public enum EBuildingType {
-	STONECUTTER(3), FORESTER(7), LUMBERJACK(0), SAWMILL(1),
+	STONECUTTER(3),
+	FORESTER(7),
+	LUMBERJACK(0),
+	SAWMILL(1),
 
-	COALMINE(6), IRONMINE(4), GOLDMINE(5), GOLDMELT(8), IRONMELT(9), TOOLSMITH(
-	        10), WEAPONSMITH(11),
+	COALMINE(6),
+	IRONMINE(4),
+	GOLDMINE(5),
+	GOLDMELT(8),
+	IRONMELT(9),
+	TOOLSMITH(10),
+	WEAPONSMITH(11),
 
-	FARM(21), PIG_FARM(20),
+	FARM(21),
+	PIG_FARM(20),
 	/**
 	 * Needs to implement {@link IBuilding.Mill}
 	 */
@@ -88,7 +97,7 @@ public enum EBuildingType {
 
 	private final ELandscapeType[] groundtypes;
 
-	private final int viewdistance;
+	private final short viewdistance;
 
 	private final OccupyerPlace[] occupyerPlaces;
 
@@ -110,14 +119,9 @@ public enum EBuildingType {
 		ImageLink[] tempimages = file.getImages();
 		if (tempimages.length == 0) {
 			// TODO: this can be removed if all images are converted
-			System.out.println("WARNING: Building " + this.toString()
-			        + " does not have an image definition.");
-			images = new ImageLink[] {
-				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0)
-			};
-			buildImages = new ImageLink[] {
-				new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1)
-			};
+			System.out.println("WARNING: Building " + this.toString() + " does not have an image definition.");
+			images = new ImageLink[] { new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0) };
+			buildImages = new ImageLink[] { new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1) };
 		} else {
 			images = tempimages;
 			buildImages = file.getBuildImages();
@@ -127,8 +131,7 @@ public enum EBuildingType {
 		groundtypes = file.getGroundtypes();
 		viewdistance = file.getViewdistance();
 
-		this.numberOfConstructionMaterials =
-		        calculateNumberOfConstructionMaterials();
+		this.numberOfConstructionMaterials = calculateNumberOfConstructionMaterials();
 	}
 
 	private byte calculateNumberOfConstructionMaterials() {
@@ -183,8 +186,7 @@ public enum EBuildingType {
 	}
 
 	/**
-	 * Gets the working radius of the building. If it is 0, the building does
-	 * not support a working radius.
+	 * Gets the working radius of the building. If it is 0, the building does not support a working radius.
 	 * 
 	 * @return
 	 */
@@ -209,8 +211,7 @@ public enum EBuildingType {
 	}
 
 	/**
-	 * Gets the tiles that are protected by this building. On thse tiles, no
-	 * other buildings may be build.
+	 * Gets the tiles that are protected by this building. On thse tiles, no other buildings may be build.
 	 * 
 	 * @return The tiles as array.
 	 */
@@ -230,7 +231,7 @@ public enum EBuildingType {
 		return groundtypes;
 	}
 
-	public int getViewDistance() {
+	public short getViewDistance() {
 		return viewdistance;
 	}
 
@@ -241,8 +242,7 @@ public enum EBuildingType {
 	public IBuildingJob getJobByName(String jobname) {
 		HashSet<String> visited = new HashSet<String>();
 
-		ConcurrentLinkedQueue<IBuildingJob> queue =
-		        new ConcurrentLinkedQueue<IBuildingJob>();
+		ConcurrentLinkedQueue<IBuildingJob> queue = new ConcurrentLinkedQueue<IBuildingJob>();
 		queue.add(startJob);
 
 		while (!queue.isEmpty()) {
@@ -258,7 +258,6 @@ public enum EBuildingType {
 			queue.add(job.getNextFailJob());
 			queue.add(job.getNextSucessJob());
 		}
-		throw new IllegalArgumentException(
-		        "This building has no job with name " + jobname);
+		throw new IllegalArgumentException("This building has no job with name " + jobname);
 	}
 }
