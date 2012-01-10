@@ -933,11 +933,11 @@ public class Background implements IGraphicsBackgroundListener {
 			index = 183;
 
 			// water <=> sand
-		} else if (outer == ELandscapeType.WATER
+		} else if (outer == ELandscapeType.WATER1
 		        && inner == ELandscapeType.SAND) {
 			index = 39;
 		} else if (outer == ELandscapeType.SAND
-		        && inner == ELandscapeType.WATER) {
+		        && inner == ELandscapeType.WATER1) {
 			index = 37;
 
 			// grass <=> mountain

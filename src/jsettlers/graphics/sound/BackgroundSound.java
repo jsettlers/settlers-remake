@@ -89,7 +89,7 @@ public class BackgroundSound implements Runnable {
 
 	private boolean hasWater(int x, int y) {
 		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
-		        && map.getLandscape(x, y) == ELandscapeType.WATER;
+		        && map.getLandscape(x, y) == ELandscapeType.WATER1;
 	}
 
 	private boolean hasTree(int cx, int cy) {
