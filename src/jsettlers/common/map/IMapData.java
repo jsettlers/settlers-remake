@@ -23,5 +23,7 @@ public interface IMapData {
 	 * @return
 	 */
 	public abstract ISPosition2D getStartPoint(int player);
+	
+	public abstract int getPlayerCount();
 
 }
