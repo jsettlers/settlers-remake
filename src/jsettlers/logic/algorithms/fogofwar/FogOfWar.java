@@ -3,7 +3,6 @@ package jsettlers.logic.algorithms.fogofwar;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
@@ -15,14 +14,13 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ISPosition2D;
 
 /**
  * This class holds the fog of war for a given map and player.
  * 
  * @author michael
  */
-public final class FogOfWar implements Serializable {
+public final class FogOfWar implements IFogOfWar, Serializable {
 	private static final long serialVersionUID = 1877994785778678510L;
 	/**
 	 * Longest distance any unit may look
@@ -66,11 +64,12 @@ public final class FogOfWar implements Serializable {
 		ois.defaultReadObject();
 	}
 
+	@Override
 	public void startThread(IFogOfWarGrid grid) {
 		this.grid = grid;
 		if (height > 3 * MAX_VIEWDISTANCE) {
-			// FogCorrectionThread thread = new FogCorrectionThread();
-			NewFoWThread thread = new NewFoWThread();
+			FogCorrectionThread thread = new FogCorrectionThread();
+			// NewFoWThread thread = new NewFoWThread();
 			thread.start();
 		} else {
 			SimpleCorrectionTread thread = new SimpleCorrectionTread();
@@ -89,6 +88,7 @@ public final class FogOfWar implements Serializable {
 	 *            The y coordinate of the point in 0..(mapHeight - 1)
 	 * @return The status from 0 to visible.
 	 */
+	@Override
 	public final byte getVisibleStatus(int x, int y) {
 		if (enabled) {
 			return (byte) Math.min(sight[x][y], CommonConstants.FOG_OF_WAR_VISIBLE);
@@ -151,25 +151,18 @@ public final class FogOfWar implements Serializable {
 			for (short y = 0; y < height; y++) {
 				int distance = getViewDistanceForPosition(x, y);
 				if (distance > 0) {
-					drawer.drawCircleToBuffer(x, y, distance, (byte) 0);
+					drawer.drawCircleToBuffer(x, y, distance);
 				}
 			}
 		}
 	}
 
-	public final void pause() {
-	}
-
-	public final void unpause() {
-	}
-
-	public final void end() {
-	}
-
+	@Override
 	public final boolean isVisible(int centerx, int centery) {
 		return sight[centerx][centery] >= CommonConstants.FOG_OF_WAR_VISIBLE;
 	}
 
+	@Override
 	public final void toggleEnabled() {
 		enabled = !enabled;
 	}
@@ -204,77 +197,6 @@ public final class FogOfWar implements Serializable {
 				}
 			}
 		}
-	}
-
-	final class NewFoWThread extends Thread {
-		private static final byte DIM_DOWN_SPEED = 10;
-		private final CircleDrawer drawer;
-
-		NewFoWThread() {
-			super("NewFoWThread");
-			this.drawer = new CircleDrawer(sight);
-			super.setDaemon(true);
-		}
-
-		@Override
-		public final void run() {
-			while (true) {
-				StopWatch watch = new MilliStopWatch();
-				watch.start();
-				rebuildSight();
-				watch.stop("NewFoWThread needed: ");
-
-				mySleep(800);
-			}
-		}
-
-		// private final BitSet changedSet = new BitSet(width * height);
-
-		private final void rebuildSight() {
-			ConcurrentLinkedQueue<? extends IViewDistancable> buildings = grid.getBuildingViewDistancables();
-			applyViewDistances(buildings);
-
-			ConcurrentLinkedQueue<? extends IViewDistancable> movables = grid.getMovableViewDistancables();
-			applyViewDistances(movables);
-
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					byte currSight = sight[x][y];
-
-					if (currSight >= CommonConstants.FOG_OF_WAR_EXPLORED) {
-						byte newSight = (byte) (currSight - DIM_DOWN_SPEED);
-						if (newSight < CommonConstants.FOG_OF_WAR_EXPLORED) {
-							sight[x][y] = CommonConstants.FOG_OF_WAR_EXPLORED;
-						} else {
-							sight[x][y] = newSight;
-						}
-					} else {
-						// don't change the value
-					}
-				}
-			}
-		}
-
-		private final void applyViewDistances(ConcurrentLinkedQueue<? extends IViewDistancable> objects) {
-			for (IViewDistancable curr : objects) {
-				if (isPlayerOK(curr)) {
-					short distance = curr.getViewDistance();
-					if (distance > 0) {
-						ISPosition2D pos = curr.getPos();
-						drawer.drawCircleToBuffer(pos.getX(), pos.getY(), distance, DIM_DOWN_SPEED);
-					}
-				}
-			}
-		}
-
-		private final void mySleep(int ms) {
-			try {
-				Thread.sleep(ms);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	/**
@@ -312,7 +234,7 @@ public final class FogOfWar implements Serializable {
 			for (short x = 0; x < width; x++) {
 				int distance = getViewDistanceForPosition(x, mapy);
 				if (distance > 0) {
-					bufferdrawer.drawCircleToBuffer(x, mapy, distance, (byte) 0);
+					bufferdrawer.drawCircleToBuffer(x, mapy, distance);
 				}
 			}
 		}
@@ -331,11 +253,11 @@ public final class FogOfWar implements Serializable {
 				for (short sweepline = (short) (BUFFER_HEIGHT / 2); sweepline < height - BUFFER_HEIGHT / 2; sweepline++) {
 					doNextLine(sweepline);
 					if (sweepline % 32 == 0) {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+						// try {
+						// Thread.sleep(100);
+						// } catch (InterruptedException e) {
+						// e.printStackTrace();
+						// }
 					}
 				}
 				loadLastBuffer();
@@ -343,7 +265,7 @@ public final class FogOfWar implements Serializable {
 				watch.stop("FogCorrectionThread needed: ");
 
 				try {
-					Thread.sleep(200);
+					Thread.sleep(700);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -425,7 +347,7 @@ public final class FogOfWar implements Serializable {
 		 * Draws a circle to the buffer line. Each point is only brightened and onlydrawn if its x coordinate is in [0, mapWidth - 1] and its computed
 		 * y coordinate is bigger than 0.
 		 */
-		final void drawCircleToBuffer(int bufferx, int buffery, int viewDistance, byte offset) {
+		final void drawCircleToBuffer(int bufferx, int buffery, int viewDistance) {
 			MapCircle circle = new MapCircle(bufferx, buffery, Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE));
 			final int squaredViewDistance = viewDistance * viewDistance;
 			CircleIterator iterator = circle.iterator();
@@ -435,7 +357,7 @@ public final class FogOfWar implements Serializable {
 
 				int currentBufferY;
 				if (currentX >= 0 && currentX < width && (currentBufferY = convertY(currentY)) >= 0) {
-					if (buffer[currentX][currentBufferY] < CommonConstants.FOG_OF_WAR_VISIBLE + offset) {
+					if (buffer[currentX][currentBufferY] < CommonConstants.FOG_OF_WAR_VISIBLE) {
 						double squaredDistance = circle.squaredDistanceToCenter(currentX, currentY);
 						byte newSight;
 						if (squaredDistance < squaredViewDistance) {
@@ -444,7 +366,7 @@ public final class FogOfWar implements Serializable {
 							newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - viewDistance) / PADDING
 									* CommonConstants.FOG_OF_WAR_VISIBLE);
 						}
-						increaseBufferAt(currentX, currentBufferY, (byte) (newSight + offset));
+						increaseBufferAt(currentX, currentBufferY, newSight);
 					}
 				}
 			}

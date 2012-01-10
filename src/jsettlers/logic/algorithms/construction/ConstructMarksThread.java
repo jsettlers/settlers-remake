@@ -4,7 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.algorithms.AlgorithmConstants;
@@ -18,18 +18,19 @@ import synchronic.timer.NetworkTimer;
  * 
  */
 public class ConstructMarksThread extends Thread {
+	private final IConstructionMarkableMap map;
+	private final byte player;
+
 	/**
 	 * area of tiles to be checked.
 	 */
-	private IMapArea mapArea = null;
+	private MapRectangle mapArea = null;
 	private EBuildingType buildingType = null;
-	private final IConstructionMarkableMap map;
-	private final byte player;
 
 	private IMapArea lastArea = null;
 
 	public ConstructMarksThread(IConstructionMarkableMap map, byte player) {
-		super("constrMarks");
+		super("constrMarksThread");
 		this.map = map;
 		this.player = player;
 
@@ -70,19 +71,20 @@ public class ConstructMarksThread extends Thread {
 	}
 
 	private void calculateConstructMarks() {
-		IMapArea currMapArea = this.mapArea; // local variables needed to prevent errors caused by synchronization
+		MapRectangle area = this.mapArea; // local variables needed to prevent errors caused by synchronization
 		EBuildingType currBuildingType = this.buildingType;
 
-		if (currBuildingType == null || currMapArea == null) {
+		if (currBuildingType == null || area == null) {
 			return;
 		}
 
 		RelativePoint[] usedPositions = currBuildingType.getProtectedTiles();
 
 		if (lastArea != null) {
-			removeConstructionMarks(lastArea, currMapArea);
+			removeConstructionMarks(lastArea, area);
 		}
-		for (ISPosition2D pos : currMapArea) {
+
+		for (ISPosition2D pos : area) {
 			short x = pos.getX();
 			short y = pos.getY();
 
@@ -94,7 +96,7 @@ public class ConstructMarksThread extends Thread {
 			}
 			map.setConstructMarking(pos, value);
 		}
-		lastArea = currMapArea;
+		lastArea = area;
 	}
 
 	/**
@@ -141,8 +143,8 @@ public class ConstructMarksThread extends Thread {
 		return (byte) (diff / usedPositions.length);
 	}
 
-	public void setScreen(IMapArea mapArea) {
-		this.mapArea = new MapShapeFilter(mapArea, map.getWidth(), map.getHeight());
+	public void setScreen(MapRectangle mapArea) {
+		this.mapArea = mapArea;
 		refreshMarkings();
 	}
 
