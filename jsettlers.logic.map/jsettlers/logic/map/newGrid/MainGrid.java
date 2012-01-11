@@ -651,40 +651,45 @@ public class MainGrid implements Serializable {
 
 	class ConstructionMarksGrid implements IConstructionMarkableMap {
 		@Override
-		public void setConstructMarking(ISPosition2D pos, byte value) {
-			mapObjectsManager.setConstructionMarking(pos, value);
+		public final void setConstructMarking(short x, short y, byte value) {
+			mapObjectsManager.setConstructionMarking(x, y, value);
 		}
 
 		@Override
-		public short getWidth() {
+		public final short getWidth() {
 			return width;
 		}
 
 		@Override
-		public short getHeight() {
+		public final short getHeight() {
 			return height;
 		}
 
 		@Override
-		public byte getHeightAt(short x, short y) {
+		public final byte getHeightAt(short x, short y) {
 			return landscapeGrid.getHeightAt(x, y);
 		}
 
-		@Override
-		public boolean canConstructAt(short x, short y, EBuildingType type, byte player) {
+		final boolean canConstructAt(short x, short y, EBuildingType type, byte player) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			for (RelativePoint curr : type.getProtectedTiles()) {
 				short currX = curr.calculateX(x);
 				short currY = curr.calculateY(y);
-				if (!MainGrid.this.isInBounds(currX, currY) || flagsGrid.isProtected(currX, currY)
-						|| partitionsGrid.getPlayerAt(currX, currY) != player || !isAllowedLandscape(currX, currY, landscapes)) {
+
+				if (!canUsePositionForConstruction(currX, currY, landscapes, player)) {
 					return false;
 				}
 			}
 			return true;
 		}
 
-		private boolean isAllowedLandscape(short x, short y, ELandscapeType[] landscapes) {
+		@Override
+		public final boolean canUsePositionForConstruction(short x, short y, ELandscapeType[] landscapeTypes, byte player) {
+			return MainGrid.this.isInBounds(x, y) && !flagsGrid.isProtected(x, y) && partitionsGrid.getPlayerAt(x, y) == player
+					&& isAllowedLandscape(x, y, landscapeTypes);
+		}
+
+		private final boolean isAllowedLandscape(short x, short y, ELandscapeType[] landscapes) {
 			ELandscapeType landscapeAt = landscapeGrid.getLandscapeTypeAt(x, y);
 			for (byte i = 0; i < landscapes.length; i++) {
 				if (landscapeAt == landscapes[i]) {
@@ -693,6 +698,12 @@ public class MainGrid implements Serializable {
 			}
 			return false;
 		}
+
+		@Override
+		public final boolean isInBounds(short x, short y) {
+			return MainGrid.this.isInBounds(x, y);
+		}
+
 	}
 
 	class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
@@ -1212,6 +1223,11 @@ public class MainGrid implements Serializable {
 		public final void save() throws FileNotFoundException, IOException, InterruptedException {
 			GameSerializer serializer = new GameSerializer();
 			serializer.save(MainGrid.this);
+		}
+
+		@Override
+		public final void toggleFogOfWar() {
+			fogOfWar.toggleEnabled();
 		}
 	}
 

@@ -172,6 +172,9 @@ public class GuiInterface implements IMapInterfaceListener {
 			// grid.resetDebugColors();
 			break;
 
+		case TOGGLE_FOG_OF_WAR:
+			grid.toggleFogOfWar();
+
 		case SAVE:
 			manager.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
 			break;

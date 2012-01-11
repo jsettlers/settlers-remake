@@ -162,18 +162,22 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		return false;
 	}
 
-	private boolean addMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
+	private final boolean addMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
+		return addMapObject(pos.getX(), pos.getY(), mapObject);
+	}
+
+	private final boolean addMapObject(short x, short y, AbstractHexMapObject mapObject) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			short x = point.calculateX(pos.getX());
-			short y = point.calculateY(pos.getY());
-			if (!grid.isInBounds(x, y) || grid.isBlocked(x, y)) {
+			short currX = point.calculateX(x);
+			short currY = point.calculateY(y);
+			if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
 				return false;
 			}
 		}
 
-		grid.addMapObject(pos.getX(), pos.getY(), mapObject);
+		grid.addMapObject(x, y, mapObject);
 
-		setBlockedForObject(pos.getX(), pos.getY(), mapObject, true);
+		setBlockedForObject(x, y, mapObject, true);
 		return true;
 	}
 
@@ -238,16 +242,16 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		timingQueue.add(new TimeEvent(object, RessourceSignMapObject.getLivetime(), true));
 	}
 
-	public void setConstructionMarking(ISPosition2D pos, byte value) {
+	public void setConstructionMarking(short x, short y, byte value) {
 		if (value >= 0) {
-			ConstructionMarkObject markObject = (ConstructionMarkObject) grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.CONSTRUCTION_MARK);
+			ConstructionMarkObject markObject = (ConstructionMarkObject) grid.getMapObject(x, y, EMapObjectType.CONSTRUCTION_MARK);
 			if (markObject == null) {
-				addMapObject(pos, new ConstructionMarkObject(value));
+				addMapObject(x, y, new ConstructionMarkObject(value));
 			} else {
 				markObject.setConstructionValue(value);
 			}
 		} else {
-			removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.CONSTRUCTION_MARK);
+			removeMapObjectType(x, y, EMapObjectType.CONSTRUCTION_MARK);
 		}
 	}
 
