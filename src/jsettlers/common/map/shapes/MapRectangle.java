@@ -14,8 +14,8 @@ import jsettlers.common.position.ShortPoint2D;
 public final class MapRectangle implements IMapArea {
 	private static final long serialVersionUID = -5451513891892255692L;
 
-	private final short minx;
-	private final short miny;
+	private final short minX;
+	private final short minY;
 	final short width;
 	final short height;
 
@@ -23,8 +23,8 @@ public final class MapRectangle implements IMapArea {
 		if (width < 0 || height < 0) {
 			throw new IllegalArgumentException("Shape Size is negative");
 		}
-		this.minx = minx;
-		this.miny = miny;
+		this.minX = minx;
+		this.minY = miny;
 		this.width = width;
 		this.height = height;
 	}
@@ -38,14 +38,14 @@ public final class MapRectangle implements IMapArea {
 		if (!containsLine(y)) {
 			return false;
 		}
-		if (x < getLineStartX(y - miny) || x > getLineEndX(y - miny)) {
+		if (x < getLineStartX(y - getMinY()) || x > getLineEndX(y - getMinY())) {
 			return false;
 		}
 		return true;
 	}
 
 	public final boolean containsLine(int y) {
-		return y >= miny && y < miny + height;
+		return y >= getMinY() && y < getMinY() + height;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public final class MapRectangle implements IMapArea {
 	 *            The line relative to the first line of this rectangle.
 	 */
 	public final int getLineStartX(int line) {
-		return minx + getOffsetForLine(line);
+		return getMinX() + getOffsetForLine(line);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public final class MapRectangle implements IMapArea {
 	}
 
 	public final int getLineY(int line) {
-		return miny + line;
+		return getMinY() + line;
 	}
 
 	public final short getLines() {
@@ -89,25 +89,33 @@ public final class MapRectangle implements IMapArea {
 		return width;
 	}
 
+	public short getMinX() {
+		return minX;
+	}
+
+	public short getMinY() {
+		return minY;
+	}
+
 	private class RectangleIterator implements Iterator<ISPosition2D> {
-		private int relativex = 0;
-		private int relativey = 0;
+		private int relativeX = 0;
+		private int relativeY = 0;
 
 		@Override
 		public boolean hasNext() {
-			return relativey < height && width > 0;
+			return relativeY < height && width > 0;
 		}
 
 		@Override
 		public ISPosition2D next() {
-			if (relativey < height && width > 0) {
-				int x = getLineStartX(relativey) + relativex;
-				int y = getLineY(relativey);
+			if (relativeY < height && width > 0) {
+				int x = getLineStartX(relativeY) + relativeX;
+				int y = getLineY(relativeY);
 				ShortPoint2D pos = new ShortPoint2D(x, y);
-				relativex++;
-				if (relativex >= width) {
-					relativex = 0;
-					relativey++;
+				relativeX++;
+				if (relativeX >= width) {
+					relativeX = 0;
+					relativeY++;
 				}
 				return pos;
 			} else {
@@ -119,6 +127,14 @@ public final class MapRectangle implements IMapArea {
 		public void remove() {
 			throw new UnsupportedOperationException("Cannot remove tiles from a Shape");
 		}
+	}
+
+	public final short getWidth() {
+		return width;
+	}
+
+	public final short getHeight() {
+		return height;
 	}
 
 }
