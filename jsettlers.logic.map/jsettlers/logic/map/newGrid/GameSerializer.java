@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import synchronic.timer.NetworkTimer;
 
@@ -23,20 +24,26 @@ public class GameSerializer {
 	public GameSerializer() {
 	}
 
-	public void save(final MainGrid grid) throws FileNotFoundException, IOException, InterruptedException {
+	public void save(final MainGrid grid) throws FileNotFoundException,
+	        IOException, InterruptedException {
 		OutputStream file;
 		if (SAVE_USE_GZIP) {
-			OutputStream unzipped = ResourceManager.writeFile(QUICK_SAVE_FILE + GZIP_EXTENSION);
+			OutputStream unzipped =
+			        ResourceManager.writeFile(QUICK_SAVE_FILE + GZIP_EXTENSION);
 			file = new GZIPOutputStream(unzipped);
 		} else {
-			file = ResourceManager.writeFile(QUICK_SAVE_FILE + NORMAL_EXTENSION);
+			file =
+			        ResourceManager.writeFile(QUICK_SAVE_FILE
+			                + NORMAL_EXTENSION);
 		}
 
-		final ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(file));
+		final ObjectOutputStream oos =
+		        new ObjectOutputStream(new BufferedOutputStream(file));
 
 		NetworkTimer.get().setPausing(true);
 		try {
-			Thread.sleep(30); // FIXME @Andreas serializer should wait until threads did their work!
+			Thread.sleep(30); // FIXME @Andreas serializer should wait until
+							  // threads did their work!
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -61,25 +68,29 @@ public class GameSerializer {
 		NetworkTimer.get().setPausing(false);
 	}
 
-	public MainGrid load() throws IOException, InterruptedException {
-		InputStream inStream;
+	public MainGrid load(String filename) throws MapLoadException {
+
 		try {
-			inStream = ResourceManager.getFile(QUICK_SAVE_FILE + NORMAL_EXTENSION);
-		} catch (IOException e) {
-			InputStream gzipped = ResourceManager.getFile(QUICK_SAVE_FILE + GZIP_EXTENSION);
-			inStream = new GZIPInputStream(gzipped);
+			InputStream inStream;
+			try {
+				inStream = ResourceManager.getFile(filename + NORMAL_EXTENSION);
+			} catch (IOException e) {
+				InputStream gzipped =
+				        ResourceManager.getFile(filename + GZIP_EXTENSION);
+				inStream = new GZIPInputStream(gzipped);
+			}
+
+			final ObjectInputStream ois = new ObjectInputStream(inStream);
+
+			LoadRunnable runnable = new LoadRunnable(ois);
+			Thread t = new Thread(null, runnable, "LoadThread", 256 * 1024);
+			t.start();
+			t.join();
+
+			return runnable.grid;
+		} catch (Throwable t) {
+			throw new MapLoadException(t);
 		}
-
-		final ObjectInputStream ois = new ObjectInputStream(inStream);
-		NetworkTimer.get().setPausing(true);
-
-		LoadRunnable runnable = new LoadRunnable(ois);
-		Thread t = new Thread(null, runnable, "LoadThread", 256 * 1024);
-		t.start();
-		t.join();
-
-		NetworkTimer.get().setPausing(false);
-		return runnable.grid;
 	}
 
 	private static final class LoadRunnable implements Runnable {

@@ -1,7 +1,15 @@
 package jsettlers.main;
 
+import java.util.Random;
+
+import jsettlers.common.map.IMapData;
+import jsettlers.common.map.IMapDataProvider;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
+import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
+import jsettlers.logic.map.random.RandomMapEvaluator;
+import jsettlers.logic.map.random.RandomMapFile;
 import jsettlers.main.JSettlersGame.Listener;
 
 /**
@@ -23,29 +31,58 @@ public class ManagedJSettlers implements Listener {
 		content.showStartScreen(new StartConnector());
 	}
 
+	private static class RandomMapItem implements IMapItem {
+		@Override
+		public String getName() {
+			return "test";
+		}
+
+		@Override
+		public int getMinPlayers() {
+			return 1;
+		}
+
+		@Override
+		public int getMaxPlayers() {
+			return 5;
+		}
+
+		@Override
+		public IMapDataProvider createLoadableGame(int players, long seed) {
+			return new RandomGameLoader(getName(), players, seed);
+		}
+	}
+
+	private static class RandomGameLoader implements IMapDataProvider {
+		private final String name;
+		private final int players;
+		private final long randomSeed;
+
+		public RandomGameLoader(String name, int players, long randomSeed) {
+			this.name = name;
+			this.players = players;
+			this.randomSeed = randomSeed;
+		}
+
+		@Override
+		public IMapData getData() throws MapLoadException {
+			RandomMapFile file = RandomMapFile.getByName(name);
+			RandomMapEvaluator evaluator =
+			        new RandomMapEvaluator(file.getInstructions(), players);
+			evaluator.createMap(new Random(randomSeed));
+			IMapData mapGrid = evaluator.getGrid();
+			return mapGrid;
+		}
+	}
+
 	private class StartConnector implements IStartScreenConnector {
-		private final IMapItem[] MAPS = new IMapItem[] { new MapItem() };
+		private final IMapItem[] MAPS = new IMapItem[] {
+			new RandomMapItem()
+		};
 
 		@Override
 		public IMapItem[] getMaps() {
 			return MAPS;
-		}
-
-		private class MapItem implements IMapItem {
-			@Override
-			public String getName() {
-				return "test";
-			}
-
-			@Override
-			public int getMinPlayers() {
-				return 1;
-			}
-
-			@Override
-			public int getMaxPlayers() {
-				return 5;
-			}
 		}
 
 		@Override
@@ -78,7 +115,10 @@ public class ManagedJSettlers implements Listener {
 				ongoingGame.setListener(null);
 				ongoingGame.stop();
 			}
-			ongoingGame = new JSettlersGame(content, game, 123456L);
+			IMapDataProvider provider =
+			        game.getMap().createLoadableGame(game.getPlayerCount(),
+			                123456L);
+			ongoingGame = new JSettlersGame(content, provider, 123456L);
 			ongoingGame.setListener(ManagedJSettlers.this);
 			ongoingGame.start();
 		}
@@ -89,9 +129,14 @@ public class ManagedJSettlers implements Listener {
 				ongoingGame.setListener(null);
 				ongoingGame.stop();
 			}
-			ongoingGame = new JSettlersGame(content, load, 123456L);
-			ongoingGame.setListener(ManagedJSettlers.this);
-			ongoingGame.start();
+			if (load instanceof SavedGame) {
+				ongoingGame =
+				        new JSettlersGame(content, (SavedGame) load, 123456L);
+				ongoingGame.setListener(ManagedJSettlers.this);
+				ongoingGame.start();
+			} else {
+				showMainScreen();
+			}
 		}
 
 		@Override
@@ -142,7 +187,8 @@ public class ManagedJSettlers implements Listener {
 	}
 
 	/**
-	 * Sets the pause status of the ongoing game. Does noting if there is no game.
+	 * Sets the pause status of the ongoing game. Does noting if there is no
+	 * game.
 	 * 
 	 * @param b
 	 */
