@@ -1,7 +1,6 @@
 package jsettlers.logic.algorithms.construction;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.landscape.ELandscapeType;
 
 /**
  * Interface offering the methods needed by {@link ConstructMarksThread}.
@@ -13,12 +12,14 @@ public interface IConstructionMarkableMap {
 	/**
 	 * Sets the given value to the given position.
 	 * 
-	 * @param pos
-	 *            position the value will be set to
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
 	 * @param value
 	 *            value to be set as construction mark value.
 	 */
-	void setConstructMarking(ISPosition2D pos, byte value);
+	void setConstructMarking(short x, short y, byte value);
 
 	/**
 	 * @return width of map.
@@ -42,19 +43,20 @@ public interface IConstructionMarkableMap {
 	byte getHeightAt(short x, short y);
 
 	/**
-	 * Checks if the given building type can be build at the given position
+	 * Checks if the given position is valid to build a building of given player that can stand on the given {@link ELandscapeType}s
 	 * 
 	 * @param x
 	 *            x coordinate of the target position
 	 * @param y
 	 *            y coordinate of the target position
-	 * @param type
-	 *            type of building to be checked.
+	 * @param landscapeTypes
+	 *            allowed landscape types
 	 * @param player
 	 *            player
 	 * @return true if a building can be positioned at the given position<br>
 	 *         false otherwise.
 	 */
-	boolean canConstructAt(short x, short y, EBuildingType type, byte player);
+	boolean canUsePositionForConstruction(short x, short y, ELandscapeType[] landscapeTypes, byte player);
 
+	boolean isInBounds(short x, short y);
 }
