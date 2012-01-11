@@ -1,24 +1,24 @@
 package jsettlers.main.swing;
 
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
+
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
-import jsettlers.common.map.IMapData;
+import javax.swing.JFrame;
+
+import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ManagedJSettlers;
-
-import javax.swing.JFrame;
 
 public class SwingManagedJSettlers {
 
@@ -58,7 +58,7 @@ public class SwingManagedJSettlers {
 	 * Directly starts a map window
 	 * @param mapname
 	 */
-	public static void startMap(IMapData data) {
+	public static void startMap(IMapDataProvider data) {
 		ResourceManager.setProvider(new ResourceProvider());
 		//TODO: detect exit
 		JSettlersGame game = new JSettlersGame(getGui(), data , 123456L);
