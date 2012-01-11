@@ -41,12 +41,26 @@ public class StoneObjectContainer implements ObjectContainer, IMapObject {
 	public RelativePoint[] getProtectedArea() {
 		return new RelativePoint[] {
 		        new RelativePoint(0, 0),
+		        //inner circle
 		        new RelativePoint(1, 0),
 		        new RelativePoint(1, 1),
 		        new RelativePoint(0, 1),
 		        new RelativePoint(-1, 0),
 		        new RelativePoint(-1, -1),
 		        new RelativePoint(0, -1),
+		        //outer circle
+		        new RelativePoint(2, 0),
+		        new RelativePoint(1, 0),
+		        new RelativePoint(2, 2),
+		        new RelativePoint(1, 2),
+		        new RelativePoint(0, 2),
+		        new RelativePoint(-1, 1),
+		        new RelativePoint(-2, 0),
+		        new RelativePoint(-2, -1),
+		        new RelativePoint(-2, -2),
+		        new RelativePoint(-1, -2),
+		        new RelativePoint(0, -2),
+		        new RelativePoint(1, -1),
 		};
 	}
 

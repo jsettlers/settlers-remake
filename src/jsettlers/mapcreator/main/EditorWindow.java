@@ -11,9 +11,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +61,7 @@ import jsettlers.mapcreator.data.MapDataSerializer;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.tools.FixHeightsTool;
+import jsettlers.mapcreator.tools.FlatLandscapeTool;
 import jsettlers.mapcreator.tools.HeightAdder;
 import jsettlers.mapcreator.tools.LandscapeHeightTool;
 import jsettlers.mapcreator.tools.LineCircleShape;
@@ -68,7 +71,6 @@ import jsettlers.mapcreator.tools.PlaceMovableTool;
 import jsettlers.mapcreator.tools.PlaceStackTool;
 import jsettlers.mapcreator.tools.SetLandscapeTool;
 import jsettlers.mapcreator.tools.ShapeType;
-import jsettlers.mapcreator.tools.FlatLandscapeTool;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.ToolBox;
 import jsettlers.mapcreator.tools.ToolNode;
@@ -77,15 +79,15 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
         TestResultReceiver, IPlayerSetter {
 
 	private final class RadiusChangeListener implements ChangeListener {
-		private final LineCircleShape shape2;
+		private final LineCircleShape shape;
 
-		private RadiusChangeListener(LineCircleShape shape2) {
-			this.shape2 = shape2;
+		private RadiusChangeListener(LineCircleShape shape) {
+			this.shape = shape;
 		}
 
 		@Override
 		public void stateChanged(ChangeEvent arg0) {
-			shape2.setRadius(((JSlider) arg0.getSource()).getModel().getValue());
+			shape.setRadius(((JSlider) arg0.getSource()).getModel().getValue());
 		}
 	}
 
@@ -229,7 +231,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	private ShapeType activeShape = null;
 	private JPanel shapeButtons;
 	private JPanel shapeSettings;
-	
+
 	private byte currentPlayer = 0;
 
 	private ISPosition2D testFailPoint = null;
@@ -247,8 +249,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 	private JButton startGameButton;
 
-	public EditorWindow(int width, int height, int playercount) {
-		data = new MapData(width, height, playercount);
+	public EditorWindow(int width, int height, int playerCount) {
+		data = new MapData(width, height, playerCount);
 		map = new MapGraphics(data);
 
 		startMapEditing();
@@ -326,8 +328,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			}
 		});
 		bar.add(testResult);
-		
-		final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
+
+		final SpinnerNumberModel model =
+		        new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
 		JSpinner playerSpinner = new JSpinner(model);
 		playerSpinner.addChangeListener(new ChangeListener() {
 			@Override
@@ -336,7 +339,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			}
 		});
 		bar.add(playerSpinner);
-		
+
 		startGameButton = new JButton("Play");
 		startGameButton.addActionListener(new ActionListener() {
 			@Override
@@ -361,10 +364,39 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			                "jsettlers.mapcreator.main.PlayProcess",
 			                temp.getAbsolutePath(),
 			        };
+
+			System.out.println("Starting process:");
+			for (String arg : args) {
+				System.out.print(arg + " ");
+			}
+			System.out.println();
 			
 			ProcessBuilder builder = new ProcessBuilder(args);
 			builder.directory(new File("").getAbsoluteFile());
-			builder.start();
+			builder.redirectErrorStream(true);
+			final Process process = builder.start();
+
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					BufferedReader reader =
+					        new BufferedReader(new InputStreamReader(
+					                process.getInputStream()));
+
+					while (true) {
+						String line;
+                        try {
+	                        line = reader.readLine();
+                        } catch (IOException e) {
+	                        break;
+                        }
+						if (line == null) {
+							break;
+						}
+						System.out.println(line);
+					}
+				}
+			}, "run game process");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -520,7 +552,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	}
 
 	@Override
-    public byte getActivePlayer() {
-	    return currentPlayer;
-    }
+	public byte getActivePlayer() {
+		return currentPlayer;
+	}
 }
