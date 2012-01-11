@@ -117,4 +117,8 @@ public class MapInterfaceConnector implements ActionFireable {
 	public void showMessage(Message message) {
 		content.addMessage(message);
 	}
+
+	public void loadUIState(UIState uiState) {
+	    content.loadUIState(uiState);
+    }
 }

@@ -789,4 +789,9 @@ public final class MapContent implements SettlersContent,
 		}
 	}
 
+	public void loadUIState(UIState uiState) {
+	    scrollTo(uiState.getScreenCenter(), false);
+	    //TODO: player number
+    }
+
 }

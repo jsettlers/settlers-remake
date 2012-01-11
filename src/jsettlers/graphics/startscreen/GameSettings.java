@@ -1,5 +1,7 @@
 package jsettlers.graphics.startscreen;
 
+import jsettlers.common.map.IMapData;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 
@@ -22,5 +24,6 @@ public class GameSettings implements IGameSettings {
 	public int getPlayerCount() {
 		return count;
 	}
+
 
 }
