@@ -38,7 +38,6 @@ public final class DijkstraAlgorithm {
 			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", cX, cY);
 		}
 
-		// TODO @Michael find out how much the radius must be bigger to be larger than the circle
 		MapCircle circle = new MapCircle(cX, cY, maxRadius * MAX_RADIUS_MULTIPLIER);
 
 		for (short radius = minRadius; radius < maxRadius; radius++) {
@@ -123,7 +122,6 @@ public final class DijkstraAlgorithm {
 			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", request.cX, request.cY);
 		}
 
-		// TODO @Michael find out how much the radius must be bigger to be larger than the circle
 		MapCircle circle = new MapCircle(request.cX, request.cY, request.maxRadius * MAX_RADIUS_MULTIPLIER);
 
 		short radiusSteps = request.getRadiusSteps();
