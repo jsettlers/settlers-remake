@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingOccupyer;
@@ -32,8 +33,6 @@ import jsettlers.logic.map.newGrid.movable.IHexMovable;
  */
 public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding {
 	private static final long serialVersionUID = 5267249978497095473L;
-
-	private static final float RADIUS = 40;
 
 	private final LinkedList<TowerOccupyer> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
@@ -71,7 +70,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private MapShapeFilter getOccupyablePositions() {
-		return new MapShapeFilter(new MapCircle(super.getPos(), RADIUS), super.getGrid().getWidth(), super.getGrid().getHeight());
+		return new MapShapeFilter(new MapCircle(super.getPos(), CommonConstants.TOWERRADIUS), super.getGrid().getWidth(), super.getGrid().getHeight());
 	}
 
 	@Override
