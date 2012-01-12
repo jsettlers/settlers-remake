@@ -17,11 +17,14 @@ public class OccupyerPlace implements Serializable {
 	private final int offsetX;
 	private final RelativePoint position;
 
-	public OccupyerPlace(int offsetX, int offsetY, ESoldierType type, RelativePoint position) {
+	private final boolean looksRight;
+
+	public OccupyerPlace(int offsetX, int offsetY, ESoldierType type, RelativePoint position, boolean looksRight) {
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.type = type;
 		this.position = position;
+		this.looksRight = looksRight;
 	}
 
 	/**
@@ -61,10 +64,18 @@ public class OccupyerPlace implements Serializable {
 		BOWMAN
 	}
 
+	/**
+	 * Whether the solier should look to the right.
+	 * @return A boolean value.
+	 */
 	public final boolean looksRight() {
-		return false; // TODO
+		return looksRight;
 	}
 
+	/**
+	 * Gets the point over which the soldier is standing.
+	 * @return The position relative to the building.
+	 */
 	public final RelativePoint getPosition() {
 		return position;
 	}

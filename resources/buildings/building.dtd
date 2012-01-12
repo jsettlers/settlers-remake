@@ -154,6 +154,7 @@
    
    soldierX CDATA #REQUIRED
    soldierY CDATA #REQUIRED
+   looksRight (true|false) "true" 
 >
 
 <!ELEMENT startjob EMPTY>

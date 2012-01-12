@@ -8,6 +8,7 @@ public abstract class CommonConstants {
 	 * if true, the user will be able to see other players people and buildings
 	 */
 	public static final boolean ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
+	public static final float TOWERRADIUS = 40;
 
 	/**
 	 * if true, the user will be able to select other player's people and buildings.
