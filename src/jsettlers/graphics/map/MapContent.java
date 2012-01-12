@@ -254,7 +254,7 @@ public final class MapContent implements SettlersContent,
 	}
 
 	private String getPlayername(byte sender) {
-		// TODO
+		// TODO: Player names
 		return "player " + sender;
 	}
 

@@ -557,7 +557,7 @@ public class MapObjectDrawer {
 	 * @param fogstatus
 	 * @return
 	 */
-	private static float getColor(int fogstatus) {
+	public static float getColor(int fogstatus) {
 		float color = (float) fogstatus / CommonConstants.FOG_OF_WAR_VISIBLE;
 		return color;
 	}

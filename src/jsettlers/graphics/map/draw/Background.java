@@ -824,6 +824,9 @@ public class Background implements IGraphicsBackgroundListener {
 	private static void addTextures(short[] data) throws IOException {
 		AdvancedDatFileReader reader =
 		        ImageProvider.getInstance().getFileReader(LAND_FILE);
+		if (reader == null) {
+			throw new IOException("Could not get a file reader for the file.");
+		}
 		ImageWriter imageWriter = new ImageWriter();
 		imageWriter.data = data;
 

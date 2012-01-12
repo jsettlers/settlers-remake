@@ -1,7 +1,5 @@
 package jsettlers.graphics.map.draw;
 
-import java.io.IOException;
-
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
 
 public class ImagePreloadTask implements Runnable {
@@ -58,7 +56,7 @@ public class ImagePreloadTask implements Runnable {
 			        104,
 			        105,
 			});
-		} catch (IOException e) {
+		} catch (Throwable e) {
 		}
 
 		try {
@@ -101,7 +99,7 @@ public class ImagePreloadTask implements Runnable {
 			        34,
 			        45
 			});
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 
@@ -169,7 +167,7 @@ public class ImagePreloadTask implements Runnable {
 			        231,
 			        232,
 			});
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 
@@ -187,18 +185,18 @@ public class ImagePreloadTask implements Runnable {
 
 			        // pikeman
 			        15,
-			        16,
+			        //16,
 			        17,
 			        18,
-			        19,
+			        //19,
 			        20,
 
 			        // bowman
 			        21,
-			        22,
+			        //22,
 			        23,
 			        24,
-			        25,
+			        //25,
 			        26,
 
 			        // ghost
@@ -207,7 +205,7 @@ public class ImagePreloadTask implements Runnable {
 			        // inside tower
 			        28
 			});
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}

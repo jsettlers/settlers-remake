@@ -31,8 +31,9 @@ public final class ImageProvider {
 	private static final String FILE_SUFFIX = ".7c003e01f.dat";
 
 	private static final String FILE_PREFIX = "siedler3_";
-	
-	private Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
+
+	private Queue<GLPreloadTask> tasks =
+	        new ConcurrentLinkedQueue<GLPreloadTask>();
 
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
 		@Override
@@ -126,7 +127,9 @@ public final class ImageProvider {
 		AdvancedDatFileReader set = this.readers.get(integer);
 		if (set == null) {
 			set = createFileReader(file);
-			this.readers.put(integer, set);
+			if (set != null) {
+				this.readers.put(integer, set);
+			}
 		}
 		return set;
 	}
@@ -195,8 +198,8 @@ public final class ImageProvider {
 		} else if (link.getType() == EImageLinkType.LANDSCAPE) {
 			return getLandscapeImage(link.getFile(), link.getSequence());
 		} else {
-			return getSettlerSequence(link.getFile(),
-			        link.getSequence()).getImageSafe(link.getImage());
+			return getSettlerSequence(link.getFile(), link.getSequence())
+			        .getImageSafe(link.getImage());
 		}
 	}
 
@@ -245,7 +248,7 @@ public final class ImageProvider {
 	public void addPreloadTask(GLPreloadTask task) {
 		tasks.add(task);
 	}
-	
+
 	public void runPreloadTasks(GLDrawContext context) {
 		GLPreloadTask task;
 		while ((task = tasks.poll()) != null) {

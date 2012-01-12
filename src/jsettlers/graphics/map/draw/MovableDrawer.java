@@ -2,6 +2,7 @@ package jsettlers.graphics.map.draw;
 
 import go.graphics.Color;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
@@ -32,10 +33,17 @@ public class MovableDrawer {
 	}
 
 	private void drawImage(MapDrawContext context, IMovable movable, Image image) {
+		ISPosition2D pos = movable.getPos();
+		byte fogstatus = context.getVisibleStatus(pos.getX(), pos.getY());
+		if (fogstatus == 0) {
+			return; // break
+		}
+		
 		Color color = context.getPlayerColor(movable.getPlayer());
-
+		float shade = MapObjectDrawer.getColor(fogstatus);
+		
 		// draw settler
-		image.draw(context.getGl(), color);
+		image.draw(context.getGl(), color, shade);
 
 		if (movable.isSelected()) {
 			context.getGl().glTranslatef(0, 0, 0.2f);
@@ -43,7 +51,7 @@ public class MovableDrawer {
 		}
 	}
 
-	private void drawSelectionMark(MapDrawContext context, float health) {
+	private static void drawSelectionMark(MapDrawContext context, float health) {
 		Image image =
 		        ImageProvider.getInstance().getSettlerSequence(4, 7)
 		                .getImageSafe(0);
