@@ -6,32 +6,38 @@ import jsettlers.graphics.image.Image;
 public final class ImageUtils {
 	private ImageUtils() {
 	}
+
 	/**
 	 * Draws an image at a rect preserving the images aspect.
 	 * 
 	 * @param gl
 	 * @param image
-	 * @param left
-	 * @param bottom
-	 * @param right
-	 * @param top
+	 * @param aleft
+	 * @param abottom
+	 * @param aright
+	 * @param atop
 	 */
-	public static void drawAtRectAspect(GLDrawContext gl, Image image, float left,
-	        float bottom, float right, float top) {
+	public static void drawAtRectAspect(GLDrawContext gl, Image image,
+	        float aleft, float abottom, float aright, float atop) {
 		float imageaspect = image.getWidth() / image.getHeight();
-		if ((right - left) / (top - bottom) > imageaspect) {
+		float left, right, top, bottom;
+		if ((aright - aleft) / (atop - abottom) > imageaspect) {
 			// image is too wide
-			float center = (left + right) / 2.0f;
-			float halfwidth = (top - bottom) / 2.0f * imageaspect;
+			float center = (aleft + aright) / 2.0f;
+			float halfwidth = (atop - abottom) / 2.0f * imageaspect;
 			left = center - halfwidth;
 			right = center + halfwidth;
+			bottom = abottom;
+			top = atop;
 		} else {
-			float center = (bottom + top) / 2.0f;
-			float halfheight = (right - left) / 2.0f / imageaspect;
+			float center = (abottom + atop) / 2.0f;
+			float halfheight = (aright - aleft) / 2.0f / imageaspect;
+			left = aleft;
+			right = aright;
 			bottom = center - halfheight;
 			top = center + halfheight;
 		}
-		
+
 		image.drawImageAtRect(gl, left, bottom, right, top);
 	}
 }
