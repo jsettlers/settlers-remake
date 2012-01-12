@@ -9,6 +9,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -49,12 +50,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
 		occupiers = new LinkedList<TowerOccupyer>(); // for testing purposes
 		if (occupyerPlaces.length > 0) {
-			searchedSoldiers.add(ESearchType.SOLDIER_SWORDSMAN);
-			searchedSoldiers.add(ESearchType.SOLDIER_BOWMAN);
-			searchedSoldiers.add(ESearchType.SOLDIER_BOWMAN);
 
 			for (OccupyerPlace currPlace : occupyerPlaces) {
 				emptyPlaces.add(currPlace);
+				searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTARY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
 			}
 		}
 	}
