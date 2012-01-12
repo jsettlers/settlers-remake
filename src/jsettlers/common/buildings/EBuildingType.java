@@ -1,5 +1,6 @@
 package jsettlers.common.buildings;
 
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -101,6 +102,8 @@ public enum EBuildingType {
 
 	private final OccupyerPlace[] occupyerPlaces;
 
+	private final BuildingAreaBitSet buildingAreaBitSet;
+
 	EBuildingType(int imageIndex) {
 		this.imageIndex = imageIndex;
 		BuildingFile file = new BuildingFile(this.toString());
@@ -132,9 +135,11 @@ public enum EBuildingType {
 		viewdistance = file.getViewdistance();
 
 		this.numberOfConstructionMaterials = calculateNumberOfConstructionMaterials();
+
+		this.buildingAreaBitSet = new BuildingAreaBitSet(this);
 	}
 
-	private byte calculateNumberOfConstructionMaterials() {
+	private final byte calculateNumberOfConstructionMaterials() {
 		byte sum = 0;
 		for (RelativeStack curr : stacks) {
 			sum += curr.requiredForBuild();
@@ -142,28 +147,28 @@ public enum EBuildingType {
 		return sum;
 	}
 
-	public IBuildingJob getStartJob() {
+	public final IBuildingJob getStartJob() {
 		return startJob;
 	}
 
-	public EMovableType getWorkerType() {
+	public final EMovableType getWorkerType() {
 		return workerType;
 	}
 
-	public RelativePoint getDoorTile() {
+	public final RelativePoint getDoorTile() {
 		return doorTile;
 	}
 
-	public RelativePoint[] getBlockedTiles() {
+	public final RelativePoint[] getBlockedTiles() {
 		return blockedTiles;
 	}
 
-	public RelativeStack[] getRequestStacks() {
+	public final RelativeStack[] getRequestStacks() {
 		return stacks;
 	}
 
 	@Deprecated
-	public int getImageIndex() {
+	public final int getImageIndex() {
 		return imageIndex;
 	}
 
@@ -172,7 +177,7 @@ public enum EBuildingType {
 	 * 
 	 * @return The images
 	 */
-	public ImageLink[] getImages() {
+	public final ImageLink[] getImages() {
 		return images;
 	}
 
@@ -181,7 +186,7 @@ public enum EBuildingType {
 	 * 
 	 * @return The image. It may be <code>null</code>
 	 */
-	public ImageLink getGuiImage() {
+	public final ImageLink getGuiImage() {
 		return guiImage;
 	}
 
@@ -190,23 +195,23 @@ public enum EBuildingType {
 	 * 
 	 * @return
 	 */
-	public short getWorkradius() {
+	public final short getWorkradius() {
 		return workradius;
 	}
 
-	public RelativePoint getWorkcenter() {
+	public final RelativePoint getWorkcenter() {
 		return workcenter;
 	}
 
-	public RelativePoint getFlag() {
+	public final RelativePoint getFlag() {
 		return flag;
 	}
 
-	public RelativeBricklayer[] getBricklayers() {
+	public final RelativeBricklayer[] getBricklayers() {
 		return bricklayers;
 	}
 
-	public byte getNumberOfConstructionMaterials() {
+	public final byte getNumberOfConstructionMaterials() {
 		return numberOfConstructionMaterials;
 	}
 
@@ -215,31 +220,31 @@ public enum EBuildingType {
 	 * 
 	 * @return The tiles as array.
 	 */
-	public RelativePoint[] getProtectedTiles() {
+	public final RelativePoint[] getProtectedTiles() {
 		return protectedTiles;
 	}
 
-	public RelativePoint[] getBuildmarks() {
+	public final RelativePoint[] getBuildmarks() {
 		return buildmarks;
 	}
 
-	public ImageLink[] getBuildImages() {
+	public final ImageLink[] getBuildImages() {
 		return buildImages;
 	}
 
-	public ELandscapeType[] getGroundtypes() {
+	public final ELandscapeType[] getGroundtypes() {
 		return groundtypes;
 	}
 
-	public short getViewDistance() {
+	public final short getViewDistance() {
 		return viewdistance;
 	}
 
-	public OccupyerPlace[] getOccupyerPlaces() {
+	public final OccupyerPlace[] getOccupyerPlaces() {
 		return occupyerPlaces;
 	}
 
-	public IBuildingJob getJobByName(String jobname) {
+	public final IBuildingJob getJobByName(String jobname) {
 		HashSet<String> visited = new HashSet<String>();
 
 		ConcurrentLinkedQueue<IBuildingJob> queue = new ConcurrentLinkedQueue<IBuildingJob>();
@@ -259,5 +264,71 @@ public enum EBuildingType {
 			queue.add(job.getNextSucessJob());
 		}
 		throw new IllegalArgumentException("This building has no job with name " + jobname);
+	}
+
+	public final BuildingAreaBitSet getBuildingAreaBitSet() {
+		return buildingAreaBitSet;
+	}
+
+	public static final class BuildingAreaBitSet {
+		public final BitSet bitSet;
+		public final short width;
+		public final short height;
+		public final short minX;
+		public final short minY;
+
+		public BuildingAreaBitSet(EBuildingType type) {
+			RelativePoint[] protectedTiles = type.getProtectedTiles();
+			short minX = protectedTiles[0].getDx();
+			short maxX = protectedTiles[0].getDx();
+			short minY = protectedTiles[0].getDy();
+			short maxY = protectedTiles[0].getDy();
+			for (int i = 0; i < protectedTiles.length; i++) {
+				minX = min(minX, protectedTiles[i].getDx());
+				maxX = max(maxX, protectedTiles[i].getDx());
+				minY = min(minY, protectedTiles[i].getDy());
+				maxY = max(maxY, protectedTiles[i].getDy());
+			}
+
+			this.minX = minX;
+			this.minY = minY;
+
+			this.width = (short) (maxX - minX + 1);
+			this.height = (short) (maxY - minY + 1);
+
+			this.bitSet = new BitSet(width * height);
+
+			for (int i = 0; i < protectedTiles.length; i++) {
+				set(protectedTiles[i].getDx(), protectedTiles[i].getDy());
+			}
+		}
+
+		public final boolean getWithoutOffset(short x, short y) {
+			return this.bitSet.get((x) + width * (y));
+		}
+
+		public final void set(short x, short y) {
+			this.bitSet.set((x - minX) + width * (y - minY));
+		}
+
+		public final boolean get(short x, short y) {
+			return this.bitSet.get((x - minX) + width * (y - minY));
+		}
+
+		private final short max(short first, short second) {
+			if (first > second) {
+				return first;
+			} else {
+				return second;
+			}
+		}
+
+		private final short min(short first, short second) {
+			if (first < second) {
+				return first;
+			} else {
+				return second;
+			}
+		}
 	}
 }
