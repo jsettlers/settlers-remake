@@ -47,7 +47,6 @@ import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionFirerer;
@@ -60,6 +59,7 @@ import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.data.MapDataSerializer;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.mapview.MapGraphics;
+import jsettlers.mapcreator.tools.DeleteObjectTool;
 import jsettlers.mapcreator.tools.FixHeightsTool;
 import jsettlers.mapcreator.tools.FlatLandscapeTool;
 import jsettlers.mapcreator.tools.HeightAdder;
@@ -222,6 +222,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				        		new PlaceBuildingTool(EBuildingType.CASTLE, this),
 				        }),
 		        }),
+		        new DeleteObjectTool(),
 	        });
 	//@formatter:on
 
@@ -545,7 +546,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 	@Override
 	public void testResult(String result, boolean allowed,
-	        ShortPoint2D failPoint) {
+	        ISPosition2D failPoint) {
 		testFailPoint = failPoint;
 		startGameButton.setEnabled(allowed);
 		testResult.setText(result);

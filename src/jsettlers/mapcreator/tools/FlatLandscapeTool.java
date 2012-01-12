@@ -1,7 +1,6 @@
 package jsettlers.mapcreator.tools;
 
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 
 /**

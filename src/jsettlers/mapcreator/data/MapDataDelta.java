@@ -10,10 +10,12 @@ import jsettlers.common.landscape.ELandscapeType;
 public class MapDataDelta {
 	private HeightChange heightChanges = null;
 	private LandscapeChange landscapeChanges = null;
-	
+	private ObjectAdder addObjects = null;
+	private ObjectRemover removeObjects = null;
+
 	public MapDataDelta() {
 	}
-	
+
 	public synchronized void addHeightChange(int x, int y, byte height) {
 		HeightChange c = new HeightChange();
 		c.x = (short) x;
@@ -22,10 +24,10 @@ public class MapDataDelta {
 		c.next = heightChanges;
 		heightChanges = c;
 	}
-	
+
 	public HeightChange getHeightChanges() {
-	    return heightChanges;
-    }
+		return heightChanges;
+	}
 
 	public synchronized void addLandscapeChange(int x, int y, ELandscapeType l) {
 		LandscapeChange c = new LandscapeChange();
@@ -35,7 +37,7 @@ public class MapDataDelta {
 		c.next = landscapeChanges;
 		landscapeChanges = c;
 	}
-	
+
 	public static class HeightChange {
 		HeightChange next = null;
 		short x;
@@ -44,13 +46,54 @@ public class MapDataDelta {
 	}
 
 	public LandscapeChange getLandscapeChanges() {
-	    return landscapeChanges;
-    }
-	
+		return landscapeChanges;
+	}
+
 	public static class LandscapeChange {
 		LandscapeChange next = null;
 		short x;
 		short y;
 		ELandscapeType landscape;
 	}
+
+	public static class ObjectAdder {
+		ObjectAdder next = null;
+		short x;
+		short y;
+		ObjectContainer obj;
+	}
+
+	public void addObject(int x, int y, ObjectContainer obj) {
+		if (obj != null) {
+			ObjectAdder adder = new ObjectAdder();
+			adder.x = (short) x;
+			adder.y = (short) y;
+			adder.obj = obj;
+			adder.next = addObjects;
+			addObjects = adder;
+		}
+	}
+	
+	public ObjectAdder getAddObjects() {
+	    return addObjects;
+    }
+
+	public static class ObjectRemover {
+		ObjectRemover next = null;
+		short x;
+		short y;
+	}
+
+	public void removeObject(int x, int y) {
+		ObjectRemover remover = new ObjectRemover();
+		remover.x = (short) x;
+		remover.y = (short) y;
+		remover.next = removeObjects;
+		removeObjects = remover;
+	}
+	
+	public ObjectRemover getRemoveObjects() {
+	    return removeObjects;
+    }
+
 }

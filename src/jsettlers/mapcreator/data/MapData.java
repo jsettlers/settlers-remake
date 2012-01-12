@@ -23,6 +23,8 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
 import jsettlers.mapcreator.data.MapDataDelta.LandscapeChange;
+import jsettlers.mapcreator.data.MapDataDelta.ObjectAdder;
+import jsettlers.mapcreator.data.MapDataDelta.ObjectRemover;
 import jsettlers.mapcreator.data.MapDataSerializer.IMapDataReceiver;
 
 /**
@@ -44,6 +46,9 @@ public class MapData implements IMapData {
 	private final int playercount;
 	private ShortPoint2D[] playerStarts;
 
+	private byte[][] lastPlayers;
+	private boolean[][] lastBorders;
+
 	public MapData(int width, int height, int playercount) {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException(
@@ -63,9 +68,9 @@ public class MapData implements IMapData {
 		this.playercount = playercount;
 		this.playerStarts = new ShortPoint2D[playercount];
 		for (int i = 0; i < playercount; i++) {
-			playerStarts[i] = new ShortPoint2D(width/2, height/2);
+			playerStarts[i] = new ShortPoint2D(width / 2, height / 2);
 		}
-		
+
 		this.width = width;
 		this.height = height;
 		this.landscapes = new ELandscapeType[width][height];
@@ -155,39 +160,38 @@ public class MapData implements IMapData {
 		}
 	}
 
-	private boolean contains(int tx, int ty) {
+	public boolean contains(int tx, int ty) {
 		return tx >= 0 && tx < width && ty >= 0 && ty < height;
 	}
 
-	private static final class MapDataReceiver implements
-            IMapDataReceiver {
-	    MapData data =null;
+	private static final class MapDataReceiver implements IMapDataReceiver {
+		MapData data = null;
 
-	    @Override
-	    public void setPlayerStart(int player, int x, int y) {
-	    	data.playerStarts[player] = new ShortPoint2D(x, y);
-	    }
+		@Override
+		public void setPlayerStart(int player, int x, int y) {
+			data.playerStarts[player] = new ShortPoint2D(x, y);
+		}
 
-	    @Override
-	    public void setMapObject(int x, int y, MapObject object) {
-	    	data.placeObject(object, x, y);
-	    }
+		@Override
+		public void setMapObject(int x, int y, MapObject object) {
+			data.placeObject(object, x, y);
+		}
 
-	    @Override
-	    public void setLandscape(int x, int y, ELandscapeType type) {
-	    	data.landscapes[x][y] = type;
-	    }
+		@Override
+		public void setLandscape(int x, int y, ELandscapeType type) {
+			data.landscapes[x][y] = type;
+		}
 
-	    @Override
-	    public void setHeight(int x, int y, byte height) {
-	    	data.heights[x][y] = height;
-	    }
+		@Override
+		public void setHeight(int x, int y, byte height) {
+			data.heights[x][y] = height;
+		}
 
-	    @Override
-	    public void setDimension(int width, int height, int playercount) {
-	    	data = new MapData(width, height, playercount);
-	    }
-    }
+		@Override
+		public void setDimension(int width, int height, int playercount) {
+			data = new MapData(width, height, playercount);
+		}
+	}
 
 	private static class FadeTask {
 
@@ -262,6 +266,7 @@ public class MapData implements IMapData {
 	public void placeObject(MapObject object, int x, int y) {
 		ObjectContainer container = null;
 		ProtectContainer protector = ProtectContainer.getInstance();
+		ELandscapeType[] landscapes = null;
 		if (object instanceof MapTreeObject) {
 			container = TreeObjectContainer.getInstance();
 		} else if (object instanceof MapStoneObject) {
@@ -275,6 +280,7 @@ public class MapData implements IMapData {
 			container =
 			        new BuildingContainer((BuildingObject) object,
 			                new ShortPoint2D(x, y));
+			landscapes = ((BuildingObject) object).getType().getGroundtypes();
 			protector =
 			        new ProtectLandscapeConstraint(((BuildingObject) object)
 			                .getType().getGroundtypes());
@@ -289,7 +295,9 @@ public class MapData implements IMapData {
 			if (!contains(abs.getX(), abs.getY())
 			        || objects[abs.getX()][abs.getY()] != null
 			        || !landscapeAllowsObjects(getLandscape(abs.getX(),
-			                abs.getY()))) {
+			                abs.getY()))
+			        || !listAllowsLandscape(landscapes,
+			                getLandscape(abs.getX(), abs.getY()))) {
 				allowed = false;
 			}
 		}
@@ -298,8 +306,24 @@ public class MapData implements IMapData {
 			for (RelativePoint p : container.getProtectedArea()) {
 				ISPosition2D abs = p.calculatePoint(start);
 				objects[abs.getX()][abs.getY()] = protector;
+				undoDelta.removeObject(abs.getX(), abs.getY());
 			}
 			objects[x][y] = container;
+			undoDelta.removeObject(x, y);
+		}
+	}
+
+	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2,
+	        ELandscapeType landscape) {
+		if (landscapes2 == null) {
+			return true;
+		} else {
+			for (ELandscapeType type : landscapes2) {
+				if (type == landscape) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
@@ -426,6 +450,18 @@ public class MapData implements IMapData {
 			backgroundListener.backgroundChangedAt(cl.x, cl.y);
 			cl = cl.next;
 		}
+		
+		// objects
+		ObjectRemover remove = delta.getRemoveObjects();
+		while (remove != null) {
+			objects[remove.x][remove.y] = null;
+			remove = remove.next;
+		}
+		ObjectAdder adder = delta.getAddObjects();
+		while (adder != null) {
+			objects[adder.x][adder.y] = adder.obj;
+			adder = adder.next;
+		}
 	}
 
 	@Override
@@ -433,9 +469,46 @@ public class MapData implements IMapData {
 		return playercount;
 	}
 
-	public  static MapData deserialize(InputStream in) throws IOException {
+	public static MapData deserialize(InputStream in) throws IOException {
 		MapDataReceiver receiver = new MapDataReceiver();
 		MapDataSerializer.deserialize(receiver, in);
 		return receiver.data;
 	}
+
+	public void deleteObject(int x, int y) {
+		ObjectContainer obj = objects[x][y];
+		if (obj instanceof ProtectContainer) {
+			return;
+		} else if (obj != null) {
+			undoDelta.addObject(x, y, obj);
+			objects[x][y] = null;
+			ShortPoint2D start = new ShortPoint2D(x, y);
+			RelativePoint[] area = obj.getProtectedArea();
+			for (RelativePoint point : area) {
+				ISPosition2D pos = point.calculatePoint(start);
+
+				if (contains(pos.getX(), pos.getY())) {
+					undoDelta.addObject(pos.getX(), pos.getY(),
+					        objects[pos.getX()][pos.getY()]);
+					objects[pos.getX()][pos.getY()] = null;
+				}
+			}
+		}
+	}
+
+	public boolean isBorder(int x, int y) {
+		return lastBorders != null && lastBorders[x][y];
+	}
+	
+	public byte getPlayer(int x, int y) {
+		return lastPlayers != null ? lastPlayers[x][y] : (byte) -1;
+	}
+	
+	public void setPlayers(byte[][] lastPlayers) {
+	    this.lastPlayers = lastPlayers;
+    }
+	
+	public void setBorders(boolean[][] lastBorders) {
+	    this.lastBorders = lastBorders;
+    }
 }

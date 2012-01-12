@@ -54,12 +54,12 @@ public class MapGraphics implements IGraphicsGrid {
 
 	@Override
 	public boolean isBorder(int x, int y) {
-		return false;
+		return data.isBorder(x, y);
 	}
 
 	@Override
 	public byte getPlayerAt(int x, int y) {
-		return 0;
+		return data.getPlayer(x, y);
 	}
 
 	@Override
