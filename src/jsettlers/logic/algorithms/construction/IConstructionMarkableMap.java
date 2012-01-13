@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.construction;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 
 /**
@@ -32,17 +33,6 @@ public interface IConstructionMarkableMap {
 	short getHeight();
 
 	/**
-	 * gets the height of the given tile position.
-	 * 
-	 * @param x
-	 *            x coordinate
-	 * @param y
-	 *            y coordinate
-	 * @return height of the tile at the fiven position
-	 */
-	byte getHeightAt(short x, short y);
-
-	/**
 	 * Checks if the given position is valid to build a building of given player that can stand on the given {@link ELandscapeType}s
 	 * 
 	 * @param x
@@ -59,4 +49,6 @@ public interface IConstructionMarkableMap {
 	boolean canUsePositionForConstruction(short x, short y, ELandscapeType[] landscapeTypes, byte player);
 
 	boolean isInBounds(short x, short y);
+
+	byte getConstructionMarkValue(short mapX, short mapY, EBuildingType buildingType);
 }

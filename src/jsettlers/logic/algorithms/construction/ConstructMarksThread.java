@@ -11,7 +11,6 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.algorithms.AlgorithmConstants;
 import synchronic.timer.NetworkTimer;
 
@@ -115,7 +114,10 @@ public class ConstructMarksThread extends Thread {
 				if (map.isInBounds(mapX, mapY)) { // needed because of map.setConstructMarking()
 					byte value;
 					if (checkPosition(mapX - minX, mapY - minY, areaSet, setWidth, buildingSet)) {
-						value = (byte) 1;
+						value = map.getConstructionMarkValue(mapX, mapY, buildingType);
+						if (value > Byte.MAX_VALUE) {
+							value = -1;
+						}
 					} else {
 						value = -1;
 					}
@@ -165,22 +167,6 @@ public class ConstructMarksThread extends Thread {
 				map.setConstructMarking(pos.getX(), pos.getY(), (byte) -1);
 			}
 		}
-	}
-
-	private byte calculateConstrMarkVal(short x, short y, RelativePoint[] usedPositions) {
-		int sum = 0;
-
-		for (RelativePoint curr : usedPositions) {
-			sum += map.getHeightAt(curr.calculateX(x), curr.calculateY(y));
-		}
-
-		int avg = sum / usedPositions.length;
-		int diff = 0;
-		for (RelativePoint curr : usedPositions) {
-			diff += Math.abs(map.getHeightAt(curr.calculateX(x), curr.calculateY(y)) - avg);
-		}
-
-		return (byte) (diff / usedPositions.length);
 	}
 
 	public void setScreen(MapRectangle mapArea) {
