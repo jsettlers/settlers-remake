@@ -112,6 +112,8 @@ public final class NewFogOfWar implements IFogOfWar {
 
 		@Override
 		public final void run() {
+			mySleep(500);
+
 			while (true) {
 				StopWatch watch = new MilliStopWatch();
 				watch.start();
