@@ -287,7 +287,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		if (currentJob.getSearchType() == ESearchType.FISHABLE) {
 			for (EDirection direction : EDirection.values()) {
 				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
-				if (super.getGrid().isInBounds(pos) && super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.WATER1) {
+				if (super.getGrid().isInBounds(pos) && super.getGrid().getLandscapeTypeAt(pos).isWater()) {
 					super.setDirection(direction);
 					return true;
 				}

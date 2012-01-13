@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.map.random.instructions.GenerationInstruction;
 import jsettlers.logic.map.random.instructions.MetaInstruction;
@@ -27,16 +28,13 @@ public class RandomMapFile {
 	private List<GenerationInstruction> instructions =
 	        new ArrayList<GenerationInstruction>();
 
-	private RandomMapFile(String name) {
+	private RandomMapFile(InputStream stream) throws MapLoadException {
 		try {
-		    String file = "maps/" + name.replaceAll("[\\.\\/\\\\]", "") + ".map";
-			InputStream stream = ResourceManager.getFile(file);
 			LineNumberReader reader =
 			        new LineNumberReader(new InputStreamReader(stream));
 			readNextSection(reader);
-			stream.close();
 		} catch (IOException e) {
-			// TODO: use default set, error, ...
+			throw new MapLoadException("Error during map creation", e);
 		}
 	}
 
@@ -81,7 +79,18 @@ public class RandomMapFile {
 		return instructions;
 	}
 
-	public static RandomMapFile getByName(String name) {
-	    return new RandomMapFile(name);
-    }
+	public static RandomMapFile getByName(String name) throws MapLoadException {
+		String file = "maps/" + name.replaceAll("[\\.\\/\\\\]", "") + ".map";
+		InputStream stream;
+		try {
+			stream = ResourceManager.getFile(file);
+		} catch (IOException e) {
+			throw new MapLoadException(e);
+		}
+		return loadFromStream(stream);
+	}
+
+	public static RandomMapFile loadFromStream(InputStream stream) throws MapLoadException {
+		return new RandomMapFile(stream);
+	}
 }

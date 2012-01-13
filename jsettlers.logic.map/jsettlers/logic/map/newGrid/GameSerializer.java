@@ -43,7 +43,7 @@ public class GameSerializer {
 		NetworkTimer.get().setPausing(true);
 		try {
 			Thread.sleep(30); // FIXME @Andreas serializer should wait until
-							  // threads did their work!
+			                  // threads did their work!
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +80,14 @@ public class GameSerializer {
 				inStream = new GZIPInputStream(gzipped);
 			}
 
+			return load(inStream);
+		} catch (Throwable t) {
+			throw new MapLoadException(t);
+		}
+	}
+
+	public MainGrid load(InputStream inStream) throws MapLoadException {
+		try {
 			final ObjectInputStream ois = new ObjectInputStream(inStream);
 
 			LoadRunnable runnable = new LoadRunnable(ois);
@@ -113,4 +121,5 @@ public class GameSerializer {
 			}
 		}
 	}
+
 }

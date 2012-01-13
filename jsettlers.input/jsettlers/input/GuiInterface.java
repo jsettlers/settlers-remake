@@ -178,6 +178,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case TOGGLE_FOG_OF_WAR:
 			grid.toggleFogOfWar();
+			break;
 
 		case SAVE:
 			manager.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
@@ -287,7 +288,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		return getIDsOfIterable(currentSelection);
 	}
 
-	private final List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
+	private final static List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
 		List<Integer> selectedIds = new LinkedList<Integer>();
 
 		for (ISelectable curr : iterable) {

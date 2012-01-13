@@ -6,6 +6,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.logic.map.newGrid.MainGrid;
 
+@Deprecated
 public class MapDataMapCreator implements IGameCreator {
 
 	private final IMapDataProvider map;

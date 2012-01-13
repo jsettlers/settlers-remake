@@ -1,15 +1,8 @@
 package jsettlers.main;
 
-import java.util.Random;
-
-import jsettlers.common.map.IMapData;
-import jsettlers.common.map.IMapDataProvider;
-import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.ISettlersGameDisplay;
-import jsettlers.graphics.startscreen.IStartScreenConnector;
+import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
-import jsettlers.logic.map.random.RandomMapEvaluator;
-import jsettlers.logic.map.random.RandomMapFile;
 import jsettlers.main.JSettlersGame.Listener;
 
 /**
@@ -17,7 +10,7 @@ import jsettlers.main.JSettlersGame.Listener;
  * 
  * @author michael
  */
-public class ManagedJSettlers implements Listener {
+public class ManagedJSettlers implements Listener, IGameStarter {
 
 	private ISettlersGameDisplay content;
 	private JSettlersGame ongoingGame;
@@ -28,152 +21,60 @@ public class ManagedJSettlers implements Listener {
 	}
 
 	private void showMainScreen() {
-		content.showStartScreen(new StartConnector());
+		content.showStartScreen(new StartConnector(this));
 	}
 
-	private static class RandomMapItem implements IMapItem {
-		@Override
-		public String getName() {
-			return "test";
+	/*
+	 * private static class RandomMapItem implements IMapItem {
+	 * @Override public String getName() { return "test"; }
+	 * @Override public int getMinPlayers() { return 1; }
+	 * @Override public int getMaxPlayers() { return 5; }
+	 * @Override public IMapDataProvider createLoadableGame(int players, long
+	 * seed) { return new RandomGameLoader(getName(), players, seed); } }
+	 */
+
+	// private static class RandomGameLoader implements IMapDataProvider {
+	// private final String name;
+	// private final int players;
+	// private final long randomSeed;
+	//
+	// public RandomGameLoader(String name, int players, long randomSeed) {
+	// this.name = name;
+	// this.players = players;
+	// this.randomSeed = randomSeed;
+	// }
+	//
+	// @Override
+	// public IMapData getData() throws MapLoadException {
+	// RandomMapFile file = RandomMapFile.getByName(name);
+	// RandomMapEvaluator evaluator =
+	// new RandomMapEvaluator(file.getInstructions(), players);
+	// evaluator.createMap(new Random(randomSeed));
+	// IMapData mapGrid = evaluator.getGrid();
+	// return mapGrid;
+	// }
+	// }
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jsettlers.main.IGameStarter#startGame(jsettlers.graphics.startscreen.
+	 * IStartScreenConnector.IGameSettings)
+	 */
+	@Override
+	public void startGame(IGameSettings game) {
+		if (ongoingGame != null) {
+			ongoingGame.setListener(null);
+			ongoingGame.stop();
 		}
 
-		@Override
-		public int getMinPlayers() {
-			return 1;
-		}
-
-		@Override
-		public int getMaxPlayers() {
-			return 5;
-		}
-
-		@Override
-		public IMapDataProvider createLoadableGame(int players, long seed) {
-			return new RandomGameLoader(getName(), players, seed);
-		}
-	}
-
-	private static class RandomGameLoader implements IMapDataProvider {
-		private final String name;
-		private final int players;
-		private final long randomSeed;
-
-		public RandomGameLoader(String name, int players, long randomSeed) {
-			this.name = name;
-			this.players = players;
-			this.randomSeed = randomSeed;
-		}
-
-		@Override
-		public IMapData getData() throws MapLoadException {
-			RandomMapFile file = RandomMapFile.getByName(name);
-			RandomMapEvaluator evaluator =
-			        new RandomMapEvaluator(file.getInstructions(), players);
-			evaluator.createMap(new Random(randomSeed));
-			IMapData mapGrid = evaluator.getGrid();
-			return mapGrid;
-		}
-	}
-
-	private class StartConnector implements IStartScreenConnector {
-		private final IMapItem[] MAPS = new IMapItem[] {
-			new RandomMapItem()
-		};
-
-		@Override
-		public IMapItem[] getMaps() {
-			return MAPS;
-		}
-
-		@Override
-		public ILoadableGame[] getLoadableGames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public IRecoverableGame[] getRecoverableGames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public INetworkGame[] getNetworkGames() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void setNetworkServer(String host) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void startNewGame(IGameSettings game) {
-			if (ongoingGame != null) {
-				ongoingGame.setListener(null);
-				ongoingGame.stop();
-			}
-			IMapDataProvider provider =
-			        game.getMap().createLoadableGame(game.getPlayerCount(),
-			                123456L);
-			ongoingGame = new JSettlersGame(content, provider, 123456L);
+		IMapItem map = game.getMap();
+		if (map instanceof IGameCreator) {
+			IGameCreator creator = (IGameCreator) map;
+			ongoingGame = new JSettlersGame(content, creator, 123456L);
 			ongoingGame.setListener(ManagedJSettlers.this);
 			ongoingGame.start();
 		}
-
-		@Override
-		public void loadGame(ILoadableGame load) {
-			if (ongoingGame != null) {
-				ongoingGame.setListener(null);
-				ongoingGame.stop();
-			}
-			if (load instanceof SavedGame) {
-				ongoingGame =
-				        new JSettlersGame(content, (SavedGame) load, 123456L);
-				ongoingGame.setListener(ManagedJSettlers.this);
-				ongoingGame.start();
-			} else {
-				showMainScreen();
-			}
-		}
-
-		@Override
-		public void recoverNetworkGame(IRecoverableGame game) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void joinNetworkGame(INetworkGame game) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void addNetworkGameListener(INetworkGameListener gameListener) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void removeNetworkGameListener(INetworkGameListener gameListener) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void startGameServer(IGameSettings game, String name) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void exitGame() {
-			System.exit(0);
-		}
-
 	}
 
 	/**

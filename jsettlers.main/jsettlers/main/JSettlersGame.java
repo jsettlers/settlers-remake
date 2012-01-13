@@ -1,12 +1,7 @@
 package jsettlers.main;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -14,7 +9,6 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
@@ -49,16 +43,18 @@ public class JSettlersGame {
 	 * @param map
 	 *            The name of the random map and some settings
 	 */
-	public JSettlersGame(ISettlersGameDisplay content, IMapDataProvider map, long randomSheed) {
+	@Deprecated
+	public JSettlersGame(ISettlersGameDisplay content, IMapDataProvider map,
+	        long randomSheed) {
 		this(content, new MapDataMapCreator(map), randomSheed);
 	}
-	
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed) {
+
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map,
+	        long randomSheed) {
 		this.content = content;
 		this.mapcreator = map;
 		this.randomSheed = randomSheed;
 	}
-	
 
 	/**
 	 * Starts the game in a new thread. Returns immeadiately
@@ -87,35 +83,40 @@ public class JSettlersGame {
 			MainGrid grid;
 
 			UIState uiState;
-            try {
-	            grid = mapcreator.getMainGrid();
-	            uiState = mapcreator.getUISettings(0);
-            } catch (MapLoadException e1) {
-	            e1.printStackTrace();
+			try {
+				grid = mapcreator.getMainGrid();
+				uiState = mapcreator.getUISettings(0);
+			} catch (MapLoadException e1) {
+				e1.printStackTrace();
 				listener.gameEnded();
 				return;
-            }
+			}
 
-    		NetworkTimer.get().setPausing(false);
+			NetworkTimer.get().setPausing(false);
 
-				/** random map */
-//				RandomMapFile file = RandomMapFile.getByName(mapSettings.getMap().getName());
-//				RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), (byte) mapSettings.getPlayerCount());
-//				evaluator.createMap(RandomSingleton.get());
-//				IMapData mapGrid = evaluator.getGrid();
+			/** random map */
+			// RandomMapFile file =
+			// RandomMapFile.getByName(mapSettings.getMap().getName());
+			// RandomMapEvaluator evaluator = new
+			// RandomMapEvaluator(file.getInstructions(), (byte)
+			// mapSettings.getPlayerCount());
+			// evaluator.createMap(RandomSingleton.get());
+			// IMapData mapGrid = evaluator.getGrid();
 
-//				GameSerializer gameSerializer = new GameSerializer();
-//				try {
-//					grid = gameSerializer.load();
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					grid = null;
-//				}
+			// GameSerializer gameSerializer = new GameSerializer();
+			// try {
+			// grid = gameSerializer.load();
+			// } catch (Exception e) {
+			// e.printStackTrace();
+			// grid = null;
+			// }
 
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
-			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
-			new GuiInterface(connector, manager, grid.getGuiInputGrid(), (byte) 0);
+			final MapInterfaceConnector connector =
+			        content.showGameMap(grid.getGraphicsGrid(), null);
+			new GuiInterface(connector, manager, grid.getGuiInputGrid(),
+			        (byte) 0);
 
 			connector.addListener(this);
 			connector.loadUIState(uiState);
@@ -124,20 +125,20 @@ public class JSettlersGame {
 			gameConnector = connector;
 
 			// --- TESTING code start
-//			Timer t = new Timer();
-//			 t.schedule(new TimerTask() {
-//			 @Override
-//			 public void run() {
-//			 if (Math.random() < .5) {
-//			 connector.showMessage(SimpleMessage.attacked(
-//			 (byte) (Math.random() * 10),
-//			 new ShortPoint2D(30, 30)));
-//			 } else {
-//			 connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
-//			 new ShortPoint2D(30, 30)));
-//			 }
-//			 }
-//			 }, 100, 1000);
+			// Timer t = new Timer();
+			// t.schedule(new TimerTask() {
+			// @Override
+			// public void run() {
+			// if (Math.random() < .5) {
+			// connector.showMessage(SimpleMessage.attacked(
+			// (byte) (Math.random() * 10),
+			// new ShortPoint2D(30, 30)));
+			// } else {
+			// connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
+			// new ShortPoint2D(30, 30)));
+			// }
+			// }
+			// }, 100, 1000);
 			// --- TESTING code end
 
 			// TODO: allow user to stop game before this happens.
@@ -150,7 +151,7 @@ public class JSettlersGame {
 				}
 			}
 
-			//TODO: do this
+			// TODO: do this
 			manager.close();
 			listener.gameEnded();
 		}
@@ -190,7 +191,8 @@ public class JSettlersGame {
 
 	public void setPaused(boolean b) {
 		if (gameConnector != null) {
-			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE : EActionType.SPEED_UNSET_PAUSE));
+			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE
+			        : EActionType.SPEED_UNSET_PAUSE));
 		}
 	}
 
