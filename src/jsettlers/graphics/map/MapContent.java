@@ -93,13 +93,13 @@ public final class MapContent implements SettlersContent,
 
 	private final IGraphicsGrid map;
 
-	private Background background = new Background();
+	private final Background background = new Background();
 
-	private MovableDrawer movableDrawer = new MovableDrawer();
+	private final MovableDrawer movableDrawer;
 
 	private final MapDrawContext context;
 
-	private MapObjectDrawer objectDrawer = new MapObjectDrawer();
+	private final  MapObjectDrawer objectDrawer;
 
 	/**
 	 * The current connector that connects the outside world to us.
@@ -140,6 +140,8 @@ public final class MapContent implements SettlersContent,
 		this.map = map;
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
+		movableDrawer = new MovableDrawer(soundmanager);
+		objectDrawer = new MapObjectDrawer(soundmanager);
 		bgsound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {

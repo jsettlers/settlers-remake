@@ -19,10 +19,12 @@ import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.sound.SoundManager;
 
 /**
  * This class handles drawing of objects on the map.
@@ -100,6 +102,13 @@ public class MapObjectDrawer {
 	int animationStep = 0;
 
 	private final ImageProvider imageProvider = ImageProvider.getInstance();
+	private final MovableDrawer movableDrawer;
+	private final SoundManager sound;
+
+	public MapObjectDrawer(SoundManager sound) {
+		this.sound = sound;
+		movableDrawer = new MovableDrawer(sound);
+	}
 
 	/**
 	 * Draws a map object at a given position.
@@ -135,6 +144,7 @@ public class MapObjectDrawer {
 					break;
 
 				case TREE_DEAD:
+					// TODO: falling tree sound.
 					drawFallingTree(context, x, y, progress, color);
 					break;
 
@@ -164,11 +174,14 @@ public class MapObjectDrawer {
 
 				case GHOST:
 					drawPlayerableByProgress(context, 12, 27, object, color);
+					playSound(object, 35);
 					break;
 
 				case BUILDING_DECONSTRUCTION_SMOKE:
 					drawByProgress(context, 13, 38, object.getStateProgress(),
 					        color);
+					// <TODO this is not the right sound.
+					playSound(object, 35);
 					break;
 
 				case FOUND_COAL:
@@ -289,6 +302,16 @@ public class MapObjectDrawer {
 			drawMapObject(context, map, x, y, object.getNextObject());
 		}
 	}
+
+	private void playSound(IMapObject object, int soundid) {
+		if (object instanceof ISoundable) {
+			ISoundable soundable = (ISoundable) object;
+			if (!soundable.isSoundPlayed()) {
+				sound.playSound(soundid, 1, 1);
+				soundable.setSoundPlayed();
+			}
+		}
+    }
 
 	private void drawPlayerableByProgress(MapDrawContext context, int file,
 	        int sequenceIndex, IMapObject object, float basecolor) {
@@ -606,6 +629,8 @@ public class MapObjectDrawer {
 					int step = i % seq.length();
 					seq.getImageSafe(step).draw(context.getGl(), null, color);
 				}
+				playSound(building, 42);
+				
 			} else {
 				ImageLink[] images = type.getImages();
 				if (images.length > 0) {
@@ -646,7 +671,7 @@ public class MapObjectDrawer {
 				                .getPlayer());
 				imageProvider.getImage(image).draw(gl, color);
 			} else {
-				new MovableDrawer().draw(context, occupyer.getMovable());
+				movableDrawer.draw(context, occupyer.getMovable());
 			}
 			gl.glPopMatrix();
 		}

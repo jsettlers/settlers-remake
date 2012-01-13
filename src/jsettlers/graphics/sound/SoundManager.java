@@ -1,5 +1,7 @@
 package jsettlers.graphics.sound;
 
+import go.graphics.sound.SoundPlayer;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,7 +9,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 import jsettlers.graphics.reader.bytereader.ByteReader;
-import go.graphics.sound.SoundPlayer;
 
 /**
  * Some known sounds:
@@ -17,7 +18,8 @@ import go.graphics.sound.SoundPlayer;
  * 3 (twice): knock stone <br>
  * 5: saw <br>
  * 6: smith <br>
- * 7: smith 12: farmer <br>
+ * 7: smith <br>
+ * 12: farmer <br>
  * 14: donkey <br>
  * 30: sword Soldier <br>
  * 31/32 (soldier ?) <br>
@@ -36,10 +38,20 @@ import go.graphics.sound.SoundPlayer;
  * 72 (+ alternaitves): moor <br>
  * 73: wind <br>
  * 74: crazy wind <br>
- * 75 (3 times): thunder 76 (2 times): rain 80: You are beeing attacked 81:
- * Mill, 82: older mill, 83: even older mill 84: catapult 85: Arrow shooting 86
- * -90: canon shooting 91: fire 92: small fire 100 - 110: Attacked (same sound?)
- * ? 111, 112: gong, 113 (4 times): kill (maya?)
+ * 75 (3 times): thunder <br>
+ * 76 (2 times): rain <br>
+ * 80: You are beeing attacked <br>
+ * 81: Mill, <br>
+ * 82: older mill, <br>
+ * 83: even older mill <br>
+ * 84: catapult <br>
+ * 85: Arrow shooting <br>
+ * 86 -90: canon shooting <br>
+ * 91: fire <br>
+ * 92: small fire <br>
+ * 100 - 110: Attacked (same sound?) ? <br>
+ * 111, 112: gong, <br>
+ * 113 (4 times): kill (maya?)
  * 
  * @author michael
  */
