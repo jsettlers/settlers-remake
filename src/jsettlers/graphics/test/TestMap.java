@@ -337,7 +337,7 @@ public class TestMap implements IGraphicsGrid {
 				continue;
 			}
 
-			while (current != null && current.getLandscapeType() != ELandscapeType.WATER1) {
+			while (current != null && !current.getLandscapeType().isWater()) {
 				current.setRiver(true);
 
 				List<EDirection> directions = Arrays.asList(EDirection.values());
@@ -380,11 +380,16 @@ public class TestMap implements IGraphicsGrid {
 			int count = (int) (Math.random() * 8 + 1);
 
 			TestTile tile = getTile(x, y);
-			if (tile.getLandscapeType() != ELandscapeType.WATER1) {
+			ELandscapeType landscape = tile.getLandscapeType();
+			if (allowsStackPlacement(landscape)) {
 				tile.setStack(new TestStack(type, count));
 			}
 		}
 	}
+
+	private static boolean allowsStackPlacement(ELandscapeType landscape) {
+	    return landscape.isWater() && landscape != ELandscapeType.MOOR && landscape != ELandscapeType.RIVER1 && landscape != ELandscapeType.RIVER2 && landscape != ELandscapeType.RIVER3 && landscape != ELandscapeType.RIVER4 && landscape != ELandscapeType.SNOW;
+    }
 
 	public void moveStep() {
 		for (TestSettler settler : this.settlers) {
