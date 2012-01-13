@@ -960,12 +960,12 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public EMaterialType getMaterialTypeAt(ISPosition2D pos) {
+		public final EMaterialType getMaterialTypeAt(ISPosition2D pos) {
 			return mapObjectsManager.getMaterialTypeAt(pos.getX(), pos.getY());
 		}
 
 		@Override
-		public EMaterialType stealMaterialAt(ISPosition2D pos) {
+		public final EMaterialType stealMaterialAt(ISPosition2D pos) {
 			EMaterialType materialType = mapObjectsManager.stealMaterialAt(pos.getX(), pos.getY());
 			if (materialType != null) {
 				partitionsGrid.removeOfferAt(pos, materialType);
@@ -975,7 +975,7 @@ public class MainGrid implements Serializable {
 
 	}
 
-	class BordersThreadGrid implements IBordersThreadGrid {
+	final class BordersThreadGrid implements IBordersThreadGrid {
 		@Override
 		public final byte getPlayer(short x, short y) {
 			return partitionsGrid.getPlayerAt(x, y);
@@ -992,7 +992,7 @@ public class MainGrid implements Serializable {
 		}
 	}
 
-	class BuildingsGrid implements IBuildingsGrid, Serializable {
+	final class BuildingsGrid implements IBuildingsGrid, Serializable {
 		private static final long serialVersionUID = -5567034251907577276L;
 
 		private final RequestStackGrid requestStackGrid = new RequestStackGrid();
@@ -1292,12 +1292,12 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
+		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
 			return Movable.getAllMovables();
 		}
 
 		@Override
-		public ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables() {
+		public final ConcurrentLinkedQueue<? extends IViewDistancable> getBuildingViewDistancables() {
 			return Building.getAllBuildings();
 		}
 	}

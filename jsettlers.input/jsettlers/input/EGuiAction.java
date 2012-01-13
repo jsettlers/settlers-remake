@@ -1,5 +1,11 @@
 package jsettlers.input;
 
+/**
+ * Actions of the gui used to send them over the network.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public enum EGuiAction {
 	BUILD,
 	SET_WORK_AREA,
@@ -8,5 +14,6 @@ public enum EGuiAction {
 	DESTROY_MOVABLES,
 	DESTROY_BUILDING,
 	STOP_WORKING,
-	START_WORKING
+	START_WORKING,
+	CONVERT
 }

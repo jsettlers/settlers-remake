@@ -16,18 +16,20 @@ import jsettlers.logic.movable.Movable;
 public class TaskExecutor {
 	private static TaskExecutor instance = null;
 	private final IGuiInputGrid grid;
+	private final ITaskExecutorGuiInterface guiInterface;
 
-	private TaskExecutor(IGuiInputGrid grid) {
+	private TaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
 		this.grid = grid;
+		this.guiInterface = guiInterface;
 	}
 
 	public static TaskExecutor get() {
 		return instance;
 	}
 
-	public static void init(IGuiInputGrid grid) {
+	public static void init(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
 		if (instance == null)
-			instance = new TaskExecutor(grid);
+			instance = new TaskExecutor(grid, guiInterface);
 	}
 
 	public void executeAction(SimpleGuiTask guiTask) {
@@ -79,7 +81,18 @@ public class TaskExecutor {
 			stopOrStartWorking(((MovableGuiTask) guiTask).getSelection(), guiTask.getGuiAction() == EGuiAction.STOP_WORKING);
 			break;
 
+		case CONVERT:
+			convertMovables((ConvertGuiTask) guiTask);
+			break;
+
 		}
+	}
+
+	private void convertMovables(ConvertGuiTask guiTask) {
+		for (Integer currID : guiTask.getSelection()) {
+			Movable.getMovableByID(currID).convertTo(guiTask.getTargetType());
+		}
+		guiInterface.refreshSelection();
 	}
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {

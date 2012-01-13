@@ -20,6 +20,7 @@ import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
+import jsettlers.logic.objects.SoundableSelfDeletingObject;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
@@ -231,7 +232,16 @@ public class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	public void addSelfDeletingMapObject(ISPosition2D pos, EMapObjectType mapObjectType, float duration, byte player) {
-		SelfDeletingMapObject object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
+		SelfDeletingMapObject object;
+		switch (mapObjectType) {
+		case GHOST:
+		case BUILDING_DECONSTRUCTION_SMOKE:
+			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration);
+			break;
+		default:
+			object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
+			break;
+		}
 		addMapObject(pos, object);
 		timingQueue.add(new TimeEvent(object, duration, true));
 	}

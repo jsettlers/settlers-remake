@@ -25,9 +25,9 @@ import random.RandomSingleton;
 public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable, IViewDistancable {
 	private static final long serialVersionUID = 6588554296128443814L;
 
-	private static int nextID = Integer.MIN_VALUE;
 	private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
 	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
+	private static int nextID = Integer.MIN_VALUE;
 
 	private final int id;
 
@@ -50,6 +50,9 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	private float progressIncrease = 0.1f;
 	private ISPosition2D nextPos;
 	private IHexMovable pushedFrom;
+
+	private byte noActionDelay = 0;
+	private boolean soundPlayed;
 
 	public Movable(IMovableGrid grid, ISPosition2D pos, EMovableType type, byte player) {
 		this.grid = grid;
@@ -245,10 +248,6 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		this.progressIncrease = getProgressIncrease(Constants.MOVABLE_STEP_DURATION);
 		isRightstep = !isRightstep;
 	}
-
-	private byte noActionDelay = 0;
-
-	private boolean soundPlayed;
 
 	@Override
 	public void timerEvent() {
@@ -513,6 +512,10 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	@Override
 	public final short getViewDistance() {
 		return 8;
+	}
+
+	public void convertTo(EMovableType targetType) {
+		this.setStrategy(MovableStrategy.getTypeStrategy(grid, targetType, this));
 	}
 
 }

@@ -5,13 +5,12 @@ import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
-import jsettlers.logic.objects.ProgressingObject;
+import jsettlers.logic.objects.ProgressingSoundableObject;
 
-public class ArrowObject extends ProgressingObject implements IArrowMapObject {
+public class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
 	private static final long serialVersionUID = 1702902724559733166L;
 
 	private static final float SECONDS_PER_TILE = 0.03f;
-
 	public static final float DECOMPOSE_DELAY = 60;
 
 	private final ISPosition2D source;
@@ -70,4 +69,5 @@ public class ArrowObject extends ProgressingObject implements IArrowMapObject {
 			target.hit(hitStrength);
 		}
 	}
+
 }

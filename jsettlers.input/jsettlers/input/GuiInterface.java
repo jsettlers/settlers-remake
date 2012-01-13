@@ -10,6 +10,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
@@ -17,6 +18,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.ScreenChangeAction;
@@ -28,8 +30,10 @@ import jsettlers.graphics.map.selection.BuildingSelection;
 import jsettlers.graphics.map.selection.EmptySelection;
 import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.map.selection.SettlerSelection;
+import jsettlers.input.task.ConvertGuiTask;
 import jsettlers.input.task.DestroyBuildingGuiTask;
 import jsettlers.input.task.GeneralGuiTask;
+import jsettlers.input.task.ITaskExecutorGuiInterface;
 import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
@@ -47,7 +51,7 @@ import synchronic.timer.NetworkTimer;
  * 
  * @author Andreas Eberle
  */
-public class GuiInterface implements IMapInterfaceListener {
+public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInterface {
 
 	private final MapInterfaceConnector connector;
 
@@ -66,7 +70,7 @@ public class GuiInterface implements IMapInterfaceListener {
 		this.manager = manager;
 		this.grid = grid;
 		this.player = player;
-		TaskExecutor.init(grid);
+		TaskExecutor.init(grid, this);
 		connector.addListener(this);
 	}
 
@@ -179,9 +183,53 @@ public class GuiInterface implements IMapInterfaceListener {
 			manager.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
 			break;
 
+		case CONVERT:
+			sendConvertAction((ConvertAction) action);
+			break;
+
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
+	}
+
+	private void sendConvertAction(ConvertAction action) {
+		List<ISelectable> convertables = new LinkedList<ISelectable>();
+		switch (action.getTargetType()) {
+		case BEARER:
+			for (ISelectable curr : currentSelection) {
+				if (curr instanceof IMovable) {
+					EMovableType currType = ((IMovable) curr).getMovableType();
+					if (currType == EMovableType.THIEF || currType == EMovableType.PIONEER || currType == EMovableType.GEOLOGIST) {
+						convertables.add(curr);
+						if (convertables.size() >= action.getAmount()) {
+							break;
+						}
+					}
+				}
+			}
+			break;
+		case PIONEER:
+		case GEOLOGIST:
+		case THIEF:
+			for (ISelectable curr : currentSelection) {
+				if (curr instanceof IMovable) {
+					EMovableType currType = ((IMovable) curr).getMovableType();
+					if (currType == EMovableType.BEARER) {
+						convertables.add(curr);
+						if (convertables.size() >= action.getAmount()) {
+							break;
+						}
+					}
+				}
+			}
+			break;
+		default:
+			System.err.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
+			return;
+		}
+
+		if (convertables.size() > 0)
+			manager.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
 	}
 
 	private void cancelBuildingCreation() {
@@ -235,10 +283,14 @@ public class GuiInterface implements IMapInterfaceListener {
 		scheduleTask(new MoveToGuiTask(pos, selectedIds));
 	}
 
-	private List<Integer> getIDsOfSelected() {
+	private final List<Integer> getIDsOfSelected() {
+		return getIDsOfIterable(currentSelection);
+	}
+
+	private final List<Integer> getIDsOfIterable(Iterable<? extends ISelectable> iterable) {
 		List<Integer> selectedIds = new LinkedList<Integer>();
 
-		for (ISelectable curr : currentSelection) {
+		for (ISelectable curr : iterable) {
 			if (curr instanceof IIDable) {
 				selectedIds.add(((IIDable) curr).getID());
 			}
@@ -383,6 +435,12 @@ public class GuiInterface implements IMapInterfaceListener {
 
 		this.connector.setSelection(selection);
 		this.currentSelection = selection;
+	}
+
+	@Override
+	public void refreshSelection() {
+		connector.setSelection(null);
+		connector.setSelection(currentSelection);
 	}
 
 }
