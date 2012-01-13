@@ -276,6 +276,9 @@ public enum EBuildingType {
 		public final short height;
 		public final short minX;
 		public final short minY;
+		public final short maxX;
+		public final short maxY;
+		public final int numberOfPositions;
 
 		public BuildingAreaBitSet(EBuildingType type) {
 			RelativePoint[] protectedTiles = type.getProtectedTiles();
@@ -290,8 +293,12 @@ public enum EBuildingType {
 				maxY = max(maxY, protectedTiles[i].getDy());
 			}
 
+			this.numberOfPositions = protectedTiles.length;
+
 			this.minX = minX;
 			this.minY = minY;
+			this.maxX = maxX;
+			this.maxY = maxY;
 
 			this.width = (short) (maxX - minX + 1);
 			this.height = (short) (maxY - minY + 1);
