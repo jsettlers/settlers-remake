@@ -1,6 +1,5 @@
 package jsettlers.graphics.action;
 
-
 /**
  * This defines the type of the action.
  * 
@@ -84,78 +83,59 @@ public enum EActionType {
 	/**
 	 * used for debugging (should be fired on pressing d)
 	 */
-	DEBUG_ACTION, 
-	
+	DEBUG_ACTION,
+
 	/**
 	 * Changes the side panel content.
+	 * 
 	 * @see ChangePanelAction
 	 */
-	CHANGE_PANEL, 
-	
+	CHANGE_PANEL,
+
 	/**
 	 * Toggles debug tile display
 	 */
-	TOGGLE_DEBUG, 
-	
+	TOGGLE_DEBUG,
+
 	/**
 	 * Pan to the given point.
 	 * <p>
 	 * The action must be an instance of {@link PanToAction}
 	 */
-	PAN_TO, 
-	
+	PAN_TO,
+
 	/**
 	 * Toggles the build menu.
 	 */
-	TOGGLE_BUILD_MENU, 
-	
+	TOGGLE_BUILD_MENU,
+
 	/**
 	 * Toggles fog of war.
 	 */
-	TOGGLE_FOG_OF_WAR, 
-	
+	TOGGLE_FOG_OF_WAR,
+
 	/**
 	 * Zoom in
 	 */
 	ZOOM_IN,
-	
+
 	/**
 	 * Zoom out
 	 */
-	ZOOM_OUT, 
-	
+	ZOOM_OUT,
+
 	/**
 	 * Save the game
 	 */
-	SAVE, 
+	SAVE,
+
 	/**
-	 * Converts bearer to pioneer of the selection.
+	 * used to convert any movable to another.<br>
+	 * 
+	 * @see ConvertAction
 	 */
-	CONVERT_ONE_PIONEER,
-	/**
-	 * Converts all selected bearers to pioneers.
-	 */
-	CONVERT_ALL_PIONEER,
-	/**
-	 * Converts bearer to thieves of the selection.
-	 */
-	CONVERT_ONE_THIEF,
-	/**
-	 * Converts all selected thieves to pioneers.
-	 */
-	CONVERT_ALL_THIEF,
-	/**
-	 * Converts bearer to geologist of the selection.
-	 */
-	CONVERT_ONE_GEOLOGIST,
-	/**
-	 * Converts all selected geologist to pioneers.
-	 */
-	CONVERT_ALL_GEOLOGIST, 
-	/**
-	 * Converts selected Pioneers back to bearers.
-	 */
-	CONVERT_TO_BEARERS, 
+	CONVERT,
+
 	/**
 	 * Start menu constants, never used in game
 	 */
@@ -163,21 +143,25 @@ public enum EActionType {
 	SHOW_LOAD,
 	SHOW_START_NETWORK,
 	SHOW_CONNECT_NETWORK,
-	SHOW_RECOVER_NETWORK, START_NEW_GAME, LOAD_GAME, 
-	
+	SHOW_RECOVER_NETWORK,
+	START_NEW_GAME,
+	LOAD_GAME,
+
 	/**
 	 * GUI internal. Implements ExecutableAction
 	 */
-	EXECUTABLE, 
-	
+	EXECUTABLE,
+
 	/**
 	 * Exit the game. Does not ask any more.
 	 */
-	EXIT, SPEED_UNSET_PAUSE, SPEED_SET_PAUSE, 
-	
+	EXIT,
+	SPEED_UNSET_PAUSE,
+	SPEED_SET_PAUSE,
+
 	/**
 	 * Unspecified action.
 	 */
 	UNSPECIFIED,
-	
+
 }
