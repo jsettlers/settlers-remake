@@ -27,10 +27,11 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
@@ -42,6 +43,7 @@ import javax.swing.event.TreeSelectionListener;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.material.EMaterialType;
@@ -54,9 +56,12 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.logic.map.save.MapDataSerializer;
+import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.save.MapLoader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
-import jsettlers.mapcreator.data.MapDataSerializer;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.tools.DeleteObjectTool;
@@ -114,6 +119,13 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		                new SetLandscapeTool(ELandscapeType.DRY_GRASS, false),
 		                new SetLandscapeTool(ELandscapeType.SAND, false),
 		                new SetLandscapeTool(ELandscapeType.WATER1, false),
+		                new SetLandscapeTool(ELandscapeType.WATER2, false),
+		                new SetLandscapeTool(ELandscapeType.WATER3, false),
+		                new SetLandscapeTool(ELandscapeType.WATER4, false),
+		                new SetLandscapeTool(ELandscapeType.WATER5, false),
+		                new SetLandscapeTool(ELandscapeType.WATER6, false),
+		                new SetLandscapeTool(ELandscapeType.WATER7, false),
+		                new SetLandscapeTool(ELandscapeType.WATER8, false),
 		                new SetLandscapeTool(ELandscapeType.RIVER1, true),
 		                new SetLandscapeTool(ELandscapeType.RIVER2, true),
 		                new SetLandscapeTool(ELandscapeType.RIVER3, true),
@@ -147,12 +159,27 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			        		new PlaceMovableTool(EMovableType.BEARER, this),
 			        		new PlaceMovableTool(EMovableType.BRICKLAYER, this),
 			        		new PlaceMovableTool(EMovableType.DIGGER, this),
+			        		new PlaceMovableTool(EMovableType.BAKER, this),
+			        		new PlaceMovableTool(EMovableType.CHARCOAL_BURNER, this),
+			        		new PlaceMovableTool(EMovableType.FARMER, this),
+			        		new PlaceMovableTool(EMovableType.FISHERMAN, this),
+			        		new PlaceMovableTool(EMovableType.FORESTER, this),
+			        		new PlaceMovableTool(EMovableType.LUMBERJACK, this),
+			        		new PlaceMovableTool(EMovableType.MELTER, this),
+			        		new PlaceMovableTool(EMovableType.MILLER, this),
+			        		new PlaceMovableTool(EMovableType.MINER, this),
+			        		new PlaceMovableTool(EMovableType.PIG_FARMER, this),
+			        		new PlaceMovableTool(EMovableType.SAWMILLER, this),
+			        		new PlaceMovableTool(EMovableType.SLAUGHTERER, this),
 			        		new PlaceMovableTool(EMovableType.SMITH, this),
+			        		new PlaceMovableTool(EMovableType.STONECUTTER, this),
+			        		new PlaceMovableTool(EMovableType.WATERWORKER, this),
 				        }),
 				        new ToolBox("Arbeiter", new ToolNode[] {
 			        		new PlaceMovableTool(EMovableType.GEOLOGIST, this),
 			        		new PlaceMovableTool(EMovableType.PIONEER, this),
-			        		new PlaceMovableTool(EMovableType.THIEF, this)
+			        		new PlaceMovableTool(EMovableType.THIEF, this),
+			        		new PlaceMovableTool(EMovableType.DONKEY, this),
 				        }),
 				        new ToolBox("Krieger", new ToolNode[] {
 			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L1, this),
@@ -246,17 +273,34 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 	private MapInterfaceConnector connector;
 
-	private JTextField testResult;
+	private JLabel testResult;
 
 	private JButton startGameButton;
 
-	public EditorWindow(int width, int height, int playerCount) {
-		data = new MapData(width, height, playerCount);
+	private final MapFileHeader header;
+
+	private JButton saveButton;
+
+	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
+		this.header = header;
+		short width = header.getWidth();
+		short height = header.getHeight();
+		short playerCount = header.getMaxPlayer();
+		data = new MapData(width, height, playerCount , ground);
 		map = new MapGraphics(data);
 
 		startMapEditing();
 		dataTester = new DataTester(data, this);
 	}
+
+	public EditorWindow(MapLoader loader) throws MapLoadException {
+	    data = new MapData(loader.getMapData());
+		header = loader.getFileHeader();
+		map = new MapGraphics(data);
+		
+		startMapEditing();
+		dataTester = new DataTester(data, this);
+    }
 
 	public void startMapEditing() {
 		JFrame window = new JFrame("map editor");
@@ -309,6 +353,16 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	private JToolBar createToolbar() {
 		JToolBar bar = new JToolBar();
 
+		saveButton = new JButton("Save");
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				save();
+			}
+		});
+		saveButton.setEnabled(false);
+		bar.add(saveButton);
+
 		undoButton = new JButton("Undo");
 		undoButton.addActionListener(new ActionListener() {
 			@Override
@@ -319,7 +373,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		undoButton.setEnabled(false);
 		bar.add(undoButton);
 
-		testResult = new JTextField();
+		testResult = new JLabel();
 		testResult.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -351,6 +405,15 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		bar.add(startGameButton);
 		return bar;
 	}
+
+	protected void save() {
+	    try {
+	        MapList.getDefaultList().saveMap(header, data);
+        } catch (IOException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(saveButton, e.getMessage());
+        }
+    }
 
 	protected void play() {
 		try {
@@ -413,6 +476,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		}
 		if (undoDeltas.isEmpty()) {
 			undoButton.setEnabled(false);
+			saveButton.setEnabled(false);
 		}
 	}
 
@@ -424,6 +488,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		data.resetUndoDelta();
 		undoDeltas.add(delta);
 		undoButton.setEnabled(true);
+		saveButton.setEnabled(true);
 	}
 
 	private JPanel createMenu() {

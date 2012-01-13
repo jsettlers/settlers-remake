@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IMapData;
@@ -21,11 +22,12 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.save.MapDataSerializer;
+import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
 import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
 import jsettlers.mapcreator.data.MapDataDelta.LandscapeChange;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectAdder;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectRemover;
-import jsettlers.mapcreator.data.MapDataSerializer.IMapDataReceiver;
 
 /**
  * This is the map data of a map that is beeing created by the editor.
@@ -44,12 +46,12 @@ public class MapData implements IMapData {
 	private final byte[][] heights;
 	private MapDataDelta undoDelta;
 	private final int playercount;
-	private ShortPoint2D[] playerStarts;
+	private ISPosition2D[] playerStarts;
 
 	private byte[][] lastPlayers;
 	private boolean[][] lastBorders;
 
-	public MapData(int width, int height, int playercount) {
+	public MapData(int width, int height, int playercount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException(
 			        "width and height must be positive");
@@ -61,7 +63,7 @@ public class MapData implements IMapData {
 			                + (Short.MAX_VALUE + 1));
 		}
 
-		if (playercount <= 0 || playercount >= 16) {
+		if (playercount <= 0 || playercount >= CommonConstants.MAX_PLAYERS) {
 			throw new IllegalArgumentException("Player count must be 1..32");
 		}
 
@@ -79,8 +81,31 @@ public class MapData implements IMapData {
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				landscapes[x][y] = ELandscapeType.GRASS;
+				landscapes[x][y] = ground;
 			}
+		}
+		resetUndoDelta();
+	}
+
+	public MapData(IMapData data) {
+		this(data.getWidth(), data.getHeight(), data.getPlayerCount(),
+		        ELandscapeType.GRASS);
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				landscapes[x][y] = data.getLandscape(x, y);
+				heights[x][y] = data.getLandscapeHeight(x, y);
+			}
+		}
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				if (data.getMapObject(x, y) != null) {
+					placeObject(data.getMapObject(x, y), x, y);
+				}
+			}
+		}
+		for (int i = 0; i < data.getPlayerCount(); i++) {
+			playerStarts[i] = data.getStartPoint(i);
 		}
 		resetUndoDelta();
 	}
@@ -168,7 +193,7 @@ public class MapData implements IMapData {
 		MapData data = null;
 
 		@Override
-		public void setPlayerStart(int player, int x, int y) {
+		public void setPlayerStart(byte player, int x, int y) {
 			data.playerStarts[player] = new ShortPoint2D(x, y);
 		}
 
@@ -189,7 +214,9 @@ public class MapData implements IMapData {
 
 		@Override
 		public void setDimension(int width, int height, int playercount) {
-			data = new MapData(width, height, playercount);
+			data =
+			        new MapData(width, height, playercount,
+			                ELandscapeType.GRASS);
 		}
 	}
 
@@ -450,7 +477,7 @@ public class MapData implements IMapData {
 			backgroundListener.backgroundChangedAt(cl.x, cl.y);
 			cl = cl.next;
 		}
-		
+
 		// objects
 		ObjectRemover remove = delta.getRemoveObjects();
 		while (remove != null) {
@@ -499,16 +526,16 @@ public class MapData implements IMapData {
 	public boolean isBorder(int x, int y) {
 		return lastBorders != null && lastBorders[x][y];
 	}
-	
+
 	public byte getPlayer(int x, int y) {
 		return lastPlayers != null ? lastPlayers[x][y] : (byte) -1;
 	}
-	
+
 	public void setPlayers(byte[][] lastPlayers) {
-	    this.lastPlayers = lastPlayers;
-    }
-	
+		this.lastPlayers = lastPlayers;
+	}
+
 	public void setBorders(boolean[][] lastBorders) {
-	    this.lastBorders = lastBorders;
-    }
+		this.lastBorders = lastBorders;
+	}
 }

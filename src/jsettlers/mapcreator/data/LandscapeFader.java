@@ -24,6 +24,8 @@ public class LandscapeFader {
 	                new FadableLandscapes(ELandscapeType.MOUNTAIN,
 	                        ELandscapeType.MOUNTAINBORDER),
 	                new FadableLandscapes(ELandscapeType.MOUNTAINBORDER,
+	                        ELandscapeType.MOUNTAINBORDEROUTER),
+	                new FadableLandscapes(ELandscapeType.MOUNTAINBORDEROUTER,
 	                        ELandscapeType.GRASS),
 
 	                new FadableLandscapes(ELandscapeType.RIVER1,
@@ -63,6 +65,21 @@ public class LandscapeFader {
 	                        ELandscapeType.WATER1),
 	                new FadableLandscapes(ELandscapeType.RIVER4,
 	                        ELandscapeType.WATER1),
+
+	                new FadableLandscapes(ELandscapeType.WATER2,
+	                        ELandscapeType.WATER1),
+	                new FadableLandscapes(ELandscapeType.WATER3,
+	                        ELandscapeType.WATER2),
+	                new FadableLandscapes(ELandscapeType.WATER4,
+	                        ELandscapeType.WATER3),
+	                new FadableLandscapes(ELandscapeType.WATER5,
+	                        ELandscapeType.WATER4),
+	                new FadableLandscapes(ELandscapeType.WATER6,
+	                        ELandscapeType.WATER5),
+	                new FadableLandscapes(ELandscapeType.WATER7,
+	                        ELandscapeType.WATER6),
+	                new FadableLandscapes(ELandscapeType.WATER8,
+	                        ELandscapeType.WATER7),
 	        };
 
 	private ELandscapeType[][][] fadeLandscapesBuffer =
@@ -73,7 +90,7 @@ public class LandscapeFader {
 		if (l1 == l2) {
 			return true;
 		}
-		
+
 		FadableLandscapes searched = new FadableLandscapes(l1, l2);
 		for (FadableLandscapes fl : allowed) {
 			if (fl.equals(searched)) {
