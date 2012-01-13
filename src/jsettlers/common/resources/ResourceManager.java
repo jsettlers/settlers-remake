@@ -1,5 +1,6 @@
 package jsettlers.common.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,6 +19,7 @@ public class ResourceManager {
 
 	/**
 	 * Gets the file. Throws a io exception if the file does not exist.
+	 * 
 	 * @param filename
 	 * @return
 	 * @throws IOException
@@ -35,6 +37,20 @@ public class ResourceManager {
 			return provider.writeFile(filename);
 		} else {
 			throw new IOException("No resource provider set.");
+		}
+	}
+
+	/**
+	 * Gets a directory where all the content that is being created should be
+	 * saved.
+	 * 
+	 * @return The directory.
+	 */
+	public static File getSaveDirectory() {
+		if (provider != null) {
+			return provider.getSaveDirectory();
+		} else {
+			return new File("");
 		}
 	}
 }

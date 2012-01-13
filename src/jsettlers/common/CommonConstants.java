@@ -9,6 +9,7 @@ public abstract class CommonConstants {
 	 */
 	public static final boolean ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
 	public static final float TOWERRADIUS = 40;
+	public static final int MAX_PLAYERS = 16;
 
 	/**
 	 * if true, the user will be able to select other player's people and buildings.

@@ -1,5 +1,6 @@
 package jsettlers.common.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,7 +9,6 @@ import java.io.OutputStream;
  * This is a object that provides access to resources needed for the game.
  * 
  * @author michael
- * 
  */
 public interface IResourceProvider {
 	/**
@@ -33,4 +33,12 @@ public interface IResourceProvider {
 	 *             If no stream could be generated
 	 */
 	OutputStream writeFile(String name) throws IOException;
+
+	/**
+	 * Gets a directory to store settings and other stuff.
+	 * 
+	 * @see ResourceManager#getSaveDirectory()
+	 * @return The directory, where the user has write permissions.
+	 */
+	File getSaveDirectory();
 }
