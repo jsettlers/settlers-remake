@@ -164,4 +164,9 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 	protected final ISPosition2D getCenterPos() {
 		return centerPos;
 	}
+
+	@Override
+	protected final void convertActionEvent() {
+		this.unmarkTargetPos();
+	}
 }

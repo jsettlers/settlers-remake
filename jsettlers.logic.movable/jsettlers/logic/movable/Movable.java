@@ -514,7 +514,8 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		return 8;
 	}
 
-	public void convertTo(EMovableType targetType) {
+	public final void convertTo(EMovableType targetType) {
+		strategy.convertActionEvent();
 		this.setStrategy(MovableStrategy.getTypeStrategy(grid, targetType, this));
 	}
 

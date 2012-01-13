@@ -149,8 +149,11 @@ public class ThiefStrategy extends PathableStrategy {
 			this.state = EThiefState.GOING_TO;
 			break;
 		case WALKING_TO_MATERIAL:
-		case TAKING_MATERIAL:
 			markStolen(super.getTargetPos(), false);
+			this.state = EThiefState.GOING_TO;
+			break;
+		case TAKING_MATERIAL:
+			markStolen(super.getPos(), false);
 			this.state = EThiefState.GOING_TO;
 			break;
 
@@ -161,6 +164,18 @@ public class ThiefStrategy extends PathableStrategy {
 
 	private final void markStolen(ISPosition2D pos, boolean mark) {
 		super.getGrid().getMapObjectsManager().markStolen(pos.getX(), pos.getY(), mark);
+	}
+
+	@Override
+	protected final void convertActionEvent() {
+		switch (state) {
+		case WALKING_TO_MATERIAL:
+			markStolen(super.getTargetPos(), false);
+			break;
+		case TAKING_MATERIAL:
+			markStolen(super.getPos(), false);
+			break;
+		}
 	}
 
 	private static enum EThiefState {

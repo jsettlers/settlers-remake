@@ -205,4 +205,10 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 	protected void setSelected(boolean selected) {
 		movable.setSelected(selected);
 	}
+
+	/**
+	 * This method is called when a movable changes it's strategy due to a user action.
+	 */
+	protected void convertActionEvent() {
+	}
 }
