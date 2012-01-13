@@ -73,6 +73,11 @@ public class BuildingCreator implements IMapInterfaceListener {
 			public OutputStream writeFile(String name) throws IOException {
 				return null;
 			}
+
+			@Override
+            public File getSaveDirectory() {
+	            return null;
+            }
 		});
 
 		EBuildingType type = askType();
