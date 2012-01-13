@@ -1,5 +1,11 @@
 package jsettlers.graphics.map;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
 import jsettlers.common.position.ISPosition2D;
 
 public class UIState {
@@ -25,6 +31,24 @@ public class UIState {
 	
 	public int getPlayer() {
 	    return player;
+    }
+	
+	public void writeTo(OutputStream stream) throws IOException {
+		new ObjectOutputStream(stream).writeObject(this);
+	}
+
+	/**
+	 * Reads the ui state from the given stream.
+	 * @param stream
+	 * @return
+	 * @throws IOException 
+	 */
+	public static UIState readFrom(InputStream stream) throws IOException {
+		try {
+	        return (UIState) new ObjectInputStream(stream).readObject();
+        } catch (ClassNotFoundException e) {
+	        throw new IOException(e);
+        }
     }
 
 }

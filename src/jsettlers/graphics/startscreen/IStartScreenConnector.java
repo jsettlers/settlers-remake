@@ -1,8 +1,10 @@
 package jsettlers.graphics.startscreen;
 
 import java.util.Date;
+import java.util.List;
 
-import jsettlers.common.map.IMapDataProvider;
+import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
+import jsettlers.graphics.startscreen.IStartScreenConnector.IRecoverableGame;
 
 /**
  * This connector provides data that is needed by the start screen.
@@ -15,7 +17,7 @@ public interface IStartScreenConnector {
 	 * 
 	 * @return
 	 */
-	IMapItem[] getMaps();
+	List<? extends IMapItem> getMaps();
 
 	public interface IMapItem {
 		String getName();
@@ -32,7 +34,7 @@ public interface IStartScreenConnector {
 		 * 
 		 * @return never null.
 		 */
-		IMapDataProvider createLoadableGame(int players, long random);
+//		IMapDataProvider createLoadableGame(int players, long random);
 	}
 
 	/**
@@ -40,7 +42,7 @@ public interface IStartScreenConnector {
 	 * 
 	 * @return A fixed list of games.
 	 */
-	ILoadableGame[] getLoadableGames();
+	List<? extends ILoadableGame> getLoadableGames();
 
 	public interface ILoadableGame {
 		String getName();
@@ -51,10 +53,10 @@ public interface IStartScreenConnector {
 	/**
 	 * Gets a list of network games that can be recovered.
 	 */
-	IRecoverableGame[] getRecoverableGames();
+	List<? extends IRecoverableGame> getRecoverableGames();
 
 	public interface IRecoverableGame extends INetworkGame {
-		Date getDate();
+		Date getSaveTime();
 	}
 
 	/**

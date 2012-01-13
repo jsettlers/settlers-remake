@@ -108,6 +108,7 @@ public class UIPanel implements UIElement {
 	 */
 	protected void drawAtRect(GLDrawContext gl, Image image,
 	        FloatRectangle position) {
+		gl.color(1,1,1,1);
 		float minX = position.getMinX();
 		float minY = position.getMinY();
 		float maxX = position.getMaxX();

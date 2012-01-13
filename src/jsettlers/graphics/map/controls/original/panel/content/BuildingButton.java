@@ -7,11 +7,9 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.ImageUtils;
 
 /**
  * This is a button to construct a building.
@@ -40,6 +38,7 @@ public class BuildingButton extends Button {
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		if (isActive()) {
+			gl.color(1,1,1,1);
 			ImageProvider
 			        .getInstance()
 			        .getImage(activeMark)
@@ -67,6 +66,8 @@ public class BuildingButton extends Button {
 
 		float cx = getPosition().getCenterX();
 		float cy = getPosition().getCenterY();
+
+		gl.color(1,1,1,1);
 		image.drawImageAtRect(gl, cx - width / 2, cy - height / 2, cx + width
 		        / 2, cy + height / 2);
 	}

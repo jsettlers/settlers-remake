@@ -2,6 +2,7 @@ package jsettlers.graphics.startscreen;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -13,12 +14,9 @@ import jsettlers.graphics.utils.UIPanel;
 
 public class NewGamePanel extends UIPanel {
 
-	private final IMapItem[] maps;
 	private UIList<MapListItem> list;
 
-	public NewGamePanel(IMapItem[] maps) {
-		this.maps = maps;
-
+	public NewGamePanel(List<? extends IMapItem> maps) {
 		ArrayList<MapListItem> items =
 		        new ArrayList<NewGamePanel.MapListItem>();
 		for (IMapItem map : maps) {

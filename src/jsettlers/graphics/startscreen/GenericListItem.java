@@ -34,16 +34,20 @@ public class GenericListItem implements UIListItem {
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		float minX = position.getMinX();
+		float minY = position.getMinY();
 		if (highlight) {
 			Image image = ImageProvider.getInstance().getImage(SELECT_MARKER);
-			image.drawImageAtRect(gl, minX, position.getMinY(),
+
+			gl.color(1,1,1,1);
+			image.drawImageAtRect(gl, minX, minY,
 			        position.getMaxX(), position.getMaxY());
 		}
 		TextDrawer textdrawer = gl.getTextDrawer(EFontSize.NORMAL);
 
 		float height = position.getHeight();
-		textdrawer.drawString(.1f, minX + .6f * height, title);
-		textdrawer.drawString(.1f, minX + .1f * height, description);
+		float textx = minX + .2f * position.getWidth();
+		textdrawer.drawString(textx, minY + .6f * height, title);
+		textdrawer.drawString(textx, minY + .1f * height, description);
 	}
 
 	@Override

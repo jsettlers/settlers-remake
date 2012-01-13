@@ -10,17 +10,21 @@ import go.graphics.text.EFontSize;
 
 import java.util.LinkedList;
 
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen implements SettlersContent {
+	private static final ImageLink BACKGROUND = new ImageLink(EImageLinkType.GUI, 2, 29, 0);
 
 	private final LinkedList<RedrawListener> redrawListeners =
 	        new LinkedList<RedrawListener>();
@@ -52,7 +56,7 @@ public class StartScreen implements SettlersContent {
 	public StartScreen(IStartScreenConnector connector) {
 		this.connector = connector;
 		root = new UIPanel();
-		//root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
+		// root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
 
 		addMainButton(EActionType.SHOW_START_NEW, .9f);
 		addMainButton(EActionType.SHOW_LOAD, .75f);
@@ -80,6 +84,10 @@ public class StartScreen implements SettlersContent {
 		if (action == null) {
 			return;
 		}
+		if (action instanceof ExecutableAction) {
+			((ExecutableAction) action).execute();
+		}
+		
 		switch (action.getActionType()) {
 			case SHOW_CONNECT_NETWORK:
 			case SHOW_LOAD:
@@ -97,20 +105,20 @@ public class StartScreen implements SettlersContent {
 					}
 				}
 				break;
-				
+
 			case LOAD_GAME:
-				ILoadableGame load = getLoadableGame();
+				ILoadableGame load = getSelectedLoadableGame();
 				if (load != null) {
 					connector.loadGame(load);
 				}
 				break;
-
 		}
+		
+		requestRedraw();
 	}
 
-	private ILoadableGame getLoadableGame() {
-		// TODO Auto-generated method stub
-		return null;
+	private ILoadableGame getSelectedLoadableGame() {
+		return connector.getLoadableGames().get(0);
 	}
 
 	private void displayContent(EActionType displayAction) {
@@ -144,8 +152,8 @@ public class StartScreen implements SettlersContent {
 	@Override
 	public void drawContent(GLDrawContext gl2, int width, int height) {
 		root.setPosition(new FloatRectangle(0, 0, width, height));
-		gl2.color(0, 0, 0, 1);
-		gl2.fillQuad(0, 0, width, height);
+		gl2.color(.6f, .6f, .6f, 1);
+		ImageProvider.getInstance().getImage(BACKGROUND).drawImageAtRect(gl2, 0, 0, width, height);
 		root.drawAt(gl2);
 	}
 

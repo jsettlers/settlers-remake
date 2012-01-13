@@ -138,8 +138,6 @@ public class SingleImage implements ImageDataPrivider, Image {
 
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 	        float right, float top) {
-		gl.color(1, 1, 1, 1);
-
 		tmpBuffer[0] = left;
 		tmpBuffer[1] = top;
 

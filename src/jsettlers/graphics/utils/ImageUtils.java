@@ -9,6 +9,8 @@ public final class ImageUtils {
 
 	/**
 	 * Draws an image at a rect preserving the images aspect.
+	 * <p>
+	 * Does not change the color!
 	 * 
 	 * @param gl
 	 * @param image

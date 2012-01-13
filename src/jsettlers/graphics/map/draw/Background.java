@@ -34,7 +34,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 	/**
 	 * Our base texture is divided into multiple squares that all hold a single
-	 * texture. Coninuous textures occupy 5*5 squares
+	 * texture. Continuous textures occupy 5*5 squares
 	 */
 	private static final int TEXTURE_GRID = 32;
 
@@ -87,6 +87,11 @@ public class Background implements IGraphicsBackgroundListener {
 	 * |39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65|66|67|68|69|70|
 	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ --- ↓ +200
 	 * |71|72|73|74|75|  |77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|00|01|02|
+	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+	 * |     |     |     |     |     |     |     |
+	 * | 011 | 012 | 013 | 014 | 015 | 016 | 017 |
+	 * |     |     |     |     |     |     |     |
+	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 	 */
 	private static final int[][] TEXTURE_POSITIONS = {
 	        /* 0: big */{
@@ -122,26 +127,26 @@ public class Background implements IGraphicsBackgroundListener {
 	        /* 10: big */{
 	                0, 5, 5
 	        },
-	        /* 11: small */{
-	                30, 2, 1
+	        /* 11: small, continuous */{
+	                0, 20, 2
 	        },
-	        /* 12: small */{
-	                31, 2, 1
+	        /* 12: small, continuous */{
+	                2, 20, 2
 	        },
-	        /* 13: small */{
-	                30, 3, 1
+	        /* 13: small, continuous */{
+	                4, 20, 2
 	        },
-	        /* 14: small */{
-	                31, 3, 1
+	        /* 14: small, continuous */{
+	                6, 20, 2
 	        },
-	        /* 15: small */{
-	                30, 4, 1
+	        /* 15: small, continuous */{
+	                8, 20, 2
 	        },
-	        /* 16: small */{
-	                31, 4, 1
+	        /* 16: small, continuous */{
+	                10, 20, 2
 	        },
-	        /* 17: small */{
-	                30, 5, 1
+	        /* 17: small, continuous */{
+	                12, 20, 2
 	        },
 	        /* 18: big */{
 	                5, 5, 5
@@ -928,8 +933,58 @@ public class Background implements IGraphicsBackgroundListener {
 	        boolean useSecond) {
 		int index;
 
-		// grass <=> dessert
-		if (outer == ELandscapeType.GRASS && inner == ELandscapeType.DESERT) {
+		// water <=> water
+		if (outer == ELandscapeType.WATER1 && inner == ELandscapeType.WATER2) {
+			index = 84;
+		} else if (outer == ELandscapeType.WATER2
+		        && inner == ELandscapeType.WATER1) {
+			index = 86;
+
+		} else if (outer == ELandscapeType.WATER2
+		        && inner == ELandscapeType.WATER3) {
+			index = 88;
+		} else if (outer == ELandscapeType.WATER3
+		        && inner == ELandscapeType.WATER2) {
+			index = 90;
+			
+		} else if (outer == ELandscapeType.WATER3
+		        && inner == ELandscapeType.WATER4) {
+			index = 92;
+		} else if (outer == ELandscapeType.WATER4
+		        && inner == ELandscapeType.WATER3) {
+			index = 94;
+			
+		} else if (outer == ELandscapeType.WATER4
+		        && inner == ELandscapeType.WATER5) {
+			index = 96;
+		} else if (outer == ELandscapeType.WATER5
+		        && inner == ELandscapeType.WATER4) {
+			index = 98;
+			
+		} else if (outer == ELandscapeType.WATER5
+		        && inner == ELandscapeType.WATER6) {
+			index = 100;
+		} else if (outer == ELandscapeType.WATER6
+		        && inner == ELandscapeType.WATER5) {
+			index = 102;
+			
+		} else if (outer == ELandscapeType.WATER6
+		        && inner == ELandscapeType.WATER7) {
+			index = 104;
+		} else if (outer == ELandscapeType.WATER7
+		        && inner == ELandscapeType.WATER6) {
+			index = 106;
+			
+		} else if (outer == ELandscapeType.WATER7
+		        && inner == ELandscapeType.WATER8) {
+			index = 108;
+		} else if (outer == ELandscapeType.WATER8
+		        && inner == ELandscapeType.WATER7) {
+			index = 110;
+
+			// grass <=> dessert
+		} else if (outer == ELandscapeType.GRASS
+		        && inner == ELandscapeType.DESERT) {
 			index = 181;
 		} else if (outer == ELandscapeType.DESERT
 		        && inner == ELandscapeType.GRASS) {
@@ -1333,8 +1388,8 @@ public class Background implements IGraphicsBackgroundListener {
 		ETextureOrientation texturePos;
 		int textureindex;
 		if (toplandscape == leftlandscape && toplandscape == rightlandscape) {
-			texturePos = ETextureOrientation.CONTINUOUS_UP;
 			textureindex = toplandscape.getImageNumber();
+			texturePos = ETextureOrientation.CONTINUOUS_UP;
 		} else if (leftlandscape == rightlandscape) {
 			texturePos = ETextureOrientation.BOTTOM;
 			textureindex = getBorder(leftlandscape, toplandscape, useSecond);
@@ -1346,6 +1401,7 @@ public class Background implements IGraphicsBackgroundListener {
 			textureindex = getBorder(toplandscape, leftlandscape, useSecond);
 		}
 
+		int[] positions = TEXTURE_POSITIONS[textureindex];
 		// texture position
 		int adddx = 0;
 		int adddy = 0;
@@ -1354,10 +1410,9 @@ public class Background implements IGraphicsBackgroundListener {
 			        x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X
 			                / 2;
 			adddy = y * DrawConstants.DISTANCE_Y;
-			adddx = realModulo(adddx, ETextureOrientation.CONTINOUS_SIZE);
-			adddy = realModulo(adddy, ETextureOrientation.CONTINOUS_SIZE);
+			adddx = realModulo(adddx, (positions[2] - 1) * TEXTURE_GRID);
+			adddy = realModulo(adddy, (positions[2] - 1) * TEXTURE_GRID);
 		}
-		int[] positions = TEXTURE_POSITIONS[textureindex];
 		adddx += positions[0] * TEXTURE_GRID;
 		adddy += positions[1] * TEXTURE_GRID;
 
