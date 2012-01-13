@@ -138,6 +138,8 @@ public class SingleImage implements ImageDataPrivider, Image {
 
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 	        float right, float top) {
+		int textureIndex = getTextureIndex(gl);
+		
 		tmpBuffer[0] = left;
 		tmpBuffer[1] = top;
 
@@ -154,7 +156,7 @@ public class SingleImage implements ImageDataPrivider, Image {
 		tmpBuffer[16] = top;
 		tmpBuffer[18] = (float) width / textureWidth;
 
-		gl.drawQuadWithTexture(getTextureIndex(gl), tmpBuffer);
+		gl.drawQuadWithTexture(textureIndex, tmpBuffer);
 	}
 
 	/*
@@ -198,11 +200,9 @@ public class SingleImage implements ImageDataPrivider, Image {
 			gl.color(color);
 		}
 
-		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl),
-		        2);
-
-		// gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometry());
-		return;
+		int textureIndex = getTextureIndex(gl);
+		int geometryIndex2 = getGeometryIndex(gl);
+		gl.drawTrianglesWithTexture(textureIndex, geometryIndex2, 2);
 	}
 
 	@Override
@@ -214,9 +214,9 @@ public class SingleImage implements ImageDataPrivider, Image {
 			        color.getBlue() * multiply, color.getAlpha());
 		}
 
-		gl.drawTrianglesWithTexture(getTextureIndex(gl), getGeometryIndex(gl),
-		        2);
-		return;
+		int textureIndex = getTextureIndex(gl);
+		int geometryIndex2 = getGeometryIndex(gl);
+		gl.drawTrianglesWithTexture(textureIndex, geometryIndex2, 2);
 	}
 
 	private float[] getGeometry() {
