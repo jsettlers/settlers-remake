@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.EBuildingType.BuildingAreaBitSet;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -665,11 +666,6 @@ public class MainGrid implements Serializable {
 			return height;
 		}
 
-		@Override
-		public final byte getHeightAt(short x, short y) {
-			return landscapeGrid.getHeightAt(x, y);
-		}
-
 		final boolean canConstructAt(short x, short y, EBuildingType type, byte player) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			for (RelativePoint curr : type.getProtectedTiles()) {
@@ -680,7 +676,7 @@ public class MainGrid implements Serializable {
 					return false;
 				}
 			}
-			return true;
+			return getConstructionMarkValue(x, y, type) >= 0;
 		}
 
 		@Override
@@ -704,6 +700,39 @@ public class MainGrid implements Serializable {
 			return MainGrid.this.isInBounds(x, y);
 		}
 
+		@Override
+		public byte getConstructionMarkValue(short mapX, short mapY, EBuildingType buildingType) {
+			final BuildingAreaBitSet buildingSet = buildingType.getBuildingAreaBitSet();
+			int sum = 0;
+
+			for (short x = buildingSet.minX; x <= buildingSet.maxX; x++) {
+				for (short y = buildingSet.minX; y <= buildingSet.maxX; y++) {
+					if (buildingSet.get(x, y)) {
+						sum += landscapeGrid.getHeightAt((short) (mapX + x), (short) (mapY + y));
+					}
+				}
+			}
+
+			int avg = sum / buildingSet.numberOfPositions;
+			float diff = 0;
+			for (short x = buildingSet.minX; x <= buildingSet.maxX; x++) {
+				for (short y = buildingSet.minX; y <= buildingSet.maxX; y++) {
+					if (buildingSet.get(x, y)) {
+						float currDiff = Math.abs(landscapeGrid.getHeightAt((short) (mapX + x), (short) (mapY + y))) - avg;
+						diff += currDiff;
+					}
+				}
+			}
+
+			diff /= buildingSet.numberOfPositions;
+			int result = (int) (2 * diff);
+
+			if (result <= Byte.MAX_VALUE) {
+				return (byte) result;
+			} else {
+				return -1;
+			}
+		}
 	}
 
 	class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
