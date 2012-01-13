@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import android.content.Context;
-
 import jsettlers.common.resources.IResourceProvider;
+import android.content.Context;
 
 public class ResourceProvider implements IResourceProvider {
 	private final File[] dirs;
@@ -60,5 +59,10 @@ public class ResourceProvider implements IResourceProvider {
 		outFile.getParentFile().mkdirs();
 		return new FileOutputStream(outFile);
 	}
+
+	@Override
+    public File getSaveDirectory() {
+	    return dirs[0];
+    }
 
 }

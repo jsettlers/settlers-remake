@@ -7,6 +7,7 @@ import go.graphics.region.Region;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
@@ -251,7 +252,6 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	@Override
 	public ProgressConnector showProgress() {
-
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -299,8 +299,8 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	 */
 	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
-			IMapItem[] maps = displayedStartScreen.getMaps();
-			final IMapItem map = maps[0];
+			List<? extends IMapItem> maps = displayedStartScreen.getMaps();
+			final IMapItem map = maps.get(0);
 			displayedStartScreen.startNewGame(new IGameSettings() {
 				@Override
 				public int getPlayerCount() {
