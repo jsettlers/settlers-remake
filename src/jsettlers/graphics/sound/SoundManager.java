@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Random;
 
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
@@ -60,6 +61,8 @@ public class SoundManager {
 	private static final int SEQUENCE_N = 118;
 	public static final int NOTIFY_ATTACKED = 80;
 	private final SoundPlayer player;
+	
+	private final Random random = new Random();
 
 	public SoundManager(SoundPlayer player) {
 		this.player = player;
@@ -70,7 +73,7 @@ public class SoundManager {
 	 * The lookup paths for the dat files.
 	 */
 	private static ArrayList<File> lookupPaths = new ArrayList<File>();
-	private int[] playerids;
+	private int[][] playerids;
 	private boolean initializing = false;
 
 	private void loadSounds() throws FileNotFoundException, IOException {
@@ -118,7 +121,7 @@ public class SoundManager {
 			seqheaderstarts[i] = reader.read32();
 		}
 
-		playerids = new int[SEQUENCE_N];
+		playerids = new int[SEQUENCE_N][];
 		for (int i = 0; i < SEQUENCE_N; i++) {
 			reader.skipTo(seqheaderstarts[i]);
 			int alternaitvecount = reader.read32();
@@ -127,23 +130,26 @@ public class SoundManager {
 				starts[j] = reader.read32();
 			}
 			if (starts.length == 0) {
-				playerids[i] = -1;
+				playerids[i] = new int[0];
 				continue;
 			}
 
-			// only use 0 for now
-			reader.skipTo(starts[0]);
+			int[] sounds = new int[alternaitvecount];
+			for (int j = 0; j < alternaitvecount; j++) {
+				// only use 0 for now
+				reader.skipTo(starts[j]);
 
-			int length = reader.read32() / 2;
-			reader.read32();
-			reader.read32(); // mostly 22050
-			reader.read32(); // mostly 44100
-			reader.read32();
-			System.out.println("sound file " + i + ", startbyte: " + starts[0]
-			        + ", startsample: " + starts[0] / 2 + ", endsample: "
-			        + (starts[0] / 2 + length));
-
-			playerids[i] = player.load(loadSound(reader, length));
+				int length = reader.read32() / 2;
+				reader.read32();
+				reader.read32(); // mostly 22050
+				reader.read32(); // mostly 44100
+				reader.read32();
+				System.out.println("sound file " + i + ", alternaitve " + j + ", startbyte: "
+				        + starts[0] + ", startsample: " + starts[j] / 2
+				        + ", endsample: " + (starts[j] / 2 + length));
+				sounds[j] = player.load(loadSound(reader, length));
+			}
+			playerids[i] = sounds;
 		}
 	}
 
@@ -164,7 +170,11 @@ public class SoundManager {
 		initialize(); // <TODO: preload sounds
 
 		if (playerids != null && soundid >= 0 && soundid < SEQUENCE_N) {
-			player.playSound(playerids[soundid], volume1, volume2);
+			int[] alternatives = playerids[soundid];
+			if (alternatives != null && alternatives.length > 0) {
+				int rand = random.nextInt(alternatives.length);
+				player.playSound(alternatives[rand], volume1, volume2);
+			}
 		}
 	}
 
