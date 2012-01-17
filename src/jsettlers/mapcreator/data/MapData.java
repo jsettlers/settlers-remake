@@ -264,9 +264,6 @@ public class MapData implements IMapData {
 				}
 			}
 		}
-		if (isWater(type)) {
-			setHeight(x, y, 0);
-		}
 
 		undoDelta.addLandscapeChange(x, y, landscapes[x][y]);
 		landscapes[x][y] = type;
@@ -395,7 +392,8 @@ public class MapData implements IMapData {
 		        && type != ELandscapeType.RIVER1
 		        && type != ELandscapeType.RIVER2
 		        && type != ELandscapeType.RIVER3
-		        && type != ELandscapeType.RIVER4;
+		        && type != ELandscapeType.RIVER4 
+		        && type != ELandscapeType.MOOR;
 	}
 
 	private boolean isWater(int x, int y) {
@@ -490,8 +488,8 @@ public class MapData implements IMapData {
 			objects[adder.x][adder.y] = adder.obj;
 			adder = adder.next;
 		}
-		
-		//start points
+
+		// start points
 		StartPointSetter start = delta.getStartPoints();
 		while (start != null) {
 			playerStarts[start.player] = start.pos;
@@ -548,6 +546,6 @@ public class MapData implements IMapData {
 
 	public void setStartPoint(byte activePlayer, ISPosition2D pos) {
 		this.undoDelta.setStartPoint(activePlayer, playerStarts[activePlayer]);
-	    this.playerStarts[activePlayer] = pos;
-    }
+		this.playerStarts[activePlayer] = pos;
+	}
 }

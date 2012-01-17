@@ -1,5 +1,6 @@
 package jsettlers.mapcreator.tools;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.main.DataTester;
@@ -35,12 +36,15 @@ public class FixHeightsTool implements Tool {
 	private static void fix(MapData map, int x, int y, int x2, int y2) {
 		byte h1 = map.getLandscapeHeight(x, y);
 		byte h2 = map.getLandscapeHeight(x2, y2);
-		if (h1 - h2 > DataTester.MAX_HEIGHT_DIFF) {
+		ELandscapeType l1 = map.getLandscape(x, y);
+		ELandscapeType l2 = map.getLandscape(x2, y2);
+		int maxHeightDiff = DataTester.getMaxHeightDiff(l1, l2);
+		if (h1 - h2 > maxHeightDiff) {
 			// h1 too big
-			map.setHeight(x, y, h2 + DataTester.MAX_HEIGHT_DIFF);
-		} else if (h2 - h1 > DataTester.MAX_HEIGHT_DIFF) {
+			map.setHeight(x, y, h2 + maxHeightDiff);
+		} else if (h2 - h1 > maxHeightDiff) {
 			// h2 too big
-			map.setHeight(x2, y2, h1 + DataTester.MAX_HEIGHT_DIFF);
+			map.setHeight(x2, y2, h1 + maxHeightDiff);
 		}
 	}
 

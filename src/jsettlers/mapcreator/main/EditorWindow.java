@@ -121,6 +121,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		                new SetLandscapeTool(ELandscapeType.GRASS, false),
 		                new SetLandscapeTool(ELandscapeType.DRY_GRASS, false),
 		                new SetLandscapeTool(ELandscapeType.SAND, false),
+		                new SetLandscapeTool(ELandscapeType.FLATTENED, false),
+		                new SetLandscapeTool(ELandscapeType.DESERT, false),
+		                new SetLandscapeTool(ELandscapeType.EARTH, false),
 		                new SetLandscapeTool(ELandscapeType.WATER1, false),
 		                new SetLandscapeTool(ELandscapeType.WATER2, false),
 		                new SetLandscapeTool(ELandscapeType.WATER3, false),
@@ -135,6 +138,10 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		                new SetLandscapeTool(ELandscapeType.RIVER4, true),
 		                new SetLandscapeTool(ELandscapeType.MOUNTAIN, false),
 		                new SetLandscapeTool(ELandscapeType.SNOW, false),
+		                new SetLandscapeTool(ELandscapeType.MOOR, false),
+		                new SetLandscapeTool(ELandscapeType.FLATTENED_DESERT, false),
+		                new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
+		                new SetLandscapeTool(ELandscapeType.GRAVEL, false),
 		        }),
 		        new ToolBox("Höhen", new ToolNode[] {
 		        		new LandscapeHeightTool(),
@@ -326,7 +333,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		menu.setPreferredSize(new Dimension(300, 800));
 		root.add(menu, BorderLayout.EAST);
 
-		// menu
+		// toolbar
 		JToolBar toolbar = createToolbar();
 		root.add(toolbar, BorderLayout.NORTH);
 
@@ -569,6 +576,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				shapeGroup.add(button);
 				shapeButtons.add(button);
 			}
+			shapeButtons.setLayout(new BoxLayout(shapeButtons, BoxLayout.LINE_AXIS));
 		}
 		shapeButtons.revalidate();
 	}

@@ -14,7 +14,7 @@ public class LandscapeFader {
 	                new FadableLandscapes(ELandscapeType.DRY_GRASS,
 	                        ELandscapeType.GRASS),
 	                new FadableLandscapes(ELandscapeType.DESERT,
-	                        ELandscapeType.GRASS),
+	                        ELandscapeType.DRY_GRASS),
 	                new FadableLandscapes(ELandscapeType.FLATTENED,
 	                        ELandscapeType.GRASS),
 	                new FadableLandscapes(ELandscapeType.SAND,
@@ -27,6 +27,19 @@ public class LandscapeFader {
 	                        ELandscapeType.MOUNTAINBORDEROUTER),
 	                new FadableLandscapes(ELandscapeType.MOUNTAINBORDEROUTER,
 	                        ELandscapeType.GRASS),
+
+	                new FadableLandscapes(ELandscapeType.MOOR,
+	                        ELandscapeType.MOORBORDER),
+	                new FadableLandscapes(ELandscapeType.GRASS,
+	                        ELandscapeType.MOORBORDER),
+
+	                new FadableLandscapes(ELandscapeType.GRAVEL,
+	                        ELandscapeType.MOUNTAINBORDER),
+
+	                new FadableLandscapes(ELandscapeType.SHARP_FLATTENED_DESERT,
+	                        ELandscapeType.DESERT),
+	                new FadableLandscapes(ELandscapeType.FLATTENED_DESERT,
+	                        ELandscapeType.DESERT),
 
 	                new FadableLandscapes(ELandscapeType.RIVER1,
 	                        ELandscapeType.RIVER2),

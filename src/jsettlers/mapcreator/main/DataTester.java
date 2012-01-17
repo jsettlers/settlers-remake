@@ -70,14 +70,14 @@ public class DataTester implements Runnable {
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
 				MapObject mapObject = data.getMapObject(x, y);
+				ShortPoint2D start = new ShortPoint2D(x, y);
 				if (mapObject instanceof BuildingObject) {
-					ShortPoint2D start = new ShortPoint2D(x, y);
 					BuildingObject buildingObject = (BuildingObject) mapObject;
 					testBuilding(players, x, y, start, buildingObject);
 				}
 			}
 		}
-		
+
 		boolean[][] borders = new boolean[data.getWidth()][data.getHeight()];
 
 		for (int x = 0; x < data.getWidth() - 1; x++) {
@@ -87,16 +87,17 @@ public class DataTester implements Runnable {
 				test(x, y, x, y + 1, players, borders);
 			}
 		}
-		
+
 		for (int player = 0; player < data.getPlayerCount(); player++) {
 			ISPosition2D point = data.getStartPoint(player);
 			if (players[point.getX()][point.getY()] != player) {
-				testFailed("Player " + player + " has invalid start point", point);
+				testFailed("Player " + player + " has invalid start point",
+				        point);
 			}
-			//mark
+			// mark
 			borders[point.getX()][point.getY()] = true;
 		}
-		
+
 		data.setPlayers(players);
 		data.setBorders(borders);
 		receiver.testResult(result, successful, resultPosition);
@@ -146,14 +147,15 @@ public class DataTester implements Runnable {
 
 	private void test(int x, int y, int x2, int y2, byte[][] players,
 	        boolean[][] borders) {
+		ELandscapeType l2 = data.getLandscape(x2, y2);
+		ELandscapeType l1 = data.getLandscape(x, y);
+		int maxHeightDiff = getMaxHeightDiff(l1, l2);
 		if (Math.abs(data.getLandscapeHeight(x2, y2)
-		        - data.getLandscapeHeight(x, y)) > MAX_HEIGHT_DIFF) {
+		        - data.getLandscapeHeight(x, y)) > maxHeightDiff) {
 			successful = false;
 			result = "Too high landscape diff";
 			resultPosition = new ShortPoint2D(x, y);
 		}
-		ELandscapeType l2 = data.getLandscape(x2, y2);
-		ELandscapeType l1 = data.getLandscape(x, y);
 		if (!fader.canFadeTo(l2, l1)) {
 			testFailed("Wrong landscape pair: " + l2 + ", " + l1,
 			        new ShortPoint2D(x, y));
@@ -167,6 +169,13 @@ public class DataTester implements Runnable {
 				borders[x2][y2] = true;
 			}
 		}
+	}
+
+	public static int getMaxHeightDiff(ELandscapeType landscape,
+	        ELandscapeType landscape2) {
+		return landscape.isWater() || landscape == ELandscapeType.MOOR
+		        || landscape2.isWater() || landscape2 == ELandscapeType.MOOR ? 0
+		        : MAX_HEIGHT_DIFF;
 	}
 
 	private void testFailed(String string, ISPosition2D pos) {
