@@ -236,7 +236,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		switch (mapObjectType) {
 		case GHOST:
 		case BUILDING_DECONSTRUCTION_SMOKE:
-			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration);
+			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration, player);
 			break;
 		default:
 			object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
