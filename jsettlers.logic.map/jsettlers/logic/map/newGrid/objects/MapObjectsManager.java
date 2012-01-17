@@ -438,7 +438,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	public void addWaves(short x, short y) {
-	    grid.addMapObject(x, y, new WaveMapObject());
+	    grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.WAVES));
     }
 
 	public void addFish(short x, short y) {
