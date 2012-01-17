@@ -15,10 +15,10 @@ CR-010 [x] ~rev 780   ae    --       allow soldiers to occupy buildings.
 CR-011 [x] ~rev 779   ae    --       disallow pioneers to take land that is protected by a tower
 CR-012 [x]  rev 715   ae    --       make pioneers listen to the stop command
 CR-013 [ ]                  --       introduce different soldier strategies: do nothing, stand, defensive (go back to where you were, do not go far) and agressive
-CR-014 [ ]                  --       allow pioneers to be converted to bearers.
-CR-015 [ ]                  --       allow bearers to be converted to specialists
+CR-014 [x] ~rev 830   ae    --       allow pioneers to be converted to bearers.
+CR-015 [x] ~rev 830   ae    --       allow bearers to be converted to specialists
 CR-016 [ ]                  --       make a thief strategy
-CR-017 [ ]                  --       make a map editor
+CR-017 [x] ~rev 840   mz    --       make a map editor
 CR-018 [ ]                  --       make bearers unkillable
 CR-019 [ ]                  --       introduce different selection levels: soldiers, specialistst and bearers.
 CR-020 [ ]                  --       add a priority for different goods to be transported by bearers.
