@@ -11,36 +11,38 @@ import jsettlers.common.resources.IResourceProvider;
 
 public class ResourceProvider implements IResourceProvider {
 	private String path;
-	private File userPath;
+	// we may want to use this in the future.
+	//private File userPath;
 
 	public ResourceProvider() {
 		String currentParentFolder =
 		        new File(new File("").getAbsolutePath()).getParent().replace(
 		                '\\', '/');
 		path = currentParentFolder + "/jsettlers.common/resources/";
-		userPath = new File(System.getProperty("user.home"), ".jsettlers");
-		userPath.mkdirs();
+		//userPath = new File(System.getProperty("user.home"), ".jsettlers");
+		//userPath.mkdirs();
 	}
 
 	@Override
 	public InputStream getFile(String name) throws IOException {
-		File file = new File(userPath.getAbsolutePath() + "/" + name);
-		if (!file.exists()) {
-			file = new File(path + name);
-		}
+//		File file = new File(userPath.getAbsolutePath() + "/" + name);
+//		if (!file.exists()) {
+			File file = new File(path + name);
+//		}
 		return new FileInputStream(file);
 	}
 
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
-		File file = new File(userPath.getAbsolutePath() + name);
+		//In the future: save to user path
+		File file = new File(path + name);
 		file.getParentFile().mkdirs();
 		return new FileOutputStream(file);
 	}
 
 	@Override
 	public File getSaveDirectory() {
-		return userPath;
+		return new File(path);
 	}
 
 }
