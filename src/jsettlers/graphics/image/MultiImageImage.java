@@ -32,39 +32,40 @@ public class MultiImageImage implements Image {
 			torsoGeometry = null;
 		}
 	}
+	private static final float IMAGE_DRAW_OFFSET = .5f;
 
 	private static float[] createGeometry(MultiImageMap map,
 	        ImageMetadata settlerMeta, int settlerx, int settlery) {
 		float umin = (float) settlerx / map.getWidth();
 		float umax = (float) (settlerx + settlerMeta.width) / map.getWidth();
 		
-		float vmin = (float) (settlery - .5f + settlerMeta.height) / map.getHeight();
-		float vmax = (float) (settlery - .5f) / map.getHeight();
+		float vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
+		float vmax = (float) (settlery) / map.getHeight();
 		return new float[] {
 		        // top left
-		        settlerMeta.offsetX,
-		        -settlerMeta.offsetY - settlerMeta.height,
+		        settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
+		        -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
 		        0,
 		        umin,
 		        vmin,
 
 		        // bottom left
-		        settlerMeta.offsetX,
-		        -settlerMeta.offsetY,
+		        settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
+		        -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
 		        0,
 		        umin,
 		        vmax,
 
 		        // bottom right
-		        settlerMeta.offsetX + settlerMeta.width,
-		        -settlerMeta.offsetY,
+		        settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
+		        -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
 		        0,
 		        umax,
 		        vmax,
 
 		        // top right
-		        settlerMeta.offsetX + settlerMeta.width,
-		        -settlerMeta.offsetY - settlerMeta.height,
+		        settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
+		        -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
 		        0,
 		        umax,
 		        vmin,
@@ -112,14 +113,14 @@ public class MultiImageImage implements Image {
 		gl.color(1, 1, 1, 1);
 
 		System.arraycopy(settlerGeometry, 0, tmpBuffer, 0, 4 * 5);
-		tmpBuffer[0] = left;
-		tmpBuffer[1] = top;
-		tmpBuffer[5] = left;
-		tmpBuffer[6] = bottom;
-		tmpBuffer[10] = right;
-		tmpBuffer[11] = bottom;
-		tmpBuffer[15] = right;
-		tmpBuffer[16] = top;
+		tmpBuffer[0] = left + IMAGE_DRAW_OFFSET;
+		tmpBuffer[1] = top + IMAGE_DRAW_OFFSET;
+		tmpBuffer[5] = left + IMAGE_DRAW_OFFSET;
+		tmpBuffer[6] = bottom + IMAGE_DRAW_OFFSET;
+		tmpBuffer[10] = right + IMAGE_DRAW_OFFSET;
+		tmpBuffer[11] = bottom + IMAGE_DRAW_OFFSET;
+		tmpBuffer[15] = right + IMAGE_DRAW_OFFSET;
+		tmpBuffer[16] = top + IMAGE_DRAW_OFFSET;
 
 		gl.drawQuadWithTexture(map.getTexture(gl), tmpBuffer);
 	}

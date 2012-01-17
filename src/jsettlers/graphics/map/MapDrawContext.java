@@ -137,7 +137,7 @@ public final class MapDrawContext {
 
 		gl2.glPushMatrix();
 		gl2.glScalef(zoom, zoom, 1);
-		gl2.glTranslatef(-this.screen.getLeft(), -this.screen.getBottom(), 0);
+		gl2.glTranslatef((int) -this.screen.getLeft() + .5f, (int) -this.screen.getBottom() + .5f, 0);
 	}
 
 	/**

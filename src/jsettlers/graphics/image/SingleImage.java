@@ -17,6 +17,7 @@ import jsettlers.graphics.reader.ImageMetadata;
  */
 public class SingleImage implements ImageDataPrivider, Image {
 
+	private static final float IMAGE_DRAW_OFFSET = .5f;
 	protected ShortBuffer data;
 	protected final int width;
 	protected final int height;
@@ -140,20 +141,20 @@ public class SingleImage implements ImageDataPrivider, Image {
 	        float right, float top) {
 		int textureIndex = getTextureIndex(gl);
 		
-		tmpBuffer[0] = left;
-		tmpBuffer[1] = top;
+		tmpBuffer[0] = left + IMAGE_DRAW_OFFSET;
+		tmpBuffer[1] = top + IMAGE_DRAW_OFFSET;
 
-		tmpBuffer[5] = left;
-		tmpBuffer[6] = bottom;
+		tmpBuffer[5] = left + IMAGE_DRAW_OFFSET;
+		tmpBuffer[6] = bottom + IMAGE_DRAW_OFFSET;
 		tmpBuffer[9] = (float) height / textureHeight;
 
-		tmpBuffer[10] = right;
-		tmpBuffer[11] = bottom;
+		tmpBuffer[10] = right + IMAGE_DRAW_OFFSET;
+		tmpBuffer[11] = bottom + IMAGE_DRAW_OFFSET;
 		tmpBuffer[13] = (float) width / textureWidth;
 		tmpBuffer[14] = (float) height / textureHeight;
 
-		tmpBuffer[15] = right;
-		tmpBuffer[16] = top;
+		tmpBuffer[15] = right + IMAGE_DRAW_OFFSET;
+		tmpBuffer[16] = top + IMAGE_DRAW_OFFSET;
 		tmpBuffer[18] = (float) width / textureWidth;
 
 		gl.drawQuadWithTexture(textureIndex, tmpBuffer);

@@ -98,6 +98,7 @@ public class MapObjectDrawer {
 	private static final int PIG_SEQ = 0;
 
 	private static final int ANIMALS_FILE = 6;
+	private static final int FISH_SEQ = 7;
 
 	int animationStep = 0;
 
@@ -294,6 +295,20 @@ public class MapObjectDrawer {
 				}
 					break;
 
+				case FISH_DECORATION: {
+					int step = getAnimationStep(x, y);
+					Sequence<? extends Image> seq =
+					        this.imageProvider.getSettlerSequence(ANIMALS_FILE,
+					                FISH_SEQ);
+					int substep = step  % 1024;
+					if (substep < 15) {
+						int subseq = (step / 1024) % 4;
+						seq.getImageSafe(subseq * 15 + substep).draw(context.getGl(), null,
+						        color);
+					};
+				}
+					break;
+
 				default:
 					break;
 			}
@@ -412,7 +427,7 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, WAVES);
 		int len = seq.length();
-		int step = (animationStep/2 + x/2 + y/2) % len;
+		int step = (animationStep / 2 + x / 2 + y / 2) % len;
 		if (step < len) {
 			seq.getImageSafe(step).draw(context.getGl(), null, color);
 		}
@@ -507,9 +522,9 @@ public class MapObjectDrawer {
 	 * @param pos
 	 * @return
 	 */
-//	private static int get01(int x, int y) {
-//		return (x * 677 + y) % 2;
-//	}
+	// private static int get01(int x, int y) {
+	// return (x * 677 + y) % 2;
+	// }
 
 	/**
 	 * Draws a player border at a given position.
@@ -532,7 +547,7 @@ public class MapObjectDrawer {
 	}
 
 	private int getAnimationStep(int x, int y) {
-		return this.animationStep + x * 167 + y * 41;
+		return this.animationStep + x * 167 + y * 1223;
 	}
 
 	/**
@@ -698,8 +713,10 @@ public class MapObjectDrawer {
 		SingleImage image = (SingleImage) unsafeimage;
 		// number of tiles in x direction, can be adjustet for performance
 		int tiles = 6;
-		
-		float toplineBottom = (int) (maskState * image.getHeight()) / (float) image.getHeight();
+
+		float toplineBottom =
+		        (int) (maskState * image.getHeight())
+		                / (float) image.getHeight();
 		float toplineTop = Math.min(1, toplineBottom + .1f);
 
 		float[] tris = new float[(tiles + 2) * 3 * 5];
@@ -739,9 +756,11 @@ public class MapObjectDrawer {
 		array[offset + 1] = y;
 		array[offset + 2] = 0;
 		// .5px offset because it works ...
-		array[offset + 3] = u * image.getTextureScaleX();// + .5f/image.getWidth();
+		array[offset + 3] = u * image.getTextureScaleX();// +
+		                                                 // .5f/image.getWidth();
 		array[offset + 4] =
-		        image.getTextureScaleY() - v * image.getTextureScaleY() + .5f/image.getHeight();
+		        image.getTextureScaleY() - v * image.getTextureScaleY() + .5f
+		                / image.getHeight();
 	}
 
 }
