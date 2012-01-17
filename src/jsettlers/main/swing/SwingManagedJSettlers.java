@@ -49,6 +49,8 @@ public class SwingManagedJSettlers {
 		ResourceManager.setProvider(new ResourceProvider());
 		ManagedJSettlers game = new ManagedJSettlers();
 		game.start(getGui());
+		
+		ImageProvider.getInstance().startPreloading();
 
 		// NetworkTimer.loadLogging("logs/2011_11_02-11_39_44.log");
 		// NetworkTimer.activateLogging("logs");
