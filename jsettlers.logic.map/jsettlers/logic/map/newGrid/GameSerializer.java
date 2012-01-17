@@ -24,6 +24,7 @@ public class GameSerializer {
 	public GameSerializer() {
 	}
 
+	@Deprecated
 	public void save(final MainGrid grid) throws FileNotFoundException,
 	        IOException, InterruptedException {
 		OutputStream file;
@@ -48,17 +49,7 @@ public class GameSerializer {
 			e.printStackTrace();
 		}
 
-		Thread t = new Thread(null, new Runnable() {
-			@Override
-			public void run() {
-				try {
-					oos.writeInt(NetworkTimer.getGameTime());
-					oos.writeObject(grid);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}, "SaveThread", 256 * 1024);
+		Thread t = new Thread(null, new GameSaveTask(grid, oos), "SaveThread", 256 * 1024);
 		t.start();
 		t.join();
 
@@ -67,6 +58,28 @@ public class GameSerializer {
 
 		NetworkTimer.get().setPausing(false);
 	}
+
+	/**
+	 * Saves the grid to the given output file.
+	 * @param grid The grid to use.
+	 * @param out The output file/stream for the game.
+	 * @throws IOException 
+	 */
+	public void save(MainGrid grid, OutputStream out) throws IOException {
+		final ObjectOutputStream oos =
+		        new ObjectOutputStream(out);
+
+		Thread t = new Thread(null, new GameSaveTask(grid, oos), "SaveThread", 256 * 1024);
+		t.start();
+		try {
+	        t.join();
+        } catch (InterruptedException e) {
+	        throw new IOException(e);
+        }
+
+		oos.flush();
+		oos.close();
+    }
 
 	public MainGrid load(String filename) throws MapLoadException {
 
@@ -100,6 +113,26 @@ public class GameSerializer {
 			throw new MapLoadException(t);
 		}
 	}
+
+	private final class GameSaveTask implements Runnable {
+	    private final MainGrid grid;
+	    private final ObjectOutputStream oos;
+
+	    private GameSaveTask(MainGrid grid, ObjectOutputStream oos) {
+		    this.grid = grid;
+		    this.oos = oos;
+	    }
+
+	    @Override
+	    public void run() {
+	    	try {
+	    		oos.writeInt(NetworkTimer.getGameTime());
+	    		oos.writeObject(grid);
+	    	} catch (IOException e) {
+	    		e.printStackTrace();
+	    	}
+	    }
+    }
 
 	private static final class LoadRunnable implements Runnable {
 		private final ObjectInputStream ois;

@@ -2,6 +2,7 @@ package jsettlers.main;
 
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
+import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.JSettlersGame.Listener;
 
@@ -63,10 +64,7 @@ public class ManagedJSettlers implements Listener, IGameStarter {
 	 */
 	@Override
 	public void startGame(IGameSettings game) {
-		if (ongoingGame != null) {
-			ongoingGame.setListener(null);
-			ongoingGame.stop();
-		}
+		stopOldGame();
 
 		IMapItem map = game.getMap();
 		if (map instanceof IGameCreator) {
@@ -76,6 +74,26 @@ public class ManagedJSettlers implements Listener, IGameStarter {
 			ongoingGame.start();
 		}
 	}
+
+	@Override
+    public void loadGame(ILoadableGame load) {
+		stopOldGame();
+
+		if (load instanceof IGameCreator) {
+			IGameCreator creator = (IGameCreator) load;
+			ongoingGame = new JSettlersGame(content, creator, 123456L);
+			ongoingGame.setListener(ManagedJSettlers.this);
+			ongoingGame.start();
+		}
+    }
+
+	private void stopOldGame() {
+	    if (ongoingGame != null) {
+			ongoingGame.setListener(null);
+			ongoingGame.stop();
+		}
+    }
+
 
 	/**
 	 * Game ended from inside the game.

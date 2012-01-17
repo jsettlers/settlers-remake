@@ -55,7 +55,7 @@ class StartConnector implements IStartScreenConnector {
 
 	@Override
 	public void loadGame(ILoadableGame load) {
-		
+		gamestarter.loadGame(load);
 	}
 
 	@Override

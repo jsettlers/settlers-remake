@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -36,6 +37,7 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.map.UIState;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
@@ -77,10 +79,14 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.stack.IRequestsStackGrid;
 import random.RandomSingleton;
+import synchronic.timer.NetworkTimer;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -188,7 +194,7 @@ public class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null) {
+				if (object != null && !(object instanceof MovableObject)) {
 					addMapObject(x, y, object);
 				}
 				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
@@ -199,7 +205,14 @@ public class MainGrid implements Serializable {
 				}
 			}
 		}
-
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				MapObject object = mapGrid.getMapObject(x, y);
+				if (object != null && object instanceof MovableObject) {
+					addMapObject(x, y, object);
+				}
+			}
+		}
 		System.out.println("grid filled");
 	}
 
@@ -1446,8 +1459,20 @@ public class MainGrid implements Serializable {
 		@Override
 		public final void save() throws FileNotFoundException, IOException,
 		        InterruptedException {
-			GameSerializer serializer = new GameSerializer();
-			serializer.save(MainGrid.this);
+			boolean pausing = NetworkTimer.isPausing();
+			NetworkTimer.get().setPausing(true);
+			try {
+				Thread.sleep(30); // FIXME @Andreas serializer should wait until
+				                  // threads did their work!
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			MapList list = MapList.getDefaultList();
+			//TODO: pass on ui state.
+			list.saveMap(new UIState(0, new ShortPoint2D(0, 0)), MainGrid.this);
+			
+			NetworkTimer.get().setPausing(pausing);
 		}
 
 		@Override
@@ -1499,5 +1524,11 @@ public class MainGrid implements Serializable {
 			return Building.getAllBuildings();
 		}
 	}
+
+	public MapFileHeader generateSaveHeader() {
+		//TODO: description
+		//TODO: count alive players, count all players
+	    return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date());
+    }
 
 }

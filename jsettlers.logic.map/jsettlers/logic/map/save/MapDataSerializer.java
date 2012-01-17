@@ -36,10 +36,11 @@ import jsettlers.common.position.ISPosition2D;
  * <p>
  * width * height bytes: height map
  * <p>
- * For each map object (until end of file): 16 bit x, 16 bit y, 8 bit type, 16
- * bit stringlength, String for additional data.
+ * For each map object (until end of file): 16 bit x, 16 bit y, 8 bit type,
+ * String for additional data.
  * 
  * @author michael
+ * @see IMapData
  */
 public class MapDataSerializer {
 	private static final int VERSION = 1;
@@ -49,6 +50,16 @@ public class MapDataSerializer {
 	private static final int TYPE_MOVABLE = 4;
 	private static final int TYPE_STACK = 5;
 
+	/**
+	 * Serializes the given data to the output stream.
+	 * 
+	 * @param data
+	 *            The data to serialize
+	 * @param out
+	 *            Thre stream to write to.
+	 * @throws IOException
+	 *             If an IO error occured.
+	 */
 	public static void serialize(IMapData data, OutputStream out)
 	        throws IOException {
 		DataOutputStream stream = new DataOutputStream(out);
@@ -112,11 +123,20 @@ public class MapDataSerializer {
 		stream.writeUTF(string);
 	}
 
+	/**
+	 * Reads the map data from the given stream and sets up the receiver by it.
+	 * 
+	 * @param data
+	 *            The receiver of the data.
+	 * @param in
+	 *            The stream to read from.
+	 * @throws IOException
+	 *             If an error occured during deserialization.
+	 */
 	public static void deserialize(IMapDataReceiver data, InputStream in)
 	        throws IOException {
 		try {
 			DataInputStream stream = new DataInputStream(in);
-			long pos = in.available();
 			int version = stream.readShort();
 
 			if (version != VERSION) {
@@ -197,6 +217,14 @@ public class MapDataSerializer {
 		}
 	}
 
+	/**
+	 * Receives the map data.
+	 * <p>
+	 * Before any other set methods, {@link #setDimension(int, int, int)} is
+	 * called exactly once.
+	 * 
+	 * @author michael
+	 */
 	public interface IMapDataReceiver {
 		void setDimension(int width, int height, int playerCount);
 

@@ -163,7 +163,7 @@ public class MapFileHeader {
 			short maxplayer = in.readShort();
 
 			byte[] bgimage = new byte[PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE * 2];
-			long read = in.read(bgimage);
+			in.read(bgimage);
 
 			Date date = null;
 			if (type == MapType.SAVED_SINGLE) {

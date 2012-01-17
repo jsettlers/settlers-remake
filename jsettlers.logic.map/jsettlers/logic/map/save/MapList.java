@@ -1,5 +1,6 @@
 package jsettlers.logic.map.save;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.UIState;
+import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 
@@ -41,11 +43,10 @@ public class MapList {
 			        "map directory is not a directory.");
 		}
 
+		// TODO: only load if requested (we do not need it for saving)
 		for (File file : files) {
 			if (file.getName().endsWith(MAP_EXTENSION)) {
 				addFileToList(file);
-			} else if (file.getName().endsWith(".randommap")) {
-				// TODO: compile randommap.
 			}
 		}
 	}
@@ -60,6 +61,8 @@ public class MapList {
 				freshMaps.add(loader);
 			}
 		} catch (MapLoadException e) {
+			System.err.println("Cought exception while loading header for "
+			        + file.getAbsolutePath());
 			e.printStackTrace();
 		}
 	}
@@ -94,7 +97,8 @@ public class MapList {
 		}
 	}
 
-	private OutputStream getOutputStream(MapFileHeader header) throws IOException {
+	private OutputStream getOutputStream(MapFileHeader header)
+	        throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
 			name = "map";
@@ -113,14 +117,28 @@ public class MapList {
 			i++;
 		}
 		try {
-			return new FileOutputStream(file);
+			return new BufferedOutputStream(new FileOutputStream(file));
 		} catch (FileNotFoundException e) {
 			throw new IOException(e);
 		}
 	}
 
-	public void saveMap(UIState state, MainGrid grid) {
+	/**
+	 * Saves a map to disk. The map logic should be paused while calling this
+	 * method.
+	 * 
+	 * @param state
+	 * @param grid
+	 * @throws IOException
+	 */
+	public void saveMap(UIState state, MainGrid grid) throws IOException {
 		// TODO: implement map saving.
+		MapFileHeader header = grid.generateSaveHeader();
+		OutputStream out = getOutputStream(header);
+		header.writeTo(out);
+		state.writeTo(out);
+		GameSerializer gameSerializer = new GameSerializer();
+		gameSerializer.save(grid, out);
 	}
 
 	public void saveRandomMap(MapFileHeader header, String definition)
