@@ -437,6 +437,10 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		return pig != null && pig.canBeCut();
 	}
 
+	public void addWaves(short x, short y) {
+	    grid.addMapObject(x, y, new WaveMapObject());
+    }
+
 	private static class TimeEvent implements Comparable<TimeEvent>, Serializable {
 		private static final long serialVersionUID = -4439126418530597713L;
 

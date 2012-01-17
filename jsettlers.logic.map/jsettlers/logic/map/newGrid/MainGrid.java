@@ -191,10 +191,27 @@ public class MainGrid implements Serializable {
 				if (object != null) {
 					addMapObject(x, y, object);
 				}
+				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
+					mapObjectsManager.addWaves(x, y);
+				}
 			}
 		}
 
 		System.out.println("grid filled");
+	}
+
+	private boolean isInsideWater(short x, short y) {
+		return isWaterSafe(x - 1, y) && isWaterSafe(x, y)
+		        && isWaterSafe(x + 1, y) && isWaterSafe(x - 1, y + 1)
+		        && isWaterSafe(x, y + 1) && isWaterSafe(x + 1, y + 1)
+		        && isWaterSafe(x, y + 2) && isWaterSafe(x + 1, y + 2)
+		        && isWaterSafe(x + 2, y + 2);
+	}
+
+	private boolean isWaterSafe(int x, int y) {
+		return isInBounds((short) x, (short) y)
+		        && landscapeGrid.getLandscapeTypeAt((short) x, (short) y)
+		                .isWater();
 	}
 
 	public static MainGrid createForDebugging() {
@@ -766,7 +783,8 @@ public class MainGrid implements Serializable {
 			return height;
 		}
 
-		final boolean canConstructAt(short x, short y, EBuildingType type, byte player) {
+		final boolean canConstructAt(short x, short y, EBuildingType type,
+		        byte player) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			for (RelativePoint curr : type.getProtectedTiles()) {
 				short currX = curr.calculateX(x);
@@ -804,16 +822,20 @@ public class MainGrid implements Serializable {
 		public final boolean isInBounds(short x, short y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
-		
+
 		@Override
-		public byte getConstructionMarkValue(short mapX, short mapY, EBuildingType buildingType) {
-			final BuildingAreaBitSet buildingSet = buildingType.getBuildingAreaBitSet();
+		public byte getConstructionMarkValue(short mapX, short mapY,
+		        EBuildingType buildingType) {
+			final BuildingAreaBitSet buildingSet =
+			        buildingType.getBuildingAreaBitSet();
 			int sum = 0;
 
 			for (short x = buildingSet.minX; x <= buildingSet.maxX; x++) {
 				for (short y = buildingSet.minX; y <= buildingSet.maxX; y++) {
 					if (buildingSet.get(x, y)) {
-						sum += landscapeGrid.getHeightAt((short) (mapX + x), (short) (mapY + y));
+						sum +=
+						        landscapeGrid.getHeightAt((short) (mapX + x),
+						                (short) (mapY + y));
 					}
 				}
 			}
@@ -823,7 +845,10 @@ public class MainGrid implements Serializable {
 			for (short x = buildingSet.minX; x <= buildingSet.maxX; x++) {
 				for (short y = buildingSet.minX; y <= buildingSet.maxX; y++) {
 					if (buildingSet.get(x, y)) {
-						float currDiff = Math.abs(landscapeGrid.getHeightAt((short) (mapX + x), (short) (mapY + y))) - avg;
+						float currDiff =
+						        Math.abs(landscapeGrid.getHeightAt(
+						                (short) (mapX + x), (short) (mapY + y)))
+						                - avg;
 						diff += currDiff;
 					}
 				}
