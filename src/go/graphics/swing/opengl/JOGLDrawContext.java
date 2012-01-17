@@ -6,7 +6,6 @@ import go.graphics.swing.text.JOGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -109,7 +108,7 @@ public class JOGLDrawContext implements GLDrawContext {
 		return reuseableBuffer;
 	}
 
-	private ByteBuffer genertateBuffer(float[] points) {
+	private static ByteBuffer genertateBuffer(float[] points) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(points.length * 4);
 		bb.order(ByteOrder.nativeOrder());
 		bb.asFloatBuffer().put(points);
@@ -178,9 +177,9 @@ public class JOGLDrawContext implements GLDrawContext {
 		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T,
 		        GL2.GL_CLAMP);
 		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
-		        GL.GL_LINEAR);
+		        GL.GL_NEAREST);
 		gl2.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-		        GL.GL_LINEAR);
+		        GL.GL_NEAREST);
 	}
 
 	@Override
