@@ -22,7 +22,8 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * This is the main map list.
  * <p>
  * It lists all available maps, and it can be used to add maps to the game.
- * 
+ * <p>
+ * TODO: load maps before they are needed, to increase startup time.
  * @author michael
  */
 public class MapList {
@@ -30,6 +31,7 @@ public class MapList {
 	private final ArrayList<MapLoader> freshMaps = new ArrayList<MapLoader>();
 	private final ArrayList<MapLoader> savedMaps = new ArrayList<MapLoader>();
 	private final File dir;
+	private boolean fileListLoaded = false;
 
 	public MapList(File dir) {
 		this.dir = dir;
@@ -37,21 +39,26 @@ public class MapList {
 			dir.mkdirs();
 		}
 
+	}
+
+	private void loadFileList() {
+		freshMaps.clear();
+		savedMaps.clear();
+		
 		File[] files = dir.listFiles();
 		if (files == null) {
 			throw new IllegalArgumentException(
 			        "map directory is not a directory.");
 		}
-
-		// TODO: only load if requested (we do not need it for saving)
-		for (File file : files) {
+		
+	    for (File file : files) {
 			if (file.getName().endsWith(MAP_EXTENSION)) {
 				addFileToList(file);
 			}
 		}
-	}
+    }
 
-	private void addFileToList(File file) {
+	private synchronized void addFileToList(File file) {
 		try {
 			MapLoader loader = new MapLoader(file);
 			MapType type = loader.getFileHeader().getType();
@@ -60,6 +67,7 @@ public class MapList {
 			} else {
 				freshMaps.add(loader);
 			}
+			loadFileList();
 		} catch (MapLoadException e) {
 			System.err.println("Cought exception while loading header for "
 			        + file.getAbsolutePath());
@@ -67,11 +75,19 @@ public class MapList {
 		}
 	}
 
-	public ArrayList<MapLoader> getSavedMaps() {
+	public synchronized ArrayList<MapLoader> getSavedMaps() {
+		if (!fileListLoaded) {
+			loadFileList();
+			fileListLoaded = true;
+		}
 		return savedMaps;
 	}
 
-	public ArrayList<MapLoader> getFreshMaps() {
+	public synchronized ArrayList<MapLoader> getFreshMaps() {
+		if (!fileListLoaded) {
+			loadFileList();
+			fileListLoaded = true;
+		}
 		return freshMaps;
 	}
 
@@ -85,7 +101,7 @@ public class MapList {
 	 * @throws IOException
 	 *             If any IO error occurred.
 	 */
-	public void saveMap(MapFileHeader header, IMapData data) throws IOException {
+	public synchronized void saveMap(MapFileHeader header, IMapData data) throws IOException {
 		OutputStream out = null;
 		try {
 			out = getOutputStream(header);
@@ -95,8 +111,19 @@ public class MapList {
 				out.close();
 			}
 		}
+		loadFileList();
 	}
 
+	/**
+	 * Gets an output stream that can be used to store the map. The stream is to
+	 * a file with a nice name and does not override any other file.
+	 * 
+	 * @param header
+	 *            The header to create the file name from. It is not written to
+	 *            the stream.
+	 * @return A output stream to a fresh generated file.
+	 * @throws IOException
+	 */
 	private OutputStream getOutputStream(MapFileHeader header)
 	        throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
@@ -131,20 +158,31 @@ public class MapList {
 	 * @param grid
 	 * @throws IOException
 	 */
-	public void saveMap(UIState state, MainGrid grid) throws IOException {
-		// TODO: implement map saving.
+	public synchronized void saveMap(UIState state, MainGrid grid) throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream out = getOutputStream(header);
 		header.writeTo(out);
 		state.writeTo(out);
 		GameSerializer gameSerializer = new GameSerializer();
 		gameSerializer.save(grid, out);
+		
+		loadFileList();
 	}
 
-	public void saveRandomMap(MapFileHeader header, String definition)
+	/**
+	 * Saves a random map to the given file.
+	 * 
+	 * @param header
+	 *            The header to save
+	 * @param definition
+	 *            The random map rule text.
+	 * @throws IOException
+	 */
+	public synchronized void saveRandomMap(MapFileHeader header, String definition)
 	        throws IOException {
 		OutputStream out = getOutputStream(header);
 		MapSaver.saveRandomMap(header, definition, out);
+		loadFileList();
 	}
 
 	public ArrayList<MapLoader> getSavedMultiplayerMaps() {
