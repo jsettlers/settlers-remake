@@ -35,6 +35,8 @@ import jsettlers.logic.map.newGrid.movable.IHexMovable;
 public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding {
 	private static final long serialVersionUID = 5267249978497095473L;
 
+	private static LinkedList<OccupyingBuilding> allOccupyingBuildings = new LinkedList<OccupyingBuilding>();
+
 	private final LinkedList<TowerOccupyer> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
@@ -56,6 +58,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTARY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
 			}
 		}
+
+		allOccupyingBuildings.add(this);
 	}
 
 	@Override
@@ -63,26 +67,26 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	protected void appearedEvent() {
+	protected final void appearedEvent() {
 		occupyArea();
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 	}
 
-	private MapShapeFilter getOccupyablePositions() {
+	public final MapShapeFilter getOccupyablePositions() {
 		return new MapShapeFilter(new MapCircle(super.getPos(), CommonConstants.TOWERRADIUS), super.getGrid().getWidth(), super.getGrid().getHeight());
 	}
 
 	@Override
-	protected EMapObjectType getFlagType() {
+	protected final EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
+	public final void stopOrStartWorking(boolean stop) {
 	}
 
 	@Override
-	protected void subTimerEvent() {
+	protected final void subTimerEvent() {
 		delayCtr++;
 		if (delayCtr > 5) {
 			delayCtr = 0;
@@ -112,7 +116,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	protected void killedEvent() {
+	protected final void killedEvent() {
+		setSelected(false);
+
 		if (occupiedArea) {
 			MapShapeFilter occupied = getOccupyablePositions();
 			super.getGrid().freeOccupiedArea(occupied, super.getPos());
@@ -124,6 +130,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			}
 			occupiers.clear();
 		}
+
+		allOccupyingBuildings.remove(this);
 	}
 
 	@Override
@@ -180,14 +188,14 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public void setSelected(boolean selected) {
+	public final void setSelected(boolean selected) {
 		super.setSelected(selected);
 		for (TowerOccupyer curr : occupiers) {
 			curr.soldier.setSelected(selected);
 		}
 	}
 
-	private ESearchType getSearchType(EMovableType movableType) {
+	private final ESearchType getSearchType(EMovableType movableType) {
 		ESearchType searchType;
 
 		switch (movableType) {
@@ -217,7 +225,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return occupiers.isEmpty();
 	}
 
-	private static class TowerOccupyer implements IBuildingOccupyer, Serializable {
+	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
 		private final OccupyerPlace place;
@@ -238,6 +246,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			return soldier.getMovable();
 		}
 
+	}
+
+	public final static LinkedList<OccupyingBuilding> getAllOccupyingBuildings() {
+		return allOccupyingBuildings;
 	}
 
 }

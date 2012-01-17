@@ -197,7 +197,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	 *            if false, the partition will be changed and for every changed position the contents of that position in the old manager will be
 	 *            moved to the new manager.
 	 */
-	private void relabelPartition(short inX, short inY, short oldPartition, short newPartition, boolean justRelabel) {
+	private final void relabelPartition(short inX, short inY, short oldPartition, short newPartition, boolean justRelabel) {
 		final short MAX_LENGTH = 1000;
 		final short[] pointsBuffer = new short[MAX_LENGTH]; // array is used to reduce the number of recursions
 		pointsBuffer[0] = inX;
@@ -358,7 +358,23 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return totallyFreePositions;
 	}
 
-	public void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+	public final void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
 		getPartitionObject(pos).removeOfferAt(pos, materialType);
+	}
+
+	public final int getTowerCounterAt(short x, short y) {
+		return towers[x][y];
+	}
+
+	/**
+	 * Used by towers to occupy a single position.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param newPlayer
+	 */
+	public final void occupyAt(short x, short y, byte newPlayer) {
+		changePlayerAt(x, y, newPlayer);
+		towers[x][y]++;
 	}
 }

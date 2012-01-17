@@ -23,7 +23,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMat
  * @author Andreas Eberle
  * 
  */
-public class Partition implements Serializable {
+public final class Partition implements Serializable {
 	private static final long serialVersionUID = -2087692347209993840L;
 
 	private int counter = 0;

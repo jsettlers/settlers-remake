@@ -105,9 +105,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			case CARRY_DROP:
 				super.getGrid().pushMaterial(super.getPos(), materialType, false); // target needs material => don't give it to the manager
 				super.setMaterial(EMaterialType.NO_MATERIAL);
-				super.getGrid().addJobless(this);
-				super.setAction(EAction.NO_ACTION, -1);
-				this.state = EBearerState.JOBLESS;
+				resetJob();
 				break;
 			case CARRY_INIT:
 				super.setAction(EAction.NO_ACTION, -1); // this leads to a call of noActionEvent() handling the initialization
@@ -124,9 +122,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 					super.getGrid().pushMaterial(super.getPos(), materialType, true);
 					super.setMaterial(EMaterialType.NO_MATERIAL);
 				}
-				this.state = EBearerState.JOBLESS;
-				super.getGrid().addJobless(this);
-				super.setAction(EAction.NO_ACTION, -1);
+				resetJob();
 				break;
 
 			default:
@@ -135,6 +131,13 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			}
 		}
 		return true;
+	}
+
+	private void resetJob() {
+		this.state = EBearerState.JOBLESS;
+		super.getGrid().addJobless(this);
+		super.setAction(EAction.NO_ACTION, -1);
+		this.requester = null;
 	}
 
 	@Override
@@ -182,9 +185,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 			break;
 
 		default:
-			this.state = EBearerState.JOBLESS;
-			super.getGrid().addJobless(this);
-			super.setAction(EAction.NO_ACTION, -1);
+			resetJob();
 			break;
 		}
 
