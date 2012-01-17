@@ -43,6 +43,7 @@ import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.map.selection.ISelectionSet;
@@ -91,6 +92,7 @@ public final class MapContent implements SettlersContent,
 	private static final float MESSAGE_OFFSET_X = 200;
 	private static final int MESSAGE_OFFSET_Y = 30;
 	private static final int MESSAGE_LINEHIEGHT = 18;
+	private static final long GOTO_MARK_TIME = 1500;
 
 	private final IGraphicsGrid map;
 
@@ -100,7 +102,7 @@ public final class MapContent implements SettlersContent,
 
 	private final MapDrawContext context;
 
-	private final  MapObjectDrawer objectDrawer;
+	private final MapObjectDrawer objectDrawer;
 
 	/**
 	 * The current connector that connects the outside world to us.
@@ -126,6 +128,9 @@ public final class MapContent implements SettlersContent,
 	private final Messenger messenger = new Messenger();
 	private final SoundManager soundmanager;
 	private final BackgroundSound bgsound;
+
+	private ISPosition2D gotoMarker;
+	private long gotoMarkerTime;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -198,6 +203,11 @@ public final class MapContent implements SettlersContent,
 
 		start = System.currentTimeMillis();
 		drawMain(screen);
+
+		if (gotoMarker != null) {
+			drawGotoMarker();
+		}
+
 		this.context.end();
 		long foregroundtime = System.currentTimeMillis() - start;
 
@@ -214,6 +224,18 @@ public final class MapContent implements SettlersContent,
 		if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
 			System.out.println("Background: " + bgtime + "ms, Foreground: "
 			        + foregroundtime + "ms, UI: " + uitime + "ms");
+		}
+	}
+
+	private void drawGotoMarker() {
+		long timediff = System.currentTimeMillis() - gotoMarkerTime;
+		if (timediff > GOTO_MARK_TIME) {
+			gotoMarker = null;
+		} else {
+			context.beginTileContext(gotoMarker.getX(), gotoMarker.getY());
+			ImageProvider.getInstance().getSettlerSequence(3, 1)
+			        .getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1).draw(context.getGl(), null, 1);
+			context.endTileContext();
 		}
 	}
 
@@ -552,7 +574,7 @@ public final class MapContent implements SettlersContent,
 			return new Action(EActionType.SPEED_FASTER);
 		} else if ("-".equals(keyCode)) {
 			return new Action(EActionType.SPEED_SLOWER);
-		} else if (" ".equals(keyCode)) {
+		} else if (" ".equals(keyCode) || "space".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SHOW_SELECTION);
 		} else if ("d".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DEBUG_ACTION);
@@ -727,6 +749,10 @@ public final class MapContent implements SettlersContent,
 
 	public void scrollTo(ISPosition2D point, boolean mark) {
 		this.context.scrollTo(point);
+		if (mark) {
+			gotoMarker = point;
+			gotoMarkerTime = System.currentTimeMillis();
+		}
 	}
 
 	/**
