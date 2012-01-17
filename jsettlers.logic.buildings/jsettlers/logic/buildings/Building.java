@@ -75,6 +75,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
+		allBuildings.add(this);
 		Timer100Milli.add(this); // the building is added to the timer in positionAt(..)
 	}
 

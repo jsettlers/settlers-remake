@@ -78,6 +78,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		movablesByID.put(this.id, this);
+		allMovables.add(this);
 		nextID = Math.max(nextID, this.id + 1);
 		MovableTimer.add(this);
 	}
