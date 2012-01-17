@@ -24,20 +24,23 @@ public enum ETextureOrientation {
 	}),
 
 	TOPLEFT(false, new float[] {
-	        DrawConstants.TEXTUREUNIT_X / 2,
+	        DrawConstants.TEXTUREUNIT_X / 2
+	                + DrawConstants.TEXTURE_BORDER_OFFSET,
 	        0,
-	        0,
+	        0 + DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y,
 	        DrawConstants.TEXTUREUNIT_X,
 	        DrawConstants.TEXTUREUNIT_Y
 	}),
 
 	TOPRIGHT(false, new float[] {
-	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.TEXTUREUNIT_X * 3 / 2
+	                - DrawConstants.TEXTURE_BORDER_OFFSET,
 	        0,
-	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_X - DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y,
-	        DrawConstants.TEXTUREUNIT_X * 2,
+	        DrawConstants.TEXTUREUNIT_X * 2
+	                - DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y
 	}),
 
@@ -73,18 +76,18 @@ public enum ETextureOrientation {
 	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
 	        0
 	}), BOTTOMLEFT(false, new float[] {
-	        0,
+	        0 + DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y,
-	        DrawConstants.TEXTUREUNIT_X / 2,
+	        DrawConstants.TEXTUREUNIT_X / 2 + DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y * 2,
-	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_X + DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y
 	}), BOTTOMRIGHT(false, new float[] {
-	        DrawConstants.TEXTUREUNIT_X,
+	        DrawConstants.TEXTUREUNIT_X - DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y,
-	        DrawConstants.TEXTUREUNIT_X * 3 / 2,
+	        DrawConstants.TEXTUREUNIT_X * 3 / 2 - DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y * 2,
-	        DrawConstants.TEXTUREUNIT_X * 2,
+	        DrawConstants.TEXTUREUNIT_X * 2 - DrawConstants.TEXTURE_BORDER_OFFSET,
 	        DrawConstants.TEXTUREUNIT_Y
 	});
 
@@ -99,10 +102,10 @@ public enum ETextureOrientation {
 	}
 
 	public boolean isContinous() {
-	    return continous;
-    }
+		return continous;
+	}
 
 	public float[] getRelativecoords() {
-	    return relativecoords;
-    }
+		return relativecoords;
+	}
 }

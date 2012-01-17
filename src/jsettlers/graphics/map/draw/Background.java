@@ -88,9 +88,15 @@ public class Background implements IGraphicsBackgroundListener {
 	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ --- ↓ +200
 	 * |71|72|73|74|75|  |77|78|79|80|81|82|83|84|85|86|87|88|89|90|91|92|93|94|95|96|97|98|99|00|01|02|
 	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-	 * |     |     |     |     |     |     |     |
-	 * | 011 | 012 | 013 | 014 | 015 | 016 | 017 |
-	 * |     |     |     |     |     |     |     |
+	 * |     |     |     |     |     |     |     |              |              |
+	 * | 011 | 012 | 013 | 014 | 015 | 016 | 017 |              |              |
+	 * |     |     |     |     |     |     |     |              |     230      |
+	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+  217         |              |--+--+--+--+--+--+--+--+
+	 * +03|04|05|06|07|08|09|10|11|12|13|14|15|16|              |              |--+--+--+--+--+--+--+--+
+	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+              |              |--+--+--+--+--+--+--+--+
+	 * +18|19|20|21|22|23|24|25|26|27|28|29|31|32|              |              |--+--+--+--+--+--+--+--+
+	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+              |              |--+--+--+--+--+--+--+--+
+	 * +33|34|                                   |              |              |--+--+--+--+--+--+--+--+
 	 * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 	 */
 	private static final int[][] TEXTURE_POSITIONS = {
@@ -707,9 +713,108 @@ public class Background implements IGraphicsBackgroundListener {
 	        /* 202: small */{
 	                31, 19, 1
 	        },
-	// ------------------------------------
+	        // ------------------------------------
 
-	        // ...
+	        /* 203: small */{
+	                0, 22, 1
+	        },
+	        /* 204: small */{
+	                1, 22, 1
+	        },
+	        /* 205: small */{
+	                2, 22, 1
+	        },
+	        /* 206: small */{
+	                3, 22, 1
+	        },
+	        /* 207: small */{
+	                4, 22, 1
+	        },
+	        /* 208: small */{
+	                5, 22, 1
+	        },
+	        /* 209: small */{
+	                6, 22, 1
+	        },
+	        /* 210: small */{
+	                7, 22, 1
+	        },
+	        /* 211: small */{
+	                8, 22, 1
+	        },
+	        /* 212: small */{
+	                9, 22, 1
+	        },
+
+	        /* 213: small */{
+	                10, 22, 1
+	        },
+	        /* 214: small */{
+	                11, 22, 1
+	        },
+	        /* 215: small */{
+	                12, 22, 1
+	        },
+	        /* 216: small */{
+	                13, 22, 1
+	        },
+	        /* 217: big */{
+	                14, 20, 5
+	        },
+	        /* 218: small */{
+	                1, 23, 1
+	        },
+	        /* 219: small */{
+	                2, 23, 1
+	        },
+	        /* 220: small */{
+	                3, 23, 1
+	        },
+	        /* 221: small */{
+	                4, 23, 1
+	        },
+	        /* 222: small */{
+	                5, 23, 1
+	        },
+
+	        /* 223: small */{
+	                6, 23, 1
+	        },
+	        /* 224: small */{
+	                7, 23, 1
+	        },
+	        /* 225: small */{
+	                8, 23, 1
+	        },
+	        /* 226: small */{
+	                9, 23, 1
+	        },
+	        /* 227: small */{
+	                10, 23, 1
+	        },
+	        /* 228: small */{
+	                11, 23, 1
+	        },
+	        /* 229: small */{
+	                12, 23, 1
+	        },
+	        /* 230: big */{
+	                19, 20, 5
+	        },
+	        /* 231: small */{
+	                13, 23, 1
+	        },
+	        /* 232: small */{
+	                0, 24, 1
+	        },
+	        /* 233: small */{
+	                1, 24, 1
+	        },
+	        /* 234: small */{
+	                2, 24, 1
+	        },
+
+	// ...
 	        };
 
 	private static final short FLOAT_SIZE = 4;
@@ -807,8 +912,13 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 
 		@Override
-		public void writeLine(short[] data, int length) throws IOException { // TODO: ensure that there is enough
-				                           // space for every texture
+		public void writeLine(short[] data, int length) throws IOException { // TODO:
+			                                                                 // ensure
+			                                                                 // that
+			                                                                 // there
+			                                                                 // is
+			                                                                 // enough
+			// space for every texture
 			if (arrayoffset < maxoffset) {
 				for (int i = 0; i < cellsize; i++) {
 					this.data[arrayoffset + i] = data[i % length];
@@ -946,35 +1056,35 @@ public class Background implements IGraphicsBackgroundListener {
 		} else if (outer == ELandscapeType.WATER3
 		        && inner == ELandscapeType.WATER2) {
 			index = 90;
-			
+
 		} else if (outer == ELandscapeType.WATER3
 		        && inner == ELandscapeType.WATER4) {
 			index = 92;
 		} else if (outer == ELandscapeType.WATER4
 		        && inner == ELandscapeType.WATER3) {
 			index = 94;
-			
+
 		} else if (outer == ELandscapeType.WATER4
 		        && inner == ELandscapeType.WATER5) {
 			index = 96;
 		} else if (outer == ELandscapeType.WATER5
 		        && inner == ELandscapeType.WATER4) {
 			index = 98;
-			
+
 		} else if (outer == ELandscapeType.WATER5
 		        && inner == ELandscapeType.WATER6) {
 			index = 100;
 		} else if (outer == ELandscapeType.WATER6
 		        && inner == ELandscapeType.WATER5) {
 			index = 102;
-			
+
 		} else if (outer == ELandscapeType.WATER6
 		        && inner == ELandscapeType.WATER7) {
 			index = 104;
 		} else if (outer == ELandscapeType.WATER7
 		        && inner == ELandscapeType.WATER6) {
 			index = 106;
-			
+
 		} else if (outer == ELandscapeType.WATER7
 		        && inner == ELandscapeType.WATER8) {
 			index = 108;
@@ -1005,7 +1115,7 @@ public class Background implements IGraphicsBackgroundListener {
 		} else if (outer == ELandscapeType.MOUNTAINBORDEROUTER
 		        && inner == ELandscapeType.GRASS) {
 			index = 118;
-			
+
 		} else if (outer == ELandscapeType.MOUNTAINBORDEROUTER
 		        && inner == ELandscapeType.MOUNTAINBORDER) {
 			index = 120;
@@ -1116,10 +1226,54 @@ public class Background implements IGraphicsBackgroundListener {
 		} else if (outer == ELandscapeType.GRASS
 		        && inner == ELandscapeType.FLATTENED) {
 			index = 172;
-		} else if (outer == ELandscapeType.SAND
-		        && inner == ELandscapeType.FLATTENED) {
+		} else if (outer == ELandscapeType.FLATTENED
+		        && inner == ELandscapeType.GRASS) {
 			index = 174;
 
+			// moor <=> grass
+		} else if (outer == ELandscapeType.GRASS
+		        && inner == ELandscapeType.MOORBORDER) {
+			index = 201;
+		} else if (outer == ELandscapeType.MOORBORDER
+		        && inner == ELandscapeType.GRASS) {
+			index = 203;
+
+		} else if (outer == ELandscapeType.MOORBORDER
+		        && inner == ELandscapeType.MOORINNER) {
+			index = 205;
+		} else if (outer == ELandscapeType.MOORINNER
+		        && inner == ELandscapeType.MOORBORDER) {
+			index = 207;
+
+		} else if (outer == ELandscapeType.MOORINNER
+		        && inner == ELandscapeType.MOOR) {
+			index = 209;
+		} else if (outer == ELandscapeType.MOOR
+		        && inner == ELandscapeType.MOORINNER) {
+			index = 211;
+
+			// flattened desert <=> desert
+
+		} else if (outer == ELandscapeType.DESERT
+		        && inner == ELandscapeType.SHARP_FLATTENED_DESERT) {
+			index = 218;
+		} else if (outer == ELandscapeType.SHARP_FLATTENED_DESERT
+		        && inner == ELandscapeType.DESERT) {
+			index = 220;
+		} else if (outer == ELandscapeType.DESERT
+		        && inner == ELandscapeType.FLATTENED_DESERT) {
+			index = 222;
+		} else if (outer == ELandscapeType.FLATTENED_DESERT
+		        && inner == ELandscapeType.DESERT) {
+			index = 224;
+
+		} else if (outer == ELandscapeType.GRAVEL
+		        && inner == ELandscapeType.MOUNTAINBORDER) {
+			index = 231;
+		} else if (outer == ELandscapeType.MOUNTAINBORDER
+		        && inner == ELandscapeType.GRAVEL) {
+			index = 233;
+			
 		} else {
 			index = outer.getImageNumber();
 			useSecond = false; // force!
@@ -1411,7 +1565,7 @@ public class Background implements IGraphicsBackgroundListener {
 		// texture position
 		int adddx = 0;
 		int adddy = 0;
-		if (texturePos.isContinous()) {
+		if (positions[2] >= 2) {
 			adddx =
 			        x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X
 			                / 2;
@@ -1425,16 +1579,19 @@ public class Background implements IGraphicsBackgroundListener {
 		float[] relativeTexCoords = texturePos.getRelativecoords();
 
 		{
+			//top
 			float u = (relativeTexCoords[0] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[1] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y, u, v, fogBase + 0);
 		}
 		{
+			//left
 			float u = (relativeTexCoords[2] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[3] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y + 1, u, v, fogBase + 2);
 		}
 		{
+			//right
 			float u = (relativeTexCoords[4] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[5] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
@@ -1490,34 +1647,37 @@ public class Background implements IGraphicsBackgroundListener {
 			textureindex = getBorder(rightlandscape, leftlandscape, useSecond);
 		}
 
+		int[] positions = TEXTURE_POSITIONS[textureindex];
 		// texture position
 		int adddx = 0;
 		int adddy = 0;
-		if (texturePos.isContinous()) {
+		if (positions[2] >= 2) {
 			adddx =
 			        x * DrawConstants.DISTANCE_X - y * DrawConstants.DISTANCE_X
 			                / 2;
 			adddy = y * DrawConstants.DISTANCE_Y;
-			adddx = realModulo(adddx, ETextureOrientation.CONTINOUS_SIZE);
-			adddy = realModulo(adddy, ETextureOrientation.CONTINOUS_SIZE);
+			adddx = realModulo(adddx, (positions[2] - 1) * TEXTURE_GRID);
+			adddy = realModulo(adddy, (positions[2] - 1) * TEXTURE_GRID);
 		}
-		int[] positions = TEXTURE_POSITIONS[textureindex];
 		adddx += positions[0] * TEXTURE_GRID;
 		adddy += positions[1] * TEXTURE_GRID;
 
 		float[] relativeTexCoords = texturePos.getRelativecoords();
 
 		{
+			//left
 			float u = (relativeTexCoords[0] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[1] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y, u, v, fogBase + 0);
 		}
 		{
+			//bottom
 			float u = (relativeTexCoords[2] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[3] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
 		}
 		{
+			//right
 			float u = (relativeTexCoords[4] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[5] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x + 1, y, u, v, fogBase + 1);
@@ -1542,8 +1702,8 @@ public class Background implements IGraphicsBackgroundListener {
 		        || context.getVisibleStatus(x, y) <= 0) {
 			color = 0;
 		} else {
-			int height1 = context.getHeight(x, y);
-			int height2 = context.getHeight(x, y + 1);
+			int height1 = context.getHeight(x, y - 1);
+			int height2 = context.getHeight(x, y);
 			float fcolor = 0.9f + (height1 - height2) * .1f;
 			if (fcolor > 1.0f) {
 				fcolor = 1.0f;

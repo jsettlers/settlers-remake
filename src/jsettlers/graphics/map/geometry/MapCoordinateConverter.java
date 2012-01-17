@@ -34,7 +34,7 @@ public final class MapCoordinateConverter {
 	private static final int M_11 = 4 * 1 + 1;
 	private static final int M_12 = 4 * 3 + 1;
 	private static final float HEIGHT_X_DISPLACEMENT = 0;
-	private static final float HEIGHT_Y_DISPLACEMENT = 3;
+	private static final float HEIGHT_Y_DISPLACEMENT = 2;
 
 	private float[] matrix = new float[4 * 4];
 	// matrix that also converts heights
