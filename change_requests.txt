@@ -2,13 +2,13 @@
  JSettlers CHANGE REQUESTS
 --------------------------------
 
-CR-001 [x]                  --       ghosts have no color (they are just black.)
-CR-002 [x]                  --       images for bowman and swordsman in tower need to be switched.
-CR-031 [ ]                  --       
-CR-032 [ ]                  --       
-CR-033 [ ]                  --       
-CR-034 [ ]                  --       
-CR-035 [ ]                  --       
-CR-036 [ ]                  --       
-CR-037 [ ]                  --       
-CR-038 [ ]                  --       
+CR-001 [x]  rev 849   mz    --       ghosts have no color (they are just black.) => logic bug
+CR-002 [ ]                  --       images for bowman and swordsman in tower need to be switched.
+CR-003 [ ]                  --       
+CR-004 [ ]                  --       
+CR-005 [ ]                  --       
+CR-006 [ ]                  --       
+CR-007 [ ]                  --       
+CR-008 [ ]                  --       
+CR-009 [ ]                  --       
+CR-010 [ ]                  --       
