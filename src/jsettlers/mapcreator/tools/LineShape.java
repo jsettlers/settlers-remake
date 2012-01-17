@@ -9,12 +9,20 @@ public class LineShape implements ShapeType {
 	public void setAffectedStatus(byte[][] fields, ISPosition2D start,
 	        ISPosition2D end) {
 		ISPosition2D current = start;
-		setFieldToMax(fields, current);
+		if (shouldDrawAt(current)) {
+			setFieldToMax(fields, current);
+		}
 		while (!current.equals(end)) {
 			EDirection d = EDirection.getApproxDirection(current, end);
 			current = d.getNextHexPoint(current);
-			setFieldToMax(fields, current);
+			if (shouldDrawAt(current)) {
+				setFieldToMax(fields, current);
+			}
 		}
+	}
+
+	protected boolean shouldDrawAt(ISPosition2D current) {
+		return true;
 	}
 
 	private static void setFieldToMax(byte[][] fields, ISPosition2D current) {
@@ -29,10 +37,10 @@ public class LineShape implements ShapeType {
 	public int getSize() {
 		return 1;
 	}
-	
+
 	@Override
 	public String getName() {
-	    return "Line";
+		return "Line";
 	}
 
 }
