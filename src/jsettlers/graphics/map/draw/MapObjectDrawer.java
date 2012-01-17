@@ -675,6 +675,8 @@ public class MapObjectDrawer {
 	}
 
 	private void drawOccupyers(MapDrawContext context, IOccupyed building) {
+		// FIXME @Michael this can cause a ConcurrentModificationException when
+		// a soldier enters the tower!
 		for (IBuildingOccupyer occupyer : building.getOccupyers()) {
 			OccupyerPlace place = occupyer.getPlace();
 			GLDrawContext gl = context.getGl();

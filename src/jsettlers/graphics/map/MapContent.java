@@ -20,6 +20,7 @@ import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
@@ -210,8 +211,10 @@ public final class MapContent implements SettlersContent,
 		drawTooltip(gl);
 		long uitime = System.currentTimeMillis() - start;
 
-		System.out.println("Background: " + bgtime + "ms, Foreground: "
-		        + foregroundtime + "ms, UI: " + uitime + "ms");
+		if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
+			System.out.println("Background: " + bgtime + "ms, Foreground: "
+			        + foregroundtime + "ms, UI: " + uitime + "ms");
+		}
 	}
 
 	private void drawMessages(GLDrawContext gl) {
@@ -792,8 +795,8 @@ public final class MapContent implements SettlersContent,
 	}
 
 	public void loadUIState(UIState uiState) {
-	    scrollTo(uiState.getScreenCenter(), false);
-	    //TODO: player number
-    }
+		scrollTo(uiState.getScreenCenter(), false);
+		// TODO: player number
+	}
 
 }
