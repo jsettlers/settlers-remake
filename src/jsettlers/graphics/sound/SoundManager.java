@@ -129,6 +129,7 @@ public class SoundManager {
 			for (int j = 0; j < alternaitvecount; j++) {
 				starts[j] = reader.read32();
 			}
+
 			if (starts.length == 0) {
 				playerids[i] = new int[0];
 				continue;
@@ -136,7 +137,6 @@ public class SoundManager {
 
 			int[] sounds = new int[alternaitvecount];
 			for (int j = 0; j < alternaitvecount; j++) {
-				// only use 0 for now
 				reader.skipTo(starts[j]);
 
 				int length = reader.read32() / 2;

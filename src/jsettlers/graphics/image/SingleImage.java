@@ -223,38 +223,38 @@ public class SingleImage implements ImageDataPrivider, Image {
 		int left = getOffsetX();
 		int top = -getOffsetY();
 		return new float[] {
-		        // top right
+		        // bottom right
 		        left + this.width,
 		        top,
 		        0,
 		        (float) width / textureWidth,
 		        0,
-		        // bottom right
+		        // top left
 		        left,
 		        top,
 		        0,
 		        0,
 		        0,
-		        // top left
+		        // top right
 		        left + this.width,
 		        top - this.height,
 		        0,
 		        (float) width / textureWidth,
 		        (float) height / textureHeight,
 
-		        // top left
+		        // top right
 		        left + this.width,
 		        top - this.height,
 		        0,
 		        (float) width / textureWidth,
 		        (float) height / textureHeight,
-		        // bottom right
+		        // bottom left
 		        left,
 		        top,
 		        0,
 		        0,
 		        0,
-		        // bottom left
+		        // top left
 		        left,
 		        top - this.height,
 		        0,

@@ -74,7 +74,7 @@ public class OriginalControls implements IControls {
 		if (newHeight <= 480) {
 			newConstants = new SmallOriginalConstants();
 		} else {
-			// TODO...
+			// TODO: higher resolution for controls.
 			newConstants = new SmallOriginalConstants();
 		}
 		if (!newConstants.equals(constants)) {

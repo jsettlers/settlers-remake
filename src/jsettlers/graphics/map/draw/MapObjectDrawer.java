@@ -139,6 +139,7 @@ public class MapObjectDrawer {
 		} else {
 			context.beginTileContext(x, y);
 			switch (type) {
+
 				case TREE_ADULT:
 					drawTree(context, x, y, color);
 					break;
@@ -165,7 +166,7 @@ public class MapObjectDrawer {
 					break;
 
 				case WAVES:
-					drawWaves(context, color);
+					drawWaves(context, x, y, color);
 					break;
 
 				case STONE:
@@ -311,7 +312,7 @@ public class MapObjectDrawer {
 				soundable.setSoundPlayed();
 			}
 		}
-    }
+	}
 
 	private void drawPlayerableByProgress(MapDrawContext context, int file,
 	        int sequenceIndex, IMapObject object, float basecolor) {
@@ -407,10 +408,14 @@ public class MapObjectDrawer {
 		seq.getImageSafe(stones).draw(context.getGl(), null, color);
 	}
 
-	private void drawWaves(MapDrawContext context, float color) {
+	private void drawWaves(MapDrawContext context, int x, int y, float color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, WAVES);
-		seq.getImageSafe(15).draw(context.getGl(), null, color);
+		int len = seq.length();
+		int step = (animationStep/2 + x/2 + y/2) % len;
+		if (step < len) {
+			seq.getImageSafe(step).draw(context.getGl(), null, color);
+		}
 	}
 
 	private void drawDeadCorn(MapDrawContext context, float color) {
@@ -502,9 +507,9 @@ public class MapObjectDrawer {
 	 * @param pos
 	 * @return
 	 */
-	private static int get01(int x, int y) {
-		return (x * 677 + y) % 2;
-	}
+//	private static int get01(int x, int y) {
+//		return (x * 677 + y) % 2;
+//	}
 
 	/**
 	 * Draws a player border at a given position.
@@ -630,7 +635,7 @@ public class MapObjectDrawer {
 					seq.getImageSafe(step).draw(context.getGl(), null, color);
 				}
 				playSound(building, 42);
-				
+
 			} else {
 				ImageLink[] images = type.getImages();
 				if (images.length > 0) {
@@ -693,8 +698,8 @@ public class MapObjectDrawer {
 		SingleImage image = (SingleImage) unsafeimage;
 		// number of tiles in x direction, can be adjustet for performance
 		int tiles = 6;
-
-		float toplineBottom = maskState;
+		
+		float toplineBottom = (int) (maskState * image.getHeight()) / (float) image.getHeight();
 		float toplineTop = Math.min(1, toplineBottom + .1f);
 
 		float[] tris = new float[(tiles + 2) * 3 * 5];
@@ -733,9 +738,10 @@ public class MapObjectDrawer {
 		array[offset] = x;
 		array[offset + 1] = y;
 		array[offset + 2] = 0;
-		array[offset + 3] = u * image.getTextureScaleX();
+		// .5px offset because it works ...
+		array[offset + 3] = u * image.getTextureScaleX();// + .5f/image.getWidth();
 		array[offset + 4] =
-		        image.getTextureScaleY() - v * image.getTextureScaleY();
+		        image.getTextureScaleY() - v * image.getTextureScaleY() + .5f/image.getHeight();
 	}
 
 }

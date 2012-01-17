@@ -807,9 +807,9 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 
 		@Override
-		public void writeLine(short[] data, int length) throws IOException {
-			if (arrayoffset < maxoffset) { // TODO: ensure that there is enough
+		public void writeLine(short[] data, int length) throws IOException { // TODO: ensure that there is enough
 				                           // space for every texture
+			if (arrayoffset < maxoffset) {
 				for (int i = 0; i < cellsize; i++) {
 					this.data[arrayoffset + i] = data[i % length];
 				}
@@ -1000,19 +1000,25 @@ public class Background implements IGraphicsBackgroundListener {
 
 			// grass <=> mountain
 		} else if (outer == ELandscapeType.GRASS
-		        && inner == ELandscapeType.MOUNTAINBORDER) {
+		        && inner == ELandscapeType.MOUNTAINBORDEROUTER) {
 			index = 116;
-		} else if (outer == ELandscapeType.MOUNTAINBORDER
+		} else if (outer == ELandscapeType.MOUNTAINBORDEROUTER
 		        && inner == ELandscapeType.GRASS) {
 			index = 118;
+			
+		} else if (outer == ELandscapeType.MOUNTAINBORDEROUTER
+		        && inner == ELandscapeType.MOUNTAINBORDER) {
+			index = 120;
+		} else if (outer == ELandscapeType.MOUNTAINBORDER
+		        && inner == ELandscapeType.MOUNTAINBORDEROUTER) {
+			index = 122;
 
 		} else if (outer == ELandscapeType.MOUNTAINBORDER
 		        && inner == ELandscapeType.MOUNTAIN) {
-			index = 120;
+			index = 124;
 		} else if (outer == ELandscapeType.MOUNTAIN
 		        && inner == ELandscapeType.MOUNTAINBORDER) {
-			index = 122;
-			// TODO: one more outer circle with 124/126
+			index = 126;
 
 			// mountain <=> snow
 		} else if (outer == ELandscapeType.MOUNTAIN
@@ -1384,7 +1390,7 @@ public class Background implements IGraphicsBackgroundListener {
 		ELandscapeType leftlandscape = context.getLandscape(x, y + 1);
 		ELandscapeType rightlandscape = context.getLandscape(x + 1, y + 1);
 
-		boolean useSecond = ((x ^ y) & 0x1) == 0;
+		boolean useSecond = ((x * 37 + y * 17) & 0x1) == 0;
 		ETextureOrientation texturePos;
 		int textureindex;
 		if (toplandscape == leftlandscape && toplandscape == rightlandscape) {

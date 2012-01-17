@@ -3,9 +3,6 @@ package jsettlers.graphics.startscreen;
 import java.util.Date;
 import java.util.List;
 
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IRecoverableGame;
-
 /**
  * This connector provides data that is needed by the start screen.
  * 

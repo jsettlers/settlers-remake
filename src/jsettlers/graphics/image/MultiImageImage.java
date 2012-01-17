@@ -35,34 +35,39 @@ public class MultiImageImage implements Image {
 
 	private static float[] createGeometry(MultiImageMap map,
 	        ImageMetadata settlerMeta, int settlerx, int settlery) {
+		float umin = (float) settlerx / map.getWidth();
+		float umax = (float) (settlerx + settlerMeta.width) / map.getWidth();
+		
+		float vmin = (float) (settlery - .5f + settlerMeta.height) / map.getHeight();
+		float vmax = (float) (settlery - .5f) / map.getHeight();
 		return new float[] {
 		        // top left
 		        settlerMeta.offsetX,
 		        -settlerMeta.offsetY - settlerMeta.height,
 		        0,
-		        (float) settlerx / map.getWidth(),
-		        (float) (settlery + settlerMeta.height) / map.getHeight(),
+		        umin,
+		        vmin,
 
 		        // bottom left
 		        settlerMeta.offsetX,
 		        -settlerMeta.offsetY,
 		        0,
-		        (float) settlerx / map.getWidth(),
-		        (float) settlery / map.getHeight(),
+		        umin,
+		        vmax,
 
 		        // bottom right
 		        settlerMeta.offsetX + settlerMeta.width,
 		        -settlerMeta.offsetY,
 		        0,
-		        (float) (settlerx + settlerMeta.width) / map.getWidth(),
-		        (float) settlery / map.getHeight(),
+		        umax,
+		        vmax,
 
 		        // top right
 		        settlerMeta.offsetX + settlerMeta.width,
 		        -settlerMeta.offsetY - settlerMeta.height,
 		        0,
-		        (float) (settlerx + settlerMeta.width) / map.getWidth(),
-		        (float) (settlery + settlerMeta.height) / map.getHeight(),
+		        umax,
+		        vmin,
 		};
 	}
 
