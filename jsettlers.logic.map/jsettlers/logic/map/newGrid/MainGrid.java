@@ -193,6 +193,9 @@ public class MainGrid implements Serializable {
 				}
 				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
 					mapObjectsManager.addWaves(x, y);
+					if (landscapeGrid.getResourceAmountAt(x, y) > 50) {
+						mapObjectsManager.addFish(x, y);
+					}
 				}
 			}
 		}

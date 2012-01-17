@@ -308,7 +308,7 @@ public class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	private final StackMapObject getNextStackObject(StackMapObject stack) {
+	private final static StackMapObject getNextStackObject(StackMapObject stack) {
 		AbstractHexMapObject next = stack.getNextObject();
 		if (next != null) {
 			return (StackMapObject) next.getMapObject(EMapObjectType.STACK_OBJECT);
@@ -439,6 +439,10 @@ public class MapObjectsManager implements ITimerable, Serializable {
 
 	public void addWaves(short x, short y) {
 	    grid.addMapObject(x, y, new WaveMapObject());
+    }
+
+	public void addFish(short x, short y) {
+		grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.FISH_DECORATION));
     }
 
 	private static class TimeEvent implements Comparable<TimeEvent>, Serializable {
