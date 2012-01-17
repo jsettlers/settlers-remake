@@ -24,7 +24,8 @@ import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen implements SettlersContent {
-	private static final ImageLink BACKGROUND = new ImageLink(EImageLinkType.GUI, 2, 29, 0);
+	private static final ImageLink BACKGROUND = new ImageLink(
+	        EImageLinkType.GUI, 2, 29, 0);
 
 	private final LinkedList<RedrawListener> redrawListeners =
 	        new LinkedList<RedrawListener>();
@@ -52,6 +53,8 @@ public class StartScreen implements SettlersContent {
 		public void aborted(GOEvent event) {
 		}
 	};
+
+	private LoadSavedGamePanel loadSavedGamePanel;
 
 	public StartScreen(IStartScreenConnector connector) {
 		this.connector = connector;
@@ -87,7 +90,7 @@ public class StartScreen implements SettlersContent {
 		if (action instanceof ExecutableAction) {
 			((ExecutableAction) action).execute();
 		}
-		
+
 		switch (action.getActionType()) {
 			case SHOW_CONNECT_NETWORK:
 			case SHOW_LOAD:
@@ -107,18 +110,16 @@ public class StartScreen implements SettlersContent {
 				break;
 
 			case LOAD_GAME:
-				ILoadableGame load = getSelectedLoadableGame();
-				if (load != null) {
-					connector.loadGame(load);
+				if (loadSavedGamePanel != null) {
+					ILoadableGame load = loadSavedGamePanel.getSelected();
+					if (load != null) {
+						connector.loadGame(load);
+					}
 				}
 				break;
 		}
-		
-		requestRedraw();
-	}
 
-	private ILoadableGame getSelectedLoadableGame() {
-		return connector.getLoadableGames().get(0);
+		requestRedraw();
 	}
 
 	private void displayContent(EActionType displayAction) {
@@ -128,10 +129,9 @@ public class StartScreen implements SettlersContent {
 			newGamePanel = new NewGamePanel(connector.getMaps());
 			content.addChild(newGamePanel, 0, 0, 1, 1);
 		} else if (displayAction == EActionType.SHOW_LOAD) {
-			UILabeledButton startbutton =
-			        new UILabeledButton(Labels.getName(EActionType.LOAD_GAME),
-			                new Action(EActionType.LOAD_GAME));
-			content.addChild(startbutton, .3f, 0, 1, .1f);
+			loadSavedGamePanel =
+			        new LoadSavedGamePanel(connector.getLoadableGames());
+			content.addChild(loadSavedGamePanel, 0, 0, 1, 1);
 		}
 
 		for (UILabeledButton b : mainButtons) {
@@ -153,7 +153,8 @@ public class StartScreen implements SettlersContent {
 	public void drawContent(GLDrawContext gl2, int width, int height) {
 		root.setPosition(new FloatRectangle(0, 0, width, height));
 		gl2.color(.6f, .6f, .6f, 1);
-		ImageProvider.getInstance().getImage(BACKGROUND).drawImageAtRect(gl2, 0, 0, width, height);
+		ImageProvider.getInstance().getImage(BACKGROUND)
+		        .drawImageAtRect(gl2, 0, 0, width, height);
 		root.drawAt(gl2);
 	}
 

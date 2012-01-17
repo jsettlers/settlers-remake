@@ -5,10 +5,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import jsettlers.common.position.ISPosition2D;
 
-public class UIState {
+public class UIState implements Serializable {
 
 	/**
 	 * The player that uses the ui.
