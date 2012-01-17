@@ -325,8 +325,8 @@ public class MainGrid implements Serializable {
 
 	protected final boolean isLandscapeBlocking(short x, short y) {
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
-		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.RIVER1 || landscape == ELandscapeType.RIVER2
-				|| landscape == ELandscapeType.RIVER3 || landscape == ELandscapeType.RIVER4 || landscape == ELandscapeType.SNOW;
+		return landscape.isWater() || landscape == ELandscapeType.MOOR
+		        || landscape == ELandscapeType.SNOW;
 	}
 
 	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
