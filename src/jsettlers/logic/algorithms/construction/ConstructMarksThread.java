@@ -75,24 +75,24 @@ public class ConstructMarksThread extends Thread {
 	}
 
 	private void calculateConstructMarks() {
-		MapRectangle area = this.mapArea; // local variables needed to prevent errors caused by synchronization
-		EBuildingType currBuildingType = this.buildingType;
+		MapRectangle mapArea = this.mapArea; // local variables needed to prevent errors caused by synchronization
+		EBuildingType buildingType = this.buildingType;
 
-		if (currBuildingType == null || area == null) {
+		if (buildingType == null || mapArea == null) {
 			return;
 		}
 		if (lastArea != null) {
-			removeConstructionMarks(lastArea, area);
+			removeConstructionMarks(lastArea, mapArea);
 		}
 
 		final BuildingAreaBitSet buildingSet = buildingType.getBuildingAreaBitSet();
 
-		final short minX = (short) (area.getLineStartX(0));
-		final short maxX = (short) (area.getLineEndX(area.getLines() - 1));
-		final short minY = (area.getMinY());
+		final short minX = (short) (mapArea.getLineStartX(0));
+		final short maxX = (short) (mapArea.getLineEndX(mapArea.getLines() - 1));
+		final short minY = (mapArea.getMinY());
 
 		final short width = (short) (maxX - minX + 1);
-		final short height = area.getHeight();
+		final short height = mapArea.getHeight();
 		final short setWidth = (short) (width + buildingSet.width);
 		final short setHeight = (short) (height + buildingSet.height);
 
@@ -107,10 +107,10 @@ public class ConstructMarksThread extends Thread {
 			}
 		}
 
-		for (short line = 0; line < area.getLines(); line++) {
-			final short mapY = (short) area.getLineY(line);
-			final int endX = area.getLineEndX(line);
-			for (short mapX = (short) area.getLineStartX(line); mapX < endX; mapX++) {
+		for (short line = 0; line < mapArea.getLines(); line++) {
+			final short mapY = (short) mapArea.getLineY(line);
+			final int endX = mapArea.getLineEndX(line);
+			for (short mapX = (short) mapArea.getLineStartX(line); mapX < endX; mapX++) {
 				if (map.isInBounds(mapX, mapY)) { // needed because of map.setConstructMarking()
 					byte value;
 					if (checkPosition(mapX - minX, mapY - minY, areaSet, setWidth, buildingSet)) {
@@ -125,7 +125,7 @@ public class ConstructMarksThread extends Thread {
 				}
 			}
 		}
-		lastArea = area;
+		lastArea = mapArea;
 	}
 
 	private static final boolean checkPosition(int offsetX, int offsetY, BitSet areaSet, short areaWidth, BuildingAreaBitSet buildingSet) {
