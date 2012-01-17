@@ -2,21 +2,25 @@ package jsettlers.logic.map.newGrid.movable;
 
 import java.io.Serializable;
 
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.map.newGrid.landscape.IWalkableGround;
 
 /**
  * This grid stores the position of the {@link IMovable}s.
  * 
  * @author Andreas Eberle
- * 
  */
 public final class MovableGrid implements Serializable {
 	private static final long serialVersionUID = 7003522358013103962L;
 
 	private final IHexMovable[][] movableGrid;
 
-	public MovableGrid(short width, short height) {
+	private final IWalkableGround ground;
+
+	public MovableGrid(short width, short height, IWalkableGround ground) {
+		this.ground = ground;
 		this.movableGrid = new IHexMovable[width][height];
 	}
 
@@ -35,7 +39,12 @@ public final class MovableGrid implements Serializable {
 	}
 
 	public final void movableEntered(ISPosition2D position, IHexMovable movable) {
-		this.movableGrid[position.getX()][position.getY()] = movable;
+		short x = position.getX();
+		short y = position.getY();
+		this.movableGrid[x][y] = movable;
+		if (movable != null && movable.getMovableType() == EMovableType.BEARER) {
+			ground.walkOn(x, y);
+		}
 	}
 
 }

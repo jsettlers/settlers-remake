@@ -134,7 +134,7 @@ public class MainGrid implements Serializable {
 
 		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.objectsGrid = new ObjectsGrid(width, height);
-		this.movableGrid = new MovableGrid(width, height);
+		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 		this.flagsGrid = new FlagsGrid(width, height);
 		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid());
 
@@ -492,7 +492,7 @@ public class MainGrid implements Serializable {
 		}
 
 		final boolean isTreePlantable(short x, short y) {
-			return landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.GRASS && !flagsGrid.isBlocked(x, y) && !hasBlockedNeighbor(x, y);
+			return landscapeGrid.getLandscapeTypeAt(x, y).isGrass() && !flagsGrid.isProtected(x, y) && !hasBlockedNeighbor(x, y);
 		}
 
 		private final boolean hasBlockedNeighbor(short x, short y) {
@@ -509,7 +509,7 @@ public class MainGrid implements Serializable {
 
 		private final boolean isCornPlantable(short x, short y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
+			return (landscapeType.isGrass() || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y) && !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT)

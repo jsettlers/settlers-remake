@@ -9,23 +9,27 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
  * This grid stores the height and the {@link ELandscapeType} of every position.
  * 
  * @author Andreas Eberle
- * 
  */
-public class LandscapeGrid implements Serializable {
+public class LandscapeGrid implements Serializable, IWalkableGround {
 	private static final long serialVersionUID = -751261669662036483L;
 
 	private final byte[][] heightGrid;
 	private final ELandscapeType[][] landscapeGrid;
 	private final byte[][] resourceAmount;
+	private final byte[] temporaryFlatened;
 	private final EResourceType[][] resourceType;
 
 	private transient IGraphicsBackgroundListener backgroundListener;
 
+	private final short width;
+
 	public LandscapeGrid(short width, short height) {
+		this.width = width;
 		this.heightGrid = new byte[width][height];
 		this.landscapeGrid = new ELandscapeType[width][height];
 		this.resourceAmount = new byte[width][height];
 		this.resourceType = new EResourceType[width][height];
+		this.temporaryFlatened = new byte[width * height];
 
 		setBackgroundListener(null);
 	}
@@ -43,7 +47,8 @@ public class LandscapeGrid implements Serializable {
 		return landscapeGrid[x][y];
 	}
 
-	public final void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
+	public final void setLandscapeTypeAt(short x, short y,
+	        ELandscapeType landscapeType) {
 		this.landscapeGrid[x][y] = landscapeType;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
@@ -53,7 +58,8 @@ public class LandscapeGrid implements Serializable {
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+	public final void setBackgroundListener(
+	        IGraphicsBackgroundListener backgroundListener) {
 		if (backgroundListener != null) {
 			this.backgroundListener = backgroundListener;
 		} else {
@@ -61,7 +67,8 @@ public class LandscapeGrid implements Serializable {
 		}
 	}
 
-	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
+	public final void setResourceAt(short x, short y,
+	        EResourceType resourceType, byte amount) {
 		this.resourceType[x][y] = resourceType;
 		this.resourceAmount[x][y] = amount;
 	}
@@ -74,8 +81,10 @@ public class LandscapeGrid implements Serializable {
 		return resourceType[x][y];
 	}
 
-	public final boolean hasResourceAt(short x, short y, EResourceType resourceType) {
-		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x][y] > 0;
+	public final boolean hasResourceAt(short x, short y,
+	        EResourceType resourceType) {
+		return getResourceTypeAt(x, y) == resourceType
+		        && resourceAmount[x][y] > 0;
 	}
 
 	public final void pickResourceAt(short x, short y) {
@@ -86,13 +95,40 @@ public class LandscapeGrid implements Serializable {
 	 * This class is used as null object to get rid of a lot of null checks
 	 * 
 	 * @author Andreas Eberle
-	 * 
 	 */
-	private static class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+	private static class NullBackgroundListener implements
+	        IGraphicsBackgroundListener, Serializable {
 		private static final long serialVersionUID = -332117701485179252L;
 
 		@Override
 		public final void backgroundChangedAt(short x, short y) {
+		}
+	}
+
+	/* (non-Javadoc)
+     * @see jsettlers.logic.map.newGrid.landscape.IWalkableGround#walkOn(int, int)
+     */
+	@Override
+    public final void walkOn(int x, int y) {
+		int i = width * y + x;
+		if (temporaryFlatened[i] < 100) {
+			temporaryFlatened[i] += 3;
+			if (temporaryFlatened[i] > 20) {
+				flaten(x, y);
+			}
+		}
+	}
+
+	private void flaten(int x, int y) {
+		// TODO: only flaten if there is grass around the place.
+		if (getLandscapeTypeAt((short) x, (short) y).isGrass()
+		        && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
+		        && getLandscapeTypeAt((short) (x - 1), (short) (y - 1)).isGrass()
+		        && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
+		        && getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass()
+		        && getLandscapeTypeAt((short) (x + 1), (short) (y + 1)).isGrass()
+		        && getLandscapeTypeAt((short) (x + 1), (short) y).isGrass()) {
+			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
 		}
 	}
 }
