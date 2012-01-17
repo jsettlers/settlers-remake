@@ -101,9 +101,9 @@ public class LandscapeFader {
 	}
 
 	/**
-	 * Gets an array of landscpaes that can be used to fade between one landscae
-	 * type and the oter. Contains the first and last landscape (or only one
-	 * element if the landscape is the same.
+	 * Gets an array of landscapes that can be used to fade between one
+	 * landscape type and the other. Contains the first and last landscape (or
+	 * only one element if the landscape is the same.
 	 * <p>
 	 * Returns null if there is no way the landscapes can be faded.
 	 * 

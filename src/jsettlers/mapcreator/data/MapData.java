@@ -28,6 +28,7 @@ import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
 import jsettlers.mapcreator.data.MapDataDelta.LandscapeChange;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectAdder;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectRemover;
+import jsettlers.mapcreator.data.MapDataDelta.StartPointSetter;
 
 /**
  * This is the map data of a map that is beeing created by the editor.
@@ -427,7 +428,7 @@ public class MapData implements IMapData {
 
 	@Override
 	public ISPosition2D getStartPoint(int player) {
-		return new ShortPoint2D(width / 2, height / 2);
+		return playerStarts[player];
 	}
 
 	public IMapObject getMapObjectContainer(int x, int y) {
@@ -489,6 +490,12 @@ public class MapData implements IMapData {
 			objects[adder.x][adder.y] = adder.obj;
 			adder = adder.next;
 		}
+		
+		//start points
+		StartPointSetter start = delta.getStartPoints();
+		while (start != null) {
+			playerStarts[start.player] = start.pos;
+		}
 	}
 
 	@Override
@@ -538,4 +545,9 @@ public class MapData implements IMapData {
 	public void setBorders(boolean[][] lastBorders) {
 		this.lastBorders = lastBorders;
 	}
+
+	public void setStartPoint(byte activePlayer, ISPosition2D pos) {
+		this.undoDelta.setStartPoint(activePlayer, playerStarts[activePlayer]);
+	    this.playerStarts[activePlayer] = pos;
+    }
 }

@@ -88,35 +88,41 @@ public class DataTester implements Runnable {
 			}
 		}
 		
+		for (int player = 0; player < data.getPlayerCount(); player++) {
+			ISPosition2D point = data.getStartPoint(player);
+			if (players[point.getX()][point.getY()] != player) {
+				testFailed("Player " + player + " has invalid start point", point);
+			}
+			//mark
+			borders[point.getX()][point.getY()] = true;
+		}
+		
 		data.setPlayers(players);
 		data.setBorders(borders);
 		receiver.testResult(result, successful, resultPosition);
 	}
 
-	private void testBuilding(byte[][] players, int x, int y, ShortPoint2D start,
-            BuildingObject buildingObject) {
-	    EBuildingType type = buildingObject.getType();
-	    for (RelativePoint p : type.getProtectedTiles()) {
-	    	ISPosition2D pos = p.calculatePoint(start);
-	    	if (!data.contains(pos.getX(), pos.getY())) {
-	    		testFailed("Building " + type + " outside map", pos);
-	    	} else if (!MapData.listAllowsLandscape(
-	    	        type.getGroundtypes(),
-	    	        data.getLandscape(pos.getX(), pos.getY()))) {
-	    		testFailed(
-	    		        "Building "
-	    		                + type
-	    		                + " cannot be placed on "
-	    		                + data.getLandscape(pos.getX(),
-	    		                        pos.getY()), pos);
-	    	} else if (players[x][y] != buildingObject.getPlayer()) {
-	    		testFailed("Building " + type + " of player "
-	    		        + buildingObject.getPlayer()
-	    		        + ", but is on " + players[x][y]
-	    		        + "'s land", pos);
-	    	}
-	    }
-    }
+	private void testBuilding(byte[][] players, int x, int y,
+	        ShortPoint2D start, BuildingObject buildingObject) {
+		EBuildingType type = buildingObject.getType();
+		for (RelativePoint p : type.getProtectedTiles()) {
+			ISPosition2D pos = p.calculatePoint(start);
+			if (!data.contains(pos.getX(), pos.getY())) {
+				testFailed("Building " + type + " outside map", pos);
+			} else if (!MapData.listAllowsLandscape(type.getGroundtypes(),
+			        data.getLandscape(pos.getX(), pos.getY()))) {
+				testFailed(
+				        "Building " + type + " cannot be placed on "
+				                + data.getLandscape(pos.getX(), pos.getY()),
+				        pos);
+			} else if (players[x][y] != buildingObject.getPlayer()) {
+				testFailed(
+				        "Building " + type + " of player "
+				                + buildingObject.getPlayer() + ", but is on "
+				                + players[x][y] + "'s land", pos);
+			}
+		}
+	}
 
 	private void drawBuildingCircle(byte[][] players, int x, int y,
 	        BuildingObject buildingObject) {
@@ -129,16 +135,17 @@ public class DataTester implements Runnable {
 		}
 	}
 
-	private void drawCircle(byte[][] players, byte player,
-	        MapCircle circle) {
+	private void drawCircle(byte[][] players, byte player, MapCircle circle) {
 		for (ISPosition2D pos : circle) {
-			if (data.contains(pos.getX(), pos.getY()) && players[pos.getX()][pos.getY()] == -1) {
+			if (data.contains(pos.getX(), pos.getY())
+			        && players[pos.getX()][pos.getY()] == -1) {
 				players[pos.getX()][pos.getY()] = player;
 			}
 		}
 	}
 
-	private void test(int x, int y, int x2, int y2, byte[][] players, boolean[][] borders) {
+	private void test(int x, int y, int x2, int y2, byte[][] players,
+	        boolean[][] borders) {
 		if (Math.abs(data.getLandscapeHeight(x2, y2)
 		        - data.getLandscapeHeight(x, y)) > MAX_HEIGHT_DIFF) {
 			successful = false;
@@ -151,7 +158,7 @@ public class DataTester implements Runnable {
 			testFailed("Wrong landscape pair: " + l2 + ", " + l1,
 			        new ShortPoint2D(x, y));
 		}
-		
+
 		if (players[x][y] != players[x2][y2]) {
 			if (players[x][y] != -1) {
 				borders[x][y] = true;
@@ -176,5 +183,5 @@ public class DataTester implements Runnable {
 		public void testResult(String name, boolean allowed,
 		        ISPosition2D resultPosition);
 	}
-	
+
 }

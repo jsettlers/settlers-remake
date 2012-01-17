@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -77,9 +78,30 @@ public class Main {
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Open map"));
 		ArrayList<MapLoader> maps = MapList.getDefaultList().getFreshMaps();
-		final JList mapList = new JList(maps.toArray());
+		Object[] array = maps.toArray();
+		Arrays.sort(array, new Comparator<Object>() {
+			@Override
+			public int compare(Object arg0, Object arg1) {
+				if (arg0 instanceof MapLoader && arg1 instanceof MapLoader) {
+					MapLoader mapLoader1 = (MapLoader) arg0;
+					MapLoader mapLoader2 = (MapLoader) arg1;
+					int nameComp =
+					        mapLoader1.getName()
+					                .compareTo(mapLoader2.getName());
+					if (nameComp != 0) {
+						return nameComp;
+					} else {
+						return mapLoader1.toString().compareTo(
+						        mapLoader2.toString());
+					}
+				} else {
+					return 0;
+				}
+			}
+		});
+		final JList mapList = new JList(array);
 		panel.add(mapList);
-		
+
 		JButton button = new JButton("Open");
 		button.addActionListener(new ActionListener() {
 			@Override
@@ -133,11 +155,11 @@ public class Main {
 
 	protected void loadMap(MapLoader value) {
 		try {
-	        new EditorWindow(value);
+			new EditorWindow(value);
 			close();
-        } catch (MapLoadException e) {
-        	JOptionPane.showMessageDialog(selectMapFrame, e.getMessage());
-        	e.printStackTrace();
-        }
+		} catch (MapLoadException e) {
+			JOptionPane.showMessageDialog(selectMapFrame, e.getMessage());
+			e.printStackTrace();
+		}
 	}
 }

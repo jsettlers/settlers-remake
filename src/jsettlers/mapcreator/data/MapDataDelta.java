@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.data;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.position.ISPosition2D;
 
 /**
  * This is a map data delta, that can be applyed from a map data to an other.
@@ -94,6 +95,33 @@ public class MapDataDelta {
 	
 	public ObjectRemover getRemoveObjects() {
 	    return removeObjects;
+    }
+	
+	//ignore start item!
+	private StartPointSetter startPoints = new StartPointSetter();
+
+	public static class StartPointSetter {
+		StartPointSetter next = null;
+		byte player;
+		ISPosition2D pos;
+	}
+
+	public StartPointSetter getStartPoints() {
+	    return startPoints.next;
+    }
+	
+	public void setStartPoint(byte player, ISPosition2D pos) {
+	    StartPointSetter cur = startPoints;
+	    while (cur.next != null) {
+	    	if (cur.next.player == player) {
+	    		cur.next = cur.next.next;
+	    	}
+	    }
+	    StartPointSetter item = new StartPointSetter();
+	    item.player = player;
+	    item.pos = pos;
+	    item.next = startPoints.next;
+	    startPoints.next = item;
     }
 
 }

@@ -1,6 +1,8 @@
 package jsettlers.mapcreator.tools;
 
 import jsettlers.common.map.object.MapObject;
+import jsettlers.common.map.object.MapStoneObject;
+import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
 
@@ -17,7 +19,14 @@ public class PlaceMapObjectTool implements Tool {
 
 	@Override
 	public String getName() {
-		return "place " + object.getClass().getSimpleName();
+		if (object instanceof MapStoneObject) {
+			return "place " + ((MapStoneObject) object).getCapacity()
+			        + " stones";
+		} else if (object instanceof MapTreeObject) {
+			return "place tree";
+		} else {
+			return "place " + object.getClass().getSimpleName();
+		}
 	}
 
 	@Override
@@ -28,7 +37,7 @@ public class PlaceMapObjectTool implements Tool {
 	@Override
 	public void apply(MapData map, ShapeType shape, ISPosition2D start,
 	        ISPosition2D end, double uidx) {
-		
+
 		byte[][] placeAt = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(placeAt, start, end);
 
@@ -40,11 +49,11 @@ public class PlaceMapObjectTool implements Tool {
 			}
 		}
 	}
-	
+
 	public MapObject getObject() {
-	    return object;
-    }
-	
+		return object;
+	}
+
 	@Override
 	public void start(MapData data, ShapeType shape, ISPosition2D pos) {
 	}

@@ -23,6 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -30,6 +31,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
@@ -40,6 +42,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -73,8 +76,8 @@ import jsettlers.mapcreator.tools.LineCircleShape;
 import jsettlers.mapcreator.tools.PlaceBuildingTool;
 import jsettlers.mapcreator.tools.PlaceMapObjectTool;
 import jsettlers.mapcreator.tools.PlaceMovableTool;
-import jsettlers.mapcreator.tools.PlaceStackTool;
 import jsettlers.mapcreator.tools.SetLandscapeTool;
+import jsettlers.mapcreator.tools.SetStartpointTool;
 import jsettlers.mapcreator.tools.ShapeType;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.ToolBox;
@@ -195,39 +198,39 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		        }),
 		        new ToolBox("Materialien", new ToolNode[] {
 				        new ToolBox("Bauen", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.PLANK, 8),
-			        		new PlaceStackTool(EMaterialType.STONE, 8),
-			        		new PlaceStackTool(EMaterialType.TRUNK, 8),
+			        		new PlaceStackToolbox(EMaterialType.PLANK, 8),
+			        		new PlaceStackToolbox(EMaterialType.STONE, 8),
+			        		new PlaceStackToolbox(EMaterialType.TRUNK, 8),
 				        }),
 					    new ToolBox("Essen", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.BREAD, 8),
-			        		new PlaceStackTool(EMaterialType.CROP, 8),
-			        		new PlaceStackTool(EMaterialType.FISH, 8),
-			        		new PlaceStackTool(EMaterialType.FISHINGROD, 8),
-			        		new PlaceStackTool(EMaterialType.FLOUR, 8),
-			        		new PlaceStackTool(EMaterialType.PIG, 8),
-			        		new PlaceStackTool(EMaterialType.WATER, 8),
-			        		new PlaceStackTool(EMaterialType.WINE, 8),
+			        		new PlaceStackToolbox(EMaterialType.BREAD, 8),
+			        		new PlaceStackToolbox(EMaterialType.CROP, 8),
+			        		new PlaceStackToolbox(EMaterialType.FISH, 8),
+			        		new PlaceStackToolbox(EMaterialType.FLOUR, 8),
+			        		new PlaceStackToolbox(EMaterialType.PIG, 8),
+			        		new PlaceStackToolbox(EMaterialType.WATER, 8),
+			        		new PlaceStackToolbox(EMaterialType.WINE, 8),
 				        }),
 					    new ToolBox("Rohstoffe", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.COAL, 8),
-			        		new PlaceStackTool(EMaterialType.IRON, 8),
-			        		new PlaceStackTool(EMaterialType.IRONORE, 8),
-			        		new PlaceStackTool(EMaterialType.GOLD, 8),
-			        		new PlaceStackTool(EMaterialType.GOLDORE, 8),
+			        		new PlaceStackToolbox(EMaterialType.COAL, 8),
+			        		new PlaceStackToolbox(EMaterialType.IRON, 8),
+			        		new PlaceStackToolbox(EMaterialType.IRONORE, 8),
+			        		new PlaceStackToolbox(EMaterialType.GOLD, 8),
+			        		new PlaceStackToolbox(EMaterialType.GOLDORE, 8),
 				        }),
 					    new ToolBox("Werkzeug", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.HAMMER, 8),
-			        		new PlaceStackTool(EMaterialType.BLADE, 8),
-			        		new PlaceStackTool(EMaterialType.AXE, 8),
-			        		new PlaceStackTool(EMaterialType.SAW, 8),
-			        		new PlaceStackTool(EMaterialType.PICK, 8),
-			        		new PlaceStackTool(EMaterialType.SCYTHE, 8),
+			        		new PlaceStackToolbox(EMaterialType.HAMMER, 8),
+			        		new PlaceStackToolbox(EMaterialType.BLADE, 8),
+			        		new PlaceStackToolbox(EMaterialType.AXE, 8),
+			        		new PlaceStackToolbox(EMaterialType.SAW, 8),
+			        		new PlaceStackToolbox(EMaterialType.PICK, 8),
+			        		new PlaceStackToolbox(EMaterialType.SCYTHE, 8),
+			        		new PlaceStackToolbox(EMaterialType.FISHINGROD, 8),
 				        }),
 					    new ToolBox("Waffen", new ToolNode[] {
-			        		new PlaceStackTool(EMaterialType.SWORD, 8),
-			        		new PlaceStackTool(EMaterialType.BOW, 8),
-			        		new PlaceStackTool(EMaterialType.SPEAR, 8),
+			        		new PlaceStackToolbox(EMaterialType.SWORD, 8),
+			        		new PlaceStackToolbox(EMaterialType.BOW, 8),
+			        		new PlaceStackToolbox(EMaterialType.SPEAR, 8),
 				        }),
 		        }),
 		        new ToolBox("Gebäude", new ToolNode[] {
@@ -249,6 +252,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				        		new PlaceBuildingTool(EBuildingType.CASTLE, this),
 				        }),
 		        }),
+		        new SetStartpointTool(this),
 		        new DeleteObjectTool(),
 	        });
 	//@formatter:on
@@ -286,7 +290,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		short width = header.getWidth();
 		short height = header.getHeight();
 		short playerCount = header.getMaxPlayer();
-		data = new MapData(width, height, playerCount , ground);
+		data = new MapData(width, height, playerCount, ground);
 		map = new MapGraphics(data);
 
 		startMapEditing();
@@ -294,13 +298,13 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	}
 
 	public EditorWindow(MapLoader loader) throws MapLoadException {
-	    data = new MapData(loader.getMapData());
+		data = new MapData(loader.getMapData());
 		header = loader.getFileHeader();
 		map = new MapGraphics(data);
-		
+
 		startMapEditing();
 		dataTester = new DataTester(data, this);
-    }
+	}
 
 	public void startMapEditing() {
 		JFrame window = new JFrame("map editor");
@@ -384,6 +388,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		});
 		bar.add(testResult);
 
+		bar.add(Box.createGlue());
+
+		bar.add(new JLabel("current player:"));
 		final SpinnerNumberModel model =
 		        new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
 		JSpinner playerSpinner = new JSpinner(model);
@@ -393,6 +400,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				currentPlayer = model.getNumber().byteValue();
 			}
 		});
+		playerSpinner.setPreferredSize(new Dimension(50, 1));
 		bar.add(playerSpinner);
 
 		startGameButton = new JButton("Play");
@@ -407,13 +415,13 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	}
 
 	protected void save() {
-	    try {
-	        MapList.getDefaultList().saveMap(header, data);
-        } catch (IOException e) {
-	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(saveButton, e.getMessage());
-        }
-    }
+		try {
+			MapList.getDefaultList().saveMap(header, data);
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(saveButton, e.getMessage());
+		}
+	}
 
 	protected void play() {
 		try {
@@ -434,7 +442,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				System.out.print(arg + " ");
 			}
 			System.out.println();
-			
+
 			ProcessBuilder builder = new ProcessBuilder(args);
 			builder.directory(new File("").getAbsoluteFile());
 			builder.redirectErrorStream(true);
@@ -449,11 +457,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 					while (true) {
 						String line;
-                        try {
-	                        line = reader.readLine();
-                        } catch (IOException e) {
-	                        break;
-                        }
+						try {
+							line = reader.readLine();
+						} catch (IOException e) {
+							break;
+						}
 						if (line == null) {
 							break;
 						}
@@ -495,15 +503,21 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		JPanel menu = new JPanel();
 		menu.setLayout(new BorderLayout());
 
-		JTree toolshelf = new JTree(new ToolTreeModel(TOOLBOX));
-		menu.add(toolshelf, BorderLayout.CENTER);
+		final JTree toolshelf = new JTree(new ToolTreeModel(TOOLBOX));
+		menu.add(new JScrollPane(toolshelf), BorderLayout.CENTER);
 		toolshelf.addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent arg0) {
-				Object lastPathComponent =
-				        arg0.getNewLeadSelectionPath().getLastPathComponent();
-				if (lastPathComponent instanceof Tool) {
-					changeTool((Tool) lastPathComponent);
+				TreePath path = arg0.getNewLeadSelectionPath();
+				Object lastPathComponent = path.getLastPathComponent();
+				if (lastPathComponent instanceof ToolBox) {
+					ToolBox toolBox = (ToolBox) lastPathComponent;
+					TreePath newPath =
+					        path.pathByAddingChild(toolBox.getTools()[0]);
+					toolshelf.setSelectionPath(newPath);
+				} else if (lastPathComponent instanceof Tool) {
+					Tool newTool = (Tool) lastPathComponent;
+					changeTool(newTool);
 				}
 			}
 		});
@@ -585,6 +599,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 				tool.apply(data, shape, lineAction.getStart(),
 				        lineAction.getEnd(), lineAction.getUidy());
+
+				dataTester.retest();
 			}
 		} else if (action instanceof StartDrawingAction) {
 			if (tool != null) {
@@ -593,9 +609,16 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				ShapeType shape = getActiveShape();
 
 				tool.start(data, shape, lineAction.getPos());
+
+				dataTester.retest();
 			}
 		} else if (action instanceof EndDrawingAction) {
 			endUseStep();
+			dataTester.retest();
+		} else if (action instanceof AbortDrawingAction) {
+			MapDataDelta delta = data.getUndoDelta();
+			data.apply(delta);
+			data.resetUndoDelta();
 			dataTester.retest();
 		}
 	}
