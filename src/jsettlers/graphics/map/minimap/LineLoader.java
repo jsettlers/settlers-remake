@@ -1,9 +1,6 @@
 package jsettlers.graphics.map.minimap;
 
 import go.graphics.Color;
-
-import java.nio.ShortBuffer;
-
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -19,6 +16,8 @@ class LineLoader implements Runnable {
      */
 	private final Minimap minimap;
 
+	private int currentline = 0;
+
 	public LineLoader(Minimap minimap) {
 		this.minimap = minimap;
 	}
@@ -30,26 +29,56 @@ class LineLoader implements Runnable {
 		}
 	};
 
+	private int currYOffset = 0;
+	private int currXOffset = 0;
+	private static final int Y_STEP_HEIGHT = 5;
+	private static final int X_STEP_WIDTH = 5;
+
+	private static final int LINES_PER_RUN = 30;
+
+	private short[][] buffer = new short[1][1];
+
 	/**
 	 * Updates a line by putting it to the update buffer. Next time the gl
 	 * context is available, it is updated.
 	 */
 	private void updateLine() {
-		int currentline = minimap.getNextUpdateLine();
-		ShortBuffer newData = getLineData(currentline);
-		newData.position(0);
-		minimap.setUpdateData(currentline, newData);
+		minimap.blockUntilUpdateAllowed();
+		for (int i = 0; i < LINES_PER_RUN; i++) {
+
+			if (buffer.length != minimap.getHeight()
+			        || buffer[currentline].length != minimap.getWidth()) {
+				buffer = new short[minimap.getHeight()][minimap.getWidth()];
+				for (int y = 0; y < minimap.getHeight(); y++) {
+					for (int x = 0; x < minimap.getWidth(); x++) {
+						buffer[y][x] = BLACK;
+					}
+				}
+				minimap.setBufferArray(buffer);
+			}
+
+			calculateLineData(currentline);
+			minimap.setUpdatedLine(currentline);
+
+			currentline += Y_STEP_HEIGHT;
+			if (currentline >= minimap.getHeight()) {
+				currYOffset++;
+				currYOffset %= Y_STEP_HEIGHT;
+
+				currentline = currYOffset;
+			}
+		}
 	}
 
-	private ShortBuffer getLineData(int currentline) {
+	private void calculateLineData(final int currentline) {
 		// may change!
 		int safewidth = this.minimap.getWidth();
 		int safeheight = this.minimap.getHeight();
 		IGraphicsGrid map = this.minimap.getContext().getMap();
 
-		//for height shades
+		// for height shades
 		int maplineheight = map.getHeight() / safeheight + 1;
-		
+
 		// first map tile in line
 		int mapmaxy =
 		        (int) ((1 - (float) currentline / safeheight) * map.getHeight());
@@ -65,8 +94,7 @@ class LineLoader implements Runnable {
 			}
 		}
 
-		ShortBuffer data = ShortBuffer.allocate(safewidth);
-		for (int x = 0; x < safewidth; x++) {
+		for (int x = currXOffset; x < safewidth; x += 5) {
 			int mapminx = (int) ((float) x / safewidth * map.getWidth());
 			int mapmaxx = (int) ((float) (x + 1) / safewidth * map.getWidth());
 
@@ -77,7 +105,8 @@ class LineLoader implements Runnable {
 			int centery = (mapmaxy + mapminy) / 2;
 
 			short color = TRANSPARENT;
-			if (minimap.getContext().isFogOfWarVisible(centerx, centery)) {
+			if (minimap.getContext().getMap()
+			        .getVisibleStatus(centerx, centery) > CommonConstants.FOG_OF_WAR_EXPLORED) {
 				color = getSettlerForArea(mapminx, mapminy, mapmaxx, mapmaxy);
 			}
 
@@ -88,7 +117,10 @@ class LineLoader implements Runnable {
 				                / CommonConstants.FOG_OF_WAR_VISIBLE;
 				int dheight =
 				        map.getHeightAt(centerx, mapminy)
-				                - map.getHeightAt(centerx, Math.min(mapminy + maplineheight, map.getHeight() - 1));
+				                - map.getHeightAt(
+				                        centerx,
+				                        Math.min(mapminy + maplineheight,
+				                                map.getHeight() - 1));
 				basecolor *= (1 + .15f * dheight);
 
 				if (basecolor >= 0) {
@@ -100,9 +132,11 @@ class LineLoader implements Runnable {
 			if (color == TRANSPARENT) {
 				color = BLACK;
 			}
-			data.put(color);
+			buffer[currentline][x] = color;
 		}
-		return data;
+
+		currXOffset += 3;
+		currXOffset %= X_STEP_WIDTH;
 	}
 
 	private short getLandscapeForArea(int mapminx, int mapminy, int mapmaxx,

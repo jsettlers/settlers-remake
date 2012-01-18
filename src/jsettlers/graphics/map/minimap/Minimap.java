@@ -3,6 +3,7 @@ package jsettlers.graphics.map.minimap;
 import go.graphics.GLDrawContext;
 
 import java.nio.ShortBuffer;
+import java.util.LinkedList;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -23,23 +24,20 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * 
  * @author michael
  */
-public class Minimap {
+public final class Minimap {
 	private MapCoordinateConverter converter;
 	private int width;
 	private int height;
 	private int imageIndex = -1;
 	private float stride;
-	private int updateline = -1; // line in the update buffer. -1 means invalid.
-	/**
-	 * last line a update was requested for.
-	 */
-	private int lastUpdateline = 0;
-	private ShortBuffer updateData;
+
 	private boolean imageIsValid = false;
 	private Object update_syncobj = new Object();
 	private final MapDrawContext context;
 
 	private MapRectangle mapViewport;
+	private short[][] buffer;
+	private LinkedList<Integer> updatedLines = new LinkedList<Integer>();
 
 	public Minimap(MapDrawContext context) {
 		this.context = context;
@@ -75,15 +73,21 @@ public class Minimap {
 				}
 				data.position(0);
 				imageIndex = context.generateTexture(width, height, data);
-				updateline = -1;
+				updatedLines.clear();
 				imageIsValid = true;
 			}
 
-			if (updateline >= 0 && updateData.remaining() == width) {
-				context.updateTexture(imageIndex, 0, updateline, width, 1,
-				        updateData);
+			if (!updatedLines.isEmpty()) {
+				for (Integer currLine : updatedLines) {
+					ShortBuffer currData = ShortBuffer.allocate(width);
+					currData.put(buffer[currLine]);
+					currData.position(0);
+
+					context.updateTexture(imageIndex, 0, currLine, width, 1,
+					        currData);
+				}
+				updatedLines.clear();
 			}
-			updateline = -1;
 			update_syncobj.notifyAll();
 		}
 
@@ -151,30 +155,14 @@ public class Minimap {
 	}
 
 	/**
-	 * Blocks and gets the next line to update.
+	 * Sets the data
 	 * 
-	 * @return
+	 * @param line
+	 * @param data
 	 */
-	public int getNextUpdateLine() {
+	public void setUpdatedLine(int line) {
 		synchronized (update_syncobj) {
-			while (updateline >= 0 || width < 1 || height < 1) {
-				try {
-					update_syncobj.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
-			lastUpdateline++;
-			lastUpdateline %= height;
-			return lastUpdateline;
-		}
-	}
-
-	public void setUpdateData(int line, ShortBuffer data) {
-		synchronized (update_syncobj) {
-			updateData = data;
-			updateline = line;
+			updatedLines.add(line);
 		}
 	}
 
@@ -211,6 +199,25 @@ public class Minimap {
 
 	public void setMapViewport(MapRectangle rect) {
 		mapViewport = rect;
+	}
+
+	/**
+	 * a call to this method blocks until it's ok to update a line.
+	 */
+	public void blockUntilUpdateAllowed() {
+		synchronized (update_syncobj) {
+			while (!updatedLines.isEmpty() || width < 1 || height < 1) {
+				try {
+					update_syncobj.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void setBufferArray(short[][] buffer) {
+		this.buffer = buffer;
 	}
 
 }
