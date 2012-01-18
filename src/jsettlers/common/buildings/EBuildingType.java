@@ -322,7 +322,7 @@ public enum EBuildingType {
 			return this.bitSet.get((x - minX) + width * (y - minY));
 		}
 
-		private final short max(short first, short second) {
+		private final static short max(short first, short second) {
 			if (first > second) {
 				return first;
 			} else {
@@ -330,7 +330,7 @@ public enum EBuildingType {
 			}
 		}
 
-		private final short min(short first, short second) {
+		private final static short min(short first, short second) {
 			if (first < second) {
 				return first;
 			} else {

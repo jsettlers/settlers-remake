@@ -253,5 +253,24 @@ public enum EBuildingJobType {
 	 * Succeeds if there is a pig at (dx, dy)
 	 */
 	PIG_IS_THERE,
+	
+	/**
+	 * Pops a tool from the list of tools that should be produced.
+	 * <p>
+	 * fails if there is noting to do.
+	 */
+	POP_TOOL,
+	
+	/**
+	 * Pops a weapon from the list of tools that should be produced.
+	 * <p>
+	 * fails if there is noting to do.
+	 */
+	POP_WEAPON,
+	
+	/**
+	 * Drops a tool/weapon that was requested with {@link #POP_TOOL} or {@link #POP_WEAPON}
+	 */
+	DROP_POPPED,
 }
 
