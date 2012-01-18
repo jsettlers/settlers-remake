@@ -24,6 +24,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * It lists all available maps, and it can be used to add maps to the game.
  * <p>
  * TODO: load maps before they are needed, to increase startup time.
+ * 
  * @author michael
  */
 public class MapList {
@@ -44,19 +45,18 @@ public class MapList {
 	private void loadFileList() {
 		freshMaps.clear();
 		savedMaps.clear();
-		
+
 		File[] files = dir.listFiles();
 		if (files == null) {
-			throw new IllegalArgumentException(
-			        "map directory is not a directory.");
+			throw new IllegalArgumentException("map directory is not a directory.");
 		}
-		
-	    for (File file : files) {
+
+		for (File file : files) {
 			if (file.getName().endsWith(MAP_EXTENSION)) {
 				addFileToList(file);
 			}
 		}
-    }
+	}
 
 	private synchronized void addFileToList(File file) {
 		try {
@@ -67,10 +67,8 @@ public class MapList {
 			} else {
 				freshMaps.add(loader);
 			}
-			loadFileList();
 		} catch (MapLoadException e) {
-			System.err.println("Cought exception while loading header for "
-			        + file.getAbsolutePath());
+			System.err.println("Cought exception while loading header for " + file.getAbsolutePath());
 			e.printStackTrace();
 		}
 	}
@@ -115,17 +113,14 @@ public class MapList {
 	}
 
 	/**
-	 * Gets an output stream that can be used to store the map. The stream is to
-	 * a file with a nice name and does not override any other file.
+	 * Gets an output stream that can be used to store the map. The stream is to a file with a nice name and does not override any other file.
 	 * 
 	 * @param header
-	 *            The header to create the file name from. It is not written to
-	 *            the stream.
+	 *            The header to create the file name from. It is not written to the stream.
 	 * @return A output stream to a fresh generated file.
 	 * @throws IOException
 	 */
-	private OutputStream getOutputStream(MapFileHeader header)
-	        throws IOException {
+	private OutputStream getOutputStream(MapFileHeader header) throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
 			name = "map";
@@ -151,8 +146,7 @@ public class MapList {
 	}
 
 	/**
-	 * Saves a map to disk. The map logic should be paused while calling this
-	 * method.
+	 * Saves a map to disk. The map logic should be paused while calling this method.
 	 * 
 	 * @param state
 	 * @param grid
@@ -165,7 +159,7 @@ public class MapList {
 		state.writeTo(out);
 		GameSerializer gameSerializer = new GameSerializer();
 		gameSerializer.save(grid, out);
-		
+
 		loadFileList();
 	}
 
@@ -178,8 +172,7 @@ public class MapList {
 	 *            The random map rule text.
 	 * @throws IOException
 	 */
-	public synchronized void saveRandomMap(MapFileHeader header, String definition)
-	        throws IOException {
+	public synchronized void saveRandomMap(MapFileHeader header, String definition) throws IOException {
 		OutputStream out = getOutputStream(header);
 		MapSaver.saveRandomMap(header, definition, out);
 		loadFileList();
