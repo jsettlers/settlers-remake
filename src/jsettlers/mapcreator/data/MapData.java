@@ -51,6 +51,8 @@ public class MapData implements IMapData {
 
 	private byte[][] lastPlayers;
 	private boolean[][] lastBorders;
+	private boolean[][] doneBuffer;
+	private boolean[][] failpoints;
 
 	public MapData(int width, int height, int playercount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
@@ -79,6 +81,7 @@ public class MapData implements IMapData {
 		this.landscapes = new ELandscapeType[width][height];
 		this.heights = new byte[width][height];
 		this.objects = new ObjectContainer[width][height];
+		this.doneBuffer = new boolean[width][height];
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -124,25 +127,65 @@ public class MapData implements IMapData {
 	 * 
 	 * @param type
 	 * @param area
+	 * @param usedmaxy
+	 * @param usedmaxx
+	 * @param usedminy
+	 * @param usedminx
 	 */
 	public void fill(ELandscapeType type, IMapArea area) {
-		boolean[][] done = new boolean[width][height];
+		
+		assert (isAllFalse(this.doneBuffer));
 
 		System.out.println("filling");
+		int ymin = Integer.MAX_VALUE;
+		int ymax = Integer.MIN_VALUE;
+		int xmin = Integer.MAX_VALUE;
+		int xmax = Integer.MIN_VALUE;
 		for (ISPosition2D pos : area) {
 			short x = pos.getX();
 			short y = pos.getY();
 			if (contains(x, y)) {
 				if (setLandscape(x, y, type)) {
-					done[x][y] = true;
+					doneBuffer[x][y] = true;
+					if (x < xmin) {
+						xmin = x;
+					}
+					if (x > xmax) {
+						xmax = x;
+					}
+	
+					if (y < ymin) {
+						ymin = y;
+					}
+					if (y > ymax) {
+						ymax = y;
+					}
 				}
+
 			}
 		}
+		if (ymin == Integer.MAX_VALUE) {
+			return; //nothing done
+		}
+
+		if (xmin > 0) {
+			xmin -= 1;
+		}
+		if (xmax < width - 1) {
+			xmax += 1;
+		}
+		if (ymin > 0) {
+			ymin -= 1;
+		}
+		if (ymax < width - 1) {
+			ymax += 1;
+		}
+		
 
 		System.out.println("searching border tiles...");
 		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<FadeTask>();
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
+		for (int y = ymin; y < ymax; y++) {
+			for (int x = xmin; x < xmax; x++) {
 				if (area.contains(new ShortPoint2D(x, y))) { // < we cannot use
 					                                         // done[x][y],
 					                                         // because done
@@ -152,9 +195,21 @@ public class MapData implements IMapData {
 					for (EDirection dir : EDirection.valuesCached()) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
-						if (contains(tx, ty) && !done[tx][ty]) {
+						if (contains(tx, ty) && !doneBuffer[tx][ty]) {
 							tasks.add(new FadeTask(tx, ty, type));
-							done[tx][ty] = true;
+							doneBuffer[tx][ty] = true;
+
+							if (tx < xmin) {
+								xmin = tx;
+							} else if (tx > xmax) {
+								xmax = tx;
+							}
+
+							if (ty < ymin) {
+								ymin = ty;
+							} else if (ty > ymax) {
+								ymax = ty;
+							}
 						}
 					}
 				}
@@ -165,6 +220,8 @@ public class MapData implements IMapData {
 		        + " tiles, starting to work on them...");
 		while (!tasks.isEmpty()) {
 			FadeTask task = tasks.poll();
+			assert contains(task.x, task.y);
+
 			ELandscapeType[] fade =
 			        fader.getLandscapesBetween(task.type,
 			                landscapes[task.x][task.y]);
@@ -178,13 +235,45 @@ public class MapData implements IMapData {
 			for (EDirection dir : EDirection.valuesCached()) {
 				int nx = task.x + dir.getGridDeltaX();
 				int ny = task.y + dir.getGridDeltaY();
-				if (contains(nx, ny) && !done[nx][ny]) {
+				if (contains(nx, ny) && !doneBuffer[nx][ny]) {
 					tasks.add(new FadeTask(nx, ny, newLandscape));
-					done[nx][ny] = true;
+					doneBuffer[nx][ny] = true;
+
+					if (nx < xmin) {
+						xmin = nx;
+					} else if (nx > xmax) {
+						xmax = nx;
+					}
+
+					if (ny < ymin) {
+						ymin = ny;
+					} else if (ny > ymax) {
+						ymax = ny;
+					}
+				}
+
+			}
+		}
+
+		// reset done buffer
+		for (int y = ymin; y <= ymax; y++) {
+			for (int x = xmin; x <= xmax; x++) {
+				doneBuffer[x][y] = false;
+			}
+		}
+		assert (isAllFalse(this.doneBuffer));
+	}
+
+	private static boolean isAllFalse(boolean[][] doneBuffer2) {
+		for (boolean[] arr : doneBuffer2) {
+			for (boolean b : arr) {
+				if (b) {
+					return false;
 				}
 			}
 		}
-	}
+	    return true;
+    }
 
 	public boolean contains(int tx, int ty) {
 		return tx >= 0 && tx < width && ty >= 0 && ty < height;
@@ -353,9 +442,6 @@ public class MapData implements IMapData {
 	}
 
 	public void setHeight(int x, int y, int height) {
-		if (isWater(x, y) && height != 0) {
-			return;
-		}
 		if (objects[x][y] instanceof LandscapeConstraint
 		        && !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
 			return;
@@ -388,20 +474,11 @@ public class MapData implements IMapData {
 	}
 
 	private static boolean landscapeAllowsObjects(ELandscapeType type) {
-		return !isWater(type) && type != ELandscapeType.SNOW
+		return !type.isWater() && type != ELandscapeType.SNOW
 		        && type != ELandscapeType.RIVER1
 		        && type != ELandscapeType.RIVER2
 		        && type != ELandscapeType.RIVER3
-		        && type != ELandscapeType.RIVER4 
-		        && type != ELandscapeType.MOOR;
-	}
-
-	private boolean isWater(int x, int y) {
-		return isWater(landscapes[x][y]);
-	}
-
-	private static boolean isWater(ELandscapeType type) {
-		return type == ELandscapeType.WATER1;
+		        && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
 	}
 
 	@Override
@@ -547,5 +624,13 @@ public class MapData implements IMapData {
 	public void setStartPoint(byte activePlayer, ISPosition2D pos) {
 		this.undoDelta.setStartPoint(activePlayer, playerStarts[activePlayer]);
 		this.playerStarts[activePlayer] = pos;
+	}
+
+	public void setFailpoints(boolean[][] failpoints) {
+		this.failpoints = failpoints;
+    }
+	
+	public boolean isFailpoint(int x, int y) {
+		return failpoints != null && failpoints[x][y];
 	}
 }

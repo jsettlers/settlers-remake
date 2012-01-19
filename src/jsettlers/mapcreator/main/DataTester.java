@@ -24,6 +24,7 @@ public class DataTester implements Runnable {
 	private ISPosition2D resultPosition;
 	private final TestResultReceiver receiver;
 	private final LandscapeFader fader = new LandscapeFader();
+	private boolean[][] failpoints;
 
 	public DataTester(MapData data, TestResultReceiver receiver) {
 		this.data = data;
@@ -52,6 +53,7 @@ public class DataTester implements Runnable {
 		result = "";
 		resultPosition = new ShortPoint2D(0, 0);
 
+		failpoints = new boolean[data.getWidth()][data.getHeight()];
 		byte[][] players = new byte[data.getWidth()][data.getHeight()];
 		for (int x = 0; x < data.getWidth(); x++) {
 			for (int y = 0; y < data.getHeight(); y++) {
@@ -100,6 +102,7 @@ public class DataTester implements Runnable {
 
 		data.setPlayers(players);
 		data.setBorders(borders);
+		data.setFailpoints(failpoints);
 		receiver.testResult(result, successful, resultPosition);
 	}
 
@@ -181,6 +184,7 @@ public class DataTester implements Runnable {
 	private void testFailed(String string, ISPosition2D pos) {
 		result = string;
 		resultPosition = pos;
+		failpoints[pos.getX()][pos.getY()] = true;
 	}
 
 	public synchronized void retest() {

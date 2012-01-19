@@ -23,6 +23,9 @@ public class FuzzyLineCircleShape extends LineCircleShape {
 			// to hard to compute
 			return Byte.MAX_VALUE;
 		}
+		if (distance > getRadius()) {
+			return 0;
+		}
 		// linear falloff:
 		//double m = Byte.MAX_VALUE / ((1 - inner) * getRadius());
 		//return (getRadius() - distance) * m;

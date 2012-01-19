@@ -27,8 +27,8 @@ public class MapHeaderEditor extends JPanel {
      */
 	private static final long serialVersionUID = 4452683956025604099L;
 
-	private static final int MIN_MAPSIZE = 50;
-	private static final int MAX_MAPSIZE = 1000;
+	private static final int MIN_MAPSIZE = 100;
+	private static final int MAX_MAPSIZE = 2000;
 	private SpinnerNumberModel width;
 	private SpinnerNumberModel height;
 	private SpinnerNumberModel minPlayer;
@@ -62,8 +62,8 @@ public class MapHeaderEditor extends JPanel {
 		JLabel descriptionLabel = new JLabel("Description");
 		JLabel widthLabel = new JLabel("Width");
 		JLabel heightLabel = new JLabel("height");
-		JLabel maxPlayerLabel = new JLabel("minimum player number");
-		JLabel minPlayerLabel = new JLabel("maximum player number");
+		JLabel minPlayerLabel = new JLabel("minimum player number");
+		JLabel maxPlayerLabel = new JLabel("maximum player number");
 
 		add(nameField);
 		add(descriptionField);

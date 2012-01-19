@@ -17,7 +17,7 @@ public interface ShapeType {
 	void setAffectedStatus(byte[][] fields, ISPosition2D start, ISPosition2D end);
 
 	/**
-	 * Gets the size of the shape (only as UI info).
+	 * Gets the size of the shape (as optimisation)
 	 * 
 	 * @return The (average) size in map units.
 	 */

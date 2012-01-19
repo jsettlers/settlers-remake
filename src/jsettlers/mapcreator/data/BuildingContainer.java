@@ -1,7 +1,11 @@
 package jsettlers.mapcreator.data;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -9,7 +13,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 
-public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint {
+public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupyed {
 
 	private final BuildingObject object;
 	private final ISPosition2D pos;
@@ -90,6 +94,25 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	@Override
     public boolean isOccupied() {
 	    return false;
+    }
+
+	@Override
+    public void setSoundPlayed() {	    
+    }
+
+	@Override
+    public boolean isSoundPlayed() {
+	    return true;
+    }
+
+	@Override
+    public List<? extends IBuildingOccupyer> getOccupyers() {
+	    return new LinkedList<IBuildingOccupyer>();
+    }
+
+	@Override
+    public boolean isRotating() {
+	    return true;
     }
 
 }

@@ -9,7 +9,7 @@ import jsettlers.mapcreator.data.MapData;
 public class PlaceMapObjectTool implements Tool {
 	private static final ShapeType[] SHAPES = new ShapeType[] {
 		new PointShape(),
-		new GridShape(),
+		new GridCircleShape(),
 	};
 
 	private final MapObject object;

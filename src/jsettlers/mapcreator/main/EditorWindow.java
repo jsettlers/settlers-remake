@@ -54,7 +54,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.ActionFirerer;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
@@ -67,6 +66,7 @@ import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.mapview.MapGraphics;
+import jsettlers.mapcreator.stat.StatisticsWindow;
 import jsettlers.mapcreator.tools.DeleteObjectTool;
 import jsettlers.mapcreator.tools.FixHeightsTool;
 import jsettlers.mapcreator.tools.FlatLandscapeTool;
@@ -113,7 +113,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	}
 
 	private LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
-
+	
 	//@formatter:off
 	private final ToolNode TOOLBOX = new ToolBox("Werkzege",
 	        new ToolNode[] {
@@ -252,11 +252,31 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				        		new PlaceBuildingTool(EBuildingType.GOLDMINE, this),
 				        		new PlaceBuildingTool(EBuildingType.COALMINE, this),
 				        		new PlaceBuildingTool(EBuildingType.CHARCOAL_BURNER, this),
+				        		new PlaceBuildingTool(EBuildingType.TOOLSMITH, this),
+				        }),
+				        new ToolBox("Essen", new ToolNode[] {
+				        		new PlaceBuildingTool(EBuildingType.FARM, this),
+				        		new PlaceBuildingTool(EBuildingType.MILL, this),
+				        		new PlaceBuildingTool(EBuildingType.BAKER, this),
+				        		new PlaceBuildingTool(EBuildingType.WATERWORKS, this),
+				        		new PlaceBuildingTool(EBuildingType.PIG_FARM, this),
+				        		new PlaceBuildingTool(EBuildingType.SLAUGHTERHOUSE, this),
+				        		new PlaceBuildingTool(EBuildingType.FISHER, this),
+				        		new PlaceBuildingTool(EBuildingType.DONKEY_FARM, this),
+				        		new PlaceBuildingTool(EBuildingType.WINEGROWER, this),
 				        }),
 				        new ToolBox("Militär", new ToolNode[] {
 				        		new PlaceBuildingTool(EBuildingType.TOWER, this),
 				        		new PlaceBuildingTool(EBuildingType.BIG_TOWER, this),
 				        		new PlaceBuildingTool(EBuildingType.CASTLE, this),
+				        }),
+				        new ToolBox("Sozial", new ToolNode[] {
+				        		new PlaceBuildingTool(EBuildingType.SMALL_LIVINGHOUSE, this),
+				        		new PlaceBuildingTool(EBuildingType.MEDIUM_LIVINGHOUSE, this),
+				        		new PlaceBuildingTool(EBuildingType.BIG_LIVINGHOUSE, this),
+				        		new PlaceBuildingTool(EBuildingType.TEMPLE, this),
+				        		new PlaceBuildingTool(EBuildingType.BIG_TEMPLE, this),
+				        		new PlaceBuildingTool(EBuildingType.STOCK, this),
 				        }),
 		        }),
 		        new SetStartpointTool(this),
@@ -347,7 +367,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 		MapContent content =
 		        new MapContent(map, new SwingSoundPlayer(),
-		                new MapEditorControls(new ActionFirerer(this)));
+		                new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = content.getInterfaceConnector();
 		region.setContent(content);
 
@@ -410,6 +430,15 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		playerSpinner.setPreferredSize(new Dimension(50, 1));
 		bar.add(playerSpinner);
 
+		JButton statistics = new JButton("Statistics");
+		statistics.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new StatisticsWindow(data);
+			}
+		});
+		bar.add(statistics);
+		
 		startGameButton = new JButton("Play");
 		startGameButton.addActionListener(new ActionListener() {
 			@Override

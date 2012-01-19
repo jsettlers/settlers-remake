@@ -49,7 +49,7 @@ public class MapGraphics implements IGraphicsGrid {
 
 	@Override
 	public Color getDebugColorAt(int x, int y) {
-		return data.getLandscape(x, y).getColor();
+		return data.isFailpoint(x, y) ? Color.RED : null;
 	}
 
 	@Override
