@@ -47,38 +47,6 @@ public interface IStartScreenConnector {
 		Date getSaveTime();
 	}
 
-	/**
-	 * Gets a list of network games that can be recovered.
-	 */
-	List<? extends IRecoverableGame> getRecoverableGames();
-
-	public interface IRecoverableGame extends INetworkGame {
-		Date getSaveTime();
-	}
-
-	/**
-	 * Gets a list of network games.
-	 * 
-	 * @return The list of network games.
-	 */
-	INetworkGame[] getNetworkGames();
-
-	public interface INetworkGame {
-		String getName();
-
-		String[] getPlayerNames();
-	}
-
-	void setNetworkServer(String host);
-
-	void addNetworkGameListener(INetworkGameListener gameListener);
-
-	void removeNetworkGameListener(INetworkGameListener gameListener);
-
-	public interface INetworkGameListener {
-		void networkGamesChanged();
-	}
-
 	/* - - - - - callbacks - - - - - */
 	/**
 	 * Called when the user starts a singleplayer game
@@ -98,18 +66,6 @@ public interface IStartScreenConnector {
 	 *            The game to load. A item of getLoadableGames();
 	 */
 	void loadGame(ILoadableGame load);
-
-	/**
-	 * Starts a network game
-	 * 
-	 * @param game
-	 * @param name
-	 */
-	void startMatch(IGameSettings game, String matchName);
-
-	void recoverNetworkGame(IRecoverableGame game);
-
-	void joinNetworkGame(INetworkGame game);
 
 	void exitGame();
 }
