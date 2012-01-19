@@ -3,6 +3,8 @@ package jsettlers.graphics.startscreen;
 import java.util.Date;
 import java.util.List;
 
+import jsettlers.common.network.INetworkConnector;
+
 /**
  * This connector provides data that is needed by the start screen.
  * 
@@ -68,4 +70,6 @@ public interface IStartScreenConnector {
 	void loadGame(ILoadableGame load);
 
 	void exitGame();
+
+	INetworkConnector getNetworkConnector();
 }
