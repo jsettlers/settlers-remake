@@ -1,5 +1,7 @@
 package jsettlers.common.network;
 
+import java.io.IOException;
+
 /**
  * interface for user of INetworkConnector to get callbacks.
  * 
@@ -26,4 +28,12 @@ public interface INetworkConnectorListener {
 	 * called when we received the map from the server
 	 */
 	void receivedMap();
+
+	/**
+	 * called if an exception occurred and the connection to the server was lost.
+	 * 
+	 * @param e
+	 *            catched exception
+	 */
+	void connectionLost(IOException e);
 }

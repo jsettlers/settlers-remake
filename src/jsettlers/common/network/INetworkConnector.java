@@ -46,6 +46,12 @@ public interface INetworkConnector {
 	void leaveCurrentMatch();
 
 	/**
+	 * Needs to be called to cause the client to load the matches list or refresh it.<br>
+	 * The listener will be informed when the list is available.
+	 */
+	void refreshMatchesList();
+
+	/**
 	 * Get list of available matches.
 	 * 
 	 * @return list of available matches.
@@ -71,4 +77,11 @@ public interface INetworkConnector {
 	 * remove the listener.
 	 */
 	void removeListener();
+
+	/**
+	 * 
+	 * @return an array of names of the match attendants. The index in the array is the players number. The array always has the length of the maximum
+	 *         players allowed in the match.
+	 */
+	String[] getMatchAttendants();
 }
