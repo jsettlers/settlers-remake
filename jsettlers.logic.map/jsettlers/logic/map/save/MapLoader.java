@@ -14,7 +14,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IRecoverableGame;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.random.RandomMapEvaluator;
@@ -29,8 +28,7 @@ import jsettlers.main.IGameCreator;
  * 
  * @author michael
  */
-public class MapLoader implements IGameCreator, ILoadableGame,
-        IRecoverableGame, IMapItem {
+public class MapLoader implements IGameCreator, ILoadableGame, IMapItem {
 	private static final byte USER_PLAYER = 0;
 	private final File file;
 	private MapFileHeader header;
@@ -88,8 +86,7 @@ public class MapLoader implements IGameCreator, ILoadableGame,
 				int randomSeed = 3;
 
 				RandomMapFile file = RandomMapFile.loadFromStream(stream);
-				RandomMapEvaluator evaluator =
-				        new RandomMapEvaluator(file.getInstructions(), players);
+				RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
 				evaluator.createMap(new Random(randomSeed));
 				mapData = evaluator.getGrid();
 
@@ -111,7 +108,7 @@ public class MapLoader implements IGameCreator, ILoadableGame,
 
 	}
 
-	private void loadBy(IMapData data) throws MapLoadException {
+	private void loadBy(IMapData data) {
 		uiState = new UIState(USER_PLAYER, data.getStartPoint(USER_PLAYER));
 	}
 
@@ -181,12 +178,6 @@ public class MapLoader implements IGameCreator, ILoadableGame,
 		}
 	}
 
-	@Override
-	public String[] getPlayerNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/**
 	 * Gets the map data for this loader, if the data is available.
 	 * 
@@ -206,6 +197,11 @@ public class MapLoader implements IGameCreator, ILoadableGame,
 	@Override
 	public String toString() {
 		return file.getName();
+	}
+
+	public String getMapID() {
+		// FIXME return mapID here
+		return null;
 	}
 
 }

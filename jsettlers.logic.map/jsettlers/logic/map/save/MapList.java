@@ -189,7 +189,10 @@ public class MapList {
 	 * @return
 	 */
 	public static MapList getDefaultList() {
-		File dir = new File(ResourceManager.getSaveDirectory(), "maps");
-		return new MapList(dir);
+		return new MapList(getDefaultFolder());
+	}
+
+	public static File getDefaultFolder() {
+		return new File(ResourceManager.getSaveDirectory(), "maps");
 	}
 }

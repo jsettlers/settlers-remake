@@ -4,7 +4,6 @@ import java.util.List;
 
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.network.NetworkConnector;
 
 class StartConnector implements IStartScreenConnector {
 	/**
@@ -32,11 +31,6 @@ class StartConnector implements IStartScreenConnector {
 	}
 
 	@Override
-	public List<? extends IRecoverableGame> getRecoverableGames() {
-		return mapList.getSavedMultiplayerMaps();
-	}
-
-	@Override
 	public void startNewGame(IGameSettings game) {
 		gamestarter.startGame(game);
 	}
@@ -49,44 +43,5 @@ class StartConnector implements IStartScreenConnector {
 	@Override
 	public void exitGame() {
 		System.exit(0);
-	}
-
-	private NetworkConnector networker = new NetworkConnector();
-
-	@Override
-	public INetworkGame[] getNetworkGames() {
-		return networker.getNetworkGames();
-	}
-
-	@Override
-	public void setNetworkServer(String host) {
-		networker.setNetworkServer(host);
-	}
-
-	@Override
-	public void recoverNetworkGame(IRecoverableGame game) {
-		networker.recoverNetworkGame(game);
-	}
-
-	@Override
-	public void joinNetworkGame(INetworkGame game) {
-		networker.joinNetworkGame(game);
-	}
-
-	@Override
-	public void startMatch(IGameSettings game, String matchName) {
-		networker.startMatch(game, matchName);
-	}
-
-	@Override
-	public void addNetworkGameListener(INetworkGameListener gameListener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeNetworkGameListener(INetworkGameListener gameListener) {
-		// TODO Auto-generated method stub
-
 	}
 }
