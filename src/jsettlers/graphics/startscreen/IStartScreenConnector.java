@@ -31,7 +31,7 @@ public interface IStartScreenConnector {
 		 * 
 		 * @return never null.
 		 */
-//		IMapDataProvider createLoadableGame(int players, long random);
+		// IMapDataProvider createLoadableGame(int players, long random);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public interface IStartScreenConnector {
 	 * @param game
 	 * @param name
 	 */
-	void startGameServer(IGameSettings game, String name);
+	void startMatch(IGameSettings game, String matchName);
 
 	void recoverNetworkGame(IRecoverableGame game);
 
