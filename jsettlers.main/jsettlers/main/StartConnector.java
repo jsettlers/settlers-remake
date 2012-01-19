@@ -4,21 +4,22 @@ import java.util.List;
 
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.network.NetworkConnector;
 
 class StartConnector implements IStartScreenConnector {
 	/**
      * 
      */
-    private final IGameStarter gamestarter;
+	private final IGameStarter gamestarter;
 	private final MapList mapList;
 
 	/**
-     * @param managedJSettlers
-     */
-    StartConnector(IGameStarter managedJSettlers) {
-        gamestarter = managedJSettlers;
-        mapList = MapList.getDefaultList();
-    }
+	 * @param managedJSettlers
+	 */
+	StartConnector(IGameStarter managedJSettlers) {
+		gamestarter = managedJSettlers;
+		mapList = MapList.getDefaultList();
+	}
 
 	@Override
 	public List<? extends IMapItem> getMaps() {
@@ -36,22 +37,9 @@ class StartConnector implements IStartScreenConnector {
 	}
 
 	@Override
-	public INetworkGame[] getNetworkGames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setNetworkServer(String host) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void startNewGame(IGameSettings game) {
 		gamestarter.startGame(game);
 	}
-
 
 	@Override
 	public void loadGame(ILoadableGame load) {
@@ -59,15 +47,35 @@ class StartConnector implements IStartScreenConnector {
 	}
 
 	@Override
-	public void recoverNetworkGame(IRecoverableGame game) {
-		// TODO Auto-generated method stub
+	public void exitGame() {
+		System.exit(0);
+	}
 
+	private NetworkConnector networker = new NetworkConnector();
+
+	@Override
+	public INetworkGame[] getNetworkGames() {
+		return networker.getNetworkGames();
+	}
+
+	@Override
+	public void setNetworkServer(String host) {
+		networker.setNetworkServer(host);
+	}
+
+	@Override
+	public void recoverNetworkGame(IRecoverableGame game) {
+		networker.recoverNetworkGame(game);
 	}
 
 	@Override
 	public void joinNetworkGame(INetworkGame game) {
-		// TODO Auto-generated method stub
+		networker.joinNetworkGame(game);
+	}
 
+	@Override
+	public void startMatch(IGameSettings game, String matchName) {
+		networker.startMatch(game, matchName);
 	}
 
 	@Override
@@ -81,16 +89,4 @@ class StartConnector implements IStartScreenConnector {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void startGameServer(IGameSettings game, String name) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void exitGame() {
-		System.exit(0);
-	}
-
 }
