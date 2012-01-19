@@ -24,6 +24,7 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 	private ClientThread clientThread = null;
 	private INetworkConnectorListener listener;
 	private IMatch[] matches;
+	private boolean requestingMatches = false;
 
 	@Override
 	public void connectToServer(String host) throws IOException {
@@ -44,17 +45,24 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 	public void setPlayerName(String playerName) {
 		try {
 			clientThread.setPlayerName(playerName);
-		} catch (IOException e) { // TODO implement correct error handling
-			e.printStackTrace();
+		} catch (IOException e) {
+			connectionLost(e);
 		}
+	}
+
+	private void connectionLost(IOException e) {
+		e.printStackTrace();
+
+		cancelConnection();
+		listener.connectionLost(e);
 	}
 
 	@Override
 	public void startMatch(IMatchSettings settings, INetworkableMap map) {
 		try {
 			clientThread.startNewMatch(new MatchDescription(settings, map.getUniqueID(), map.getName()), map.getFile());
-		} catch (IOException e) { // TODO implement correct error handling
-			e.printStackTrace();
+		} catch (IOException e) {
+			connectionLost(e);
 		}
 	}
 
@@ -62,8 +70,20 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 	public void leaveCurrentMatch() {
 		try {
 			clientThread.leaveMatch();
-		} catch (IOException e) { // TODO implement correct error handling
-			e.printStackTrace();
+		} catch (IOException e) {
+			connectionLost(e);
+		}
+	}
+
+	@Override
+	public void refreshMatchesList() {
+		if (!requestingMatches) {
+			try {
+				requestingMatches = true;
+				clientThread.requestMatchesList();
+			} catch (IOException e) {
+				connectionLost(e);
+			}
 		}
 	}
 
@@ -84,8 +104,8 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 			}
 
 			clientThread.requestMap();
-		} catch (IOException e) { // TODO implement correct error handling
-			e.printStackTrace();
+		} catch (IOException e) {
+			connectionLost(e);
 		}
 	}
 
@@ -123,6 +143,7 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 		}
 		this.matches = matches;
 
+		requestingMatches = false;
 		listener.retrievedMatches();
 	}
 
@@ -147,6 +168,12 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 	@Override
 	public File getMapFolder() {
 		return MapList.getDefaultFolder();
+	}
+
+	@Override
+	public String[] getMatchAttendants() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

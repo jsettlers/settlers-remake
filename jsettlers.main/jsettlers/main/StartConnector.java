@@ -2,8 +2,10 @@ package jsettlers.main;
 
 import java.util.List;
 
+import jsettlers.common.network.INetworkConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.network.NetworkConnector;
 
 class StartConnector implements IStartScreenConnector {
 	/**
@@ -11,6 +13,7 @@ class StartConnector implements IStartScreenConnector {
      */
 	private final IGameStarter gamestarter;
 	private final MapList mapList;
+	private INetworkConnector networkConnector;
 
 	/**
 	 * @param managedJSettlers
@@ -43,5 +46,14 @@ class StartConnector implements IStartScreenConnector {
 	@Override
 	public void exitGame() {
 		System.exit(0);
+	}
+
+	@Override
+	public INetworkConnector getNetworkConnector() {
+		if (networkConnector == null) {
+			networkConnector = new NetworkConnector();
+		}
+
+		return networkConnector;
 	}
 }
