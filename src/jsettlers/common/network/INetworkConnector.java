@@ -84,4 +84,10 @@ public interface INetworkConnector {
 	 *         players allowed in the match.
 	 */
 	String[] getMatchAttendants();
+
+	/**
+	 * Needs to be called to cause the client to load the match attendants list or refresh it.<br>
+	 * The listener will be informed when the list is available.
+	 */
+	void refreshMatchAttendants();
 }

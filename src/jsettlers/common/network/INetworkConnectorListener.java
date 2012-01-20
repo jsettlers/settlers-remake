@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public interface INetworkConnectorListener {
 	/**
-	 * list of matches is now available.
+	 * list of matches is now available / refreshed.
 	 */
 	void retrievedMatches();
 
@@ -36,4 +36,9 @@ public interface INetworkConnectorListener {
 	 *            catched exception
 	 */
 	void connectionLost(IOException e);
+
+	/**
+	 * list of attendants is now available / refreshed.
+	 */
+	void retrievedMatchAttendants();
 }
