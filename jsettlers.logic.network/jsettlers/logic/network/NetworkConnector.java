@@ -25,6 +25,7 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 	private INetworkConnectorListener listener;
 	private IMatch[] matches;
 	private boolean requestingMatches = false;
+	private String[] matchAttendants;
 
 	@Override
 	public void connectToServer(String host) throws IOException {
@@ -172,8 +173,22 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 
 	@Override
 	public String[] getMatchAttendants() {
-		// TODO Auto-generated method stub
-		return null;
+		return matchAttendants;
+	}
+
+	@Override
+	public void refreshMatchAttendants() {
+		try {
+			clientThread.requestMatchAttendants();
+		} catch (IOException e) {
+			connectionLost(e);
+		}
+	}
+
+	@Override
+	public void receivedMatchAttendants(String[] matchAttendants) {
+		this.matchAttendants = matchAttendants;
+		listener.retrievedMatchAttendants();
 	}
 
 }
