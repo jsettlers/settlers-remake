@@ -1,8 +1,7 @@
 package jsettlers.logic.algorithms.borders;
 
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
@@ -17,7 +16,7 @@ public class BordersThread implements Runnable {
 
 	private final IBordersThreadGrid grid;
 	private boolean canceled = false;
-	private final Queue<ISPosition2D> positionsQueue = new ConcurrentLinkedQueue<ISPosition2D>();
+	private final LinkedBlockingQueue<ISPosition2D> positionsQueue = new LinkedBlockingQueue<ISPosition2D>();
 
 	/**
 	 * This constructor creates a new instance of {@link BordersThread} and automatically launches a thread for it called "bordersThread".
@@ -36,56 +35,60 @@ public class BordersThread implements Runnable {
 
 	@Override
 	public void run() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
+
 		while (!canceled) {
-			if (!positionsQueue.isEmpty()) {
-				ISPosition2D position;
-				synchronized (positionsQueue) {
-					position = positionsQueue.poll();
-				}
-
-				byte player = grid.getPlayer(position.getX(), position.getY());
-				boolean isBorder = false;
-
-				for (EDirection currDir : EDirection.values()) {
-					short currNeighborX = currDir.getNextTileX(position.getX());
-					short currNeighborY = currDir.getNextTileY(position.getY());
-
-					if (!grid.isInBounds(currNeighborX, currNeighborY)) {
-						continue;
-					}
-
-					byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
-					boolean neighborIsBorder = false;
-
-					if (neighborPlayer != player) {
-						isBorder = true;
-					}
-
-					if (neighborPlayer >= 0) { // this position is occupied by a player
-
-						for (EDirection currNeighborDir : EDirection.valuesCached()) {
-							short nextX = currNeighborDir.getNextTileX(currNeighborX);
-							short nextY = currNeighborDir.getNextTileY(currNeighborY);
-
-							if (grid.isInBounds(nextX, nextY) && grid.getPlayer(nextX, nextY) != neighborPlayer) {
-								neighborIsBorder = true;
-								break;
-							}
-						}
-					} // else the position is not occupied -> don't display a border here
-
-					grid.setBorder(currNeighborX, currNeighborY, neighborIsBorder);
-				}
-
-				grid.setBorder(position.getX(), position.getY(), isBorder && player >= 0);
-			} else {
+			ISPosition2D position = null;
+			while (position == null && !canceled) {
 				try {
-					Thread.sleep(50);
+					position = positionsQueue.take();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
+			calculateForPosition(position);
 		}
+	}
+
+	private void calculateForPosition(ISPosition2D position) {
+		byte player = grid.getPlayer(position.getX(), position.getY());
+		boolean isBorder = false;
+
+		for (EDirection currDir : EDirection.values()) {
+			short currNeighborX = currDir.getNextTileX(position.getX());
+			short currNeighborY = currDir.getNextTileY(position.getY());
+
+			if (!grid.isInBounds(currNeighborX, currNeighborY)) {
+				continue;
+			}
+
+			byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
+			boolean neighborIsBorder = false;
+
+			if (neighborPlayer != player) {
+				isBorder = true;
+			}
+
+			if (neighborPlayer >= 0) { // this position is occupied by a player
+
+				for (EDirection currNeighborDir : EDirection.valuesCached()) {
+					short nextX = currNeighborDir.getNextTileX(currNeighborX);
+					short nextY = currNeighborDir.getNextTileY(currNeighborY);
+
+					if (grid.isInBounds(nextX, nextY) && grid.getPlayer(nextX, nextY) != neighborPlayer) {
+						neighborIsBorder = true;
+						break;
+					}
+				}
+			} // else the position is not occupied -> don't display a border here
+
+			grid.setBorder(currNeighborX, currNeighborY, neighborIsBorder);
+		}
+
+		grid.setBorder(position.getX(), position.getY(), isBorder && player >= 0);
 	}
 
 	public void checkPosition(ISPosition2D position) {
@@ -102,6 +105,7 @@ public class BordersThread implements Runnable {
 
 	public void cancel() {
 		this.canceled = true;
+		positionsQueue.notifyAll();
 	}
 
 }

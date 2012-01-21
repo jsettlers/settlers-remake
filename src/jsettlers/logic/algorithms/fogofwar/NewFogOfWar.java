@@ -100,12 +100,11 @@ public final class NewFogOfWar implements IFogOfWar {
 
 	final class NewFoWThread extends Thread {
 		private static final byte DIM_DOWN_SPEED = 10;
-		private final CircleDrawer drawer;
+		private final CircleDrawer drawer = new CircleDrawer();
 		private byte[][] buffer;
 
 		NewFoWThread() {
 			super("NewFoWThread");
-			this.drawer = new CircleDrawer();
 			this.buffer = new byte[width][height];
 			super.setDaemon(true);
 		}
