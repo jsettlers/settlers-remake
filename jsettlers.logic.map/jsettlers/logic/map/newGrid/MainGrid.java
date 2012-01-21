@@ -29,9 +29,9 @@ import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -189,7 +189,7 @@ public class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && !(object instanceof MovableObject)) {
+				if (object != null && (object instanceof BuildingObject) && isTower(((BuildingObject) object).getType())) {
 					addMapObject(x, y, object);
 				}
 				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
@@ -200,15 +200,20 @@ public class MainGrid implements Serializable {
 				}
 			}
 		}
+
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && object instanceof MovableObject) {
+				if (object != null && !((object instanceof BuildingObject) && isTower(((BuildingObject) object).getType()))) {
 					addMapObject(x, y, object);
 				}
 			}
 		}
 		System.out.println("grid filled");
+	}
+
+	private final boolean isTower(EBuildingType type) {
+		return type == EBuildingType.TOWER || type == EBuildingType.CASTLE || type == EBuildingType.BIG_TOWER;
 	}
 
 	private boolean isInsideWater(short x, short y) {
@@ -278,6 +283,7 @@ public class MainGrid implements Serializable {
 		} else if (object instanceof BuildingObject) {
 			Building building = Building.getBuilding(((BuildingObject) object).getType(), ((BuildingObject) object).getPlayer());
 			building.appearAt(buildingsGrid, pos);
+
 			if (building instanceof IOccupyableBuilding) {
 				Movable soldier = createNewMovableAt(((IOccupyableBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
 				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
@@ -325,8 +331,7 @@ public class MainGrid implements Serializable {
 
 	protected final boolean isLandscapeBlocking(short x, short y) {
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
-		return landscape.isWater() || landscape == ELandscapeType.MOOR
-		        || landscape == ELandscapeType.SNOW;
+		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.SNOW;
 	}
 
 	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -509,8 +514,8 @@ public class MainGrid implements Serializable {
 
 		private final boolean isCornPlantable(short x, short y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType.isGrass() || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
-					&& !hasProtectedNeighbor(x, y) && !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
+			return (landscapeType.isGrass() || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y) && !hasProtectedNeighbor(x, y)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING);
@@ -555,13 +560,11 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final Color getDebugColorAt(int x, int y) {
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x,
-			// (short) y) + 1);
-			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f,
-			// ((value / 9) % 3) * 0.33f, 1);
-
-			short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+
+			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
+			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -1100,14 +1103,14 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte player) {
+		public final void occupyArea(MapCircle toBeOccupied, ISPosition2D occupiersPosition, byte player) {
 			List<ISPosition2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, occupiersPosition, player);
 			bordersThread.checkPositions(occupiedPositions);
 			landmarksCorrectionThread.addLandmarkedPositions(occupiedPositions);
 		}
 
 		@Override
-		public final void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos) {
+		public final void freeOccupiedArea(MapCircle occupied, ISPosition2D pos) {
 			List<ISPosition2D> totallyFreed = partitionsGrid.freeOccupiedArea(occupied, pos);
 			if (!totallyFreed.isEmpty()) {
 				StopWatch watch = new MilliStopWatch();
@@ -1132,15 +1135,13 @@ public class MainGrid implements Serializable {
 					FreeMapArea freedArea = new FreeMapArea(totallyFreed);
 
 					for (OccupyingDistanceCombi currOcc : occupyingInRange) {
-						MapShapeFilter currOccArea = currOcc.building.getOccupyablePositions();
+						MapCircle currOccArea = currOcc.building.getOccupyablePositions();
 
 						Iterator<ISPosition2D> iter = freedArea.iterator();
 						for (ISPosition2D currPos = iter.next(); iter.hasNext(); currPos = iter.next()) {
 							if (currOccArea.contains(currPos)) {
 								iter.remove();
 								partitionsGrid.occupyAt(currPos.getX(), currPos.getY(), currOcc.building.getPlayer());
-								// bordersThread.checkPosition(currPos);
-								// landmarksCorrectionThread.addLandmarkedPosition(currPos);
 							}
 						}
 

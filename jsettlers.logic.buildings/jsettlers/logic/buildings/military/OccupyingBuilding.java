@@ -11,7 +11,6 @@ import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
@@ -72,8 +71,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 	}
 
-	public final MapShapeFilter getOccupyablePositions() {
-		return new MapShapeFilter(new MapCircle(super.getPos(), CommonConstants.TOWERRADIUS), super.getGrid().getWidth(), super.getGrid().getHeight());
+	public final MapCircle getOccupyablePositions() {
+		return new MapCircle(super.getPos(), CommonConstants.TOWERRADIUS);
 	}
 
 	@Override
@@ -120,7 +119,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		setSelected(false);
 
 		if (occupiedArea) {
-			MapShapeFilter occupied = getOccupyablePositions();
+			MapCircle occupied = getOccupyablePositions();
 			super.getGrid().freeOccupiedArea(occupied, super.getPos());
 
 			int idx = 0;
@@ -159,7 +158,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private final void occupyArea() {
 		if (!occupiedArea) {
-			MapShapeFilter occupying = getOccupyablePositions();
+			MapCircle occupying = getOccupyablePositions();
 			super.getGrid().occupyArea(occupying, super.getPos(), super.getPlayer());
 			occupiedArea = true;
 		}

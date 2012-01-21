@@ -1,7 +1,7 @@
 package jsettlers.logic.buildings;
 
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -86,7 +86,7 @@ public interface IBuildingsGrid {
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 
-	void occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte player);
+	void occupyArea(MapCircle toBeOccupied, ISPosition2D occupiersPosition, byte player);
 
 	void removeBuildingAt(ISPosition2D pos);
 
@@ -96,7 +96,7 @@ public interface IBuildingsGrid {
 	 * @param occupied
 	 * @param pos
 	 */
-	void freeOccupiedArea(MapShapeFilter occupied, ISPosition2D pos);
+	void freeOccupiedArea(MapCircle occupied, ISPosition2D pos);
 
 	void pushMaterialsTo(ISPosition2D position, EMaterialType type, byte numberOf);
 

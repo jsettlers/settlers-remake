@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.common.Color;
-import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -305,33 +307,73 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(position).releaseRequestsAt(position, materialType);
 	}
 
-	public final List<ISPosition2D> occupyArea(MapShapeFilter toBeOccupied, ISPosition2D occupiersPosition, byte newPlayer) {
+	public final List<ISPosition2D> occupyArea(MapCircle toBeOccupied, ISPosition2D occupiersPosition, byte newPlayer) {
+		MilliStopWatch watch = new MilliStopWatch();
+		watch.start();
+
 		changePlayerAt(occupiersPosition.getX(), occupiersPosition.getY(), newPlayer);
 
 		short newPartition = getPartition(occupiersPosition);
 		List<ISPosition2D> occupiedPositions = new ArrayList<ISPosition2D>();
+		List<ISPosition2D> checkForMerge = new ArrayList<ISPosition2D>();
+
+		ISPosition2D unblockedOccupied = null;
 
 		for (ISPosition2D curr : toBeOccupied) {
 			short x = curr.getX();
 			short y = curr.getY();
-			short partitionAt = getPartitionAt(x, y);
 
-			if (partitionAt != newPartition && towers[x][y] <= 0) {
-				if (partitionAt < 0) {
-					setPartition(x, y, newPartition);
-					occupiedPositions.add(curr);
-				} else if (partitionObjects[partitionAt].getPlayer() == newPlayer) {
-					newPartition = this.mergePartitions(x, y, occupiersPosition.getX(), occupiersPosition.getY());
+			if (!isInBounds(x, y)) {
+				continue;
+			}
+
+			short currPartition = getPartitionAt(x, y);
+
+			if (currPartition != newPartition) {
+				if (towers[x][y] <= 0) {
+					if (currPartition < 0) {
+						setPartition(x, y, newPartition);
+						occupiedPositions.add(curr);
+
+						if (unblockedOccupied == null && !grid.isBlocked(x, y)) {
+							unblockedOccupied = curr;
+						}
+					} else if (partitionObjects[currPartition].getPlayer() == newPlayer) {
+						checkForMerge.add(curr);
+					}
 				} else {
-					occupiedPositions.add(curr);
-					this.partitionsAlgorithm.calculateNewPartition(x, y, newPlayer);
+					if (partitionObjects[currPartition].getPlayer() == newPlayer) {
+						checkForMerge.add(curr);
+					}
 				}
 			}
+
 			if (getPlayerAt(x, y) == newPlayer) {
 				towers[x][y]++;
+
+				for (ISPosition2D neighbor : new MapNeighboursArea(curr)) {
+					if (isInBounds(neighbor) && !toBeOccupied.contains(neighbor)) {
+						checkForMerge.add(neighbor);
+					}
+				}
 			}
 		}
 
+		ISPosition2D[] foundPartions = new ISPosition2D[partitionObjects.length];
+		for (ISPosition2D curr : checkForMerge) {
+			foundPartions[getPartition(curr) + 1] = curr; // +1 to have no conflict with unoccupied area
+		}
+
+		for (short i = 0; i < foundPartions.length; i++) {
+			ISPosition2D pos = foundPartions[i];
+			if (pos != null && (i - 1) != newPartition) {
+				if (getPartitionObject((short) (i - 1)).getPlayer() == newPlayer) {
+					this.mergePartitions(pos.getX(), pos.getY(), unblockedOccupied.getX(), unblockedOccupied.getY());
+				}
+			}
+		}
+
+		watch.stop("occupying area needed---------------------------------------------------------------------------------------------");
 		return occupiedPositions;
 	}
 
@@ -339,14 +381,14 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return towers[x][y] > 0;
 	}
 
-	public final List<ISPosition2D> freeOccupiedArea(MapShapeFilter occupied, ISPosition2D occupiersPosition) {
+	public final List<ISPosition2D> freeOccupiedArea(MapCircle occupied, ISPosition2D occupiersPosition) {
 		short partiton = getPartition(occupiersPosition);
 		List<ISPosition2D> totallyFreePositions = new ArrayList<ISPosition2D>();
 
 		for (ISPosition2D curr : occupied) {
 			short x = curr.getX();
 			short y = curr.getY();
-			if (getPartitionAt(x, y) == partiton) {
+			if (isInBounds(x, y) && getPartitionAt(x, y) == partiton) {
 				towers[x][y]--;
 				if (towers[x][y] <= 0) {
 					totallyFreePositions.add(curr);
