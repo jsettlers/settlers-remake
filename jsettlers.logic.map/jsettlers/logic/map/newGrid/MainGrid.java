@@ -1142,6 +1142,8 @@ public class MainGrid implements Serializable {
 							if (currOccArea.contains(currPos)) {
 								iter.remove();
 								partitionsGrid.occupyAt(currPos.getX(), currPos.getY(), currOcc.building.getPlayer());
+								bordersThread.checkPosition(currPos);
+								landmarksCorrectionThread.addLandmarkedPosition(currPos);
 							}
 						}
 
