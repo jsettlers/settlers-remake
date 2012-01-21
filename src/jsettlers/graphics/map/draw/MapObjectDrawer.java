@@ -1,6 +1,9 @@
 package jsettlers.graphics.map.draw;
 
 import go.graphics.GLDrawContext;
+
+import java.util.ConcurrentModificationException;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -300,12 +303,13 @@ public class MapObjectDrawer {
 					Sequence<? extends Image> seq =
 					        this.imageProvider.getSettlerSequence(ANIMALS_FILE,
 					                FISH_SEQ);
-					int substep = step  % 1024;
+					int substep = step % 1024;
 					if (substep < 15) {
 						int subseq = (step / 1024) % 4;
-						seq.getImageSafe(subseq * 15 + substep).draw(context.getGl(), null,
-						        color);
-					};
+						seq.getImageSafe(subseq * 15 + substep).draw(
+						        context.getGl(), null, color);
+					}
+					;
 				}
 					break;
 
@@ -675,27 +679,31 @@ public class MapObjectDrawer {
 	}
 
 	private void drawOccupyers(MapDrawContext context, IOccupyed building) {
-		// FIXME @Michael this can cause a ConcurrentModificationException when
+		// this can cause a ConcurrentModificationException when
 		// a soldier enters the tower!
-		for (IBuildingOccupyer occupyer : building.getOccupyers()) {
-			OccupyerPlace place = occupyer.getPlace();
-			GLDrawContext gl = context.getGl();
+		try {
+			for (IBuildingOccupyer occupyer : building.getOccupyers()) {
+				OccupyerPlace place = occupyer.getPlace();
+				GLDrawContext gl = context.getGl();
 
-			gl.glPushMatrix();
-			gl.glTranslatef(place.getOffsetX(), place.getOffsetY(), 0);
+				gl.glPushMatrix();
+				gl.glTranslatef(place.getOffsetX(), place.getOffsetY(), 0);
 
-			if (place.getType() == ESoldierType.INFANTARY) {
-				ImageLink image =
-				        place.looksRight() ? INSIDE_BUILDING_RIGHT
-				                : INSIDE_BUILDING_LEFT;
-				Color color =
-				        context.getPlayerColor(occupyer.getMovable()
-				                .getPlayer());
-				imageProvider.getImage(image).draw(gl, color);
-			} else {
-				movableDrawer.draw(context, occupyer.getMovable());
+				if (place.getType() == ESoldierType.INFANTARY) {
+					ImageLink image =
+					        place.looksRight() ? INSIDE_BUILDING_RIGHT
+					                : INSIDE_BUILDING_LEFT;
+					Color color =
+					        context.getPlayerColor(occupyer.getMovable()
+					                .getPlayer());
+					imageProvider.getImage(image).draw(gl, color);
+				} else {
+					movableDrawer.draw(context, occupyer.getMovable());
+				}
+				gl.glPopMatrix();
 			}
-			gl.glPopMatrix();
+		} catch (ConcurrentModificationException e) {
+			// happens sometime, just ignore it.
 		}
 	}
 
