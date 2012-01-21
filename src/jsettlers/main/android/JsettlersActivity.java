@@ -18,8 +18,8 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.startscreen.GameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.ManagedJSettlers;
@@ -36,13 +36,16 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 
 public class JsettlersActivity extends Activity implements ISettlersGameDisplay {
 
 	private static final String PREFS_NAME = "PREFS";
 
-	private static final int SOUND_THREADS = 2;
+	private static final int SOUND_THREADS = 4;
 
 	private GOSurfaceView glView;
 
@@ -54,7 +57,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	private Area area;
 
 	private enum EAndroidUIState {
-		SHOW_PROGRESS, SHOW_STARTSCREEN, SHOW_ACTIVE_GAME
+		SHOW_PROGRESS, SHOW_STARTSCREEN, SHOW_ACTIVE_GAME, SHOW_GAMELIST
 	}
 
 	private EAndroidUIState state = EAndroidUIState.SHOW_STARTSCREEN;
@@ -74,7 +77,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		super.onStart();
 
 		keepScreenOn();
-
+		
 		if (!managerStarted) {
 			addImageLookups();
 
@@ -222,10 +225,12 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	@Override
 	public void onBackPressed() {
-		if (glView == null || state != EAndroidUIState.SHOW_ACTIVE_GAME) {
-			super.onBackPressed();
-		} else {
+		if (glView != null && state == EAndroidUIState.SHOW_ACTIVE_GAME) {
 			glView.fireKey("PAUSE");
+		} else if (state == EAndroidUIState.SHOW_GAMELIST) {
+			showStartscreenContent();
+		} else {
+			super.onBackPressed();
 		}
 	}
 
@@ -277,39 +282,50 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 			@Override
 			public void run() {
-				disposeGLView();
-
-				setContentView(R.layout.startmenu);
-
-				// TODO: really look if there is a saved game with that name
-				SharedPreferences settings =
-				        getSharedPreferences(PREFS_NAME, 0);
-				String name = settings.getString("resumegame", "");
-
-				if (name.isEmpty() || true) {
-					findViewById(R.id.resume_game_button).setVisibility(
-					        View.INVISIBLE);
-				}
+				showStartscreenContent();
 			}
+
 		});
 	}
 
 	/**
+	 * Shows the start screen {@link #displayedStartScreen}
+	 */
+	private void showStartscreenContent() {
+		disposeGLView();
+
+		setContentView(R.layout.startmenu);
+
+		// TODO: really look if there is a saved game with that name
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		String name = settings.getString("resumegame", "");
+
+		state = EAndroidUIState.SHOW_STARTSCREEN;
+
+		if (name.isEmpty() || true) {
+			findViewById(R.id.resume_game_button).setVisibility(View.INVISIBLE);
+		}
+	}
+
+	/**
 	 * Onclick listener
+	 * <p>
+	 * Run on UI Thread.
 	 */
 	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
-			List<? extends IMapItem> maps = displayedStartScreen.getMaps();
-			final IMapItem map = maps.get(0);
-			displayedStartScreen.startNewGame(new IGameSettings() {
-				@Override
-				public int getPlayerCount() {
-					return 3;
-				}
+			setContentView(R.layout.maplist);
 
+			List<? extends IMapItem> maps = displayedStartScreen.getMaps();
+			ListView list = (ListView) findViewById(R.id.maplist);
+			list.setAdapter(new MapListAdapter(this, maps));
+			list.setOnItemClickListener(new OnItemClickListener() {
 				@Override
-				public IMapItem getMap() {
-					return map;
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+				        int itemid, long arg3) {
+					MapListAdapter adapter = (MapListAdapter) arg0.getAdapter();
+					displayedStartScreen.startNewGame(
+					        new GameSettings(adapter.get(itemid), 3));
 				}
 			});
 		}
@@ -322,7 +338,6 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		if (displayedStartScreen != null) {
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			final String name = settings.getString("resumegame", "");
-
 			displayedStartScreen.loadGame(new ILoadableGame() {
 				@Override
 				public String getName() {

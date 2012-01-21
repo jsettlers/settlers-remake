@@ -33,7 +33,7 @@ import android.content.res.Resources;
 
 public class ResourceUpdater implements Runnable {
 
-	private static final String RESOURCE_PREFIX = "resources/";
+	private static final String RESOURCE_PREFIX = "";
 	private static final String SERVER_ROOT = "https://michael2402.homeip.net/jsettlers/";
 	private final Resources resources;
 	private final File destdir;
