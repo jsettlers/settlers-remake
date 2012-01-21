@@ -115,4 +115,10 @@ public class MapEditorControls implements IControls {
 		this.context = context;
 	}
 
+	@Override
+    public Action replaceAction(Action action) {
+	    // TODO Auto-generated method stub
+	    return action;
+    }
+
 }
