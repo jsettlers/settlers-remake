@@ -82,22 +82,38 @@ public interface IControls extends IMapInterfaceListener {
 	 * @return If the event was handled.
 	 */
 	boolean handleDrawEvent(GODrawEvent event);
-	
+
 	/**
 	 * Indicates that the user builds the building.
-	 * @param type The type the user wants to build.
+	 * 
+	 * @param type
+	 *            The type the user wants to build.
 	 */
 	void displayBuildingBuild(EBuildingType type);
-	
+
 	/**
 	 * Changes the selection for the map.
-	 * @param selection the selections.
+	 * 
+	 * @param selection
+	 *            the selections.
 	 */
 	void displaySelection(ISelectionSet selection);
-	
+
 	/**
 	 * Gives the ui access to the draw context that is used to draw the map.
+	 * 
 	 * @param context
 	 */
 	void setDrawContext(MapDrawContext context);
+
+	/**
+	 * Allows the controls to catch an action the gui would fire.
+	 * <p>
+	 * This can also be used for status info.
+	 * 
+	 * @param action
+	 *            The action.
+	 * @return The new action to send. This is often just the old action.
+	 */
+	Action replaceAction(Action action);
 }

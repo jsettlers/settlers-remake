@@ -33,6 +33,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.MoveToAction;
@@ -84,7 +85,7 @@ import jsettlers.graphics.sound.SoundManager;
  * @author michael
  */
 public final class MapContent implements SettlersContent,
-        GOEventHandlerProvoder, IMapInterfaceListener {
+        GOEventHandlerProvoder, IMapInterfaceListener, ActionFireable {
 	private boolean ENABLE_DEBUG = false;
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
@@ -234,7 +235,8 @@ public final class MapContent implements SettlersContent,
 		} else {
 			context.beginTileContext(gotoMarker.getX(), gotoMarker.getY());
 			ImageProvider.getInstance().getSettlerSequence(3, 1)
-			        .getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1).draw(context.getGl(), null, 1);
+			        .getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1)
+			        .draw(context.getGl(), null, 1);
 			context.endTileContext();
 		}
 	}
@@ -561,9 +563,14 @@ public final class MapContent implements SettlersContent,
 	}
 
 	private void fireActionEvent(GOEvent event, Action action) {
-		event.setHandler(new ActionHandler(action, getInterfaceConnector()));
+		event.setHandler(new ActionHandler(action, this));
 	}
 
+	/**
+	 * Gets a action for a keyboard key
+	 * @param keyCode The key
+	 * @return The action that corresponds to the key
+	 */
 	private static Action getActionForKeyboard(String keyCode) {
 		if ("F12".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FAST_FORWARD);
@@ -771,9 +778,6 @@ public final class MapContent implements SettlersContent,
 		controls.action(action);
 		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
 			ENABLE_DEBUG = !ENABLE_DEBUG;
-		} else if (action.getActionType() == EActionType.TOGGLE_FOG_OF_WAR) {
-			// context.getFogOfWar().toggleEnabled();
-			// FIXME @Andreas toggle fog of war needs to be send to logic
 		} else if (action.getActionType() == EActionType.PAN_TO) {
 			PanToAction panAction = (PanToAction) action;
 			scrollTo(panAction.getCenter(), false);
@@ -823,6 +827,14 @@ public final class MapContent implements SettlersContent,
 	public void loadUIState(UIState uiState) {
 		scrollTo(uiState.getScreenCenter(), false);
 		// TODO: player number
+	}
+
+	@Override
+	public void fireAction(Action action) {
+		Action fire = controls.replaceAction(action);
+		if (fire != null) {
+			getInterfaceConnector().fireAction(fire);
+		}
 	}
 
 }

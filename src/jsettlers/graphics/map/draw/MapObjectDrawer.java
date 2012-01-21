@@ -547,7 +547,7 @@ public class MapObjectDrawer {
 	}
 
 	private int getAnimationStep(int x, int y) {
-		return this.animationStep + x * 167 + y * 1223;
+		return 0xfffffff & (this.animationStep + x * 167 + y * 1223);
 	}
 
 	/**

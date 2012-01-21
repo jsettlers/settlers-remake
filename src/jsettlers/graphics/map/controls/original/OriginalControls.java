@@ -281,5 +281,10 @@ public class OriginalControls implements IControls {
 		this.context = context;
 		this.minimap = new Minimap(context);
 
-	};
+	}
+
+	@Override
+    public Action replaceAction(Action action) {
+	    return mainPanel.catchAction(action);
+    };
 }

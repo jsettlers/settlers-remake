@@ -1,6 +1,7 @@
 package jsettlers.graphics.map.controls.original.panel;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.controls.original.IOriginalConstants;
 import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
@@ -170,4 +171,8 @@ public class MainPanel extends UIPanel {
 			listener.displayBuildingBuild(type);
 		}
 	}
+
+	public Action catchAction(Action action) {
+	    return action;
+    }
 }
