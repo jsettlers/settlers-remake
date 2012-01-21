@@ -97,7 +97,7 @@ public class MapCircle implements IMapArea {
 		return squaredDistanceToCenter(x, y) < minradius * minradius;
 	}
 
-	public final double getRadius() {
+	public final float getRadius() {
 		return radius;
 	}
 
