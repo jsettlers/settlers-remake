@@ -7,7 +7,7 @@ import jsettlers.logic.algorithms.heap.MinHeapable;
 /**
  * A single node in the search graph
  */
-public class AStarNode implements MinHeapable, ISPosition2D {
+public final class AStarNode implements MinHeapable, ISPosition2D {
 	private static final long serialVersionUID = -8082228881037942236L;
 
 	/** The x coordinate of the node */
@@ -58,11 +58,11 @@ public class AStarNode implements MinHeapable, ISPosition2D {
 	}
 
 	@Override
-	public float getRank() {
+	public final float getRank() {
 		return heuristic + cost;
 	}
 
-	public boolean equals(AStarNode m) {
+	public final boolean equals(AStarNode m) {
 		return m.x == x && m.y == y;
 	}
 

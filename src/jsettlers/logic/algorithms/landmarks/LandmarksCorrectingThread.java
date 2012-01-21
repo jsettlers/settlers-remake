@@ -28,7 +28,16 @@ public final class LandmarksCorrectingThread extends Thread {
 
 	@Override
 	public final void run() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
+
 		while (true) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+			}
 
 			ISPosition2D startPos = null;
 			while (startPos == null) {
