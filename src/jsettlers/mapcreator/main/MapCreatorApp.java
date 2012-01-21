@@ -31,35 +31,28 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.swing.ResourceProvider;
 
-public class Main {
-	private static final MapFileHeader DEFAULT = new MapFileHeader(
-	        MapType.NORMAL, "new map", "", (short) 300, (short) 300, (short) 1,
-	        (short) 10, null);
-	private static final String[] GROUND_TYPES = new String[] {
-	        ELandscapeType.WATER8.toString(),
-	        ELandscapeType.GRASS.toString(),
-	        ELandscapeType.DRY_GRASS.toString(),
-	        ELandscapeType.SNOW.toString(),
-	        ELandscapeType.DESERT.toString(),
-	};
+public class MapCreatorApp {
+	private static final MapFileHeader DEFAULT = new MapFileHeader(MapType.NORMAL, "new map", "", (short) 300, (short) 300, (short) 1, (short) 10,
+			null);
+	private static final String[] GROUND_TYPES = new String[] { ELandscapeType.WATER8.toString(), ELandscapeType.GRASS.toString(),
+			ELandscapeType.DRY_GRASS.toString(), ELandscapeType.SNOW.toString(), ELandscapeType.DESERT.toString(), };
 	private JFrame selectMapFrame;
 
 	static { // sets the native library path for the system dependent jogl libs
 		JoglLibraryPathInitializer.initLibraryPath();
 
 		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
+		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
 		ResourceManager.setProvider(new ResourceProvider());
 	}
 
 	public static void main(String[] args) {
-		new Main();
+		new MapCreatorApp();
 	}
 
-	private Main() {
+	private MapCreatorApp() {
 		JPanel newMap = createNewMapPanel();
 		JPanel open = createOpenMapPanel();
 		JPanel root = new JPanel();
@@ -70,6 +63,7 @@ public class Main {
 		selectMapFrame.add(root);
 		selectMapFrame.pack();
 		selectMapFrame.setVisible(true);
+		selectMapFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	}
 
@@ -85,14 +79,11 @@ public class Main {
 				if (arg0 instanceof MapLoader && arg1 instanceof MapLoader) {
 					MapLoader mapLoader1 = (MapLoader) arg0;
 					MapLoader mapLoader2 = (MapLoader) arg1;
-					int nameComp =
-					        mapLoader1.getName()
-					                .compareTo(mapLoader2.getName());
+					int nameComp = mapLoader1.getName().compareTo(mapLoader2.getName());
 					if (nameComp != 0) {
 						return nameComp;
 					} else {
-						return mapLoader1.toString().compareTo(
-						        mapLoader2.toString());
+						return mapLoader1.toString().compareTo(mapLoader2.toString());
 					}
 				} else {
 					return 0;
@@ -122,15 +113,13 @@ public class Main {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		final MapHeaderEditor headerEditor = new MapHeaderEditor(DEFAULT, true);
 		panel.add(headerEditor);
-		headerEditor
-		        .setBorder(BorderFactory.createTitledBorder("Map settings"));
+		headerEditor.setBorder(BorderFactory.createTitledBorder("Map settings"));
 
 		JPanel ground = new JPanel();
 		ground.setBorder(BorderFactory.createTitledBorder("Ground type"));
 		panel.add(ground);
 
-		final SpinnerListModel groundType =
-		        new SpinnerListModel(Arrays.asList(GROUND_TYPES));
+		final SpinnerListModel groundType = new SpinnerListModel(Arrays.asList(GROUND_TYPES));
 		JSpinner groundTypes = new JSpinner(groundType);
 		ground.add(groundTypes);
 
@@ -139,8 +128,7 @@ public class Main {
 		createMapButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new EditorWindow(headerEditor.getHeader(), ELandscapeType
-				        .valueOf(groundType.getValue().toString()));
+				new EditorWindow(headerEditor.getHeader(), ELandscapeType.valueOf(groundType.getValue().toString()));
 				close();
 			}
 		});
