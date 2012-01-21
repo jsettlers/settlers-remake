@@ -3,6 +3,8 @@ package jsettlers.graphics.image;
 import go.graphics.GLDrawContext;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 import jsettlers.graphics.map.draw.GLPreloadTask;
@@ -33,12 +35,13 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private boolean drawEnabled = false;
 	private boolean textureValid = false;
 	private int textureIndex = -1;
-	private short[] buffers;
+	private ShortBuffer buffers;
 
 	public MultiImageMap(int width, int height) {
 		this.width = width;
 		this.height = height;
-		buffers = new short[width * height];
+		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(width * height * 2);
+		buffers = byteBuffer.order(ByteOrder.nativeOrder()).asShortBuffer();
 		anyInstance = this;
 	}
 
@@ -125,7 +128,8 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	public void writeLine(short[] data, int length) throws IOException {
 		if (drawEnabled) {
 			int dp = drawpointer;
-			System.arraycopy(data, 0, this.buffers, dp, length);
+			buffers.position(dp);
+			buffers.put(data, 0, length);
 			drawpointer = dp + this.width;
 		}
 	}
@@ -149,8 +153,8 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			if (textureIndex > -1) {
 				gl.deleteTexture(textureIndex);
 			}
-			textureIndex =
-			        gl.generateTexture(width, height, ShortBuffer.wrap(buffers));
+			buffers.rewind();
+			textureIndex = gl.generateTexture(width, height, buffers);
 			System.out.println("opengl Texture: " + textureIndex + ", thread: "
 			        + Thread.currentThread().toString());
 			if (textureIndex > -1) {
