@@ -5,9 +5,8 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 
 /**
- * This is a queue that lets you define different slots. In each slot, the
- * entries are processed in a fifo-principle, but it is not guaranteed that the
- * first job is handled first, but it gets higher priority.
+ * This is a queue that lets you define different slots. In each slot, the entries are processed in a fifo-principle, but it is not guaranteed that
+ * the first job is handled first, but it gets higher priority.
  * <p>
  * This queue is not thread safe.
  * 
@@ -45,8 +44,8 @@ public class SlotQueue<T, E extends ILocatable> {
 		this.slotTypes = slottypes;
 		this.slotPriority = slotpriority;
 
-		this.slots = (ElementHolder<E>[]) new ElementHolder[slotCount];
-		this.tails = (ElementHolder<E>[]) new ElementHolder[slotCount];
+		this.slots = new ElementHolder[slotCount];
+		this.tails = new ElementHolder[slotCount];
 		this.count = new int[slotCount];
 		this.slotOrder = new int[slotCount];
 		for (int i = 0; i < slotCount; i++) {
@@ -69,8 +68,7 @@ public class SlotQueue<T, E extends ILocatable> {
 	}
 
 	/**
-	 * Adds the element to the queue, if the given slot exists (otherwise: does
-	 * nothing)
+	 * Adds the element to the queue, if the given slot exists (otherwise: does nothing)
 	 * 
 	 * @param slottype
 	 *            The slot to use
@@ -131,8 +129,7 @@ public class SlotQueue<T, E extends ILocatable> {
 		float bestDist = Float.POSITIVE_INFINITY;
 		ElementHolder<E> current = slots[slotNumber];
 		for (int cost = 0; cost < ELEMENTS_TO_LOOK_AT && current != null; cost++) {
-			float dist =
-			        MapCircle.getDistanceSquared(current.element.getPos(), pos);
+			float dist = MapCircle.getDistanceSquared(current.element.getPos(), pos);
 			if (dist < bestDist) {
 				best = current;
 				bestDist = dist;
@@ -144,8 +141,7 @@ public class SlotQueue<T, E extends ILocatable> {
 	}
 
 	/**
-	 * Removes a element from a slot, rates the skip cost of all elements to
-	 * skip up. Decreases the count for the slot by one.
+	 * Removes a element from a slot, rates the skip cost of all elements to skip up. Decreases the count for the slot by one.
 	 * 
 	 * @param slotNumber
 	 * @param toRemove
@@ -158,8 +154,7 @@ public class SlotQueue<T, E extends ILocatable> {
 				tails[slotNumber] = null;
 			}
 		} else {
-			for (current = slots[slotNumber]; true /* uses break */; current =
-			        current.next) {
+			for (current = slots[slotNumber]; true /* uses break */; current = current.next) {
 				if (current.next == toRemove) {
 					current.next = toRemove.next;
 					if (toRemove.next == null) {
@@ -175,8 +170,7 @@ public class SlotQueue<T, E extends ILocatable> {
 	}
 
 	/**
-	 * Pops a element. The position is taken into account when rating the
-	 * possible pop slots.
+	 * Pops a element. The position is taken into account when rating the possible pop slots.
 	 * 
 	 * @param closeTo
 	 * @return
@@ -186,16 +180,13 @@ public class SlotQueue<T, E extends ILocatable> {
 		ElementHolder<E> best = null;
 		int bestSlot = 0;
 
-		for (int i = 0, considered = 0; i < slotOrder.length
-		        && considered < CONSIDER_MAX; i++) {
+		for (int i = 0, considered = 0; i < slotOrder.length && considered < CONSIDER_MAX; i++) {
 			int slotNumber = slotOrder[i];
 
 			ElementHolder<E> myBest = findBestFit(closeTo, slotNumber);
 			if (myBest != null) {
 				considered++;
-				float distance =
-				        MapCircle.getDistanceSquared(myBest.element.getPos(),
-				                closeTo);
+				float distance = MapCircle.getDistanceSquared(myBest.element.getPos(), closeTo);
 				if (distance < bestDistance) {
 					bestDistance = distance;
 					best = myBest;
@@ -281,8 +272,7 @@ public class SlotQueue<T, E extends ILocatable> {
 
 	public void addAll(SlotQueue<T, E> other) {
 		for (int i = 0; i < other.slots.length; i++) {
-			for (ElementHolder<E> current = other.slots[i]; current != null; current =
-			        current.next) {
+			for (ElementHolder<E> current = other.slots[i]; current != null; current = current.next) {
 				add(other.slotTypes[i], current.element);
 			}
 		}
