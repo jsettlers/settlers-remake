@@ -150,7 +150,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SET_WORK_AREA:
-			setActiveAction(action);
+			if (currentSelection.getSize() > 0) {
+				ISelectable selected = currentSelection.iterator().next();
+				if (selected instanceof Building) {
+					ISPosition2D pos = ((SelectAction) action).getPosition();
+					scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, pos, ((Building) selected).getPos()));
+				}
+			}
 			break;
 
 		case DESTROY:
@@ -353,14 +359,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				} else {
 					return; // prevent resetting the current action
 				}
-			case SET_WORK_AREA:
-				if (currentSelection.getSize() > 0) {
-					ISelectable selected = currentSelection.iterator().next();
-					if (selected instanceof Building) {
-						scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, pos, ((Building) selected).getPos()));
-					}
-				}
-				break;
 			}
 
 			setActiveAction(null);
