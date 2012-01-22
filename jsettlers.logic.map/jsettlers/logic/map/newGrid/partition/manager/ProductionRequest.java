@@ -1,10 +1,14 @@
 package jsettlers.logic.map.newGrid.partition.manager;
 
+import java.io.Serializable;
+
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 
-public class ProductionRequest implements ILocatable {
+public final class ProductionRequest implements ILocatable, Serializable {
+	private static final long serialVersionUID = -1849601517609060590L;
+
 	private final ISPosition2D pos;
 	private final EMaterialType type;
 
@@ -14,11 +18,11 @@ public class ProductionRequest implements ILocatable {
 	}
 
 	@Override
-    public ISPosition2D getPos() {
-	    return pos;
-    }
+	public ISPosition2D getPos() {
+		return pos;
+	}
 
 	public EMaterialType getType() {
-	    return type;
-    }
+		return type;
+	}
 }

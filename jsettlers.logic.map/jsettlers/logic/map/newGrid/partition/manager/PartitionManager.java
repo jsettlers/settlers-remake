@@ -36,14 +36,15 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class PartitionManager implements INetworkTimerable, Serializable {
+public final class PartitionManager implements INetworkTimerable, Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
-	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, PartitionManager.Request>(EMaterialType.values(), new int[EMaterialType.values().length]);
+	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, PartitionManager.Request>(EMaterialType.values(),
+			new int[EMaterialType.values().length]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
@@ -58,8 +59,11 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	private final SerializableLinkedList<WorkerCreationRequest> workerCreationRequests = new SerializableLinkedList<PartitionManager.WorkerCreationRequest>();
 	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<PartitionManager.SoilderCreationRequest>();
 
-	private final SlotQueue<EMaterialType, ProductionRequest> toolProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(new EMaterialType[] {EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK, EMaterialType.FISHINGROD, EMaterialType.SCYTHE}, new int[] {50, 50, 30, 30, 30, 30, 30});
-	private final SlotQueue<EMaterialType, ProductionRequest> weaponProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(EMaterialType.values(), new int[EMaterialType.values().length]);
+	private final SlotQueue<EMaterialType, ProductionRequest> toolProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
+			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
+					EMaterialType.FISHINGROD, EMaterialType.SCYTHE }, new int[] { 50, 50, 30, 30, 30, 30, 30 });
+	private final SlotQueue<EMaterialType, ProductionRequest> weaponProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
+			EMaterialType.values(), new int[EMaterialType.values().length]);
 
 	public PartitionManager() {
 		schedule();
@@ -146,12 +150,12 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 			newManager.materialOffers.set(position, removedOffer);
 		}
 
-		//TODO: use newHasSamePlayer
+		// TODO: use newHasSamePlayer
 		materialRequests.moveItemsForPosition(position, newManager.materialRequests);
 
 		toolProductionRequests.moveItemsForPosition(position, newManager.toolProductionRequests);
 		weaponProductionRequests.moveItemsForPosition(position, newManager.weaponProductionRequests);
-		
+
 		if (newHasSamePlayer) {
 			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
 			if (bearer != null)
@@ -557,17 +561,17 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 			reduceOfferAmount(offer);
 		}
 	}
-	
+
 	public final void requestToolProduction(EMaterialType type, ISPosition2D pos) {
 		toolProductionRequests.add(type, new ProductionRequest(type, pos));
 	}
-	
+
 	public final EMaterialType popToolProduction(ISPosition2D closeTo) {
 		ProductionRequest request = toolProductionRequests.pop(closeTo);
 		if (request != null) {
-	        return request.getType();
-        } else {
-	        return null;
-        }
+			return request.getType();
+		} else {
+			return null;
+		}
 	}
 }

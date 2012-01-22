@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.landscape;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import jsettlers.common.landscape.ELandscapeType;
@@ -19,11 +21,10 @@ public class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedR
 	private final byte[] temporaryFlatened;
 	private final EResourceType[][] resourceType;
 
-	private transient IGraphicsBackgroundListener backgroundListener;
-
 	private final short width;
 
 	private final FlattenedResetter flattenedResetter;
+	private transient IGraphicsBackgroundListener backgroundListener;
 
 	public LandscapeGrid(short width, short height) {
 		this.width = width;
@@ -33,8 +34,12 @@ public class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedR
 		this.resourceType = new EResourceType[width][height];
 		this.temporaryFlatened = new byte[width * height];
 
-		this.flattenedResetter = new FlattenedResetter(this);
+		flattenedResetter = new FlattenedResetter(this);
+		setBackgroundListener(null);
+	}
 
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
 		setBackgroundListener(null);
 	}
 
