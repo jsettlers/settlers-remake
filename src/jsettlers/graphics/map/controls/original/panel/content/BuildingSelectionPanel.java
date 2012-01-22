@@ -38,13 +38,21 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 	private static ImageLink DESTROY = new ImageLink(EImageLinkType.GUI, 3,
 	        198, 0);
+	
+	private BuildingState lastState = null;
 
 	public BuildingSelectionPanel(BuildingSelection selection) {
 		building = selection.getSelectedBuilding();
 
 		ImageLink[] images = building.getBuildingType().getImages();
 		panel = new BuidlingBackgroundPanel(images);
-		UIPanel changeWorking;
+		
+		lastState = new BuildingState(building);
+		addPanelContent();
+	}
+
+	private void addPanelContent() {
+	    UIPanel changeWorking;
 		if (building.isWorking()) {
 			changeWorking =
 			        new Button(new Action(EActionType.STOP_WORKING),
@@ -60,14 +68,14 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 		if (building.getBuildingType().getWorkradius() > 0) {
 			Button setWorkcenter =
-			        new Button(new Action(EActionType.SET_WORK_AREA),
+			        new Button(new Action(EActionType.ASK_SET_WORK_AREA),
 			                SET_WORK_AREA, SET_WORK_AREA,
 			                Labels.getName(EActionType.SET_WORK_AREA));
 			panel.addChild(setWorkcenter, .4f, .9f, .6f, 1);
 		}
 
 		Button destroy =
-		        new Button(new Action(EActionType.DESTROY), DESTROY, DESTROY,
+		        new Button(new Action(EActionType.ASK_DESTROY), DESTROY, DESTROY,
 		                Labels.getName(EActionType.DESTROY));
 		panel.addChild(destroy, .8f, .9f, 1, 1);
 
@@ -83,12 +91,12 @@ public class BuildingSelectionPanel implements IContentProvider {
 		if (building instanceof IBuilding.IOccupyed) {
 			List<? extends IBuildingOccupyer> occupyers =
 			        ((IBuilding.IOccupyed) building).getOccupyers();
-			drawOccupyerPlaces(occupyers);
+			addOccupyerPlaces(occupyers);
 
 		}
-	}
+    }
 
-	private void drawOccupyerPlaces(List<? extends IBuildingOccupyer> occupyers) {
+	private void addOccupyerPlaces(List<? extends IBuildingOccupyer> occupyers) {
 		int bottomindex = 0;
 
 		int topindex = 0;
@@ -146,11 +154,17 @@ public class BuildingSelectionPanel implements IContentProvider {
 		}
 	}
 
-	private static class BuidlingBackgroundPanel extends UIPanel {
+	private class BuidlingBackgroundPanel extends UIPanel {
 		private final ImageLink[] links;
 
 		public BuidlingBackgroundPanel(ImageLink[] links) {
 			this.links = links;
+		}
+		
+		@Override
+		public void drawAt(GLDrawContext gl) {
+			refreshContentIfNeeded();
+		    super.drawAt(gl);
 		}
 
 		@Override
@@ -169,6 +183,14 @@ public class BuildingSelectionPanel implements IContentProvider {
 	public UIPanel getPanel() {
 		return panel;
 	}
+
+	public void refreshContentIfNeeded() {
+	    if (!lastState.isStillInState(building)) {
+	    	panel.removeAll();
+	    	addPanelContent();
+	    	lastState = new BuildingState(building);
+	    }
+    }
 
 	@Override
 	public IContextListener getContextListener() {

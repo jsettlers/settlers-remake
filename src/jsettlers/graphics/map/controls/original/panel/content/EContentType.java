@@ -22,7 +22,7 @@ public enum EContentType implements IContentProvider {
 	STOCK(ESecondaryTabType.SETTLERS, null),
 	TOOLS(ESecondaryTabType.SETTLERS, null),
 	GOODS_SPREAD(ESecondaryTabType.SETTLERS, null),
-	GOODS_TRANSPORT(ESecondaryTabType.SETTLERS, null),
+	GOODS_TRANSPORT(ESecondaryTabType.SETTLERS, new MaterialPriorityPanel()),
 
 	SETTLERSTATISTIC(ESecondaryTabType.GOODS, null),
 	PROFESSION(ESecondaryTabType.GOODS, null),

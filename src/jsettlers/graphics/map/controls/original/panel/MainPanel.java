@@ -1,12 +1,17 @@
 package jsettlers.graphics.map.controls.original.panel;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.SelectAction;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.IOriginalConstants;
 import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -65,6 +70,15 @@ public class MainPanel extends UIPanel {
 
 	private EBuildingType activeBuilding;
 
+	private IContentProvider goBackContent;
+
+	/**
+	 * The action type the next simple select action should be replaced with.
+	 * <p>
+	 * This field is reset on every content change.
+	 */
+	private EActionType selectAction;
+
 	public MainPanel() {
 		useConstants(new SmallOriginalConstants());
 		setContent(EContentType.BUILD_NORMAL);
@@ -114,6 +128,7 @@ public class MainPanel extends UIPanel {
 		if (listener != null) {
 			listener.displayBuildingBuild(activeBuilding);
 		}
+		selectAction = null;
 	}
 
 	private void setButtonsActive(TabButton[] buttons, IContentProvider type) {
@@ -173,6 +188,45 @@ public class MainPanel extends UIPanel {
 	}
 
 	public Action catchAction(Action action) {
-	    return action;
-    }
+		if (action.getActionType() == EActionType.ASK_SET_WORK_AREA) {
+			goBackContent = activeContent;
+			setContent(new MessageContent(
+			        Labels.getString("click_set_workcenter"), null, null,
+			        Labels.getString("abort"), new Action(EActionType.ABORT)));
+			selectAction = EActionType.SET_WORK_AREA;
+			return null;
+		} else if (action.getActionType() == EActionType.ASK_DESTROY) {
+			goBackContent = activeContent;
+			setContent(new MessageContent(
+			        Labels.getString("really_destroy_building"),
+			        Labels.getName(EActionType.DESTROY), new Action(
+			                EActionType.DESTROY), Labels.getString("abort"),
+			        new Action(EActionType.ABORT)));
+			return null;
+		} else if (action.getActionType() == EActionType.SELECT_POINT
+		        && selectAction != null) {
+			ISPosition2D position = ((SelectAction) action).getPosition();
+			SelectAction replaced = new SelectAction(position, selectAction);
+			goBack();
+			return replaced;
+		} else if (action.getActionType() == EActionType.ABORT
+		        && goBackContent != null) {
+			goBack();
+			return null;
+		} else if (action.getActionType() == EActionType.GUI_RUNNABLE) {
+			((Runnable) action).run();
+			return null;
+		}else {
+			return action;
+		}
+	}
+
+	private void goBack() {
+		if (goBackContent != null) {
+			setContent(goBackContent);
+			goBackContent = null;
+		} else {
+			setContent(EContentType.EMPTY);
+		}
+	}
 }

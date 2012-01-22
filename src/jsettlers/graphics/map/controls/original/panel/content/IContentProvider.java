@@ -8,7 +8,7 @@ import jsettlers.graphics.utils.UIPanel;
  * 
  * @author michael
  */
-public interface IContentProvider {
+public interface IContentProvider extends ContentFactory {
 	public UIPanel getPanel();
 
 	public IContextListener getContextListener();

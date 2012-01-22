@@ -140,21 +140,21 @@ public class SingleImage implements ImageDataPrivider, Image {
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 	        float right, float top) {
 		int textureIndex = getTextureIndex(gl);
-		
-		tmpBuffer[0] = left + IMAGE_DRAW_OFFSET;
-		tmpBuffer[1] = top + IMAGE_DRAW_OFFSET;
 
-		tmpBuffer[5] = left + IMAGE_DRAW_OFFSET;
-		tmpBuffer[6] = bottom + IMAGE_DRAW_OFFSET;
+		tmpBuffer[0] = left;
+		tmpBuffer[1] = top;
+
+		tmpBuffer[5] = left;
+		tmpBuffer[6] = bottom;
 		tmpBuffer[9] = (float) height / textureHeight;
 
-		tmpBuffer[10] = right + IMAGE_DRAW_OFFSET;
-		tmpBuffer[11] = bottom + IMAGE_DRAW_OFFSET;
+		tmpBuffer[10] = right;
+		tmpBuffer[11] = bottom;
 		tmpBuffer[13] = (float) width / textureWidth;
 		tmpBuffer[14] = (float) height / textureHeight;
 
-		tmpBuffer[15] = right + IMAGE_DRAW_OFFSET;
-		tmpBuffer[16] = top + IMAGE_DRAW_OFFSET;
+		tmpBuffer[15] = right;
+		tmpBuffer[16] = top;
 		tmpBuffer[18] = (float) width / textureWidth;
 
 		gl.drawQuadWithTexture(textureIndex, tmpBuffer);

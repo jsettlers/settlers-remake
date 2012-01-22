@@ -23,6 +23,11 @@ public class SelectAction extends Action {
 		this.position = position;
 	}
 
+	public SelectAction(ISPosition2D position, EActionType action) {
+		super(action);
+		this.position = position;
+    }
+
 	/**
 	 * Gets the position on the map.
 	 * 

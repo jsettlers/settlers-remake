@@ -49,7 +49,7 @@ public class Label extends UIPanel implements UIElement {
 				y += lineHeight;
 				linewidth = widths[i];
 			} else {
-				line.append("");
+				line.append(" ");
 				line.append(words[i]);
 				linewidth = newlinewidth;
 			}

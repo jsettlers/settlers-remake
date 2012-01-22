@@ -506,11 +506,9 @@ public final class MapContent implements SettlersContent,
 			event.setHandler(new PanHandler(this.context.getScreen()));
 		} else if (event instanceof GOCommandEvent) {
 			GOCommandEvent commandEvent = (GOCommandEvent) event;
-			Action action = handleCommand(commandEvent);
-
-			if (action != null) {
-				fireActionEvent(event, action);
-			}
+			Action action = getActionForCommand(commandEvent);
+			// also set when action was null, to abort drawing.
+			fireActionEvent(event, action);
 		} else if (event instanceof GOKeyEvent) {
 			Action actionForKeyboard =
 			        getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
@@ -568,7 +566,9 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets a action for a keyboard key
-	 * @param keyCode The key
+	 * 
+	 * @param keyCode
+	 *            The key
 	 * @return The action that corresponds to the key
 	 */
 	private static Action getActionForKeyboard(String keyCode) {
@@ -647,7 +647,7 @@ public final class MapContent implements SettlersContent,
 		}
 	}
 
-	private Action handleCommand(GOCommandEvent commandEvent) {
+	private Action getActionForCommand(GOCommandEvent commandEvent) {
 		UIPoint position = commandEvent.getCommandPosition();
 		if (controls.containsPoint(position)) {
 			return controls.getActionFor(position);

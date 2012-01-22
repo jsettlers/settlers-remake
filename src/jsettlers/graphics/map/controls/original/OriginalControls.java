@@ -284,7 +284,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-    public Action replaceAction(Action action) {
-	    return mainPanel.catchAction(action);
-    };
+	public Action replaceAction(Action action) {
+		return mainPanel.catchAction(action);
+	};
 }

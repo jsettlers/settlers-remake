@@ -51,6 +51,7 @@ public enum EActionType {
 
 	/**
 	 * Request to set the working area of the building.
+	 * @see SelectAction
 	 */
 	SET_WORK_AREA,
 
@@ -162,6 +163,29 @@ public enum EActionType {
 	/**
 	 * Unspecified action.
 	 */
-	UNSPECIFIED,
+	UNSPECIFIED, 
+	
+	/**
+	 * Asks the user to set a work area.
+	 */
+	ASK_SET_WORK_AREA, 
+	
+	/**
+	 * Aborts the current user action.
+	 */
+	ABORT, 
+	/**
+	 * Asks the user if he wants to destroy the building.
+	 */
+	ASK_DESTROY,
+	
+	/**
+	 * A runnable gui action that is executed when fired from the gui.
+	 * <p>
+	 * only used gui internally, and should normally not be exposed.
+	 * <p>
+	 * must implement {@link Runnable}
+	 */
+	GUI_RUNNABLE
 
 }
