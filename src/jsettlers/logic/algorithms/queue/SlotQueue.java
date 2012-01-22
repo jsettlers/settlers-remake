@@ -263,14 +263,14 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 	}
 
 	/**
-	 * Pops anything
+	 * Pops anything from any slot
 	 * 
 	 * @return
 	 */
-	public E pop() {
+	public E pop(ITypeAcceptor<T> acceptor) {
 		for (int i = 0; i < slotOrder.length; i++) {
 			int slotNumber = slotOrder[i];
-			if (slots[slotNumber] != null) {
+			if (slots[slotNumber] != null && (acceptor == null || acceptor.accepts(slotTypes[slotNumber]))) {
 				E e = slots[slotNumber].element;
 				slots[slotNumber] = slots[slotNumber].next;
 				if (slots[slotNumber] == null) {
@@ -365,5 +365,4 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 			}
 		}
 	}
-
 }
