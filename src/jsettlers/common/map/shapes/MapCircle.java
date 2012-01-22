@@ -5,7 +5,8 @@ import jsettlers.common.position.ISPosition2D;
 /**
  * This class represents a circular area of the map.
  * <p>
- * It contains all elements whose distance to the center is smaller or equal to radius.
+ * It contains all elements whose distance to the center is smaller or equal to
+ * radius.
  * <p>
  * Geometry calculations (a is the constant {@link MapCircle#Y_SCALE}:
  * <p>
@@ -57,7 +58,8 @@ public class MapCircle implements IMapArea {
 	 *            The x coordinate.
 	 * @param y
 	 *            The y coordinate
-	 * @return The distance to the center of this circle, so that the tiles around the center all have distance 1.
+	 * @return The distance to the center of this circle, so that the tiles
+	 *         around the center all have distance 1.
 	 */
 	public final float squaredDistanceToCenter(int x, int y) {
 		int dx = x - cx;
@@ -66,9 +68,20 @@ public class MapCircle implements IMapArea {
 	}
 
 	public static final float getDistance(int x1, int y1, int x2, int y2) {
+		float suared = getDistanceSquared(x1, y1, x2, y2);
+		return (float) Math.sqrt(suared);
+	}
+
+	public static float getDistanceSquared(ISPosition2D pos1, ISPosition2D pos2) {
+		return getDistanceSquared(pos1.getX(), pos1.getY(), pos2.getX(),
+		        pos2.getY());
+	}
+
+	public static float getDistanceSquared(int x1, int y1, int x2, int y2) {
 		int dx = x1 - x2;
 		int dy = y1 - y2;
-		return (float) Math.sqrt((.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy);
+		float suared = (.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy;
+		return suared;
 	}
 
 	/**
@@ -79,7 +92,9 @@ public class MapCircle implements IMapArea {
 	 * @return The width of the line, NAN if the line is outside the circle.
 	 */
 	protected float getHalfLineWidth(int relativey) {
-		double maximum = Math.sqrt(radius * radius - relativey * MapCircle.Y_SCALE * relativey * MapCircle.Y_SCALE);
+		double maximum =
+		        Math.sqrt(radius * radius - relativey * MapCircle.Y_SCALE
+		                * relativey * MapCircle.Y_SCALE);
 		if (relativey % 2 == 0) {
 			// round to tiles.
 			return (float) Math.floor(maximum);
