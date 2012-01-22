@@ -545,6 +545,10 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			@Override
 			public void valueChanged(TreeSelectionEvent arg0) {
 				TreePath path = arg0.getNewLeadSelectionPath();
+				if (path == null) {
+					changeTool(null);
+					return;
+				}
 				Object lastPathComponent = path.getLastPathComponent();
 				if (lastPathComponent instanceof ToolBox) {
 					ToolBox toolBox = (ToolBox) lastPathComponent;
