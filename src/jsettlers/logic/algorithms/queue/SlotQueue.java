@@ -1,5 +1,10 @@
 package jsettlers.logic.algorithms.queue;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
@@ -16,24 +21,84 @@ import jsettlers.common.position.ISPosition2D;
  *            the type of elements in the queue.
  * @author michael
  */
-public class SlotQueue<T, E extends ILocatable> {
+public class SlotQueue<T, E extends ILocatable> implements Serializable {
+	private static final long serialVersionUID = -5567867841476892036L;
+
 	private static final int ELEMENTS_TO_LOOK_AT = 15;
 	private static final int CONSIDER_MAX = 3; // < should be small
-	private final T[] slotTypes;
-	private final int[] slotPriority;
+
+	private T[] slotTypes;
+	private int[] slotPriority;
 	/**
 	 * The head of the fifo queues
 	 */
-	private final ElementHolder<E>[] slots;
+	private ElementHolder<E>[] slots;
 	/**
 	 * The tail of the fifo queues
 	 */
-	private final ElementHolder<E>[] tails;
-	private final int[] count;
+	private ElementHolder<E>[] tails;
+	private int[] count;
 	/**
 	 * The permutation of the slots so that they are ordered by priority.
 	 */
-	private final int[] slotOrder;
+	private int[] slotOrder;
+
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(slotTypes);
+		oos.writeObject(slotPriority);
+		oos.writeObject(count);
+		oos.writeObject(slotOrder);
+
+		for (int i = 0; i < slotTypes.length; i++) {
+			ElementHolder<E> curr = slots[i];
+			while (curr != null) {
+				oos.writeObject(curr);
+				curr = curr.next;
+			}
+			oos.writeObject(null);
+		}
+
+		for (int i = 0; i < slotTypes.length; i++) {
+			ElementHolder<E> curr = tails[i];
+			while (curr != null) {
+				oos.writeObject(curr);
+				curr = curr.next;
+			}
+			oos.writeObject(null);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		slotTypes = (T[]) ois.readObject();
+		slotPriority = (int[]) ois.readObject();
+		count = (int[]) ois.readObject();
+		slotOrder = (int[]) ois.readObject();
+
+		slots = new ElementHolder[slotTypes.length];
+		for (int i = 0; i < slotTypes.length; i++) {
+			ElementHolder<E> curr = (ElementHolder<E>) ois.readObject();
+			slots[i] = curr;
+			ElementHolder<E> last = curr;
+			while (last != null) {
+				curr = (ElementHolder<E>) ois.readObject();
+				last.next = curr;
+				last = curr;
+			}
+		}
+
+		tails = new ElementHolder[slotTypes.length];
+		for (int i = 0; i < slotTypes.length; i++) {
+			ElementHolder<E> curr = (ElementHolder<E>) ois.readObject();
+			tails[i] = curr;
+			ElementHolder<E> last = curr;
+			while (last != null) {
+				curr = (ElementHolder<E>) ois.readObject();
+				last.next = curr;
+				last = curr;
+			}
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public SlotQueue(T[] slottypes, int[] slotpriority) {
@@ -259,15 +324,16 @@ public class SlotQueue<T, E extends ILocatable> {
 		}
 	}
 
-	private static class ElementHolder<E> {
-		private final E element;
-		private ElementHolder<E> next = null;
-		private int skipcost = 1;
+	private static class ElementHolder<E> implements Serializable {
+		private static final long serialVersionUID = 5419958157372923605L;
+
+		final E element;
+		ElementHolder<E> next = null;
+		int skipcost = 1;
 
 		public ElementHolder(E element) {
 			this.element = element;
 		}
-
 	}
 
 	public void addAll(SlotQueue<T, E> other) {
