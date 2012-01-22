@@ -213,11 +213,7 @@ public class MainGrid implements Serializable {
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {
-	    return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupyerPlaces().length > 0;
-    }
-
-	private final boolean isTower(EBuildingType type) {
-		return type == EBuildingType.TOWER || type == EBuildingType.CASTLE || type == EBuildingType.BIG_TOWER;
+		return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupyerPlaces().length > 0;
 	}
 
 	private boolean isInsideWater(short x, short y) {
@@ -399,7 +395,7 @@ public class MainGrid implements Serializable {
 				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case CUTTABLE_STONE:
-				return y < height + 1 && x < width - 1 && objectsGrid.hasCuttableObject((short) (x - 1), (short) (y + 1), EMapObjectType.STONE)
+				return y + 1 < height && x - 1 < width && objectsGrid.hasCuttableObject((short) (x - 1), (short) (y + 1), EMapObjectType.STONE)
 						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case ENEMY: {
@@ -564,8 +560,8 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final Color getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -575,9 +571,8 @@ public class MainGrid implements Serializable {
 
 			// return debugColors[x][y];
 
-			// return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0,
-			// 0,
-			// 1, 1) : (flagsGrid.isMarked((short) x, (short) y) ? new Color(0, 1, 0, 1) : null));
+			return flagsGrid.isBlocked((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0,
+					1, 1) : (flagsGrid.isMarked((short) x, (short) y) ? new Color(0, 1, 0, 1) : null));
 
 		}
 
@@ -1021,15 +1016,14 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-        public EMaterialType popToolProduction(ISPosition2D pos) {
-	        return partitionsGrid.popToolProduction(pos);
-        }
+		public EMaterialType popToolProduction(ISPosition2D pos) {
+			return partitionsGrid.popToolProduction(pos);
+		}
 
 		@Override
-        public float getResourceAmountAround(short x, short y,
-                EResourceType type) {
-	        return landscapeGrid.getResourceAmountAround(x, y, type);
-        }
+		public float getResourceAmountAround(short x, short y, EResourceType type) {
+			return landscapeGrid.getResourceAmountAround(x, y, type);
+		}
 
 	}
 

@@ -30,18 +30,25 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	private final EMovableType movableType;
 	private transient IBuildingJob currentJob;
 
-	private boolean done;
+	private boolean done = true;
+	private boolean recordedJobless = false;
 	private IWorkerRequestBuilding building;
 	private Path path;
-	
-	private EMaterialType lastPopped = null;
 
-	private EMaterialType temporaryDropMat;
+	private EMaterialType lastPopped = null;
 
 	public BuildingWorkerStrategy(IMovableGrid grid, Movable movable, EMovableType movableType) {
 		super(grid, movable);
 		this.movableType = movableType;
-		grid.addJobless(this);
+
+		makeJobless();
+	}
+
+	private final void makeJobless() {
+		if (!recordedJobless) {
+			super.getGrid().addJobless(this);
+			this.recordedJobless = true;
+		}
 	}
 
 	@Override
@@ -52,7 +59,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	@Override
 	protected void pathRequestFailed() {
 		super.setAction(EAction.NO_ACTION, -1);
-		path = null;
+		this.path = null;
 		if (currentJob != null)
 			jobFailed();
 	}
@@ -275,7 +282,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			jobFinished();
 			break;
 		}
-		
+
 		case POP_TOOL: {
 			ISPosition2D pos = building.getDoor();
 			lastPopped = super.getGrid().popToolProduction(pos);
@@ -286,7 +293,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			break;
 		}
-		
+
 		case DROP_POPPED: {
 			if (lastPopped != null) {
 				dropAction();
@@ -294,7 +301,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 				jobFailed();
 			}
 			break;
-			
+
 		}
 
 		default:
@@ -309,23 +316,23 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	private boolean isProductive() {
 		switch (building.getBuildingType()) {
-			case FISHER:
-				//TODO: look into the water, not at the sand.
-				return hasProductiveResources(super.getPos(), EResourceType.FISH);
-			case COALMINE:
-				return hasProductiveResources(building.getDoor(), EResourceType.COAL);
-			case IRONMINE:
-				return hasProductiveResources(building.getDoor(), EResourceType.IRON);
-			case GOLDMINE:
-				return hasProductiveResources(building.getDoor(), EResourceType.GOLD);
+		case FISHER:
+			// TODO: look into the water, not at the sand.
+			return hasProductiveResources(super.getPos(), EResourceType.FISH);
+		case COALMINE:
+			return hasProductiveResources(building.getDoor(), EResourceType.COAL);
+		case IRONMINE:
+			return hasProductiveResources(building.getDoor(), EResourceType.IRON);
+		case GOLDMINE:
+			return hasProductiveResources(building.getDoor(), EResourceType.GOLD);
 		}
 		return false;
 	}
 
 	private boolean hasProductiveResources(ISPosition2D pos, EResourceType type) {
-	    float amount = getGrid().getResourceAmountAround(pos.getX(), pos.getY(), type);
-	    return RandomSingleton.get().nextFloat() < amount;
-    }
+		float amount = getGrid().getResourceAmountAround(pos.getX(), pos.getY(), type);
+		return RandomSingleton.get().nextFloat() < amount;
+	}
 
 	private boolean lookAtSearched() {
 		if (currentJob.getSearchType() == ESearchType.FISHABLE) {
@@ -476,6 +483,8 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	@Override
 	public void buildingDestroyed() {
 		this.currentJob = null;
+		this.building = null;
+		this.path = null;
 
 		if (super.isFollowingPath()) {
 			super.getGrid().setMarked(super.getTargetPos(), false);
@@ -488,13 +497,14 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	private void checkForDroppingMaterial() {
 		EMaterialType material;
 		material = super.getMaterial();
-		
+
 		if (material != null && material != EMaterialType.NO_MATERIAL) {
 			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 			super.getGrid().pushMaterial(super.getPos(), material, true);
 		}
-		super.getGrid().addJobless(this);
+
+		makeJobless();
 	}
 
 	@Override
@@ -504,6 +514,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			this.currentJob = building.getBuildingType().getStartJob();
 			this.done = false;
 			this.building.occupyBuilding(this);
+			recordedJobless = false;
 		} else {
 			super.getGrid().addJobless(this);
 		}
@@ -512,18 +523,6 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	@Override
 	protected boolean checkGoStepPrecondition() {
 		return building == null || building.isNotDestroyed();
-	}
-
-	@Override
-	protected void pathAbortedEvent() {
-		if (building != null) {
-			currentJob = null;
-			building = null;
-		} else {
-			System.err.println("bricklayer abort path but that should not happen here!");
-			super.setAction(EAction.NO_ACTION, -1);
-		}
-
 	}
 
 }
