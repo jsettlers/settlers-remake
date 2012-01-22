@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ISPosition2D;
 
 /**
@@ -53,7 +54,7 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 		for (Entry<ISPosition2D, T> currEntry : data.entrySet()) {
 			if (acceptor == null || acceptor.isAccepted(currEntry.getValue())) {
 				ISPosition2D currPosition = currEntry.getKey();
-				float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
+				float currDist = MapCircle.getDistanceSquared(position, currPosition);
 
 				if (bestDistance > currDist) {
 					bestDistance = currDist;
@@ -84,7 +85,7 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 		}
 
 		if (bestPos != null)
-			data.remove(bestPos);
+			removeObjectAt(position);
 
 		return currBest;
 	}
@@ -111,7 +112,11 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 	}
 
 	public void addAll(PositionableHashMap<T> materialOffers) {
-		this.data.putAll(materialOffers.data);
+		for (Entry<ISPosition2D, T> entry : materialOffers.data.entrySet()) {
+			//needed to track the count of elements
+			set(entry.getKey(), entry.getValue());
+		}
+		//this.data.putAll(materialOffers.data);
 	}
 
 }

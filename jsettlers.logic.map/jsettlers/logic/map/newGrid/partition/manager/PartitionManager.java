@@ -17,7 +17,6 @@ import jsettlers.logic.algorithms.queue.SlotQueue;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
@@ -42,7 +41,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
-	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
+	private final OfferMap materialOffers = new OfferMap();
 	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, PartitionManager.Request>(EMaterialType.values(),
 			new int[EMaterialType.values().length]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
@@ -117,6 +116,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	public void addJobless(IManageableBearer manageable) {
+		// try to find him a new job first
 		this.joblessBearer.insert(manageable);
 	}
 
@@ -320,7 +320,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	private void handleMaterialRequest() {
-		Request request = materialRequests.pop();
+		Request request = materialRequests.pop(materialOffers);
 		if (request != null) {
 
 			materialTypeAcceptor.materialType = request.requested;
@@ -358,7 +358,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		materialRequests.add(request.requested, request);
 	}
 
-	private static class Offer implements Serializable {
+	static class Offer implements Serializable {
 		private static final long serialVersionUID = 8516955442065220998L;
 
 		ISPosition2D position;
