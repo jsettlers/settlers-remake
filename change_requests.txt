@@ -4,7 +4,7 @@
 
 CR-001 [x]  rev 849   mz    --       ghosts have no color (they are just black.) => logic bug
 CR-002 [ ]                  --       images for bowman and swordsman in tower need to be switched.
-CR-003 [ ]                  --       
+CR-003 [ ]                  --       synchronize the falling of the tree with the action of the lumberjack
 CR-004 [ ]                  --       
 CR-005 [ ]                  --       
 CR-006 [ ]                  --       
