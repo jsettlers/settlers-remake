@@ -21,11 +21,11 @@ import jsettlers.graphics.utils.UIPanel;
  */
 public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 
-	private static final float RELATIVE_BUTTONHEIGHT = .05f;
+	private static final int COLUMNS = 6;
+	private static final float RELATIVE_BUTTONHEIGHT = .06f;
 
-	private static final float RELATIVE_BUTTONWIDTH = .1f;
+	private static final float RELATIVE_BUTTONWIDTH = 1f / (COLUMNS + 2);
 
-	private static final int COLUMNS = 8;
 
 	private static final ImageLink ALL_UP_IMAGE = new ImageLink(
 	        EImageLinkType.GUI, 3, 219, 0);
@@ -35,6 +35,8 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	        3, 225, 0);
 	private static final ImageLink DOWN_IMAGE = new ImageLink(
 	        EImageLinkType.GUI, 3, 228, 0);
+
+	private static final float ROWHEIGHT = .1f;
 
 	/**
 	 * Points on which materials can be placed.
@@ -77,13 +79,11 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		ypoints = new float[order.length];
 		positions = new AnimateablePosition[order.length];
 
-		for (int y = 0; (y - 1) * COLUMNS < order.length; y++) {
-			for (int x = 0; x < COLUMNS && x + y * COLUMNS < order.length; x++) {
-				int index = x + y * COLUMNS;
-				xpoints[index] = (float) (x + 1) / (COLUMNS + 2);
-				ypoints[index] = .7f - y / 20.0f;
-			}
-		}
+		addRowPositions(0, true);
+		addRowPositions(1, false);
+		addRowPositions(2, true);
+		addRowPositions(3, false);
+		addRowPositions(4, true);
 
 		for (int i = 0; i < order.length; i++) {
 			int slotIndex = order[i];
@@ -92,14 +92,28 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 			                ypoints[slotIndex]);
 		}
 
-		addChild(new Button(createChangeorderAction(1000), ALL_UP_IMAGE,
+		addChild(new Button(createChangeorderAction(-1000), ALL_UP_IMAGE,
 		        ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
-		addChild(new Button(createChangeorderAction(1), UP_IMAGE, UP_IMAGE,
+		addChild(new Button(createChangeorderAction(-1), UP_IMAGE, UP_IMAGE,
 		        "one up"), .6f, .1f, .75f, .18f);
-		addChild(new Button(createChangeorderAction(-1), DOWN_IMAGE,
+		addChild(new Button(createChangeorderAction(1), DOWN_IMAGE,
 		        DOWN_IMAGE, "one down"), .45f, .1f, .6f, .18f);
-		addChild(new Button(createChangeorderAction(-1000), ALL_DOWN_IMAGE,
+		addChild(new Button(createChangeorderAction(1000), ALL_DOWN_IMAGE,
 		        ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
+	}
+
+	private void addRowPositions(int rowIndex, boolean descent) {
+		for (int column = 0; column < COLUMNS; column++) {
+			int index = rowIndex * COLUMNS + column;
+			if (index < xpoints.length) {
+				xpoints[index] =
+				        (float) (descent ? (column + 1) : (COLUMNS - column))
+				                / (COLUMNS + 2);
+				ypoints[index] = .8f - rowIndex * ROWHEIGHT -
+				        (float) column / (COLUMNS - 1)
+				                * (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
+			}
+		}
 	}
 
 	private Action createChangeorderAction(final int add) {
@@ -149,15 +163,15 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 
 	private void setToPosition(int typeOrdinal, int newindex) {
 		order[typeOrdinal] = newindex;
-		positions[typeOrdinal].setPosition(xpoints[newindex], ypoints[newindex]);
+		positions[typeOrdinal]
+		        .setPosition(xpoints[newindex], ypoints[newindex]);
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		super.drawAt(gl);
 		gl.color(1, 1, 1, 1);
-		
-		
+
 		EMaterialType[] types = EMaterialType.values();
 		gl.glPushMatrix();
 		FloatRectangle position = getPosition();
@@ -175,11 +189,11 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		// TODO: add 1 or 2 for bigger gui
 		int image = materialType.getGuiIconBase();
 		int file = materialType.getGuiFile();
-		Image iamgeLink = ImageProvider
-		        .getInstance().getImage(new ImageLink(EImageLinkType.GUI, file, image, 0));
-		iamgeLink
-		        .drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH,
-		                y + RELATIVE_BUTTONHEIGHT);
+		Image iamgeLink =
+		        ImageProvider.getInstance().getImage(
+		                new ImageLink(EImageLinkType.GUI, file, image, 0));
+		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y
+		        + RELATIVE_BUTTONHEIGHT);
 
 		if (selected == materialType) {
 			ImageProvider
@@ -245,6 +259,5 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	public ESecondaryTabType getTabs() {
 		return null;
 	}
-
 
 }
