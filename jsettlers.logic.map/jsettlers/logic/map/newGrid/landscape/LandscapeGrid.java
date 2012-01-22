@@ -10,7 +10,7 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
  * 
  * @author Andreas Eberle
  */
-public class LandscapeGrid implements Serializable, IWalkableGround {
+public class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable {
 	private static final long serialVersionUID = -751261669662036483L;
 
 	private final byte[][] heightGrid;
@@ -23,6 +23,8 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 
 	private final short width;
 
+	private final FlattenedResetter flattenedResetter;
+
 	public LandscapeGrid(short width, short height) {
 		this.width = width;
 		this.heightGrid = new byte[width][height];
@@ -30,6 +32,8 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		this.resourceAmount = new byte[width][height];
 		this.resourceType = new EResourceType[width][height];
 		this.temporaryFlatened = new byte[width * height];
+
+		this.flattenedResetter = new FlattenedResetter(this);
 
 		setBackgroundListener(null);
 	}
@@ -47,8 +51,11 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		return landscapeGrid[x][y];
 	}
 
-	public final void setLandscapeTypeAt(short x, short y,
-	        ELandscapeType landscapeType) {
+	public final void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
+		if (landscapeType == ELandscapeType.FLATTENED && this.landscapeGrid[x][y] != ELandscapeType.FLATTENED) {
+			flattenedResetter.addPosition(x, y);
+		}
+
 		this.landscapeGrid[x][y] = landscapeType;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
@@ -58,8 +65,7 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public final void setBackgroundListener(
-	        IGraphicsBackgroundListener backgroundListener) {
+	public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 		if (backgroundListener != null) {
 			this.backgroundListener = backgroundListener;
 		} else {
@@ -67,8 +73,7 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		}
 	}
 
-	public final void setResourceAt(short x, short y,
-	        EResourceType resourceType, byte amount) {
+	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
 		this.resourceType[x][y] = resourceType;
 		this.resourceAmount[x][y] = amount;
 	}
@@ -78,8 +83,7 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 	 * 
 	 * @param x
 	 * @param y
-	 * @return The amount of resources, where 0 is no resources and
-	 *         {@link Byte.MAX_VALUE} means full resources.
+	 * @return The amount of resources, where 0 is no resources and {@link Byte.MAX_VALUE} means full resources.
 	 */
 	public final byte getResourceAmountAt(short x, short y) {
 		return resourceAmount[x][y];
@@ -89,10 +93,8 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		return resourceType[x][y];
 	}
 
-	public final boolean hasResourceAt(short x, short y,
-	        EResourceType resourceType) {
-		return getResourceTypeAt(x, y) == resourceType
-		        && resourceAmount[x][y] > 0;
+	public final boolean hasResourceAt(short x, short y, EResourceType resourceType) {
+		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x][y] > 0;
 	}
 
 	public final void pickResourceAt(short x, short y) {
@@ -104,8 +106,7 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 	 * 
 	 * @author Andreas Eberle
 	 */
-	private static class NullBackgroundListener implements
-	        IGraphicsBackgroundListener, Serializable {
+	private static class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
 		private static final long serialVersionUID = -332117701485179252L;
 
 		@Override
@@ -115,13 +116,17 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 
 	@Override
 	public final void walkOn(int x, int y) {
-		int i = width * y + x;
+		int i = getFlatIndex(x, y);
 		if (temporaryFlatened[i] < 100) {
 			temporaryFlatened[i] += 3;
 			if (temporaryFlatened[i] > 20) {
 				flaten(x, y);
 			}
 		}
+	}
+
+	private final int getFlatIndex(int x, int y) {
+		return width * y + x;
 	}
 
 	/**
@@ -131,15 +136,10 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 	 * @param y
 	 */
 	private void flaten(int x, int y) {
-		if (getLandscapeTypeAt((short) x, (short) y).isGrass()
-		        && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
-		        && getLandscapeTypeAt((short) (x - 1), (short) (y - 1))
-		                .isGrass()
-		        && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
-		        && getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass()
-		        && getLandscapeTypeAt((short) (x + 1), (short) (y + 1))
-		                .isGrass()
-		        && getLandscapeTypeAt((short) (x + 1), (short) y).isGrass()) {
+		if (getLandscapeTypeAt((short) x, (short) y).isGrass() && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
+				&& getLandscapeTypeAt((short) (x - 1), (short) (y - 1)).isGrass() && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
+				&& getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass() && getLandscapeTypeAt((short) (x + 1), (short) (y + 1)).isGrass()
+				&& getLandscapeTypeAt((short) (x + 1), (short) y).isGrass()) {
 			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
 		}
 	}
@@ -158,5 +158,19 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 			}
 		}
 		return (float) found / Byte.MAX_VALUE / 9;
+	}
+
+	@Override
+	public boolean countFlattenedDown(short x, short y) {
+		int i = getFlatIndex(x, y);
+
+		temporaryFlatened[i]--;
+		if (temporaryFlatened[i] <= -30) {
+			temporaryFlatened[i] = 0;
+			setLandscapeTypeAt(x, y, ELandscapeType.GRASS);
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
