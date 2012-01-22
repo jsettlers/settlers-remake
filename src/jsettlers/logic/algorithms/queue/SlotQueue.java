@@ -32,11 +32,11 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 	/**
 	 * The head of the fifo queues
 	 */
-	private ElementHolder<E>[] slots;
+	private transient ElementHolder<E>[] slots;
 	/**
 	 * The tail of the fifo queues
 	 */
-	private ElementHolder<E>[] tails;
+	private transient ElementHolder<E>[] tails;
 	private int[] count;
 	/**
 	 * The permutation of the slots so that they are ordered by priority.
@@ -44,10 +44,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 	private int[] slotOrder;
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
-		oos.writeObject(slotTypes);
-		oos.writeObject(slotPriority);
-		oos.writeObject(count);
-		oos.writeObject(slotOrder);
+		oos.defaultWriteObject();
 
 		for (int i = 0; i < slotTypes.length; i++) {
 			ElementHolder<E> curr = slots[i];
@@ -70,10 +67,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		slotTypes = (T[]) ois.readObject();
-		slotPriority = (int[]) ois.readObject();
-		count = (int[]) ois.readObject();
-		slotOrder = (int[]) ois.readObject();
+		ois.defaultReadObject();
 
 		slots = new ElementHolder[slotTypes.length];
 		for (int i = 0; i < slotTypes.length; i++) {
