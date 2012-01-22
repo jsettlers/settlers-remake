@@ -47,7 +47,8 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		return landscapeGrid[x][y];
 	}
 
-	public final void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
+	public final void setLandscapeTypeAt(short x, short y,
+	        ELandscapeType landscapeType) {
 		this.landscapeGrid[x][y] = landscapeType;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
@@ -57,7 +58,8 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+	public final void setBackgroundListener(
+	        IGraphicsBackgroundListener backgroundListener) {
 		if (backgroundListener != null) {
 			this.backgroundListener = backgroundListener;
 		} else {
@@ -65,11 +67,20 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		}
 	}
 
-	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
+	public final void setResourceAt(short x, short y,
+	        EResourceType resourceType, byte amount) {
 		this.resourceType[x][y] = resourceType;
 		this.resourceAmount[x][y] = amount;
 	}
 
+	/**
+	 * gets the resource amount at the given position
+	 * 
+	 * @param x
+	 * @param y
+	 * @return The amount of resources, where 0 is no resources and
+	 *         {@link Byte.MAX_VALUE} means full resources.
+	 */
 	public final byte getResourceAmountAt(short x, short y) {
 		return resourceAmount[x][y];
 	}
@@ -78,8 +89,10 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		return resourceType[x][y];
 	}
 
-	public final boolean hasResourceAt(short x, short y, EResourceType resourceType) {
-		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x][y] > 0;
+	public final boolean hasResourceAt(short x, short y,
+	        EResourceType resourceType) {
+		return getResourceTypeAt(x, y) == resourceType
+		        && resourceAmount[x][y] > 0;
 	}
 
 	public final void pickResourceAt(short x, short y) {
@@ -91,7 +104,8 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 	 * 
 	 * @author Andreas Eberle
 	 */
-	private static class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+	private static class NullBackgroundListener implements
+	        IGraphicsBackgroundListener, Serializable {
 		private static final long serialVersionUID = -332117701485179252L;
 
 		@Override
@@ -110,13 +124,39 @@ public class LandscapeGrid implements Serializable, IWalkableGround {
 		}
 	}
 
+	/**
+	 * Sets the landscape to flattened after a settler walked on it.
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	private void flaten(int x, int y) {
-		// TODO: only flaten if there is grass around the place.
-		if (getLandscapeTypeAt((short) x, (short) y).isGrass() && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
-				&& getLandscapeTypeAt((short) (x - 1), (short) (y - 1)).isGrass() && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
-				&& getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass() && getLandscapeTypeAt((short) (x + 1), (short) (y + 1)).isGrass()
-				&& getLandscapeTypeAt((short) (x + 1), (short) y).isGrass()) {
+		if (getLandscapeTypeAt((short) x, (short) y).isGrass()
+		        && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
+		        && getLandscapeTypeAt((short) (x - 1), (short) (y - 1))
+		                .isGrass()
+		        && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
+		        && getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass()
+		        && getLandscapeTypeAt((short) (x + 1), (short) (y + 1))
+		                .isGrass()
+		        && getLandscapeTypeAt((short) (x + 1), (short) y).isGrass()) {
 			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
 		}
+	}
+
+	public float getResourceAmountAround(short x, short y, EResourceType type) {
+		int minx = Math.max(x - 1, 0);
+		int maxx = Math.max(x + 1, width - 1);
+		int miny = Math.max(y - 1, 0);
+		int maxy = Math.max(y + 1, resourceAmount[0].length - 1);
+		int found = 0;
+		for (int currentx = minx; currentx <= maxx; currentx++) {
+			for (int currenty = miny; currenty <= maxy; currenty++) {
+				if (resourceType[currentx][currenty] == type) {
+					found += resourceAmount[currentx][currenty];
+				}
+			}
+		}
+		return (float) found / Byte.MAX_VALUE / 9;
 	}
 }

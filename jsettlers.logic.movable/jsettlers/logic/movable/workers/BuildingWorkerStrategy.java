@@ -16,6 +16,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.IMovableGrid;
@@ -32,6 +33,10 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	private boolean done;
 	private IWorkerRequestBuilding building;
 	private Path path;
+	
+	private EMaterialType lastPopped = null;
+
+	private EMaterialType temporaryDropMat;
 
 	public BuildingWorkerStrategy(IMovableGrid grid, Movable movable, EMovableType movableType) {
 		super(grid, movable);
@@ -71,6 +76,9 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 				boolean success = true;
 				if (currentJob.getType() == EBuildingJobType.DROP && currentJob.getMaterial() != EMaterialType.NO_MATERIAL) {
 					success = super.getGrid().pushMaterial(super.getPos(), currentJob.getMaterial(), true);
+				} else if (currentJob.getType() == EBuildingJobType.DROP_POPPED && lastPopped != null) {
+					success = super.getGrid().pushMaterial(super.getPos(), lastPopped, true);
+					lastPopped = null;
 				}
 
 				if (success) {
@@ -267,6 +275,27 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			jobFinished();
 			break;
 		}
+		
+		case POP_TOOL: {
+			ISPosition2D pos = building.getDoor();
+			lastPopped = super.getGrid().popToolProduction(pos);
+			if (lastPopped != null) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
+			break;
+		}
+		
+		case DROP_POPPED: {
+			if (lastPopped != null) {
+				dropAction();
+			} else {
+				jobFailed();
+			}
+			break;
+			
+		}
 
 		default:
 			System.err.println("unknown job type in BuildingWorkerStrategy: " + type);
@@ -279,9 +308,24 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	private boolean isProductive() {
-		// TODO: weight
-		return RandomSingleton.get().nextBoolean();
+		switch (building.getBuildingType()) {
+			case FISHER:
+				//TODO: look into the water, not at the sand.
+				return hasProductiveResources(super.getPos(), EResourceType.FISH);
+			case COALMINE:
+				return hasProductiveResources(building.getDoor(), EResourceType.COAL);
+			case IRONMINE:
+				return hasProductiveResources(building.getDoor(), EResourceType.IRON);
+			case GOLDMINE:
+				return hasProductiveResources(building.getDoor(), EResourceType.GOLD);
+		}
+		return false;
 	}
+
+	private boolean hasProductiveResources(ISPosition2D pos, EResourceType type) {
+	    float amount = getGrid().getResourceAmountAround(pos.getX(), pos.getY(), type);
+	    return RandomSingleton.get().nextFloat() < amount;
+    }
 
 	private boolean lookAtSearched() {
 		if (currentJob.getSearchType() == ESearchType.FISHABLE) {
@@ -442,7 +486,9 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	private void checkForDroppingMaterial() {
-		EMaterialType material = super.getMaterial();
+		EMaterialType material;
+		material = super.getMaterial();
+		
 		if (material != null && material != EMaterialType.NO_MATERIAL) {
 			super.setAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 			super.setMaterial(EMaterialType.NO_MATERIAL);

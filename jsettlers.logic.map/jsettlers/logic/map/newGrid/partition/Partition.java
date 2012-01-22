@@ -123,4 +123,8 @@ public final class Partition implements Serializable {
 		manager.removeOfferAt(pos, materialType);
 	}
 
+	public EMaterialType popToolProduction(ISPosition2D pos) {
+	    return manager.popToolProduction(pos);
+    }
+
 }

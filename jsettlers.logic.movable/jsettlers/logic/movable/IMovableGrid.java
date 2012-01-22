@@ -18,10 +18,10 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
 import synchronic.timer.NetworkTimer;
 
 /**
- * This interface defines all methods needed by the movables to interact with the grid.
+ * This interface defines all methods needed by the movables to interact with
+ * the grid.
  * 
  * @author Andreas Eberle
- * 
  */
 public interface IMovableGrid {
 	/**
@@ -74,10 +74,12 @@ public interface IMovableGrid {
 	boolean isBlocked(short x, short y);
 
 	/**
-	 * Checks if the given position is blocked for the given {@link IPathCalculateable}.
+	 * Checks if the given position is blocked for the given
+	 * {@link IPathCalculateable}.
 	 * 
 	 * @param pathCalculateable
-	 *            the actor for whom it should be checked, if the position can be entered by himself.
+	 *            the actor for whom it should be checked, if the position can
+	 *            be entered by himself.
 	 * @param x
 	 *            x coordinate.
 	 * @param y
@@ -100,7 +102,8 @@ public interface IMovableGrid {
 	 * @return true if the material had been placed,<br>
 	 *         false otherwise.
 	 */
-	boolean pushMaterial(ISPosition2D position, EMaterialType materialType, boolean offer);
+	boolean pushMaterial(ISPosition2D position, EMaterialType materialType,
+	        boolean offer);
 
 	/**
 	 * Takes a material of the given type from the given position.
@@ -119,7 +122,8 @@ public interface IMovableGrid {
 	 * 
 	 * @param position
 	 *            position to be looked for.
-	 * @return {@link ELandscapeType} that's currently set to the given position.
+	 * @return {@link ELandscapeType} that's currently set to the given
+	 *         position.
 	 */
 	ELandscapeType getLandscapeTypeAt(ISPosition2D position);
 
@@ -204,7 +208,8 @@ public interface IMovableGrid {
 	 * @return true if the position fits the searchType.<br>
 	 *         false if it doesn't.
 	 */
-	boolean fitsSearchType(ISPosition2D position, ESearchType searchType, IPathCalculateable pathCalculateable);
+	boolean fitsSearchType(ISPosition2D position, ESearchType searchType,
+	        IPathCalculateable pathCalculateable);
 
 	/**
 	 * Executes the given searchType
@@ -219,7 +224,8 @@ public interface IMovableGrid {
 	boolean executeSearchType(ISPosition2D position, ESearchType searchType);
 
 	/**
-	 * Checks if the given {@link EMaterialType} can be popped from the given position.
+	 * Checks if the given {@link EMaterialType} can be popped from the given
+	 * position.
 	 * 
 	 * @param position
 	 *            position to be checked.
@@ -231,7 +237,8 @@ public interface IMovableGrid {
 	boolean canPop(ISPosition2D position, EMaterialType material);
 
 	/**
-	 * Checks if the given {@link EMaterialType} can be pushed to the given position.
+	 * Checks if the given {@link EMaterialType} can be pushed to the given
+	 * position.
 	 * 
 	 * @param position
 	 *            position to be checked.
@@ -243,7 +250,8 @@ public interface IMovableGrid {
 	/**
 	 * Gives a {@link HexAStar} algorithm.
 	 * <p />
-	 * NOTE: This {@link HexAStar} can only be used in a {@link NetworkTimer} synchronous way.
+	 * NOTE: This {@link HexAStar} can only be used in a {@link NetworkTimer}
+	 * synchronous way.
 	 * 
 	 * @return {@link HexAStar} algorithm.
 	 */
@@ -252,7 +260,8 @@ public interface IMovableGrid {
 	/**
 	 * Gives a {@link DijkstraAlgorithm} algorithm.
 	 * <p />
-	 * NOTE: This {@link DijkstraAlgorithm} can only be used in a {@link NetworkTimer} synchronous way.
+	 * NOTE: This {@link DijkstraAlgorithm} can only be used in a
+	 * {@link NetworkTimer} synchronous way.
 	 * 
 	 * @return {@link DijkstraAlgorithm} algorithm.
 	 */
@@ -261,7 +270,8 @@ public interface IMovableGrid {
 	/**
 	 * Gives a {@link InAreaFinder} algorithm.
 	 * <p />
-	 * NOTE: This {@link InAreaFinder} can only be used in a {@link NetworkTimer} synchronous way.
+	 * NOTE: This {@link InAreaFinder} can only be used in a
+	 * {@link NetworkTimer} synchronous way.
 	 * 
 	 * @return {@link InAreaFinder} algorithm.
 	 */
@@ -297,7 +307,8 @@ public interface IMovableGrid {
 
 	boolean isEnforcedByTower(ISPosition2D pos);
 
-	boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable);
+	boolean isAllowedForMovable(short x, short y,
+	        IPathCalculateable pathCalculatable);
 
 	EResourceType getResourceTypeAt(short x, short y);
 
@@ -324,4 +335,17 @@ public interface IMovableGrid {
 	 *         or null if none had been stolen.
 	 */
 	EMaterialType stealMaterialAt(ISPosition2D pos);
+
+	EMaterialType popToolProduction(ISPosition2D pos);
+
+	/**
+	 * gets the amount of resources around a given position. 1 means: full, 0
+	 * means nothing.
+	 * 
+	 * @param x The x coordinate of the position
+	 * @param y The y coordinate of the position
+	 * @param type The type of resources to search for
+	 * @return The amount.
+	 */
+	float getResourceAmountAround(short x, short y, EResourceType type);
 }

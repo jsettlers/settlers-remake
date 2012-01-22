@@ -419,4 +419,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		changePlayerAt(x, y, newPlayer);
 		towers[x][y]++;
 	}
+
+	public EMaterialType popToolProduction(ISPosition2D pos) {
+		return getPartitionObject(pos).popToolProduction(pos);
+    }
 }

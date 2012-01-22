@@ -189,7 +189,7 @@ public class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && (object instanceof BuildingObject) && isTower(((BuildingObject) object).getType())) {
+				if (object != null && isOccupyableBuilding(object)) {
 					addMapObject(x, y, object);
 				}
 				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
@@ -204,13 +204,17 @@ public class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && !((object instanceof BuildingObject) && isTower(((BuildingObject) object).getType()))) {
+				if (object != null && !isOccupyableBuilding(object)) {
 					addMapObject(x, y, object);
 				}
 			}
 		}
 		System.out.println("grid filled");
 	}
+
+	private static boolean isOccupyableBuilding(MapObject object) {
+	    return object instanceof BuildingObject && ((BuildingObject) object).getType().getOccupyerPlaces().length > 0;
+    }
 
 	private final boolean isTower(EBuildingType type) {
 		return type == EBuildingType.TOWER || type == EBuildingType.CASTLE || type == EBuildingType.BIG_TOWER;
@@ -1015,6 +1019,17 @@ public class MainGrid implements Serializable {
 			}
 			return materialType;
 		}
+
+		@Override
+        public EMaterialType popToolProduction(ISPosition2D pos) {
+	        return partitionsGrid.popToolProduction(pos);
+        }
+
+		@Override
+        public float getResourceAmountAround(short x, short y,
+                EResourceType type) {
+	        return landscapeGrid.getResourceAmountAround(x, y, type);
+        }
 
 	}
 

@@ -13,6 +13,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.queue.SlotQueue;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -37,12 +38,12 @@ import synchronic.timer.NetworkTimer;
  */
 public class PartitionManager implements INetworkTimerable, Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final PositionableHashMap<Offer> materialOffers = new PositionableHashMap<PartitionManager.Offer>();
-	private final SerializableLinkedList<Request> materialRequests = new SerializableLinkedList<PartitionManager.Request>();
+	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, PartitionManager.Request>(EMaterialType.values(), new int[EMaterialType.values().length]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
@@ -56,6 +57,9 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 
 	private final SerializableLinkedList<WorkerCreationRequest> workerCreationRequests = new SerializableLinkedList<PartitionManager.WorkerCreationRequest>();
 	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<PartitionManager.SoilderCreationRequest>();
+
+	private final SlotQueue<EMaterialType, ProductionRequest> toolProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(new EMaterialType[] {EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK, EMaterialType.FISHINGROD, EMaterialType.SCYTHE}, new int[] {50, 50, 30, 30, 30, 30, 30});
+	private final SlotQueue<EMaterialType, ProductionRequest> weaponProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(EMaterialType.values(), new int[EMaterialType.values().length]);
 
 	public PartitionManager() {
 		schedule();
@@ -85,7 +89,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
-		materialRequests.offer(new Request(requester, materialType, priority));
+		materialRequests.add(materialType, new Request(requester, materialType, priority));
 	}
 
 	public void requestDiggers(IDiggerRequester requester, byte amount) {
@@ -142,19 +146,12 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 			newManager.materialOffers.set(position, removedOffer);
 		}
 
-		java.util.Iterator<Request> requestIter = materialRequests.iterator();
-		while (requestIter.hasNext()) {
-			Request currRequest = requestIter.next();
-			if (currRequest.getPos().equals(position)) {
-				requestIter.remove();
-				if (newHasSamePlayer) {
-					newManager.materialRequests.offer(currRequest);
-				} else {
-					System.out.println("merge but has not same player");
-				}
-			}
-		}
+		//TODO: use newHasSamePlayer
+		materialRequests.moveItemsForPosition(position, newManager.materialRequests);
 
+		toolProductionRequests.moveItemsForPosition(position, newManager.toolProductionRequests);
+		weaponProductionRequests.moveItemsForPosition(position, newManager.weaponProductionRequests);
+		
 		if (newHasSamePlayer) {
 			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
 			if (bearer != null)
@@ -201,6 +198,8 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		newManager.soilderCreationRequests.addAll(this.soilderCreationRequests);
 		newManager.workerCreationRequests.addAll(this.workerCreationRequests);
 		newManager.workerRequests.addAll(this.workerRequests);
+		newManager.toolProductionRequests.addAll(toolProductionRequests);
+		newManager.weaponProductionRequests.addAll(weaponProductionRequests);
 	}
 
 	@Override
@@ -250,6 +249,10 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 						workerCreationRequests.addLast(workerRequest);
 					}
 				} else {
+					if (!workerRequest.produceToolRequested) {
+						requestToolProduction(tool, workerRequest.position);
+						workerRequest.produceToolRequested = true;
+					}
 					workerCreationRequests.addLast(workerRequest);
 				}
 			} else {
@@ -313,8 +316,8 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	private void handleMaterialRequest() {
-		if (!materialRequests.isEmpty()) {
-			Request request = materialRequests.poll();
+		Request request = materialRequests.pop();
+		if (request != null) {
 
 			materialTypeAcceptor.materialType = request.requested;
 			Offer offer = materialOffers.getObjectNextTo(request.getPos(), materialTypeAcceptor);
@@ -348,7 +351,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	private void reofferRequest(Request request) {
 		// TODO: decrease priority, do something else, ...
 		// request.decreasePriority();
-		materialRequests.offerLast(request);
+		materialRequests.add(request.requested, request);
 	}
 
 	private static class Offer implements Serializable {
@@ -439,6 +442,8 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	private static class WorkerCreationRequest implements ILocatable, Serializable {
+		public boolean produceToolRequested;
+
 		private static final long serialVersionUID = 3047014371520017602L;
 
 		final EMovableType movableType;
@@ -535,13 +540,7 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
-		Iterator<Request> iter = materialRequests.iterator();
-		while (iter.hasNext()) {
-			Request curr = iter.next();
-			if (curr.requested == materialType && curr.getPos().equals(position)) {
-				iter.remove();
-			}
-		}
+		materialRequests.removeOfType(materialType, position);
 	}
 
 	/**
@@ -557,5 +556,18 @@ public class PartitionManager implements INetworkTimerable, Serializable {
 		if (offer != null && offer.materialType == materialType) {
 			reduceOfferAmount(offer);
 		}
+	}
+	
+	public final void requestToolProduction(EMaterialType type, ISPosition2D pos) {
+		toolProductionRequests.add(type, new ProductionRequest(type, pos));
+	}
+	
+	public final EMaterialType popToolProduction(ISPosition2D closeTo) {
+		ProductionRequest request = toolProductionRequests.pop(closeTo);
+		if (request != null) {
+	        return request.getType();
+        } else {
+	        return null;
+        }
 	}
 }
