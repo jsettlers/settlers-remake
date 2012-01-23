@@ -25,9 +25,9 @@ import javax.swing.JFrame;
 import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
+import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
@@ -39,7 +39,7 @@ public class DatFileTester {
 	}
 
 	private static final String FILE =
-	        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_%.7c003e01f.dat";
+	        "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
 
 	private static final Color[] colors = new Color[] {
 		new Color(0xffffff)
@@ -47,7 +47,7 @@ public class DatFileTester {
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
-	private static int datFileIndex = 11;
+	private static int datFileIndex = 18;
 
 	private AdvancedDatFileReader reader;
 
@@ -231,6 +231,8 @@ public class DatFileTester {
 					mode = GUI;
 				} else if ("E".equalsIgnoreCase(keyCode)) {
 					export();
+				} else if ("W".equalsIgnoreCase(keyCode)) {
+					exportAll();
 				}
 				region.requestRedraw();
 			}
@@ -339,24 +341,51 @@ public class DatFileTester {
 		int returnVal = fc.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
-			exportTo(dir);
+			exportTo(dir, reader);
 		}
 	}
 
-	private void exportTo(File dir) {
-		export(reader.getSettlers(), new File(dir, "settlers"));
-		exportSequence(new File(dir, "gui"), 0, reader.getGuis());
-		exportSequence(new File(dir, "landscape"), 1, reader.getLandscapes());
+	private static void exportAll() {
+		final JFileChooser fc = new JFileChooser();
+
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnVal = fc.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File dir = fc.getSelectedFile();
+			for (int i = 0; i <= 99; i++) {
+				File file =
+				        new File(FILE.replace("%", String.format("%02d", i)));
+
+				if (file.exists()) {
+					AdvancedDatFileReader reader =
+					        new AdvancedDatFileReader(file);
+					exportTo(new File(dir, "" + i), reader);
+				}
+			}
+		}
 	}
 
-	private <T extends Image> void export(SequenceList<T> sequences, File dir) {
+	private static void exportTo(File dir, AdvancedDatFileReader reader) {
+		export(reader.getSettlers(), new File(dir, "settlers"));
+		Sequence<GuiImage> guis = reader.getGuis();
+		if (guis.length() > 0) {
+			exportSequence(new File(dir, "gui"), 0, guis);
+		}
+		Sequence<LandscapeImage> landscapes = reader.getLandscapes();
+		if (landscapes.length() > 0) {
+			exportSequence(new File(dir, "landscape"), 1, landscapes);
+		}
+	}
+
+	private static <T extends Image> void export(SequenceList<T> sequences,
+	        File dir) {
 		for (int index = 0; index < sequences.size(); index++) {
 			Sequence<T> seq = sequences.get(index);
 			exportSequence(dir, index, seq);
 		}
 	}
 
-	private <T extends Image> void exportSequence(File dir, int index,
+	private static <T extends Image> void exportSequence(File dir, int index,
 	        Sequence<T> seq) {
 		File seqdir = new File(dir, index + "");
 		seqdir.mkdirs();
@@ -371,11 +400,16 @@ public class DatFileTester {
 		}
 	}
 
-	private void export(SingleImage image, File file) {
+	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
+		int width = image.getWidth();
+		int height = image.getHeight();
+		if (width <= 0 || height <= 0) {
+			return;
+		}
+
 		BufferedImage rendered =
-		        new BufferedImage(image.getWidth(), image.getHeight(),
-		                BufferedImage.TYPE_INT_ARGB);
+		        new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		ShortBuffer data = image.getData().duplicate();
 		data.rewind();
 		int[] rgbArray = new int[data.remaining()];
@@ -388,9 +422,7 @@ public class DatFileTester {
 			rgbArray[i] = new Color(red, green, blue, alpha).getRGB();
 		}
 
-		rendered.setRGB(0, 0, image.getWidth(), image.getHeight(), rgbArray,
-		        -image.getWidth() + image.getHeight() * image.getWidth(),
-		        -image.getWidth());
+		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
 
 		try {
 			ImageIO.write(rendered, "png", file);
