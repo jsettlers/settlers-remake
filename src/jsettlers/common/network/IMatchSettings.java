@@ -18,4 +18,6 @@ public interface IMatchSettings {
 	 * @return random seed for all players.
 	 */
 	long getRandomSeed();
+
+	INetworkableMap getMap();
 }

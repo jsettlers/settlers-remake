@@ -3,7 +3,7 @@ package jsettlers.common.network;
 import java.io.IOException;
 
 /**
- * Interface needed by jsettlers.graphics to interact with the networking system.
+ * Interface not needed by jsettlers.graphics to interact with the networking system.
  * 
  * @author Andreas Eberle
  * 
