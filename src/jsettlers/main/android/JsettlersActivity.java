@@ -12,6 +12,7 @@ import java.util.List;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
+import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -436,4 +437,10 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 			}
 		});
 	}
+
+	@Override
+    public void showNetworkScreen(INetworkScreenAdapter networkScreen) {
+	    // TODO Auto-generated method stub
+	    
+    }
 }
