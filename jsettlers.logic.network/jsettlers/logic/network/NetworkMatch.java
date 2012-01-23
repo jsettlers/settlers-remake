@@ -9,7 +9,7 @@ public class NetworkMatch implements IMatch {
 	private final int maxPlayers;
 	private final String mapID;
 
-	NetworkMatch(String matchID, String matchName, String mapID, int maxPlayers) {
+	public NetworkMatch(String matchID, String matchName, String mapID, int maxPlayers) {
 		this.matchID = matchID;
 		this.matchName = matchName;
 		this.mapID = mapID;

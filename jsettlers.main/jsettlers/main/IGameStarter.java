@@ -1,5 +1,7 @@
 package jsettlers.main;
 
+import jsettlers.common.network.IMatch;
+import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 
@@ -8,5 +10,19 @@ public interface IGameStarter {
 	public abstract void startGame(IGameSettings game);
 
 	public abstract void loadGame(ILoadableGame load);
+
+	/**
+	 * Starts a new network game server.
+	 * @param server The server that is already running and can be used. Empty string => start new server.
+	 * @param gameSettings
+	 */
+	void startNetworkGame(String server, IMatchSettings gameSettings);
+
+	/**
+	 * Joins a network game
+	 * @param serverAddress The server.
+	 * @param match
+	 */
+	void joinNetworkGame(String serverAddress, IMatch match);
 
 }

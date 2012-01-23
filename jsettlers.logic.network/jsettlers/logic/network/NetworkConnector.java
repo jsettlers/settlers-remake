@@ -1,5 +1,5 @@
 package jsettlers.logic.network;
-
+/*
 import java.io.File;
 import java.io.IOException;
 
@@ -192,3 +192,4 @@ public class NetworkConnector implements INetworkConnector, IClientThreadListene
 	}
 
 }
+*/

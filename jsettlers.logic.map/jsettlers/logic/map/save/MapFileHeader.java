@@ -182,4 +182,9 @@ public class MapFileHeader {
 			}
 		}
 	}
+
+	public String getUniqueId() {
+		//TODO: compute this
+	    return getName();
+    }
 }

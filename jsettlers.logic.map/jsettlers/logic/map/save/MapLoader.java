@@ -10,6 +10,7 @@ import java.util.Random;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.network.INetworkableMap;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
@@ -28,7 +29,7 @@ import jsettlers.main.IGameCreator;
  * 
  * @author michael
  */
-public class MapLoader implements IGameCreator, ILoadableGame, IMapItem {
+public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetworkableMap {
 	private static final byte USER_PLAYER = 0;
 	private final File file;
 	private MapFileHeader header;
@@ -200,8 +201,25 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem {
 	}
 
 	public String getMapID() {
-		// FIXME return mapID here
-		return null;
+		return getUniqueID();
 	}
 
+	@Override
+    public String getUniqueID() {
+	    try {
+	        return getFileHeader().getUniqueId();
+        } catch (MapLoadException e) {
+	        return "";
+        }
+    }
+
+	@Override
+    public File getFile() {
+	    return file;
+    }
+
+	@Override
+    public INetworkableMap getNetworkableMap() {
+	    return this;
+    }
 }
