@@ -33,4 +33,10 @@ public interface ISettlersGameDisplay {
 	 */
 	public MapInterfaceConnector showGameMap(
 	        IGraphicsGrid map, IStatisticable playerStatistics);
+
+	/**
+	 * Shows the network screen (when a network game is started)
+	 * @param networkScreen
+	 */
+	public void showNetworkScreen(INetworkScreenAdapter networkScreen);
 }

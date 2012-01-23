@@ -12,6 +12,8 @@ import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.network.IMatch;
+import jsettlers.common.network.IMatchSettings;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
@@ -56,6 +58,8 @@ public class StartScreen implements SettlersContent {
 
 	private LoadSavedGamePanel loadSavedGamePanel;
 
+	private JoinGamePanel joinGamePanel;
+
 	public StartScreen(IStartScreenConnector connector) {
 		this.connector = connector;
 		root = new UIPanel();
@@ -64,7 +68,7 @@ public class StartScreen implements SettlersContent {
 		addMainButton(EActionType.SHOW_START_NEW, .9f);
 		addMainButton(EActionType.SHOW_LOAD, .75f);
 		addMainButton(EActionType.SHOW_START_NETWORK, .6f);
-		addMainButton(EActionType.SHOW_CONNECT_NETWORK, .45f);
+		addMainButton(EActionType.SHOW_JOIN_NETWORK, .45f);
 		addMainButton(EActionType.SHOW_RECOVER_NETWORK, .3f);
 
 		content = new UIPanel();
@@ -92,7 +96,7 @@ public class StartScreen implements SettlersContent {
 		}
 
 		switch (action.getActionType()) {
-			case SHOW_CONNECT_NETWORK:
+			case SHOW_JOIN_NETWORK:
 			case SHOW_LOAD:
 			case SHOW_RECOVER_NETWORK:
 			case SHOW_START_NETWORK:
@@ -109,6 +113,15 @@ public class StartScreen implements SettlersContent {
 				}
 				break;
 
+			case START_NETWORK:
+				if (newGamePanel != null) {
+					IMatchSettings gameSettings = newGamePanel.getNetworkGameSettings();
+					if (gameSettings != null) {
+						connector.startNetworkGame(gameSettings);
+					}
+				}
+				break;
+
 			case LOAD_GAME:
 				if (loadSavedGamePanel != null) {
 					ILoadableGame load = loadSavedGamePanel.getSelected();
@@ -117,6 +130,14 @@ public class StartScreen implements SettlersContent {
 					}
 				}
 				break;
+				
+			case JOIN_NETWORK:
+				if (joinGamePanel != null) {
+					IMatch match = joinGamePanel.getSelected();
+					if (match != null) {
+						connector.joinNetworkGame(match);
+					}
+				}
 		}
 
 		requestRedraw();
@@ -126,12 +147,18 @@ public class StartScreen implements SettlersContent {
 		content.removeAll();
 
 		if (displayAction == EActionType.SHOW_START_NEW) {
-			newGamePanel = new NewGamePanel(connector.getMaps());
+			newGamePanel = new NewGamePanel(connector.getMaps(), false);
 			content.addChild(newGamePanel, 0, 0, 1, 1);
 		} else if (displayAction == EActionType.SHOW_LOAD) {
 			loadSavedGamePanel =
 			        new LoadSavedGamePanel(connector.getLoadableGames());
 			content.addChild(loadSavedGamePanel, 0, 0, 1, 1);
+		} else if (displayAction == EActionType.SHOW_START_NETWORK) {
+			newGamePanel = new NewGamePanel(connector.getMaps(), true);
+			content.addChild(newGamePanel, 0, 0, 1, 1);
+		} else if (displayAction == EActionType.SHOW_JOIN_NETWORK) {
+			joinGamePanel = new JoinGamePanel(connector.getNetworkConnector());
+			content.addChild(joinGamePanel, 0, 0, 1, 1);
 		}
 
 		for (UILabeledButton b : mainButtons) {

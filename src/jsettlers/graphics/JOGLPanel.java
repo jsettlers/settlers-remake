@@ -14,6 +14,7 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.progress.ProgressContent;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
+import jsettlers.graphics.startscreen.NetworkScreen;
 import jsettlers.graphics.startscreen.StartScreen;
 
 /**
@@ -32,6 +33,8 @@ public class JOGLPanel implements ISettlersGameDisplay {
 	private Area area;
 
 	private final SoundPlayer player;
+
+	private TimerTask redrawTimerTask;
 
 	/**
 	 * Creates a new empty panel.
@@ -57,6 +60,11 @@ public class JOGLPanel implements ISettlersGameDisplay {
 		this.region.setContent(content);
 		content.addRedrawListener(region);
 		this.content = content;
+		region.requestRedraw();
+		if (redrawTimerTask != null) {
+			redrawTimerTask.cancel();
+			redrawTimerTask = null;
+		}
 	}
 
 	/**
@@ -79,23 +87,29 @@ public class JOGLPanel implements ISettlersGameDisplay {
 		changeContent(content);
 
 		Timer timer = new Timer(true);
-		timer.schedule(new TimerTask() {
+		redrawTimerTask = new TimerTask() {
 			@Override
 			public void run() {
 				// TODO: this is only for testing
 				JOGLPanel.this.region.requestRedraw();
 			}
-		}, 10, 33);
+		};
+		timer.schedule(redrawTimerTask, 10, 33);
 
 		return content.getInterfaceConnector();
 	}
-	
+
 	public synchronized void showStartScreen(IStartScreenConnector connector) {
-		changeContent(new StartScreen(connector));		
+		changeContent(new StartScreen(connector));
 	}
 
 	public Area getArea() {
-	    return area;
-    }
+		return area;
+	}
+
+	@Override
+	public void showNetworkScreen(INetworkScreenAdapter networkScreen) {
+		changeContent(new NetworkScreen(networkScreen));
+	}
 
 }

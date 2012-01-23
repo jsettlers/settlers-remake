@@ -4,6 +4,7 @@ package jsettlers.graphics.startscreen;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
@@ -16,7 +17,7 @@ public class NewGamePanel extends UIPanel {
 
 	private UIList<MapListItem> list;
 
-	public NewGamePanel(List<? extends IMapItem> maps) {
+	public NewGamePanel(List<? extends IMapItem> maps, boolean startNetwork) {
 		ArrayList<MapListItem> items =
 		        new ArrayList<NewGamePanel.MapListItem>();
 		for (IMapItem map : maps) {
@@ -27,9 +28,10 @@ public class NewGamePanel extends UIPanel {
 		this.addChild(list, 0, .15f, 1, 1);
 
 		// start button
+		EActionType action = startNetwork ? EActionType.START_NETWORK : EActionType.START_NEW_GAME;
 		UILabeledButton startbutton =
-		        new UILabeledButton(Labels.getName(EActionType.START_NEW_GAME),
-		                new Action(EActionType.START_NEW_GAME));
+		        new UILabeledButton(Labels.getName(action),
+		                new Action(action));
 		this.addChild(startbutton, .3f, 0, 1, .1f);
 	}
 
@@ -61,5 +63,14 @@ public class NewGamePanel extends UIPanel {
 			return null;
 		}
 	}
+
+	public IMatchSettings getNetworkGameSettings() {
+		MapListItem item = list.getActiveItem();
+	    if (item != null) {
+	    	return new NetworkGameSettings(item.getMap(), "player's game");
+	    } else {
+	    	return null;
+	    }
+    }
 
 }

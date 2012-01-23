@@ -143,7 +143,7 @@ public enum EActionType {
 	SHOW_START_NEW,
 	SHOW_LOAD,
 	SHOW_START_NETWORK,
-	SHOW_CONNECT_NETWORK,
+	SHOW_JOIN_NETWORK,
 	SHOW_RECOVER_NETWORK,
 	START_NEW_GAME,
 	LOAD_GAME,
@@ -186,6 +186,11 @@ public enum EActionType {
 	 * <p>
 	 * must implement {@link Runnable}
 	 */
-	GUI_RUNNABLE
+	GUI_RUNNABLE, 
+	
+	/**
+	 * Gets called when a network grame should be started.
+	 */
+	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START
 
 }

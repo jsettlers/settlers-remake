@@ -3,7 +3,9 @@ package jsettlers.graphics.startscreen;
 import java.util.Date;
 import java.util.List;
 
-import jsettlers.common.network.INetworkConnector;
+import jsettlers.common.network.IMatch;
+import jsettlers.common.network.IMatchSettings;
+import jsettlers.common.network.INetworkableMap;
 
 /**
  * This connector provides data that is needed by the start screen.
@@ -25,6 +27,8 @@ public interface IStartScreenConnector {
 
 		int getMaxPlayers();
 
+		INetworkableMap getNetworkableMap();
+		
 		/**
 		 * Creates a loadable game. This method should return fast.
 		 * <p>
@@ -72,4 +76,18 @@ public interface IStartScreenConnector {
 	void exitGame();
 
 	INetworkConnector getNetworkConnector();
+
+	/**
+	 * Starts a new network game
+	 * 
+	 * @param gameSettings
+	 *            The settings to use for the game.
+	 */
+	void startNetworkGame(IMatchSettings gameSettings);
+
+	/**
+	 * Requests to join a network game.
+	 * @param match
+	 */
+	void joinNetworkGame(IMatch match);
 }
