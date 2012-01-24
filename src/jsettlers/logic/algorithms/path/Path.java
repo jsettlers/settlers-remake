@@ -63,4 +63,8 @@ public class Path implements Serializable {
 	public ISPosition2D getTargetPos() {
 		return path[path.length - 1];
 	}
+
+	public int getLength() {
+		return path.length;
+	}
 }

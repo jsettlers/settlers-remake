@@ -7,7 +7,7 @@ package jsettlers.logic.algorithms.landmarks;
  * @author Andreas Eberle
  * 
  */
-public interface ILandmarksThreadMap {
+public interface ILandmarksThreadGrid {
 
 	public boolean isBlocked(short x, short y);
 
@@ -16,4 +16,5 @@ public interface ILandmarksThreadMap {
 	public boolean isInBounds(short x, short y);
 
 	public void setPartitionAndPlayerAt(short x, short y, short startPartition);
+
 }

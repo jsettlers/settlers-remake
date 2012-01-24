@@ -15,12 +15,12 @@ import jsettlers.common.position.ISPosition2D;
  * 
  */
 public final class LandmarksCorrectingThread extends Thread {
-	private final ILandmarksThreadMap map;
+	private final ILandmarksThreadGrid grid;
 	private final LinkedBlockingQueue<ISPosition2D> queue = new LinkedBlockingQueue<ISPosition2D>();
 
-	public LandmarksCorrectingThread(ILandmarksThreadMap map) {
+	public LandmarksCorrectingThread(ILandmarksThreadGrid map) {
 		super("LandmarksCorrectingThread");
-		this.map = map;
+		this.grid = map;
 
 		this.setDaemon(true);
 		this.start();
@@ -52,10 +52,10 @@ public final class LandmarksCorrectingThread extends Thread {
 	}
 
 	private final void checkLandmarks(ISPosition2D startPos) {
-		if (map.isBlocked(startPos.getX(), startPos.getY()))
+		if (grid.isBlocked(startPos.getX(), startPos.getY()))
 			return;
 
-		short startPartition = map.getPartitionAt(startPos.getX(), startPos.getY());
+		short startPartition = grid.getPartitionAt(startPos.getX(), startPos.getY());
 
 		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
 		for (EDirection startDirection : allBlockedDirections) {
@@ -75,15 +75,15 @@ public final class LandmarksCorrectingThread extends Thread {
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
 			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
 
-			if (!map.isInBounds(neighborPos.getX(), neighborPos.getY())) {
+			if (!grid.isInBounds(neighborPos.getX(), neighborPos.getY())) {
 				takeOverBlockedLand(blockedBorder, startPartition);
 				break;
-			} else if (map.isBlocked(neighborPos.getX(), neighborPos.getY())) {
+			} else if (grid.isBlocked(neighborPos.getX(), neighborPos.getY())) {
 				blocked = neighborPos;
 				blockedDir = neighborDir;
 				blockedBorder.add(blocked);
 				i = 0;
-			} else if (map.getPartitionAt(neighborPos.getX(), neighborPos.getY()) == startPartition) {
+			} else if (grid.getPartitionAt(neighborPos.getX(), neighborPos.getY()) == startPartition) {
 				currBase = neighborPos;
 				blockedDir = EDirection.getDirection(currBase, blocked);
 				i = 0;
@@ -102,8 +102,8 @@ public final class LandmarksCorrectingThread extends Thread {
 		for (ISPosition2D curr : blockedBorder) {
 			short y = curr.getY();
 			for (short x = curr.getX();; x++) {
-				if (map.isBlocked(x, y)) {
-					map.setPartitionAndPlayerAt(x, y, startPartition);
+				if (grid.isBlocked(x, y)) {
+					grid.setPartitionAndPlayerAt(x, y, startPartition);
 				} else {
 					break;
 				}
@@ -117,7 +117,7 @@ public final class LandmarksCorrectingThread extends Thread {
 		for (EDirection currDir : EDirection.values()) {
 			short currX = currDir.getNextTileX(position.getX());
 			short currY = currDir.getNextTileY(position.getY());
-			if (map.isInBounds(currX, currY) && map.isBlocked(currX, currY)) {
+			if (grid.isInBounds(currX, currY) && grid.isBlocked(currX, currY)) {
 				blockedDirections.add(currDir);
 			}
 		}
