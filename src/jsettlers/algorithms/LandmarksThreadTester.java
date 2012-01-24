@@ -26,7 +26,7 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
+import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.main.swing.ResourceProvider;
 
@@ -161,7 +161,7 @@ public class LandmarksThreadTester {
 	// }
 	// }
 
-	private static class Map implements ILandmarksThreadMap, IGraphicsGrid {
+	private static class Map implements ILandmarksThreadGrid, IGraphicsGrid {
 		short[][] partitions = new short[WIDTH][HEIGHT];
 		boolean[][] blocked = new boolean[WIDTH][HEIGHT];
 
