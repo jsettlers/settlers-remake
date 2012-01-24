@@ -1,6 +1,5 @@
 package jsettlers.graphics.sound;
 
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -36,51 +35,52 @@ public class BackgroundSound implements Runnable {
 	@Override
 	public void run() {
 		try {
-		while (!stopped) {
-			waitTime(300);
-			if (stopped) {
-				break;
-			}
-			MapRectangle screen = map.getScreenArea();
-			if (screen == null) {
-				continue;
-			}
-			int line = (int) (Math.random() * screen.getLines());
-
-			int x =
-			        screen.getLineStartX(line)
-			                + (int) (Math.random() * screen.getLineLength());
-			int y = screen.getLineY(line);
-
-			if (hasTree(x, y)) {
-				if (Math.random() < .5) {
-				sound.playSound(INDEX_BIRDS1, VOLUME, VOLUME);
-				} else {
-					sound.playSound(INDEX_BIRDS2, VOLUME, VOLUME);
+			while (!stopped) {
+				waitTime(300);
+				if (stopped) {
+					break;
 				}
-				waitTime(800); // < Do not play it to often
-			} else if (hasWater(x, y)) {
-				sound.playSound(INDEX_WATER, VOLUME, VOLUME);
-				waitTime(200);
-			} else if (hasDesert(x, y)) {
-				sound.playSound(INDEX_DESERT, VOLUME, VOLUME);
-				waitTime(500);
+				MapRectangle screen = map.getScreenArea();
+				if (screen == null) {
+					continue;
+				}
+				int line = (int) (Math.random() * screen.getLines());
+
+				int x =
+				        screen.getLineStartX(line)
+				                + (int) (Math.random() * screen.getLineLength());
+				int y = screen.getLineY(line);
+
+				if (hasTree(x, y)) {
+					if (Math.random() < .5) {
+						sound.playSound(INDEX_BIRDS1, VOLUME, VOLUME);
+					} else {
+						sound.playSound(INDEX_BIRDS2, VOLUME, VOLUME);
+					}
+					waitTime(800); // < Do not play it to often
+				} else if (hasWater(x, y)) {
+					sound.playSound(INDEX_WATER, VOLUME, VOLUME);
+					waitTime(200);
+				} else if (hasDesert(x, y)) {
+					sound.playSound(INDEX_DESERT, VOLUME, VOLUME);
+					waitTime(500);
+				}
 			}
-		}
 		} catch (Throwable e) {
 			System.out.println("Sound thread died because of an exception.");
+			e.printStackTrace();
 		}
 	}
 
 	private void waitTime(int time) {
-	    synchronized (waitMutex) {
-	    	try {
-	    		waitMutex.wait(time);
-	    	} catch (InterruptedException e) {
-	    		e.printStackTrace();
-	    	}
-	    }
-    }
+		synchronized (waitMutex) {
+			try {
+				waitMutex.wait(time);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	private boolean hasDesert(int x, int y) {
 		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
@@ -95,7 +95,9 @@ public class BackgroundSound implements Runnable {
 	private boolean hasTree(int cx, int cy) {
 		for (int x = cx - 2; x <= cx + 2; x++) {
 			for (int y = cy - 2; y <= cy + 2; y++) {
-				if (map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0 && hasTreeObject(x, y)) {
+				if (map.checkMapCoordinates(x, y)
+				        && map.getVisibleStatus(x, y) != 0
+				        && hasTreeObject(x, y)) {
 					return true;
 				}
 			}
@@ -107,14 +109,15 @@ public class BackgroundSound implements Runnable {
 		IMapObject o = map.getMap().getMapObjectsAt(x, y);
 		while (o != null) {
 			EMapObjectType type = o.getObjectType();
-			if (type == EMapObjectType.TREE_ADULT || type == EMapObjectType.TREE_DEAD) {
+			if (type == EMapObjectType.TREE_ADULT
+			        || type == EMapObjectType.TREE_DEAD) {
 				return true;
 			}
 			o = o.getNextObject();
 		}
-	    return false;
-    }
-	
+		return false;
+	}
+
 	public void stop() {
 		stopped = true;
 		waitMutex.notifyAll();
