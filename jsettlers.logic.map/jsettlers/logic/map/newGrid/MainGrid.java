@@ -53,7 +53,7 @@ import jsettlers.logic.algorithms.fogofwar.IFogOfWar;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
-import jsettlers.logic.algorithms.landmarks.ILandmarksThreadMap;
+import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
@@ -331,7 +331,7 @@ public class MainGrid implements Serializable {
 
 	protected final boolean isLandscapeBlocking(short x, short y) {
 		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
-		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.SNOW;
+		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.MOORINNER || landscape == ELandscapeType.SNOW;
 	}
 
 	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -664,11 +664,10 @@ public class MainGrid implements Serializable {
 
 	}
 
-	final class LandmarksGrid implements ILandmarksThreadMap {
+	final class LandmarksGrid implements ILandmarksThreadGrid {
 		@Override
 		public final boolean isBlocked(short x, short y) {
-			ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
-			return flagsGrid.isBlocked(x, y) || landscape == ELandscapeType.WATER1 || landscape == ELandscapeType.SNOW;
+			return isLandscapeBlocking(x, y) || flagsGrid.isBlocked(x, y);
 		}
 
 		@Override
