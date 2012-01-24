@@ -76,7 +76,7 @@ public class MapEditorControls implements IControls {
 
 	@Override
 	public boolean containsPoint(UIPoint position) {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -117,7 +117,6 @@ public class MapEditorControls implements IControls {
 
 	@Override
     public Action replaceAction(Action action) {
-	    // TODO Auto-generated method stub
 	    return action;
     }
 

@@ -55,6 +55,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -269,6 +270,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				        		new PlaceBuildingTool(EBuildingType.TOWER, this),
 				        		new PlaceBuildingTool(EBuildingType.BIG_TOWER, this),
 				        		new PlaceBuildingTool(EBuildingType.CASTLE, this),
+				        		new PlaceBuildingTool(EBuildingType.WEAPONSMITH, this),
+				        		new PlaceBuildingTool(EBuildingType.DOCKYARD, this),
 				        }),
 				        new ToolBox("Sozial", new ToolNode[] {
 				        		new PlaceBuildingTool(EBuildingType.SMALL_LIVINGHOUSE, this),
@@ -661,6 +664,18 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			data.apply(delta);
 			data.resetUndoDelta();
 			dataTester.retest();
+		} else if (action instanceof SelectAction) {
+			if (tool != null) {
+				SelectAction lineAction = (SelectAction) action;
+
+				ShapeType shape = getActiveShape();
+
+				tool.start(data, shape, lineAction.getPosition());
+				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
+
+				endUseStep();
+				dataTester.retest();
+			}
 		}
 	}
 
