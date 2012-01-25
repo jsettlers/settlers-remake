@@ -4,8 +4,7 @@ import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 
@@ -17,7 +16,7 @@ import jsettlers.logic.movable.Movable;
  * @author Andreas Eberle
  * 
  */
-public class SwordsmanStrategy extends AbstractSoldierStrategy {
+public final class SwordsmanStrategy extends AbstractSoldierStrategy {
 	private static final long serialVersionUID = 4161192227960382067L;
 
 	public SwordsmanStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
@@ -25,21 +24,10 @@ public class SwordsmanStrategy extends AbstractSoldierStrategy {
 	}
 
 	@Override
-	protected short getSearchRadius() {
-		return Constants.SOWRDSMAN_SEARCH_RADIUS;
-	}
-
-	@Override
-	protected void executeHit(ISPosition2D enemyPos) {
-		EDirection enemyDir = EDirection.getDirection(super.getPos(), enemyPos);
-		super.setDirection(enemyDir);
+	public void executeHit(IHexMovable enemy) {
+		super.setDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 		super.setAction(EAction.ACTION1, 0.65f);
-		super.getGrid().getMovable(enemyPos).hit(1.0f);
-	}
-
-	@Override
-	protected boolean canHit(ISPosition2D enemyPos) {
-		return EDirection.getDirection(this.getPos(), enemyPos) != null;
+		enemy.hit(1.0f);
 	}
 
 	@Override

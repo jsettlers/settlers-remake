@@ -1,270 +1,161 @@
 package jsettlers.logic.movable.soldiers;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
-import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.GotoJob;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
+import jsettlers.logic.movable.soldiers.behaviors.ISoldierBehaviorable;
+import jsettlers.logic.movable.soldiers.behaviors.SoldierBehavior;
 
-public abstract class AbstractSoldierStrategy extends PathableStrategy implements IBuildingOccupyableMovable {
+public abstract class AbstractSoldierStrategy extends PathableStrategy implements IBuildingOccupyableMovable, ISoldierBehaviorable {
 	private static final long serialVersionUID = 9000857936712315432L;
 
 	private final EMovableType type;
 
-	private short delayCtr = Short.MAX_VALUE;
-	private ISPosition2D enemyPos;
-
-	private IOccupyableBuilding tower = null;
-	private ESoldierState state = ESoldierState.WATCHING;
+	private SoldierBehavior behavior;
 
 	protected AbstractSoldierStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
 		super(grid, movable);
 		this.type = type;
+		this.behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
 	}
 
 	@Override
-	protected void gotHitEvent() {
+	protected final void gotHitEvent() {
 		super.abortPath();
 	}
 
-	protected abstract short getSearchRadius();
-
 	protected final boolean isInTower() {
-		return state == ESoldierState.IN_TOWER;
+		return SoldierBehavior.isInTower(behavior);
 	}
 
 	@Override
-	protected boolean noActionEvent() {
+	protected final boolean noActionEvent() {
 		if (!super.noActionEvent()) {
-			switch (state) {
-			case WATCHING:
-				checkEnemies();
-				break;
-			case IN_TOWER:
-				// TODO only check outer circle and enemy positions in the area
-				findEnemyPos(Constants.TOWER_SOLDIER_SEARCH_AREA, (short) (Constants.MOVABLE_INTERRUPTS_PER_SECOND * 5));
-				if (enemyPos != null) {
-					if (canHit(enemyPos)) {
-						executeHit(enemyPos);
-					}
-				}
-
-				break;
-
-			default:
-				System.err.println("AbstractSoldierStrategy.noActionEvent(): state=" + state);
-				break;
-			}
+			calculateAction();
 		}
 		return true;
 	}
 
+	private final void calculateAction() {
+		behavior = behavior.calculate(super.getPos(), this);
+	}
+
 	@Override
-	protected boolean actionFinished() {
+	protected final boolean actionFinished() {
 		if (!super.actionFinished()) {
-			switch (state) {
-			case WATCHING:
-				checkEnemies();
-				break;
-
-			case IN_TOWER:
-				super.setDontMove(true);
-				break;
-
-			default:
-				System.out.println("AbstractSoldierStrategy.actionFinished(): state=" + state);
-				super.setAction(EAction.NO_ACTION, -1);
-				break;
-			}
+			calculateAction();
 		}
 
 		return true;
 	}
 
 	@Override
-	protected void pathFinished() {
-		switch (state) {
-		case WATCHING:
-			super.setAction(EAction.NO_ACTION, -1);
-			break;
-		case GO_TO_TOWER:
-			state = ESoldierState.IN_TOWER;
-			super.setVisible(false);
-			tower.setSoldier(this);
-			if (getSoldierType() != ESoldierType.BOWMAN) {
-				super.setSleeping(true);
-			} else {
-				super.setPos(tower.getPosition(this));
-				super.setDontMove(true);
-			}
-			break;
-		}
-	}
-
-	private void checkEnemies() {
-		findEnemyPos(getSearchRadius(), (short) (Constants.MOVABLE_INTERRUPTS_PER_SECOND * 3));
-
-		if (enemyPos != null) {
-			if (!canHit(enemyPos)) {
-				EDirection enemyDir = EDirection.getApproxDirection(super.getPos(), enemyPos);
-				if (enemyDir != null) {
-					ISPosition2D nextPos = getNextPos(enemyDir);
-
-					if (nextPos != null) {
-						super.goToTile(nextPos);
-						return;
-					}
-				}
-			} else {
-				executeHit(enemyPos);
-				return;
-			}
-		}
-		super.setAction(EAction.NO_ACTION, -1);
-	}
-
-	private void findEnemyPos(short searchRadius, short delay) {
-		if (enemyPos != null || delayCtr > delay) {
-			delayCtr = 0;
-
-			Path path = super.getGrid().getDijkstra()
-					.find(this, super.getPos().getX(), super.getPos().getY(), (short) 1, searchRadius, ESearchType.ENEMY);
-			if (path != null)
-				enemyPos = path.getTargetPos();
-			else
-				enemyPos = null;
-		} else {
-			delayCtr++;
-			enemyPos = null;
-		}
-	}
-
-	protected abstract boolean canHit(ISPosition2D enemyPos);
-
-	protected abstract void executeHit(ISPosition2D enemyPos);
-
-	/**
-	 * Calculates the next position in the given direction.<br>
-	 * If the next position is blocked, a neighbor direction will be taken.<br>
-	 * If all neighbor tiles are blocked, this method returns null.
-	 * 
-	 * @param dir
-	 * @return
-	 */
-	private ISPosition2D getNextPos(EDirection dir) {
-		ISPosition2D nextPos;
-		int ctr = 0; // to prevent endless loop
-		do {
-			nextPos = dir.getNextHexPoint(super.getPos());
-			if (super.getGrid().isBlocked(this, nextPos.getX(), nextPos.getY())) {
-				dir = dir.getNeighbor(-1);
-				nextPos = null;
-			}
-			ctr++;
-		} while (nextPos == null && ctr < 6);
-		return nextPos;
+	protected final void pathFinished() {
+		calculateAction();
 	}
 
 	@Override
-	public boolean needsPlayersGround() {
+	public final boolean needsPlayersGround() {
 		return false;
 	}
 
 	@Override
-	public EMovableType getMovableType() {
+	public final EMovableType getMovableType() {
 		return type;
 	}
 
 	@Override
-	protected boolean isGotoJobable() {
-		return state != ESoldierState.GO_TO_TOWER && state != ESoldierState.IN_TOWER;
+	protected final boolean isGotoJobable() {
+		return SoldierBehavior.isGotoJobable(behavior);
 	}
 
 	@Override
-	protected void pathRequestFailed() {
-		switch (state) {
-		case GO_TO_TOWER:
-			tower = null;
-			state = ESoldierState.WATCHING;
-			delayCtr = 0;
-			System.out.println("path request failed");
-			break;
-		}
+	protected final void pathRequestFailed() {
+		behavior.pathRequestFailed();
 	}
 
 	@Override
-	protected void pathAbortedEvent() {
-		state = ESoldierState.WATCHING;
-		tower = null;
-		delayCtr = 0;
+	protected final void pathAbortedEvent() {
+		behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
 	}
 
 	@Override
-	protected boolean isPathStopable() {
-		return state != ESoldierState.GO_TO_TOWER;
+	protected final boolean isPathStopable() {
+		return SoldierBehavior.isPathStopable(behavior);
 	}
 
 	@Override
-	public void setOccupyableBuilding(IOccupyableBuilding building) {
-		super.setGotoJob(new GotoJob(building.getDoor()));
-		this.tower = building;
-		this.state = ESoldierState.GO_TO_TOWER;
+	public final void setOccupyableBuilding(IOccupyableBuilding building) {
+		behavior = SoldierBehavior.getGoToTowerBehavior(this, building);
 	}
 
 	@Override
-	public void leaveOccupyableBuilding(ISPosition2D pos) {
+	public final void leaveOccupyableBuilding(ISPosition2D pos) {
 		this.setPos(pos);
-		this.tower = null;
-		this.state = ESoldierState.WATCHING;
-		super.setAction(EAction.NO_ACTION, -1);
 		super.setVisible(true);
+		super.setDontMove(false);
+
+		behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
 	}
 
 	@Override
-	public void setSelected(boolean selected) {
+	public final void setSelected(boolean selected) {
 		super.setSelected(selected);
 	}
 
 	@Override
 	protected final void killedEvent() {
-		if (tower != null) {
-			tower.requestFailed(getMovableType());
-		}
+		behavior.killedEvent(this.type);
 	}
 
 	@Override
 	public final boolean canOccupyBuilding() {
-		return tower == null;
+		return !isInTower();
 	}
 
 	@Override
-	protected boolean checkGoStepPrecondition() {
-		if (tower != null) {
-			return tower.isNotDestroyed();
-		} else {
-			return true;
-		}
+	protected final boolean checkGoStepPrecondition() {
+		return behavior.checkGoStepPrecondition();
 	}
 
-	/**
-	 * enum to define the states of a soldier.
-	 * 
-	 * @author Andreas Eberle
-	 * 
-	 */
-	private static enum ESoldierState {
-		GO_TO_TOWER,
-		WATCHING,
-		IN_TOWER
+	@Override
+	public final void goToTile(ISPosition2D newPos) {
+		super.goToTile(newPos);
 	}
 
+	@Override
+	public final void setGotoJob(GotoJob job) {
+		super.setGotoJob(job);
+	}
+
+	@Override
+	public final IMovableGrid getGrid() {
+		return super.getGrid();
+	}
+
+	@Override
+	public final void setAction(EAction action, float duration) {
+		super.setAction(action, duration);
+	}
+
+	@Override
+	public final void setVisible(boolean visible) {
+		super.setVisible(visible);
+	}
+
+	@Override
+	public final IBuildingOccupyableMovable getBuildingOccupier() {
+		return this;
+	}
+
+	@Override
+	public final void calculatePathTo(ISPosition2D target) {
+		super.calculatePathTo(target);
+	}
 }

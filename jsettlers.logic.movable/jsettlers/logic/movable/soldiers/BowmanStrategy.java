@@ -4,8 +4,7 @@ import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
-import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 
@@ -17,7 +16,7 @@ import jsettlers.logic.movable.Movable;
  * @author Andreas Eberle
  * 
  */
-public class BowmanStrategy extends AbstractSoldierStrategy {
+public final class BowmanStrategy extends AbstractSoldierStrategy {
 	private static final long serialVersionUID = 4101130971112016217L;
 
 	public BowmanStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
@@ -25,24 +24,12 @@ public class BowmanStrategy extends AbstractSoldierStrategy {
 	}
 
 	@Override
-	protected final short getSearchRadius() {
-		return Constants.BOWMAN_SEARCH_RADIUS;
-	}
-
-	@Override
-	protected final void executeHit(ISPosition2D enemyPos) {
+	public void executeHit(IHexMovable enemy) {
 		super.setAction(EAction.ACTION1, 0.8f);
-		EDirection dir = EDirection.getApproxDirection(super.getPos(), enemyPos);
-		if (dir != null)
-			super.setDirection(dir);
 
-		super.getGrid().getMapObjectsManager().addArrowObject(super.getGrid().getMovable(enemyPos), super.getPos(), 0.8f);
-	}
+		super.setDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 
-	@Override
-	protected final boolean canHit(ISPosition2D enemyPos) {
-		float fireRadius = super.isInTower() ? Constants.BOWMAN_FIRE_RADIUS_IN_TOWER : Constants.BOWMAN_FIRE_RADIUS;
-		return Math.hypot(super.getPos().getX() - enemyPos.getX(), super.getPos().getY() - enemyPos.getY()) <= fireRadius;
+		super.getGrid().getMapObjectsManager().addArrowObject(enemy, super.getPos(), 0.8f);
 	}
 
 	@Override

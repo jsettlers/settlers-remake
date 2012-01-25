@@ -15,4 +15,6 @@ public interface IOccupyableBuilding {
 
 	boolean isNotDestroyed();
 
+	byte getPlayer();
+
 }

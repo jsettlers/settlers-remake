@@ -150,11 +150,13 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 
 	@Override
 	public final void hit(float strength) {
-		health -= strength * 0.1f;
-		if (health <= 0) {
-			this.kill();
-		} else {
-			strategy.gotHitEvent();
+		if (health > 0) { // this is to prevent double ghosts
+			health -= strength * 0.1f;
+			if (health <= 0) {
+				this.kill();
+			} else {
+				strategy.gotHitEvent();
+			}
 		}
 	}
 

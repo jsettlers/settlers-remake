@@ -124,7 +124,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 		this.movable.goToTile(pos);
 	}
 
-	protected final void setAction(EAction action, float duration) {
+	protected void setAction(EAction action, float duration) {
 		this.movable.setAction(action, duration);
 	}
 
@@ -153,7 +153,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 		this.movable.setPos(pos);
 	}
 
-	protected final void setVisible(boolean visible) {
+	protected void setVisible(boolean visible) {
 		this.movable.setVisible(visible);
 	}
 
@@ -172,7 +172,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 		movable.setWaiting(time);
 	}
 
-	protected final IMovableGrid getGrid() {
+	protected IMovableGrid getGrid() {
 		return grid;
 	}
 
