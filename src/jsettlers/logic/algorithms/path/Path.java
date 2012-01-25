@@ -65,6 +65,6 @@ public class Path implements Serializable {
 	}
 
 	public int getLength() {
-		return path.length;
+		return path.length - 1;
 	}
 }
