@@ -13,6 +13,8 @@ import jsettlers.logic.map.newGrid.partition.manager.datastructures.Positionable
  * 
  */
 public class OfferMap extends PositionableHashMap<PartitionManager.Offer> implements ITypeAcceptor<EMaterialType> {
+	private static final long serialVersionUID = 194211819683736498L;
+
 	int[] count = new int[EMaterialType.values().length];
 
 	@Override
@@ -32,7 +34,7 @@ public class OfferMap extends PositionableHashMap<PartitionManager.Offer> implem
 	}
 
 	@Override
-    public boolean accepts(EMaterialType type) {
-	    return count[type.ordinal()] > 0;
-    }
+	public boolean accepts(EMaterialType type) {
+		return count[type.ordinal()] > 0;
+	}
 }
