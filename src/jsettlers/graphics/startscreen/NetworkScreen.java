@@ -130,4 +130,10 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 	    playerListValid = false;
     }
 
+	@Override
+    public void addChatMessage(String message) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
 }

@@ -28,6 +28,8 @@ public interface IStartScreenConnector {
 		int getMaxPlayers();
 
 		INetworkableMap getNetworkableMap();
+
+		String getDescription();
 		
 		/**
 		 * Creates a loadable game. This method should return fast.
