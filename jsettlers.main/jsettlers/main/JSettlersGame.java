@@ -70,8 +70,8 @@ public class JSettlersGame {
 
 			RandomSingleton.load(randomSheed);
 
-			Timer100Milli.start();
 			NetworkTimer.get().setPausing(true);
+			Timer100Milli.start();
 
 			progress.setProgressState(EProgressState.LOADING_MAP);
 
