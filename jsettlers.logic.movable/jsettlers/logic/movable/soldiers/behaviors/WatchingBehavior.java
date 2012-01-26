@@ -18,10 +18,6 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 
 	WatchingBehavior(ISoldierBehaviorable soldier) {
 		super(soldier);
-		initActions();
-	}
-
-	protected void initActions() {
 		super.setAction(EAction.NO_ACTION, -1);
 	}
 

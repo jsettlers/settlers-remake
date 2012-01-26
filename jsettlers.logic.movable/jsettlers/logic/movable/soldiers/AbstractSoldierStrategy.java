@@ -23,6 +23,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 		super(grid, movable);
 		this.type = type;
 		this.behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
+		super.setAction(EAction.NO_ACTION, -1);
 	}
 
 	@Override
@@ -132,6 +133,11 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	@Override
 	public final void setGotoJob(GotoJob job) {
 		super.setGotoJob(job);
+	}
+
+	@Override
+	protected void executingGotoJobAction() {
+		this.behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
 	}
 
 	@Override

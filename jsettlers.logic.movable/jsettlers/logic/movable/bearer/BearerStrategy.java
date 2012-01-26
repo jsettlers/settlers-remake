@@ -197,6 +197,10 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 		if (requester != null) {
 			requester.requestFailed();
 		}
+		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
+			super.getGrid().pushMaterial(super.getPos(), super.getMaterial(), true);
+			super.setMaterial(EMaterialType.NO_MATERIAL);
+		}
 	}
 
 	@Override
