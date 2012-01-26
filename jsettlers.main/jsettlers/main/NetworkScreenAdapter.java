@@ -55,4 +55,16 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	public void setStartAllowed(boolean startAllowed) {
 	}
 
+	@Override
+    public void sendChatMessage(String message) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	@Override
+    public void startGame() {
+	    // TODO Auto-generated method stub
+	    
+    }
+
 }

@@ -222,4 +222,13 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
     public INetworkableMap getNetworkableMap() {
 	    return this;
     }
+
+	@Override
+    public String getDescription() {
+	    try {
+	        return getFileHeader().getDescription();
+        } catch (MapLoadException e) {
+	        return "";
+        }
+    }
 }
