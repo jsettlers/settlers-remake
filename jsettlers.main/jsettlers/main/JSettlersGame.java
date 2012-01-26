@@ -44,13 +44,11 @@ public class JSettlersGame {
 	 *            The name of the random map and some settings
 	 */
 	@Deprecated
-	public JSettlersGame(ISettlersGameDisplay content, IMapDataProvider map,
-	        long randomSheed) {
+	public JSettlersGame(ISettlersGameDisplay content, IMapDataProvider map, long randomSheed) {
 		this(content, new MapDataMapCreator(map), randomSheed);
 	}
 
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map,
-	        long randomSheed) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed) {
 		this.content = content;
 		this.mapcreator = map;
 		this.randomSheed = randomSheed;
@@ -113,10 +111,8 @@ public class JSettlersGame {
 
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
-			final MapInterfaceConnector connector =
-			        content.showGameMap(grid.getGraphicsGrid(), null);
-			new GuiInterface(connector, manager, grid.getGuiInputGrid(),
-			        (byte) 0);
+			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
+			new GuiInterface(connector, manager, grid.getGuiInputGrid(), (byte) 0);
 
 			connector.addListener(this);
 			connector.loadUIState(uiState);
@@ -151,8 +147,6 @@ public class JSettlersGame {
 				}
 			}
 
-			// TODO: do this
-			manager.close();
 			listener.gameEnded();
 		}
 
@@ -191,8 +185,7 @@ public class JSettlersGame {
 
 	public void setPaused(boolean b) {
 		if (gameConnector != null) {
-			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE
-			        : EActionType.SPEED_UNSET_PAUSE));
+			gameConnector.fireAction(new Action(b ? EActionType.SPEED_SET_PAUSE : EActionType.SPEED_UNSET_PAUSE));
 		}
 	}
 
