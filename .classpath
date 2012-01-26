@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.android"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
+	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
