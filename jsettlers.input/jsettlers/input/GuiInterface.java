@@ -43,7 +43,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IDebugable;
 import jsettlers.logic.movable.IIDable;
-import network.INetworkManager;
+import network.NetworkManager;
 import synchronic.timer.NetworkTimer;
 
 /**
@@ -55,7 +55,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private final MapInterfaceConnector connector;
 
-	private final INetworkManager manager;
+	private final NetworkManager manager;
 	private final IGuiInputGrid grid;
 	private final byte player;
 	/**
@@ -65,7 +65,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private EBuildingType previewBuilding;
 	private ISelectionSet currentSelection = new EmptySelection();
 
-	public GuiInterface(MapInterfaceConnector connector, INetworkManager manager, IGuiInputGrid grid, byte player) {
+	public GuiInterface(MapInterfaceConnector connector, NetworkManager manager, IGuiInputGrid grid, byte player) {
 		this.connector = connector;
 		this.manager = manager;
 		this.grid = grid;

@@ -14,8 +14,7 @@ import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.timer.Timer100Milli;
-import network.INetworkManager;
-import network.NullNetworkManager;
+import network.NetworkManager;
 import random.RandomSingleton;
 import synchronic.timer.NetworkTimer;
 
@@ -65,7 +64,7 @@ public class JSettlersGame {
 
 		@Override
 		public void run() {
-			INetworkManager manager = new NullNetworkManager();
+			NetworkManager manager = new NetworkManager();
 
 			ProgressConnector progress = content.showProgress();
 
