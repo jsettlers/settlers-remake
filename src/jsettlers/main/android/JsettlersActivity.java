@@ -7,7 +7,6 @@ import go.graphics.region.Region;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
@@ -19,10 +18,8 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.graphics.startscreen.GameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.ManagedJSettlers;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -34,13 +31,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 
 public class JsettlersActivity extends Activity implements ISettlersGameDisplay {
 
@@ -316,21 +311,19 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
 			setContentView(R.layout.maplist);
-
-			List<? extends IMapItem> maps = displayedStartScreen.getMaps();
-			ListView list = (ListView) findViewById(R.id.maplist);
-			list.setAdapter(new MapListAdapter(this, maps));
-			list.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-				        int itemid, long arg3) {
-					MapListAdapter adapter = (MapListAdapter) arg0.getAdapter();
-					displayedStartScreen.startNewGame(
-					        new GameSettings(adapter.get(itemid), 3));
-				}
-			});
+			View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+			new MapList(root, displayedStartScreen, false);
 		}
 	}
+	
+	public void startNetworkGameButtonClicked(@SuppressWarnings("unused") View target) {
+		if (displayedStartScreen != null) {
+			setContentView(R.layout.maplist);
+			View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+			new MapList(root, displayedStartScreen, true);
+		}
+	}
+
 
 	/**
 	 * Onclick listener
@@ -440,7 +433,8 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	@Override
     public void showNetworkScreen(INetworkScreenAdapter networkScreen) {
-	    // TODO Auto-generated method stub
-	    
+	    setContentView(R.layout.networkinit);
+		View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+	    new NetworkView(root, networkScreen);
     }
 }

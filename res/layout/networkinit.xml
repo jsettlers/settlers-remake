@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <ListView
+            android:id="@+id/network_playerlist"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+        </ListView>
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/network_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1" >
+            </ListView>
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/network_chatmessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
+
+                    <requestFocus />
+                </EditText>
+
+                <Button
+                    android:id="@+id/network_sendchat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/network_allowstart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/accept_start" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/network_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button" />
+    </LinearLayout>
+
+</LinearLayout>
