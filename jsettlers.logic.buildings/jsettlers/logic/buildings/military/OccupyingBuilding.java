@@ -22,6 +22,7 @@ import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContin
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import random.RandomSingleton;
 
 /**
  * Tower building.
@@ -41,7 +42,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
 
 	private DijkstraContinuableRequest request;
-	private byte delayCtr = 0;
+	private byte delayCtr;
 
 	private boolean occupiedArea;
 
@@ -59,6 +60,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		allOccupyingBuildings.add(this);
+
+		delayCtr = (byte) RandomSingleton.getInt(0, 3);
 	}
 
 	@Override

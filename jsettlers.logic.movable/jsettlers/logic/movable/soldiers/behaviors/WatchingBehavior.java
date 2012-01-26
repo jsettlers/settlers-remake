@@ -7,6 +7,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
+import random.RandomSingleton;
 
 /**
  * 
@@ -19,13 +20,15 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 	WatchingBehavior(ISoldierBehaviorable soldier) {
 		super(soldier);
 		super.setAction(EAction.NO_ACTION, -1);
+
+		this.delayCtr = RandomSingleton.getInt(0, DELAY / 2);
 	}
 
 	static final int DELAY = Constants.MOVABLE_INTERRUPTS_PER_SECOND * 3;
-	private static final short SEARCH_RADIUS = 25;
+	private static final short SEARCH_RADIUS = 15;
 	private static final int BOWMAN_FIRE_RADIUS = 18;
 
-	private int delayCtr = 0;
+	private int delayCtr;
 	private boolean enemyFoundLastTime = false;
 
 	@Override
