@@ -1,4 +1,4 @@
-package jsettlers.main;
+package jsettlers.main.network;
 
 /**
  * A task to connect to a network game.

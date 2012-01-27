@@ -1,4 +1,4 @@
-package jsettlers.logic.network;
+package jsettlers.main.network;
 
 import jsettlers.common.network.IMatch;
 

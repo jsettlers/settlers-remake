@@ -1,13 +1,13 @@
-package jsettlers.main;
+package jsettlers.main.network;
 
 import java.io.File;
+import java.io.Serializable;
 
 import jsettlers.common.network.IMatch;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.main.NetworkStarter.INetworkStartListener;
+import jsettlers.main.network.NetworkStarter.INetworkStartListener;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
-import jsettlers.network.client.INetworkableObject;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.response.MatchesInfoList;
@@ -17,8 +17,7 @@ public class NetworkJoiner implements NetworkConnectTask {
 	private final IMatch match;
 	private final INetworkStartListener listener;
 
-	public NetworkJoiner(String serverAddress, IMatch match,
-	        INetworkStartListener listener) {
+	public NetworkJoiner(String serverAddress, IMatch match, INetworkStartListener listener) {
 		this.serverAddress = serverAddress;
 		this.match = match;
 		this.listener = listener;
@@ -36,8 +35,7 @@ public class NetworkJoiner implements NetworkConnectTask {
 		@Override
 		public void run() {
 			try {
-				ClientThread clientThread =
-				        new ClientThread(serverAddress, this);
+				ClientThread clientThread = new ClientThread(serverAddress, this);
 				clientThread.start();
 				clientThread.joinMatch(match.getMatchID());
 
@@ -60,8 +58,7 @@ public class NetworkJoiner implements NetworkConnectTask {
 		}
 
 		@Override
-		public void joinedMatchEvent(
-		        MatchDescription matchDescription) {
+		public void joinedMatchEvent(MatchDescription matchDescription) {
 			started = true;
 			this.matchDescription = matchDescription;
 			synchronized (waitForStartMutex) {
@@ -76,8 +73,7 @@ public class NetworkJoiner implements NetworkConnectTask {
 		}
 
 		@Override
-		public void receivedProxiedObjectEvent(String sender,
-		        INetworkableObject proxiedObject) {
+		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
 			// TODO Auto-generated method stub
 
 		}
@@ -110,8 +106,7 @@ public class NetworkJoiner implements NetworkConnectTask {
 		listener.networkGameStartFailed(this);
 	}
 
-	protected void notifyStartSucceeded(ClientThread thread,
-	        MatchDescription match) {
+	protected void notifyStartSucceeded(ClientThread thread, MatchDescription match) {
 		listener.networkGameStarted(this, thread, match);
 	}
 

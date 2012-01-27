@@ -26,7 +26,7 @@ CR-021 [ ]                  --       add a priority for the buildings, in which 
 CR-022 [x] ~rev 780    ae   --       Make buildings destructable
 CR-023 [x]  rev 724    ae   --       Do not dig on mountains (mine construction)
 CR-024 [x]  rev 723    ae   --       When people that can walk on foreign ground are pushed away by a protected tile, they should search the nearest free tile, not the nearest one with the players ground.
-CR-025 [ ]                  --       Make fog of war consume less CPU
+CR-025 [ ]  rev 822    ae   --       Make fog of war consume less CPU
 CR-026 [ ]                  --       Some Workers (e.g. Lumberjack) go crazy when they are cut of their house. Recheck all fail jobs.
 CR-027 [x]  rev 719    ae   --       bricklayer walks to buildings that are already constructed (gets the job after the building has been constructed
 CR-028 [x]  rev 722    ae   --       Move fog of war to logic and algorithms

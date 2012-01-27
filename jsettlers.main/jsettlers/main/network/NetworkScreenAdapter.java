@@ -1,9 +1,10 @@
-package jsettlers.main;
+package jsettlers.main.network;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.graphics.INetworkScreenAdapter;
+import jsettlers.main.ManagedJSettlers;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.server.match.MatchDescription;
 

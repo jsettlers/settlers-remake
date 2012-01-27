@@ -1,7 +1,8 @@
-package jsettlers.main;
+package jsettlers.main.network;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,10 +10,8 @@ import java.util.List;
 import jsettlers.common.network.IMatch;
 import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.network.NetworkMatch;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
-import jsettlers.network.client.INetworkableObject;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.Match;
 import jsettlers.network.server.match.MatchDescription;
@@ -20,13 +19,13 @@ import jsettlers.network.server.response.MatchesInfoList;
 
 /**
  * This is the list of matches for the start screen.
+ * 
  * @author michael
- *
+ * 
  */
 public class NetworkConnector implements INetworkConnector {
 
-	private static final List<IMatch> NULL_LIST = Arrays
-	        .asList(new IMatch[] {});
+	private static final List<IMatch> NULL_LIST = Arrays.asList(new IMatch[] {});
 	private INetworkListener listener;
 	private String address = "";
 	private List<IMatch> matches = NULL_LIST;
@@ -42,10 +41,10 @@ public class NetworkConnector implements INetworkConnector {
 	}
 
 	private void notifyMatchListChanged() {
-	    if (listener != null) {
+		if (listener != null) {
 			listener.matchListChanged(this);
 		}
-    }
+	}
 
 	private void reconnect() {
 		if (currentSender != null) {
@@ -69,12 +68,12 @@ public class NetworkConnector implements INetworkConnector {
 	public synchronized List<IMatch> getMatches() {
 		return matches;
 	}
-	
+
 	protected synchronized void setMatchList(ServerSender from, List<IMatch> list) {
 		if (from == currentSender) {
 			this.matches = list;
 			notifyMatchListChanged();
-		}	
+		}
 	}
 
 	private class ServerSender implements IClientThreadListener, Runnable {
@@ -85,11 +84,10 @@ public class NetworkConnector implements INetworkConnector {
 		public ServerSender(String address) {
 			address2 = address;
 		}
-		
 
 		public void disconnect() {
 			clientThread.cancelConnection();
-			disconnected  = true;
+			disconnected = true;
 		}
 
 		@Override
@@ -102,8 +100,7 @@ public class NetworkConnector implements INetworkConnector {
 
 		@Override
 		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
-			ArrayList<IMatch> matches =
-			        new ArrayList<IMatch>();
+			ArrayList<IMatch> matches = new ArrayList<IMatch>();
 			for (Match m : matchesList.getMatches()) {
 				matches.add(new NetworkMatch(m.getMatchId(), m.getDescription().getMatchName(), m.getDescription().getMapId(), m.getDescription()
 						.getMaxPlayers()));
@@ -112,8 +109,7 @@ public class NetworkConnector implements INetworkConnector {
 		}
 
 		@Override
-		public void receivedProxiedObjectEvent(String sender,
-		        INetworkableObject proxiedObject) {
+		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
 		}
 
 		@Override
@@ -134,22 +130,22 @@ public class NetworkConnector implements INetworkConnector {
 		}
 
 		@Override
-        public void run() {
+		public void run() {
 			try {
 				clientThread = new ClientThread(address2, this);
 				clientThread.start();
 				while (!disconnected) {
 					clientThread.requestMatchesList();
 					try {
-	                    Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                    }
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				//TODO: sent connection error
+				// TODO: sent connection error
 			}
-        }
+		}
 	}
 
 }

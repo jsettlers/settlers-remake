@@ -9,7 +9,11 @@ import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.JSettlersGame.Listener;
-import jsettlers.main.NetworkStarter.INetworkStartListener;
+import jsettlers.main.network.NetworkConnectTask;
+import jsettlers.main.network.NetworkJoiner;
+import jsettlers.main.network.NetworkScreenAdapter;
+import jsettlers.main.network.NetworkStarter;
+import jsettlers.main.network.NetworkStarter.INetworkStartListener;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.server.match.MatchDescription;
 

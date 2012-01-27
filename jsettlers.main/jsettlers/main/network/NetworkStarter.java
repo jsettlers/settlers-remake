@@ -1,13 +1,13 @@
-package jsettlers.main;
+package jsettlers.main.network;
 
 import java.io.File;
+import java.io.Serializable;
 
 import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
-import jsettlers.network.client.INetworkableObject;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.response.MatchesInfoList;
@@ -26,8 +26,7 @@ public class NetworkStarter implements NetworkConnectTask {
 	private ProgressConnector progress;
 	private final String server;
 
-	public NetworkStarter(String server, IMatchSettings gameSettings,
-	        INetworkStartListener notify) {
+	public NetworkStarter(String server, IMatchSettings gameSettings, INetworkStartListener notify) {
 		this.server = server;
 		this.gameSettings = gameSettings;
 		this.notify = notify;
@@ -43,12 +42,12 @@ public class NetworkStarter implements NetworkConnectTask {
 		new Thread(new StartNetworkTask(), "network game starter").start();
 	}
 
+	@Override
 	public void cancel() {
 		// TODO: allow to cancel connection
 	}
 
-	private final class StartNetworkTask implements Runnable,
-	        IClientThreadListener {
+	private final class StartNetworkTask implements Runnable, IClientThreadListener {
 		private final Object waitForStartMutex = new Object();
 		private boolean started = false;
 		private MatchDescription match;
@@ -58,10 +57,8 @@ public class NetworkStarter implements NetworkConnectTask {
 			try {
 				ClientThread clientThread = new ClientThread(server, this);
 				clientThread.start();
-				MatchDescription matchDescription =
-				        new MatchDescription(gameSettings);
-				clientThread.startNewMatch(matchDescription, gameSettings
-				        .getMap().getFile());
+				MatchDescription matchDescription = new MatchDescription(gameSettings);
+				clientThread.startNewMatch(matchDescription, gameSettings.getMap().getFile());
 
 				synchronized (waitForStartMutex) {
 					while (!started) {
@@ -94,8 +91,7 @@ public class NetworkStarter implements NetworkConnectTask {
 		}
 
 		@Override
-		public void receivedProxiedObjectEvent(String sender,
-		        INetworkableObject proxiedObject) {
+		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
 		}
 
 		@Override
@@ -125,8 +121,7 @@ public class NetworkStarter implements NetworkConnectTask {
 	}
 
 	public interface INetworkStartListener {
-		void networkGameStarted(NetworkConnectTask starter,
-		        ClientThread clientThread, MatchDescription description);
+		void networkGameStarted(NetworkConnectTask starter, ClientThread clientThread, MatchDescription description);
 
 		void networkGameStartFailed(NetworkConnectTask networkJoiner);
 	}
