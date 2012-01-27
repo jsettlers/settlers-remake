@@ -61,7 +61,7 @@ public class MapList {
 	private synchronized void addFileToList(File file) {
 		try {
 			MapLoader loader = new MapLoader(file);
-			MapType type = loader.getFileHeader().getType();
+			MapType type = loader.getFileHeader().getType(); 
 			if (type == MapType.SAVED_SINGLE) {
 				savedMaps.add(loader);
 			} else {
