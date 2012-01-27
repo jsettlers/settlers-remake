@@ -2,7 +2,9 @@ package jsettlers.main;
 
 import jsettlers.common.network.IMatch;
 import jsettlers.common.network.IMatchSettings;
+import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.graphics.ISettlersGameDisplay;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
@@ -23,11 +25,13 @@ import jsettlers.network.server.match.MatchDescription;
  * 
  * @author michael
  */
-public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartListener, INetworkStartScreenEndListener {
+public class ManagedJSettlers implements Listener, IGameStarter,
+        INetworkStartListener, INetworkStartScreenEndListener {
 
 	private ISettlersGameDisplay content;
 	private JSettlersGame ongoingGame;
 	private INetworkConnectTask networkConnectTask;
+	private NetworkScreenAdapter networkScreen;
 
 	public synchronized void start(ISettlersGameDisplay content) {
 		this.content = content;
@@ -44,6 +48,7 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 
 		IMapItem map = game.getMap();
 		if (map instanceof IGameCreator) {
+			// TODO: pass on player count
 			IGameCreator creator = (IGameCreator) map;
 			ongoingGame = new JSettlersGame(content, creator, 123456L);
 			ongoingGame.setListener(ManagedJSettlers.this);
@@ -70,10 +75,17 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 		}
 
 		// TODO: stop main screen
-		if (networkConnectTask != null) {
-			networkConnectTask.cancel();
+		INetworkConnectTask oldTask = networkConnectTask;
+		if (oldTask != null) {
+			networkConnectTask = null;
+			oldTask.cancel();
 		}
-		networkConnectTask = null;
+
+		NetworkScreenAdapter oldScreen = networkScreen;
+		if (oldScreen != null) {
+			networkScreen = null;
+			oldScreen.cancel();
+		}
 	}
 
 	/**
@@ -87,7 +99,8 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 	}
 
 	/**
-	 * Sets the pause status of the ongoing game. Does noting if there is no game.
+	 * Sets the pause status of the ongoing game. Does noting if there is no
+	 * game.
 	 * 
 	 * @param b
 	 */
@@ -115,10 +128,12 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 	}
 
 	@Override
-	public synchronized void startNetworkGame(String server, IMatchSettings gameSettings) {
+	public synchronized void startNetworkGame(String server,
+	        IMatchSettings gameSettings) {
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.STARTING_SERVER);
-		NetworkMatchOpener starter = new NetworkMatchOpener(server, gameSettings, this);
+		NetworkMatchOpener starter =
+		        new NetworkMatchOpener(server, gameSettings, this);
 		starter.start(connector);
 		networkConnectTask = starter;
 	}
@@ -127,18 +142,28 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 	public void networkMatchJoinFailed(INetworkConnectTask starter) {
 		if (starter == networkConnectTask) {
 			networkConnectTask = null;
+			// TODO: add stirng to the file.
+			showError(Labels.getString("could not start network"));
 			showMainScreen();
 		}
 	}
 
+	private void showError(String string) {
+		System.out.println("Error: " + string);
+		content.showErrorMessage(string);
+	}
+
 	@Override
-	public void networkMatchJoined(INetworkConnectTask starter, ClientThread clientThread, MatchDescription description) {
+	public void networkMatchJoined(INetworkConnectTask starter,
+	        ClientThread clientThread, MatchDescription description) {
 		if (starter == networkConnectTask) {
 			networkConnectTask = null;
-			System.out.println("now the network game screen should be displayed.");
+			System.out
+			        .println("now the network game screen should be displayed.");
 
-			NetworkScreenAdapter networkScreen = new NetworkScreenAdapter(clientThread, description);
+			networkScreen = new NetworkScreenAdapter(clientThread, description);
 			content.showNetworkScreen(networkScreen);
+			networkScreen.setEndListener(this);
 		}
 	}
 
@@ -146,20 +171,28 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 	public void joinNetworkGame(String serverAddress, IMatch match) {
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.JOINING_GAME);
-		NetworkMatchJoiner joiner = new NetworkMatchJoiner(serverAddress, match, this);
+		NetworkMatchJoiner joiner =
+		        new NetworkMatchJoiner(serverAddress, match, this);
 		joiner.start();
 		networkConnectTask = joiner;
 	}
 
 	@Override
-	public void leftMatch() {
-		showMainScreen();
+	public void leftMatch(INetworkScreenAdapter networkScreenAdapter) {
+		if (networkScreen == networkScreenAdapter) {
+			showMainScreen();
+		}
 	}
 
 	@Override
-	public void networkMatchStarting() {
-		// TODO Auto-generated method stub
-
+	public void networkMatchStarting(
+	        INetworkScreenAdapter networkScreenAdapter, ClientThread client) {
+		if (networkScreen == networkScreenAdapter) {
+			networkScreen = null;
+			// TODO @andreas: ongoingGame = // new game with network client
+			// ongoingGame.setListener(ManagedJSettlers.this);
+			// ongoingGame.start();
+		}
 	}
 
 }
