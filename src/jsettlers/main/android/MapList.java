@@ -52,7 +52,6 @@ public class MapList {
 
 		startButton = (Button) mainView.findViewById(R.id.maplist_startbutton);
 		startButton.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				tryStartGame();
@@ -70,6 +69,19 @@ public class MapList {
 			name.setText(iMapItem.getName());
 			description.setText(iMapItem.getDescription());
 			startButton.setEnabled(true);
+
+			int players;
+			try {
+				players = Integer.parseInt(playerField.getText().toString());
+			}catch (NumberFormatException e) {
+				players = 0;
+			}
+			if (players < selectedMap.getMinPlayers()) {
+				playerField.setText(selectedMap.getMinPlayers() + "");
+			} else if (players > selectedMap.getMaxPlayers()) {
+				playerField.setText(selectedMap.getMaxPlayers() + "");
+			}
+			
 		} else {
 			name.setText("");
 			description.setText("");

@@ -36,6 +36,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 public class JsettlersActivity extends Activity implements ISettlersGameDisplay {
 
@@ -436,5 +437,16 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	    setContentView(R.layout.networkinit);
 		View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
 	    new NetworkView(root, networkScreen);
+    }
+
+	@Override
+    public void showErrorMessage(final String string) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+			    Toast t = Toast.makeText(JsettlersActivity.this, string, Toast.LENGTH_LONG);
+			    t.show();
+			}
+		});
     }
 }
