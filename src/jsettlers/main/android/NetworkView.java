@@ -25,33 +25,33 @@ public class NetworkView implements INetworkScreenListener {
 		networkScreen.setListener(this);
 		playerList = new PlayerList(root.getContext(), networkScreen);
 		chatAdapter = new ChatAdapter(root.getContext());
-		
-	    ListView playerListView = (ListView) root.findViewById(R.id.network_playerlist);
-	    playerListView.setAdapter(playerList);
-	    
-	    ListView chatListView = (ListView) root.findViewById(R.id.network_chat);
-	    chatListView.setAdapter(chatAdapter);
-	    
-	    chatTextField = (EditText) root.findViewById(R.id.network_chatmessage);
-	    Button chatButton = (Button) root.findViewById(R.id.network_sendchat);
-	    chatButton.setOnClickListener(new OnClickListener() {
+
+		ListView playerListView = (ListView) root.findViewById(R.id.network_playerlist);
+		playerListView.setAdapter(playerList);
+
+		ListView chatListView = (ListView) root.findViewById(R.id.network_chat);
+		chatListView.setAdapter(chatAdapter);
+
+		chatTextField = (EditText) root.findViewById(R.id.network_chatmessage);
+		Button chatButton = (Button) root.findViewById(R.id.network_sendchat);
+		chatButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sendChatMessage();
 			}
 		});
-	    
-	    acceptButton = (CheckBox) root.findViewById(R.id.network_allowstart);
-	    acceptButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+		acceptButton = (CheckBox) root.findViewById(R.id.network_allowstart);
+		acceptButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				NetworkView.this.networkScreen.setStartAllowed(isChecked);
+				NetworkView.this.networkScreen.setReady(isChecked);
 			}
 		});
-	    
-	    startButton = (Button) root.findViewById(R.id.network_start);
-	    startButton.setOnClickListener(new OnClickListener() {
-			
+
+		startButton = (Button) root.findViewById(R.id.network_start);
+		startButton.setOnClickListener(new OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
 				networkScreen.startGame();
@@ -59,20 +59,22 @@ public class NetworkView implements INetworkScreenListener {
 		});
 	}
 
-    protected void sendChatMessage() {
-	    String message = chatTextField.getText().toString();
-	    if (!message.isEmpty()) {
-	    	networkScreen.sendChatMessage(message);
-	    	
-	    	chatTextField.setText("");
-	    }
-    }
+	protected void sendChatMessage() {
+		String message = chatTextField.getText().toString();
+		if (!message.isEmpty()) {
+			networkScreen.sendChatMessage(message);
 
+			chatTextField.setText("");
+		}
+	}
+
+	@Override
 	public void playerListChanged() {
-	    playerList.changed();
-    }
+		playerList.changed();
+	}
 
-    public void addChatMessage(String message) {
-	    chatAdapter.addChatMessage(message);
-    }
+	@Override
+	public void addChatMessage(String message) {
+		chatAdapter.addChatMessage(message);
+	}
 }
