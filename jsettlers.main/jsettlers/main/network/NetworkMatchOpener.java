@@ -13,20 +13,20 @@ import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.response.MatchesInfoList;
 
 /**
- * A helper class for jsettlers to start the network.
+ * A helper class for jsettlers to open a network match.
  * <p>
  * it is capable to start a new server.
  * 
  * @author michael
  */
-public class NetworkStarter implements NetworkConnectTask {
+public class NetworkMatchOpener implements INetworkConnectTask {
 
 	private final INetworkStartListener notify;
 	private final IMatchSettings gameSettings;
 	private ProgressConnector progress;
 	private final String server;
 
-	public NetworkStarter(String server, IMatchSettings gameSettings, INetworkStartListener notify) {
+	public NetworkMatchOpener(String server, IMatchSettings gameSettings, INetworkStartListener notify) {
 		this.server = server;
 		this.gameSettings = gameSettings;
 		this.notify = notify;
@@ -113,16 +113,16 @@ public class NetworkStarter implements NetworkConnectTask {
 	}
 
 	protected void notifyStartFailed() {
-		notify.networkGameStartFailed(this);
+		notify.networkMatchJoinFailed(this);
 	}
 
 	protected void notifyStartSucceeded(ClientThread thread, MatchDescription match) {
-		notify.networkGameStarted(this, thread, match);
+		notify.networkMatchJoined(this, thread, match);
 	}
 
 	public interface INetworkStartListener {
-		void networkGameStarted(NetworkConnectTask starter, ClientThread clientThread, MatchDescription description);
+		void networkMatchJoined(INetworkConnectTask starter, ClientThread clientThread, MatchDescription description);
 
-		void networkGameStartFailed(NetworkConnectTask networkJoiner);
+		void networkMatchJoinFailed(INetworkConnectTask networkJoiner);
 	}
 }

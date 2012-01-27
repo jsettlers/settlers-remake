@@ -18,7 +18,7 @@ import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.response.MatchesInfoList;
 
 /**
- * This is the list of matches for the start screen.
+ * This class retrieves the list of matches for the start screen.
  * 
  * @author michael
  * 
@@ -78,11 +78,11 @@ public class NetworkConnector implements INetworkConnector {
 
 	private class ServerSender implements IClientThreadListener, Runnable {
 		private ClientThread clientThread;
-		private final String address2;
+		private final String address;
 		private boolean disconnected = false;
 
 		public ServerSender(String address) {
-			address2 = address;
+			this.address = address;
 		}
 
 		public void disconnect() {
@@ -132,7 +132,7 @@ public class NetworkConnector implements INetworkConnector {
 		@Override
 		public void run() {
 			try {
-				clientThread = new ClientThread(address2, this);
+				clientThread = new ClientThread(address, this);
 				clientThread.start();
 				while (!disconnected) {
 					clientThread.requestMatchesList();

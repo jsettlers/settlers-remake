@@ -19,8 +19,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	private final ClientThread clientThread;
 	private final MatchDescription description;
 
-	public NetworkScreenAdapter(ClientThread clientThread,
-	        MatchDescription description) {
+	public NetworkScreenAdapter(ClientThread clientThread, MatchDescription description) {
 		this.clientThread = clientThread;
 		this.description = description;
 	}
@@ -44,28 +43,34 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 
 		public NetworkPlayer(int i) {
 			name = "player " + i;
-        }
+		}
 
 		@Override
-        public String getPlayerName() {
-	        return name;
-        }
-	}
-	
-	@Override
-	public void setStartAllowed(boolean startAllowed) {
+		public String getPlayerName() {
+			return name;
+		}
+
+		@Override
+		public boolean isReady() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 
 	@Override
-    public void sendChatMessage(String message) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void setReady(boolean ready) {
+	}
 
 	@Override
-    public void startGame() {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void sendChatMessage(String message) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void startGame() {
+		// TODO Auto-generated method stub
+
+	}
 
 }

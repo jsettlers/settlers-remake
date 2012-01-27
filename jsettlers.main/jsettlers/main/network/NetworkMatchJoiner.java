@@ -5,19 +5,19 @@ import java.io.Serializable;
 
 import jsettlers.common.network.IMatch;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.main.network.NetworkStarter.INetworkStartListener;
+import jsettlers.main.network.NetworkMatchOpener.INetworkStartListener;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.response.MatchesInfoList;
 
-public class NetworkJoiner implements NetworkConnectTask {
+public class NetworkMatchJoiner implements INetworkConnectTask {
 	private final String serverAddress;
 	private final IMatch match;
 	private final INetworkStartListener listener;
 
-	public NetworkJoiner(String serverAddress, IMatch match, INetworkStartListener listener) {
+	public NetworkMatchJoiner(String serverAddress, IMatch match, INetworkStartListener listener) {
 		this.serverAddress = serverAddress;
 		this.match = match;
 		this.listener = listener;
@@ -44,10 +44,10 @@ public class NetworkJoiner implements NetworkConnectTask {
 						waitForStartMutex.wait();
 					}
 				}
-				notifyStartSucceeded(clientThread, matchDescription);
+				notifyJoinSucceeded(clientThread, matchDescription);
 			} catch (Throwable t) {
 				t.printStackTrace();
-				notifyStartFailed();
+				notifyJoindFailed();
 			}
 		}
 
@@ -102,12 +102,12 @@ public class NetworkJoiner implements NetworkConnectTask {
 		}
 	}
 
-	protected void notifyStartFailed() {
-		listener.networkGameStartFailed(this);
+	protected void notifyJoindFailed() {
+		listener.networkMatchJoinFailed(this);
 	}
 
-	protected void notifyStartSucceeded(ClientThread thread, MatchDescription match) {
-		listener.networkGameStarted(this, thread, match);
+	protected void notifyJoinSucceeded(ClientThread thread, MatchDescription match) {
+		listener.networkMatchJoined(this, thread, match);
 	}
 
 	@Override

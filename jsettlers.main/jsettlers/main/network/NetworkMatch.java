@@ -2,6 +2,12 @@ package jsettlers.main.network;
 
 import jsettlers.common.network.IMatch;
 
+/**
+ * This is a implementation of {@link IMatch}.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class NetworkMatch implements IMatch {
 
 	private final String matchID;
@@ -14,7 +20,6 @@ public class NetworkMatch implements IMatch {
 		this.matchName = matchName;
 		this.mapID = mapID;
 		this.maxPlayers = maxPlayers;
-
 	}
 
 	@Override

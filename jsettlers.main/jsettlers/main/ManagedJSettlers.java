@@ -9,11 +9,12 @@ import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.main.JSettlersGame.Listener;
-import jsettlers.main.network.NetworkConnectTask;
-import jsettlers.main.network.NetworkJoiner;
+import jsettlers.main.network.INetworkConnectTask;
+import jsettlers.main.network.INetworkStartScreenEndListener;
+import jsettlers.main.network.NetworkMatchJoiner;
+import jsettlers.main.network.NetworkMatchOpener;
+import jsettlers.main.network.NetworkMatchOpener.INetworkStartListener;
 import jsettlers.main.network.NetworkScreenAdapter;
-import jsettlers.main.network.NetworkStarter;
-import jsettlers.main.network.NetworkStarter.INetworkStartListener;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.server.match.MatchDescription;
 
@@ -22,12 +23,11 @@ import jsettlers.network.server.match.MatchDescription;
  * 
  * @author michael
  */
-public class ManagedJSettlers implements Listener, IGameStarter,
-        INetworkStartListener {
+public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartListener, INetworkStartScreenEndListener {
 
 	private ISettlersGameDisplay content;
 	private JSettlersGame ongoingGame;
-	private NetworkConnectTask networkConnectTask;
+	private INetworkConnectTask networkConnectTask;
 
 	public synchronized void start(ISettlersGameDisplay content) {
 		this.content = content;
@@ -38,43 +38,6 @@ public class ManagedJSettlers implements Listener, IGameStarter,
 		content.showStartScreen(new StartConnector(this));
 	}
 
-	/*
-	 * private static class RandomMapItem implements IMapItem {
-	 * @Override public String getName() { return "test"; }
-	 * @Override public int getMinPlayers() { return 1; }
-	 * @Override public int getMaxPlayers() { return 5; }
-	 * @Override public IMapDataProvider createLoadableGame(int players, long
-	 * seed) { return new RandomGameLoader(getName(), players, seed); } }
-	 */
-
-	// private static class RandomGameLoader implements IMapDataProvider {
-	// private final String name;
-	// private final int players;
-	// private final long randomSeed;
-	//
-	// public RandomGameLoader(String name, int players, long randomSeed) {
-	// this.name = name;
-	// this.players = players;
-	// this.randomSeed = randomSeed;
-	// }
-	//
-	// @Override
-	// public IMapData getData() throws MapLoadException {
-	// RandomMapFile file = RandomMapFile.getByName(name);
-	// RandomMapEvaluator evaluator =
-	// new RandomMapEvaluator(file.getInstructions(), players);
-	// evaluator.createMap(new Random(randomSeed));
-	// IMapData mapGrid = evaluator.getGrid();
-	// return mapGrid;
-	// }
-	// }
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jsettlers.main.IGameStarter#startGame(jsettlers.graphics.startscreen.
-	 * IStartScreenConnector.IGameSettings)
-	 */
 	@Override
 	public synchronized void startGame(IGameSettings game) {
 		stopOldStuff();
@@ -124,8 +87,7 @@ public class ManagedJSettlers implements Listener, IGameStarter,
 	}
 
 	/**
-	 * Sets the pause status of the ongoing game. Does noting if there is no
-	 * game.
+	 * Sets the pause status of the ongoing game. Does noting if there is no game.
 	 * 
 	 * @param b
 	 */
@@ -153,17 +115,16 @@ public class ManagedJSettlers implements Listener, IGameStarter,
 	}
 
 	@Override
-	public synchronized void startNetworkGame(String server,
-	        IMatchSettings gameSettings) {
+	public synchronized void startNetworkGame(String server, IMatchSettings gameSettings) {
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.STARTING_SERVER);
-		NetworkStarter starter = new NetworkStarter(server, gameSettings, this);
+		NetworkMatchOpener starter = new NetworkMatchOpener(server, gameSettings, this);
 		starter.start(connector);
 		networkConnectTask = starter;
 	}
 
 	@Override
-	public void networkGameStartFailed(NetworkConnectTask starter) {
+	public void networkMatchJoinFailed(INetworkConnectTask starter) {
 		if (starter == networkConnectTask) {
 			networkConnectTask = null;
 			showMainScreen();
@@ -171,13 +132,11 @@ public class ManagedJSettlers implements Listener, IGameStarter,
 	}
 
 	@Override
-	public void networkGameStarted(NetworkConnectTask starter,
-	        ClientThread clientThread, MatchDescription description) {
+	public void networkMatchJoined(INetworkConnectTask starter, ClientThread clientThread, MatchDescription description) {
 		if (starter == networkConnectTask) {
 			networkConnectTask = null;
-			System.out
-			        .println("now the network game screen should be displayed.");
-			
+			System.out.println("now the network game screen should be displayed.");
+
 			NetworkScreenAdapter networkScreen = new NetworkScreenAdapter(clientThread, description);
 			content.showNetworkScreen(networkScreen);
 		}
@@ -187,9 +146,20 @@ public class ManagedJSettlers implements Listener, IGameStarter,
 	public void joinNetworkGame(String serverAddress, IMatch match) {
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.JOINING_GAME);
-		NetworkJoiner joiner = new NetworkJoiner(serverAddress, match, this);
+		NetworkMatchJoiner joiner = new NetworkMatchJoiner(serverAddress, match, this);
 		joiner.start();
 		networkConnectTask = joiner;
+	}
+
+	@Override
+	public void leftMatch() {
+		showMainScreen();
+	}
+
+	@Override
+	public void networkMatchStarting() {
+		// TODO Auto-generated method stub
+
 	}
 
 }
