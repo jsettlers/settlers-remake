@@ -1,7 +1,5 @@
 package jsettlers.main.android;
 
-import java.util.List;
-
 import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.graphics.INetworkScreenAdapter.INetworkPlayer;
 import android.content.Context;
@@ -11,44 +9,47 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class PlayerList extends BaseAdapter {
-	
 
 	private final INetworkScreenAdapter networkScreen;
-	private List<INetworkPlayer> playerList;
+	private INetworkPlayer[] playerList;
 	private final Context context;
 
 	public PlayerList(Context context, INetworkScreenAdapter networkScreen) {
-	    this.context = context;
+		this.context = context;
 		this.networkScreen = networkScreen;
-		playerList = networkScreen.getPlayerList();
-    }
+		playerList = networkScreen.getPlayers();
+	}
 
 	@Override
-    public int getCount() {
-	    return playerList.size();
-    }
+	public int getCount() {
+		if (playerList != null) {
+			return playerList.length;
+		} else {
+			return 0;
+		}
+	}
 
 	@Override
-    public Object getItem(int arg0) {
-	    return playerList.get(arg0);
-    }
+	public INetworkPlayer getItem(int idx) {
+		return playerList[idx];
+	}
 
 	@Override
-    public long getItemId(int arg0) {
-		//TODO
-	    return playerList.get(arg0).hashCode();
-    }
+	public long getItemId(int idx) {
+		// TODO
+		return getItem(idx).hashCode();
+	}
 
 	@Override
-    public View getView(int arg0, View arg1, ViewGroup arg2) {
+	public View getView(int idx, View arg1, ViewGroup arg2) {
 		TextView view = new TextView(context);
-		view.setText(playerList.get(arg0).getPlayerName());
-	    return view;
-    }
+		view.setText(getItem(idx).getPlayerName());
+		return view;
+	}
 
 	public void changed() {
-		playerList = networkScreen.getPlayerList();
-	    notifyDataSetChanged();
-    }
+		playerList = networkScreen.getPlayers();
+		notifyDataSetChanged();
+	}
 
 }
