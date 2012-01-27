@@ -33,21 +33,25 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 		networkScreen.setListener(this);
 		root = new UIPanel();
 		root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 25, 0));
-		
+
 		listContainer = new UIPanel();
 		root.addChild(listContainer, .04f, .1f, .96f, .7f);
-		
-		startAllowedButton = new Button(new FinishAction(), new ImageLink(EImageLinkType.SETTLER, 2, 17, 0), new ImageLink(EImageLinkType.SETTLER, 2, 17, 1), "allow to start game");
+
+		startAllowedButton =
+		        new Button(new FinishAction(), new ImageLink(
+		                EImageLinkType.SETTLER, 2, 17, 0), new ImageLink(
+		                EImageLinkType.SETTLER, 2, 17, 1),
+		                "allow to start game");
 		root.addChild(startAllowedButton, 0.75f, .05f, .8f, .08f);
 	}
-	
+
 	private class FinishAction extends ExecutableAction {
 		@Override
-        public void execute() {
+		public void execute() {
 			startAllowed = !startAllowed;
 			startAllowedButton.setActive(startAllowed);
-			networkScreen.setStartAllowed(startAllowed);
-        }
+			networkScreen.setReady(startAllowed);
+		}
 	}
 
 	@Override
@@ -68,12 +72,12 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 			UIList<PlayerItem> list = new UIList<PlayerItem>(players, .2f);
 			listContainer.addChild(list, 0, 0, 1, 1);
 		}
-    }
-	
+	}
+
 	private class PlayerItem extends GenericListItem {
 		public PlayerItem(INetworkPlayer player) {
-	        super(player.getPlayerName(), "");
-        }
+			super(player.getPlayerName(), "");
+		}
 	}
 
 	@Override
@@ -83,14 +87,14 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 				@Override
 				public void phaseChanged(GOEvent event) {
 				}
-				
+
 				@Override
 				public void finished(GOEvent event) {
 					GOCommandEvent c = (GOCommandEvent) event;
 					UIPoint position = c.getCommandPosition();
 					performActionAt(position.getX(), position.getY());
 				}
-				
+
 				@Override
 				public void aborted(GOEvent event) {
 				}
@@ -126,14 +130,14 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 	}
 
 	@Override
-    public void playerListChanged() {
-	    playerListValid = false;
-    }
+	public void playerListChanged() {
+		playerListValid = false;
+	}
 
 	@Override
-    public void addChatMessage(String message) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void addChatMessage(String message) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
