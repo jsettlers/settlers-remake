@@ -66,8 +66,10 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 			playerListValid = true;
 			listContainer.removeAll();
 			ArrayList<PlayerItem> players = new ArrayList<PlayerItem>();
-			for (INetworkPlayer player : networkScreen.getPlayerList()) {
-				players.add(new PlayerItem(player));
+			if (networkScreen.getPlayers() != null) {
+				for (INetworkPlayer player : networkScreen.getPlayers()) {
+					players.add(new PlayerItem(player));
+				}
 			}
 			UIList<PlayerItem> list = new UIList<PlayerItem>(players, .2f);
 			listContainer.addChild(list, 0, 0, 1, 1);

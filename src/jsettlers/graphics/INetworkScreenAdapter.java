@@ -1,7 +1,5 @@
 package jsettlers.graphics;
 
-import java.util.List;
-
 /**
  * @author Andreas Eberle
  */
@@ -10,11 +8,12 @@ public interface INetworkScreenAdapter {
 	void setListener(INetworkScreenListener networkScreen);
 
 	/**
-	 * Gets a immutable list of players.
+	 * Gets an array of players. <br>
+	 * NOTE: The array might be null!
 	 * 
 	 * @return The current players.
 	 */
-	List<INetworkPlayer> getPlayerList();
+	INetworkPlayer[] getPlayers();
 
 	/**
 	 * Listener for events to the network screen

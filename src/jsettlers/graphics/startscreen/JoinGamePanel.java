@@ -37,7 +37,8 @@ public class JoinGamePanel extends UIPanel implements INetworkListener {
 			ArrayList<DisplayableMatch> displaymatches =
 			        new ArrayList<DisplayableMatch>();
 			for (IMatch m : networkConnector.getMatches()) {
-				displaymatches.add(new DisplayableMatch(m));
+				if (m != null)
+					displaymatches.add(new DisplayableMatch(m));
 			}
 			list = new UIList<DisplayableMatch>(displaymatches, .1f);
 

@@ -1,9 +1,6 @@
 package jsettlers.graphics.startscreen;
 
-import java.util.List;
-
 import jsettlers.common.network.IMatch;
-
 
 /**
  * This is the network connector the start screen needs.
@@ -31,19 +28,19 @@ public interface INetworkConnector {
 
 	/**
 	 * Sets a listener to notify when the list changes.
-	 * @param listener The lister. May be null, then no listenr is used.
+	 * 
+	 * @param listener
+	 *            The lister. May be null, then no listenr is used.
 	 */
 	public void setListener(INetworkListener listener);
 
 	/**
-	 * Gets a list of matches.
-	 * <p>
-	 * The list should be immutable to prevent problems with concurrent
-	 * modification exceptions.
+	 * Gets an array of matches. <br>
+	 * NOTE: elements of the array might be null!!
 	 * 
-	 * @return The list.
+	 * @return the array of matches
 	 */
-	public List<IMatch> getMatches();
+	public IMatch[] getMatches();
 
 	/**
 	 * This listener is notified whenever the list of matches changed.
