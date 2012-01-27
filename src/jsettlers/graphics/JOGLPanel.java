@@ -112,4 +112,10 @@ public class JOGLPanel implements ISettlersGameDisplay {
 		changeContent(new NetworkScreen(networkScreen));
 	}
 
+	@Override
+    public void showErrorMessage(String string) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
 }

@@ -39,4 +39,6 @@ public interface ISettlersGameDisplay {
 	 * @param networkScreen
 	 */
 	public void showNetworkScreen(INetworkScreenAdapter networkScreen);
+
+	public void showErrorMessage(String string);
 }
