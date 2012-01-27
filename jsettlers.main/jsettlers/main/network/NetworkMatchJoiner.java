@@ -10,7 +10,8 @@ import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.MatchDescription;
-import jsettlers.network.server.response.MatchesInfoList;
+import jsettlers.network.server.match.MatchPlayer;
+import jsettlers.network.server.match.MatchesInfoList;
 
 public class NetworkMatchJoiner implements INetworkConnectTask {
 	private final String serverAddress;
@@ -96,7 +97,7 @@ public class NetworkMatchJoiner implements INetworkConnectTask {
 		}
 
 		@Override
-		public void receivedMatchAttendants(String[] matchAttendants) {
+		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
 			// TODO Auto-generated method stub
 
 		}

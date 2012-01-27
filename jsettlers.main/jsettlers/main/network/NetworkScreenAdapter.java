@@ -1,12 +1,17 @@
 package jsettlers.main.network;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.Serializable;
 
 import jsettlers.graphics.INetworkScreenAdapter;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.main.ManagedJSettlers;
 import jsettlers.network.client.ClientThread;
+import jsettlers.network.client.IClientThreadListener;
+import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.MatchDescription;
+import jsettlers.network.server.match.MatchPlayer;
+import jsettlers.network.server.match.MatchesInfoList;
 
 /**
  * This adapter provides everything the gui needs to display a network screen.
@@ -20,11 +25,13 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	private final MatchDescription description;
 	private INetworkStartScreenEndListener endListener;
 	private INetworkScreenListener networkScreenListener;
+	private INetworkPlayer[] playerInfos;
 
 	public NetworkScreenAdapter(ClientThread clientThread, MatchDescription description) {
 		this.clientThread = clientThread;
 		this.description = description;
-		//TODO: @andreas: Register a listener on clientThread, that calls notifyMatchStarted and notifyPlayerlistChanged
+		// TODO: @andreas: Register a listener on clientThread, that calls notifyMatchStarted and notifyPlayerlistChanged
+		clientThread.setListener(new ScreenAdapterClientThreadListener());
 	}
 
 	@Override
@@ -33,35 +40,13 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	}
 
 	@Override
-	public List<INetworkPlayer> getPlayerList() {
-		ArrayList<INetworkPlayer> list = new ArrayList<INetworkPlayer>();
-		for (int i = 0; i < description.getPlayers(); i++) {
-			list.add(new NetworkPlayer(i));
-		}
-		return list;
-	}
-
-	private class NetworkPlayer implements INetworkPlayer {
-		private final String name;
-
-		public NetworkPlayer(int i) {
-			name = "player " + i;
-		}
-
-		@Override
-		public String getPlayerName() {
-			return name;
-		}
-
-		@Override
-		public boolean isReady() {
-			// TODO Auto-generated method stub
-			return false;
-		}
+	public INetworkPlayer[] getPlayers() {
+		return playerInfos;
 	}
 
 	@Override
 	public void setReady(boolean ready) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -72,7 +57,6 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	@Override
 	public void startGame() {
 		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -83,7 +67,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 			endListener.networkMatchStarting(this, this.clientThread);
 		}
 	}
-	
+
 	/**
 	 * Notifies the gui that the player list changed.
 	 */
@@ -92,15 +76,84 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 			networkScreenListener.playerListChanged();
 		}
 	}
-	
+
 	public void setEndListener(INetworkStartScreenEndListener endListener) {
-		this.endListener = endListener;	    
-    }
+		this.endListener = endListener;
+	}
 
 	public void cancel() {
 		if (endListener != null) {
 			endListener.leftMatch(this);
 		}
-    }
+	}
 
+	private class ScreenAdapterClientThreadListener implements IClientThreadListener {
+
+		@Override
+		public void requestFailedEvent(EClientRequest failedRequest) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void joinedMatchEvent(MatchDescription match) {
+			System.err.println("should not get here: NetworkScreenAdapter.ScreenAdapterClientThreadListener.joinedMatchEvent()");
+		}
+
+		@Override
+		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
+			// ignore
+		}
+
+		@Override
+		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
+			if (proxiedObject instanceof String) {
+				networkScreenListener.addChatMessage(sender + ": " + proxiedObject);
+			}
+		}
+
+		@Override
+		public void playerLeftEvent(String leavingPlayer) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mapReceivedEvent() {
+			// ignore
+		}
+
+		@Override
+		public File getMapFolder() {
+			return MapList.getDefaultFolder();
+		}
+
+		@Override
+		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
+			INetworkPlayer[] newInfos = new NetworkPlayer[playerInfos.length];
+			for (int i = 0; i < description.getPlayers(); i++) {
+				newInfos[i] = new NetworkPlayer(playerInfos[i]);
+			}
+
+			NetworkScreenAdapter.this.playerInfos = newInfos;
+			networkScreenListener.playerListChanged();
+		}
+
+	}
+
+	private static final class NetworkPlayer implements INetworkPlayer {
+		private final MatchPlayer matchPlayer;
+
+		public NetworkPlayer(MatchPlayer matchPlayer) {
+			this.matchPlayer = matchPlayer;
+		}
+
+		@Override
+		public String getPlayerName() {
+			return matchPlayer.getName();
+		}
+
+		@Override
+		public boolean isReady() {
+			return matchPlayer.isReady();
+		}
+	}
 }

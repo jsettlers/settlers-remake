@@ -10,7 +10,8 @@ import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.match.MatchDescription;
-import jsettlers.network.server.response.MatchesInfoList;
+import jsettlers.network.server.match.MatchPlayer;
+import jsettlers.network.server.match.MatchesInfoList;
 
 /**
  * A helper class for jsettlers to open a network match.
@@ -108,7 +109,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 		}
 
 		@Override
-		public void receivedMatchAttendants(String[] matchAttendants) {
+		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
 		}
 	}
 

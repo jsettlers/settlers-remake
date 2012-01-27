@@ -7,7 +7,7 @@ import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.main.network.NetworkConnector;
+import jsettlers.main.network.NetworkMatchRetriever;
 
 class StartConnector implements IStartScreenConnector {
 	/**
@@ -53,7 +53,7 @@ class StartConnector implements IStartScreenConnector {
 	@Override
 	public INetworkConnector getNetworkConnector() {
 		if (networkConnector == null) {
-			networkConnector = new NetworkConnector();
+			networkConnector = new NetworkMatchRetriever();
 		}
 
 		return networkConnector;

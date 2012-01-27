@@ -3,9 +3,6 @@ package jsettlers.main.network;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import jsettlers.common.network.IMatch;
 import jsettlers.graphics.startscreen.INetworkConnector;
@@ -13,9 +10,9 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
-import jsettlers.network.server.match.Match;
 import jsettlers.network.server.match.MatchDescription;
-import jsettlers.network.server.response.MatchesInfoList;
+import jsettlers.network.server.match.MatchPlayer;
+import jsettlers.network.server.match.MatchesInfoList;
 
 /**
  * This class retrieves the list of matches for the start screen.
@@ -23,12 +20,10 @@ import jsettlers.network.server.response.MatchesInfoList;
  * @author michael
  * 
  */
-public class NetworkConnector implements INetworkConnector {
-
-	private static final List<IMatch> NULL_LIST = Arrays.asList(new IMatch[] {});
+public class NetworkMatchRetriever implements INetworkConnector {
 	private INetworkListener listener;
 	private String address = "";
-	private List<IMatch> matches = NULL_LIST;
+	private IMatch[] matches = new IMatch[0];
 
 	private ServerSender currentSender;
 
@@ -65,13 +60,13 @@ public class NetworkConnector implements INetworkConnector {
 	}
 
 	@Override
-	public synchronized List<IMatch> getMatches() {
+	public synchronized IMatch[] getMatches() {
 		return matches;
 	}
 
-	protected synchronized void setMatchList(ServerSender from, List<IMatch> list) {
+	protected synchronized void setMatchList(ServerSender from, IMatch[] matches) {
 		if (from == currentSender) {
-			this.matches = list;
+			this.matches = matches;
 			notifyMatchListChanged();
 		}
 	}
@@ -100,11 +95,13 @@ public class NetworkConnector implements INetworkConnector {
 
 		@Override
 		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
-			ArrayList<IMatch> matches = new ArrayList<IMatch>();
-			for (Match m : matchesList.getMatches()) {
-				matches.add(new NetworkMatch(m.getMatchId(), m.getDescription().getMatchName(), m.getDescription().getMapId(), m.getDescription()
-						.getMaxPlayers()));
+			IMatch[] matches = new IMatch[matchesList.getMatches().length];
+			int i = 0;
+			for (MatchDescription m : matchesList.getMatches()) {
+				matches[i] = new NetworkMatch(m.getMatchId(), m.getMatchName(), m.getMapId(), m.getMaxPlayers());
+				i++;
 			}
+
 			setMatchList(this, matches);
 		}
 
@@ -126,10 +123,6 @@ public class NetworkConnector implements INetworkConnector {
 		}
 
 		@Override
-		public void receivedMatchAttendants(String[] matchAttendants) {
-		}
-
-		@Override
 		public void run() {
 			try {
 				clientThread = new ClientThread(address, this);
@@ -145,6 +138,12 @@ public class NetworkConnector implements INetworkConnector {
 				e.printStackTrace();
 				// TODO: sent connection error
 			}
+		}
+
+		@Override
+		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
+			// TODO Auto-generated method stub
+
 		}
 	}
 
