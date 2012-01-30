@@ -84,8 +84,8 @@ public class UIList<T extends UIListItem> implements UIElement {
 		        minX + width * RIGHTBORDER, minY + height * EDGEPART,
 		        minX + width, minY + height * (1 - EDGEPART));
 		provider.getImage(SCROLLBAR_BOTTOM).drawImageAtRect(gl,
-		        minX + width * RIGHTBORDER, minY,
-		        minX + width, minY + EDGEPART * height);
+		        minX + width * RIGHTBORDER, minY, minX + width,
+		        minY + EDGEPART * height);
 	}
 
 	@Override

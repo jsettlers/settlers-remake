@@ -1,5 +1,6 @@
 package jsettlers.graphics;
 
+
 /**
  * @author Andreas Eberle
  */
@@ -68,5 +69,6 @@ public interface INetworkScreenAdapter {
 	/**
 	 * try to start the game.
 	 */
-	void startGame();
+	void startNetworkMatch();
+
 }
