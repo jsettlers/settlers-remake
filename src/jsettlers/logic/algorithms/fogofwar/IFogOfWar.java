@@ -18,4 +18,6 @@ public interface IFogOfWar extends Serializable {
 
 	public abstract void startThread(IFogOfWarGrid grid);
 
+	public abstract void cancel();
+
 }

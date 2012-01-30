@@ -105,7 +105,9 @@ public class BordersThread implements Runnable {
 
 	public void cancel() {
 		this.canceled = true;
-		positionsQueue.notifyAll();
+		synchronized (positionsQueue) {
+			positionsQueue.notifyAll();
+		}
 	}
 
 }

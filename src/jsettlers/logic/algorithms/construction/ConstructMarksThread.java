@@ -32,6 +32,7 @@ public class ConstructMarksThread extends Thread {
 	private EBuildingType buildingType = null;
 
 	private IMapArea lastArea = null;
+	private boolean canceled;
 
 	public ConstructMarksThread(IConstructionMarkableMap map, byte player) {
 		super("constrMarksThread");
@@ -44,7 +45,7 @@ public class ConstructMarksThread extends Thread {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!canceled) {
 			try {
 				synchronized (this) {
 					while (buildingType == null) {
@@ -52,7 +53,7 @@ public class ConstructMarksThread extends Thread {
 					}
 				}
 
-				while (buildingType != null) {
+				while (buildingType != null && !canceled) {
 					if (!NetworkTimer.isPausing()) {
 						StopWatch watch = new MilliStopWatch();
 						watch.start();
@@ -68,6 +69,8 @@ public class ConstructMarksThread extends Thread {
 				removeConstructionMarks(lastArea);
 				lastArea = null;
 
+			} catch (InterruptedException e) {
+				// do nothing
 			} catch (Throwable e) { // this thread must never be destroyed due to errors
 				e.printStackTrace();
 			}
@@ -181,6 +184,11 @@ public class ConstructMarksThread extends Thread {
 
 	public synchronized void refreshMarkings() {
 		this.notifyAll();
+	}
+
+	public void cancel() {
+		canceled = true;
+		this.interrupt();
 	}
 
 }

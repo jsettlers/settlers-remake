@@ -33,6 +33,7 @@ public final class NewFogOfWar implements IFogOfWar {
 
 	private boolean enabled = true;
 	transient private IFogOfWarGrid grid;
+	private boolean canceled;
 
 	public NewFogOfWar(short width, short height) {
 		this(width, height, (byte) 0, false);
@@ -113,7 +114,7 @@ public final class NewFogOfWar implements IFogOfWar {
 		public final void run() {
 			mySleep(500);
 
-			while (true) {
+			while (!canceled) {
 				StopWatch watch = new MilliStopWatch();
 				watch.start();
 				if (enabled) {
@@ -220,5 +221,10 @@ public final class NewFogOfWar implements IFogOfWar {
 			}
 		}
 
+	}
+
+	@Override
+	public void cancel() {
+		this.canceled = true;
 	}
 }

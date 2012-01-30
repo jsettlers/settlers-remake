@@ -17,6 +17,7 @@ import jsettlers.common.position.ISPosition2D;
 public final class LandmarksCorrectingThread extends Thread {
 	private final ILandmarksThreadGrid grid;
 	private final LinkedBlockingQueue<ISPosition2D> queue = new LinkedBlockingQueue<ISPosition2D>();
+	private boolean canceled;
 
 	public LandmarksCorrectingThread(ILandmarksThreadGrid map) {
 		super("LandmarksCorrectingThread");
@@ -33,7 +34,7 @@ public final class LandmarksCorrectingThread extends Thread {
 		} catch (InterruptedException e) {
 		}
 
-		while (true) {
+		while (!canceled) {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
@@ -44,7 +45,6 @@ public final class LandmarksCorrectingThread extends Thread {
 				try {
 					startPos = queue.take();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 			checkLandmarks(startPos);
@@ -130,5 +130,10 @@ public final class LandmarksCorrectingThread extends Thread {
 
 	public final void addLandmarkedPositions(List<ISPosition2D> occupiedPositions) {
 		queue.addAll(occupiedPositions);
+	}
+
+	public void cancel() {
+		canceled = true;
+		this.interrupt();
 	}
 }
