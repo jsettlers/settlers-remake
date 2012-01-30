@@ -19,6 +19,8 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ManagedJSettlers;
+import jsettlers.main.MapDataMapCreator;
+import network.NetworkManager;
 
 public class SwingManagedJSettlers {
 
@@ -26,13 +28,11 @@ public class SwingManagedJSettlers {
 		JoglLibraryPathInitializer.initLibraryPath();
 
 		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
+		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
-	
-		SoundManager.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/Snd"));
+
+		SoundManager.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/Snd"));
 		SoundManager.addLookupPath(new File("D:/Games/Siedler3/Snd"));
 		SoundManager.addLookupPath(new File("C:/Program Files/siedler 3/Snd"));
 	}
@@ -49,21 +49,22 @@ public class SwingManagedJSettlers {
 		ResourceManager.setProvider(new ResourceProvider());
 		ManagedJSettlers game = new ManagedJSettlers();
 		game.start(getGui());
-		
+
 		ImageProvider.getInstance().startPreloading();
 
 		// NetworkTimer.loadLogging("logs/2011_11_02-11_39_44.log");
 		// NetworkTimer.activateLogging("logs");
 	}
-	
+
 	/**
 	 * Directly starts a map window
+	 * 
 	 * @param mapname
 	 */
 	public static void startMap(IMapDataProvider data) {
 		ResourceManager.setProvider(new ResourceProvider());
-		//TODO: detect exit
-		JSettlersGame game = new JSettlersGame(getGui(), data , 123456L);
+		// TODO: detect exit
+		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager());
 		game.start();
 	}
 
@@ -81,5 +82,5 @@ public class SwingManagedJSettlers {
 		jsettlersWnd.setVisible(true);
 		jsettlersWnd.setLocationRelativeTo(null);
 		return content;
-    }
+	}
 }
