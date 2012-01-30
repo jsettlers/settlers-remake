@@ -97,7 +97,7 @@ public class NetworkMatchJoiner implements INetworkConnectTask {
 		}
 
 		@Override
-		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
+		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
 			// TODO Auto-generated method stub
 
 		}

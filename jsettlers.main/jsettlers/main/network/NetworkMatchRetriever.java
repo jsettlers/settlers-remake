@@ -141,9 +141,7 @@ public class NetworkMatchRetriever implements INetworkConnector {
 		}
 
 		@Override
-		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
-			// TODO Auto-generated method stub
-
+		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
 		}
 	}
 

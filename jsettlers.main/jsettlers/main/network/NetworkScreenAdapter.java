@@ -22,7 +22,7 @@ import jsettlers.network.server.match.MatchesInfoList;
 public class NetworkScreenAdapter implements INetworkScreenAdapter {
 
 	private final ClientThread clientThread;
-	private final MatchDescription description;
+	private MatchDescription description;
 	private INetworkStartScreenEndListener endListener;
 	private INetworkScreenListener networkScreenListener;
 	private INetworkPlayer[] playerInfos;
@@ -127,14 +127,17 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 
 		@Override
-		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
+		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
+			NetworkScreenAdapter.this.description = matchDescription;
 			INetworkPlayer[] newInfos = new NetworkPlayer[playerInfos.length];
-			for (int i = 0; i < description.getPlayers(); i++) {
+			for (int i = 0; i < description.getMaxPlayers(); i++) {
 				newInfos[i] = new NetworkPlayer(playerInfos[i]);
 			}
 
 			NetworkScreenAdapter.this.playerInfos = newInfos;
-			networkScreenListener.playerListChanged();
+
+			if (networkScreenListener != null)
+				networkScreenListener.playerListChanged();
 		}
 
 	}

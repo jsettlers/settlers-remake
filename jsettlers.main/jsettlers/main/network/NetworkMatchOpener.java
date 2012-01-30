@@ -109,7 +109,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 		}
 
 		@Override
-		public void receivedPlayerInfos(MatchPlayer[] playerInfos) {
+		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
 		}
 	}
 
