@@ -69,26 +69,14 @@ public class NetworkMatchJoiner implements INetworkConnectTask {
 
 		@Override
 		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void playerLeftEvent(String leavingPlayer) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void mapReceivedEvent() {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
@@ -98,8 +86,14 @@ public class NetworkMatchJoiner implements INetworkConnectTask {
 
 		@Override
 		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
-			// TODO Auto-generated method stub
+		}
 
+		@Override
+		public void startingMatch() {
+		}
+
+		@Override
+		public void mapReceivedEvent(File mapFile) {
 		}
 	}
 

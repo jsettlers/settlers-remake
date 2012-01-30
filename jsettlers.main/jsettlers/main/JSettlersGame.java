@@ -1,6 +1,5 @@
 package jsettlers.main;
 
-import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
@@ -13,6 +12,7 @@ import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.timer.MovableTimer;
 import jsettlers.logic.timer.Timer100Milli;
 import network.NetworkManager;
 import random.RandomSingleton;
@@ -36,21 +36,13 @@ public class JSettlersGame {
 
 	private final IGameCreator mapcreator;
 
-	/**
-	 * Creates a new game by a given random mapname.
-	 * 
-	 * @param map
-	 *            The name of the random map and some settings
-	 */
-	@Deprecated
-	public JSettlersGame(ISettlersGameDisplay content, IMapDataProvider map, long randomSheed) {
-		this(content, new MapDataMapCreator(map), randomSheed);
-	}
+	private final NetworkManager networkManager;
 
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed, NetworkManager networkManager) {
 		this.content = content;
 		this.mapcreator = map;
 		this.randomSheed = randomSheed;
+		this.networkManager = networkManager;
 	}
 
 	/**
@@ -64,8 +56,6 @@ public class JSettlersGame {
 
 		@Override
 		public void run() {
-			NetworkManager manager = new NetworkManager();
-
 			ProgressConnector progress = content.showProgress();
 
 			RandomSingleton.load(randomSheed);
@@ -111,32 +101,14 @@ public class JSettlersGame {
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
-			new GuiInterface(connector, manager, grid.getGuiInputGrid(), (byte) 0);
+			new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), (byte) 0);
 
 			connector.addListener(this);
 			connector.loadUIState(uiState);
-			manager.startGameTimer();
+			networkManager.startGameTimer();
 
 			gameConnector = connector;
 
-			// --- TESTING code start
-			// Timer t = new Timer();
-			// t.schedule(new TimerTask() {
-			// @Override
-			// public void run() {
-			// if (Math.random() < .5) {
-			// connector.showMessage(SimpleMessage.attacked(
-			// (byte) (Math.random() * 10),
-			// new ShortPoint2D(30, 30)));
-			// } else {
-			// connector.showMessage(SimpleMessage.foundMinerals(EMaterialType.COAL,
-			// new ShortPoint2D(30, 30)));
-			// }
-			// }
-			// }, 100, 1000);
-			// --- TESTING code end
-
-			// TODO: allow user to stop game before this happens.
 			synchronized (stopMutex) {
 				while (!stopped) {
 					try {
@@ -145,6 +117,11 @@ public class JSettlersGame {
 					}
 				}
 			}
+
+			networkManager.stop();
+			Timer100Milli.stop();
+			MovableTimer.stop();
+			grid.stopGame();
 
 			listener.gameEnded();
 		}

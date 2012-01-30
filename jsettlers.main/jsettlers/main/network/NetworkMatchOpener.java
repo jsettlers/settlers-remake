@@ -59,7 +59,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 				ClientThread clientThread = new ClientThread(server, this);
 				clientThread.start();
 				MatchDescription matchDescription = new MatchDescription(gameSettings);
-				clientThread.startNewMatch(matchDescription, gameSettings.getMap().getFile());
+				clientThread.openNewMatch(matchDescription, gameSettings.getMap().getFile());
 
 				synchronized (waitForStartMutex) {
 					while (!started) {
@@ -100,7 +100,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 		}
 
 		@Override
-		public void mapReceivedEvent() {
+		public void mapReceivedEvent(File mapFile) {
 		}
 
 		@Override
@@ -110,6 +110,10 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 
 		@Override
 		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
+		}
+
+		@Override
+		public void startingMatch() {
 		}
 	}
 

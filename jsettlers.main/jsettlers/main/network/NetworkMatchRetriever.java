@@ -114,7 +114,7 @@ public class NetworkMatchRetriever implements INetworkConnector {
 		}
 
 		@Override
-		public void mapReceivedEvent() {
+		public void mapReceivedEvent(File mapFile) {
 		}
 
 		@Override
@@ -142,6 +142,10 @@ public class NetworkMatchRetriever implements INetworkConnector {
 
 		@Override
 		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
+		}
+
+		@Override
+		public void startingMatch() {
 		}
 	}
 

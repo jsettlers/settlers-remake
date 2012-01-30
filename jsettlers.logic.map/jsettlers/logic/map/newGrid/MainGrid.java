@@ -139,10 +139,8 @@ public class MainGrid implements Serializable {
 		this.partitionsGrid = new PartitionsGrid(width, height, new PartitionableGrid());
 
 		this.buildingsGrid = new BuildingsGrid();
-		this.fogOfWar = new NewFogOfWar(width, height); // TODO @Andreas
-														// implement new
-														// interface for fog of
-														// war
+		this.fogOfWar = new NewFogOfWar(width, height);
+		// TODO @Andreas implement new interface for fog of war
 
 		initAdditionalGrids();
 	}
@@ -263,6 +261,13 @@ public class MainGrid implements Serializable {
 		grid.createNewMovableAt(new ShortPoint2D(60, 60), EMovableType.SWORDSMAN_L3, (byte) 0);
 
 		return grid;
+	}
+
+	public void stopGame() {
+		bordersThread.cancel();
+		fogOfWar.cancel();
+		constructionMarksCalculator.cancel();
+		landmarksCorrectionThread.cancel();
 	}
 
 	public static MainGrid create(IMapData mapGrid) {

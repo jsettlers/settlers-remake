@@ -1,10 +1,12 @@
 package jsettlers.main.network;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.logic.map.save.MapList;
+import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.ManagedJSettlers;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
@@ -26,12 +28,20 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	private INetworkStartScreenEndListener endListener;
 	private INetworkScreenListener networkScreenListener;
 	private INetworkPlayer[] playerInfos;
+	private MapLoader mapLoader;
 
 	public NetworkScreenAdapter(ClientThread clientThread, MatchDescription description) {
 		this.clientThread = clientThread;
 		this.description = description;
-		// TODO: @andreas: Register a listener on clientThread, that calls notifyMatchStarted and notifyPlayerlistChanged
 		clientThread.setListener(new ScreenAdapterClientThreadListener());
+	}
+
+	public MatchDescription getMatchDescription() {
+		return description;
+	}
+
+	public MapLoader getMapLoader() {
+		return mapLoader;
 	}
 
 	@Override
@@ -45,18 +55,48 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	}
 
 	@Override
-	public void setReady(boolean ready) {
-		// TODO Auto-generated method stub
+	public void setReady(final boolean ready) {
+		new Thread("setReadyThread") {
+			@Override
+			public void run() {
+				try {
+					clientThread.setPlayerReady(ready);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	@Override
-	public void sendChatMessage(String message) {
-		// TODO Auto-generated method stub
+	public void sendChatMessage(final String message) {
+		new Thread("sendChatMessageThread") {
+			@Override
+			public void run() {
+				try {
+					clientThread.proxyObjectToTeammates(message);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	@Override
-	public void startGame() {
-		// TODO Auto-generated method stub
+	public void startNetworkMatch() {
+		new Thread("startGameThread") {
+			@Override
+			public void run() {
+				try {
+					clientThread.tryToStartMatch();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	/**
@@ -87,7 +127,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 	}
 
-	private class ScreenAdapterClientThreadListener implements IClientThreadListener {
+	private final class ScreenAdapterClientThreadListener implements IClientThreadListener {
 
 		@Override
 		public void requestFailedEvent(EClientRequest failedRequest) {
@@ -117,8 +157,8 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 
 		@Override
-		public void mapReceivedEvent() {
-			// ignore
+		public void mapReceivedEvent(File mapFile) {
+			mapLoader = new MapLoader(mapFile);
 		}
 
 		@Override
@@ -131,13 +171,19 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 			NetworkScreenAdapter.this.description = matchDescription;
 			INetworkPlayer[] newInfos = new NetworkPlayer[playerInfos.length];
 			for (int i = 0; i < description.getMaxPlayers(); i++) {
-				newInfos[i] = new NetworkPlayer(playerInfos[i]);
+				if (playerInfos[i] != null)
+					newInfos[i] = new NetworkPlayer(playerInfos[i]);
 			}
 
 			NetworkScreenAdapter.this.playerInfos = newInfos;
 
-			if (networkScreenListener != null)
-				networkScreenListener.playerListChanged();
+			notifyPlayerlistChanged();
+		}
+
+		@Override
+		public void startingMatch() {
+			System.out.println("NETWORK MATCH STARTED!!!");
+			notifyMatchStarted();
 		}
 
 	}
@@ -159,4 +205,5 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 			return matchPlayer.isReady();
 		}
 	}
+
 }
