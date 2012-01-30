@@ -54,7 +54,7 @@ public class NetworkView implements INetworkScreenListener {
 
 			@Override
 			public void onClick(View v) {
-				networkScreen.startGame();
+				networkScreen.startNetworkMatch();
 			}
 		});
 	}
