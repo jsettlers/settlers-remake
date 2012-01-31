@@ -93,6 +93,12 @@ public class BuildingCreator implements IMapInterfaceListener {
 			public File getSaveDirectory() {
 				return null;
 			}
+
+			@Override
+            public File getTempDirectory() {
+	            // TODO Auto-generated method stub
+	            return null;
+            }
 		});
 
 		EBuildingType type = askType();
