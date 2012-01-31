@@ -72,7 +72,7 @@ public class NetworkMatchJoiner implements INetworkConnectTask {
 		}
 
 		@Override
-		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
+		public void receivedObject(String sender, Serializable proxiedObject) {
 		}
 
 		@Override

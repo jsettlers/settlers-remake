@@ -15,5 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.networking"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network.objects"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

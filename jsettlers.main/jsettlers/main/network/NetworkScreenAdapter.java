@@ -30,7 +30,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	private INetworkScreenListener networkScreenListener;
 	private NetworkPlayer[] playerInfos;
 	private MapLoader mapLoader;
-	private int myPlayerNumber;
+	private byte myPlayerNumber;
 
 	public NetworkScreenAdapter(final ClientThread clientThread, MatchDescription description) {
 		this.clientThread = clientThread;
@@ -87,7 +87,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 			@Override
 			public void run() {
 				try {
-					clientThread.proxyObjectToTeammates(message);
+					clientThread.proxyObjectToOthers(message);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -130,9 +130,10 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	}
 
 	private void calculateMyPlayerNumebr(String myID) {
-		for (int i = 0; i < playerInfos.length; i++) {
+		for (byte i = 0; i < playerInfos.length; i++) {
 			if (playerInfos[i] != null && playerInfos[i].getUniqueID().equals(myID)) {
 				myPlayerNumber = i;
+				return;
 			}
 		}
 		System.err.println("ERROR: couldn't calculate the players playernumber!!!");
@@ -148,7 +149,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 	}
 
-	public int getMyPlayerNumber() {
+	public byte getMyPlayerNumber() {
 		return myPlayerNumber;
 	}
 
@@ -170,7 +171,7 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 
 		@Override
-		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
+		public void receivedObject(String sender, Serializable proxiedObject) {
 			if (proxiedObject instanceof String) {
 				networkScreenListener.addChatMessage(sender + ": " + proxiedObject);
 			}
@@ -218,26 +219,15 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 
 	}
 
-	private static final class NetworkPlayer implements INetworkPlayer {
-		private final MatchPlayer matchPlayer;
-
-		public NetworkPlayer(MatchPlayer matchPlayer) {
-			this.matchPlayer = matchPlayer;
+	public String[] getPlayerIDs() {
+		String[] ids = new String[playerInfos.length];
+		for (int i = 0; i < ids.length; i++) {
+			if (playerInfos[i] != null) {
+				ids[i] = playerInfos[i].getUniqueID();
+			}
 		}
 
-		@Override
-		public String getPlayerName() {
-			return matchPlayer.getName();
-		}
-
-		@Override
-		public boolean isReady() {
-			return matchPlayer.isReady();
-		}
-
-		public String getUniqueID() {
-			return matchPlayer.getUniqueId();
-		}
+		return ids;
 	}
 
 }

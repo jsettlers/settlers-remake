@@ -106,7 +106,7 @@ public class NetworkMatchRetriever implements INetworkConnector {
 		}
 
 		@Override
-		public void receivedProxiedObjectEvent(String sender, Serializable proxiedObject) {
+		public void receivedObject(String sender, Serializable proxiedObject) {
 		}
 
 		@Override

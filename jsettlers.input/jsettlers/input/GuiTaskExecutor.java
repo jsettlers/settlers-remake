@@ -1,4 +1,4 @@
-package jsettlers.input.task;
+package jsettlers.input;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,32 +7,47 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ISPosition2D;
-import jsettlers.input.EGuiAction;
-import jsettlers.input.IGuiInputGrid;
+import jsettlers.input.task.ConvertGuiTask;
+import jsettlers.input.task.DestroyBuildingGuiTask;
+import jsettlers.input.task.EGuiAction;
+import jsettlers.input.task.GeneralGuiTask;
+import jsettlers.input.task.MovableGuiTask;
+import jsettlers.input.task.MoveToGuiTask;
+import jsettlers.input.task.SimpleGuiTask;
+import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.GotoJob;
 import jsettlers.logic.movable.Movable;
+import network.ITaskExecutor;
+import network.task.ITask;
 
-public class TaskExecutor {
-	private static TaskExecutor instance = null;
+public class GuiTaskExecutor implements ITaskExecutor {
+	private static GuiTaskExecutor instance = null;
 	private final IGuiInputGrid grid;
 	private final ITaskExecutorGuiInterface guiInterface;
 
-	private TaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
+	public GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
 		this.grid = grid;
 		this.guiInterface = guiInterface;
 	}
 
-	public static TaskExecutor get() {
+	public static GuiTaskExecutor get() {
 		return instance;
 	}
 
 	public static void init(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
 		if (instance == null)
-			instance = new TaskExecutor(grid, guiInterface);
+			instance = new GuiTaskExecutor(grid, guiInterface);
 	}
 
-	public void executeAction(SimpleGuiTask guiTask) {
+	@Override
+	public void executeTask(ITask iTask) {
+		if (!(iTask instanceof SimpleGuiTask)) {
+			return;
+		}
+
+		SimpleGuiTask guiTask = (SimpleGuiTask) iTask;
+
 		System.err.println("executeTask(GuiTask): " + guiTask.getGuiAction());
 		switch (guiTask.getGuiAction()) {
 		case SET_WORK_AREA: {

@@ -17,6 +17,7 @@ import jsettlers.main.network.INetworkStartScreenEndListener;
 import jsettlers.main.network.NetworkMatchJoiner;
 import jsettlers.main.network.NetworkMatchOpener;
 import jsettlers.main.network.NetworkMatchOpener.INetworkStartListener;
+import jsettlers.main.network.NetworkRunningGameConnector;
 import jsettlers.main.network.NetworkScreenAdapter;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.server.match.MatchDescription;
@@ -128,7 +129,7 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 	}
 
 	@Override
-	public synchronized void startNetworkGame(String server, IMatchSettings gameSettings) {
+	public synchronized void openNewNetworkGame(String server, IMatchSettings gameSettings) {
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.STARTING_SERVER);
 		NetworkMatchOpener starter = new NetworkMatchOpener(server, gameSettings, this);
@@ -186,7 +187,10 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 
 			description.getMapId();
 			MapLoader map = networkScreen.getMapLoader();
-			NetworkManager networkManager = new NetworkManager(); // TODO @andreas use the correct constructor
+			NetworkRunningGameConnector runningGameConnector = new NetworkRunningGameConnector(client);
+			NetworkManager networkManager = new NetworkManager(runningGameConnector, networkScreen.getMyPlayerNumber(), networkScreen.getPlayerIDs());
+
+			client.setListener(runningGameConnector);
 
 			// TODO: pass on player count
 			IGameCreator creator = map;

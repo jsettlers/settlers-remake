@@ -11,6 +11,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
+import jsettlers.input.GuiTaskExecutor;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.timer.MovableTimer;
 import jsettlers.logic.timer.Timer100Milli;
@@ -101,11 +102,12 @@ public class JSettlersGame {
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
-			new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), (byte) 0);
+			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), (byte) 0);
 
 			connector.addListener(this);
 			connector.loadUIState(uiState);
-			networkManager.startGameTimer();
+
+			networkManager.startGameTimer(new GuiTaskExecutor(grid.getGuiInputGrid(), guiInterface));
 
 			gameConnector = connector;
 

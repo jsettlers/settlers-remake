@@ -1,4 +1,4 @@
-package jsettlers.input.task;
+package jsettlers.input;
 
 /**
  * Interface for TaskExecutor to give commands to the GuiInterface using the executor.

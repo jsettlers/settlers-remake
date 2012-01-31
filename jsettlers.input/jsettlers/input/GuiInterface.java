@@ -32,12 +32,11 @@ import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.input.task.ConvertGuiTask;
 import jsettlers.input.task.DestroyBuildingGuiTask;
+import jsettlers.input.task.EGuiAction;
 import jsettlers.input.task.GeneralGuiTask;
-import jsettlers.input.task.ITaskExecutorGuiInterface;
 import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
-import jsettlers.input.task.TaskExecutor;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
@@ -70,7 +69,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.manager = manager;
 		this.grid = grid;
 		this.player = player;
-		TaskExecutor.init(grid, this);
 		connector.addListener(this);
 	}
 
@@ -286,7 +284,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void moveTo(ISPosition2D pos) {
 		List<Integer> selectedIds = getIDsOfSelected();
-
 		scheduleTask(new MoveToGuiTask(pos, selectedIds));
 	}
 
