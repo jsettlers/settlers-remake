@@ -65,4 +65,9 @@ public class ResourceProvider implements IResourceProvider {
 	    return dirs[0];
     }
 
+	@Override
+    public File getTempDirectory() {
+	    return dirs[0];
+    }
+
 }

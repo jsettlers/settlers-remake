@@ -23,10 +23,10 @@ public class NetworkView implements INetworkScreenListener {
 	public NetworkView(View root, final INetworkScreenAdapter networkScreen) {
 		this.networkScreen = networkScreen;
 		networkScreen.setListener(this);
-		playerList = new PlayerList(root.getContext(), networkScreen);
 		chatAdapter = new ChatAdapter(root.getContext());
 
 		ListView playerListView = (ListView) root.findViewById(R.id.network_playerlist);
+		playerList = new PlayerList(playerListView, networkScreen);
 		playerListView.setAdapter(playerList);
 
 		ListView chatListView = (ListView) root.findViewById(R.id.network_chat);

@@ -22,6 +22,8 @@ import android.widget.Toast;
  * @author michael
  */
 public class MapList {
+	private static final String TEST_IP_ADDR = "";
+	
 	private final TextView description;
 	private final TextView name;
 	private IMapItem selectedMap;
@@ -101,7 +103,7 @@ public class MapList {
 				} else {
 					if (requestNetworkStart) {
 						connector.startNetworkGame(new NetworkGameSettings(
-						        selectedMap, "android network game", players));
+						        selectedMap, "android network game", players, TEST_IP_ADDR));
 					} else {
 						connector.startNewGame(new GameSettings(selectedMap,
 						        players));

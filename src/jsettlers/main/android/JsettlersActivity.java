@@ -74,7 +74,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		super.onStart();
 
 		keepScreenOn();
-		
+
 		if (!managerStarted) {
 			addImageLookups();
 
@@ -312,19 +312,23 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
 			setContentView(R.layout.maplist);
-			View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+			View root =
+			        ((ViewGroup) findViewById(android.R.id.content))
+			                .getChildAt(0);
 			new MapList(root, displayedStartScreen, false);
 		}
 	}
-	
-	public void startNetworkGameButtonClicked(@SuppressWarnings("unused") View target) {
+
+	public void startNetworkGameButtonClicked(
+	        @SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
 			setContentView(R.layout.maplist);
-			View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+			View root =
+			        ((ViewGroup) findViewById(android.R.id.content))
+			                .getChildAt(0);
 			new MapList(root, displayedStartScreen, true);
 		}
 	}
-
 
 	/**
 	 * Onclick listener
@@ -433,20 +437,29 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	}
 
 	@Override
-    public void showNetworkScreen(INetworkScreenAdapter networkScreen) {
-	    setContentView(R.layout.networkinit);
-		View root = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
-	    new NetworkView(root, networkScreen);
-    }
+	public void showNetworkScreen(final INetworkScreenAdapter networkScreen) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				disposeGLView();
+				setContentView(R.layout.networkinit);
+				View root =
+				        ((ViewGroup) findViewById(android.R.id.content))
+				                .getChildAt(0);
+				new NetworkView(root, networkScreen);
+			}
+		});
+	}
 
 	@Override
-    public void showErrorMessage(final String string) {
+	public void showErrorMessage(final String string) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-			    Toast t = Toast.makeText(JsettlersActivity.this, string, Toast.LENGTH_LONG);
-			    t.show();
+				Toast t =
+				        Toast.makeText(JsettlersActivity.this, string,
+				                Toast.LENGTH_LONG);
+				t.show();
 			}
 		});
-    }
+	}
 }

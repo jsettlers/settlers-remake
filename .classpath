@@ -11,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network.objects"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
