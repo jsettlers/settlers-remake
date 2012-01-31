@@ -45,4 +45,9 @@ public class ResourceProvider implements IResourceProvider {
 		return new File(path);
 	}
 
+	@Override
+    public File getTempDirectory() {
+	    return new File(path);
+    }
+
 }
