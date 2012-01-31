@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.Serializable;
 
 import jsettlers.common.network.IMatchSettings;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
+import jsettlers.network.server.ServerThread;
 import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.match.MatchPlayer;
 import jsettlers.network.server.match.MatchesInfoList;
@@ -27,8 +29,8 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 	private ProgressConnector progress;
 	private final String server;
 
-	public NetworkMatchOpener(String server, IMatchSettings gameSettings, INetworkStartListener notify) {
-		this.server = server;
+	public NetworkMatchOpener(IMatchSettings gameSettings, INetworkStartListener notify) {
+		this.server = gameSettings.getServerAddress();
 		this.gameSettings = gameSettings;
 		this.notify = notify;
 	}
@@ -56,7 +58,18 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 		@Override
 		public void run() {
 			try {
-				ClientThread clientThread = new ClientThread(server, this);
+				String serverAddress;
+				if (server == null || server.isEmpty()) {
+					//start new server
+					ServerThread serverThread = new ServerThread(ResourceManager.getTempDirectory());
+					serverThread.start();
+					
+					serverAddress = "localhost";
+				} else {
+					serverAddress = server;
+				}
+				
+				ClientThread clientThread = new ClientThread(serverAddress, this);
 				clientThread.start();
 				MatchDescription matchDescription = new MatchDescription(gameSettings);
 				clientThread.openNewMatch(matchDescription, gameSettings.getMap().getFile());
@@ -69,6 +82,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 				notifyStartSucceeded(clientThread, match);
 
 			} catch (Throwable t) {
+				t.printStackTrace();
 				notifyStartFailed();
 			}
 		}

@@ -13,10 +13,9 @@ public interface IGameStarter {
 
 	/**
 	 * Starts a new network game server.
-	 * @param server The server that is already running and can be used. Empty string => start new server.
 	 * @param gameSettings
 	 */
-	void openNewNetworkGame(String server, IMatchSettings gameSettings);
+	void openNetworkGame(IMatchSettings gameSettings);
 
 	/**
 	 * Joins a network game

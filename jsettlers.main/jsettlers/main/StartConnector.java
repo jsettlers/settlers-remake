@@ -61,7 +61,7 @@ class StartConnector implements IStartScreenConnector {
 
 	@Override
 	public void startNetworkGame(IMatchSettings gameSettings) {
-		gamestarter.openNewNetworkGame(getNetworkConnector().getServerAddress(), gameSettings);
+		gamestarter.openNetworkGame(gameSettings);
 	}
 
 	@Override

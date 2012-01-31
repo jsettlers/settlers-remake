@@ -129,10 +129,10 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 	}
 
 	@Override
-	public synchronized void openNewNetworkGame(String server, IMatchSettings gameSettings) {
+	public synchronized void openNetworkGame(IMatchSettings gameSettings) {
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.STARTING_SERVER);
-		NetworkMatchOpener starter = new NetworkMatchOpener(server, gameSettings, this);
+		NetworkMatchOpener starter = new NetworkMatchOpener(gameSettings, this);
 		starter.start(connector);
 		networkConnectTask = starter;
 	}
