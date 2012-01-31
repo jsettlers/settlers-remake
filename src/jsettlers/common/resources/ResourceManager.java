@@ -53,4 +53,12 @@ public class ResourceManager {
 			return new File("");
 		}
 	}
+
+	public static File getTempDirectory() {
+		if (provider != null) {
+			return provider.getTempDirectory();
+		} else {
+			return new File("");
+		}
+    }
 }

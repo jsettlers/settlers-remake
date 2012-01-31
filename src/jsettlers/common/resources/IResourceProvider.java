@@ -41,4 +41,6 @@ public interface IResourceProvider {
 	 * @return The directory, where the user has write permissions.
 	 */
 	File getSaveDirectory();
+
+	File getTempDirectory();
 }

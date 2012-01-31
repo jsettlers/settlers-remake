@@ -20,4 +20,10 @@ public interface IMatchSettings {
 	long getRandomSeed();
 
 	INetworkableMap getMap();
+	
+	/**
+	 * Gets the address of the server to open the game on.
+	 * @return The server address.
+	 */
+	String getServerAddress();
 }
