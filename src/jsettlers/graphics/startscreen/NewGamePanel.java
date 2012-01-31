@@ -67,7 +67,7 @@ public class NewGamePanel extends UIPanel {
 	public IMatchSettings getNetworkGameSettings() {
 		MapListItem item = list.getActiveItem();
 	    if (item != null) {
-	    	return new NetworkGameSettings(item.getMap(), "player's game");
+	    	return new NetworkGameSettings(item.getMap(), "player's game", 3, "localhost");
 	    } else {
 	    	return null;
 	    }
