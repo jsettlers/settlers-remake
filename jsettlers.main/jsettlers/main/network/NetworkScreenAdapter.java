@@ -3,6 +3,7 @@ package jsettlers.main.network;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 
 import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.logic.map.save.MapList;
@@ -27,13 +28,24 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	private MatchDescription description;
 	private INetworkStartScreenEndListener endListener;
 	private INetworkScreenListener networkScreenListener;
-	private INetworkPlayer[] playerInfos;
+	private NetworkPlayer[] playerInfos;
 	private MapLoader mapLoader;
+	private int myPlayerNumber;
 
-	public NetworkScreenAdapter(ClientThread clientThread, MatchDescription description) {
+	public NetworkScreenAdapter(final ClientThread clientThread, MatchDescription description) {
 		this.clientThread = clientThread;
 		this.description = description;
 		clientThread.setListener(new ScreenAdapterClientThreadListener());
+
+		new Thread("setReadyThread") {
+			@Override
+			public void run() {
+				try {
+					clientThread.requestPlayerInfos();
+				} catch (IOException e) {
+				}
+			}
+		}.start();
 	}
 
 	public MatchDescription getMatchDescription() {
@@ -117,6 +129,15 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 	}
 
+	private void calculateMyPlayerNumebr(String myID) {
+		for (int i = 0; i < playerInfos.length; i++) {
+			if (playerInfos[i] != null && playerInfos[i].getUniqueID().equals(myID)) {
+				myPlayerNumber = i;
+			}
+		}
+		System.err.println("ERROR: couldn't calculate the players playernumber!!!");
+	}
+
 	public void setEndListener(INetworkStartScreenEndListener endListener) {
 		this.endListener = endListener;
 	}
@@ -125,6 +146,10 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		if (endListener != null) {
 			endListener.leftMatch(this);
 		}
+	}
+
+	public int getMyPlayerNumber() {
+		return myPlayerNumber;
 	}
 
 	private final class ScreenAdapterClientThreadListener implements IClientThreadListener {
@@ -168,8 +193,10 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 
 		@Override
 		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
+			System.err.println("RECEIVED PLAYER INFOS: " + Arrays.toString(playerInfos));
+
 			NetworkScreenAdapter.this.description = matchDescription;
-			INetworkPlayer[] newInfos = new NetworkPlayer[playerInfos.length];
+			NetworkPlayer[] newInfos = new NetworkPlayer[playerInfos.length];
 			for (int i = 0; i < description.getMaxPlayers(); i++) {
 				if (playerInfos[i] != null)
 					newInfos[i] = new NetworkPlayer(playerInfos[i]);
@@ -181,8 +208,11 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 
 		@Override
-		public void startingMatch() {
+		public void startingMatch(String myID) {
 			System.out.println("NETWORK MATCH STARTED!!!");
+
+			calculateMyPlayerNumebr(myID);
+
 			notifyMatchStarted();
 		}
 
@@ -203,6 +233,10 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		@Override
 		public boolean isReady() {
 			return matchPlayer.isReady();
+		}
+
+		public String getUniqueID() {
+			return matchPlayer.getUniqueId();
 		}
 	}
 

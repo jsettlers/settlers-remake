@@ -113,7 +113,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 		}
 
 		@Override
-		public void startingMatch() {
+		public void startingMatch(String myID) {
 		}
 	}
 

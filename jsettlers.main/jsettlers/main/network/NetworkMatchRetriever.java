@@ -145,7 +145,7 @@ public class NetworkMatchRetriever implements INetworkConnector {
 		}
 
 		@Override
-		public void startingMatch() {
+		public void startingMatch(String myID) {
 		}
 	}
 
