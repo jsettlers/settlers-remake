@@ -10,6 +10,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
+import jsettlers.network.server.ServerThread;
 import jsettlers.network.server.match.MatchDescription;
 import jsettlers.network.server.match.MatchPlayer;
 import jsettlers.network.server.match.MatchesInfoList;
@@ -22,14 +23,14 @@ import jsettlers.network.server.match.MatchesInfoList;
  */
 public class NetworkMatchRetriever implements INetworkConnector {
 	private INetworkListener listener;
-	private String address = "";
+	private String address = null;
 	private IMatch[] matches = new IMatch[0];
 
 	private ServerSender currentSender;
 
 	@Override
 	public synchronized void setServerAddress(String address) {
-		this.address = address;
+		this.address = null;
 
 		reconnect();
 		notifyMatchListChanged();
@@ -45,7 +46,7 @@ public class NetworkMatchRetriever implements INetworkConnector {
 		if (currentSender != null) {
 			currentSender.disconnect();
 		}
-		currentSender = new ServerSender(address);
+		currentSender = new ServerSender();
 		new Thread(currentSender, "network start sender").start();
 	}
 
@@ -73,12 +74,7 @@ public class NetworkMatchRetriever implements INetworkConnector {
 
 	private class ServerSender implements IClientThreadListener, Runnable {
 		private ClientThread clientThread;
-		private final String address;
 		private boolean disconnected = false;
-
-		public ServerSender(String address) {
-			this.address = address;
-		}
 
 		public void disconnect() {
 			clientThread.cancelConnection();
@@ -124,6 +120,10 @@ public class NetworkMatchRetriever implements INetworkConnector {
 
 		@Override
 		public void run() {
+			if (address == null) {
+				address = ServerThread.retrievLanServerAddress(5); // try to find lan server
+			}
+
 			try {
 				clientThread = new ClientThread(address, this);
 				clientThread.start();

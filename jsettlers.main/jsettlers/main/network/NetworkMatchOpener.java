@@ -30,7 +30,8 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 	private final String server;
 
 	public NetworkMatchOpener(IMatchSettings gameSettings, INetworkStartListener notify) {
-		this.server = gameSettings.getServerAddress();
+		// this.server = gameSettings.getServerAddress(); //TODO @Michael implement a way to say if we are in lan or not
+		this.server = null;
 		this.gameSettings = gameSettings;
 		this.notify = notify;
 	}
@@ -60,15 +61,20 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 			try {
 				String serverAddress;
 				if (server == null || server.isEmpty()) {
-					//start new server
-					ServerThread serverThread = new ServerThread(ResourceManager.getTempDirectory());
-					serverThread.start();
-					
-					serverAddress = "localhost";
+					serverAddress = ServerThread.retrievLanServerAddress(5); // try to find lan server
+
+					if (serverAddress == null) { // if no lan server has been found
+						// start new server
+						System.err.println("started new server!");
+						ServerThread serverThread = new ServerThread(ResourceManager.getTempDirectory(), true);
+						serverThread.start();
+
+						serverAddress = "localhost";
+					}
 				} else {
 					serverAddress = server;
 				}
-				
+
 				ClientThread clientThread = new ClientThread(serverAddress, this);
 				clientThread.start();
 				MatchDescription matchDescription = new MatchDescription(gameSettings);
