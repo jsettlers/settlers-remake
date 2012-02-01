@@ -21,6 +21,7 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.main.ManagedJSettlers;
+import jsettlers.network.client.LanServerAddressBroadcastListener;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -54,7 +55,10 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	private Area area;
 
 	private enum EAndroidUIState {
-		SHOW_PROGRESS, SHOW_STARTSCREEN, SHOW_ACTIVE_GAME, SHOW_GAMELIST
+		SHOW_PROGRESS,
+		SHOW_STARTSCREEN,
+		SHOW_ACTIVE_GAME,
+		SHOW_GAMELIST
 	}
 
 	private EAndroidUIState state = EAndroidUIState.SHOW_STARTSCREEN;
@@ -82,30 +86,23 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 			manager.start(this);
 			managerStarted = true;
 		}
+
+		new LanServerAddressBroadcastListener().start();
 	}
 
 	private void keepScreenOn() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		super.getWindow().addFlags(
-		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		super.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	private void addImageLookups() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files = new File[] {
-		        getExternalFilesDir(null), // <- output dir, always writable
-		        jsettlersdir,
-		        storage,
-		        jsettlersdir,
-		        new File(jsettlersdir, "GFX"),
-		        michael,
-		        new File(michael, "GFX")
-		};
+		File[] files = new File[] { getExternalFilesDir(null), // <- output dir, always writable
+				jsettlersdir, storage, jsettlersdir, new File(jsettlersdir, "GFX"), michael, new File(michael, "GFX") };
 
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
@@ -188,35 +185,35 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		}
 		// Handle item selection
 		switch (item.getItemId()) {
-			case R.id.f12btn:
-				glView.fireKey("F12");
-				return true;
-			case R.id.savebtn:
-				glView.fireKey("F2");
-				return true;
-				// case R.id.loadbtn:
-				// glView.fireKey("q");
-				// return true;
-				// case R.id.pausebtn:
-				// glView.fireKey("PAUSE");
-				// return true;
-			case R.id.speedup:
-				glView.fireKey("+");
-				glView.fireKey("+");
-				return true;
-			case R.id.slowdown:
-				glView.fireKey("-");
-				glView.fireKey("-");
-				return true;
-			case R.id.kill:
-				glView.fireKey("DELETE");
-				return true;
-			case R.id.stop:
-				glView.fireKey("STOP");
-				return true;
+		case R.id.f12btn:
+			glView.fireKey("F12");
+			return true;
+		case R.id.savebtn:
+			glView.fireKey("F2");
+			return true;
+			// case R.id.loadbtn:
+			// glView.fireKey("q");
+			// return true;
+			// case R.id.pausebtn:
+			// glView.fireKey("PAUSE");
+			// return true;
+		case R.id.speedup:
+			glView.fireKey("+");
+			glView.fireKey("+");
+			return true;
+		case R.id.slowdown:
+			glView.fireKey("-");
+			glView.fireKey("-");
+			return true;
+		case R.id.kill:
+			glView.fireKey("DELETE");
+			return true;
+		case R.id.stop:
+			glView.fireKey("STOP");
+			return true;
 
-			default:
-				return super.onOptionsItemSelected(item);
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -312,20 +309,15 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public void startGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
 			setContentView(R.layout.maplist);
-			View root =
-			        ((ViewGroup) findViewById(android.R.id.content))
-			                .getChildAt(0);
+			View root = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
 			new MapList(root, displayedStartScreen, false);
 		}
 	}
 
-	public void startNetworkGameButtonClicked(
-	        @SuppressWarnings("unused") View target) {
+	public void startNetworkGameButtonClicked(@SuppressWarnings("unused") View target) {
 		if (displayedStartScreen != null) {
 			setContentView(R.layout.maplist);
-			View root =
-			        ((ViewGroup) findViewById(android.R.id.content))
-			                .getChildAt(0);
+			View root = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
 			new MapList(root, displayedStartScreen, true);
 		}
 	}
@@ -380,8 +372,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	}
 
 	@Override
-	public MapInterfaceConnector showGameMap(IGraphicsGrid map,
-	        IStatisticable playerStatistics) {
+	public MapInterfaceConnector showGameMap(IGraphicsGrid map, IStatisticable playerStatistics) {
 		displayedStartScreen = null;
 		state = EAndroidUIState.SHOW_ACTIVE_GAME;
 
@@ -412,8 +403,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	}
 
 	public void preloadGlView() {
-		if (this.state != EAndroidUIState.SHOW_ACTIVE_GAME
-		        && state != EAndroidUIState.SHOW_PROGRESS) {
+		if (this.state != EAndroidUIState.SHOW_ACTIVE_GAME && state != EAndroidUIState.SHOW_PROGRESS) {
 			return;
 		}
 
@@ -430,8 +420,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 			@Override
 			public void run() {
 				System.out.println("running opengl preload");
-				ImageProvider.getInstance().runPreloadTasks(
-				        glView.getDrawContext());
+				ImageProvider.getInstance().runPreloadTasks(glView.getDrawContext());
 			}
 		});
 	}
@@ -439,12 +428,11 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	@Override
 	public void showNetworkScreen(final INetworkScreenAdapter networkScreen) {
 		runOnUiThread(new Runnable() {
+			@Override
 			public void run() {
 				disposeGLView();
 				setContentView(R.layout.networkinit);
-				View root =
-				        ((ViewGroup) findViewById(android.R.id.content))
-				                .getChildAt(0);
+				View root = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
 				new NetworkView(root, networkScreen);
 			}
 		});
@@ -455,9 +443,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Toast t =
-				        Toast.makeText(JsettlersActivity.this, string,
-				                Toast.LENGTH_LONG);
+				Toast t = Toast.makeText(JsettlersActivity.this, string, Toast.LENGTH_LONG);
 				t.show();
 			}
 		});
