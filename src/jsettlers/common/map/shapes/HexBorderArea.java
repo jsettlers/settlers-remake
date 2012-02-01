@@ -10,7 +10,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Eberle
  * 
  */
-public class HexBorderArea implements IMapArea {
+public final class HexBorderArea implements IMapArea {
 	private static final long serialVersionUID = -5609476544086214928L;
 
 	private final short radius;
@@ -41,7 +41,7 @@ public class HexBorderArea implements IMapArea {
 		return (short) (radius * 6);
 	}
 
-	public class HexBorderIterator implements Iterator<ISPosition2D> {
+	public static final class HexBorderIterator implements Iterator<ISPosition2D> {
 		private final short r;
 		private final short centerX;
 		private final short centerY;
