@@ -85,8 +85,9 @@ public final class NewFogOfWar implements IFogOfWar {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private final boolean isPlayerOK(IPlayerable playerable) {
-		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || playerable.getPlayer() == player);
+		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayer() == player));
 	}
 
 	@Override
