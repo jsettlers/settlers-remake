@@ -20,7 +20,7 @@ public class JoinGamePanel extends UIPanel implements INetworkListener {
 
 	public JoinGamePanel(INetworkConnector networkConnector) {
 		this.networkConnector = networkConnector;
-		networkConnector.setServerAddress("localhost");
+		 networkConnector.setServerAddress(null);
 
 		// start button
 		EActionType action = EActionType.JOIN_NETWORK;
