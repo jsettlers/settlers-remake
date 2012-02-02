@@ -102,13 +102,14 @@ public final class NewFogOfWar implements IFogOfWar {
 
 	final class NewFoWThread extends Thread {
 		private static final byte DIM_DOWN_SPEED = 10;
-		private final CircleDrawer drawer = new CircleDrawer();
+		private final CircleDrawer drawer;
 		private byte[][] buffer;
 
 		NewFoWThread() {
 			super("NewFoWThread");
 			this.buffer = new byte[width][height];
 			super.setDaemon(true);
+			drawer = new CircleDrawer();
 		}
 
 		@Override
@@ -164,7 +165,8 @@ public final class NewFogOfWar implements IFogOfWar {
 					short distance = curr.getViewDistance();
 					if (distance > 0) {
 						ISPosition2D pos = curr.getPos();
-						drawer.drawCircleToBuffer(pos.getX(), pos.getY(), distance);
+						if (pos != null)
+							drawer.drawCircleToBuffer(pos.getX(), pos.getY(), distance);
 					}
 				}
 			}
