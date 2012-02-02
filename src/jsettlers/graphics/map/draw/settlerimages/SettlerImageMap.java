@@ -56,7 +56,7 @@ public final class SettlerImageMap {
 		this.types = EMovableType.values().length;
 		this.actions = EAction.values().length;
 		this.materials = EMaterialType.values().length;
-		this.directions = EDirection.values().length;
+		this.directions = EDirection.values.length;
 		this.map =
 		        new SettlerImageMapItem[this.types][this.actions][this.materials][this.directions];
 
