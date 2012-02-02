@@ -57,7 +57,7 @@ public class BordersThread implements Runnable {
 		byte player = grid.getPlayer(position.getX(), position.getY());
 		boolean isBorder = false;
 
-		for (EDirection currDir : EDirection.values()) {
+		for (EDirection currDir : EDirection.valuesCached()) {
 			short currNeighborX = currDir.getNextTileX(position.getX());
 			short currNeighborY = currDir.getNextTileY(position.getY());
 
