@@ -54,10 +54,10 @@ public class BordersThread implements Runnable {
 	}
 
 	private void calculateForPosition(ISPosition2D position) {
-		byte player = grid.getPlayer(position.getX(), position.getY());
+		byte player = grid.getPlayerAt(position.getX(), position.getY());
 		boolean isBorder = false;
 
-		for (EDirection currDir : EDirection.valuesCached()) {
+		for (EDirection currDir : EDirection.values) {
 			short currNeighborX = currDir.getNextTileX(position.getX());
 			short currNeighborY = currDir.getNextTileY(position.getY());
 
@@ -65,7 +65,7 @@ public class BordersThread implements Runnable {
 				continue;
 			}
 
-			byte neighborPlayer = grid.getPlayer(currNeighborX, currNeighborY);
+			byte neighborPlayer = grid.getPlayerAt(currNeighborX, currNeighborY);
 			boolean neighborIsBorder = false;
 
 			if (neighborPlayer != player) {
@@ -74,21 +74,21 @@ public class BordersThread implements Runnable {
 
 			if (neighborPlayer >= 0) { // this position is occupied by a player
 
-				for (EDirection currNeighborDir : EDirection.valuesCached()) {
+				for (EDirection currNeighborDir : EDirection.values) {
 					short nextX = currNeighborDir.getNextTileX(currNeighborX);
 					short nextY = currNeighborDir.getNextTileY(currNeighborY);
 
-					if (grid.isInBounds(nextX, nextY) && grid.getPlayer(nextX, nextY) != neighborPlayer) {
+					if (grid.isInBounds(nextX, nextY) && grid.getPlayerAt(nextX, nextY) != neighborPlayer) {
 						neighborIsBorder = true;
 						break;
 					}
 				}
 			} // else the position is not occupied -> don't display a border here
 
-			grid.setBorder(currNeighborX, currNeighborY, neighborIsBorder);
+			grid.setBorderAt(currNeighborX, currNeighborY, neighborIsBorder);
 		}
 
-		grid.setBorder(position.getX(), position.getY(), isBorder && player >= 0);
+		grid.setBorderAt(position.getX(), position.getY(), isBorder && player >= 0);
 	}
 
 	public void checkPosition(ISPosition2D position) {

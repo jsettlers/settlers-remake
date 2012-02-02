@@ -102,7 +102,7 @@ public class PartitionsAlgorithm {
 
 		boolean lastWasOldPartition = false;
 
-		for (EDirection dir : EDirection.values()) {
+		for (EDirection dir : EDirection.values) {
 			ISPosition2D currPos = dir.getNextHexPoint(x, y);
 			if (!grid.isInBounds(currPos.getX(), currPos.getY())) {
 				continue;
@@ -125,7 +125,7 @@ public class PartitionsAlgorithm {
 			}
 		}
 
-		ISPosition2D lastPosition = EDirection.values()[5].getNextHexPoint(x, y);
+		ISPosition2D lastPosition = EDirection.values[5].getNextHexPoint(x, y);
 		if (grid.getPartition(lastPosition) == oldPartition) {
 			disconnectedCtr--;
 		}

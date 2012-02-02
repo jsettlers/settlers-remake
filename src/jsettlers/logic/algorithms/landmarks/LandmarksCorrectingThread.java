@@ -114,7 +114,7 @@ public final class LandmarksCorrectingThread extends Thread {
 	private final LinkedList<EDirection> getBlockedDirection(ISPosition2D position) {
 		LinkedList<EDirection> blockedDirections = new LinkedList<EDirection>();
 
-		for (EDirection currDir : EDirection.values()) {
+		for (EDirection currDir : EDirection.values) {
 			short currX = currDir.getNextTileX(position.getX());
 			short currY = currDir.getNextTileY(position.getY());
 			if (grid.isInBounds(currX, currY) && grid.isBlocked(currX, currY)) {
