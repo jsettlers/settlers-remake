@@ -11,11 +11,17 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 
-class FlattenedResetter implements ITimerable, Serializable {
+/**
+ * Resets the positions flattened by movables to grass after a while.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+final class FlattenedResetter implements ITimerable, Serializable {
 	private static final long serialVersionUID = -7786860099434140327L;
 
 	/**
-	 * number of ticks of the timer to be ignored before the next reset run will be done.
+	 * number of ticks of the 100ms timer to be ignored before the next reset run will be done.
 	 */
 	private static final byte EXECUTION_DELAY = 15;
 

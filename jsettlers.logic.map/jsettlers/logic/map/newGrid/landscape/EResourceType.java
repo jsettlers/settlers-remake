@@ -14,10 +14,14 @@ public enum EResourceType {
 	IRON(EMapObjectType.FOUND_IRON),
 	FISH(null);
 
+	public static final EResourceType[] values = EResourceType.values();
+
+	public final byte ordinal;
 	private final EMapObjectType mapObjectType;
 
 	private EResourceType(EMapObjectType mapObjectType) {
 		this.mapObjectType = mapObjectType;
+		this.ordinal = (byte) super.ordinal();
 	}
 
 	public final EMapObjectType getMapObjectType() {
