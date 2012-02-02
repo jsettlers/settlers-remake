@@ -23,7 +23,7 @@ public class PioneerStrategy extends SpecialistStrategy {
 		ISPosition2D centerPos = super.getCenterPos();
 
 		// TODO: look at more tiles (radius 3)
-		for (EDirection sateliteDir : EDirection.values()) {
+		for (EDirection sateliteDir : EDirection.values) {
 			ISPosition2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
 
 			if (super.getGrid().isAllowedForMovable(satelitePos.getX(), satelitePos.getY(), this) && canWorkOn(satelitePos)) {

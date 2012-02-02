@@ -474,7 +474,7 @@ public class MainGrid implements Serializable {
 		}
 
 		private final boolean hasProtectedNeighbor(short x, short y) {
-			for (EDirection currDir : EDirection.valuesCached()) {
+			for (EDirection currDir : EDirection.values) {
 				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
 			}
@@ -506,7 +506,7 @@ public class MainGrid implements Serializable {
 		}
 
 		private final boolean hasBlockedNeighbor(short x, short y) {
-			for (EDirection currDir : EDirection.values()) {
+			for (EDirection currDir : EDirection.values) {
 				short currX = currDir.getNextTileX(x);
 				short currY = currDir.getNextTileY(y);
 				if (!isInBounds(currX, currY) || flagsGrid.isBlocked(currX, currY)) {
@@ -584,7 +584,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean isBorder(int x, int y) {
-			return partitionsGrid.isBorderAt((short) x, (short) y);
+			return flagsGrid.isBorderAt((short) x, (short) y);
 		}
 
 		@Override
@@ -1034,13 +1034,13 @@ public class MainGrid implements Serializable {
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
 		@Override
-		public final byte getPlayer(short x, short y) {
+		public final byte getPlayerAt(short x, short y) {
 			return partitionsGrid.getPlayerAt(x, y);
 		}
 
 		@Override
-		public final void setBorder(short x, short y, boolean isBorder) {
-			partitionsGrid.setBorderAt(x, y, isBorder);
+		public final void setBorderAt(short x, short y, boolean isBorder) {
+			flagsGrid.setBorderAt(x, y, isBorder);
 		}
 
 		@Override

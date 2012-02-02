@@ -336,7 +336,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	private boolean lookAtSearched() {
 		if (currentJob.getSearchType() == ESearchType.FISHABLE) {
-			for (EDirection direction : EDirection.values()) {
+			for (EDirection direction : EDirection.values) {
 				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
 				if (super.getGrid().isInBounds(pos) && super.getGrid().getLandscapeTypeAt(pos).isWater()) {
 					super.setDirection(direction);
@@ -345,7 +345,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			}
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.RIVER) {
-			for (EDirection direction : EDirection.values()) {
+			for (EDirection direction : EDirection.values) {
 				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
 				if (super.getGrid().isInBounds(pos)
 						&& (super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER1

@@ -57,7 +57,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	public Movable(IMovableGrid grid, ISPosition2D pos, EMovableType type, byte player) {
 		this.grid = grid;
 		this.pos = pos;
-		this.setDirection(EDirection.values()[RandomSingleton.getInt(0, 5)]);
+		this.setDirection(EDirection.values[RandomSingleton.getInt(0, 5)]);
 		this.player = player;
 		this.strategy = MovableStrategy.getTypeStrategy(grid, type, this);
 
@@ -224,10 +224,10 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	private void goToRandomDirection(IHexMovable from) {
 		// choose a random direction and go to it
 		int offset = RandomSingleton.getInt(0, 5);
-		int directions = EDirection.values().length;
+		int directions = EDirection.NUMBER_OF_DIRECTIONS;
 
 		for (int i = 0; i < directions; i++) {
-			ISPosition2D newPos = EDirection.values()[(i + offset) % directions].getNextHexPoint(pos);
+			ISPosition2D newPos = EDirection.values[(i + offset) % directions].getNextHexPoint(pos);
 			if (grid.isAllowedForMovable(newPos.getX(), newPos.getY(), strategy)) {
 				goToTile(newPos);
 				return;
@@ -317,7 +317,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		if (RandomSingleton.nextF() < Constants.MOVABLE_TURN_PROBABILITY) {
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
 		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_NEIGHBOR_PUSH_PROBABILITY) {
-			for (EDirection curr : EDirection.valuesCached()) { // push all movables around this movable
+			for (EDirection curr : EDirection.values) { // push all movables around this movable
 				ISPosition2D point = curr.getNextHexPoint(pos);
 				if (grid.isInBounds(point)) {
 					IHexMovable movable = grid.getMovable(point);

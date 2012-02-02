@@ -134,7 +134,7 @@ public final class ObjectsGrid implements Serializable {
 	}
 
 	public final boolean hasNeighborObjectType(short x, short y, EMapObjectType mapObjectType) {
-		EDirection[] directions = EDirection.valuesCached();
+		EDirection[] directions = EDirection.values;
 
 		for (EDirection currDir : directions) {
 			ISPosition2D currPos = currDir.getNextHexPoint(x, y);

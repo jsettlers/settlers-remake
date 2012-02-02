@@ -38,7 +38,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	private final short height;
 	private final short[][] partitions;
 	private final byte[][] towers;
-	private final boolean[][] borders;
+
 	/**
 	 * This array stores the partition objects handled by this class.<br>
 	 */
@@ -53,7 +53,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		this.grid = grid;
 		this.partitions = new short[width][height];
 		this.towers = new byte[width][height];
-		this.borders = new boolean[width][height];
 		this.nullPartition = new Partition((byte) -1, height * width);
 
 		for (short x = 0; x < width; x++) {
@@ -254,14 +253,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return getPartitionObject(position.getX(), position.getY()).pushMaterial(position, materialType);
 	}
 
-	public final void setBorderAt(short x, short y, boolean isBorder) {
-		this.borders[x][y] = isBorder;
-	}
-
-	public final boolean isBorderAt(short x, short y) {
-		return borders[x][y];
-	}
-
 	public final void addJobless(IManageableBearer manageable) {
 		getPartitionObject(manageable.getPos()).addJobless(manageable);
 	}
@@ -422,5 +413,5 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	public EMaterialType popToolProduction(ISPosition2D pos) {
 		return getPartitionObject(pos).popToolProduction(pos);
-    }
+	}
 }

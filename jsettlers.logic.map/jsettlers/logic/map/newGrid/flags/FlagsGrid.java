@@ -17,6 +17,7 @@ public class FlagsGrid implements Serializable {
 	private final BitSet blockedGrid;
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
+	private final BitSet bordersGrid;
 
 	public FlagsGrid(final short width, final short height) {
 		this.width = width;
@@ -24,6 +25,7 @@ public class FlagsGrid implements Serializable {
 		this.blockedGrid = new BitSet(width * height);
 		this.protectedGrid = new BitSet(width * height);
 		this.markedGrid = new BitSet(width * height);
+		this.bordersGrid = new BitSet(width * height);
 	}
 
 	public boolean isBlocked(short x, short y) {
@@ -65,6 +67,14 @@ public class FlagsGrid implements Serializable {
 
 	public void setProtected(short x, short y, boolean setProtected) {
 		this.protectedGrid.set(getIdx(x, y), setProtected);
+	}
+
+	public boolean isBorderAt(short x, short y) {
+		return this.bordersGrid.get(getIdx(x, y));
+	}
+
+	public void setBorderAt(short x, short y, boolean setProtected) {
+		this.bordersGrid.set(getIdx(x, y), setProtected);
 	}
 
 }
