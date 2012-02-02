@@ -340,7 +340,7 @@ public class TestMap implements IGraphicsGrid {
 			while (current != null && !current.getLandscapeType().isWater()) {
 				current.setRiver(true);
 
-				List<EDirection> directions = Arrays.asList(EDirection.values());
+				List<EDirection> directions = Arrays.asList(EDirection.values);
 				Collections.shuffle(directions);
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
@@ -360,7 +360,7 @@ public class TestMap implements IGraphicsGrid {
 
 	private int getNeighbourRiverCount(TestTile tile) {
 		int rivers = 0;
-		for (EDirection dir : EDirection.values()) {
+		for (EDirection dir : EDirection.values) {
 			TestTile toTest = this.getTile(dir.getNextHexPoint(tile));
 			if (toTest != null
 					&& (toTest.getLandscapeType() == ELandscapeType.RIVER1 || toTest.getLandscapeType() == ELandscapeType.RIVER2
@@ -388,8 +388,9 @@ public class TestMap implements IGraphicsGrid {
 	}
 
 	private static boolean allowsStackPlacement(ELandscapeType landscape) {
-	    return landscape.isWater() && landscape != ELandscapeType.MOOR && landscape != ELandscapeType.RIVER1 && landscape != ELandscapeType.RIVER2 && landscape != ELandscapeType.RIVER3 && landscape != ELandscapeType.RIVER4 && landscape != ELandscapeType.SNOW;
-    }
+		return landscape.isWater() && landscape != ELandscapeType.MOOR && landscape != ELandscapeType.RIVER1 && landscape != ELandscapeType.RIVER2
+				&& landscape != ELandscapeType.RIVER3 && landscape != ELandscapeType.RIVER4 && landscape != ELandscapeType.SNOW;
+	}
 
 	public void moveStep() {
 		for (TestSettler settler : this.settlers) {
