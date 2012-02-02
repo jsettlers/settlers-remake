@@ -36,8 +36,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	private final short width;
 	private final short height;
-	private final short[][] partitions;
-	private final byte[][] towers;
+	private final short[] partitions;
+	private final byte[] towers;
 
 	/**
 	 * This array stores the partition objects handled by this class.<br>
@@ -51,15 +51,17 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		this.width = width;
 		this.height = height;
 		this.grid = grid;
-		this.partitions = new short[width][height];
-		this.towers = new byte[width][height];
+		this.partitions = new short[width * height];
+		this.towers = new byte[width * height];
 		this.nullPartition = new Partition((byte) -1, height * width);
 
-		for (short x = 0; x < width; x++) {
-			for (short y = 0; y < height; y++) {
-				this.partitions[x][y] = -1;
-			}
+		for (int idx = 0; idx < partitions.length; idx++) {
+			this.partitions[idx] = -1;
 		}
+	}
+
+	private final int getIdx(int x, int y) {
+		return y * width + x;
 	}
 
 	public final void initPartitionsAlgorithm(HexAStar aStar) {
@@ -76,7 +78,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	public final short getPartitionAt(short x, short y) {
-		return this.partitions[x][y];
+		return this.partitions[getIdx(x, y)];
 	}
 
 	private final Partition getPartitionObject(ISPosition2D pos) {
@@ -101,7 +103,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	@Override
 	public final short getPartition(short x, short y) {
-		return this.partitions[x][y];
+		return this.partitions[getIdx(x, y)];
 	}
 
 	@Override
@@ -112,13 +114,13 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
 		grid.setDebugColor(x, y, Color.GREEN);
 
-		this.partitions[x][y] = newPartition;
+		this.partitions[getIdx(x, y)] = newPartition;
 
 		grid.changedPartitionAt(x, y);
 	}
 
 	public final void setPartitionAndPlayerAt(short x, short y, short partition) {
-		this.partitions[x][y] = partition;
+		this.partitions[getIdx(x, y)] = partition;
 	}
 
 	@Override
@@ -179,9 +181,9 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		short newPartition = initializeNewPartition(getPlayerAt(firstPos));
 		short oldPartition = getPartition(firstPos);
 
-		partitions[x][y] = -1;// this is needed, because the new partition is not determined yet
+		partitions[getIdx(x, y)] = -1;// this is needed, because the new partition is not determined yet
 		relabelPartition(secondPos.getX(), secondPos.getY(), oldPartition, newPartition, false);
-		partitions[x][y] = oldPartition;
+		partitions[getIdx(x, y)] = oldPartition;
 	}
 
 	private final byte[] neighborX = EDirection.getXDeltaArray();
@@ -208,12 +210,12 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		while (length > 0) {
 			short y = pointsBuffer[--length];
 			short x = pointsBuffer[--length];
-			if (partitions[x][y] != oldPartition) {
+			if (partitions[getIdx(x, y)] != oldPartition) {
 				continue; // the partition may already have changed.
 			}
 
 			if (justRelabel) {
-				this.partitions[x][y] = newPartition;
+				this.partitions[getIdx(x, y)] = newPartition;
 			} else {
 				setPartition(x, y, newPartition);
 			}
@@ -222,7 +224,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 				short currX = (short) (x + neighborX[i]);
 				short currY = (short) (y + neighborY[i]);
-				if (isInBounds(currX, currY) && partitions[currX][currY] == oldPartition && (!currIsBlocked || grid.isBlocked(currX, currY))) {
+				if (isInBounds(currX, currY) && partitions[getIdx(currX, currY)] == oldPartition && (!currIsBlocked || grid.isBlocked(currX, currY))) {
 					if (length < MAX_LENGTH) {
 						pointsBuffer[length++] = currX;
 						pointsBuffer[length++] = currY;
@@ -321,7 +323,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			short currPartition = getPartitionAt(x, y);
 
 			if (currPartition != newPartition) {
-				if (towers[x][y] <= 0) {
+				if (towers[getIdx(x, y)] <= 0) {
 					if (currPartition < 0) {
 						setPartition(x, y, newPartition);
 						occupiedPositions.add(curr);
@@ -340,7 +342,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			}
 
 			if (getPlayerAt(x, y) == newPlayer) {
-				towers[x][y]++;
+				towers[getIdx(x, y)]++;
 
 				for (ISPosition2D neighbor : new MapNeighboursArea(curr)) {
 					if (isInBounds(neighbor) && !toBeOccupied.contains(neighbor)) {
@@ -369,7 +371,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	public final boolean isEnforcedByTower(short x, short y) {
-		return towers[x][y] > 0;
+		return towers[getIdx(x, y)] > 0;
 	}
 
 	public final List<ISPosition2D> freeOccupiedArea(MapCircle occupied, ISPosition2D occupiersPosition) {
@@ -380,10 +382,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			short x = curr.getX();
 			short y = curr.getY();
 			if (isInBounds(x, y) && getPartitionAt(x, y) == partiton) {
-				towers[x][y]--;
-				if (towers[x][y] <= 0) {
+				final int idx = getIdx(x, y);
+				towers[idx]--;
+				if (towers[idx] <= 0) {
 					totallyFreePositions.add(curr);
-					towers[x][y] = 0; // just to ensure that the array is ok (<0 would be wrong)
+					towers[idx] = 0; // just to ensure that the array is ok (<0 would be wrong)
 				}
 			}
 		}
@@ -396,7 +399,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	public final int getTowerCounterAt(short x, short y) {
-		return towers[x][y];
+		return towers[getIdx(x, y)];
 	}
 
 	/**
@@ -408,7 +411,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	 */
 	public final void occupyAt(short x, short y, byte newPlayer) {
 		changePlayerAt(x, y, newPlayer);
-		towers[x][y]++;
+		towers[getIdx(x, y)]++;
 	}
 
 	public EMaterialType popToolProduction(ISPosition2D pos) {
