@@ -56,14 +56,11 @@ public class MapData implements IMapData {
 
 	public MapData(int width, int height, int playercount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
-			throw new IllegalArgumentException(
-			        "width and height must be positive");
+			throw new IllegalArgumentException("width and height must be positive");
 		}
 
 		if (width > Short.MAX_VALUE || height > Short.MAX_VALUE) {
-			throw new IllegalArgumentException(
-			        "width and height must be less than "
-			                + (Short.MAX_VALUE + 1));
+			throw new IllegalArgumentException("width and height must be less than " + (Short.MAX_VALUE + 1));
 		}
 
 		if (playercount <= 0 || playercount >= CommonConstants.MAX_PLAYERS) {
@@ -92,8 +89,7 @@ public class MapData implements IMapData {
 	}
 
 	public MapData(IMapData data) {
-		this(data.getWidth(), data.getHeight(), data.getPlayerCount(),
-		        ELandscapeType.GRASS);
+		this(data.getWidth(), data.getHeight(), data.getPlayerCount(), ELandscapeType.GRASS);
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -114,10 +110,12 @@ public class MapData implements IMapData {
 		resetUndoDelta();
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -133,7 +131,7 @@ public class MapData implements IMapData {
 	 * @param usedminx
 	 */
 	public void fill(ELandscapeType type, IMapArea area) {
-		
+
 		assert (isAllFalse(this.doneBuffer));
 
 		System.out.println("filling");
@@ -153,7 +151,7 @@ public class MapData implements IMapData {
 					if (x > xmax) {
 						xmax = x;
 					}
-	
+
 					if (y < ymin) {
 						ymin = y;
 					}
@@ -165,7 +163,7 @@ public class MapData implements IMapData {
 			}
 		}
 		if (ymin == Integer.MAX_VALUE) {
-			return; //nothing done
+			return; // nothing done
 		}
 
 		if (xmin > 0) {
@@ -180,19 +178,18 @@ public class MapData implements IMapData {
 		if (ymax < width - 1) {
 			ymax += 1;
 		}
-		
 
 		System.out.println("searching border tiles...");
 		Queue<FadeTask> tasks = new ConcurrentLinkedQueue<FadeTask>();
 		for (int y = ymin; y < ymax; y++) {
 			for (int x = xmin; x < xmax; x++) {
 				if (area.contains(new ShortPoint2D(x, y))) { // < we cannot use
-					                                         // done[x][y],
-					                                         // because done
-					                                         // flag
-					                                         // is set for other
-					                                         // tiles, too.
-					for (EDirection dir : EDirection.valuesCached()) {
+																// done[x][y],
+																// because done
+																// flag
+																// is set for other
+																// tiles, too.
+					for (EDirection dir : EDirection.values) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
 						if (contains(tx, ty) && !doneBuffer[tx][ty]) {
@@ -216,15 +213,12 @@ public class MapData implements IMapData {
 			}
 		}
 
-		System.out.println("Found " + tasks.size()
-		        + " tiles, starting to work on them...");
+		System.out.println("Found " + tasks.size() + " tiles, starting to work on them...");
 		while (!tasks.isEmpty()) {
 			FadeTask task = tasks.poll();
 			assert contains(task.x, task.y);
 
-			ELandscapeType[] fade =
-			        fader.getLandscapesBetween(task.type,
-			                landscapes[task.x][task.y]);
+			ELandscapeType[] fade = fader.getLandscapesBetween(task.type, landscapes[task.x][task.y]);
 
 			if (fade == null || fade.length <= 2) {
 				continue; // nothing to do
@@ -232,7 +226,7 @@ public class MapData implements IMapData {
 
 			ELandscapeType newLandscape = fade[1];
 			setLandscape(task.x, task.y, newLandscape);
-			for (EDirection dir : EDirection.valuesCached()) {
+			for (EDirection dir : EDirection.values) {
 				int nx = task.x + dir.getGridDeltaX();
 				int ny = task.y + dir.getGridDeltaY();
 				if (contains(nx, ny) && !doneBuffer[nx][ny]) {
@@ -272,8 +266,8 @@ public class MapData implements IMapData {
 				}
 			}
 		}
-	    return true;
-    }
+		return true;
+	}
 
 	public boolean contains(int tx, int ty) {
 		return tx >= 0 && tx < width && ty >= 0 && ty < height;
@@ -304,9 +298,7 @@ public class MapData implements IMapData {
 
 		@Override
 		public void setDimension(int width, int height, int playercount) {
-			data =
-			        new MapData(width, height, playercount,
-			                ELandscapeType.GRASS);
+			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
 		}
 	}
 
@@ -317,8 +309,7 @@ public class MapData implements IMapData {
 		private final int x;
 
 		/**
-		 * A task to set the landscape at a given point to the landscpae close
-		 * to type.
+		 * A task to set the landscape at a given point to the landscpae close to type.
 		 * 
 		 * @param x
 		 *            The x position where to fade
@@ -346,8 +337,7 @@ public class MapData implements IMapData {
 				return false;
 			}
 			if (objects[x][y] instanceof LandscapeConstraint) {
-				LandscapeConstraint constraint =
-				        (LandscapeConstraint) objects[x][y];
+				LandscapeConstraint constraint = (LandscapeConstraint) objects[x][y];
 				if (!allowsLandscape(type, constraint)) {
 					return false;
 				}
@@ -362,8 +352,7 @@ public class MapData implements IMapData {
 		return true;
 	}
 
-	private static boolean allowsLandscape(ELandscapeType type,
-	        LandscapeConstraint constraint) {
+	private static boolean allowsLandscape(ELandscapeType type, LandscapeConstraint constraint) {
 		boolean allowed = false;
 		for (ELandscapeType t : constraint.getAllowedLandscapes()) {
 			if (t == type) {
@@ -386,18 +375,13 @@ public class MapData implements IMapData {
 		} else if (object instanceof MapStoneObject) {
 			container = new StoneObjectContainer((MapStoneObject) object);
 		} else if (object instanceof MovableObject) {
-			container =
-			        new MovableObjectContainer((MovableObject) object, x, y);
+			container = new MovableObjectContainer((MovableObject) object, x, y);
 		} else if (object instanceof StackObject) {
 			container = new StackContainer((StackObject) object);
 		} else if (object instanceof BuildingObject) {
-			container =
-			        new BuildingContainer((BuildingObject) object,
-			                new ShortPoint2D(x, y));
+			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
 			landscapes = ((BuildingObject) object).getType().getGroundtypes();
-			protector =
-			        new ProtectLandscapeConstraint(((BuildingObject) object)
-			                .getType().getGroundtypes());
+			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType().getGroundtypes());
 		} else {
 			return; // error!
 		}
@@ -406,12 +390,9 @@ public class MapData implements IMapData {
 		ISPosition2D start = new ShortPoint2D(x, y);
 		for (RelativePoint p : container.getProtectedArea()) {
 			ISPosition2D abs = p.calculatePoint(start);
-			if (!contains(abs.getX(), abs.getY())
-			        || objects[abs.getX()][abs.getY()] != null
-			        || !landscapeAllowsObjects(getLandscape(abs.getX(),
-			                abs.getY()))
-			        || !listAllowsLandscape(landscapes,
-			                getLandscape(abs.getX(), abs.getY()))) {
+			if (!contains(abs.getX(), abs.getY()) || objects[abs.getX()][abs.getY()] != null
+					|| !landscapeAllowsObjects(getLandscape(abs.getX(), abs.getY()))
+					|| !listAllowsLandscape(landscapes, getLandscape(abs.getX(), abs.getY()))) {
 				allowed = false;
 			}
 		}
@@ -427,8 +408,7 @@ public class MapData implements IMapData {
 		}
 	}
 
-	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2,
-	        ELandscapeType landscape) {
+	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2, ELandscapeType landscape) {
 		if (landscapes2 == null) {
 			return true;
 		} else {
@@ -442,8 +422,7 @@ public class MapData implements IMapData {
 	}
 
 	public void setHeight(int x, int y, int height) {
-		if (objects[x][y] instanceof LandscapeConstraint
-		        && !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
+		if (objects[x][y] instanceof LandscapeConstraint && !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
 			return;
 		}
 
@@ -459,11 +438,9 @@ public class MapData implements IMapData {
 		heights[x][y] = safeheight;
 		if (objects[x][y] instanceof BuildingContainer) {
 			ShortPoint2D center = new ShortPoint2D(x, y);
-			for (RelativePoint r : ((BuildingContainer) objects[x][y])
-			        .getMapObject().getType().getBlockedTiles()) {
+			for (RelativePoint r : ((BuildingContainer) objects[x][y]).getMapObject().getType().getBlockedTiles()) {
 				ISPosition2D pos = r.calculatePoint(center);
-				undoDelta.addHeightChange(pos.getX(), pos.getY(),
-				        heights[pos.getX()][pos.getY()]);
+				undoDelta.addHeightChange(pos.getX(), pos.getY(), heights[pos.getX()][pos.getY()]);
 				heights[pos.getX()][pos.getY()] = safeheight;
 			}
 		}
@@ -474,11 +451,8 @@ public class MapData implements IMapData {
 	}
 
 	private static boolean landscapeAllowsObjects(ELandscapeType type) {
-		return !type.isWater() && type != ELandscapeType.SNOW
-		        && type != ELandscapeType.RIVER1
-		        && type != ELandscapeType.RIVER2
-		        && type != ELandscapeType.RIVER3
-		        && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
+		return !type.isWater() && type != ELandscapeType.SNOW && type != ELandscapeType.RIVER1 && type != ELandscapeType.RIVER2
+				&& type != ELandscapeType.RIVER3 && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
 	}
 
 	@Override
@@ -597,8 +571,7 @@ public class MapData implements IMapData {
 				ISPosition2D pos = point.calculatePoint(start);
 
 				if (contains(pos.getX(), pos.getY())) {
-					undoDelta.addObject(pos.getX(), pos.getY(),
-					        objects[pos.getX()][pos.getY()]);
+					undoDelta.addObject(pos.getX(), pos.getY(), objects[pos.getX()][pos.getY()]);
 					objects[pos.getX()][pos.getY()] = null;
 				}
 			}
@@ -628,8 +601,8 @@ public class MapData implements IMapData {
 
 	public void setFailpoints(boolean[][] failpoints) {
 		this.failpoints = failpoints;
-    }
-	
+	}
+
 	public boolean isFailpoint(int x, int y) {
 		return failpoints != null && failpoints[x][y];
 	}
