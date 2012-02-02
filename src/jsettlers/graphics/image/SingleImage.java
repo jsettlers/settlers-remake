@@ -89,9 +89,13 @@ public class SingleImage implements ImageDataPrivider, Image {
 	}
 
 	/**
-	 * Converts the current data to match the pwer of two size.
+	 * Converts the current data to match the power of two size.
 	 */
 	protected void adaptDataToTextureSize() {
+		if (width == 0 || height == 0) {
+			return;
+		}
+		
 		this.data.rewind();
 		short[] newData = new short[textureHeight * textureWidth];
 		for (int y = 0; y < height; y++) {

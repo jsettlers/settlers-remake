@@ -71,4 +71,9 @@ public interface INetworkScreenAdapter {
 	 */
 	void startNetworkMatch();
 
+	/**
+	 * I am leaving the game.
+	 */
+	void leaveGame();
+
 }

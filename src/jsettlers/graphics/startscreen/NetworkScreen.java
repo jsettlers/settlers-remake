@@ -1,7 +1,6 @@
 package jsettlers.graphics.startscreen;
 
 import go.graphics.GLDrawContext;
-import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
@@ -17,10 +16,12 @@ import jsettlers.graphics.INetworkScreenAdapter.INetworkPlayer;
 import jsettlers.graphics.INetworkScreenAdapter.INetworkScreenListener;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
-public class NetworkScreen implements SettlersContent, INetworkScreenListener {
+public class NetworkScreen extends RedrawListenerHaver implements SettlersContent, INetworkScreenListener {
 	private final INetworkScreenAdapter networkScreen;
 	private final UIPanel root;
 	private boolean playerListValid;
@@ -28,7 +29,7 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 	private Button startAllowedButton;
 	private boolean startAllowed = false;
 
-	public NetworkScreen(INetworkScreenAdapter networkScreen) {
+	public NetworkScreen(final INetworkScreenAdapter networkScreen) {
 		this.networkScreen = networkScreen;
 		networkScreen.setListener(this);
 		root = new UIPanel();
@@ -41,8 +42,24 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 		        new Button(new FinishAction(), new ImageLink(
 		                EImageLinkType.SETTLER, 2, 17, 0), new ImageLink(
 		                EImageLinkType.SETTLER, 2, 17, 1),
-		                "allow to start game");
-		root.addChild(startAllowedButton, 0.75f, .05f, .8f, .08f);
+		                Labels.getString("allow_start_game_descr"));
+		root.addChild(startAllowedButton, 0.65f, .05f, .7f, .08f);
+		
+		UILabeledButton startButton = new UILabeledButton(Labels.getString("start_netgame"), new ExecutableAction() {
+			@Override
+			public void execute() {
+				networkScreen.startNetworkMatch();
+			}
+		});
+		root.addChild(startButton, 0.8f, .03f, .95f, .1f);
+
+		UILabeledButton abortButton = new UILabeledButton(Labels.getString("abort_netgame"), new ExecutableAction() {
+			@Override
+			public void execute() {
+				networkScreen.leaveGame();
+			}
+		});
+		root.addChild(abortButton, 0.1f, .03f, .25f, .1f);
 	}
 
 	private class FinishAction extends ExecutableAction {
@@ -68,8 +85,9 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 			ArrayList<PlayerItem> players = new ArrayList<PlayerItem>();
 			if (networkScreen.getPlayers() != null) {
 				for (INetworkPlayer player : networkScreen.getPlayers()) {
-					if (player != null)
+					if (player != null) {
 						players.add(new PlayerItem(player));
+					}
 				}
 			}
 			UIList<PlayerItem> list = new UIList<PlayerItem>(players, .2f);
@@ -79,7 +97,7 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 
 	private class PlayerItem extends GenericListItem {
 		public PlayerItem(INetworkPlayer player) {
-			super(player.getPlayerName(), "");
+			super(player.getPlayerName(), "...");
 		}
 	}
 
@@ -122,25 +140,20 @@ public class NetworkScreen implements SettlersContent, INetworkScreenListener {
 		if (action instanceof ExecutableAction) {
 			((ExecutableAction) action).execute();
 		}
-	}
-
-	@Override
-	public void addRedrawListener(RedrawListener l) {
-	}
-
-	@Override
-	public void removeRedrawListener(RedrawListener l) {
+		requestRedraw();
 	}
 
 	@Override
 	public void playerListChanged() {
 		playerListValid = false;
+		requestRedraw();
 	}
 
 	@Override
 	public void addChatMessage(String message) {
 		// TODO Auto-generated method stub
 
+		requestRedraw();
 	}
 
 }

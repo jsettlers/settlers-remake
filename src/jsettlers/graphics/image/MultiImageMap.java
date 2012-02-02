@@ -2,11 +2,15 @@ package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.GLPreloadTask;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
@@ -24,7 +28,6 @@ import jsettlers.graphics.sequence.Sequence;
  * @author michael
  */
 public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
-	public static MultiImageMap anyInstance = null; // FIXME: only for testing
 
 	private final int width;
 	private final int height;
@@ -36,17 +39,27 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	private boolean textureValid = false;
 	private int textureIndex = -1;
 	private ShortBuffer buffers;
+	private ByteBuffer byteBuffer;
 
-	public MultiImageMap(int width, int height) {
+	private final File cacheFile;
+
+	public MultiImageMap(int width, int height, String id) {
 		this.width = width;
 		this.height = height;
-		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(width * height * 2);
-		buffers = byteBuffer.order(ByteOrder.nativeOrder()).asShortBuffer();
-		anyInstance = this;
+		File root = new File(ResourceManager.getSaveDirectory(), "cache");
+		cacheFile = new File(root, "cache-" + id);
 	}
 
-	public void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
+	private void allocateBuffers() {
+		byteBuffer = ByteBuffer.allocateDirect(width * height * 2);
+		byteBuffer.order(ByteOrder.nativeOrder());
+		buffers = byteBuffer.asShortBuffer();
+	}
+
+	public synchronized void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
 	        Sequence<Image>[] addTo) throws IOException {
+		allocateBuffers();
+
 		ImageMetadata settlermeta = new ImageMetadata();
 		ImageMetadata torsometa = new ImageMetadata();
 		for (int seqindex : sequenceIndexes) {
@@ -94,6 +107,38 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		// request
 		textureValid = false;
 		ImageProvider.getInstance().addPreloadTask(this);
+	}
+
+	public synchronized void writeCache() {
+		FileOutputStream out = null;
+		try {
+			cacheFile.getParentFile().mkdirs();
+			cacheFile.delete();
+			out = new FileOutputStream(cacheFile);
+
+			byte[] line = new byte[this.width * 2];
+			byteBuffer.rewind();
+			while (byteBuffer.hasRemaining()) {
+				byteBuffer.get(line);
+				out.write(line);
+			}
+			out.close();
+
+			buffers = null;
+			byteBuffer = null;
+		} catch (IOException e) {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e1) {
+				}
+			}
+			e.printStackTrace();
+		}
+	}
+	
+	public synchronized boolean hasCache() {
+		return cacheFile.isFile();
 	}
 
 	@Override
@@ -153,16 +198,40 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			if (textureIndex > -1) {
 				gl.deleteTexture(textureIndex);
 			}
-			buffers.rewind();
-			textureIndex = gl.generateTexture(width, height, buffers);
-			System.out.println("opengl Texture: " + textureIndex + ", thread: "
-			        + Thread.currentThread().toString());
-			if (textureIndex > -1) {
-				textureValid = true;
+			try {
+				loadTexture(gl);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		return textureIndex;
 	}
+
+	private synchronized void loadTexture(GLDrawContext gl) throws IOException,
+            IOException {
+	    if (buffers == null) {
+	    	allocateBuffers();
+	    	FileInputStream in = new FileInputStream(cacheFile);
+	    	byte[] line = new byte[this.width * 2];
+	    	while (in.available() > 0) {
+	    		if (in.read(line) <= 0) {
+	    			throw new IOException();
+	    		}
+	    		byteBuffer.put(line);
+	    	}
+	    	byteBuffer.rewind();
+	    }
+
+	    buffers.rewind();
+	    textureIndex = gl.generateTexture(width, height, buffers);
+	    System.out.println("opengl Texture: " + textureIndex
+	            + ", thread: " + Thread.currentThread().toString());
+	    if (textureIndex > -1) {
+	    	textureValid = true;
+	    }
+	    buffers = null;
+	    byteBuffer = null;
+    }
 
 	@Override
 	public void run(GLDrawContext context) {

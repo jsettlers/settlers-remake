@@ -78,8 +78,9 @@ public final class Minimap {
 			}
 
 			if (!updatedLines.isEmpty()) {
+				ShortBuffer currData = ShortBuffer.allocate(width);
 				for (Integer currLine : updatedLines) {
-					ShortBuffer currData = ShortBuffer.allocate(width);
+					currData.position(0);
 					currData.put(buffer[currLine]);
 					currData.position(0);
 

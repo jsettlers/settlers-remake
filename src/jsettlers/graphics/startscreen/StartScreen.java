@@ -21,11 +21,12 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.startscreen.INetworkConnector.INetworkListener;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.utils.UIPanel;
 
-public class StartScreen implements SettlersContent {
+public class StartScreen extends RedrawListenerHaver implements SettlersContent, INetworkListener {
 	private static final ImageLink BACKGROUND = new ImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
 
@@ -159,6 +160,7 @@ public class StartScreen implements SettlersContent {
 		} else if (displayAction == EActionType.SHOW_JOIN_NETWORK) {
 			joinGamePanel = new JoinGamePanel(connector.getNetworkConnector());
 			content.addChild(joinGamePanel, 0, 0, 1, 1);
+			connector.getNetworkConnector().setListener(this);
 		}
 
 		for (UILabeledButton b : mainButtons) {
@@ -193,18 +195,9 @@ public class StartScreen implements SettlersContent {
 	}
 
 	@Override
-	public void addRedrawListener(RedrawListener l) {
-		redrawListeners.add(l);
-	}
+    public void matchListChanged(INetworkConnector connector) {
+	    joinGamePanel.matchListChanged(connector);
+	    requestRedraw();
+    }
 
-	@Override
-	public void removeRedrawListener(RedrawListener l) {
-		redrawListeners.remove(l);
-	}
-
-	private void requestRedraw() {
-		for (RedrawListener l : redrawListeners) {
-			l.requestRedraw();
-		}
-	}
 }

@@ -55,7 +55,7 @@ public class ImagePreloadTask implements Runnable {
 			        103,
 			        104,
 			        105,
-			});
+			}, "1");
 		} catch (Throwable e) {
 		}
 
@@ -98,7 +98,7 @@ public class ImagePreloadTask implements Runnable {
 			        33,
 			        34,
 			        45
-			});
+			}, "10");
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -166,7 +166,7 @@ public class ImagePreloadTask implements Runnable {
 
 			        231,
 			        232,
-			});
+			}, "11");
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -204,7 +204,7 @@ public class ImagePreloadTask implements Runnable {
 
 			        // inside tower
 			        28
-			});
+			}, "12");
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

@@ -616,11 +616,14 @@ public class AdvancedDatFileReader implements DatFileSet {
 		return reader;
 	}
 
-	public void generateImageMap(int width, int height, int[] sequences)
-	        throws IOException {
+	public void generateImageMap(int width, int height, int[] sequences,
+	        String id) throws IOException {
 		initializeIfNeeded();
 
-		MultiImageMap map = new MultiImageMap(width, height);
-		map.addSequences(this, sequences, settlersequences);
+		MultiImageMap map = new MultiImageMap(width, height, id);
+		if (!map.hasCache()) {
+			map.addSequences(this, sequences, settlersequences);
+			map.writeCache();
+		}
 	}
 }
