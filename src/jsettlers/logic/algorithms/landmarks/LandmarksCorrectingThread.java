@@ -102,7 +102,7 @@ public final class LandmarksCorrectingThread extends Thread {
 		for (ISPosition2D curr : blockedBorder) {
 			short y = curr.getY();
 			for (short x = curr.getX();; x++) {
-				if (grid.isBlocked(x, y)) {
+				if (grid.isInBounds(x, y) && grid.isBlocked(x, y)) {
 					grid.setPartitionAndPlayerAt(x, y, startPartition);
 				} else {
 					break;

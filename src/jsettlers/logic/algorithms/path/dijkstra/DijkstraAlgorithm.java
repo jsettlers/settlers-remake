@@ -38,8 +38,6 @@ public final class DijkstraAlgorithm {
 			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", cX, cY);
 		}
 
-		MapCircle circle = new MapCircle(cX, cY, maxRadius * MAX_RADIUS_MULTIPLIER);
-
 		for (short radius = minRadius; radius < maxRadius; radius++) {
 			short x = cX, y = (short) (cY - radius);
 			for (byte direction = 0; direction < 6; direction++) {
@@ -48,7 +46,7 @@ public final class DijkstraAlgorithm {
 				for (short length = 0; length < radius; length++) {
 					x += dx;
 					y += dy;
-					if (circle.contains(x, y) && isInBounds(x, y)) {
+					if (isInBounds(x, y)) {
 						map.setDijkstraSearched(x, y);
 						if (map.fitsSearchType(x, y, type, requester)) {
 							Path path = findPathTo(requester, x, y);
@@ -72,7 +70,7 @@ public final class DijkstraAlgorithm {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	public static class DijkstraContinuableRequest implements Serializable {
+	public final static class DijkstraContinuableRequest implements Serializable {
 		private static final long serialVersionUID = -1350601280043056439L;
 
 		final short minRadius;
