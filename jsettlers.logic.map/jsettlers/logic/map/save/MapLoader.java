@@ -29,7 +29,8 @@ import jsettlers.main.IGameCreator;
  * 
  * @author michael
  */
-public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetworkableMap {
+public class MapLoader implements IGameCreator, ILoadableGame, IMapItem,
+        INetworkableMap {
 	private static final byte USER_PLAYER = 0;
 	private final File file;
 	private MapFileHeader header;
@@ -87,7 +88,8 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 				int randomSeed = 3;
 
 				RandomMapFile file = RandomMapFile.loadFromStream(stream);
-				RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
+				RandomMapEvaluator evaluator =
+				        new RandomMapEvaluator(file.getInstructions(), players);
 				evaluator.createMap(new Random(randomSeed));
 				mapData = evaluator.getGrid();
 
@@ -205,30 +207,32 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 	}
 
 	@Override
-    public String getUniqueID() {
-	    try {
-	        return getFileHeader().getUniqueId();
-        } catch (MapLoadException e) {
-	        return "";
-        }
-    }
+	public String getUniqueID() {
+		try {
+			return getFileHeader().getUniqueId();
+		} catch (MapLoadException e) {
+			return "";
+		}
+	}
 
 	@Override
-    public File getFile() {
-	    return file;
-    }
+	public File getFile() {
+		return file;
+	}
 
 	@Override
-    public INetworkableMap getNetworkableMap() {
-	    return this;
-    }
+	public INetworkableMap getNetworkableMap() {
+		return this;
+	}
 
 	@Override
-    public String getDescription() {
-	    try {
-	        return getFileHeader().getDescription();
-        } catch (MapLoadException e) {
-	        return "";
-        }
-    }
+	public String getDescription() {
+		try {
+			return getFileHeader().getDescription() + "\n"
+			        + getFileHeader().getWidth() + "x"
+			        + getFileHeader().getHeight();
+		} catch (MapLoadException e) {
+			return "";
+		}
+	}
 }

@@ -32,7 +32,8 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 	private MapLoader mapLoader;
 	private byte myPlayerNumber;
 
-	public NetworkScreenAdapter(final ClientThread clientThread, MatchDescription description) {
+	public NetworkScreenAdapter(final ClientThread clientThread,
+	        MatchDescription description) {
 		this.clientThread = clientThread;
 		this.description = description;
 		clientThread.setListener(new ScreenAdapterClientThreadListener());
@@ -131,12 +132,14 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 
 	private void calculateMyPlayerNumebr(String myID) {
 		for (byte i = 0; i < playerInfos.length; i++) {
-			if (playerInfos[i] != null && playerInfos[i].getUniqueID().equals(myID)) {
+			if (playerInfos[i] != null
+			        && playerInfos[i].getUniqueID().equals(myID)) {
 				myPlayerNumber = i;
 				return;
 			}
 		}
-		System.err.println("ERROR: couldn't calculate the players playernumber!!!");
+		System.err
+		        .println("ERROR: couldn't calculate the players playernumber!!!");
 	}
 
 	public void setEndListener(INetworkStartScreenEndListener endListener) {
@@ -153,7 +156,8 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		return myPlayerNumber;
 	}
 
-	private final class ScreenAdapterClientThreadListener implements IClientThreadListener {
+	private final class ScreenAdapterClientThreadListener implements
+	        IClientThreadListener {
 
 		@Override
 		public void requestFailedEvent(EClientRequest failedRequest) {
@@ -162,7 +166,8 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 
 		@Override
 		public void joinedMatchEvent(MatchDescription match) {
-			System.err.println("should not get here: NetworkScreenAdapter.ScreenAdapterClientThreadListener.joinedMatchEvent()");
+			System.err
+			        .println("should not get here: NetworkScreenAdapter.ScreenAdapterClientThreadListener.joinedMatchEvent()");
 		}
 
 		@Override
@@ -173,7 +178,8 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		@Override
 		public void receivedObject(String sender, Serializable proxiedObject) {
 			if (proxiedObject instanceof String) {
-				networkScreenListener.addChatMessage(sender + ": " + proxiedObject);
+				networkScreenListener.addChatMessage(sender + ": "
+				        + proxiedObject);
 			}
 		}
 
@@ -193,8 +199,10 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 
 		@Override
-		public void receivedPlayerInfos(MatchDescription matchDescription, MatchPlayer[] playerInfos) {
-			System.err.println("RECEIVED PLAYER INFOS: " + Arrays.toString(playerInfos));
+		public void receivedPlayerInfos(MatchDescription matchDescription,
+		        MatchPlayer[] playerInfos) {
+			System.err.println("RECEIVED PLAYER INFOS: "
+			        + Arrays.toString(playerInfos));
 
 			NetworkScreenAdapter.this.description = matchDescription;
 			NetworkPlayer[] newInfos = new NetworkPlayer[playerInfos.length];
@@ -228,6 +236,21 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 		}
 
 		return ids;
+	}
+
+	@Override
+	public void leaveGame() {
+		new Thread("setReadyThread") {
+			@Override
+			public void run() {
+				try {
+					clientThread.leaveMatch();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+		endListener.leftMatch(this);
 	}
 
 }
