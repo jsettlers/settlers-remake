@@ -23,33 +23,32 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
-		float[] quadData =
-		        new float[] {
-		                x1,
-		                y1,
-		                0,
-		                x2,
-		                y1,
-		                0,
-		                x1,
-		                y2,
-		                0,
-		                x1,
-		                y2,
-		                0,
-		                x2,
-		                y1,
-		                0,
-		                x2,
-		                y2,
-		                0,
-		        };
+		quadDatas = new float[3 * 6];
+		quadDatas[ 0] = x1;
+		quadDatas[ 1] = y1;
+		quadDatas[ 2] = 0;
+		quadDatas[ 3] = x2;
+		quadDatas[ 4] = y1;
+		quadDatas[ 5] = 0;
+		quadDatas[ 6] = x1;
+		quadDatas[ 7] = y2;
+		quadDatas[ 8] = 0;
+		quadDatas[ 9] = x1;
+		quadDatas[10] = y2;
+		quadDatas[11] = 0;
+		quadDatas[12] = x2;
+		quadDatas[13] = y1;
+		quadDatas[14] = 0;
+		quadDatas[15] = x2;
+		quadDatas[16] = y2;
+		quadDatas[17] = 0;
 
 		glBindTexture(0);
-		FloatBuffer floatBuff = generateTemporaryFloatBuffer(quadData);
+		FloatBuffer floatBuff = generateTemporaryFloatBuffer(quadDatas);
+
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 3 * 4, floatBuff);
-		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, quadData.length / 3);
+		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, quadDatas.length / 3);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 	}
 
@@ -89,23 +88,23 @@ public class AndroidContext implements GLDrawContext {
 	private FloatBuffer reuseableBufferDuplicate;
 
 	private FloatBuffer generateTemporaryFloatBuffer(float[] points) {
-		if (reuseableBuffer == null
-		        || reuseableBuffer.position(0).capacity() < points.length) {
+		int floatCount = points.length;
+		FloatBuffer b = createReusedBuffer(floatCount);
+		b.put(points);
+		b.position(0);
+		return b;
+	}
 
-			if (reuseableBuffer != null) {
-				System.out.println("reallocated! needed: " + points.length
-				        + ", old:" + reuseableBuffer.capacity());
-			}
-			ByteBuffer quadPoints =
-			        ByteBuffer.allocateDirect(points.length * 4);
+	private FloatBuffer createReusedBuffer(int floatCount) {
+		if (reuseableBuffer == null
+		        || reuseableBuffer.position(0).capacity() < floatCount) {
+			ByteBuffer quadPoints = ByteBuffer.allocateDirect(floatCount * 4);
 			quadPoints.order(ByteOrder.nativeOrder());
 			reuseableBuffer = quadPoints.asFloatBuffer();
 			reuseableBufferDuplicate = reuseableBuffer.duplicate();
 		} else {
 			reuseableBuffer.position(0);
 		}
-		reuseableBuffer.put(points);
-		reuseableBuffer.position(0);
 		return reuseableBuffer;
 	}
 
@@ -453,6 +452,7 @@ public class AndroidContext implements GLDrawContext {
 	}
 
 	private GraphicsByteBuffer currentBuffer = null;
+	private float[] quadDatas;
 
 	@Override
 	public GLBuffer startWriteGeometry(int geometryindex) {
@@ -470,7 +470,8 @@ public class AndroidContext implements GLDrawContext {
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
 
-	public static class GraphicsByteBuffer implements GLDrawContext.GLBuffer {
+	public static final class GraphicsByteBuffer implements
+	        GLDrawContext.GLBuffer {
 		private static int BUFFER_LENGTH = 1024;
 		private static ByteBuffer buffer = ByteBuffer.allocateDirect(
 		        BUFFER_LENGTH).order(ByteOrder.nativeOrder());
