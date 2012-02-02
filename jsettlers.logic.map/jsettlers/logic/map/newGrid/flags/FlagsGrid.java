@@ -27,7 +27,11 @@ public class FlagsGrid implements Serializable {
 	}
 
 	public boolean isBlocked(short x, short y) {
-		return blockedGrid.get(x * width + y);
+		return blockedGrid.get(getIdx(x, y));
+	}
+
+	private final int getIdx(int x, int y) {
+		return y * width + x;
 	}
 
 	/**
@@ -42,24 +46,25 @@ public class FlagsGrid implements Serializable {
 	 *            otherwise it will be set to unblocked and unprotected.
 	 */
 	public void setBlockedAndProtected(short x, short y, boolean blocked) {
-		this.blockedGrid.set(x * width + y, blocked);
-		this.setProtected(x, y, blocked);
+		final int idx = getIdx(x, y);
+		this.blockedGrid.set(idx, blocked);
+		this.protectedGrid.set(idx, blocked);
 	}
 
 	public boolean isMarked(short x, short y) {
-		return this.markedGrid.get(x * width + y);
+		return this.markedGrid.get(getIdx(x, y));
 	}
 
 	public void setMarked(short x, short y, boolean marked) {
-		this.markedGrid.set(x * width + y, marked);
+		this.markedGrid.set(getIdx(x, y), marked);
 	}
 
 	public boolean isProtected(short x, short y) {
-		return this.protectedGrid.get(x * width + y);
+		return this.protectedGrid.get(getIdx(x, y));
 	}
 
 	public void setProtected(short x, short y, boolean setProtected) {
-		this.protectedGrid.set(x * width + y, setProtected);
+		this.protectedGrid.set(getIdx(x, y), setProtected);
 	}
 
 }
