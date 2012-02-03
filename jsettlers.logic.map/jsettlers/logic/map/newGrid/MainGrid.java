@@ -31,7 +31,6 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -47,7 +46,6 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
-import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWar;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
@@ -121,7 +119,6 @@ public class MainGrid implements Serializable {
 	transient IGraphicsGrid graphicsGrid;
 	transient LandmarksCorrectingThread landmarksCorrectionThread;
 	transient ConstructionMarksGrid constructionMarksGrid;
-	transient ConstructMarksThread constructionMarksCalculator;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
 
@@ -149,7 +146,6 @@ public class MainGrid implements Serializable {
 		this.graphicsGrid = new GraphicsGrid();
 		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.constructionMarksGrid = new ConstructionMarksGrid();
-		this.constructionMarksCalculator = new ConstructMarksThread(constructionMarksGrid, (byte) 0);
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
 
@@ -266,7 +262,6 @@ public class MainGrid implements Serializable {
 	public void stopGame() {
 		bordersThread.cancel();
 		fogOfWar.cancel();
-		constructionMarksCalculator.cancel();
 		landmarksCorrectionThread.cancel();
 	}
 
@@ -696,7 +691,7 @@ public class MainGrid implements Serializable {
 		}
 	}
 
-	class ConstructionMarksGrid implements IConstructionMarkableMap {
+	final class ConstructionMarksGrid implements IConstructionMarkableMap {
 		@Override
 		public final void setConstructMarking(short x, short y, byte value) {
 			mapObjectsManager.setConstructionMarking(x, y, value);
@@ -781,7 +776,7 @@ public class MainGrid implements Serializable {
 		}
 	}
 
-	class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
+	final class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		transient HexAStar aStar;
@@ -1290,7 +1285,7 @@ public class MainGrid implements Serializable {
 
 	}
 
-	class GUIInputGrid implements IGuiInputGrid {
+	final class GUIInputGrid implements IGuiInputGrid {
 		@Override
 		public final IHexMovable getMovable(short x, short y) {
 			return movableGrid.getMovableAt(x, y);
@@ -1324,16 +1319,6 @@ public class MainGrid implements Serializable {
 		@Override
 		public final byte getPlayerAt(ISPosition2D position) {
 			return partitionsGrid.getPlayerAt(position);
-		}
-
-		@Override
-		public final void setBuildingType(EBuildingType buildingType) {
-			constructionMarksCalculator.setBuildingType(buildingType);
-		}
-
-		@Override
-		public final void setScreen(MapRectangle screenArea) {
-			constructionMarksCalculator.setScreen(screenArea);
 		}
 
 		@Override
@@ -1381,6 +1366,11 @@ public class MainGrid implements Serializable {
 		@Override
 		public final void toggleFogOfWar() {
 			fogOfWar.toggleEnabled();
+		}
+
+		@Override
+		public IConstructionMarkableMap getConstructionMarksGrid() {
+			return constructionMarksGrid;
 		}
 	}
 

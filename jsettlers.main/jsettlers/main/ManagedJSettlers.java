@@ -52,7 +52,7 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 		if (map instanceof IGameCreator) {
 			// TODO: pass on player count
 			IGameCreator creator = (IGameCreator) map;
-			ongoingGame = new JSettlersGame(content, creator, 123456L, new NetworkManager());
+			ongoingGame = new JSettlersGame(content, creator, 123456L, new NetworkManager(), (byte) 0);
 			ongoingGame.setListener(ManagedJSettlers.this);
 			ongoingGame.start();
 		}
@@ -64,7 +64,7 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 
 		if (load instanceof IGameCreator) {
 			IGameCreator creator = (IGameCreator) load;
-			ongoingGame = new JSettlersGame(content, creator, 123456L, new NetworkManager());
+			ongoingGame = new JSettlersGame(content, creator, 123456L, new NetworkManager(), (byte) 0);
 			ongoingGame.setListener(ManagedJSettlers.this);
 			ongoingGame.start();
 		}
@@ -194,7 +194,7 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 
 			// TODO: pass on player count
 			IGameCreator creator = map;
-			ongoingGame = new JSettlersGame(content, creator, description.getRandomSeed(), networkManager);
+			ongoingGame = new JSettlersGame(content, creator, description.getRandomSeed(), networkManager, networkScreen.getMyPlayerNumber());
 			ongoingGame.setListener(ManagedJSettlers.this);
 			ongoingGame.start();
 

@@ -29,21 +29,21 @@ public class JSettlersGame {
 	private final long randomSheed;
 
 	private boolean stopped = false;
-	private Object stopMutex = new Object();
+	private final Object stopMutex = new Object();
 	private final ISettlersGameDisplay content;
+	private final IGameCreator mapcreator;
+	private final NetworkManager networkManager;
+	private final byte playerNumber;
 
 	private Listener listener;
 	private MapInterfaceConnector gameConnector;
 
-	private final IGameCreator mapcreator;
-
-	private final NetworkManager networkManager;
-
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed, NetworkManager networkManager) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed, NetworkManager networkManager, byte playerNumber) {
 		this.content = content;
 		this.mapcreator = map;
 		this.randomSheed = randomSheed;
 		this.networkManager = networkManager;
+		this.playerNumber = playerNumber;
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class JSettlersGame {
 			UIState uiState;
 			try {
 				grid = mapcreator.getMainGrid();
-				uiState = mapcreator.getUISettings(0);
+				uiState = mapcreator.getUISettings(playerNumber);
 			} catch (MapLoadException e1) {
 				e1.printStackTrace();
 				listener.gameEnded();
@@ -102,7 +102,7 @@ public class JSettlersGame {
 			progress.setProgressState(EProgressState.LOADING_IMAGES);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
-			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), (byte) 0);
+			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), playerNumber);
 
 			connector.addListener(this);
 			connector.loadUIState(uiState);

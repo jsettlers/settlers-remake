@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 
@@ -29,10 +29,6 @@ public interface IGuiInputGrid {
 
 	byte getPlayerAt(ISPosition2D position);
 
-	void setBuildingType(EBuildingType buildingType);
-
-	void setScreen(MapRectangle screenArea);
-
 	void resetDebugColors();
 
 	IHexMovable getMovable(short x, short y);
@@ -51,4 +47,6 @@ public interface IGuiInputGrid {
 	void save() throws FileNotFoundException, IOException, InterruptedException;
 
 	void toggleFogOfWar();
+
+	IConstructionMarkableMap getConstructionMarksGrid();
 }

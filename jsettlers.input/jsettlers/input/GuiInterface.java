@@ -38,6 +38,7 @@ import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
+import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IDebugable;
@@ -54,6 +55,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private final MapInterfaceConnector connector;
 
+	private final ConstructMarksThread constructionMarksCalculator;
 	private final NetworkManager manager;
 	private final IGuiInputGrid grid;
 	private final byte player;
@@ -69,6 +71,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.manager = manager;
 		this.grid = grid;
 		this.player = player;
+		this.constructionMarksCalculator = new ConstructMarksThread(grid.getConstructionMarksGrid(), player);
 		connector.addListener(this);
 	}
 
@@ -84,7 +87,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			System.err.println("build: " + buildingType);
 			this.previewBuilding = buildingType; // FIXME implement a way to give graphics grid the preview building
 			connector.setPreviewBuildingType(buildingType);
-			grid.setBuildingType(buildingType);
+			constructionMarksCalculator.setBuildingType(buildingType);
 			setActiveAction(action);
 			break;
 
@@ -173,7 +176,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SCREEN_CHANGE:
-			grid.setScreen(((ScreenChangeAction) action).getScreenArea());
+			constructionMarksCalculator.setScreen(((ScreenChangeAction) action).getScreenArea());
 			break;
 
 		case TOGGLE_DEBUG:
@@ -239,7 +242,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void cancelBuildingCreation() {
 		previewBuilding = null;
-		grid.setBuildingType(null);
+		constructionMarksCalculator.setBuildingType(null);
 		connector.setPreviewBuildingType(null);
 	}
 
