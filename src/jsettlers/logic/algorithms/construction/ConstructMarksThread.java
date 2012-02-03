@@ -21,9 +21,10 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class ConstructMarksThread extends Thread {
+public class ConstructMarksThread implements Runnable {
 	private final IConstructionMarkableMap map;
 	private final byte player;
+	private final Thread thread;
 
 	/**
 	 * area of tiles to be checked.
@@ -35,12 +36,12 @@ public class ConstructMarksThread extends Thread {
 	private boolean canceled;
 
 	public ConstructMarksThread(IConstructionMarkableMap map, byte player) {
-		super("constrMarksThread");
 		this.map = map;
 		this.player = player;
 
-		this.setDaemon(true);
-		this.start();
+		thread = new Thread(this, "constrMarksThread");
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	@Override
@@ -188,7 +189,7 @@ public class ConstructMarksThread extends Thread {
 
 	public void cancel() {
 		canceled = true;
-		this.interrupt();
+		thread.interrupt();
 	}
 
 }
