@@ -64,7 +64,7 @@ public class SwingManagedJSettlers {
 	public static void startMap(IMapDataProvider data) {
 		ResourceManager.setProvider(new ResourceProvider());
 		// TODO: detect exit
-		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager());
+		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager(), (byte) 0);
 		game.start();
 	}
 
