@@ -69,9 +69,13 @@ public final class LandmarksCorrectingThread extends Thread {
 		ISPosition2D blocked = blockedDir.getNextHexPoint(startPos);
 		ISPosition2D currBase = startPos;
 		LinkedList<ISPosition2D> blockedBorder = new LinkedList<ISPosition2D>();
+
 		blockedBorder.add(blocked);
 
+		int length;
 		for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+			length = blockedBorder.size();
+
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
 			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
 
@@ -80,9 +84,14 @@ public final class LandmarksCorrectingThread extends Thread {
 				break;
 			} else if (grid.isBlocked(neighborPos.getX(), neighborPos.getY())) {
 				blocked = neighborPos;
-				blockedDir = neighborDir;
-				blockedBorder.add(blocked);
-				i = 0;
+				if (blocked.equals(blockedBorder.getFirst())) {
+					takeOverBlockedLand(blockedBorder, startPartition);
+					break;
+				} else {
+					blockedDir = neighborDir;
+					blockedBorder.add(blocked);
+					i = 0;
+				}
 			} else if (grid.getPartitionAt(neighborPos.getX(), neighborPos.getY()) == startPartition) {
 				currBase = neighborPos;
 				blockedDir = EDirection.getDirection(currBase, blocked);
@@ -102,6 +111,14 @@ public final class LandmarksCorrectingThread extends Thread {
 		for (ISPosition2D curr : blockedBorder) {
 			short y = curr.getY();
 			for (short x = curr.getX();; x++) {
+				if (grid.isInBounds(x, y) && grid.isBlocked(x, y)) {
+					grid.setPartitionAndPlayerAt(x, y, startPartition);
+				} else {
+					break;
+				}
+			}
+
+			for (short x = (short) (curr.getX() - 1);; x--) {
 				if (grid.isInBounds(x, y) && grid.isBlocked(x, y)) {
 					grid.setPartitionAndPlayerAt(x, y, startPartition);
 				} else {
