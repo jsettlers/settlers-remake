@@ -47,16 +47,6 @@ public abstract class AbstractHexMapObject implements IMapObject, Serializable {
 	}
 
 	/**
-	 * checks if any map object on this list is blocking.
-	 * 
-	 * @return true if any of the map objects on this list is blocking it's position (returns true when {@link #isBlocking()} is called).
-	 */
-	@Deprecated
-	public final boolean hasAnyBlocking() {
-		return isBlocking() || this.next != null && this.next.hasAnyBlocking();
-	}
-
-	/**
 	 * appends the given object to this list.
 	 * 
 	 * @param mapObject

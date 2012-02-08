@@ -47,7 +47,6 @@ import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
-import jsettlers.logic.algorithms.fogofwar.IFogOfWar;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
@@ -114,7 +113,7 @@ public class MainGrid implements Serializable {
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager mapObjectsManager;
 	final BuildingsGrid buildingsGrid;
-	final IFogOfWar fogOfWar;
+	final NewFogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
 	transient LandmarksCorrectingThread landmarksCorrectionThread;
@@ -137,7 +136,6 @@ public class MainGrid implements Serializable {
 
 		this.buildingsGrid = new BuildingsGrid();
 		this.fogOfWar = new NewFogOfWar(width, height);
-		// TODO @Andreas implement new interface for fog of war
 
 		initAdditionalGrids();
 	}
@@ -167,7 +165,7 @@ public class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				ELandscapeType landscape = mapGrid.getLandscape(x, y);
-				landscapeGrid.setLandscapeTypeAt(x, y, landscape);
+				setLandscapeTypeAt(x, y, landscape);
 				landscapeGrid.setHeightAt(x, y, mapGrid.getLandscapeHeight(x, y));
 
 				if (landscape == ELandscapeType.MOUNTAIN) {
@@ -217,46 +215,6 @@ public class MainGrid implements Serializable {
 
 	private boolean isWaterSafe(int x, int y) {
 		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
-	}
-
-	public static MainGrid createForDebugging() {
-		MainGrid grid = new MainGrid((short) 200, (short) 100);
-
-		for (short x = 0; x < grid.width; x++) {
-			for (short y = 0; y < grid.height; y++) {
-				grid.landscapeGrid.setLandscapeTypeAt(x, y, ELandscapeType.GRASS);
-				grid.landscapeGrid.setHeightAt(x, y, (byte) 0);
-			}
-		}
-
-		Building tower = Building.getBuilding(EBuildingType.TOWER, (byte) 0);
-		tower.appearAt(grid.buildingsGrid, new ShortPoint2D(55, 50));
-
-		tower = Building.getBuilding(EBuildingType.TOWER, (byte) 0);
-		tower.appearAt(grid.buildingsGrid, new ShortPoint2D(145, 50));
-
-		grid.placeStack(new ShortPoint2D(30, 50), EMaterialType.PLANK, 8);
-		grid.placeStack(new ShortPoint2D(32, 50), EMaterialType.PLANK, 8);
-		grid.placeStack(new ShortPoint2D(34, 50), EMaterialType.PLANK, 8);
-		grid.placeStack(new ShortPoint2D(36, 50), EMaterialType.PLANK, 8);
-		grid.placeStack(new ShortPoint2D(30, 40), EMaterialType.STONE, 8);
-		grid.placeStack(new ShortPoint2D(32, 40), EMaterialType.STONE, 8);
-		grid.placeStack(new ShortPoint2D(34, 40), EMaterialType.STONE, 8);
-		grid.placeStack(new ShortPoint2D(36, 40), EMaterialType.STONE, 8);
-		grid.placeStack(new ShortPoint2D(34, 30), EMaterialType.HAMMER, 1);
-		grid.placeStack(new ShortPoint2D(36, 30), EMaterialType.BLADE, 1);
-
-		grid.placeStack(new ShortPoint2D(38, 30), EMaterialType.AXE, 1);
-		grid.placeStack(new ShortPoint2D(40, 30), EMaterialType.SAW, 1);
-
-		for (int i = 0; i < 10; i++) {
-			grid.createNewMovableAt(new ShortPoint2D(60 + 2 * i, 50), EMovableType.BEARER, (byte) 0);
-		}
-		grid.createNewMovableAt(new ShortPoint2D(50, 50), EMovableType.PIONEER, (byte) 0);
-
-		grid.createNewMovableAt(new ShortPoint2D(60, 60), EMovableType.SWORDSMAN_L3, (byte) 0);
-
-		return grid;
 	}
 
 	public void stopGame() {
@@ -329,9 +287,19 @@ public class MainGrid implements Serializable {
 		return movable;
 	}
 
-	protected final boolean isLandscapeBlocking(short x, short y) {
-		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
+	private final boolean isLandscapeBlocking(ELandscapeType landscape) {
 		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.MOORINNER || landscape == ELandscapeType.SNOW;
+	}
+
+	protected final void setLandscapeTypeAt(short x, short y, ELandscapeType newType) {
+		if (isLandscapeBlocking(newType)) {
+			flagsGrid.setBlockedAndProtected(x, y, true);
+		} else {
+			if (isLandscapeBlocking(landscapeGrid.getLandscapeTypeAt(x, y))) {
+				flagsGrid.setBlockedAndProtected(x, y, false);
+			}
+		}
+		landscapeGrid.setLandscapeTypeAt(x, y, newType);
 	}
 
 	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -339,8 +307,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-			return flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y)
-					|| (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
+			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
 		}
 
 		@Override
@@ -410,7 +377,7 @@ public class MainGrid implements Serializable {
 				return hasSamePlayer(x, y, pathCalculable) && hasNeighbourLandscape(x, y, ELandscapeType.WATER1);
 
 			case NON_BLOCKED_OR_PROTECTED:
-				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y))
+				return !(flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y))
 						&& (!pathCalculable.needsPlayersGround() || hasSamePlayer(x, y, pathCalculable)) && movableGrid.getMovableAt(x, y) == null;
 
 			case SOLDIER_BOWMAN:
@@ -571,8 +538,9 @@ public class MainGrid implements Serializable {
 
 			// return debugColors[x][y];
 
-			return isLandscapeBlocking((short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0,
-					1, 1) : (flagsGrid.isMarked((short) x, (short) y) ? new Color(0, 1, 0, 1) : null));
+			return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED : flagsGrid.isBlocked(
+					(short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0, 1, 1) : (flagsGrid
+					.isMarked((short) x, (short) y) ? new Color(0, 1, 0, 1) : null));
 
 		}
 
@@ -608,7 +576,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void setLandscape(short x, short y, ELandscapeType landscapeType) {
-			landscapeGrid.setLandscapeTypeAt(x, y, landscapeType);
+			setLandscapeTypeAt(x, y, landscapeType);
 		}
 
 		@Override
@@ -666,7 +634,7 @@ public class MainGrid implements Serializable {
 	final class LandmarksGrid implements ILandmarksThreadGrid {
 		@Override
 		public final boolean isBlocked(short x, short y) {
-			return isLandscapeBlocking(x, y) || flagsGrid.isBlocked(x, y);
+			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override
@@ -820,7 +788,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean isBlocked(short x, short y) {
-			return flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);
+			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override
@@ -942,7 +910,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void changeLandscapeAt(ISPosition2D pos, ELandscapeType type) {
-			landscapeGrid.setLandscapeTypeAt(pos.getX(), pos.getY(), type);
+			setLandscapeTypeAt(pos.getX(), pos.getY(), type);
 		}
 
 		@Override
@@ -981,7 +949,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable) {
-			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y) && !isLandscapeBlocking(x, y)
+			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y)
 					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer() == partitionsGrid.getPlayerAt(x, y));
 		}
 
@@ -1379,7 +1347,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final boolean isBlocked(short x, short y) {
-			return flagsGrid.isBlocked(x, y) || isLandscapeBlocking(x, y);
+			return flagsGrid.isBlocked(x, y);
 		}
 
 		@Override

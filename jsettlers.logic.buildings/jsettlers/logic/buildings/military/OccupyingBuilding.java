@@ -16,6 +16,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
@@ -66,6 +67,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	protected final void constructionFinishedEvent() {
+		for (RelativePoint curr : super.getBuildingType().getAttackers()) {
+			super.getGrid().getMapObjectsManager()
+					.addSimpleMapObject(curr.calculatePoint(super.getPos()), EMapObjectType.ATTACKABLE_TOWER, false, super.getPlayer());
+		}
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package jsettlers.logic.movable.soldiers.behaviors;
 
+import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.logging.StopWatch;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
@@ -31,12 +33,26 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 	private int delayCtr;
 	private boolean enemyFoundLastTime = false;
 
+	private static long sum = 0;
+	private static int ctr = 0;
+
 	@Override
 	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
 		if (enemyFoundLastTime || delayCtr > DELAY) {
 			delayCtr = 0;
 
+			StopWatch watch = new MilliStopWatch();
+			watch.start();
 			Path path = super.getGrid().getDijkstra().find(pathCalcable, pos.getX(), pos.getY(), (short) 1, SEARCH_RADIUS, ESearchType.ENEMY);
+			watch.stop();
+			sum += watch.getDiff();
+			ctr++;
+			if (ctr >= 10000) {
+				System.out.println("soldier searches needed in avg: " + ((float) sum) / ctr);
+				sum = 0;
+				ctr = 0;
+			}
+
 			if (path != null) {
 				enemyFoundLastTime = true;
 				if (canHit(pos, path.getTargetPos())) {

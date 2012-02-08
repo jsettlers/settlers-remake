@@ -40,7 +40,7 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class MapObjectsManager implements ITimerable, Serializable {
+public final class MapObjectsManager implements ITimerable, Serializable {
 	private static final long serialVersionUID = 1833055351956872224L;
 
 	private final IMapObjectsManagerGrid grid;
@@ -438,12 +438,12 @@ public class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	public void addWaves(short x, short y) {
-	    grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.WAVES));
-    }
+		grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.WAVES));
+	}
 
 	public void addFish(short x, short y) {
 		grid.addMapObject(x, y, new DecorationMapObject(EMapObjectType.FISH_DECORATION));
-    }
+	}
 
 	private static class TimeEvent implements Comparable<TimeEvent>, Serializable {
 		private static final long serialVersionUID = -4439126418530597713L;
