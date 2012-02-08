@@ -120,12 +120,12 @@ public final class HexAStar {
 			Path path = new Path(pathlength);
 
 			int idx = pathlength;
-			path.insertAt(idx, curr);
+			path.insertAt(idx, curr.getX(), curr.getY());
 
 			while (curr.parent != null) {
 				idx--;
 				curr = curr.parent;
-				path.insertAt(idx, curr);
+				path.insertAt(idx, curr.getX(), curr.getY());
 			}
 
 			return path;
