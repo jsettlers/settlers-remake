@@ -57,8 +57,9 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 		if (path != null) {
 			if (!path.isFinished()) {
 				if (checkGoStepPrecondition()) {
-					ISPosition2D nextTile = path.nextStep();
+					ISPosition2D nextTile = path.getNextPos();
 					super.goToTile(nextTile);
+					path.goToNextStep();
 				} else {
 					abortPath();
 					pathAbortedEvent();

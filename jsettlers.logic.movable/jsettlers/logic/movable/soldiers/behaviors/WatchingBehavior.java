@@ -59,7 +59,7 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 					super.setAction(EAction.NO_ACTION, -1);
 					return new FightingBehavior(getSoldier(), path.getTargetPos(), this);
 				} else {
-					super.goToTile(path.getFirst());
+					super.goToTile(path.getFirstPos());
 					return this;
 				}
 			} else {
