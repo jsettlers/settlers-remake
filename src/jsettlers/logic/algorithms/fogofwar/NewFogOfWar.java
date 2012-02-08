@@ -2,6 +2,7 @@ package jsettlers.logic.algorithms.fogofwar;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
@@ -17,7 +18,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  * @author Andreas Eberle
  */
-public final class NewFogOfWar implements IFogOfWar {
+public final class NewFogOfWar implements Serializable {
 	private static final long serialVersionUID = 1877994785778678510L;
 	/**
 	 * Longest distance any unit may look
@@ -60,7 +61,6 @@ public final class NewFogOfWar implements IFogOfWar {
 		ois.defaultReadObject();
 	}
 
-	@Override
 	public void startThread(IFogOfWarGrid grid) {
 		this.grid = grid;
 		NewFoWThread thread = new NewFoWThread();
@@ -76,7 +76,6 @@ public final class NewFogOfWar implements IFogOfWar {
 	 *            The y coordinate of the point in 0..(mapHeight - 1)
 	 * @return The status from 0 to visible.
 	 */
-	@Override
 	public final byte getVisibleStatus(int x, int y) {
 		if (enabled) {
 			return (byte) Math.min(sight[x][y], CommonConstants.FOG_OF_WAR_VISIBLE);
@@ -90,12 +89,10 @@ public final class NewFogOfWar implements IFogOfWar {
 		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayer() == player));
 	}
 
-	@Override
 	public final boolean isVisible(int centerx, int centery) {
 		return sight[centerx][centery] >= CommonConstants.FOG_OF_WAR_VISIBLE;
 	}
 
-	@Override
 	public final void toggleEnabled() {
 		enabled = !enabled;
 	}
@@ -226,7 +223,6 @@ public final class NewFogOfWar implements IFogOfWar {
 
 	}
 
-	@Override
 	public void cancel() {
 		this.canceled = true;
 	}
