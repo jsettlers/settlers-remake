@@ -64,4 +64,7 @@
     <occupyer offsetX="-16" type="INFANTARY" offsetY="23" soldierX="3" soldierY="2" looksRight="false"/>
     <occupyer offsetX="13" type="BOWMAN" offsetY="60" soldierX="-1" soldierY="-6"/>
     <occupyer offsetX="-7" type="BOWMAN" offsetY="60" soldierX="-3" soldierY="-6"/>
+    
+    <attacker dx="3" dy="3" />
+    <attacker dx="3" dy="2" />
 </building>

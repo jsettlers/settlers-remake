@@ -54,17 +54,15 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_BRICKLAYER = "bricklayer";
 	private static final String ATTR_DIRECTION = "direction";
 	private static final String TAG_BUILDMARK = "buildmark";
+	private static final String TAG_ATTACKER = "attacker";
 	private static final String TAG_IMAGE = "image";
 	private static final String TAG_GROUNDTYE = "ground";
 
-	private final ArrayList<RelativePoint> blocked =
-	        new ArrayList<RelativePoint>();
+	private final ArrayList<RelativePoint> blocked = new ArrayList<RelativePoint>();
 
-	private final ArrayList<RelativePoint> protectedTiles =
-	        new ArrayList<RelativePoint>();
+	private final ArrayList<RelativePoint> protectedTiles = new ArrayList<RelativePoint>();
 
-	private final Hashtable<String, JobElementWrapper> jobElements =
-	        new Hashtable<String, JobElementWrapper>();
+	private final Hashtable<String, JobElementWrapper> jobElements = new Hashtable<String, JobElementWrapper>();
 
 	private String startJobName = "";
 	private RelativePoint door = new RelativePoint(0, 0);
@@ -72,21 +70,18 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private EMovableType workerType;
 	private ArrayList<RelativeStack> stacks = new ArrayList<RelativeStack>();
-	private ArrayList<RelativeBricklayer> bricklayers =
-	        new ArrayList<RelativeBricklayer>();
+	private ArrayList<RelativeBricklayer> bricklayers = new ArrayList<RelativeBricklayer>();
 
 	private int workradius;
 	private RelativePoint workCenter = new RelativePoint(0, 0);
 	private RelativePoint flag = new RelativePoint(0, 0);
-	private ArrayList<RelativePoint> buildmarks =
-	        new ArrayList<RelativePoint>();
+	private ArrayList<RelativePoint> buildmarks = new ArrayList<RelativePoint>();
+	private ArrayList<RelativePoint> attackers = new ArrayList<RelativePoint>();
 	private ImageLink guiimage = new ImageLink(EImageLinkType.GUI, 1, 0, 0);
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
-	private ArrayList<ELandscapeType> groundtypes =
-	        new ArrayList<ELandscapeType>();
-	private ArrayList<OccupyerPlace> occupyerplaces =
-	        new ArrayList<OccupyerPlace>();
+	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
+	private ArrayList<OccupyerPlace> occupyerplaces = new ArrayList<OccupyerPlace>();
 	private short viewdistance = 0;
 	private final String buildingName;
 
@@ -97,24 +92,19 @@ public class BuildingFile implements BuildingJobDataProvider {
 			xr.setContentHandler(new SaxHandler());
 			xr.setEntityResolver(new EntityResolver() {
 				@Override
-				public InputSource resolveEntity(String publicId,
-				        String systemId) throws SAXException, IOException {
+				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 					if (systemId.contains(BUILDING_DTD)) {
-						return new InputSource(ResourceManager.getFile(DATA_DIR
-						        + BUILDING_DTD));
+						return new InputSource(ResourceManager.getFile(DATA_DIR + BUILDING_DTD));
 					} else {
 						return null;
 					}
 				}
 			});
 
-			InputStream stream =
-			        ResourceManager.getFile(DATA_DIR
-			                + buildingName.toLowerCase() + ".xml");
+			InputStream stream = ResourceManager.getFile(DATA_DIR + buildingName.toLowerCase() + ".xml");
 			xr.parse(new InputSource(stream));
 		} catch (Exception e) {
-			System.err.println("Error loading building file for "
-			        + buildingName + ":" + e.getMessage());
+			System.err.println("Error loading building file for " + buildingName + ":" + e.getMessage());
 			loadDefault();
 		}
 	}
@@ -122,8 +112,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private class SaxHandler extends DefaultHandler {
 
 		@Override
-		public void startElement(String uri, String localName, String qName,
-		        Attributes attributes) throws SAXException {
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 			String tagName = qName;
 			if (TAG_BUILDING.equals(tagName)) {
 				readAttributes(attributes);
@@ -152,9 +141,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 				readImageLink(attributes);
 			} else if (TAG_BUILDMARK.equals(tagName)) {
 				buildmarks.add(readRelativeTile(attributes));
+			} else if (TAG_ATTACKER.equals(tagName)) {
+				attackers.add(readRelativeTile(attributes));
 			} else if (TAG_GROUNDTYE.equals(tagName)) {
-				groundtypes.add(ELandscapeType.valueOf(attributes
-				        .getValue("groundtype")));
+				groundtypes.add(ELandscapeType.valueOf(attributes.getValue("groundtype")));
 			} else if (TAG_OCCUPYER.equals(tagName)) {
 				addOccupyer(attributes);
 			}
@@ -171,24 +161,15 @@ public class BuildingFile implements BuildingJobDataProvider {
 		try {
 			int x = Integer.parseInt(attributes.getValue("offsetX"));
 			int y = Integer.parseInt(attributes.getValue("offsetY"));
-			ESoldierType type =
-			        OccupyerPlace.ESoldierType.valueOf(attributes
-			                .getValue("type"));
-			RelativePoint position =
-			        new RelativePoint(Short.parseShort(attributes
-			                .getValue("soldierX")), Short.parseShort(attributes
-			                .getValue("soldierY")));
-			OccupyerPlace place =
-			        new OccupyerPlace(x, y, type, position,
-			                "true".equals(attributes.getValue("looksRight")));
+			ESoldierType type = OccupyerPlace.ESoldierType.valueOf(attributes.getValue("type"));
+			RelativePoint position = new RelativePoint(Short.parseShort(attributes.getValue("soldierX")), Short.parseShort(attributes
+					.getValue("soldierY")));
+			OccupyerPlace place = new OccupyerPlace(x, y, type, position, "true".equals(attributes.getValue("looksRight")));
 			occupyerplaces.add(place);
 		} catch (NumberFormatException e) {
-			System.err.println("Warning: illegal number "
-			        + "for occupyer x/y attribute, in definiton for "
-			        + buildingName);
+			System.err.println("Warning: illegal number " + "for occupyer x/y attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
-			System.err.println("Illegal occupyer position name in "
-			        + buildingName);
+			System.err.println("Illegal occupyer position name in " + buildingName);
 		}
 	}
 
@@ -197,8 +178,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 			int file = Integer.parseInt(attributes.getValue("file"));
 			int sequence = Integer.parseInt(attributes.getValue("sequence"));
 			int image = Integer.parseInt(attributes.getValue("image"));
-			EImageLinkType type =
-			        EImageLinkType.valueOf(attributes.getValue("type"));
+			EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
 			ImageLink imageLink = new ImageLink(type, file, sequence, image);
 			String forState = attributes.getValue("for");
 			if ("GUI".equals(forState)) {
@@ -209,9 +189,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 				images.add(imageLink);
 			}
 		} catch (NumberFormatException e) {
-			System.err.println("Warning: illegal number "
-			        + "for image link attribute, in definiton for "
-			        + buildingName);
+			System.err.println("Warning: illegal number " + "for image link attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Illegal image link name in " + buildingName);
 		}
@@ -221,15 +199,12 @@ public class BuildingFile implements BuildingJobDataProvider {
 		try {
 			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
 			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
-			EDirection direction =
-			        EDirection.valueOf(attributes.getValue(ATTR_DIRECTION));
+			EDirection direction = EDirection.valueOf(attributes.getValue(ATTR_DIRECTION));
 
 			bricklayers.add(new RelativeBricklayer(dx, dy, direction));
 
 		} catch (NumberFormatException e) {
-			System.err
-			        .println("Warning: illegal number for stack attribute, in definiton for "
-			                + buildingName);
+			System.err.println("Warning: illegal number for stack attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Illegal material name in " + buildingName);
 		}
@@ -243,9 +218,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 			return new RelativePoint(dx, dy);
 
 		} catch (NumberFormatException e) {
-			System.err.println("Warning: illegal number "
-			        + "for relative tile attribute, in definiton for "
-			        + buildingName);
+			System.err.println("Warning: illegal number " + "for relative tile attribute, in definiton for " + buildingName);
 			return new RelativePoint(0, 0);
 		}
 	}
@@ -254,16 +227,13 @@ public class BuildingFile implements BuildingJobDataProvider {
 		try {
 			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
 			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
-			EMaterialType type =
-			        EMaterialType.valueOf(attributes.getValue(ATTR_MATERIAl));
-			short requiredForBuild =
-			        Short.parseShort(attributes.getValue(ATTR_BUILDREQUIRED));
+			EMaterialType type = EMaterialType.valueOf(attributes.getValue(ATTR_MATERIAl));
+			short requiredForBuild = Short.parseShort(attributes.getValue(ATTR_BUILDREQUIRED));
 
 			stacks.add(new RelativeStack(dx, dy, type, requiredForBuild));
 
 		} catch (NumberFormatException e) {
-			System.err.println("Warning: illegal number "
-			        + "for stack attribute, in definiton for " + buildingName);
+			System.err.println("Warning: illegal number " + "for stack attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Illegal material name in " + buildingName);
 		}
@@ -302,13 +272,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 				if (startJobName == null || startJobName.isEmpty()) {
 					startJob = SimpleBuildingJob.createFallback();
 				} else {
-					startJob =
-					        SimpleBuildingJob.createLinkedJobs(this,
-					                startJobName);
+					startJob = SimpleBuildingJob.createLinkedJobs(this, startJobName);
 				}
 			} catch (Exception e) {
-				System.err.println("Error while creating job list for "
-				        + buildingName + ", using fallback. Message: " + e);
+				System.err.println("Error while creating job list for " + buildingName + ", using fallback. Message: " + e);
 				e.printStackTrace();
 				startJob = SimpleBuildingJob.createFallback();
 			}
@@ -383,5 +350,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	public OccupyerPlace[] getOccupyerPlaces() {
 		return occupyerplaces.toArray(new OccupyerPlace[occupyerplaces.size()]);
+	}
+
+	public RelativePoint[] getAttackers() {
+		return attackers.toArray(new RelativePoint[attackers.size()]);
 	}
 }

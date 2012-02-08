@@ -95,7 +95,7 @@
 	RIVER4|
 	MOUNTAINBORDER
 )">
-<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
+<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*, attacker*) >
 
 <!ATTLIST building
    worker CDATA #REQUIRED
@@ -190,6 +190,12 @@
 
 <!ELEMENT buildmark EMPTY>
 <!ATTLIST buildmark
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+>
+
+<!ELEMENT attacker EMPTY>
+<!ATTLIST attacker
    dx CDATA #REQUIRED
    dy CDATA #REQUIRED
 >

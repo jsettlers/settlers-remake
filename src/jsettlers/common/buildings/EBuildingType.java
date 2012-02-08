@@ -93,6 +93,7 @@ public enum EBuildingType {
 	private final RelativePoint[] protectedTiles;
 
 	private final RelativePoint[] buildmarks;
+	private final RelativePoint[] attackers;
 
 	private final ImageLink[] buildImages;
 
@@ -131,6 +132,7 @@ public enum EBuildingType {
 		}
 
 		buildmarks = file.getBuildmarks();
+		attackers = file.getAttackers();
 		groundtypes = file.getGroundtypes();
 		viewdistance = file.getViewdistance();
 
@@ -226,6 +228,10 @@ public enum EBuildingType {
 
 	public final RelativePoint[] getBuildmarks() {
 		return buildmarks;
+	}
+
+	public RelativePoint[] getAttackers() {
+		return attackers;
 	}
 
 	public final ImageLink[] getBuildImages() {
@@ -338,4 +344,5 @@ public enum EBuildingType {
 			}
 		}
 	}
+
 }
