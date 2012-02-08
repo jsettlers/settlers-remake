@@ -1,5 +1,7 @@
 package jsettlers.logic.algorithms.path.astar;
 
+import java.util.BitSet;
+
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
@@ -15,12 +17,10 @@ import jsettlers.logic.algorithms.path.Path;
  * 
  */
 public final class HexAStar {
-	private static final int NO_LIST = -1;
-
 	private final AStarNode[][] nodes;
 	private final IAStarPathMap map;
-	private int openList = 1;
-	private int closedList = 2;
+	private final BitSet openList;
+	private final BitSet closedList;
 	private final short height, width;
 
 	private MinHeap<AStarNode> open = new MinHeap<AStarNode>(AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
@@ -34,6 +34,8 @@ public final class HexAStar {
 		this.height = height;
 
 		nodes = new AStarNode[height][width];
+		openList = new BitSet(width * height);
+		closedList = new BitSet(width * height);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -43,6 +45,11 @@ public final class HexAStar {
 
 		xDeltaArray = EDirection.getXDeltaArray();
 		yDeltaArray = EDirection.getYDeltaArray();
+	}
+
+	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
+		ISPosition2D pos = requester.getPos();
+		return findPath(requester, pos.getX(), pos.getY(), target.getX(), target.getY());
 	}
 
 	public final Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
@@ -57,14 +64,8 @@ public final class HexAStar {
 			blockedAtStart = false;
 		}
 
-		if (closedList > Integer.MAX_VALUE - 10) {
-			openList = 1;
-			closedList = 2;
-			resetListOfNodes();
-		} else {
-			openList += 2;
-			closedList += 2;
-		}
+		closedList.clear();
+		openList.clear();
 
 		open.clear();
 		boolean found = false;
@@ -72,12 +73,11 @@ public final class HexAStar {
 
 		while (!open.isEmpty()) {
 			AStarNode currNode = open.deleteMin();
-			currNode.inList = closedList;
 
 			short x = currNode.x;
 			short y = currNode.y;
 
-			map.markAsClosed(x, y);
+			setClosed(x, y);
 
 			if (currNode.equals(tx, ty)) {
 				found = true;
@@ -90,9 +90,11 @@ public final class HexAStar {
 
 				if (isValidPosition(requester, neighborX, neighborY, blockedAtStart)) {
 					AStarNode neighbor = nodes[neighborY][neighborX];
-					if (neighbor.inList != closedList) {
+					int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
+
+					if (!closedList.get(flatNeighborIdx)) {
 						float newCosts = currNode.cost + map.getCost(currNode.x, currNode.y, neighbor.x, neighbor.y);
-						if (neighbor.inList == openList) {
+						if (openList.get(flatNeighborIdx)) {
 							if (neighbor.cost > newCosts) {
 								neighbor.cost = newCosts;
 								neighbor.depth = currNode.depth + 1;
@@ -103,7 +105,7 @@ public final class HexAStar {
 							neighbor.cost = newCosts;
 							neighbor.heuristic = map.getHeuristicCost(neighbor.x, neighbor.y, tx, ty);
 							neighbor.parent = currNode;
-							neighbor.inList = openList;
+							openList.set(flatNeighborIdx);
 							neighbor.depth = currNode.depth + 1;
 							open.insert(neighbor);
 
@@ -134,9 +136,14 @@ public final class HexAStar {
 		return null;
 	}
 
+	private final void setClosed(short x, short y) {
+		closedList.set(getFlatIdx(x, y));
+		map.markAsClosed(x, y);
+	}
+
 	private final void initStartNode(short sx, short sy, short tx, short ty) {
 		open.insert(nodes[sy][sx]);
-		nodes[sy][sx].inList = openList;
+		openList.set(getFlatIdx(sx, sy));
 		nodes[sy][sx].depth = 0;
 		nodes[sy][sx].parent = null;
 		nodes[sy][sx].cost = 0;
@@ -155,16 +162,16 @@ public final class HexAStar {
 		return map.isBlocked(requester, x, y);
 	}
 
-	private final void resetListOfNodes() {
-		for (short y = 0; y < height; y++) {
-			for (short x = 0; x < width; x++) {
-				nodes[y][x].inList = NO_LIST;
-			}
-		}
+	private final int getFlatIdx(short x, short y) {
+		return y * width + x;
 	}
 
-	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
-		ISPosition2D pos = requester.getPos();
-		return findPath(requester, pos.getX(), pos.getY(), target.getX(), target.getY());
+	private final int getX(int flatIdx) {
+		return flatIdx % width;
 	}
+
+	private final int getY(int flatIdx) {
+		return flatIdx / width;
+	}
+
 }

@@ -23,8 +23,6 @@ public final class AStarNode implements MinHeapable, ISPosition2D {
 	/** The search depth of this node */
 	int depth = 0;
 
-	int inList = 0;
-
 	/** index in open list */
 	int heapIdx = -1;
 
