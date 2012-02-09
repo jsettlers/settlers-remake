@@ -58,8 +58,10 @@ public final class LandmarksCorrectingThread extends Thread {
 		short startPartition = grid.getPartitionAt(startPos.getX(), startPos.getY());
 
 		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
-		for (EDirection startDirection : allBlockedDirections) {
-			checkLandmarks(startPos, startPartition, startDirection);
+		if (allBlockedDirections.size() < EDirection.NUMBER_OF_DIRECTIONS) { // check if this is not an enclosed position
+			for (EDirection startDirection : allBlockedDirections) {
+				checkLandmarks(startPos, startPartition, startDirection);
+			}
 		}
 	}
 
@@ -72,10 +74,7 @@ public final class LandmarksCorrectingThread extends Thread {
 
 		blockedBorder.add(blocked);
 
-		int length;
 		for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-			length = blockedBorder.size();
-
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
 			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
 
