@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.ISettlersGameDisplay;
@@ -35,6 +36,8 @@ public class SwingManagedJSettlers {
 		SoundManager.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/Snd"));
 		SoundManager.addLookupPath(new File("D:/Games/Siedler3/Snd"));
 		SoundManager.addLookupPath(new File("C:/Program Files/siedler 3/Snd"));
+
+		CommonConstants.ENABLE_DEBUG_COLORS = true;
 	}
 
 	/**
