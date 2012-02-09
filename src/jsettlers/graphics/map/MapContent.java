@@ -424,7 +424,7 @@ public final class MapContent implements SettlersContent,
 			objectDrawer.drawPlayerBorderObject(context, player);
 			this.context.endTileContext();
 		}
-		return ENABLE_DEBUG && map.getDebugColorAt(x, y) != null;
+		return ENABLE_DEBUG && map.getDebugColorAt(x, y) >= 0;
 	}
 
 	private void drawDebugColors() {
@@ -480,10 +480,12 @@ public final class MapContent implements SettlersContent,
 		for (ISPosition2D pos : tiles) {
 			short x = pos.getX();
 			short y = pos.getY();
-			Color color = map.getDebugColorAt(x, y);
-			if (color != null) {
+			int rgba = map.getDebugColorAt(x, y);
+			if (rgba >= 0) {
 				this.context.beginTileContext(x, y);
-				gl.color(color.red, color.green, color.blue, color.alpha);
+				Color color = new Color(rgba);
+				// TODO remove creation of color object
+				gl.color(color.red, color.blue, color.green, color.alpha);
 				gl.drawQuadWithTexture(0, shape);
 				context.endTileContext();
 			}
