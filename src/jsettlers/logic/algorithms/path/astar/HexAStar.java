@@ -5,10 +5,11 @@ import java.util.BitSet;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
-import jsettlers.logic.algorithms.heap.MinHeap;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.algorithms.path.astar.heap.IHeapRankSupplier;
+import jsettlers.logic.algorithms.path.astar.heap.MinHeap;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -16,35 +17,41 @@ import jsettlers.logic.algorithms.path.Path;
  * @author Andreas Eberle
  * 
  */
-public final class HexAStar {
-	private final AStarNode[][] nodes;
+public final class HexAStar implements IHeapRankSupplier {
+	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
+	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
+
 	private final IAStarPathMap map;
+
+	private final short height, width;
 	private final BitSet openList;
 	private final BitSet closedList;
-	private final short height, width;
 
-	private MinHeap<AStarNode> open = new MinHeap<AStarNode>(AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
+	private final float[] costs;
+	private final float[] heuristics;
+	private final int[] depth;
 
-	private final byte[] xDeltaArray;
-	private final byte[] yDeltaArray;
+	private final int[] heapIdx;
+
+	private final int[] parent;
+
+	private final MinHeap open;
 
 	public HexAStar(IAStarPathMap map, short width, short height) {
 		this.map = map;
 		this.width = width;
 		this.height = height;
+		this.open = new MinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
 
-		nodes = new AStarNode[height][width];
 		openList = new BitSet(width * height);
 		closedList = new BitSet(width * height);
+		costs = new float[width * height];
+		heuristics = new float[width * height];
+		depth = new int[width * height];
 
-		for (short y = 0; y < height; y++) {
-			for (short x = 0; x < width; x++) {
-				nodes[y][x] = new AStarNode(x, y);
-			}
-		}
+		heapIdx = new int[width * height];
 
-		xDeltaArray = EDirection.getXDeltaArray();
-		yDeltaArray = EDirection.getYDeltaArray();
+		parent = new int[width * height];
 	}
 
 	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
@@ -64,6 +71,8 @@ public final class HexAStar {
 			blockedAtStart = false;
 		}
 
+		int targetFlatIdx = getFlatIdx(tx, ty);
+
 		closedList.clear();
 		openList.clear();
 
@@ -72,14 +81,14 @@ public final class HexAStar {
 		initStartNode(sx, sy, tx, ty);
 
 		while (!open.isEmpty()) {
-			AStarNode currNode = open.deleteMin();
+			int currFlatIdx = open.deleteMin();
 
-			short x = currNode.x;
-			short y = currNode.y;
+			short x = getX(currFlatIdx);
+			short y = getY(currFlatIdx);
 
 			setClosed(x, y);
 
-			if (currNode.equals(tx, ty)) {
+			if (targetFlatIdx == currFlatIdx) {
 				found = true;
 				break;
 			}
@@ -89,27 +98,27 @@ public final class HexAStar {
 				short neighborY = (short) (y + yDeltaArray[i]);
 
 				if (isValidPosition(requester, neighborX, neighborY, blockedAtStart)) {
-					AStarNode neighbor = nodes[neighborY][neighborX];
 					int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
 					if (!closedList.get(flatNeighborIdx)) {
-						float newCosts = currNode.cost + map.getCost(currNode.x, currNode.y, neighbor.x, neighbor.y);
+						float newCosts = costs[currFlatIdx] + map.getCost(x, y, neighborX, neighborY);
 						if (openList.get(flatNeighborIdx)) {
-							if (neighbor.cost > newCosts) {
-								neighbor.cost = newCosts;
-								neighbor.depth = currNode.depth + 1;
-								neighbor.parent = currNode;
-								open.siftUp(neighbor);
+							if (costs[flatNeighborIdx] > newCosts) {
+								costs[flatNeighborIdx] = newCosts;
+								heuristics[flatNeighborIdx] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+								depth[flatNeighborIdx] = depth[currFlatIdx] + 1;
+								parent[flatNeighborIdx] = currFlatIdx;
+								open.siftUp(flatNeighborIdx);
 							}
 						} else {
-							neighbor.cost = newCosts;
-							neighbor.heuristic = map.getHeuristicCost(neighbor.x, neighbor.y, tx, ty);
-							neighbor.parent = currNode;
+							costs[flatNeighborIdx] = newCosts;
+							heuristics[flatNeighborIdx] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+							parent[flatNeighborIdx] = currFlatIdx;
 							openList.set(flatNeighborIdx);
-							neighbor.depth = currNode.depth + 1;
-							open.insert(neighbor);
+							depth[flatNeighborIdx] = depth[currFlatIdx] + 1;
+							open.insert(flatNeighborIdx);
 
-							map.markAsOpen(neighbor.x, neighbor.y);
+							map.markAsOpen(neighborX, neighborY);
 						}
 					}
 				}
@@ -117,17 +126,17 @@ public final class HexAStar {
 		}
 
 		if (found) {
-			AStarNode curr = nodes[ty][tx];
-			int pathlength = curr.depth;
+			int pathlength = depth[getFlatIdx(tx, ty)];
 			Path path = new Path(pathlength);
 
 			int idx = pathlength;
-			path.insertAt(idx, curr.getX(), curr.getY());
 
-			while (curr.parent != null) {
+			int parentFlatIdx = targetFlatIdx;
+
+			while (parentFlatIdx >= 0) {
+				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
 				idx--;
-				curr = curr.parent;
-				path.insertAt(idx, curr.getX(), curr.getY());
+				parentFlatIdx = parent[parentFlatIdx];
 			}
 
 			return path;
@@ -142,12 +151,13 @@ public final class HexAStar {
 	}
 
 	private final void initStartNode(short sx, short sy, short tx, short ty) {
-		open.insert(nodes[sy][sx]);
-		openList.set(getFlatIdx(sx, sy));
-		nodes[sy][sx].depth = 0;
-		nodes[sy][sx].parent = null;
-		nodes[sy][sx].cost = 0;
-		nodes[sy][sx].heuristic = map.getHeuristicCost(sx, sy, tx, ty);
+		int flatIdx = getFlatIdx(sx, sy);
+		open.insert(flatIdx);
+		openList.set(flatIdx);
+		depth[flatIdx] = 0;
+		parent[flatIdx] = -1;
+		costs[flatIdx] = 0;
+		heuristics[flatIdx] = map.getHeuristicCost(sx, sy, tx, ty);
 	}
 
 	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
@@ -166,12 +176,27 @@ public final class HexAStar {
 		return y * width + x;
 	}
 
-	private final int getX(int flatIdx) {
-		return flatIdx % width;
+	private final short getX(int flatIdx) {
+		return (short) (flatIdx % width);
 	}
 
-	private final int getY(int flatIdx) {
-		return flatIdx / width;
+	private final short getY(int flatIdx) {
+		return (short) (flatIdx / width);
+	}
+
+	@Override
+	public float getHeapRank(int identifier) {
+		return costs[identifier] + heuristics[identifier];
+	}
+
+	@Override
+	public int getHeapIdx(int identifier) {
+		return heapIdx[identifier];
+	}
+
+	@Override
+	public void setHeapIdx(int identifier, int idx) {
+		heapIdx[identifier] = idx;
 	}
 
 }
