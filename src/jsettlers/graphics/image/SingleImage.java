@@ -1,10 +1,10 @@
 package jsettlers.graphics.image;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
 
 import java.nio.ShortBuffer;
 
+import jsettlers.common.Color;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -95,7 +95,7 @@ public class SingleImage implements ImageDataPrivider, Image {
 		if (width == 0 || height == 0) {
 			return;
 		}
-		
+
 		this.data.rewind();
 		short[] newData = new short[textureHeight * textureWidth];
 		for (int y = 0; y < height; y++) {
@@ -141,6 +141,7 @@ public class SingleImage implements ImageDataPrivider, Image {
 	        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
+	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
 	        float right, float top) {
 		int textureIndex = getTextureIndex(gl);
@@ -202,7 +203,8 @@ public class SingleImage implements ImageDataPrivider, Image {
 		if (color == null) {
 			gl.color(1, 1, 1, 1);
 		} else {
-			gl.color(color);
+			gl.color(color.getRed(), color.getGreen(), color.getBlue(),
+			        color.getAlpha());
 		}
 
 		int textureIndex = getTextureIndex(gl);

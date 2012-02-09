@@ -1,10 +1,10 @@
 package jsettlers.graphics.image;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
 
 import java.nio.ShortBuffer;
 
+import jsettlers.common.Color;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -15,18 +15,21 @@ import jsettlers.graphics.reader.ImageMetadata;
  * @author michael
  */
 public class NullImage extends SingleImage {
-	private static final short[] NULL_DATA = new short[] {0};
+	private static final short[] NULL_DATA = new short[] {
+		0
+	};
 	private static final int HALFSIZE = 3;
 	private static NullImage instance;
 	private static LandscapeImage landscapeinstance = null;
 	private static final ImageMetadata nullImageMeta = new ImageMetadata();
-	
+
 	static {
 		nullImageMeta.width = 1;
 		nullImageMeta.height = 1;
 		nullImageMeta.offsetX = 0;
 		nullImageMeta.offsetY = 0;
 	}
+
 	/**
 	 * Gets an instance of the null image.
 	 * 
@@ -65,11 +68,11 @@ public class NullImage extends SingleImage {
 		}, true);
 	}
 
-
 	private static GuiImage guiinstance;
 
 	/**
 	 * Gets an empty landscape image.
+	 * 
 	 * @return The imge instance.
 	 */
 	public static LandscapeImage getForLandscape() {
@@ -81,6 +84,7 @@ public class NullImage extends SingleImage {
 
 	/**
 	 * Gets an empty gui image.
+	 * 
 	 * @return The imge instance.
 	 */
 	public static GuiImage getForGui() {

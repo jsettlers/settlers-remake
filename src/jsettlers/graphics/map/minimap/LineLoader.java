@@ -1,6 +1,6 @@
 package jsettlers.graphics.map.minimap;
 
-import go.graphics.Color;
+import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;

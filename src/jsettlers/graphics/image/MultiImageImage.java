@@ -1,7 +1,7 @@
 package jsettlers.graphics.image;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
+import jsettlers.common.Color;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -32,13 +32,14 @@ public class MultiImageImage implements Image {
 			torsoGeometry = null;
 		}
 	}
+
 	private static final float IMAGE_DRAW_OFFSET = .5f;
 
 	private static float[] createGeometry(MultiImageMap map,
 	        ImageMetadata settlerMeta, int settlerx, int settlery) {
 		float umin = (float) settlerx / map.getWidth();
 		float umax = (float) (settlerx + settlerMeta.width) / map.getWidth();
-		
+
 		float vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
 		float vmax = (float) (settlery) / map.getHeight();
 		return new float[] {

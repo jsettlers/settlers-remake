@@ -1,6 +1,6 @@
 package jsettlers.graphics.map.draw;
 
-import go.graphics.Color;
+import jsettlers.common.Color;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;

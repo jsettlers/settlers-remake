@@ -1,6 +1,5 @@
 package jsettlers.graphics.map;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
@@ -20,6 +19,7 @@ import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
 
+import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -483,7 +483,7 @@ public final class MapContent implements SettlersContent,
 			Color color = map.getDebugColorAt(x, y);
 			if (color != null) {
 				this.context.beginTileContext(x, y);
-				gl.color(color);
+				gl.color(color.red, color.green, color.blue, color.alpha);
 				gl.drawQuadWithTexture(0, shape);
 				context.endTileContext();
 			}

@@ -1,7 +1,7 @@
 package jsettlers.graphics.image;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
+import jsettlers.common.Color;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -38,12 +38,12 @@ public class SettlerImage extends SingleImage {
 
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
-	    super.draw(gl, null, multiply);
+		super.draw(gl, null, multiply);
 		if (this.torso != null) {
 			this.torso.draw(gl, color, multiply);
 		}
 	}
-	
+
 	/**
 	 * Sets the image overlay.
 	 * 

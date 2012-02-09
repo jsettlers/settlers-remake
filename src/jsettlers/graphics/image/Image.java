@@ -1,7 +1,7 @@
 package jsettlers.graphics.image;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
+import jsettlers.common.Color;
 
 public interface Image {
 
