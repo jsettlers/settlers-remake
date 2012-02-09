@@ -1,6 +1,5 @@
 package go.graphics.android;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -24,16 +23,16 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public void fillQuad(float x1, float y1, float x2, float y2) {
 		quadDatas = new float[3 * 6];
-		quadDatas[ 0] = x1;
-		quadDatas[ 1] = y1;
-		quadDatas[ 2] = 0;
-		quadDatas[ 3] = x2;
-		quadDatas[ 4] = y1;
-		quadDatas[ 5] = 0;
-		quadDatas[ 6] = x1;
-		quadDatas[ 7] = y2;
-		quadDatas[ 8] = 0;
-		quadDatas[ 9] = x1;
+		quadDatas[0] = x1;
+		quadDatas[1] = y1;
+		quadDatas[2] = 0;
+		quadDatas[3] = x2;
+		quadDatas[4] = y1;
+		quadDatas[5] = 0;
+		quadDatas[6] = x1;
+		quadDatas[7] = y2;
+		quadDatas[8] = 0;
+		quadDatas[9] = x1;
 		quadDatas[10] = y2;
 		quadDatas[11] = 0;
 		quadDatas[12] = x2;
@@ -77,12 +76,6 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glColor4f(red, green, blue, alpha);
 	}
 
-	@Override
-	public void color(Color color) {
-		color(color.getRed(), color.getGreen(), color.getBlue(),
-		        color.getAlpha());
-	}
-
 	private FloatBuffer reuseableBuffer = null;
 	private ByteBuffer quadEleementBuffer;
 	private FloatBuffer reuseableBufferDuplicate;
@@ -96,8 +89,7 @@ public class AndroidContext implements GLDrawContext {
 	}
 
 	private FloatBuffer createReusedBuffer(int floatCount) {
-		if (reuseableBuffer == null
-		        || reuseableBuffer.position(0).capacity() < floatCount) {
+		if (reuseableBuffer == null || reuseableBuffer.position(0).capacity() < floatCount) {
 			ByteBuffer quadPoints = ByteBuffer.allocateDirect(floatCount * 4);
 			quadPoints.order(ByteOrder.nativeOrder());
 			reuseableBuffer = quadPoints.asFloatBuffer();
@@ -111,15 +103,13 @@ public class AndroidContext implements GLDrawContext {
 	@Override
 	public void drawLine(float[] points, boolean loop) {
 		if (points.length % 3 != 0) {
-			throw new IllegalArgumentException(
-			        "Point array length needs to be multiple of 3.");
+			throw new IllegalArgumentException("Point array length needs to be multiple of 3.");
 		}
 		glBindTexture(0);
 		FloatBuffer floatBuff = generateTemporaryFloatBuffer(points);
 		GLES10.glDisableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 0, floatBuff);
-		GLES10.glDrawArrays(loop ? GLES10.GL_LINE_LOOP : GLES10.GL_LINE_STRIP,
-		        0, points.length / 3);
+		GLES10.glDrawArrays(loop ? GLES10.GL_LINE_LOOP : GLES10.GL_LINE_STRIP, 0, points.length / 3);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);
 	}
 
@@ -148,8 +138,7 @@ public class AndroidContext implements GLDrawContext {
 		texbuffer.position(3);
 		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, texbuffer);
 
-		GLES10.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
-		        quadEleementBuffer);
+		GLES10.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE, quadEleementBuffer);
 	}
 
 	private void generateQuadElementBuffer() {
@@ -188,7 +177,7 @@ public class AndroidContext implements GLDrawContext {
 		texbuffer.position(3);
 		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 9 * 4, texbuffer);
 		FloatBuffer colorbuffer = buffer.duplicate(); // we need it selden enogh
-		                                              // to allocate a new one.
+														// to allocate a new one.
 		colorbuffer.position(5);
 		GLES10.glColorPointer(4, GLES10.GL_FLOAT, 9 * 4, colorbuffer);
 
@@ -225,9 +214,7 @@ public class AndroidContext implements GLDrawContext {
 		}
 
 		glBindTexture(texture);
-		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_RGBA, width,
-		        height, 0, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1,
-		        data);
+		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_RGBA, width, height, 0, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
 
 		setTextureParameters();
 		return texture;
@@ -241,26 +228,19 @@ public class AndroidContext implements GLDrawContext {
 	}
 
 	/**
-	 * Sets the texture parameters, assuming that the texture was just created
-	 * and is bound.
+	 * Sets the texture parameters, assuming that the texture was just created and is bound.
 	 */
 	private static void setTextureParameters() {
-		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D,
-		        GLES10.GL_TEXTURE_MAG_FILTER, GLES10.GL_LINEAR);
-		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D,
-		        GLES10.GL_TEXTURE_MIN_FILTER, GLES10.GL_LINEAR);
-		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_WRAP_S,
-		        GLES10.GL_REPEAT);
-		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_WRAP_T,
-		        GLES10.GL_REPEAT);
+		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_MAG_FILTER, GLES10.GL_LINEAR);
+		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_MIN_FILTER, GLES10.GL_LINEAR);
+		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_WRAP_S, GLES10.GL_REPEAT);
+		GLES10.glTexParameterf(GLES10.GL_TEXTURE_2D, GLES10.GL_TEXTURE_WRAP_T, GLES10.GL_REPEAT);
 	}
 
 	@Override
-	public void updateTexture(int textureIndex, int left, int bottom,
-	        int width, int height, ShortBuffer data) {
+	public void updateTexture(int textureIndex, int left, int bottom, int width, int height, ShortBuffer data) {
 		glBindTexture(textureIndex);
-		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width,
-		        height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
+		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width, height, GLES10.GL_RGBA, GLES10.GL_UNSIGNED_SHORT_5_5_5_1, data);
 	}
 
 	public int generateTextureAlpha(int width, int height) {
@@ -279,25 +259,20 @@ public class AndroidContext implements GLDrawContext {
 		data.rewind();
 
 		glBindTexture(texture);
-		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_ALPHA, width,
-		        height, 0, GLES10.GL_ALPHA, GLES10.GL_UNSIGNED_BYTE, data);
+		GLES10.glTexImage2D(GLES10.GL_TEXTURE_2D, 0, GLES10.GL_ALPHA, width, height, 0, GLES10.GL_ALPHA, GLES10.GL_UNSIGNED_BYTE, data);
 
 		setTextureParameters();
 		return texture;
 	}
 
-	public void updateTextureAlpha(int textureIndex, int left, int bottom,
-	        int width, int height, ByteBuffer data) {
+	public void updateTextureAlpha(int textureIndex, int left, int bottom, int width, int height, ByteBuffer data) {
 		glBindTexture(textureIndex);
-		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width,
-		        height, GLES10.GL_ALPHA, GLES10.GL_UNSIGNED_BYTE, data);
+		GLES10.glTexSubImage2D(GLES10.GL_TEXTURE_2D, 0, left, bottom, width, height, GLES10.GL_ALPHA, GLES10.GL_UNSIGNED_BYTE, data);
 	}
 
 	@Override
 	public void deleteTexture(int textureid) {
-		GLES10.glDeleteTextures(1, new int[] {
-			textureid
-		}, 0);
+		GLES10.glDeleteTextures(1, new int[] { textureid }, 0);
 	}
 
 	@Override
@@ -323,8 +298,7 @@ public class AndroidContext implements GLDrawContext {
 		GLES11.glVertexPointer(3, GLES10.GL_FLOAT, 5 * 4, 0);
 		GLES11.glTexCoordPointer(2, GLES10.GL_FLOAT, 5 * 4, 3 * 4);
 
-		GLES11.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE,
-		        quadEleementBuffer);
+		GLES11.glDrawElements(GLES10.GL_TRIANGLES, 6, GLES10.GL_UNSIGNED_BYTE, quadEleementBuffer);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
@@ -336,9 +310,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public void removeGeometry(int geometryindex) {
-		GLES11.glDeleteBuffers(1, new int[] {
-			geometryindex
-		}, 0);
+		GLES11.glDeleteBuffers(1, new int[] { geometryindex }, 0);
 	}
 
 	public void reinit(int width, int height) {
@@ -367,8 +339,7 @@ public class AndroidContext implements GLDrawContext {
 	}
 
 	@Override
-	public void drawTrianglesWithTexture(int textureid, int geometryindex,
-	        int triangleCount) {
+	public void drawTrianglesWithTexture(int textureid, int geometryindex, int triangleCount) {
 		glBindTexture(textureid);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex);
@@ -382,9 +353,7 @@ public class AndroidContext implements GLDrawContext {
 
 	@Override
 	public int generateGeometry(int bytes) {
-		int[] vertexBuffIds = new int[] {
-			0
-		};
+		int[] vertexBuffIds = new int[] { 0 };
 		GLES11.glGenBuffers(1, vertexBuffIds, 0);
 
 		int vertexBufferId = vertexBuffIds[0];
@@ -393,15 +362,13 @@ public class AndroidContext implements GLDrawContext {
 		}
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, vertexBufferId);
-		GLES11.glBufferData(GLES11.GL_ARRAY_BUFFER, bytes, null,
-		        GLES11.GL_DYNAMIC_DRAW);
+		GLES11.glBufferData(GLES11.GL_ARRAY_BUFFER, bytes, null, GLES11.GL_DYNAMIC_DRAW);
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 		return vertexBufferId;
 	}
 
 	@Override
-	public void drawTrianglesWithTextureColored(int textureid,
-	        int geometryindex, int triangleCount) {
+	public void drawTrianglesWithTextureColored(int textureid, int geometryindex, int triangleCount) {
 		glBindTexture(textureid);
 
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, geometryindex);
@@ -470,11 +437,9 @@ public class AndroidContext implements GLDrawContext {
 		GLES11.glBindBuffer(GLES11.GL_ARRAY_BUFFER, 0);
 	}
 
-	public static final class GraphicsByteBuffer implements
-	        GLDrawContext.GLBuffer {
+	public static final class GraphicsByteBuffer implements GLDrawContext.GLBuffer {
 		private static int BUFFER_LENGTH = 1024;
-		private static ByteBuffer buffer = ByteBuffer.allocateDirect(
-		        BUFFER_LENGTH).order(ByteOrder.nativeOrder());
+		private static ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_LENGTH).order(ByteOrder.nativeOrder());
 		private static int bufferstart = 0;
 		private static int bufferlength = 0;
 
@@ -515,8 +480,7 @@ public class AndroidContext implements GLDrawContext {
 
 		private void writeBuffer() {
 			buffer.position(0);
-			GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, bufferstart,
-			        bufferlength, buffer);
+			GLES11.glBufferSubData(GLES11.GL_ARRAY_BUFFER, bufferstart, bufferlength, buffer);
 		}
 	}
 
