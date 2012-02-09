@@ -51,7 +51,7 @@ import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
-import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
+import jsettlers.logic.algorithms.landmarks.NewLandmarkCorrection;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
@@ -115,7 +115,8 @@ public class MainGrid implements Serializable {
 	final NewFogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
-	transient LandmarksCorrectingThread landmarksCorrectionThread;
+//	transient LandmarksCorrectingThread landmarksCorrectionThread;
+	transient NewLandmarkCorrection landmarksCorrection;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
@@ -141,7 +142,7 @@ public class MainGrid implements Serializable {
 
 	private void initAdditionalGrids() {
 		this.graphicsGrid = new GraphicsGrid();
-		this.landmarksCorrectionThread = new LandmarksCorrectingThread(new LandmarksGrid());
+		this.landmarksCorrection = new NewLandmarkCorrection(new LandmarksGrid());
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
@@ -217,7 +218,6 @@ public class MainGrid implements Serializable {
 	public void stopGame() {
 		bordersThread.cancel();
 		fogOfWar.cancel();
-		landmarksCorrectionThread.cancel();
 	}
 
 	public static MainGrid create(IMapData mapGrid) {
@@ -275,7 +275,7 @@ public class MainGrid implements Serializable {
 	private void changePlayerAt(ISPosition2D position, byte player) {
 		partitionsGrid.changePlayerAt(position.getX(), position.getY(), player);
 		bordersThread.checkPosition(position);
-		landmarksCorrectionThread.addLandmarkedPosition(position);
+		landmarksCorrection.reTest(position.getX(), position.getY());
 	}
 
 	public final Movable createNewMovableAt(ISPosition2D pos, EMovableType type, byte player) {
@@ -654,6 +654,16 @@ public class MainGrid implements Serializable {
 				((Building) building).kill();
 			}
 		}
+
+		@Override
+        public short getHeight() {
+	        return height;
+        }
+
+		@Override
+        public short getWidth() {
+	        return width;
+        }
 	}
 
 	final class ConstructionMarksGrid implements IConstructionMarkableMap {
@@ -1079,7 +1089,7 @@ public class MainGrid implements Serializable {
 		public final void occupyArea(MapCircle toBeOccupied, ISPosition2D occupiersPosition, byte player) {
 			List<ISPosition2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, occupiersPosition, player);
 			bordersThread.checkPositions(occupiedPositions);
-			landmarksCorrectionThread.addLandmarkedPositions(occupiedPositions);
+			landmarksCorrection.addLandmarkedPositions(occupiedPositions);
 		}
 
 		@Override
@@ -1116,7 +1126,7 @@ public class MainGrid implements Serializable {
 								iter.remove();
 								partitionsGrid.occupyAt(currPos.getX(), currPos.getY(), currOcc.building.getPlayer());
 								bordersThread.checkPosition(currPos);
-								landmarksCorrectionThread.addLandmarkedPosition(currPos);
+								landmarksCorrection.reTest(currPos.getX(), currPos.getY());
 							}
 						}
 
@@ -1345,7 +1355,8 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void changedPartitionAt(short x, short y) {
-			landmarksCorrectionThread.addLandmarkedPosition(new ShortPoint2D(x, y));
+			
+			landmarksCorrection.reTest(x, y);
 		}
 
 		@Override

@@ -105,7 +105,6 @@ public class NetworkScreenAdapter implements INetworkScreenAdapter {
 				try {
 					clientThread.tryToStartMatch();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
