@@ -322,12 +322,12 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void markAsOpen(short x, short y) {
-			landscapeGrid.setDebugColor(x, y, Color.BLUE.getRGBA());
+			landscapeGrid.setDebugColor(x, y, Color.BLUE.getARGB());
 		}
 
 		@Override
 		public final void markAsClosed(short x, short y) {
-			landscapeGrid.setDebugColor(x, y, Color.RED.getRGBA());
+			landscapeGrid.setDebugColor(x, y, Color.RED.getARGB());
 		}
 
 		@Override
@@ -1350,7 +1350,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void setDebugColor(final short x, final short y, Color color) {
-			landscapeGrid.setDebugColor(x, y, color.getRGBA());
+			landscapeGrid.setDebugColor(x, y, color.getARGB());
 		}
 
 	}
