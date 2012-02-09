@@ -48,13 +48,13 @@ public class LandmarksThreadTester {
 	public static void main(String args[]) {
 
 		JOGLPanel content = new JOGLPanel(new SoundPlayer() {
-			
+
 			@Override
 			public void playSound(int sound, float lvolume, float rvolume) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public int load(short[] loadSound) {
 				// TODO Auto-generated method stub
@@ -220,8 +220,8 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public Color getDebugColorAt(int x, int y) {
-			return new Color(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
+		public int getDebugColorAt(int x, int y) {
+			return Color.getRGBA(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
 		}
 
 		@Override

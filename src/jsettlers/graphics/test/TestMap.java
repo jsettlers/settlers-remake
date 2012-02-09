@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -478,8 +477,8 @@ public class TestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public Color getDebugColorAt(int x, int y) {
-		return null;
+	public int getDebugColorAt(int x, int y) {
+		return -1;
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class DatFileTester {
 
 	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
 
-	private static final Color[] colors = new Color[] { new Color(0xffffff) };
+	private static final Color[] colors = new Color[] { Color.WHITE };
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
@@ -393,7 +393,7 @@ public class DatFileTester {
 			float green = (float) ((myColor >> 6) & 0x1f) / 0x1f;
 			float blue = (float) ((myColor >> 1) & 0x1f) / 0x1f;
 			float alpha = myColor & 0x1;
-			rgbArray[i] = new Color(red, green, blue, alpha).getRGB();
+			rgbArray[i] = Color.getRGBA(red, green, blue, alpha);
 		}
 
 		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
