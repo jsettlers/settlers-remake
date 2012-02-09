@@ -1,5 +1,6 @@
 package jsettlers.buildingcreator.editor;
 
+import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 
@@ -120,10 +121,11 @@ public class BuildingCreator implements IMapInterfaceListener {
 			}
 
 			@Override
-			public int load(short[] loadSound) {
+			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
 				// TODO Auto-generated method stub
-				return 0;
+
 			}
+
 		});
 		MapInterfaceConnector connector = mapPanel.showGameMap(map, null);
 		connector.addListener(this);
