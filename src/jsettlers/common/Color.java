@@ -3,7 +3,7 @@ package jsettlers.common;
 public final class Color {
 	public static final Color BLACK = new Color(0, 0, 0, 1);
 	public static final Color WHITE = new Color(1, 1, 1, 1);
-	public static final Color TRANSPARENT = new Color(1, 1, 1, 0);
+	public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 	public static final Color RED = new Color(1, 0, 0, 1);
 	public static final Color BLUE = new Color(0, 0, 1, 1);
 	public static final Color GREEN = new Color(0, 1, 0, 1);
@@ -15,8 +15,8 @@ public final class Color {
 
 	private final int argb;
 
-	public Color(int argb) {
-		this(argb, ((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, ((argb >> 0) & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
+	public Color(int rgb) {
+		this(0xff << 24 | rgb, ((rgb >> 16) & 0xff) / 255f, ((rgb >> 8) & 0xff) / 255f, ((rgb >> 0) & 0xff) / 255f, 1f);
 	}
 
 	private Color(float red, float green, float blue, float alpha) {
