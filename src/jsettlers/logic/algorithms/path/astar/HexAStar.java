@@ -8,8 +8,6 @@ import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.heap.IHeapRankSupplier;
-import jsettlers.logic.algorithms.path.astar.heap.MinHeap;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -17,7 +15,7 @@ import jsettlers.logic.algorithms.path.astar.heap.MinHeap;
  * @author Andreas Eberle
  * 
  */
-public final class HexAStar implements IHeapRankSupplier {
+public final class HexAStar {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
 	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
 
@@ -27,18 +25,18 @@ public final class HexAStar implements IHeapRankSupplier {
 	private final BitSet openList;
 	private final BitSet closedList;
 
-	private final float[] costs;
-	private final float[] heuristics;
+	final float[] costs;
+	final float[] heuristics;
 
-	private final int[] depthParentHeap;
+	final int[] depthParentHeap;
 
-	private final MinHeap open;
+	private final AStarMinHeap open;
 
 	public HexAStar(IAStarPathMap map, short width, short height) {
 		this.map = map;
 		this.width = width;
 		this.height = height;
-		this.open = new MinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
+		this.open = new AStarMinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
 
 		openList = new BitSet(width * height);
 		closedList = new BitSet(width * height);
@@ -147,7 +145,7 @@ public final class HexAStar implements IHeapRankSupplier {
 		return 3 * flatIdx + 1;
 	}
 
-	private static final int getHeapArrayIdx(int flatIdx) {
+	static final int getHeapArrayIdx(int flatIdx) {
 		return 3 * flatIdx + 2;
 	}
 
@@ -190,18 +188,15 @@ public final class HexAStar implements IHeapRankSupplier {
 		return (short) (flatIdx / width);
 	}
 
-	@Override
-	public float getHeapRank(int identifier) {
+	final float getHeapRank(int identifier) {
 		return costs[identifier] + heuristics[identifier];
 	}
 
-	@Override
-	public int getHeapIdx(int identifier) {
+	final int getHeapIdx(int identifier) {
 		return depthParentHeap[getHeapArrayIdx(identifier)];
 	}
 
-	@Override
-	public void setHeapIdx(int identifier, int idx) {
+	final void setHeapIdx(int identifier, int idx) {
 		depthParentHeap[getHeapArrayIdx(identifier)] = idx;
 	}
 

@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.path.astar.heap;
+package jsettlers.logic.algorithms.path.astar;
 
 import java.util.ArrayList;
 
@@ -7,10 +7,10 @@ import java.util.ArrayList;
  * 
  * @author Andreas Eberle
  */
-public final class MinHeap {
+public final class AStarMinHeap {
 	private final ArrayList<Integer> heap = new ArrayList<Integer>();
 	private int size = 0;
-	private final IHeapRankSupplier rankSupplier;
+	private final HexAStar rankSupplier;
 
 	/**
 	 * Creates a new min heap.
@@ -20,7 +20,7 @@ public final class MinHeap {
 	 * @param startCapacity
 	 *            The minimal and initial capacity the heap should have. May not be null.
 	 */
-	public MinHeap(IHeapRankSupplier rankSupplier, int startCapacity) {
+	public AStarMinHeap(HexAStar rankSupplier, int startCapacity) {
 		this.rankSupplier = rankSupplier;
 		if (startCapacity <= 0) {
 			throw new IllegalArgumentException("too smal initial capacity");
