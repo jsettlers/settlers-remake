@@ -8,16 +8,23 @@ public final class Color {
 	public static final Color BLUE = new Color(0, 0, 1, 1);
 	public static final Color GREEN = new Color(0, 1, 0, 1);
 
-	public final float blue;
-	public final float red;
-	public final float green;
-	public final float alpha;
+	private final float blue;
+	private final float red;
+	private final float green;
+	private final float alpha;
 
-	public Color(int rgbhex) {
-		this(((rgbhex >> 16) & 0xff) / 255f, ((rgbhex >> 8) & 0xff) / 255f, ((rgbhex >> 0) & 0xff) / 255f, 1f);
+	private final int argb;
+
+	public Color(int argb) {
+		this(argb, ((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, ((argb >> 0) & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
 	}
 
 	private Color(float red, float green, float blue, float alpha) {
+		this(Color.getARGB(red, green, blue, alpha), red, green, blue, alpha);
+	}
+
+	private Color(int argb, float red, float green, float blue, float alpha) {
+		this.argb = argb;
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
@@ -40,11 +47,11 @@ public final class Color {
 		return red;
 	}
 
-	public final int getRGBA() {
-		return getRGBA(red, green, blue, alpha);
+	public final int getARGB() {
+		return argb;
 	}
 
-	public static final int getRGBA(float red, float green, float blue, float alpha) {
+	public static final int getARGB(float red, float green, float blue, float alpha) {
 		return ((int) (alpha * 255) & 0xff) << 24 | ((int) (red * 255) & 0xff) << 16 | ((int) (green * 255) & 0xff) << 8
 				| ((int) (blue * 255) & 0xff);
 	}
