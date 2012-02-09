@@ -48,8 +48,8 @@ public class MapGraphics implements IGraphicsGrid {
 	}
 
 	@Override
-	public Color getDebugColorAt(int x, int y) {
-		return data.isFailpoint(x, y) ? Color.RED : null;
+	public int getDebugColorAt(int x, int y) {
+		return data.isFailpoint(x, y) ? Color.RED.getRGBA() : -1;
 	}
 
 	@Override
