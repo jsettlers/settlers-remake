@@ -27,8 +27,8 @@ public class ScrollArea extends UIPanel {
 			points[i * 3 + 1] = y;
 			points[i * 3 + 2] = 0;
 		}
-		gl.color(Color.WHITE.red, Color.WHITE.green, Color.WHITE.blue,
-		        Color.WHITE.alpha);
+		gl.color(Color.WHITE.getRed(), Color.WHITE.getGreen(),
+		        Color.WHITE.getBlue(), Color.WHITE.getAlpha());
 		gl.drawLine(points, true);
 	}
 }

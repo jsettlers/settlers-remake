@@ -19,7 +19,6 @@ import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
 
-import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -480,12 +479,13 @@ public final class MapContent implements SettlersContent,
 		for (ISPosition2D pos : tiles) {
 			short x = pos.getX();
 			short y = pos.getY();
-			int rgba = map.getDebugColorAt(x, y);
-			if (rgba >= 0) {
+			int argb = map.getDebugColorAt(x, y);
+			if (argb >= 0) {
 				this.context.beginTileContext(x, y);
-				Color color = new Color(rgba);
-				// TODO remove creation of color object
-				gl.color(color.red, color.blue, color.green, color.alpha);
+				gl.color(((argb >> 16) & 0xff) / 255f,
+				        ((argb >> 8) & 0xff) / 255f,
+				        ((argb >> 0) & 0xff) / 255f,
+				        ((argb >> 24) & 0xff) / 255f);
 				gl.drawQuadWithTexture(0, shape);
 				context.endTileContext();
 			}
