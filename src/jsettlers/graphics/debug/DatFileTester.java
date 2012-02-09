@@ -393,7 +393,7 @@ public class DatFileTester {
 			float green = (float) ((myColor >> 6) & 0x1f) / 0x1f;
 			float blue = (float) ((myColor >> 1) & 0x1f) / 0x1f;
 			float alpha = myColor & 0x1;
-			rgbArray[i] = Color.getRGBA(red, green, blue, alpha);
+			rgbArray[i] = Color.getARGB(red, green, blue, alpha);
 		}
 
 		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);

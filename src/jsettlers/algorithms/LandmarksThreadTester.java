@@ -221,7 +221,7 @@ public class LandmarksThreadTester {
 
 		@Override
 		public int getDebugColorAt(int x, int y) {
-			return Color.getRGBA(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
+			return Color.getARGB(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
 		}
 
 		@Override
