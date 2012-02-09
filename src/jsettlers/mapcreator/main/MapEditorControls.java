@@ -19,6 +19,10 @@ public class MapEditorControls implements IControls {
 	private MapDrawContext context;
 	private final ActionFireable firerer;
 
+		private ISPosition2D toMapPosition(UIPoint lastpoint) {
+			return context.getPositionOnScreen((float) lastpoint.getX(),
+			        (float) lastpoint.getY());
+		}
 	private final class GOEventHandlerImplementation implements
 	        GOModalEventHandler {
 		private ISPosition2D last;
@@ -30,9 +34,6 @@ public class MapEditorControls implements IControls {
 			starty = lastpoint.getY();
 		}
 
-		private ISPosition2D toMapPosition(UIPoint lastpoint) {
-	        return context.getPositionOnScreen((float) lastpoint.getX(),(float) lastpoint.getY());
-        }
 
 		@Override
 		public void phaseChanged(GOEvent event) {
@@ -53,11 +54,12 @@ public class MapEditorControls implements IControls {
 		public void eventDataChanged(GOEvent event) {
 			UIPoint pos = ((GODrawEvent) event).getDrawPosition();
 			ISPosition2D cur = toMapPosition(pos);
-			firerer.fireAction(new DrawLineAction(last, cur, pos.getY() - starty));
+			firerer.fireAction(new DrawLineAction(last, cur, pos.getY()
+			        - starty));
 			last = cur;
 		}
 	}
-	
+
 	public MapEditorControls(ActionFireable firerer) {
 		this.firerer = firerer;
 	}
@@ -76,12 +78,12 @@ public class MapEditorControls implements IControls {
 
 	@Override
 	public boolean containsPoint(UIPoint position) {
-		return false;
+		return true;
 	}
 
 	@Override
 	public String getDescriptionFor(UIPoint position) {
-		return null;
+		return toMapPosition(position).toString();
 	}
 
 	@Override
@@ -116,8 +118,8 @@ public class MapEditorControls implements IControls {
 	}
 
 	@Override
-    public Action replaceAction(Action action) {
-	    return action;
-    }
+	public Action replaceAction(Action action) {
+		return action;
+	}
 
 }
