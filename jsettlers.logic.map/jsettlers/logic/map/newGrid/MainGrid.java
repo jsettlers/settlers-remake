@@ -108,7 +108,6 @@ public class MainGrid implements Serializable {
 	final PartitionsGrid partitionsGrid;
 	final MovableGrid movableGrid;
 	final FlagsGrid flagsGrid;
-	transient Color[][] debugColors;
 
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager mapObjectsManager;
@@ -146,8 +145,6 @@ public class MainGrid implements Serializable {
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
-
-		this.debugColors = new Color[width][height];
 
 		this.fogOfWar.startThread(new FogOfWarGrid());
 
@@ -325,12 +322,12 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void markAsOpen(short x, short y) {
-			debugColors[x][y] = Color.BLUE;
+			landscapeGrid.setDebugColor(x, y, Color.BLUE.getRGBA());
 		}
 
 		@Override
 		public final void markAsClosed(short x, short y) {
-			debugColors[x][y] = Color.RED;
+			landscapeGrid.setDebugColor(x, y, Color.RED.getRGBA());
 		}
 
 		@Override
@@ -526,7 +523,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final Color getDebugColorAt(int x, int y) {
+		public final int getDebugColorAt(int x, int y) {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
@@ -536,7 +533,7 @@ public class MainGrid implements Serializable {
 			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return debugColors[x][y];
+			return landscapeGrid.getDebugColor(x, y);
 
 			// return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED : flagsGrid.isBlocked(
 			// (short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0, 1, 1) : (flagsGrid
@@ -1291,11 +1288,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void resetDebugColors() {
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					debugColors[x][y] = null;
-				}
-			}
+			landscapeGrid.resetDebugColors();
 		}
 
 		@Override
@@ -1357,7 +1350,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void setDebugColor(final short x, final short y, Color color) {
-			debugColors[x][y] = color;
+			landscapeGrid.setDebugColor(x, y, color.getRGBA());
 		}
 
 	}

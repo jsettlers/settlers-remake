@@ -25,6 +25,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private final short height;
 
 	private final FlattenedResetter flattenedResetter;
+
+	private transient final int[] debugColor;
 	private transient IGraphicsBackgroundListener backgroundListener;
 
 	public LandscapeGrid(short width, short height) {
@@ -36,13 +38,17 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		this.resourceType = new byte[width * height];
 		this.temporaryFlatened = new byte[width * height];
 
-		flattenedResetter = new FlattenedResetter(this);
+		this.debugColor = new int[width * height];
+		resetDebugColors();
+
+		this.flattenedResetter = new FlattenedResetter(this);
 		setBackgroundListener(null);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		setBackgroundListener(null);
+		resetDebugColors();
 	}
 
 	public final byte getHeightAt(short x, short y) {
@@ -56,6 +62,20 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final ELandscapeType getLandscapeTypeAt(short x, short y) {
 		return ELandscapeType.values[landscapeGrid[getIdx(x, y)]];
+	}
+
+	public final void setDebugColor(short x, short y, int rgba) {
+		debugColor[getIdx(x, y)] = rgba;
+	}
+
+	public final int getDebugColor(int x, int y) {
+		return debugColor[getIdx(x, y)];
+	}
+
+	public final void resetDebugColors() {
+		for (int i = 0; i < debugColor.length; i++) {
+			debugColor[i] = -1;
+		}
 	}
 
 	private final int getIdx(int x, int y) {
@@ -180,4 +200,5 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 			return false;
 		}
 	}
+
 }
