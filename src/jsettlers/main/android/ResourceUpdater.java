@@ -13,6 +13,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,8 +35,7 @@ import android.content.res.Resources;
 public class ResourceUpdater implements Runnable {
 
 	private static final String RESOURCE_PREFIX = "";
-	private static final String SERVER_ROOT =
-	        "https://michael2402.homeip.net/jsettlers/";
+	private static final String SERVER_ROOT = "https://michael2402.homeip.net/jsettlers/";
 	private final Resources resources;
 	private final File destdir;
 
@@ -71,13 +71,11 @@ public class ResourceUpdater implements Runnable {
 		setUpdating(false);
 	}
 
-	private void updateFiles(DefaultHttpClient httpClient) throws IOException,
-	        ClientProtocolException {
+	private void updateFiles(DefaultHttpClient httpClient) throws IOException, ClientProtocolException {
 		final String url = SERVER_ROOT + "resources.zip";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
-		ZipInputStream inputStream =
-		        new ZipInputStream(response.getEntity().getContent());
+		ZipInputStream inputStream = new ZipInputStream(response.getEntity().getContent());
 		setUpdating(true);
 
 		try {
@@ -90,9 +88,7 @@ public class ResourceUpdater implements Runnable {
 			while ((entry = inputStream.getNextEntry()) != null) {
 				String name = entry.getName();
 				if (name.startsWith(RESOURCE_PREFIX)) {
-					String outfilename =
-					        destdir.getAbsolutePath() + "/"
-					                + name.substring(RESOURCE_PREFIX.length());
+					String outfilename = destdir.getAbsolutePath() + "/" + name.substring(RESOURCE_PREFIX.length());
 					File outfile = new File(outfilename);
 					if (entry.isDirectory()) {
 						if (outfile.exists() && !outfile.isDirectory()) {
@@ -127,17 +123,15 @@ public class ResourceUpdater implements Runnable {
 		setUpdating(false);
 	}
 
-	private static String getMyVersion(File versionfile)
-	        throws IOException {
+	private static String getMyVersion(File versionfile) throws IOException {
 		if (versionfile.exists()) {
-			return getString(new FileInputStream(versionfile));
+			return new DataInputStream(new FileInputStream(versionfile)).readUTF();
 		} else {
 			return "";
 		}
 	}
 
-	private static String loadRevision(DefaultHttpClient httpClient)
-	        throws IOException, ClientProtocolException {
+	private static String loadRevision(DefaultHttpClient httpClient) throws IOException, ClientProtocolException {
 		final String url = SERVER_ROOT + "revision.txt";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
@@ -145,15 +139,13 @@ public class ResourceUpdater implements Runnable {
 		return getString(inputStream);
 	}
 
-	private static String getString(InputStream inputStream) throws IOException {
-		return new DataInputStream(inputStream).readUTF();
+	private static String getString(InputStream inputStream) {
+		return new Scanner(inputStream).useDelimiter("\\A").next();
 	}
 
-	private DefaultHttpClient createClient() throws KeyStoreException,
-	        NoSuchAlgorithmException, CertificateException, IOException,
-	        KeyManagementException, UnrecoverableKeyException {
-		HostnameVerifier hostnameVerifier =
-		        SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+	private DefaultHttpClient createClient() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException,
+			KeyManagementException, UnrecoverableKeyException {
+		HostnameVerifier hostnameVerifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
 		DefaultHttpClient client = new DefaultHttpClient();
 
@@ -165,13 +157,10 @@ public class ResourceUpdater implements Runnable {
 		SSLSocketFactory socketFactory = new SSLSocketFactory(truststore);
 
 		SchemeRegistry registry = new SchemeRegistry();
-		socketFactory
-		        .setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+		socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
 		registry.register(new Scheme("https", socketFactory, 443));
-		SingleClientConnManager mgr =
-		        new SingleClientConnManager(client.getParams(), registry);
-		DefaultHttpClient httpClient =
-		        new DefaultHttpClient(mgr, client.getParams());
+		SingleClientConnManager mgr = new SingleClientConnManager(client.getParams(), registry);
+		DefaultHttpClient httpClient = new DefaultHttpClient(mgr, client.getParams());
 
 		// Set verifier
 		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
@@ -182,8 +171,7 @@ public class ResourceUpdater implements Runnable {
 		return isUpdating;
 	}
 
-	public synchronized void waitUntilUpdateFinished()
-	        throws InterruptedException {
+	public synchronized void waitUntilUpdateFinished() throws InterruptedException {
 		while (isUpdating) {
 			this.wait();
 		}
