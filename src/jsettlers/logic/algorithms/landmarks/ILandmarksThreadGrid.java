@@ -17,4 +17,8 @@ public interface ILandmarksThreadGrid {
 
 	public void setPartitionAndPlayerAt(short x, short y, short startPartition);
 
+	public short getHeight();
+
+	public short getWidth();
+
 }
