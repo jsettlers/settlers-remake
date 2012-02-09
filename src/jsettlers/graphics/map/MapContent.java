@@ -423,7 +423,7 @@ public final class MapContent implements SettlersContent,
 			objectDrawer.drawPlayerBorderObject(context, player);
 			this.context.endTileContext();
 		}
-		return ENABLE_DEBUG && map.getDebugColorAt(x, y) >= 0;
+		return ENABLE_DEBUG && map.getDebugColorAt(x, y) != 0;
 	}
 
 	private void drawDebugColors() {
@@ -480,7 +480,7 @@ public final class MapContent implements SettlersContent,
 			short x = pos.getX();
 			short y = pos.getY();
 			int argb = map.getDebugColorAt(x, y);
-			if (argb >= 0) {
+			if (argb != 0) {
 				this.context.beginTileContext(x, y);
 				gl.color(((argb >> 16) & 0xff) / 255f,
 				        ((argb >> 8) & 0xff) / 255f,
