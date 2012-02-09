@@ -262,7 +262,7 @@ public class NewLandmarkCorrection {
 	public void reTest(short x, short y) {
 		if (!map.isBlocked(x, y)) {
 			short destPartition = map.getPartitionAt(x, y);
-			for (EDirection dir : EDirection.valuesCached()) {
+			for (EDirection dir : EDirection.values) {
 				short nx = dir.getNextTileX(x);
 				short ny = dir.getNextTileY(y);
 				if (map.isInBounds(nx, ny) && map.isBlocked(nx, ny)) {
