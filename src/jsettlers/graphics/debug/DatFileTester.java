@@ -1,6 +1,5 @@
 package jsettlers.graphics.debug;
 
-import go.graphics.Color;
 import go.graphics.GLDrawContext;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -22,6 +21,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
+import jsettlers.common.Color;
 import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
@@ -38,12 +38,9 @@ public class DatFileTester {
 		JoglLibraryPathInitializer.initLibraryPath();
 	}
 
-	private static final String FILE =
-	        "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
+	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
 
-	private static final Color[] colors = new Color[] {
-		new Color(0xffffff)
-	};
+	private static final Color[] colors = new Color[] { new Color(0xffffff) };
 	// private static final String FILE =
 	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
 
@@ -253,8 +250,7 @@ public class DatFileTester {
 
 		}
 
-		private <T extends Image> void drawSequences(GLDrawContext gl2,
-		        int width, int height, SequenceList<T> sequences) {
+		private <T extends Image> void drawSequences(GLDrawContext gl2, int width, int height, SequenceList<T> sequences) {
 			gl2.glTranslatef(offsetX, offsetY, 0);
 
 			int y = 0;
@@ -274,16 +270,14 @@ public class DatFileTester {
 			}
 		}
 
-		private <T extends Image> int drawSequence(GLDrawContext gl2,
-		        int width, int height, int y, Sequence<T> seq) {
+		private <T extends Image> int drawSequence(GLDrawContext gl2, int width, int height, int y, Sequence<T> seq) {
 			int maxheight = 0;
 			int x = 0;
 			for (int index = 0; index < seq.length(); index++) {
 				T image = seq.getImage(index);
 				maxheight = Math.max(maxheight, image.getHeight());
 
-				if (x > -offsetX - 100 && x < -offsetX + width + 100
-				        && y > -offsetY - 100 && y < -offsetY + height + 100) {
+				if (x > -offsetX - 100 && x < -offsetX + width + 100 && y > -offsetY - 100 && y < -offsetY + height + 100) {
 					drawImage(gl2, y, index, x, (SingleImage) image);
 				}
 				x += 100;
@@ -291,24 +285,12 @@ public class DatFileTester {
 			return maxheight;
 		}
 
-		private void drawImage(GLDrawContext gl2, int y, int index, int x,
-		        SingleImage image) {
-			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight()
-			        + image.getOffsetY(), colors[index % colors.length]);
+		private void drawImage(GLDrawContext gl2, int y, int index, int x, SingleImage image) {
+			image.drawAt(gl2, x - image.getOffsetX(), y + image.getHeight() + image.getOffsetY(), colors[index % colors.length]);
 
 			gl2.color(1, 0, 0, 1);
-			float[] line =
-			        new float[] {
-			                x,
-			                y,
-			                0,
-			                x,
-			                y + image.getHeight() + image.getOffsetY(),
-			                0,
-			                x - image.getOffsetX(),
-			                y + image.getHeight() + image.getOffsetY(),
-			                0
-			        };
+			float[] line = new float[] { x, y, 0, x, y + image.getHeight() + image.getOffsetY(), 0, x - image.getOffsetX(),
+					y + image.getHeight() + image.getOffsetY(), 0 };
 			gl2.drawLine(line, false);
 			drawPoint(gl2, x, y);
 			drawPoint(gl2, x + image.getWidth(), y);
@@ -323,13 +305,12 @@ public class DatFileTester {
 
 		private void printHelp() {
 			System.out
-			        .println("HELP:\nUse arrow keys to navigate.\nS shows settlers. \nG shows gui images. \nB shows Background. \nE exports as png");
+					.println("HELP:\nUse arrow keys to navigate.\nS shows settlers. \nG shows gui images. \nB shows Background. \nE exports as png");
 		}
 	}
 
 	private void reloadDatFile() {
-		File file =
-		        new File(FILE.replace("%", String.format("%02d", datFileIndex)));
+		File file = new File(FILE.replace("%", String.format("%02d", datFileIndex)));
 
 		reader = new AdvancedDatFileReader(file);
 	}
@@ -353,12 +334,10 @@ public class DatFileTester {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File dir = fc.getSelectedFile();
 			for (int i = 0; i <= 99; i++) {
-				File file =
-				        new File(FILE.replace("%", String.format("%02d", i)));
+				File file = new File(FILE.replace("%", String.format("%02d", i)));
 
 				if (file.exists()) {
-					AdvancedDatFileReader reader =
-					        new AdvancedDatFileReader(file);
+					AdvancedDatFileReader reader = new AdvancedDatFileReader(file);
 					exportTo(new File(dir, "" + i), reader);
 				}
 			}
@@ -377,25 +356,21 @@ public class DatFileTester {
 		}
 	}
 
-	private static <T extends Image> void export(SequenceList<T> sequences,
-	        File dir) {
+	private static <T extends Image> void export(SequenceList<T> sequences, File dir) {
 		for (int index = 0; index < sequences.size(); index++) {
 			Sequence<T> seq = sequences.get(index);
 			exportSequence(dir, index, seq);
 		}
 	}
 
-	private static <T extends Image> void exportSequence(File dir, int index,
-	        Sequence<T> seq) {
+	private static <T extends Image> void exportSequence(File dir, int index, Sequence<T> seq) {
 		File seqdir = new File(dir, index + "");
 		seqdir.mkdirs();
 		for (int j = 0; j < seq.length(); j++) {
 			T image = seq.getImage(j);
 			export((SingleImage) image, new File(seqdir, j + ".png"));
-			if (image instanceof SettlerImage
-			        && ((SettlerImage) image).getTorso() != null) {
-				export((SingleImage) ((SettlerImage) image).getTorso(),
-				        new File(seqdir, j + "_torso.png"));
+			if (image instanceof SettlerImage && ((SettlerImage) image).getTorso() != null) {
+				export((SingleImage) ((SettlerImage) image).getTorso(), new File(seqdir, j + "_torso.png"));
 			}
 		}
 	}
@@ -408,8 +383,7 @@ public class DatFileTester {
 			return;
 		}
 
-		BufferedImage rendered =
-		        new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage rendered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		ShortBuffer data = image.getData().duplicate();
 		data.rewind();
 		int[] rgbArray = new int[data.remaining()];
