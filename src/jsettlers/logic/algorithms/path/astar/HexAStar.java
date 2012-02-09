@@ -29,11 +29,8 @@ public final class HexAStar implements IHeapRankSupplier {
 
 	private final float[] costs;
 	private final float[] heuristics;
-	private final int[] depth;
 
-	private final int[] heapIdx;
-
-	private final int[] parent;
+	private final int[] depthParentHeap;
 
 	private final MinHeap open;
 
@@ -47,11 +44,8 @@ public final class HexAStar implements IHeapRankSupplier {
 		closedList = new BitSet(width * height);
 		costs = new float[width * height];
 		heuristics = new float[width * height];
-		depth = new int[width * height];
 
-		heapIdx = new int[width * height];
-
-		parent = new int[width * height];
+		depthParentHeap = new int[width * height * 3];
 	}
 
 	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
@@ -106,16 +100,16 @@ public final class HexAStar implements IHeapRankSupplier {
 							if (costs[flatNeighborIdx] > newCosts) {
 								costs[flatNeighborIdx] = newCosts;
 								heuristics[flatNeighborIdx] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
-								depth[flatNeighborIdx] = depth[currFlatIdx] + 1;
-								parent[flatNeighborIdx] = currFlatIdx;
+								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
+								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 								open.siftUp(flatNeighborIdx);
 							}
 						} else {
 							costs[flatNeighborIdx] = newCosts;
 							heuristics[flatNeighborIdx] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
-							parent[flatNeighborIdx] = currFlatIdx;
+							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 							openList.set(flatNeighborIdx);
-							depth[flatNeighborIdx] = depth[currFlatIdx] + 1;
+							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							open.insert(flatNeighborIdx);
 
 							map.markAsOpen(neighborX, neighborY);
@@ -126,7 +120,7 @@ public final class HexAStar implements IHeapRankSupplier {
 		}
 
 		if (found) {
-			int pathlength = depth[getFlatIdx(tx, ty)];
+			int pathlength = depthParentHeap[getDepthIdx(getFlatIdx(tx, ty))];
 			Path path = new Path(pathlength);
 
 			int idx = pathlength;
@@ -136,13 +130,25 @@ public final class HexAStar implements IHeapRankSupplier {
 			while (parentFlatIdx >= 0) {
 				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
 				idx--;
-				parentFlatIdx = parent[parentFlatIdx];
+				parentFlatIdx = depthParentHeap[getParentIdx(parentFlatIdx)];
 			}
 
 			return path;
 		}
 
 		return null;
+	}
+
+	private static final int getDepthIdx(int flatIdx) {
+		return 3 * flatIdx;
+	}
+
+	private static final int getParentIdx(int flatIdx) {
+		return 3 * flatIdx + 1;
+	}
+
+	private static final int getHeapArrayIdx(int flatIdx) {
+		return 3 * flatIdx + 2;
 	}
 
 	private final void setClosed(short x, short y) {
@@ -154,8 +160,8 @@ public final class HexAStar implements IHeapRankSupplier {
 		int flatIdx = getFlatIdx(sx, sy);
 		open.insert(flatIdx);
 		openList.set(flatIdx);
-		depth[flatIdx] = 0;
-		parent[flatIdx] = -1;
+		depthParentHeap[getDepthIdx(flatIdx)] = 0;
+		depthParentHeap[getParentIdx(flatIdx)] = -1;
 		costs[flatIdx] = 0;
 		heuristics[flatIdx] = map.getHeuristicCost(sx, sy, tx, ty);
 	}
@@ -191,12 +197,12 @@ public final class HexAStar implements IHeapRankSupplier {
 
 	@Override
 	public int getHeapIdx(int identifier) {
-		return heapIdx[identifier];
+		return depthParentHeap[getHeapArrayIdx(identifier)];
 	}
 
 	@Override
 	public void setHeapIdx(int identifier, int idx) {
-		heapIdx[identifier] = idx;
+		depthParentHeap[getHeapArrayIdx(identifier)] = idx;
 	}
 
 }
