@@ -1,5 +1,6 @@
 package jsettlers.graphics.sound;
 
+import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
 
 import java.io.File;
@@ -61,7 +62,7 @@ public class SoundManager {
 	private static final int SEQUENCE_N = 118;
 	public static final int NOTIFY_ATTACKED = 80;
 	private final SoundPlayer player;
-	
+
 	private final Random random = new Random();
 
 	public SoundManager(SoundPlayer player) {
@@ -92,7 +93,8 @@ public class SoundManager {
 			throw new IOException("Sound file not found.");
 		}
 
-		ByteReader reader = new ByteReader(new RandomAccessFile(sndfile, "r"));
+		RandomAccessFile randomAccessFile = new RandomAccessFile(sndfile, "r");
+		ByteReader reader = new ByteReader(randomAccessFile);
 
 		reader.assumeToRead(new byte[] {
 		        0x44,
@@ -113,8 +115,6 @@ public class SoundManager {
 		        0x00
 		});
 
-		// int filesize = reader.read32();
-
 		reader.skipTo(0x24);
 		int[] seqheaderstarts = new int[SEQUENCE_N];
 		for (int i = 0; i < SEQUENCE_N; i++) {
@@ -130,44 +130,44 @@ public class SoundManager {
 				starts[j] = reader.read32();
 			}
 
-			if (starts.length == 0) {
-				playerids[i] = new int[0];
-				continue;
-			}
+			playerids[i] = starts;
 
-			int[] sounds = new int[alternaitvecount];
-			for (int j = 0; j < alternaitvecount; j++) {
-				reader.skipTo(starts[j]);
-
-				int length = reader.read32() / 2;
-				reader.read32();
-				reader.read32(); // mostly 22050
-				reader.read32(); // mostly 44100
-				reader.read32();
-				System.out.println("sound file " + i + ", alternaitve " + j + ", startbyte: "
-				        + starts[0] + ", startsample: " + starts[j] / 2
-				        + ", endsample: " + (starts[j] / 2 + length));
-				sounds[j] = player.load(loadSound(reader, length));
-			}
-			playerids[i] = sounds;
+			// int[] sounds = new int[alternaitvecount];
+			// for (int j = 0; j < alternaitvecount; j++) {
+			// reader.skipTo(starts[j]);
+			//
+			// int length = reader.read32() / 2;
+			// reader.read32();
+			// reader.read32(); // mostly 22050
+			// reader.read32(); // mostly 44100
+			// reader.read32();
+			// System.out.println("sound file " + i + ", alternaitve " + j
+			// + ", startbyte: " + starts[0] + ", startsample: "
+			// + starts[j] / 2 + ", endsample: "
+			// + (starts[j] / 2 + length));
+			// sounds[j] = player.load(loadSound(reader, length));
+			// }
+			// playerids[i] = sounds;
 		}
+
+		player.setSoundDataRetriever(new SoundDataRetriever(reader));
 	}
 
-	private static short[] loadSound(ByteReader reader, int length)
-	        throws IOException {
-		if (length < 0) {
-			return new short[0];
-		}
-		short[] data = new short[length];
-		for (int i = 0; i < length; i++) {
-			data[i] = (short) reader.read16signed();
-		}
-
-		return data;
-	}
+	// private static short[] loadSound(ByteReader reader, int length)
+	// throws IOException {
+	// if (length < 0) {
+	// return new short[0];
+	// }
+	// short[] data = new short[length];
+	// for (int i = 0; i < length; i++) {
+	// data[i] = (short) reader.read16signed();
+	// }
+	//
+	// return data;
+	// }
 
 	public void playSound(int soundid, float volume1, float volume2) {
-		initialize(); // <TODO: preload sounds
+		initialize();
 
 		if (playerids != null && soundid >= 0 && soundid < SEQUENCE_N) {
 			int[] alternatives = playerids[soundid];
@@ -202,5 +202,44 @@ public class SoundManager {
 		synchronized (lookupPaths) {
 			lookupPaths.add(file);
 		}
+	}
+
+	private static class SoundDataRetriever implements ISoundDataRetriever {
+
+		private final ByteReader reader;
+
+		public SoundDataRetriever(ByteReader reader) {
+			this.reader = reader;
+		}
+
+		@Override
+		public synchronized short[] getSoundData(int soundStart)
+		        throws IOException {
+			reader.skipTo(soundStart);
+
+			int length = reader.read32() / 2;
+			reader.read32();
+			reader.read32(); // mostly 22050
+			reader.read32(); // mostly 44100
+			reader.read32();
+
+			System.out.println("playing sound, startbyte: " + soundStart
+			        + "  length: " + length);
+			return loadSound(reader, length);
+		}
+
+		private static short[] loadSound(ByteReader reader, int length)
+		        throws IOException {
+			if (length < 0) {
+				return new short[0];
+			}
+			short[] data = new short[length];
+			for (int i = 0; i < length; i++) {
+				data[i] = (short) reader.read16signed();
+			}
+
+			return data;
+		}
+
 	}
 }
