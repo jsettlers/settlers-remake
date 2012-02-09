@@ -21,12 +21,13 @@ public final class HexAStar {
 
 	private final IAStarPathMap map;
 
-	private final short height, width;
+	private final short height;
+	private final short width;
+
 	private final BitSet openList;
 	private final BitSet closedList;
 
-	final float[] costs;
-	final float[] heuristics;
+	final float[] costsAndHeuristics;
 
 	final int[] depthParentHeap;
 
@@ -38,12 +39,11 @@ public final class HexAStar {
 		this.height = height;
 		this.open = new AStarMinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
 
-		openList = new BitSet(width * height);
-		closedList = new BitSet(width * height);
-		costs = new float[width * height];
-		heuristics = new float[width * height];
+		this.openList = new BitSet(width * height);
+		this.closedList = new BitSet(width * height);
+		this.costsAndHeuristics = new float[width * height * 2];
 
-		depthParentHeap = new int[width * height * 3];
+		this.depthParentHeap = new int[width * height * 3];
 	}
 
 	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
@@ -63,7 +63,7 @@ public final class HexAStar {
 			blockedAtStart = false;
 		}
 
-		int targetFlatIdx = getFlatIdx(tx, ty);
+		final int targetFlatIdx = getFlatIdx(tx, ty);
 
 		closedList.clear();
 		openList.clear();
@@ -93,21 +93,21 @@ public final class HexAStar {
 					int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
 					if (!closedList.get(flatNeighborIdx)) {
-						float newCosts = costs[currFlatIdx] + map.getCost(x, y, neighborX, neighborY);
+						float newCosts = costsAndHeuristics[getCostsIdx(currFlatIdx)] + map.getCost(x, y, neighborX, neighborY);
 						if (openList.get(flatNeighborIdx)) {
-							if (costs[flatNeighborIdx] > newCosts) {
-								costs[flatNeighborIdx] = newCosts;
-								heuristics[flatNeighborIdx] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+							if (costsAndHeuristics[getCostsIdx(flatNeighborIdx)] > newCosts) {
+								costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
+								costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
 								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 								open.siftUp(flatNeighborIdx);
 							}
 						} else {
-							costs[flatNeighborIdx] = newCosts;
-							heuristics[flatNeighborIdx] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+							costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
+							costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 							openList.set(flatNeighborIdx);
-							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							open.insert(flatNeighborIdx);
 
 							map.markAsOpen(neighborX, neighborY);
@@ -122,7 +122,6 @@ public final class HexAStar {
 			Path path = new Path(pathlength);
 
 			int idx = pathlength;
-
 			int parentFlatIdx = targetFlatIdx;
 
 			while (parentFlatIdx >= 0) {
@@ -135,6 +134,14 @@ public final class HexAStar {
 		}
 
 		return null;
+	}
+
+	private static final int getHeuristicIdx(int flatIdx) {
+		return flatIdx * 2 + 1;
+	}
+
+	private static final int getCostsIdx(int flatIdx) {
+		return flatIdx * 2;
 	}
 
 	private static final int getDepthIdx(int flatIdx) {
@@ -160,8 +167,8 @@ public final class HexAStar {
 		openList.set(flatIdx);
 		depthParentHeap[getDepthIdx(flatIdx)] = 0;
 		depthParentHeap[getParentIdx(flatIdx)] = -1;
-		costs[flatIdx] = 0;
-		heuristics[flatIdx] = map.getHeuristicCost(sx, sy, tx, ty);
+		costsAndHeuristics[getCostsIdx(flatIdx)] = 0;
+		costsAndHeuristics[getHeuristicIdx(flatIdx)] = map.getHeuristicCost(sx, sy, tx, ty);
 	}
 
 	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
@@ -189,7 +196,7 @@ public final class HexAStar {
 	}
 
 	final float getHeapRank(int identifier) {
-		return costs[identifier] + heuristics[identifier];
+		return costsAndHeuristics[getCostsIdx(identifier)] + costsAndHeuristics[getHeuristicIdx(identifier)];
 	}
 
 	final int getHeapIdx(int identifier) {
