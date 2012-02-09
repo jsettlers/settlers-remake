@@ -1,6 +1,5 @@
 package jsettlers.buildingcreator.editor.map;
 
-import jsettlers.common.Color;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.IMapObject;
@@ -15,7 +14,7 @@ public class PseudoTile implements ISPosition2D {
 	private final int y;
 
 	private IBuilding building;
-	private Color debugColor;
+	private int debugColor;
 	private IMapObject stack;
 
 	public PseudoTile(int x, int y) {
@@ -27,7 +26,7 @@ public class PseudoTile implements ISPosition2D {
 		return building;
 	}
 
-	public Color getDebugColor() {
+	public int getDebugColor() {
 		return debugColor;
 	}
 
@@ -79,7 +78,7 @@ public class PseudoTile implements ISPosition2D {
 		this.building = building;
 	}
 
-	public void setDebugColor(Color debugColor) {
+	public void setDebugColor(int debugColor) {
 		this.debugColor = debugColor;
 	}
 

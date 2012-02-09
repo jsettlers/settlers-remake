@@ -1,7 +1,6 @@
 package jsettlers.buildingcreator.editor.map;
 
 import jsettlers.buildingcreator.editor.BuildingDefinition;
-import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
@@ -66,7 +65,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public Color getDebugColorAt(int x, int y) {
+	public int getDebugColorAt(int x, int y) {
 		return tiles[x][y].getDebugColor();
 	}
 

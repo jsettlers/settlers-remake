@@ -95,10 +95,10 @@ public class BuildingCreator implements IMapInterfaceListener {
 			}
 
 			@Override
-            public File getTempDirectory() {
-	            // TODO Auto-generated method stub
-	            return null;
-            }
+			public File getTempDirectory() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		});
 
 		EBuildingType type = askType();
@@ -345,14 +345,13 @@ public class BuildingCreator implements IMapInterfaceListener {
 		}
 
 		if (!colors.isEmpty()) {
-			Color color = mixColors(colors);
-			tile.setDebugColor(color);
+			tile.setDebugColor(mixColors(colors));
 		} else {
-			tile.setDebugColor(null);
+			tile.setDebugColor(-1);
 		}
 	}
 
-	private Color mixColors(ArrayList<Color> colors) {
+	private int mixColors(ArrayList<Color> colors) {
 		float bluesum = 0;
 		float redsum = 0;
 		float greensum = 0;
@@ -361,7 +360,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			redsum += color.getRed();
 			greensum += color.getGreen();
 		}
-		Color color = new Color(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 255);
+		int color = Color.getRGBA(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 255);
 		return color;
 	}
 
