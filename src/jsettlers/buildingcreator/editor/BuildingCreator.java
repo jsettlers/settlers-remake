@@ -360,7 +360,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			redsum += color.getRed();
 			greensum += color.getGreen();
 		}
-		int color = Color.getRGBA(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 255);
+		int color = Color.getARGB(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 255);
 		return color;
 	}
 
