@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 
@@ -26,7 +27,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	private final FlattenedResetter flattenedResetter;
 
-	private transient final int[] debugColor;
+	public transient int[] debugColors;
 	private transient IGraphicsBackgroundListener backgroundListener;
 
 	public LandscapeGrid(short width, short height) {
@@ -38,8 +39,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		this.resourceType = new byte[width * height];
 		this.temporaryFlatened = new byte[width * height];
 
-		this.debugColor = new int[width * height];
-		resetDebugColors();
+		initDebugColors();
 
 		this.flattenedResetter = new FlattenedResetter(this);
 		setBackgroundListener(null);
@@ -48,7 +48,16 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		setBackgroundListener(null);
-		resetDebugColors();
+
+		initDebugColors();
+	}
+
+	private final void initDebugColors() {
+		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+			this.debugColors = new int[width * height];
+		} else {
+			this.debugColors = null;
+		}
 	}
 
 	public final byte getHeightAt(short x, short y) {
@@ -64,17 +73,25 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return ELandscapeType.values[landscapeGrid[getIdx(x, y)]];
 	}
 
-	public final void setDebugColor(short x, short y, int rgba) {
-		debugColor[getIdx(x, y)] = rgba;
+	public final void setDebugColor(short x, short y, int argb) {
+		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+			debugColors[getIdx(x, y)] = argb;
+		}
 	}
 
 	public final int getDebugColor(int x, int y) {
-		return debugColor[getIdx(x, y)];
+		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+			return debugColors[getIdx(x, y)];
+		} else {
+			return 0;
+		}
 	}
 
 	public final void resetDebugColors() {
-		for (int i = 0; i < debugColor.length; i++) {
-			debugColor[i] = -1;
+		if (CommonConstants.ENABLE_DEBUG_COLORS) {
+			for (int i = 0; i < debugColors.length; i++) {
+				debugColors[i] = 0;
+			}
 		}
 	}
 
