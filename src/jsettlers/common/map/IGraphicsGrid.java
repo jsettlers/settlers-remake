@@ -1,6 +1,5 @@
 package jsettlers.common.map;
 
-import jsettlers.common.Color;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
@@ -67,9 +66,9 @@ public interface IGraphicsGrid {
 	 *            x coordinate
 	 * @param y
 	 *            y coordinate
-	 * @return {@link Color} object that should be drawn as debug color at the given position or null if no debug color should be drawn.
+	 * @return debug color to be drawn at the given position (in 16bit rgba format) or -1 if no color should be drawn.
 	 */
-	Color getDebugColorAt(int x, int y);
+	int getDebugColorAt(int x, int y);
 
 	/**
 	 * @param x
