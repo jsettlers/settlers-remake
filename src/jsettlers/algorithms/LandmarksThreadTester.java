@@ -1,5 +1,6 @@
 package jsettlers.algorithms;
 
+import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 
@@ -56,9 +57,9 @@ public class LandmarksThreadTester {
 			}
 
 			@Override
-			public int load(short[] loadSound) {
+			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
 				// TODO Auto-generated method stub
-				return 0;
+
 			}
 		});
 

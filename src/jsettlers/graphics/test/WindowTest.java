@@ -1,5 +1,6 @@
 package jsettlers.graphics.test;
 
+import go.graphics.sound.ISoundDataRetriever;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 
@@ -23,27 +24,25 @@ public class WindowTest {
 
 	private WindowTest() {
 		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File(
-		        "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
+		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
-
 
 		TestMap map = new TestMap();
 
 		JFrame window = new JFrame("window test");
 
 		JOGLPanel content = new JOGLPanel(new SoundPlayer() {
-			
+
 			@Override
 			public void playSound(int sound, float lvolume, float rvolume) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
-			public int load(short[] loadSound) {
+			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
 				// TODO Auto-generated method stub
-				return 0;
+
 			}
 		});
 		window.add(new AreaContainer(content.getArea()));
@@ -61,8 +60,7 @@ public class WindowTest {
 
 			@Override
 			public void action(Action action) {
-				System.out.println("Action preformed: "
-				        + action.getActionType());
+				System.out.println("Action preformed: " + action.getActionType());
 			}
 		});
 		connector.setSelection(new SettlerSelection(map.getAllSettlers()));
