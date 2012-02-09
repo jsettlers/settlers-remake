@@ -50,25 +50,22 @@ public interface GLDrawContext {
 	 */
 	void color(float red, float green, float blue, float alpha);
 
-	void color(Color color);
-
 	/**
-	 * Returns a texture id which is positive or 0. It returns a negative number
-	 * on error.
+	 * Returns a texture id which is positive or 0. It returns a negative number on error.
 	 * 
 	 * @param width
 	 * @param height
 	 *            The height of the image.
 	 * @param data
-	 *            The data as array. It needs to have a length of width * height
-	 *            and each element is a color with: 5 bits red, 5 bits gree,n, 5
-	 *            bits blue and 1 bit alpha.
+	 *            The data as array. It needs to have a length of width * height and each element is a color with: 5 bits red, 5 bits gree,n, 5 bits
+	 *            blue and 1 bit alpha.
 	 * @return The id of the generated texture.
 	 */
 	int generateTexture(int width, int height, ShortBuffer data);
 
 	/**
 	 * Deletes a texture.
+	 * 
 	 * @param textureid
 	 */
 	void deleteTexture(int textureid);
@@ -82,12 +79,15 @@ public interface GLDrawContext {
 	 *            A float array of the form: x,y,z,u,v
 	 */
 	void drawQuadWithTexture(int textureid, float[] geometry);
+
 	void drawQuadWithTexture(int textureid, int geometryindex);
-	
+
 	void drawTrianglesWithTexture(int textureid, float[] geometry);
+
 	void drawTrianglesWithTexture(int textureid, int geometryindex, int triangleCount);
-	
+
 	void drawTrianglesWithTextureColored(int textureid, float[] geometry);
+
 	void drawTrianglesWithTextureColored(int textureid, int geometryindex, int triangleCount);
 
 	int makeWidthValid(int width);
@@ -98,30 +98,36 @@ public interface GLDrawContext {
 
 	/**
 	 * Updates a part of a texture image.
-	 * @param textureIndex The texture to use.
+	 * 
+	 * @param textureIndex
+	 *            The texture to use.
 	 * @param left
 	 * @param bottom
 	 * @param width
 	 * @param height
 	 * @param data
 	 */
-	void updateTexture(int textureIndex, int left, int bottom, int width,
-            int height, ShortBuffer data);
-	
+	void updateTexture(int textureIndex, int left, int bottom, int width, int height, ShortBuffer data);
+
 	TextDrawer getTextDrawer(EFontSize size);
-	
+
 	int storeGeometry(float[] geometry);
+
 	boolean isGeometryValid(int geometryindex);
+
 	void removeGeometry(int geometryindex);
-	
+
 	GLBuffer startWriteGeometry(int geometryindex);
+
 	void endWriteGeometry(int geometryindex);
 
 	int generateGeometry(int bytes);
-	
+
 	interface GLBuffer {
 		void putFloat(float f);
+
 		void putByte(byte b);
+
 		void position(int position);
 	}
 }
