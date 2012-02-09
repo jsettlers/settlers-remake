@@ -311,11 +311,11 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public float getHeuristicCost(short sx, short sy, short tx, short ty) {
+		public final float getHeuristicCost(short sx, short sy, short tx, short ty) {
 			float dx = (short) Math.abs(sx - tx);
 			float dy = (short) Math.abs(sy - ty);
 
-			return (dx + dy) * Constants.TILE_HEURISTIC_DIST;
+			return (dx + 1.01f * dy) * Constants.TILE_HEURISTIC_DIST;
 		}
 
 		@Override
