@@ -18,7 +18,7 @@ public enum EMaterialType {
 	FISHINGROD((short) 66, (short) 3, (short) 141),
 	FLOUR((short) 48, (short) 3, (short) 183),
 	GOLD((short) 36, (short) 3, (short) 135),
-	GOLDORE((short) 35,(short) 3,  (short) 150),
+	GOLDORE((short) 35, (short) 3, (short) 150),
 	HAMMER((short) 51, (short) 3, (short) 126),
 	IRON((short) 42, (short) 3, (short) 132),
 	IRONORE((short) 39, (short) 3, (short) 147),
@@ -40,14 +40,18 @@ public enum EMaterialType {
 	TREE((short) 0, (short) 0, (short) 0),
 	PLANT((short) 0, (short) 0, (short) 0);
 
+	public static final EMaterialType[] values = EMaterialType.values();
+
 	private final short stackIndex;
 	private final short guiBase;
 	private final short guiFile;
+	public final byte ordinal;
 
 	EMaterialType(short stackIndex, short guiFile, short guiBase) {
 		this.stackIndex = stackIndex;
 		this.guiFile = guiFile;
 		this.guiBase = guiBase;
+		this.ordinal = (byte) super.ordinal();
 	}
 
 	/**
@@ -61,17 +65,16 @@ public enum EMaterialType {
 	}
 
 	/**
-	 * Gets the gui icon base. That is the index of the small image for this
-	 * material in the gui file 2.
+	 * Gets the gui icon base. That is the index of the small image for this material in the gui file 2.
 	 * 
 	 * @return The index.
 	 */
 	public int getGuiIconBase() {
 		return guiBase;
 	}
-	
+
 	public short getGuiFile() {
-	    return guiFile;
-    }
+		return guiFile;
+	}
 
 }

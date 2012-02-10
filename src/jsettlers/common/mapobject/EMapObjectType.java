@@ -105,5 +105,12 @@ public enum EMapObjectType {
 	/**
 	 * doesn't need to be drawn
 	 */
-	ATTACKABLE_TOWER
+	ATTACKABLE_TOWER;
+
+	public static final EMapObjectType[] values = EMapObjectType.values();
+	public final byte ordinal;
+
+	private EMapObjectType() {
+		this.ordinal = (byte) super.ordinal();
+	}
 }

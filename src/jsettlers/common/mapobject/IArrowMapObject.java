@@ -1,7 +1,6 @@
 package jsettlers.common.mapobject;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
 
 /**
  * Specifies a arrow that comes from {@link #getSource()} and flies to {@link #getTarget()}.
@@ -12,18 +11,32 @@ import jsettlers.common.position.ISPosition2D;
 public interface IArrowMapObject extends IMapObject {
 
 	/**
-	 * gets the source position of the arrow.
+	 * gets the x coordinate of the source position of the arrow.
 	 * 
-	 * @return The start position where it was shot from
+	 * @return The start x coordinate of the position where it was shot from
 	 */
-	ISPosition2D getSource();
+	short getSourceX();
 
 	/**
-	 * gets the target position of the arrow.
+	 * gets the x coordinate of the source position of the arrow.
 	 * 
-	 * @return The target
+	 * @return The start x coordinate of the position where it was shot from
 	 */
-	ISPosition2D getTarget();
+	short getSourceY();
+
+	/**
+	 * gets the x coordinate of the target position of the arrow.
+	 * 
+	 * @return the target x coordinate
+	 */
+	short getTargetX();
+
+	/**
+	 * gets the x coordinate of the target position of the arrow.
+	 * 
+	 * @return the target x coordinate
+	 */
+	short getTargetY();
 
 	/**
 	 * gets the direction in which the arrow is flying.

@@ -74,8 +74,28 @@ public enum EDirection {
 	 * @return
 	 */
 	public static EDirection getApproxDirection(ISPosition2D first, ISPosition2D second) {
-		byte dx = (byte) (second.getX() - first.getX());
-		byte dy = (byte) (second.getY() - first.getY());
+		return getApproxDirection(first.getX(), first.getY(), second.getX(), second.getY());
+	}
+
+	/**
+	 * Returns the direction thats best to be gone to get from first to second.
+	 * <p>
+	 * If the points are equal, the result is undefined but not null.
+	 * 
+	 * @param fx
+	 *            x coordinate of first position
+	 * @param fx
+	 *            y coordinate of first position
+	 * @param sx
+	 *            x coordinate of second position
+	 * @param sy
+	 *            y coordinate of second position
+	 * 
+	 * @return
+	 */
+	public static EDirection getApproxDirection(short fx, short fy, short sx, short sy) {
+		byte dx = (byte) (sx - fx);
+		byte dy = (byte) (sy - fy);
 
 		float incline = (float) dy / dx;
 
