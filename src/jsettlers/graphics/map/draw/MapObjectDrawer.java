@@ -21,7 +21,6 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
@@ -404,10 +403,9 @@ public class MapObjectDrawer {
 		float progress = object.getStateProgress();
 		int index = Math.round(progress * 2);
 
-		ISPosition2D start = object.getSource();
-		ISPosition2D end = object.getTarget();
-		context.beginBetweenTileContext(start.getX(), start.getY(), end.getX(),
-		        end.getY(), progress);
+		context.beginBetweenTileContext(object.getSourceX(),
+		        object.getSourceY(), object.getTargetX(), object.getTargetY(),
+		        progress);
 		context.getGl()
 		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, 0);
 		if (progress >= 1) {
