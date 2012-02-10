@@ -4,6 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -17,10 +18,9 @@ import jsettlers.logic.stack.RequestStack;
 public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	private static final long serialVersionUID = 7050284039312172046L;
 
-	private ISPosition2D workAreaCenter;
-
+	private short workAreaCenterX;
+	private short workAreaCenterY;
 	private boolean isWorking = true;
-
 	private IManageableWorker worker;;
 
 	public WorkerBuilding(EBuildingType type, byte player) {
@@ -28,46 +28,54 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public EMapObjectType getFlagType() {
+	public final EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_ROOF;
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
+	public final void stopOrStartWorking(boolean stop) {
 		isWorking = !stop;
 	}
 
 	@Override
-	public ISPosition2D getDoor() {
-		return super.getDoor();
+	protected final void positionedEvent(ISPosition2D pos) {
+		ISPosition2D workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
+		workAreaCenterX = workAreaCenter.getX();
+		workAreaCenterY = workAreaCenter.getY();
 	}
 
 	@Override
-	protected void positionedEvent(ISPosition2D pos) {
-		workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
-	}
-
-	@Override
-	protected void constructionFinishedEvent() {
+	protected final void constructionFinishedEvent() {
 		super.getGrid().requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
 	}
 
 	@Override
-	protected void subTimerEvent() {
+	protected final void subTimerEvent() {
 	}
 
 	@Override
-	public void setWorkAreaCenter(ISPosition2D workAreaCenter) {
-		this.workAreaCenter = workAreaCenter;
+	public final void setWorkAreaCenter(ISPosition2D workAreaCenter) {
+		this.workAreaCenterX = workAreaCenter.getX();
+		this.workAreaCenterY = workAreaCenter.getY();
 	}
 
 	@Override
-	public ISPosition2D getWorkAreaCenter() {
-		return workAreaCenter;
+	public final short getWorkAreaCenterX() {
+		return workAreaCenterX;
 	}
 
 	@Override
-	public boolean popMaterial(ISPosition2D position, EMaterialType material) {
+	public final short getWorkAreaCenterY() {
+		return workAreaCenterY;
+	}
+
+	@Override
+	protected final ISPosition2D getWorkAreaCenter() {
+		return new ShortPoint2D(workAreaCenterX, workAreaCenterY);
+	}
+
+	@Override
+	public final boolean popMaterial(ISPosition2D position, EMaterialType material) {
 		for (RequestStack stack : super.getStacks()) {
 			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
 				stack.pop();
@@ -78,18 +86,18 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public boolean isWorking() {
+	public final boolean isWorking() {
 		return isWorking;
 	}
 
 	@Override
-	public void occupyBuilding(IManageableWorker worker) {
+	public final void occupyBuilding(IManageableWorker worker) {
 		this.worker = worker;
 		super.placeFlag(true);
 	}
 
 	@Override
-	protected void killedEvent() {
+	protected final void killedEvent() {
 		if (worker != null) {
 			this.worker.buildingDestroyed();
 			this.worker = null;

@@ -173,11 +173,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final ISPosition2D getDoor() {
-		return super.getDoor();
-	}
-
-	@Override
 	public final void requestFailed(EMovableType movableType) {
 		ESearchType searchType = getSearchType(movableType);
 		if (searchType != null)

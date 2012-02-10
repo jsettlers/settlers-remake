@@ -8,6 +8,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.Movable;
 
 /**
+ * Abstract parent class for buildings that spawn new movables.
  * 
  * @author Andreas Eberle
  * 
@@ -16,7 +17,7 @@ public abstract class SpawnBuilding extends Building {
 	private static final long serialVersionUID = 7584783336566602225L;
 
 	private byte delayCtr = 0;
-	private int produced = 0;
+	private byte produced = 0;
 
 	protected SpawnBuilding(EBuildingType type, byte player) {
 		super(type, player);
@@ -52,7 +53,7 @@ public abstract class SpawnBuilding extends Building {
 
 	protected abstract EMovableType getMovableType();
 
-	protected abstract int getProduceLimit();
+	protected abstract byte getProduceLimit();
 
 	@Override
 	public final void stopOrStartWorking(boolean stop) {

@@ -8,7 +8,7 @@ import jsettlers.common.buildings.IBuilding;
  * 
  * @author Andreas Eberle
  */
-public class MillBuilding extends WorkerBuilding implements IBuilding.IMill {
+public final class MillBuilding extends WorkerBuilding implements IBuilding.IMill {
 	private static final long serialVersionUID = -8586862770507050382L;
 
 	private boolean rotating;

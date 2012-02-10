@@ -4,11 +4,13 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.PathableStrategy;
+import random.RandomSingleton;
 
 /**
  * Movable strategy for diggers.
@@ -82,7 +84,12 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private ISPosition2D getDiggablePosition() {
-		for (ISPosition2D pos : requester.getBuildingArea()) {
+		RelativePoint[] blockedTiles = requester.getBuildingType().getBlockedTiles();
+		ISPosition2D buildingPos = requester.getPos();
+		int offset = RandomSingleton.getInt(0, blockedTiles.length - 1);
+
+		for (int i = 0; i < blockedTiles.length; i++) {
+			ISPosition2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);
 			if (needsToChangeHeight(pos) && !super.getGrid().isMarked(pos)) {
 				return pos;
 			}

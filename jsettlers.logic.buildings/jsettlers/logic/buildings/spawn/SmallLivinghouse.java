@@ -8,10 +8,10 @@ import jsettlers.common.movable.EMovableType;
  * @author Andreas Eberle
  * 
  */
-public class SmallLivinghouse extends SpawnBuilding {
+public final class SmallLivinghouse extends SpawnBuilding {
 	private static final long serialVersionUID = -6001054088627024255L;
 
-	static final int PRODUCE_LIMIT = 10;
+	private static final byte PRODUCE_LIMIT = 10;
 
 	public SmallLivinghouse(byte player) {
 		super(EBuildingType.SMALL_LIVINGHOUSE, player);
@@ -23,7 +23,7 @@ public class SmallLivinghouse extends SpawnBuilding {
 	}
 
 	@Override
-	protected int getProduceLimit() {
+	protected byte getProduceLimit() {
 		return PRODUCE_LIMIT;
 	}
 }

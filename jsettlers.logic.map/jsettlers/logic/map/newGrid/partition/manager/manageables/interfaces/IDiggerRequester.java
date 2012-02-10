@@ -1,10 +1,10 @@
 package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 
-import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ILocatable;
 
-public interface IDiggerRequester extends IRequester {
-
-	FreeMapArea getBuildingArea();
+public interface IDiggerRequester extends IRequester, ILocatable {
+	EBuildingType getBuildingType();
 
 	@Override
 	boolean isRequestActive();

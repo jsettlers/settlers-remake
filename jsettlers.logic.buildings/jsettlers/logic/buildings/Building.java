@@ -2,7 +2,6 @@ package jsettlers.logic.buildings;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -37,29 +36,31 @@ import jsettlers.logic.stack.LimittedRequestStack;
 import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
-import random.RandomSingleton;
 
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable,
 		IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
+	private static final byte STATE_CREATED = 0;
+	private static final byte STATE_POSITIONED = 1;
+	private static final byte STATE_WAITING_FOR_MATERIAL = 2;
+	private static final byte STATE_CONSTRUCTED = 3;
+	private static final byte STATE_DESTROYED = 4;
+	private static final byte STATE_BRICKLAYERS_REQUESTED = 5;
 
 	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.2f;
-
 	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
 	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
 
 	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
 
-	private final byte player;
-	private EBuildingState state = EBuildingState.CREATED;
-
 	private ISPosition2D pos;
-	private ISPosition2D door;
-	transient private boolean selected;
 	private IBuildingsGrid grid;
+	private final byte player;
+	private byte state = STATE_CREATED;
+
+	transient private boolean selected;
 
 	private float constructionProgress = 0.0f;
-	private FreeMapArea buildingArea;
 	private byte heightAvg;
 
 	private short delayCtr = 0;
@@ -95,7 +96,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public final void constructAt(IBuildingsGrid grid, ISPosition2D pos) {
-		assert state == EBuildingState.CREATED : "building can not be positioned in this state";
+		assert state == STATE_CREATED : "building can not be positioned in this state";
 
 		boolean itWorked = positionAt(grid, pos);
 
@@ -104,7 +105,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 			placeAdditionalMapObjects(grid, pos, true);
 
-			this.state = EBuildingState.POSITIONED;
+			this.state = STATE_POSITIONED;
 
 			requestDiggers();
 		}
@@ -162,10 +163,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			this.pos = pos;
 			this.grid = grid;
 
-			this.buildingArea = new FreeMapArea(this.pos, type.getBlockedTiles());
-
-			this.door = getBuildingType().getDoorTile().calculatePoint(pos);
-
 			Timer100Milli.add(this);
 
 			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
@@ -190,12 +187,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	protected abstract void positionedEvent(ISPosition2D pos);
 
 	public final void appearAt(IBuildingsGrid grid, ISPosition2D pos) {
-		this.state = EBuildingState.CONSTRUCTED;
+		this.state = STATE_CONSTRUCTED;
 
 		positionAt(grid, pos);
 
 		if (this.pos != null) {
-			grid.setBlocked(buildingArea, true);
+			grid.setBlocked(getBuildingArea(), true);
 			finishConstruction();
 		}
 		appearedEvent();
@@ -207,16 +204,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void requestDiggers() {
 		if (shouldBeFlatened()) {
 			RelativePoint[] blocked = getBuildingType().getBlockedTiles();
-			LinkedList<ISPosition2D> positions = new LinkedList<ISPosition2D>();
 			int heightSum = 0;
 
 			for (RelativePoint curr : blocked) {
 				ISPosition2D currPos = curr.calculatePoint(this.pos);
-				positions.add(currPos);
 				heightSum += this.grid.getHeightAt(currPos);
 			}
-
-			Collections.shuffle(positions, RandomSingleton.get());
 
 			this.heightAvg = (byte) (heightSum / blocked.length);
 			byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
@@ -231,8 +224,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private boolean isFlatened() {
 		if (shouldBeFlatened()) {
-			for (ISPosition2D pos : buildingArea) {
-				if (grid.getHeightAt(pos) != heightAvg) {
+			for (RelativePoint currPos : type.getBlockedTiles()) {
+				if (grid.getHeightAt(currPos.calculatePoint(this.pos)) != heightAvg) {
 					return false;
 				}
 			}
@@ -245,37 +238,37 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public void timerEvent() {
 		switch (state) {
-		case CREATED:
+		case STATE_CREATED:
 			assert false : "this should never happen!";
 			break;
-		case POSITIONED:
+		case STATE_POSITIONED:
 			if (waitedSecond()) {
 				if (isFlatened()) {
 					placeAdditionalMapObjects(grid, pos, false);
-					grid.setBlocked(buildingArea, true);
-					this.state = EBuildingState.WAITING_FOR_MATERIAL;
+					grid.setBlocked(getBuildingArea(), true);
+					this.state = STATE_WAITING_FOR_MATERIAL;
 				}
 			}
 			break;
 
-		case WAITING_FOR_MATERIAL:
+		case STATE_WAITING_FOR_MATERIAL:
 			if (waitedSecond()) {
 				if (isMaterialAvailable()) {
 					requestBricklayers();
-					state = EBuildingState.BRICKLAYERS_REQUESTED;
+					state = STATE_BRICKLAYERS_REQUESTED;
 				}
 			}
 			break;
 
-		case BRICKLAYERS_REQUESTED:
+		case STATE_BRICKLAYERS_REQUESTED:
 			// the state changes are handled by tryToTakeMaterial()
 			break;
 
-		case CONSTRUCTED:
+		case STATE_CONSTRUCTED:
 			subTimerEvent();
 			break;
 
-		case DESTROYED:
+		case STATE_DESTROYED:
 			break;
 		}
 	}
@@ -330,7 +323,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public boolean tryToTakeMaterial() {
-		if (state != EBuildingState.BRICKLAYERS_REQUESTED) {
+		if (state != STATE_BRICKLAYERS_REQUESTED) {
 			return false;
 		}
 
@@ -348,7 +341,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				if (areAllStacksFullfilled()) {
 					finishConstruction();
 				} else {
-					state = EBuildingState.WAITING_FOR_MATERIAL;
+					state = STATE_WAITING_FOR_MATERIAL;
 				}
 				return false;
 			}
@@ -376,7 +369,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void finishConstruction() {
 		constructionProgress = 1;
 
-		this.state = EBuildingState.CONSTRUCTED;
+		this.state = STATE_CONSTRUCTED;
 		stacks = createWorkStacks();
 
 		constructionFinishedEvent();
@@ -404,24 +397,15 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.selected = selected;
 	}
 
-	private static enum EBuildingState {
-		CREATED,
-		POSITIONED,
-		WAITING_FOR_MATERIAL,
-		CONSTRUCTED,
-		DESTROYED,
-		BRICKLAYERS_REQUESTED
-	}
-
 	@Override
 	public final boolean isConstructionFinished() {
-		return state == EBuildingState.CONSTRUCTED || state == EBuildingState.DESTROYED;
+		return state == STATE_CONSTRUCTED || state == STATE_DESTROYED;
 	}
 
 	protected abstract EMapObjectType getFlagType();
 
-	protected ISPosition2D getDoor() {
-		return door;
+	public final ISPosition2D getDoor() {
+		return getBuildingType().getDoorTile().calculatePoint(pos);
 	}
 
 	@Override
@@ -432,7 +416,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		placeReusableMaterials();
 		releaseRequestStacks();
 
-		this.state = EBuildingState.DESTROYED;
+		this.state = STATE_DESTROYED;
 
 		grid.removeBuildingAt(pos);
 		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION,
@@ -448,10 +432,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private void placeReusableMaterials() {
 		int posIdx = 0;
+		FreeMapArea buildingArea = new FreeMapArea(this.pos, type.getBlockedTiles());
+
 		if (isConstructionFinished()) {
 			for (RelativeStack curr : type.getRequestStacks()) {
 				if (curr.requiredForBuild() > 0) {
-					ISPosition2D position = this.buildingArea.get(posIdx);
+					ISPosition2D position = buildingArea.get(posIdx);
 					posIdx += 2;
 					grid.pushMaterialsTo(position, curr.getType(), (byte) Math.min(curr.requiredForBuild() / 2, Constants.STACK_SIZE));
 				}
@@ -461,7 +447,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				posIdx += 2;
 				int numberOfPopped = ((LimittedRequestStack) stack).getNumberOfPopped() / 2;
 				if (numberOfPopped > 0) {
-					ISPosition2D position = this.buildingArea.get(posIdx);
+					ISPosition2D position = buildingArea.get(posIdx);
 					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(numberOfPopped, Constants.STACK_SIZE));
 				}
 			}
@@ -540,9 +526,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return !isConstructionFinished();
 	}
 
-	@Override
-	public FreeMapArea getBuildingArea() {
-		return this.buildingArea;
+	protected FreeMapArea getBuildingArea() {
+		return new FreeMapArea(this.pos, type.getBlockedTiles());
 	}
 
 	@Override
@@ -551,7 +536,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public final boolean isNotDestroyed() {
-		return state != EBuildingState.DESTROYED;
+		return state != STATE_DESTROYED;
 	}
 
 	public static Building getBuilding(EBuildingType type, byte player) {
@@ -598,9 +583,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		default:
 			System.err.println("couldn't create new building, because type is unknown: " + type);
+			return null;
 		}
-
-		return new TestBuilding(player, type);
 	}
 
 	public IBuildingsGrid getGrid() {
@@ -627,4 +611,5 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return UNCONSTRUCTED_VIEW_DISTANCE;
 		}
 	}
+
 }

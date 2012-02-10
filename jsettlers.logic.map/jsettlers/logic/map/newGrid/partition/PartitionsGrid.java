@@ -276,7 +276,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	public final void requestDiggers(IDiggerRequester requester, byte amount) {
-		getPartitionObject(requester.getBuildingArea().get(0)).requestDiggers(requester, amount);
+		getPartitionObject(requester.getPos()).requestDiggers(requester, amount);
 	}
 
 	public final void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {

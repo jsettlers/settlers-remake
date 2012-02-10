@@ -13,6 +13,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.constants.Constants;
@@ -384,12 +385,14 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	private void searchInAreaAction() {
 		super.setPos(getCurrentJobPos());
-		super.calculateInAreaPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
+		ShortPoint2D workAreaCenter = new ShortPoint2D(building.getWorkAreaCenterX(), building.getWorkAreaCenterY());
+		super.calculateInAreaPath(workAreaCenter, building.getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
 	private void searchDijkstraAction() {
 		super.setPos(getCurrentJobPos());
-		super.calculateDijkstraPath(building.getWorkAreaCenter(), building.getBuildingType().getWorkradius(), currentJob.getSearchType());
+		ShortPoint2D workAreaCenter = new ShortPoint2D(building.getWorkAreaCenterX(), building.getWorkAreaCenterY());
+		super.calculateDijkstraPath(workAreaCenter, building.getBuildingType().getWorkradius(), currentJob.getSearchType());
 	}
 
 	private void gotoAction() {

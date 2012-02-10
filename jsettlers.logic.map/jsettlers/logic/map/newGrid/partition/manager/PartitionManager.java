@@ -358,7 +358,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		materialRequests.add(request.requested, request);
 	}
 
-	static class Offer implements Serializable {
+	static final class Offer implements Serializable {
 		private static final long serialVersionUID = 8516955442065220998L;
 
 		ISPosition2D position;
@@ -378,7 +378,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 
 	}
 
-	private static class Request implements Comparable<Request>, Serializable, ILocatable {
+	private final static class Request implements Comparable<Request>, Serializable, ILocatable {
 		private static final long serialVersionUID = -3427364937835501076L;
 
 		final IMaterialRequester requester;
@@ -407,7 +407,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private static class DiggerRequest implements ILocatable, Serializable {
+	private static final class DiggerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -3781604767367556333L;
 
 		final IDiggerRequester requester;
@@ -420,12 +420,12 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
-			return requester.getBuildingArea().get(0);
+		public final ISPosition2D getPos() {
+			return requester.getPos();
 		}
 	}
 
-	private static class BricklayerRequest implements ILocatable, Serializable {
+	private static final class BricklayerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -1673422793657988587L;
 
 		boolean creationRequested = false;
@@ -445,7 +445,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private static class WorkerCreationRequest implements ILocatable, Serializable {
+	private static final class WorkerCreationRequest implements ILocatable, Serializable {
 		public boolean produceToolRequested;
 
 		private static final long serialVersionUID = 3047014371520017602L;
@@ -469,7 +469,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private static class SoilderCreationRequest implements ILocatable, Serializable {
+	private static final class SoilderCreationRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -3108188242025391145L;
 
 		private final Barrack barrack;
@@ -493,7 +493,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private static class MaterialTypeAcceptor implements IAcceptor<Offer>, Serializable {
+	private static final class MaterialTypeAcceptor implements IAcceptor<Offer>, Serializable {
 		private static final long serialVersionUID = 635444536013281565L;
 
 		EMaterialType materialType = null;
@@ -504,7 +504,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private static class MovableTypeAcceptor implements IAcceptor<IManageableWorker>, Serializable {
+	private static final class MovableTypeAcceptor implements IAcceptor<IManageableWorker>, Serializable {
 		private static final long serialVersionUID = 111392803354934224L;
 
 		EMovableType movableType = null;
@@ -515,7 +515,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		}
 	}
 
-	private static class WorkerRequest implements ILocatable, Serializable {
+	private static final class WorkerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = 6420250669583553112L;
 
 		final EMovableType movableType;
