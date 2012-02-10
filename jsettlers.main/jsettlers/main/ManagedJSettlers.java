@@ -133,7 +133,7 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 		ProgressConnector connector = content.showProgress();
 		connector.setProgressState(EProgressState.STARTING_SERVER);
 		NetworkMatchOpener starter = new NetworkMatchOpener(gameSettings, this);
-		starter.start(connector);
+		starter.start();
 		networkConnectTask = starter;
 	}
 

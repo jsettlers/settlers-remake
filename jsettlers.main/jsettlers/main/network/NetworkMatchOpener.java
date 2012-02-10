@@ -5,7 +5,6 @@ import java.io.Serializable;
 
 import jsettlers.common.network.IMatchSettings;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
@@ -26,7 +25,6 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 
 	private final INetworkStartListener notify;
 	private final IMatchSettings gameSettings;
-	private ProgressConnector progress;
 	private final String server;
 
 	public NetworkMatchOpener(IMatchSettings gameSettings, INetworkStartListener notify) {
@@ -38,11 +36,8 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 
 	/**
 	 * Starts the game asynchroniously.
-	 * 
-	 * @param progress
 	 */
-	public void start(ProgressConnector progress) {
-		this.progress = progress;
+	public void start() {
 		new Thread(new StartNetworkTask(), "network game starter").start();
 	}
 

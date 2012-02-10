@@ -16,12 +16,10 @@ import network.IProxiedObjectListener;
 
 public class NetworkRunningGameConnector implements IClientThreadListener, INetworkServerConnector {
 
-	private final ClientThread clientThread;
 	private IProxiedObjectListener proxiedObjectListener = null;
 	private final ProxyObjectsThread proxyThread;
 
 	public NetworkRunningGameConnector(ClientThread clientThread) {
-		this.clientThread = clientThread;
 		proxyThread = new ProxyObjectsThread(clientThread);
 		proxyThread.start();
 	}
