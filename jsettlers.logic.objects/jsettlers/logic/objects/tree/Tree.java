@@ -15,9 +15,6 @@ import jsettlers.logic.objects.GrowingObject;
 public class Tree extends GrowingObject implements ISoundable {
 	private static final long serialVersionUID = 8241068714975746824L;
 
-	/**
-	 * time a tree needs to grow
-	 */
 	public static final float GROWTH_DURATION = 7 * 60;
 	public static final float DECOMPOSE_DURATION = 2 * 60;
 
@@ -31,7 +28,7 @@ public class Tree extends GrowingObject implements ISoundable {
 	 * @param grid
 	 */
 	public Tree(ISPosition2D pos) {
-		super(pos, EMapObjectType.TREE_GROWING, EMapObjectType.TREE_ADULT, EMapObjectType.TREE_DEAD);
+		super(pos, EMapObjectType.TREE_GROWING);
 	}
 
 	@Override
@@ -57,5 +54,15 @@ public class Tree extends GrowingObject implements ISoundable {
 	@Override
 	public boolean isSoundPlayed() {
 		return soundPlayed;
+	}
+
+	@Override
+	protected EMapObjectType getDeadState() {
+		return EMapObjectType.TREE_DEAD;
+	}
+
+	@Override
+	protected EMapObjectType getAdultState() {
+		return EMapObjectType.TREE_ADULT;
 	}
 }

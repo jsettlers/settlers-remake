@@ -6,14 +6,14 @@ import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
 import random.RandomSingleton;
 
-public class RessourceSignMapObject extends AbstractObjectsManagerObject {
+public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 	private static final long serialVersionUID = -7248748388147081545L;
 
 	private static final float MINIMUM_LIVETIME = 2 * 60;
 	private static final float MAX_RANDOM_LIVETIME = 3 * 60;
 
 	private final float amount;
-	private final EMapObjectType type;
+	private final byte objectType;
 
 	public RessourceSignMapObject(ISPosition2D pos, EResourceType resourceType, float amount) {
 		super(pos);
@@ -21,13 +21,13 @@ public class RessourceSignMapObject extends AbstractObjectsManagerObject {
 
 		switch (resourceType) {
 		case COAL:
-			type = EMapObjectType.FOUND_COAL;
+			objectType = EMapObjectType.FOUND_COAL.ordinal;
 			break;
 		case IRON:
-			type = EMapObjectType.FOUND_IRON;
+			objectType = EMapObjectType.FOUND_IRON.ordinal;
 			break;
 		case GOLD:
-			type = EMapObjectType.FOUND_GOLD;
+			objectType = EMapObjectType.FOUND_GOLD.ordinal;
 			break;
 		default:
 			throw new IllegalArgumentException("Can't create ressource sign for: " + resourceType);
@@ -36,7 +36,7 @@ public class RessourceSignMapObject extends AbstractObjectsManagerObject {
 
 	@Override
 	public EMapObjectType getObjectType() {
-		return type;
+		return EMapObjectType.values[objectType];
 	}
 
 	@Override

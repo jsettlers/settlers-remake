@@ -8,7 +8,7 @@ import jsettlers.common.position.ISPosition2D;
  * @author Andreas Eberle
  * 
  */
-public class AdultTree extends Tree {
+public final class AdultTree extends Tree {
 	private static final long serialVersionUID = 5956923025331740093L;
 
 	/**

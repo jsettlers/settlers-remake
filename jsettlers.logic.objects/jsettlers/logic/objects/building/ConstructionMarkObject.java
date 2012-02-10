@@ -11,7 +11,7 @@ import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
  * @author Andreas Eberle
  * 
  */
-public class ConstructionMarkObject extends AbstractHexMapObject {
+public final class ConstructionMarkObject extends AbstractHexMapObject {
 	private static final long serialVersionUID = 4420024473109760614L;
 
 	private float constructionValue;

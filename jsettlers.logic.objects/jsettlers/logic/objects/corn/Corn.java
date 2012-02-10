@@ -10,7 +10,7 @@ import jsettlers.logic.objects.GrowingObject;
  * @author Andreas Eberle
  * 
  */
-public class Corn extends GrowingObject {
+public final class Corn extends GrowingObject {
 	private static final long serialVersionUID = -7535441306083940418L;
 
 	public static final float GROWTH_DURATION = 7 * 60;
@@ -23,7 +23,7 @@ public class Corn extends GrowingObject {
 	 * @param grid
 	 */
 	public Corn(ISPosition2D pos) {
-		super(pos, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD);
+		super(pos, EMapObjectType.CORN_GROWING);
 	}
 
 	@Override
@@ -34,6 +34,16 @@ public class Corn extends GrowingObject {
 	@Override
 	protected float getDecomposeDuration() {
 		return DECOMPOSE_DURATION;
+	}
+
+	@Override
+	protected EMapObjectType getDeadState() {
+		return EMapObjectType.CORN_DEAD;
+	}
+
+	@Override
+	protected EMapObjectType getAdultState() {
+		return EMapObjectType.CORN_ADULT;
 	}
 
 }

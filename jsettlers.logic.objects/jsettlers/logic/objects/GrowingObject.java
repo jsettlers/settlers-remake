@@ -14,13 +14,8 @@ public abstract class GrowingObject extends ProgressingObject {
 
 	private EMapObjectType state;
 
-	private final EMapObjectType adult;
-	private final EMapObjectType dead;
-
-	protected GrowingObject(ISPosition2D pos, EMapObjectType growing, EMapObjectType adult, EMapObjectType dead) {
+	protected GrowingObject(ISPosition2D pos, EMapObjectType growing) {
 		super(pos);
-		this.adult = adult;
-		this.dead = dead;
 
 		this.state = growing;
 		super.setDuration(getGrowthDuration());
@@ -29,12 +24,16 @@ public abstract class GrowingObject extends ProgressingObject {
 	protected abstract float getGrowthDuration();
 
 	public boolean isDead() {
-		return this.state == dead;
+		return this.state == getDeadState();
 	}
 
+	protected abstract EMapObjectType getDeadState();
+
 	public boolean isAdult() {
-		return this.state == adult;
+		return this.state == getAdultState();
 	}
+
+	protected abstract EMapObjectType getAdultState();
 
 	@Override
 	public boolean canBeCut() {
@@ -44,7 +43,7 @@ public abstract class GrowingObject extends ProgressingObject {
 	@Override
 	public boolean cutOff() {
 		super.setDuration(getDecomposeDuration());
-		this.state = dead;
+		this.state = getDeadState();
 		return true;
 	}
 
@@ -57,11 +56,11 @@ public abstract class GrowingObject extends ProgressingObject {
 
 	@Override
 	protected void changeState() {
-		if (state == adult) {
-			state = dead;
-		} else if (state == dead) {
+		if (state == getAdultState()) {
+			state = getDeadState();
+		} else if (state == getDeadState()) {
 		} else {
-			state = adult;
+			state = getAdultState();
 		}
 	}
 }

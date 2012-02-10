@@ -12,16 +12,22 @@ import jsettlers.common.position.ISPosition2D;
 public abstract class AbstractObjectsManagerObject extends AbstractHexMapObject implements Serializable {
 	private static final long serialVersionUID = 6013184372588966504L;
 
-	private final ISPosition2D pos;
+	private final short x;
+	private final short y;
 
 	protected AbstractObjectsManagerObject(ISPosition2D pos) {
-		this.pos = pos;
-	}
-
-	protected ISPosition2D getPos() {
-		return pos;
+		this.x = pos.getX();
+		this.y = pos.getY();
 	}
 
 	protected abstract void changeState();
+
+	public final short getX() {
+		return x;
+	}
+
+	public final short getY() {
+		return y;
+	}
 
 }

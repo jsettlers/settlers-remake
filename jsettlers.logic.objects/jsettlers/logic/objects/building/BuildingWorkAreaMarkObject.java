@@ -3,7 +3,13 @@ package jsettlers.logic.objects.building;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 
-public class BuildingWorkAreaMarkObject extends AbstractHexMapObject {
+/**
+ * map object to visialize the work area of a building to the user.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public final class BuildingWorkAreaMarkObject extends AbstractHexMapObject {
 	private static final long serialVersionUID = 8892749217187685868L;
 
 	private final float progress;

@@ -7,13 +7,14 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.objects.ProgressingSoundableObject;
 
-public class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
+public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
 	private static final long serialVersionUID = 1702902724559733166L;
 
 	private static final float SECONDS_PER_TILE = 0.03f;
 	public static final float DECOMPOSE_DELAY = 60;
 
-	private final ISPosition2D source;
+	private final short sourceX;
+	private final short sourceY;
 	private final float hitStrength;
 
 	private final IHexMovable target;
@@ -22,7 +23,8 @@ public class ArrowObject extends ProgressingSoundableObject implements IArrowMap
 		super(target.getPos());
 		this.target = target;
 
-		this.source = source;
+		this.sourceX = source.getX();
+		this.sourceY = source.getY();
 		this.hitStrength = hitStrength;
 
 		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(source.getX() - target.getPos().getX(), source.getY() - target.getPos().getY())));
@@ -39,23 +41,13 @@ public class ArrowObject extends ProgressingSoundableObject implements IArrowMap
 	}
 
 	@Override
-	public ISPosition2D getSource() {
-		return source;
-	}
-
-	@Override
 	public boolean isBlocking() {
 		return false;
 	}
 
 	@Override
 	public EDirection getDirection() {
-		return EDirection.getApproxDirection(source, super.getPos());
-	}
-
-	@Override
-	public ISPosition2D getTarget() {
-		return super.getPos();
+		return EDirection.getApproxDirection(getSourceX(), getSourceY(), getTargetX(), getTargetY());
 	}
 
 	@Override
@@ -65,9 +57,28 @@ public class ArrowObject extends ProgressingSoundableObject implements IArrowMap
 
 	@Override
 	protected void changeState() {
-		if (target.getPos().equals(this.getTarget())) {
+		if (target.getPos().getX() == getTargetX() && target.getPos().getY() == getTargetY()) {
 			target.hit(hitStrength);
 		}
 	}
 
+	@Override
+	public short getSourceX() {
+		return sourceX;
+	}
+
+	@Override
+	public short getSourceY() {
+		return sourceY;
+	}
+
+	@Override
+	public short getTargetX() {
+		return target.getPos().getX();
+	}
+
+	@Override
+	public short getTargetY() {
+		return target.getPos().getY();
+	}
 }

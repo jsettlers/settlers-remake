@@ -65,8 +65,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		while (curr != null && curr.isOutDated(gameTime)) {
 			timingQueue.poll();
 			if (curr.shouldRemoveObject()) {
-				ISPosition2D pos = curr.mapObject.getPos();
-				removeMapObject(pos.getX(), pos.getY(), curr.mapObject);
+				removeMapObject(curr.mapObject.getX(), curr.mapObject.getY(), curr.mapObject);
 			} else {
 				curr.getMapObject().changeState();
 			}
@@ -227,8 +226,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		addMapObject(pos, new StandardMapObject(objectType, blocking, player));
 	}
 
-	public void addBuildingWorkAreaObject(ISPosition2D pos, float progress) {
-		addMapObject(pos, new BuildingWorkAreaMarkObject(progress));
+	public void addBuildingWorkAreaObject(ISPosition2D pos, float radius) {
+		addMapObject(pos, new BuildingWorkAreaMarkObject(radius));
 	}
 
 	public void addSelfDeletingMapObject(ISPosition2D pos, EMapObjectType mapObjectType, float duration, byte player) {

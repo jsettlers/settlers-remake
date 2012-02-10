@@ -15,12 +15,12 @@ import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 public final class StackMapObject extends AbstractHexMapObject implements IStackMapObject {
 	private static final long serialVersionUID = -5471566113368524172L;
 
-	private final EMaterialType materialType;
+	private final byte materialType;
 	private byte size;
 	private byte markedStolen = 0;
 
 	public StackMapObject(EMaterialType materialType, byte size) {
-		this.materialType = materialType;
+		this.materialType = materialType.ordinal;
 		this.size = size;
 	}
 
@@ -73,7 +73,7 @@ public final class StackMapObject extends AbstractHexMapObject implements IStack
 
 	@Override
 	public final EMaterialType getMaterialType() {
-		return materialType;
+		return EMaterialType.values[materialType];
 	}
 
 	@Override
