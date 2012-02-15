@@ -37,11 +37,6 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 
 	}
 
-	@Override
-	public float getHeuristicCost(short sx, short sy, short tx, short ty) {
-		return 1;
-	}
-
 	public void setBlocked(int x, int y, boolean b) {
 		blocked[x][y] = b;
 	}

@@ -97,14 +97,14 @@ public final class HexAStar {
 						if (openList.get(flatNeighborIdx)) {
 							if (costsAndHeuristics[getCostsIdx(flatNeighborIdx)] > newCosts) {
 								costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
-								costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+								costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
 								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 								open.siftUp(flatNeighborIdx);
 							}
 						} else {
 							costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
-							costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = map.getHeuristicCost(neighborX, neighborY, tx, ty);
+							costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
 							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 							openList.set(flatNeighborIdx);
@@ -168,7 +168,7 @@ public final class HexAStar {
 		depthParentHeap[getDepthIdx(flatIdx)] = 0;
 		depthParentHeap[getParentIdx(flatIdx)] = -1;
 		costsAndHeuristics[getCostsIdx(flatIdx)] = 0;
-		costsAndHeuristics[getHeuristicIdx(flatIdx)] = map.getHeuristicCost(sx, sy, tx, ty);
+		costsAndHeuristics[getHeuristicIdx(flatIdx)] = getHeuristicCost(sx, sy, tx, ty);
 	}
 
 	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
@@ -207,4 +207,10 @@ public final class HexAStar {
 		depthParentHeap[getHeapArrayIdx(identifier)] = idx;
 	}
 
+	private static final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {
+		final float dx = (short) Math.abs(sx - tx);
+		final float dy = (short) Math.abs(sy - ty);
+
+		return (dx + 1.01f * dy);
+	}
 }

@@ -4,8 +4,6 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 
 public interface IAStarPathMap {
 
-	float getHeuristicCost(short sx, short sy, short tx, short ty);
-
 	boolean isBlocked(IPathCalculateable requester, short x, short y);
 
 	float getCost(short sx, short sy, short tx, short ty);
