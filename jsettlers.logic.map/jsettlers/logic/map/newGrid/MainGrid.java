@@ -115,7 +115,7 @@ public class MainGrid implements Serializable {
 	final NewFogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
-//	transient LandmarksCorrectingThread landmarksCorrectionThread;
+	// transient LandmarksCorrectingThread landmarksCorrectionThread;
 	transient NewLandmarkCorrection landmarksCorrection;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
@@ -305,14 +305,6 @@ public class MainGrid implements Serializable {
 		@Override
 		public boolean isBlocked(IPathCalculateable requester, short x, short y) {
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayer() != partitionsGrid.getPlayerAt(x, y));
-		}
-
-		@Override
-		public final float getHeuristicCost(short sx, short sy, short tx, short ty) {
-			float dx = (short) Math.abs(sx - tx);
-			float dy = (short) Math.abs(sy - ty);
-
-			return (dx + 1.01f * dy) * Constants.TILE_HEURISTIC_DIST;
 		}
 
 		@Override
@@ -656,14 +648,14 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-        public short getHeight() {
-	        return height;
-        }
+		public short getHeight() {
+			return height;
+		}
 
 		@Override
-        public short getWidth() {
-	        return width;
-        }
+		public short getWidth() {
+			return width;
+		}
 	}
 
 	final class ConstructionMarksGrid implements IConstructionMarkableMap {
@@ -1355,7 +1347,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void changedPartitionAt(short x, short y) {
-			
+
 			landmarksCorrection.reTest(x, y);
 		}
 
