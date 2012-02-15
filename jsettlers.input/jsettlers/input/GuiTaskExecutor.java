@@ -118,7 +118,9 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void killSelectedMovables(List<Integer> selectedMovables) {
 		for (Integer currID : selectedMovables) {
-			Movable.getMovableByID(currID).kill();
+			Movable curr = Movable.getMovableByID(currID);
+			if (curr != null)
+				curr.kill();
 		}
 	}
 
@@ -132,7 +134,8 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	private void moveSelectedTo(ISPosition2D pos, List<Integer> list) {
 		if (list.size() == 1) {
 			Movable currMovable = Movable.getMovableByID(list.get(0));
-			currMovable.setGotoJob(new GotoJob(pos));
+			if (currMovable != null)
+				currMovable.setGotoJob(new GotoJob(pos));
 		} else {
 			float radius = (float) (Math.sqrt(list.size() / 3.14f)) * 2;
 			MapCircle mapCircle = new MapCircle(pos, radius);

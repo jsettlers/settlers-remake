@@ -32,7 +32,13 @@ public class Timer100Milli extends SuperTimer<ITimerable> {
 	@Override
 	protected void executeAction() {
 		for (ITimerable s : timerables) {
-			s.timerEvent();
+			try {
+				s.timerEvent();
+			} catch (Throwable t) {
+				System.out.println("Timer100Milli catched: ");
+				t.printStackTrace();
+				s.kill();
+			}
 		}
 	}
 

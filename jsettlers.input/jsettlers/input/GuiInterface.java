@@ -180,7 +180,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case TOGGLE_DEBUG:
-			// grid.resetDebugColors();
+			grid.resetDebugColors();
 			break;
 
 		case TOGGLE_FOG_OF_WAR:
