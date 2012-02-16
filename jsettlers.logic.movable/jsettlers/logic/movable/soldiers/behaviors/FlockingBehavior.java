@@ -26,13 +26,13 @@ public class FlockingBehavior extends SoldierBehavior {
 	private static final byte FLOCK_RADIUS = 10;
 	private static final int SEPARATION_RADIUS = FLOCK_RADIUS / 3;
 
-	private static final byte AVG_POS_FACTOR = 0;
-	private static final byte AVG_DIR_FACTOR = 0;
-	private static final byte TO_CLOSE_FACTOR = 5;
+	private static byte AVG_POS_FACTOR = 2;
+	private static byte AVG_DIR_FACTOR = 2;
+	private static byte TO_CLOSE_FACTOR = 15;
 
-	private static final int MINIMUM_ACTING_BARRIER = 50;
+	private static int MINIMUM_ACTING_BARRIER = 100;
 
-	private static final byte LEADER_FACTOR = 5;
+	private static byte LEADER_FACTOR = 1;
 
 	@Override
 	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
@@ -61,7 +61,7 @@ public class FlockingBehavior extends SoldierBehavior {
 			if (neighbors.getCurrRadius() < SEPARATION_RADIUS) {
 				sumToCloseX += neighborPos.getX();
 				sumToCloseY += neighborPos.getY();
-				toCloseDist += (SEPARATION_RADIUS - neighbors.getCurrRadius());
+				toCloseDist += (SEPARATION_RADIUS - neighbors.getCurrRadius()) * (SEPARATION_RADIUS - neighbors.getCurrRadius());
 				toCloseCtr++;
 			}
 
@@ -69,33 +69,34 @@ public class FlockingBehavior extends SoldierBehavior {
 		}
 
 		if (ctr > 0) {
-			EDirection avgPosDirection = EDirection.getApproxDirection(pos.getX(), pos.getY(), sumPosX / ctr, sumPosY / ctr);
-			EDirection othersDirDirection = EDirection.getApproxDirection(100, 100, 100 + dirX * 10, 100 + dirY * 10);
-			ISPosition2D leaderDirectedPos = leader.getDirection().getNextTilePoint(leader.getPos(), 7);
-			EDirection leaderDir = EDirection.getApproxDirection(pos, leaderDirectedPos);
-			int leaderDist = Math.abs(pos.getX() - leaderDirectedPos.getX()) + Math.abs(pos.getY() - leaderDirectedPos.getY());
+			int deltaX = 0;
+			int deltaY = 0;
 
-			int toCloseDx;
-			int toCloseDy;
-			if (toCloseCtr > 0) {
-				EDirection toCloseOppositeDir = EDirection.getApproxDirection(pos.getX(), pos.getY(), sumToCloseX / toCloseCtr,
-						sumToCloseY / toCloseCtr).getInverseDirection();
-				toCloseDx = toCloseOppositeDir.getGridDeltaX();
-				toCloseDy = toCloseOppositeDir.getGridDeltaY();
+			deltaX += AVG_POS_FACTOR * (sumPosX / ctr - pos.getX());
+			deltaY += AVG_POS_FACTOR * (sumPosY / ctr - pos.getY());
 
-				toCloseDist = toCloseDist * toCloseDist / toCloseCtr;
-			} else {
-				toCloseDx = 0;
-				toCloseDy = 0;
+			deltaX += dirX * AVG_DIR_FACTOR;
+			deltaY += dirY * AVG_DIR_FACTOR;
+
+			if (leader != null) {
+				ISPosition2D leaderDirectedPos = leader.getDirection().getNextTilePoint(leader.getPos(), 7);
+				int leaderDist = Math.abs(pos.getX() - leaderDirectedPos.getX()) + Math.abs(pos.getY() - leaderDirectedPos.getY());
+
+				deltaX += (leaderDirectedPos.getX() - pos.getX()) * leaderDist * LEADER_FACTOR;
+				deltaY += (leaderDirectedPos.getY() - pos.getY()) * leaderDist * LEADER_FACTOR;
 			}
 
-			int newDirX = (avgPosDirection.getGridDeltaX() * AVG_POS_FACTOR + othersDirDirection.getGridDeltaX() * AVG_DIR_FACTOR + toCloseDx
-					* toCloseDist * TO_CLOSE_FACTOR + leaderDir.getGridDeltaX() * leaderDist * LEADER_FACTOR);
-			int newDirY = (avgPosDirection.getGridDeltaY() * AVG_POS_FACTOR + othersDirDirection.getGridDeltaY() * AVG_DIR_FACTOR + toCloseDy
-					* toCloseDist * TO_CLOSE_FACTOR + leaderDir.getGridDeltaY() * leaderDist * LEADER_FACTOR);
+			if (toCloseCtr > 0) {
+				toCloseDist = toCloseDist / toCloseCtr;
+				EDirection dir = EDirection.getApproxDirection(0, 0, sumToCloseX / toCloseCtr - pos.getX(), sumToCloseY / toCloseCtr - pos.getY())
+						.getInverseDirection();
 
-			if (Math.abs(newDirX) + Math.abs(newDirY) > MINIMUM_ACTING_BARRIER) {
-				EDirection newDir = EDirection.getApproxDirection(500, 500, 500 + newDirX, 500 + newDirY);
+				deltaX += dir.getGridDeltaX() * toCloseDist * TO_CLOSE_FACTOR;
+				deltaY += dir.getGridDeltaY() * toCloseDist * TO_CLOSE_FACTOR;
+			}
+
+			if (Math.abs(deltaX) + Math.abs(deltaY) > MINIMUM_ACTING_BARRIER) {
+				EDirection newDir = EDirection.getApproxDirection(0, 0, deltaX, deltaY);
 				// System.out.println("new direction: " + newDir);
 
 				super.goToTile(newDir.getNextHexPoint(pos));
