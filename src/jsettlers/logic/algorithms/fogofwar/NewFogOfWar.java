@@ -6,8 +6,6 @@ import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.CircleIterator;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.player.IPlayerable;
@@ -114,12 +112,12 @@ public final class NewFogOfWar implements Serializable {
 			mySleep(500);
 
 			while (!canceled) {
-				StopWatch watch = new MilliStopWatch();
-				watch.start();
+				// StopWatch watch = new MilliStopWatch();
+				// watch.start();
 				if (enabled) {
 					rebuildSight();
 				}
-				watch.stop("NewFoWThread needed: ");
+				// watch.stop("NewFoWThread needed: ");
 
 				mySleep(800);
 			}
