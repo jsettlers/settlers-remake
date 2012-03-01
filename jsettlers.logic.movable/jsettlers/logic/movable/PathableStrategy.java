@@ -41,16 +41,26 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 
 	private boolean checkGotoJob() {
 		if (gotoJob != null) {
-			executingGotoJobAction();
-			calculatePathTo(gotoJob.getPosition());
-			gotoJob = null;
-			return true;
+			if (executingGotoJobAction()) {
+				calculatePathTo(gotoJob.getPosition());
+				gotoJob = null;
+				return true;
+			} else {
+				gotoJob = null;
+				return false;
+			}
 		} else {
 			return false;
 		}
 	}
 
-	protected void executingGotoJobAction() {
+	/**
+	 * 
+	 * @return true if the goto job should be executed,<br>
+	 *         false otherwise.
+	 */
+	protected boolean executingGotoJobAction() {
+		return true;
 	}
 
 	private boolean goPathStep() {
@@ -145,7 +155,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	protected abstract void pathRequestFailed();
 
 	@Override
-	protected void setGotoJob(GotoJob job) {
+	protected void setGotoJob(Movable leader, GotoJob job) {
 		if (isGotoJobable()) {
 			doPreGotoJobActions();
 			this.gotoJob = job;

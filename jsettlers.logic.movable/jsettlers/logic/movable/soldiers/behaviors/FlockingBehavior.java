@@ -26,16 +26,22 @@ public class FlockingBehavior extends SoldierBehavior {
 	private static final byte FLOCK_RADIUS = 10;
 	private static final int SEPARATION_RADIUS = FLOCK_RADIUS / 3;
 
-	private static byte AVG_POS_FACTOR = 2;
-	private static byte AVG_DIR_FACTOR = 2;
+	private static byte AVG_POS_FACTOR = 1;
+	private static byte AVG_DIR_FACTOR = 0;
 	private static byte TO_CLOSE_FACTOR = 15;
 
-	private static int MINIMUM_ACTING_BARRIER = 100;
+	private static int MINIMUM_ACTING_BARRIER = 170;
 
-	private static byte LEADER_FACTOR = 1;
+	private static byte LEADER_FACTOR = 10;
 
 	@Override
 	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
+		AVG_DIR_FACTOR = 0;
+		TO_CLOSE_FACTOR = 20;
+		LEADER_FACTOR = 10;
+
+		MINIMUM_ACTING_BARRIER = 170;
+
 		MovableNeighborIterator neighbors = super.getGrid().getNeighborsIterator(pos, FLOCK_RADIUS);
 
 		int sumPosX = 0;
@@ -82,12 +88,13 @@ public class FlockingBehavior extends SoldierBehavior {
 				ISPosition2D leaderDirectedPos = leader.getDirection().getNextTilePoint(leader.getPos(), 7);
 				int leaderDist = Math.abs(pos.getX() - leaderDirectedPos.getX()) + Math.abs(pos.getY() - leaderDirectedPos.getY());
 
-				deltaX += (leaderDirectedPos.getX() - pos.getX()) * leaderDist * LEADER_FACTOR;
-				deltaY += (leaderDirectedPos.getY() - pos.getY()) * leaderDist * LEADER_FACTOR;
+				deltaX += (leaderDirectedPos.getX() - pos.getX()) * LEADER_FACTOR;
+				deltaY += (leaderDirectedPos.getY() - pos.getY()) * LEADER_FACTOR;
 			}
 
 			if (toCloseCtr > 0) {
 				toCloseDist = toCloseDist / toCloseCtr;
+				toCloseDist *= toCloseDist;
 				EDirection dir = EDirection.getApproxDirection(0, 0, sumToCloseX / toCloseCtr - pos.getX(), sumToCloseY / toCloseCtr - pos.getY())
 						.getInverseDirection();
 

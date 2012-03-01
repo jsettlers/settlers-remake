@@ -19,6 +19,8 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 
 	private SoldierBehavior behavior;
 
+	private Movable leader;
+
 	protected AbstractSoldierStrategy(IMovableGrid grid, Movable movable, EMovableType type) {
 		super(grid, movable);
 		this.type = type;
@@ -131,13 +133,22 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	}
 
 	@Override
-	public final void setGotoJob(GotoJob job) {
-		super.setGotoJob(job);
+	public final void setGotoJob(Movable leader, GotoJob job) {
+		this.leader = leader;
+		super.setGotoJob(leader, job);
 	}
 
 	@Override
-	protected void executingGotoJobAction() {
-		this.behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
+	protected boolean executingGotoJobAction() {
+		if (super.getMovable() == leader) {
+			this.behavior = SoldierBehavior.getDefaultSoldierBehavior(this);
+			leader = null;
+			return true;
+		} else {
+			this.behavior = SoldierBehavior.getFlockingBehavior(this, leader);
+			leader = null;
+			return false;
+		}
 	}
 
 	@Override

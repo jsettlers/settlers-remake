@@ -290,7 +290,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 				state = EMovableState.FINISHED_ACTION;
 				strategy.actionFinished();
 				if (state == EMovableState.FINISHED_ACTION) {
-					System.out.println("blï¿½d");
+					System.out.println("blöd");
 					strategy.actionFinished();
 				}
 			}
@@ -337,7 +337,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 			setDirection(newDir);
 
 			if (!this.grid.isInBounds(nextTile)) {
-				System.err.println("movable is directed to leave the grid!");
+				throw new RuntimeException("movable is directed to leave the grid!");
 			}
 
 			this.nextPos = nextTile;
@@ -391,8 +391,8 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		this.material = material;
 	}
 
-	public final void setGotoJob(GotoJob gotoJob) {
-		this.strategy.setGotoJob(gotoJob);
+	public final void setGotoJob(Movable leader, GotoJob gotoJob) {
+		this.strategy.setGotoJob(leader, gotoJob);
 	}
 
 	final void setPos(ISPosition2D pos) {

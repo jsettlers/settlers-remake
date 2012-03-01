@@ -26,7 +26,7 @@ import synchronic.timer.NetworkTimer;
  */
 public class JSettlersGame {
 
-	private final long randomSheed;
+	private final long randomSeed;
 
 	private boolean stopped = false;
 	private final Object stopMutex = new Object();
@@ -38,10 +38,10 @@ public class JSettlersGame {
 	private Listener listener;
 	private MapInterfaceConnector gameConnector;
 
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSheed, NetworkManager networkManager, byte playerNumber) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSeed, NetworkManager networkManager, byte playerNumber) {
 		this.content = content;
 		this.mapcreator = map;
-		this.randomSheed = randomSheed;
+		this.randomSeed = randomSeed;
 		this.networkManager = networkManager;
 		this.playerNumber = playerNumber;
 	}
@@ -59,10 +59,9 @@ public class JSettlersGame {
 		public void run() {
 			ProgressConnector progress = content.showProgress();
 
-			RandomSingleton.load(randomSheed);
+			RandomSingleton.load(randomSeed);
 
 			NetworkTimer.get().setPausing(true);
-			Timer100Milli.start();
 
 			progress.setProgressState(EProgressState.LOADING_MAP);
 

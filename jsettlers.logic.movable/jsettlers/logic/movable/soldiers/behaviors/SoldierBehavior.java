@@ -8,6 +8,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
+import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 
 /**
@@ -81,6 +82,14 @@ public abstract class SoldierBehavior implements Serializable {
 
 	protected final IBuildingOccupyableMovable getBuildingOccupier() {
 		return soldier.getBuildingOccupier();
+	}
+
+	public static SoldierBehavior getWatchingBehavior(ISoldierBehaviorable soldier) {
+		return new WatchingBehavior(soldier);
+	}
+
+	public static SoldierBehavior getFlockingBehavior(ISoldierBehaviorable soldier, IHexMovable leader) {
+		return new FlockingBehavior(soldier, leader);
 	}
 
 }

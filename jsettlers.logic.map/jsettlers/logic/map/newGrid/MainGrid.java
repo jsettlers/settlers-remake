@@ -29,6 +29,8 @@ import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -266,6 +268,15 @@ public class MainGrid implements Serializable {
 
 	public IGuiInputGrid getGuiInputGrid() {
 		return guiInputGrid;
+	}
+
+	/**
+	 * FOR TESTS ONLY!!
+	 * 
+	 * @return
+	 */
+	public IAStarPathMap getPathfinderGrid() {
+		return movablePathfinderGrid;
 	}
 
 	protected final boolean isInBounds(short x, short y) {
@@ -991,6 +1002,45 @@ public class MainGrid implements Serializable {
 			return landscapeGrid.getResourceAmountAround(x, y, type);
 		}
 
+		@Override
+		public MovableNeighborIterator getNeighborsIterator(ISPosition2D pos, byte radius) {
+			return new MovableNeighborIterator(pos, radius);
+		}
+
+	}
+
+	public final class MovableNeighborIterator implements Iterator<IHexMovable> {
+		private final HexGridAreaIterator hexIterator;
+		private IHexMovable currMovable;
+
+		public MovableNeighborIterator(ISPosition2D pos, byte radius) {
+			this.hexIterator = new HexGridArea(pos.getX(), pos.getY(), (short) 0, radius).iterator();
+		}
+
+		@Override
+		public boolean hasNext() {
+			while (hexIterator.hasNext()) {
+				if (isInBounds(hexIterator.getNextX(), hexIterator.getNextY())
+						&& (currMovable = movableGrid.getMovableAt(hexIterator.getNextX(), hexIterator.getNextY())) != null) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public IHexMovable next() {
+			return currMovable;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		public final int getCurrRadius() {
+			return hexIterator.getCurrRadius();
+		}
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {

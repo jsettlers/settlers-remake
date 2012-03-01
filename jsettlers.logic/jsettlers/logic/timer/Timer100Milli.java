@@ -8,12 +8,6 @@ public class Timer100Milli extends SuperTimer<ITimerable> {
 
 	private static Timer100Milli uniIns;
 
-	public static void start() {
-		if (uniIns == null) {
-			uniIns = new Timer100Milli();
-		}
-	}
-
 	public static void stop() {
 		if (uniIns != null) {
 			uniIns.cancel();
@@ -22,11 +16,18 @@ public class Timer100Milli extends SuperTimer<ITimerable> {
 	}
 
 	public static void add(ITimerable t) {
-		uniIns.add_(t);
+		get().add_(t);
 	}
 
 	public static void remove(ITimerable t) {
-		uniIns.remove_(t);
+		get().remove_(t);
+	}
+
+	private static SuperTimer<ITimerable> get() {
+		if (uniIns == null) {
+			uniIns = new Timer100Milli();
+		}
+		return uniIns;
 	}
 
 	@Override

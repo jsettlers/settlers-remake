@@ -142,7 +142,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 		return this.movable.getPlayer();
 	}
 
-	protected abstract void setGotoJob(GotoJob gotoJob);
+	protected abstract void setGotoJob(Movable leader, GotoJob gotoJob);
 
 	protected final void convertTo(EMovableType movableType) {
 		this.movable.setMaterial(EMaterialType.NO_MATERIAL);
