@@ -15,7 +15,7 @@ import jsettlers.logic.algorithms.path.Path;
  * @author Andreas Eberle
  * 
  */
-public final class HexAStar implements IAStar {
+public final class AStarJPS implements IAStar {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
 	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
 
@@ -29,11 +29,13 @@ public final class HexAStar implements IAStar {
 
 	final float[] costsAndHeuristics;
 
-	final int[] depthParentHeap;
+	final int[] depth;
+	final int[] parent;
+	final int[] heapIdx;
 
 	private final AStarMinHeap open;
 
-	public HexAStar(IAStarPathMap map, short width, short height) {
+	public AStarJPS(IAStarPathMap map, short width, short height) {
 		this.map = map;
 		this.width = width;
 		this.height = height;
@@ -43,7 +45,9 @@ public final class HexAStar implements IAStar {
 		this.closedList = new BitSet(width * height);
 		this.costsAndHeuristics = new float[width * height * 2];
 
-		this.depthParentHeap = new int[width * height * 3];
+		this.depth = new int[width * height];
+		this.parent = new int[width * height];
+		this.heapIdx = new int[width * height];
 	}
 
 	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
@@ -98,15 +102,15 @@ public final class HexAStar implements IAStar {
 							if (costsAndHeuristics[getCostsIdx(flatNeighborIdx)] > newCosts) {
 								costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
 								costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
-								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
-								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
+								depth[flatNeighborIdx] = depth[currFlatIdx] + 1;
+								parent[flatNeighborIdx] = currFlatIdx;
 								open.siftUp(flatNeighborIdx);
 							}
 						} else {
 							costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
 							costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
-							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
-							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
+							depth[flatNeighborIdx] = depth[currFlatIdx] + 1;
+							parent[flatNeighborIdx] = currFlatIdx;
 							openList.set(flatNeighborIdx);
 							open.insert(flatNeighborIdx);
 
@@ -118,7 +122,7 @@ public final class HexAStar implements IAStar {
 		}
 
 		if (found) {
-			int pathlength = depthParentHeap[getDepthIdx(getFlatIdx(tx, ty))];
+			int pathlength = depth[getFlatIdx(tx, ty)];
 			Path path = new Path(pathlength);
 
 			int idx = pathlength;
@@ -127,7 +131,7 @@ public final class HexAStar implements IAStar {
 			while (parentFlatIdx >= 0) {
 				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
 				idx--;
-				parentFlatIdx = depthParentHeap[getParentIdx(parentFlatIdx)];
+				parentFlatIdx = parent[parentFlatIdx];
 			}
 
 			return path;
@@ -144,18 +148,6 @@ public final class HexAStar implements IAStar {
 		return flatIdx * 2;
 	}
 
-	private static final int getDepthIdx(int flatIdx) {
-		return 3 * flatIdx;
-	}
-
-	private static final int getParentIdx(int flatIdx) {
-		return 3 * flatIdx + 1;
-	}
-
-	static final int getHeapArrayIdx(int flatIdx) {
-		return 3 * flatIdx + 2;
-	}
-
 	private final void setClosed(short x, short y) {
 		closedList.set(getFlatIdx(x, y));
 		map.markAsClosed(x, y);
@@ -165,8 +157,8 @@ public final class HexAStar implements IAStar {
 		int flatIdx = getFlatIdx(sx, sy);
 		open.insert(flatIdx);
 		openList.set(flatIdx);
-		depthParentHeap[getDepthIdx(flatIdx)] = 0;
-		depthParentHeap[getParentIdx(flatIdx)] = -1;
+		depth[flatIdx] = 0;
+		parent[flatIdx] = -1;
 		costsAndHeuristics[getCostsIdx(flatIdx)] = 0;
 		costsAndHeuristics[getHeuristicIdx(flatIdx)] = getHeuristicCost(sx, sy, tx, ty);
 	}
@@ -202,12 +194,12 @@ public final class HexAStar implements IAStar {
 
 	@Override
 	public final int getHeapIdx(int identifier) {
-		return depthParentHeap[getHeapArrayIdx(identifier)];
+		return heapIdx[identifier];
 	}
 
 	@Override
 	public final void setHeapIdx(int identifier, int idx) {
-		depthParentHeap[getHeapArrayIdx(identifier)] = idx;
+		heapIdx[identifier] = idx;
 	}
 
 	private static final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {
