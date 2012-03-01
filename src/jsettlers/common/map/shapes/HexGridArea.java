@@ -42,11 +42,11 @@ public final class HexGridArea implements IMapArea {
 	}
 
 	@Override
-	public ICoordinateIterator iterator() {
+	public HexGridAreaIterator iterator() {
 		return new HexGridAreaIterator(this);
 	}
 
-	private static final class HexGridAreaIterator implements ICoordinateIterator {
+	public static final class HexGridAreaIterator implements ICoordinateIterator {
 		private static final byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
 		private static final byte[] directionIncreaseY = { 0, 1, 1, 0, -1, -1 };
 
@@ -109,6 +109,10 @@ public final class HexGridArea implements IMapArea {
 		@Override
 		public short getNextY() {
 			return y;
+		}
+
+		public final short getCurrRadius() {
+			return radius;
 		}
 	}
 

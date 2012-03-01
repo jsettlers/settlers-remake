@@ -84,7 +84,7 @@ public enum EDirection {
 	 * 
 	 * @param fx
 	 *            x coordinate of first position
-	 * @param fx
+	 * @param fy
 	 *            y coordinate of first position
 	 * @param sx
 	 *            x coordinate of second position
@@ -93,11 +93,11 @@ public enum EDirection {
 	 * 
 	 * @return
 	 */
-	public static EDirection getApproxDirection(short fx, short fy, short sx, short sy) {
-		byte dx = (byte) (sx - fx);
-		byte dy = (byte) (sy - fy);
+	public static EDirection getApproxDirection(int fx, int fy, int sx, int sy) {
+		int dx = sx - fx;
+		int dy = sy - fy;
 
-		float incline = (float) dy / dx;
+		float incline = ((float) dy) / dx;
 
 		if (dx == 0) {
 			if (dy < 0) {
