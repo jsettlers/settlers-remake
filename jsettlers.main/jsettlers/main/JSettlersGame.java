@@ -31,12 +31,13 @@ public class JSettlersGame {
 	private boolean stopped = false;
 	private final Object stopMutex = new Object();
 	private final ISettlersGameDisplay content;
-	private final IGameCreator mapcreator;
+	private IGameCreator mapcreator;
 	private final NetworkManager networkManager;
 	private final byte playerNumber;
 
 	private Listener listener;
 	private MapInterfaceConnector gameConnector;
+	private boolean started = false;
 
 	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSeed, NetworkManager networkManager, byte playerNumber) {
 		this.content = content;
@@ -49,8 +50,11 @@ public class JSettlersGame {
 	/**
 	 * Starts the game in a new thread. Returns immeadiately
 	 */
-	public void start() {
-		new Thread(new GameRunner()).start();
+	public synchronized void start() {
+		if (!started) {
+			started = true;
+			new Thread(new GameRunner()).start();
+		}
 	}
 
 	private class GameRunner implements Runnable, IMapInterfaceListener {
@@ -59,9 +63,9 @@ public class JSettlersGame {
 		public void run() {
 			ProgressConnector progress = content.showProgress();
 
+			NetworkTimer.get().setPausing(true);
 			RandomSingleton.load(randomSeed);
 
-			NetworkTimer.get().setPausing(true);
 
 			progress.setProgressState(EProgressState.LOADING_MAP);
 
@@ -73,6 +77,7 @@ public class JSettlersGame {
 			try {
 				grid = mapcreator.getMainGrid();
 				uiState = mapcreator.getUISettings(playerNumber);
+				mapcreator = null;
 			} catch (MapLoadException e1) {
 				e1.printStackTrace();
 				listener.gameEnded();
