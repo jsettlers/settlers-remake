@@ -47,7 +47,8 @@ public class MapEditorControls implements IControls {
 
 		@Override
 		public void aborted(GOEvent event) {
-			firerer.fireAction(new AbortDrawingAction());
+			finished(event);
+			//firerer.fireAction(new AbortDrawingAction());
 		}
 
 		@Override

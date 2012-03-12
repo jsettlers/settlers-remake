@@ -109,6 +109,7 @@ public class DataTester implements Runnable {
 	private void testBuilding(byte[][] players, int x, int y,
 	        ShortPoint2D start, BuildingObject buildingObject) {
 		EBuildingType type = buildingObject.getType();
+		int height = data.getLandscapeHeight(x, y);
 		for (RelativePoint p : type.getProtectedTiles()) {
 			ISPosition2D pos = p.calculatePoint(start);
 			if (!data.contains(pos.getX(), pos.getY())) {
@@ -119,11 +120,15 @@ public class DataTester implements Runnable {
 				        "Building " + type + " cannot be placed on "
 				                + data.getLandscape(pos.getX(), pos.getY()),
 				        pos);
-			} else if (players[x][y] != buildingObject.getPlayer()) {
+			} else if (players[pos.getX()][pos.getY()] != buildingObject.getPlayer()) {
 				testFailed(
 				        "Building " + type + " of player "
 				                + buildingObject.getPlayer() + ", but is on "
 				                + players[x][y] + "'s land", pos);
+			} else if (data.getLandscapeHeight(pos.getX(), pos.getY()) != height) {
+				testFailed(
+				        "Building " + type + " of player "
+				                + buildingObject.getPlayer() + " must be on flat ground", pos);
 			}
 		}
 	}

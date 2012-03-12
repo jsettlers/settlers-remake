@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.data;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.mapcreator.data.objects.ProtectContainer;
 
 public class ProtectLandscapeConstraint extends ProtectContainer implements LandscapeConstraint {
 	

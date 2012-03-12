@@ -1,9 +1,9 @@
 package jsettlers.mapcreator.main;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.mapcreator.tools.PlaceStackTool;
 import jsettlers.mapcreator.tools.ToolBox;
 import jsettlers.mapcreator.tools.ToolNode;
+import jsettlers.mapcreator.tools.objects.PlaceStackTool;
 
 public class PlaceStackToolbox extends ToolBox {
 

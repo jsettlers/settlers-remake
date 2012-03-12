@@ -2,6 +2,7 @@ package jsettlers.mapcreator.data;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.mapcreator.data.objects.ObjectContainer;
 
 /**
  * This is a map data delta, that can be applyed from a map data to an other.

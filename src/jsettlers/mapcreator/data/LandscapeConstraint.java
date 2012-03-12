@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.data;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.mapcreator.data.objects.ObjectContainer;
 
 /**
  * Placeholder object with harder constraints on the landscape.

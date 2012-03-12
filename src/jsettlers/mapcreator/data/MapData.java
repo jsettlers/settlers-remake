@@ -10,6 +10,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
+import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
@@ -29,6 +30,14 @@ import jsettlers.mapcreator.data.MapDataDelta.LandscapeChange;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectAdder;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectRemover;
 import jsettlers.mapcreator.data.MapDataDelta.StartPointSetter;
+import jsettlers.mapcreator.data.objects.BuildingContainer;
+import jsettlers.mapcreator.data.objects.MapObjectContainer;
+import jsettlers.mapcreator.data.objects.MovableObjectContainer;
+import jsettlers.mapcreator.data.objects.ObjectContainer;
+import jsettlers.mapcreator.data.objects.ProtectContainer;
+import jsettlers.mapcreator.data.objects.StackContainer;
+import jsettlers.mapcreator.data.objects.StoneObjectContainer;
+import jsettlers.mapcreator.data.objects.TreeObjectContainer;
 
 /**
  * This is the map data of a map that is beeing created by the editor.
@@ -382,6 +391,8 @@ public class MapData implements IMapData {
 			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
 			landscapes = ((BuildingObject) object).getType().getGroundtypes();
 			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType().getGroundtypes());
+		} else if (object instanceof MapDecorationObject) {
+			container = new MapObjectContainer((MapDecorationObject)object);
 		} else {
 			return; // error!
 		}
@@ -422,9 +433,9 @@ public class MapData implements IMapData {
 	}
 
 	public void setHeight(int x, int y, int height) {
-		if (objects[x][y] instanceof LandscapeConstraint && !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
-			return;
-		}
+//		if (objects[x][y] instanceof LandscapeConstraint && !((LandscapeConstraint) objects[x][y]).allowHeightChange()) {
+//			return;
+//		}
 
 		byte safeheight;
 		if (height >= Byte.MAX_VALUE) {
@@ -436,14 +447,14 @@ public class MapData implements IMapData {
 		}
 		undoDelta.addHeightChange(x, y, heights[x][y]);
 		heights[x][y] = safeheight;
-		if (objects[x][y] instanceof BuildingContainer) {
-			ShortPoint2D center = new ShortPoint2D(x, y);
-			for (RelativePoint r : ((BuildingContainer) objects[x][y]).getMapObject().getType().getBlockedTiles()) {
-				ISPosition2D pos = r.calculatePoint(center);
-				undoDelta.addHeightChange(pos.getX(), pos.getY(), heights[pos.getX()][pos.getY()]);
-				heights[pos.getX()][pos.getY()] = safeheight;
-			}
-		}
+//		if (objects[x][y] instanceof BuildingContainer) {
+//			ShortPoint2D center = new ShortPoint2D(x, y);
+//			for (RelativePoint r : ((BuildingContainer) objects[x][y]).getMapObject().getType().getBlockedTiles()) {
+//				ISPosition2D pos = r.calculatePoint(center);
+//				undoDelta.addHeightChange(pos.getX(), pos.getY(), heights[pos.getX()][pos.getY()]);
+//				heights[pos.getX()][pos.getY()] = safeheight;
+//			}
+//		}
 
 		if (backgroundListener != null) {
 			backgroundListener.backgroundChangedAt((short) x, (short) y);

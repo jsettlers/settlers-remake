@@ -2,6 +2,7 @@ package jsettlers.mapcreator.tools;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public interface Tool extends ToolNode {
 	public ShapeType[] getShapes();
