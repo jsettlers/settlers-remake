@@ -264,7 +264,7 @@ public class MapObjectDrawer {
 					break;
 
 				case PLANT_DECORATION: {
-					int step = getAnimationStep(x, y) % 8;
+					int step = (x * 13 + y * 233) % 8;
 
 					Sequence<? extends Image> seq =
 					        this.imageProvider.getSettlerSequence(1, 27);
@@ -274,7 +274,7 @@ public class MapObjectDrawer {
 					break;
 
 				case DESERT_DECORATION: {
-					int step = getAnimationStep(x, y) % 5 + 10;
+					int step = (x * 13 + y * 233) % 5 + 10;
 
 					Sequence<? extends Image> seq =
 					        this.imageProvider.getSettlerSequence(1, 27);
@@ -545,7 +545,7 @@ public class MapObjectDrawer {
 	}
 
 	private static int getTreeType(int x, int y) {
-		return (x * 251 + y * 233) % TREE_TYPES;
+		return (x + x / 5 + y / 3 + y + y / 7) % TREE_TYPES;
 	}
 
 	private int getAnimationStep(int x, int y) {
