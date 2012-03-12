@@ -2,6 +2,7 @@ package jsettlers.mapcreator.tools.landscape;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
@@ -21,7 +22,7 @@ public class FlatLandscapeTool implements Tool {
 
 	@Override
 	public String getName() {
-		return "flaten";
+		return EditorLabels.getLabel("flaten");
 	}
 
 	@Override

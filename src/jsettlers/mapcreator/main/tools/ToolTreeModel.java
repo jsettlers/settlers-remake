@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.tools;
 
 import java.util.LinkedList;
 

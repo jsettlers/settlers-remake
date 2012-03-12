@@ -3,6 +3,8 @@ package jsettlers.mapcreator.tools.objects;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.IPlayerSetter;
 
 public class PlaceMovableTool extends PlaceMapObjectTool {
@@ -18,7 +20,7 @@ public class PlaceMovableTool extends PlaceMapObjectTool {
 
 	@Override
 	public String getName() {
-		return "place movable " + type;
+		return String.format(EditorLabels.getLabel("movabledescr"), Labels.getName(type));
 	}
 
 	@Override

@@ -68,7 +68,19 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
+import jsettlers.mapcreator.main.action.AbortDrawingAction;
+import jsettlers.mapcreator.main.action.CombiningActionFirerer;
+import jsettlers.mapcreator.main.action.DrawLineAction;
+import jsettlers.mapcreator.main.action.EndDrawingAction;
+import jsettlers.mapcreator.main.action.StartDrawingAction;
+import jsettlers.mapcreator.main.error.IScrollToAble;
+import jsettlers.mapcreator.main.error.ShowErrorsButton;
+import jsettlers.mapcreator.main.map.MapEditorControls;
+import jsettlers.mapcreator.main.tools.PlaceStackToolbox;
+import jsettlers.mapcreator.main.tools.ToolRenderer;
+import jsettlers.mapcreator.main.tools.ToolTreeModel;
 import jsettlers.mapcreator.mapview.MapGraphics;
 import jsettlers.mapcreator.stat.StatisticsWindow;
 import jsettlers.mapcreator.tools.SetStartpointTool;
@@ -92,7 +104,7 @@ import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class EditorWindow implements IMapInterfaceListener, ActionFireable,
-        TestResultReceiver, IPlayerSetter {
+        TestResultReceiver, IPlayerSetter, IScrollToAble {
 
 	private final class RadiusChangeListener implements ChangeListener {
 		private final LineCircleShape shape;
@@ -382,7 +394,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		        				new TemplateMovable(4, -12, EMovableType.BEARER),
 		        				new TemplateMovable(4, -14, EMovableType.BEARER),
 		        		}, this),
-		        		new PlaceTemplateTool("Molzarbeiter", new TemplateObject[] {
+		        		new PlaceTemplateTool("Holzarbeiter", new TemplateObject[] {
 		        				new TemplateBuilding(0, 10, EBuildingType.LUMBERJACK),
 		        				new TemplateBuilding(0, 0, EBuildingType.FORESTER),
 		        				new TemplateBuilding(3, -9, EBuildingType.LUMBERJACK),
@@ -414,6 +426,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	private LinkedList<MapDataDelta> undoDeltas =
 	        new LinkedList<MapDataDelta>();
 
+	private LinkedList<MapDataDelta> redoDeltas =
+	        new LinkedList<MapDataDelta>();
+
 	private DataTester dataTester;
 
 	private MapInterfaceConnector connector;
@@ -425,6 +440,10 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	private final MapFileHeader header;
 
 	private JButton saveButton;
+
+	private JButton redoButton;
+
+	private ShowErrorsButton showErrorsButton;
 
 	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
 		this.header = header;
@@ -443,8 +462,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		header = loader.getFileHeader();
 		map = new MapGraphics(data);
 
-		startMapEditing();
 		dataTester = new DataTester(data, this);
+		startMapEditing();
+		dataTester.start();
 	}
 
 	public void startMapEditing() {
@@ -498,7 +518,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	private JToolBar createToolbar() {
 		JToolBar bar = new JToolBar();
 
-		saveButton = new JButton("Save");
+		saveButton = new JButton(EditorLabels.getLabel("save"));
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -508,7 +528,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		saveButton.setEnabled(false);
 		bar.add(saveButton);
 
-		undoButton = new JButton("Undo");
+		undoButton = new JButton(EditorLabels.getLabel("undo"));
 		undoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -517,6 +537,20 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		});
 		undoButton.setEnabled(false);
 		bar.add(undoButton);
+
+		redoButton = new JButton(EditorLabels.getLabel("redo"));
+		redoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				redo();
+			}
+		});
+		redoButton.setEnabled(false);
+		bar.add(redoButton);
+
+		showErrorsButton =
+		        new ShowErrorsButton(dataTester.getErrorList(), this);
+		bar.add(showErrorsButton);
 
 		testResult = new JLabel();
 		testResult.addMouseListener(new MouseAdapter() {
@@ -542,6 +576,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			}
 		});
 		playerSpinner.setPreferredSize(new Dimension(50, 1));
+		playerSpinner.setMaximumSize(new Dimension(50, 40));
 		bar.add(playerSpinner);
 
 		JButton statistics = new JButton("Statistics");
@@ -629,12 +664,29 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		if (!undoDeltas.isEmpty()) {
 			MapDataDelta delta = undoDeltas.pollLast();
 
-			data.apply(delta);
+			MapDataDelta inverse = data.apply(delta);
 
+			redoDeltas.addLast(inverse);
+			redoButton.setEnabled(true);
 		}
 		if (undoDeltas.isEmpty()) {
 			undoButton.setEnabled(false);
 			saveButton.setEnabled(false);
+		}
+	}
+
+	protected void redo() {
+		if (!redoDeltas.isEmpty()) {
+			MapDataDelta delta = redoDeltas.pollLast();
+
+			MapDataDelta inverse = data.apply(delta);
+
+			undoDeltas.addLast(inverse);
+			undoButton.setEnabled(true);
+			saveButton.setEnabled(true);
+		}
+		if (redoDeltas.isEmpty()) {
+			redoButton.setEnabled(false);
 		}
 	}
 
@@ -645,7 +697,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		MapDataDelta delta = data.getUndoDelta();
 		data.resetUndoDelta();
 		undoDeltas.add(delta);
+		redoDeltas.clear();
 		undoButton.setEnabled(true);
+		redoButton.setEnabled(false);
 		saveButton.setEnabled(true);
 	}
 
@@ -807,10 +861,18 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		testFailPoint = failPoint;
 		startGameButton.setEnabled(allowed);
 		testResult.setText(result);
+		showErrorsButton.setEnabled(!allowed);
 	}
 
 	@Override
 	public byte getActivePlayer() {
 		return currentPlayer;
+	}
+
+	@Override
+	public void scrollTo(ISPosition2D pos) {
+		if (pos != null) {
+			connector.scrollTo(pos, true);
+		}
 	}
 }

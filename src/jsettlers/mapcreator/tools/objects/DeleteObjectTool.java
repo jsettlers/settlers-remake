@@ -2,6 +2,7 @@ package jsettlers.mapcreator.tools.objects;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.PointShape;
@@ -16,7 +17,7 @@ public class DeleteObjectTool implements Tool {
 
 	@Override
 	public String getName() {
-		return "delete objects";
+		return EditorLabels.getLabel("deletedescr");
 	}
 
 	@Override

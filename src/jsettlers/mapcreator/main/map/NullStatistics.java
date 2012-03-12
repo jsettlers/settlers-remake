@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.map;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;

@@ -2,6 +2,7 @@ package jsettlers.mapcreator.tools.landscape;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
@@ -18,7 +19,8 @@ public class HeightAdder implements Tool {
 
 	@Override
 	public String getName() {
-		return subtract ? "decrease height" : "increase height";
+		return EditorLabels.getLabel(subtract ? "decreaseheightdescr"
+		        : "increaseheightdescr");
 	}
 
 	@Override
@@ -33,7 +35,8 @@ public class HeightAdder implements Tool {
 	}
 
 	@Override
-	public void apply(MapData map, ShapeType shape, ISPosition2D start, ISPosition2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ISPosition2D start,
+	        ISPosition2D end, double uidx) {
 		if (alreadyadded == null) {
 			alreadyadded = new int[map.getWidth()][map.getHeight()];
 		}
@@ -43,7 +46,8 @@ public class HeightAdder implements Tool {
 		int factor = subtract ? -1 : 1;
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getWidth(); y++) {
-				int dheight = (INCREASE_HEIGHT * influence[x][y] / Byte.MAX_VALUE);
+				int dheight =
+				        (INCREASE_HEIGHT * influence[x][y] / Byte.MAX_VALUE);
 				if (dheight == 0) {
 					continue;
 				}

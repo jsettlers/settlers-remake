@@ -3,6 +3,7 @@ package jsettlers.mapcreator.tools.landscape;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.shapes.FuzzyLineCircleShape;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
@@ -25,7 +26,7 @@ public class LandscapeHeightTool implements Tool {
 
 	@Override
 	public String getName() {
-		return "change height";
+		return EditorLabels.getLabel("changeheightdescr");
 	}
 
 	@Override

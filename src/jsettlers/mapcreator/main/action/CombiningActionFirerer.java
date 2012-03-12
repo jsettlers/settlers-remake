@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.action;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

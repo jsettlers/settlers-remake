@@ -4,6 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.IPlayerSetter;
 
 public class PlaceBuildingTool extends PlaceMapObjectTool {
@@ -24,7 +25,7 @@ public class PlaceBuildingTool extends PlaceMapObjectTool {
 
 	@Override
 	public String getName() {
-		return String.format("Gebäude %s platzieren", Labels.getName(type));
+		return String.format(EditorLabels.getLabel("buildingdescr"), Labels.getName(type));
 	}
 
 }

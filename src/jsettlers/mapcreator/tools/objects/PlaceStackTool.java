@@ -2,6 +2,8 @@ package jsettlers.mapcreator.tools.objects;
 
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.mapcreator.localization.EditorLabels;
 
 public class PlaceStackTool extends PlaceMapObjectTool {
 
@@ -16,6 +18,6 @@ public class PlaceStackTool extends PlaceMapObjectTool {
 
 	@Override
 	public String getName() {
-	    return "place " + count + " " + type;
+		return String.format(EditorLabels.getLabel("stackdescr"), count, Labels.getName(type, count != 1));
 	}
 }

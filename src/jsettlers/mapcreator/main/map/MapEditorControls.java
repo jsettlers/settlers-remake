@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.map;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
@@ -13,6 +13,9 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.selection.ISelectionSet;
+import jsettlers.mapcreator.main.action.DrawLineAction;
+import jsettlers.mapcreator.main.action.EndDrawingAction;
+import jsettlers.mapcreator.main.action.StartDrawingAction;
 
 public class MapEditorControls implements IControls {
 

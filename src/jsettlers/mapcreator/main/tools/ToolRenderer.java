@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.tools;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -23,6 +23,7 @@ public class ToolRenderer implements TreeCellRenderer {
 			jTextField.setForeground(Color.WHITE);
 			jTextField.setBackground(new Color(0x0343df));
 		}
+		jTextField.setBorder(null);
 		return jTextField;
 	}
 

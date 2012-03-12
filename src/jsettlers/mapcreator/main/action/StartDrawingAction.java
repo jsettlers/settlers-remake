@@ -1,4 +1,4 @@
-package jsettlers.mapcreator.main;
+package jsettlers.mapcreator.main.action;
 
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.graphics.action.Action;

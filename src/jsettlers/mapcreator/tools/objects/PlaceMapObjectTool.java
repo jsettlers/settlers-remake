@@ -1,10 +1,12 @@
 package jsettlers.mapcreator.tools.objects;
 
+import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.shapes.GridCircleShape;
 import jsettlers.mapcreator.tools.shapes.PointShape;
@@ -12,8 +14,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class PlaceMapObjectTool implements Tool {
 	private static final ShapeType[] SHAPES = new ShapeType[] {
-		new PointShape(),
-		new GridCircleShape(),
+	        new PointShape(), new GridCircleShape(),
 	};
 
 	private final MapObject object;
@@ -25,12 +26,18 @@ public class PlaceMapObjectTool implements Tool {
 	@Override
 	public String getName() {
 		if (object instanceof MapStoneObject) {
-			return "place " + ((MapStoneObject) object).getCapacity()
-			        + " stones";
+			return String.format(EditorLabels.getLabel("stonedescr"),
+			        ((MapStoneObject) object).getCapacity());
 		} else if (object instanceof MapTreeObject) {
-			return "place tree";
+			return EditorLabels.getLabel("treedescr");
+		} else if (object instanceof MapDecorationObject) {
+			return String.format(
+			        EditorLabels.getLabel("commondescr"),
+			        EditorLabels.getLabel("object_"
+			                + ((MapDecorationObject) object).getType()));
 		} else {
-			return String.format("%s platzieren", object.getClass().getSimpleName());
+			return String.format(EditorLabels.getLabel("commondescr"), object
+			        .getClass().getSimpleName());
 		}
 	}
 

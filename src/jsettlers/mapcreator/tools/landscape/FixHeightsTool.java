@@ -5,6 +5,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.DataTester;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
@@ -12,7 +13,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
 public class FixHeightsTool implements Tool {
 	@Override
 	public String getName() {
-		return "fix heights";
+		return EditorLabels.getLabel("fixheights");
 	}
 
 	@Override

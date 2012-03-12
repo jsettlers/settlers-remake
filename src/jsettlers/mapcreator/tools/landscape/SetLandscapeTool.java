@@ -5,6 +5,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
 import jsettlers.mapcreator.tools.buffers.ByteMapArea;
 import jsettlers.mapcreator.tools.buffers.GlobalShapeBuffer;
@@ -40,7 +41,7 @@ public class SetLandscapeTool implements Tool {
 
 	@Override
 	public String getName() {
-		return "set landscape to " + type;
+		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape_"+type));
 	}
 
 	@Override

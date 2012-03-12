@@ -1,5 +1,7 @@
 package jsettlers.mapcreator.main;
 
+import java.util.ArrayList;
+
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -11,6 +13,8 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.LandscapeFader;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.main.error.Error;
+import jsettlers.mapcreator.main.error.ErrorList;
 
 public class DataTester implements Runnable {
 
@@ -25,12 +29,19 @@ public class DataTester implements Runnable {
 	private final TestResultReceiver receiver;
 	private final LandscapeFader fader = new LandscapeFader();
 	private boolean[][] failpoints;
+	private final ErrorList errorList;
+	private ArrayList<Error> errors = new ArrayList<Error>();
 
 	public DataTester(MapData data, TestResultReceiver receiver) {
 		this.data = data;
 		this.receiver = receiver;
-		new Thread(this, "data tester").start();
+		errorList = new ErrorList();
 	}
+
+	public void start() {
+		new Thread(this, "data tester").start();
+    }
+
 
 	@Override
 	public void run() {
@@ -52,6 +63,7 @@ public class DataTester implements Runnable {
 		successful = true;
 		result = "";
 		resultPosition = new ShortPoint2D(0, 0);
+		errors = new ArrayList<Error>();
 
 		failpoints = new boolean[data.getWidth()][data.getHeight()];
 		byte[][] players = new byte[data.getWidth()][data.getHeight()];
@@ -103,6 +115,7 @@ public class DataTester implements Runnable {
 		data.setPlayers(players);
 		data.setBorders(borders);
 		data.setFailpoints(failpoints);
+		errorList.setErrors(errors);
 		receiver.testResult(result, successful, resultPosition);
 	}
 
@@ -120,7 +133,8 @@ public class DataTester implements Runnable {
 				        "Building " + type + " cannot be placed on "
 				                + data.getLandscape(pos.getX(), pos.getY()),
 				        pos);
-			} else if (players[pos.getX()][pos.getY()] != buildingObject.getPlayer()) {
+			} else if (players[pos.getX()][pos.getY()] != buildingObject
+			        .getPlayer()) {
 				testFailed(
 				        "Building " + type + " of player "
 				                + buildingObject.getPlayer() + ", but is on "
@@ -128,7 +142,8 @@ public class DataTester implements Runnable {
 			} else if (data.getLandscapeHeight(pos.getX(), pos.getY()) != height) {
 				testFailed(
 				        "Building " + type + " of player "
-				                + buildingObject.getPlayer() + " must be on flat ground", pos);
+				                + buildingObject.getPlayer()
+				                + " must be on flat ground", pos);
 			}
 		}
 	}
@@ -160,9 +175,7 @@ public class DataTester implements Runnable {
 		int maxHeightDiff = getMaxHeightDiff(l1, l2);
 		if (Math.abs(data.getLandscapeHeight(x2, y2)
 		        - data.getLandscapeHeight(x, y)) > maxHeightDiff) {
-			successful = false;
-			result = "Too high landscape diff";
-			resultPosition = new ShortPoint2D(x, y);
+			testFailed("Too high landscape diff", new ShortPoint2D(x, y));
 		}
 		if (!fader.canFadeTo(l2, l1)) {
 			testFailed("Wrong landscape pair: " + l2 + ", " + l1,
@@ -187,9 +200,11 @@ public class DataTester implements Runnable {
 	}
 
 	private void testFailed(String string, ISPosition2D pos) {
+		successful = false;
 		result = string;
 		resultPosition = pos;
 		failpoints[pos.getX()][pos.getY()] = true;
+		errors.add(new Error(pos, string));
 	}
 
 	public synchronized void retest() {
@@ -201,5 +216,8 @@ public class DataTester implements Runnable {
 		public void testResult(String name, boolean allowed,
 		        ISPosition2D resultPosition);
 	}
-
+	
+	public ErrorList getErrorList() {
+	    return errorList;
+    }
 }

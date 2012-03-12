@@ -16,7 +16,7 @@ public class EditorLabels {
 			}
 			load = true;
 		}
-		if (resource == null) {
+		if (resource == null || !resource.containsKey(name)) {
 			return name;
 		} else {
 			return resource.getString(name);
