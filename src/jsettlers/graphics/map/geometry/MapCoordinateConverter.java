@@ -265,7 +265,7 @@ public final class MapCoordinateConverter {
 		float minx = getMapX(screen.getMinX(), screen.getMaxY());
 		float miny = getMapY(screen.getMinX(), screen.getMaxY());
 		return new MapRectangle((short) minx, (short) miny, (short) Math.max(
-		        Math.ceil(width), 0), (short) Math.max(Math.ceil(height), 0));
+		        Math.ceil(width), 0), (short) Math.max(Math.ceil(height + 10), 0));
 	}
 
 	/**
