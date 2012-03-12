@@ -88,8 +88,8 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
     }
 
 	@Override
-    public boolean allowHeightChange() {
-	    return true;
+    public boolean needsFlatGround() {
+	    return object.getType().getGroundtypes()[0] != ELandscapeType.MOUNTAIN;
     }
 
 	@Override

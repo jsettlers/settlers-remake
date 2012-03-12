@@ -16,8 +16,8 @@ public class ProtectLandscapeConstraint extends ProtectContainer implements Land
 	}
 
 	@Override
-    public boolean allowHeightChange() {
-	    return false;
+    public boolean needsFlatGround() {
+	    return allowed[0] != ELandscapeType.MOUNTAIN;
     }
 
 }

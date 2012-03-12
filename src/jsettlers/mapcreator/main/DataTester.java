@@ -40,8 +40,7 @@ public class DataTester implements Runnable {
 
 	public void start() {
 		new Thread(this, "data tester").start();
-    }
-
+	}
 
 	@Override
 	public void run() {
@@ -55,7 +54,11 @@ public class DataTester implements Runnable {
 				}
 				retest = false;
 			}
-			doTest();
+			try {
+				doTest();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -139,7 +142,8 @@ public class DataTester implements Runnable {
 				        "Building " + type + " of player "
 				                + buildingObject.getPlayer() + ", but is on "
 				                + players[x][y] + "'s land", pos);
-			} else if (data.getLandscapeHeight(pos.getX(), pos.getY()) != height) {
+			} else if (type.getGroundtypes()[0] != ELandscapeType.MOUNTAIN
+			        && data.getLandscapeHeight(pos.getX(), pos.getY()) != height) {
 				testFailed(
 				        "Building " + type + " of player "
 				                + buildingObject.getPlayer()
@@ -216,8 +220,8 @@ public class DataTester implements Runnable {
 		public void testResult(String name, boolean allowed,
 		        ISPosition2D resultPosition);
 	}
-	
+
 	public ErrorList getErrorList() {
-	    return errorList;
-    }
+		return errorList;
+	}
 }

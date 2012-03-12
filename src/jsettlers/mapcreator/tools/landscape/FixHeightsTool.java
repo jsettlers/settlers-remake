@@ -45,11 +45,11 @@ public class FixHeightsTool implements Tool {
 		ELandscapeType l2 = map.getLandscape(x2, y2);
 		int maxHeightDiff = DataTester.getMaxHeightDiff(l1, l2);
 		IMapObject container1 = map.getMapObjectContainer(x, y);
-		if (container1 instanceof LandscapeConstraint && !((LandscapeConstraint) container1).allowHeightChange()) {
+		if (container1 instanceof LandscapeConstraint && ((LandscapeConstraint) container1).needsFlatGround()) {
 			maxHeightDiff = 0;
 		}
 		IMapObject container2 = map.getMapObjectContainer(x2, y2);
-		if (container2 instanceof LandscapeConstraint && !((LandscapeConstraint) container2).allowHeightChange()) {
+		if (container2 instanceof LandscapeConstraint && ((LandscapeConstraint) container2).needsFlatGround()) {
 			maxHeightDiff = 0;
 		}
 		if (h1 - h2 > maxHeightDiff) {

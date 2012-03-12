@@ -87,7 +87,7 @@ public class StatisticsTable extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return playercount;
+		return playercount + 1;
 	}
 
 	@Override

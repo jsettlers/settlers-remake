@@ -12,5 +12,5 @@ public interface LandscapeConstraint extends ObjectContainer {
 	
 	public ELandscapeType[] getAllowedLandscapes();
 	
-	public boolean allowHeightChange();
+	public boolean needsFlatGround();
 }
