@@ -12,6 +12,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 
 public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupyed {
@@ -22,7 +23,7 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	public BuildingContainer(BuildingObject object, ISPosition2D pos) {
 		this.object = object;
 		this.pos = pos;
-    }
+	}
 
 	@Override
 	public BuildingObject getMapObject() {
@@ -35,85 +36,90 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-    public EMapObjectType getObjectType() {
-	    return EMapObjectType.BUILDING;
-    }
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.BUILDING;
+	}
 
 	@Override
-    public float getStateProgress() {
-	    return 1;
-    }
+	public float getStateProgress() {
+		return 1;
+	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    return null;
-    }
+	public IMapObject getNextObject() {
+		return null;
+	}
 
 	@Override
-    public byte getPlayer() {
-	    return object.getPlayer();
-    }
+	public byte getPlayer() {
+		return object.getPlayer();
+	}
 
 	@Override
-    public boolean isSelected() {
-	    return false;
-    }
+	public boolean isSelected() {
+		return false;
+	}
 
 	@Override
-    public void setSelected(boolean selected) {
-    }
+	public void setSelected(boolean selected) {
+	}
 
 	@Override
-    public void stopOrStartWorking(boolean stop) {	    
-    }
+	public void stopOrStartWorking(boolean stop) {
+	}
 
 	@Override
-    public ISPosition2D getPos() {
-	    return pos;
-    }
+	public ISPosition2D getPos() {
+		return pos;
+	}
 
 	@Override
-    public EBuildingType getBuildingType() {
-	    return object.getType();
-    }
+	public EBuildingType getBuildingType() {
+		return object.getType();
+	}
 
 	@Override
-    public boolean isWorking() {
-	    return false;
-    }
+	public boolean isWorking() {
+		return false;
+	}
 
 	@Override
-    public ELandscapeType[] getAllowedLandscapes() {
-	    return object.getType().getGroundtypes();
-    }
+	public ELandscapeType[] getAllowedLandscapes() {
+		return object.getType().getGroundtypes();
+	}
 
 	@Override
-    public boolean needsFlatGround() {
-	    return object.getType().getGroundtypes()[0] != ELandscapeType.MOUNTAIN;
-    }
+	public boolean needsFlatGround() {
+		return object.getType().getGroundtypes()[0] != ELandscapeType.MOUNTAIN;
+	}
 
 	@Override
-    public boolean isOccupied() {
-	    return false;
-    }
+	public boolean isOccupied() {
+		return false;
+	}
 
 	@Override
-    public void setSoundPlayed() {	    
-    }
+	public void setSoundPlayed() {
+	}
 
 	@Override
-    public boolean isSoundPlayed() {
-	    return true;
-    }
+	public boolean isSoundPlayed() {
+		return true;
+	}
 
 	@Override
-    public List<? extends IBuildingOccupyer> getOccupyers() {
-	    return new LinkedList<IBuildingOccupyer>();
-    }
+	public List<? extends IBuildingOccupyer> getOccupyers() {
+		return new LinkedList<IBuildingOccupyer>();
+	}
 
 	@Override
-    public boolean isRotating() {
-	    return true;
-    }
+	public boolean isRotating() {
+		return true;
+	}
+
+	@Override
+	public ESelectionType getSelectionType() {
+		return ESelectionType.BUILDING;
+	}
 
 }

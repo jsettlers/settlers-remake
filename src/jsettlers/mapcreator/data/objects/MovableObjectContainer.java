@@ -10,6 +10,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.selectable.ESelectionType;
 
 public class MovableObjectContainer implements ObjectContainer, IMovable {
 
@@ -98,4 +99,8 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 		return true;
 	}
 
+	@Override
+	public ESelectionType getSelectionType() {
+		return ESelectionType.PEOPLE;
+	}
 }
