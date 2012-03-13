@@ -22,12 +22,16 @@ public enum EDirection {
 	public static final EDirection[] values = EDirection.values();
 	public static final byte NUMBER_OF_DIRECTIONS = (byte) values.length;
 
-	private final byte gridDeltaX;
-	private final byte gridDeltaY;
+	public final byte gridDeltaX;
+	public final byte gridDeltaY;
+
+	public final boolean isHorizontal;
 
 	EDirection(int gridDx, int gridDy) {
 		this.gridDeltaX = (byte) gridDx;
 		this.gridDeltaY = (byte) gridDy;
+
+		this.isHorizontal = (gridDy == 0);
 	}
 
 	/**
@@ -129,7 +133,18 @@ public enum EDirection {
 
 	}
 
-	public static EDirection getDirection(byte dx, byte dy) {
+	public final static EDirection getDirectionOfMultipleSteps(int dx, int dy) {
+		int steps;
+		if (dx != 0) {
+			steps = Math.abs(dx);
+		} else {
+			steps = Math.abs(dy);
+		}
+
+		return getDirection(dx / steps, dy / steps);
+	}
+
+	public final static EDirection getDirection(int dx, int dy) {
 		for (EDirection currDir : values) {
 			if (currDir.gridDeltaX == dx && currDir.gridDeltaY == dy) {
 				return currDir;
@@ -139,11 +154,11 @@ public enum EDirection {
 		return null;
 	}
 
-	public short getNextTileX(short x) {
+	public final short getNextTileX(short x) {
 		return (short) (x + gridDeltaX);
 	}
 
-	public short getNextTileY(short y) {
+	public final short getNextTileY(short y) {
 		return (short) (y + gridDeltaY);
 	}
 
@@ -200,6 +215,10 @@ public enum EDirection {
 			result[i] = EDirection.values[i].gridDeltaY;
 		}
 		return result;
+	}
+
+	public final boolean isHorizontal() {
+		return isHorizontal;
 	}
 
 }
