@@ -6,6 +6,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.selectable.ESelectionType;
 
 public class TestSettler implements IMovable {
 
@@ -110,5 +111,10 @@ public class TestSettler implements IMovable {
 	@Override
 	public final boolean isSoundPlayed() {
 		return true; // prevent playing of sound
+	}
+
+	@Override
+	public ESelectionType getSelectionType() {
+		return ESelectionType.PEOPLE;
 	}
 }

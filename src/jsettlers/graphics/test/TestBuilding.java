@@ -5,6 +5,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.selectable.ESelectionType;
 
 public class TestBuilding implements IBuilding {
 
@@ -75,6 +76,11 @@ public class TestBuilding implements IBuilding {
 	@Override
 	public boolean isOccupied() {
 		return true;
+	}
+
+	@Override
+	public ESelectionType getSelectionType() {
+		return ESelectionType.BUILDING;
 	}
 
 }

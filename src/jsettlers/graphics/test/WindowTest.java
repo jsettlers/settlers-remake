@@ -14,7 +14,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.map.selection.SettlerSelection;
+import jsettlers.input.SelectionSet;
 
 public class WindowTest {
 
@@ -63,7 +63,8 @@ public class WindowTest {
 				System.out.println("Action preformed: " + action.getActionType());
 			}
 		});
-		connector.setSelection(new SettlerSelection(map.getAllSettlers()));
+
+		connector.setSelection(new SelectionSet(map.getAllSettlers()));
 	}
 
 	public static void main(String[] args) {
