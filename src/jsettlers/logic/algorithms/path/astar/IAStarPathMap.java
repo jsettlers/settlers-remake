@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.path.astar;
 
+import jsettlers.common.Color;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 
 public interface IAStarPathMap {
@@ -27,5 +28,7 @@ public interface IAStarPathMap {
 	 *            y coordinate
 	 */
 	void markAsClosed(short x, short y);
+
+	void setDebugColor(short x, short y, Color color);
 
 }

@@ -46,17 +46,21 @@ public final class HexAStar implements IAStar {
 		this.depthParentHeap = new int[width * height * 3];
 	}
 
+	@Override
 	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
 		ISPosition2D pos = requester.getPos();
 		return findPath(requester, pos.getX(), pos.getY(), target.getX(), target.getY());
 	}
 
+	@Override
 	public final Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
 		final boolean blockedAtStart;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
 		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)) {
 			return null; // target can not be reached
+		} else if (sx == tx && sy == ty) {
+			return null;
 		} else if (isBlocked(requester, sx, sy)) {
 			blockedAtStart = true;
 		} else {
@@ -97,7 +101,7 @@ public final class HexAStar implements IAStar {
 						if (openList.get(flatNeighborIdx)) {
 							if (costsAndHeuristics[getCostsIdx(flatNeighborIdx)] > newCosts) {
 								costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
-								costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
+								// costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
 								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 								open.siftUp(flatNeighborIdx);
@@ -124,11 +128,13 @@ public final class HexAStar implements IAStar {
 			int idx = pathlength;
 			int parentFlatIdx = targetFlatIdx;
 
-			while (parentFlatIdx >= 0) {
-				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
+			while (idx > 0) {
 				idx--;
+				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
 				parentFlatIdx = depthParentHeap[getParentIdx(parentFlatIdx)];
 			}
+
+			path.initPath();
 
 			return path;
 		}
@@ -214,6 +220,7 @@ public final class HexAStar implements IAStar {
 		final float dx = (short) Math.abs(sx - tx);
 		final float dy = (short) Math.abs(sy - ty);
 
-		return (dx + 1.01f * dy);
+		// return (dx + 1.01f * dy);// FIXME
+		return dx + dy;
 	}
 }

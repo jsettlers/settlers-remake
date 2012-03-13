@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.path.test;
 
+import jsettlers.common.Color;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 
@@ -39,5 +40,9 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 
 	public void setBlocked(int x, int y, boolean b) {
 		blocked[x][y] = b;
+	}
+
+	@Override
+	public void setDebugColor(short x, short y, Color color) {
 	}
 }

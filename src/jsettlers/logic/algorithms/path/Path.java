@@ -2,6 +2,7 @@ package jsettlers.logic.algorithms.path;
 
 import java.io.Serializable;
 
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -15,11 +16,18 @@ public final class Path implements Serializable {
 
 	private final short[] pathX;
 	private final short[] pathY;
-	private short walkIdx = 1;
+
+	private short currX;
+	private short currY;
+
+	private EDirection dir;
+	private int idx = 1;
+
+	private boolean finished;
 
 	public Path(int length) {
-		pathX = new short[length + 1];
-		pathY = new short[length + 1];
+		pathX = new short[length];
+		pathY = new short[length];
 	}
 
 	/**
@@ -32,7 +40,7 @@ public final class Path implements Serializable {
 	 * @param y
 	 *            y position of the step
 	 */
-	public void insertAt(int idx, short x, short y) {
+	public final void insertAt(int idx, short x, short y) {
 		pathX[idx] = x;
 		pathY[idx] = y;
 	}
@@ -43,11 +51,11 @@ public final class Path implements Serializable {
 	 * @return -1 if {@link #isFinished()} returns true<br>
 	 *         otherwise the next x coordinate
 	 */
-	public short nextX() {
+	public final short nextX() {
 		if (isFinished()) {
 			return -1;
 		} else {
-			return pathX[walkIdx];
+			return currX;
 		}
 	}
 
@@ -57,20 +65,20 @@ public final class Path implements Serializable {
 	 * @return -1 if {@link #isFinished()} returns true<br>
 	 *         otherwise the next y coordinate
 	 */
-	public short nextY() {
+	public final short nextY() {
 		if (isFinished()) {
 			return -1;
 		} else {
-			return pathY[walkIdx];
+			return currY;
 		}
 	}
 
-	public boolean isFinished() {
-		return walkIdx >= pathX.length;
+	public final boolean isFinished() {
+		return finished;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		StringBuffer res = new StringBuffer();
 		for (short idx = 0; idx < pathX.length; idx++) {
 			res.append("(" + pathX[idx] + "|" + pathY[idx] + ")");
@@ -78,19 +86,19 @@ public final class Path implements Serializable {
 		return res.toString();
 	}
 
-	public short getFirstX() {
-		return pathX[1];
+	public final short getFirstX() {
+		return pathX[0];
 	}
 
-	public short getFirstY() {
-		return pathY[1];
+	public final short getFirstY() {
+		return pathY[0];
 	}
 
-	public short getTargetX() {
+	public final short getTargetX() {
 		return pathX[pathX.length - 1];
 	}
 
-	public short getTargetY() {
+	public final short getTargetY() {
 		return pathY[pathY.length - 1];
 	}
 
@@ -101,19 +109,42 @@ public final class Path implements Serializable {
 	/**
 	 * increases the path counter
 	 */
-	public void goToNextStep() {
-		walkIdx++;
+	public final void goToNextStep() {
+		if (idx >= pathX.length) {
+			finished = true;
+			return;
+		}
+
+		currX = dir.getNextTileX(currX);
+		currY = dir.getNextTileY(currY);
+
+		if (currX == pathX[idx] && currY == pathY[idx]) {
+			idx++;
+			if (idx < pathX.length) {
+				dir = EDirection.getDirectionOfMultipleSteps(pathX[idx] - pathX[idx - 1], pathY[idx] - pathY[idx - 1]);
+			}
+		}
+
 	}
 
-	public ShortPoint2D getNextPos() {
-		return new ShortPoint2D(pathX[walkIdx], pathY[walkIdx]);
+	public final void initPath() {
+		currX = getFirstX();
+		currY = getFirstY();
+
+		if (pathX.length > 1) {
+			dir = EDirection.getDirectionOfMultipleSteps(pathX[1] - pathX[0], pathY[1] - pathY[0]);
+		}
 	}
 
-	public ShortPoint2D getFirstPos() {
-		return new ShortPoint2D(pathX[1], pathY[1]);
+	public final ShortPoint2D getNextPos() {
+		return new ShortPoint2D(nextX(), nextY());
 	}
 
-	public ShortPoint2D getTargetPos() {
+	public final ShortPoint2D getFirstPos() {
+		return new ShortPoint2D(getFirstX(), getFirstY());
+	}
+
+	public final ShortPoint2D getTargetPos() {
 		final int length = getLength();
 		return new ShortPoint2D(pathX[length], pathY[length]);
 	}

@@ -8,7 +8,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.HexAStar;
+import jsettlers.logic.algorithms.path.astar.IAStar;
 
 /**
  * this class implements a strict dijkstra algorithm
@@ -23,9 +23,9 @@ public final class DijkstraAlgorithm {
 
 	private final IDijkstraPathMap map;
 	private final short height, width;
-	private final HexAStar aStar;
+	private final IAStar aStar;
 
-	public DijkstraAlgorithm(IDijkstraPathMap map, HexAStar aStar, short width, short height) {
+	public DijkstraAlgorithm(IDijkstraPathMap map, IAStar aStar, short width, short height) {
 		this.map = map;
 		this.aStar = aStar;
 		this.width = width;
