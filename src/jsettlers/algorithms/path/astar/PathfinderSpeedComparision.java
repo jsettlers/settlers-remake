@@ -39,8 +39,8 @@ public class PathfinderSpeedComparision {
 		testAStar(PATH_RANDOM_SEED, astar2, map, 10, width, height); // just to get the arrays in the cache
 		long aStar2Time = testAStar(PATH_RANDOM_SEED, astar2, map, NUMBER_OF_PATHS, width, height);
 
-		System.out.println("aStar1 avg: " + ((float) aStar1Time) / NUMBER_OF_PATHS + " ms");
-		System.out.println("aStar2 avg: " + ((float) aStar2Time) / NUMBER_OF_PATHS + " ms");
+		System.out.println("aStar1 (" + astar1.getClass() + ") avg: " + ((float) aStar1Time) / NUMBER_OF_PATHS + " ms");
+		System.out.println("aStar2 (" + astar2.getClass() + ")  avg: " + ((float) aStar2Time) / NUMBER_OF_PATHS + " ms");
 	}
 
 	private static MainGrid getMap() throws MapLoadException {
