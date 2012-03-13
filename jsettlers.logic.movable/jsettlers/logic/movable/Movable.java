@@ -13,6 +13,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
@@ -521,6 +522,11 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	public final void convertTo(EMovableType targetType) {
 		strategy.convertActionEvent();
 		this.setStrategy(MovableStrategy.getTypeStrategy(grid, targetType, this));
+	}
+
+	@Override
+	public final ESelectionType getSelectionType() {
+		return strategy.getMovableType().getSelectionType();
 	}
 
 }

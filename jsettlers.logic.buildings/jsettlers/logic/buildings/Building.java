@@ -18,6 +18,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
@@ -395,6 +396,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+		drawWorkAreaCircle(selected);
 	}
 
 	@Override
@@ -610,6 +612,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		} else {
 			return UNCONSTRUCTED_VIEW_DISTANCE;
 		}
+	}
+
+	@Override
+	public ESelectionType getSelectionType() {
+		return ESelectionType.BUILDING;
 	}
 
 }

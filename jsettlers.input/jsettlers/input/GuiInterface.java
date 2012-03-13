@@ -1,7 +1,5 @@
 package jsettlers.input;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,10 +24,6 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.selection.BuildingSelection;
-import jsettlers.graphics.map.selection.EmptySelection;
-import jsettlers.graphics.map.selection.ISelectionSet;
-import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.input.task.ConvertGuiTask;
 import jsettlers.input.task.DestroyBuildingGuiTask;
 import jsettlers.input.task.EGuiAction;
@@ -64,7 +58,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 */
 	private Action activeAction = null;
 	private EBuildingType previewBuilding;
-	private ISelectionSet currentSelection = new EmptySelection();
+	private SelectionSet currentSelection = new SelectionSet();
 
 	public GuiInterface(MapInterfaceConnector connector, NetworkManager manager, IGuiInputGrid grid, byte player) {
 		this.connector = connector;
@@ -254,8 +248,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		} else {
 			manager.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
 		}
-		currentSelection = new EmptySelection();
-		connector.setSelection(currentSelection);
+		setSelection(new SelectionSet());
 	}
 
 	private void showSelection() {
@@ -317,27 +310,20 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void selectArea(SelectAreaAction action) {
-		ArrayList<IMovable> foundMovables = new ArrayList<IMovable>();
-		IBuilding foundBuilding = null;
+		SelectionSet selectionSet = new SelectionSet();
 
 		for (ISPosition2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
 			IMovable movable = grid.getMovable(curr.getX(), curr.getY());
 			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayer() == player)) {
-				foundMovables.add(movable);
+				selectionSet.add(movable);
 			}
 			IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
 			if (building != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || building.getPlayer() == player)) {
-				foundBuilding = building;
+				selectionSet.add(building);
 			}
 		}
 
-		if (!foundMovables.isEmpty()) {
-			setSelection(new SettlerSelection(foundMovables));
-		} else if (foundBuilding != null) {
-			setSelection(new BuildingSelection(foundBuilding));
-		} else {
-			setSelection(new EmptySelection());
-		}
+		setSelection(selectionSet);
 	}
 
 	private void handleSelectPointAction(SelectAction action) {
@@ -380,21 +366,21 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			IHexMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
 			if (m1 != null) {
-				setSelection(new SettlerSelection(Collections.singletonList(m1)));
+				setSelection(new SelectionSet(m1));
 			} else if (m2 != null) {
-				setSelection(new SettlerSelection(Collections.singletonList(m2)));
+				setSelection(new SelectionSet(m2));
 			} else if (m3 != null) {
-				setSelection(new SettlerSelection(Collections.singletonList(m3)));
+				setSelection(new SelectionSet(m3));
 			} else if (m4 != null) {
-				setSelection(new SettlerSelection(Collections.singletonList(m4)));
+				setSelection(new SelectionSet(m4));
 
 			} else {
 				// search buildings
 				IBuilding building = getBuildingAround(pos);
 				if (building != null) {
-					setSelection(new BuildingSelection(building));
+					setSelection(new SelectionSet(building));
 				} else {
-					setSelection(new EmptySelection());
+					setSelection(new SelectionSet());
 				}
 			}
 		}
@@ -418,20 +404,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 * @param selection
 	 *            The selected items. Not null!
 	 */
-	private void setSelection(ISelectionSet selection) {
-		for (ISelectable unselected : this.currentSelection) {
-			unselected.setSelected(false);
-			if (unselected instanceof Building) {
-				((Building) unselected).drawWorkAreaCircle(false);
-			}
-		}
-		for (ISelectable selected : selection) {
-			selected.setSelected(true);
-			if (selected instanceof Building) {
-				((Building) selected).drawWorkAreaCircle(true);
-			}
-		}
+	private void setSelection(SelectionSet selection) {
+		currentSelection.clear();
 
+		selection.setSelected(true);
 		this.connector.setSelection(selection);
 		this.currentSelection = selection;
 	}
