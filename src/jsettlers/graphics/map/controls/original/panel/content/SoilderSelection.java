@@ -1,10 +1,10 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
-import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.graphics.utils.UIPanel;
 
 public class SoilderSelection implements IContentProvider {
@@ -28,14 +28,14 @@ public class SoilderSelection implements IContentProvider {
 
 	private final UIPanel panel;
 
-	public SoilderSelection(SettlerSelection selection) {
+	public SoilderSelection(ISelectionSet selection) {
 		panel = new UIPanel();
 
 		addRowsToPanel(panel, selection, soildertypes);
 	}
 
-	public static void addRowsToPanel(UIPanel panel,
-	        SettlerSelection selection, EMovableType[] types) {
+	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection,
+	        EMovableType[] types) {
 		float rowHeight = 1f / ROWS;
 
 		int rowi = ROWS - 1; // from bottom
@@ -51,12 +51,15 @@ public class SoilderSelection implements IContentProvider {
 			}
 		}
 
-		UIPanel kill = new UILabeledButton("kill", new Action(EActionType.DESTROY));
-		UIPanel stop = new UILabeledButton("stop", new Action(EActionType.STOP_WORKING));
+		UIPanel kill =
+		        new UILabeledButton("kill", new Action(EActionType.DESTROY));
+		UIPanel stop =
+		        new UILabeledButton("stop",
+		                new Action(EActionType.STOP_WORKING));
 
 		panel.addChild(kill, .1f, .1f, .5f, .2f);
 		panel.addChild(stop, .5f, .1f, .9f, .2f);
-		
+
 	}
 
 	@Override
@@ -74,18 +77,4 @@ public class SoilderSelection implements IContentProvider {
 		return null;
 	}
 
-	/**
-	 * Checks if the selection contains soilders.
-	 * 
-	 * @param settlerSelection
-	 * @return
-	 */
-	public static boolean isFor(SettlerSelection settlerSelection) {
-		for (EMovableType t : soildertypes) {
-			if (settlerSelection.getMovableCount(t) > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

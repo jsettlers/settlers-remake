@@ -3,16 +3,16 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
-import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.graphics.utils.UIPanel;
 
 public class BearerSelection implements IContentProvider {
 	private UIPanel panel;
 	private int count;
 
-	public BearerSelection(SettlerSelection selection) {
+	public BearerSelection(ISelectionSet selection) {
 		panel = new UIPanel();
 		count = selection.getMovableCount(EMovableType.BEARER);
 
@@ -72,9 +72,4 @@ public class BearerSelection implements IContentProvider {
 		return null;
 	}
 
-	public static EMovableType[] getTypes() {
-		return new EMovableType[] {
-			EMovableType.BEARER
-		};
-	}
 }

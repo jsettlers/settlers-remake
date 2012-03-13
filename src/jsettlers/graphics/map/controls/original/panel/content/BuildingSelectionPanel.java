@@ -12,12 +12,12 @@ import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.map.selection.BuildingSelection;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -38,21 +38,21 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 	private static ImageLink DESTROY = new ImageLink(EImageLinkType.GUI, 3,
 	        198, 0);
-	
+
 	private BuildingState lastState = null;
 
-	public BuildingSelectionPanel(BuildingSelection selection) {
-		building = selection.getSelectedBuilding();
+	public BuildingSelectionPanel(ISelectionSet selection) {
+		building = (IBuilding) selection.get(0);
 
 		ImageLink[] images = building.getBuildingType().getImages();
 		panel = new BuidlingBackgroundPanel(images);
-		
+
 		lastState = new BuildingState(building);
 		addPanelContent();
 	}
 
 	private void addPanelContent() {
-	    UIPanel changeWorking;
+		UIPanel changeWorking;
 		if (building.isWorking()) {
 			changeWorking =
 			        new Button(new Action(EActionType.STOP_WORKING),
@@ -75,11 +75,12 @@ public class BuildingSelectionPanel implements IContentProvider {
 		}
 
 		Button destroy =
-		        new Button(new Action(EActionType.ASK_DESTROY), DESTROY, DESTROY,
-		                Labels.getName(EActionType.DESTROY));
+		        new Button(new Action(EActionType.ASK_DESTROY), DESTROY,
+		                DESTROY, Labels.getName(EActionType.DESTROY));
 		panel.addChild(destroy, .8f, .9f, 1, 1);
 
 		UIPanel namePanel = new UIPanel() {
+			@Override
 			public void drawAt(GLDrawContext gl) {
 				gl.getTextDrawer(EFontSize.HEADLINE).renderCentered(
 				        getPosition().getCenterX(), getPosition().getCenterY(),
@@ -94,7 +95,7 @@ public class BuildingSelectionPanel implements IContentProvider {
 			addOccupyerPlaces(occupyers);
 
 		}
-    }
+	}
 
 	private void addOccupyerPlaces(List<? extends IBuildingOccupyer> occupyers) {
 		int bottomindex = 0;
@@ -160,11 +161,11 @@ public class BuildingSelectionPanel implements IContentProvider {
 		public BuidlingBackgroundPanel(ImageLink[] links) {
 			this.links = links;
 		}
-		
+
 		@Override
 		public void drawAt(GLDrawContext gl) {
 			refreshContentIfNeeded();
-		    super.drawAt(gl);
+			super.drawAt(gl);
 		}
 
 		@Override
@@ -185,12 +186,12 @@ public class BuildingSelectionPanel implements IContentProvider {
 	}
 
 	public void refreshContentIfNeeded() {
-	    if (!lastState.isStillInState(building)) {
-	    	panel.removeAll();
-	    	addPanelContent();
-	    	lastState = new BuildingState(building);
-	    }
-    }
+		if (!lastState.isStillInState(building)) {
+			panel.removeAll();
+			addPanelContent();
+			lastState = new BuildingState(building);
+		}
+	}
 
 	@Override
 	public IContextListener getContextListener() {

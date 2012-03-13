@@ -9,6 +9,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
@@ -22,9 +23,6 @@ import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
 import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
 import jsettlers.graphics.map.minimap.Minimap;
-import jsettlers.graphics.map.selection.BuildingSelection;
-import jsettlers.graphics.map.selection.ISelectionSet;
-import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.graphics.utils.UIPanel;
 
 public class OriginalControls implements IControls {
@@ -257,26 +255,38 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public void displaySelection(ISelectionSet selection) {
-		if (selection instanceof SettlerSelection) {
+		if (selection == null || selection.getSize() == 0) {
+			if (!lastSelectionWasNull) {
+				lastSelectionWasNull = true;
+				mainPanel.setContent(EContentType.EMPTY);
+			}// else: nothing to do
+		} else {
 			lastSelectionWasNull = false;
-			SettlerSelection settlerSelection = (SettlerSelection) selection;
-			if (SoilderSelection.isFor(settlerSelection)) {
-				mainPanel.setContent(new SoilderSelection(settlerSelection));
-			} else if (SpecialistSelection.isFor(settlerSelection)) {
-				mainPanel.setContent(new SpecialistSelection(settlerSelection));
-			} else {
-				mainPanel.setContent(new BearerSelection(settlerSelection));
+
+			switch (selection.getSelectionType()) {
+				case PEOPLE:
+					mainPanel.setContent(new BearerSelection(selection));
+					break;
+				case SOLDIERS:
+					mainPanel.setContent(new SoilderSelection(selection));
+					break;
+				case SPECIALISTS:
+					mainPanel.setContent(new SpecialistSelection(selection));
+					break;
+
+				case BUILDING:
+					mainPanel.setContent(new BuildingSelectionPanel(selection));
+					break;
+				default:
+					System.err
+					        .println("got Selection but couldn't handle it! SelectionType: "
+					                + selection.getSelectionType());
+					break;
 			}
-		} else if (selection instanceof BuildingSelection) {
-			lastSelectionWasNull = false;
-			mainPanel.setContent(new BuildingSelectionPanel(
-			        (BuildingSelection) selection));
-		} else if (!lastSelectionWasNull) {
-			lastSelectionWasNull = true;
-			mainPanel.setContent(EContentType.EMPTY);
 		}
 	}
 
+	@Override
 	public void setDrawContext(MapDrawContext context) {
 		this.context = context;
 		this.minimap = new Minimap(context);

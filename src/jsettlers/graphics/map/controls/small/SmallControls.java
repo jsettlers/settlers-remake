@@ -8,12 +8,12 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.graphics.map.selection.ISelectionSet;
 
 /**
  * These controls provide:
@@ -64,11 +64,11 @@ public class SmallControls implements IControls {
 			float buttonsize = scrollsize / 2;
 			scrollArea.setPosition(new FloatRectangle(newWidth - scrollsize, 0,
 			        newWidth, scrollsize));
-			buildMenuOpener.setPosition(new FloatRectangle(newWidth - buttonsize,
-			        newHeight - 2 * buttonsize, newWidth, newHeight
-			                - buttonsize));
-			buildMenu.setPosition(new FloatRectangle(0, 0, newWidth - buttonsize,
-			        newHeight));
+			buildMenuOpener.setPosition(new FloatRectangle(newWidth
+			        - buttonsize, newHeight - 2 * buttonsize, newWidth,
+			        newHeight - buttonsize));
+			buildMenu.setPosition(new FloatRectangle(0, 0, newWidth
+			        - buttonsize, newHeight));
 		}
 	}
 
@@ -133,27 +133,27 @@ public class SmallControls implements IControls {
 	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
-    public void displaySelection(ISelectionSet selection) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void displaySelection(ISelectionSet selection) {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
-    public void setDrawContext(MapDrawContext context) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void setDrawContext(MapDrawContext context) {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
-    public Action replaceAction(Action action) {
-	    // TODO Auto-generated method stub
-	    return action;
-    }
+	public Action replaceAction(Action action) {
+		// TODO Auto-generated method stub
+		return action;
+	}
 
 }

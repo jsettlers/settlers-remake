@@ -1,11 +1,11 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
-import jsettlers.graphics.map.selection.SettlerSelection;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -26,7 +26,7 @@ public class SpecialistSelection implements IContentProvider {
 
 	private final UIPanel panel;
 
-	public SpecialistSelection(SettlerSelection selection) {
+	public SpecialistSelection(ISelectionSet selection) {
 		panel = new UIPanel();
 
 		SoilderSelection.addRowsToPanel(panel, selection, specialists);
@@ -65,18 +65,4 @@ public class SpecialistSelection implements IContentProvider {
 		return null;
 	}
 
-	/**
-	 * Checks if the selection contains soilders.
-	 * 
-	 * @param settlerSelection
-	 * @return
-	 */
-	public static boolean isFor(SettlerSelection settlerSelection) {
-		for (EMovableType t : specialists) {
-			if (settlerSelection.getMovableCount(t) > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

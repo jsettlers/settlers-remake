@@ -4,10 +4,10 @@ import java.util.LinkedList;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionFirerer;
-import jsettlers.graphics.map.selection.ISelectionSet;
 import jsettlers.graphics.messages.Message;
 
 /**
@@ -108,17 +108,19 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Sets the building the user is currently building.
-	 * @param buildingType The type of the building.
+	 * 
+	 * @param buildingType
+	 *            The type of the building.
 	 */
 	public void setPreviewBuildingType(EBuildingType buildingType) {
-	    content.setPreviewBuildingType(buildingType);
-    }
-	
+		content.setPreviewBuildingType(buildingType);
+	}
+
 	public void showMessage(Message message) {
 		content.addMessage(message);
 	}
 
 	public void loadUIState(UIState uiState) {
-	    content.loadUIState(uiState);
-    }
+		content.loadUIState(uiState);
+	}
 }

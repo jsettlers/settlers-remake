@@ -5,10 +5,10 @@ import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapDrawContext;
-import jsettlers.graphics.map.selection.ISelectionSet;
 
 /**
  * Classes that implement this are capable of displaying the full game controls
