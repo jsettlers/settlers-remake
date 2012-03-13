@@ -58,6 +58,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
+import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
@@ -67,7 +68,6 @@ import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
 import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
@@ -320,7 +320,8 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final float getCost(short sx, short sy, short tx, short ty) {
-			return Constants.TILE_PATHFINDER_COST * (flagsGrid.isProtected(sx, sy) ? 3.5f : 1);
+			// return Constants.TILE_PATHFINDER_COST * (flagsGrid.isProtected(sx, sy) ? 3.5f : 1);
+			return 1;
 		}
 
 		@Override
@@ -490,6 +491,11 @@ public class MainGrid implements Serializable {
 
 		private final boolean isCornCuttable(short x, short y) {
 			return objectsGrid.hasCuttableObject(x, y, EMapObjectType.CORN_ADULT);
+		}
+
+		@Override
+		public void setDebugColor(short x, short y, Color color) {
+			landscapeGrid.setDebugColor(x, y, color.getARGB());
 		}
 
 	}
@@ -757,9 +763,9 @@ public class MainGrid implements Serializable {
 	final class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
-		transient HexAStar aStar;
+		transient IAStar aStar;
 		transient DijkstraAlgorithm dijkstra;
-		transient private InAreaFinder inAreaFinder;
+		private transient InAreaFinder inAreaFinder;
 
 		public MovablePathfinderGrid() {
 			initPathfinders();
@@ -878,7 +884,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final HexAStar getAStar() {
+		public final IAStar getAStar() {
 			return aStar;
 		}
 

@@ -14,7 +14,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
-import jsettlers.logic.algorithms.path.astar.HexAStar;
+import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -64,7 +64,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return y * width + x;
 	}
 
-	public final void initPartitionsAlgorithm(HexAStar aStar) {
+	public final void initPartitionsAlgorithm(IAStar aStar) {
 		this.partitionsAlgorithm = new PartitionsAlgorithm(this, aStar);
 	}
 

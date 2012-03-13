@@ -7,6 +7,7 @@ import jsettlers.common.position.ISPosition2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
+import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.map.newGrid.MainGrid.MovableNeighborIterator;
 import jsettlers.logic.map.newGrid.landscape.EResourceType;
@@ -245,9 +246,9 @@ public interface IMovableGrid {
 	 * <p />
 	 * NOTE: This {@link HexAStar} can only be used in a {@link NetworkTimer} synchronous way.
 	 * 
-	 * @return {@link HexAStar} algorithm.
+	 * @return {@link IAStar} algorithm.
 	 */
-	HexAStar getAStar();
+	IAStar getAStar();
 
 	/**
 	 * Gives a {@link DijkstraAlgorithm} algorithm.
