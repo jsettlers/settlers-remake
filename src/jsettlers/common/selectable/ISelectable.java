@@ -32,4 +32,11 @@ public interface ISelectable {
 	 *            if false, it should stop working.
 	 */
 	void stopOrStartWorking(boolean stop);
+
+	/**
+	 * get the selection type.
+	 * 
+	 * @return {@link ESelectionType}
+	 */
+	ESelectionType getSelectionType();
 }
