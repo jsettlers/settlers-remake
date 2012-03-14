@@ -6,10 +6,13 @@ import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.map.shapes.CircleIterator;
+import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ISPosition2D;
+import jsettlers.logic.algorithms.fogofwar.circle.CachedRelativeCircleIterator;
+import jsettlers.logic.algorithms.fogofwar.circle.CachedRelativeMapCircle;
 
 /**
  * This class holds the fog of war for a given map and player.
@@ -112,12 +115,12 @@ public final class NewFogOfWar implements Serializable {
 			mySleep(500);
 
 			while (!canceled) {
-				// StopWatch watch = new MilliStopWatch();
-				// watch.start();
+				StopWatch watch = new MilliStopWatch();
+				watch.start();
 				if (enabled) {
 					rebuildSight();
 				}
-				// watch.stop("NewFoWThread needed: ");
+				watch.stop("NewFoWThread needed: ");
 
 				mySleep(800);
 			}
@@ -177,10 +180,11 @@ public final class NewFogOfWar implements Serializable {
 
 	}
 
-	class CircleDrawer {
+	final class CircleDrawer {
 		private byte[][] buffer;
+		private final CachedRelativeMapCircle[] cachedCircles = new CachedRelativeMapCircle[MAX_VIEWDISTANCE];
 
-		public void setBuffer(byte[][] buffer) {
+		public final void setBuffer(byte[][] buffer) {
 			this.buffer = buffer;
 		}
 
@@ -188,18 +192,21 @@ public final class NewFogOfWar implements Serializable {
 		 * Draws a circle to the buffer line. Each point is only brightened and onlydrawn if its x coordinate is in [0, mapWidth - 1] and its computed
 		 * y coordinate is bigger than 0.
 		 */
-		final void drawCircleToBuffer(int bufferx, int buffery, int viewDistance) {
-			MapCircle circle = new MapCircle(bufferx, buffery, Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE));
+		final void drawCircleToBuffer(int bufferX, int bufferY, int viewDistance) {
+			CachedRelativeMapCircle circle = getCachedCircle(viewDistance);
 			final int squaredViewDistance = viewDistance * viewDistance;
-			CircleIterator iterator = circle.iterator();
+			CachedRelativeCircleIterator iterator = circle.iterator();
 
 			while (iterator.hasNext()) {
-				final int currY = iterator.nextY();
-				final int currX = iterator.nextX();
+				final int relativeY = iterator.nextY();
+				final int relativeX = iterator.nextX();
+
+				final int currY = relativeY + bufferY;
+				final int currX = relativeX + bufferX;
 
 				if (currX >= 0 && currX < width && currY > 0 && currY < height) {
 					if (buffer[currX][currY] < CommonConstants.FOG_OF_WAR_VISIBLE) {
-						double squaredDistance = circle.squaredDistanceToCenter(currX, currY);
+						double squaredDistance = MapCircle.getSquaredDistance(relativeX, relativeY);
 						byte newSight;
 						if (squaredDistance < squaredViewDistance) {
 							newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
@@ -211,6 +218,15 @@ public final class NewFogOfWar implements Serializable {
 					}
 				}
 			}
+		}
+
+		private CachedRelativeMapCircle getCachedCircle(int viewDistance) {
+			int radius = Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE);
+			if (cachedCircles[radius] == null) {
+				cachedCircles[radius] = new CachedRelativeMapCircle(radius);
+			}
+
+			return cachedCircles[radius];
 		}
 
 		private final void increaseBufferAt(int x, int y, byte newsight) {
