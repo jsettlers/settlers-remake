@@ -162,6 +162,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		occupyArea();
+
+		soldier.setSelected(super.isSelected());
 	}
 
 	private final void occupyArea() {
