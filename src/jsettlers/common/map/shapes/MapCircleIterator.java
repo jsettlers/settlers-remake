@@ -5,14 +5,14 @@ import java.util.Iterator;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
-public class CircleIterator implements Iterator<ISPosition2D> {
+public class MapCircleIterator implements Iterator<ISPosition2D> {
 	protected int currenty;
 
 	protected float currentLineHalfWidth;
 	// x from vertical center line of circle.
 	protected float currentx;
 
-	protected final double radius;
+	protected final float radius;
 
 	protected final short centerx;
 
@@ -20,7 +20,7 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 
 	private final MapCircle circle;
 
-	public CircleIterator(MapCircle circle) {
+	public MapCircleIterator(MapCircle circle) {
 		this.circle = circle;
 		radius = circle.getRadius();
 		currenty = -(int) (radius / MapCircle.Y_SCALE);
@@ -76,7 +76,7 @@ public class CircleIterator implements Iterator<ISPosition2D> {
 	}
 
 	@Override
-	public void remove() {
+	public final void remove() {
 		throw new UnsupportedOperationException("Cannot remove from a circle.");
 	}
 }

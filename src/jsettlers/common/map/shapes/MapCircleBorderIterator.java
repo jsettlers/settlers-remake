@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import jsettlers.common.position.ISPosition2D;
 
-public class MapCircleBorderIterator extends CircleIterator implements
+public class MapCircleBorderIterator extends MapCircleIterator implements
         Iterator<ISPosition2D> {
 
 	private final MapCircleBorder circle;

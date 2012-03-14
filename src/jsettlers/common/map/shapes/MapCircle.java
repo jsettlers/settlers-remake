@@ -13,7 +13,7 @@ import jsettlers.common.position.ISPosition2D;
  * 
  * @author michael
  */
-public class MapCircle implements IMapArea {
+public final class MapCircle implements IMapArea {
 	private static final long serialVersionUID = 1L;
 
 	private final float radius;
@@ -21,7 +21,7 @@ public class MapCircle implements IMapArea {
 	private final short cx;
 
 	/**
-	 * Factor so that d((0,0), (1,1)) is almoast 1.
+	 * Factor so that d((0,0), (1,1)) is almost 1.
 	 */
 	public final static float Y_SCALE = (float) Math.sqrt(3) / 2.0f * .999999f;
 
@@ -46,8 +46,8 @@ public class MapCircle implements IMapArea {
 	}
 
 	@Override
-	public final CircleIterator iterator() {
-		return new CircleIterator(this);
+	public final MapCircleIterator iterator() {
+		return new MapCircleIterator(this);
 	}
 
 	/**
@@ -62,6 +62,17 @@ public class MapCircle implements IMapArea {
 	public final float squaredDistanceToCenter(int x, int y) {
 		int dx = x - cx;
 		int dy = y - cy;
+		return getSquaredDistance(dx, dy);
+	}
+
+	/**
+	 * Gives the squared distance for given delta x and delta y
+	 * 
+	 * @param dx
+	 * @param dy
+	 * @return
+	 */
+	public static float getSquaredDistance(int dx, int dy) {
 		return (.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy;
 	}
 
@@ -70,19 +81,18 @@ public class MapCircle implements IMapArea {
 		return (float) Math.sqrt(squared);
 	}
 
-	public static float getDistanceSquared(ISPosition2D pos1, ISPosition2D pos2) {
+	public static final float getDistanceSquared(ISPosition2D pos1, ISPosition2D pos2) {
 		return getDistanceSquared(pos1.getX(), pos1.getY(), pos2.getX(), pos2.getY());
 	}
 
-	public static float getDistanceSquared(int x1, int y1, int x2, int y2) {
+	public static final float getDistanceSquared(int x1, int y1, int x2, int y2) {
 		int dx = x1 - x2;
 		int dy = y1 - y2;
-		float suared = (.25f + Y_SCALE * Y_SCALE) * dy * dy + dx * dx - dx * dy;
-		return suared;
+		return getSquaredDistance(dx, dy);
 	}
 
 	/**
-	 * Gets the half with of a line, roundend.
+	 * Gets the half width of a line, roundend.
 	 * 
 	 * @param relativey
 	 *            The x coordinate of the line relative to the center
