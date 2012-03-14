@@ -5,6 +5,7 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ConvertAction;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -44,13 +45,12 @@ public class BearerSelection implements IContentProvider {
 		UIPanel icon = new UIPanel();
 		icon.setBackground(imageLink);
 
-		// TODO:Labels
 		UILabeledButton convert1 =
-		        new UILabeledButton("convert 1", new ConvertAction(type,
-		                (short) 1));
+		        new UILabeledButton(Labels.getString("convert_1_to_" + type),
+		                new ConvertAction(type, (short) 1));
 		UILabeledButton convertall =
-		        new UILabeledButton("convert all", new ConvertAction(type,
-		                Short.MAX_VALUE));
+		        new UILabeledButton(Labels.getString("convert_all_to_" + type),
+		                new ConvertAction(type, Short.MAX_VALUE));
 
 		panel.addChild(icon, .1f, bottom, .3f, bottom + .2f);
 		panel.addChild(convert1, .3f, bottom + .1f, .9f, bottom + .2f);
