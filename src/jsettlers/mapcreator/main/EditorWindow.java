@@ -103,8 +103,7 @@ import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateObject;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class EditorWindow implements IMapInterfaceListener, ActionFireable,
-        TestResultReceiver, IPlayerSetter, IScrollToAble {
+public class EditorWindow implements IMapInterfaceListener, ActionFireable, TestResultReceiver, IPlayerSetter, IScrollToAble {
 
 	private final class RadiusChangeListener implements ChangeListener {
 		private final LineCircleShape shape;
@@ -134,281 +133,174 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 	private LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
-	//@formatter:off
-	private final ToolNode TOOLBOX = new ToolBox("Werkzege",
-	        new ToolNode[] {
-		        new ToolBox("Landschaft", new ToolNode[] {
-		                new SetLandscapeTool(ELandscapeType.GRASS, false),
-		                new SetLandscapeTool(ELandscapeType.DRY_GRASS, false),
-		                new SetLandscapeTool(ELandscapeType.SAND, false),
-		                new SetLandscapeTool(ELandscapeType.FLATTENED, false),
-		                new SetLandscapeTool(ELandscapeType.DESERT, false),
-		                new SetLandscapeTool(ELandscapeType.EARTH, false),
-		                new SetLandscapeTool(ELandscapeType.WATER1, false),
-		                new SetLandscapeTool(ELandscapeType.WATER2, false),
-		                new SetLandscapeTool(ELandscapeType.WATER3, false),
-		                new SetLandscapeTool(ELandscapeType.WATER4, false),
-		                new SetLandscapeTool(ELandscapeType.WATER5, false),
-		                new SetLandscapeTool(ELandscapeType.WATER6, false),
-		                new SetLandscapeTool(ELandscapeType.WATER7, false),
-		                new SetLandscapeTool(ELandscapeType.WATER8, false),
-		                new SetLandscapeTool(ELandscapeType.RIVER1, true),
-		                new SetLandscapeTool(ELandscapeType.RIVER2, true),
-		                new SetLandscapeTool(ELandscapeType.RIVER3, true),
-		                new SetLandscapeTool(ELandscapeType.RIVER4, true),
-		                new SetLandscapeTool(ELandscapeType.MOUNTAIN, false),
-		                new SetLandscapeTool(ELandscapeType.SNOW, false),
-		                new SetLandscapeTool(ELandscapeType.MOOR, false),
-		                new SetLandscapeTool(ELandscapeType.FLATTENED_DESERT, false),
-		                new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
-		                new SetLandscapeTool(ELandscapeType.GRAVEL, false),
-		        }),
-		        new ToolBox("Höhen", new ToolNode[] {
-		        		new LandscapeHeightTool(),
-		        		new HeightAdder(true),
-		        		new HeightAdder(false),
-		        		new FlatLandscapeTool(),
-		        		new FixHeightsTool(),
-		        }),
-		        new ToolBox("Objekte", new ToolNode[] {
-		        		new PlaceMapObjectTool(MapTreeObject.getInstance()),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(0)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(2)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(4)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(5)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(6)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(7)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(8)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
-		        		new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
-		        		new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.PLANT_DECORATION)),
-		        		new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.DESERT_DECORATION)),
-		        }),
-		        new ToolBox("Siedler", new ToolNode[] {
-				        new ToolBox("Arbeiter", new ToolNode[] {
-			        		new PlaceMovableTool(EMovableType.BEARER, this),
-			        		new PlaceMovableTool(EMovableType.BRICKLAYER, this),
-			        		new PlaceMovableTool(EMovableType.DIGGER, this),
-			        		new PlaceMovableTool(EMovableType.BAKER, this),
-			        		new PlaceMovableTool(EMovableType.CHARCOAL_BURNER, this),
-			        		new PlaceMovableTool(EMovableType.FARMER, this),
-			        		new PlaceMovableTool(EMovableType.FISHERMAN, this),
-			        		new PlaceMovableTool(EMovableType.FORESTER, this),
-			        		new PlaceMovableTool(EMovableType.LUMBERJACK, this),
-			        		new PlaceMovableTool(EMovableType.MELTER, this),
-			        		new PlaceMovableTool(EMovableType.MILLER, this),
-			        		new PlaceMovableTool(EMovableType.MINER, this),
-			        		new PlaceMovableTool(EMovableType.PIG_FARMER, this),
-			        		new PlaceMovableTool(EMovableType.SAWMILLER, this),
-			        		new PlaceMovableTool(EMovableType.SLAUGHTERER, this),
-			        		new PlaceMovableTool(EMovableType.SMITH, this),
-			        		new PlaceMovableTool(EMovableType.STONECUTTER, this),
-			        		new PlaceMovableTool(EMovableType.WATERWORKER, this),
-				        }),
-				        new ToolBox("Spezialisten", new ToolNode[] {
-			        		new PlaceMovableTool(EMovableType.GEOLOGIST, this),
-			        		new PlaceMovableTool(EMovableType.PIONEER, this),
-			        		new PlaceMovableTool(EMovableType.THIEF, this),
-			        		new PlaceMovableTool(EMovableType.DONKEY, this),
-				        }),
-				        new ToolBox("Krieger", new ToolNode[] {
-			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L1, this),
-			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L2, this),
-			        		new PlaceMovableTool(EMovableType.SWORDSMAN_L3, this),
-			        		new PlaceMovableTool(EMovableType.BOWMAN_L1, this),
-			        		new PlaceMovableTool(EMovableType.BOWMAN_L2, this),
-			        		new PlaceMovableTool(EMovableType.BOWMAN_L3, this),
-			        		new PlaceMovableTool(EMovableType.PIKEMAN_L1, this),
-			        		new PlaceMovableTool(EMovableType.PIKEMAN_L2, this),
-			        		new PlaceMovableTool(EMovableType.PIKEMAN_L3, this),
-				        }),
-		        }),
-		        new ToolBox("Materialien", new ToolNode[] {
-				        new ToolBox("Bauen", new ToolNode[] {
-			        		new PlaceStackToolbox(EMaterialType.PLANK, 8),
-			        		new PlaceStackToolbox(EMaterialType.STONE, 8),
-			        		new PlaceStackToolbox(EMaterialType.TRUNK, 8),
-				        }),
-					    new ToolBox("Essen", new ToolNode[] {
-			        		new PlaceStackToolbox(EMaterialType.BREAD, 8),
-			        		new PlaceStackToolbox(EMaterialType.CROP, 8),
-			        		new PlaceStackToolbox(EMaterialType.FISH, 8),
-			        		new PlaceStackToolbox(EMaterialType.FLOUR, 8),
-			        		new PlaceStackToolbox(EMaterialType.PIG, 8),
-			        		new PlaceStackToolbox(EMaterialType.WATER, 8),
-			        		new PlaceStackToolbox(EMaterialType.WINE, 8),
-				        }),
-					    new ToolBox("Rohstoffe", new ToolNode[] {
-			        		new PlaceStackToolbox(EMaterialType.COAL, 8),
-			        		new PlaceStackToolbox(EMaterialType.IRON, 8),
-			        		new PlaceStackToolbox(EMaterialType.IRONORE, 8),
-			        		new PlaceStackToolbox(EMaterialType.GOLD, 8),
-			        		new PlaceStackToolbox(EMaterialType.GOLDORE, 8),
-				        }),
-					    new ToolBox("Werkzeug", new ToolNode[] {
-			        		new PlaceStackToolbox(EMaterialType.HAMMER, 8),
-			        		new PlaceStackToolbox(EMaterialType.BLADE, 8),
-			        		new PlaceStackToolbox(EMaterialType.AXE, 8),
-			        		new PlaceStackToolbox(EMaterialType.SAW, 8),
-			        		new PlaceStackToolbox(EMaterialType.PICK, 8),
-			        		new PlaceStackToolbox(EMaterialType.SCYTHE, 8),
-			        		new PlaceStackToolbox(EMaterialType.FISHINGROD, 8),
-				        }),
-					    new ToolBox("Waffen", new ToolNode[] {
-			        		new PlaceStackToolbox(EMaterialType.SWORD, 8),
-			        		new PlaceStackToolbox(EMaterialType.BOW, 8),
-			        		new PlaceStackToolbox(EMaterialType.SPEAR, 8),
-				        }),
-		        }),
-		        new ToolBox("Gebäude", new ToolNode[] {
-				        new ToolBox("Rohstoffe", new ToolNode[] {
-				        		new PlaceBuildingTool(EBuildingType.LUMBERJACK, this),
-				        		new PlaceBuildingTool(EBuildingType.SAWMILL, this),
-				        		new PlaceBuildingTool(EBuildingType.STONECUTTER, this),
-				        		new PlaceBuildingTool(EBuildingType.FORESTER, this),
-				        		new PlaceBuildingTool(EBuildingType.IRONMELT, this),
-				        		new PlaceBuildingTool(EBuildingType.IRONMINE, this),
-				        		new PlaceBuildingTool(EBuildingType.GOLDMELT, this),
-				        		new PlaceBuildingTool(EBuildingType.GOLDMINE, this),
-				        		new PlaceBuildingTool(EBuildingType.COALMINE, this),
-				        		new PlaceBuildingTool(EBuildingType.CHARCOAL_BURNER, this),
-				        		new PlaceBuildingTool(EBuildingType.TOOLSMITH, this),
-				        }),
-				        new ToolBox("Essen", new ToolNode[] {
-				        		new PlaceBuildingTool(EBuildingType.FARM, this),
-				        		new PlaceBuildingTool(EBuildingType.MILL, this),
-				        		new PlaceBuildingTool(EBuildingType.BAKER, this),
-				        		new PlaceBuildingTool(EBuildingType.WATERWORKS, this),
-				        		new PlaceBuildingTool(EBuildingType.PIG_FARM, this),
-				        		new PlaceBuildingTool(EBuildingType.SLAUGHTERHOUSE, this),
-				        		new PlaceBuildingTool(EBuildingType.FISHER, this),
-				        		new PlaceBuildingTool(EBuildingType.DONKEY_FARM, this),
-				        		new PlaceBuildingTool(EBuildingType.WINEGROWER, this),
-				        }),
-				        new ToolBox("Militär", new ToolNode[] {
-				        		new PlaceBuildingTool(EBuildingType.TOWER, this),
-				        		new PlaceBuildingTool(EBuildingType.BIG_TOWER, this),
-				        		new PlaceBuildingTool(EBuildingType.CASTLE, this),
-				        		new PlaceBuildingTool(EBuildingType.WEAPONSMITH, this),
-				        		new PlaceBuildingTool(EBuildingType.DOCKYARD, this),
-				        }),
-				        new ToolBox("Sozial", new ToolNode[] {
-				        		new PlaceBuildingTool(EBuildingType.SMALL_LIVINGHOUSE, this),
-				        		new PlaceBuildingTool(EBuildingType.MEDIUM_LIVINGHOUSE, this),
-				        		new PlaceBuildingTool(EBuildingType.BIG_LIVINGHOUSE, this),
-				        		new PlaceBuildingTool(EBuildingType.TEMPLE, this),
-				        		new PlaceBuildingTool(EBuildingType.BIG_TEMPLE, this),
-				        		new PlaceBuildingTool(EBuildingType.STOCK, this),
-				        }),
-		        }),
-		        new ToolBox("Vorlagen", new ToolNode[] {
-		        		new PlaceTemplateTool("Start", new TemplateObject[] {
-		        				new TemplateBuilding(0, 0, EBuildingType.TOWER),
-		        				
-		        				// goods
-		        				new TemplateObject(-4, 7, new StackObject(EMaterialType.PLANK, 8)),
-		        				new TemplateObject(-4, 10, new StackObject(EMaterialType.PLANK, 8)),
-		        				
-		        				new TemplateObject(-1, 7, new StackObject(EMaterialType.PLANK, 8)),
-		        				new TemplateObject(-1, 10, new StackObject(EMaterialType.PLANK, 8)),
-		        				new TemplateObject(-1, 13, new StackObject(EMaterialType.PLANK, 8)),
-		        				
-		        				new TemplateObject(2, 7, new StackObject(EMaterialType.STONE, 8)),
-		        				new TemplateObject(2, 10, new StackObject(EMaterialType.PLANK, 8)),
-		        				new TemplateObject(2, 13, new StackObject(EMaterialType.PLANK, 8)),
-		        				
-		        				new TemplateObject(5, 7, new StackObject(EMaterialType.STONE, 8)),
-		        				new TemplateObject(5, 10, new StackObject(EMaterialType.STONE, 8)),
-		        				new TemplateObject(5, 13, new StackObject(EMaterialType.STONE, 8)),
-		        				
-		        				new TemplateObject(8, 7, new StackObject(EMaterialType.FISH, 8)),
-		        				new TemplateObject(8, 10, new StackObject(EMaterialType.COAL, 8)),
-		        				new TemplateObject(8, 13, new StackObject(EMaterialType.STONE, 8)),
-		        				
-		        				new TemplateObject(11, 7, new StackObject(EMaterialType.BREAD, 8)),
-		        				new TemplateObject(11, 10, new StackObject(EMaterialType.IRONORE, 8)),
-		        				new TemplateObject(11, 13, new StackObject(EMaterialType.BLADE, 6)),
-		        				
-		        				new TemplateObject(14, 7, new StackObject(EMaterialType.MEAT, 8)),
-		        				new TemplateObject(14, 10, new StackObject(EMaterialType.FISHINGROD, 2)),
-		        				new TemplateObject(14, 13, new StackObject(EMaterialType.HAMMER, 8)),
-		        				
-		        				new TemplateObject(17, 7, new StackObject(EMaterialType.SCYTHE, 2)),
-		        				//new TemplateObject(17, 10, new StackObject(EMaterialType., 2)),
-		        				new TemplateObject(17, 13, new StackObject(EMaterialType.AXE, 4)),
-		        				
-		        				new TemplateObject(20, 10, new StackObject(EMaterialType.PICK, 6)),
-		        				new TemplateObject(20, 13, new StackObject(EMaterialType.SAW, 2)),
-		        				
-		        				// worker
-		        				new TemplateMovable(8, 16, EMovableType.BRICKLAYER),
-		        				new TemplateMovable(9, 18, EMovableType.BRICKLAYER),
-		        				new TemplateMovable(10, 16, EMovableType.BRICKLAYER),
-		        				new TemplateMovable(11, 18, EMovableType.BRICKLAYER),
-		        				new TemplateMovable(12, 16, EMovableType.BRICKLAYER),
-		        				
-		        				new TemplateMovable(14, 16, EMovableType.DIGGER),
-		        				new TemplateMovable(15, 18, EMovableType.DIGGER),
-		        				new TemplateMovable(16, 16, EMovableType.DIGGER),
-		        				
-		        				new TemplateMovable(18, 17, EMovableType.SMITH),
-		        				new TemplateMovable(20, 16, EMovableType.MELTER),
+	// @formatter:off
+	private final ToolNode TOOLBOX = new ToolBox("Werkzege", new ToolNode[] {
+			new ToolBox("Landschaft", new ToolNode[] { new SetLandscapeTool(ELandscapeType.GRASS, false),
+					new SetLandscapeTool(ELandscapeType.DRY_GRASS, false), new SetLandscapeTool(ELandscapeType.SAND, false),
+					new SetLandscapeTool(ELandscapeType.FLATTENED, false), new SetLandscapeTool(ELandscapeType.DESERT, false),
+					new SetLandscapeTool(ELandscapeType.EARTH, false), new SetLandscapeTool(ELandscapeType.WATER1, false),
+					new SetLandscapeTool(ELandscapeType.WATER2, false), new SetLandscapeTool(ELandscapeType.WATER3, false),
+					new SetLandscapeTool(ELandscapeType.WATER4, false), new SetLandscapeTool(ELandscapeType.WATER5, false),
+					new SetLandscapeTool(ELandscapeType.WATER6, false), new SetLandscapeTool(ELandscapeType.WATER7, false),
+					new SetLandscapeTool(ELandscapeType.WATER8, false), new SetLandscapeTool(ELandscapeType.RIVER1, true),
+					new SetLandscapeTool(ELandscapeType.RIVER2, true), new SetLandscapeTool(ELandscapeType.RIVER3, true),
+					new SetLandscapeTool(ELandscapeType.RIVER4, true), new SetLandscapeTool(ELandscapeType.MOUNTAIN, false),
+					new SetLandscapeTool(ELandscapeType.SNOW, false), new SetLandscapeTool(ELandscapeType.MOOR, false),
+					new SetLandscapeTool(ELandscapeType.FLATTENED_DESERT, false), new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
+					new SetLandscapeTool(ELandscapeType.GRAVEL, false), }),
+			new ToolBox("Höhen", new ToolNode[] { new LandscapeHeightTool(), new HeightAdder(true), new HeightAdder(false), new FlatLandscapeTool(),
+					new FixHeightsTool(), }),
+			new ToolBox("Objekte", new ToolNode[] { new PlaceMapObjectTool(MapTreeObject.getInstance()),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(0)), new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(2)), new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(4)), new PlaceMapObjectTool(MapStoneObject.getInstance(5)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(6)), new PlaceMapObjectTool(MapStoneObject.getInstance(7)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(8)), new PlaceMapObjectTool(MapStoneObject.getInstance(9)),
+					new PlaceMapObjectTool(MapStoneObject.getInstance(10)),
+					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.PLANT_DECORATION)),
+					new PlaceMapObjectTool(new MapDecorationObject(EMapObjectType.DESERT_DECORATION)), }),
+			new ToolBox("Siedler", new ToolNode[] {
+					new ToolBox("Arbeiter", new ToolNode[] { new PlaceMovableTool(EMovableType.BEARER, this),
+							new PlaceMovableTool(EMovableType.BRICKLAYER, this), new PlaceMovableTool(EMovableType.DIGGER, this),
+							new PlaceMovableTool(EMovableType.BAKER, this), new PlaceMovableTool(EMovableType.CHARCOAL_BURNER, this),
+							new PlaceMovableTool(EMovableType.FARMER, this), new PlaceMovableTool(EMovableType.FISHERMAN, this),
+							new PlaceMovableTool(EMovableType.FORESTER, this), new PlaceMovableTool(EMovableType.LUMBERJACK, this),
+							new PlaceMovableTool(EMovableType.MELTER, this), new PlaceMovableTool(EMovableType.MILLER, this),
+							new PlaceMovableTool(EMovableType.MINER, this), new PlaceMovableTool(EMovableType.PIG_FARMER, this),
+							new PlaceMovableTool(EMovableType.SAWMILLER, this), new PlaceMovableTool(EMovableType.SLAUGHTERER, this),
+							new PlaceMovableTool(EMovableType.SMITH, this), new PlaceMovableTool(EMovableType.STONECUTTER, this),
+							new PlaceMovableTool(EMovableType.WATERWORKER, this), }),
+					new ToolBox("Spezialisten", new ToolNode[] { new PlaceMovableTool(EMovableType.GEOLOGIST, this),
+							new PlaceMovableTool(EMovableType.PIONEER, this), new PlaceMovableTool(EMovableType.THIEF, this),
+							new PlaceMovableTool(EMovableType.DONKEY, this), }),
+					new ToolBox("Krieger", new ToolNode[] { new PlaceMovableTool(EMovableType.SWORDSMAN_L1, this),
+							new PlaceMovableTool(EMovableType.SWORDSMAN_L2, this), new PlaceMovableTool(EMovableType.SWORDSMAN_L3, this),
+							new PlaceMovableTool(EMovableType.BOWMAN_L1, this), new PlaceMovableTool(EMovableType.BOWMAN_L2, this),
+							new PlaceMovableTool(EMovableType.BOWMAN_L3, this), new PlaceMovableTool(EMovableType.PIKEMAN_L1, this),
+							new PlaceMovableTool(EMovableType.PIKEMAN_L2, this), new PlaceMovableTool(EMovableType.PIKEMAN_L3, this), }), }),
+			new ToolBox("Materialien", new ToolNode[] {
+					new ToolBox("Bauen", new ToolNode[] { new PlaceStackToolbox(EMaterialType.PLANK, 8),
+							new PlaceStackToolbox(EMaterialType.STONE, 8), new PlaceStackToolbox(EMaterialType.TRUNK, 8), }),
+					new ToolBox("Essen", new ToolNode[] { new PlaceStackToolbox(EMaterialType.BREAD, 8),
+							new PlaceStackToolbox(EMaterialType.CROP, 8), new PlaceStackToolbox(EMaterialType.FISH, 8),
+							new PlaceStackToolbox(EMaterialType.FLOUR, 8), new PlaceStackToolbox(EMaterialType.PIG, 8),
+							new PlaceStackToolbox(EMaterialType.WATER, 8), new PlaceStackToolbox(EMaterialType.WINE, 8), }),
+					new ToolBox("Rohstoffe", new ToolNode[] { new PlaceStackToolbox(EMaterialType.COAL, 8),
+							new PlaceStackToolbox(EMaterialType.IRON, 8), new PlaceStackToolbox(EMaterialType.IRONORE, 8),
+							new PlaceStackToolbox(EMaterialType.GOLD, 8), new PlaceStackToolbox(EMaterialType.GOLDORE, 8), }),
+					new ToolBox("Werkzeug", new ToolNode[] { new PlaceStackToolbox(EMaterialType.HAMMER, 8),
+							new PlaceStackToolbox(EMaterialType.BLADE, 8), new PlaceStackToolbox(EMaterialType.AXE, 8),
+							new PlaceStackToolbox(EMaterialType.SAW, 8), new PlaceStackToolbox(EMaterialType.PICK, 8),
+							new PlaceStackToolbox(EMaterialType.SCYTHE, 8), new PlaceStackToolbox(EMaterialType.FISHINGROD, 8), }),
+					new ToolBox("Waffen", new ToolNode[] { new PlaceStackToolbox(EMaterialType.SWORD, 8),
+							new PlaceStackToolbox(EMaterialType.BOW, 8), new PlaceStackToolbox(EMaterialType.SPEAR, 8), }), }),
+			new ToolBox("Gebäude", new ToolNode[] {
+					new ToolBox("Rohstoffe", new ToolNode[] { new PlaceBuildingTool(EBuildingType.LUMBERJACK, this),
+							new PlaceBuildingTool(EBuildingType.SAWMILL, this), new PlaceBuildingTool(EBuildingType.STONECUTTER, this),
+							new PlaceBuildingTool(EBuildingType.FORESTER, this), new PlaceBuildingTool(EBuildingType.IRONMELT, this),
+							new PlaceBuildingTool(EBuildingType.IRONMINE, this), new PlaceBuildingTool(EBuildingType.GOLDMELT, this),
+							new PlaceBuildingTool(EBuildingType.GOLDMINE, this), new PlaceBuildingTool(EBuildingType.COALMINE, this),
+							new PlaceBuildingTool(EBuildingType.CHARCOAL_BURNER, this), new PlaceBuildingTool(EBuildingType.TOOLSMITH, this), }),
+					new ToolBox("Essen", new ToolNode[] { new PlaceBuildingTool(EBuildingType.FARM, this),
+							new PlaceBuildingTool(EBuildingType.MILL, this), new PlaceBuildingTool(EBuildingType.BAKER, this),
+							new PlaceBuildingTool(EBuildingType.WATERWORKS, this), new PlaceBuildingTool(EBuildingType.PIG_FARM, this),
+							new PlaceBuildingTool(EBuildingType.SLAUGHTERHOUSE, this), new PlaceBuildingTool(EBuildingType.FISHER, this),
+							new PlaceBuildingTool(EBuildingType.DONKEY_FARM, this), new PlaceBuildingTool(EBuildingType.WINEGROWER, this), }),
+					new ToolBox("Militär", new ToolNode[] { new PlaceBuildingTool(EBuildingType.TOWER, this),
+							new PlaceBuildingTool(EBuildingType.BIG_TOWER, this), new PlaceBuildingTool(EBuildingType.CASTLE, this),
+							new PlaceBuildingTool(EBuildingType.WEAPONSMITH, this), new PlaceBuildingTool(EBuildingType.DOCKYARD, this), }),
+					new ToolBox("Sozial", new ToolNode[] { new PlaceBuildingTool(EBuildingType.SMALL_LIVINGHOUSE, this),
+							new PlaceBuildingTool(EBuildingType.MEDIUM_LIVINGHOUSE, this),
+							new PlaceBuildingTool(EBuildingType.BIG_LIVINGHOUSE, this), new PlaceBuildingTool(EBuildingType.TEMPLE, this),
+							new PlaceBuildingTool(EBuildingType.BIG_TEMPLE, this), new PlaceBuildingTool(EBuildingType.STOCK, this), }), }),
+			new ToolBox("Vorlagen", new ToolNode[] {
+					new PlaceTemplateTool("Start", new TemplateObject[] {
+							new TemplateBuilding(0, 0, EBuildingType.TOWER),
 
-		        				// soldiers
-		        				new TemplateMovable(-11, -12, EMovableType.SWORDSMAN_L1),
-		        				new TemplateMovable(-11, -14, EMovableType.SWORDSMAN_L1),
-		        				new TemplateMovable(-11, -16, EMovableType.SWORDSMAN_L1),
+							// goods
+							new TemplateObject(-4, 7, new StackObject(EMaterialType.PLANK, 8)),
+							new TemplateObject(-4, 10, new StackObject(EMaterialType.PLANK, 8)),
 
-		        				new TemplateMovable(-9, -10, EMovableType.SWORDSMAN_L1),
-		        				new TemplateMovable(-9, -12, EMovableType.SWORDSMAN_L1),
-		        				new TemplateMovable(-9, -14, EMovableType.SWORDSMAN_L1),
-		        				new TemplateMovable(-9, -16, EMovableType.BOWMAN_L1),
+							new TemplateObject(-1, 7, new StackObject(EMaterialType.PLANK, 8)),
+							new TemplateObject(-1, 10, new StackObject(EMaterialType.PLANK, 8)),
+							new TemplateObject(-1, 13, new StackObject(EMaterialType.PLANK, 8)),
 
-		        				new TemplateMovable(-7, -10, EMovableType.PIKEMAN_L1),
-		        				new TemplateMovable(-7, -12, EMovableType.PIKEMAN_L1),
-		        				new TemplateMovable(-7, -14, EMovableType.BOWMAN_L1),
-		        				new TemplateMovable(-7, -16, EMovableType.BOWMAN_L1),
-		        				
-		        				new TemplateMovable(-5, -10, EMovableType.PIKEMAN_L1),
-		        				new TemplateMovable(-5, -12, EMovableType.BOWMAN_L1),
-		        				new TemplateMovable(-5, -14, EMovableType.BOWMAN_L1),
-		        				
-		        				//bearer
-		        				new TemplateMovable(-2, -12, EMovableType.BEARER),
-		        				new TemplateMovable(-2, -14, EMovableType.BEARER),
-		        				new TemplateMovable(-2, -16, EMovableType.BEARER),
+							new TemplateObject(2, 7, new StackObject(EMaterialType.STONE, 8)),
+							new TemplateObject(2, 10, new StackObject(EMaterialType.PLANK, 8)),
+							new TemplateObject(2, 13, new StackObject(EMaterialType.PLANK, 8)),
 
-		        				new TemplateMovable(0, -10, EMovableType.BEARER),
-		        				new TemplateMovable(0, -12, EMovableType.BEARER),
-		        				new TemplateMovable(0, -14, EMovableType.BEARER),
-		        				new TemplateMovable(0, -16, EMovableType.BEARER),
+							new TemplateObject(5, 7, new StackObject(EMaterialType.STONE, 8)),
+							new TemplateObject(5, 10, new StackObject(EMaterialType.STONE, 8)),
+							new TemplateObject(5, 13, new StackObject(EMaterialType.STONE, 8)),
 
-		        				new TemplateMovable(2, -10, EMovableType.BEARER),
-		        				new TemplateMovable(2, -12, EMovableType.BEARER),
-		        				new TemplateMovable(2, -14, EMovableType.BEARER),
-		        				new TemplateMovable(2, -16, EMovableType.BEARER),
-		        				
-		        				new TemplateMovable(4, -10, EMovableType.BEARER),
-		        				new TemplateMovable(4, -12, EMovableType.BEARER),
-		        				new TemplateMovable(4, -14, EMovableType.BEARER),
-		        		}, this),
-		        		new PlaceTemplateTool("Holzarbeiter", new TemplateObject[] {
-		        				new TemplateBuilding(0, 10, EBuildingType.LUMBERJACK),
-		        				new TemplateBuilding(0, 0, EBuildingType.FORESTER),
-		        				new TemplateBuilding(3, -9, EBuildingType.LUMBERJACK),
+							new TemplateObject(8, 7, new StackObject(EMaterialType.FISH, 8)),
+							new TemplateObject(8, 10, new StackObject(EMaterialType.COAL, 8)),
+							new TemplateObject(8, 13, new StackObject(EMaterialType.STONE, 8)),
 
-		        				new TemplateMovable(8, -8, EMovableType.LUMBERJACK),
-		        				new TemplateMovable(7, 3, EMovableType.FORESTER),
-		        				new TemplateMovable(7, 12, EMovableType.LUMBERJACK),
-		        				
-		        		}, this),
-		        }),
-		        new SetStartpointTool(this),
-		        new DeleteObjectTool(),
-	        });
-	//@formatter:on
+							new TemplateObject(11, 7, new StackObject(EMaterialType.BREAD, 8)),
+							new TemplateObject(11, 10, new StackObject(EMaterialType.IRONORE, 8)),
+							new TemplateObject(11, 13, new StackObject(EMaterialType.BLADE, 6)),
+
+							new TemplateObject(14, 7, new StackObject(EMaterialType.MEAT, 8)),
+							new TemplateObject(14, 10, new StackObject(EMaterialType.FISHINGROD, 2)),
+							new TemplateObject(14, 13, new StackObject(EMaterialType.HAMMER, 8)),
+
+							new TemplateObject(17, 7, new StackObject(EMaterialType.SCYTHE, 2)),
+							// new TemplateObject(17, 10, new StackObject(EMaterialType., 2)),
+							new TemplateObject(17, 13, new StackObject(EMaterialType.AXE, 4)),
+
+							new TemplateObject(20, 10, new StackObject(EMaterialType.PICK, 6)),
+							new TemplateObject(20, 13, new StackObject(EMaterialType.SAW, 2)),
+
+							// worker
+							new TemplateMovable(8, 16, EMovableType.BRICKLAYER),
+							new TemplateMovable(9, 18, EMovableType.BRICKLAYER),
+							new TemplateMovable(10, 16, EMovableType.BRICKLAYER),
+							new TemplateMovable(11, 18, EMovableType.BRICKLAYER),
+							new TemplateMovable(12, 16, EMovableType.BRICKLAYER),
+
+							new TemplateMovable(14, 16, EMovableType.DIGGER),
+							new TemplateMovable(15, 18, EMovableType.DIGGER),
+							new TemplateMovable(16, 16, EMovableType.DIGGER),
+
+							new TemplateMovable(18, 17, EMovableType.SMITH),
+							new TemplateMovable(20, 16, EMovableType.MELTER),
+
+							// soldiers
+							new TemplateMovable(-11, -12, EMovableType.SWORDSMAN_L1), new TemplateMovable(-11, -14, EMovableType.SWORDSMAN_L1),
+							new TemplateMovable(-11, -16, EMovableType.SWORDSMAN_L1),
+
+							new TemplateMovable(-9, -10, EMovableType.SWORDSMAN_L1), new TemplateMovable(-9, -12, EMovableType.SWORDSMAN_L1),
+							new TemplateMovable(-9, -14, EMovableType.SWORDSMAN_L1), new TemplateMovable(-9, -16, EMovableType.BOWMAN_L1),
+
+							new TemplateMovable(-7, -10, EMovableType.PIKEMAN_L1), new TemplateMovable(-7, -12, EMovableType.PIKEMAN_L1),
+							new TemplateMovable(-7, -14, EMovableType.BOWMAN_L1),
+							new TemplateMovable(-7, -16, EMovableType.BOWMAN_L1),
+
+							new TemplateMovable(-5, -10, EMovableType.PIKEMAN_L1),
+							new TemplateMovable(-5, -12, EMovableType.BOWMAN_L1),
+							new TemplateMovable(-5, -14, EMovableType.BOWMAN_L1),
+
+							// bearer
+							new TemplateMovable(-2, -12, EMovableType.BEARER), new TemplateMovable(-2, -14, EMovableType.BEARER),
+							new TemplateMovable(-2, -16, EMovableType.BEARER),
+
+							new TemplateMovable(0, -10, EMovableType.BEARER), new TemplateMovable(0, -12, EMovableType.BEARER),
+							new TemplateMovable(0, -14, EMovableType.BEARER), new TemplateMovable(0, -16, EMovableType.BEARER),
+
+							new TemplateMovable(2, -10, EMovableType.BEARER), new TemplateMovable(2, -12, EMovableType.BEARER),
+							new TemplateMovable(2, -14, EMovableType.BEARER), new TemplateMovable(2, -16, EMovableType.BEARER),
+
+							new TemplateMovable(4, -10, EMovableType.BEARER), new TemplateMovable(4, -12, EMovableType.BEARER),
+							new TemplateMovable(4, -14, EMovableType.BEARER), }, this),
+					new PlaceTemplateTool("Holzarbeiter", new TemplateObject[] { new TemplateBuilding(0, 10, EBuildingType.LUMBERJACK),
+							new TemplateBuilding(0, 0, EBuildingType.FORESTER), new TemplateBuilding(3, -9, EBuildingType.LUMBERJACK),
+
+							new TemplateMovable(8, -8, EMovableType.LUMBERJACK), new TemplateMovable(7, 3, EMovableType.FORESTER),
+							new TemplateMovable(7, 12, EMovableType.LUMBERJACK),
+
+					}, this), }), new SetStartpointTool(this), new DeleteObjectTool(), });
+	// @formatter:on
 
 	private final MapData data;
 	private final MapGraphics map;
@@ -423,13 +315,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 	private JButton undoButton;
 
-	private LinkedList<MapDataDelta> undoDeltas =
-	        new LinkedList<MapDataDelta>();
+	private LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
 
-	private LinkedList<MapDataDelta> redoDeltas =
-	        new LinkedList<MapDataDelta>();
+	private LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
 
-	private DataTester dataTester;
+	private final DataTester dataTester;
 
 	private MapInterfaceConnector connector;
 
@@ -453,8 +343,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		data = new MapData(width, height, playerCount, ground);
 		map = new MapGraphics(data);
 
-		startMapEditing();
 		dataTester = new DataTester(data, this);
+		startMapEditing();
 	}
 
 	public EditorWindow(MapLoader loader) throws MapLoadException {
@@ -499,9 +389,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		window.setVisible(true);
 		window.setLocationRelativeTo(null);
 
-		MapContent content =
-		        new MapContent(map, new SwingSoundPlayer(),
-		                new MapEditorControls(new CombiningActionFirerer(this)));
+		MapContent content = new MapContent(map, new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = content.getInterfaceConnector();
 		region.setContent(content);
 
@@ -548,8 +436,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		redoButton.setEnabled(false);
 		bar.add(redoButton);
 
-		showErrorsButton =
-		        new ShowErrorsButton(dataTester.getErrorList(), this);
+		showErrorsButton = new ShowErrorsButton(dataTester.getErrorList(), this);
 		bar.add(showErrorsButton);
 
 		testResult = new JLabel();
@@ -566,8 +453,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		bar.add(Box.createGlue());
 
 		bar.add(new JLabel("current player:"));
-		final SpinnerNumberModel model =
-		        new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
+		final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
 		JSpinner playerSpinner = new JSpinner(model);
 		playerSpinner.addChangeListener(new ChangeListener() {
 			@Override
@@ -613,14 +499,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			File temp = File.createTempFile("tmp_map", "");
 			MapDataSerializer.serialize(data, new FileOutputStream(temp));
 
-			String[] args =
-			        new String[] {
-			                "java",
-			                "-classpath",
-			                System.getProperty("java.class.path"),
-			                "jsettlers.mapcreator.main.PlayProcess",
-			                temp.getAbsolutePath(),
-			        };
+			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), "jsettlers.mapcreator.main.PlayProcess",
+					temp.getAbsolutePath(), };
 
 			System.out.println("Starting process:");
 			for (String arg : args) {
@@ -636,9 +516,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					BufferedReader reader =
-					        new BufferedReader(new InputStreamReader(
-					                process.getInputStream()));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
 					while (true) {
 						String line;
@@ -720,8 +598,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				Object lastPathComponent = path.getLastPathComponent();
 				if (lastPathComponent instanceof ToolBox) {
 					ToolBox toolBox = (ToolBox) lastPathComponent;
-					TreePath newPath =
-					        path.pathByAddingChild(toolBox.getTools()[0]);
+					TreePath newPath = path.pathByAddingChild(toolBox.getTools()[0]);
 					toolshelf.setSelectionPath(newPath);
 				} else if (lastPathComponent instanceof Tool) {
 					Tool newTool = (Tool) lastPathComponent;
@@ -730,8 +607,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 			}
 		});
 		toolshelf.setCellRenderer(new ToolRenderer());
-		toolshelf
-		        .setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		toolshelf.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 
 		JPanel shape = new JPanel();
 		shape.setLayout(new BoxLayout(shape, BoxLayout.Y_AXIS));
@@ -777,8 +653,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				shapeGroup.add(button);
 				shapeButtons.add(button);
 			}
-			shapeButtons.setLayout(new BoxLayout(shapeButtons,
-			        BoxLayout.LINE_AXIS));
+			shapeButtons.setLayout(new BoxLayout(shapeButtons, BoxLayout.LINE_AXIS));
 		}
 		shapeButtons.revalidate();
 	}
@@ -807,8 +682,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 
 				ShapeType shape = getActiveShape();
 
-				tool.apply(data, shape, lineAction.getStart(),
-				        lineAction.getEnd(), lineAction.getUidy());
+				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
 
 				dataTester.retest();
 			}
@@ -837,8 +711,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 				ShapeType shape = getActiveShape();
 
 				tool.start(data, shape, lineAction.getPosition());
-				tool.apply(data, shape, lineAction.getPosition(),
-				        lineAction.getPosition(), 0);
+				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
 
 				endUseStep();
 				dataTester.retest();
@@ -856,8 +729,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 	}
 
 	@Override
-	public void testResult(String result, boolean allowed,
-	        ISPosition2D failPoint) {
+	public void testResult(String result, boolean allowed, ISPosition2D failPoint) {
 		testFailPoint = failPoint;
 		startGameButton.setEnabled(allowed);
 		testResult.setText(result);
