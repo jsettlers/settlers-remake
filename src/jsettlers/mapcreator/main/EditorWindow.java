@@ -345,6 +345,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 		dataTester = new DataTester(data, this);
 		startMapEditing();
+		dataTester.start();
 	}
 
 	public EditorWindow(MapLoader loader) throws MapLoadException {
