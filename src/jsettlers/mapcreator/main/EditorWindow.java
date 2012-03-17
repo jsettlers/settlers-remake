@@ -148,7 +148,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 					new SetLandscapeTool(ELandscapeType.SNOW, false), new SetLandscapeTool(ELandscapeType.MOOR, false),
 					new SetLandscapeTool(ELandscapeType.FLATTENED_DESERT, false), new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
 					new SetLandscapeTool(ELandscapeType.GRAVEL, false), }),
-			new ToolBox("HÃ¶hen", new ToolNode[] { new LandscapeHeightTool(), new HeightAdder(true), new HeightAdder(false), new FlatLandscapeTool(),
+			new ToolBox("Höhen", new ToolNode[] { new LandscapeHeightTool(), new HeightAdder(true), new HeightAdder(false), new FlatLandscapeTool(),
 					new FixHeightsTool(), }),
 			new ToolBox("Objekte", new ToolNode[] { new PlaceMapObjectTool(MapTreeObject.getInstance()),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(0)), new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
@@ -194,7 +194,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 							new PlaceStackToolbox(EMaterialType.SCYTHE, 8), new PlaceStackToolbox(EMaterialType.FISHINGROD, 8), }),
 					new ToolBox("Waffen", new ToolNode[] { new PlaceStackToolbox(EMaterialType.SWORD, 8),
 							new PlaceStackToolbox(EMaterialType.BOW, 8), new PlaceStackToolbox(EMaterialType.SPEAR, 8), }), }),
-			new ToolBox("GebÃ¤ude", new ToolNode[] {
+			new ToolBox("Gebäude", new ToolNode[] {
 					new ToolBox("Rohstoffe", new ToolNode[] { new PlaceBuildingTool(EBuildingType.LUMBERJACK, this),
 							new PlaceBuildingTool(EBuildingType.SAWMILL, this), new PlaceBuildingTool(EBuildingType.STONECUTTER, this),
 							new PlaceBuildingTool(EBuildingType.FORESTER, this), new PlaceBuildingTool(EBuildingType.IRONMELT, this),
@@ -206,7 +206,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 							new PlaceBuildingTool(EBuildingType.WATERWORKS, this), new PlaceBuildingTool(EBuildingType.PIG_FARM, this),
 							new PlaceBuildingTool(EBuildingType.SLAUGHTERHOUSE, this), new PlaceBuildingTool(EBuildingType.FISHER, this),
 							new PlaceBuildingTool(EBuildingType.DONKEY_FARM, this), new PlaceBuildingTool(EBuildingType.WINEGROWER, this), }),
-					new ToolBox("MilitÃ¤r", new ToolNode[] { new PlaceBuildingTool(EBuildingType.TOWER, this),
+					new ToolBox("Militär", new ToolNode[] { new PlaceBuildingTool(EBuildingType.TOWER, this),
 							new PlaceBuildingTool(EBuildingType.BIG_TOWER, this), new PlaceBuildingTool(EBuildingType.CASTLE, this),
 							new PlaceBuildingTool(EBuildingType.WEAPONSMITH, this), new PlaceBuildingTool(EBuildingType.DOCKYARD, this), }),
 					new ToolBox("Sozial", new ToolNode[] { new PlaceBuildingTool(EBuildingType.SMALL_LIVINGHOUSE, this),
