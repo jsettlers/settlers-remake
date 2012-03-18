@@ -1,10 +1,10 @@
 package jsettlers.mapcreator.tools.landscape;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.ISPosition2D;
 import jsettlers.mapcreator.data.LandscapeConstraint;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.data.objects.ObjectContainer;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.DataTester;
 import jsettlers.mapcreator.tools.Tool;
@@ -36,6 +36,16 @@ public class FixHeightsTool implements Tool {
 				}
 			}
 		}
+
+		for (int x = map.getWidth() - 2; x >= 0; x--) {
+			for (int y = map.getWidth() - 2; y >= 0; y--) {
+				if (influences[x][y] > 0) {
+					fix(map, x, y, x + 1, y);
+					fix(map, x, y, x + 1, y + 1);
+					fix(map, x, y, x, y + 1);
+				}
+			}
+		}
 	}
 
 	private static void fix(MapData map, int x, int y, int x2, int y2) {
@@ -43,15 +53,20 @@ public class FixHeightsTool implements Tool {
 		byte h2 = map.getLandscapeHeight(x2, y2);
 		ELandscapeType l1 = map.getLandscape(x, y);
 		ELandscapeType l2 = map.getLandscape(x2, y2);
+
 		int maxHeightDiff = DataTester.getMaxHeightDiff(l1, l2);
-		IMapObject container1 = map.getMapObjectContainer(x, y);
-		if (container1 instanceof LandscapeConstraint && ((LandscapeConstraint) container1).needsFlatGround()) {
+
+		ObjectContainer container1 = map.getMapObjectContainer(x, y);
+		if (container1 instanceof LandscapeConstraint
+		        && ((LandscapeConstraint) container1).needsFlatGround()) {
 			maxHeightDiff = 0;
 		}
-		IMapObject container2 = map.getMapObjectContainer(x2, y2);
-		if (container2 instanceof LandscapeConstraint && ((LandscapeConstraint) container2).needsFlatGround()) {
+		ObjectContainer container2 = map.getMapObjectContainer(x2, y2);
+		if (container2 instanceof LandscapeConstraint
+		        && ((LandscapeConstraint) container2).needsFlatGround()) {
 			maxHeightDiff = 0;
 		}
+
 		if (h1 - h2 > maxHeightDiff) {
 			// h1 too big
 			map.setHeight(x, y, h2 + maxHeightDiff);

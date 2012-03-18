@@ -17,7 +17,6 @@ import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ISPosition2D;
@@ -518,13 +517,8 @@ public class MapData implements IMapData {
 		return playerStarts[player];
 	}
 
-	public IMapObject getMapObjectContainer(int x, int y) {
-		ObjectContainer container = objects[x][y];
-		if (container instanceof IMapObject) {
-			return (IMapObject) container;
-		} else {
-			return null;
-		}
+	public ObjectContainer getMapObjectContainer(int x, int y) {
+		return objects[x][y];
 	}
 
 	public IMovable getMovableContainer(int x, int y) {

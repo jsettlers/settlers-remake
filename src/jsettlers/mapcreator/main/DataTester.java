@@ -198,8 +198,8 @@ public class DataTester implements Runnable {
 
 	public static int getMaxHeightDiff(ELandscapeType landscape,
 	        ELandscapeType landscape2) {
-		return landscape.isWater() || landscape == ELandscapeType.MOOR
-		        || landscape2.isWater() || landscape2 == ELandscapeType.MOOR ? 0
+		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.MOORINNER
+		        || landscape2.isWater() || landscape2 == ELandscapeType.MOOR || landscape2 == ELandscapeType.MOORINNER ? 0
 		        : MAX_HEIGHT_DIFF;
 	}
 

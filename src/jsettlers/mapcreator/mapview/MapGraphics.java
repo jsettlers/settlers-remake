@@ -8,6 +8,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.mapcreator.data.MapData;
+import jsettlers.mapcreator.data.objects.ObjectContainer;
 
 public class MapGraphics implements IGraphicsGrid {
 
@@ -34,7 +35,12 @@ public class MapGraphics implements IGraphicsGrid {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		return data.getMapObjectContainer(x, y);
+		ObjectContainer container = data.getMapObjectContainer(x, y);
+		if (container instanceof IMapObject) {
+			return (IMapObject) container;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
