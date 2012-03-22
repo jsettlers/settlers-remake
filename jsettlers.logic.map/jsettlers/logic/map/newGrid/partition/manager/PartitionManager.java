@@ -26,8 +26,8 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
-import synchronic.timer.INetworkTimerable;
-import synchronic.timer.NetworkTimer;
+import jsettlers.logic.timer.ITimerable;
+import jsettlers.logic.timer.PartitionManagerTimer;
 
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.
@@ -35,7 +35,7 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionManager implements INetworkTimerable, Serializable {
+public final class PartitionManager implements ITimerable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
@@ -69,11 +69,11 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	private void schedule() {
-		NetworkTimer.schedule(this, (short) 10);
+		PartitionManagerTimer.add(this);
 	}
 
 	public void stop() {
-		NetworkTimer.remove(this);
+		PartitionManagerTimer.remove(this);
 	}
 
 	public boolean addOffer(ISPosition2D position, EMaterialType materialType) {
@@ -207,7 +207,7 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 	}
 
 	@Override
-	public void timerEvent() {
+	public final void timerEvent() {
 		handleMaterialRequest();
 
 		handleWorkerCreationRequest();
@@ -573,5 +573,10 @@ public final class PartitionManager implements INetworkTimerable, Serializable {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void kill() {
+		throw new UnsupportedOperationException("CAN'T KILL PARTITION MANAGER!! THIS REALLY SHOULD NOT HAPPEN!");
 	}
 }

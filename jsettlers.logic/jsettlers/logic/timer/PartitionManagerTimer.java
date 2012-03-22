@@ -1,14 +1,12 @@
 package jsettlers.logic.timer;
 
-import jsettlers.logic.constants.Constants;
+public class PartitionManagerTimer extends AbstractTimer<ITimerable> {
 
-public class MovableTimer extends AbstractTimer<ITimerable> {
-
-	protected MovableTimer() {
-		super(Constants.MOVABLE_INTERRUPT_DELAY);
+	protected PartitionManagerTimer() {
+		super((short) 20);
 	}
 
-	private static MovableTimer uniIns;
+	private static PartitionManagerTimer uniIns;
 
 	public static void stop() {
 		if (uniIns != null) {
@@ -27,7 +25,7 @@ public class MovableTimer extends AbstractTimer<ITimerable> {
 
 	private static AbstractTimer<ITimerable> get() {
 		if (uniIns == null) {
-			uniIns = new MovableTimer();
+			uniIns = new PartitionManagerTimer();
 		}
 		return uniIns;
 	}

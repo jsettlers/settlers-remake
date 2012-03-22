@@ -48,7 +48,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		SimpleGuiTask guiTask = (SimpleGuiTask) iTask;
 
-		System.err.println("executeTask(GuiTask): " + guiTask.getGuiAction());
+		System.out.println("executeTask(GuiTask): " + guiTask.getGuiAction());
 		switch (guiTask.getGuiAction()) {
 		case SET_WORK_AREA: {
 			WorkAreaGuiTask task = (WorkAreaGuiTask) guiTask;

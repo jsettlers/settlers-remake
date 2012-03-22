@@ -7,14 +7,13 @@ package jsettlers.logic.constants;
  * 
  */
 public final class Constants {
-
-	public static final float TILE_PATHFINDER_COST = 1.0f;
-
 	/**
 	 * private constructor, because no instances of this class can be created.
 	 */
 	private Constants() {
 	}
+
+	public static final float TILE_PATHFINDER_COST = 1.0f;
 
 	public static final byte STACK_SIZE = 8;
 
@@ -25,7 +24,7 @@ public final class Constants {
 
 	public static final byte MOVABLE_INTERRUPTS_PER_SECOND = 17;
 
-	public static final short MOVABLE_DELAY = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
+	public static final short MOVABLE_INTERRUPT_DELAY = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
 
 	public static float MOVABLE_STEP_DURATION = 0.4f;
 
@@ -51,5 +50,7 @@ public final class Constants {
 	public static final int TILES_PER_DIGGER = 15;
 
 	public static final short TOWER_SOLDIER_SEARCH_AREA = 45;
+
+	public static final int PARTITION_MANANGER_RUNS_PER_TICK = 5;
 
 }
