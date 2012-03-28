@@ -59,9 +59,24 @@ public enum EDirection {
 	 * @return EDirection if the direction exists<br>
 	 *         null if it does not exist
 	 */
-	public static EDirection getDirection(ISPosition2D first, ISPosition2D second) {
-		byte dx = (byte) (second.getX() - first.getX());
-		byte dy = (byte) (second.getY() - first.getY());
+	public static final EDirection getDirection(ISPosition2D first, ISPosition2D second) {
+		return getDirection(first.getX(), first.getY(), second.getX(), second.getY());
+	}
+
+	/**
+	 * LIMITATION: the given ISPosition objects need to be direct neighbors and can not be the same object!! <br>
+	 * calculates the direction between the two given ISPosition2D objects.
+	 * 
+	 * @param first
+	 *            one ISPosition2D object
+	 * @param second
+	 *            another ISPisition2D object
+	 * @return EDirection if the direction exists<br>
+	 *         null if it does not exist
+	 */
+	public static final EDirection getDirection(short sx, short sy, short tx, short ty) {
+		byte dx = (byte) (tx - sx);
+		byte dy = (byte) (ty - sy);
 
 		return getDirection(dx, dy);
 	}

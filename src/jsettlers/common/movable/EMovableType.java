@@ -4,71 +4,77 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.selectable.ESelectionType;
 
 /**
- * Defines all types of movables with the tool they need.
+ * Defines all types of movables with the tool they need, their selection level and if they need their players ground.
  * 
  * @author Andreas Eberle
  * 
  */
 public enum EMovableType {
-	BEARER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	SMITH(EMaterialType.HAMMER, ESelectionType.PEOPLE),
-	LUMBERJACK(EMaterialType.AXE, ESelectionType.PEOPLE),
-	STONECUTTER(EMaterialType.PICK, ESelectionType.PEOPLE),
-	SAWMILLER(EMaterialType.SAW, ESelectionType.PEOPLE),
-	FORESTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	MELTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	MINER(EMaterialType.PICK, ESelectionType.PEOPLE),
-	FISHERMAN(EMaterialType.FISHINGROD, ESelectionType.PEOPLE),
-	FARMER(EMaterialType.SCYTHE, ESelectionType.PEOPLE),
-	MILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	BAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	PIG_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	SLAUGHTERER(EMaterialType.AXE, ESelectionType.PEOPLE),
-	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
+	BEARER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	SMITH(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
+	LUMBERJACK(EMaterialType.AXE, ESelectionType.PEOPLE, true),
+	STONECUTTER(EMaterialType.PICK, ESelectionType.PEOPLE, true),
+	SAWMILLER(EMaterialType.SAW, ESelectionType.PEOPLE, true),
+	FORESTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	MELTER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	MINER(EMaterialType.PICK, ESelectionType.PEOPLE, true),
+	FISHERMAN(EMaterialType.FISHINGROD, ESelectionType.PEOPLE, true),
+	FARMER(EMaterialType.SCYTHE, ESelectionType.PEOPLE, true),
+	MILLER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	BAKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	PIG_FARMER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	SLAUGHTERER(EMaterialType.AXE, ESelectionType.PEOPLE, true),
+	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 
-	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE),
-	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE),
+	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
+	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true),
 
-	THIEF(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS),
-	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS),
-	TEST_MOVABLE(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS),
-	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS),
+	THIEF(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
+	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
+	TEST_MOVABLE(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
+	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 
-	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS),
-	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS),
-	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS),
+	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
+	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
+	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
 
-	PIKEMAN_L1(EMaterialType.SPEAR, ESelectionType.SOLDIERS),
-	PIKEMAN_L2(EMaterialType.SPEAR, ESelectionType.SOLDIERS),
-	PIKEMAN_L3(EMaterialType.SPEAR, ESelectionType.SOLDIERS),
+	PIKEMAN_L1(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false),
+	PIKEMAN_L2(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false),
+	PIKEMAN_L3(EMaterialType.SPEAR, ESelectionType.SOLDIERS, false),
 
-	BOWMAN_L1(EMaterialType.BOW, ESelectionType.SOLDIERS),
-	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS),
-	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS),
+	BOWMAN_L1(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
+	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
+	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
 
-	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE),
-	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE);
+	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
+	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
 
 	private final EMaterialType tool;
 	private final ESelectionType selectionType;
+	private final boolean needsPlayersGround;
 
-	EMovableType(EMaterialType tool, ESelectionType selectionType) {
+	EMovableType(EMaterialType tool, ESelectionType selectionType, boolean needsPlayersGround) {
 		this.tool = tool;
 		this.selectionType = selectionType;
+		this.needsPlayersGround = needsPlayersGround;
 	}
 
 	/**
 	 * @return the tool this settler needs to do his job.
 	 */
-	public EMaterialType getTool() {
+	public final EMaterialType getTool() {
 		return tool;
 	}
 
 	/**
 	 * @return selection type of this movable type
 	 */
-	public ESelectionType getSelectionType() {
+	public final ESelectionType getSelectionType() {
 		return selectionType;
+	}
+
+	public final boolean needsPlayersGround() {
+		return needsPlayersGround;
 	}
 }
