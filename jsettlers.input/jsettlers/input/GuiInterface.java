@@ -35,8 +35,8 @@ import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
-import jsettlers.logic.movable.IDebugable;
-import jsettlers.logic.movable.IIDable;
+import jsettlers.logic.newmovable.interfaces.IDebugable;
+import jsettlers.logic.newmovable.interfaces.IIDable;
 import network.NetworkManager;
 import synchronic.timer.NetworkTimer;
 

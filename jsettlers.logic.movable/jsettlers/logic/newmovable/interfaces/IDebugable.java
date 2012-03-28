@@ -1,4 +1,4 @@
-package jsettlers.logic.movable;
+package jsettlers.logic.newmovable.interfaces;
 
 public interface IDebugable {
 

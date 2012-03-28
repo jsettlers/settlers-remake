@@ -25,7 +25,7 @@ public class MovableTimer extends AbstractTimer<ITimerable> {
 		get().remove_(t);
 	}
 
-	private static AbstractTimer<ITimerable> get() {
+	private static synchronized AbstractTimer<ITimerable> get() {
 		if (uniIns == null) {
 			uniIns = new MovableTimer();
 		}

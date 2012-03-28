@@ -19,6 +19,8 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.soldiers.AbstractSoldierStrategy;
+import jsettlers.logic.newmovable.interfaces.IDebugable;
+import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
