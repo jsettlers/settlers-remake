@@ -1,4 +1,4 @@
-package jsettlers.commin.movable;
+package jsettlers.common.movable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
