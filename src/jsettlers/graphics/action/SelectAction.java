@@ -1,6 +1,6 @@
 package jsettlers.graphics.action;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a select action that states that the user selected a position on the
@@ -10,7 +10,7 @@ import jsettlers.common.position.ISPosition2D;
  */
 public class SelectAction extends Action {
 
-	private final ISPosition2D position;
+	private final ShortPoint2D position;
 
 	/**
 	 * Creates a new select action.
@@ -18,12 +18,12 @@ public class SelectAction extends Action {
 	 * @param position
 	 *            The position the user wants to select.
 	 */
-	public SelectAction(ISPosition2D position) {
+	public SelectAction(ShortPoint2D position) {
 		super(EActionType.SELECT_POINT);
 		this.position = position;
 	}
 
-	public SelectAction(ISPosition2D position, EActionType action) {
+	public SelectAction(ShortPoint2D position, EActionType action) {
 		super(action);
 		this.position = position;
     }
@@ -33,7 +33,7 @@ public class SelectAction extends Action {
 	 * 
 	 * @return The position the user selected.
 	 */
-	public ISPosition2D getPosition() {
+	public ShortPoint2D getPosition() {
 		return this.position;
 	}
 }

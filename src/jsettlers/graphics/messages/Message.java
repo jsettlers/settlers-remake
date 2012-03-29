@@ -1,6 +1,6 @@
 package jsettlers.graphics.messages;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a message for the user, that is displayed at the users screen.
@@ -43,5 +43,5 @@ public interface Message {
 	 * 
 	 * @return A point describing the message position on the map. May be outside the map.
 	 */
-	ISPosition2D getPosition();
+	ShortPoint2D getPosition();
 }

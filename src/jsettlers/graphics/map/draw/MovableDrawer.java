@@ -4,7 +4,7 @@ import jsettlers.common.Color;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
@@ -91,7 +91,7 @@ public class MovableDrawer {
 
 	private static void drawImage(MapDrawContext context, IMovable movable,
 	        Image image) {
-		ISPosition2D pos = movable.getPos();
+		ShortPoint2D pos = movable.getPos();
 		byte fogstatus = context.getVisibleStatus(pos.getX(), pos.getY());
 		if (fogstatus == 0) {
 			return; // break

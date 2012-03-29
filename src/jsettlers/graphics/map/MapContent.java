@@ -29,7 +29,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
@@ -129,7 +129,7 @@ public final class MapContent implements SettlersContent,
 	private final SoundManager soundmanager;
 	private final BackgroundSound bgsound;
 
-	private ISPosition2D gotoMarker;
+	private ShortPoint2D gotoMarker;
 	private long gotoMarkerTime;
 
 	/**
@@ -375,7 +375,7 @@ public final class MapContent implements SettlersContent,
 		// ImageProvider.getInstance().getSettlerSequence(4, 5);
 		// float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
 		//
-		// ISPosition2D underMouse =
+		// ShortPoint2D underMouse =
 		// this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
 		// IHexTile tile = map.getTile(underMouse);
 		// if (tile != null) {
@@ -476,7 +476,7 @@ public final class MapContent implements SettlersContent,
 		                0,
 		        };
 
-		for (ISPosition2D pos : tiles) {
+		for (ShortPoint2D pos : tiles) {
 			short x = pos.getX();
 			short y = pos.getY();
 			int argb = map.getDebugColorAt(x, y);
@@ -698,7 +698,7 @@ public final class MapContent implements SettlersContent,
 
 		float x = (float) position.getX();
 		float y = (float) position.getY();
-		ISPosition2D onMap = this.context.getPositionOnScreen(x, y);
+		ShortPoint2D onMap = this.context.getPositionOnScreen(x, y);
 		if (this.context.checkMapCoordinates(onMap.getX(), onMap.getY())) {
 			Action action;
 			if (commandEvent.isSelecting()) {
@@ -756,7 +756,7 @@ public final class MapContent implements SettlersContent,
 		controls.displaySelection(selection);
 	}
 
-	public void scrollTo(ISPosition2D point, boolean mark) {
+	public void scrollTo(ShortPoint2D point, boolean mark) {
 		this.context.scrollTo(point);
 		if (mark) {
 			gotoMarker = point;

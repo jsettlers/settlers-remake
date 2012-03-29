@@ -3,7 +3,7 @@ package jsettlers.graphics.map;
 import java.util.LinkedList;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -69,7 +69,7 @@ public class MapInterfaceConnector implements ActionFireable {
 	 * @param mark
 	 *            If there should be a mark displayed at the point.
 	 */
-	public void scrollTo(ISPosition2D point, boolean mark) {
+	public void scrollTo(ShortPoint2D point, boolean mark) {
 		this.content.scrollTo(point, mark);
 	}
 

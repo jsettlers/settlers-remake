@@ -8,7 +8,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
@@ -153,7 +153,7 @@ public class OriginalControls implements IControls {
 		        ((relativey - constants.UI_CENTERY)
 		                / (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
 		                / constants.MINIMAP_HEIGHT;
-		ISPosition2D clickPosition =
+		ShortPoint2D clickPosition =
 		        minimap.getClickPositionIfOnMap(minimapx, minimapy);
 		if (clickPosition != null) {
 			return new PanToAction(clickPosition);
@@ -183,7 +183,7 @@ public class OriginalControls implements IControls {
 
 	}
 
-	private ISPosition2D startMapPosition;
+	private ShortPoint2D startMapPosition;
 
 	@Override
 	public boolean handleDrawEvent(GODrawEvent event) {

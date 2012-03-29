@@ -12,7 +12,6 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
@@ -177,8 +176,8 @@ public final class MapDrawContext {
 	 *            The y coordinate in draw space.
 	 * @return The map position under the point.
 	 */
-	public ISPosition2D getPositionUnder(float screenx, float screeny) {
-		ISPosition2D currentPoint = converter.getMap(screenx, screeny);
+	public ShortPoint2D getPositionUnder(float screenx, float screeny) {
+		ShortPoint2D currentPoint = converter.getMap(screenx, screeny);
 		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
 
 		UIPoint onscreen =
@@ -190,7 +189,7 @@ public final class MapDrawContext {
 		do {
 			couldBeImproved = false;
 
-			for (ISPosition2D p : new MapNeighboursArea(currentPoint)) {
+			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
 				onscreen =
 				        converter.getView(p.getX(), p.getY(),
 				                getHeight(p.getX(), p.getY()));
@@ -216,7 +215,7 @@ public final class MapDrawContext {
 	 *            The y coordinate in screen space.
 	 * @return The map position under the screen point.
 	 */
-	public ISPosition2D getPositionOnScreen(float x, float y) {
+	public ShortPoint2D getPositionOnScreen(float x, float y) {
 		return getPositionUnder(x / zoom + this.screen.getLeft(), y / zoom
 		        + this.screen.getBottom());
 	}
@@ -352,7 +351,7 @@ public final class MapDrawContext {
 		}
 
 		@Override
-		public boolean contains(ISPosition2D point) {
+		public boolean contains(ShortPoint2D point) {
 			int height = getHeight(point.getX(), point.getY());
 			float x = converter.getViewX(point.getX(), point.getY(), height);
 			float y = converter.getViewY(point.getX(), point.getY(), height);
@@ -360,11 +359,11 @@ public final class MapDrawContext {
 		}
 
 		@Override
-		public Iterator<ISPosition2D> iterator() {
+		public Iterator<ShortPoint2D> iterator() {
 			return new MyIterator();
 		}
 
-		private class MyIterator implements Iterator<ISPosition2D> {
+		private class MyIterator implements Iterator<ShortPoint2D> {
 			/**
 			 * How many lines to search at least.
 			 */
@@ -406,7 +405,7 @@ public final class MapDrawContext {
 			}
 
 			@Override
-			public ISPosition2D next() {
+			public ShortPoint2D next() {
 				ShortPoint2D ret = next;
 				next = searchNext();
 				return ret;
@@ -424,7 +423,7 @@ public final class MapDrawContext {
 		return this.converter.getMapForScreen(this.screen.getPosition());
 	}
 
-	public void scrollTo(ISPosition2D point) {
+	public void scrollTo(ShortPoint2D point) {
 		int height = getHeight(point.getX(), point.getY());
 		float x = converter.getViewX(point.getX(), point.getY(), height);
 		float y = converter.getViewY(point.getX(), point.getY(), height);

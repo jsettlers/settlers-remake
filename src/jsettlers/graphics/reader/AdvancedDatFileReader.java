@@ -260,8 +260,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 		guiimages = new GuiImage[guistarts.length];
 
-		settlersequences =
-		        (Sequence<Image>[]) new Sequence[settlerstarts.length];
+		settlersequences = new Sequence[settlerstarts.length];
 
 		int torsodifference = settlerstarts.length - torsostarts.length;
 		if (torsodifference != 0) {

@@ -1,6 +1,6 @@
 package jsettlers.graphics.action;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * The action that states that the ui should pan to a given point.
@@ -9,9 +9,9 @@ import jsettlers.common.position.ISPosition2D;
  */
 public class PanToAction extends Action {
 
-	private final ISPosition2D center;
+	private final ShortPoint2D center;
 
-	public PanToAction(ISPosition2D center) {
+	public PanToAction(ShortPoint2D center) {
 	    super(EActionType.PAN_TO);
 		this.center = center;
     }
@@ -20,7 +20,7 @@ public class PanToAction extends Action {
 	 * Gets the point that should be at the center of the screen.
 	 * @return The point.
 	 */
-	public ISPosition2D getCenter() {
+	public ShortPoint2D getCenter() {
 	    return center;
     }
 

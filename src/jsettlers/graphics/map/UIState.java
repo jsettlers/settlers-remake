@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class UIState implements Serializable {
 
@@ -19,14 +19,14 @@ public class UIState implements Serializable {
 	/**
 	 * The center point of the screen.
 	 */
-	private final ISPosition2D screenCenter;
+	private final ShortPoint2D screenCenter;
 
-	public UIState(int player, ISPosition2D startPoint) {
+	public UIState(int player, ShortPoint2D startPoint) {
 		this.player = player;
 		this.screenCenter = startPoint;
     }
 	
-	public ISPosition2D getScreenCenter() {
+	public ShortPoint2D getScreenCenter() {
 	    return screenCenter;
     }
 	

@@ -1,6 +1,6 @@
 package jsettlers.graphics.action;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This action states that the user wants something to move to the given
@@ -10,7 +10,7 @@ import jsettlers.common.position.ISPosition2D;
  */
 public class MoveToAction extends Action {
 
-	private final ISPosition2D position;
+	private final ShortPoint2D position;
 
 	/**
 	 * Creates a new moveto aciton.
@@ -18,7 +18,7 @@ public class MoveToAction extends Action {
 	 * @param position
 	 *            The position the user clicked at.
 	 */
-	public MoveToAction(ISPosition2D position) {
+	public MoveToAction(ShortPoint2D position) {
 		super(EActionType.MOVE_TO);
 		this.position = position;
 	}
@@ -28,7 +28,7 @@ public class MoveToAction extends Action {
 	 * 
 	 * @return The position.
 	 */
-	public ISPosition2D getPosition() {
+	public ShortPoint2D getPosition() {
 		return this.position;
 	}
 

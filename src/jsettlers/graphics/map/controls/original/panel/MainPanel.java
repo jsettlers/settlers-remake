@@ -1,7 +1,7 @@
 package jsettlers.graphics.map.controls.original.panel;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.SelectAction;
@@ -205,7 +205,7 @@ public class MainPanel extends UIPanel {
 			return null;
 		} else if (action.getActionType() == EActionType.SELECT_POINT
 		        && selectAction != null) {
-			ISPosition2D position = ((SelectAction) action).getPosition();
+			ShortPoint2D position = ((SelectAction) action).getPosition();
 			SelectAction replaced = new SelectAction(position, selectAction);
 			goBack();
 			return replaced;

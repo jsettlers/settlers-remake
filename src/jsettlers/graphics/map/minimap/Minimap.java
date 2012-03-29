@@ -7,7 +7,6 @@ import java.util.LinkedList;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
@@ -171,7 +170,7 @@ public final class Minimap {
 		return context;
 	}
 
-	public ISPosition2D getClickPositionIfOnMap(float relativex, float relativey) {
+	public ShortPoint2D getClickPositionIfOnMap(float relativex, float relativey) {
 		int x = converter.getMapX(relativex, relativey);
 		int y = converter.getMapY(relativex, relativey);
 
@@ -182,7 +181,7 @@ public final class Minimap {
 		}
 	}
 
-	public ISPosition2D getClickPosition(float relativex, float relativey) {
+	public ShortPoint2D getClickPosition(float relativex, float relativey) {
 		int x = converter.getMapX(relativex, relativey);
 		int y = converter.getMapY(relativex, relativey);
 		if (x < 0) {
