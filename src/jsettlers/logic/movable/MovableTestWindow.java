@@ -1,6 +1,7 @@
 package jsettlers.logic.movable;
 
 import jsettlers.TestWindow;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
@@ -37,11 +38,26 @@ public class MovableTestWindow {
 			public void action(Action action) {
 				switch (action.getActionType()) {
 				case MOVE_TO:
-					movable.moveTo(new ShortPoint2D(((MoveToAction) action).getPosition()));
+					movable.moveTo(((MoveToAction) action).getPosition());
+					break;
+				case SPEED_FASTER:
+					NetworkTimer.multiplyGameSpeed(1.2f);
+					break;
+				case SPEED_SLOWER:
+					NetworkTimer.multiplyGameSpeed(1 / 1.2f);
 					break;
 				}
 			}
 		});
+
+		grid.getMovableGrid().dropMaterial(new ShortPoint2D(40, 40), EMaterialType.PLANK);
+		grid.getMovableGrid().dropMaterial(new ShortPoint2D(60, 60), EMaterialType.STONE);
+
+		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(30, 30));
+		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(31, 31));
+		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(32, 32));
+		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(33, 33));
+		;
 
 	}
 }

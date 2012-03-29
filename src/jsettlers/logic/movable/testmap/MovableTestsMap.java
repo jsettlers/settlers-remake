@@ -1,5 +1,7 @@
 package jsettlers.logic.movable.testmap;
 
+import java.util.LinkedList;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -14,8 +16,11 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
+import jsettlers.logic.objects.stack.StackMapObject;
+import random.RandomSingleton;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
@@ -55,7 +60,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		return null;
+		if (materialTypeMap[x][y] != null && materialAmmountMap[x][y] > 0) {
+			return new StackMapObject(materialTypeMap[x][y], materialAmmountMap[x][y]);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -122,7 +131,28 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public void addJoblessBearer(IManageableBearer bearer) {
+			if (!materials.isEmpty()) {
+				ShortPoint2D source = materials.pop();
+				final ShortPoint2D targetPos = new ShortPoint2D(RandomSingleton.getInt(0, width - 1), RandomSingleton.getInt(0, height - 1));
+				bearer.executeJob(source, new IMaterialRequester() {
+					@Override
+					public void requestFailed() {
+					}
+
+					@Override
+					public boolean isRequestActive() {
+						return true;
+					}
+
+					@Override
+					public ShortPoint2D getPos() {
+						return targetPos;
+					}
+				}, materialTypeMap[source.getX()][source.getY()]);
+			}
 		}
+
+		private LinkedList<ShortPoint2D> materials = new LinkedList<ShortPoint2D>();
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
@@ -133,6 +163,15 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 				return false;
 			}
 		}
+
+		@Override
+		public void dropMaterial(ShortPoint2D pos, EMaterialType materialType) {
+			materialTypeMap[pos.getX()][pos.getY()] = materialType;
+			materialAmmountMap[pos.getX()][pos.getY()]++;
+
+			materials.add(pos);
+		}
+
 	};
 
 	public INewMovableGrid getMovableGrid() {
