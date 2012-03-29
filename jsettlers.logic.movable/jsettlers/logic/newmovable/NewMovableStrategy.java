@@ -8,6 +8,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
+import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
 import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
 
 public abstract class NewMovableStrategy implements Serializable {
@@ -24,6 +25,8 @@ public abstract class NewMovableStrategy implements Serializable {
 		switch (movableType) {
 		case TEST_MOVABLE:
 			return new TestMovableStrategy(movable);
+		case BEARER:
+			return new BearerMovableStrategy(movable);
 
 		default:
 			return null;
@@ -36,8 +39,8 @@ public abstract class NewMovableStrategy implements Serializable {
 		movable.convertTo(movableType);
 	}
 
-	protected final void setMaterial(EMaterialType materialType) {
-		movable.setMaterial(materialType);
+	protected final EMaterialType setMaterial(EMaterialType materialType) {
+		return movable.setMaterial(materialType);
 	}
 
 	protected final void playAction(EAction movableAction, float duration) { // TODO @Andreas : rename EAction to EMovableAction
@@ -58,5 +61,15 @@ public abstract class NewMovableStrategy implements Serializable {
 
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
+	}
+
+	/**
+	 * Checks preconditions before the next path step can be gone.
+	 * 
+	 * @return true if the path should be continued<br>
+	 *         false if it must be stopped.
+	 */
+	protected boolean checkPathStepPreconditions() {
+		return true;
 	}
 }

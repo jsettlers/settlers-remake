@@ -25,4 +25,12 @@ public interface IStrategyGrid {
 	 */
 	boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType);
 
+	/**
+	 * Drop a material of given type at given position.
+	 * 
+	 * @param pos
+	 * @param materialType
+	 */
+	void dropMaterial(ShortPoint2D pos, EMaterialType materialType);
+
 }

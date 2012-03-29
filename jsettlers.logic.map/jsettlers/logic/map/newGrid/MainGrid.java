@@ -815,7 +815,7 @@ public class MainGrid implements Serializable {
 		public final boolean pushMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer) {
 			if (mapObjectsManager.pushMaterial(position.getX(), position.getY(), materialType)) {
 				if (offer) {
-					partitionsGrid.pushMaterial(new ShortPoint2D(position), materialType);
+					partitionsGrid.pushMaterial(position, materialType);
 				}
 				return true;
 			} else
@@ -1300,7 +1300,7 @@ public class MainGrid implements Serializable {
 
 				byte stackSize = mapObjectsManager.getStackSize(position.getX(), position.getY(), materialType);
 				for (byte i = 0; i < stackSize; i++) {
-					partitionsGrid.pushMaterial(new ShortPoint2D(position), materialType);
+					partitionsGrid.pushMaterial(position, materialType);
 				}
 			}
 		}

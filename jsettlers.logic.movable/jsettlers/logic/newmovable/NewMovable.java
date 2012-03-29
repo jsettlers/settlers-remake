@@ -139,7 +139,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private void pathingAction() {
 		if (progress >= 1) {
-			if (path.isFinished()) { // if path is finished, return from here
+			if (path.isFinished() || !strategy.checkPathStepPreconditions()) { // if path is finished, or canceled by strategy return from here
 				setState(ENewMovableState.DOING_NOTHING);
 				movableAction = EAction.NO_ACTION;
 				path = null;
@@ -192,10 +192,13 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * Sets the material this movable is carrying to the given one.
 	 * 
 	 * @param materialType
+	 * @return {@link EMaterialType} that has been set before.
 	 */
-	final void setMaterial(EMaterialType materialType) {
+	final EMaterialType setMaterial(EMaterialType materialType) {
 		assert materialType != null : "MaterialType may not be null";
+		EMaterialType former = this.materialType;
 		this.materialType = materialType;
+		return former;
 	}
 
 	/**
