@@ -33,7 +33,6 @@ import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.IResourceProvider;
@@ -225,7 +224,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 	public void action(Action action) {
 		if (action instanceof SelectAction) {
 			SelectAction sAction = (SelectAction) action;
-			ISPosition2D pos = sAction.getPosition();
+			ShortPoint2D pos = sAction.getPosition();
 			RelativePoint relative = absoluteToRelative(pos);
 
 			positionDisplayer.setText("x = " + (pos.getX() - BuildingtestMap.OFFSET) + ", y = " + (pos.getY() - BuildingtestMap.OFFSET));
@@ -268,7 +267,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 	private void setDoor(RelativePoint tile) {
 		RelativePoint oldDoor = definition.getDoor();
-		ISPosition2D oldPos = relativeToAbsolute(oldDoor);
+		ShortPoint2D oldPos = relativeToAbsolute(oldDoor);
 		reloadColor(oldPos);
 
 		definition.setDoor(tile);
@@ -276,18 +275,18 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 	private void setFlag(RelativePoint tile) {
 		RelativePoint oldFlag = definition.getFlag();
-		ISPosition2D oldPos = relativeToAbsolute(oldFlag);
+		ShortPoint2D oldPos = relativeToAbsolute(oldFlag);
 		reloadColor(oldPos);
 
 		definition.setFlag(tile);
 	}
 
-	private ISPosition2D relativeToAbsolute(RelativePoint oldDoor) {
-		ISPosition2D oldPos = new ShortPoint2D(oldDoor.getDx() + BuildingtestMap.OFFSET, oldDoor.getDy() + BuildingtestMap.OFFSET);
+	private ShortPoint2D relativeToAbsolute(RelativePoint oldDoor) {
+		ShortPoint2D oldPos = new ShortPoint2D(oldDoor.getDx() + BuildingtestMap.OFFSET, oldDoor.getDy() + BuildingtestMap.OFFSET);
 		return oldPos;
 	}
 
-	private RelativePoint absoluteToRelative(ISPosition2D pos) {
+	private RelativePoint absoluteToRelative(ShortPoint2D pos) {
 		RelativePoint tile = new RelativePoint(pos.getX() - BuildingtestMap.OFFSET, pos.getY() - BuildingtestMap.OFFSET);
 		return tile;
 	}
@@ -302,7 +301,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 		}
 	}
 
-	private void reloadColor(ISPosition2D pos) {
+	private void reloadColor(ShortPoint2D pos) {
 		PseudoTile tile = map.getTile(pos);
 		ArrayList<Color> colors = new ArrayList<Color>();
 

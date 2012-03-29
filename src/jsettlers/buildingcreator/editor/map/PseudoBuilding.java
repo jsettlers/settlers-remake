@@ -4,14 +4,14 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
 public class PseudoBuilding implements IBuilding {
 	private final EBuildingType type;
-	private final ISPosition2D pos;
+	private final ShortPoint2D pos;
 
-	PseudoBuilding(EBuildingType type, ISPosition2D pos) {
+	PseudoBuilding(EBuildingType type, ShortPoint2D pos) {
 		this.type = type;
 		this.pos = pos;
 
@@ -28,7 +28,7 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return pos;
 	}
 

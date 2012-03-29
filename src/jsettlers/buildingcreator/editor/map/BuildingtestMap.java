@@ -8,7 +8,7 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class BuildingtestMap implements IGraphicsGrid {
 
@@ -26,7 +26,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 			}
 		}
 		PseudoTile middle = tiles[OFFSET][OFFSET];
-		IBuilding building = new PseudoBuilding(definition.getType(), middle);
+		IBuilding building = new PseudoBuilding(definition.getType(), middle.getPos());
 		middle.setBuilding(building);
 	}
 
@@ -79,7 +79,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 		return 0;
 	}
 
-	public PseudoTile getTile(ISPosition2D pos) {
+	public PseudoTile getTile(ShortPoint2D pos) {
 		return tiles[pos.getX()][pos.getY()];
 	}
 
