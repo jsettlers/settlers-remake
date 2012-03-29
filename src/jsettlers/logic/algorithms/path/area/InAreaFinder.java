@@ -1,7 +1,6 @@
 package jsettlers.logic.algorithms.path.area;
 
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import random.RandomSingleton;
@@ -35,7 +34,7 @@ public final class InAreaFinder {
 	 * @return an SPoint2D object if the searched thing has been found<br>
 	 *         null if it hasn't been found.
 	 */
-	public final ISPosition2D find(IPathCalculateable requester, short centerX, short centerY, short searchRadius, ESearchType searched) {
+	public final ShortPoint2D find(IPathCalculateable requester, short centerX, short centerY, short searchRadius, ESearchType searched) {
 
 		for (int i = 0; i < 100; i++) {
 			double angle = RandomSingleton.nextD() * 2 * Math.PI; // get an angle in the interval [0, 2PI]

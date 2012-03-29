@@ -3,7 +3,7 @@ package jsettlers.logic.algorithms.landmarks;
 import java.util.List;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Tests the partitions and if the partition encloses a blocked tile area, the
@@ -274,8 +274,8 @@ public class NewLandmarkCorrection {
 		}
 	}
 
-	public void addLandmarkedPositions(List<ISPosition2D> occupiedPositions) {
-		for (ISPosition2D pos : occupiedPositions) {
+	public void addLandmarkedPositions(List<ShortPoint2D> occupiedPositions) {
+		for (ShortPoint2D pos : occupiedPositions) {
 			reTest(pos.getX(), pos.getY());
 		}
 	}

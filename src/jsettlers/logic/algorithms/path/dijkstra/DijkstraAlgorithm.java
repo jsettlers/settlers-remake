@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
@@ -62,7 +62,7 @@ public final class DijkstraAlgorithm {
 	}
 
 	private final Path findPathTo(IPathCalculateable requester, short tx, short ty) {
-		ISPosition2D pos = requester.getPos();
+		ShortPoint2D pos = requester.getPos();
 		return aStar.findPath(requester, pos.getX(), pos.getY(), tx, ty);
 	}
 
@@ -102,7 +102,7 @@ public final class DijkstraAlgorithm {
 			return 3;
 		}
 
-		public boolean isCenterAt(ISPosition2D pos) {
+		public boolean isCenterAt(ShortPoint2D pos) {
 			return pos != null && pos.getX() == cX && pos.getY() == cY;
 		}
 

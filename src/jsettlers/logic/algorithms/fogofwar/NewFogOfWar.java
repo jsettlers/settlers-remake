@@ -10,7 +10,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.fogofwar.circle.CachedRelativeCircleIterator;
 import jsettlers.logic.algorithms.fogofwar.circle.CachedRelativeMapCircle;
 
@@ -162,7 +162,7 @@ public final class NewFogOfWar implements Serializable {
 				if (isPlayerOK(curr)) {
 					short distance = curr.getViewDistance();
 					if (distance > 0) {
-						ISPosition2D pos = curr.getPos();
+						ShortPoint2D pos = curr.getPos();
 						if (pos != null)
 							drawer.drawCircleToBuffer(pos.getX(), pos.getY(), distance);
 					}

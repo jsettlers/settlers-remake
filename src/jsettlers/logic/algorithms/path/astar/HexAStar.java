@@ -3,7 +3,7 @@ package jsettlers.logic.algorithms.path.astar;
 import java.util.BitSet;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
@@ -47,8 +47,8 @@ public final class HexAStar implements IAStar {
 	}
 
 	@Override
-	public final Path findPath(IPathCalculateable requester, ISPosition2D target) {
-		ISPosition2D pos = requester.getPos();
+	public final Path findPath(IPathCalculateable requester, ShortPoint2D target) {
+		ShortPoint2D pos = requester.getPos();
 		return findPath(requester, pos.getX(), pos.getY(), target.getX(), target.getY());
 	}
 
@@ -220,7 +220,6 @@ public final class HexAStar implements IAStar {
 		final float dx = (short) Math.abs(sx - tx);
 		final float dy = (short) Math.abs(sy - ty);
 
-		// return (dx + 1.01f * dy);// FIXME
-		return dx + dy;
+		return (dx + 1.01f * dy);
 	}
 }

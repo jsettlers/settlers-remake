@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This thread calculates the positions that represent the border between the areas occupied by different players.
@@ -16,7 +16,7 @@ public class BordersThread implements Runnable {
 
 	private final IBordersThreadGrid grid;
 	private boolean canceled = false;
-	private final LinkedBlockingQueue<ISPosition2D> positionsQueue = new LinkedBlockingQueue<ISPosition2D>();
+	private final LinkedBlockingQueue<ShortPoint2D> positionsQueue = new LinkedBlockingQueue<ShortPoint2D>();
 
 	/**
 	 * This constructor creates a new instance of {@link BordersThread} and automatically launches a thread for it called "bordersThread".
@@ -41,7 +41,7 @@ public class BordersThread implements Runnable {
 		}
 
 		while (!canceled) {
-			ISPosition2D position = null;
+			ShortPoint2D position = null;
 			while (position == null && !canceled) {
 				try {
 					position = positionsQueue.take();
@@ -53,7 +53,7 @@ public class BordersThread implements Runnable {
 		}
 	}
 
-	private void calculateForPosition(ISPosition2D position) {
+	private void calculateForPosition(ShortPoint2D position) {
 		byte player = grid.getPlayerAt(position.getX(), position.getY());
 		boolean isBorder = false;
 
@@ -91,13 +91,13 @@ public class BordersThread implements Runnable {
 		grid.setBorderAt(position.getX(), position.getY(), isBorder && player >= 0);
 	}
 
-	public void checkPosition(ISPosition2D position) {
+	public void checkPosition(ShortPoint2D position) {
 		synchronized (positionsQueue) {
 			this.positionsQueue.offer(position);
 		}
 	}
 
-	public void checkPositions(List<ISPosition2D> occupiedPositions) {
+	public void checkPositions(List<ShortPoint2D> occupiedPositions) {
 		synchronized (positionsQueue) {
 			this.positionsQueue.addAll(occupiedPositions);
 		}

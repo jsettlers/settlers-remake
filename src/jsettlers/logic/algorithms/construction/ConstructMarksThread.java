@@ -10,7 +10,7 @@ import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
 import synchronic.timer.NetworkTimer;
 
@@ -152,7 +152,7 @@ public class ConstructMarksThread implements Runnable {
 	 *            The area to remove the marks
 	 */
 	private void removeConstructionMarks(IMapArea area) {
-		for (ISPosition2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
+		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
 			map.setConstructMarking(pos.getX(), pos.getY(), (byte) -1);
 		}
 	}
@@ -166,7 +166,7 @@ public class ConstructMarksThread implements Runnable {
 	 *            The area of marks that should be skipped.
 	 */
 	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
-		for (ISPosition2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
+		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
 			if (!notIn.contains(pos)) {
 				map.setConstructMarking(pos.getX(), pos.getY(), (byte) -1);
 			}

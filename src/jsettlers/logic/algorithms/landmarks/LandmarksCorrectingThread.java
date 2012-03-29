@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Thread to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area of
@@ -16,7 +16,7 @@ import jsettlers.common.position.ISPosition2D;
  */
 public final class LandmarksCorrectingThread extends Thread {
 	private final ILandmarksThreadGrid grid;
-	private final LinkedBlockingQueue<ISPosition2D> queue = new LinkedBlockingQueue<ISPosition2D>();
+	private final LinkedBlockingQueue<ShortPoint2D> queue = new LinkedBlockingQueue<ShortPoint2D>();
 	private boolean canceled;
 
 	public LandmarksCorrectingThread(ILandmarksThreadGrid map) {
@@ -40,7 +40,7 @@ public final class LandmarksCorrectingThread extends Thread {
 			} catch (InterruptedException e) {
 			}
 
-			ISPosition2D startPos = null;
+			ShortPoint2D startPos = null;
 			while (startPos == null) {
 				try {
 					startPos = queue.take();
@@ -51,7 +51,7 @@ public final class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private final void checkLandmarks(ISPosition2D startPos) {
+	private final void checkLandmarks(ShortPoint2D startPos) {
 		if (grid.isBlocked(startPos.getX(), startPos.getY()))
 			return;
 
@@ -65,18 +65,18 @@ public final class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private final void checkLandmarks(ISPosition2D startPos, short startPartition, EDirection startDirection) {
+	private final void checkLandmarks(ShortPoint2D startPos, short startPartition, EDirection startDirection) {
 		EDirection blockedDir = startDirection;
 
-		ISPosition2D blocked = blockedDir.getNextHexPoint(startPos);
-		ISPosition2D currBase = startPos;
-		LinkedList<ISPosition2D> blockedBorder = new LinkedList<ISPosition2D>();
+		ShortPoint2D blocked = blockedDir.getNextHexPoint(startPos);
+		ShortPoint2D currBase = startPos;
+		LinkedList<ShortPoint2D> blockedBorder = new LinkedList<ShortPoint2D>();
 
 		blockedBorder.add(blocked);
 
 		for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection neighborDir = blockedDir.getNeighbor(-1);
-			ISPosition2D neighborPos = neighborDir.getNextHexPoint(currBase);
+			ShortPoint2D neighborPos = neighborDir.getNextHexPoint(currBase);
 
 			if (!grid.isInBounds(neighborPos.getX(), neighborPos.getY())) {
 				takeOverBlockedLand(blockedBorder, startPartition);
@@ -106,8 +106,8 @@ public final class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private final void takeOverBlockedLand(LinkedList<ISPosition2D> blockedBorder, short startPartition) {
-		for (ISPosition2D curr : blockedBorder) {
+	private final void takeOverBlockedLand(LinkedList<ShortPoint2D> blockedBorder, short startPartition) {
+		for (ShortPoint2D curr : blockedBorder) {
 			short y = curr.getY();
 			for (short x = curr.getX();; x++) {
 				if (grid.isInBounds(x, y) && grid.isBlocked(x, y)) {
@@ -127,7 +127,7 @@ public final class LandmarksCorrectingThread extends Thread {
 		}
 	}
 
-	private final LinkedList<EDirection> getBlockedDirection(ISPosition2D position) {
+	private final LinkedList<EDirection> getBlockedDirection(ShortPoint2D position) {
 		LinkedList<EDirection> blockedDirections = new LinkedList<EDirection>();
 
 		for (EDirection currDir : EDirection.values) {
@@ -140,11 +140,11 @@ public final class LandmarksCorrectingThread extends Thread {
 		return blockedDirections;
 	}
 
-	public final void addLandmarkedPosition(ISPosition2D pos) {
+	public final void addLandmarkedPosition(ShortPoint2D pos) {
 		queue.offer(pos);
 	}
 
-	public final void addLandmarkedPositions(List<ISPosition2D> occupiedPositions) {
+	public final void addLandmarkedPositions(List<ShortPoint2D> occupiedPositions) {
 		queue.addAll(occupiedPositions);
 	}
 

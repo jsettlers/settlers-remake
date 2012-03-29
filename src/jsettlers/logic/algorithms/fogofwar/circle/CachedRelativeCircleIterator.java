@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleIterator;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -13,7 +12,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Eberle
  * 
  */
-public final class CachedRelativeCircleIterator implements Iterator<ISPosition2D> {
+public final class CachedRelativeCircleIterator implements Iterator<ShortPoint2D> {
 	protected int currenty;
 
 	protected float currentLineHalfWidth;
@@ -56,7 +55,7 @@ public final class CachedRelativeCircleIterator implements Iterator<ISPosition2D
 	}
 
 	@Override
-	public ISPosition2D next() {
+	public ShortPoint2D next() {
 		int y = currenty;
 		int x = computeNextXAndProgress();
 

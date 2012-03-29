@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a queue that lets you define different slots. In each slot, the entries are processed in a fifo-principle, but it is not guaranteed that
@@ -160,7 +160,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 	 * @param pos
 	 *            The position to pop close to.
 	 */
-	public E pop(T slot, ISPosition2D pos) {
+	public E pop(T slot, ShortPoint2D pos) {
 		for (int slotNumber = 0; slotNumber < slots.length; slotNumber++) {
 			if (slotTypes[slotNumber].equals(slot)) {
 				return pop(pos, slotNumber);
@@ -169,7 +169,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 		return null;
 	}
 
-	private E pop(ISPosition2D pos, int slotNumber) {
+	private E pop(ShortPoint2D pos, int slotNumber) {
 		if (slots[slotNumber] == null) {
 			return null;
 		} else {
@@ -183,7 +183,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 		}
 	}
 
-	private ElementHolder<E> findBestFit(ISPosition2D pos, int slotNumber) {
+	private ElementHolder<E> findBestFit(ShortPoint2D pos, int slotNumber) {
 		ElementHolder<E> best = slots[slotNumber];
 		float bestDist = Float.POSITIVE_INFINITY;
 		ElementHolder<E> current = slots[slotNumber];
@@ -234,7 +234,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 	 * @param closeTo
 	 * @return
 	 */
-	public E pop(ISPosition2D closeTo) {
+	public E pop(ShortPoint2D closeTo) {
 		float bestDistance = Float.POSITIVE_INFINITY;
 		ElementHolder<E> best = null;
 		int bestSlot = 0;
@@ -289,7 +289,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 	 * @param to
 	 * @see #add(Object, ILocatable)
 	 */
-	public void moveItemsForPosition(ISPosition2D pos, SlotQueue<T, E> to) {
+	public void moveItemsForPosition(ShortPoint2D pos, SlotQueue<T, E> to) {
 		for (int i = 0; i < slots.length; i++) {
 			if (slots[i] == null) {
 				continue;
@@ -338,7 +338,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 		}
 	}
 
-	public void removeOfType(T type, ISPosition2D pos) {
+	public void removeOfType(T type, ShortPoint2D pos) {
 		for (int slotNumber = 0; slotNumber < slots.length; slotNumber++) {
 			if (slotTypes[slotNumber].equals(type) && slots[slotNumber] != null) {
 				removeFromPosition(pos, slotNumber);
@@ -346,7 +346,7 @@ public class SlotQueue<T, E extends ILocatable> implements Serializable {
 		}
 	}
 
-	private void removeFromPosition(ISPosition2D pos, int slotNumber) {
+	private void removeFromPosition(ShortPoint2D pos, int slotNumber) {
 		for (ElementHolder<E> current = slots[slotNumber]; current.next != null;) {
 			if (current.next.element.getPos().equals(pos)) {
 				current.next = current.next.next;

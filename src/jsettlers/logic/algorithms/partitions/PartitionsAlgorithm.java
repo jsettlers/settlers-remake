@@ -2,7 +2,7 @@ package jsettlers.logic.algorithms.partitions;
 
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStar;
@@ -68,7 +68,7 @@ public class PartitionsAlgorithm {
 	private void addToNewPartiton(final short x, final short y, final byte newPlayer) {
 		short newPartition = -1;
 
-		for (ISPosition2D currPos : new MapNeighboursArea(x, y)) {
+		for (ShortPoint2D currPos : new MapNeighboursArea(x, y)) {
 			if (grid.getPlayerAt(currPos) == newPlayer) {
 				if (newPartition == -1) { // neighbor has same player and we have no partition found yet -> add to the same partition
 					newPartition = grid.getPartition(currPos);
@@ -98,13 +98,13 @@ public class PartitionsAlgorithm {
 	 *            old partition of the removed position
 	 */
 	private void removeFromOldPartition(final short x, final short y, final short oldPartition) {
-		ISPosition2D[] disconnected = new ISPosition2D[3]; // at maximum 3 neighbors can be disconnected on the hex grid
+		ShortPoint2D[] disconnected = new ShortPoint2D[3]; // at maximum 3 neighbors can be disconnected on the hex grid
 		byte disconnectedCtr = 0;
 
 		boolean lastWasOldPartition = false;
 
 		for (EDirection dir : EDirection.values) {
-			ISPosition2D currPos = dir.getNextHexPoint(x, y);
+			ShortPoint2D currPos = dir.getNextHexPoint(x, y);
 			if (!grid.isInBounds(currPos.getX(), currPos.getY())) {
 				continue;
 			}
@@ -126,7 +126,7 @@ public class PartitionsAlgorithm {
 			}
 		}
 
-		ISPosition2D lastPosition = EDirection.values[5].getNextHexPoint(x, y);
+		ShortPoint2D lastPosition = EDirection.values[5].getNextHexPoint(x, y);
 		if (grid.getPartition(lastPosition) == oldPartition) {
 			disconnectedCtr--;
 		}
@@ -167,7 +167,7 @@ public class PartitionsAlgorithm {
 		}
 	}
 
-	private boolean existsPathBetween(final ISPosition2D firstPos, final ISPosition2D secondPos, final byte player) {
+	private boolean existsPathBetween(final ShortPoint2D firstPos, final ShortPoint2D secondPos, final byte player) {
 		aStarPathable.pos = firstPos;
 		aStarPathable.player = player;
 
@@ -184,7 +184,7 @@ public class PartitionsAlgorithm {
 	 */
 	private class AStarPathable implements IPathCalculateable {
 		private byte player;
-		private ISPosition2D pos;
+		private ShortPoint2D pos;
 
 		@Override
 		public byte getPlayer() {
@@ -192,7 +192,7 @@ public class PartitionsAlgorithm {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return pos;
 		}
 

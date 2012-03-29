@@ -1,6 +1,6 @@
 package jsettlers.logic.algorithms.partitions;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Interface defining methods needed by the PartitionsManager.
@@ -16,7 +16,7 @@ public interface IPartionsAlgorithmMap {
 	 *            position the partition is requested for
 	 * @return index of the partition of this position
 	 */
-	short getPartition(final ISPosition2D position);
+	short getPartition(final ShortPoint2D position);
 
 	short getPartition(short x, short y);
 
@@ -26,7 +26,7 @@ public interface IPartionsAlgorithmMap {
 	 *            position the team is requested for
 	 * @return team occupying this position
 	 */
-	byte getPlayerAt(final ISPosition2D position);
+	byte getPlayerAt(final ShortPoint2D position);
 
 	/**
 	 * Sets the given partition to the given position.
@@ -80,7 +80,7 @@ public interface IPartionsAlgorithmMap {
 	 * @param secondPos
 	 *            position of second partition
 	 */
-	void dividePartition(final short x, final short y, final ISPosition2D firstPos, final ISPosition2D secondPos);
+	void dividePartition(final short x, final short y, final ShortPoint2D firstPos, final ShortPoint2D secondPos);
 
 	boolean isInBounds(short x, short y);
 
