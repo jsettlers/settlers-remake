@@ -4,7 +4,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -14,7 +14,7 @@ public class ThiefStrategy extends PathableStrategy {
 	private static final long serialVersionUID = 4744167559826750335L;
 	private static final byte THIEF_SEARCH_RADIUS = 20;
 
-	private ISPosition2D startPosition = null;
+	private ShortPoint2D startPosition = null;
 	private EThiefState state = EThiefState.NOTHING_TO_DO;
 
 	public ThiefStrategy(IMovableGrid grid, Movable movable) {
@@ -162,7 +162,7 @@ public class ThiefStrategy extends PathableStrategy {
 		}
 	}
 
-	private final void markStolen(ISPosition2D pos, boolean mark) {
+	private final void markStolen(ShortPoint2D pos, boolean mark) {
 		super.getGrid().getMapObjectsManager().markStolen(pos.getX(), pos.getY(), mark);
 	}
 

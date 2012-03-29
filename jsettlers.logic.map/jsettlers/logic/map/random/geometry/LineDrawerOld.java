@@ -5,40 +5,38 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
  * A 2D line drawer.
  * <p>
  * TODO: convert it so that it can handle hex tile connections
+ * 
  * @author michael
- *
+ * 
  */
-public class LineDrawerOld implements Iterable<ISPosition2D> {
+public class LineDrawerOld implements Iterable<ShortPoint2D> {
 
 	private final List<Point> points;
 
 	public LineDrawerOld(List<Point> points) {
 		if (points.size() < 2) {
-			throw new IllegalArgumentException(
-			        "There have to be at least 2 points in a line");
+			throw new IllegalArgumentException("There have to be at least 2 points in a line");
 		}
 		this.points = points;
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new LineIterator();
 	}
 
 	/**
-	 * A line drawing iterator {@link http
-	 * ://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm}
+	 * A line drawing iterator {@link http ://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm}
 	 * 
 	 * @author michael
 	 */
-	private class LineIterator implements Iterator<ISPosition2D> {
+	private class LineIterator implements Iterator<ShortPoint2D> {
 		Iterator<Point> pointIt;
 		private int endx;
 		private int endy;
@@ -92,7 +90,7 @@ public class LineDrawerOld implements Iterable<ISPosition2D> {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			if (finished) {
 				throw new NoSuchElementException();
 			}

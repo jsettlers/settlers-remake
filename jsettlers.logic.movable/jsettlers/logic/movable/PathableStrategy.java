@@ -2,7 +2,7 @@ package jsettlers.logic.movable;
 
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 
@@ -22,7 +22,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	}
 
 	@Override
-	public ISPosition2D getPos() { // needs to be public due to the interface
+	public ShortPoint2D getPos() { // needs to be public due to the interface
 		return super.getPos();
 	}
 
@@ -67,7 +67,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 		if (path != null) {
 			if (!path.isFinished()) {
 				if (checkGoStepPrecondition()) {
-					ISPosition2D nextTile = path.getNextPos();
+					ShortPoint2D nextTile = path.getNextPos();
 					super.goToTile(nextTile);
 					path.goToNextStep();
 				} else {
@@ -112,7 +112,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 		return path != null && !path.isFinished();
 	}
 
-	protected void calculatePathTo(ISPosition2D target) {
+	protected void calculatePathTo(ShortPoint2D target) {
 		Path path = super.getGrid().getAStar().findPath(this, target);
 		initCalculatedPath(path);
 	}
@@ -138,13 +138,13 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 		this.path = path;
 	}
 
-	protected void calculateDijkstraPath(ISPosition2D centerPos, short maxRadius, ESearchType type) {
+	protected void calculateDijkstraPath(ShortPoint2D centerPos, short maxRadius, ESearchType type) {
 		Path path = super.getGrid().getDijkstra().find(this, centerPos.getX(), centerPos.getY(), (short) 1, maxRadius, type);
 		initCalculatedPath(path);
 	}
 
-	protected void calculateInAreaPath(ISPosition2D centerPos, short searchRadius, ESearchType type) {
-		ISPosition2D targetPos = super.getGrid().getInAreaFinder().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
+	protected void calculateInAreaPath(ShortPoint2D centerPos, short searchRadius, ESearchType type) {
+		ShortPoint2D targetPos = super.getGrid().getInAreaFinder().find(this, centerPos.getX(), centerPos.getY(), searchRadius, type);
 		if (targetPos == null) {
 			pathRequestFailed();
 		} else {
@@ -178,7 +178,7 @@ public abstract class PathableStrategy extends MovableStrategy implements IPathC
 	 * @return position this movable is walking to<br>
 	 *         null if the movable is currently not following any path.
 	 */
-	protected ISPosition2D getTargetPos() {
+	protected ShortPoint2D getTargetPos() {
 		if (path != null) {
 			return path.getTargetPos();
 		} else {

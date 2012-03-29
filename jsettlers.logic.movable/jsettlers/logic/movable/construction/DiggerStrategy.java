@@ -3,7 +3,7 @@ package jsettlers.logic.movable.construction;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
@@ -39,7 +39,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	protected boolean noActionEvent() {
 		if (!super.noActionEvent()) {
 			if (requester != null) {
-				ISPosition2D pos = getDiggablePosition();
+				ShortPoint2D pos = getDiggablePosition();
 				if (pos != null) {
 					super.calculatePathTo(pos);
 				} else {
@@ -83,13 +83,13 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 		super.getGrid().setMarked(super.getPos(), false);
 	}
 
-	private ISPosition2D getDiggablePosition() {
+	private ShortPoint2D getDiggablePosition() {
 		RelativePoint[] blockedTiles = requester.getBuildingType().getBlockedTiles();
-		ISPosition2D buildingPos = requester.getPos();
+		ShortPoint2D buildingPos = requester.getPos();
 		int offset = RandomSingleton.getInt(0, blockedTiles.length - 1);
 
 		for (int i = 0; i < blockedTiles.length; i++) {
-			ISPosition2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);
+			ShortPoint2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);
 			if (needsToChangeHeight(pos) && !super.getGrid().isMarked(pos)) {
 				return pos;
 			}
@@ -97,7 +97,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 		return null;
 	}
 
-	private boolean needsToChangeHeight(ISPosition2D pos) {
+	private boolean needsToChangeHeight(ShortPoint2D pos) {
 		if (super.getGrid().getHeightAt(pos) != requester.getHeight()) {
 			return true;
 		}
@@ -119,7 +119,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 			if (needsToChangeHeight(super.getPos()) && wentThere) {
 				super.setAction(EAction.ACTION1, 1);
 			} else if (requester != null) {
-				ISPosition2D diggablePos = getDiggablePosition();
+				ShortPoint2D diggablePos = getDiggablePosition();
 				if (diggablePos != null) {
 					this.wentThere = false;
 					super.getGrid().setMarked(diggablePos, true);

@@ -3,7 +3,7 @@ package jsettlers.logic.map.newGrid.partition.manager.manageables;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
@@ -15,12 +15,11 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMat
  */
 public interface IManageableBearer extends IManageable, ILocatable {
 
-	void executeJob(ISPosition2D offer, IMaterialRequester requester, EMaterialType materialType);
+	void executeJob(ShortPoint2D offer, IMaterialRequester requester, EMaterialType materialType);
 
 	void becomeWorker(EMovableType movableType);
 
-	void becomeWorker(EMovableType movableType, ISPosition2D offer);
+	void becomeWorker(EMovableType movableType, ShortPoint2D offer);
 
 	void becomeSoldier(Barrack barrack);
-
 }

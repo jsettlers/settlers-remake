@@ -1,7 +1,7 @@
 package jsettlers.logic.objects.corn;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.objects.GrowingObject;
 
 /**
@@ -22,7 +22,7 @@ public final class Corn extends GrowingObject {
 	 * 
 	 * @param grid
 	 */
-	public Corn(ISPosition2D pos) {
+	public Corn(ShortPoint2D pos) {
 		super(pos, EMapObjectType.CORN_GROWING);
 	}
 

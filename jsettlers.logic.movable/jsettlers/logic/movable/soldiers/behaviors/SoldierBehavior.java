@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
@@ -21,7 +21,7 @@ public abstract class SoldierBehavior implements Serializable {
 
 	protected final ISoldierBehaviorable soldier;
 
-	public abstract SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable);
+	public abstract SoldierBehavior calculate(ShortPoint2D pos, IPathCalculateable pathCalcable);
 
 	protected SoldierBehavior(ISoldierBehaviorable soldier) {
 		this.soldier = soldier;
@@ -31,7 +31,7 @@ public abstract class SoldierBehavior implements Serializable {
 		return getSoldier().getGrid();
 	}
 
-	public final void goToTile(ISPosition2D first) {
+	public final void goToTile(ShortPoint2D first) {
 		soldier.goToTile(first);
 	}
 

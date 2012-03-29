@@ -3,7 +3,7 @@ package jsettlers.logic.movable.specialists;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 
@@ -17,14 +17,14 @@ public class PioneerStrategy extends SpecialistStrategy {
 	}
 
 	@Override
-	protected final ISPosition2D getCloseForeignTile() {
-		ISPosition2D bestNeighbour = null;
+	protected final ShortPoint2D getCloseForeignTile() {
+		ShortPoint2D bestNeighbour = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
-		ISPosition2D centerPos = super.getCenterPos();
+		ShortPoint2D centerPos = super.getCenterPos();
 
 		// TODO: look at more tiles (radius 3)
 		for (EDirection sateliteDir : EDirection.values) {
-			ISPosition2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
+			ShortPoint2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
 
 			if (super.getGrid().isAllowedForMovable(satelitePos.getX(), satelitePos.getY(), this) && canWorkOn(satelitePos)) {
 				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
@@ -38,7 +38,7 @@ public class PioneerStrategy extends SpecialistStrategy {
 		return bestNeighbour;
 	}
 
-	private boolean canWorkOn(ISPosition2D pos) {
+	private boolean canWorkOn(ShortPoint2D pos) {
 		return super.getGrid().fitsSearchType(pos, ESearchType.FOREIGN_GROUND, this);
 	}
 

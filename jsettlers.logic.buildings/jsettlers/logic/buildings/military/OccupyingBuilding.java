@@ -15,7 +15,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
@@ -119,7 +119,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	protected void positionedEvent(ISPosition2D pos) {
+	protected void positionedEvent(ShortPoint2D pos) {
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final ISPosition2D getPosition(IBuildingOccupyableMovable soldier) {
+	public final ShortPoint2D getPosition(IBuildingOccupyableMovable soldier) {
 		for (TowerOccupyer curr : occupiers) {
 			if (curr.soldier == soldier) {
 				return curr.place.getPosition().calculatePoint(super.getPos());

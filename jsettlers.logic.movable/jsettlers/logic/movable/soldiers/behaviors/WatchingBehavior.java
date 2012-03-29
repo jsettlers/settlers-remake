@@ -5,7 +5,7 @@ import jsettlers.common.logging.StopWatch;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
@@ -37,7 +37,7 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 	private static int ctr = 0;
 
 	@Override
-	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
+	public SoldierBehavior calculate(ShortPoint2D pos, IPathCalculateable pathCalcable) {
 		if (enemyFoundLastTime || delayCtr > DELAY) {
 			delayCtr = 0;
 
@@ -74,7 +74,7 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 		}
 	}
 
-	private boolean canHit(ISPosition2D pos, ISPosition2D enemyPos) {
+	private boolean canHit(ShortPoint2D pos, ShortPoint2D enemyPos) {
 		switch (super.soldier.getSoldierType()) {
 		case BOWMAN:
 			return Math.hypot(pos.getX() - enemyPos.getX(), pos.getY() - enemyPos.getY()) <= BOWMAN_FIRE_RADIUS;

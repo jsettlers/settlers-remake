@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This grid stores the objects located at each position.
@@ -137,7 +137,7 @@ public final class ObjectsGrid implements Serializable {
 		EDirection[] directions = EDirection.values;
 
 		for (EDirection currDir : directions) {
-			ISPosition2D currPos = currDir.getNextHexPoint(x, y);
+			ShortPoint2D currPos = currDir.getNextHexPoint(x, y);
 			if (hasMapObjectType(currPos.getX(), currPos.getY(), mapObjectType)) {
 				return true;
 			}

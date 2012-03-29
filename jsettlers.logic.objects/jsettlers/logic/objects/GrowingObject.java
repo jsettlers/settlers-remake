@@ -1,7 +1,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is an abstract class used for growing objects.
@@ -14,7 +14,7 @@ public abstract class GrowingObject extends ProgressingObject {
 
 	private EMapObjectType state;
 
-	protected GrowingObject(ISPosition2D pos, EMapObjectType growing) {
+	protected GrowingObject(ShortPoint2D pos, EMapObjectType growing) {
 		super(pos);
 
 		this.state = growing;

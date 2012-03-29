@@ -5,7 +5,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -30,9 +30,9 @@ public interface IBuildingsGrid {
 	 *            position to be checked.
 	 * @return height at given position.
 	 */
-	byte getHeightAt(ISPosition2D position);
+	byte getHeightAt(ShortPoint2D position);
 
-	boolean setBuilding(ISPosition2D position, Building newBuilding); // FIXME create interface for Building to be used by the grid
+	boolean setBuilding(ShortPoint2D position, Building newBuilding); // FIXME create interface for Building to be used by the grid
 
 	/**
 	 * Gives the width of the grid.
@@ -56,7 +56,7 @@ public interface IBuildingsGrid {
 	 * @return the movable currently located at the given position<br>
 	 *         or null if no movable is located at the given position.
 	 */
-	IHexMovable getMovable(ISPosition2D position);
+	IHexMovable getMovable(ShortPoint2D position);
 
 	/**
 	 * Positions the given movable at the given position.
@@ -68,7 +68,7 @@ public interface IBuildingsGrid {
 	 * @param movable
 	 *            movable to be positioned.
 	 */
-	void placeNewMovable(ISPosition2D position, IHexMovable movable);
+	void placeNewMovable(ShortPoint2D position, IHexMovable movable);
 
 	MapObjectsManager getMapObjectsManager();
 
@@ -76,7 +76,7 @@ public interface IBuildingsGrid {
 
 	void requestDiggers(IDiggerRequester requester, byte amount);
 
-	void requestBricklayer(Building building, ISPosition2D position, EDirection direction);
+	void requestBricklayer(Building building, ShortPoint2D position, EDirection direction);
 
 	IRequestsStackGrid getRequestStackGrid();
 
@@ -86,9 +86,9 @@ public interface IBuildingsGrid {
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 
-	void occupyArea(MapCircle toBeOccupied, ISPosition2D occupiersPosition, byte player);
+	void occupyArea(MapCircle toBeOccupied, ShortPoint2D occupiersPosition, byte player);
 
-	void removeBuildingAt(ISPosition2D pos);
+	void removeBuildingAt(ShortPoint2D pos);
 
 	/**
 	 * this method removes the enforcement in the given area
@@ -96,9 +96,9 @@ public interface IBuildingsGrid {
 	 * @param occupied
 	 * @param pos
 	 */
-	void freeOccupiedArea(MapCircle occupied, ISPosition2D pos);
+	void freeOccupiedArea(MapCircle occupied, ShortPoint2D pos);
 
-	void pushMaterialsTo(ISPosition2D position, EMaterialType type, byte numberOf);
+	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
 	/**
 	 * @return dijkstra algorithm to be used by buildings.

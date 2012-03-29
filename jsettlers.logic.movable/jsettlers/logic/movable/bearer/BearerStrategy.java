@@ -3,7 +3,7 @@ package jsettlers.logic.movable.bearer;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
@@ -16,7 +16,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	private static final long serialVersionUID = -3470280673016494554L;
 
 	private EBearerState state = EBearerState.JOBLESS;
-	private ISPosition2D offer;
+	private ShortPoint2D offer;
 	private IMaterialRequester requester;
 	private EMaterialType materialType;
 	private EMovableType movableType;
@@ -204,7 +204,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	@Override
-	public void executeJob(ISPosition2D offer, IMaterialRequester requester, EMaterialType materialType) {
+	public void executeJob(ShortPoint2D offer, IMaterialRequester requester, EMaterialType materialType) {
 		this.offer = offer;
 		this.requester = requester;
 		this.materialType = materialType;
@@ -223,7 +223,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	@Override
-	public void becomeWorker(EMovableType movableType, ISPosition2D offer) {
+	public void becomeWorker(EMovableType movableType, ShortPoint2D offer) {
 		this.offer = offer;
 		this.movableType = movableType;
 		this.materialType = movableType.getTool();

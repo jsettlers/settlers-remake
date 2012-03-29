@@ -3,7 +3,7 @@ package jsettlers.logic.map.save;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
 
@@ -82,7 +82,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	}
 
 	@Override
-	public ISPosition2D getStartPoint(int player) {
+	public ShortPoint2D getStartPoint(int player) {
 		return playerStarts[player];
 	}
 

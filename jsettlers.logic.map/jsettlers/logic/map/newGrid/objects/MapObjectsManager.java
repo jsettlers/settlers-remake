@@ -11,7 +11,6 @@ import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
@@ -80,7 +79,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		Timer100Milli.remove(this);
 	}
 
-	public boolean executeSearchType(ISPosition2D pos, ESearchType type) {
+	public boolean executeSearchType(ShortPoint2D pos, ESearchType type) {
 		switch (type) {
 		case CUTTABLE_TREE:
 			return cutTree(pos);
@@ -104,7 +103,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	private void cutStone(ISPosition2D pos) {
+	private void cutStone(ShortPoint2D pos) {
 		short x = (short) (pos.getX() - 1);
 		short y = (short) (pos.getY() + 1);
 		AbstractHexMapObject stone = grid.getMapObject(x, y, EMapObjectType.STONE);
@@ -116,16 +115,16 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	private boolean plantTree(ISPosition2D pos) {
+	private boolean plantTree(ShortPoint2D pos) {
 		Tree tree = new Tree(pos);
 		addMapObject(pos, tree);
 		timingQueue.offer(new TimeEvent(tree, Tree.GROWTH_DURATION, false));
 		return true;
 	}
 
-	private boolean plantCorn(ISPosition2D pos) {
+	private boolean plantCorn(ShortPoint2D pos) {
 		grid.setLandscape(pos.getX(), pos.getY(), ELandscapeType.EARTH);
-		for (ISPosition2D curr : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
+		for (ShortPoint2D curr : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
 			grid.setLandscape(curr.getX(), curr.getY(), ELandscapeType.EARTH);
 		}
 		Corn corn = new Corn(pos);
@@ -136,7 +135,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		return true;
 	}
 
-	private boolean cutCorn(ISPosition2D pos) {
+	private boolean cutCorn(ShortPoint2D pos) {
 		short x = pos.getX();
 		short y = pos.getY();
 		if (grid.isInBounds(x, y)) {
@@ -149,7 +148,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		return false;
 	}
 
-	private boolean cutTree(ISPosition2D pos) {
+	private boolean cutTree(ShortPoint2D pos) {
 		short x = (short) (pos.getX() - 1);
 		short y = (short) (pos.getY() - 1);
 		if (grid.isInBounds(x, y)) {
@@ -162,7 +161,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		return false;
 	}
 
-	private final boolean addMapObject(ISPosition2D pos, AbstractHexMapObject mapObject) {
+	private final boolean addMapObject(ShortPoint2D pos, AbstractHexMapObject mapObject) {
 		return addMapObject(pos.getX(), pos.getY(), mapObject);
 	}
 
@@ -207,30 +206,30 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	public void addStone(ISPosition2D pos, int capacity) {
+	public void addStone(ShortPoint2D pos, int capacity) {
 		addMapObject(pos, new Stone(capacity));
 	}
 
-	public void plantAdultTree(ISPosition2D pos) {
+	public void plantAdultTree(ShortPoint2D pos) {
 		addMapObject(pos, new AdultTree(pos));
 	}
 
-	public void addArrowObject(IHexMovable enemyPos, ISPosition2D ownPos, float strength) {
+	public void addArrowObject(IHexMovable enemyPos, ShortPoint2D ownPos, float strength) {
 		ArrowObject arrow = new ArrowObject(enemyPos, ownPos, strength);
 		addMapObject(enemyPos.getPos(), arrow);
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.DECOMPOSE_DELAY, true));
 	}
 
-	public void addSimpleMapObject(ISPosition2D pos, EMapObjectType objectType, boolean blocking, byte player) {
+	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, byte player) {
 		addMapObject(pos, new StandardMapObject(objectType, blocking, player));
 	}
 
-	public void addBuildingWorkAreaObject(ISPosition2D pos, float radius) {
+	public void addBuildingWorkAreaObject(ShortPoint2D pos, float radius) {
 		addMapObject(pos, new BuildingWorkAreaMarkObject(radius));
 	}
 
-	public void addSelfDeletingMapObject(ISPosition2D pos, EMapObjectType mapObjectType, float duration, byte player) {
+	public void addSelfDeletingMapObject(ShortPoint2D pos, EMapObjectType mapObjectType, float duration, byte player) {
 		SelfDeletingMapObject object;
 		switch (mapObjectType) {
 		case GHOST:
@@ -245,7 +244,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		timingQueue.add(new TimeEvent(object, duration, true));
 	}
 
-	public void addRessourceSign(ISPosition2D pos, EResourceType resourceType, float amount) {
+	public void addRessourceSign(ShortPoint2D pos, EResourceType resourceType, float amount) {
 		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, amount);
 		addMapObject(pos, object);
 		timingQueue.add(new TimeEvent(object, RessourceSignMapObject.getLivetime(), true));
@@ -264,7 +263,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	public boolean canPush(ISPosition2D position) {
+	public boolean canPush(ShortPoint2D position) {
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
 		int sum = 0;
 
@@ -411,11 +410,11 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		return stackObject;
 	}
 
-	public void addBuildingTo(ISPosition2D position, AbstractHexMapObject newBuilding) {
+	public void addBuildingTo(ShortPoint2D position, AbstractHexMapObject newBuilding) {
 		addMapObject(position, newBuilding);
 	}
 
-	public void placePig(ISPosition2D pos, boolean place) {
+	public void placePig(ShortPoint2D pos, boolean place) {
 		if (place) {
 			AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
 			if (pig == null) {
@@ -426,12 +425,12 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	public boolean isPigThere(ISPosition2D pos) {
+	public boolean isPigThere(ShortPoint2D pos) {
 		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
 		return pig != null;
 	}
 
-	public boolean isPigAdult(ISPosition2D pos) {
+	public boolean isPigAdult(ShortPoint2D pos) {
 		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
 		return pig != null && pig.canBeCut();
 	}

@@ -3,20 +3,20 @@ package jsettlers.logic.stack;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
 public class RequestStack implements Serializable, IMaterialRequester {
 	private static final long serialVersionUID = 8082718564781798767L;
 
-	private final ISPosition2D position;
+	private final ShortPoint2D position;
 	private final EMaterialType materialType;
 	private final IRequestsStackGrid grid;
 
 	private boolean requesting = true;
 
-	public RequestStack(IRequestsStackGrid grid, ISPosition2D position, EMaterialType materialType) {
+	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType) {
 		this.grid = grid;
 		this.position = position;
 		this.materialType = materialType;
@@ -44,7 +44,7 @@ public class RequestStack implements Serializable, IMaterialRequester {
 		return true;
 	}
 
-	public ISPosition2D getPosition() {
+	public ShortPoint2D getPosition() {
 		return position;
 	}
 
@@ -62,7 +62,7 @@ public class RequestStack implements Serializable, IMaterialRequester {
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return position;
 	}
 

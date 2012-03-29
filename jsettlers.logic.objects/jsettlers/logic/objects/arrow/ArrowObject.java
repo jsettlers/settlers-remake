@@ -3,7 +3,7 @@ package jsettlers.logic.objects.arrow;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.objects.ProgressingSoundableObject;
 
@@ -19,7 +19,7 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	private final IHexMovable target;
 
-	public ArrowObject(IHexMovable target, ISPosition2D source, float hitStrength) {
+	public ArrowObject(IHexMovable target, ShortPoint2D source, float hitStrength) {
 		super(target.getPos());
 		this.target = target;
 

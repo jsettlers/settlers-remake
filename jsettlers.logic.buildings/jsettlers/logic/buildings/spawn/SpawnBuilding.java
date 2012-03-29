@@ -3,7 +3,7 @@ package jsettlers.logic.buildings.spawn;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.movable.Movable;
 
@@ -60,7 +60,7 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	protected void positionedEvent(ISPosition2D pos) {
+	protected void positionedEvent(ShortPoint2D pos) {
 	}
 
 	@Override

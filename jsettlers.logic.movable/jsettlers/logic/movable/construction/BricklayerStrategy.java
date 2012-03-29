@@ -3,7 +3,7 @@ package jsettlers.logic.movable.construction;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.movable.IMovableGrid;
@@ -20,7 +20,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	private static final long serialVersionUID = -5076159171851148099L;
 
 	private IConstructableBuilding constructionSite;
-	private ISPosition2D bricklayerTargetPos;
+	private ShortPoint2D bricklayerTargetPos;
 	private EDirection lookDirection;
 	public boolean startedGoing;
 
@@ -105,7 +105,7 @@ public class BricklayerStrategy extends PathableStrategy implements IManageableB
 	}
 
 	@Override
-	public void setBricklayerJob(IConstructableBuilding constructionSite, ISPosition2D bricklayerTargetPos, EDirection direction) {
+	public void setBricklayerJob(IConstructableBuilding constructionSite, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		if (!constructionSite.isConstructionFinished()) {
 			this.constructionSite = constructionSite;
 			this.bricklayerTargetPos = bricklayerTargetPos;

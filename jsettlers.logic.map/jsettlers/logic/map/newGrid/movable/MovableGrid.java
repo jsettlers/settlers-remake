@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.landscape.IWalkableGround;
 
 /**
@@ -37,14 +37,14 @@ public final class MovableGrid implements Serializable {
 		this.movableGrid[getIdx(x, y)] = movable;
 	}
 
-	public final void movableLeft(ISPosition2D position, IHexMovable movable) {
+	public final void movableLeft(ShortPoint2D position, IHexMovable movable) {
 		int idx = getIdx(position.getX(), position.getY());
 		if (this.movableGrid[idx] == movable) {
 			this.movableGrid[idx] = null;
 		}
 	}
 
-	public final void movableEntered(ISPosition2D position, IHexMovable movable) {
+	public final void movableEntered(ShortPoint2D position, IHexMovable movable) {
 		short x = position.getX();
 		short y = position.getY();
 		this.movableGrid[getIdx(x, y)] = movable;

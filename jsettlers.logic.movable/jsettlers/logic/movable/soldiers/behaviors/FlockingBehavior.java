@@ -2,7 +2,7 @@ package jsettlers.logic.movable.soldiers.behaviors;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.map.newGrid.MainGrid.MovableNeighborIterator;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
@@ -35,7 +35,7 @@ public class FlockingBehavior extends SoldierBehavior {
 	private static byte LEADER_FACTOR = 10;
 
 	@Override
-	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
+	public SoldierBehavior calculate(ShortPoint2D pos, IPathCalculateable pathCalcable) {
 		AVG_DIR_FACTOR = 0;
 		TO_CLOSE_FACTOR = 20;
 		LEADER_FACTOR = 10;
@@ -60,7 +60,7 @@ public class FlockingBehavior extends SoldierBehavior {
 			EDirection neighborDir = next.getDirection();
 			dirX += neighborDir.getGridDeltaX();
 			dirY += neighborDir.getGridDeltaY();
-			ISPosition2D neighborPos = next.getPos();
+			ShortPoint2D neighborPos = next.getPos();
 			sumPosX += neighborPos.getX();
 			sumPosY += neighborPos.getY();
 
@@ -85,7 +85,7 @@ public class FlockingBehavior extends SoldierBehavior {
 			deltaY += dirY * AVG_DIR_FACTOR;
 
 			if (leader != null) {
-				ISPosition2D leaderDirectedPos = leader.getDirection().getNextTilePoint(leader.getPos(), 7);
+				ShortPoint2D leaderDirectedPos = leader.getDirection().getNextTilePoint(leader.getPos(), 7);
 				int leaderDist = Math.abs(pos.getX() - leaderDirectedPos.getX()) + Math.abs(pos.getY() - leaderDirectedPos.getY());
 
 				deltaX += (leaderDirectedPos.getX() - pos.getX()) * LEADER_FACTOR;

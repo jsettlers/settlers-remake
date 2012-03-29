@@ -1,6 +1,6 @@
 package jsettlers.logic.objects.tree;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a tree on the map, that's adult from the beginning.
@@ -16,7 +16,7 @@ public final class AdultTree extends Tree {
 	 * 
 	 * @param grid
 	 */
-	public AdultTree(ISPosition2D pos) {
+	public AdultTree(ShortPoint2D pos) {
 		super(pos);
 		super.changeState();
 	}

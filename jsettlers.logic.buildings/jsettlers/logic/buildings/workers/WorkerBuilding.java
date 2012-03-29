@@ -3,7 +3,6 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
@@ -38,8 +37,8 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	protected final void positionedEvent(ISPosition2D pos) {
-		ISPosition2D workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
+	protected final void positionedEvent(ShortPoint2D pos) {
+		ShortPoint2D workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
 		workAreaCenterX = workAreaCenter.getX();
 		workAreaCenterY = workAreaCenter.getY();
 	}
@@ -54,7 +53,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public final void setWorkAreaCenter(ISPosition2D workAreaCenter) {
+	public final void setWorkAreaCenter(ShortPoint2D workAreaCenter) {
 		this.workAreaCenterX = workAreaCenter.getX();
 		this.workAreaCenterY = workAreaCenter.getY();
 	}
@@ -70,12 +69,12 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	protected final ISPosition2D getWorkAreaCenter() {
+	protected final ShortPoint2D getWorkAreaCenter() {
 		return new ShortPoint2D(workAreaCenterX, workAreaCenterY);
 	}
 
 	@Override
-	public final boolean popMaterial(ISPosition2D position, EMaterialType material) {
+	public final boolean popMaterial(ShortPoint2D position, EMaterialType material) {
 		for (RequestStack stack : super.getStacks()) {
 			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
 				stack.pop();

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.task.ConvertGuiTask;
 import jsettlers.input.task.DestroyBuildingGuiTask;
 import jsettlers.input.task.EGuiAction;
@@ -82,7 +82,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 
 		case DESTROY_BUILDING: {
-			ISPosition2D buildingPos = ((DestroyBuildingGuiTask) guiTask).getPosition();
+			ShortPoint2D buildingPos = ((DestroyBuildingGuiTask) guiTask).getPosition();
 			((Building) grid.getBuildingAt(buildingPos.getX(), buildingPos.getY())).kill();
 		}
 			break;
@@ -131,7 +131,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 *            position to move to
 	 * @param list
 	 */
-	private void moveSelectedTo(ISPosition2D pos, List<Integer> list) {
+	private void moveSelectedTo(ShortPoint2D pos, List<Integer> list) {
 		if (list.size() == 1) {
 			Movable currMovable = Movable.getMovableByID(list.get(0));
 			if (currMovable != null)
@@ -141,7 +141,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			MapCircle mapCircle = new MapCircle(pos, radius);
 			Movable leader = null;
 
-			Iterator<ISPosition2D> circleIter = mapCircle.iterator();
+			Iterator<ShortPoint2D> circleIter = mapCircle.iterator();
 			int ctr = 0;
 			for (Integer currID : list) {
 				Movable currMovable = Movable.getMovableByID(currID);
@@ -159,7 +159,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		}
 	}
 
-	private void setWorkArea(ISPosition2D pos, short buildingX, short buildingY) {
+	private void setWorkArea(ShortPoint2D pos, short buildingX, short buildingY) {
 		Building building = (Building) grid.getBuildingAt(buildingX, buildingY);
 
 		if (building != null) {

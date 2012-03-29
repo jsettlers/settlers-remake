@@ -17,7 +17,7 @@ import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Serializes the map data to a byte stream.
@@ -72,7 +72,7 @@ public class MapDataSerializer {
 
 		stream.writeByte(data.getPlayerCount());
 		for (int player = 0; player < data.getPlayerCount(); player++) {
-			ISPosition2D start = data.getStartPoint(player);
+			ShortPoint2D start = data.getStartPoint(player);
 			stream.writeShort(start.getX());
 			stream.writeShort(start.getY());
 		}

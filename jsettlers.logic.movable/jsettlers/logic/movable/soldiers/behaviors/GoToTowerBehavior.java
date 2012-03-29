@@ -1,6 +1,6 @@
 package jsettlers.logic.movable.soldiers.behaviors;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 
@@ -20,7 +20,7 @@ class GoToTowerBehavior extends SoldierBehavior {
 	}
 
 	@Override
-	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
+	public SoldierBehavior calculate(ShortPoint2D pos, IPathCalculateable pathCalcable) {
 		super.getSoldier().calculatePathTo(building.getDoor());
 		switch (super.getSoldier().getSoldierType()) {
 		case BOWMAN:

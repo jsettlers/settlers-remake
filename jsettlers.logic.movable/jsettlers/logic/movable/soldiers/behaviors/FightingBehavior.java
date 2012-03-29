@@ -1,6 +1,6 @@
 package jsettlers.logic.movable.soldiers.behaviors;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 
@@ -13,18 +13,18 @@ import jsettlers.logic.map.newGrid.movable.IHexMovable;
 final class FightingBehavior extends SoldierBehavior {
 	private static final long serialVersionUID = -7277998697464430659L;
 
-	private final ISPosition2D enemyPos;
+	private final ShortPoint2D enemyPos;
 
 	private final IFightingBehaviorUser user;
 
-	FightingBehavior(ISoldierBehaviorable soldier, ISPosition2D enemyPos, IFightingBehaviorUser user) {
+	FightingBehavior(ISoldierBehaviorable soldier, ShortPoint2D enemyPos, IFightingBehaviorUser user) {
 		super(soldier);
 		this.enemyPos = enemyPos;
 		this.user = user;
 	}
 
 	@Override
-	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
+	public SoldierBehavior calculate(ShortPoint2D pos, IPathCalculateable pathCalcable) {
 		IHexMovable enemy = super.getGrid().getMovable(enemyPos);
 		if (enemy != null && enemy.getPlayer() != super.getPlayer()) {
 			super.getSoldier().executeHit(enemy);

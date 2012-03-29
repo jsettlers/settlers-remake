@@ -1,6 +1,5 @@
 package jsettlers.logic.newmovable.interfaces;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
@@ -12,7 +11,7 @@ import jsettlers.logic.newmovable.NewMovable;
  * @author Andreas Eberle
  * 
  */
-public interface INewMovableGrid {
+public interface INewMovableGrid extends IStrategyGrid {
 
 	boolean isFreeForMovable(short x, short y);
 
@@ -20,6 +19,6 @@ public interface INewMovableGrid {
 
 	void enterPosition(ShortPoint2D position, NewMovable movable);
 
-	Path calculatePathTo(IPathCalculateable pathRequester, ISPosition2D targetPos);
+	Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos);
 
 }

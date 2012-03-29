@@ -2,7 +2,7 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Object that can show any {@link EMapObjectType} on the map for a given time. When the time is finished, it removes itself from the map.
@@ -24,11 +24,11 @@ public class SelfDeletingMapObject extends ProgressingObject implements IPlayera
 	 * @param type
 	 *            type to be returned to jsettlers.graphics
 	 */
-	public SelfDeletingMapObject(ISPosition2D pos, EMapObjectType type, float duration) {
+	public SelfDeletingMapObject(ShortPoint2D pos, EMapObjectType type, float duration) {
 		this(pos, type, duration, (byte) -1);
 	}
 
-	public SelfDeletingMapObject(ISPosition2D pos, EMapObjectType type, float duration, byte player) {
+	public SelfDeletingMapObject(ShortPoint2D pos, EMapObjectType type, float duration, byte player) {
 		super(pos);
 		this.player = player;
 		this.type = type;

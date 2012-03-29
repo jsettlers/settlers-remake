@@ -3,7 +3,7 @@ package jsettlers.logic.movable.specialists;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -30,13 +30,13 @@ public final class GeologistStrategy extends SpecialistStrategy {
 	}
 
 	@Override
-	protected final ISPosition2D getCloseForeignTile() {
-		ISPosition2D bestNeighbour = null;
+	protected final ShortPoint2D getCloseForeignTile() {
+		ShortPoint2D bestNeighbour = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
-		ISPosition2D centerPos = super.getCenterPos();
+		ShortPoint2D centerPos = super.getCenterPos();
 
 		// TODO: look at more tiles (radius 3)
-		for (ISPosition2D satelitePos : new HexBorderArea(super.getPos(), (short) 2)) {
+		for (ShortPoint2D satelitePos : new HexBorderArea(super.getPos(), (short) 2)) {
 			if (super.getGrid().isAllowedForMovable(satelitePos.getX(), satelitePos.getY(), this) && canWorkOn(satelitePos)) {
 				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
 				if (distance < bestNeighbourDistance) {
@@ -52,11 +52,11 @@ public final class GeologistStrategy extends SpecialistStrategy {
 	 * needs to be overriden here, because we have to go at least two steps.
 	 */
 	@Override
-	protected final void initGoingToPosition(ISPosition2D bestNeighbour) {
+	protected final void initGoingToPosition(ShortPoint2D bestNeighbour) {
 		super.calculatePathTo(bestNeighbour);
 	}
 
-	protected final boolean canWorkOn(ISPosition2D satelitePos) {
+	protected final boolean canWorkOn(ShortPoint2D satelitePos) {
 		return super.getGrid().fitsSearchType(satelitePos, getSearchType(), this);
 	}
 

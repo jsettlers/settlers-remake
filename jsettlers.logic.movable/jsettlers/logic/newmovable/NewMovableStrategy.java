@@ -7,6 +7,8 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
+import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
 
 public abstract class NewMovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
@@ -50,7 +52,11 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.goToPos(targetPos);
 	}
 
-	public ShortPoint2D getPosition() {
+	protected final IStrategyGrid getStrategyGrid() {
+		return movable.getStrategyGrid();
+	}
+
+	public final ShortPoint2D getPos() {
 		return movable.getPos();
 	}
 }

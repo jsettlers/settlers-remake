@@ -1,7 +1,7 @@
 package jsettlers.logic.movable.soldiers.behaviors;
 
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
@@ -18,7 +18,7 @@ public final class BowmanInTowerBehavior extends InfantryInTowerBehavior impleme
 	private boolean enemyFoundLastTime = false;
 
 	@Override
-	public SoldierBehavior calculate(ISPosition2D pos, IPathCalculateable pathCalcable) {
+	public SoldierBehavior calculate(ShortPoint2D pos, IPathCalculateable pathCalcable) {
 		super.calculate(pos, pathCalcable);
 
 		if (enemyFoundLastTime || delayCtr > WatchingBehavior.DELAY) {
@@ -45,7 +45,7 @@ public final class BowmanInTowerBehavior extends InfantryInTowerBehavior impleme
 		}
 	}
 
-	private final boolean canHit(ISPosition2D pos, ISPosition2D enemyPos) { // TODO use MapCircle to get a circle on the map
+	private final boolean canHit(ShortPoint2D pos, ShortPoint2D enemyPos) { // TODO use MapCircle to get a circle on the map
 		return Math.hypot(pos.getX() - enemyPos.getX(), pos.getY() - enemyPos.getY()) <= BOWMAN_IN_TOWER_SEARCH_RADIUS;
 	}
 

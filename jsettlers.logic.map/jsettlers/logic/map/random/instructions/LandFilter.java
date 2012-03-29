@@ -1,6 +1,6 @@
 package jsettlers.logic.map.random.instructions;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This class filters land.
@@ -9,5 +9,5 @@ import jsettlers.common.position.ISPosition2D;
  *
  */
 public interface LandFilter {
-	boolean isPlaceable(ISPosition2D point);
+	boolean isPlaceable(ShortPoint2D point);
 }

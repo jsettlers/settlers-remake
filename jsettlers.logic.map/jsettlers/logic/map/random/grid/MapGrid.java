@@ -13,7 +13,6 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.random.geometry.LineDrawer;
 import jsettlers.logic.map.random.geometry.Point;
@@ -57,7 +56,7 @@ public class MapGrid implements IMapData {
 
 		for (MeshEdge edge : mesh.getEdges()) {
 			LineDrawer drawer = new LineDrawer(noisyEdges.get(edge));
-			for (ISPosition2D position : drawer) {
+			for (ShortPoint2D position : drawer) {
 				short x = clampX(position.getX());
 				short y = clampY(position.getY());
 				edgeMap[x][y] = edge;
@@ -93,17 +92,17 @@ public class MapGrid implements IMapData {
 
 		for (MeshSite site : mesh.getSites()) {
 			Point center = site.getCenter().getIntPoint();
-			Queue<ISPosition2D> sitePoints = new ConcurrentLinkedQueue<ISPosition2D>();
+			Queue<ShortPoint2D> sitePoints = new ConcurrentLinkedQueue<ShortPoint2D>();
 			sitePoints.offer(new ShortPoint2D(center.getX(), center.getY()));
 			ELandscapeType landscape = GridLandscapeType.convert(site.getLandscape());
 
 			while (!sitePoints.isEmpty()) {
-				ISPosition2D point = sitePoints.poll();
+				ShortPoint2D point = sitePoints.poll();
 				short x = point.getX();
 				short y = point.getY();
 				if (types[x][y] == null) {
 					types[x][y] = landscape;
-					for (ISPosition2D toAdd : new MapNeighboursArea(point)) {
+					for (ShortPoint2D toAdd : new MapNeighboursArea(point)) {
 						sitePoints.offer(toAdd);
 					}
 				}
@@ -191,35 +190,43 @@ public class MapGrid implements IMapData {
 		return new MapGrid(mesh, random, playerstarts);
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.logic.map.random.grid.IMapData#getWidth()
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.logic.map.random.grid.IMapData#getWidth()
+	 */
 	@Override
-    public int getWidth() {
+	public int getWidth() {
 		return width;
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.logic.map.random.grid.IMapData#getHeight()
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.logic.map.random.grid.IMapData#getHeight()
+	 */
 	@Override
-    public int getHeight() {
+	public int getHeight() {
 		return height;
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.logic.map.random.grid.IMapData#getLandscape(int, int)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.logic.map.random.grid.IMapData#getLandscape(int, int)
+	 */
 	@Override
-    public ELandscapeType getLandscape(int x, int y) {
+	public ELandscapeType getLandscape(int x, int y) {
 		return types[x][y];
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.logic.map.random.grid.IMapData#getMapObject(int, int)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.logic.map.random.grid.IMapData#getMapObject(int, int)
+	 */
 	@Override
-    public MapObject getMapObject(int x, int y) {
+	public MapObject getMapObject(int x, int y) {
 		MapObject object = objects[x][y];
 		if (objects[x][y] instanceof PlaceholderObject) {
 			return null;
@@ -237,7 +244,7 @@ public class MapGrid implements IMapData {
 	}
 
 	public void reserveArea(int x, int y, int radius) {
-		for (ISPosition2D pos : new MapShapeFilter(new MapCircle((short) x, (short) y, radius), width, height)) {
+		for (ShortPoint2D pos : new MapShapeFilter(new MapCircle((short) x, (short) y, radius), width, height)) {
 			if (objects[pos.getX()][pos.getY()] == null) {
 				objects[pos.getX()][pos.getY()] = PlaceholderObject.getInstance();
 			}
@@ -248,19 +255,23 @@ public class MapGrid implements IMapData {
 		return x >= 0 && x < width && y >= 0 && y < height && !isReserved(x, y);
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.logic.map.random.grid.IMapData#getLandscapeHeight(short, short)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.logic.map.random.grid.IMapData#getLandscapeHeight(short, short)
+	 */
 	@Override
-    public byte getLandscapeHeight(int x, int y) {
+	public byte getLandscapeHeight(int x, int y) {
 		return (byte) Math.max(0, 10 + heightGenerator.getNoise(x, y) * 25);
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.logic.map.random.grid.IMapData#getStartPoint(int)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.logic.map.random.grid.IMapData#getStartPoint(int)
+	 */
 	@Override
-    public ISPosition2D getStartPoint(int player) {
+	public ShortPoint2D getStartPoint(int player) {
 		if (player < 0 || player >= playerstarts.length) {
 			return new ShortPoint2D(getWidth() / 2, getHeight() / 2);
 		} else {
@@ -269,7 +280,7 @@ public class MapGrid implements IMapData {
 	}
 
 	@Override
-    public int getPlayerCount() {
-	    return playerstarts.length;
-    }
+	public int getPlayerCount() {
+		return playerstarts.length;
+	}
 }

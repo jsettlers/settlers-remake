@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -19,21 +19,21 @@ import jsettlers.common.position.ISPosition2D;
 public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 	private static final long serialVersionUID = 5748990341167824377L;
 
-	private Hashtable<ISPosition2D, T> data;
+	private Hashtable<ShortPoint2D, T> data;
 
 	public PositionableHashMap() {
-		data = new Hashtable<ISPosition2D, T>();
+		data = new Hashtable<ShortPoint2D, T>();
 	}
 
-	public void set(ISPosition2D position, T object) {
+	public void set(ShortPoint2D position, T object) {
 		data.put(position, object);
 	}
 
-	public T getObjectAt(ISPosition2D position) {
+	public T getObjectAt(ShortPoint2D position) {
 		return data.get(position);
 	}
 
-	public T removeObjectAt(ISPosition2D position) {
+	public T removeObjectAt(ShortPoint2D position) {
 		return data.remove(position);
 	}
 
@@ -47,13 +47,13 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 	 *            if acceptor == null, every object will be accepted.
 	 * @return accepted object that's nearest to position
 	 */
-	public T getObjectNextTo(ISPosition2D position, IAcceptor<T> acceptor) {
+	public T getObjectNextTo(ShortPoint2D position, IAcceptor<T> acceptor) {
 		float bestDistance = Float.MAX_VALUE;
 		T currBest = null;
 
-		for (Entry<ISPosition2D, T> currEntry : data.entrySet()) {
+		for (Entry<ShortPoint2D, T> currEntry : data.entrySet()) {
 			if (acceptor == null || acceptor.isAccepted(currEntry.getValue())) {
-				ISPosition2D currPosition = currEntry.getKey();
+				ShortPoint2D currPosition = currEntry.getKey();
 				float currDist = MapCircle.getDistanceSquared(position, currPosition);
 
 				if (bestDistance > currDist) {
@@ -66,14 +66,14 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 		return currBest;
 	}
 
-	public T removeObjectNextTo(ISPosition2D position, IAcceptor<T> acceptor) {
+	public T removeObjectNextTo(ShortPoint2D position, IAcceptor<T> acceptor) {
 		float bestDistance = Float.MAX_VALUE;
 		T currBest = null;
-		ISPosition2D bestPos = null;
+		ShortPoint2D bestPos = null;
 
-		for (Entry<ISPosition2D, T> currEntry : data.entrySet()) {
+		for (Entry<ShortPoint2D, T> currEntry : data.entrySet()) {
 			if (acceptor == null || acceptor.isAccepted(currEntry.getValue())) {
-				ISPosition2D currPosition = currEntry.getKey();
+				ShortPoint2D currPosition = currEntry.getKey();
 				float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
 
 				if (bestDistance > currDist) {
@@ -112,7 +112,7 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 	}
 
 	public void addAll(PositionableHashMap<T> materialOffers) {
-		for (Entry<ISPosition2D, T> entry : materialOffers.data.entrySet()) {
+		for (Entry<ShortPoint2D, T> entry : materialOffers.data.entrySet()) {
 			//needed to track the count of elements
 			set(entry.getKey(), entry.getValue());
 		}

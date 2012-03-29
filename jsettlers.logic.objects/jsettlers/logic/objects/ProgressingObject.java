@@ -1,6 +1,6 @@
 package jsettlers.logic.objects;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
 import random.RandomSingleton;
 import synchronic.timer.NetworkTimer;
@@ -16,7 +16,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 	private int startTime;
 	private int duration;
 
-	protected ProgressingObject(ISPosition2D pos) {
+	protected ProgressingObject(ShortPoint2D pos) {
 		super(pos);
 	}
 

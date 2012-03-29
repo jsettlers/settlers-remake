@@ -4,7 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.stack.RequestStack;
@@ -31,7 +31,7 @@ public class Barrack extends Building {
 	}
 
 	@Override
-	protected void positionedEvent(ISPosition2D pos) {
+	protected void positionedEvent(ShortPoint2D pos) {
 
 	}
 
@@ -69,7 +69,7 @@ public class Barrack extends Building {
 	 * 
 	 * @return The point in map space.
 	 */
-	public ISPosition2D getFlag() {
+	public ShortPoint2D getFlag() {
 		RelativePoint flag = getBuildingType().getFlag();
 		return calculateRealPoint(flag.getDx(), flag.getDy());
 	}

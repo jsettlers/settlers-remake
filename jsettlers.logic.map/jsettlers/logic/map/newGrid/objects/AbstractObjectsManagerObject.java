@@ -2,7 +2,7 @@ package jsettlers.logic.map.newGrid.objects;
 
 import java.io.Serializable;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * 
@@ -15,7 +15,7 @@ public abstract class AbstractObjectsManagerObject extends AbstractHexMapObject 
 	private final short x;
 	private final short y;
 
-	protected AbstractObjectsManagerObject(ISPosition2D pos) {
+	protected AbstractObjectsManagerObject(ShortPoint2D pos) {
 		this.x = pos.getX();
 		this.y = pos.getY();
 	}

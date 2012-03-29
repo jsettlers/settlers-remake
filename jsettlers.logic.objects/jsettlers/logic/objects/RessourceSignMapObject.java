@@ -1,7 +1,7 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
 import random.RandomSingleton;
@@ -15,7 +15,7 @@ public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 	private final float amount;
 	private final byte objectType;
 
-	public RessourceSignMapObject(ISPosition2D pos, EResourceType resourceType, float amount) {
+	public RessourceSignMapObject(ShortPoint2D pos, EResourceType resourceType, float amount) {
 		super(pos);
 		this.amount = amount;
 

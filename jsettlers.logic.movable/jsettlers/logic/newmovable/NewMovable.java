@@ -13,9 +13,17 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
+import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
+import random.RandomSingleton;
 
+/**
+ * Central Movable class of JSettlers.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, Serializable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
@@ -26,32 +34,56 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private EMovableType movableType;
 	private NewMovableStrategy strategy;
+	private byte player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
 	private EAction movableAction = EAction.NO_ACTION;
+	private EDirection direction;
 
 	private float progress;
-
 	private float progressIncrease;
-
-	private EDirection direction;
 
 	private ShortPoint2D position;
 
+	private ShortPoint2D targetPosition = null;
 	private Path path;
 	private boolean isRightstep;
 
-	public NewMovable(INewMovableGrid grid, EMovableType movableType) {
-		this.grid = grid;
-		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-		// The test movable has no images, so display a bearer
-		this.movableType = movableType == EMovableType.TEST_MOVABLE ? EMovableType.BEARER : movableType;
+	private boolean selected = false;
+	private boolean soundPlayed = false;
+	private float health = 1.0f;
 
-		this.direction = EDirection.EAST; // TODO use random direction
+	public NewMovable(INewMovableGrid grid, EMovableType movableType, byte player) {
+		this.grid = grid;
+		this.player = player;
+		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
+
+		// The test movable has no images, so display a bearer
+		this.movableType = movableType == EMovableType.TEST_MOVABLE ? EMovableType.SWORDSMAN_L3 : movableType;
+
+		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
 		MovableTimer.add(this);
 	}
 
+	/**
+	 * Tests if this movable can receive moveTo requests and if so, directs it to go to the given position.
+	 * 
+	 * @param targetPosition
+	 */
+	public final void moveTo(ShortPoint2D targetPosition) {
+		if (movableType.isMoveToAble() && state != ENewMovableState.SLEEPING) {
+			this.targetPosition = targetPosition;
+		}
+	}
+
+	/**
+	 * Positions this movable at the given position on the it's grid.<br>
+	 * If the movable is already located on the grid, it's removed from it's old position and then added to the new one.<br>
+	 * If the given position is null, the movable will only be removed from the grid and thus get invisible.
+	 * 
+	 * @param position
+	 */
 	public final void positionAt(ShortPoint2D position) {
 		assert grid.isFreeForMovable(position.getX(), position.getY()) : "given position not free for movable! " + position;
 
@@ -84,7 +116,20 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		case PATHING:
 			pathingAction();
 			break;
+		}
 
+		if (targetPosition != null) {
+			switch (state) {
+			case PATHING:
+				if (progress < 1) {
+					break;
+				} // if we are pathing and finished a step, calculate new path
+				setState(ENewMovableState.DOING_NOTHING);
+			case DOING_NOTHING:
+				goToPos(targetPosition); // progress is reset in here
+				targetPosition = null;
+				break;
+			}
 		}
 
 		if (state == ENewMovableState.DOING_NOTHING) {
@@ -162,10 +207,13 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 *            duration the animation should last (in seconds).
 	 */
 	final void playAction(EAction movableAction, float duration) {
+		assert state == ENewMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
+
 		this.movableAction = movableAction;
 		setState(ENewMovableState.PLAYING_ACTION);
 		this.progressIncrease = 1.0f / (duration * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 		this.progress = 0;
+		this.soundPlayed = false;
 	}
 
 	/**
@@ -177,7 +225,17 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		this.direction = direction;
 	}
 
+	/**
+	 * Lets this movable go to the given position.
+	 * 
+	 * @param targetPos
+	 *            position to move to.
+	 * @return true if it was possible to calculate a path to the given position<br>
+	 *         false if it wasn't possible to get a path.
+	 */
 	final boolean goToPos(ShortPoint2D targetPos) {
+		assert state == ENewMovableState.DOING_NOTHING : "can't do goToPos() if state isn't DOING_NOTHING. curr state: " + state;
+
 		Path path = grid.calculatePathTo(this, targetPos);
 		if (path == null) {
 			return false;
@@ -188,6 +246,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			progress = 1;
 			return true;
 		}
+	}
+
+	final IStrategyGrid getStrategyGrid() {
+		return grid;
 	}
 
 	/**
@@ -209,19 +271,17 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	@Override
 	public byte getPlayer() {
-		// TODO Auto-generated method stub
-		return 0;
+		return player;
 	}
 
 	@Override
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
+		return selected;
 	}
 
 	@Override
 	public void setSelected(boolean selected) {
-		// TODO Auto-generated method stub
+		this.selected = selected;
 	}
 
 	@Override
@@ -231,20 +291,17 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	@Override
 	public ESelectionType getSelectionType() {
-		// TODO Auto-generated method stub
-		return null;
+		return movableType.getSelectionType();
 	}
 
 	@Override
 	public void setSoundPlayed() {
-		// TODO Auto-generated method stub
-
+		this.soundPlayed = true;
 	}
 
 	@Override
 	public boolean isSoundPlayed() {
-		// TODO Auto-generated method stub
-		return false;
+		return soundPlayed;
 	}
 
 	@Override
@@ -279,17 +336,16 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	@Override
 	public float getHealth() {
-		// TODO Auto-generated method stub
-		return 1;
+		return health;
 	}
 
 	@Override
-	public boolean isRightstep() {
+	public final boolean isRightstep() {
 		return isRightstep;
 	}
 
 	@Override
-	public boolean needsPlayersGround() {
+	public final boolean needsPlayersGround() {
 		return movableType.needsPlayersGround();
 	}
 

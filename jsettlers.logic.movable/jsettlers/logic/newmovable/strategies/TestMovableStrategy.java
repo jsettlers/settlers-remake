@@ -1,8 +1,9 @@
-package jsettlers.logic.newmovable;
+package jsettlers.logic.newmovable.strategies;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.constants.Constants;
+import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.NewMovableStrategy;
 
 public class TestMovableStrategy extends NewMovableStrategy {
 	private static final long serialVersionUID = -8014915507026812395L;
@@ -17,11 +18,11 @@ public class TestMovableStrategy extends NewMovableStrategy {
 	protected void action() {
 		ctr++;
 		if (ctr == 20) {
-			super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
+			super.playAction(EAction.ACTION1, 0.8f);
 		} else if (ctr == 40) {
 			ctr = 0;
-			ShortPoint2D pos = super.getPosition();
-			super.goToPos(new ShortPoint2D(70 - pos.getX(), 60 - pos.getY()));
+			ShortPoint2D pos = super.getPos();
+			super.goToPos(new ShortPoint2D(90 - pos.getX(), 80 - pos.getY()));
 		}
 	}
 }

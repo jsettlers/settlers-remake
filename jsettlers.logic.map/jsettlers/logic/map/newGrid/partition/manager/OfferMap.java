@@ -1,7 +1,7 @@
 package jsettlers.logic.map.newGrid.partition.manager;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager.Offer;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap;
@@ -18,14 +18,14 @@ public class OfferMap extends PositionableHashMap<PartitionManager.Offer> implem
 	int[] count = new int[EMaterialType.values().length];
 
 	@Override
-	public void set(ISPosition2D position, Offer object) {
+	public void set(ShortPoint2D position, Offer object) {
 		removeObjectAt(position);
 		count[object.materialType.ordinal()]++;
 		super.set(position, object);
 	}
 
 	@Override
-	public Offer removeObjectAt(ISPosition2D position) {
+	public Offer removeObjectAt(ShortPoint2D position) {
 		Offer removed = super.removeObjectAt(position);
 		if (removed != null) {
 			count[removed.materialType.ordinal()]--;

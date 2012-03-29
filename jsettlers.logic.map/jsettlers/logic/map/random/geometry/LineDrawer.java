@@ -4,30 +4,28 @@ import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
-public class LineDrawer implements Iterable<ISPosition2D> {
+public class LineDrawer implements Iterable<ShortPoint2D> {
 
 	private final List<Point> points;
 
 	public LineDrawer(List<Point> points) {
 		if (points.size() < 2) {
-			throw new IllegalArgumentException(
-			        "There have to be at least 2 points in a line");
+			throw new IllegalArgumentException("There have to be at least 2 points in a line");
 		}
 		this.points = points;
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new LineIterator();
 	}
 
-	private class LineIterator implements Iterator<ISPosition2D> {
+	private class LineIterator implements Iterator<ShortPoint2D> {
 		Iterator<Point> pointIt;
-		ISPosition2D currentTarget;
-		ISPosition2D current;
+		ShortPoint2D currentTarget;
+		ShortPoint2D current;
 
 		LineIterator() {
 			pointIt = points.iterator();
@@ -51,14 +49,13 @@ public class LineDrawer implements Iterable<ISPosition2D> {
 		}
 
 		@Override
-		public ISPosition2D next() {
-			ISPosition2D next = current;
+		public ShortPoint2D next() {
+			ShortPoint2D next = current;
 			if (current.equals(currentTarget)) {
 				relaodTarget();
 			}
 			if (currentTarget != null) {
-				EDirection dir =
-				        EDirection.getApproxDirection(current, currentTarget);
+				EDirection dir = EDirection.getApproxDirection(current, currentTarget);
 				current = dir.getNextHexPoint(current);
 			}
 			return next;

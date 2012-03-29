@@ -3,7 +3,7 @@ package jsettlers.logic.movable;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
@@ -33,7 +33,7 @@ public interface IMovableGrid {
 	 * @param movable
 	 *            movable that left
 	 */
-	void movableLeft(ISPosition2D position, IHexMovable movable);
+	void movableLeft(ShortPoint2D position, IHexMovable movable);
 
 	/**
 	 * The given movable entered the given position.
@@ -43,7 +43,7 @@ public interface IMovableGrid {
 	 * @param movable
 	 *            movable that entered
 	 */
-	void movableEntered(ISPosition2D position, IHexMovable movable);
+	void movableEntered(ShortPoint2D position, IHexMovable movable);
 
 	/**
 	 * This method returns the {@link MapObjectsManager} of the grid.
@@ -60,7 +60,7 @@ public interface IMovableGrid {
 	 * @return the movable currently located at the given position<br>
 	 *         or null if no movable is located at that position.
 	 */
-	IHexMovable getMovable(ISPosition2D position);
+	IHexMovable getMovable(ShortPoint2D position);
 
 	/**
 	 * Checks if the given position is blocked.
@@ -101,7 +101,7 @@ public interface IMovableGrid {
 	 * @return true if the material had been placed,<br>
 	 *         false otherwise.
 	 */
-	boolean pushMaterial(ISPosition2D position, EMaterialType materialType, boolean offer);
+	boolean pushMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer);
 
 	/**
 	 * Takes a material of the given type from the given position.
@@ -113,7 +113,7 @@ public interface IMovableGrid {
 	 * @return true if it was possible to take the material.<br>
 	 *         false if it was not possible.
 	 */
-	boolean popMaterial(ISPosition2D position, EMaterialType materialType);
+	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
 
 	/**
 	 * Gives the {@link ELandscapeType} at the given position.
@@ -122,7 +122,7 @@ public interface IMovableGrid {
 	 *            position to be looked for.
 	 * @return {@link ELandscapeType} that's currently set to the given position.
 	 */
-	ELandscapeType getLandscapeTypeAt(ISPosition2D position);
+	ELandscapeType getLandscapeTypeAt(ShortPoint2D position);
 
 	/**
 	 * Gives the height at the given position.
@@ -131,7 +131,7 @@ public interface IMovableGrid {
 	 *            position to get the height for.
 	 * @return height at the given position.
 	 */
-	byte getHeightAt(ISPosition2D position);
+	byte getHeightAt(ShortPoint2D position);
 
 	/**
 	 * Changes the height of the landscape at the given position.
@@ -141,7 +141,7 @@ public interface IMovableGrid {
 	 * @param delta
 	 *            delta the height should be changed at the given position.
 	 */
-	void changeHeightAt(ISPosition2D position, byte delta);
+	void changeHeightAt(ShortPoint2D position, byte delta);
 
 	/**
 	 * Sets a marker to this position.
@@ -152,7 +152,7 @@ public interface IMovableGrid {
 	 *            if true, the mark will be set,<br>
 	 *            if false, the mark will be removed.
 	 */
-	void setMarked(ISPosition2D position, boolean marked);
+	void setMarked(ShortPoint2D position, boolean marked);
 
 	/**
 	 * Checks if the exists a mark for this position.
@@ -162,7 +162,7 @@ public interface IMovableGrid {
 	 * @return true if there is a marking<br>
 	 *         false if there is none.
 	 */
-	boolean isMarked(ISPosition2D position);
+	boolean isMarked(ShortPoint2D position);
 
 	/**
 	 * Checks if the given position is on the grid.
@@ -172,7 +172,7 @@ public interface IMovableGrid {
 	 * @return true if the given position is on the grid<br>
 	 *         false otherwise.
 	 */
-	boolean isInBounds(ISPosition2D position);
+	boolean isInBounds(ShortPoint2D position);
 
 	/**
 	 * Gives the player occupying the given position.
@@ -181,7 +181,7 @@ public interface IMovableGrid {
 	 *            position to be checked.
 	 * @return player currently occupying the given position.
 	 */
-	byte getPlayerAt(ISPosition2D position);
+	byte getPlayerAt(ShortPoint2D position);
 
 	/**
 	 * Sets the player that should now occupy the given position.
@@ -191,7 +191,7 @@ public interface IMovableGrid {
 	 * @param player
 	 *            player that is now occupying the given position.
 	 */
-	void changePlayerAt(ISPosition2D position, byte player);
+	void changePlayerAt(ShortPoint2D position, byte player);
 
 	/**
 	 * Checks if the given position fits the given search type.
@@ -205,7 +205,7 @@ public interface IMovableGrid {
 	 * @return true if the position fits the searchType.<br>
 	 *         false if it doesn't.
 	 */
-	boolean fitsSearchType(ISPosition2D position, ESearchType searchType, IPathCalculateable pathCalculateable);
+	boolean fitsSearchType(ShortPoint2D position, ESearchType searchType, IPathCalculateable pathCalculateable);
 
 	/**
 	 * Executes the given searchType
@@ -217,7 +217,7 @@ public interface IMovableGrid {
 	 * @return true if the execution was successful<br>
 	 *         false if it wasn't.
 	 */
-	boolean executeSearchType(ISPosition2D position, ESearchType searchType);
+	boolean executeSearchType(ShortPoint2D position, ESearchType searchType);
 
 	/**
 	 * Checks if the given {@link EMaterialType} can be popped from the given position.
@@ -229,7 +229,7 @@ public interface IMovableGrid {
 	 * @return true if it can be popped<br>
 	 *         false otherwise.
 	 */
-	boolean canPop(ISPosition2D position, EMaterialType material);
+	boolean canPop(ShortPoint2D position, EMaterialType material);
 
 	/**
 	 * Checks if the given {@link EMaterialType} can be pushed to the given position.
@@ -239,7 +239,7 @@ public interface IMovableGrid {
 	 * @return true if it can be pushed to the given position<br>
 	 *         false otherwise.
 	 */
-	boolean canPush(ISPosition2D position);
+	boolean canPush(ShortPoint2D position);
 
 	/**
 	 * Gives a {@link HexAStar} algorithm.
@@ -276,7 +276,7 @@ public interface IMovableGrid {
 
 	void addJobless(IManageableDigger digger);
 
-	void changeLandscapeAt(ISPosition2D pos, ELandscapeType type);
+	void changeLandscapeAt(ShortPoint2D pos, ELandscapeType type);
 
 	/**
 	 * Places or removes a smoke object.
@@ -286,17 +286,17 @@ public interface IMovableGrid {
 	 * @param place
 	 *            If the object should be placed (true) or removed (false)
 	 */
-	void placeSmoke(ISPosition2D pos, boolean place);
+	void placeSmoke(ShortPoint2D pos, boolean place);
 
 	boolean isProtected(short x, short y);
 
-	void placePig(ISPosition2D pos, boolean place);
+	void placePig(ShortPoint2D pos, boolean place);
 
-	boolean isPigThere(ISPosition2D pos);
+	boolean isPigThere(ShortPoint2D pos);
 
-	boolean isPigAdult(ISPosition2D pos);
+	boolean isPigAdult(ShortPoint2D pos);
 
-	boolean isEnforcedByTower(ISPosition2D pos);
+	boolean isEnforcedByTower(ShortPoint2D pos);
 
 	boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable);
 
@@ -304,7 +304,7 @@ public interface IMovableGrid {
 
 	byte getResourceAmountAt(short x, short y);
 
-	boolean canAddRessourceSign(ISPosition2D pos);
+	boolean canAddRessourceSign(ShortPoint2D pos);
 
 	/**
 	 * Returns a {@link EMaterialType} available at the given position.
@@ -314,7 +314,7 @@ public interface IMovableGrid {
 	 * @return an available {@link EMaterialType} at this position. <br>
 	 *         or null if no material is available
 	 */
-	EMaterialType getMaterialTypeAt(ISPosition2D pos);
+	EMaterialType getMaterialTypeAt(ShortPoint2D pos);
 
 	/**
 	 * try to steal a material at the given position
@@ -324,9 +324,9 @@ public interface IMovableGrid {
 	 * @return the {@link EMaterialType} of the stolen material<br>
 	 *         or null if none had been stolen.
 	 */
-	EMaterialType stealMaterialAt(ISPosition2D pos);
+	EMaterialType stealMaterialAt(ShortPoint2D pos);
 
-	EMaterialType popToolProduction(ISPosition2D pos);
+	EMaterialType popToolProduction(ShortPoint2D pos);
 
 	/**
 	 * gets the amount of resources around a given position. 1 means: full, 0 means nothing.
@@ -341,5 +341,5 @@ public interface IMovableGrid {
 	 */
 	float getResourceAmountAround(short x, short y, EResourceType type);
 
-	MovableNeighborIterator getNeighborsIterator(ISPosition2D pos, byte radius);
+	MovableNeighborIterator getNeighborsIterator(ShortPoint2D pos, byte radius);
 }

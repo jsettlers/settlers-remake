@@ -1,7 +1,7 @@
 package jsettlers.logic.objects.tree;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.logic.objects.GrowingObject;
@@ -27,7 +27,7 @@ public class Tree extends GrowingObject implements ISoundable {
 	 * 
 	 * @param grid
 	 */
-	public Tree(ISPosition2D pos) {
+	public Tree(ShortPoint2D pos) {
 		super(pos, EMapObjectType.TREE_GROWING);
 	}
 

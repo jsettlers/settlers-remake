@@ -11,7 +11,7 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
 import jsettlers.logic.algorithms.path.astar.IAStar;
@@ -69,7 +69,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public final byte getPlayerAt(ISPosition2D position) {
+	public final byte getPlayerAt(ShortPoint2D position) {
 		return isInBounds(position) ? this.getPartitionObject(position.getX(), position.getY()).getPlayer() : -1;
 	}
 
@@ -81,7 +81,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return this.partitions[getIdx(x, y)];
 	}
 
-	private final Partition getPartitionObject(ISPosition2D pos) {
+	private final Partition getPartitionObject(ShortPoint2D pos) {
 		return getPartitionObject(getPartition(pos));
 	}
 
@@ -97,7 +97,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public final short getPartition(ISPosition2D position) {
+	public final short getPartition(ShortPoint2D position) {
 		return getPartition(position.getX(), position.getY());
 	}
 
@@ -176,7 +176,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public final void dividePartition(final short x, final short y, ISPosition2D firstPos, ISPosition2D secondPos) {
+	public final void dividePartition(final short x, final short y, ShortPoint2D firstPos, ShortPoint2D secondPos) {
 		System.out.println("DIVIDE!!");
 		short newPartition = initializeNewPartition(getPlayerAt(firstPos));
 		short oldPartition = getPartition(firstPos);
@@ -242,7 +242,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		}
 	}
 
-	private final boolean isInBounds(ISPosition2D position) {
+	private final boolean isInBounds(ShortPoint2D position) {
 		return isInBounds(position.getX(), position.getY());
 	}
 
@@ -251,7 +251,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	public final boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+	public final boolean pushMaterial(ShortPoint2D position, EMaterialType materialType) {
 		return getPartitionObject(position.getX(), position.getY()).pushMaterial(position, materialType);
 	}
 
@@ -279,7 +279,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(requester.getPos()).requestDiggers(requester, amount);
 	}
 
-	public final void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
+	public final void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		getPartitionObject(building.getPos()).requestBricklayer(building, bricklayerTargetPos, direction);
 	}
 
@@ -296,23 +296,23 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(barrack.getDoor()).requestSoilderable(barrack);
 	}
 
-	public final void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+	public final void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
 		getPartitionObject(position).releaseRequestsAt(position, materialType);
 	}
 
-	public final List<ISPosition2D> occupyArea(MapCircle toBeOccupied, ISPosition2D occupiersPosition, byte newPlayer) {
+	public final List<ShortPoint2D> occupyArea(MapCircle toBeOccupied, ShortPoint2D occupiersPosition, byte newPlayer) {
 		MilliStopWatch watch = new MilliStopWatch();
 		watch.start();
 
 		changePlayerAt(occupiersPosition.getX(), occupiersPosition.getY(), newPlayer);
 
 		short newPartition = getPartition(occupiersPosition);
-		List<ISPosition2D> occupiedPositions = new ArrayList<ISPosition2D>();
-		List<ISPosition2D> checkForMerge = new ArrayList<ISPosition2D>();
+		List<ShortPoint2D> occupiedPositions = new ArrayList<ShortPoint2D>();
+		List<ShortPoint2D> checkForMerge = new ArrayList<ShortPoint2D>();
 
-		ISPosition2D unblockedOccupied = null;
+		ShortPoint2D unblockedOccupied = null;
 
-		for (ISPosition2D curr : toBeOccupied) {
+		for (ShortPoint2D curr : toBeOccupied) {
 			short x = curr.getX();
 			short y = curr.getY();
 
@@ -344,7 +344,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			if (getPlayerAt(x, y) == newPlayer) {
 				towers[getIdx(x, y)]++;
 
-				for (ISPosition2D neighbor : new MapNeighboursArea(curr)) {
+				for (ShortPoint2D neighbor : new MapNeighboursArea(curr)) {
 					if (isInBounds(neighbor) && !toBeOccupied.contains(neighbor)) {
 						checkForMerge.add(neighbor);
 					}
@@ -352,13 +352,13 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			}
 		}
 
-		ISPosition2D[] foundPartions = new ISPosition2D[partitionObjects.length];
-		for (ISPosition2D curr : checkForMerge) {
+		ShortPoint2D[] foundPartions = new ShortPoint2D[partitionObjects.length];
+		for (ShortPoint2D curr : checkForMerge) {
 			foundPartions[getPartition(curr) + 1] = curr; // +1 to have no conflict with unoccupied area
 		}
 
 		for (short i = 0; i < foundPartions.length; i++) {
-			ISPosition2D pos = foundPartions[i];
+			ShortPoint2D pos = foundPartions[i];
 			if (pos != null && (i - 1) != newPartition) {
 				if (getPartitionObject((short) (i - 1)).getPlayer() == newPlayer) {
 					this.mergePartitions(pos.getX(), pos.getY(), unblockedOccupied.getX(), unblockedOccupied.getY());
@@ -374,11 +374,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return towers[getIdx(x, y)] > 0;
 	}
 
-	public final List<ISPosition2D> freeOccupiedArea(MapCircle occupied, ISPosition2D occupiersPosition) {
+	public final List<ShortPoint2D> freeOccupiedArea(MapCircle occupied, ShortPoint2D occupiersPosition) {
 		short partiton = getPartition(occupiersPosition);
-		List<ISPosition2D> totallyFreePositions = new ArrayList<ISPosition2D>();
+		List<ShortPoint2D> totallyFreePositions = new ArrayList<ShortPoint2D>();
 
-		for (ISPosition2D curr : occupied) {
+		for (ShortPoint2D curr : occupied) {
 			short x = curr.getX();
 			short y = curr.getY();
 			if (isInBounds(x, y) && getPartitionAt(x, y) == partiton) {
@@ -394,7 +394,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return totallyFreePositions;
 	}
 
-	public final void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+	public final void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
 		getPartitionObject(pos).removeOfferAt(pos, materialType);
 	}
 
@@ -414,7 +414,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		towers[getIdx(x, y)]++;
 	}
 
-	public EMaterialType popToolProduction(ISPosition2D pos) {
+	public EMaterialType popToolProduction(ShortPoint2D pos) {
 		return getPartitionObject(pos).popToolProduction(pos);
 	}
 }

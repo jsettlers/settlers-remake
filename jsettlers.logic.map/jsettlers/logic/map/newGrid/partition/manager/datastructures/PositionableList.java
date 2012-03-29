@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 
 /**
@@ -36,7 +36,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	 *            position to be used to find the nearest accepted neighbor around it.
 	 * @return object that's nearest to position
 	 */
-	public T removeObjectNextTo(ISPosition2D position) {
+	public T removeObjectNextTo(ShortPoint2D position) {
 		return removeObjectNextTo(position, null);
 	}
 
@@ -45,7 +45,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return data.iterator();
 	}
 
-	public T removeObjectAt(ISPosition2D position) {
+	public T removeObjectAt(ShortPoint2D position) {
 		Iterator<T> iter = data.iterator();
 		while (iter.hasNext()) {
 			T curr = iter.next();
@@ -67,7 +67,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	 *            if result == null every entry is accepted.
 	 * @return accepted object that's nearest to position
 	 */
-	public T removeObjectNextTo(ISPosition2D position, IAcceptor<T> acceptor) {
+	public T removeObjectNextTo(ShortPoint2D position, IAcceptor<T> acceptor) {
 		float bestDistance = Float.MAX_VALUE;
 		T currBest = null;
 
@@ -75,7 +75,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 			if (acceptor != null && !acceptor.isAccepted(currEntry))
 				continue;
 
-			ISPosition2D currPosition = currEntry.getPos();
+			ShortPoint2D currPosition = currEntry.getPos();
 			float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
 
 			if (bestDistance > currDist) {

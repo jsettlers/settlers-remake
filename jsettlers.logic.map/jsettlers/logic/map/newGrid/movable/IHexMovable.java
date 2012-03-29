@@ -1,7 +1,7 @@
 package jsettlers.logic.map.newGrid.movable;
 
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 
 /**
@@ -42,7 +42,7 @@ public interface IHexMovable extends IMovable {
 
 	IHexMovable getPushedFrom();
 
-	ISPosition2D getNextTile();
+	ShortPoint2D getNextTile();
 
 	/**
 	 * 

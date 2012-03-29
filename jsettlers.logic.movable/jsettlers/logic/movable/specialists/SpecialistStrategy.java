@@ -2,7 +2,7 @@ package jsettlers.logic.movable.specialists;
 
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -13,7 +13,7 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 
 	private static final byte SEARCH_RADIUS = (byte) 15;
 
-	private ISPosition2D centerPos;
+	private ShortPoint2D centerPos;
 	private boolean going = false;
 
 	private boolean secondActionDone;
@@ -94,7 +94,7 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 	}
 
 	private final void unmarkTargetPos() {
-		ISPosition2D targetPos = super.getTargetPos();
+		ShortPoint2D targetPos = super.getTargetPos();
 		if (targetPos != null) {
 			super.getGrid().setMarked(targetPos, false);
 		} else {
@@ -108,7 +108,7 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 	}
 
 	private final void requestNewPath() {
-		ISPosition2D bestNeighbour = getCloseForeignTile();
+		ShortPoint2D bestNeighbour = getCloseForeignTile();
 
 		if (bestNeighbour != null) {
 			super.getGrid().setMarked(bestNeighbour, true);
@@ -120,13 +120,13 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 		going = true;
 	}
 
-	protected void initGoingToPosition(ISPosition2D bestNeighbour) {
+	protected void initGoingToPosition(ShortPoint2D bestNeighbour) {
 		super.goToTile(bestNeighbour);
 	}
 
 	protected abstract ESearchType getSearchType();
 
-	protected abstract ISPosition2D getCloseForeignTile();
+	protected abstract ShortPoint2D getCloseForeignTile();
 
 	@Override
 	protected final void stopOrStartWorking(boolean stop) {
@@ -161,7 +161,7 @@ public abstract class SpecialistStrategy extends PathableStrategy {
 		unmarkTargetPos();
 	}
 
-	protected final ISPosition2D getCenterPos() {
+	protected final ShortPoint2D getCenterPos() {
 		return centerPos;
 	}
 

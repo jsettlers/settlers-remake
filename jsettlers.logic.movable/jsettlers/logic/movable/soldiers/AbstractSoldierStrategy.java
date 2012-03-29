@@ -2,7 +2,7 @@ package jsettlers.logic.movable.soldiers;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.movable.GotoJob;
@@ -99,7 +99,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	}
 
 	@Override
-	public final void leaveOccupyableBuilding(ISPosition2D pos) {
+	public final void leaveOccupyableBuilding(ShortPoint2D pos) {
 		this.setPos(pos);
 		super.setVisible(true);
 		super.setDontMove(false);
@@ -128,7 +128,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	}
 
 	@Override
-	public final void goToTile(ISPosition2D newPos) {
+	public final void goToTile(ShortPoint2D newPos) {
 		super.goToTile(newPos);
 	}
 
@@ -172,7 +172,7 @@ public abstract class AbstractSoldierStrategy extends PathableStrategy implement
 	}
 
 	@Override
-	public final void calculatePathTo(ISPosition2D target) {
+	public final void calculatePathTo(ShortPoint2D target) {
 		super.calculatePathTo(target);
 	}
 }

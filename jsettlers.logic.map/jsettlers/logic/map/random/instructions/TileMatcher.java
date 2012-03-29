@@ -3,9 +3,9 @@ package jsettlers.logic.map.random.instructions;
 import java.util.Random;
 
 import jsettlers.common.map.IMapData;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
-public abstract class TileMatcher implements Iterable<ISPosition2D> {
+public abstract class TileMatcher implements Iterable<ShortPoint2D> {
 	protected final IMapData grid;
 	protected final int startx;
 	protected final int starty;
@@ -24,7 +24,7 @@ public abstract class TileMatcher implements Iterable<ISPosition2D> {
 
 	}
 
-	protected boolean isPlaceable(ISPosition2D point) {
+	protected boolean isPlaceable(ShortPoint2D point) {
 		return filter.isPlaceable(point);
 	}
 

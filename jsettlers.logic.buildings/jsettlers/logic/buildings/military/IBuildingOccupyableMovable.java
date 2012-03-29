@@ -3,7 +3,7 @@ package jsettlers.logic.buildings.military;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public interface IBuildingOccupyableMovable {
 
@@ -15,7 +15,7 @@ public interface IBuildingOccupyableMovable {
 
 	IMovable getMovable();
 
-	void leaveOccupyableBuilding(ISPosition2D pos);
+	void leaveOccupyableBuilding(ShortPoint2D pos);
 
 	void setSelected(boolean selected);
 }

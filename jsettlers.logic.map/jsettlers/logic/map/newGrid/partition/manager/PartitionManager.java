@@ -11,7 +11,6 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.queue.SlotQueue;
 import jsettlers.logic.buildings.Building;
@@ -76,7 +75,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		PartitionManagerTimer.remove(this);
 	}
 
-	public boolean addOffer(ISPosition2D position, EMaterialType materialType) {
+	public boolean addOffer(ShortPoint2D position, EMaterialType materialType) {
 		Offer existingOffer = materialOffers.getObjectAt(position);
 		if (existingOffer != null) {
 			if (existingOffer.materialType == materialType) {
@@ -99,7 +98,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		diggerRequests.offer(new DiggerRequest(requester, amount));
 	}
 
-	public void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
+	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		bricklayerRequests.offer(new BricklayerRequest(building, bricklayerTargetPos, direction));
 	}
 
@@ -111,7 +110,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		soilderCreationRequests.offer(new SoilderCreationRequest(barrack));
 	}
 
-	public IManageableBearer removeJobless(ISPosition2D position) {
+	public IManageableBearer removeJobless(ShortPoint2D position) {
 		return joblessBearer.removeObjectAt(position);
 	}
 
@@ -177,7 +176,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		removePositionTo(position, this.workerRequests, newManager.workerRequests, newHasSamePlayer);
 	}
 
-	private <T extends ILocatable> void removePositionTo(ISPosition2D pos, LinkedList<T> fromList, LinkedList<T> toList, boolean newHasSamePlayer) {
+	private <T extends ILocatable> void removePositionTo(ShortPoint2D pos, LinkedList<T> fromList, LinkedList<T> toList, boolean newHasSamePlayer) {
 		Iterator<T> iter = fromList.iterator();
 		while (iter.hasNext()) {
 			T curr = iter.next();
@@ -341,7 +340,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private void createNewTooluser(EMovableType movableType, ISPosition2D position) {
+	private void createNewTooluser(EMovableType movableType, ShortPoint2D position) {
 		workerCreationRequests.addLast(new WorkerCreationRequest(movableType, position));
 	}
 
@@ -361,11 +360,11 @@ public final class PartitionManager implements ITimerable, Serializable {
 	static final class Offer implements Serializable {
 		private static final long serialVersionUID = 8516955442065220998L;
 
-		ISPosition2D position;
+		ShortPoint2D position;
 		EMaterialType materialType;
 		byte amount = 0;
 
-		public Offer(ISPosition2D position, EMaterialType materialType, byte amount) {
+		public Offer(ShortPoint2D position, EMaterialType materialType, byte amount) {
 			this.position = position;
 			this.materialType = materialType;
 			this.amount = amount;
@@ -402,7 +401,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return requester.getPos();
 		}
 	}
@@ -420,7 +419,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 
 		@Override
-		public final ISPosition2D getPos() {
+		public final ShortPoint2D getPos() {
 			return requester.getPos();
 		}
 	}
@@ -430,17 +429,17 @@ public final class PartitionManager implements ITimerable, Serializable {
 
 		boolean creationRequested = false;
 		final Building building;
-		final ISPosition2D bricklayerTargetPos;
+		final ShortPoint2D bricklayerTargetPos;
 		final EDirection direction;
 
-		public BricklayerRequest(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
+		public BricklayerRequest(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 			this.building = building;
 			this.bricklayerTargetPos = bricklayerTargetPos;
 			this.direction = direction;
 		}
 
 		@Override
-		public final ISPosition2D getPos() {
+		public final ShortPoint2D getPos() {
 			return building.getPos();
 		}
 	}
@@ -451,9 +450,9 @@ public final class PartitionManager implements ITimerable, Serializable {
 		private static final long serialVersionUID = 3047014371520017602L;
 
 		final EMovableType movableType;
-		final ISPosition2D position;
+		final ShortPoint2D position;
 
-		public WorkerCreationRequest(EMovableType movableType, ISPosition2D position) {
+		public WorkerCreationRequest(EMovableType movableType, ShortPoint2D position) {
 			this.movableType = movableType;
 			this.position = position;
 		}
@@ -464,7 +463,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return position;
 		}
 	}
@@ -484,7 +483,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return barrack.getDoor();
 		}
 
@@ -528,7 +527,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return building.getDoor();
 		}
 
@@ -543,7 +542,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		schedule();
 	}
 
-	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+	public void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
 		materialRequests.removeOfType(materialType, position);
 	}
 
@@ -555,18 +554,18 @@ public final class PartitionManager implements ITimerable, Serializable {
 	 * @param materialType
 	 *            {@link EMaterialType} to be checked.
 	 */
-	public final void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+	public final void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
 		Offer offer = this.materialOffers.getObjectAt(pos);
 		if (offer != null && offer.materialType == materialType) {
 			reduceOfferAmount(offer);
 		}
 	}
 
-	public final void requestToolProduction(EMaterialType type, ISPosition2D pos) {
+	public final void requestToolProduction(EMaterialType type, ShortPoint2D pos) {
 		toolProductionRequests.add(type, new ProductionRequest(type, pos));
 	}
 
-	public final EMaterialType popToolProduction(ISPosition2D closeTo) {
+	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
 		ProductionRequest request = toolProductionRequests.pop(closeTo);
 		if (request != null) {
 			return request.getType();

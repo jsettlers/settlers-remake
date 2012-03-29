@@ -4,7 +4,7 @@ import java.util.Random;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.MapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.random.grid.GridLandscapeType;
 import jsettlers.logic.map.random.grid.MapGrid;
@@ -36,7 +36,7 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 			int count = getIntParameter("count", random);
 
 			int i = 0;
-			for (ISPosition2D place : matcher) {
+			for (ShortPoint2D place : matcher) {
 				placeObject(grid, start, place.getX(), place.getY(), random);
 				i++;
 				if (i >= count) {
@@ -56,7 +56,7 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 		}
 
 		@Override
-		public boolean isPlaceable(ISPosition2D point) {
+		public boolean isPlaceable(ShortPoint2D point) {
 			return grid.isObjectPlaceable(point.getX(), point.getY())
 					&& (onLandscape == null || onLandscape.equals(grid.getLandscape(point.getX(), point.getY())));
 		}

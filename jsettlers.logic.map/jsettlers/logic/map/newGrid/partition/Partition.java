@@ -5,7 +5,7 @@ import java.io.Serializable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -71,7 +71,7 @@ public final class Partition implements Serializable {
 		return counter;
 	}
 
-	public boolean pushMaterial(ISPosition2D position, EMaterialType materialType) {
+	public boolean pushMaterial(ShortPoint2D position, EMaterialType materialType) {
 		return manager.addOffer(position, materialType);
 	}
 
@@ -99,7 +99,7 @@ public final class Partition implements Serializable {
 		manager.addJobless(digger);
 	}
 
-	public void requestBricklayer(Building building, ISPosition2D bricklayerTargetPos, EDirection direction) {
+	public void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		manager.requestBricklayer(building, bricklayerTargetPos, direction);
 	}
 
@@ -115,16 +115,16 @@ public final class Partition implements Serializable {
 		manager.mergeInto(newPartition.manager);
 	}
 
-	public void releaseRequestsAt(ISPosition2D position, EMaterialType materialType) {
+	public void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
 		manager.releaseRequestsAt(position, materialType);
 	}
 
-	public void removeOfferAt(ISPosition2D pos, EMaterialType materialType) {
+	public void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
 		manager.removeOfferAt(pos, materialType);
 	}
 
-	public EMaterialType popToolProduction(ISPosition2D pos) {
-	    return manager.popToolProduction(pos);
-    }
+	public EMaterialType popToolProduction(ShortPoint2D pos) {
+		return manager.popToolProduction(pos);
+	}
 
 }

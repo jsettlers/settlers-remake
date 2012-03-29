@@ -6,7 +6,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.movable.bearer.BearerStrategy;
 import jsettlers.logic.movable.construction.BricklayerStrategy;
@@ -120,7 +120,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 	 */
 	protected abstract boolean actionFinished();
 
-	protected void goToTile(ISPosition2D pos) {
+	protected void goToTile(ShortPoint2D pos) {
 		this.movable.goToTile(pos);
 	}
 
@@ -133,7 +133,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return this.movable.getPos();
 	}
 
@@ -149,7 +149,7 @@ public abstract class MovableStrategy implements Serializable, IPathCalculateabl
 		this.movable.setStrategy(getTypeStrategy(grid, movableType, movable));
 	}
 
-	protected final void setPos(ISPosition2D pos) {
+	protected final void setPos(ShortPoint2D pos) {
 		this.movable.setPos(pos);
 	}
 

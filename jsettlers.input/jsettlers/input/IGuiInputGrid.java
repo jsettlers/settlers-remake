@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
@@ -23,11 +23,11 @@ public interface IGuiInputGrid {
 
 	IBuilding getBuildingAt(short x, short y);
 
-	boolean isInBounds(ISPosition2D position);
+	boolean isInBounds(ShortPoint2D position);
 
 	IBuildingsGrid getBuildingsGrid();
 
-	byte getPlayerAt(ISPosition2D position);
+	byte getPlayerAt(ShortPoint2D position);
 
 	void resetDebugColors();
 
@@ -42,7 +42,7 @@ public interface IGuiInputGrid {
 	 *            The type of the building
 	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
-	ISPosition2D getConstructablePositionAround(ISPosition2D pos, EBuildingType type);
+	ShortPoint2D getConstructablePositionAround(ShortPoint2D pos, EBuildingType type);
 
 	void save() throws FileNotFoundException, IOException, InterruptedException;
 

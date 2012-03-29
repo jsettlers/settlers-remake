@@ -16,7 +16,7 @@ import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
@@ -54,7 +54,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
 
-	private ISPosition2D pos;
+	private ShortPoint2D pos;
 	private IBuildingsGrid grid;
 	private final byte player;
 	private byte state = STATE_CREATED;
@@ -96,7 +96,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	public final void constructAt(IBuildingsGrid grid, ISPosition2D pos) {
+	public final void constructAt(IBuildingsGrid grid, ShortPoint2D pos) {
 		assert state == STATE_CREATED : "building can not be positioned in this state";
 
 		boolean itWorked = positionAt(grid, pos);
@@ -141,7 +141,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return result;
 	}
 
-	private void placeAdditionalMapObjects(IBuildingsGrid grid, ISPosition2D pos, boolean place) {
+	private void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
 		if (place) {
 			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, (byte) -1);
 		} else {
@@ -152,13 +152,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			if (place) {
 				grid.getMapObjectsManager().addSimpleMapObject(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST, false, (byte) -1);
 			} else {
-				ISPosition2D postPos = curr.calculatePoint(pos);
+				ShortPoint2D postPos = curr.calculatePoint(pos);
 				grid.getMapObjectsManager().removeMapObjectType(postPos.getX(), postPos.getY(), EMapObjectType.BUILDINGSITE_POST);
 			}
 		}
 	}
 
-	private boolean positionAt(IBuildingsGrid grid, ISPosition2D pos) {
+	private boolean positionAt(IBuildingsGrid grid, ShortPoint2D pos) {
 		boolean couldBePlaced = grid.setBuilding(pos, this);
 		if (couldBePlaced) {
 			this.pos = pos;
@@ -176,7 +176,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	protected void placeFlag(boolean place) {
-		ISPosition2D flagPosition = type.getFlag().calculatePoint(pos);
+		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
 
 		if (place) {
 			grid.getMapObjectsManager().addSimpleMapObject(flagPosition, getFlagType(), false, player);
@@ -185,9 +185,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
-	protected abstract void positionedEvent(ISPosition2D pos);
+	protected abstract void positionedEvent(ShortPoint2D pos);
 
-	public final void appearAt(IBuildingsGrid grid, ISPosition2D pos) {
+	public final void appearAt(IBuildingsGrid grid, ShortPoint2D pos) {
 		this.state = STATE_CONSTRUCTED;
 
 		positionAt(grid, pos);
@@ -208,7 +208,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			int heightSum = 0;
 
 			for (RelativePoint curr : blocked) {
-				ISPosition2D currPos = curr.calculatePoint(this.pos);
+				ShortPoint2D currPos = curr.calculatePoint(this.pos);
 				heightSum += this.grid.getHeightAt(currPos);
 			}
 
@@ -308,7 +308,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public ISPosition2D calculateRealPoint(short dx, short dy) {
+	public ShortPoint2D calculateRealPoint(short dx, short dy) {
 		return new RelativePoint(dx, dy).calculatePoint(pos);
 	}
 
@@ -384,7 +384,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return pos;
 	}
 
@@ -406,7 +406,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	protected abstract EMapObjectType getFlagType();
 
-	public final ISPosition2D getDoor() {
+	public final ShortPoint2D getDoor() {
 		return getBuildingType().getDoorTile().calculatePoint(pos);
 	}
 
@@ -439,7 +439,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (isConstructionFinished()) {
 			for (RelativeStack curr : type.getRequestStacks()) {
 				if (curr.requiredForBuild() > 0) {
-					ISPosition2D position = buildingArea.get(posIdx);
+					ShortPoint2D position = buildingArea.get(posIdx);
 					posIdx += 2;
 					grid.pushMaterialsTo(position, curr.getType(), (byte) Math.min(curr.requiredForBuild() / 2, Constants.STACK_SIZE));
 				}
@@ -449,7 +449,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				posIdx += 2;
 				int numberOfPopped = ((LimittedRequestStack) stack).getNumberOfPopped() / 2;
 				if (numberOfPopped > 0) {
-					ISPosition2D position = buildingArea.get(posIdx);
+					ShortPoint2D position = buildingArea.get(posIdx);
 					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(numberOfPopped, Constants.STACK_SIZE));
 				}
 			}
@@ -466,7 +466,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		stacks = new LinkedList<RequestStack>();
 	}
 
-	public void setWorkAreaCenter(@SuppressWarnings("unused") ISPosition2D workAreaCenter) {
+	public void setWorkAreaCenter(@SuppressWarnings("unused") ShortPoint2D workAreaCenter) {
 	}
 
 	/**
@@ -477,29 +477,29 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	 * @param radius
 	 */
 	public void drawWorkAreaCircle(boolean draw) {
-		ISPosition2D center = getWorkAreaCenter();
+		ShortPoint2D center = getWorkAreaCenter();
 		if (center != null) {
 			short radius = type.getWorkradius();
-			for (ISPosition2D pos : getCircle(grid, center, radius)) {
+			for (ShortPoint2D pos : getCircle(grid, center, radius)) {
 				addOrRemoveMarkObject(draw, grid, pos, 1.0f);
 			}
-			for (ISPosition2D pos : getCircle(grid, center, .75f * radius)) {
+			for (ShortPoint2D pos : getCircle(grid, center, .75f * radius)) {
 				addOrRemoveMarkObject(draw, grid, pos, 0.66f);
 			}
-			for (ISPosition2D pos : getCircle(grid, center, .5f * radius)) {
+			for (ShortPoint2D pos : getCircle(grid, center, .5f * radius)) {
 				addOrRemoveMarkObject(draw, grid, pos, 0.33f);
 			}
-			for (ISPosition2D pos : getCircle(grid, center, .25f * radius)) {
+			for (ShortPoint2D pos : getCircle(grid, center, .25f * radius)) {
 				addOrRemoveMarkObject(draw, grid, pos, 0f);
 			}
 		}
 	}
 
-	protected ISPosition2D getWorkAreaCenter() {
+	protected ShortPoint2D getWorkAreaCenter() {
 		return null;
 	}
 
-	private void addOrRemoveMarkObject(boolean draw, IBuildingsGrid grid, ISPosition2D pos, float progress) {
+	private void addOrRemoveMarkObject(boolean draw, IBuildingsGrid grid, ShortPoint2D pos, float progress) {
 		if (draw) {
 			grid.getMapObjectsManager().addBuildingWorkAreaObject(pos, progress);
 		} else {
@@ -507,7 +507,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
-	private MapShapeFilter getCircle(IBuildingsGrid grid, ISPosition2D center, float radius) {
+	private MapShapeFilter getCircle(IBuildingsGrid grid, ShortPoint2D center, float radius) {
 		MapCircle baseCircle = new MapCircle(center, radius);
 		MapCircleBorder border = new MapCircleBorder(baseCircle);
 		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());

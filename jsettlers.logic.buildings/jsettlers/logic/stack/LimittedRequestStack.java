@@ -1,7 +1,7 @@
 package jsettlers.logic.stack;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 
 public class LimittedRequestStack extends RequestStack {
@@ -11,7 +11,7 @@ public class LimittedRequestStack extends RequestStack {
 	private short stillToBeRequested = 0;
 	private short poppedMaterials = 0;
 
-	public LimittedRequestStack(IRequestsStackGrid grid, ISPosition2D position, EMaterialType materialType, short requestedAmount) {
+	public LimittedRequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, short requestedAmount) {
 		super(grid, position, materialType);
 		this.requestedAmount = requestedAmount;
 		this.stillToBeRequested = requestedAmount;

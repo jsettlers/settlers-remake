@@ -2,7 +2,7 @@ package jsettlers.logic.movable.soldiers.behaviors;
 
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
@@ -16,7 +16,7 @@ public interface ISoldierBehaviorable {
 
 	IMovableGrid getGrid();
 
-	void goToTile(ISPosition2D first);
+	void goToTile(ShortPoint2D first);
 
 	byte getPlayer();
 
@@ -28,7 +28,7 @@ public interface ISoldierBehaviorable {
 
 	void executeHit(IHexMovable movable);
 
-	void calculatePathTo(ISPosition2D door);
+	void calculatePathTo(ShortPoint2D door);
 
 	void setDontMove(boolean dontMove);
 

@@ -1,6 +1,6 @@
 package jsettlers.logic.objects;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 
 public abstract class ProgressingSoundableObject extends ProgressingObject implements ISoundable {
@@ -8,7 +8,7 @@ public abstract class ProgressingSoundableObject extends ProgressingObject imple
 
 	private boolean soundPlayed;
 
-	protected ProgressingSoundableObject(ISPosition2D pos) {
+	protected ProgressingSoundableObject(ShortPoint2D pos) {
 		super(pos);
 	}
 

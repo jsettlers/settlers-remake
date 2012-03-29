@@ -10,29 +10,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 public class GroupMatcher extends TileMatcher {
 
-	public GroupMatcher(IMapData grid, int startx, int starty, int distance,
-	        LandFilter onLandscape, Random random) {
+	public GroupMatcher(IMapData grid, int startx, int starty, int distance, LandFilter onLandscape, Random random) {
 		super(grid, startx, starty, distance, onLandscape, random);
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new GroupMatcherIterator();
 	}
 
-	private class GroupMatcherIterator implements Iterator<ISPosition2D> {
+	private class GroupMatcherIterator implements Iterator<ShortPoint2D> {
 
-		Queue<ISPosition2D> possible =
-		        new ConcurrentLinkedQueue<ISPosition2D>();
+		Queue<ShortPoint2D> possible = new ConcurrentLinkedQueue<ShortPoint2D>();
 
-		Set<ISPosition2D> found = new HashSet<ISPosition2D>();
+		Set<ShortPoint2D> found = new HashSet<ShortPoint2D>();
 
-		private ISPosition2D current;
+		private ShortPoint2D current;
 
 		public GroupMatcherIterator() {
 			ShortPoint2D pos = new ShortPoint2D(startx, starty);
@@ -53,11 +50,8 @@ public class GroupMatcher extends TileMatcher {
 					break;
 				}
 				current = possible.poll();
-				for (ISPosition2D pos : new MapShapeFilter(new MapNeighboursArea(
-				        current), grid.getWidth(), grid.getHeight())) {
-					if (!found.contains(pos)
-					        && Math.hypot(pos.getX() - startx, pos.getY()
-					                - starty) < distance) {
+				for (ShortPoint2D pos : new MapShapeFilter(new MapNeighboursArea(current), grid.getWidth(), grid.getHeight())) {
+					if (!found.contains(pos) && Math.hypot(pos.getX() - startx, pos.getY() - starty) < distance) {
 						possible.offer(pos);
 						found.add(pos);
 					}
@@ -67,8 +61,8 @@ public class GroupMatcher extends TileMatcher {
 		}
 
 		@Override
-		public ISPosition2D next() {
-			ISPosition2D next = this.current;
+		public ShortPoint2D next() {
+			ShortPoint2D next = this.current;
 			computeNext();
 			return next;
 		}

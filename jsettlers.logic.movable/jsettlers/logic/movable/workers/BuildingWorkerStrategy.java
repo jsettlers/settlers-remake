@@ -12,7 +12,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.workers.MillBuilding;
@@ -242,7 +241,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 		case SMOKE_ON:
 		case SMOKE_OFF: {
-			ISPosition2D pos = getCurrentJobPos();
+			ShortPoint2D pos = getCurrentJobPos();
 			super.getGrid().placeSmoke(pos, type == EBuildingJobType.SMOKE_ON);
 			jobFinished();
 			break;
@@ -257,7 +256,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			break;
 
 		case PIG_IS_ADULT: {
-			ISPosition2D pos = getCurrentJobPos();
+			ShortPoint2D pos = getCurrentJobPos();
 			if (super.getGrid().isPigAdult(pos)) {
 				jobFinished();
 			} else {
@@ -267,7 +266,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		}
 
 		case PIG_IS_THERE: {
-			ISPosition2D pos = getCurrentJobPos();
+			ShortPoint2D pos = getCurrentJobPos();
 			if (super.getGrid().isPigThere(pos)) {
 				jobFinished();
 			} else {
@@ -278,14 +277,14 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 		case PIG_PLACE:
 		case PIG_REMOVE: {
-			ISPosition2D pos = getCurrentJobPos();
+			ShortPoint2D pos = getCurrentJobPos();
 			super.getGrid().placePig(pos, type == EBuildingJobType.PIG_PLACE);
 			jobFinished();
 			break;
 		}
 
 		case POP_TOOL: {
-			ISPosition2D pos = building.getDoor();
+			ShortPoint2D pos = building.getDoor();
 			lastPopped = super.getGrid().popToolProduction(pos);
 			if (lastPopped != null) {
 				jobFinished();
@@ -311,7 +310,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		}
 	}
 
-	private ISPosition2D getCurrentJobPos() {
+	private ShortPoint2D getCurrentJobPos() {
 		return building.calculateRealPoint(currentJob.getDx(), currentJob.getDy());
 	}
 
@@ -330,7 +329,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 		return false;
 	}
 
-	private boolean hasProductiveResources(ISPosition2D pos, EResourceType type) {
+	private boolean hasProductiveResources(ShortPoint2D pos, EResourceType type) {
 		float amount = getGrid().getResourceAmountAround(pos.getX(), pos.getY(), type);
 		return RandomSingleton.get().nextFloat() < amount;
 	}
@@ -338,7 +337,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	private boolean lookAtSearched() {
 		if (currentJob.getSearchType() == ESearchType.FISHABLE) {
 			for (EDirection direction : EDirection.values) {
-				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
+				ShortPoint2D pos = direction.getNextHexPoint(super.getPos());
 				if (super.getGrid().isInBounds(pos) && super.getGrid().getLandscapeTypeAt(pos).isWater()) {
 					super.setDirection(direction);
 					return true;
@@ -347,7 +346,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 			return false;
 		} else if (currentJob.getSearchType() == ESearchType.RIVER) {
 			for (EDirection direction : EDirection.values) {
-				ISPosition2D pos = direction.getNextHexPoint(super.getPos());
+				ShortPoint2D pos = direction.getNextHexPoint(super.getPos());
 				if (super.getGrid().isInBounds(pos)
 						&& (super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER1
 								|| super.getGrid().getLandscapeTypeAt(pos) == ELandscapeType.RIVER2
@@ -406,7 +405,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	}
 
 	private void showAction() {
-		ISPosition2D pos = getCurrentJobPos();
+		ShortPoint2D pos = getCurrentJobPos();
 		super.setPos(pos);
 		super.setVisible(true);
 		jobFinished();
@@ -414,7 +413,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 
 	private void walkAction() {
 		EDirection dir = currentJob.getDirection();
-		ISPosition2D nextPos = dir.getNextHexPoint(super.getPos());
+		ShortPoint2D nextPos = dir.getNextHexPoint(super.getPos());
 
 		goToTile(nextPos);
 	}
@@ -428,7 +427,7 @@ public class BuildingWorkerStrategy extends PathableStrategy implements IManagea
 	 *            next position to be gone.
 	 */
 	@Override
-	protected void goToTile(ISPosition2D nextPos) {
+	protected void goToTile(ShortPoint2D nextPos) {
 		if (!done) {
 			super.goToTile(nextPos);
 			done = true;

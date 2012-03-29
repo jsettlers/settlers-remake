@@ -11,7 +11,6 @@ import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.graphics.action.Action;
@@ -138,7 +137,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				setActiveAction(null);
 			} else {
 				MoveToAction moveToAction = (MoveToAction) action;
-				ISPosition2D pos = moveToAction.getPosition();
+				ShortPoint2D pos = moveToAction.getPosition();
 
 				moveTo(pos);
 			}
@@ -148,7 +147,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			if (currentSelection.getSize() > 0) {
 				ISelectable selected = currentSelection.iterator().next();
 				if (selected instanceof Building) {
-					ISPosition2D pos = ((SelectAction) action).getPosition();
+					ShortPoint2D pos = ((SelectAction) action).getPosition();
 					scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, pos, ((Building) selected).getPos()));
 				}
 			}
@@ -264,7 +263,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 		System.out.println("locatable: " + count);
 		if (count > 0) {
-			ISPosition2D point = new ShortPoint2D(x / count, y / count);
+			ShortPoint2D point = new ShortPoint2D(x / count, y / count);
 			connector.scrollTo(point, false);
 		}
 	}
@@ -278,7 +277,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		manager.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, getIDsOfSelected()));
 	}
 
-	private void moveTo(ISPosition2D pos) {
+	private void moveTo(ShortPoint2D pos) {
 		List<Integer> selectedIds = getIDsOfSelected();
 		scheduleTask(new MoveToGuiTask(pos, selectedIds));
 	}
@@ -312,7 +311,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void selectArea(SelectAreaAction action) {
 		SelectionSet selectionSet = new SelectionSet();
 
-		for (ISPosition2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
+		for (ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
 			IMovable movable = grid.getMovable(curr.getX(), curr.getY());
 			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayer() == player)) {
 				selectionSet.add(movable);
@@ -328,7 +327,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void handleSelectPointAction(SelectAction action) {
 		SelectAction selectAction = action;
-		ISPosition2D pos = selectAction.getPosition();
+		ShortPoint2D pos = selectAction.getPosition();
 		System.out.println("clicked: ( " + pos.getX() + " | " + pos.getY() + " )");
 
 		if (activeAction == null) {
@@ -337,7 +336,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			switch (activeAction.getActionType()) {
 			case BUILD:
 				EBuildingType type = previewBuilding;
-				ISPosition2D pos2 = grid.getConstructablePositionAround(pos, type);
+				ShortPoint2D pos2 = grid.getConstructablePositionAround(pos, type);
 				if (pos2 != null) {
 					cancelBuildingCreation();
 					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos2, type));
@@ -355,7 +354,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		manager.scheduleTask(guiTask);
 	}
 
-	private void select(ISPosition2D pos) {
+	private void select(ShortPoint2D pos) {
 		if (grid.isInBounds(pos)) {
 			short x = pos.getX();
 			short y = pos.getY();
@@ -386,8 +385,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
-	private IBuilding getBuildingAround(ISPosition2D pos) {
-		for (ISPosition2D curr : new MapCircle(pos.getX(), pos.getY(), 5)) {
+	private IBuilding getBuildingAround(ShortPoint2D pos) {
+		for (ShortPoint2D curr : new MapCircle(pos.getX(), pos.getY(), 5)) {
 			if (grid.isInBounds(curr)) {
 				IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
 				if (building != null) {

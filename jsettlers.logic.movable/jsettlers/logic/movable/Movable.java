@@ -12,7 +12,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
@@ -35,7 +35,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	private final int id;
 
 	private final IMovableGrid grid;
-	private ISPosition2D pos;
+	private ShortPoint2D pos;
 	private byte player;
 	private boolean isRightstep;
 	private float health = 1.0f;
@@ -51,13 +51,13 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 
 	private MovableStrategy strategy;
 	private float progressIncrease = 0.1f;
-	private ISPosition2D nextPos;
+	private ShortPoint2D nextPos;
 	private IHexMovable pushedFrom;
 
 	private byte noActionDelay = 0;
 	private boolean soundPlayed;
 
-	public Movable(IMovableGrid grid, ISPosition2D pos, EMovableType type, byte player) {
+	public Movable(IMovableGrid grid, ShortPoint2D pos, EMovableType type, byte player) {
 		this.grid = grid;
 		this.pos = pos;
 		this.setDirection(EDirection.values[RandomSingleton.getInt(0, 5)]);
@@ -121,7 +121,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	}
 
 	@Override
-	public final ISPosition2D getPos() {
+	public final ShortPoint2D getPos() {
 		return pos;
 	}
 
@@ -230,7 +230,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		int directions = EDirection.NUMBER_OF_DIRECTIONS;
 
 		for (int i = 0; i < directions; i++) {
-			ISPosition2D newPos = EDirection.values[(i + offset) % directions].getNextHexPoint(pos);
+			ShortPoint2D newPos = EDirection.values[(i + offset) % directions].getNextHexPoint(pos);
 			if (grid.isAllowedForMovable(newPos.getX(), newPos.getY(), strategy)) {
 				goToTile(newPos);
 				return;
@@ -321,7 +321,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 			this.setDirection(direction.getNeighbor(RandomSingleton.getInt(-1, 1)));
 		} else if (RandomSingleton.nextF() < Constants.MOVABLE_NO_ACTION_NEIGHBOR_PUSH_PROBABILITY) {
 			for (EDirection curr : EDirection.values) { // push all movables around this movable
-				ISPosition2D point = curr.getNextHexPoint(pos);
+				ShortPoint2D point = curr.getNextHexPoint(pos);
 				if (grid.isInBounds(point)) {
 					IHexMovable movable = grid.getMovable(point);
 					if (movable != null) {
@@ -332,7 +332,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		}
 	}
 
-	void goToTile(ISPosition2D nextTile) {
+	void goToTile(ShortPoint2D nextTile) {
 		assert nextTile != null : "next tile mustn't be null!";
 
 		EDirection newDir = EDirection.getDirection(pos, nextTile);
@@ -398,7 +398,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 		this.strategy.setGotoJob(leader, gotoJob);
 	}
 
-	final void setPos(ISPosition2D pos) {
+	final void setPos(ShortPoint2D pos) {
 		grid.movableLeft(this.pos, this);
 		this.pos = pos;
 		this.progress = 0;
@@ -458,7 +458,7 @@ public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable
 	}
 
 	@Override
-	public final ISPosition2D getNextTile() {
+	public final ShortPoint2D getNextTile() {
 		return nextPos;
 	}
 
