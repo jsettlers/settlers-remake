@@ -5,7 +5,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
 public class TestSettler implements IMovable {
@@ -49,8 +49,8 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
-	public ISPosition2D getPos() {
-		return this.position;
+	public ShortPoint2D getPos() {
+		return this.position.getPos();
 	}
 
 	@Override

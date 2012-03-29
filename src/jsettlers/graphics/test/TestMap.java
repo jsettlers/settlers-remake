@@ -20,7 +20,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class TestMap implements IGraphicsGrid {
 	private static final int HEIGHT = 150;
@@ -131,7 +131,7 @@ public class TestMap implements IGraphicsGrid {
 		}
 	}
 
-	public TestTile getTile(ISPosition2D pos) {
+	public TestTile getTile(ShortPoint2D pos) {
 		return getTile(pos.getX(), pos.getY());
 	}
 
@@ -143,11 +143,11 @@ public class TestMap implements IGraphicsGrid {
 			TestTile tile = getTile(cx, cy);
 			TestBuilding building = null;
 			if (tile.getLandscapeType() == ELandscapeType.GRASS) {
-				building = new TestBuilding(tile, EBuildingType.LUMBERJACK);
+				building = new TestBuilding(tile.getPos(), EBuildingType.LUMBERJACK);
 			} else if (tile.getLandscapeType() == ELandscapeType.MOUNTAIN) {
-				building = new TestBuilding(tile, EBuildingType.COALMINE);
+				building = new TestBuilding(tile.getPos(), EBuildingType.COALMINE);
 			} else if (tile.getLandscapeType() == ELandscapeType.SAND) {
-				building = new TestBuilding(tile, EBuildingType.FISHER);
+				building = new TestBuilding(tile.getPos(), EBuildingType.FISHER);
 			}
 			if (building != null) {
 				this.buildings.add(building);
@@ -270,7 +270,7 @@ public class TestMap implements IGraphicsGrid {
 			double r = Math.random() * HEIGHTCIRCLESIZE;
 			MapCircle circle = new MapCircle((short) cx, (short) cy, (float) r);
 
-			for (ISPosition2D pos : new MapShapeFilter(circle, WIDTH, HEIGHT)) {
+			for (ShortPoint2D pos : new MapShapeFilter(circle, WIDTH, HEIGHT)) {
 				double add = (r - circle.distanceToCenter(pos.getX(), pos.getY())) / 5;
 				this.heights[pos.getX()][pos.getY()] += (byte) add;
 			}
@@ -343,7 +343,7 @@ public class TestMap implements IGraphicsGrid {
 				Collections.shuffle(directions);
 				TestTile goTo = null;
 				for (EDirection possibleDirection : directions) {
-					TestTile tile = this.getTile(possibleDirection.getNextHexPoint(current));
+					TestTile tile = this.getTile(possibleDirection.getNextHexPoint(current.getPos()));
 					if (tile != null && tile.getHeight() <= current.getHeight() && tile.getLandscapeType() != ELandscapeType.RIVER1
 							&& tile.getLandscapeType() != ELandscapeType.RIVER2 && tile.getLandscapeType() != ELandscapeType.RIVER3
 							&& tile.getLandscapeType() != ELandscapeType.RIVER4 && getNeighbourRiverCount(tile) < 2) {
@@ -360,7 +360,7 @@ public class TestMap implements IGraphicsGrid {
 	private int getNeighbourRiverCount(TestTile tile) {
 		int rivers = 0;
 		for (EDirection dir : EDirection.values) {
-			TestTile toTest = this.getTile(dir.getNextHexPoint(tile));
+			TestTile toTest = this.getTile(dir.getNextHexPoint(tile.getPos()));
 			if (toTest != null
 					&& (toTest.getLandscapeType() == ELandscapeType.RIVER1 || toTest.getLandscapeType() == ELandscapeType.RIVER2
 							|| toTest.getLandscapeType() == ELandscapeType.RIVER3 || toTest.getLandscapeType() == ELandscapeType.RIVER4)) {
@@ -402,9 +402,9 @@ public class TestMap implements IGraphicsGrid {
 					settler.setDirection(direction);
 				} else {
 
-					TestTile nextPosition = this.getTile(settler.getDirection().getNextHexPoint(newPosition));
+					TestTile nextPosition = this.getTile(settler.getDirection().getNextHexPoint(newPosition.getPos()));
 
-					((TestTile) settler.getPos()).setMovable(null);
+					this.getTile(settler.getPos()).setMovable(null);
 					newPosition.setMovable(settler);
 					settler.setPosition(newPosition);
 

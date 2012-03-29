@@ -6,13 +6,14 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 
@@ -22,6 +23,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	private final short height;
 
 	private final IMovable movableMap[][];
+	private final EMaterialType materialTypeMap[][];
+	private final byte materialAmmountMap[][];
 	private final HexAStar aStar;
 
 	public MovableTestsMap(int width, int height) {
@@ -29,6 +32,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		this.height = (short) height;
 
 		this.movableMap = new IMovable[width][height];
+		this.materialTypeMap = new EMaterialType[width][height];
+		this.materialAmmountMap = new byte[width][height];
 
 		aStar = new HexAStar(this, this.width, this.height);
 	}
@@ -111,8 +116,22 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Path calculatePathTo(IPathCalculateable pathRequester, ISPosition2D targetPos) {
+		public Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos) {
 			return aStar.findPath(pathRequester, targetPos);
+		}
+
+		@Override
+		public void addJoblessBearer(IManageableBearer bearer) {
+		}
+
+		@Override
+		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
+			if (materialTypeMap[pos.getX()][pos.getY()] == materialType && materialAmmountMap[pos.getX()][pos.getY()] > 0) {
+				materialAmmountMap[pos.getX()][pos.getY()]--;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	};
 

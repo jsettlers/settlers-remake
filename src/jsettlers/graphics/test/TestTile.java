@@ -6,12 +6,9 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
-public class TestTile implements ISPosition2D {
-	private static final long serialVersionUID = 1L;
-
+public class TestTile {
 	private final short y;
 	private final short x;
 	private final byte height;
@@ -78,19 +75,8 @@ public class TestTile implements ISPosition2D {
 		this.movable = moveavble;
 	}
 
-	@Override
-	public short getX() {
-		return this.x;
-	}
-
-	@Override
-	public short getY() {
-		return this.y;
-	}
-
-	@Override
-	public boolean equals(ISPosition2D other) {
-		return other.getX() == this.x && other.getY() == this.y;
+	public boolean equals(TestTile other) {
+		return other.x == this.x && other.y == this.y;
 	}
 
 	@Override
@@ -124,6 +110,10 @@ public class TestTile implements ISPosition2D {
 
 	public Color getDebugColor() {
 		return null;
+	}
+
+	public ShortPoint2D getPos() {
+		return new ShortPoint2D(x, y);
 	}
 
 }

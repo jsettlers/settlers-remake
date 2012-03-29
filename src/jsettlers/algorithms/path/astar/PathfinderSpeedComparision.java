@@ -5,7 +5,6 @@ import java.util.Random;
 
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.AStarJPS;
@@ -63,8 +62,8 @@ public class PathfinderSpeedComparision {
 		watch.start();
 
 		for (int i = 0; i < numberOfPaths; i++) {
-			ISPosition2D start = getUnblocktPosition(requester, random, map, width, height);
-			ISPosition2D target = getUnblocktPosition(requester, random, map, width, height);
+			ShortPoint2D start = getUnblocktPosition(requester, random, map, width, height);
+			ShortPoint2D target = getUnblocktPosition(requester, random, map, width, height);
 
 			astar.findPath(requester, start.getX(), start.getY(), target.getX(), target.getY());
 			System.out.print(i + ", ");
@@ -76,7 +75,7 @@ public class PathfinderSpeedComparision {
 		return watch.getDiff();
 	}
 
-	private static ISPosition2D getUnblocktPosition(IPathCalculateable requester, Random random, IAStarPathMap map, short width, short height) {
+	private static ShortPoint2D getUnblocktPosition(IPathCalculateable requester, Random random, IAStarPathMap map, short width, short height) {
 		short x, y;
 		do {
 			x = (short) random.nextInt(width);
@@ -93,7 +92,7 @@ public class PathfinderSpeedComparision {
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return null;
 		}
 

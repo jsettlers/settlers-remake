@@ -16,7 +16,6 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JOGLPanel;
@@ -136,7 +135,7 @@ public class LandmarksThreadTester {
 
 	private static void setPartition(int x, int y, int partition) {
 		map.setPartitionAndPlayerAt((short) x, (short) y, (short) partition);
-		ISPosition2D pos = new ShortPoint2D(x, y);
+		ShortPoint2D pos = new ShortPoint2D(x, y);
 		thread.addLandmarkedPosition(pos);
 	}
 

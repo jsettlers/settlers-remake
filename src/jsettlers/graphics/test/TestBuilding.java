@@ -4,16 +4,16 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
 public class TestBuilding implements IBuilding {
 
-	private final ISPosition2D position;
+	private final ShortPoint2D position;
 	private float constructed;
 	private final EBuildingType image;
 
-	TestBuilding(ISPosition2D position, EBuildingType image) {
+	TestBuilding(ShortPoint2D position, EBuildingType image) {
 		this.position = position;
 		this.image = image;
 		this.constructed = (float) Math.random();
@@ -29,7 +29,7 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return this.position;
 	}
 

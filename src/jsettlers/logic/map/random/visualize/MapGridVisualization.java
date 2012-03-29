@@ -85,7 +85,6 @@ public class MapGridVisualization extends JPanel {
 		case WATER1:
 			return Color.BLUE;
 
-
 		case SAND:
 			return Color.YELLOW;
 
@@ -101,7 +100,7 @@ public class MapGridVisualization extends JPanel {
 	}
 
 	public static void main(String[] args) {
-		RandomMapFile file = null;//RandomMapFile.getByName("test");
+		RandomMapFile file = null;// RandomMapFile.getByName("test");
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 3);
 		evaluator.createMap(new Random());
 

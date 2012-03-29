@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
@@ -185,14 +184,14 @@ public class PartitionsGridTestingWnd extends JFrame {
 
 	private static class TestMaterialRequester implements IMaterialRequester {
 
-		private final ISPosition2D pos;
+		private final ShortPoint2D pos;
 
 		TestMaterialRequester(int x, int y) {
 			this.pos = new ShortPoint2D(x, y);
 		}
 
 		@Override
-		public ISPosition2D getPos() {
+		public ShortPoint2D getPos() {
 			return pos;
 		}
 

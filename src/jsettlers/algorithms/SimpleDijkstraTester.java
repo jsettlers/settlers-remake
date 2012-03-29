@@ -1,7 +1,6 @@
 package jsettlers.algorithms;
 
 import jsettlers.common.material.ESearchType;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
@@ -40,7 +39,7 @@ public class SimpleDijkstraTester {
 		IPathCalculateable requester = new IPathCalculateable() {
 
 			@Override
-			public ISPosition2D getPos() {
+			public ShortPoint2D getPos() {
 				return new ShortPoint2D(100, 100);
 			}
 
