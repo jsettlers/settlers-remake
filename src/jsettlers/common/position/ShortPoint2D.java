@@ -25,10 +25,6 @@ public class ShortPoint2D implements Serializable {
 		this((short) x, (short) y);
 	}
 
-	public ShortPoint2D(ShortPoint2D position) {
-		this(position.getX(), position.getY());
-	}
-
 	public short getX() {
 		return x;
 	}
