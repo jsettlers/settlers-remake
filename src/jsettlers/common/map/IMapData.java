@@ -2,7 +2,7 @@ package jsettlers.common.map;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.MapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public interface IMapData {
 
@@ -22,7 +22,7 @@ public interface IMapData {
 	 * @param player
 	 * @return
 	 */
-	public abstract ISPosition2D getStartPoint(int player);
+	public abstract ShortPoint2D getStartPoint(int player);
 	
 	public abstract int getPlayerCount();
 

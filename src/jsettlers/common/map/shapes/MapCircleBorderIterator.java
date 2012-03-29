@@ -2,10 +2,10 @@ package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class MapCircleBorderIterator extends MapCircleIterator implements
-        Iterator<ISPosition2D> {
+        Iterator<ShortPoint2D> {
 
 	private final MapCircleBorder circle;
 
@@ -15,13 +15,13 @@ public class MapCircleBorderIterator extends MapCircleIterator implements
 	}
 
 	@Override
-	public ISPosition2D next() {
+	public ShortPoint2D next() {
 		/**
 		 * Skip inner parts. Assume not to skip the last point of the row,
 		 * so we need no additional checking.
 		 */
 
-		ISPosition2D next;
+		ShortPoint2D next;
 		do {
 			next = super.next();
 		} while (circle.isInVolume(next));

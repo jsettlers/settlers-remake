@@ -1,7 +1,6 @@
 package jsettlers.common.map.shapes;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -37,7 +36,7 @@ public final class HexGridArea implements IMapArea {
 	}
 
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public boolean contains(ShortPoint2D position) {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 
@@ -92,7 +91,7 @@ public final class HexGridArea implements IMapArea {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			return new ShortPoint2D(x, y);
 		}
 

@@ -3,7 +3,6 @@ package jsettlers.common.map.shapes;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -55,18 +54,18 @@ public class Parallelogram implements IMapArea {
 	}
 
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public boolean contains(ShortPoint2D position) {
 		int x = position.getX();
 		int y = position.getY();
 		return x >= minx && x <= maxx && y >= miny && y <= maxy;
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new ParallelogramIterator();
 	}
 
-	class ParallelogramIterator implements Iterator<ISPosition2D> {
+	class ParallelogramIterator implements Iterator<ShortPoint2D> {
 		int x = minx;
 		int y = miny;
 
@@ -76,7 +75,7 @@ public class Parallelogram implements IMapArea {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
@@ -100,7 +99,7 @@ public class Parallelogram implements IMapArea {
 		StringBuffer str = new StringBuffer();
 		str.append("{");
 		int trim = 0;
-		for (ISPosition2D point : this) {
+		for (ShortPoint2D point : this) {
 			str.append(point + ", ");
 			trim = 2;
 		}

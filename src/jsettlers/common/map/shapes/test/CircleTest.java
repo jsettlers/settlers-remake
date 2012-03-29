@@ -11,7 +11,6 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.Parallelogram;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 import org.junit.Test;
@@ -24,10 +23,10 @@ public class CircleTest {
 	private static final int TEST_WIDTH = 100;
 
 	/**
-	 * Test method for {@link jsettlers.common.map.shapes.MapCircle#contains(jsettlers.common.position.ISPosition2D)} .
+	 * Test method for {@link jsettlers.common.map.shapes.MapCircle#contains(jsettlers.common.position.ShortPoint2D)} .
 	 */
 	@Test
-	public void testContainsISPosition2D() {
+	public void testContainsShortPoint2D() {
 		short cx = 0;
 		short cy = 0;
 		MapCircle circle = new MapCircle(cx, cy, 1);
@@ -93,7 +92,7 @@ public class CircleTest {
 	private void testShapeIterator(IMapArea circle) {
 		boolean[][] foundByIterator = new boolean[TEST_WIDTH][TEST_WIDTH];
 
-		for (ISPosition2D pos : circle) {
+		for (ShortPoint2D pos : circle) {
 			foundByIterator[pos.getX()][pos.getY()] = true;
 		}
 

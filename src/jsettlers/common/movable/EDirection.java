@@ -1,6 +1,5 @@
 package jsettlers.common.movable;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -50,25 +49,25 @@ public enum EDirection {
 
 	/**
 	 * LIMITATION: the given ISPosition objects need to be direct neighbors and can not be the same object!! <br>
-	 * calculates the direction between the two given ISPosition2D objects.
+	 * calculates the direction between the two given ShortPoint2D objects.
 	 * 
 	 * @param first
-	 *            one ISPosition2D object
+	 *            one ShortPoint2D object
 	 * @param second
 	 *            another ISPisition2D object
 	 * @return EDirection if the direction exists<br>
 	 *         null if it does not exist
 	 */
-	public static final EDirection getDirection(ISPosition2D first, ISPosition2D second) {
+	public static final EDirection getDirection(ShortPoint2D first, ShortPoint2D second) {
 		return getDirection(first.getX(), first.getY(), second.getX(), second.getY());
 	}
 
 	/**
 	 * LIMITATION: the given ISPosition objects need to be direct neighbors and can not be the same object!! <br>
-	 * calculates the direction between the two given ISPosition2D objects.
+	 * calculates the direction between the two given ShortPoint2D objects.
 	 * 
 	 * @param first
-	 *            one ISPosition2D object
+	 *            one ShortPoint2D object
 	 * @param second
 	 *            another ISPisition2D object
 	 * @return EDirection if the direction exists<br>
@@ -92,7 +91,7 @@ public enum EDirection {
 	 *            second position
 	 * @return
 	 */
-	public static EDirection getApproxDirection(ISPosition2D first, ISPosition2D second) {
+	public static EDirection getApproxDirection(ShortPoint2D first, ShortPoint2D second) {
 		return getApproxDirection(first.getX(), first.getY(), second.getX(), second.getY());
 	}
 
@@ -184,7 +183,7 @@ public enum EDirection {
 	 * @param y
 	 * @return
 	 */
-	public ISPosition2D getNextHexPoint(short x, short y) {
+	public ShortPoint2D getNextHexPoint(short x, short y) {
 		return new ShortPoint2D(getNextTileX(x), getNextTileY(y));
 	}
 
@@ -194,11 +193,11 @@ public enum EDirection {
 	 * @param pos
 	 * @return
 	 */
-	public ISPosition2D getNextHexPoint(ISPosition2D pos) {
+	public ShortPoint2D getNextHexPoint(ShortPoint2D pos) {
 		return getNextHexPoint(pos.getX(), pos.getY());
 	}
 
-	public ISPosition2D getNextTilePoint(ISPosition2D pos, int steps) {
+	public ShortPoint2D getNextTilePoint(ShortPoint2D pos, int steps) {
 		return new ShortPoint2D(pos.getX() + gridDeltaX * steps, pos.getY() + gridDeltaY * steps);
 	}
 

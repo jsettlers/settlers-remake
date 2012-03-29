@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class FreeMapAreaTest {
 
 	@Test
 	public void test() {
-		List<ISPosition2D> positions = new LinkedList<ISPosition2D>();
+		List<ShortPoint2D> positions = new LinkedList<ShortPoint2D>();
 		positions.add(new ShortPoint2D(1, 1));
 		positions.add(new ShortPoint2D(2, 2));
 		positions.add(new ShortPoint2D(3, 3));

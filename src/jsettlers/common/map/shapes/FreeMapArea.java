@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.SRectangle;
 
@@ -20,7 +20,7 @@ import jsettlers.common.position.SRectangle;
 public final class FreeMapArea implements IMapArea {
 	private static final long serialVersionUID = 6331090134655931952L;
 
-	private final List<ISPosition2D> positions;
+	private final List<ShortPoint2D> positions;
 	private final short xOffset;
 	private final short yOffset;
 	private final boolean[][] areaMap;
@@ -31,7 +31,7 @@ public final class FreeMapArea implements IMapArea {
 	 * @param positions
 	 *            the positions this map area shall contain.
 	 */
-	public FreeMapArea(List<ISPosition2D> positions) {
+	public FreeMapArea(List<ShortPoint2D> positions) {
 		assert positions.size() > 0 : "positions must contain at least one value!!";
 
 		this.positions = positions;
@@ -54,12 +54,12 @@ public final class FreeMapArea implements IMapArea {
 	 * @param relativePoints
 	 *            The relative points
 	 */
-	public FreeMapArea(ISPosition2D pos, RelativePoint[] relativePoints) {
+	public FreeMapArea(ShortPoint2D pos, RelativePoint[] relativePoints) {
 		this(convertRelative(pos, relativePoints));
 	}
 
-	private final static ArrayList<ISPosition2D> convertRelative(ISPosition2D pos, RelativePoint[] relativePoints) {
-		ArrayList<ISPosition2D> list = new ArrayList<ISPosition2D>();
+	private final static ArrayList<ShortPoint2D> convertRelative(ShortPoint2D pos, RelativePoint[] relativePoints) {
+		ArrayList<ShortPoint2D> list = new ArrayList<ShortPoint2D>();
 
 		for (RelativePoint relative : relativePoints) {
 			list.add(relative.calculatePoint(pos));
@@ -67,24 +67,24 @@ public final class FreeMapArea implements IMapArea {
 		return list;
 	}
 
-	private final void setPositionsToMap(boolean[][] areaMap, List<ISPosition2D> positions) {
-		for (ISPosition2D curr : positions) {
+	private final void setPositionsToMap(boolean[][] areaMap, List<ShortPoint2D> positions) {
+		for (ShortPoint2D curr : positions) {
 			areaMap[getMapX(curr)][getMapY(curr)] = true;
 		}
 	}
 
-	final int getMapY(ISPosition2D pos) {
+	final int getMapY(ShortPoint2D pos) {
 		return pos.getY() - yOffset;
 	}
 
-	final int getMapX(ISPosition2D pos) {
+	final int getMapX(ShortPoint2D pos) {
 		return pos.getX() - xOffset;
 	}
 
-	private final SRectangle getBounds(List<ISPosition2D> positions) {
+	private final SRectangle getBounds(List<ShortPoint2D> positions) {
 		short xMin = Short.MAX_VALUE, xMax = 0, yMin = Short.MAX_VALUE, yMax = 0;
 
-		for (ISPosition2D curr : positions) {
+		for (ShortPoint2D curr : positions) {
 			short x = curr.getX();
 			short y = curr.getY();
 			if (x < xMin)
@@ -102,18 +102,18 @@ public final class FreeMapArea implements IMapArea {
 	}
 
 	@Override
-	public final boolean contains(ISPosition2D pos) {
+	public final boolean contains(ShortPoint2D pos) {
 		return isValidPos(pos) && areaMap[getMapX(pos)][getMapY(pos)];
 	}
 
-	private final boolean isValidPos(ISPosition2D pos) {
+	private final boolean isValidPos(ShortPoint2D pos) {
 		int dx = pos.getX() - xOffset;
 		int dy = pos.getY() - yOffset;
 		return dx >= 0 && dy >= 0 && dx < width && dy < height;
 	}
 
 	@Override
-	public final Iterator<ISPosition2D> iterator() {
+	public final Iterator<ShortPoint2D> iterator() {
 		return new FreeMapAreaIterator(this);
 	}
 
@@ -121,7 +121,7 @@ public final class FreeMapArea implements IMapArea {
 		return positions.size();
 	}
 
-	public final ISPosition2D get(int i) {
+	public final ShortPoint2D get(int i) {
 		return positions.get(i);
 	}
 
@@ -129,15 +129,15 @@ public final class FreeMapArea implements IMapArea {
 		return positions.isEmpty();
 	}
 
-	final void setPosition(ISPosition2D pos, boolean value) {
+	final void setPosition(ShortPoint2D pos, boolean value) {
 		areaMap[getMapX(pos)][getMapY(pos)] = value;
 	}
 
-	private final static class FreeMapAreaIterator implements Iterator<ISPosition2D> {
+	private final static class FreeMapAreaIterator implements Iterator<ShortPoint2D> {
 
 		private final FreeMapArea freeMapArea;
-		private final Iterator<ISPosition2D> iterator;
-		private ISPosition2D currPos;
+		private final Iterator<ShortPoint2D> iterator;
+		private ShortPoint2D currPos;
 
 		public FreeMapAreaIterator(FreeMapArea freeMapArea) {
 			this.freeMapArea = freeMapArea;
@@ -150,7 +150,7 @@ public final class FreeMapArea implements IMapArea {
 		}
 
 		@Override
-		public final ISPosition2D next() {
+		public final ShortPoint2D next() {
 			currPos = iterator.next();
 			return currPos;
 		}

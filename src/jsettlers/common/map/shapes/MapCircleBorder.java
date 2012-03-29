@@ -2,7 +2,7 @@ package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class MapCircleBorder implements IMapArea {
 	private static final long serialVersionUID = 7850239131055274940L;
@@ -18,16 +18,16 @@ public class MapCircleBorder implements IMapArea {
 	 * <p>
 	 * This is exactly the case if the point is contained in the base circle and it is not contained int he volume.
 	 * 
-	 * @see IMapArea#contains(ISPosition2D)
-	 * @see MapCircleBorder#isInVolume(ISPosition2D)
+	 * @see IMapArea#contains(ShortPoint2D)
+	 * @see MapCircleBorder#isInVolume(ShortPoint2D)
 	 */
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public boolean contains(ShortPoint2D position) {
 		return baseCircle.contains(position) && !isInVolume(position);
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new MapCircleBorderIterator(this);
 	}
 
@@ -42,7 +42,7 @@ public class MapCircleBorder implements IMapArea {
 	 *            The point to test
 	 * @return true if and only if the point is in the volume.
 	 */
-	public boolean isInVolume(ISPosition2D point) {
+	public boolean isInVolume(ShortPoint2D point) {
 		if (point == null) {
 			return false;
 		}

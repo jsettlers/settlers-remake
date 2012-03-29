@@ -2,10 +2,9 @@ package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
-public class MapCircleIterator implements Iterator<ISPosition2D> {
+public class MapCircleIterator implements Iterator<ShortPoint2D> {
 	protected int currenty;
 
 	protected float currentLineHalfWidth;
@@ -55,7 +54,7 @@ public class MapCircleIterator implements Iterator<ISPosition2D> {
 	}
 
 	@Override
-	public ISPosition2D next() {
+	public ShortPoint2D next() {
 		int y = currenty + centery;
 		int x = computeNextXAndProgress();
 

@@ -2,7 +2,6 @@ package jsettlers.common.map.shapes;
 
 import java.util.Iterator;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -17,7 +16,7 @@ public final class HexBorderArea implements IMapArea {
 	private short centerX;
 	private short centerY;
 
-	public HexBorderArea(ISPosition2D center, short radius) {
+	public HexBorderArea(ShortPoint2D center, short radius) {
 		this(center.getX(), center.getY(), radius);
 	}
 
@@ -28,12 +27,12 @@ public final class HexBorderArea implements IMapArea {
 	}
 
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public boolean contains(ShortPoint2D position) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new HexBorderIterator(centerX, centerY, radius);
 	}
 
@@ -41,7 +40,7 @@ public final class HexBorderArea implements IMapArea {
 		return (short) (radius * 6);
 	}
 
-	public static final class HexBorderIterator implements Iterator<ISPosition2D> {
+	public static final class HexBorderIterator implements Iterator<ShortPoint2D> {
 		private final short r;
 		private final short centerX;
 		private final short centerY;
@@ -64,7 +63,7 @@ public final class HexBorderArea implements IMapArea {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			switch (nextCorner) {
 			case 1:
 				x++;

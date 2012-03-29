@@ -77,4 +77,8 @@ public enum EMovableType {
 	public final boolean needsPlayersGround() {
 		return needsPlayersGround;
 	}
+
+	public final boolean isMoveToAble() {
+		return !needsPlayersGround;
+	}
 }

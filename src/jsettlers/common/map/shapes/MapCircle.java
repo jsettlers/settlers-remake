@@ -1,6 +1,6 @@
 package jsettlers.common.map.shapes;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This class represents a circular area of the map.
@@ -25,7 +25,7 @@ public final class MapCircle implements IMapArea {
 	 */
 	public final static float Y_SCALE = (float) Math.sqrt(3) / 2.0f * .999999f;
 
-	public MapCircle(ISPosition2D pos, float radius) {
+	public MapCircle(ShortPoint2D pos, float radius) {
 		this(pos.getX(), pos.getY(), radius);
 	}
 
@@ -36,7 +36,7 @@ public final class MapCircle implements IMapArea {
 	}
 
 	@Override
-	public final boolean contains(ISPosition2D position) {
+	public final boolean contains(ShortPoint2D position) {
 		return contains(position.getX(), position.getY());
 	}
 
@@ -81,7 +81,7 @@ public final class MapCircle implements IMapArea {
 		return (float) Math.sqrt(squared);
 	}
 
-	public static final float getDistanceSquared(ISPosition2D pos1, ISPosition2D pos2) {
+	public static final float getDistanceSquared(ShortPoint2D pos1, ShortPoint2D pos2) {
 		return getDistanceSquared(pos1.getX(), pos1.getY(), pos2.getX(), pos2.getY());
 	}
 

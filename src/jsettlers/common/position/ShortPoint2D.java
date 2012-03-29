@@ -2,7 +2,7 @@ package jsettlers.common.position;
 
 import java.io.Serializable;
 
-public class ShortPoint2D implements ISPosition2D, Serializable {
+public class ShortPoint2D implements Serializable {
 	private static final long serialVersionUID = -6227987796843655750L;
 
 	protected final short x;
@@ -25,12 +25,14 @@ public class ShortPoint2D implements ISPosition2D, Serializable {
 		this((short) x, (short) y);
 	}
 
-	@Override
+	public ShortPoint2D(ShortPoint2D position) {
+		this(position.getX(), position.getY());
+	}
+
 	public short getX() {
 		return x;
 	}
 
-	@Override
 	public short getY() {
 		return y;
 	}
@@ -42,15 +44,14 @@ public class ShortPoint2D implements ISPosition2D, Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof ISPosition2D)) {
+		if (o == null || !(o instanceof ShortPoint2D)) {
 			return false;
 		}
 
-		return equals((ISPosition2D) o);
+		return equals((ShortPoint2D) o);
 	}
 
-	@Override
-	public boolean equals(ISPosition2D other) {
+	public boolean equals(ShortPoint2D other) {
 		return other.getX() == x && other.getY() == y;
 	}
 
@@ -60,7 +61,7 @@ public class ShortPoint2D implements ISPosition2D, Serializable {
 	}
 
 	/**
-	 * Computes the hashcode the way ISPosition2D wants it.
+	 * Computes the hashcode the way ShortPoint2D wants it.
 	 * 
 	 * @param x
 	 * @param y

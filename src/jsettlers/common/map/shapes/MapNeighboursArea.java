@@ -3,7 +3,7 @@ package jsettlers.common.map.shapes;
 import java.util.Iterator;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class MapNeighboursArea implements IMapArea {
 	private static final long serialVersionUID = -6205409596340280969L;
@@ -11,7 +11,7 @@ public class MapNeighboursArea implements IMapArea {
 	private final short x;
 	private final short y;
 
-	public MapNeighboursArea(ISPosition2D center) {
+	public MapNeighboursArea(ShortPoint2D center) {
 		this.x = center.getX();
 		this.y = center.getY();
 	}
@@ -22,8 +22,8 @@ public class MapNeighboursArea implements IMapArea {
 	}
 
 	@Override
-	public boolean contains(ISPosition2D position) {
-		for (ISPosition2D pos : this) {
+	public boolean contains(ShortPoint2D position) {
+		for (ShortPoint2D pos : this) {
 			if (pos.equals(position)) {
 				return true;
 			}
@@ -32,11 +32,11 @@ public class MapNeighboursArea implements IMapArea {
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new NeighbourIterator();
 	}
 
-	private class NeighbourIterator implements Iterator<ISPosition2D> {
+	private class NeighbourIterator implements Iterator<ShortPoint2D> {
 		int directionIndex = 0;
 
 		@Override
@@ -45,7 +45,7 @@ public class MapNeighboursArea implements IMapArea {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			return EDirection.values[directionIndex++].getNextHexPoint(x, y);
 		}
 

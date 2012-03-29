@@ -3,7 +3,7 @@ package jsettlers.common.map.shapes;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This filter creates the union of an other shape with the map.
@@ -37,7 +37,7 @@ public class MapShapeFilter implements IMapArea {
 	 * This method checks if the point is contained by the map and by the shape.
 	 */
 	@Override
-	public boolean contains(ISPosition2D position) {
+	public boolean contains(ShortPoint2D position) {
 		if (inMap(position)) {
 			return base.contains(position);
 		} else {
@@ -45,20 +45,20 @@ public class MapShapeFilter implements IMapArea {
 		}
 	}
 
-	private boolean inMap(ISPosition2D position) {
+	private boolean inMap(ShortPoint2D position) {
 		int x = position.getX();
 		int y = position.getY();
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
 	@Override
-	public Iterator<ISPosition2D> iterator() {
+	public Iterator<ShortPoint2D> iterator() {
 		return new FilteredIterator();
 	}
 
-	private class FilteredIterator implements Iterator<ISPosition2D> {
-		private ISPosition2D next;
-		private Iterator<ISPosition2D> iterator;
+	private class FilteredIterator implements Iterator<ShortPoint2D> {
+		private ShortPoint2D next;
+		private Iterator<ShortPoint2D> iterator;
 
 		public FilteredIterator() {
 			iterator = base.iterator();
@@ -81,11 +81,11 @@ public class MapShapeFilter implements IMapArea {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			if (next == null) {
 				throw new NoSuchElementException();
 			}
-			ISPosition2D result = next;
+			ShortPoint2D result = next;
 			searchNext();
 			return result;
 		}

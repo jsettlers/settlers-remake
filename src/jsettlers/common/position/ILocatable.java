@@ -10,7 +10,7 @@ import java.util.List;
  * 
  */
 public interface ILocatable {
-	ISPosition2D getPos();
+	ShortPoint2D getPos();
 
 	static class Methods {
 		/**
@@ -22,7 +22,7 @@ public interface ILocatable {
 		 *            target position
 		 * @return index of the closest {@link ILocatable} on the list.
 		 */
-		public static int getNearest(List<? extends ILocatable> toBeCompared, ISPosition2D target) {
+		public static int getNearest(List<? extends ILocatable> toBeCompared, ShortPoint2D target) {
 			int closestIdx = 0;
 			float closestDist = Short.MAX_VALUE;
 
@@ -31,7 +31,7 @@ public interface ILocatable {
 
 			int idx = 0;
 			for (ILocatable curr : toBeCompared) {
-				ISPosition2D currPos = curr.getPos();
+				ShortPoint2D currPos = curr.getPos();
 				float currHeu = getHeuristic(currPos, tx, ty);
 				if (currHeu < closestDist) {
 					closestDist = currHeu;
@@ -43,7 +43,7 @@ public interface ILocatable {
 			return closestIdx;
 		}
 
-		public static float getHeuristic(ISPosition2D pos, short tx, short ty) {
+		public static float getHeuristic(ShortPoint2D pos, short tx, short ty) {
 			return (float) Math.hypot(pos.getX() - tx, pos.getY() - ty);
 		}
 	}

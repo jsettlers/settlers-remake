@@ -3,7 +3,6 @@ package jsettlers.common.map.shapes;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -30,7 +29,7 @@ public final class MapRectangle implements IMapArea {
 	}
 
 	@Override
-	public final boolean contains(ISPosition2D position) {
+	public final boolean contains(ShortPoint2D position) {
 		return contains(position.getX(), position.getY());
 	}
 
@@ -49,7 +48,7 @@ public final class MapRectangle implements IMapArea {
 	}
 
 	@Override
-	public final Iterator<ISPosition2D> iterator() {
+	public final Iterator<ShortPoint2D> iterator() {
 		return new RectangleIterator();
 	}
 
@@ -97,7 +96,7 @@ public final class MapRectangle implements IMapArea {
 		return minY;
 	}
 
-	private class RectangleIterator implements Iterator<ISPosition2D> {
+	private class RectangleIterator implements Iterator<ShortPoint2D> {
 		private int relativeX = 0;
 		private int relativeY = 0;
 
@@ -107,7 +106,7 @@ public final class MapRectangle implements IMapArea {
 		}
 
 		@Override
-		public ISPosition2D next() {
+		public ShortPoint2D next() {
 			if (relativeY < height && width > 0) {
 				int x = getLineStartX(relativeY) + relativeX;
 				int y = getLineY(relativeY);

@@ -3,7 +3,7 @@ package jsettlers.common.movable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.common.sound.ISoundable;
 
@@ -47,7 +47,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * @return position on grid
 	 */
 	@Override
-	public ISPosition2D getPos();
+	public ShortPoint2D getPos();
 
 	/**
 	 * Used to get health of a movable.
