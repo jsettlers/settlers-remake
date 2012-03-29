@@ -7,7 +7,6 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -71,7 +70,7 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return pos;
 	}
 

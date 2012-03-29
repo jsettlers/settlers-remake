@@ -1,6 +1,6 @@
 package jsettlers.mapcreator.tools.shapes;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Only draws a little point at the start position.
@@ -10,8 +10,8 @@ import jsettlers.common.position.ISPosition2D;
 public class PointShape implements ShapeType {
 
 	@Override
-    public void setAffectedStatus(byte[][] fields, ISPosition2D start,
-            ISPosition2D end) {
+    public void setAffectedStatus(byte[][] fields, ShortPoint2D start,
+            ShortPoint2D end) {
 	    short x = start.getX();
 		if (x >= 0 && x < fields.length) {
 	    	short y = start.getY();

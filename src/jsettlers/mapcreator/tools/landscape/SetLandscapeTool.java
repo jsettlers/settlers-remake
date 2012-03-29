@@ -3,7 +3,7 @@ package jsettlers.mapcreator.tools.landscape;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
@@ -50,8 +50,8 @@ public class SetLandscapeTool implements Tool {
 	}
 
 	@Override
-	public void apply(MapData map, ShapeType shape, ISPosition2D start,
-	        ISPosition2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
+	        ShortPoint2D end, double uidx) {
 		if (buffer == null) {
 			buffer = new GlobalShapeBuffer(map.getWidth(), map.getHeight());
 		}
@@ -76,7 +76,7 @@ public class SetLandscapeTool implements Tool {
 	}
 
 	@Override
-	public void start(MapData data, ShapeType shape, ISPosition2D pos) {
+	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 	}
 
 }

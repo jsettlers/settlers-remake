@@ -1,14 +1,14 @@
 package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class LineShape implements ShapeType {
 
 	@Override
-	public void setAffectedStatus(byte[][] fields, ISPosition2D start,
-	        ISPosition2D end) {
-		ISPosition2D current = start;
+	public void setAffectedStatus(byte[][] fields, ShortPoint2D start,
+	        ShortPoint2D end) {
+		ShortPoint2D current = start;
 		if (shouldDrawAt(current)) {
 			setFieldToMax(fields, current);
 		}
@@ -21,11 +21,11 @@ public class LineShape implements ShapeType {
 		}
 	}
 
-	protected boolean shouldDrawAt(ISPosition2D current) {
+	protected boolean shouldDrawAt(ShortPoint2D current) {
 		return true;
 	}
 
-	private static void setFieldToMax(byte[][] fields, ISPosition2D current) {
+	private static void setFieldToMax(byte[][] fields, ShortPoint2D current) {
 		short x = current.getX();
 		short y = current.getY();
 		if (x < fields.length && x >= 0 && y >= 0 && y < fields[x].length) {

@@ -5,7 +5,7 @@ import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.IPlayerSetter;
@@ -37,7 +37,7 @@ public class PlaceTemplateTool implements Tool {
 		};
 	}
 
-	private void addAround(MapData map, ISPosition2D start) {
+	private void addAround(MapData map, ShortPoint2D start) {
 		for (TemplateObject object : objects) {
 			int x = start.getX() + object.getDx();
 			int y = start.getY() + object.getDy();
@@ -105,13 +105,13 @@ public class PlaceTemplateTool implements Tool {
 	}
 
 	@Override
-	public void start(MapData data, ShapeType shape, ISPosition2D pos) {
+	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 		addAround(data, pos);
 	}
 
 	@Override
-	public void apply(MapData map, ShapeType shape, ISPosition2D start,
-	        ISPosition2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
+	        ShortPoint2D end, double uidx) {
 	}
 
 }

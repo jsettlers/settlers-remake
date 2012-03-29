@@ -3,7 +3,7 @@ package jsettlers.mapcreator.main.action;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 
@@ -34,9 +34,9 @@ public class CombiningActionFirerer implements ActionFireable {
 					action = toFire.take();
 					if (action instanceof DrawLineAction
 					        && toFire.peek() instanceof DrawLineAction) {
-						ISPosition2D start =
+						ShortPoint2D start =
 						        ((DrawLineAction) action).getStart();
-						ISPosition2D end = ((DrawLineAction) action).getEnd();
+						ShortPoint2D end = ((DrawLineAction) action).getEnd();
 						double uidy = ((DrawLineAction) action).getUidy();
 						while (toFire.peek() instanceof DrawLineAction) {
 							DrawLineAction next =

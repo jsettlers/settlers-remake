@@ -1,6 +1,6 @@
 package jsettlers.mapcreator.tools.landscape;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
@@ -32,8 +32,8 @@ public class FlatLandscapeTool implements Tool {
 
 	// TODO: this should me done in screen space!
 	@Override
-	public void apply(MapData map, ShapeType shape, ISPosition2D start,
-	        ISPosition2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
+	        ShortPoint2D end, double uidx) {
 		byte[][] influences = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(influences, start, end);
 		
@@ -72,7 +72,7 @@ public class FlatLandscapeTool implements Tool {
 	}
 
 	@Override
-	public void start(MapData map, ShapeType shape, ISPosition2D pos) {
+	public void start(MapData map, ShapeType shape, ShortPoint2D pos) {
 		old = new byte[map.getWidth()][map.getHeight()];
 
 		for (int x = 0; x < old.length; x++) {

@@ -4,7 +4,7 @@ import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.tools.Tool;
@@ -47,8 +47,8 @@ public class PlaceMapObjectTool implements Tool {
 	}
 
 	@Override
-	public void apply(MapData map, ShapeType shape, ISPosition2D start,
-	        ISPosition2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
+	        ShortPoint2D end, double uidx) {
 
 		byte[][] placeAt = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(placeAt, start, end);
@@ -67,6 +67,6 @@ public class PlaceMapObjectTool implements Tool {
 	}
 
 	@Override
-	public void start(MapData data, ShapeType shape, ISPosition2D pos) {
+	public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
 	}
 }

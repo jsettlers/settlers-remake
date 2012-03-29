@@ -1,7 +1,7 @@
 package jsettlers.mapcreator.tools.shapes;
 
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This is a shape a tool can work with.
@@ -14,7 +14,7 @@ public interface ShapeType {
 	 * initialized with 0s, and that 0 means no influence, 127 means full
 	 * influence.
 	 */
-	void setAffectedStatus(byte[][] fields, ISPosition2D start, ISPosition2D end);
+	void setAffectedStatus(byte[][] fields, ShortPoint2D start, ShortPoint2D end);
 
 	/**
 	 * Gets the size of the shape (as optimisation)

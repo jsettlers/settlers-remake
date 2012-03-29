@@ -19,7 +19,6 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ISPosition2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.save.MapDataSerializer;
@@ -55,7 +54,7 @@ public class MapData implements IMapData {
 	private final byte[][] heights;
 	private MapDataDelta undoDelta;
 	private final int playercount;
-	private ISPosition2D[] playerStarts;
+	private ShortPoint2D[] playerStarts;
 
 	private byte[][] lastPlayers;
 	private boolean[][] lastBorders;
@@ -64,14 +63,11 @@ public class MapData implements IMapData {
 
 	public MapData(int width, int height, int playercount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
-			throw new IllegalArgumentException(
-			        "width and height must be positive");
+			throw new IllegalArgumentException("width and height must be positive");
 		}
 
 		if (width > Short.MAX_VALUE || height > Short.MAX_VALUE) {
-			throw new IllegalArgumentException(
-			        "width and height must be less than "
-			                + (Short.MAX_VALUE + 1));
+			throw new IllegalArgumentException("width and height must be less than " + (Short.MAX_VALUE + 1));
 		}
 
 		if (playercount <= 0 || playercount >= CommonConstants.MAX_PLAYERS) {
@@ -100,8 +96,7 @@ public class MapData implements IMapData {
 	}
 
 	public MapData(IMapData data) {
-		this(data.getWidth(), data.getHeight(), data.getPlayerCount(),
-		        ELandscapeType.GRASS);
+		this(data.getWidth(), data.getHeight(), data.getPlayerCount(), ELandscapeType.GRASS);
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -151,7 +146,7 @@ public class MapData implements IMapData {
 		int ymax = Integer.MIN_VALUE;
 		int xmin = Integer.MAX_VALUE;
 		int xmax = Integer.MIN_VALUE;
-		for (ISPosition2D pos : area) {
+		for (ShortPoint2D pos : area) {
 			short x = pos.getX();
 			short y = pos.getY();
 			if (contains(x, y)) {
@@ -196,11 +191,11 @@ public class MapData implements IMapData {
 		for (int y = ymin; y < ymax; y++) {
 			for (int x = xmin; x < xmax; x++) {
 				if (area.contains(new ShortPoint2D(x, y))) { // < we cannot use
-					                                         // done[x][y],
-					                                         // because done
-					                                         // flag
-					                                         // is set for other
-					                                         // tiles, too.
+																// done[x][y],
+																// because done
+																// flag
+																// is set for other
+																// tiles, too.
 					for (EDirection dir : EDirection.values) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
@@ -225,15 +220,12 @@ public class MapData implements IMapData {
 			}
 		}
 
-		System.out.println("Found " + tasks.size()
-		        + " tiles, starting to work on them...");
+		System.out.println("Found " + tasks.size() + " tiles, starting to work on them...");
 		while (!tasks.isEmpty()) {
 			FadeTask task = tasks.poll();
 			assert contains(task.x, task.y);
 
-			ELandscapeType[] fade =
-			        fader.getLandscapesBetween(task.type,
-			                landscapes[task.x][task.y]);
+			ELandscapeType[] fade = fader.getLandscapesBetween(task.type, landscapes[task.x][task.y]);
 
 			if (fade == null || fade.length <= 2) {
 				continue; // nothing to do
@@ -313,9 +305,7 @@ public class MapData implements IMapData {
 
 		@Override
 		public void setDimension(int width, int height, int playercount) {
-			data =
-			        new MapData(width, height, playercount,
-			                ELandscapeType.GRASS);
+			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
 		}
 	}
 
@@ -326,8 +316,7 @@ public class MapData implements IMapData {
 		private final int x;
 
 		/**
-		 * A task to set the landscape at a given point to the landscpae close
-		 * to type.
+		 * A task to set the landscape at a given point to the landscpae close to type.
 		 * 
 		 * @param x
 		 *            The x position where to fade
@@ -355,8 +344,7 @@ public class MapData implements IMapData {
 				return false;
 			}
 			if (objects[x][y] instanceof LandscapeConstraint) {
-				LandscapeConstraint constraint =
-				        (LandscapeConstraint) objects[x][y];
+				LandscapeConstraint constraint = (LandscapeConstraint) objects[x][y];
 				if (!allowsLandscape(type, constraint)) {
 					return false;
 				}
@@ -371,8 +359,7 @@ public class MapData implements IMapData {
 		return true;
 	}
 
-	private static boolean allowsLandscape(ELandscapeType type,
-	        LandscapeConstraint constraint) {
+	private static boolean allowsLandscape(ELandscapeType type, LandscapeConstraint constraint) {
 		boolean allowed = false;
 		for (ELandscapeType t : constraint.getAllowedLandscapes()) {
 			if (t == type) {
@@ -395,18 +382,13 @@ public class MapData implements IMapData {
 		} else if (object instanceof MapStoneObject) {
 			container = new StoneObjectContainer((MapStoneObject) object);
 		} else if (object instanceof MovableObject) {
-			container =
-			        new MovableObjectContainer((MovableObject) object, x, y);
+			container = new MovableObjectContainer((MovableObject) object, x, y);
 		} else if (object instanceof StackObject) {
 			container = new StackContainer((StackObject) object);
 		} else if (object instanceof BuildingObject) {
-			container =
-			        new BuildingContainer((BuildingObject) object,
-			                new ShortPoint2D(x, y));
+			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
 			landscapes = ((BuildingObject) object).getType().getGroundtypes();
-			protector =
-			        new ProtectLandscapeConstraint(((BuildingObject) object)
-			                .getType().getGroundtypes());
+			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType().getGroundtypes());
 		} else if (object instanceof MapDecorationObject) {
 			container = new MapObjectContainer((MapDecorationObject) object);
 		} else {
@@ -414,22 +396,19 @@ public class MapData implements IMapData {
 		}
 
 		boolean allowed = true;
-		ISPosition2D start = new ShortPoint2D(x, y);
+		ShortPoint2D start = new ShortPoint2D(x, y);
 		for (RelativePoint p : container.getProtectedArea()) {
-			ISPosition2D abs = p.calculatePoint(start);
-			if (!contains(abs.getX(), abs.getY())
-			        || objects[abs.getX()][abs.getY()] != null
-			        || !landscapeAllowsObjects(getLandscape(abs.getX(),
-			                abs.getY()))
-			        || !listAllowsLandscape(landscapes,
-			                getLandscape(abs.getX(), abs.getY()))) {
+			ShortPoint2D abs = p.calculatePoint(start);
+			if (!contains(abs.getX(), abs.getY()) || objects[abs.getX()][abs.getY()] != null
+					|| !landscapeAllowsObjects(getLandscape(abs.getX(), abs.getY()))
+					|| !listAllowsLandscape(landscapes, getLandscape(abs.getX(), abs.getY()))) {
 				allowed = false;
 			}
 		}
 
 		if (allowed) {
 			for (RelativePoint p : container.getProtectedArea()) {
-				ISPosition2D abs = p.calculatePoint(start);
+				ShortPoint2D abs = p.calculatePoint(start);
 				objects[abs.getX()][abs.getY()] = protector;
 				undoDelta.removeObject(abs.getX(), abs.getY());
 			}
@@ -438,8 +417,7 @@ public class MapData implements IMapData {
 		}
 	}
 
-	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2,
-	        ELandscapeType landscape) {
+	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2, ELandscapeType landscape) {
 		if (landscapes2 == null) {
 			return true;
 		} else {
@@ -472,7 +450,7 @@ public class MapData implements IMapData {
 		// ShortPoint2D center = new ShortPoint2D(x, y);
 		// for (RelativePoint r : ((BuildingContainer)
 		// objects[x][y]).getMapObject().getType().getBlockedTiles()) {
-		// ISPosition2D pos = r.calculatePoint(center);
+		// ShortPoint2D pos = r.calculatePoint(center);
 		// undoDelta.addHeightChange(pos.getX(), pos.getY(),
 		// heights[pos.getX()][pos.getY()]);
 		// heights[pos.getX()][pos.getY()] = safeheight;
@@ -485,11 +463,8 @@ public class MapData implements IMapData {
 	}
 
 	private static boolean landscapeAllowsObjects(ELandscapeType type) {
-		return !type.isWater() && type != ELandscapeType.SNOW
-		        && type != ELandscapeType.RIVER1
-		        && type != ELandscapeType.RIVER2
-		        && type != ELandscapeType.RIVER3
-		        && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
+		return !type.isWater() && type != ELandscapeType.SNOW && type != ELandscapeType.RIVER1 && type != ELandscapeType.RIVER2
+				&& type != ELandscapeType.RIVER3 && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
 	}
 
 	@Override
@@ -513,7 +488,7 @@ public class MapData implements IMapData {
 	}
 
 	@Override
-	public ISPosition2D getStartPoint(int player) {
+	public ShortPoint2D getStartPoint(int player) {
 		return playerStarts[player];
 	}
 
@@ -571,7 +546,7 @@ public class MapData implements IMapData {
 			objects[remove.x][remove.y] = null;
 			remove = remove.next;
 		}
-		
+
 		ObjectAdder adder = delta.getAddObjects();
 		while (adder != null) {
 			inverse.removeObject(adder.x, adder.y);
@@ -609,11 +584,10 @@ public class MapData implements IMapData {
 			ShortPoint2D start = new ShortPoint2D(x, y);
 			RelativePoint[] area = obj.getProtectedArea();
 			for (RelativePoint point : area) {
-				ISPosition2D pos = point.calculatePoint(start);
+				ShortPoint2D pos = point.calculatePoint(start);
 
 				if (contains(pos.getX(), pos.getY())) {
-					undoDelta.addObject(pos.getX(), pos.getY(),
-					        objects[pos.getX()][pos.getY()]);
+					undoDelta.addObject(pos.getX(), pos.getY(), objects[pos.getX()][pos.getY()]);
 					objects[pos.getX()][pos.getY()] = null;
 				}
 			}
@@ -636,7 +610,7 @@ public class MapData implements IMapData {
 		this.lastBorders = lastBorders;
 	}
 
-	public void setStartPoint(byte activePlayer, ISPosition2D pos) {
+	public void setStartPoint(byte activePlayer, ShortPoint2D pos) {
 		this.undoDelta.setStartPoint(activePlayer, playerStarts[activePlayer]);
 		this.playerStarts[activePlayer] = pos;
 	}

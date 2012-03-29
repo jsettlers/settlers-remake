@@ -1,20 +1,20 @@
 package jsettlers.mapcreator.main.error;
 
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class Error implements ILocatable {
-	private final ISPosition2D position;
+	private final ShortPoint2D position;
 	private final String description;
 
-	public Error(ISPosition2D position, String description) {
+	public Error(ShortPoint2D position, String description) {
 		this.position = position;
 		this.description = description;
 		
 	}
 
 	@Override
-    public ISPosition2D getPos() {
+    public ShortPoint2D getPos() {
 	    return position;
     }
 	

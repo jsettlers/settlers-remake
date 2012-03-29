@@ -1,7 +1,7 @@
 package jsettlers.mapcreator.data;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
 
 /**
@@ -104,14 +104,14 @@ public class MapDataDelta {
 	public static class StartPointSetter {
 		StartPointSetter next = null;
 		byte player;
-		ISPosition2D pos;
+		ShortPoint2D pos;
 	}
 
 	public StartPointSetter getStartPoints() {
 	    return startPoints.next;
     }
 	
-	public void setStartPoint(byte player, ISPosition2D pos) {
+	public void setStartPoint(byte player, ShortPoint2D pos) {
 	    StartPointSetter cur = startPoints;
 	    while (cur.next != null) {
 	    	if (cur.next.player == player) {

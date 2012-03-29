@@ -10,7 +10,7 @@ import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 
 public class PlayerDiagram extends JPanel {
@@ -25,7 +25,7 @@ public class PlayerDiagram extends JPanel {
 	private final int[] polylinex = new int[WATCHED_DISTANCE];
 
 	public PlayerDiagram(MapData data, int player) {
-		ISPosition2D start = data.getStartPoint(player);
+		ShortPoint2D start = data.getStartPoint(player);
 		int startx = start.getX();
 		int starty = start.getY();
 

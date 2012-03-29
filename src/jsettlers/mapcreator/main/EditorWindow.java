@@ -54,7 +54,7 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
@@ -311,7 +311,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private byte currentPlayer = 0;
 
-	private ISPosition2D testFailPoint = null;
+	private ShortPoint2D testFailPoint = null;
 
 	private JButton undoButton;
 
@@ -730,7 +730,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	}
 
 	@Override
-	public void testResult(String result, boolean allowed, ISPosition2D failPoint) {
+	public void testResult(String result, boolean allowed, ShortPoint2D failPoint) {
 		testFailPoint = failPoint;
 		startGameButton.setEnabled(allowed);
 		testResult.setText(result);
@@ -743,7 +743,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	}
 
 	@Override
-	public void scrollTo(ISPosition2D pos) {
+	public void scrollTo(ShortPoint2D pos) {
 		if (pos != null) {
 			connector.scrollTo(pos, true);
 		}

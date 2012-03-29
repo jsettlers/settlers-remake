@@ -1,13 +1,13 @@
 package jsettlers.mapcreator.tools.shapes;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public class LineCircleShape implements ShapeType {
 
 	private int radius = 10;
 
 	@Override
-	public void setAffectedStatus(byte[][] fields, ISPosition2D start, ISPosition2D end) {
+	public void setAffectedStatus(byte[][] fields, ShortPoint2D start, ShortPoint2D end) {
 		CircleLine line = new CircleLine(start, end);
 
 		for (int x = 0; x < fields.length; x++) {

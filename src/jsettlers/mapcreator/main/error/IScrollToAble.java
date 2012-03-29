@@ -1,9 +1,9 @@
 package jsettlers.mapcreator.main.error;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 public interface IScrollToAble {
 
-	void scrollTo(ISPosition2D pos);
+	void scrollTo(ShortPoint2D pos);
 
 }

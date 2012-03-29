@@ -10,7 +10,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.mapcreator.data.LandscapeConstraint;
@@ -18,9 +18,9 @@ import jsettlers.mapcreator.data.LandscapeConstraint;
 public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeConstraint, IBuilding.IMill, IBuilding.IOccupyed {
 
 	private final BuildingObject object;
-	private final ISPosition2D pos;
+	private final ShortPoint2D pos;
 
-	public BuildingContainer(BuildingObject object, ISPosition2D pos) {
+	public BuildingContainer(BuildingObject object, ShortPoint2D pos) {
 		this.object = object;
 		this.pos = pos;
 	}
@@ -69,7 +69,7 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public ISPosition2D getPos() {
+	public ShortPoint2D getPos() {
 		return pos;
 	}
 

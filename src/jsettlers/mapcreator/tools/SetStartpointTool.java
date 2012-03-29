@@ -1,6 +1,6 @@
 package jsettlers.mapcreator.tools;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.IPlayerSetter;
@@ -26,13 +26,13 @@ public class SetStartpointTool implements Tool {
     }
 
 	@Override
-    public void apply(MapData map, ShapeType shape, ISPosition2D start,
-            ISPosition2D end, double uidx) {
+    public void apply(MapData map, ShapeType shape, ShortPoint2D start,
+            ShortPoint2D end, double uidx) {
 		map.setStartPoint(player.getActivePlayer(), end);
     }
 
 	@Override
-    public void start(MapData data, ShapeType shape, ISPosition2D pos) {
+    public void start(MapData data, ShapeType shape, ShortPoint2D pos) {
     }
 	
 }

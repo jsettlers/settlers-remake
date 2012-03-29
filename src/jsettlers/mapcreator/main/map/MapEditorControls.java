@@ -7,7 +7,7 @@ import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -22,12 +22,12 @@ public class MapEditorControls implements IControls {
 	private MapDrawContext context;
 	private final ActionFireable firerer;
 
-	private ISPosition2D toMapPosition(UIPoint lastpoint) {
+	private ShortPoint2D toMapPosition(UIPoint lastpoint) {
 		return context.getPositionOnScreen((float) lastpoint.getX(), (float) lastpoint.getY());
 	}
 
 	private final class GOEventHandlerImplementation implements GOModalEventHandler {
-		private ISPosition2D last;
+		private ShortPoint2D last;
 		private final double starty;
 
 		public GOEventHandlerImplementation(UIPoint lastpoint) {
@@ -55,7 +55,7 @@ public class MapEditorControls implements IControls {
 		@Override
 		public void eventDataChanged(GOEvent event) {
 			UIPoint pos = ((GODrawEvent) event).getDrawPosition();
-			ISPosition2D cur = toMapPosition(pos);
+			ShortPoint2D cur = toMapPosition(pos);
 			firerer.fireAction(new DrawLineAction(last, cur, pos.getY() - starty));
 			last = cur;
 		}

@@ -1,6 +1,6 @@
 package jsettlers.mapcreator.tools.shapes;
 
-import jsettlers.common.position.ISPosition2D;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This shape lets space between its points.
@@ -9,7 +9,7 @@ import jsettlers.common.position.ISPosition2D;
  */
 public class GridShape extends LineShape {
 	@Override
-	protected boolean shouldDrawAt(ISPosition2D current) {
+	protected boolean shouldDrawAt(ShortPoint2D current) {
 	    return current.getX() % 2 == 0 && current.getY() % 2 == 1;
 	}
 	
