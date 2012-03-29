@@ -1,6 +1,5 @@
 package go.graphics.swing;
 
-import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
@@ -24,8 +23,7 @@ import javax.swing.JPanel;
  * 
  * @author michael
  */
-public class AreaContainer extends JPanel implements RedrawListener,
-        GOEventHandlerProvoder {
+public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvoder {
 
 	/**
 	 * 
@@ -56,8 +54,7 @@ public class AreaContainer extends JPanel implements RedrawListener,
 		canvas.addGLEventListener(new GLEventListener() {
 
 			@Override
-			public void reshape(GLAutoDrawable gl, int x, int y, int width,
-			        int height) {
+			public void reshape(GLAutoDrawable gl, int x, int y, int width, int height) {
 				resizeArea(gl.getGL().getGL2(), x, y, width, height);
 			}
 
