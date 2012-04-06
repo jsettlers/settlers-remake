@@ -48,7 +48,7 @@ public class ShortPoint2D implements Serializable {
 	}
 
 	public boolean equals(ShortPoint2D other) {
-		return other.getX() == x && other.getY() == y;
+		return other != null && other.getX() == x && other.getY() == y;
 	}
 
 	@Override
