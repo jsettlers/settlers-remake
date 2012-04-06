@@ -6,7 +6,8 @@ import jsettlers.common.position.ILocatable;
 public interface IPathCalculateable extends IPlayerable, ILocatable {
 	/**
 	 * 
-	 * @return if this method returns true, that means that this requester can only work on ground that belongs to his own player.
+	 * @return true if this path requester can only walk on it's own players ground.<br>
+	 *         false if the requester can use everybody's ground.
 	 */
 	boolean needsPlayersGround();
 

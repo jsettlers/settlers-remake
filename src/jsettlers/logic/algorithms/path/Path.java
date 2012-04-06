@@ -31,6 +31,18 @@ public final class Path implements Serializable {
 	}
 
 	/**
+	 * Creates a path of length 1 with that's just containing to the given position.<br>
+	 * 
+	 * @param position
+	 *            the single path position.
+	 */
+	public Path(ShortPoint2D position) {
+		this(1);
+		insertAt(0, position.getX(), position.getY());
+		initPath();
+	}
+
+	/**
 	 * sets the given position to the given index of the path
 	 * 
 	 * @param idx
