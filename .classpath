@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.logic"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.networking"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.android"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/go.graphics"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.graphics"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.logic"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.networking"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.common"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/go.graphics.android"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.algorithms"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.network"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network.objects"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.network.objects"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
