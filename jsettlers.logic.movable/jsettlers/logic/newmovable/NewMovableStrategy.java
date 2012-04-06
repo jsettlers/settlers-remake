@@ -59,6 +59,30 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getStrategyGrid();
 	}
 
+	/**
+	 * Tries to go a step in the given direction.
+	 * 
+	 * @param direction
+	 *            direction to go
+	 * @return true if the step can and will immediately be executed. <br>
+	 *         false if the target position is generally blocked or a movable occupies that position.
+	 */
+	protected final boolean goInDirection(EDirection direction) {
+		return movable.goInDirection(direction);
+	}
+
+	/**
+	 * Forces the movable to go a step in the given direction (if it is not blocked).
+	 * 
+	 * @param direction
+	 *            direction to go
+	 * @return true if the step can and will immediately be executed. <br>
+	 *         false if the target position is blocked for this movable.
+	 */
+	protected final boolean forceGoInDirection(EDirection direction) {
+		return movable.forceGoInDirection(direction);
+	}
+
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
 	}

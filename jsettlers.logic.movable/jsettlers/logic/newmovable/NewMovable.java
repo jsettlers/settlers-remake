@@ -28,7 +28,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 
-	private final INewMovableGrid grid;
+	private final INewMovableGrid<NewMovable> grid;
 
 	private ENewMovableState state = ENewMovableState.SLEEPING;
 
@@ -52,14 +52,15 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private boolean selected = false;
 	private boolean soundPlayed = false;
 	private float health = 1.0f;
+	private NewMovable pushedFrom;
 
-	public NewMovable(INewMovableGrid grid, EMovableType movableType, byte player) {
+	public NewMovable(INewMovableGrid<NewMovable> grid, EMovableType movableType, byte player) {
 		this.grid = grid;
 		this.player = player;
 		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
 
 		// The test movable has no images, so display a bearer
-		this.movableType = movableType == EMovableType.TEST_MOVABLE ? EMovableType.SWORDSMAN_L3 : movableType;
+		this.movableType = movableType == EMovableType.TEST_MOVABLE ? EMovableType.SWORDSMAN_L1 : movableType;
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
@@ -109,8 +110,13 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			doingNothingAction();
 			break;
 
+		// case WAITING_FOR_GOING_SINGLE_STEP:
+		// goInDirection(direction); // try to go in the set direction.
+		// break;
+
+		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			playingActionAction();
+			progressCurrentAction();
 			break;
 
 		case PATHING:
@@ -149,14 +155,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			direction = EDirection.getDirection(position.getX(), position.getY(), path.nextX(), path.nextY());
 
 			if (grid.isFreeForMovable(path.nextX(), path.nextY())) { // if we can go on to the next step
-				movableAction = EAction.WALKING;
-				progress -= 1;
-				grid.leavePosition(position, this);
-				this.position = path.getNextPos();
-				grid.enterPosition(position, this);
-				path.goToNextStep();
-				isRightstep = !isRightstep;
+				goSinglePathStep();
 			} else { // step not possible, so try it next time
+				grid.getMovableAt(path.nextX(), path.nextY()).push(this);
 				return;
 			}
 		} else {
@@ -164,7 +165,21 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	private void playingActionAction() {
+	private void goSinglePathStep() {
+		initGoingSingleStep(path.getNextPos());
+		path.goToNextStep();
+	}
+
+	private void initGoingSingleStep(ShortPoint2D position) {
+		movableAction = EAction.WALKING;
+		progress -= 1;
+		grid.leavePosition(this.position, this);
+		grid.enterPosition(position, this);
+		this.position = position;
+		isRightstep = !isRightstep;
+	}
+
+	private void progressCurrentAction() {
 		progress += progressIncrease;
 		if (progress > 1.01) { // > 1.01 ensures that the image for 100 % is also shown for one cycle
 			setState(ENewMovableState.DOING_NOTHING);
@@ -175,6 +190,43 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private void doingNothingAction() {
 		// TODO Auto-generated method stub
 
+	}
+
+	private void push(NewMovable pushingMovable) {
+		switch (state) {
+		case DOING_NOTHING:
+			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
+				pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
+				EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+				goInDirection(pushedFromDir);
+			}
+			break;
+
+		// case WAITING_FOR_GOING_SINGLE_STEP:
+		case PATHING:
+
+			break;
+
+		case GOING_SINGLE_STEP:
+		case PLAYING_ACTION:
+		case SLEEPING:
+			break; // just ignore
+		}
+	}
+
+	private boolean goToRandomDirection(NewMovable pushingMovable) {
+		int offset = RandomSingleton.getInt(0, EDirection.NUMBER_OF_DIRECTIONS - 1);
+		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+
+		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+			if (currDir != pushedFromDir && goInDirection(currDir)) {
+				return true;
+			}
+		}
+
+		// TODO What has to be done here?
+		return false;
 	}
 
 	/**
@@ -243,16 +295,74 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		if (path == null) {
 			return false;
 		} else {
-			this.path = path;
-			setState(ENewMovableState.PATHING);
-			this.movableAction = EAction.NO_ACTION;
-			progress = 1;
-			return true;
+			return followPath(path);
 		}
 	}
 
+	/**
+	 * Tries to go a step in the given direction.
+	 * 
+	 * @param direction
+	 *            direction to go
+	 * @return true if the step can and will immediately be executed. <br>
+	 *         false if the target position is generally blocked or a movable occupies that position.
+	 */
+	final boolean goInDirection(EDirection direction) {
+		ShortPoint2D pos = direction.getNextHexPoint(position);
+		if (isValidPosition(pos) && grid.isFreeForMovable(pos.getX(), pos.getY())) {
+			initGoingSingleStep(pos);
+			this.direction = direction;
+			progressIncrease = WALKING_PROGRESS_INCREASE;
+			setState(ENewMovableState.GOING_SINGLE_STEP);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Forces the movable to go a step in the given direction (if it is not blocked).
+	 * 
+	 * @param direction
+	 *            direction to go
+	 * @return true if the step can and will immediately be executed. <br>
+	 *         false if the target position is blocked for this movable.
+	 */
+	final boolean forceGoInDirection(EDirection direction) {
+		ShortPoint2D targetPos = direction.getNextHexPoint(position);
+		if (isValidPosition(targetPos)) {
+			this.followPath(new Path(targetPos));
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 
+	 * @return {@link IStrategyGrid} that can be used by the strategy to gain informations from the grid.
+	 */
 	final IStrategyGrid getStrategyGrid() {
 		return grid;
+	}
+
+	private boolean followPath(Path path) {
+		this.path = path;
+		setState(ENewMovableState.PATHING);
+		this.movableAction = EAction.NO_ACTION;
+		progress = 1;
+		return true;
+	}
+
+	/**
+	 * Checks if the given position is free or blocked for this movable.
+	 * 
+	 * @param pos
+	 *            position to be checked
+	 * @return true if the given position can be accessed by this movable
+	 */
+	private boolean isValidPosition(ShortPoint2D pos) {
+		return !grid.isBlocked(pos.getX(), pos.getY()) && (!this.needsPlayersGround() || grid.getPlayer(pos.getX(), pos.getY()) == this.getPlayer());
 	}
 
 	/**
@@ -260,85 +370,85 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * 
 	 * @param newState
 	 */
-	private final void setState(ENewMovableState newState) {
+	private void setState(ENewMovableState newState) {
 		this.state = newState;
 	}
 
-	@Override
 	/**
 	 * kills this movable.
 	 */
-	public void kill() {
+	@Override
+	public final void kill() {
 		MovableTimer.remove(this);
 	}
 
 	@Override
-	public byte getPlayer() {
+	public final byte getPlayer() {
 		return player;
 	}
 
 	@Override
-	public boolean isSelected() {
+	public final boolean isSelected() {
 		return selected;
 	}
 
 	@Override
-	public void setSelected(boolean selected) {
+	public final void setSelected(boolean selected) {
 		this.selected = selected;
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
+	public final void stopOrStartWorking(boolean stop) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public ESelectionType getSelectionType() {
+	public final ESelectionType getSelectionType() {
 		return movableType.getSelectionType();
 	}
 
 	@Override
-	public void setSoundPlayed() {
+	public final void setSoundPlayed() {
 		this.soundPlayed = true;
 	}
 
 	@Override
-	public boolean isSoundPlayed() {
+	public final boolean isSoundPlayed() {
 		return soundPlayed;
 	}
 
 	@Override
-	public EMovableType getMovableType() {
+	public final EMovableType getMovableType() {
 		return movableType;
 	}
 
 	@Override
-	public EAction getAction() {
+	public final EAction getAction() {
 		return movableAction;
 	}
 
 	@Override
-	public EDirection getDirection() {
+	public final EDirection getDirection() {
 		return direction;
 	}
 
 	@Override
-	public float getMoveProgress() {
+	public final float getMoveProgress() {
 		return progress;
 	}
 
 	@Override
-	public EMaterialType getMaterial() {
+	public final EMaterialType getMaterial() {
 		return materialType;
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
+	public final ShortPoint2D getPos() {
 		return position;
 	}
 
 	@Override
-	public float getHealth() {
+	public final float getHealth() {
 		return health;
 	}
 

@@ -20,7 +20,7 @@ import jsettlers.logic.newmovable.NewMovableStrategy;
 public final class BearerMovableStrategy extends NewMovableStrategy implements IManageableBearer {
 	private static final long serialVersionUID = -734268451796522451L;
 
-	private EBearerState state;
+	private EBearerState state = EBearerState.JOBLESS;
 
 	private ShortPoint2D offer;
 	private IMaterialRequester requester;
@@ -71,7 +71,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			}
 			break;
 		case GOING_TO_REQUEST:
-			if (super.getPos().equals(offer)) {
+			if (super.getPos().equals(requester.getPos())) {
 				super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.DROPPING;
 			} else {
