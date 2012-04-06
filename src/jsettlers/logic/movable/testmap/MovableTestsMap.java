@@ -27,7 +27,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	private final short width;
 	private final short height;
 
-	private final IMovable movableMap[][];
+	private final NewMovable movableMap[][];
 	private final EMaterialType materialTypeMap[][];
 	private final byte materialAmmountMap[][];
 	private final HexAStar aStar;
@@ -36,7 +36,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		this.width = (short) width;
 		this.height = (short) height;
 
-		this.movableMap = new IMovable[width][height];
+		this.movableMap = new NewMovable[width][height];
 		this.materialTypeMap = new EMaterialType[width][height];
 		this.materialAmmountMap = new byte[width][height];
 
@@ -106,7 +106,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 
-	private final INewMovableGrid movableGrid = new INewMovableGrid() {
+	private final INewMovableGrid<NewMovable> movableGrid = new INewMovableGrid<NewMovable>() {
 		@Override
 		public void leavePosition(ShortPoint2D position, NewMovable movable) {
 			if (movableMap[position.getX()][position.getY()] == movable) {
@@ -172,9 +172,24 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			materials.add(pos);
 		}
 
+		@Override
+		public NewMovable getMovableAt(short x, short y) {
+			return movableMap[x][y];
+		}
+
+		@Override
+		public byte getPlayer(short x, short y) {
+			return 0;
+		}
+
+		@Override
+		public boolean isBlocked(short x, short y) {
+			return false;
+		}
+
 	};
 
-	public INewMovableGrid getMovableGrid() {
+	public INewMovableGrid<NewMovable> getMovableGrid() {
 		return movableGrid;
 	}
 

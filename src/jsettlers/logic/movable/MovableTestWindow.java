@@ -30,6 +30,7 @@ public class MovableTestWindow {
 
 		movable = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0);
 		movable.positionAt(new ShortPoint2D(50, 50));
+		movable.setSelected(true);
 
 		connector.setSelection(new SelectionSet(movable));
 
@@ -46,6 +47,9 @@ public class MovableTestWindow {
 				case SPEED_SLOWER:
 					NetworkTimer.multiplyGameSpeed(1 / 1.2f);
 					break;
+				case FAST_FORWARD:
+					NetworkTimer.get().fastForward();
+					break;
 				}
 			}
 		});
@@ -57,7 +61,7 @@ public class MovableTestWindow {
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(31, 31));
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(32, 32));
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(33, 33));
-		;
 
+		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(51, 50));
 	}
 }
