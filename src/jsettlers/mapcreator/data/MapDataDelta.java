@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.data;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.mapcreator.data.objects.ObjectContainer;
 
@@ -14,6 +15,7 @@ public class MapDataDelta {
 	private LandscapeChange landscapeChanges = null;
 	private ObjectAdder addObjects = null;
 	private ObjectRemover removeObjects = null;
+	private ResourceChanger changeResources = null;
 
 	public MapDataDelta() {
 	}
@@ -65,6 +67,7 @@ public class MapDataDelta {
 		ObjectContainer obj;
 	}
 
+
 	public void addObject(int x, int y, ObjectContainer obj) {
 		if (obj != null) {
 			ObjectAdder adder = new ObjectAdder();
@@ -75,10 +78,33 @@ public class MapDataDelta {
 			addObjects = adder;
 		}
 	}
-	
+	public static class ResourceChanger {
+		ResourceChanger next = null;
+		short x;
+		short y;
+		EResourceType type;
+		byte amount;
+	}
 	public ObjectAdder getAddObjects() {
 	    return addObjects;
     }
+	
+	public void changeResource(int x, int y, 
+			EResourceType type,
+			byte amount) {
+		ResourceChanger c = new ResourceChanger();
+		c.x = (short) x;
+		c.y = (short) y;
+		c.type = type;
+		c.amount = amount;
+		c.next = changeResources;
+		changeResources = c;
+	}
+	
+	public ResourceChanger getChangeResources() {
+	    return changeResources;
+    }
+	
 
 	public static class ObjectRemover {
 		ObjectRemover next = null;

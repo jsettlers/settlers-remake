@@ -13,6 +13,7 @@ import jsettlers.mapcreator.data.objects.ObjectContainer;
 public class MapGraphics implements IGraphicsGrid {
 
 	private final MapData data;
+	private boolean showResources = false;
 
 	public MapGraphics(MapData data) {
 		this.data = data;
@@ -35,11 +36,21 @@ public class MapGraphics implements IGraphicsGrid {
 
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
-		ObjectContainer container = data.getMapObjectContainer(x, y);
-		if (container instanceof IMapObject) {
-			return (IMapObject) container;
+		if (showResources) {
+			byte amount = data.getResourceAmount((short) x, (short) y);
+			if (amount > 0) {
+				return ResourceMapObject.get(
+				        data.getResourceType((short) x, (short) y), amount);
+			} else {
+				return null;
+			}
 		} else {
-			return null;
+			ObjectContainer container = data.getMapObjectContainer(x, y);
+			if (container instanceof IMapObject) {
+				return (IMapObject) container;
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -79,8 +90,13 @@ public class MapGraphics implements IGraphicsGrid {
 	}
 
 	@Override
-	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+	public void setBackgroundListener(
+	        IGraphicsBackgroundListener backgroundListener) {
 		data.setListener(backgroundListener);
+	}
+
+	public void setShowResources(boolean b) {
+		showResources = b;
 	}
 
 }

@@ -48,6 +48,7 @@ import javax.swing.tree.TreePath;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapStoneObject;
@@ -94,6 +95,8 @@ import jsettlers.mapcreator.tools.landscape.FixHeightsTool;
 import jsettlers.mapcreator.tools.landscape.FlatLandscapeTool;
 import jsettlers.mapcreator.tools.landscape.HeightAdder;
 import jsettlers.mapcreator.tools.landscape.LandscapeHeightTool;
+import jsettlers.mapcreator.tools.landscape.PlaceResource;
+import jsettlers.mapcreator.tools.landscape.ResourceTool;
 import jsettlers.mapcreator.tools.landscape.SetLandscapeTool;
 import jsettlers.mapcreator.tools.objects.DeleteObjectTool;
 import jsettlers.mapcreator.tools.objects.PlaceBuildingTool;
@@ -106,7 +109,8 @@ import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateObject;
 import jsettlers.mapcreator.tools.shapes.LineCircleShape;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
-public class EditorWindow implements IMapInterfaceListener, ActionFireable, TestResultReceiver, IPlayerSetter, IScrollToAble {
+public class EditorWindow implements IMapInterfaceListener, ActionFireable,
+        TestResultReceiver, IPlayerSetter, IScrollToAble {
 
 	private final class RadiusChangeListener implements ChangeListener {
 		private final LineCircleShape shape;
@@ -151,8 +155,18 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 					new SetLandscapeTool(ELandscapeType.SNOW, false), new SetLandscapeTool(ELandscapeType.MOOR, false),
 					new SetLandscapeTool(ELandscapeType.FLATTENED_DESERT, false), new SetLandscapeTool(ELandscapeType.SHARP_FLATTENED_DESERT, false),
 					new SetLandscapeTool(ELandscapeType.GRAVEL, false), }),
-			new ToolBox("Höhen", new ToolNode[] { new LandscapeHeightTool(), new HeightAdder(true), new HeightAdder(false), new FlatLandscapeTool(),
+			new ToolBox("Höhen", new ToolNode[] { 
+					new LandscapeHeightTool(), 
+					new HeightAdder(true), 
+					new HeightAdder(false), 
+					new FlatLandscapeTool(),
 					new FixHeightsTool(), }),
+			new ToolBox("Resourcen", new ToolNode[] { 
+					new PlaceResource(EResourceType.FISH),
+					new PlaceResource(EResourceType.IRON),
+					new PlaceResource(EResourceType.GOLD),
+					new PlaceResource(EResourceType.COAL),
+					new PlaceResource(null)}),
 			new ToolBox("Objekte", new ToolNode[] { new PlaceMapObjectTool(MapTreeObject.getInstance()),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(0)), new PlaceMapObjectTool(MapStoneObject.getInstance(1)),
 					new PlaceMapObjectTool(MapStoneObject.getInstance(2)), new PlaceMapObjectTool(MapStoneObject.getInstance(3)),
@@ -318,9 +332,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private JButton undoButton;
 
-	private LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
+	private LinkedList<MapDataDelta> undoDeltas =
+	        new LinkedList<MapDataDelta>();
 
-	private LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
+	private LinkedList<MapDataDelta> redoDeltas =
+	        new LinkedList<MapDataDelta>();
 
 	private final DataTester dataTester;
 
@@ -395,7 +411,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		window.setVisible(true);
 		window.setLocationRelativeTo(null);
 
-		MapContent content = new MapContent(map, new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
+		MapContent content =
+		        new MapContent(map, new SwingSoundPlayer(),
+		                new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = content.getInterfaceConnector();
 		region.setContent(content);
 
@@ -442,7 +460,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		redoButton.setEnabled(false);
 		bar.add(redoButton);
 
-		showErrorsButton = new ShowErrorsButton(dataTester.getErrorList(), this);
+		showErrorsButton =
+		        new ShowErrorsButton(dataTester.getErrorList(), this);
 		bar.add(showErrorsButton);
 
 		testResult = new JLabel();
@@ -459,7 +478,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		bar.add(Box.createGlue());
 
 		bar.add(new JLabel("current player:"));
-		final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
+		final SpinnerNumberModel model =
+		        new SpinnerNumberModel(0, 0, data.getPlayerCount() - 1, 1);
 		JSpinner playerSpinner = new JSpinner(model);
 		playerSpinner.addChangeListener(new ChangeListener() {
 			@Override
@@ -507,8 +527,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		JPanel box = new JPanel();
 		box.setLayout(new BoxLayout(box, BoxLayout.PAGE_AXIS));
 		box.add(headerEditor);
-		
-		
+
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(new ActionListener() {
 			@Override
@@ -528,7 +547,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			}
 		});
 		box.add(okButton);
-		
+
 		dialog.add(box);
 		dialog.pack();
 		dialog.setVisible(true);
@@ -554,8 +573,14 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			File temp = File.createTempFile("tmp_map", "");
 			MapDataSerializer.serialize(data, new FileOutputStream(temp));
 
-			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), "jsettlers.mapcreator.main.PlayProcess",
-					temp.getAbsolutePath(), };
+			String[] args =
+			        new String[] {
+			                "java",
+			                "-classpath",
+			                System.getProperty("java.class.path"),
+			                "jsettlers.mapcreator.main.PlayProcess",
+			                temp.getAbsolutePath(),
+			        };
 
 			System.out.println("Starting process:");
 			for (String arg : args) {
@@ -571,7 +596,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+					BufferedReader reader =
+					        new BufferedReader(new InputStreamReader(
+					                process.getInputStream()));
 
 					while (true) {
 						String line;
@@ -653,7 +680,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 				Object lastPathComponent = path.getLastPathComponent();
 				if (lastPathComponent instanceof ToolBox) {
 					ToolBox toolBox = (ToolBox) lastPathComponent;
-					TreePath newPath = path.pathByAddingChild(toolBox.getTools()[0]);
+					TreePath newPath =
+					        path.pathByAddingChild(toolBox.getTools()[0]);
 					toolshelf.setSelectionPath(newPath);
 				} else if (lastPathComponent instanceof Tool) {
 					Tool newTool = (Tool) lastPathComponent;
@@ -662,7 +690,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			}
 		});
 		toolshelf.setCellRenderer(new ToolRenderer());
-		toolshelf.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		toolshelf
+		        .setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 
 		JPanel shape = new JPanel();
 		shape.setLayout(new BoxLayout(shape, BoxLayout.Y_AXIS));
@@ -691,6 +720,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			}
 			lastUsed.remove(shape);
 			lastUsed.addFirst(shape);
+
+			map.setShowResources(tool instanceof ResourceTool);
+
 			setShape(shape);
 		} else {
 			setShape(null);
@@ -708,7 +740,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 				shapeGroup.add(button);
 				shapeButtons.add(button);
 			}
-			shapeButtons.setLayout(new BoxLayout(shapeButtons, BoxLayout.LINE_AXIS));
+			shapeButtons.setLayout(new BoxLayout(shapeButtons,
+			        BoxLayout.LINE_AXIS));
 		}
 		shapeButtons.revalidate();
 	}
@@ -737,7 +770,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 				ShapeType shape = getActiveShape();
 
-				tool.apply(data, shape, lineAction.getStart(), lineAction.getEnd(), lineAction.getUidy());
+				tool.apply(data, shape, lineAction.getStart(),
+				        lineAction.getEnd(), lineAction.getUidy());
 
 				dataTester.retest();
 			}
@@ -766,7 +800,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 				ShapeType shape = getActiveShape();
 
 				tool.start(data, shape, lineAction.getPosition());
-				tool.apply(data, shape, lineAction.getPosition(), lineAction.getPosition(), 0);
+				tool.apply(data, shape, lineAction.getPosition(),
+				        lineAction.getPosition(), 0);
 
 				endUseStep();
 				dataTester.retest();
@@ -784,7 +819,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	}
 
 	@Override
-	public void testResult(String result, boolean allowed, ShortPoint2D failPoint) {
+	public void testResult(String result, boolean allowed,
+	        ShortPoint2D failPoint) {
 		testFailPoint = failPoint;
 		startGameButton.setEnabled(allowed);
 		testResult.setText(result);

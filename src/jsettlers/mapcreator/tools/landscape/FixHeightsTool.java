@@ -30,6 +30,7 @@ public class FixHeightsTool implements Tool {
 		for (int x = 0; x < map.getWidth() - 1; x++) {
 			for (int y = 0; y < map.getWidth() - 1; y++) {
 				if (influences[x][y] > 0) {
+					fixResources(map, x, y);
 					fix(map, x, y, x + 1, y);
 					fix(map, x, y, x + 1, y + 1);
 					fix(map, x, y, x, y + 1);
@@ -47,6 +48,14 @@ public class FixHeightsTool implements Tool {
 			}
 		}
 	}
+
+	private static void fixResources(MapData map, int x, int y) {
+	    if (map.getResourceAmount((short) x, (short) y) > 0) {
+	    	if (!DataTester.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short)  y))) {
+	    		map.decreaseResourceTo(x, y, (byte) 0);
+	    	}
+	    }
+    }
 
 	private static void fix(MapData map, int x, int y, int x2, int y2) {
 		byte h1 = map.getLandscapeHeight(x, y);
