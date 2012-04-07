@@ -5,9 +5,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Random;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.map.object.MapObject;
@@ -18,6 +20,7 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.random.grid.MapGrid;
 
 /**
  * Serializes the map data to a byte stream.
@@ -49,6 +52,7 @@ public class MapDataSerializer {
 	private static final int TYPE_BUILDING = 3;
 	private static final int TYPE_MOVABLE = 4;
 	private static final int TYPE_STACK = 5;
+	private static final int VERSION_WITH_RESOURCES = 2;
 
 	/**
 	 * Serializes the given data to the output stream.
@@ -66,7 +70,7 @@ public class MapDataSerializer {
 		int width = data.getWidth();
 		int height = data.getHeight();
 
-		stream.writeShort(VERSION);
+		stream.writeShort(VERSION_WITH_RESOURCES);
 		stream.writeShort(width);
 		stream.writeShort(height);
 
@@ -89,6 +93,13 @@ public class MapDataSerializer {
 			}
 		}
 
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
+				stream.writeByte(data.getResourceType(x, y).ordinal);
+				stream.writeByte(data.getResourceAmount(x, y));
+			}
+		}
+		
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				MapObject object = data.getMapObject(x, y);
@@ -139,9 +150,10 @@ public class MapDataSerializer {
 			DataInputStream stream = new DataInputStream(in);
 			int version = stream.readShort();
 
-			if (version != VERSION) {
+			if (version != VERSION && version != VERSION_WITH_RESOURCES) {
 				throw new IOException("wrong stream version, got: " + version);
 			}
+			Random rand = new Random(123);
 
 			int width = stream.readShort();
 			int height = stream.readShort();
@@ -161,6 +173,13 @@ public class MapDataSerializer {
 				for (int y = 0; y < height; y++) {
 					byte type = stream.readByte();
 					data.setLandscape(x, y, types[type]);
+					if (version < VERSION_WITH_RESOURCES) {
+						//fallback. Can be removed once all maps use new format.
+						EResourceType type2 =
+						        MapGrid.getResourceType(types[type], rand);
+						data.setResources(x, y, type2,
+						        MapGrid.getResourceAmount(types[type], rand));
+					}
 				}
 			}
 
@@ -169,6 +188,17 @@ public class MapDataSerializer {
 					byte h = stream.readByte();
 					data.setHeight(x, y, h);
 				}
+			}
+
+			if (version >= VERSION_WITH_RESOURCES) {
+				for (int x = 0; x < width; x++) {
+					for (int y = 0; y < height; y++) {
+						byte t = stream.readByte();
+						byte amount = stream.readByte();
+						data.setResources(x, y, EResourceType.values[t], amount);
+					}
+				}
+
 			}
 
 			while (stream.available() > 0) {
@@ -181,6 +211,7 @@ public class MapDataSerializer {
 					data.setMapObject(x, y, object);
 				}
 			}
+
 		} catch (Throwable t) {
 			throw new IOException("Error while reading map file", t);
 		}
@@ -235,5 +266,7 @@ public class MapDataSerializer {
 		void setLandscape(int x, int y, ELandscapeType type);
 
 		void setMapObject(int x, int y, MapObject object);
+
+		void setResources(int x, int y, EResourceType type, byte amount);
 	}
 }

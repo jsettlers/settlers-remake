@@ -1,6 +1,7 @@
 package jsettlers.logic.map.save;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
@@ -22,6 +23,8 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	private byte[][] heights;
 	private ELandscapeType[][] landscapes;
 	private MapObject[][] mapObjects;
+	private byte[][] resourceTypes;
+	private byte[][] resourceAmount;
 
 	@Override
 	public void setDimension(int width, int height, int playerCount) {
@@ -32,6 +35,8 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 		this.heights = new byte[width][height];
 		this.landscapes = new ELandscapeType[width][height];
 		this.mapObjects = new MapObject[width][height];
+		this.resourceTypes = new byte[width][height];
+		this.resourceAmount = new byte[width][height];
 	}
 
 	@Override
@@ -90,4 +95,20 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	public int getPlayerCount() {
 		return playerCount;
 	}
+
+	@Override
+    public EResourceType getResourceType(short x, short y) {
+	    return EResourceType.values[resourceTypes[x][y]];
+    }
+
+	@Override
+    public byte getResourceAmount(short x, short y) {
+	    return resourceAmount[x][y];
+    }
+
+	@Override
+    public void setResources(int x, int y, EResourceType type, byte amount) {
+	    resourceAmount[x][y] = amount;
+	    resourceTypes[x][y] = type.ordinal;
+    }
 }

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.PriorityQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -14,7 +15,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;

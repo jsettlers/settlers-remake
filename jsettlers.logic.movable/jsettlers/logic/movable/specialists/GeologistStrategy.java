@@ -1,10 +1,10 @@
 package jsettlers.logic.movable.specialists;
 
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 

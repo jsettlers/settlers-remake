@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 
 /**

@@ -17,6 +17,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.EBuildingType.BuildingAreaBitSet;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
@@ -68,7 +69,6 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
-import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
@@ -90,7 +90,6 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.stack.IRequestsStackGrid;
-import random.RandomSingleton;
 import synchronic.timer.NetworkTimer;
 
 /**
@@ -166,12 +165,7 @@ public class MainGrid implements Serializable {
 				ELandscapeType landscape = mapGrid.getLandscape(x, y);
 				setLandscapeTypeAt(x, y, landscape);
 				landscapeGrid.setHeightAt(x, y, mapGrid.getLandscapeHeight(x, y));
-
-				if (landscape == ELandscapeType.MOUNTAIN) {
-					landscapeGrid.setResourceAt(x, y, EResourceType.values()[RandomSingleton.getInt(0, 2)], (byte) RandomSingleton.getInt(-100, 127));
-				} else if (landscape.isWater()) {
-					landscapeGrid.setResourceAt(x, y, EResourceType.FISH, (byte) RandomSingleton.getInt(-100, 127));
-				}
+				landscapeGrid.setResourceAt(x, y, mapGrid.getResourceType(x, y), mapGrid.getResourceAmount(x, y));
 			}
 		}
 

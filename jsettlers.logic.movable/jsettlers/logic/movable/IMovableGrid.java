@@ -1,6 +1,7 @@
 package jsettlers.logic.movable;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
@@ -10,7 +11,6 @@ import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.map.newGrid.MainGrid.MovableNeighborIterator;
-import jsettlers.logic.map.newGrid.landscape.EResourceType;
 import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;

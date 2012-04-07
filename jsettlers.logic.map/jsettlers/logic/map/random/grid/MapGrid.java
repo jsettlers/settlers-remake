@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.map.shapes.MapCircle;
@@ -283,4 +284,31 @@ public class MapGrid implements IMapData {
 	public int getPlayerCount() {
 		return playerstarts.length;
 	}
+
+	public static EResourceType getResourceType(ELandscapeType landscape, Random rand) {
+		if (landscape == ELandscapeType.MOUNTAIN) {
+			return EResourceType.values()[rand.nextInt(3)];
+		} else {
+			return EResourceType.FISH;
+		}
+	}
+	
+	public static byte getResourceAmount(ELandscapeType landscape, Random rand) {
+		if (landscape == ELandscapeType.MOUNTAIN || landscape.isWater()) {
+			return (byte) rand.nextInt(Byte.MAX_VALUE + 1);
+		} else {
+			return 0;
+		}
+	}
+
+	@Override
+    public EResourceType getResourceType(short x, short y) {
+	    return EResourceType.FISH;
+    }
+
+	@Override
+    public byte getResourceAmount(short x, short y) {
+	    return 0;
+    }
+
 }
