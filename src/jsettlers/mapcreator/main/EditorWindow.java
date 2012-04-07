@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -27,6 +28,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -68,6 +70,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
+import jsettlers.mapcreator.data.PreviewImageCreator;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.main.action.AbortDrawingAction;
@@ -327,13 +330,15 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private JButton startGameButton;
 
-	private final MapFileHeader header;
+	private MapFileHeader header;
 
 	private JButton saveButton;
 
 	private JButton redoButton;
 
 	private ShowErrorsButton showErrorsButton;
+
+	private JFrame window;
 
 	public EditorWindow(MapFileHeader header, ELandscapeType ground) {
 		this.header = header;
@@ -343,8 +348,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		data = new MapData(width, height, playerCount, ground);
 		map = new MapGraphics(data);
 
+		buildMapEditingWindow();
 		dataTester = new DataTester(data, this);
-		startMapEditing();
 		dataTester.start();
 	}
 
@@ -354,12 +359,12 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		map = new MapGraphics(data);
 
 		dataTester = new DataTester(data, this);
-		startMapEditing();
+		buildMapEditingWindow();
 		dataTester.start();
 	}
 
-	public void startMapEditing() {
-		JFrame window = new JFrame("map editor");
+	public void buildMapEditingWindow() {
+		window = new JFrame("map editor");
 		JPanel root = new JPanel();
 		root.setLayout(new BorderLayout(10, 10));
 
@@ -466,7 +471,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		playerSpinner.setMaximumSize(new Dimension(50, 40));
 		bar.add(playerSpinner);
 
-		JButton statistics = new JButton("Statistics");
+		JButton statistics = new JButton(EditorLabels.getLabel("statistics"));
 		statistics.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -474,6 +479,15 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			}
 		});
 		bar.add(statistics);
+
+		JButton editSettings = new JButton(EditorLabels.getLabel("settings"));
+		editSettings.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editSettings();
+			}
+		});
+		bar.add(editSettings);
 
 		startGameButton = new JButton("Play");
 		startGameButton.addActionListener(new ActionListener() {
@@ -486,10 +500,50 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		return bar;
 	}
 
+	protected void editSettings() {
+		final JDialog dialog =
+		        new JDialog(window, EditorLabels.getLabel("settings"), true);
+		final MapHeaderEditor headerEditor = new MapHeaderEditor(header, true);
+		JPanel box = new JPanel();
+		box.setLayout(new BoxLayout(box, BoxLayout.PAGE_AXIS));
+		box.add(headerEditor);
+		
+		
+		JButton okButton = new JButton("OK");
+		okButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				MapFileHeader nheader = headerEditor.getHeader();
+				if (nheader.getWidth() != header.getWidth()
+				        || nheader.getHeight() != header.getHeight()) {
+					JOptionPane.showMessageDialog(window,
+					        "Widh and height are fixed.", "Error",
+					        JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				header = nheader;
+				data.setMaxPlayers(header.getMaxPlayer());
+				dataTester.retest();
+				dialog.setVisible(false);
+			}
+		});
+		box.add(okButton);
+		
+		dialog.add(box);
+		dialog.pack();
+		dialog.setVisible(true);
+	}
+
 	protected void save() {
 		try {
-			MapList.getDefaultList().saveMap(header, data);
-		} catch (IOException e) {
+			short[] image = new PreviewImageCreator(data).getPreviewImage();
+			MapFileHeader imagedHeader =
+			        new MapFileHeader(header.getType(), header.getName(),
+			                header.getDescription(), header.getWidth(),
+			                header.getHeight(), header.getMinPlayer(),
+			                header.getMaxPlayer(), new Date(), image);
+			MapList.getDefaultList().saveMap(imagedHeader, data);
+		} catch (Throwable e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(saveButton, e.getMessage());
 		}

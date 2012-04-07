@@ -53,7 +53,7 @@ public class MapData implements IMapData {
 	private IGraphicsBackgroundListener backgroundListener;
 	private final byte[][] heights;
 	private MapDataDelta undoDelta;
-	private final int playercount;
+	private int playercount;
 	private ShortPoint2D[] playerStarts;
 
 	private byte[][] lastPlayers;
@@ -621,5 +621,21 @@ public class MapData implements IMapData {
 
 	public boolean isFailpoint(int x, int y) {
 		return failpoints != null && failpoints[x][y];
+	}
+
+	public void setMaxPlayers(short maxPlayer) {
+		if (maxPlayer <= 0 || maxPlayer >= CommonConstants.MAX_PLAYERS) {
+			throw new IllegalArgumentException("Player count must be 1..32");
+		}
+
+		ShortPoint2D[] newPlayerStarts = new ShortPoint2D[maxPlayer];
+		for (int i = 0; i < maxPlayer; i++) {
+			newPlayerStarts[i] =
+			        i < playercount ? playerStarts[i] : new ShortPoint2D(
+			                width / 2, height / 2);
+		}
+		this.playercount = maxPlayer;
+		this.playerStarts = newPlayerStarts;
+
 	}
 }

@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.main;
 
 import java.awt.Dimension;
+import java.util.Date;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -46,8 +47,12 @@ public class MapHeaderEditor extends JPanel {
 		descriptionField = new JTextArea();
 		descriptionField.setMinimumSize(new Dimension(200, 50));
 
-		width = new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE, MAX_MAPSIZE, 1);
-		height = new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE, MAX_MAPSIZE, 1);
+		width =
+		        new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
+		                MAX_MAPSIZE, 1);
+		height =
+		        new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
+		                MAX_MAPSIZE, 1);
 		minPlayer =
 		        new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
 		maxPlayer =
@@ -144,6 +149,8 @@ public class MapHeaderEditor extends JPanel {
 		short minPlayer = this.minPlayer.getNumber().shortValue();
 		short maxPlayer = this.maxPlayer.getNumber().shortValue();
 		return new MapFileHeader(MapType.NORMAL, name, description, width,
-		        height, minPlayer, maxPlayer, null);
+		        height, minPlayer, maxPlayer, new Date(),
+		        new short[MapFileHeader.PREVIEW_IMAGE_SIZE
+		                * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 	}
 }
