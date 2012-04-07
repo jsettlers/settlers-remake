@@ -36,7 +36,7 @@ public class MapFileHeader {
 	        'M', 'A', 'P', ' '
 	};
 
-	private static final int PREVIEW_IMAGE_SIZE = 128;
+	public static final int PREVIEW_IMAGE_SIZE = 128;
 
 	private final String name;
 
@@ -52,7 +52,9 @@ public class MapFileHeader {
 
 	private final short maxPlayer;
 
-	private Date date;
+	private final Date date;
+
+	private final short[] bgimage;
 
 	/**
 	 * The content type of a map file.
@@ -65,7 +67,10 @@ public class MapFileHeader {
 
 	public MapFileHeader(MapType type, String name, String description,
 	        short width, short height, short minplayer, short maxplayer,
-	        Date date) {
+	        Date date, short[] bgimage) {
+		if (bgimage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
+			throw new IllegalArgumentException("bg image has wrong size.");
+		}
 		this.type = type;
 		this.name = name;
 		this.description = description;
@@ -74,6 +79,7 @@ public class MapFileHeader {
 		this.minPlayer = minplayer;
 		this.maxPlayer = maxplayer;
 		this.date = date;
+		this.bgimage = bgimage;
 	}
 
 	public MapType getType() {
@@ -108,6 +114,10 @@ public class MapFileHeader {
 		return maxPlayer;
 	}
 
+	public short[] getBgimage() {
+	    return bgimage;
+    }
+	
 	public void writeTo(OutputStream stream) throws IOException {
 		DataOutputStream out = new DataOutputStream(stream);
 		out.write(START_BYTES);
@@ -121,7 +131,9 @@ public class MapFileHeader {
 		out.writeShort(minPlayer);
 		out.writeShort(maxPlayer);
 
-		out.write(new byte[PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE * 2]);
+		for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
+			 out.writeShort(bgimage[i]);
+		};
 		
 		if (type == MapType.SAVED_SINGLE) {
 			out.writeLong(date.getTime());
@@ -162,8 +174,10 @@ public class MapFileHeader {
 			short minplayer = in.readShort();
 			short maxplayer = in.readShort();
 
-			byte[] bgimage = new byte[PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE * 2];
-			in.read(bgimage);
+			short[] bgimage = new short[PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE];
+			for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
+				bgimage[i] = in.readShort();
+			};
 
 			Date date = null;
 			if (type == MapType.SAVED_SINGLE) {
@@ -172,7 +186,7 @@ public class MapFileHeader {
 			}
 
 			return new MapFileHeader(type, name, description, width, height,
-			        minplayer, maxplayer, date);
+			        minplayer, maxplayer, date, bgimage);
 
 		} catch (Throwable t) {
 			if (t instanceof IOException) {
@@ -187,4 +201,5 @@ public class MapFileHeader {
 		//TODO: compute this
 	    return getName();
     }
+
 }

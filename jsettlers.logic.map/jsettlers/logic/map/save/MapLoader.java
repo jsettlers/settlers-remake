@@ -235,4 +235,14 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem,
 			return "";
 		}
 	}
+
+	@Override
+	public short[] getImage() {
+		try {
+			return getFileHeader().getBgimage();
+		} catch (MapLoadException e) {
+			return new short[MapFileHeader.PREVIEW_IMAGE_SIZE
+			        * MapFileHeader.PREVIEW_IMAGE_SIZE];
+		}
+	}
 }

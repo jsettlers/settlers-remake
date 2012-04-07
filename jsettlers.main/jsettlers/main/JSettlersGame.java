@@ -67,7 +67,7 @@ public class JSettlersGame {
 			RandomSingleton.load(randomSeed);
 
 
-			progress.setProgressState(EProgressState.LOADING_MAP);
+			progress.setProgressState(EProgressState.LOADING_MAP, 0.1f);
 
 			ImageProvider.getInstance().startPreloading();
 
@@ -103,7 +103,7 @@ public class JSettlersGame {
 			// grid = null;
 			// }
 
-			progress.setProgressState(EProgressState.LOADING_IMAGES);
+			progress.setProgressState(EProgressState.LOADING_IMAGES, 0.8f);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
 			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), playerNumber);
