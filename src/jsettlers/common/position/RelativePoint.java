@@ -81,4 +81,8 @@ public class RelativePoint implements Serializable {
 		return dx;
 	}
 
+	public RelativePoint invert() {
+	    return new RelativePoint(-dx, -dy);
+    }
+
 }
