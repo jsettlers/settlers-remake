@@ -244,7 +244,7 @@ public class JOGLDrawContext implements GLDrawContext {
 
 	@Override
 	public TextDrawer getTextDrawer(EFontSize size) {
-		return JOGLTextDrawer.getTextDrawer(size);
+		return JOGLTextDrawer.getTextDrawer(size, this);
 	}
 
 	@Override
@@ -413,4 +413,7 @@ public class JOGLDrawContext implements GLDrawContext {
 			return geometries.size() - 1;
 		}
 	}
+
+	public void prepareFontDrawing() {
+    }
 }

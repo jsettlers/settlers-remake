@@ -1,5 +1,6 @@
 package go.graphics.swing.text;
 
+import go.graphics.swing.opengl.JOGLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -22,13 +23,17 @@ public final class JOGLTextDrawer implements TextDrawer {
 
 	private final TextRenderer renderer;
 
+	private final JOGLDrawContext drawContext;
+
 	/**
 	 * Creates a new text drawer.
 	 * 
 	 * @param size
 	 *            The size of the text.
+	 * @param drawContext 
 	 */
-	private JOGLTextDrawer(EFontSize size) {
+	private JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
+		this.drawContext = drawContext;
 		Font font = new Font(FONTNAME, Font.TRUETYPE_FONT, size.getSize());
 		this.renderer = new TextRenderer(font, true, true, null, true);
 	}
@@ -60,10 +65,15 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 */
 	@Override
 	public void drawString(float x, float y, String string) {
+		try {
+		this.drawContext.prepareFontDrawing();
 		this.renderer.begin3DRendering();
 		this.renderer.draw3D(string, x, y, 0, 1);
 		this.renderer.end3DRendering();
 		this.renderer.flush();
+		} catch (Throwable e) {
+			//bad
+		}
 	}
 
 	/**
@@ -73,9 +83,9 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 *            The size for the drawer.
 	 * @return An instance of a drawer for that size.
 	 */
-	public static TextDrawer getTextDrawer(EFontSize size) {
+	public static TextDrawer getTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
 		if (instances[size.ordinal()] == null) {
-			instances[size.ordinal()] = new JOGLTextDrawer(size);
+			instances[size.ordinal()] = new JOGLTextDrawer(size, drawContext);
 		}
 		return instances[size.ordinal()];
 	}
