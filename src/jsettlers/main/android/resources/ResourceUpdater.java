@@ -70,6 +70,7 @@ public class ResourceUpdater implements Runnable {
 			//bad. really bad.
 			return;
 		}
+		needsUpdate = false;
 		
 		setUpdating(true);
 		new Thread(new Runnable() {
