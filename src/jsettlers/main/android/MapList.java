@@ -6,6 +6,7 @@ import jsettlers.graphics.startscreen.GameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.graphics.startscreen.NetworkGameSettings;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -33,7 +34,7 @@ public class MapList {
 	private EditText playerField;
 
 	public MapList(View mainView, IStartScreenConnector connector,
-	        boolean requestNetworkStart) {
+	        boolean requestNetworkStart, LayoutInflater inflater) {
 		this.connector = connector;
 		this.requestNetworkStart = requestNetworkStart;
 		name = (TextView) mainView.findViewById(R.id.maplist_name);
@@ -42,7 +43,7 @@ public class MapList {
 
 		List<? extends IMapItem> maps = connector.getMaps();
 		ListView list = (ListView) mainView.findViewById(R.id.maplist);
-		list.setAdapter(new MapListAdapter(mainView.getContext(), maps));
+		list.setAdapter(new MapListAdapter(inflater, maps));
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int itemid,

@@ -1,7 +1,6 @@
-package jsettlers.main.android;
+package jsettlers.main.android.resources;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,6 +18,10 @@ import java.util.zip.ZipInputStream;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+
+import jsettlers.graphics.progress.EProgressState;
+import jsettlers.graphics.progress.ProgressConnector;
+import jsettlers.main.android.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -40,7 +43,8 @@ public class ResourceUpdater implements Runnable {
 	private final File destdir;
 
 	private boolean isUpdating;
-
+	private boolean needsUpdate = false;
+	
 	public ResourceUpdater(Resources resources, File destdir) {
 		this.resources = resources;
 		this.destdir = destdir;
@@ -55,28 +59,42 @@ public class ResourceUpdater implements Runnable {
 			File versionfile = new File(destdir, "version");
 			String myrev = getMyVersion(versionfile);
 
-			if (serverrev != null && !serverrev.equals(myrev)) {
-				// Download the file
-				System.out.println("resourceupdater: updating");
-				updateFiles(httpClient);
-
-				FileOutputStream fileOut = new FileOutputStream(versionfile);
-				DataOutputStream out = new DataOutputStream(fileOut);
-				out.writeUTF(serverrev);
-			}
-
+			needsUpdate = serverrev != null && !serverrev.equals(myrev);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		setUpdating(false);
+	}
+	
+	public void startUpdate(final UpdateListener listener, final ProgressConnector c) {
+		if (isUpdating()) {
+			//bad. really bad.
+			return;
+		}
+		
+		setUpdating(true);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					updateFiles(createClient(), c);
+				} catch (Throwable t) {
+					setUpdating(false);
+				}
+				c.setProgressState(EProgressState.UPDATE, 1);
+				if (listener != null) {
+					listener.resourceUpdateFinished();
+				}
+				
+			}
+		}, "resource-update").start();
 	}
 
-	private void updateFiles(DefaultHttpClient httpClient) throws IOException, ClientProtocolException {
+	private void updateFiles(DefaultHttpClient httpClient, ProgressConnector c) throws IOException, ClientProtocolException {
+		c.setProgressState(EProgressState.UPDATE, -1);
 		final String url = SERVER_ROOT + "resources.zip";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
 		ZipInputStream inputStream = new ZipInputStream(response.getEntity().getContent());
-		setUpdating(true);
 
 		try {
 
@@ -84,9 +102,13 @@ public class ResourceUpdater implements Runnable {
 
 			byte[] buffer = new byte[1024];
 
+			int size = inputStream.available();
+			
 			ZipEntry entry;
 			while ((entry = inputStream.getNextEntry()) != null) {
 				String name = entry.getName();
+				c.setProgressState(EProgressState.UPDATE, (float) (size - inputStream.available()) / size);
+				
 				if (name.startsWith(RESOURCE_PREFIX)) {
 					String outfilename = destdir.getAbsolutePath() + "/" + name.substring(RESOURCE_PREFIX.length());
 					File outfile = new File(outfilename);
@@ -181,4 +203,8 @@ public class ResourceUpdater implements Runnable {
 		this.isUpdating = isUpdating;
 		this.notifyAll();
 	}
+
+	public boolean needsUpdate() {
+	    return needsUpdate;
+    }
 }

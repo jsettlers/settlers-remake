@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:layout_margin="5sp"
         android:layout_weight="1" >
+        <!-- Preview: listitem=@layout/maplistitem -->
     </ListView>
 
     <LinearLayout

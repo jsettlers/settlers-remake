@@ -3,21 +3,22 @@ package jsettlers.main.android;
 import java.util.List;
 
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MapListAdapter extends BaseAdapter {
 
 	private final List<? extends IMapItem> maps;
-	private final Context context;
+	private final LayoutInflater inflater;
 
-	public MapListAdapter(Context context, List<? extends IMapItem> maps) {
-		this.context = context;
+	public MapListAdapter(LayoutInflater inflater, List<? extends IMapItem> maps) {
+		this.inflater = inflater;
 		this.maps = maps;
-    }
+	}
 
 	@Override
 	public int getCount() {
@@ -41,15 +42,27 @@ public class MapListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int arg0, View arg1, ViewGroup arg2) {
-		TextView view;
+		View view;
 		if (arg1 != null) {
-			view = (TextView) arg1;
-		}else {
-			view = new TextView(context);
+			view = arg1;
+		} else {
+			view = inflater.inflate(R.layout.maplistitem, null);
 		}
+
 		IMapItem map = maps.get(arg0);
-		view.setText(map.getName());
+		TextView name = (TextView) view.findViewById(R.id.mapitem_name);
+		name.setText(map.getName());
+
+		TextView description = (TextView) view.findViewById(R.id.mapitem_descr);
+		description.setText(getDescriptionString(map));
+
+		ImageView image = (ImageView) view.findViewById(R.id.mapitem_icon);
+		image.setImageBitmap(PreviewImageConverter.toBitmap(map.getImage()));
 		return view;
+	}
+
+	private static String getDescriptionString(IMapItem map) {
+		return map.getMinPlayers() + " - " + map.getMaxPlayers();
 	}
 
 	@Override
@@ -68,7 +81,7 @@ public class MapListAdapter extends BaseAdapter {
 	}
 
 	public IMapItem get(int itemid) {
-	    return maps.get(itemid);
-    }
+		return maps.get(itemid);
+	}
 
 }

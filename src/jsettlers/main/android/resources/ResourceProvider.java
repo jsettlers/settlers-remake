@@ -1,4 +1,4 @@
-package jsettlers.main.android;
+package jsettlers.main.android.resources;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import jsettlers.common.resources.IResourceProvider;
+import jsettlers.graphics.progress.ProgressConnector;
 import android.content.Context;
 
 public class ResourceProvider implements IResourceProvider {
@@ -19,6 +20,15 @@ public class ResourceProvider implements IResourceProvider {
 		this.updater = new ResourceUpdater(context.getResources(), dirs[0]);
 		new Thread(updater, "resource updater").start();
 	}
+	
+	public boolean needsUpdate() {
+		return updater.needsUpdate();
+	}
+	
+	public void startUpdate(final UpdateListener listener, ProgressConnector c) {
+		updater.startUpdate(listener, c);
+	}
+
 
 	@Override
 	public InputStream getFile(String name) throws IOException {
