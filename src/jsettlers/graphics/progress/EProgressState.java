@@ -11,5 +11,10 @@ public enum EProgressState {
 	/**
 	 * Start a network server.
 	 */
-	STARTING_SERVER, WAIT_FOR_SERVER_RESPONSE, JOINING_GAME
+	STARTING_SERVER, WAIT_FOR_SERVER_RESPONSE, JOINING_GAME, 
+	
+	/**
+	 * Update application data
+	 */
+	UPDATE
 }

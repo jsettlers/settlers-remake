@@ -151,13 +151,7 @@ class LineLoader implements Runnable {
 
 	private static short getColorForLandscape(ELandscapeType landscape,
 	        float basecolor) {
-		return toShortColor(landscape.getColor(), basecolor);
-	}
-
-	private static short toShortColor(Color color, float multiply) {
-		return (short) ((int) (Math.min(1, color.getRed() * multiply) * 0x1f) << 11
-		        | (int) (Math.min(1, color.getGreen() * multiply) * 0x1f) << 6
-		        | (int) (Math.min(1, color.getBlue() * multiply) * 0x1f) << 1 | 1);
+		return landscape.getColor().toShortColor(basecolor);
 	}
 
 	private short getSettlerForArea(int mapminx, int mapminy, int mapmaxx,
@@ -173,7 +167,7 @@ class LineLoader implements Runnable {
 					byte player = map.getPlayerAt(x, y);
 					Color playerColor =
 					        minimap.getContext().getPlayerColor(player);
-					color = toShortColor(playerColor, 1);
+					color = playerColor.toShortColor(1);
 				}
 			}
 		}
@@ -181,7 +175,7 @@ class LineLoader implements Runnable {
 	}
 
 	private short getColor(IMovable settler) {
-		return toShortColor(
-		        minimap.getContext().getPlayerColor(settler.getPlayer()), 1);
+		return minimap.getContext().getPlayerColor(settler.getPlayer())
+		        .toShortColor(1);
 	}
 }

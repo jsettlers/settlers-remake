@@ -48,8 +48,9 @@ public class ProgressContent implements SettlersContent {
 	 * 
 	 * @param state
 	 *            A valid EProgressState
+	 * @param progress 
 	 */
-	public void setProgressState(EProgressState state) {
+	public void setProgressState(EProgressState state, float progress) {
 		this.state = state;
 
 		for (RedrawListener l : listeners) {

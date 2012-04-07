@@ -17,8 +17,9 @@ public class ProgressConnector {
 	 * 
 	 * @param state
 	 *            The state.
+	 * @param progress 
 	 */
-	public void setProgressState(EProgressState state) {
-		content.setProgressState(state);
+	public void setProgressState(EProgressState state, float progress) {
+		content.setProgressState(state, progress);
 	}
 }

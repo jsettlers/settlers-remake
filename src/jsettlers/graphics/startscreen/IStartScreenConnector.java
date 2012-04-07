@@ -30,6 +30,8 @@ public interface IStartScreenConnector {
 		INetworkableMap getNetworkableMap();
 
 		String getDescription();
+
+		short[] getImage();
 		
 		/**
 		 * Creates a loadable game. This method should return fast.
