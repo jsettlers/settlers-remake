@@ -7,6 +7,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.resources.ResourceManager;
@@ -75,6 +76,16 @@ public final class Labels {
 		return getString("movable_" + type);
 	}
 
+	/**
+	 * Gets the name of a resource
+	 * 
+	 * @param type
+	 *            The resource type
+	 * @return The name.
+	 */
+	public static String getName(EResourceType type) {
+		return getString("resource_" + type);
+	}
 	/**
 	 * Gets the name of a building
 	 * 
