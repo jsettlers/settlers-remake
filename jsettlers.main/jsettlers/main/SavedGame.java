@@ -6,6 +6,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapLoader;
 
 /**
@@ -48,5 +49,14 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 	public UIState getUISettings(int player) throws MapLoadException {
 		return loader.getUISettings(player);
 	}
+
+	@Override
+    public short[] getImage() {
+		try {
+			return loader.getFileHeader().getBgimage();
+		} catch (MapLoadException e) {
+			return new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
+		}
+    }
 
 }
