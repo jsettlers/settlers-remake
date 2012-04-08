@@ -1,8 +1,9 @@
-package jsettlers.main.android;
+package jsettlers.main.android.maplist;
 
-import java.util.List;
-
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
+import jsettlers.main.android.PreviewImageConverter;
+import jsettlers.main.android.R;
+import jsettlers.main.android.R.id;
+import jsettlers.main.android.R.layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,25 +11,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MapListAdapter extends BaseAdapter {
+public abstract class MapListAdapter extends BaseAdapter {
 
-	private final List<? extends IMapItem> maps;
 	private final LayoutInflater inflater;
 
-	public MapListAdapter(LayoutInflater inflater, List<? extends IMapItem> maps) {
+	public MapListAdapter(LayoutInflater inflater) {
 		this.inflater = inflater;
-		this.maps = maps;
 	}
 
-	@Override
-	public int getCount() {
-		return maps.size();
-	}
-
-	@Override
-	public Object getItem(int arg0) {
-		return maps.get(arg0);
-	}
 
 	@Override
 	public long getItemId(int arg0) {
@@ -49,21 +39,21 @@ public class MapListAdapter extends BaseAdapter {
 			view = inflater.inflate(R.layout.maplistitem, null);
 		}
 
-		IMapItem map = maps.get(arg0);
 		TextView name = (TextView) view.findViewById(R.id.mapitem_name);
-		name.setText(map.getName());
+		String title = getTitle(arg0);
+		name.setText(title);
 
 		TextView description = (TextView) view.findViewById(R.id.mapitem_descr);
-		description.setText(getDescriptionString(map));
+		description.setText(getDescriptionString(arg0));
 
 		ImageView image = (ImageView) view.findViewById(R.id.mapitem_icon);
-		image.setImageBitmap(PreviewImageConverter.toBitmap(map.getImage()));
+		short[] bitmap = getImage(arg0);
+		image.setImageBitmap(PreviewImageConverter.toBitmap(bitmap));
 		return view;
 	}
-
-	private static String getDescriptionString(IMapItem map) {
-		return map.getMinPlayers() + " - " + map.getMaxPlayers();
-	}
+	
+	protected abstract String getTitle(int arg0);
+	protected abstract short[] getImage(int arg0);
 
 	@Override
 	public int getViewTypeCount() {
@@ -75,13 +65,8 @@ public class MapListAdapter extends BaseAdapter {
 		return true;
 	}
 
-	@Override
-	public boolean isEmpty() {
-		return maps.isEmpty();
-	}
 
-	public IMapItem get(int itemid) {
-		return maps.get(itemid);
-	}
+	protected abstract String getDescriptionString(int mapn);
+
 
 }

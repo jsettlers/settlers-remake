@@ -6,7 +6,6 @@ import go.graphics.area.Area;
 import go.graphics.region.Region;
 
 import java.io.File;
-import java.util.Date;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
@@ -21,6 +20,7 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.main.ManagedJSettlers;
+import jsettlers.main.android.maplist.MapList;
 import jsettlers.main.android.resources.ResourceProvider;
 import jsettlers.main.android.resources.UpdateListener;
 import jsettlers.network.client.LanServerAddressBroadcastListener;
@@ -335,14 +335,14 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 			public void run() {
 				setContentView(R.layout.startmenu);
 
-				// TODO: really look if there is a saved game with that name
+				// really look if there is a saved game with that name
 				SharedPreferences settings =
 				        getSharedPreferences(PREFS_NAME, 0);
 				String name = settings.getString("resumegame", "");
 
 				state = EAndroidUIState.SHOW_STARTSCREEN;
 
-				if (name.isEmpty() || true) {
+				if (!name.isEmpty()) {
 					findViewById(R.id.resume_game_button).setVisibility(
 					        View.INVISIBLE);
 				}
@@ -366,7 +366,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 					new MapList(
 					        root,
 					        displayedStartScreen,
-					        false,
+					        MapList.STARTMODE_SINGLE,
 					        (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE));
 				}
 			}
@@ -385,7 +385,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 					new MapList(
 					        root,
 					        displayedStartScreen,
-					        true,
+					        MapList.STARTMODE_MULTIPLAYER,
 					        (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE));
 				}
 			}
@@ -402,17 +402,18 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 					SharedPreferences settings =
 					        getSharedPreferences(PREFS_NAME, 0);
 					final String name = settings.getString("resumegame", "");
-					displayedStartScreen.loadGame(new ILoadableGame() {
-						@Override
-						public String getName() {
-							return name;
+					ILoadableGame foundMap = null;
+					for (ILoadableGame map : displayedStartScreen.getLoadableGames()) {
+						if (name.equals(map.getName())) {
+							foundMap  = map;
 						}
-
-						@Override
-						public Date getSaveTime() {
-							return null;
-						}
-					});
+					}
+					
+					if (foundMap != null) {
+						displayedStartScreen.loadGame(foundMap);
+					} else {
+						//TODO: tell the user that an error occurred.
+					}
 				}
 			}
 		});
@@ -425,17 +426,15 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		doStartUpdate(new Runnable() {
 			public void run() {
 				if (displayedStartScreen != null) {
-					displayedStartScreen.loadGame(new ILoadableGame() {
-						@Override
-						public String getName() {
-							return "quicksave";
-						}
-
-						@Override
-						public Date getSaveTime() {
-							return null;
-						}
-					});
+					setContentView(R.layout.maplist);
+					View root =
+					        ((ViewGroup) findViewById(android.R.id.content))
+					                .getChildAt(0);
+					new MapList(
+					        root,
+					        displayedStartScreen,
+					        MapList.STARTMODE_LOAD_SINGLE,
+					        (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE));
 				}
 			}
 		});
