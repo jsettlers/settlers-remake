@@ -30,7 +30,6 @@ public class FlatLandscapeTool implements Tool {
 		return LandscapeHeightTool.LANDSCAPE_SHAPES;
 	}
 
-	// TODO: this should me done in screen space!
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
 	        ShortPoint2D end, double uidx) {
