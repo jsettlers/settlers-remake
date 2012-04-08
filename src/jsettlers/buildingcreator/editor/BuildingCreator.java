@@ -96,7 +96,6 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 			@Override
 			public File getTempDirectory() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 		});
@@ -115,14 +114,10 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 			@Override
 			public void playSound(int sound, float lvolume, float rvolume) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
-				// TODO Auto-generated method stub
-
 			}
 
 		});
