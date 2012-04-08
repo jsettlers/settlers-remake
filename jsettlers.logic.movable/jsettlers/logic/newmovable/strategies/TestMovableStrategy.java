@@ -25,7 +25,7 @@ public class TestMovableStrategy extends NewMovableStrategy {
 		} else if (ctr == 60) {
 			ctr = 0;
 			ShortPoint2D pos = super.getPos();
-			super.goToPos(new ShortPoint2D(90 - pos.getX(), 80 - pos.getY()));
+			super.goToPos(new ShortPoint2D(80 - pos.getX(), 70 - pos.getY()));
 		}
 	}
 }

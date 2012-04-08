@@ -84,8 +84,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * If the given position is null, the movable will only be removed from the grid and thus get invisible.
 	 * 
 	 * @param position
+	 * @return this movable
 	 */
-	public final void positionAt(ShortPoint2D position) {
+	public final NewMovable positionAt(ShortPoint2D position) {
 		assert grid.isFreeForMovable(position.getX(), position.getY()) : "given position not free for movable! " + position;
 
 		if (this.position != null) {
@@ -98,6 +99,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			grid.enterPosition(this.position, this);
 			setState(ENewMovableState.DOING_NOTHING);
 		}
+
+		return this;
 	}
 
 	@Override
@@ -109,10 +112,6 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		case DOING_NOTHING:
 			doingNothingAction();
 			break;
-
-		// case WAITING_FOR_GOING_SINGLE_STEP:
-		// goInDirection(direction); // try to go in the set direction.
-		// break;
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
@@ -202,9 +201,28 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			}
 			break;
 
-		// case WAITING_FOR_GOING_SINGLE_STEP:
 		case PATHING:
-
+			if (this.progress >= 1) {
+				if (pushingMovable.direction.getInverseDirection() == this.direction) { // two movables going in opposite direction against each other
+					pushingMovable.goSinglePathStep();
+					this.goSinglePathStep();
+				} else {
+					ShortPoint2D nextPos = this.direction.getNextHexPoint(this.position);
+					if (grid.isFreeForMovable(nextPos.getX(), nextPos.getY())) {
+						// this movable isn't blocked, so just let it's pathingAction() handle this
+					} else if (pushedFrom == null) {
+						this.pushedFrom = pushingMovable;
+						grid.getMovableAt(nextPos.getX(), nextPos.getY()).push(this);
+						this.pushedFrom = null;
+					} else {
+						while (pushingMovable != this) {
+							pushingMovable.goSinglePathStep();
+							pushingMovable = pushingMovable.pushedFrom;
+						}
+						this.goSinglePathStep();
+					}
+				}
+			}
 			break;
 
 		case GOING_SINGLE_STEP:
