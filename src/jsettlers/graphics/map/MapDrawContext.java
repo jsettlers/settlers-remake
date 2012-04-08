@@ -168,7 +168,6 @@ public final class MapDrawContext {
 	}
 
 	/**
-	 * TODO: height
 	 * 
 	 * @param x
 	 *            The x coordinate in draw space
@@ -207,7 +206,6 @@ public final class MapDrawContext {
 	}
 
 	/**
-	 * TODO: height
 	 * 
 	 * @param x
 	 *            The x coordinate in screen space

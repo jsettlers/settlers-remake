@@ -55,6 +55,8 @@ public interface IStartScreenConnector {
 		String getName();
 
 		Date getSaveTime();
+
+		short[] getImage();
 	}
 
 	/* - - - - - callbacks - - - - - */

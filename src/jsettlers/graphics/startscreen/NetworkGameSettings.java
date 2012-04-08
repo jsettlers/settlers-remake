@@ -38,7 +38,7 @@ public class NetworkGameSettings implements IMatchSettings {
 
 	@Override
 	public long getRandomSeed() {
-		return 0; //TODO: define one.
+		return 0; //TODO: define a random seed on network game start.
 	}
 
 	@Override

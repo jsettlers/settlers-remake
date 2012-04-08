@@ -134,25 +134,18 @@ public class SmallControls implements IControls {
 
 	@Override
 	public void displayBuildingBuild(EBuildingType type) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void displaySelection(ISelectionSet selection) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void setDrawContext(MapDrawContext context) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public Action replaceAction(Action action) {
-		// TODO Auto-generated method stub
 		return action;
 	}
 

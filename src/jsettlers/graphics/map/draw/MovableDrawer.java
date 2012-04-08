@@ -14,7 +14,7 @@ import jsettlers.graphics.sound.SoundManager;
 /**
  * This is the movable drawer that draws movable objects (settlers).
  * <p>
- * It uses the settler image map to get the right image. TODO: cleanup.
+ * It uses the settler image map to get the right image.
  * 
  * @author michael
  */
@@ -85,8 +85,7 @@ public class MovableDrawer {
 	}
 
 	private void playSoundAction2(EMovableType type) {
-		// TODO Auto-generated method stub
-
+		// currently there is nobody who needs this.
 	}
 
 	private static void drawImage(MapDrawContext context, IMovable movable,

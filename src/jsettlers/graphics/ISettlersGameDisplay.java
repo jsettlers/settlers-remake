@@ -28,7 +28,8 @@ public interface ISettlersGameDisplay {
 	 * @param playerStatistics
 	 *            the statistics to be displayed. (can be null) <br>
 	 *            TODO @Michael use player statistics
-	 * @return The connector to access the view and add event listenrs
+	 *            TODO @Andreas provide player statistics
+	 * @return The connector to access the view and add event listeners
 	 * @see MapInterfaceConnector
 	 */
 	public MapInterfaceConnector showGameMap(

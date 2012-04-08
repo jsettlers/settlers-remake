@@ -30,7 +30,7 @@ public class SimpleMessage implements Message {
 
 	@Override
 	public int getAge() {
-		// TODO
+		// TODO: implement a message aging process.
 		return 0;
 	}
 

@@ -912,13 +912,7 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 
 		@Override
-		public void writeLine(short[] data, int length) throws IOException { // TODO:
-			                                                                 // ensure
-			                                                                 // that
-			                                                                 // there
-			                                                                 // is
-			                                                                 // enough
-			// space for every texture
+		public void writeLine(short[] data, int length) throws IOException { 
 			if (arrayoffset < maxoffset) {
 				for (int i = 0; i < cellsize; i++) {
 					this.data[arrayoffset + i] = data[i % length];

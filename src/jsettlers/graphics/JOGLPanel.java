@@ -67,20 +67,7 @@ public class JOGLPanel implements ISettlersGameDisplay {
 		}
 	}
 
-	/**
-	 * Sets the content of the panel to be amap.
-	 * <p>
-	 * This method also sets up the draw context of the map and returns a
-	 * {@link MapInterfaceConnector} that can be accessed to change the view.
-	 * 
-	 * @param map
-	 *            The map to display.
-	 * @param playerStatistics
-	 *            the statistics to be displayed. (can be null) <br>
-	 *            TODO @Michael use player statistics
-	 * @return The connector to access the view and add event listenrs
-	 * @see MapInterfaceConnector
-	 */
+	@Override
 	public synchronized MapInterfaceConnector showGameMap(
 	        final IGraphicsGrid map, IStatisticable playerStatistics) {
 		MapContent content = new MapContent(map, player);
@@ -90,7 +77,7 @@ public class JOGLPanel implements ISettlersGameDisplay {
 		redrawTimerTask = new TimerTask() {
 			@Override
 			public void run() {
-				// TODO: this is only for testing
+				// TODO: this is only for testing. Implement a real animator on Jogl.
 				JOGLPanel.this.region.requestRedraw();
 			}
 		};
@@ -114,7 +101,7 @@ public class JOGLPanel implements ISettlersGameDisplay {
 
 	@Override
     public void showErrorMessage(String string) {
-	    // TODO Auto-generated method stub
+	    // TODO Display error message on gui
 	    
     }
 
