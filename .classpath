@@ -12,5 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.swing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.main.swing"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="D:/data/programming/java/programs/SettlersWorkspace/jsettlers.deploy/libs/jar/jogl.all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

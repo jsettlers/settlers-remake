@@ -15,13 +15,13 @@ import random.RandomSingleton;
 import synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
-	public static void main(String args[]) {
+	public static void main(String args[]) throws InterruptedException {
 		new MovableTestWindow();
 	}
 
 	private NewMovable movable;
 
-	private MovableTestWindow() {
+	private MovableTestWindow() throws InterruptedException {
 		NetworkTimer.get().schedule();
 		RandomSingleton.load(1000);
 
@@ -29,7 +29,7 @@ public class MovableTestWindow {
 		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
 
 		movable = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0);
-		movable.positionAt(new ShortPoint2D(50, 50));
+		movable.positionAt(new ShortPoint2D(49, 50));
 		movable.setSelected(true);
 
 		connector.setSelection(new SelectionSet(movable));
@@ -62,6 +62,18 @@ public class MovableTestWindow {
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(32, 32));
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(33, 33));
 
-		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(51, 50));
+		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(50, 50));
+
+		{
+			Thread.sleep(3000);
+			// circle of three movables blocking each others path
+			NewMovable m1 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(50, 70));
+			NewMovable m2 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(51, 70));
+			NewMovable m3 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(50, 69));
+
+			m1.moveTo(new ShortPoint2D(52, 70));
+			m2.moveTo(new ShortPoint2D(49, 68));
+			m3.moveTo(new ShortPoint2D(50, 71));
+		}
 	}
 }

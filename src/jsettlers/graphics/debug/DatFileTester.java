@@ -255,7 +255,7 @@ public class DatFileTester {
 
 			int y = 0;
 			int seqIndex = 0;
-			TextDrawer drawer = JOGLTextDrawer.getTextDrawer(EFontSize.NORMAL);
+			TextDrawer drawer = JOGLTextDrawer.getTextDrawer(EFontSize.NORMAL, null); // FIXME this is just to fix the error
 			for (int i = 0; i < sequences.size(); i++) {
 				Sequence<T> seq = sequences.get(i);
 				int maxheight;
