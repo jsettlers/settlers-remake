@@ -28,7 +28,7 @@ public final class Constants {
 
 	public static float MOVABLE_STEP_DURATION = 0.4f;
 
-	public static final float MOVABLE_TURN_PROBABILITY = 0.06F;
+	public static final float MOVABLE_TURN_PROBABILITY = 0.003F;
 	public static final float MOVABLE_NO_ACTION_NEIGHBOR_PUSH_PROBABILITY = 0.2F;
 
 	public static final float MOVABLE_TAKE_DROP_DURATION = 0.5f;

@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -36,9 +38,11 @@ import random.RandomSingleton;
 public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
+	private static final short NOTHING_TO_DO_MAX_RADIUS = 3;
 
 	private static final HashMap<Integer, NewMovable> movablesByID = new HashMap<Integer, NewMovable>();
 	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
+
 	private static int nextID = Integer.MIN_VALUE;
 
 	private final INewMovableGrid<NewMovable> grid;
@@ -220,9 +224,35 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	private void doingNothingAction() {
-		// TODO Auto-generated method stub
+	private float probablity = 0.06f;
 
+	private void doingNothingAction() {
+		float random = RandomSingleton.nextF();
+		if (random <= probablity) {
+			short x = position.getX(), y = position.getY();
+			HexGridArea area = new HexGridArea(x, y, (short) 1, NOTHING_TO_DO_MAX_RADIUS);
+			float dx = 0, dy = 0;
+			HexGridAreaIterator iter = area.iterator();
+			while (iter.hasNext()) {
+				short currX = iter.getNextX();
+				short currY = iter.getNextY();
+				if (grid.getMovableAt(currX, currY) != null) {
+					int factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
+
+					dx += (short) (x - currX) * factor;
+					dy += (short) (y - currY) * factor;
+				}
+			}
+
+			if (Math.abs(dx) + Math.abs(dy) > 1.6f) {
+				this.goInDirection(EDirection.getApproxDirection(0, 0, (int) dx, (int) dy));
+				probablity += 0.02f;
+			} else {
+				probablity = Math.max(probablity - 0.02f, 0.06f);
+			}
+		} else if (random >= 1 - Constants.MOVABLE_TURN_PROBABILITY) {
+			lookInDirection(direction.getNeighbor(2 * RandomSingleton.getInt(0, 1) - 1));
+		}
 	}
 
 	private void push(NewMovable pushingMovable) {
