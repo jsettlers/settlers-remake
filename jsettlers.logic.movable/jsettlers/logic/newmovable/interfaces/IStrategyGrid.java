@@ -7,6 +7,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.newmovable.NewMovableStrategy;
@@ -24,6 +25,8 @@ public interface IStrategyGrid {
 	void addJoblessWorker(IManageableWorker worker);
 
 	void addJoblessDigger(IManageableDigger digger);
+
+	void addJoblessBricklayer(IManageableBricklayer bricklayer);
 
 	/**
 	 * Take a material from the stack at given position of given {@link EMaterialType}.

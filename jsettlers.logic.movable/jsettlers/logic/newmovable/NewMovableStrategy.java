@@ -10,9 +10,12 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
+import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
 import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
+import jsettlers.logic.newmovable.strategies.DiggerStrategy;
 import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
+import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
 
 public abstract class NewMovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
@@ -59,6 +62,15 @@ public abstract class NewMovableStrategy implements Serializable {
 			return new BuildingWorkerStrategy(movable, movableType);
 
 		case DIGGER:
+			return new DiggerStrategy(movable);
+
+		case BRICKLAYER:
+			return new BricklayerStrategy(movable);
+
+		case PIONEER:
+		case GEOLOGIST:
+		case THIEF:
+			return new DummySpecialistStrategy(movable);
 
 		default:
 			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";

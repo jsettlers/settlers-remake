@@ -15,7 +15,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	private IDiggerRequester requester;
 	private EDiggerState state = EDiggerState.JOBLESS;
 
-	protected DiggerStrategy(NewMovable movable) {
+	public DiggerStrategy(NewMovable movable) {
 		super(movable);
 		makeJobless();
 	}
