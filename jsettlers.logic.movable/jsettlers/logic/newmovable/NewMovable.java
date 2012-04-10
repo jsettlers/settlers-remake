@@ -1,7 +1,12 @@
 package jsettlers.logic.newmovable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
@@ -10,9 +15,12 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.newmovable.interfaces.IDebugable;
+import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.timer.ITimerable;
@@ -25,11 +33,16 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, Serializable {
+public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 
+	private static final HashMap<Integer, NewMovable> movablesByID = new HashMap<Integer, NewMovable>();
+	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
+	private static int nextID = Integer.MIN_VALUE;
+
 	private final INewMovableGrid<NewMovable> grid;
+	private final int id;
 
 	private ENewMovableState state = ENewMovableState.SLEEPING;
 
@@ -66,6 +79,25 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
+		MovableTimer.add(this);
+
+		this.id = nextID++;
+		movablesByID.put(this.id, this);
+		allMovables.offer(this);
+	}
+
+	/**
+	 * This method overrides the standard deserialize method to restore the movablesByID map and the nextID.
+	 * 
+	 * @param ois
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		movablesByID.put(this.id, this);
+		allMovables.add(this);
+		nextID = Math.max(nextID, this.id + 1);
 		MovableTimer.add(this);
 	}
 
@@ -448,6 +480,22 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	}
 
 	/**
+	 * Used for networking to identify movables over the network.
+	 * 
+	 * @param id
+	 *            id to be looked for
+	 * @return returns the movable with the given ID<br>
+	 *         or null if the id can not be found
+	 */
+	public final static NewMovable getMovableByID(int id) {
+		return movablesByID.get(id);
+	}
+
+	public final static ConcurrentLinkedQueue<NewMovable> getAllMovables() {
+		return allMovables;
+	}
+
+	/**
 	 * kills this movable.
 	 */
 	@Override
@@ -456,6 +504,11 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		grid.leavePosition(this.position, this);
 		this.health = 0;
 		this.strategy.killedEvent(path != null ? path.getTargetPos() : null);
+
+		movablesByID.remove(this.getID());
+		allMovables.remove(this);
+
+		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, 1, player);
 	}
 
 	@Override
@@ -536,6 +589,21 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	@Override
 	public final boolean needsPlayersGround() {
 		return movableType.needsPlayersGround();
+	}
+
+	@Override
+	public final short getViewDistance() {
+		return Constants.MOVABLE_VIEW_DISTANCE;
+	}
+
+	@Override
+	public void debug() {
+		System.out.println("debug");
+	}
+
+	@Override
+	public int getID() {
+		return id;
 	}
 
 }

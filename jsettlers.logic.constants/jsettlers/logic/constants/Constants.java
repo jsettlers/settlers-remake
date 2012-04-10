@@ -33,6 +33,8 @@ public final class Constants {
 
 	public static final float MOVABLE_TAKE_DROP_DURATION = 0.5f;
 
+	public static final short MOVABLE_VIEW_DISTANCE = 8;
+
 	public static final short BOWMAN_SEARCH_RADIUS = 20;
 
 	public static final short SOWRDSMAN_SEARCH_RADIUS = 13;

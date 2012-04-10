@@ -15,6 +15,9 @@ public class SoldierStrategy extends NewMovableStrategy {
 
 	@Override
 	protected void action() {
+		if (movableType != null) { // just to get rid of warning
+
+		}
 	}
 
 }

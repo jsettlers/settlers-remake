@@ -1,5 +1,6 @@
 package jsettlers.logic.newmovable.interfaces;
 
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
@@ -38,5 +39,7 @@ public interface INewMovableGrid<T extends IMovable> extends IStrategyGrid {
 	byte getPlayer(short x, short y);
 
 	boolean isBlocked(short x, short y);
+
+	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player);
 
 }
