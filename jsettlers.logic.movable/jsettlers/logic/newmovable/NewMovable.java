@@ -3,6 +3,7 @@ package jsettlers.logic.newmovable;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -53,6 +54,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private boolean soundPlayed = false;
 	private float health = 1.0f;
 	private NewMovable pushedFrom;
+	private boolean visible;
 
 	public NewMovable(INewMovableGrid<NewMovable> grid, EMovableType movableType, byte player) {
 		this.grid = grid;
@@ -227,8 +229,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-		case SLEEPING:
 			break; // just ignore
+
+		case SLEEPING:
+			assert false : "got pushed while sleeping: should not be possible!";
 		}
 	}
 
@@ -243,7 +247,6 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			}
 		}
 
-		// TODO What has to be done here?
 		return false;
 	}
 
@@ -313,7 +316,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		if (path == null) {
 			return false;
 		} else {
-			return followPath(path);
+			followPath(path);
+			return true;
 		}
 	}
 
@@ -364,12 +368,63 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		return grid;
 	}
 
-	private boolean followPath(Path path) {
+	final void setPos(ShortPoint2D position) {
+		if (visible) {
+			grid.leavePosition(this.position, this);
+			grid.enterPosition(position, this);
+		}
+
+		this.position = position;
+	}
+
+	final void setVisible(boolean visible) {
+		if (this.visible == visible) { // nothing to change
+		} else if (this.visible) { // is visible and gets invisible
+			grid.leavePosition(position, this);
+		} else {
+			grid.enterPosition(position, this);
+		}
+
+		this.visible = visible;
+	}
+
+	/**
+	 * 
+	 * @param dijkstra
+	 *            if true, dijkstra algorithm is used<br>
+	 *            if false, in area finder is used.
+	 * @param centerX
+	 * @param centerY
+	 * @param radius
+	 * @param searchType
+	 * @return
+	 */
+	final boolean preSearchPath(boolean dikjstra, short centerX, short centerY, short radius, ESearchType searchType) {
+		assert state == ENewMovableState.DOING_NOTHING : "this method can only be invoked in state DOING_NOTHING";
+
+		if (dikjstra) {
+			this.path = grid.searchDijkstra(this, centerX, centerY, radius, searchType);
+		} else {
+			this.path = grid.searchInArea(this, centerX, centerY, radius, searchType);
+		}
+
+		if (path != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	final void followPresearchedPath() {
+		assert this.path != null : "path mustn't be null to be able to followPresearchedPath()!";
+		followPath(this.path);
+	}
+
+	private void followPath(Path path) {
 		this.path = path;
 		setState(ENewMovableState.PATHING);
 		this.movableAction = EAction.NO_ACTION;
 		progress = 1;
-		return true;
 	}
 
 	/**
@@ -398,6 +453,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	@Override
 	public final void kill() {
 		MovableTimer.remove(this);
+		grid.leavePosition(this.position, this);
+		this.health = 0;
+		this.strategy.killedEvent(path != null ? path.getTargetPos() : null);
 	}
 
 	@Override

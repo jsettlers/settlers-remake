@@ -1,5 +1,6 @@
 package jsettlers.logic.newmovable.interfaces;
 
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -21,6 +22,10 @@ public interface INewMovableGrid<T extends IMovable> extends IStrategyGrid {
 	void enterPosition(ShortPoint2D position, T movable);
 
 	Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos);
+
+	Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+
+	Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
 	T getMovableAt(short x, short y);
 

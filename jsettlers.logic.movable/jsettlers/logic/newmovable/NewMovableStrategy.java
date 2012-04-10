@@ -3,13 +3,16 @@ package jsettlers.logic.newmovable;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
+import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
+import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 
 public abstract class NewMovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
@@ -18,7 +21,6 @@ public abstract class NewMovableStrategy implements Serializable {
 
 	protected NewMovableStrategy(NewMovable movable) {
 		this.movable = movable;
-		// TODO Auto-generated constructor stub
 	}
 
 	public static NewMovableStrategy getStrategy(NewMovable movable, EMovableType movableType) {
@@ -28,7 +30,38 @@ public abstract class NewMovableStrategy implements Serializable {
 		case BEARER:
 			return new BearerMovableStrategy(movable);
 
+		case SWORDSMAN_L1:
+		case SWORDSMAN_L2:
+		case SWORDSMAN_L3:
+		case BOWMAN_L1:
+		case BOWMAN_L2:
+		case BOWMAN_L3:
+		case PIKEMAN_L1:
+		case PIKEMAN_L2:
+		case PIKEMAN_L3:
+			return new SoldierStrategy(movable, movableType);
+
+		case BAKER:
+		case CHARCOAL_BURNER:
+		case FARMER:
+		case FISHERMAN:
+		case FORESTER:
+		case MELTER:
+		case MILLER:
+		case MINER:
+		case PIG_FARMER:
+		case LUMBERJACK:
+		case SAWMILLER:
+		case SLAUGHTERER:
+		case SMITH:
+		case STONECUTTER:
+		case WATERWORKER:
+			return new BuildingWorkerStrategy(movable, movableType);
+
+		case DIGGER:
+
 		default:
+			assert false : "requested movableType: " + movableType + " but have no strategy for this type!";
 			return null;
 		}
 	}
@@ -83,8 +116,39 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.forceGoInDirection(direction);
 	}
 
+	protected final void setPos(ShortPoint2D pos) {
+		movable.setPos(pos);
+	}
+
+	protected final void setVisible(boolean visible) {
+		movable.setVisible(visible);
+	}
+
+	/**
+	 * 
+	 * @param dijkstra
+	 *            if true, dijkstra algorithm is used<br>
+	 *            if false, in area finder is used.
+	 * @param centerX
+	 * @param centerY
+	 * @param radius
+	 * @param searchType
+	 * @return
+	 */
+	protected final boolean preSearchPath(boolean dijkstra, short centerX, short centerY, short radius, ESearchType searchType) {
+		return movable.preSearchPath(dijkstra, centerX, centerY, radius, searchType);
+	}
+
+	protected final void followPresearchedPath() {
+		movable.followPresearchedPath();
+	}
+
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
+	}
+
+	protected final EMaterialType getMaterial() {
+		return movable.getMaterial();
 	}
 
 	/**
@@ -95,5 +159,15 @@ public abstract class NewMovableStrategy implements Serializable {
 	 */
 	protected boolean checkPathStepPreconditions() {
 		return true;
+	}
+
+	/**
+	 * This method is called when a movable is killed and can be used for finalization.
+	 * 
+	 * @param pathTarget
+	 *            if the movable is currently walking on a path, this is the target of the path<br>
+	 *            else it is null.
+	 */
+	protected void killedEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
 	}
 }
