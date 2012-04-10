@@ -25,7 +25,7 @@ public class MovableTestWindow {
 		NetworkTimer.get().schedule();
 		RandomSingleton.load(1000);
 
-		MovableTestsMap grid = new MovableTestsMap(100, 100);
+		MovableTestsMap grid = new MovableTestsMap(140, 140);
 		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
 
 		movable = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0);
@@ -63,6 +63,14 @@ public class MovableTestWindow {
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(33, 33));
 
 		new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(50, 50));
+
+		{// test automatic distribution of many movables next to each other
+			for (int x = 30; x < 40; x++) {
+				for (int y = 80; y < 90; y++) {
+					new NewMovable(grid.getMovableGrid(), EMovableType.BEARER, (byte) 0).positionAt(new ShortPoint2D(x, y));
+				}
+			}
+		}
 
 		{
 			Thread.sleep(3000);
