@@ -67,13 +67,13 @@ public class MovableTestWindow {
 		{
 			Thread.sleep(3000);
 			// circle of three movables blocking each others path
-			NewMovable m1 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(50, 70));
-			NewMovable m2 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(51, 70));
-			NewMovable m3 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(50, 69));
+			NewMovable m1 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(50, 65));
+			NewMovable m2 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(51, 65));
+			NewMovable m3 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0).positionAt(new ShortPoint2D(50, 64));
 
-			m1.moveTo(new ShortPoint2D(52, 70));
-			m2.moveTo(new ShortPoint2D(49, 68));
-			m3.moveTo(new ShortPoint2D(50, 71));
+			m1.moveTo(new ShortPoint2D(52, 65));
+			m2.moveTo(new ShortPoint2D(49, 63));
+			m3.moveTo(new ShortPoint2D(50, 66));
 		}
 	}
 }
