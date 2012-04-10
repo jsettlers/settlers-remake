@@ -8,6 +8,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -279,6 +280,10 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public void addJoblessBricklayer(IManageableBricklayer bricklayer) {
+		}
+
+		@Override
+		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player) {
 		}
 
 	};
