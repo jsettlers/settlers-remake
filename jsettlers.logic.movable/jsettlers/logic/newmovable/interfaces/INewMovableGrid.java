@@ -42,4 +42,6 @@ public interface INewMovableGrid<T extends IMovable> extends IStrategyGrid {
 
 	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player);
 
+	boolean isInBounds(short x, short y);
+
 }

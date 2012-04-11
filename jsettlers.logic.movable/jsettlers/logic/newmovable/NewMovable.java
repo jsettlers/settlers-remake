@@ -236,17 +236,23 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			while (iter.hasNext()) {
 				short currX = iter.getNextX();
 				short currY = iter.getNextY();
-				if (grid.getMovableAt(currX, currY) != null) {
-					int factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
+				int factor;
 
-					dx += (short) (x - currX) * factor;
-					dy += (short) (y - currY) * factor;
+				if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
+					factor = iter.getCurrRadius() == 1 ? 10 : 4;
+				} else if (grid.getMovableAt(currX, currY) != null) {
+					factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
+				} else {
+					continue;
 				}
+
+				dx += (short) (x - currX) * factor;
+				dy += (short) (y - currY) * factor;
 			}
 
 			if (Math.abs(dx) + Math.abs(dy) > 1.6f) {
 				this.goInDirection(EDirection.getApproxDirection(0, 0, (int) dx, (int) dy));
-				probablity += 0.02f;
+				probablity = Math.min(probablity + 0.02f, 0.5f);
 			} else {
 				probablity = Math.max(probablity - 0.02f, 0.06f);
 			}
@@ -497,7 +503,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * @return true if the given position can be accessed by this movable
 	 */
 	private boolean isValidPosition(ShortPoint2D pos) {
-		return !grid.isBlocked(pos.getX(), pos.getY()) && (!this.needsPlayersGround() || grid.getPlayer(pos.getX(), pos.getY()) == this.getPlayer());
+		return grid.isInBounds(pos.getX(), pos.getY()) && !grid.isBlocked(pos.getX(), pos.getY())
+				&& (!this.needsPlayersGround() || grid.getPlayer(pos.getX(), pos.getY()) == this.getPlayer());
 	}
 
 	/**
