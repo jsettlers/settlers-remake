@@ -25,7 +25,7 @@ public class MovableTestWindow {
 		NetworkTimer.get().schedule();
 		RandomSingleton.load(1000);
 
-		MovableTestsMap grid = new MovableTestsMap(140, 140);
+		MovableTestsMap grid = new MovableTestsMap(100, 100);
 		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
 
 		movable = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, (byte) 0);

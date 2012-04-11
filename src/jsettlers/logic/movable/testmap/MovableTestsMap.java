@@ -126,7 +126,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			return isInBounds(x, y) && movableMap[x][y] == null;
 		}
 
-		private boolean isInBounds(short x, short y) {
+		@Override
+		public boolean isInBounds(short x, short y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
 		}
 
