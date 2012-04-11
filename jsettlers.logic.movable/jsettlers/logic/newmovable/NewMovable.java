@@ -42,7 +42,6 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private static final HashMap<Integer, NewMovable> movablesByID = new HashMap<Integer, NewMovable>();
 	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
-
 	private static int nextID = Integer.MIN_VALUE;
 
 	private final INewMovableGrid<NewMovable> grid;
@@ -63,15 +62,18 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private ShortPoint2D position;
 
-	private ShortPoint2D targetPosition = null;
+	private ShortPoint2D moveToRequest = null;
 	private Path path;
-	private boolean isRightstep;
+
+	private float health = 1.0f;
+	private boolean visible;
+	private NewMovable pushedFrom;
 
 	private boolean selected = false;
 	private boolean soundPlayed = false;
-	private float health = 1.0f;
-	private NewMovable pushedFrom;
-	private boolean visible;
+	private boolean isRightstep = false;
+
+	private float doingNothingProbablity = 0.06f;
 
 	public NewMovable(INewMovableGrid<NewMovable> grid, EMovableType movableType, byte player) {
 		this.grid = grid;
@@ -112,7 +114,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
 		if (movableType.isMoveToAble() && state != ENewMovableState.SLEEPING) {
-			this.targetPosition = targetPosition;
+			this.moveToRequest = targetPosition;
 		}
 	}
 
@@ -161,7 +163,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			break;
 		}
 
-		if (targetPosition != null) {
+		if (moveToRequest != null) {
 			switch (state) {
 			case PATHING:
 				if (progress < 1) {
@@ -169,8 +171,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 				} // if we are pathing and finished a step, calculate new path
 				setState(ENewMovableState.DOING_NOTHING);
 			case DOING_NOTHING:
-				goToPos(targetPosition); // progress is reset in here
-				targetPosition = null;
+				goToPos(moveToRequest); // progress is reset in here
+				moveToRequest = null;
 				break;
 			}
 		}
@@ -224,11 +226,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	private float probablity = 0.06f;
-
 	private void doingNothingAction() {
 		float random = RandomSingleton.nextF();
-		if (random <= probablity) {
+		if (random <= doingNothingProbablity) {
 			short x = position.getX(), y = position.getY();
 			HexGridArea area = new HexGridArea(x, y, (short) 1, NOTHING_TO_DO_MAX_RADIUS);
 			float dx = 0, dy = 0;
@@ -252,9 +252,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 			if (Math.abs(dx) + Math.abs(dy) > 1.6f) {
 				this.goInDirection(EDirection.getApproxDirection(0, 0, (int) dx, (int) dy));
-				probablity = Math.min(probablity + 0.02f, 0.5f);
+				doingNothingProbablity = Math.min(doingNothingProbablity + 0.02f, 0.5f);
 			} else {
-				probablity = Math.max(probablity - 0.02f, 0.06f);
+				doingNothingProbablity = Math.max(doingNothingProbablity - 0.02f, 0.06f);
 			}
 		} else if (random >= 1 - Constants.MOVABLE_TURN_PROBABILITY) {
 			lookInDirection(direction.getNeighbor(2 * RandomSingleton.getInt(0, 1) - 1));
@@ -634,12 +634,12 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	}
 
 	@Override
-	public void debug() {
+	public final void debug() {
 		System.out.println("debug");
 	}
 
 	@Override
-	public int getID() {
+	public final int getID() {
 		return id;
 	}
 
