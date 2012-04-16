@@ -25,6 +25,8 @@ public final class Path implements Serializable {
 
 	private boolean finished;
 
+	private ShortPoint2D targetPos;
+
 	public Path(int length) {
 		pathX = new short[length];
 		pathY = new short[length];
@@ -157,7 +159,10 @@ public final class Path implements Serializable {
 	}
 
 	public final ShortPoint2D getTargetPos() {
-		final int length = getLength();
-		return new ShortPoint2D(pathX[length], pathY[length]);
+		if (targetPos == null) {
+			final int length = getLength();
+			targetPos = new ShortPoint2D(pathX[length], pathY[length]);
+		}
+		return targetPos;
 	}
 }

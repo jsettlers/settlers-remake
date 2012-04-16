@@ -14,5 +14,5 @@ public interface IAStar {
 
 	Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty);
 
-	Path findPath(IPathCalculateable aStarPathable, ShortPoint2D secondPos);
+	Path findPath(IPathCalculateable aStarPathable, ShortPoint2D targetPos);
 }
