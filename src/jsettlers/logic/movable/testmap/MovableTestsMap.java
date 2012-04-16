@@ -113,7 +113,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 
-	private final INewMovableGrid<NewMovable> movableGrid = new INewMovableGrid<NewMovable>() {
+	private final INewMovableGrid movableGrid = new INewMovableGrid() {
 		@Override
 		public void leavePosition(ShortPoint2D position, NewMovable movable) {
 			if (movableMap[position.getX()][position.getY()] == movable) {
@@ -122,7 +122,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isFreeForMovable(short x, short y) {
+		public boolean hasNoMovableAt(short x, short y) {
 			return isInBounds(x, y) && movableMap[x][y] == null;
 		}
 
@@ -177,11 +177,13 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void dropMaterial(ShortPoint2D pos, EMaterialType materialType) {
+		public boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer) {
 			materialTypeMap[pos.getX()][pos.getY()] = materialType;
 			materialAmmountMap[pos.getX()][pos.getY()]++;
 
 			materials.add(pos);
+
+			return true;
 		}
 
 		@Override
@@ -190,7 +192,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public byte getPlayer(short x, short y) {
+		public byte getPlayerAt(short x, short y) {
 			return 0;
 		}
 
@@ -270,10 +272,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void changeHeightTowards(ShortPoint2D position, byte targetHeight) {
-		}
-
-		@Override
 		public Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
 			return null;
 		}
@@ -291,9 +289,38 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player) {
 		}
 
+		@Override
+		public void changeHeightTowards(short x, short y, byte targetHeight) {
+		}
+
+		@Override
+		public boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position) {
+			short x = position.getX(), y = position.getY();
+			return isInBounds(x, y) && !isBlocked(x, y) && (!pathRequester.needsPlayersGround() || pathRequester.getPlayer() == getPlayerAt(x, y));
+		}
+
+		@Override
+		public boolean isProtected(short x, short y) {
+			return false;
+		}
+
+		@Override
+		public boolean isBlockedOrProtected(short x, short y) {
+			return isBlocked(x, y) || isProtected(x, y);
+		}
+
+		@Override
+		public boolean fitsSearchType(IPathCalculateable pathCalculateable, ShortPoint2D pos, ESearchType searchType) {
+			return false;
+		}
+
+		@Override
+		public void changePlayerAt(ShortPoint2D pos, byte player) {
+		}
+
 	};
 
-	public INewMovableGrid<NewMovable> getMovableGrid() {
+	public INewMovableGrid getMovableGrid() {
 		return movableGrid;
 	}
 
