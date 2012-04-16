@@ -7,6 +7,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
@@ -16,6 +17,7 @@ import jsettlers.logic.newmovable.strategies.DiggerStrategy;
 import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
+import jsettlers.logic.newmovable.strategies.specialists.PioneerStrategy;
 
 public abstract class NewMovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
@@ -68,6 +70,7 @@ public abstract class NewMovableStrategy implements Serializable {
 			return new BricklayerStrategy(movable);
 
 		case PIONEER:
+			return new PioneerStrategy(movable);
 		case GEOLOGIST:
 		case THIEF:
 			return new DummySpecialistStrategy(movable);
@@ -128,7 +131,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.forceGoInDirection(direction);
 	}
 
-	protected final void setPos(ShortPoint2D pos) {
+	protected final void setPosition(ShortPoint2D pos) {
 		movable.setPos(pos);
 	}
 
@@ -155,6 +158,18 @@ public abstract class NewMovableStrategy implements Serializable {
 		movable.followPresearchedPath();
 	}
 
+	protected final void enableNothingToDoAction(boolean enable) {
+		movable.enableNothingToDoAction(enable);
+	}
+
+	protected void setSelected(boolean selected) {
+		movable.setSelected(selected);
+	}
+
+	protected final boolean fitsSearchType(ShortPoint2D pos, ESearchType searchType) {
+		return movable.getStrategyGrid().fitsSearchType(movable, pos, searchType);
+	}
+
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
 	}
@@ -163,13 +178,24 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getMaterial();
 	}
 
+	public byte getPlayer() {
+		return movable.getPlayer();
+	}
+
+	protected IMovable getMovable() {
+		return movable;
+	}
+
 	/**
 	 * Checks preconditions before the next path step can be gone.
+	 * 
+	 * @param pathTarget
+	 *            TODO
 	 * 
 	 * @return true if the path should be continued<br>
 	 *         false if it must be stopped.
 	 */
-	protected boolean checkPathStepPreconditions() {
+	protected boolean checkPathStepPreconditions(@SuppressWarnings("unused") ShortPoint2D pathTarget) {
 		return true;
 	}
 
@@ -182,4 +208,8 @@ public abstract class NewMovableStrategy implements Serializable {
 	 */
 	protected void killedEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
 	}
+
+	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D targetPos) {
+	}
+
 }

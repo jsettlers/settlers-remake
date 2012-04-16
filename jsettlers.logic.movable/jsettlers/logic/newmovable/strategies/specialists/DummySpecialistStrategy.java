@@ -3,7 +3,7 @@ package jsettlers.logic.newmovable.strategies.specialists;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
-public class DummySpecialistStrategy extends NewMovableStrategy {
+public final class DummySpecialistStrategy extends NewMovableStrategy {
 	private static final long serialVersionUID = -1359250497501671076L;
 
 	public DummySpecialistStrategy(NewMovable movable) {

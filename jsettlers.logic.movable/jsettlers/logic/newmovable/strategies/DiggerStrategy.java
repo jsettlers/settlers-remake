@@ -17,7 +17,8 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 	public DiggerStrategy(NewMovable movable) {
 		super(movable);
-		makeJobless();
+
+		reportAsJobless();
 	}
 
 	@Override
@@ -52,7 +53,8 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	private void executeDigg() {
-		super.getStrategyGrid().changeHeightTowards(super.getPos(), requester.getHeight());
+		ShortPoint2D pos = super.getPos();
+		super.getStrategyGrid().changeHeightTowards(pos.getX(), pos.getY(), requester.getHeight());
 		super.getStrategyGrid().setMarked(super.getPos(), false);
 	}
 
@@ -63,10 +65,10 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 				state = EDiggerState.GOING_TO_POS;
 				super.getStrategyGrid().setMarked(diggablePos, true);
 			} else {
-				makeJobless();
+				reportAsJobless();
 			}
 		} else {
-			makeJobless();
+			reportAsJobless();
 		}
 	}
 
@@ -88,19 +90,23 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 		return super.getStrategyGrid().getHeightAt(pos) != requester.getHeight();
 	}
 
-	private void makeJobless() {
+	private void reportAsJobless() {
 		this.state = EDiggerState.JOBLESS;
 		this.requester = null;
 		super.getStrategyGrid().addJoblessDigger(this);
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions() {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget) {
 		if (requester == null || requester.isRequestActive()) {
 			return true;
 		} else {
 			if (state != EDiggerState.JOBLESS) {
-				makeJobless();
+				reportAsJobless();
+			}
+
+			if (pathTarget != null) {
+				super.getStrategyGrid().setMarked(pathTarget, false);
 			}
 			return false;
 		}
@@ -111,16 +117,12 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 		if (pathTarget != null) {
 			super.getStrategyGrid().setMarked(pathTarget, false);
 		}
-
-		if (state != EDiggerState.JOBLESS) {
-			makeJobless();
-		}
 	}
 
 	private static enum EDiggerState {
 		JOBLESS,
 		INIT_JOB,
 		GOING_TO_POS,
-		PLAYING_ACTION
+		PLAYING_ACTION,
 	}
 }

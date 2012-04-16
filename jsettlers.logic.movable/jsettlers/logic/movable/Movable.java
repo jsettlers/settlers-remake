@@ -17,7 +17,6 @@ import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.movable.soldiers.AbstractSoldierStrategy;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
@@ -25,6 +24,7 @@ import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
 
+@Deprecated
 public final class Movable implements IHexMovable, ITimerable, IMovable, IIDable, IDebugable, Serializable, IViewDistancable {
 	private static final long serialVersionUID = 6588554296128443814L;
 

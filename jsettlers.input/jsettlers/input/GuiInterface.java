@@ -33,7 +33,6 @@ import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructMarksThread;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
 import network.NetworkManager;
@@ -312,7 +311,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		SelectionSet selectionSet = new SelectionSet();
 
 		for (ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
-			IMovable movable = grid.getMovable(curr.getX(), curr.getY());
+			IGuiMovable movable = grid.getMovable(curr.getX(), curr.getY());
 			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayer() == player)) {
 				selectionSet.add(movable);
 			}
@@ -359,10 +358,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			short x = pos.getX();
 			short y = pos.getY();
 
-			IHexMovable m1 = grid.getMovable((short) (x + 1), (short) (y + 1));
-			IHexMovable m2 = grid.getMovable((x), (short) (y + 1));
-			IHexMovable m3 = grid.getMovable(x, y);
-			IHexMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
+			IGuiMovable m1 = grid.getMovable((short) (x + 1), (short) (y + 1));
+			IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
+			IGuiMovable m3 = grid.getMovable(x, y);
+			IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
 			if (m1 != null) {
 				setSelection(new SelectionSet(m1));

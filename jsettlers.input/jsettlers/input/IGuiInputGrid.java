@@ -8,7 +8,6 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
@@ -31,7 +30,7 @@ public interface IGuiInputGrid {
 
 	void resetDebugColors();
 
-	IHexMovable getMovable(short x, short y);
+	IGuiMovable getMovable(short x, short y);
 
 	/**
 	 * Gets a position where the building can be constructed some points around pos.

@@ -4,7 +4,7 @@ import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import jsettlers.logic.movable.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
 

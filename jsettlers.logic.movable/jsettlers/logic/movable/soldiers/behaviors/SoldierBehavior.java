@@ -8,7 +8,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import jsettlers.logic.movable.IHexMovable;
 import jsettlers.logic.movable.IMovableGrid;
 
 /**

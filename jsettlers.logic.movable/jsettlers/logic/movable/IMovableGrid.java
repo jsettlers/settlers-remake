@@ -11,7 +11,6 @@ import jsettlers.logic.algorithms.path.astar.HexAStar;
 import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.map.newGrid.MainGrid.MovableNeighborIterator;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;

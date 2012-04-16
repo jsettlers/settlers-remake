@@ -9,10 +9,10 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.movable.IMovableGrid;
+import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
@@ -56,23 +56,11 @@ public interface IBuildingsGrid {
 	 * @return the movable currently located at the given position<br>
 	 *         or null if no movable is located at the given position.
 	 */
-	IHexMovable getMovable(ShortPoint2D position);
-
-	/**
-	 * Positions the given movable at the given position.
-	 * <p>
-	 * This method does not register the movable as workless.
-	 * 
-	 * @param position
-	 *            position the movable should be positioned.
-	 * @param movable
-	 *            movable to be positioned.
-	 */
-	void placeNewMovable(ShortPoint2D position, IHexMovable movable);
+	NewMovable getMovable(ShortPoint2D position);
 
 	MapObjectsManager getMapObjectsManager();
 
-	IMovableGrid getMovableGrid();
+	INewMovableGrid getMovableGrid();
 
 	void requestDiggers(IDiggerRequester requester, byte amount);
 

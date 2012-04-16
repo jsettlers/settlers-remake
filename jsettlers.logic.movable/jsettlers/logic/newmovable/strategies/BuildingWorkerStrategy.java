@@ -16,7 +16,7 @@ import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 import random.RandomSingleton;
 
-public class BuildingWorkerStrategy extends NewMovableStrategy implements IManageableWorker {
+public final class BuildingWorkerStrategy extends NewMovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;
 
 	private final EMovableType movableType;
@@ -32,7 +32,8 @@ public class BuildingWorkerStrategy extends NewMovableStrategy implements IManag
 	public BuildingWorkerStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable);
 		this.movableType = movableType;
-		reportJobless();
+
+		reportAsJobless();
 	}
 
 	@Override
@@ -67,7 +68,7 @@ public class BuildingWorkerStrategy extends NewMovableStrategy implements IManag
 
 		case SHOW:
 			ShortPoint2D pos = getCurrentJobPos();
-			super.setPos(pos);
+			super.setPosition(pos);
 			super.setVisible(true);
 			jobFinished();
 			break;
@@ -110,6 +111,7 @@ public class BuildingWorkerStrategy extends NewMovableStrategy implements IManag
 
 		case FOLLOW_SEARCHED:
 			super.followPresearchedPath();
+			jobFinished();
 			break;
 
 		case LOOK_AT_SEARCHED:
@@ -217,20 +219,18 @@ public class BuildingWorkerStrategy extends NewMovableStrategy implements IManag
 	}
 
 	private void takeAction() {
-		if (this.building.popMaterial(super.getPos(), currentJob.getMaterial())) {
-			super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-			jobFinished();
-		} else {
-			jobFailed();
-		}
-
+		super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
+		this.building.popMaterial(super.getPos(), currentJob.getMaterial());
+		jobFinished();
 	}
 
 	private void dropAction(EMaterialType materialType) {
 		if (!done) {
 			super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
+			done = true;
 		} else {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType);
+			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
+			jobFinished();
 		}
 	}
 
@@ -241,6 +241,8 @@ public class BuildingWorkerStrategy extends NewMovableStrategy implements IManag
 	 *            if false, in area finder is used.
 	 */
 	private void preSearchPathAction(boolean dijkstra) {
+		super.setPosition(getCurrentJobPos());
+
 		boolean pathFound = super.preSearchPath(dijkstra, building.getWorkAreaCenterX(), building.getWorkAreaCenterY(), building.getBuildingType()
 				.getWorkradius(), currentJob.getSearchType());
 		if (pathFound) {
@@ -325,16 +327,29 @@ public class BuildingWorkerStrategy extends NewMovableStrategy implements IManag
 	@Override
 	public void setWorkerJob(IWorkerRequestBuilding building) {
 		this.building = building;
+		building.occupyBuilding(this);
 		this.currentJob = building.getBuildingType().getStartJob();
+		super.enableNothingToDoAction(false);
+		this.done = false;
 	}
 
 	@Override
 	public void buildingDestroyed() {
-		reportJobless();
+		super.setVisible(true);
+
+		reportAsJobless();
+
+		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
+			super.getStrategyGrid().dropMaterial(super.getPos(), super.getMaterial(), true);
+			super.setMaterial(EMaterialType.NO_MATERIAL);
+		}
 	}
 
-	private void reportJobless() {
+	private void reportAsJobless() {
 		super.getStrategyGrid().addJoblessWorker(this);
+		super.enableNothingToDoAction(true);
+		this.currentJob = null;
+		this.building = null;
 	}
 
 }

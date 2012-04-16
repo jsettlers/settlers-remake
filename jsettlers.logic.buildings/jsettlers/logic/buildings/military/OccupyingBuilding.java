@@ -15,14 +15,14 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import jsettlers.logic.newmovable.NewMovable;
 import random.RandomSingleton;
 
 /**
@@ -109,7 +109,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				if (path != null) {
 					System.out.println("soldier found");
 
-					IHexMovable soldier = super.getGrid().getMovable(path.getTargetPos());
+					NewMovable soldier = super.getGrid().getMovable(path.getTargetPos());
 					if (soldier != null && soldier.setOccupyableBuilding(this)) {
 						searchedSoldiers.pop();
 					}// soldier wasn't at the position

@@ -55,6 +55,7 @@ import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
 import jsettlers.logic.algorithms.landmarks.NewLandmarkCorrection;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.HexAStar;
@@ -70,7 +71,6 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
 import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
@@ -87,8 +87,8 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMat
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.movable.IMovableGrid;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.stack.IRequestsStackGrid;
 import synchronic.timer.NetworkTimer;
 
@@ -223,7 +223,7 @@ public class MainGrid implements Serializable {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
 
 		if (object instanceof MapTreeObject) {
-			if (isInBounds(x, y) && movablePathfinderGrid.isTreePlantable(x, y)) {
+			if (isInBounds(x, y) && movablePathfinderGrid.pathfinderGrid.isTreePlantable(x, y)) {
 				mapObjectsManager.plantAdultTree(pos);
 			}
 		} else if (object instanceof MapStoneObject) {
@@ -235,7 +235,7 @@ public class MainGrid implements Serializable {
 			building.appearAt(buildingsGrid, pos);
 
 			if (building instanceof IOccupyableBuilding) {
-				Movable soldier = createNewMovableAt(((IOccupyableBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
+				NewMovable soldier = createNewMovableAt(((IOccupyableBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
 				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
 			}
 		} else if (object instanceof MovableObject) {
@@ -246,12 +246,13 @@ public class MainGrid implements Serializable {
 	public MapFileHeader generateSaveHeader() {
 		// TODO: description
 		// TODO: count alive players, count all players
-		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(), new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
+		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(),
+				new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
 		for (int i = 0; i < count; i++) {
-			movablePathfinderGrid.pushMaterial(pos, materialType, true);
+			movablePathfinderGrid.dropMaterial(pos, materialType, true);
 		}
 	}
 
@@ -269,22 +270,15 @@ public class MainGrid implements Serializable {
 	 * @return
 	 */
 	public IAStarPathMap getPathfinderGrid() {
-		return movablePathfinderGrid;
+		return movablePathfinderGrid.pathfinderGrid;
 	}
 
-	protected final boolean isInBounds(short x, short y) {
+	public final boolean isInBounds(short x, short y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
-	private void changePlayerAt(ShortPoint2D position, byte player) {
-		partitionsGrid.changePlayerAt(position.getX(), position.getY(), player);
-		bordersThread.checkPosition(position);
-		landmarksCorrection.reTest(position.getX(), position.getY());
-	}
-
-	public final Movable createNewMovableAt(ShortPoint2D pos, EMovableType type, byte player) {
-		Movable movable = new Movable(movablePathfinderGrid, pos, type, player);
-		buildingsGrid.placeNewMovable(pos, movable);
+	public final NewMovable createNewMovableAt(ShortPoint2D pos, EMovableType type, byte player) {
+		NewMovable movable = new NewMovable(movablePathfinderGrid, type, pos, player);
 		return movable;
 	}
 
@@ -303,7 +297,7 @@ public class MainGrid implements Serializable {
 		landscapeGrid.setLandscapeTypeAt(x, y, newType);
 	}
 
-	class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
+	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
 		@Override
@@ -403,7 +397,7 @@ public class MainGrid implements Serializable {
 		}
 
 		private final boolean isSoldierAt(short x, short y, ESearchType searchType, byte player) {
-			IHexMovable movable = movableGrid.getMovableAt(x, y);
+			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
 			} else {
@@ -535,11 +529,11 @@ public class MainGrid implements Serializable {
 			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return landscapeGrid.getDebugColor(x, y);
+			// return landscapeGrid.getDebugColor(x, y);
 
-			// return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED : flagsGrid.isBlocked(
-			// (short) x, (short) y) ? new Color(0, 0, 0, 1) : (flagsGrid.isProtected((short) x, (short) y) ? new Color(0, 0, 1, 1) : (flagsGrid
-			// .isMarked((short) x, (short) y) ? new Color(0, 1, 0, 1) : null));
+			return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : flagsGrid
+					.isBlocked((short) x, (short) y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB()
+					: (flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : 0));
 
 		}
 
@@ -753,12 +747,13 @@ public class MainGrid implements Serializable {
 		}
 	}
 
-	final class MovablePathfinderGrid extends PathfinderGrid implements IMovableGrid, Serializable {
+	final class MovablePathfinderGrid implements INewMovableGrid, Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		transient IAStar aStar;
 		transient DijkstraAlgorithm dijkstra;
 		private transient InAreaFinder inAreaFinder;
+		private transient PathfinderGrid pathfinderGrid;
 
 		public MovablePathfinderGrid() {
 			initPathfinders();
@@ -770,29 +765,11 @@ public class MainGrid implements Serializable {
 		}
 
 		private final void initPathfinders() {
-			aStar = new HexAStar(this, width, height);
-			dijkstra = new DijkstraAlgorithm(this, aStar, width, height);
-			inAreaFinder = new InAreaFinder(this, width, height);
-		}
+			pathfinderGrid = new PathfinderGrid();
 
-		@Override
-		public final void movableLeft(ShortPoint2D position, IHexMovable movable) {
-			movableGrid.movableLeft(position, movable);
-		}
-
-		@Override
-		public final void movableEntered(ShortPoint2D position, IHexMovable movable) {
-			movableGrid.movableEntered(position, movable);
-		}
-
-		@Override
-		public final MapObjectsManager getMapObjectsManager() {
-			return mapObjectsManager;
-		}
-
-		@Override
-		public final IHexMovable getMovable(ShortPoint2D position) {
-			return movableGrid.getMovableAt(position.getX(), position.getY());
+			aStar = new HexAStar(pathfinderGrid, width, height);
+			dijkstra = new DijkstraAlgorithm(pathfinderGrid, aStar, width, height);
+			inAreaFinder = new InAreaFinder(pathfinderGrid, width, height);
 		}
 
 		@Override
@@ -801,19 +778,13 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean canPush(ShortPoint2D position) {
-			return mapObjectsManager.canPush(position);
+		public final boolean isProtected(short x, short y) {
+			return flagsGrid.isProtected(x, y);
 		}
 
 		@Override
-		public final boolean pushMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer) {
-			if (mapObjectsManager.pushMaterial(position.getX(), position.getY(), materialType)) {
-				if (offer) {
-					partitionsGrid.pushMaterial(position, materialType);
-				}
-				return true;
-			} else
-				return false;
+		public final boolean isBlockedOrProtected(short x, short y) {
+			return isBlocked(x, y) || isProtected(x, y);
 		}
 
 		@Override
@@ -822,26 +793,8 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean popMaterial(ShortPoint2D position, EMaterialType materialType) {
-			if (mapObjectsManager.popMaterial(position.getX(), position.getY(), materialType)) {
-				return true;
-			} else
-				return false;
-		}
-
-		@Override
-		public final ELandscapeType getLandscapeTypeAt(ShortPoint2D position) {
-			return landscapeGrid.getLandscapeTypeAt(position.getX(), position.getY());
-		}
-
-		@Override
 		public final byte getHeightAt(ShortPoint2D position) {
 			return landscapeGrid.getHeightAt(position.getX(), position.getY());
-		}
-
-		@Override
-		public final void changeHeightAt(ShortPoint2D position, byte delta) {
-			landscapeGrid.changeHeightAt(position.getX(), position.getY(), delta);
 		}
 
 		@Override
@@ -855,71 +808,13 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isInBounds(ShortPoint2D position) {
-			final short x = position.getX();
-			final short y = position.getY();
-			return 0 <= x && x < width && 0 <= y && y < height;
-		}
-
-		@Override
-		public final byte getPlayerAt(ShortPoint2D position) {
-			return partitionsGrid.getPlayerAt(position);
-		}
-
-		@Override
-		public final void changePlayerAt(ShortPoint2D position, byte player) {
-			MainGrid.this.changePlayerAt(position, player);
+		public final byte getPlayerAt(short x, short y) {
+			return partitionsGrid.getPlayerAt(x, y);
 		}
 
 		@Override
 		public final boolean executeSearchType(ShortPoint2D position, ESearchType searchType) {
 			return mapObjectsManager.executeSearchType(position, searchType);
-		}
-
-		@Override
-		public final IAStar getAStar() {
-			return aStar;
-		}
-
-		@Override
-		public final DijkstraAlgorithm getDijkstra() {
-			return dijkstra;
-		}
-
-		@Override
-		public final InAreaFinder getInAreaFinder() {
-			return inAreaFinder;
-		}
-
-		@Override
-		public final boolean fitsSearchType(ShortPoint2D position, ESearchType searchType, IPathCalculateable pathCalculateable) {
-			return super.fitsSearchType(position.getX(), position.getY(), searchType, pathCalculateable);
-		}
-
-		@Override
-		public final void addJobless(IManageableBearer manageable) {
-			partitionsGrid.addJobless(manageable);
-		}
-
-		@Override
-		public final void addJobless(IManageableWorker worker) {
-			partitionsGrid.addJobless(worker);
-
-		}
-
-		@Override
-		public final void addJobless(IManageableBricklayer bricklayer) {
-			partitionsGrid.addJobless(bricklayer);
-		}
-
-		@Override
-		public final void addJobless(IManageableDigger digger) {
-			partitionsGrid.addJobless(digger);
-		}
-
-		@Override
-		public final void changeLandscapeAt(ShortPoint2D pos, ELandscapeType type) {
-			setLandscapeTypeAt(pos.getX(), pos.getY(), type);
 		}
 
 		@Override
@@ -932,18 +827,130 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isProtected(short x, short y) {
-			return flagsGrid.isProtected(x, y);
+		public void changePlayerAt(ShortPoint2D position, byte player) {
+			partitionsGrid.changePlayerAt(position.getX(), position.getY(), player);
+			bordersThread.checkPosition(position);
+			landmarksCorrection.reTest(position.getX(), position.getY());
+		}
+
+		// @Override
+		// public final boolean isProtected(short x, short y) {
+		// return flagsGrid.isProtected(x, y);
+		// }
+
+		// @Override
+		// public final boolean isEnforcedByTower(ShortPoint2D pos) {
+		// return partitionsGrid.isEnforcedByTower(pos.getX(), pos.getY());
+		// }
+
+		@Override
+		public final boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D pos) {
+			short x = pos.getX(), y = pos.getY();
+			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y)
+					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayer() == partitionsGrid.getPlayerAt(x, y));
+		}
+
+		// @Override
+		// public final EResourceType getResourceTypeAt(short x, short y) {
+		// return landscapeGrid.getResourceTypeAt(x, y);
+		// }
+		//
+		// @Override
+		// public final byte getResourceAmountAt(short x, short y) {
+		// return landscapeGrid.getResourceAmountAt(x, y);
+		// }
+		//
+		// @Override
+		// public final boolean canAddRessourceSign(ShortPoint2D pos) {
+		// return super.canAddRessourceSign(pos.getX(), pos.getY());
+		// }
+
+		// @Override
+		// public final EMaterialType stealMaterialAt(ShortPoint2D pos) {
+		// EMaterialType materialType = mapObjectsManager.stealMaterialAt(pos.getX(), pos.getY());
+		// if (materialType != null) {
+		// partitionsGrid.removeOfferAt(pos, materialType);
+		// }
+		// return materialType;
+		// }
+
+		@Override
+		public float getResourceAmountAround(short x, short y, EResourceType type) {
+			return landscapeGrid.getResourceAmountAround(x, y, type);
 		}
 
 		@Override
-		public final void placePig(ShortPoint2D pos, boolean place) {
-			mapObjectsManager.placePig(pos, place);
+		public void addJoblessBearer(IManageableBearer bearer) {
+			partitionsGrid.addJobless(bearer);
 		}
 
 		@Override
-		public final boolean isPigThere(ShortPoint2D pos) {
-			return mapObjectsManager.isPigThere(pos);
+		public void addJoblessWorker(IManageableWorker worker) {
+			partitionsGrid.addJobless(worker);
+		}
+
+		@Override
+		public void addJoblessDigger(IManageableDigger digger) {
+			partitionsGrid.addJobless(digger);
+		}
+
+		@Override
+		public void addJoblessBricklayer(IManageableBricklayer bricklayer) {
+			partitionsGrid.addJobless(bricklayer);
+		}
+
+		@Override
+		public boolean takeMaterial(ShortPoint2D position, EMaterialType materialType) {
+			if (mapObjectsManager.popMaterial(position.getX(), position.getY(), materialType)) {
+				return true;
+			} else
+				return false;
+		}
+
+		@Override
+		public boolean dropMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer) {
+			if (mapObjectsManager.pushMaterial(position.getX(), position.getY(), materialType)) {
+				if (offer) {
+					partitionsGrid.pushMaterial(position, materialType);
+				}
+				return true;
+			} else
+				return false;
+		}
+
+		@Override
+		public EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType) {
+			if (searchType == ESearchType.FISHABLE) {
+				for (EDirection direction : EDirection.values) {
+					ShortPoint2D currPos = direction.getNextHexPoint(position);
+					short x = currPos.getX(), y = currPos.getY();
+
+					if (isInBounds(x, y) && landscapeGrid.getLandscapeTypeAt(x, y).isWater()) {
+						return direction;
+					}
+				}
+				return null;
+			} else if (searchType == ESearchType.RIVER) {
+				for (EDirection direction : EDirection.values) {
+					ShortPoint2D currPos = direction.getNextHexPoint(position);
+					short x = currPos.getX(), y = currPos.getY();
+					ELandscapeType landscapeTypeAt = landscapeGrid.getLandscapeTypeAt(x, y);
+
+					if (isInBounds(x, y)
+							&& (landscapeTypeAt == ELandscapeType.RIVER1 || landscapeTypeAt == ELandscapeType.RIVER2
+									|| landscapeTypeAt == ELandscapeType.RIVER3 || landscapeTypeAt == ELandscapeType.RIVER4)) {
+						return direction;
+					}
+				}
+				return null;
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public EMaterialType popToolProductionRequest(ShortPoint2D pos) {
+			return partitionsGrid.popToolProduction(pos);
 		}
 
 		@Override
@@ -952,65 +959,86 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isEnforcedByTower(ShortPoint2D pos) {
-			return partitionsGrid.isEnforcedByTower(pos.getX(), pos.getY());
+		public void placePigAt(ShortPoint2D pos, boolean place) {
+			mapObjectsManager.placePig(pos, place);
 		}
 
 		@Override
-		public final boolean isAllowedForMovable(short x, short y, IPathCalculateable pathCalculatable) {
-			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y)
-					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayer() == partitionsGrid.getPlayerAt(x, y));
+		public boolean hasPigAt(ShortPoint2D position) {
+			return mapObjectsManager.isPigThere(position);
 		}
 
 		@Override
-		public final EResourceType getResourceTypeAt(short x, short y) {
-			return landscapeGrid.getResourceTypeAt(x, y);
+		public boolean canPushMaterial(ShortPoint2D position) {
+			return mapObjectsManager.canPush(position);
 		}
 
 		@Override
-		public final byte getResourceAmountAt(short x, short y) {
-			return landscapeGrid.getResourceAmountAt(x, y);
+		public void changeHeightTowards(short x, short y, byte targetHeight) {
+			byte currHeight = landscapeGrid.getHeightAt(x, y);
+			landscapeGrid.setHeightAt(x, y, (byte) (currHeight + Math.signum(targetHeight - currHeight)));
+			landscapeGrid.setLandscapeTypeAt(x, y, ELandscapeType.FLATTENED);
 		}
 
 		@Override
-		public final boolean canAddRessourceSign(ShortPoint2D pos) {
-			return super.canAddRessourceSign(pos.getX(), pos.getY());
+		public boolean hasNoMovableAt(short x, short y) {
+			return movableGrid.getMovableAt(x, y) == null;
 		}
 
 		@Override
-		public final EMaterialType getMaterialTypeAt(ShortPoint2D pos) {
-			return mapObjectsManager.getMaterialTypeAt(pos.getX(), pos.getY());
+		public void leavePosition(ShortPoint2D position, NewMovable movable) {
+			movableGrid.movableLeft(position, movable);
 		}
 
 		@Override
-		public final EMaterialType stealMaterialAt(ShortPoint2D pos) {
-			EMaterialType materialType = mapObjectsManager.stealMaterialAt(pos.getX(), pos.getY());
-			if (materialType != null) {
-				partitionsGrid.removeOfferAt(pos, materialType);
+		public void enterPosition(ShortPoint2D position, NewMovable movable) {
+			movableGrid.movableEntered(position, movable);
+		}
+
+		@Override
+		public Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos) {
+			return aStar.findPath(pathRequester, targetPos);
+		}
+
+		@Override
+		public Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
+			return dijkstra.find(pathCalculateable, centerX, centerY, (short) 1, radius, searchType);
+		}
+
+		@Override
+		public Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
+			ShortPoint2D target = inAreaFinder.find(pathCalculateable, centerX, centerY, radius, searchType);
+			if (target != null) {
+				return calculatePathTo(pathCalculateable, target);
+			} else {
+				return null;
 			}
-			return materialType;
 		}
 
 		@Override
-		public EMaterialType popToolProduction(ShortPoint2D pos) {
-			return partitionsGrid.popToolProduction(pos);
+		public NewMovable getMovableAt(short x, short y) {
+			return movableGrid.getMovableAt(x, y);
 		}
 
 		@Override
-		public float getResourceAmountAround(short x, short y, EResourceType type) {
-			return landscapeGrid.getResourceAmountAround(x, y, type);
+		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player) {
+			mapObjectsManager.addSelfDeletingMapObject(position, mapObjectType, duration, player);
 		}
 
 		@Override
-		public MovableNeighborIterator getNeighborsIterator(ShortPoint2D pos, byte radius) {
-			return new MovableNeighborIterator(pos, radius);
+		public boolean isInBounds(short x, short y) {
+			return MainGrid.this.isInBounds(x, y);
 		}
 
+		@Override
+		public boolean fitsSearchType(IPathCalculateable pathCalculable, ShortPoint2D pos, ESearchType searchType) {
+			return pathfinderGrid.fitsSearchType(pos.getX(), pos.getY(), searchType, pathCalculable);
+		}
 	}
 
-	public final class MovableNeighborIterator implements Iterator<IHexMovable> {
+	public final class MovableNeighborIterator implements Iterator<NewMovable> {
 		private final HexGridAreaIterator hexIterator;
-		private IHexMovable currMovable;
+		private NewMovable currMovable;
 
 		public MovableNeighborIterator(ShortPoint2D pos, byte radius) {
 			this.hexIterator = new HexGridArea(pos.getX(), pos.getY(), (short) 0, radius).iterator();
@@ -1028,7 +1056,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IHexMovable next() {
+		public NewMovable next() {
 			return currMovable;
 		}
 
@@ -1072,7 +1100,7 @@ public class MainGrid implements Serializable {
 		@Override
 		public final void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf) {
 			for (int i = 0; i < numberOf; i++) {
-				movablePathfinderGrid.pushMaterial(position, type, true);
+				movablePathfinderGrid.dropMaterial(position, type, true);
 			}
 		}
 
@@ -1216,13 +1244,8 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final IHexMovable getMovable(ShortPoint2D position) {
+		public final NewMovable getMovable(ShortPoint2D position) {
 			return movableGrid.getMovableAt(position.getX(), position.getY());
-		}
-
-		@Override
-		public final void placeNewMovable(ShortPoint2D position, IHexMovable movable) {
-			movableGrid.movableEntered(position, movable);
 		}
 
 		@Override
@@ -1231,7 +1254,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final IMovableGrid getMovableGrid() {
+		public final INewMovableGrid getMovableGrid() {
 			return movablePathfinderGrid;
 		}
 
@@ -1303,7 +1326,7 @@ public class MainGrid implements Serializable {
 
 	final class GUIInputGrid implements IGuiInputGrid {
 		@Override
-		public final IHexMovable getMovable(short x, short y) {
+		public final NewMovable getMovable(short x, short y) {
 			return movableGrid.getMovableAt(x, y);
 		}
 
@@ -1420,7 +1443,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
-			return Movable.getAllMovables();
+			return NewMovable.getAllMovables();
 		}
 
 		@Override

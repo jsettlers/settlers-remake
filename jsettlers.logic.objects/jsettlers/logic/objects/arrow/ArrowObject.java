@@ -4,7 +4,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import jsettlers.logic.movable.IHexMovable;
 import jsettlers.logic.objects.ProgressingSoundableObject;
 
 public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {

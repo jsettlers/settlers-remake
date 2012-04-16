@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.movable;
+package jsettlers.logic.movable;
 
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;

@@ -30,6 +30,10 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 
 	public BearerMovableStrategy(NewMovable movable) {
 		super(movable);
+		reportAsJobless();
+	}
+
+	private void reportAsJobless() {
 		super.getStrategyGrid().addJoblessBearer(this);
 	}
 
@@ -84,7 +88,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			requester = null;
 			materialType = null;
 			state = EBearerState.JOBLESS;
-			super.getStrategyGrid().addJoblessBearer(this);
+			reportAsJobless();
 			break;
 
 		case INIT_CONVERT_JOB:
@@ -112,7 +116,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);
 		if (carriedMaterial != EMaterialType.NO_MATERIAL) {
-			drop(carriedMaterial);
+			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
 		}
 
 		offer = null;
@@ -120,15 +124,15 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		materialType = null;
 		targetMovableType = null;
 		state = EBearerState.JOBLESS;
-		super.getStrategyGrid().addJoblessBearer(this);
+		reportAsJobless();
 	}
 
 	private void drop(EMaterialType materialType) {
-		super.getStrategyGrid().dropMaterial(super.getPos(), materialType);
+		super.getStrategyGrid().dropMaterial(super.getPos(), materialType, false);
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions() {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget) {
 		return requester == null || requester.isRequestActive();
 	}
 
@@ -176,4 +180,5 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		INIT_CONVERT_WITH_TOOL_JOB,
 		DEAD_OBJECT,
 	}
+
 }

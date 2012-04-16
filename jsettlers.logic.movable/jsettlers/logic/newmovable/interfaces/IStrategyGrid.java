@@ -6,6 +6,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
@@ -44,7 +45,7 @@ public interface IStrategyGrid {
 	 * @param pos
 	 * @param materialType
 	 */
-	void dropMaterial(ShortPoint2D pos, EMaterialType materialType);
+	boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
 
 	float getResourceAmountAround(short x, short y, EResourceType type);
 
@@ -65,6 +66,19 @@ public interface IStrategyGrid {
 	 *         false if it can not
 	 */
 	boolean executeSearchType(ShortPoint2D pos, ESearchType searchType);
+
+	/**
+	 * Checks if the given position fits the given search type.
+	 * 
+	 * @param pathCalculateable
+	 *            path requester
+	 * @param pos
+	 *            position
+	 * @param searchType
+	 *            search type to be checked
+	 * @return true if the search type fits the given position.
+	 */
+	boolean fitsSearchType(IPathCalculateable pathCalculateable, ShortPoint2D pos, ESearchType searchType);
 
 	EMaterialType popToolProductionRequest(ShortPoint2D pos);
 
@@ -125,6 +139,8 @@ public interface IStrategyGrid {
 	 * @param position
 	 * @param targetHeight
 	 */
-	void changeHeightTowards(ShortPoint2D position, byte targetHeight);
+	void changeHeightTowards(short x, short y, byte targetHeight);
+
+	void changePlayerAt(ShortPoint2D pos, byte player);
 
 }

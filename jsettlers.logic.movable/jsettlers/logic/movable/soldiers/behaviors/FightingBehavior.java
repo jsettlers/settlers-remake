@@ -2,7 +2,7 @@ package jsettlers.logic.movable.soldiers.behaviors;
 
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import jsettlers.logic.movable.IHexMovable;
 
 /**
  * This behavior causes the soldier to kill fight an enemy at a given position until it is dead or no longer there.

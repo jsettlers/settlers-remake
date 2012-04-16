@@ -15,7 +15,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.movable.IHexMovable;
+import jsettlers.logic.movable.IHexMovable;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;

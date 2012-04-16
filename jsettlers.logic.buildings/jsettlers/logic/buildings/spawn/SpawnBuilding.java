@@ -5,7 +5,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.newmovable.NewMovable;
 
 /**
  * Abstract parent class for buildings that spawn new movables.
@@ -40,9 +40,7 @@ public abstract class SpawnBuilding extends Building {
 				if (super.getGrid().getMovable(super.getDoor()) == null) {
 					delayCtr = 0;
 
-					super.getGrid().placeNewMovable(getDoor(),
-							new Movable(super.getGrid().getMovableGrid(), super.getDoor(), getMovableType(), super.getPlayer()));
-					// Movable created = getDoor().getMovable();
+					new NewMovable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
 					produced++;
 				}
 			} else {

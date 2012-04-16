@@ -16,8 +16,7 @@ import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.movable.GotoJob;
-import jsettlers.logic.movable.Movable;
+import jsettlers.logic.newmovable.NewMovable;
 import network.ITaskExecutor;
 import network.task.ITask;
 
@@ -105,20 +104,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void convertMovables(ConvertGuiTask guiTask) {
 		for (Integer currID : guiTask.getSelection()) {
-			Movable.getMovableByID(currID).convertTo(guiTask.getTargetType());
+			NewMovable.getMovableByID(currID).convertTo(guiTask.getTargetType());
 		}
 		guiInterface.refreshSelection();
 	}
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
 		for (Integer currID : selectedMovables) {
-			Movable.getMovableByID(currID).stopOrStartWorking(stop);
+			NewMovable.getMovableByID(currID).stopOrStartWorking(stop);
 		}
 	}
 
 	private void killSelectedMovables(List<Integer> selectedMovables) {
 		for (Integer currID : selectedMovables) {
-			Movable curr = Movable.getMovableByID(currID);
+			NewMovable curr = NewMovable.getMovableByID(currID);
 			if (curr != null)
 				curr.kill();
 		}
@@ -133,26 +132,25 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 */
 	private void moveSelectedTo(ShortPoint2D pos, List<Integer> list) {
 		if (list.size() == 1) {
-			Movable currMovable = Movable.getMovableByID(list.get(0));
+			NewMovable currMovable = NewMovable.getMovableByID(list.get(0));
 			if (currMovable != null)
-				currMovable.setGotoJob(currMovable, new GotoJob(pos));
+				currMovable.moveTo(pos);
 		} else if (!list.isEmpty()) {
 			float radius = (float) (Math.sqrt(list.size() / 3.14f)) * 2;
 			MapCircle mapCircle = new MapCircle(pos, radius);
-			Movable leader = null;
+			NewMovable leader = null;
 
 			Iterator<ShortPoint2D> circleIter = mapCircle.iterator();
 			int ctr = 0;
 			for (Integer currID : list) {
-				Movable currMovable = Movable.getMovableByID(currID);
+				NewMovable currMovable = NewMovable.getMovableByID(currID);
 				if (leader == null || ctr % 30 == 0) {
 					leader = currMovable;
 				}
 
 				if (currMovable != null) {
-					GotoJob job = new GotoJob(circleIter.next());
 					circleIter.next();
-					currMovable.setGotoJob(leader, job);
+					currMovable.moveTo(circleIter.next());
 				}
 				ctr++;
 			}

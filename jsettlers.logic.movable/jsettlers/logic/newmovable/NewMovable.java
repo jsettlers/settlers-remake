@@ -17,14 +17,17 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+import jsettlers.input.IGuiMovable;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
+import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
@@ -35,7 +38,7 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable {
+public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 	private static final short NOTHING_TO_DO_MAX_RADIUS = 3;
@@ -44,10 +47,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
 	private static int nextID = Integer.MIN_VALUE;
 
-	private final INewMovableGrid<NewMovable> grid;
+	private final INewMovableGrid grid;
 	private final int id;
 
-	private ENewMovableState state = ENewMovableState.SLEEPING;
+	private ENewMovableState state = ENewMovableState.DOING_NOTHING;
 
 	private EMovableType movableType;
 	private NewMovableStrategy strategy;
@@ -66,7 +69,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private Path path;
 
 	private float health = 1.0f;
-	private boolean visible;
+	private boolean visible = true;
+	private boolean enableNothingToDo = true;
 	private NewMovable pushedFrom;
 
 	private boolean selected = false;
@@ -75,8 +79,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private float doingNothingProbablity = 0.06f;
 
-	public NewMovable(INewMovableGrid<NewMovable> grid, EMovableType movableType, byte player) {
+	public NewMovable(INewMovableGrid grid, EMovableType movableType, ShortPoint2D position, byte player) {
 		this.grid = grid;
+		this.position = position;
 		this.player = player;
 		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
 
@@ -90,6 +95,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		this.id = nextID++;
 		movablesByID.put(this.id, this);
 		allMovables.offer(this);
+
+		grid.enterPosition(position, this);
 	}
 
 	/**
@@ -126,8 +133,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * @param position
 	 * @return this movable
 	 */
-	public final NewMovable positionAt(ShortPoint2D position) {
-		assert grid.isFreeForMovable(position.getX(), position.getY()) : "given position not free for movable! " + position;
+	protected final NewMovable positionAt(ShortPoint2D position) {
+		assert grid.hasNoMovableAt(position.getX(), position.getY()) : "given position not free for movable! " + position;
 
 		if (this.position != null) {
 			grid.leavePosition(this.position, this);
@@ -150,7 +157,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			return;
 
 		case DOING_NOTHING:
-			doingNothingAction();
+			if (visible && enableNothingToDo) {
+				doingNothingAction();
+			}
 			break;
 
 		case GOING_SINGLE_STEP:
@@ -169,10 +178,14 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 				if (progress < 1) {
 					break;
 				} // if we are pathing and finished a step, calculate new path
-				setState(ENewMovableState.DOING_NOTHING);
+				setState(ENewMovableState.DOING_NOTHING); // this line is needed for assertions
 			case DOING_NOTHING:
 				goToPos(moveToRequest); // progress is reset in here
 				moveToRequest = null;
+
+				if (path != null) {
+					this.strategy.moveToPathSet(path.getTargetPos());
+				}
 				break;
 			}
 		}
@@ -184,7 +197,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private void pathingAction() {
 		if (progress >= 1) {
-			if (path.isFinished() || !strategy.checkPathStepPreconditions()) { // if path is finished, or canceled by strategy return from here
+			if (path.isFinished() || !strategy.checkPathStepPreconditions(path.getTargetPos())) {
+				// if path is finished, or canceled by strategy return from here
 				setState(ENewMovableState.DOING_NOTHING);
 				movableAction = EAction.NO_ACTION;
 				path = null;
@@ -193,7 +207,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 			direction = EDirection.getDirection(position.getX(), position.getY(), path.nextX(), path.nextY());
 
-			if (grid.isFreeForMovable(path.nextX(), path.nextY())) { // if we can go on to the next step
+			if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
 				goSinglePathStep();
 			} else { // step not possible, so try it next time
 				grid.getMovableAt(path.nextX(), path.nextY()).push(this);
@@ -220,44 +234,59 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private void progressCurrentAction() {
 		progress += progressIncrease;
-		if (progress > 1.01) { // > 1.01 ensures that the image for 100 % is also shown for one cycle
+		if (progress >= 1.01) { // > 1.01 ensures that the image for 100 % is also shown for one cycle
 			setState(ENewMovableState.DOING_NOTHING);
 			this.movableAction = EAction.NO_ACTION;
 		}
 	}
 
 	private void doingNothingAction() {
-		float random = RandomSingleton.nextF();
-		if (random <= doingNothingProbablity) {
-			short x = position.getX(), y = position.getY();
-			HexGridArea area = new HexGridArea(x, y, (short) 1, NOTHING_TO_DO_MAX_RADIUS);
-			float dx = 0, dy = 0;
-			HexGridAreaIterator iter = area.iterator();
-			while (iter.hasNext()) {
-				short currX = iter.getNextX();
-				short currY = iter.getNextY();
-				int factor;
-
-				if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
-					factor = iter.getCurrRadius() == 1 ? 10 : 4;
-				} else if (grid.getMovableAt(currX, currY) != null) {
-					factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
-				} else {
-					continue;
-				}
-
-				dx += (short) (x - currX) * factor;
-				dy += (short) (y - currY) * factor;
-			}
-
-			if (Math.abs(dx) + Math.abs(dy) > 1.6f) {
-				this.goInDirection(EDirection.getApproxDirection(0, 0, (int) dx, (int) dy));
-				doingNothingProbablity = Math.min(doingNothingProbablity + 0.02f, 0.5f);
+		if (grid.isBlocked(position.getX(), position.getY())) {
+			Path newPath = grid.searchDijkstra(this, position.getX(), position.getY(), (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
+			if (newPath == null) {
+				kill();
 			} else {
-				doingNothingProbablity = Math.max(doingNothingProbablity - 0.02f, 0.06f);
+				followPath(newPath);
 			}
-		} else if (random >= 1 - Constants.MOVABLE_TURN_PROBABILITY) {
-			lookInDirection(direction.getNeighbor(2 * RandomSingleton.getInt(0, 1) - 1));
+		} else {
+			float random = RandomSingleton.nextF();
+			if (random <= doingNothingProbablity) {
+				flockToDecentralize();
+			} else if (random >= 1 - Constants.MOVABLE_TURN_PROBABILITY) {
+				lookInDirection(direction.getNeighbor(2 * RandomSingleton.getInt(0, 1) - 1));
+			}
+		}
+	}
+
+	private void flockToDecentralize() {
+		short x = position.getX(), y = position.getY();
+		HexGridArea area = new HexGridArea(x, y, (short) 1, NOTHING_TO_DO_MAX_RADIUS);
+		float dx = 0, dy = 0;
+		HexGridAreaIterator iter = area.iterator();
+		while (iter.hasNext()) {
+			short currX = iter.getNextX();
+			short currY = iter.getNextY();
+			int factor;
+
+			if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
+				factor = iter.getCurrRadius() == 1 ? 6 : 2;
+			} else if (grid.getMovableAt(currX, currY) != null) {
+				factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
+			} else {
+				continue;
+			}
+
+			dx += (short) (x - currX) * factor;
+			dy += (short) (y - currY) * factor;
+		}
+		dx += direction.gridDeltaX;
+		dy += direction.gridDeltaY;
+
+		if (Math.abs(dx) + Math.abs(dy) >= 4f) {
+			this.goInDirection(EDirection.getApproxDirection(0, 0, (int) dx, (int) dy));
+			doingNothingProbablity = Math.min(doingNothingProbablity + 0.02f, 0.1f);
+		} else {
+			doingNothingProbablity = Math.max(doingNothingProbablity - 0.02f, 0.06f);
 		}
 	}
 
@@ -272,13 +301,13 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			break;
 
 		case PATHING:
-			if (this.progress >= 1) {
-				if (pushingMovable.direction.getInverseDirection() == this.direction) { // two movables going in opposite direction against each other
+			if (this.progress >= 1 && !this.path.isFinished()) {
+				if (pushingMovable.direction == this.direction.getInverseDirection()) { // two movables going in opposite direction against each other
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
 				} else {
 					ShortPoint2D nextPos = this.direction.getNextHexPoint(this.position);
-					if (grid.isFreeForMovable(nextPos.getX(), nextPos.getY())) {
+					if (grid.hasNoMovableAt(nextPos.getX(), nextPos.getY())) {
 						// this movable isn't blocked, so just let it's pathingAction() handle this
 					} else if (pushedFrom == null) {
 						this.pushedFrom = pushingMovable;
@@ -316,17 +345,6 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 
 		return false;
-	}
-
-	/**
-	 * Converts this movable to a movable of the given {@link EMovableType}.
-	 * 
-	 * @param movableType
-	 */
-	final void convertTo(EMovableType movableType) {
-		this.movableType = movableType;
-		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-		setState(ENewMovableState.DOING_NOTHING);
 	}
 
 	/**
@@ -399,7 +417,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 */
 	final boolean goInDirection(EDirection direction) {
 		ShortPoint2D pos = direction.getNextHexPoint(position);
-		if (isValidPosition(pos) && grid.isFreeForMovable(pos.getX(), pos.getY())) {
+		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.getX(), pos.getY())) {
 			initGoingSingleStep(pos);
 			this.direction = direction;
 			progressIncrease = WALKING_PROGRESS_INCREASE;
@@ -420,7 +438,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 */
 	final boolean forceGoInDirection(EDirection direction) {
 		ShortPoint2D targetPos = direction.getNextHexPoint(position);
-		if (isValidPosition(targetPos)) {
+		if (grid.isValidPosition(this, targetPos)) {
 			this.followPath(new Path(targetPos));
 			return true;
 		} else {
@@ -488,23 +506,15 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		followPath(this.path);
 	}
 
+	final void enableNothingToDoAction(boolean enable) {
+		this.enableNothingToDo = enable;
+	}
+
 	private void followPath(Path path) {
 		this.path = path;
 		setState(ENewMovableState.PATHING);
 		this.movableAction = EAction.NO_ACTION;
 		progress = 1;
-	}
-
-	/**
-	 * Checks if the given position is free or blocked for this movable.
-	 * 
-	 * @param pos
-	 *            position to be checked
-	 * @return true if the given position can be accessed by this movable
-	 */
-	private boolean isValidPosition(ShortPoint2D pos) {
-		return grid.isInBounds(pos.getX(), pos.getY()) && !grid.isBlocked(pos.getX(), pos.getY())
-				&& (!this.needsPlayersGround() || grid.getPlayer(pos.getX(), pos.getY()) == this.getPlayer());
 	}
 
 	/**
@@ -641,6 +651,38 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	@Override
 	public final int getID() {
 		return id;
+	}
+
+	/**
+	 * Converts this movable to a movable of the given {@link EMovableType}.
+	 * 
+	 * @param movableType
+	 */
+	public final void convertTo(EMovableType movableType) {
+		this.movableType = movableType;
+		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
+		setState(ENewMovableState.DOING_NOTHING);
+	}
+
+	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+		if (canOccupyBuilding()) {
+			((SoldierStrategy) strategy).setOccupyableBuilding(building);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean canOccupyBuilding() {
+		return getMovableType().getSelectionType() == ESelectionType.SOLDIERS;
+	}
+
+	private static enum ENewMovableState {
+		PLAYING_ACTION,
+		PATHING,
+		DOING_NOTHING,
+		SLEEPING,
+		GOING_SINGLE_STEP,
 	}
 
 }

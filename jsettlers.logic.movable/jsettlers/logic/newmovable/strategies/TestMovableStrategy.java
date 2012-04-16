@@ -6,7 +6,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
-public class TestMovableStrategy extends NewMovableStrategy {
+public final class TestMovableStrategy extends NewMovableStrategy {
 	private static final long serialVersionUID = -8014915507026812395L;
 
 	public TestMovableStrategy(NewMovable movable) {
@@ -28,4 +28,5 @@ public class TestMovableStrategy extends NewMovableStrategy {
 			super.goToPos(new ShortPoint2D(80 - pos.getX(), 70 - pos.getY()));
 		}
 	}
+
 }
