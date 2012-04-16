@@ -510,6 +510,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		this.enableNothingToDo = enable;
 	}
 
+	final boolean isValidPosition(ShortPoint2D position) {
+		return grid.isValidPosition(this, position);
+	}
+
 	private void followPath(Path path) {
 		this.path = path;
 		setState(ENewMovableState.PATHING);

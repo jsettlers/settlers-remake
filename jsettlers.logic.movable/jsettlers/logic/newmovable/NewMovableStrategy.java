@@ -170,6 +170,10 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getStrategyGrid().fitsSearchType(movable, pos, searchType);
 	}
 
+	protected final boolean isValidPosition(ShortPoint2D position) {
+		return movable.isValidPosition(position);
+	}
+
 	public final ShortPoint2D getPos() {
 		return movable.getPos();
 	}
@@ -178,7 +182,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getMaterial();
 	}
 
-	public byte getPlayer() {
+	protected final byte getPlayer() {
 		return movable.getPlayer();
 	}
 

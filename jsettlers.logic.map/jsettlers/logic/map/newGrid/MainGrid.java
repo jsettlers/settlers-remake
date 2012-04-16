@@ -331,8 +331,7 @@ public class MainGrid implements Serializable {
 			switch (searchType) {
 
 			case FOREIGN_GROUND:
-				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y)
-						&& !partitionsGrid.isEnforcedByTower(x, y);
+				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))
