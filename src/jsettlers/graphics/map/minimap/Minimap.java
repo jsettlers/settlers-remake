@@ -122,26 +122,36 @@ public final class Minimap {
 		int lineStartX = mapViewport.getLineStartX(0);
 		int firstY = mapViewport.getLineY(0);
 		float minviewx = converter.getViewX(lineStartX, firstY, 0) * width;
-		float maxviewy = converter.getViewY(lineStartX, firstY, 0) * height;
+		float maxviewy =
+		        Math.min(converter.getViewY(lineStartX, firstY, 0), 1) * height;
 		float maxviewx =
 		        converter.getViewX(mapViewport.getLineEndX(0), firstY, 0)
 		                * width;
-		float minviewy =
-		        converter.getViewY(lineStartX,
-		                mapViewport.getLineY(mapViewport.getLines()), 0)
-		                * height;
+		int lastY = mapViewport.getLineY(mapViewport.getLines());
+		float minviewy = Math.max(converter.getViewY(lineStartX, lastY, 0), 0) * height;
+
 		context.drawLine(new float[] {
-		        minviewx,
+				//bottom left
+		        Math.max(minviewx, minviewy / height * stride * width),
 		        minviewy,
 		        0,
-		        maxviewx,
+		        // bottom right
+		        Math.min(maxviewx, (minviewy / height * stride + 1) * width),
 		        minviewy,
 		        0,
-		        maxviewx,
+		        Math.min(maxviewx, (maxviewy / height * stride + 1) * width),
+		        Math.max((Math.min(maxviewx, (maxviewy / height * stride + 1) * width) - width) / width / stride * height, minviewy),
+		        0,
+		        // top right
+		        Math.min(maxviewx, (maxviewy / height * stride + 1) * width),
 		        maxviewy,
 		        0,
-		        minviewx,
+		        // top left
+		        Math.max(minviewx, maxviewy / height * stride * width),
 		        maxviewy,
+		        0,
+		        Math.max(minviewx, minviewy / height * stride * width),
+		        Math.min(Math.max(minviewx, minviewy / height * stride * width) / width /stride * height, maxviewy),
 		        0,
 		}, true);
 	}
