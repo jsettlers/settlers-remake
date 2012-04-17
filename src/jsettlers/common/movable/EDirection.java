@@ -197,7 +197,7 @@ public enum EDirection {
 		return getNextHexPoint(pos.getX(), pos.getY());
 	}
 
-	public ShortPoint2D getNextTilePoint(ShortPoint2D pos, int steps) {
+	public ShortPoint2D getNextHexPoint(ShortPoint2D pos, int steps) {
 		return new ShortPoint2D(pos.getX() + gridDeltaX * steps, pos.getY() + gridDeltaY * steps);
 	}
 
