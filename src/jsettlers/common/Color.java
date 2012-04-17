@@ -35,7 +35,7 @@ public final class Color {
 		this.blue = blue;
 		this.alpha = alpha;
 
-		this.shortColor = toShortColor(1);
+		this.shortColor = toShortColorForced(1);
 	}
 
 	public final float getAlpha() {
@@ -72,11 +72,15 @@ public final class Color {
 		} else if (multiply < 0) {
 			return BLACK.toShortColor(1);
 		} else {
-			return (short) ((int) (Math.min(1, red * multiply) * 0x1f) << 11
-			        | (int) (Math.min(1, green * multiply) * 0x1f) << 6
-			        | (int) (Math.min(1, blue * multiply) * 0x1f) << 1 | 1);
+			return toShortColorForced(multiply);
 		}
 	}
+
+	private short toShortColorForced(float multiply) {
+	    return (short) ((int) (Math.min(1, red * multiply) * 0x1f) << 11
+	            | (int) (Math.min(1, green * multiply) * 0x1f) << 6
+	            | (int) (Math.min(1, blue * multiply) * 0x1f) << 1 | 1);
+    }
 
 	public static Color fromShort(short s) {
 		return new Color((float) (s >> 11 & 0x1f) / 0x1f,
