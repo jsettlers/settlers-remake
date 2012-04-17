@@ -26,7 +26,7 @@ public final class GeologistStrategy extends SpecialistStrategy {
 		EResourceType resourceType = grid.getResourceTypeAt(x, y);
 		byte amount = (byte) Math.max(grid.getResourceAmountAt(x, y), 0);
 
-		grid.getMapObjectsManager().addRessourceSign(super.getPos(), resourceType, amount / 127f);
+		// grid.getMapObjectsManager().addRessourceSign(super.getPos(), resourceType, amount / 127f);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public final class GeologistStrategy extends SpecialistStrategy {
 
 	@Override
 	protected final ESearchType getSearchType() {
-		return ESearchType.MOUNTAIN;
+		return ESearchType.RESOURCE_SIGNABLE;
 	}
 
 	@Override

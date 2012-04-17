@@ -17,6 +17,7 @@ import jsettlers.logic.newmovable.strategies.DiggerStrategy;
 import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
+import jsettlers.logic.newmovable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.PioneerStrategy;
 
 public abstract class NewMovableStrategy implements Serializable {
@@ -72,6 +73,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		case PIONEER:
 			return new PioneerStrategy(movable);
 		case GEOLOGIST:
+			return new GeologistStrategy(movable);
 		case THIEF:
 			return new DummySpecialistStrategy(movable);
 
@@ -213,7 +215,7 @@ public abstract class NewMovableStrategy implements Serializable {
 	protected void killedEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
 	}
 
-	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D targetPos) {
+	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D oldTargetPos, @SuppressWarnings("unused") ShortPoint2D targetPos) {
 	}
 
 }

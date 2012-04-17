@@ -3,6 +3,7 @@ package jsettlers.logic.map.newGrid.objects;
 import java.io.Serializable;
 
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 
 public interface IMapObjectsManagerGrid extends Serializable {
@@ -27,5 +28,9 @@ public interface IMapObjectsManagerGrid extends Serializable {
 	boolean isInBounds(short x, short y);
 
 	void setProtected(short x, short y, boolean protect);
+
+	EResourceType getRessourceTypeAt(short x, short y);
+
+	byte getRessourceAmountAt(short x, short y);
 
 }

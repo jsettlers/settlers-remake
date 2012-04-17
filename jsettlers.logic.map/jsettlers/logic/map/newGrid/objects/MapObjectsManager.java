@@ -97,10 +97,24 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		case PLANTABLE_CORN:
 			return plantCorn(pos);
 
+		case RESOURCE_SIGNABLE:
+			return addRessourceSign(pos);
+
 		default:
 			System.err.println("can't handle search type in executeSearchType(): " + type);
 			return false;
 		}
+	}
+
+	private boolean addRessourceSign(ShortPoint2D pos) {
+		EResourceType resourceType = grid.getRessourceTypeAt(pos.getX(), pos.getY());
+		byte resourceAmount = grid.getRessourceAmountAt(pos.getX(), pos.getY());
+
+		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, resourceAmount / ((float) Byte.MAX_VALUE));
+		addMapObject(pos, object);
+		timingQueue.add(new TimeEvent(object, RessourceSignMapObject.getLivetime(), true));
+
+		return true;
 	}
 
 	private void cutStone(ShortPoint2D pos) {
@@ -245,12 +259,6 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 		addMapObject(pos, object);
 		timingQueue.add(new TimeEvent(object, duration, true));
-	}
-
-	public void addRessourceSign(ShortPoint2D pos, EResourceType resourceType, float amount) {
-		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, amount);
-		addMapObject(pos, object);
-		timingQueue.add(new TimeEvent(object, RessourceSignMapObject.getLivetime(), true));
 	}
 
 	public void setConstructionMarking(short x, short y, byte value) {

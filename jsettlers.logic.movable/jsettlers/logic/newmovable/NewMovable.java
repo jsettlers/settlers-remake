@@ -180,11 +180,18 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 				} // if we are pathing and finished a step, calculate new path
 				setState(ENewMovableState.DOING_NOTHING); // this line is needed for assertions
 			case DOING_NOTHING:
+				ShortPoint2D oldTargetPos;
+				if (path != null) {
+					oldTargetPos = path.getTargetPos();
+				} else {
+					oldTargetPos = null;
+				}
+
 				goToPos(moveToRequest); // progress is reset in here
 				moveToRequest = null;
 
 				if (path != null) {
-					this.strategy.moveToPathSet(path.getTargetPos());
+					this.strategy.moveToPathSet(oldTargetPos, path.getTargetPos());
 				}
 				break;
 			}

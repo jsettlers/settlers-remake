@@ -374,7 +374,7 @@ public class MainGrid implements Serializable {
 			case SOLDIER_PIKEMAN:
 				return isSoldierAt(x, y, searchType, pathCalculable.getPlayer());
 
-			case MOUNTAIN:
+			case RESOURCE_SIGNABLE:
 				return isInBounds(x, y) && !flagsGrid.isMarked(x, y) && canAddRessourceSign(x, y);
 
 			case FOREIGN_MATERIAL:
@@ -619,6 +619,16 @@ public class MainGrid implements Serializable {
 		@Override
 		public final void setProtected(short x, short y, boolean protect) {
 			flagsGrid.setProtected(x, y, protect);
+		}
+
+		@Override
+		public EResourceType getRessourceTypeAt(short x, short y) {
+			return landscapeGrid.getResourceTypeAt(x, y);
+		}
+
+		@Override
+		public byte getRessourceAmountAt(short x, short y) {
+			return landscapeGrid.getResourceAmountAt(x, y);
 		}
 
 	}
