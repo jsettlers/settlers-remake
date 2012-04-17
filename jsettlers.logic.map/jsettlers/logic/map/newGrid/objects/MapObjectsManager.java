@@ -107,11 +107,14 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		short x = (short) (pos.getX() - 1);
 		short y = (short) (pos.getY() + 1);
 		AbstractHexMapObject stone = grid.getMapObject(x, y, EMapObjectType.STONE);
-		stone.cutOff();
 
-		if (!stone.canBeCut()) {
-			addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, (byte) -1);
-			removeMapObjectType(x, y, EMapObjectType.STONE);
+		if (stone != null) {
+			stone.cutOff();
+
+			if (!stone.canBeCut()) {
+				addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, (byte) -1);
+				removeMapObjectType(x, y, EMapObjectType.STONE);
+			}
 		}
 	}
 
@@ -140,7 +143,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		short y = pos.getY();
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject corn = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.CORN_ADULT);
-			if (corn.cutOff()) {
+			if (corn != null && corn.cutOff()) {
 				timingQueue.offer(new TimeEvent(corn, Corn.REMOVE_DURATION, true));
 				return true;
 			}
@@ -153,7 +156,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		short y = (short) (pos.getY() - 1);
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.TREE_ADULT);
-			if (tree.cutOff()) {
+			if (tree != null && tree.cutOff()) {
 				timingQueue.offer(new TimeEvent(tree, Tree.DECOMPOSE_DURATION, true));
 				return true;
 			}

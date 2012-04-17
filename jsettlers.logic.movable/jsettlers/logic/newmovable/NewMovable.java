@@ -494,11 +494,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			this.path = grid.searchInArea(this, centerX, centerY, radius, searchType);
 		}
 
-		if (path != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return path != null;
 	}
 
 	final void followPresearchedPath() {

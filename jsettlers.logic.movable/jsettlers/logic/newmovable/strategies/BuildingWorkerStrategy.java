@@ -110,8 +110,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		case FOLLOW_SEARCHED:
-			super.followPresearchedPath();
-			jobFinished();
+			followPreSearchedAction();
 			break;
 
 		case LOOK_AT_SEARCHED:
@@ -192,6 +191,11 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		}
+	}
+
+	private void followPreSearchedAction() {
+		super.followPresearchedPath();
+		jobFinished();
 	}
 
 	private void placeOrRemovePigAction() {
@@ -339,6 +343,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 
 		reportAsJobless();
 
+		dropCurrMaterial();
+	}
+
+	private void dropCurrMaterial() {
 		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
 			super.getStrategyGrid().dropMaterial(super.getPos(), super.getMaterial(), true);
 			super.setMaterial(EMaterialType.NO_MATERIAL);
@@ -352,4 +360,8 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 		this.building = null;
 	}
 
+	@Override
+	protected void killedEvent(ShortPoint2D pathTarget) { // used in overriding methods
+		dropCurrMaterial();
+	}
 }

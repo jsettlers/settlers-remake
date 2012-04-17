@@ -75,6 +75,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		switch (action.getActionType()) {
 		case BUILD:
+			this.setSelection(new SelectionSet());
 			EBuildingType buildingType = ((BuildAction) action).getBuilding();
 			System.err.println("build: " + buildingType);
 			this.previewBuilding = buildingType; // FIXME implement a way to give graphics grid the preview building
