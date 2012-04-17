@@ -35,7 +35,7 @@ public class EDirectionTest {
 
 		for (EDirection currDir : EDirection.values) {
 			for (int i = 1; i < 30; i++) {
-				ShortPoint2D target = currDir.getNextTilePoint(new ShortPoint2D(startX, startY), i);
+				ShortPoint2D target = currDir.getNextHexPoint(new ShortPoint2D(startX, startY), i);
 
 				EDirection calculatedDir = EDirection.getDirectionOfMultipleSteps(target.getX() - startX, target.getY() - startY);
 				assertNotNull(calculatedDir);
