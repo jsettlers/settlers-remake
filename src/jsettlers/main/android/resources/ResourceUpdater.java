@@ -1,6 +1,7 @@
 package jsettlers.main.android.resources;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,6 +45,7 @@ public class ResourceUpdater implements Runnable {
 
 	private boolean isUpdating;
 	private boolean needsUpdate = false;
+	private String serverrev = "";
 	
 	public ResourceUpdater(Resources resources, File destdir) {
 		this.resources = resources;
@@ -55,8 +57,8 @@ public class ResourceUpdater implements Runnable {
 		try {
 			DefaultHttpClient httpClient = createClient();
 
-			String serverrev = loadRevision(httpClient);
-			File versionfile = new File(destdir, "version");
+			serverrev = loadRevision(httpClient);
+			File versionfile = getVersionFile();
 			String myrev = getMyVersion(versionfile);
 
 			needsUpdate = serverrev != null && !serverrev.equals(myrev);
@@ -64,6 +66,10 @@ public class ResourceUpdater implements Runnable {
 			e.printStackTrace();
 		}
 	}
+
+	private File getVersionFile() {
+	    return new File(destdir, "version");
+    }
 	
 	public void startUpdate(final UpdateListener listener, final ProgressConnector c) {
 		if (isUpdating()) {
@@ -140,6 +146,8 @@ public class ResourceUpdater implements Runnable {
 				}
 			}
 			System.out.println("Updated " + files + " files");
+			
+			writeMyVersion(getVersionFile(), serverrev);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -152,6 +160,10 @@ public class ResourceUpdater implements Runnable {
 		} else {
 			return "";
 		}
+	}
+
+	private static void writeMyVersion(File versionfile, String version) throws IOException {
+			new DataOutputStream(new FileOutputStream(versionfile)).writeUTF(version);
 	}
 
 	private static String loadRevision(DefaultHttpClient httpClient) throws IOException, ClientProtocolException {
