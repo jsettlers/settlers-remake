@@ -1,13 +1,14 @@
 package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
  * Only draws a little point at the start position.
  * @author michael
  *
  */
-public class PointShape implements ShapeType {
+public class PointShape extends ShapeType {
 
 	@Override
     public void setAffectedStatus(byte[][] fields, ShortPoint2D start,
@@ -28,7 +29,7 @@ public class PointShape implements ShapeType {
 	
 	@Override
 	public String getName() {
-	    return "points";
+	    return EditorLabels.getLabel("points");
 	}
 
 }

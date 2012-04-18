@@ -1,13 +1,19 @@
 package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.localization.EditorLabels;
 
-public class LineCircleShape implements ShapeType {
+public class LineCircleShape extends ShapeType {
 
-	private int radius = 10;
+	private static final ShapeProperty RADIUS_PROPERTY = new ShapeProperty(EditorLabels.getLabel("radius"), 0, 100);
+
+	public LineCircleShape() {
+		addProperty(RADIUS_PROPERTY);
+	}
 
 	@Override
-	public void setAffectedStatus(byte[][] fields, ShortPoint2D start, ShortPoint2D end) {
+	public void setAffectedStatus(byte[][] fields, ShortPoint2D start,
+	        ShortPoint2D end) {
 		CircleLine line = new CircleLine(start, end);
 
 		for (int x = 0; x < fields.length; x++) {
@@ -20,24 +26,20 @@ public class LineCircleShape implements ShapeType {
 
 	@SuppressWarnings("unused")
 	protected byte getFieldRating(int x, int y, double distance) {
-		return (distance <= radius ? Byte.MAX_VALUE : 0);
+		return (distance <= getProperty(RADIUS_PROPERTY) ? Byte.MAX_VALUE : 0);
 	}
 
 	@Override
 	public int getSize() {
-		return radius;
+		return getProperty(RADIUS_PROPERTY);
 	}
 
 	public int getRadius() {
-		return radius;
+		return getProperty(RADIUS_PROPERTY);
 	}
-
-	public void setRadius(int radius) {
-	    this.radius = radius;
-    }
 
 	@Override
 	public String getName() {
-	    return "circle line";
+		return EditorLabels.getLabel("circle_line");
 	}
 }

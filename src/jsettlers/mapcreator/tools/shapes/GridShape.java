@@ -1,6 +1,7 @@
 package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
  * This shape lets space between its points.
@@ -15,6 +16,6 @@ public class GridShape extends LineShape {
 	
 	@Override
 	public String getName() {
-	    return "filtered";
+	    return EditorLabels.getLabel("grid_line");
 	}
 }

@@ -30,7 +30,6 @@ public class CircleLine {
 		// vector pointing in the direction of the line
 		this.directionx = nx / length;
 		this.directiony = ny / length;
-		
 	}
 
 	/**

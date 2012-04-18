@@ -1,8 +1,15 @@
 package jsettlers.mapcreator.tools.shapes;
 
+import jsettlers.mapcreator.localization.EditorLabels;
+
 
 public class FuzzyLineCircleShape extends LineCircleShape {
-	private float inner = .5f;
+	
+	private static final ShapeProperty INNER_PROPERTY = new ShapeProperty(EditorLabels.getLabel("line_inner"), 0, 100);
+
+	public FuzzyLineCircleShape() {
+		addProperty(INNER_PROPERTY);
+	}
 
 	@Override
 	protected byte getFieldRating(int x, int y, double distance) {
@@ -20,7 +27,7 @@ public class FuzzyLineCircleShape extends LineCircleShape {
     }
 
 	protected double getSlopedRating(double distance) {
-		if (inner > .97) {
+		if (getProperty(INNER_PROPERTY) == INNER_PROPERTY.getMax()) {
 			// to hard to compute
 			return Byte.MAX_VALUE;
 		}
@@ -38,6 +45,7 @@ public class FuzzyLineCircleShape extends LineCircleShape {
 		return Byte.MAX_VALUE * (.5 * Math.cos(distance * Math.PI / getRadius()) + .5);
 	}
 
+	/*
 	public void setInner(float inner) {
 		if (inner < 0) {
 			this.inner = 0;
@@ -46,14 +54,14 @@ public class FuzzyLineCircleShape extends LineCircleShape {
 		} else {
 			this.inner = inner;
 		}
-	}
+	}*/
 
 	public float getInner() {
-		return inner;
+		return getProperty(INNER_PROPERTY) / 100f;
 	}
 	
 	@Override
 	public String getName() {
-	    return "fuzzy line";
+	    return EditorLabels.getLabel("fuzzy_line");
 	}
 }

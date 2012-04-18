@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -83,6 +82,7 @@ import jsettlers.mapcreator.main.error.IScrollToAble;
 import jsettlers.mapcreator.main.error.ShowErrorsButton;
 import jsettlers.mapcreator.main.map.MapEditorControls;
 import jsettlers.mapcreator.main.tools.PlaceStackToolbox;
+import jsettlers.mapcreator.main.tools.ShapePropertyEditor;
 import jsettlers.mapcreator.main.tools.ToolRenderer;
 import jsettlers.mapcreator.main.tools.ToolTreeModel;
 import jsettlers.mapcreator.mapview.MapGraphics;
@@ -106,24 +106,11 @@ import jsettlers.mapcreator.tools.objects.PlaceTemplateTool;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateBuilding;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateMovable;
 import jsettlers.mapcreator.tools.objects.PlaceTemplateTool.TemplateObject;
-import jsettlers.mapcreator.tools.shapes.LineCircleShape;
+import jsettlers.mapcreator.tools.shapes.ShapeProperty;
 import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class EditorWindow implements IMapInterfaceListener, ActionFireable,
         TestResultReceiver, IPlayerSetter, IScrollToAble {
-
-	private final class RadiusChangeListener implements ChangeListener {
-		private final LineCircleShape shape;
-
-		private RadiusChangeListener(LineCircleShape shape) {
-			this.shape = shape;
-		}
-
-		@Override
-		public void stateChanged(ChangeEvent arg0) {
-			shape.setRadius(((JSlider) arg0.getSource()).getModel().getValue());
-		}
-	}
 
 	private final class ShapeActionListener implements ActionListener {
 		private final ShapeType shape;
@@ -750,11 +737,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable,
 		activeShape = shape;
 		// updateShapeButtons();
 		shapeSettings.removeAll();
-		if (shape instanceof LineCircleShape) {
-			final LineCircleShape shape2 = (LineCircleShape) shape;
-			JSlider radiusSelector = new JSlider(1, 50, shape2.getRadius());
-			radiusSelector.addChangeListener(new RadiusChangeListener(shape2));
-			shapeSettings.add(radiusSelector);
+		for (ShapeProperty property : shape.getProperties()) {
+			shapeSettings.add(new ShapePropertyEditor(shape, property));
 		}
 		shapeSettings.revalidate();
 	}

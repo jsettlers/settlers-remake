@@ -1,8 +1,10 @@
 package jsettlers.mapcreator.tools.shapes;
 
+import jsettlers.mapcreator.localization.EditorLabels;
 
 
-public class GridCircleShape extends LineCircleShape implements ShapeType {
+
+public class GridCircleShape extends LineCircleShape {
 
 	@Override
 	protected byte getFieldRating(int x, int y, double distance) {
@@ -15,7 +17,7 @@ public class GridCircleShape extends LineCircleShape implements ShapeType {
 
 	@Override
 	public String getName() {
-		return "spaced circle";
+	    return EditorLabels.getLabel("grid_circle");
 	}
 
 }

@@ -1,5 +1,6 @@
 package jsettlers.mapcreator.tools.shapes;
 
+import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.noise.NoiseGenerator;
 
 public class NoisyLineCircleShape extends FuzzyLineCircleShape {
@@ -21,6 +22,6 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 	
 	@Override
 	public String getName() {
-	    return "noisy line";
+	    return EditorLabels.getLabel("noisy_circle_line");
 	}
 }
