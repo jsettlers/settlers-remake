@@ -302,32 +302,32 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 		RelativePoint relative = absoluteToRelative(pos);
 		if (definition.getBlockedStatus(relative)) {
-			colors.add(new Color(0x0343df));
+			colors.add(new Color(0xff0343df));
 		} else if (definition.getProtectedStatus(relative)) {
-			colors.add(new Color(0x75bbfd));
+			colors.add(new Color(0xff75bbfd));
 		}
 
 		if (tool == ToolType.SET_BUILDMARK) {
 			if (definition.getBuildmarkStatus(relative)) {
-				colors.add(new Color(0xf97306));
+				colors.add(new Color(0xfff97306));
 			}
 		}
 
 		if (tool == ToolType.SET_DOOR) {
 			if (definition.getDoor().equals(relative)) {
-				colors.add(new Color(0xf97306));
+				colors.add(new Color(0xfff97306));
 			}
 		}
 
 		if (tool == ToolType.SET_FLAG) {
 			if (definition.getFlag().equals(relative)) {
-				colors.add(new Color(0xf97306));
+				colors.add(new Color(0xfff97306));
 			}
 		}
 
 		if (tool == ToolType.ADD_STACK || tool == ToolType.REMOVE_STACK) {
 			if (definition.getStack(relative) != null) {
-				colors.add(new Color(0xf97306));
+				colors.add(new Color(0xfff97306));
 				tile.setStack(new MapStack(definition.getStack(relative)));
 			} else {
 				tile.setStack(null);
@@ -336,18 +336,18 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 		if (tool == ToolType.BRICKLAYER_NE || tool == ToolType.BRICKLAYER_NW) {
 			if (definition.getBricklayerStatus(relative)) {
-				colors.add(new Color(0xf97306));
+				colors.add(new Color(0xfff97306));
 			}
 		}
 
 		if (!colors.isEmpty()) {
 			tile.setDebugColor(mixColors(colors));
 		} else {
-			tile.setDebugColor(-1);
+			tile.setDebugColor(0);
 		}
 	}
 
-	private int mixColors(ArrayList<Color> colors) {
+	private static int mixColors(ArrayList<Color> colors) {
 		float bluesum = 0;
 		float redsum = 0;
 		float greensum = 0;
@@ -356,7 +356,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			redsum += color.getRed();
 			greensum += color.getGreen();
 		}
-		int color = Color.getARGB(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 255);
+		int color = Color.getARGB(redsum / colors.size(), greensum / colors.size(), bluesum / colors.size(), 1);
 		return color;
 	}
 
