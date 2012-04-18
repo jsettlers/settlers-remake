@@ -560,7 +560,6 @@ public class MainGrid implements Serializable {
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
 		}
-
 	}
 
 	final class MapObjectsManagerGrid implements IMapObjectsManagerGrid {

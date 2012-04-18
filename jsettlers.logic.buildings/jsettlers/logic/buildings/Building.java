@@ -15,9 +15,10 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayerable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.Barrack;
@@ -25,6 +26,7 @@ import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
+import jsettlers.logic.buildings.spawn.SpawnBuilding;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -582,6 +584,26 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case GOLDMINE:
 		case COALMINE:
 			return new MineBuilding(type, player);
+			
+			//XXX This is only for testing!
+		case LAGERHAUS:
+			return new SpawnBuilding(type, player) {
+				/**
+                 * 
+                 */
+                private static final long serialVersionUID =
+                        2605958844824648130L;
+
+				@Override
+				protected byte getProduceLimit() {
+					return 0;
+				}
+				
+				@Override
+				protected EMovableType getMovableType() {
+					return EMovableType.BEARER;
+				}
+			};
 
 		default:
 			System.err.println("couldn't create new building, because type is unknown: " + type);
