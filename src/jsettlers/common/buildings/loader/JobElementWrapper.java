@@ -43,7 +43,7 @@ public class JobElementWrapper implements BuildingJobData {
 		direction = getDirection(attributes);
 	}
 
-	private EBuildingJobType getType(Attributes attributes)
+	private static EBuildingJobType getType(Attributes attributes)
 	        throws IllegalAccessError {
 		String typeString = attributes.getValue(TYPE);
 		try {
@@ -58,7 +58,7 @@ public class JobElementWrapper implements BuildingJobData {
 		return direction;
 	}
 
-	private EDirection getDirection(Attributes attributes) {
+	private static EDirection getDirection(Attributes attributes) {
 		String string = attributes.getValue(DIRECTION);
 		if (string == null) {
 			return null;
@@ -71,7 +71,7 @@ public class JobElementWrapper implements BuildingJobData {
 		}
 	}
 
-	private int getAttributeAsInt(Attributes attributes, String attribute) {
+	private static int getAttributeAsInt(Attributes attributes, String attribute) {
 		String string = attributes.getValue(attribute);
 		if (string == null) {
 			return 0;
@@ -94,7 +94,7 @@ public class JobElementWrapper implements BuildingJobData {
 		return dy;
 	}
 
-	private EMaterialType getMaterial(Attributes attributes) {
+	private static EMaterialType getMaterial(Attributes attributes) {
 		String string = attributes.getValue(MATERIAL);
 		if (string == null) {
 			return null;
@@ -145,7 +145,7 @@ public class JobElementWrapper implements BuildingJobData {
 		return time;
 	}
 
-	private float getAttributeAsFloat(Attributes attributes, String attribute) {
+	private static float getAttributeAsFloat(Attributes attributes, String attribute) {
 		String string = attributes.getValue(attribute);
 		if (string == null) {
 			return 0f;

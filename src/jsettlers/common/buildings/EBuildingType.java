@@ -8,6 +8,7 @@ import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.loader.BuildingFile;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
@@ -62,7 +63,12 @@ public enum EBuildingType {
 	// 27: katapult
 
 	TEMPLE(31),
-	BIG_TEMPLE(32);
+	BIG_TEMPLE(32),
+	
+	/**
+	 * Test building for own image files.
+	 */
+	LAGERHAUS(0);
 
 	private final IBuildingJob startJob;
 
@@ -90,12 +96,13 @@ public enum EBuildingType {
 
 	private final ImageLink[] images;
 
+	private final ImageLink[] buildImages;
+	
 	private final RelativePoint[] protectedTiles;
 
 	private final RelativePoint[] buildmarks;
 	private final RelativePoint[] attackers;
 
-	private final ImageLink[] buildImages;
 
 	private final ELandscapeType[] groundtypes;
 
@@ -124,8 +131,8 @@ public enum EBuildingType {
 		if (tempimages.length == 0) {
 			// TODO: this can be removed if all images are converted
 			System.out.println("WARNING: Building " + this.toString() + " does not have an image definition.");
-			images = new ImageLink[] { new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0) };
-			buildImages = new ImageLink[] { new ImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1) };
+			images = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, 13, imageIndex, 0) };
+			buildImages = new ImageLink[] { new OriginalImageLink(EImageLinkType.SETTLER, 13, imageIndex, 1) };
 		} else {
 			images = tempimages;
 			buildImages = file.getBuildImages();

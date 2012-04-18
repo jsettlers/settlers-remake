@@ -12,6 +12,7 @@ import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -77,7 +78,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private RelativePoint flag = new RelativePoint(0, 0);
 	private ArrayList<RelativePoint> buildmarks = new ArrayList<RelativePoint>();
 	private ArrayList<RelativePoint> attackers = new ArrayList<RelativePoint>();
-	private ImageLink guiimage = new ImageLink(EImageLinkType.GUI, 1, 0, 0);
+	private ImageLink guiimage = new OriginalImageLink(EImageLinkType.GUI, 1, 0, 0);
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
 	private ArrayList<ELandscapeType> groundtypes = new ArrayList<ELandscapeType>();
@@ -175,11 +176,14 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private void readImageLink(Attributes attributes) {
 		try {
-			int file = Integer.parseInt(attributes.getValue("file"));
-			int sequence = Integer.parseInt(attributes.getValue("sequence"));
-			int image = Integer.parseInt(attributes.getValue("image"));
-			EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
-			ImageLink imageLink = new ImageLink(type, file, sequence, image);
+			ImageLink imageLink;
+			if (attributes.getIndex("name") < 0) {
+				imageLink = getOriginalImageLink(attributes);
+			} else {
+				String name = attributes.getValue("name");
+			    int image = Integer.parseInt(attributes.getValue("image"));
+			    imageLink = ImageLink.fromName(name, image);
+			}
 			String forState = attributes.getValue("for");
 			if ("GUI".equals(forState)) {
 				guiimage = imageLink;
@@ -194,6 +198,15 @@ public class BuildingFile implements BuildingJobDataProvider {
 			System.err.println("Illegal image link name in " + buildingName);
 		}
 	}
+
+	private static OriginalImageLink getOriginalImageLink(Attributes attributes) {
+	    int file = Integer.parseInt(attributes.getValue("file"));
+	    int sequence = Integer.parseInt(attributes.getValue("sequence"));
+	    int image = Integer.parseInt(attributes.getValue("image"));
+	    EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
+	    OriginalImageLink imageLink = new OriginalImageLink(type, file, sequence, image);
+	    return imageLink;
+    }
 
 	private void readRelativeBricklayer(Attributes attributes) {
 		try {

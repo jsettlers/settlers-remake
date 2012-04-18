@@ -19,9 +19,9 @@ public final class Color {
 	private final int argb;
 	private final short shortColor;
 
-	public Color(int rgb) {
-		this(0xff << 24 | rgb, ((rgb >> 16) & 0xff) / 255f,
-		        ((rgb >> 8) & 0xff) / 255f, ((rgb >> 0) & 0xff) / 255f, 1f);
+	public Color(int argb) {
+		this(argb, ((argb >> 16) & 0xff) / 255f,
+		        ((argb >> 8) & 0xff) / 255f, ((argb >> 0) & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
 	}
 
 	private Color(float red, float green, float blue, float alpha) {
@@ -77,10 +77,14 @@ public final class Color {
 	}
 
 	private short toShortColorForced(float multiply) {
-	    return (short) ((int) (Math.min(1, red * multiply) * 0x1f) << 11
-	            | (int) (Math.min(1, green * multiply) * 0x1f) << 6
-	            | (int) (Math.min(1, blue * multiply) * 0x1f) << 1 | 1);
-    }
+		if (alpha < .1f) {
+			return 0;
+		} else {
+			return (short) ((int) (Math.min(1, red * multiply) * 0x1f) << 11
+			        | (int) (Math.min(1, green * multiply) * 0x1f) << 6
+			        | (int) (Math.min(1, blue * multiply) * 0x1f) << 1 | 1);
+		}
+	}
 
 	public static Color fromShort(short s) {
 		return new Color((float) (s >> 11 & 0x1f) / 0x1f,

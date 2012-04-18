@@ -1,104 +1,18 @@
 package jsettlers.common.images;
 
-/**
- * This is a virtual link to a image in a settler image file.
- * 
- * @see EImageLinkType
- * @author michael
- */
-public final class ImageLink {
-	private final EImageLinkType type;
-	private final int file;
-	private final int sequence;
-	private final int image;
-	private final int length;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-	/**
-	 * Creates a new image link description
-	 * 
-	 * @param type
-	 *            The type
-	 * @param file
-	 *            The file it is in
-	 * @param sequence
-	 *            The sequence index
-	 * @param image
-	 *            The image in the sequence, for {@value EImageLinkType#SETTLER} images.
-	 * @param length
-	 *            The number contained in the sequence that is linked,
-	 */
-	public ImageLink(EImageLinkType type, int file, int sequence, int image, int length) {
-		this.type = type;
-		this.file = file;
-		this.sequence = sequence;
-		this.image = image;
-		this.length = length;
-	}
-
-	/**
-	 * Creates a new image link description
-	 * 
-	 * @param type
-	 *            The type
-	 * @param file
-	 *            The file it is in
-	 * @param sequence
-	 *            The sequence index
-	 * @param image
-	 *            The image in the sequence, for {@value EImageLinkType#SETTLER} images.
-	 */
-	public ImageLink(EImageLinkType type, int file, int sequence, int image) {
-		this(type, file, sequence, image, 1);
-	}
-
-	/**
-	 * Gets the type of the image.
-	 * 
-	 * @return The image type
-	 */
-	public EImageLinkType getType() {
-		return type;
-	}
-
-	/**
-	 * Gets the file
-	 * 
-	 * @return The files number.
-	 */
-	public int getFile() {
-		return file;
-	}
-
-	/**
-	 * Gets the seuqence index inside the file.
-	 * <p>
-	 * For GUI and LANDSCAPE images, this defines the image.
-	 * 
-	 * @return The index
-	 */
-	public int getSequence() {
-		return sequence;
-	}
-
-	/**
-	 * Gets the image index inside the sequence
-	 * 
-	 * @return The image index
-	 */
-	public int getImage() {
-		return image;
-	}
-
-	@Override
-	public String toString() {
-		return "image[type=" + type + ", file=" + file + ", sequence=" + sequence + ", image=" + image + "]";
-	}
-
-	/**
-	 * Gets the length of this strip
-	 * @return The length as int
-	 */
-	public int getLength() {
-		return length;
+public abstract class ImageLink {
+	private static final Pattern ORIGINAL_LINK = Pattern
+	        .compile("original_(\\d+)_(SETTLER|GUI|LANDSCAPE)_(\\d+)");
+	
+	public static ImageLink fromName(String name, int imageIndex) {
+		Matcher matcher = ORIGINAL_LINK.matcher(name);
+		if (matcher.matches()) {
+			return new OriginalImageLink(EImageLinkType.valueOf(matcher.group(2)), Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(3)), imageIndex);
+		} else {
+			return new DirectImageLink(name + "." + imageIndex);
+		}
 	}
 }

@@ -182,9 +182,10 @@
 <!ELEMENT image EMPTY>
 <!ATTLIST image
    for (GUI|BUILD|FINAL) #REQUIRED
-   type %imagelinktype; #REQUIRED
-   file CDATA #REQUIRED
-   sequence CDATA #REQUIRED
+   name CDATA #IMPLIED
+   type %imagelinktype; #IMPLIED
+   file CDATA #IMPLIED
+   sequence CDATA #IMPLIED
    image CDATA #REQUIRED
 >
 
