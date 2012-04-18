@@ -11,6 +11,7 @@ import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
@@ -22,21 +23,21 @@ import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 public class BuildingSelectionPanel implements IContentProvider {
-	private static final ImageLink SOILDER_MISSING = new ImageLink(
+	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 45, 0);
-	private static final ImageLink SOILDER_COMMING = new ImageLink(
+	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 48, 0);
 	private IBuilding building;
 	private UIPanel panel;
 
-	private static ImageLink SET_WORK_AREA = new ImageLink(EImageLinkType.GUI,
+	private static OriginalImageLink SET_WORK_AREA = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 201, 0);
-	private static ImageLink START_WORKING = new ImageLink(EImageLinkType.GUI,
+	private static OriginalImageLink START_WORKING = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 196, 0);
-	private static ImageLink STOP_WORKING = new ImageLink(EImageLinkType.GUI,
+	private static OriginalImageLink STOP_WORKING = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 192, 0);
 
-	private static ImageLink DESTROY = new ImageLink(EImageLinkType.GUI, 3,
+	private static OriginalImageLink DESTROY = new OriginalImageLink(EImageLinkType.GUI, 3,
 	        198, 0);
 
 	private BuildingState lastState = null;
@@ -104,7 +105,7 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 		for (IBuildingOccupyer occupyer : occupyers) {
 			OccupyerPlace place = occupyer.getPlace();
-			ImageLink link = SOILDER_COMMING;
+			OriginalImageLink link = SOILDER_COMMING;
 			boolean big = false;
 
 			if (occupyer.getMovable() != null) {
@@ -127,39 +128,39 @@ public class BuildingSelectionPanel implements IContentProvider {
 		}
 	}
 
-	private static ImageLink getIconFor(IMovable movable) {
+	private static OriginalImageLink getIconFor(IMovable movable) {
 		switch (movable.getMovableType()) {
 			case SWORDSMAN_L1:
-				return new ImageLink(EImageLinkType.GUI, 14, 213, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
 			case SWORDSMAN_L2:
-				return new ImageLink(EImageLinkType.GUI, 14, 222, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
 			case SWORDSMAN_L3:
-				return new ImageLink(EImageLinkType.GUI, 14, 231, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
 			case PIKEMAN_L1:
-				return new ImageLink(EImageLinkType.GUI, 14, 216, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
 			case PIKEMAN_L2:
-				return new ImageLink(EImageLinkType.GUI, 14, 225, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 225, 0);
 			case PIKEMAN_L3:
-				return new ImageLink(EImageLinkType.GUI, 14, 234, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 234, 0);
 			case BOWMAN_L1:
-				return new ImageLink(EImageLinkType.GUI, 14, 219, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
 			case BOWMAN_L2:
-				return new ImageLink(EImageLinkType.GUI, 14, 228, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 228, 0);
 			case BOWMAN_L3:
-				return new ImageLink(EImageLinkType.GUI, 14, 237, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 14, 237, 0);
 
 			default:
 				System.err.println("A unknown image was requested for gui. "
 				        + "Type=" + movable.getMovableType());
-				return new ImageLink(EImageLinkType.GUI, 24, 213, 0);
+				return new OriginalImageLink(EImageLinkType.GUI, 24, 213, 0);
 		}
 	}
 
 	private class BuidlingBackgroundPanel extends UIPanel {
 		private final ImageLink[] links;
 
-		public BuidlingBackgroundPanel(ImageLink[] links) {
-			this.links = links;
+		public BuidlingBackgroundPanel(ImageLink[] images) {
+			this.links = images;
 		}
 
 		@Override

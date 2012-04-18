@@ -14,6 +14,7 @@ import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
@@ -35,9 +36,9 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public class MapObjectDrawer {
 
-	private static final ImageLink INSIDE_BUILDING_RIGHT = new ImageLink(
+	private static final OriginalImageLink INSIDE_BUILDING_RIGHT = new OriginalImageLink(
 	        EImageLinkType.SETTLER, 12, 28, 1);
-	private static final ImageLink INSIDE_BUILDING_LEFT = new ImageLink(
+	private static final OriginalImageLink INSIDE_BUILDING_LEFT = new OriginalImageLink(
 	        EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int FILE = 1;
@@ -688,7 +689,7 @@ public class MapObjectDrawer {
 				gl.glTranslatef(place.getOffsetX(), place.getOffsetY(), 0);
 
 				if (place.getType() == ESoldierType.INFANTARY) {
-					ImageLink image =
+					OriginalImageLink image =
 					        place.looksRight() ? INSIDE_BUILDING_RIGHT
 					                : INSIDE_BUILDING_LEFT;
 					Color color =

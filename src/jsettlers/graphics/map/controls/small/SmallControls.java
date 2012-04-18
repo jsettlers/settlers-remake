@@ -5,7 +5,7 @@ import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.selectable.ISelectionSet;
@@ -28,7 +28,7 @@ import jsettlers.graphics.map.controls.IControls;
 public class SmallControls implements IControls {
 	private TabableButton buildMenuOpener =
 	        new TabableButton(new Action(EActionType.TOGGLE_BUILD_MENU),
-	                new ImageLink(EImageLinkType.SETTLER, 11, 0, 0),
+	                new OriginalImageLink(EImageLinkType.SETTLER, 11, 0, 0),
 	                Labels.getString("action_BUILD"));
 
 	private ScrollArea scrollArea = new ScrollArea();

@@ -1,7 +1,7 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ConvertAction;
@@ -23,24 +23,24 @@ public class BearerSelection implements IContentProvider {
 	}
 
 	private void addPioneers(float bottom) {
-		ImageLink imageLink = new ImageLink(EImageLinkType.GUI, 14, 210, 0);
+		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 210, 0);
 
 		drawButtongroup(bottom, imageLink, EMovableType.PIONEER);
 	}
 
 	private void addThieves(float bottom) {
-		ImageLink imageLink = new ImageLink(EImageLinkType.GUI, 14, 189, 0);
+		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 189, 0);
 
 		drawButtongroup(bottom, imageLink, EMovableType.THIEF);
 	}
 
 	private void addGeologists(float bottom) {
-		ImageLink imageLink = new ImageLink(EImageLinkType.GUI, 14, 192, 0);
+		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 192, 0);
 
 		drawButtongroup(bottom, imageLink, EMovableType.GEOLOGIST);
 	}
 
-	private void drawButtongroup(float bottom, ImageLink imageLink,
+	private void drawButtongroup(float bottom, OriginalImageLink imageLink,
 	        EMovableType type) {
 		UIPanel icon = new UIPanel();
 		icon.setBackground(imageLink);

@@ -5,18 +5,18 @@ import go.graphics.GLDrawContext;
 import java.util.List;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.UIElement;
 
 public class UIList<T extends UIListItem> implements UIElement {
-	private static final ImageLink SCROLLBAR_TOP = new ImageLink(
+	private static final OriginalImageLink SCROLLBAR_TOP = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 2, 0);
-	private static final ImageLink SCROLLBAR_MIDDLE = new ImageLink(
+	private static final OriginalImageLink SCROLLBAR_MIDDLE = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 3, 0);
-	private static final ImageLink SCROLLBAR_BOTTOM = new ImageLink(
+	private static final OriginalImageLink SCROLLBAR_BOTTOM = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 4, 0);
 
 	private static final float RIGHTBORDER = .97f;

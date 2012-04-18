@@ -2,7 +2,7 @@ package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
@@ -27,13 +27,13 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	private static final float RELATIVE_BUTTONWIDTH = 1f / (COLUMNS + 2);
 
 
-	private static final ImageLink ALL_UP_IMAGE = new ImageLink(
+	private static final OriginalImageLink ALL_UP_IMAGE = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 219, 0);
-	private static final ImageLink ALL_DOWN_IMAGE = new ImageLink(
+	private static final OriginalImageLink ALL_DOWN_IMAGE = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 222, 0);
-	private static final ImageLink UP_IMAGE = new ImageLink(EImageLinkType.GUI,
+	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 225, 0);
-	private static final ImageLink DOWN_IMAGE = new ImageLink(
+	private static final OriginalImageLink DOWN_IMAGE = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 228, 0);
 
 	private static final float ROWHEIGHT = .1f;
@@ -191,7 +191,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		int file = materialType.getGuiFile();
 		Image iamgeLink =
 		        ImageProvider.getInstance().getImage(
-		                new ImageLink(EImageLinkType.GUI, file, image, 0));
+		                new OriginalImageLink(EImageLinkType.GUI, file, image, 0));
 		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y
 		        + RELATIVE_BUTTONHEIGHT);
 

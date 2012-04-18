@@ -1,6 +1,6 @@
 package jsettlers.graphics.map.controls.original;
 
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 
 public abstract class IOriginalConstants {
 	float UI_RATIO;
@@ -51,8 +51,8 @@ public abstract class IOriginalConstants {
 
 	protected final int UI_BG_SEQINDEX_RIGHT = 3;
 
-	ImageLink UI_BG_SEQ_MAIN;
-	ImageLink UI_BG_SEQ_MINIMAPR;
-	ImageLink UI_BG_SEQ_MINIMAPL;
-	ImageLink UI_BG_SEQ_RIGHT;
+	OriginalImageLink UI_BG_SEQ_MAIN;
+	OriginalImageLink UI_BG_SEQ_MINIMAPR;
+	OriginalImageLink UI_BG_SEQ_MINIMAPL;
+	OriginalImageLink UI_BG_SEQ_RIGHT;
 }

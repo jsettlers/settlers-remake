@@ -5,7 +5,7 @@ import go.graphics.GLDrawContext;
 import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.image.Image;
@@ -25,7 +25,7 @@ public class UIPanel implements UIElement {
 	        new LinkedList<UIPanel.ChildLink>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
-	private ImageLink background;
+	private OriginalImageLink background;
 
 	public UIPanel() {
 	}
@@ -36,7 +36,7 @@ public class UIPanel implements UIElement {
 	 * @param file
 	 * @param settlerSeqIndex
 	 */
-	public void setBackground(ImageLink link) {
+	public void setBackground(OriginalImageLink link) {
 		this.background = link;
 	}
 
@@ -88,7 +88,7 @@ public class UIPanel implements UIElement {
 	}
 
 	protected void drawBackground(GLDrawContext gl) {
-		ImageLink link = getBackgroundImage();
+		OriginalImageLink link = getBackgroundImage();
 		if (link != null) {
 			FloatRectangle position = getPosition();
 			Image image = ImageProvider.getInstance().getImage(link);
@@ -124,9 +124,9 @@ public class UIPanel implements UIElement {
 	 * For settler sequences, assumes the same for the next two sequence
 	 * members.
 	 */
-	protected Image getDetailedImage(ImageLink link, float width, float height) {
+	protected Image getDetailedImage(OriginalImageLink link, float width, float height) {
 		Image image = ImageProvider.getInstance().getImage(link);
-		ImageLink currentLink = link;
+		OriginalImageLink currentLink = link;
 
 		for (int i = 1; i < DETAIL_IMAGES
 		        && (image.getWidth() < width || image.getHeight() < height); i++) {
@@ -146,7 +146,7 @@ public class UIPanel implements UIElement {
 		return image;
 	}
 
-	protected ImageLink getBackgroundImage() {
+	protected OriginalImageLink getBackgroundImage() {
 		return background;
 	}
 

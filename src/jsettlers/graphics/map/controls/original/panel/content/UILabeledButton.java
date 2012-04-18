@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -12,9 +12,9 @@ public class UILabeledButton extends UIPanel {
 	private final String text;
 	private final Action action;
 
-	private static final ImageLink BUTTON = new ImageLink(EImageLinkType.GUI,
+	private static final OriginalImageLink BUTTON = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 324, 0);
-	private static final ImageLink BUTTON_ACTIVE = new ImageLink(
+	private static final OriginalImageLink BUTTON_ACTIVE = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 327, 0);
 	private final EFontSize size;
 	

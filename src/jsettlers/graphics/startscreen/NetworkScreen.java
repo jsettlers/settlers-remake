@@ -9,7 +9,7 @@ import go.graphics.event.command.GOCommandEvent;
 import java.util.ArrayList;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.graphics.INetworkScreenAdapter.INetworkPlayer;
@@ -33,14 +33,14 @@ public class NetworkScreen extends RedrawListenerHaver implements SettlersConten
 		this.networkScreen = networkScreen;
 		networkScreen.setListener(this);
 		root = new UIPanel();
-		root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 25, 0));
+		root.setBackground(new OriginalImageLink(EImageLinkType.GUI, 2, 25, 0));
 
 		listContainer = new UIPanel();
 		root.addChild(listContainer, .04f, .1f, .96f, .7f);
 
 		startAllowedButton =
-		        new Button(new FinishAction(), new ImageLink(
-		                EImageLinkType.SETTLER, 2, 17, 0), new ImageLink(
+		        new Button(new FinishAction(), new OriginalImageLink(
+		                EImageLinkType.SETTLER, 2, 17, 0), new OriginalImageLink(
 		                EImageLinkType.SETTLER, 2, 17, 1),
 		                Labels.getString("allow_start_game_descr"));
 		root.addChild(startAllowedButton, 0.65f, .05f, .7f, .08f);

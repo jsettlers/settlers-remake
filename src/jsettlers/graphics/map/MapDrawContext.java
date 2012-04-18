@@ -46,27 +46,27 @@ public final class MapDrawContext {
 	private MapCoordinateConverter converter;
 	Color[] playerColors = new Color[] {
 	        // red
-	        new Color(0xe50000),
+	        new Color(0xffe50000),
 	        // blue
-	        new Color(0x0343df),
+	        new Color(0xff0343df),
 	        // green
-	        new Color(0x15b01a),
+	        new Color(0xff15b01a),
 	        // yellow
-	        new Color(0xffff14),
+	        new Color(0xffffff14),
 	        // purple
-	        new Color(0x7e1e9c),
+	        new Color(0xff7e1e9c),
 	        // teal
-	        new Color(0x029386),
+	        new Color(0xff029386),
 	        // orange
-	        new Color(0xf97306),
+	        new Color(0xfff97306),
 	        // magenta
-	        new Color(0xc20078),
+	        new Color(0xffc20078),
 	        // grey
-	        new Color(0x929591),
+	        new Color(0xff929591),
 	        // violet
-	        new Color(0x9a0eea),
+	        new Color(0xff9a0eea),
 	        // olive
-	        new Color(0x6e750e),
+	        new Color(0xff6e750e),
 	};
 
 	private float zoom;

@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.image.Image;
@@ -17,7 +17,7 @@ public class GenericListItem implements UIListItem {
 	private final String title;
 	private final String description;
 
-	private static final ImageLink SELECT_MARKER = new ImageLink(
+	private static final OriginalImageLink SELECT_MARKER = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 330, 0);
 
 	public GenericListItem(String title, String description) {

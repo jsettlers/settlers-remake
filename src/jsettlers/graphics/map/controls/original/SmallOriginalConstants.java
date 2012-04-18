@@ -1,7 +1,7 @@
 package jsettlers.graphics.map.controls.original;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 
 public class SmallOriginalConstants extends IOriginalConstants {
 
@@ -15,16 +15,16 @@ public class SmallOriginalConstants extends IOriginalConstants {
 		UI_DECORATIONRIGHT = (float) 8 / 209 + UI_CENTERX;
 
 		UI_BG_SEQ_MAIN =
-		        new ImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
 		                UI_BG_SEQINDEX_MAIN, 0);
 		UI_BG_SEQ_MINIMAPR =
-		        new ImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
 		                UI_BG_SEQINDEX_MINIMAPR, 0);
 		UI_BG_SEQ_MINIMAPL =
-		        new ImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
 		                UI_BG_SEQINDEX_MINIMAPL, 0);
 		UI_BG_SEQ_RIGHT =
-		        new ImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
 		                UI_BG_SEQINDEX_RIGHT, 0);
  
 		UI_TABS1_TOP = 1 - (float) 13 / 338;

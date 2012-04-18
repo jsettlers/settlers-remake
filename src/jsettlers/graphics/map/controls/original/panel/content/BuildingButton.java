@@ -4,6 +4,7 @@ import go.graphics.GLDrawContext;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.image.Image;
@@ -20,7 +21,7 @@ public class BuildingButton extends Button {
 
 	private final ImageLink buildingImage;
 
-	private final static ImageLink activeMark = new ImageLink(
+	private final static OriginalImageLink activeMark = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 123, 0);
 
 	public static int ITEM_WIDTH = 60;
@@ -38,7 +39,7 @@ public class BuildingButton extends Button {
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		if (isActive()) {
-			gl.color(1,1,1,1);
+			gl.color(1, 1, 1, 1);
 			ImageProvider
 			        .getInstance()
 			        .getImage(activeMark)
@@ -53,9 +54,14 @@ public class BuildingButton extends Button {
 	@Override
 	protected void drawBackground(GLDrawContext gl) {
 		FloatRectangle position = getPosition();
-		Image image =
-		        getDetailedImage(buildingImage, position.getWidth(),
-		                position.getHeight());
+		Image image;
+		if (buildingImage instanceof OriginalImageLink) {
+			image =
+			        getDetailedImage((OriginalImageLink) buildingImage,
+			                position.getWidth(), position.getHeight());
+		} else {
+			image = ImageProvider.getInstance().getImage(buildingImage);
+		}
 
 		float width =
 		        (float) image.getWidth() / ITEM_WIDTH
@@ -67,7 +73,7 @@ public class BuildingButton extends Button {
 		float cx = getPosition().getCenterX();
 		float cy = getPosition().getCenterY();
 
-		gl.color(1,1,1,1);
+		gl.color(1, 1, 1, 1);
 		image.drawImageAtRect(gl, cx - width / 2, cy - height / 2, cx + width
 		        / 2, cy + height / 2);
 	}

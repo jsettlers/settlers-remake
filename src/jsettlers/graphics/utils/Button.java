@@ -1,6 +1,6 @@
 package jsettlers.graphics.utils;
 
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
 
 /**
@@ -18,10 +18,10 @@ public class Button extends UIPanel implements UIButton {
 	private boolean active = false;
 	private final Action action;
 	private final String description;
-	private final ImageLink image;
-	private final ImageLink activeImage;
+	private final OriginalImageLink image;
+	private final OriginalImageLink activeImage;
 
-	public Button(Action action, ImageLink image, ImageLink active,
+	public Button(Action action, OriginalImageLink image, OriginalImageLink active,
 	        String description) {
 		this.action = action;
 		this.image = image;
@@ -52,7 +52,7 @@ public class Button extends UIPanel implements UIButton {
 	}*/
 	
 	@Override
-	protected ImageLink getBackgroundImage() {
+	protected OriginalImageLink getBackgroundImage() {
 	    return active ? activeImage : image;
 	}
 

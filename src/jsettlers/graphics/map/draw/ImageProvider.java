@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.images.TextureMap;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.ImageIndexFile;
 import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SingleImage;
@@ -34,6 +38,8 @@ public final class ImageProvider {
 
 	private Queue<GLPreloadTask> tasks =
 	        new ConcurrentLinkedQueue<GLPreloadTask>();
+	
+	private ImageIndexFile indexFile = null;
 
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
 		@Override
@@ -193,15 +199,29 @@ public final class ImageProvider {
 	public Image getImage(ImageLink link) {
 		if (link == null) {
 			return NullImage.getInstance();
-		} else if (link.getType() == EImageLinkType.GUI) {
-			return getGuiImage(link.getFile(), link.getSequence());
-		} else if (link.getType() == EImageLinkType.LANDSCAPE) {
-			return getLandscapeImage(link.getFile(), link.getSequence());
+		} else if (link instanceof DirectImageLink) {
+			return getDirectImage((DirectImageLink) link);
 		} else {
-			return getSettlerSequence(link.getFile(), link.getSequence())
-			        .getImageSafe(link.getImage());
+			OriginalImageLink olink = (OriginalImageLink) link;
+			if (olink.getType() == EImageLinkType.GUI) {
+				return getGuiImage(olink.getFile(), olink.getSequence());
+			} else if (olink.getType() == EImageLinkType.LANDSCAPE) {
+				return getLandscapeImage(olink.getFile(), olink.getSequence());
+			} else {
+				return getSettlerSequence(olink.getFile(), olink.getSequence())
+				        .getImageSafe(olink.getImage());
+			}
 		}
 	}
+
+	private Image getDirectImage(DirectImageLink link) {
+		if (indexFile == null) {
+			indexFile = new ImageIndexFile();
+		}
+		
+		int index = TextureMap.getIndex(link.getName());
+	    return indexFile.getImage(index);
+    }
 
 	/**
 	 * marks all loaded images as invalid. TODO: ensure that they get deleted

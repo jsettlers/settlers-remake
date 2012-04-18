@@ -11,7 +11,7 @@ import go.graphics.text.EFontSize;
 import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.network.IMatch;
 import jsettlers.common.network.IMatchSettings;
 import jsettlers.common.position.FloatRectangle;
@@ -27,7 +27,7 @@ import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen extends RedrawListenerHaver implements SettlersContent, INetworkListener {
-	private static final ImageLink BACKGROUND = new ImageLink(
+	private static final OriginalImageLink BACKGROUND = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
 
 	private final LinkedList<RedrawListener> redrawListeners =

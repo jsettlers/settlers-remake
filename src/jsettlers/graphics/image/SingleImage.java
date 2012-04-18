@@ -17,7 +17,6 @@ import jsettlers.graphics.reader.ImageMetadata;
  */
 public class SingleImage implements ImageDataPrivider, Image {
 
-	private static final float IMAGE_DRAW_OFFSET = .5f;
 	protected ShortBuffer data;
 	protected final int width;
 	protected final int height;

@@ -1,7 +1,7 @@
 package jsettlers.graphics.map.controls.original.panel;
 
 import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
@@ -18,13 +18,13 @@ public class TabButton extends Button {
 
 	public TabButton(EContentType content, int file, int image,
 	        int activeImage, String description) {
-		this(content, new ImageLink(EImageLinkType.GUI, file, image, 0),
-		        new ImageLink(EImageLinkType.GUI, file, activeImage, 0),
+		this(content, new OriginalImageLink(EImageLinkType.GUI, file, image, 0),
+		        new OriginalImageLink(EImageLinkType.GUI, file, activeImage, 0),
 		        description);
 	}
 
-	public TabButton(EContentType content, ImageLink image,
-	        ImageLink activeImage, String description) {
+	public TabButton(EContentType content, OriginalImageLink image,
+	        OriginalImageLink activeImage, String description) {
 		super(new ChangePanelAction(content), image, activeImage, description);
 		this.content = content;
 	}

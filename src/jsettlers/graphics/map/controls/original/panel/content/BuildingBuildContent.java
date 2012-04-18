@@ -45,7 +45,8 @@ public class BuildingBuildContent implements ContentFactory, IContextListener {
 	public static final EBuildingType[] socialBuildings = new EBuildingType[] {
 	        EBuildingType.SMALL_LIVINGHOUSE,
 	        EBuildingType.MEDIUM_LIVINGHOUSE,
-	        EBuildingType.BIG_LIVINGHOUSE
+	        EBuildingType.BIG_LIVINGHOUSE,
+	        EBuildingType.LAGERHAUS,
 	};
 
 	private static final int ROWS = 6;

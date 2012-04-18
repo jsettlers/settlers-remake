@@ -1,7 +1,7 @@
 package jsettlers.graphics.map.controls.small;
 
 import go.graphics.GLDrawContext;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.utils.Button;
 
@@ -13,7 +13,7 @@ import jsettlers.graphics.utils.Button;
  */
 public class TabableButton extends Button {
 
-	public TabableButton(Action action, ImageLink image,
+	public TabableButton(Action action, OriginalImageLink image,
             String description) {
 	    super(action, image, image, description);
     }
