@@ -1,5 +1,9 @@
 package jsettlers.logic.newmovable.strategies;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -21,7 +25,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 
 	private final EMovableType movableType;
 
-	private IBuildingJob currentJob = null;
+	private transient IBuildingJob currentJob = null;
 	private IWorkerRequestBuilding building;
 
 	private boolean done;
@@ -34,6 +38,25 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 		this.movableType = movableType;
 
 		reportAsJobless();
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		String currentJobName = ois.readUTF();
+		if (currentJobName.equals("null")) {
+			currentJob = null;
+		} else {
+			currentJob = building.getBuildingType().getJobByName(currentJobName);
+		}
+	}
+
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		oos.defaultWriteObject();
+		if (currentJob != null) {
+			oos.writeUTF(currentJob.getName());
+		} else {
+			oos.writeUTF("null");
+		}
 	}
 
 	@Override
