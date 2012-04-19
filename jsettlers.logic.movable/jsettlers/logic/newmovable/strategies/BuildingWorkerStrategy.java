@@ -254,7 +254,11 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private void dropAction(EMaterialType materialType) {
 		if (!done) {
 			super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
-			done = true;
+			if (materialType == EMaterialType.NO_MATERIAL) { // if materialType == NO_MATERIAL then, don't drop anything, just play the animation
+				jobFinished();
+			} else {
+				done = true;
+			}
 		} else {
 			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
 			jobFinished();
