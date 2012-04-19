@@ -301,8 +301,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		switch (state) {
 		case DOING_NOTHING:
 			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
-				pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
 				EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+				pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
 				goInDirection(pushedFromDir);
 			}
 			break;
