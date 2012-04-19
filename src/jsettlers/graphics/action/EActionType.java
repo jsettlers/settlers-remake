@@ -191,6 +191,11 @@ public enum EActionType {
 	/**
 	 * Gets called when a network grame should be started.
 	 */
-	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START
+	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START, 
+	
+	/**
+	 * Toggles if original graphics should be used by the gui.
+	 */
+	TOGGLE_ORIGINAL_GRAPHICS
 
 }

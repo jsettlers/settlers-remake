@@ -47,7 +47,7 @@ public class ImageIndexFile {
 			throw new IOException("Texture file has wrong version.");
 		}
 
-		int length = in.available() / 2 / 7;
+		int length = in.available() / 2 / 9;
 
 		images = new ImageIndexImage[length];
 		for (int i = 0; i < length; i++) {

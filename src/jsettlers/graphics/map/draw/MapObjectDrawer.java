@@ -12,6 +12,7 @@ import jsettlers.common.buildings.IBuilding.IOccupyed;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
+import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -36,10 +37,10 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public class MapObjectDrawer {
 
-	private static final OriginalImageLink INSIDE_BUILDING_RIGHT = new OriginalImageLink(
-	        EImageLinkType.SETTLER, 12, 28, 1);
-	private static final OriginalImageLink INSIDE_BUILDING_LEFT = new OriginalImageLink(
-	        EImageLinkType.SETTLER, 12, 28, 0);
+	private static final OriginalImageLink INSIDE_BUILDING_RIGHT =
+	        new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 1);
+	private static final OriginalImageLink INSIDE_BUILDING_LEFT =
+	        new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
 	private static final int FILE = 1;
 
@@ -102,6 +103,8 @@ public class MapObjectDrawer {
 
 	private static final int ANIMALS_FILE = 6;
 	private static final int FISH_SEQ = 7;
+	private static final AnimationSequence TREE_TEST_SEQUENCE =
+	        new AnimationSequence("tree_test", 0, 5);;
 
 	int animationStep = 0;
 
@@ -145,7 +148,11 @@ public class MapObjectDrawer {
 			switch (type) {
 
 				case TREE_ADULT:
-					drawTree(context, x, y, color);
+					if (context.ENABLE_ORIGINAL) {
+						drawTree(context, x, y, color);
+					} else {
+						drawTreeTest(context, x, y, color);
+					}
 					break;
 
 				case TREE_DEAD:
@@ -517,6 +524,12 @@ public class MapObjectDrawer {
 
 		int step = getAnimationStep(x, y) % seq.length();
 		seq.getImageSafe(step).draw(context.getGl(), null, color);
+	}
+
+	private void drawTreeTest(MapDrawContext context, int x, int y, float color) {
+		int step = getAnimationStep(x, y) % TREE_TEST_SEQUENCE.getLength();
+		imageProvider.getImage(TREE_TEST_SEQUENCE.getImage(step)).draw(
+		        context.getGl(), null, color);
 	}
 
 	/**

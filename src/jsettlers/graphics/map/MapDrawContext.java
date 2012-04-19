@@ -71,6 +71,8 @@ public final class MapDrawContext {
 
 	private float zoom;
 
+	public boolean ENABLE_ORIGINAL = true;
+
 	// private long beginTime;
 
 	/**

@@ -25,7 +25,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	private LinkedList<IMapInterfaceListener> listeners =
 	        new LinkedList<IMapInterfaceListener>();
-
+	
 	private ActionFirerer actionFirerer = new ActionFirerer(
 	        new ActionFireable() {
 		        @Override
@@ -48,6 +48,7 @@ public class MapInterfaceConnector implements ActionFireable {
 	 */
 	public MapInterfaceConnector(MapContent content) {
 		this.content = content;
+		actionFirerer.setBlockingListener(content);
 	}
 
 	/**

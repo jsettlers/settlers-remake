@@ -18,9 +18,9 @@ public interface Message {
 	/**
 	 * Gets the age of the message, that is the time since it was sent.
 	 * 
-	 * @return The time since it was sent in milliseconds.
+	 * @return The time it was sent in milliseconds.
 	 */
-	int getAge();
+	long getAge();
 
 	/**
 	 * Gets the message content. Only used for chat messages.

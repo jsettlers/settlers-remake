@@ -35,12 +35,14 @@ import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
+import jsettlers.graphics.action.ActionThreadBlockingListener;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.PanToAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
@@ -84,7 +86,8 @@ import jsettlers.graphics.sound.SoundManager;
  * @author michael
  */
 public final class MapContent implements SettlersContent,
-        GOEventHandlerProvoder, IMapInterfaceListener, ActionFireable {
+        GOEventHandlerProvoder, IMapInterfaceListener, ActionFireable,
+        ActionThreadBlockingListener {
 	private boolean ENABLE_DEBUG = false;
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
@@ -218,6 +221,9 @@ public final class MapContent implements SettlersContent,
 		drawMessages(gl);
 
 		drawFramerate(gl);
+		if (actionThreadIsSlow) {
+			drawActionThreadSlow(gl);
+		}
 		drawTooltip(gl);
 		long uitime = System.currentTimeMillis() - start;
 
@@ -330,6 +336,14 @@ public final class MapContent implements SettlersContent,
 			drawer.drawString((int) mousePosition.getX(),
 			        (int) mousePosition.getY(), tooltipString);
 		}
+	}
+
+	private void drawActionThreadSlow(GLDrawContext gl) {
+		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
+		String string = Labels.getString("action_firerer_slow");
+		float x = windowWidth - (float) drawer.getWidth(string) - 40;
+		float y = windowHeight - (float) drawer.getHeight(string) - 10;
+		drawer.drawString(x, y, string);
 	}
 
 	/**
@@ -591,6 +605,8 @@ public final class MapContent implements SettlersContent,
 			return new Action(EActionType.STOP_WORKING);
 		} else if ("e".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_DEBUG);
+		} else if ("o".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.TOGGLE_ORIGINAL_GRAPHICS);
 		} else if ("q".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
@@ -692,6 +708,7 @@ public final class MapContent implements SettlersContent,
 	};
 
 	private UIPoint currentSelectionAreaEnd;
+	private boolean actionThreadIsSlow;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {
@@ -780,6 +797,8 @@ public final class MapContent implements SettlersContent,
 		controls.action(action);
 		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
 			ENABLE_DEBUG = !ENABLE_DEBUG;
+		} else if (action.getActionType() == EActionType.TOGGLE_ORIGINAL_GRAPHICS) {
+			context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
 		} else if (action.getActionType() == EActionType.PAN_TO) {
 			PanToAction panAction = (PanToAction) action;
 			scrollTo(panAction.getCenter(), false);
@@ -837,6 +856,16 @@ public final class MapContent implements SettlersContent,
 		if (fire != null) {
 			getInterfaceConnector().fireAction(fire);
 		}
+	}
+
+	@Override
+	public void actionThreadSlow(boolean isBlocking) {
+		actionThreadIsSlow = isBlocking;
+	}
+
+	@Override
+	public void actionThreadCoughtException(Throwable e) {
+		// This is currently ignroed. TODO: Where to catch exceptions?
 	}
 
 }

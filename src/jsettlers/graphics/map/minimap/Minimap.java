@@ -119,6 +119,9 @@ public final class Minimap {
 	}
 
 	private void drawViewmark(GLDrawContext context) {
+		if (mapViewport == null) {
+			return;
+		}
 		int lineStartX = mapViewport.getLineStartX(0);
 		int firstY = mapViewport.getLineY(0);
 		float minviewx = converter.getViewX(lineStartX, firstY, 0) * width;
