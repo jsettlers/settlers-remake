@@ -17,8 +17,8 @@ import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.network.task.ITask;
 import network.ITaskExecutor;
-import network.task.ITask;
 
 public class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
