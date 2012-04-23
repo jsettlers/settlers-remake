@@ -99,6 +99,7 @@ public class MapGridVisualization extends JPanel {
 		}
 	}
 
+	@SuppressWarnings("null")
 	public static void main(String[] args) {
 		RandomMapFile file = null;// RandomMapFile.getByName("test");
 		RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), 3);

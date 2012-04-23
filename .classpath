@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.main.swing"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/jogl.all.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
