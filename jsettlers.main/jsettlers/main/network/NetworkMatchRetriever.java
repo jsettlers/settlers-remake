@@ -11,9 +11,9 @@ import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.ServerThread;
-import jsettlers.network.server.match.MatchDescription;
-import jsettlers.network.server.match.MatchPlayer;
-import jsettlers.network.server.match.MatchesInfoList;
+import jsettlers.network.server.restapi.MatchDescription;
+import jsettlers.network.server.restapi.MatchPlayer;
+import jsettlers.network.server.restapi.MatchesInfoList;
 
 /**
  * This class retrieves the list of matches for the start screen.
@@ -77,7 +77,8 @@ public class NetworkMatchRetriever implements INetworkConnector {
 		private boolean disconnected = false;
 
 		public void disconnect() {
-			clientThread.cancelConnection();
+			if (clientThread != null)
+				clientThread.cancelConnection();
 			disconnected = true;
 		}
 
@@ -91,14 +92,15 @@ public class NetworkMatchRetriever implements INetworkConnector {
 
 		@Override
 		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
-			IMatch[] matches = new IMatch[matchesList.getMatches().length];
+			IMatch[] matches = new IMatch[matchesList.getOpenMatches().length];
 			int i = 0;
-			for (MatchDescription m : matchesList.getMatches()) {
+			for (MatchDescription m : matchesList.getOpenMatches()) {
 				matches[i] = new NetworkMatch(m.getMatchId(), m.getMatchName(), m.getMapId(), m.getMaxPlayers());
 				i++;
 			}
 
 			setMatchList(this, matches);
+			System.out.println("retrieved network matches: " + matches.length);
 		}
 
 		@Override

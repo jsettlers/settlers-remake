@@ -1,7 +1,7 @@
 package jsettlers.main.network;
 
 import jsettlers.graphics.INetworkScreenAdapter.INetworkPlayer;
-import jsettlers.network.server.match.MatchPlayer;
+import jsettlers.network.server.restapi.MatchPlayer;
 
 final class NetworkPlayer implements INetworkPlayer {
 	private final MatchPlayer matchPlayer;
@@ -21,6 +21,6 @@ final class NetworkPlayer implements INetworkPlayer {
 	}
 
 	public String getUniqueID() {
-		return matchPlayer.getUniqueId();
+		return matchPlayer.getId();
 	}
 }

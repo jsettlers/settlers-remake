@@ -20,7 +20,7 @@ import jsettlers.main.network.NetworkMatchOpener.INetworkStartListener;
 import jsettlers.main.network.NetworkRunningGameConnector;
 import jsettlers.main.network.NetworkScreenAdapter;
 import jsettlers.network.client.ClientThread;
-import jsettlers.network.server.match.MatchDescription;
+import jsettlers.network.server.restapi.MatchDescription;
 import network.NetworkManager;
 
 /**

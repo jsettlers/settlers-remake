@@ -12,9 +12,9 @@ import jsettlers.main.ManagedJSettlers;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
-import jsettlers.network.server.match.MatchDescription;
-import jsettlers.network.server.match.MatchPlayer;
-import jsettlers.network.server.match.MatchesInfoList;
+import jsettlers.network.server.restapi.MatchDescription;
+import jsettlers.network.server.restapi.MatchPlayer;
+import jsettlers.network.server.restapi.MatchesInfoList;
 
 /**
  * This adapter provides everything the gui needs to display a network screen.
