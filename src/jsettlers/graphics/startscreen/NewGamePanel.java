@@ -11,6 +11,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
+import jsettlers.graphics.utils.UIList;
 import jsettlers.graphics.utils.UIPanel;
 
 public class NewGamePanel extends UIPanel {

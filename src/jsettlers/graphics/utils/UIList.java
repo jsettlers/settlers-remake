@@ -1,4 +1,4 @@
-package jsettlers.graphics.startscreen;
+package jsettlers.graphics.utils;
 
 import go.graphics.GLDrawContext;
 
@@ -9,7 +9,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.UIElement;
+import jsettlers.graphics.startscreen.ExecutableAction;
 
 public class UIList<T extends UIListItem> implements UIElement {
 	private static final OriginalImageLink SCROLLBAR_TOP = new OriginalImageLink(
@@ -21,10 +21,11 @@ public class UIList<T extends UIListItem> implements UIElement {
 
 	private static final float RIGHTBORDER = .97f;
 	private static final float EDGEPART = .02f;
+	private static final float SLIDER_MIN_HEIGHT = 0.1f;
 	private final float itemheight;
 	private FloatRectangle position;
 
-	private float listoffset = 0; // relative
+	private float listoffset = 0; // relative in UI space
 	private final List<T> items;
 	private T activeItem;
 
@@ -47,7 +48,7 @@ public class UIList<T extends UIListItem> implements UIElement {
 		if (listoffset < 0) {
 			listoffset = 0;
 		} else if (listoffset + 1 > totallistheigt) {
-			listoffset = Math.min(0, totallistheigt);
+			listoffset = Math.max(0, totallistheigt - 1);
 		}
 
 		float minY = position.getMinY();
@@ -74,18 +75,28 @@ public class UIList<T extends UIListItem> implements UIElement {
 			item.drawAt(gl);
 		}
 
+		float sliderHeight = Math.min(1, Math.max(SLIDER_MIN_HEIGHT, 1 / totallistheigt));
+		float slide = (1 - sliderHeight) * listoffset / (totallistheigt - 1);
+		float sliderMax = 1 - slide;
+		
+		float sliderMin = sliderMax - sliderHeight;
+		float edgeHeight = height * EDGEPART; //bottom / top edge at side.
+		
+		float sliderMinY = sliderMin * height + minY;
+		float sliderMaxY = sliderMax * height + minY;
+		
 		// side
 		ImageProvider provider = ImageProvider.getInstance();
 		gl.color(1, 1, 1, 1);
 		provider.getImage(SCROLLBAR_TOP).drawImageAtRect(gl,
-		        minX + width * RIGHTBORDER, minY + height * (1 - EDGEPART),
-		        minX + width, minY + height);
+		        minX + width * RIGHTBORDER, sliderMaxY - edgeHeight,
+		        minX + width, sliderMaxY);
 		provider.getImage(SCROLLBAR_MIDDLE).drawImageAtRect(gl,
-		        minX + width * RIGHTBORDER, minY + height * EDGEPART,
-		        minX + width, minY + height * (1 - EDGEPART));
+		        minX + width * RIGHTBORDER, sliderMinY + edgeHeight,
+		        minX + width, sliderMaxY  - edgeHeight);
 		provider.getImage(SCROLLBAR_BOTTOM).drawImageAtRect(gl,
-		        minX + width * RIGHTBORDER, minY, minX + width,
-		        minY + EDGEPART * height);
+		        minX + width * RIGHTBORDER, sliderMinY, minX + width,
+		        sliderMinY + edgeHeight);
 	}
 
 	@Override
@@ -99,9 +110,24 @@ public class UIList<T extends UIListItem> implements UIElement {
 				return null;
 			}
 		} else {
-			return null;
+			//relative to list height
+			int destCenterItem = (int) ((1 - relativey) * items.size());
+			int currentCenterItem = (int) (listoffset + .5f / itemheight);
+			
+			final int toScroll = destCenterItem - currentCenterItem;
+			
+			return new ExecutableAction() {
+				@Override
+				public void execute() {
+					scrollBy(toScroll);
+				}
+			};
 		}
 	}
+
+	protected void scrollBy(int toScroll) {
+	    listoffset += itemheight * toScroll;
+    }
 
 	private class SelectAction extends ExecutableAction {
 		private final T item;
@@ -112,6 +138,7 @@ public class UIList<T extends UIListItem> implements UIElement {
 
 		@Override
 		public void execute() {
+			//TODO: setActiveUIElement();
 			setActiveItem(item);
 		}
 	}

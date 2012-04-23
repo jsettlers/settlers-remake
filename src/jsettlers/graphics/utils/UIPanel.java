@@ -5,6 +5,7 @@ import go.graphics.GLDrawContext;
 import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
@@ -25,7 +26,7 @@ public class UIPanel implements UIElement {
 	        new LinkedList<UIPanel.ChildLink>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
-	private OriginalImageLink background;
+	private ImageLink background;
 
 	public UIPanel() {
 	}
@@ -36,8 +37,8 @@ public class UIPanel implements UIElement {
 	 * @param file
 	 * @param settlerSeqIndex
 	 */
-	public void setBackground(OriginalImageLink link) {
-		this.background = link;
+	public void setBackground(ImageLink imageLink) {
+		this.background = imageLink;
 	}
 
 	/**
@@ -88,7 +89,7 @@ public class UIPanel implements UIElement {
 	}
 
 	protected void drawBackground(GLDrawContext gl) {
-		OriginalImageLink link = getBackgroundImage();
+		ImageLink link = getBackgroundImage();
 		if (link != null) {
 			FloatRectangle position = getPosition();
 			Image image = ImageProvider.getInstance().getImage(link);
@@ -146,7 +147,7 @@ public class UIPanel implements UIElement {
 		return image;
 	}
 
-	protected OriginalImageLink getBackgroundImage() {
+	protected ImageLink getBackgroundImage() {
 		return background;
 	}
 

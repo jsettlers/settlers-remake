@@ -19,6 +19,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.utils.UIList;
 import jsettlers.graphics.utils.UIPanel;
 
 public class NetworkScreen extends RedrawListenerHaver implements SettlersContent, INetworkScreenListener {

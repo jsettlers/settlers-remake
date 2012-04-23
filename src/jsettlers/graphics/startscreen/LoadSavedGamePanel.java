@@ -8,6 +8,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
+import jsettlers.graphics.utils.UIList;
 import jsettlers.graphics.utils.UIPanel;
 
 public class LoadSavedGamePanel extends UIPanel {

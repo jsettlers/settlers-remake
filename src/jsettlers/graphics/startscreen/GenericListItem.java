@@ -9,6 +9,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.utils.UIListItem;
 
 public class GenericListItem implements UIListItem {
 
