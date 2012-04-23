@@ -33,8 +33,8 @@ CR-028 [x]  rev 722    ae   --       Move fog of war to logic and algorithms
 CR-029 [x] ~rev 760    ae   --       Slow down tick rate of NetworkTimer
 CR-030 [ ]                  --       pig farmer leaves his position when working on third pig
 CR-031 [ ]                  --       think about an auto repair for offers and requests function for the stacks: remove old offers and reinsert them from time to time
-CR-032 [ ]                  --       
-CR-033 [ ]                  --       
+CR-032 [ ]                  --       it's possible to select multiple buildings
+CR-033 [ ]                  --       some buildings are not completely constructed
 CR-034 [ ]                  --       
 CR-035 [ ]                  --       
 CR-036 [ ]                  --       
