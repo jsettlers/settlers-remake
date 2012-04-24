@@ -11,8 +11,8 @@ import jsettlers.common.network.IMatch;
  */
 public interface INetworkConnector {
 	/**
-	 * Lets the user set the address to use. A match update event is sent
-	 * shortly afterwards.
+	 * Lets the user set the address to use and inits retrieving of the open
+	 * matches. A match update should be sent shortly afterwards.
 	 * 
 	 * @param address
 	 *            The address as String.
@@ -41,6 +41,11 @@ public interface INetworkConnector {
 	 * @return the array of matches
 	 */
 	public IMatch[] getMatches();
+
+	/**
+	 * terminates the used thread.
+	 */
+	public void disconnect();
 
 	/**
 	 * This listener is notified whenever the list of matches changed.
