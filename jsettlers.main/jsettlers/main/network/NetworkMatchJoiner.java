@@ -11,7 +11,6 @@ import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.restapi.MatchDescription;
 import jsettlers.network.server.restapi.MatchPlayer;
-import jsettlers.network.server.restapi.MatchesInfoList;
 
 public class NetworkMatchJoiner implements INetworkConnectTask {
 	private final String serverAddress;
@@ -65,10 +64,6 @@ public class NetworkMatchJoiner implements INetworkConnectTask {
 			synchronized (waitForStartMutex) {
 				waitForStartMutex.notifyAll();
 			}
-		}
-
-		@Override
-		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
 		}
 
 		@Override

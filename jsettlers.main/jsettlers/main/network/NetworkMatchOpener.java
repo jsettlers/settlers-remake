@@ -12,7 +12,6 @@ import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.ServerThread;
 import jsettlers.network.server.restapi.MatchDescription;
 import jsettlers.network.server.restapi.MatchPlayer;
-import jsettlers.network.server.restapi.MatchesInfoList;
 
 /**
  * A helper class for jsettlers to open a network match.
@@ -56,7 +55,7 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 			try {
 				String serverAddress;
 				if (server == null || server.isEmpty()) {
-					serverAddress = ServerThread.retrievLanServerAddress(5); // try to find lan server
+					serverAddress = ServerThread.retrieveLanServerAddress(5); // try to find lan server
 
 					if (serverAddress == null) { // if no lan server has been found
 						// start new server
@@ -99,11 +98,6 @@ public class NetworkMatchOpener implements INetworkConnectTask {
 			synchronized (waitForStartMutex) {
 				waitForStartMutex.notifyAll();
 			}
-		}
-
-		@Override
-		public void retrievedMatchesEvent(MatchesInfoList matchesList) {
-
 		}
 
 		@Override

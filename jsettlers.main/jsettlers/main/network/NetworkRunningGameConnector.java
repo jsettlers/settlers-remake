@@ -10,7 +10,6 @@ import jsettlers.network.client.IClientThreadListener;
 import jsettlers.network.client.request.EClientRequest;
 import jsettlers.network.server.restapi.MatchDescription;
 import jsettlers.network.server.restapi.MatchPlayer;
-import jsettlers.network.server.restapi.MatchesInfoList;
 import network.INetworkServerConnector;
 import network.IProxiedObjectListener;
 
@@ -104,11 +103,6 @@ public class NetworkRunningGameConnector implements IClientThreadListener, INetw
 
 	@Override
 	public void joinedMatchEvent(MatchDescription match) {
-		// ignore
-	}
-
-	@Override
-	public void retrievedMatchesEvent(MatchesInfoList matchesList) {
 		// ignore
 	}
 
