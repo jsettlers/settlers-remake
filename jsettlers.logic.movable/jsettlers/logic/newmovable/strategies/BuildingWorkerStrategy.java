@@ -118,7 +118,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		case DROP:
-			dropAction(super.getMaterial());
+			dropAction(currentJob.getMaterial());
 			break;
 		case DROP_POPPED:
 			dropAction(poppedMaterial);
