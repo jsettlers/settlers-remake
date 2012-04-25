@@ -82,11 +82,8 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		case WALK:
-			if (super.forceGoInDirection(currentJob.getDirection())) {
-				jobFinished();
-			} else {
-				jobFailed();
-			}
+			super.forceGoInDirection(currentJob.getDirection());
+			jobFinished();
 			break;
 
 		case SHOW:

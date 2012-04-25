@@ -241,7 +241,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private void progressCurrentAction() {
 		progress += progressIncrease;
-		if (progress >= 1.01) { // > 1.01 ensures that the image for 100 % is also shown for one cycle
+		if (progress >= 1) {
 			setState(ENewMovableState.DOING_NOTHING);
 			this.movableAction = EAction.NO_ACTION;
 		}
@@ -440,17 +440,12 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * 
 	 * @param direction
 	 *            direction to go
-	 * @return true if the step can and will immediately be executed. <br>
-	 *         false if the target position is blocked for this movable.
 	 */
-	final boolean forceGoInDirection(EDirection direction) {
+	final void forceGoInDirection(EDirection direction) {
 		ShortPoint2D targetPos = direction.getNextHexPoint(position);
-		if (grid.isValidPosition(this, targetPos)) {
-			this.followPath(new Path(targetPos));
-			return true;
-		} else {
-			return false;
-		}
+		this.direction = direction;
+		this.followPath(new Path(targetPos));
+		this.goSinglePathStep();
 	}
 
 	/**

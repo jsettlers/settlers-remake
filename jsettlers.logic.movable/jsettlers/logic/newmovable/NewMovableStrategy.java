@@ -126,11 +126,9 @@ public abstract class NewMovableStrategy implements Serializable {
 	 * 
 	 * @param direction
 	 *            direction to go
-	 * @return true if the step can and will immediately be executed. <br>
-	 *         false if the target position is blocked for this movable.
 	 */
-	protected final boolean forceGoInDirection(EDirection direction) {
-		return movable.forceGoInDirection(direction);
+	protected final void forceGoInDirection(EDirection direction) {
+		movable.forceGoInDirection(direction);
 	}
 
 	protected final void setPosition(ShortPoint2D pos) {
