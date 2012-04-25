@@ -7,7 +7,7 @@ public enum EBuildingJobType {
 	/**
 	 * Waits a given time.
 	 * <p>
-	 * Parameter: time
+	 * Parameter: time (in seconds)
 	 * <p>
 	 * Success: The time elapsed.
 	 * <p>
@@ -18,7 +18,8 @@ public enum EBuildingJobType {
 	WAIT,
 
 	/**
-	 * Lets the settler walk in a given direction. The settler may wait.
+	 * Lets the settler walk in a given direction. The settler may wait. The
+	 * settler may walk on blocked tiles with this command.
 	 * <p>
 	 * Parameter: direction
 	 * <p>
@@ -29,7 +30,8 @@ public enum EBuildingJobType {
 	WALK,
 
 	/**
-	 * Shows the settler at a given position.
+	 * Shows the settler at a given position. The settler just appears there.
+	 * The position may be blocked.
 	 * <p>
 	 * Parameter: dx, dy
 	 * <p>
@@ -55,15 +57,15 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Parameter: material
 	 * <p>
-	 * Success: good
+	 * Success: always
 	 * <p>
-	 * Fail: There was no given material at that position.
+	 * Fail: never
 	 */
 	SET_MATERIAL,
 
 	/**
-	 * Picks up the specified material. Does not change the material type
-	 * assigned to the settler
+	 * Picks up the specified material. Does not change the material property
+	 * of the settler
 	 * <p>
 	 * Parameter: material
 	 * <p>
@@ -74,13 +76,16 @@ public enum EBuildingJobType {
 	TAKE,
 
 	/**
-	 * Lets the settler drop the given material to the stack at the positon.
+	 * Lets the settler drop the given material to the stack at the position.
+	 * <p>
+	 * The given material that is dropped is independent from the material the
+	 * settler is having, and the material property is not changed by this call.
 	 * <p>
 	 * Parameter: material
 	 * <p>
 	 * Success: When the settler dropped the material.
 	 * <p>
-	 * Fail: If the drop is impossible.
+	 * Fail: If the drop is impossible, e.g. because there is already material at that position.
 	 */
 	DROP,
 
@@ -158,7 +163,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Success: The animation was played.
 	 * <p>
-	 * Fail: something was wrong...
+	 * Fail: should not happen.
 	 */
 	PLAY_ACTION1,
 
@@ -212,65 +217,73 @@ public enum EBuildingJobType {
 	 * otherwise.
 	 */
 	IS_PRODUCTIVE,
-	
+
 	/**
 	 * Puts a smoke thing at a given position.
+	 * <p>
+	 * Parameters: The position where smoke should be.
 	 */
 	SMOKE_ON,
-	
+
 	/**
 	 * Removes the smoke.
+	 * <p>
+	 * Parameters: The position where smoke was.
 	 */
-	SMOKE_OFF, 
+	SMOKE_OFF,
+
+	/**
+	 * Building starts working, e.g. for a mill.
+	 */
+	START_WORKING, 
 	
 	/**
-	 * Building starts working
+	 * Building stops working, e.g. for a mill.
 	 */
-	START_WORKING,
 	STOP_WORKING,
-	
+
 	/**
 	 * pop a material at a given position.
 	 */
 	REMOTETAKE,
-	
+
 	/**
 	 * Places a pig at (dx, dy)
 	 */
 	PIG_PLACE,
-	
+
 	/**
 	 * Removes a pig at (dx, dy)
 	 */
 	PIG_REMOVE,
-	
+
 	/**
 	 * Succeeds only if there is an adult pig at (dx, dy)
 	 */
 	PIG_IS_ADULT,
-	
+
 	/**
 	 * Succeeds if there is a pig at (dx, dy)
 	 */
 	PIG_IS_THERE,
-	
+
 	/**
 	 * Pops a tool from the list of tools that should be produced.
 	 * <p>
 	 * fails if there is noting to do.
 	 */
 	POP_TOOL,
-	
+
 	/**
 	 * Pops a weapon from the list of tools that should be produced.
 	 * <p>
 	 * fails if there is noting to do.
 	 */
 	POP_WEAPON,
-	
+
 	/**
-	 * Drops a tool/weapon that was requested with {@link #POP_TOOL} or {@link #POP_WEAPON}
+	 * Drops a tool/weapon that was requested with {@link #POP_TOOL} or
+	 * {@link #POP_WEAPON}
 	 */
 	DROP_POPPED,
 }
-
