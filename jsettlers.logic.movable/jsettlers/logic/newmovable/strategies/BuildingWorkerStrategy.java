@@ -388,7 +388,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	@Override
-	protected void killedEvent(ShortPoint2D pathTarget) { // used in overriding methods
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 		dropCurrMaterial();
 	}
 }

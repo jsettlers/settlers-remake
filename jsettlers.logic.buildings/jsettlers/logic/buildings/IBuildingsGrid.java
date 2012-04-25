@@ -7,9 +7,9 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
-import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
@@ -70,7 +70,7 @@ public interface IBuildingsGrid {
 
 	void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding);
 
-	void requestSoilderable(Barrack barrack);
+	void requestSoilderable(IBarrack barrack);
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 

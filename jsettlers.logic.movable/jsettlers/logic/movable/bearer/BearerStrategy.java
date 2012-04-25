@@ -4,9 +4,9 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.movable.IMovableGrid;
 import jsettlers.logic.movable.Movable;
@@ -20,7 +20,7 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	private IMaterialRequester requester;
 	private EMaterialType materialType;
 	private EMovableType movableType;
-	private Barrack barrack;
+	private IBarrack barrack;
 
 	public BearerStrategy(IMovableGrid grid, Movable movable) {
 		super(grid, movable);
@@ -212,18 +212,18 @@ public class BearerStrategy extends PathableStrategy implements IManageableBeare
 	}
 
 	@Override
-	public void becomeWorker(EMovableType movableType) {
+	public void becomeWorker(IWorkerRequester requester, EMovableType movableType) {
 		super.convertTo(movableType);
 	}
 
 	@Override
-	public void becomeSoldier(Barrack barrack) {
+	public void becomeSoldier(IBarrack barrack) {
 		this.barrack = barrack;
 		this.state = EBearerState.SOLDIER_INIT;
 	}
 
 	@Override
-	public void becomeWorker(EMovableType movableType, ShortPoint2D offer) {
+	public void becomeWorker(IWorkerRequester requester, EMovableType movableType, ShortPoint2D offer) {
 		this.offer = offer;
 		this.movableType = movableType;
 		this.materialType = movableType.getTool();

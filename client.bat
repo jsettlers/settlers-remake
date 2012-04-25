@@ -1,1 +1,0 @@
-javaw.exe -jar JSettlers.jar client

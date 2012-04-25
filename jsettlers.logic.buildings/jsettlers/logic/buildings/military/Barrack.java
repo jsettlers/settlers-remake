@@ -4,17 +4,18 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.stack.RequestStack;
 
 /**
- * This is the barrack building. It requests bearers to become soilders.
+ * This is the barrack building. It requests bearers to become soldiers.
  * 
- * @author michael
+ * @author Andreas Eberle
  */
-public class Barrack extends Building {
+public class Barrack extends Building implements IBarrack {
 	private static final long serialVersionUID = -6541972855836598068L;
 
 	private boolean stoppedWorking = false;
@@ -74,6 +75,7 @@ public class Barrack extends Building {
 		return calculateRealPoint(flag.getDx(), flag.getDy());
 	}
 
+	@Override
 	public EMovableType popWeaponForBearer() {
 		for (RequestStack stack : super.getStacks()) {
 			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
@@ -103,6 +105,11 @@ public class Barrack extends Building {
 	@Override
 	public final boolean isOccupied() {
 		return true;
+	}
+
+	@Override
+	public void bearerRequestFailed() {
+		requestedBearer--;
 	}
 
 }

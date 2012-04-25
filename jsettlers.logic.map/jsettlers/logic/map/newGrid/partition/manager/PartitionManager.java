@@ -14,14 +14,15 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.queue.SlotQueue;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer.IWorkerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -34,7 +35,7 @@ import jsettlers.logic.timer.PartitionManagerTimer;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionManager implements ITimerable, Serializable {
+public final class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
 	private static final long serialVersionUID = 1L;
 
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
@@ -106,7 +107,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		workerRequests.offer(new WorkerRequest(workerType, workerBuilding));
 	}
 
-	public void requestSoilderable(Barrack barrack) {
+	public void requestSoilderable(IBarrack barrack) {
 		soilderCreationRequests.offer(new SoilderCreationRequest(barrack));
 	}
 
@@ -246,7 +247,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 				if (offer != null) {
 					IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
 					if (manageableBearer != null) {
-						manageableBearer.becomeWorker(workerRequest.movableType, offer.position);
+						manageableBearer.becomeWorker(this, workerRequest.movableType, offer.position);
 						reduceOfferAmount(offer);
 					} else {
 						workerCreationRequests.addLast(workerRequest);
@@ -261,12 +262,17 @@ public final class PartitionManager implements ITimerable, Serializable {
 			} else {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
 				if (manageableBearer != null) {
-					manageableBearer.becomeWorker(workerRequest.movableType);
+					manageableBearer.becomeWorker(this, workerRequest.movableType);
 				} else {
 					workerCreationRequests.addLast(workerRequest);
 				}
 			}
 		}
+	}
+
+	@Override
+	public void workerCreationRequestFailed(EMovableType type, ShortPoint2D position) {
+		workerCreationRequests.add(new WorkerCreationRequest(type, position));
 	}
 
 	private void handleSoldierCreationRequest() {
@@ -377,7 +383,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 
 	}
 
-	private final static class Request implements Comparable<Request>, Serializable, ILocatable {
+	final static class Request implements Comparable<Request>, Serializable, ILocatable {
 		private static final long serialVersionUID = -3427364937835501076L;
 
 		final IMaterialRequester requester;
@@ -406,7 +412,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private static final class DiggerRequest implements ILocatable, Serializable {
+	static final class DiggerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -3781604767367556333L;
 
 		final IDiggerRequester requester;
@@ -424,7 +430,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private static final class BricklayerRequest implements ILocatable, Serializable {
+	static final class BricklayerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -1673422793657988587L;
 
 		boolean creationRequested = false;
@@ -444,13 +450,13 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private static final class WorkerCreationRequest implements ILocatable, Serializable {
-		public boolean produceToolRequested;
-
+	static final class WorkerCreationRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = 3047014371520017602L;
 
 		final EMovableType movableType;
 		final ShortPoint2D position;
+
+		boolean produceToolRequested;
 
 		public WorkerCreationRequest(EMovableType movableType, ShortPoint2D position) {
 			this.movableType = movableType;
@@ -468,12 +474,12 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private static final class SoilderCreationRequest implements ILocatable, Serializable {
+	static final class SoilderCreationRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -3108188242025391145L;
 
-		private final Barrack barrack;
+		final IBarrack barrack;
 
-		public SoilderCreationRequest(Barrack barrack) {
+		public SoilderCreationRequest(IBarrack barrack) {
 			this.barrack = barrack;
 		}
 
@@ -487,12 +493,12 @@ public final class PartitionManager implements ITimerable, Serializable {
 			return barrack.getDoor();
 		}
 
-		public Barrack getBarrack() {
+		public IBarrack getBarrack() {
 			return barrack;
 		}
 	}
 
-	private static final class MaterialTypeAcceptor implements IAcceptor<Offer>, Serializable {
+	static final class MaterialTypeAcceptor implements IAcceptor<Offer>, Serializable {
 		private static final long serialVersionUID = 635444536013281565L;
 
 		EMaterialType materialType = null;
@@ -503,7 +509,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private static final class MovableTypeAcceptor implements IAcceptor<IManageableWorker>, Serializable {
+	static final class MovableTypeAcceptor implements IAcceptor<IManageableWorker>, Serializable {
 		private static final long serialVersionUID = 111392803354934224L;
 
 		EMovableType movableType = null;
@@ -514,7 +520,7 @@ public final class PartitionManager implements ITimerable, Serializable {
 		}
 	}
 
-	private static final class WorkerRequest implements ILocatable, Serializable {
+	static final class WorkerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = 6420250669583553112L;
 
 		final EMovableType movableType;
@@ -578,4 +584,5 @@ public final class PartitionManager implements ITimerable, Serializable {
 	public void kill() {
 		throw new UnsupportedOperationException("CAN'T KILL PARTITION MANAGER!! THIS REALLY SHOULD NOT HAPPEN!");
 	}
+
 }

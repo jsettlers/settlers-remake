@@ -65,7 +65,6 @@ import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -82,6 +81,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.map.save.MapFileHeader;
@@ -1287,7 +1287,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void requestSoilderable(Barrack barrack) {
+		public final void requestSoilderable(IBarrack barrack) {
 			partitionsGrid.requestSoilderable(barrack);
 		}
 

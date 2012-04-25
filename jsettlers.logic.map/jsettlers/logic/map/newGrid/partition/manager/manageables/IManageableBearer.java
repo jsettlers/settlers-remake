@@ -4,7 +4,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.military.Barrack;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
 /**
@@ -17,9 +17,19 @@ public interface IManageableBearer extends IManageable, ILocatable {
 
 	void executeJob(ShortPoint2D offer, IMaterialRequester requester, EMaterialType materialType);
 
-	void becomeWorker(EMovableType movableType);
+	void becomeWorker(IWorkerRequester requester, EMovableType movableType);
 
-	void becomeWorker(EMovableType movableType, ShortPoint2D offer);
+	void becomeWorker(IWorkerRequester requester, EMovableType movableType, ShortPoint2D offer);
 
-	void becomeSoldier(Barrack barrack);
+	void becomeSoldier(IBarrack barrack);
+
+	/**
+	 * This interface is used by the bearers to signal the need of a reoffer of the worker creation request.
+	 * 
+	 * @author Andreas Eberle
+	 * 
+	 */
+	public static interface IWorkerRequester {
+		void workerCreationRequestFailed(EMovableType type, ShortPoint2D position);
+	}
 }

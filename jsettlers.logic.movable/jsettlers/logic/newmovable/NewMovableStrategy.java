@@ -206,13 +206,13 @@ public abstract class NewMovableStrategy implements Serializable {
 	}
 
 	/**
-	 * This method is called when a movable is killed and can be used for finalization.
+	 * This method is called when a movable is killed or converted to another strategy and can be used for finalization work.
 	 * 
 	 * @param pathTarget
 	 *            if the movable is currently walking on a path, this is the target of the path<br>
 	 *            else it is null.
 	 */
-	protected void killedEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
+	protected void strategyKilledEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
 	}
 
 	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D oldTargetPos, @SuppressWarnings("unused") ShortPoint2D targetPos) {

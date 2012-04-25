@@ -557,7 +557,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		MovableTimer.remove(this);
 		grid.leavePosition(this.position, this);
 		this.health = 0;
-		this.strategy.killedEvent(path != null ? path.getTargetPos() : null);
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);
@@ -666,9 +666,12 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * @param movableType
 	 */
 	public final void convertTo(EMovableType movableType) {
-		this.movableType = movableType;
-		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-		setState(ENewMovableState.DOING_NOTHING);
+		if (this.movableType != movableType) {
+			this.movableType = movableType;
+			this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+			this.strategy = NewMovableStrategy.getStrategy(this, movableType);
+			setState(ENewMovableState.DOING_NOTHING);
+		}
 	}
 
 	public boolean setOccupyableBuilding(IOccupyableBuilding building) {

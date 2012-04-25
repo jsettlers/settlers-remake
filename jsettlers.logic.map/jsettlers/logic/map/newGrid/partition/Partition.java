@@ -7,13 +7,13 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
@@ -107,7 +107,7 @@ public final class Partition implements Serializable {
 		manager.requestBuildingWorker(workerType, workerBuilding);
 	}
 
-	public void requestSoilderable(Barrack barrack) {
+	public void requestSoilderable(IBarrack barrack) {
 		manager.requestSoilderable(barrack);
 	}
 

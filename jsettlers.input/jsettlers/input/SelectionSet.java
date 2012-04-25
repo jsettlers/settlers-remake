@@ -37,15 +37,23 @@ public final class SelectionSet implements ISelectionSet {
 		add(selectable);
 	}
 
+	/**
+	 * This methods decides if the given {@link ISelectable} can be added to this selection set or not.
+	 * 
+	 * @param selectable
+	 */
 	public synchronized void add(ISelectable selectable) {
-		if (selectable.getSelectionType().priority < selectionType.priority) {
+		ESelectionType selectionType = selectable.getSelectionType();
+		if (selectionType.priority < this.selectionType.priority) {
 			return; // selectable is of lower priority
-		} else if (selectable.getSelectionType().priority > selectionType.priority) {
+		} else if (selectionType.priority > this.selectionType.priority) {
 			clear();
-			selectionType = selectable.getSelectionType();
+			this.selectionType = selectionType;
 		}
 
-		set.add(selectable);
+		if (selectionType.maxSelected > set.size()) {
+			set.add(selectable);
+		}
 	}
 
 	public synchronized void clear() {

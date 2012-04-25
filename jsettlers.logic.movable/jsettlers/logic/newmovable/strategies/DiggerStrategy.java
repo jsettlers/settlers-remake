@@ -113,7 +113,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	@Override
-	protected void killedEvent(ShortPoint2D pathTarget) {
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (pathTarget != null) {
 			super.getStrategyGrid().setMarked(pathTarget, false);
 		}

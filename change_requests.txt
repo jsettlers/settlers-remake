@@ -21,7 +21,7 @@ CR-016 [x] ~rev 800   ae    --       make a thief strategy
 CR-017 [x] ~rev 840   mz    --       make a map editor
 CR-018 [ ]                  --       make bearers unkillable
 CR-019 [ ]  rev 957   ae    --       introduce different selection levels: soldiers, specialistst and bearers.
-CR-020 [ ]                  --       add a priority for different goods to be transported by bearers.
+CR-020 [x]            mz    --       add a priority for different goods to be transported by bearers.
 CR-021 [ ]                  --       add a priority for the buildings, in which they receive goods.
 CR-022 [x] ~rev 780    ae   --       Make buildings destructable
 CR-023 [x]  rev 724    ae   --       Do not dig on mountains (mine construction)
@@ -33,7 +33,7 @@ CR-028 [x]  rev 722    ae   --       Move fog of war to logic and algorithms
 CR-029 [x] ~rev 760    ae   --       Slow down tick rate of NetworkTimer
 CR-030 [ ]                  --       pig farmer leaves his position when working on third pig
 CR-031 [ ]                  --       think about an auto repair for offers and requests function for the stacks: remove old offers and reinsert them from time to time
-CR-032 [ ]                  --       it's possible to select multiple buildings
+CR-032 [ ]  rev 1014   ae   --       it's possible to select multiple buildings
 CR-033 [ ]                  --       some buildings are not completely constructed
 CR-034 [ ]                  --       
 CR-035 [ ]                  --       

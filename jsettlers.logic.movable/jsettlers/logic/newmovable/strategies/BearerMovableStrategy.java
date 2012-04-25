@@ -4,9 +4,9 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
@@ -28,6 +28,10 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 
 	private EMovableType targetMovableType;
 
+	private IBarrack barrack;
+
+	private IWorkerRequester workerRequester;
+
 	public BearerMovableStrategy(NewMovable movable) {
 		super(movable);
 		reportAsJobless();
@@ -46,7 +50,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		case INIT_CARRY_JOB:
 			state = EBearerState.GOING_TO_OFFER;
 			if (!super.goToPos(offer)) {
-				handleJobFailed();
+				handleJobFailed(true);
 			}
 			break;
 		case GOING_TO_OFFER:
@@ -54,24 +58,24 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 				super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.TAKING;
 			} else {
-				handleJobFailed();
+				handleJobFailed(true);
 			}
 			break;
 		case TAKING:
 			if (super.getStrategyGrid().takeMaterial(super.getPos(), materialType)) {
 				if (requester == null) { // we handle a convert with tool job
-					super.convertTo(targetMovableType);
 					state = EBearerState.DEAD_OBJECT;
+					super.convertTo(targetMovableType);
 				} else {
 					super.setMaterial(materialType);
 					offer = null;
 					state = EBearerState.GOING_TO_REQUEST;
 					if (!super.goToPos(requester.getPos())) {
-						handleJobFailed();
+						handleJobFailed(true);
 					}
 				}
 			} else {
-				handleJobFailed();
+				handleJobFailed(true);
 			}
 			break;
 		case GOING_TO_REQUEST:
@@ -79,7 +83,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 				super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.DROPPING;
 			} else {
-				handleJobFailed();
+				handleJobFailed(true);
 			}
 			break;
 		case DROPPING:
@@ -92,8 +96,25 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			break;
 
 		case INIT_CONVERT_JOB:
-			super.convertTo(targetMovableType);
 			state = EBearerState.DEAD_OBJECT;
+			super.convertTo(targetMovableType);
+			break;
+
+		case INIT_BECOME_SOLDIER_JOB:
+			super.goToPos(barrack.getDoor());
+			state = EBearerState.GOING_TO_BARRACK;
+			break;
+
+		case GOING_TO_BARRACK:
+			EMovableType movableType = barrack.popWeaponForBearer();
+			if (movableType == null) { // weapon got missing, make this bearer jobless again
+				this.barrack = null;
+				this.state = EBearerState.JOBLESS;
+				reportAsJobless();
+			} else {
+				this.state = EBearerState.DEAD_OBJECT;
+				super.convertTo(movableType);
+			}
 			break;
 
 		case DEAD_OBJECT:
@@ -101,16 +122,36 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		}
 	}
 
-	private void handleJobFailed() {
+	private void handleJobFailed(boolean reportAsJobless) {
 		switch (state) {
 		case INIT_CARRY_JOB:
 		case GOING_TO_OFFER:
-			// TODO @Andreas reoffer the offer
+			reoffer();
 		case TAKING:
+			if (targetMovableType != null) {
+				workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
+			}
 		case GOING_TO_REQUEST:
 			if (requester != null && requester.isRequestActive()) {
 				requester.requestFailed();
 			}
+			break;
+
+		case INIT_BECOME_SOLDIER_JOB:
+		case GOING_TO_BARRACK:
+			barrack.bearerRequestFailed();
+			break;
+
+		case DROPPING: // handled after this
+			break;
+
+		case INIT_CONVERT_WITH_TOOL_JOB:
+			reoffer();
+		case INIT_CONVERT_JOB:
+			workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
+			break;
+
+		case DEAD_OBJECT:
 			break;
 		}
 
@@ -123,8 +164,17 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		requester = null;
 		materialType = null;
 		targetMovableType = null;
+		workerRequester = null;
 		state = EBearerState.JOBLESS;
-		reportAsJobless();
+
+		if (reportAsJobless) {
+			reportAsJobless();
+		}
+	}
+
+	private void reoffer() {
+		super.getStrategyGrid().takeMaterial(offer, materialType);
+		super.getStrategyGrid().dropMaterial(offer, materialType, true);
 	}
 
 	private void drop(EMaterialType materialType) {
@@ -146,7 +196,8 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	@Override
-	public void becomeWorker(EMovableType movableType) {
+	public void becomeWorker(IWorkerRequester requester, EMovableType movableType) {
+		this.workerRequester = requester;
 		this.targetMovableType = movableType;
 		this.state = EBearerState.INIT_CONVERT_JOB;
 		this.offer = null;
@@ -155,7 +206,8 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	@Override
-	public void becomeWorker(EMovableType movableType, ShortPoint2D offer) {
+	public void becomeWorker(IWorkerRequester requester, EMovableType movableType, ShortPoint2D offer) {
+		this.workerRequester = requester;
 		this.targetMovableType = movableType;
 		this.offer = offer;
 		this.requester = null;
@@ -164,21 +216,39 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	@Override
-	public void becomeSoldier(Barrack barrack) {
-		// TODO Auto-generated method stub
-
+	public void becomeSoldier(IBarrack barrack) {
+		this.barrack = barrack;
+		this.state = EBearerState.INIT_BECOME_SOLDIER_JOB;
 	}
 
+	@Override
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
+		handleJobFailed(false);
+		state = EBearerState.DEAD_OBJECT;
+	}
+
+	/**
+	 * states of a bearer.
+	 * 
+	 * @author Andreas Eberle
+	 * 
+	 */
 	private enum EBearerState {
 		JOBLESS,
-		GOING_TO_REQUEST,
+
 		INIT_CARRY_JOB,
+		GOING_TO_REQUEST,
 		GOING_TO_OFFER,
 		TAKING,
 		DROPPING,
+
 		INIT_CONVERT_JOB,
 		INIT_CONVERT_WITH_TOOL_JOB,
+
 		DEAD_OBJECT,
+
+		INIT_BECOME_SOLDIER_JOB,
+		GOING_TO_BARRACK,
 	}
 
 }
