@@ -51,7 +51,8 @@ public class ActionFirerer implements ActionFireable {
 				Action action;
 				try {
 					action = toFire.take();
-					long startTime = fireStartTime.poll();
+					long startTime = fireStartTime.poll(); // FIXME @MICHAEL
+														   // NullPointerException
 					startWatchdog(startTime);
 					fireTo.fireAction(action);
 					stopWatchdog();
