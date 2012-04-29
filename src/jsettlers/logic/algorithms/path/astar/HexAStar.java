@@ -15,7 +15,7 @@ import jsettlers.logic.algorithms.path.Path;
  * @author Andreas Eberle
  * 
  */
-public final class HexAStar implements IAStar {
+public final class HexAStar implements IAStar, IAStarHeapable {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
 	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
 

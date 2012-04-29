@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public final class AStarMinHeap {
 	private final ArrayList<Integer> heap = new ArrayList<Integer>();
 	private int size = 0;
-	private final IAStar rankSupplier;
+	private final IAStarHeapable rankSupplier;
 
 	/**
 	 * Creates a new min heap.
@@ -20,7 +20,7 @@ public final class AStarMinHeap {
 	 * @param startCapacity
 	 *            The minimal and initial capacity the heap should have. May not be null.
 	 */
-	public AStarMinHeap(IAStar rankSupplier, int startCapacity) {
+	public AStarMinHeap(IAStarHeapable rankSupplier, int startCapacity) {
 		this.rankSupplier = rankSupplier;
 		if (startCapacity <= 0) {
 			throw new IllegalArgumentException("too smal initial capacity");

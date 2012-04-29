@@ -16,7 +16,7 @@ import jsettlers.logic.algorithms.path.Path;
  * @author Andreas Eberle
  * 
  */
-public final class AStarJPS implements IAStar {
+public final class AStarJPS implements IAStar, IAStarHeapable {
 	private final IAStarPathMap map;
 
 	private final short height;
