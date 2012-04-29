@@ -47,7 +47,7 @@ public final class Constants {
 
 	public static final short PIKEMAN_SEARCH_RADIUS = 12;
 
-	public static final byte BRICKLAYER_ACTIONS_PER_MATERIAL = 15;
+	public static final byte BRICKLAYER_ACTIONS_PER_MATERIAL = 12;
 
 	public static final int TILES_PER_DIGGER = 15;
 
