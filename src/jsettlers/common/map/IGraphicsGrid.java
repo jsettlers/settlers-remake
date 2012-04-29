@@ -13,14 +13,14 @@ import jsettlers.common.movable.IMovable;
 public interface IGraphicsGrid {
 
 	/**
-	 * @return height of map.
-	 */
-	short getHeight();
-
-	/**
 	 * @return width of map
 	 */
 	short getWidth();
+
+	/**
+	 * @return height of map.
+	 */
+	short getHeight();
 
 	/**
 	 * @param x
