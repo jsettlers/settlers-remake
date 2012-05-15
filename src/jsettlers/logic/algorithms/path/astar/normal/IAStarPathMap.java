@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.path.astar;
+package jsettlers.logic.algorithms.path.astar.normal;
 
 import jsettlers.common.Color;
 import jsettlers.logic.algorithms.path.IPathCalculateable;

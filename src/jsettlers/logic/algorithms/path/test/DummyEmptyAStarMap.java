@@ -2,7 +2,7 @@ package jsettlers.logic.algorithms.path.test;
 
 import jsettlers.common.Color;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
+import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 
 /**
  * Dummy map for testing purposes of AStar.
