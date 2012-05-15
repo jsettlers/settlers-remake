@@ -1,10 +1,10 @@
-package jsettlers.algorithms.supergrid;
+package jsettlers.algorithms.supergrid.wnd;
 
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 
-import jsettlers.algorithms.supergrid.ISuperGridAStarGrid.IBlockedChangedListener;
+import jsettlers.algorithms.supergrid.wnd.ISuperGridAStarGrid.IBlockedChangedListener;
 import jsettlers.common.Color;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;

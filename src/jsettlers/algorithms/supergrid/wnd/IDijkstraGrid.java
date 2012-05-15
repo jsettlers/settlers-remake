@@ -1,4 +1,4 @@
-package jsettlers.algorithms.supergrid;
+package jsettlers.algorithms.supergrid.wnd;
 
 public interface IDijkstraGrid {
 

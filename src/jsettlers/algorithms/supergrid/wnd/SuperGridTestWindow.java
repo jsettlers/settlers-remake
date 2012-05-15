@@ -1,4 +1,4 @@
-package jsettlers.algorithms.supergrid;
+package jsettlers.algorithms.supergrid.wnd;
 
 import jsettlers.TestWindow;
 import jsettlers.common.position.ShortPoint2D;
