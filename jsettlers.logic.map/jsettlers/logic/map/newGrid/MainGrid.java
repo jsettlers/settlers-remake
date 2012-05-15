@@ -58,9 +58,9 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
-import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
+import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
+import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
@@ -210,7 +210,7 @@ public class MainGrid implements Serializable {
 		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
 	}
 
-	public void stopGame() {
+	public void stopThreads() {
 		bordersThread.cancel();
 		fogOfWar.cancel();
 	}

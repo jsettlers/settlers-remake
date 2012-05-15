@@ -127,7 +127,7 @@ public class JSettlersGame {
 			networkManager.stop();
 			Timer100Milli.stop();
 			MovableTimer.stop();
-			grid.stopGame();
+			grid.stopThreads();
 
 			listener.gameEnded();
 		}
