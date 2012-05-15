@@ -8,6 +8,7 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.logic.algorithms.path.astar.supergrid.SuperGridAStar;
 
 public class SuperGridTestWindow {
 
@@ -18,7 +19,7 @@ public class SuperGridTestWindow {
 		final TestMapGrid grid = new TestMapGrid((short) 300, (short) 300);
 		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
 
-		final SuperGridAStar aStar = new SuperGridAStar(grid.getWidth(), grid.getHeight(), grid);
+		final SuperGridAStar aStar = new SuperGridAStar(grid, grid.getWidth(), grid.getHeight());
 
 		connector.addListener(new IMapInterfaceListener() {
 			ShortPoint2D first;

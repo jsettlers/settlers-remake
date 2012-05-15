@@ -1,26 +1,24 @@
 package jsettlers.algorithms.path.astar;
 
-import java.io.File;
 import java.util.Random;
 
+import jsettlers.TestUtils;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.astar.AStarJPS;
-import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.astar.IAStar;
 import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
+import jsettlers.logic.algorithms.path.astar.normal.AStarJPS;
+import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
+import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 import jsettlers.logic.map.newGrid.MainGrid;
-import jsettlers.logic.map.save.MapLoader;
-import random.RandomSingleton;
 
 public class PathfinderSpeedComparision {
 	private static final int NUMBER_OF_PATHS = 200;
 	private static final int PATH_RANDOM_SEED = 1234;
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException {
-		MainGrid mainGrid = getMap();
+		MainGrid mainGrid = TestUtils.getMap();
 		short width = mainGrid.getGraphicsGrid().getWidth();
 		short height = mainGrid.getGraphicsGrid().getHeight();
 		IAStarPathMap map = mainGrid.getPathfinderGrid();
@@ -40,13 +38,6 @@ public class PathfinderSpeedComparision {
 
 		System.out.println("aStar1 (" + astar1.getClass() + ") avg: " + ((float) aStar1Time) / NUMBER_OF_PATHS + " ms");
 		System.out.println("aStar2 (" + astar2.getClass() + ")  avg: " + ((float) aStar2Time) / NUMBER_OF_PATHS + " ms");
-	}
-
-	private static MainGrid getMap() throws MapLoadException {
-		RandomSingleton.load(123456L);
-		MapLoader loader = new MapLoader(new File("../jsettlers.common/resources/maps/bigmap.map"));
-
-		return loader.getMainGrid();
 	}
 
 	private static long testAStar(int randomSeed, IAStar astar, IAStarPathMap map, int numberOfPaths, short width, short height)
@@ -75,7 +66,7 @@ public class PathfinderSpeedComparision {
 		return watch.getDiff();
 	}
 
-	private static ShortPoint2D getUnblocktPosition(IPathCalculateable requester, Random random, IAStarPathMap map, short width, short height) {
+	public static ShortPoint2D getUnblocktPosition(IPathCalculateable requester, Random random, IAStarPathMap map, int width, int height) {
 		short x, y;
 		do {
 			x = (short) random.nextInt(width);
@@ -83,22 +74,5 @@ public class PathfinderSpeedComparision {
 		} while (map.isBlocked(requester, x, y));
 
 		return new ShortPoint2D(x, y);
-	}
-
-	private static final class TestPathRequester implements IPathCalculateable {
-		@Override
-		public byte getPlayer() {
-			return 0;
-		}
-
-		@Override
-		public ShortPoint2D getPos() {
-			return null;
-		}
-
-		@Override
-		public boolean needsPlayersGround() {
-			return false;
-		}
 	}
 }

@@ -11,6 +11,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.path.astar.supergrid.ISuperGridAStarGrid;
 
 class TestMapGrid implements ISuperGridAStarGrid, IGraphicsGrid {
 
@@ -96,7 +97,7 @@ class TestMapGrid implements ISuperGridAStarGrid, IGraphicsGrid {
 	}
 
 	@Override
-	public void setColor(int x, int y, Color color) {
+	public void setDebugColor(int x, int y, Color color) {
 		colors[x][y] = color;
 	}
 
