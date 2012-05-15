@@ -7,10 +7,10 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.algorithms.path.astar.normal.AStarJPS;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStar;
+import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.map.newGrid.MainGrid;
 
 public class PathfinderSpeedComparision {

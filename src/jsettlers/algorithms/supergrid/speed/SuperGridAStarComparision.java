@@ -11,9 +11,9 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStar;
+import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.algorithms.path.astar.supergrid.ISuperGridAStarGrid;
 import jsettlers.logic.algorithms.path.astar.supergrid.SuperGridAStar;
 import jsettlers.logic.map.newGrid.MainGrid;
@@ -34,8 +34,9 @@ public class SuperGridAStarComparision {
 		HexAStar aStar = new HexAStar(pathfinderGrid, width, height);
 		SuperGridAStar superAStar = new SuperGridAStar(getSuperPathfinderGrid(grid), width, height);
 
-		long aStarTime = testAStar(RANDOM_SEED, aStar, pathfinderGrid, RUNS, width, height);
-		long superAStarTime = testSuperAStar(RANDOM_SEED, superAStar, aStar, pathfinderGrid, RUNS * 5, width, height);
+		long aStarTime = -1;
+		aStarTime = testAStar(RANDOM_SEED, aStar, pathfinderGrid, RUNS, width, height);
+		long superAStarTime = testSuperAStar(RANDOM_SEED, superAStar, aStar, pathfinderGrid, RUNS * 10, width, height);
 
 		System.out.println("aStar: " + aStarTime + "     superGridAStar: " + superAStarTime);
 	}
