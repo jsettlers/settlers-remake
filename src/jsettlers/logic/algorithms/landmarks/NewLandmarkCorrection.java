@@ -7,8 +7,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Tests the partitions and if the partition encloses a blocked tile area, the
- * area is taken over by the partition.
+ * Tests the partitions and if the partition encloses a blocked tile area, the area is taken over by the partition.
  * <p>
  * retestUnblocked(x, y) tests after a pioneer took over land.
  * 
@@ -16,7 +15,7 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class NewLandmarkCorrection {
 	private final ILandmarksThreadGrid map;
-	private LinkedList<RelabelMarker> relabelMarkers = new LinkedList<RelabelMarker>() ;
+	private LinkedList<RelabelMarker> relabelMarkers = new LinkedList<RelabelMarker>();
 
 	public NewLandmarkCorrection(ILandmarksThreadGrid map) {
 		this.map = map;
@@ -26,9 +25,8 @@ public class NewLandmarkCorrection {
 	// startx, starty are blocked.
 	// (startx, starty) + unblockDir is the point that has the new (destination)
 	// partition and is unblocked.
-	//TODO: test the find algo.
-	private void startRelabel(short startx, short starty, short destPartition,
-	        EDirection unblockedDir) {
+	// TODO: test the find algo.
+	private void startRelabel(short startx, short starty, short destPartition, EDirection unblockedDir) {
 		if (map.getPartitionAt(startx, starty) == destPartition) {
 			// nothing more to do.
 			return;
@@ -37,8 +35,7 @@ public class NewLandmarkCorrection {
 		if (!needsRelabel(startx, starty, destPartition)) {
 			throw new IllegalArgumentException();
 		}
-		if (needsRelabel(unblockedDir.getNextTileX(startx),
-		        unblockedDir.getNextTileY(starty), destPartition)) {
+		if (needsRelabel(unblockedDir.getNextTileX(startx), unblockedDir.getNextTileY(starty), destPartition)) {
 			throw new IllegalArgumentException();
 		}
 
@@ -51,14 +48,12 @@ public class NewLandmarkCorrection {
 			// there are two ways this algo can continue: Go to next point
 			// inside blocked area or next outside (=> change look direction)
 
-
 			EDirection newDir = lookOutside.getNeighbor(1);
 			short newx = newDir.getNextTileX(blockedx);
 			short newy = newDir.getNextTileY(blockedy);
-			if (newx < 0 || newy < 0 || newx >= map.getWidth()
-			        || newy >= map.getHeight()) {
+			if (newx < 0 || newy < 0 || newx >= map.getWidth() || newy >= map.getHeight()) {
 				System.out.println("Border case");
-				//TODO: border case
+				// TODO: border case
 				newDir = newDir.getNeighbor(2);
 				boolean onBoder = true;
 				while (onBoder) {
@@ -93,11 +88,10 @@ public class NewLandmarkCorrection {
 					lookOutside = newDir;
 				}
 			}
-		} while (blockedx != startx || blockedy != starty
-		        || !lookOutside.equals(unblockedDir));
+		} while (blockedx != startx || blockedy != starty || !lookOutside.equals(unblockedDir));
 
 		relabel(startx, starty, destPartition, true, true);
-		
+
 		while (!relabelMarkers.isEmpty()) {
 			RelabelMarker m = relabelMarkers.pop();
 			relabel(m.x, m.y, m.destPartition, m.upwards, !m.upwards);
@@ -105,17 +99,16 @@ public class NewLandmarkCorrection {
 	}
 
 	// relabels a blocked partition
-	private void relabel(short startx, short starty, short destPartition,
-	        boolean up, boolean down) {
-		assert (needsRelabel(startx, starty, destPartition)) : "Start point needs to be relabled";
-		
+	private void relabel(short startx, short starty, short destPartition, boolean up, boolean down) {
+		// assert (needsRelabel(startx, starty, destPartition)) : "Start point needs to be relabled";
+		// FIXME @Michael can this line be removed?
+
 		short leftx = startx;
 		short rightx = startx;
 		while (leftx > 1 && needsRelabel((short) (leftx - 1), starty, destPartition)) {
 			leftx--;
 		}
-		while (rightx + 1 < map.getWidth()
-		        && needsRelabel((short) (rightx + 1), starty, destPartition)) {
+		while (rightx + 1 < map.getWidth() && needsRelabel((short) (rightx + 1), starty, destPartition)) {
 			rightx++;
 		}
 		relabelBlock(leftx, rightx, starty, destPartition);
@@ -128,22 +121,17 @@ public class NewLandmarkCorrection {
 	}
 
 	// relabels below a line.
-	private void relabelUpwards(short leftx, short rightx, short starty,
-	        short destPartition) {
+	private void relabelUpwards(short leftx, short rightx, short starty, short destPartition) {
 		short y = (short) (starty - 1);
 		while (y >= 0) {
 			short newleft = leftx > 0 ? (short) (leftx - 1) : 0;
 			if (needsRelabel(newleft, y, destPartition)) {
 				// go more left
-				while (newleft > 0
-				        && needsRelabel((short) (newleft - 1), y, destPartition)) {
+				while (newleft > 0 && needsRelabel((short) (newleft - 1), y, destPartition)) {
 					newleft--;
-					if (newleft - 1 >= 0
-					        && needsRelabel((short) (newleft - 1),
-					                (short) (y + 1), destPartition)) {
+					if (newleft - 1 >= 0 && needsRelabel((short) (newleft - 1), (short) (y + 1), destPartition)) {
 						// mark the point to relabel.
-						markToRelabel((short) (newleft - 1), (short) (y + 1),
-						        destPartition, false);
+						markToRelabel((short) (newleft - 1), (short) (y + 1), destPartition, false);
 					}
 				}
 			} else {
@@ -157,22 +145,18 @@ public class NewLandmarkCorrection {
 			}
 
 			short newright = newleft;
-			while (newright + 1 < map.getWidth()
-			        && needsRelabel((short) (newright + 1), y, destPartition)) {
+			while (newright + 1 < map.getWidth() && needsRelabel((short) (newright + 1), y, destPartition)) {
 				newright++;
 				if (newright + 1 < map.getWidth() && newright >= rightx) {
-					if (needsRelabel((short) (newright + 1), (short) (y + 1),
-					        destPartition)) {
-						markToRelabel((short) (newright + 1), (short) (y + 1),
-						        destPartition, false);
+					if (needsRelabel((short) (newright + 1), (short) (y + 1), destPartition)) {
+						markToRelabel((short) (newright + 1), (short) (y + 1), destPartition, false);
 					}
 				}
 			}
 
 			relabelBlock(newleft, newright, y, destPartition);
 
-			for (short x = (short) (newright + 1); x <= rightx + 1
-			        && x < map.getWidth(); x++) {
+			for (short x = (short) (newright + 1); x <= rightx + 1 && x < map.getWidth(); x++) {
 				if (needsRelabel(x, y, destPartition)) {
 					markToRelabel(x, y, destPartition, true);
 				}
@@ -185,22 +169,17 @@ public class NewLandmarkCorrection {
 	}
 
 	// relabels below a line.
-	private void relabelDownwards(short leftx, short rightx, short starty,
-	        short destPartition) {
+	private void relabelDownwards(short leftx, short rightx, short starty, short destPartition) {
 		short y = (short) (starty + 1);
 		while (y < map.getHeight()) {
 			short newleft = leftx;
 			if (needsRelabel(newleft, y, destPartition)) {
 				// go more left
-				while (newleft > 0
-				        && needsRelabel((short) (newleft - 1), y, destPartition)) {
+				while (newleft > 0 && needsRelabel((short) (newleft - 1), y, destPartition)) {
 					newleft--;
-					if (newleft - 1 >= 0
-					        && needsRelabel((short) (newleft - 1),
-					                (short) (y - 1), destPartition)) {
+					if (newleft - 1 >= 0 && needsRelabel((short) (newleft - 1), (short) (y - 1), destPartition)) {
 						// mark the point to relabel.
-						markToRelabel((short) (newleft - 1), (short) (y - 1),
-						        destPartition, true);
+						markToRelabel((short) (newleft - 1), (short) (y - 1), destPartition, true);
 					}
 				}
 			} else {
@@ -214,21 +193,18 @@ public class NewLandmarkCorrection {
 			}
 
 			short newright = newleft;
-			while (newright + 1 < map.getWidth()
-			        && needsRelabel((short) (newright + 1), y, destPartition)) {
+			while (newright + 1 < map.getWidth() && needsRelabel((short) (newright + 1), y, destPartition)) {
 				newright++;
 				if (newright > rightx) {
 					if (needsRelabel(newright, (short) (y - 1), destPartition)) {
-						markToRelabel(newright, (short) (y - 1), destPartition,
-						        true);
+						markToRelabel(newright, (short) (y - 1), destPartition, true);
 					}
 				}
 			}
 
 			relabelBlock(newleft, newright, y, destPartition);
 
-			for (short x = (short) (newright + 1); x <= rightx + 1
-			        && x < map.getWidth(); x++) {
+			for (short x = (short) (newright + 1); x <= rightx + 1 && x < map.getWidth(); x++) {
 				if (needsRelabel(x, y, destPartition)) {
 					markToRelabel(x, y, destPartition, false);
 				}
@@ -244,13 +220,12 @@ public class NewLandmarkCorrection {
 		return map.isBlocked(x, y) && map.getPartitionAt(x, y) != destPartition;
 	}
 
-	private void markToRelabel(short x, short y, short destPartition,
-	        boolean upwards) {
-//		 System.out.println("Restarting at " + x + ", " + y + ", upwards = " +
-//		 upwards);
+	private void markToRelabel(short x, short y, short destPartition, boolean upwards) {
+		// System.out.println("Restarting at " + x + ", " + y + ", upwards = " +
+		// upwards);
 		relabelMarkers.push(new RelabelMarker(x, y, destPartition, upwards));
 	}
-	
+
 	private static class RelabelMarker {
 
 		private final short x;
@@ -258,20 +233,18 @@ public class NewLandmarkCorrection {
 		private final short destPartition;
 		private final boolean upwards;
 
-		public RelabelMarker(short x, short y, short destPartition,
-                boolean upwards) {
-					this.x = x;
-					this.y = y;
-					this.destPartition = destPartition;
-					this.upwards = upwards;
-        }
-		
+		public RelabelMarker(short x, short y, short destPartition, boolean upwards) {
+			this.x = x;
+			this.y = y;
+			this.destPartition = destPartition;
+			this.upwards = upwards;
+		}
+
 	}
 
-	private void relabelBlock(short leftx, short rightx, short y,
-	        short destPartition) {
-//		System.out.println("Relabeling line " + y + " from " + leftx + " to "
-//		        + rightx);
+	private void relabelBlock(short leftx, short rightx, short y, short destPartition) {
+		// System.out.println("Relabeling line " + y + " from " + leftx + " to "
+		// + rightx);
 		for (short x = leftx; x <= rightx; x++) {
 			map.setPartitionAndPlayerAt(x, y, destPartition);
 		}
@@ -290,9 +263,8 @@ public class NewLandmarkCorrection {
 				short nx = dir.getNextTileX(x);
 				short ny = dir.getNextTileY(y);
 				if (map.isInBounds(nx, ny) && map.isBlocked(nx, ny)) {
-//					System.out.println("trying to relabel: " + nx + "," + ny);
-					startRelabel(nx, ny, destPartition,
-					        dir.getInverseDirection());
+					// System.out.println("trying to relabel: " + nx + "," + ny);
+					startRelabel(nx, ny, destPartition, dir.getInverseDirection());
 				}
 			}
 		}
