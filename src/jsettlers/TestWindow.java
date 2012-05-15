@@ -33,6 +33,9 @@ public class TestWindow {
 		SoundManager.addLookupPath(new File("C:/Program Files/siedler 3/Snd"));
 	}
 
+	private TestWindow() {
+	}
+
 	public static MapInterfaceConnector openTestWindow(IGraphicsGrid map) {
 		ResourceManager.setProvider(new ResourceProvider());
 
