@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.path.astar;
+package jsettlers.logic.algorithms.path.astar.normal;
 
 import java.util.BitSet;
 
@@ -9,6 +9,7 @@ import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.algorithms.path.astar.IAStarPathMap;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid

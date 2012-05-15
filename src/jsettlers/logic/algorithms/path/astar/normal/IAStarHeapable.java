@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.path.astar;
+package jsettlers.logic.algorithms.path.astar.normal;
 
 public interface IAStarHeapable {
 	int getHeapIdx(int elementID);

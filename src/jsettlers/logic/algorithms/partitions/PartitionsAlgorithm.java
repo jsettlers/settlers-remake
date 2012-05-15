@@ -4,8 +4,8 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.astar.HexAStar;
-import jsettlers.logic.algorithms.path.astar.IAStar;
+import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
+import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 
 /**
  * Calculates the partitions of the Map and combines partitions of the same player when they get in contact with each other or divides partitions that

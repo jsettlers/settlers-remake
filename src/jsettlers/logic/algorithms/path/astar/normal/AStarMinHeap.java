@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.path.astar;
+package jsettlers.logic.algorithms.path.astar.normal;
 
 import java.util.ArrayList;
 
