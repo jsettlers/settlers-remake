@@ -31,6 +31,7 @@ public final class SuperGridAStar implements IAStarHeapable, IBlockedChangedList
 	private final int height;
 	private final int numberOfPositions;
 
+	private final boolean[] playerChanged;
 	private final float[] superGrid;
 	private final float[] costsAndHeuristics;
 	private final int[] parentHeapIdx;
@@ -55,6 +56,8 @@ public final class SuperGridAStar implements IAStarHeapable, IBlockedChangedList
 		this.numberOfPositions = this.width * this.height;
 
 		this.superGrid = new float[numberOfPositions * NUMBER_OF_DIRECTIONS];
+		this.playerChanged = new boolean[numberOfPositions * NUMBER_OF_DIRECTIONS];
+
 		this.costsAndHeuristics = new float[numberOfPositions * 2];
 		this.parentHeapIdx = new int[numberOfPositions * 2];
 		this.openClosed = new BitSet(numberOfPositions * 2);
@@ -161,7 +164,7 @@ public final class SuperGridAStar implements IAStarHeapable, IBlockedChangedList
 		while (foundTarget >= 0) {
 			int x = foundTarget % width;
 			int y = foundTarget / height;
-			path.add(new ShortPoint2D(x, y));
+			path.add(new ShortPoint2D(x * STEP_WIDTH, y * STEP_WIDTH));
 			setColor(x, y, Color.RED);
 
 			foundTarget = parentHeapIdx[2 * foundTarget];
@@ -225,7 +228,8 @@ public final class SuperGridAStar implements IAStarHeapable, IBlockedChangedList
 	}
 
 	private void updateCostsOnPos(int x, int y) {
-		float[] costs = costsDijkstra.calculateCostsFor(x, y);
+		PositionCosts positionCosts = costsDijkstra.calculateCostsFor(x, y);
+		float[] costs = positionCosts.getCosts();
 		int idx = getIdx(x, y) * NUMBER_OF_DIRECTIONS;
 		for (int i = 0; i < NUMBER_OF_DIRECTIONS; i++) {
 			float cost = costs[i];

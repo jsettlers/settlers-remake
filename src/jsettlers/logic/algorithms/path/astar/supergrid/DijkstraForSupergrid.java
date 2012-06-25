@@ -36,9 +36,10 @@ class DijkstraForSupergrid {
 		this.grid = grid;
 	}
 
-	public float[] calculateCostsFor(int sGridX, int sGridY) {
+	public PositionCosts calculateCostsFor(int sGridX, int sGridY) {
 		if (grid.isBlocked(sGridX * SuperGridAStar.STEP_WIDTH, sGridY * SuperGridAStar.STEP_WIDTH)) { // if position is block, there can't be paths
-			return new float[] { Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE };
+			float[] costs = new float[] { Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE };
+			return new PositionCosts(costs);
 		}
 
 		used.clear();
@@ -83,7 +84,7 @@ class DijkstraForSupergrid {
 			costs[dir] = depth[SUPER_NEIGHBORS[dir]];
 		}
 
-		return costs;
+		return new PositionCosts(costs);
 	}
 
 	private final boolean inSearchArea(int neighborIdx) {
