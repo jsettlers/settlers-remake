@@ -11,6 +11,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
@@ -20,8 +21,8 @@ import jsettlers.logic.map.newGrid.MainGrid;
 
 public class SuperGridAStarComparision {
 
-	private static final int RANDOM_SEED = 124423;
-	private static final int RUNS = 200;
+	private static final int RANDOM_SEED = (int) (Math.random() * Integer.MAX_VALUE);
+	private static final int RUNS = 10000;
 
 	public static void main(String args[]) throws MapLoadException {
 		MainGrid grid = TestUtils.getMap();
@@ -36,7 +37,7 @@ public class SuperGridAStarComparision {
 
 		long aStarTime = -1;
 		aStarTime = testAStar(RANDOM_SEED, aStar, pathfinderGrid, RUNS, width, height);
-		long superAStarTime = testSuperAStar(RANDOM_SEED, superAStar, aStar, pathfinderGrid, RUNS * 10, width, height);
+		long superAStarTime = testSuperAStar(RANDOM_SEED, superAStar, aStar, pathfinderGrid, RUNS, width, height);
 
 		System.out.println("aStar: " + aStarTime + "     superGridAStar: " + superAStarTime);
 	}
@@ -45,7 +46,6 @@ public class SuperGridAStarComparision {
 			int height) {
 		Random random = new Random(randomSeed);
 		IPathCalculateable requester = new TestPathRequester();
-		System.out.println("found path: ");
 
 		try {
 			Thread.sleep(300);
@@ -60,13 +60,17 @@ public class SuperGridAStarComparision {
 			ShortPoint2D target = PathfinderSpeedComparision.getUnblocktPosition(requester, random, map, width, height);
 
 			ArrayList<ShortPoint2D> superPath = superAStar.findPath(start.getX(), start.getY(), target.getX(), target.getY());
+			int sum = 0;
 			for (int n = 0; n + 2 < superPath.size();) {
 				ShortPoint2D pos1 = superPath.get(n++);
 				ShortPoint2D pos2 = superPath.get(++n);
-				astar.findPath(requester, pos1.getX(), pos1.getY(), pos2.getX(), pos2.getY());
+				Path path = astar.findPath(requester, pos1.getX(), pos1.getY(), pos2.getX(), pos2.getY());
+
+				if (path != null)
+					sum += path.getLength();
 			}
 
-			System.out.print(i + ", ");
+			System.out.print(sum + ",\t");
 		}
 
 		watch.stop();
@@ -92,8 +96,12 @@ public class SuperGridAStarComparision {
 			ShortPoint2D start = PathfinderSpeedComparision.getUnblocktPosition(requester, random, map, width, height);
 			ShortPoint2D target = PathfinderSpeedComparision.getUnblocktPosition(requester, random, map, width, height);
 
-			astar.findPath(requester, start.getX(), start.getY(), target.getX(), target.getY());
-			System.out.print(i + ", ");
+			Path path = astar.findPath(requester, start.getX(), start.getY(), target.getX(), target.getY());
+			if (path != null) {
+				System.out.print(path.getLength() + ",\t");
+			} else {
+				System.out.print("0,\t");
+			}
 		}
 
 		watch.stop();
