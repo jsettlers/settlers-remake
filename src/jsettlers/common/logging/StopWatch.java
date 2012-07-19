@@ -11,6 +11,10 @@ public abstract class StopWatch {
 	protected long start;
 	protected long diff;
 
+	public StopWatch() {
+		start();
+	}
+
 	/**
 	 * saves the current time.
 	 */
