@@ -85,7 +85,7 @@ public final class BlockedPartitioner {
 	}
 
 	private void merge(short toBeMerged, short newPartition) {
-		System.out.println("merged: " + toBeMerged + "   " + newPartition);
+		// System.out.println("merged: " + toBeMerged + "   " + newPartition);
 
 		unionTable[toBeMerged + 1] = newPartition;
 
