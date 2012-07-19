@@ -9,9 +9,9 @@ import jsettlers.common.movable.EDirection;
  * 
  */
 public final class BlockedPartitioner {
-	private static final short BLOCKED_PARTITION = -1;
+	public static final short BLOCKED_PARTITION = -1;
 	private final IBlockedPartitionerGrid grid;
-	private final short[][] partitions;
+	private final short[] partitions;
 	private final int width;
 	private final int height;
 
@@ -30,7 +30,7 @@ public final class BlockedPartitioner {
 	 */
 	public BlockedPartitioner(IBlockedPartitionerGrid grid, int width, int height) {
 		this.grid = grid;
-		this.partitions = new short[width][height];
+		this.partitions = new short[width * height];
 		this.width = width;
 		this.height = height;
 
@@ -38,7 +38,7 @@ public final class BlockedPartitioner {
 		this.unionTable[BLOCKED_PARTITION + 1] = BLOCKED_PARTITION;
 	}
 
-	public short[][] getPartitions() {
+	public short[] getPartitions() {
 		return partitions;
 	}
 
@@ -145,10 +145,10 @@ public final class BlockedPartitioner {
 	}
 
 	private void setPartition(int x, int y, short newPartition) {
-		partitions[x][y] = newPartition;
+		partitions[x + y * width] = newPartition;
 	}
 
 	private int getPartition(int x, int y) {
-		return partitions[x][y];
+		return partitions[x + y * width];
 	}
 }
