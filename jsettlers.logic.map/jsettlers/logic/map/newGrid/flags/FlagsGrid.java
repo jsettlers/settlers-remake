@@ -3,24 +3,33 @@ package jsettlers.logic.map.newGrid.flags;
 import java.io.Serializable;
 import java.util.BitSet;
 
+import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.logging.StopWatch;
+import jsettlers.logic.algorithms.partitions.BlockedPartitioner;
+import jsettlers.logic.algorithms.partitions.IBlockedPartitionerGrid;
+
 /**
  * Grid that's storing the blocked information for fast access.
  * 
  * @author Andreas Eberle
  * 
  */
-public class FlagsGrid implements Serializable {
+public final class FlagsGrid implements Serializable {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
+	private final short height;
 
 	private final BitSet blockedGrid;
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
 	private final BitSet bordersGrid;
 
+	private short[] blockedPartitions;
+
 	public FlagsGrid(final short width, final short height) {
 		this.width = width;
+		this.height = height;
 
 		this.blockedGrid = new BitSet(width * height);
 		this.protectedGrid = new BitSet(width * height);
@@ -75,6 +84,25 @@ public class FlagsGrid implements Serializable {
 
 	public void setBorderAt(short x, short y, boolean setProtected) {
 		this.bordersGrid.set(getIdx(x, y), setProtected);
+	}
+
+	public short getBlockedPartition(short x, short y) {
+		return this.blockedPartitions[getIdx(x, y)];
+	}
+
+	public void calculateBlockedPartitions() {
+		BlockedPartitioner partitioner = new BlockedPartitioner(new IBlockedPartitionerGrid() {
+			@Override
+			public boolean isBlocked(int x, int y) {
+				return FlagsGrid.this.isBlocked((short) x, (short) y);
+			}
+		}, width, height);
+
+		StopWatch watch = new MilliStopWatch();
+		partitioner.calculate();
+		watch.stop("Blocked partitioner needed");
+
+		this.blockedPartitions = partitioner.getPartitions();
 	}
 
 }

@@ -168,6 +168,8 @@ public class MainGrid implements Serializable {
 			}
 		}
 
+		flagsGrid.calculateBlockedPartitions();
+
 		// tow passes, we might need the base grid tiles to add blocking, ...
 		// status
 		for (short y = 0; y < height; y++) {
