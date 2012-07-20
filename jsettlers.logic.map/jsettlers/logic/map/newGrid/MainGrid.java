@@ -521,7 +521,7 @@ public class MainGrid implements Serializable {
 		@Override
 		public final int getDebugColorAt(int x, int y) {
 			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);

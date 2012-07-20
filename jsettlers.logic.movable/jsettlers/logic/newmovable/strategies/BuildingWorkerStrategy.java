@@ -64,10 +64,12 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 		if (currentJob == null)
 			return;
 
-		EBuildingJobType jobType = currentJob.getType();
-		if (movableType == EMovableType.MILLER && jobType == EBuildingJobType.HIDE) {
-			System.out.println();
-		}
+		// if (movableType == EMovableType.PIG_FARMER) {
+		// System.err.println("Pigfarmer action() with jobType: " + currentJob.getType() + "  and name: " + currentJob.getName());
+		// if (currentJob.getType() == EBuildingJobType.DROP) {
+		// System.out.println();
+		// }
+		// }
 
 		switch (currentJob.getType()) {
 		case GO_TO:
