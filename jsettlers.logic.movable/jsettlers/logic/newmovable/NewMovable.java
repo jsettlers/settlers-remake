@@ -125,6 +125,22 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
+	public void leavePosition() {
+		int offset = RandomSingleton.getInt(0, EDirection.NUMBER_OF_DIRECTIONS - 1);
+
+		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
+			if (goInDirection(currDir)) {
+				break;
+			} else {
+				NewMovable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.getX()), currDir.getNextTileY(position.getY()));
+				if (movableAtPos != null) {
+					movableAtPos.push(this);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Positions this movable at the given position on the it's grid.<br>
 	 * If the movable is already located on the grid, it's removed from it's old position and then added to the new one.<br>
