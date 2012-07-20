@@ -126,6 +126,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	}
 
 	public void leavePosition() {
+		if (!enableNothingToDo) {
+			return;
+		}
+
 		int offset = RandomSingleton.getInt(0, EDirection.NUMBER_OF_DIRECTIONS - 1);
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
@@ -314,8 +318,13 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	}
 
 	private void push(NewMovable pushingMovable) {
+
 		switch (state) {
 		case DOING_NOTHING:
+			if (!enableNothingToDo) { // don't go to random direction if movable shouldn't do something in DOING_NOTHING
+				return;
+			}
+
 			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
 				EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
 				pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
@@ -462,6 +471,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		this.direction = direction;
 		this.followPath(new Path(targetPos));
 		this.goSinglePathStep();
+		setState(ENewMovableState.PATHING);
 	}
 
 	/**
@@ -541,8 +551,11 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * @param newState
 	 */
 	private void setState(ENewMovableState newState) {
+		this.formerState = this.state;
 		this.state = newState;
 	}
+
+	ENewMovableState formerState;
 
 	/**
 	 * Used for networking to identify movables over the network.
