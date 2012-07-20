@@ -70,45 +70,36 @@
 
 	<startjob name="gohome" />
 
+	
 	<!-- going home job -->
-	<job name="gohome" type="GO_TO" successjob="hide" failjob="waithome"
-		dx="-1" dy="2" />
-	<job name="waithome" type="WAIT" successjob="start" failjob="waithome"
-		time="3" />
-	<job name="hide" type="HIDE" successjob="start" failjob="start" />
+	<job name="gohome" 		type="GO_TO" 		successjob="hide" 		failjob="hide" 		dx="-1" dy="1" />
+	<job name="hide" 		type="HIDE" 		successjob="start" 		failjob="start" 		/>
 
-	<job name="start" type="WAIT" successjob="checkflour" failjob="waithome"
-		time="3.0" />
-	<job name="checkflour" type="NOT_FULL" successjob="checkcrop"
-		failjob="waithome" dx="-2" dy="1" material="FLOUR" />
-	<job name="checkcrop" type="AVAILABLE" successjob="show" failjob="waithome"
-		dx="2" dy="2" material="CROP" />
-	<job name="show" type="SHOW" successjob="go_to_crop" failjob="hide"
-		dx="-1" dy="2" />
-	<job name="go_to_crop" type="GO_TO" successjob="take1" failjob="gohome"
-		dx="2" dy="2" />
-	<job name="take1" type="DROP" successjob="changeMat1" failjob="gohome"
-		material="NO_MATERIAL" />
-	<job name="changeMat1" type="SET_MATERIAL" successjob="take2"
-		failjob="gohome" material="CROP" />
-	<job name="take2" type="TAKE" successjob="go_back" failjob="gohome"
-		material="CROP" />
-	<job name="go_back" type="GO_TO" successjob="hide1" failjob="gohome"
-		dx="-1" dy="2" />
-	<job name="hide1" type="HIDE" successjob="startwork" failjob="start" />
-	<job name="startwork" type="START_WORKING" successjob="makeflour" failjob="makeflour"/>
-	<job name="makeflour" type="WAIT" successjob="stopwork" failjob="start"
-		time="2.5" />
-	<job name="stopwork" type="STOP_WORKING" successjob="changeMat2" failjob="changeMat2"/>
-	<job name="changeMat2" type="SET_MATERIAL" successjob="get_flour"
-		failjob="hide" material="FLOUR" />
-	<job name="get_flour" type="GO_TO" successjob="look" failjob="gohome"
-		dx="-2" dy="1" />
-	<job name="look" type="LOOK_AT" successjob="drop" failjob="hide"
-		direction="NORTH_EAST" />
-	<job name="drop" type="DROP" successjob="changeMat3" failjob="gohome"
-		material="FLOUR" />
-	<job name="changeMat3" type="SET_MATERIAL" successjob="gohome"
-		failjob="gohome" material="NO_MATERIAL" />
+	<job name="start" 		type="WAIT" 		successjob="checkflour" failjob="hide" 		time="3.0" />
+	<job name="checkflour" 	type="NOT_FULL" 	successjob="checkcrop" 	failjob="hide" 		dx="-2" dy="1" 	material="FLOUR" />
+	<job name="checkcrop" 	type="AVAILABLE" 	successjob="show" 		failjob="hide" 		dx="2" 	dy="2" 	material="CROP" />
+	<job name="show" 		type="SHOW" 		successjob="go_to_crop" failjob="hide" 		dx="-1" dy="1" />
+	
+	<job name="go_to_crop" 	type="GO_TO" 		successjob="take1" 		failjob="gohome" 	dx="2" dy="2" />
+	<job name="take1" 		type="DROP" 		successjob="changeMat1" failjob="gohome" 	material="NO_MATERIAL" />
+	<job name="changeMat1" 	type="SET_MATERIAL" successjob="take2" 		failjob="gohome" 	material="CROP" />
+	<job name="take2" 		type="TAKE" 		successjob="go_back" 	failjob="gohome" 	material="CROP" />
+	<job name="go_back" 	type="GO_TO" 		successjob="hide1" 		failjob="gohome" 	dx="-1" dy="1" />
+	<job name="hide1" 		type="HIDE" 		successjob="startwork" 	failjob="start" 		/>
+	<job name="startwork" 	type="START_WORKING" successjob="makeflour" failjob="makeflour"		/>
+	<job name="makeflour" 	type="WAIT" 		successjob="stopwork" 	failjob="start" 	time="2.5" />
+	<job name="stopwork" 	type="STOP_WORKING" successjob="changeMat2" failjob="changeMat2"	/>
+	<job name="changeMat2" 	type="SET_MATERIAL" successjob="show2" 		failjob="hide" 		material="FLOUR" />
+	<job name="show2" 		type="SHOW" 		successjob="walkflour1" failjob="hide" 		dx="-1" dy="1" />
+	
+	<job name="walkflour1"	type="WALK" 		successjob="walkflour2" failjob="gohome" 	direction="SOUTH_WEST" />
+	<job name="walkflour2"	type="WALK" 		successjob="look" 		failjob="gohome" 	direction="NORTH_WEST" />
+	
+	<job name="look" 		type="LOOK_AT" 		successjob="drop" 		failjob="hide" 		direction="NORTH_EAST" />
+	<job name="drop" 		type="DROP" 		successjob="changeMat3" failjob="hide" 		material="FLOUR" />
+	<job name="changeMat3" 	type="SET_MATERIAL" successjob="walkhome1" 	failjob="hide" 		material="NO_MATERIAL" />
 
+	<job name="walkhome1"	type="WALK" 		successjob="walkhome2" 	failjob="hide" 		direction="SOUTH_EAST" />
+	<job name="walkhome2"	type="WALK" 		successjob="hide" 		failjob="hide" 		direction="NORTH_EAST" />
+	
 </building>
