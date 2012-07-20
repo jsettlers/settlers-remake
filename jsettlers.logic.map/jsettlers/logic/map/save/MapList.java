@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import jsettlers.common.map.IMapData;
@@ -56,12 +57,15 @@ public class MapList {
 				addFileToList(file);
 			}
 		}
+
+		Collections.sort(freshMaps);
+		Collections.sort(savedMaps);
 	}
 
 	private synchronized void addFileToList(File file) {
 		try {
 			MapLoader loader = new MapLoader(file);
-			MapType type = loader.getFileHeader().getType(); 
+			MapType type = loader.getFileHeader().getType();
 			if (type == MapType.SAVED_SINGLE) {
 				savedMaps.add(loader);
 			} else {

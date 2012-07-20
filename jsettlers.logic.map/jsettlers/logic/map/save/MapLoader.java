@@ -29,8 +29,7 @@ import jsettlers.main.IGameCreator;
  * 
  * @author michael
  */
-public class MapLoader implements IGameCreator, ILoadableGame, IMapItem,
-        INetworkableMap {
+public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetworkableMap, Comparable<MapLoader> {
 	private static final byte USER_PLAYER = 0;
 	private final File file;
 	private MapFileHeader header;
@@ -88,8 +87,7 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem,
 				int randomSeed = 3;
 
 				RandomMapFile file = RandomMapFile.loadFromStream(stream);
-				RandomMapEvaluator evaluator =
-				        new RandomMapEvaluator(file.getInstructions(), players);
+				RandomMapEvaluator evaluator = new RandomMapEvaluator(file.getInstructions(), players);
 				evaluator.createMap(new Random(randomSeed));
 				mapData = evaluator.getGrid();
 
@@ -228,9 +226,7 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem,
 	@Override
 	public String getDescription() {
 		try {
-			return getFileHeader().getDescription() + "\n"
-			        + getFileHeader().getWidth() + "x"
-			        + getFileHeader().getHeight();
+			return getFileHeader().getDescription() + "\n" + getFileHeader().getWidth() + "x" + getFileHeader().getHeight();
 		} catch (MapLoadException e) {
 			return "";
 		}
@@ -241,8 +237,22 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem,
 		try {
 			return getFileHeader().getBgimage();
 		} catch (MapLoadException e) {
-			return new short[MapFileHeader.PREVIEW_IMAGE_SIZE
-			        * MapFileHeader.PREVIEW_IMAGE_SIZE];
+			return new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
+		}
+	}
+
+	@Override
+	public int compareTo(MapLoader o) {
+		try {
+			MapFileHeader myHeader = getFileHeader();
+			MapFileHeader otherHeader = o.getFileHeader();
+			if (myHeader.getType() == MapType.SAVED_SINGLE) {
+				return -myHeader.getDate().compareTo(otherHeader.getDate()); // order by date descending
+			} else {
+				return myHeader.getName().compareTo(otherHeader.getName()); // order by name ascending
+			}
+		} catch (MapLoadException e) {
+			return 0;
 		}
 	}
 }
