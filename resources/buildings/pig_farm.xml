@@ -114,7 +114,7 @@
     <door dx="0" dy="4" />
 
     <stack dx="5" dy="5" material="CROP" buildrequired="0" />
-    <!--<stack dx="-2" dy="3" material="PIG" buildrequired="0" /> -->
+    <!--<stack dx="-1" dy="4" material="PIG" buildrequired="0" /> -->
     <stack dx="3" dy="6" material="WATER" buildrequired="0" />
     <stack dx="1" dy="6" material="PLANK" buildrequired="1" />
     <stack dx="3" dy="6" material="STONE" buildrequired="1" />
@@ -151,8 +151,8 @@
 
     <!-- PIG1 at 2, 2 -->
     <!-- wait some time -->
-    <job name="PIG1_wait" type="WAIT" successjob="PIG1_checkpigs" failjob="PIG1_checkpigs" time="3" />
-    <job name="PIG1_checkpigs" type="NOT_FULL" successjob="PIG1_isKillable" failjob="PIG1_isNPlaceable" dx="-2" dy="3" material="PIG" />
+    <job name="PIG1_wait" type="WAIT" successjob="STACK_NOT_FULL" failjob="STACK_NOT_FULL" time="3" />
+    <job name="STACK_NOT_FULL" type="NOT_FULL" successjob="PIG1_isKillable" failjob="PIG1_isNPlaceable" dx="-1" dy="4" material="PIG" />
 
     <job name="PIG1_isKillable" type="PIG_IS_ADULT" successjob="KILL1_start" failjob="PIG2_isKillable" dx="2" dy="2" />
     <job name="PIG2_isKillable" type="PIG_IS_ADULT" successjob="KILL2_start" failjob="PIG3_isKillable" dx="2" dy="1" />
@@ -259,7 +259,7 @@
     <job name="KILL3_start" type="SET_MATERIAL" successjob="KILL3_show" failjob="hide" material="NO_MATERIAL" />
     <job name="KILL3_show" type="SHOW" successjob="KILL3_walkA1" failjob="hide" dx="0" dy="1" />
     <job name="KILL3_walkA1" type="WALK" successjob="KILL3_walkA2" failjob="gohome" direction="SOUTH_EAST" />
-    <job name="KILL3_walkA2" type="WALK" successjob="KILL3_walkA2" failjob="gohome" direction="EAST" />
+    <job name="KILL3_walkA2" type="WALK" successjob="KILL3_walkA3" failjob="gohome" direction="EAST" />
     <job name="KILL3_walkA3" type="WALK" successjob="KILL3_walkA4" failjob="gohome" direction="NORTH_EAST" />
     <job name="KILL3_walkA4" type="WALK" successjob="KILL3_kill1" failjob="gohome" direction="NORTH_EAST" />
     <job name="KILL3_kill1" type="DROP" successjob="KILL3_kill2" failjob="gohome" material="NO_MATERIAL" />
