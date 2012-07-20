@@ -64,6 +64,11 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 		if (currentJob == null)
 			return;
 
+		EBuildingJobType jobType = currentJob.getType();
+		if (movableType == EMovableType.MILLER && jobType == EBuildingJobType.HIDE) {
+			System.out.println();
+		}
+
 		switch (currentJob.getType()) {
 		case GO_TO:
 			gotoAction();
