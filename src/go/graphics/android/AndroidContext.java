@@ -488,4 +488,11 @@ public class AndroidContext implements GLDrawContext {
 		return context;
 	}
 
+	@Override
+    public void drawTrianglesWithTextureColored(int currentTexture,
+            ByteBuffer byteBuffer, int currentTriangles) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
 }
