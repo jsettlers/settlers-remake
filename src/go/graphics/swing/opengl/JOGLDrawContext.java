@@ -231,7 +231,7 @@ public class JOGLDrawContext implements GLDrawContext {
 		        / FLOATS_PER_COLORED_TRI_VERTEX);
 	}
 
-	private void drawTrianglesWithTextureColored(int textureid,
+	public void drawTrianglesWithTextureColored(int textureid,
 	        ByteBuffer buffer, int triangles) {
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
 
