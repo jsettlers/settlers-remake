@@ -99,4 +99,9 @@ public class BuildingtestMap implements IGraphicsGrid {
 
 	}
 
+	@Override
+    public int nextDrawableX(int x, int y) {
+	    return x + 1;
+    }
+
 }
