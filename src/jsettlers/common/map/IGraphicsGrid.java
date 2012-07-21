@@ -110,4 +110,13 @@ public interface IGraphicsGrid {
 	 *            listener to be set.
 	 */
 	void setBackgroundListener(IGraphicsBackgroundListener backgroundListener);
+
+	/**
+	 * Gets the next x coordinate that might contain a drawable Object.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return a value bigger than x, might be outside the map.
+	 */
+	int nextDrawableX(int x, int y);
 }

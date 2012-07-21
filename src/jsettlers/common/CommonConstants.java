@@ -16,7 +16,7 @@ public abstract class CommonConstants {
 	 */
 	public static boolean ENABLE_ALL_PLAYER_SELECTION = true;
 
-	public static final boolean ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT = false;
+	public static final boolean ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT = true;
 
 	/**
 	 * NOTE: this value has only an effect if it's changed before the MainGrid is created! IT MUSTN'T BE CHANGED AFTER A MAIN GRID HAS BEEN CREATED<br>
