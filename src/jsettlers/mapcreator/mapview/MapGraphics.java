@@ -99,4 +99,9 @@ public class MapGraphics implements IGraphicsGrid {
 		showResources = b;
 	}
 
+	@Override
+    public int nextDrawableX(int x, int y) {
+	    return x + 1;
+    }
+
 }
