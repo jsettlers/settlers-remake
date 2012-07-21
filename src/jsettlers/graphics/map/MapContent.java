@@ -150,7 +150,7 @@ public final class MapContent implements SettlersContent,
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
 		movableDrawer = new MovableDrawer(soundmanager);
-		objectDrawer = new MapObjectDrawer(soundmanager);
+		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		bgsound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {
@@ -371,7 +371,7 @@ public final class MapContent implements SettlersContent,
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			for (int x = startX; x <= endX; x++) {
+			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y)) {
 				needDrawDebug |= drawTile(x, y);
 				if (!linePartuallyVisible) {
 					double drawspacey =
@@ -406,12 +406,13 @@ public final class MapContent implements SettlersContent,
 			drawDebugColors();
 		}
 
+		objectDrawer.flush();
 	}
 
 	private boolean drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
-			this.objectDrawer.drawMapObject(this.context, this.map, x, y,
+			this.objectDrawer.drawMapObject(this.map, x, y,
 			        object);
 		}
 
@@ -432,10 +433,8 @@ public final class MapContent implements SettlersContent,
 		}
 
 		if (map.isBorder(x, y)) {
-			this.context.beginTileContext(x, y);
 			byte player = map.getPlayerAt(x, y);
-			objectDrawer.drawPlayerBorderObject(context, player);
-			this.context.endTileContext();
+			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}
 		return ENABLE_DEBUG && map.getDebugColorAt(x, y) != 0;
 	}

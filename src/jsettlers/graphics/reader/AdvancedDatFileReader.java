@@ -620,9 +620,9 @@ public class AdvancedDatFileReader implements DatFileSet {
 		initializeIfNeeded();
 
 		MultiImageMap map = new MultiImageMap(width, height, id);
-		if (!map.hasCache()) {
+		//if (!map.hasCache()) {
 			map.addSequences(this, sequences, settlersequences);
 			map.writeCache();
-		}
+		//}
 	}
 }

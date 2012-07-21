@@ -112,8 +112,14 @@ public class MapObjectDrawer {
 	private final MovableDrawer movableDrawer;
 	private final SoundManager sound;
 
-	public MapObjectDrawer(SoundManager sound) {
+	private final DrawBuffer buffer;
+
+	private final MapDrawContext context;
+
+	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
+		this.context = context;
 		this.sound = sound;
+		buffer = new DrawBuffer(context);
 		movableDrawer = new MovableDrawer(sound);
 	}
 
@@ -129,8 +135,7 @@ public class MapObjectDrawer {
 	 * @param object
 	 *            The object (tree, ...) to draw.
 	 */
-	public void drawMapObject(MapDrawContext context, IGraphicsGrid map, int x,
-	        int y, IMapObject object) {
+	public void drawMapObject(IGraphicsGrid map, int x, int y, IMapObject object) {
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -144,7 +149,6 @@ public class MapObjectDrawer {
 		if (type == EMapObjectType.ARROW) {
 			drawArrow(context, (IArrowMapObject) object, color);
 		} else {
-			context.beginTileContext(x, y);
 			switch (type) {
 
 				case TREE_ADULT:
@@ -323,10 +327,9 @@ public class MapObjectDrawer {
 				default:
 					break;
 			}
-			context.endTileContext();
 		}
 		if (object.getNextObject() != null) {
-			drawMapObject(context, map, x, y, object.getNextObject());
+			drawMapObject(map, x, y, object.getNextObject());
 		}
 	}
 
@@ -523,7 +526,7 @@ public class MapObjectDrawer {
 		                TREE_SEQUENCES[treeType]);
 
 		int step = getAnimationStep(x, y) % seq.length();
-		seq.getImageSafe(step).draw(context.getGl(), null, color);
+		draw(seq.getImageSafe(step), x, y, color);
 	}
 
 	private void drawTreeTest(MapDrawContext context, int x, int y, float color) {
@@ -551,12 +554,14 @@ public class MapObjectDrawer {
 	 *            The player.
 	 */
 	public void drawPlayerBorderObject(MapDrawContext context, byte player) {
-		GLDrawContext gl = context.getGl();
-		Color color = context.getPlayerColor(player);
-
-		this.imageProvider.getSettlerSequence(FILE_BORDERPOST, 65)
-		        .getImageSafe(0).draw(gl, color);
 	}
+
+	public void drawPlayerBorderObject(int x, int y, byte player) {
+		GLDrawContext gl = context.getGl();
+		int color = context.getPlayerColor(player).getARGB();
+		
+		draw(imageProvider.getSettlerSequence(FILE_BORDERPOST, 65).getImageSafe(0), x, y, color);
+    }
 
 	private static int getTreeType(int x, int y) {
 		return (x + x / 5 + y / 3 + y + y / 7) % TREE_TYPES;
@@ -785,4 +790,20 @@ public class MapObjectDrawer {
 		                / image.getHeight();
 	}
 
+	private void draw(Image image, int x, int y, float color) {
+		int iColor = Color.getARGB(color, color, color, color);
+		draw(image, x, y, iColor);
+	}
+
+	private void draw(Image image, int x, int y, int color) {
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+
+		image.drawAt(context.getGl(), buffer, viewX, viewY, color);
+	}
+
+	public void flush() {
+	    buffer.flush();
+    }
 }

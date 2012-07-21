@@ -2,6 +2,7 @@ package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
+import jsettlers.graphics.map.draw.DrawBuffer;
 
 public interface Image {
 
@@ -59,5 +60,8 @@ public interface Image {
 
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
 	        float maxX, float maxY);
+
+	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY,
+            int iColor);
 
 }

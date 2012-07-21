@@ -5,6 +5,7 @@ import go.graphics.GLDrawContext;
 import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
+import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -287,4 +288,11 @@ public class SingleImage implements ImageDataPrivider, Image {
 	public float getTextureScaleY() {
 		return (float) height / textureHeight;
 	}
+
+	@Override
+    public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+            float viewY, int iColor) {
+	    // TODO Auto-generated method stub
+	    
+    }
 }

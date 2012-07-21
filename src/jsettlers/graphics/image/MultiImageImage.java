@@ -2,6 +2,7 @@ package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
+import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -15,20 +16,42 @@ public class MultiImageImage implements Image {
 	private final float[] settlerGeometry;
 	private final float[] torsoGeometry;
 
-	private final int width;
+	private final class Data {
+		private int width;
 
-	private final int height;
+		private int height;
+
+		private int offsetX;
+
+		private int offsetY;
+
+		private float umin;
+
+		private float umax;
+
+		private float vmin;
+
+		private float vmax;
+	}
+
+	private final Data settler;
+
+	private final Data torso;
 
 	public MultiImageImage(MultiImageMap map, ImageMetadata settlerMeta,
 	        int settlerx, int settlery, ImageMetadata torsoMeta, int torsox,
 	        int torsoy) {
 		this.map = map;
-		this.width = settlerMeta.width;
-		this.height = settlerMeta.height;
-		settlerGeometry = createGeometry(map, settlerMeta, settlerx, settlery);
+
+		settler = new Data();
+		settlerGeometry =
+		        createGeometry(map, settlerMeta, settlerx, settlery, settler);
 		if (torsoMeta != null) {
-			torsoGeometry = createGeometry(map, torsoMeta, torsox, torsoy);
+			torso = new Data();
+			torsoGeometry =
+			        createGeometry(map, torsoMeta, torsox, torsoy, torso);
 		} else {
+			torso = null;
 			torsoGeometry = null;
 		}
 	}
@@ -36,40 +59,45 @@ public class MultiImageImage implements Image {
 	private static final float IMAGE_DRAW_OFFSET = .5f;
 
 	private static float[] createGeometry(MultiImageMap map,
-	        ImageMetadata settlerMeta, int settlerx, int settlery) {
-		float umin = (float) settlerx / map.getWidth();
-		float umax = (float) (settlerx + settlerMeta.width) / map.getWidth();
+	        ImageMetadata settlerMeta, int settlerx, int settlery, Data data) {
+		data.width = settlerMeta.width;
+		data.height = settlerMeta.height;
+		data.offsetX = settlerMeta.offsetX;
+		data.offsetY = settlerMeta.offsetY;
 
-		float vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
-		float vmax = (float) (settlery) / map.getHeight();
+		data.umin = (float) settlerx / map.getWidth();
+		data.umax = (float) (settlerx + settlerMeta.width) / map.getWidth();
+
+		data.vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
+		data.vmax = (float) (settlery) / map.getHeight();
 		return new float[] {
 		        // top left
 		        settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
 		        -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
 		        0,
-		        umin,
-		        vmin,
+		        data.umin,
+		        data.vmin,
 
 		        // bottom left
 		        settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
 		        -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
 		        0,
-		        umin,
-		        vmax,
+		        data.umin,
+		        data.vmax,
 
 		        // bottom right
 		        settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
 		        -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
 		        0,
-		        umax,
-		        vmax,
+		        data.umax,
+		        data.vmax,
 
 		        // top right
 		        settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
 		        -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
 		        0,
-		        umax,
-		        vmin,
+		        data.umax,
+		        data.vmin,
 		};
 	}
 
@@ -128,12 +156,27 @@ public class MultiImageImage implements Image {
 
 	@Override
 	public int getWidth() {
-		return width;
+		return settler.width;
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		return settler.height;
+	}
+
+	@Override
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, int iColor) {
+		buffer.addImage(map.getTexture(gl), viewX + settler.offsetX, viewY
+		        - settler.offsetY - settler.height, viewX + settler.offsetX + settler.width,
+		        viewY - settler.offsetY, settler.umin,
+		        settler.vmin, settler.umax, settler.vmax, iColor);
+		if (torso != null) {
+			buffer.addImage(map.getTexture(gl), viewX + torso.offsetX, viewY
+			        - torso.offsetY - torso.height, viewX + torso.offsetX + torso.width,
+			        viewY - torso.offsetY, torso.umin,
+			        torso.vmin, torso.umax, torso.vmax, iColor);
+		}
 	}
 
 }
