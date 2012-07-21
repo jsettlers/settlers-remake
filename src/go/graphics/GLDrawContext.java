@@ -3,6 +3,7 @@ package go.graphics;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /**
@@ -130,4 +131,7 @@ public interface GLDrawContext {
 
 		void position(int position);
 	}
+
+	void drawTrianglesWithTextureColored(int currentTexture,
+            ByteBuffer byteBuffer, int currentTriangles);
 }
