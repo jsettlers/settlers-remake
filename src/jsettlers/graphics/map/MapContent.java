@@ -351,7 +351,6 @@ public final class MapContent implements SettlersContent,
 	 * is set up.
 	 */
 	private void drawMain(FloatRectangle screen) {
-		boolean needDrawDebug = false;
 		short height = map.getHeight();
 		short width = map.getWidth();
 		MapRectangle area = this.context.getConverter().getMapForScreen(screen);
@@ -372,7 +371,7 @@ public final class MapContent implements SettlersContent,
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
 			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y)) {
-				needDrawDebug |= drawTile(x, y);
+				drawTile(x, y);
 				if (!linePartuallyVisible) {
 					double drawspacey =
 					        this.context.getConverter().getViewY(x, y,
@@ -402,14 +401,14 @@ public final class MapContent implements SettlersContent,
 		// }
 		// }
 
-		if (needDrawDebug) {
+		if (ENABLE_DEBUG) {
 			drawDebugColors();
 		}
 
 		objectDrawer.flush();
 	}
 
-	private boolean drawTile(int x, int y) {
+	private void drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
 			this.objectDrawer.drawMapObject(this.map, x, y,
@@ -436,7 +435,6 @@ public final class MapContent implements SettlersContent,
 			byte player = map.getPlayerAt(x, y);
 			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}
-		return ENABLE_DEBUG && map.getDebugColorAt(x, y) != 0;
 	}
 
 	private void drawDebugColors() {
