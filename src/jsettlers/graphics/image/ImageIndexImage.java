@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
-public class ImageIndexImage implements Image {
+public class ImageIndexImage extends Image {
 	private final short width;
 	private final short height;
 	private float[] geometry;

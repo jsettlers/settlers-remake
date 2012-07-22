@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
 import jsettlers.graphics.map.draw.DrawBuffer;
 
-public interface Image {
+public abstract class Image {
 
 	/**
 	 * Convenience method, calls drawAt(gl, x, y, -1);
@@ -54,14 +54,29 @@ public interface Image {
 	 */
 	public abstract void draw(GLDrawContext gl, Color color, float multiply);
 
-	public int getWidth();
+	public abstract int getWidth();
 
-	public int getHeight();
+	public abstract int getHeight();
 
-	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
-	        float maxX, float maxY);
+	public abstract void drawImageAtRect(GLDrawContext gl, float minX,
+	        float minY, float maxX, float maxY);
 
-	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY,
-            int iColor);
+	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
+	        float viewX, float viewY, int iColor);
+
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, Color color, float multiply) {
+		int iColor;
+		if (multiply == 1) {
+			iColor = color.getARGB();
+		} else {
+			iColor =
+			        Color.getARGB(color.getRed() * multiply, color.getGreen()
+			                * multiply, color.getBlue() * multiply,
+			                color.getAlpha());
+		}
+		drawAt(gl, buffer, viewX, viewY, iColor);
+
+	}
 
 }

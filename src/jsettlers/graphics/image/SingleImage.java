@@ -16,7 +16,7 @@ import jsettlers.graphics.reader.ImageMetadata;
  * 
  * @author michael
  */
-public class SingleImage implements ImageDataPrivider, Image {
+public class SingleImage extends Image implements ImageDataPrivider {
 
 	protected ShortBuffer data;
 	protected final int width;

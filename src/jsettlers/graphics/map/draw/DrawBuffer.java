@@ -9,7 +9,7 @@ public class DrawBuffer {
 	
 	private static final int BUFFERS = 5;
 	private final MapDrawContext context;
-	protected float z;
+	private float z;
 
 	class Buffer {
 		/**
@@ -52,6 +52,9 @@ public class DrawBuffer {
 		}
 		
 		protected void addImage(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) { 
+			if (currentTriangles >= BUFFER_TRIANGLES - 2) {
+				draw();
+			}
 			addPointPrimitive(x1, y1, u1, v1, activeColor);
 			addPointPrimitive(x1, y2, u1, v2, activeColor);
 			addPointPrimitive(x2, y1, u2, v1, activeColor);
@@ -64,7 +67,7 @@ public class DrawBuffer {
 		private void addPointPrimitive(float x1, float y1, float u, float v, int activeColor) {
 			byteBuffer.putFloat(x1);
 			byteBuffer.putFloat(y1);
-			byteBuffer.putFloat(z);
+			byteBuffer.putFloat(getZ());
 			byteBuffer.putFloat(u);
 			byteBuffer.putFloat(v);
 			byteBuffer.putInt(activeColor);
@@ -83,7 +86,7 @@ public class DrawBuffer {
     }
 		
 	public void addImage(int texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) {
-		z += .0001f;
+		setZ(getZ() + .0001f);
 		getBuffer(texture).addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
 	}
 
@@ -109,8 +112,16 @@ public class DrawBuffer {
 		for (int i = 0; i < BUFFERS; i++) {
 			drawBuffers[i].draw();
 		}
-		z = 0;
+		setZ(0);
 	}
+
+	public float getZ() {
+	    return z;
+    }
+
+	public void setZ(float z) {
+	    this.z = z;
+    }
 
 	
 }

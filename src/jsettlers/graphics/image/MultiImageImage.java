@@ -10,7 +10,7 @@ import jsettlers.graphics.reader.ImageMetadata;
  * 
  * @author michael
  */
-public class MultiImageImage implements Image {
+public class MultiImageImage extends Image {
 	private final MultiImageMap map;
 
 	private final float[] settlerGeometry;
