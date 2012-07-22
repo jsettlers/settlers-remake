@@ -161,6 +161,7 @@ public class MapObjectDrawer {
 
 				case TREE_DEAD:
 					// TODO: falling tree sound.
+					playSound(object, 4);
 					drawFallingTree(context, x, y, progress, color);
 					break;
 
