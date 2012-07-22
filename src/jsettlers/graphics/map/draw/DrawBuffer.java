@@ -45,7 +45,7 @@ public class DrawBuffer {
 		}
 
 		protected void draw() {
-			System.out.println("draw " + currentTriangles + " tris of " + currentTexture);
+			// System.out.println("draw " + currentTriangles + " tris of " + currentTexture);
 			byteBuffer.rewind();
 			context.getGl().drawTrianglesWithTextureColored(currentTexture, byteBuffer, currentTriangles);
 			byteBuffer.rewind();
