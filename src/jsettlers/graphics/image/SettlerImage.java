@@ -2,6 +2,7 @@ package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
 import jsettlers.common.Color;
+import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
@@ -73,5 +74,23 @@ public class SettlerImage extends SingleImage {
 			torso.setGeometryIndex(index);
 		}
 		return index;
+	}
+
+	@Override
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, int iColor) {
+		super.drawAt(gl, buffer, viewX, viewY, iColor);
+		if (this.torso != null) {
+			torso.drawAt(gl, buffer, viewX, viewY, iColor);
+		}
+	}
+
+	@Override
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, Color color, float multiply) {
+		super.drawAt(gl, buffer, viewX, viewY, Color.WHITE, multiply);
+		if (this.torso != null) {
+			torso.drawAt(gl, buffer, viewX, viewY, dimColor(color, multiply));
+		}
 	}
 }

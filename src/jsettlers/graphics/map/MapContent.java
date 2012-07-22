@@ -26,7 +26,6 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -46,9 +45,9 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
+import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
-import jsettlers.graphics.map.draw.MovableDrawer;
 import jsettlers.graphics.messages.Message;
 import jsettlers.graphics.messages.Messenger;
 import jsettlers.graphics.sound.BackgroundSound;
@@ -101,8 +100,6 @@ public final class MapContent implements SettlersContent,
 
 	private final Background background = new Background();
 
-	private final MovableDrawer movableDrawer;
-
 	private final MapDrawContext context;
 
 	private final MapObjectDrawer objectDrawer;
@@ -149,8 +146,9 @@ public final class MapContent implements SettlersContent,
 		this.map = map;
 		this.context = new MapDrawContext(map);
 		this.soundmanager = new SoundManager(player);
-		movableDrawer = new MovableDrawer(soundmanager);
-		objectDrawer = new MapObjectDrawer(context, soundmanager);
+		buffer = new DrawBuffer(context);
+
+		objectDrawer = new MapObjectDrawer(context, soundmanager, buffer);
 		bgsound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {
@@ -405,7 +403,7 @@ public final class MapContent implements SettlersContent,
 			drawDebugColors();
 		}
 
-		objectDrawer.flush();
+		buffer.flush();
 	}
 
 	private void drawTile(int x, int y) {
@@ -417,18 +415,7 @@ public final class MapContent implements SettlersContent,
 
 		IMovable movable = map.getMovableAt(x, y);
 		if (movable != null) {
-			if (movable.getAction() == EAction.WALKING) {
-				int originx = x - movable.getDirection().getGridDeltaX();
-				int originy = y - movable.getDirection().getGridDeltaY();
-				this.context.beginBetweenTileContext(originx, originy, x, y,
-				        movable.getMoveProgress());
-				this.movableDrawer.draw(this.context, movable);
-				this.context.endTileContext();
-			} else {
-				this.context.beginTileContext(x, y);
-				this.movableDrawer.draw(this.context, movable);
-				this.context.endTileContext();
-			}
+			this.objectDrawer.draw(movable);
 		}
 
 		if (map.isBorder(x, y)) {
@@ -706,6 +693,7 @@ public final class MapContent implements SettlersContent,
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
+	private DrawBuffer buffer;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {

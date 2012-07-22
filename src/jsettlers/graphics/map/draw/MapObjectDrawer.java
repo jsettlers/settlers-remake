@@ -22,11 +22,17 @@ import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.sound.ISoundable;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
+import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 import jsettlers.graphics.sequence.Sequence;
 import jsettlers.graphics.sound.SoundManager;
 
@@ -109,18 +115,20 @@ public class MapObjectDrawer {
 	int animationStep = 0;
 
 	private final ImageProvider imageProvider = ImageProvider.getInstance();
-	private final MovableDrawer movableDrawer;
 	private final SoundManager sound;
 
 	private final DrawBuffer buffer;
 
 	private final MapDrawContext context;
 
-	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
+	private SettlerImageMap imageMap = SettlerImageMap.getInstance();
+	private float betweenTilesY;
+
+	public MapObjectDrawer(MapDrawContext context, SoundManager sound,
+	        DrawBuffer buffer) {
 		this.context = context;
 		this.sound = sound;
-		buffer = new DrawBuffer(context);
-		movableDrawer = new MovableDrawer(sound);
+		this.buffer = buffer;
 	}
 
 	/**
@@ -166,7 +174,7 @@ public class MapObjectDrawer {
 					break;
 
 				case TREE_GROWING:
-					drawGrowingTree( x, y, progress, color);
+					drawGrowingTree(x, y, progress, color);
 					break;
 
 				case CORN_GROWING:
@@ -202,48 +210,48 @@ public class MapObjectDrawer {
 					break;
 
 				case FOUND_COAL:
-					drawByProgress(x, y, FILE, 94,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 94, object.getStateProgress(),
+					        color);
 					break;
 
 				case FOUND_GEMSTONE:
-					drawByProgress(x, y, FILE, 95,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 95, object.getStateProgress(),
+					        color);
 					break;
 
 				case FOUND_GOLD:
-					drawByProgress(x, y, FILE, 96,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 96, object.getStateProgress(),
+					        color);
 					break;
 
 				case FOUND_IRON:
-					drawByProgress(x, y, FILE, 97,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 97, object.getStateProgress(),
+					        color);
 					break;
 
 				case FOUND_BRIMSTONE:
-					drawByProgress(x, y, FILE, 98,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 98, object.getStateProgress(),
+					        color);
 					break;
 
 				case FOUND_NOTHING:
-					drawByProgress(x, y, FILE, 99,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 99, object.getStateProgress(),
+					        color);
 					break;
 
 				case BUILDINGSITE_SIGN:
-					drawByProgress(x, y, FILE, 93,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 93, object.getStateProgress(),
+					        color);
 					break;
 
 				case BUILDINGSITE_POST:
-					drawByProgress(x, y, FILE, 92,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 92, object.getStateProgress(),
+					        color);
 					break;
 
 				case WORKAREA_MARK:
-					drawByProgress(x, y, FILE, 91,
-					        object.getStateProgress(), color);
+					drawByProgress(x, y, FILE, 91, object.getStateProgress(),
+					        color);
 					break;
 
 				case FLAG_DOOR:
@@ -251,17 +259,18 @@ public class MapObjectDrawer {
 					break;
 
 				case CONSTRUCTION_MARK:
-					drawByProgress(x, y, 4, 6, object.getStateProgress(),
-					        color);
+					drawByProgress(x, y, 4, 6, object.getStateProgress(), color);
 					break;
 
 				case FLAG_ROOF:
-					context.getGl().glTranslatef(0, 0, 0.2f);
+					float z = buffer.getZ();
+					buffer.setZ(.89f);
 					drawPlayerableWaving(x, y, 13, 64, object, color);
+					buffer.setZ(z);
 					break;
 
 				case BUILDING:
-					drawBuilding( x, y, (IBuilding) object, color);
+					drawBuilding(x, y, (IBuilding) object, color);
 					break;
 
 				case STACK_OBJECT:
@@ -304,8 +313,7 @@ public class MapObjectDrawer {
 					if (seq.length() > 0) {
 						int i = getAnimationStep(x, y) / 2;
 						int step = i % seq.length();
-						draw(seq.getImageSafe(step), x, y,
-						        color);
+						draw(seq.getImageSafe(step), x, y, color);
 					}
 				}
 					break;
@@ -332,6 +340,137 @@ public class MapObjectDrawer {
 		if (object.getNextObject() != null) {
 			drawMapObject(map, x, y, object.getNextObject());
 		}
+	}
+
+	/**
+	 * Draws a movable
+	 * 
+	 * @param movable
+	 *            The movable.
+	 */
+	public void draw(IMovable movable) {
+		Image image = this.imageMap.getImageForSettler(movable);
+		drawImage(movable, image);
+
+		if (!movable.isSoundPlayed()) {
+			EAction action = movable.getAction();
+			if (action == EAction.ACTION1) {
+				playSoundAction1(movable.getMovableType());
+				movable.setSoundPlayed();
+			} else if (action == EAction.ACTION2) {
+				playSoundAction2(movable.getMovableType());
+				movable.setSoundPlayed();
+			}
+		}
+	}
+
+	private void playSoundAction1(EMovableType type) {
+		switch (type) {
+			case LUMBERJACK:
+				sound.playSound(1, 1, 1);
+				break;
+			case STONECUTTER:
+				sound.playSound(3, 1, 1);
+				break;
+			case DIGGER:
+				sound.playSound(2, 1, 1);
+				break;
+			case SAWMILLER:
+				sound.playSound(5, 1, 1);
+				break;
+			case SMITH:
+				sound.playSound(6, 1, 1);
+				break;
+			case FARMER:
+				sound.playSound(12, 1, 1);
+				break;
+			case SWORDSMAN_L1:
+			case SWORDSMAN_L2:
+			case SWORDSMAN_L3:
+				sound.playSound(30, 1, 1);
+				break;
+			case BOWMAN_L1:
+			case BOWMAN_L2:
+			case BOWMAN_L3:
+				sound.playSound(33, 1, 1);
+				break;
+		}
+	}
+
+	private void playSoundAction2(EMovableType type) {
+		// currently there is nobody who needs this.
+	}
+
+	private void drawImage(IMovable movable, Image image) {
+		ShortPoint2D pos = movable.getPos();
+		short x = pos.getX();
+		short y = pos.getY();
+		
+		byte fogstatus = context.getVisibleStatus(x, y);
+		if (fogstatus == 0) {
+			return; // break
+		}
+
+		Color color = context.getPlayerColor(movable.getPlayer());
+		float shade = MapObjectDrawer.getColor(fogstatus);
+		
+		float viewX;
+		float viewY;
+		if (movable.getAction() == EAction.WALKING) {
+			int originx = x - movable.getDirection().getGridDeltaX();
+			int originy = y - movable.getDirection().getGridDeltaY();
+			viewX = betweenTilesX(originx, originy, x, y, movable.getMoveProgress());
+			viewY = betweenTilesY;
+		} else {
+			int height = context.getHeight(x, y);
+			viewX = context.getConverter().getViewX(x, y, height);
+			viewY = context.getConverter().getViewY(x, y, height);
+		}
+		image.drawAt(context.getGl(), buffer, viewX, viewY, color, shade);
+
+		if (movable.isSelected()) {
+			drawSelectionMark(viewX, viewY, movable.getHealth());
+		}
+	}
+
+
+	private float betweenTilesX(int startx, int starty, int destinationx,
+	        int destinationy, float progress) {
+		float theight = context.getHeight(startx, starty);
+		float dheight = context.getHeight(destinationx, destinationy);
+		MapCoordinateConverter converter = context.getConverter();
+		float x =
+		        (1 - progress)
+		                * converter.getViewX(startx, starty, theight)
+		                + progress
+		                * converter.getViewX(destinationx, destinationy,
+		                        dheight);
+		betweenTilesY = (1 - progress)
+                * converter.getViewY(startx, starty, theight)
+                + progress
+                * converter.getViewY(destinationx, destinationy,
+                        dheight);
+		return x;
+	}
+
+	private void drawSelectionMark(float viewX, float viewY, float health) {
+		float z = buffer.getZ();
+		buffer.setZ(.9f);
+		
+		Image image =
+		        ImageProvider.getInstance().getSettlerSequence(4, 7)
+		                .getImageSafe(0);
+		image.drawAt(context.getGl(), buffer, viewX, viewY + 20, -1);
+
+		Sequence<? extends Image> sequence =
+		        ImageProvider.getInstance().getSettlerSequence(4, 6);
+		int healthId =
+		        Math.min((int) ((1 - health) * sequence.length()),
+		                sequence.length() - 1);
+		Image healthImage = sequence.getImageSafe(healthId);
+		healthImage.drawAt(context.getGl(), buffer, viewX, viewY + 38, -1);
+		
+		buffer.setZ(z);
 	}
 
 	private void playSound(IMapObject object, int soundid) {
@@ -379,16 +518,15 @@ public class MapObjectDrawer {
 		context.beginBetweenTileContext(object.getSourceX(),
 		        object.getSourceY(), object.getTargetX(), object.getTargetY(),
 		        progress);
-		context.getGl()
-		        .glTranslatef(0, -20 * progress * (progress - 1) + 10, progress >= 1 ? -.9f : buffer.getZ());
+		context.getGl().glTranslatef(0, -20 * progress * (progress - 1) + 10,
+		        progress >= 1 ? -.9f : buffer.getZ());
 
 		this.imageProvider.getSettlerSequence(FILE, sequence)
 		        .getImageSafe(index).draw(context.getGl(), null, color);
 		context.endTileContext();
 	}
 
-	private void drawStones(int x, int y, IMapObject object,
-	        float color) {
+	private void drawStones(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, STONE);
 		int stones = (int) (seq.length() - object.getStateProgress() - 1);
@@ -411,8 +549,7 @@ public class MapObjectDrawer {
 		draw(seq.getImageSafe(CORN_DEAD_STEP), x, y, color);
 	}
 
-	private void drawGrowingCorn(int x, int y, IMapObject object,
-	        float color) {
+	private void drawGrowingCorn(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq =
 		        this.imageProvider.getSettlerSequence(FILE, CORN);
 		int step = (int) (object.getStateProgress() * CORN_GROW_STEPS);
@@ -426,8 +563,7 @@ public class MapObjectDrawer {
 		draw(seq.getImageSafe(step), x, y, color);
 	}
 
-	private void drawGrowingTree( int x, int y,
-	        float progress, float color) {
+	private void drawGrowingTree(int x, int y, float progress, float color) {
 		Image image;
 		if (progress < 0.33) {
 			Sequence<? extends Image> seq =
@@ -448,8 +584,7 @@ public class MapObjectDrawer {
 		draw(image, x, y, color);
 	}
 
-	private void drawFallingTree(int x, int y,
-	        float progress, float color) {
+	private void drawFallingTree(int x, int y, float progress, float color) {
 		int treeType = getTreeType(x, y);
 		int imageStep = 0;
 
@@ -490,8 +625,8 @@ public class MapObjectDrawer {
 
 	private void drawTreeTest(int x, int y, float color) {
 		int step = getAnimationStep(x, y) % TREE_TEST_SEQUENCE.getLength();
-		draw(imageProvider.getImage(TREE_TEST_SEQUENCE.getImage(step))
-		        , x, y, color);
+		draw(imageProvider.getImage(TREE_TEST_SEQUENCE.getImage(step)), x, y,
+		        color);
 	}
 
 	/**
@@ -541,12 +676,10 @@ public class MapObjectDrawer {
 	 * @param object
 	 *            The stack to draw.
 	 */
-	public void drawStack(int x, int y, IStackMapObject object,
-	        float color) {
+	public void drawStack(int x, int y, IStackMapObject object, float color) {
 		byte elements = object.getSize();
 		if (elements > 0) {
-			drawStackAtScreen(x, y, object.getMaterialType(),
-			        elements, color);
+			drawStackAtScreen(x, y, object.getMaterialType(), elements, color);
 		}
 	}
 
@@ -560,8 +693,8 @@ public class MapObjectDrawer {
 	 * @param count
 	 *            The number of elements on the stack
 	 */
-	private void drawStackAtScreen(int x, int y,
-	        EMaterialType material, int count, float color) {
+	private void drawStackAtScreen(int x, int y, EMaterialType material,
+	        int count, float color) {
 		int stackIndex = material.getStackIndex();
 
 		Sequence<? extends Image> seq =
@@ -587,8 +720,7 @@ public class MapObjectDrawer {
 	 * @param color
 	 *            Gray color shade
 	 */
-	private void drawBuilding(int x, int y,
-	        IBuilding building, float color) {
+	private void drawBuilding(int x, int y, IBuilding building, float color) {
 		EBuildingType type = building.getBuildingType();
 
 		float state = building.getStateProgress();
@@ -660,10 +792,8 @@ public class MapObjectDrawer {
 			for (IBuildingOccupyer occupyer : building.getOccupyers()) {
 				OccupyerPlace place = occupyer.getPlace();
 
-				gl.glPushMatrix();
-				gl.glTranslatef(place.getOffsetX(), place.getOffsetY(), 0);
-
 				if (place.getType() == ESoldierType.INFANTARY) {
+
 					OriginalImageLink image =
 					        place.looksRight() ? INSIDE_BUILDING_RIGHT
 					                : INSIDE_BUILDING_LEFT;
@@ -674,9 +804,8 @@ public class MapObjectDrawer {
 					        viewX + place.getOffsetX(),
 					        viewY + place.getOffsetY(), color, basecolor);
 				} else {
-					movableDrawer.draw(context, occupyer.getMovable());
+					draw(occupyer.getMovable());
 				}
-				gl.glPopMatrix();
 			}
 		} catch (ConcurrentModificationException e) {
 			// happens sometime, just ignore it.
@@ -690,7 +819,7 @@ public class MapObjectDrawer {
 		Image image =
 		        imageProvider.getSettlerSequence(SELECTMARK_FILE,
 		                SELECTMARK_SEQUENCE).getImageSafe(0);
-		draw(image, x, y, 1);
+		draw(image, x, y, -1);
 
 		buffer.setZ(z);
 	}
@@ -701,7 +830,7 @@ public class MapObjectDrawer {
 			return; // should not happen
 		}
 		context.beginTileContext(x, y);
-		
+
 		SingleImage image = (SingleImage) unsafeimage;
 		// number of tiles in x direction, can be adjusted for performance
 		int tiles = 6;
@@ -732,7 +861,7 @@ public class MapObjectDrawer {
 		GLDrawContext gl = context.getGl();
 		gl.color(color, color, color, 1);
 		gl.drawTrianglesWithTexture(image.getTextureIndex(gl), tris);
-		
+
 		context.endTileContext();
 	}
 
@@ -805,7 +934,7 @@ public class MapObjectDrawer {
 	}
 
 	private void draw(Image image, int x, int y, float color) {
-		int iColor = Color.getARGB(color, color, color, color);
+		int iColor = Color.getARGB(color, color, color, 1);
 		draw(image, x, y, iColor);
 	}
 
@@ -815,9 +944,5 @@ public class MapObjectDrawer {
 		float viewY = context.getConverter().getViewY(x, y, height);
 
 		image.drawAt(context.getGl(), buffer, viewX, viewY, color);
-	}
-
-	public void flush() {
-		buffer.flush();
 	}
 }

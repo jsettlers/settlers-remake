@@ -66,7 +66,13 @@ public abstract class Image {
 
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 	        float viewY, Color color, float multiply) {
-		int iColor;
+		int iColor = dimColor(color, multiply);
+		drawAt(gl, buffer, viewX, viewY, iColor);
+
+	}
+
+	public static int dimColor(Color color, float multiply) {
+	    int iColor;
 		if (multiply == 1) {
 			iColor = color.getARGB();
 		} else {
@@ -75,8 +81,7 @@ public abstract class Image {
 			                * multiply, color.getBlue() * multiply,
 			                color.getAlpha());
 		}
-		drawAt(gl, buffer, viewX, viewY, iColor);
-
-	}
+	    return iColor;
+    }
 
 }

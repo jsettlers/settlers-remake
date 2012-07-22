@@ -167,16 +167,28 @@ public class MultiImageImage extends Image {
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 	        float viewY, int iColor) {
+		drawAt(gl, buffer, viewX, viewY, iColor, iColor);
+	}
+
+	private void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, int sColor, int tColor) {
 		buffer.addImage(map.getTexture(gl), viewX + settler.offsetX, viewY
-		        - settler.offsetY - settler.height, viewX + settler.offsetX + settler.width,
-		        viewY - settler.offsetY, settler.umin,
-		        settler.vmin, settler.umax, settler.vmax, iColor);
+		        - settler.offsetY - settler.height, viewX + settler.offsetX
+		        + settler.width, viewY - settler.offsetY, settler.umin,
+		        settler.vmin, settler.umax, settler.vmax, sColor);
 		if (torso != null) {
 			buffer.addImage(map.getTexture(gl), viewX + torso.offsetX, viewY
-			        - torso.offsetY - torso.height, viewX + torso.offsetX + torso.width,
-			        viewY - torso.offsetY, torso.umin,
-			        torso.vmin, torso.umax, torso.vmax, iColor);
+			        - torso.offsetY - torso.height, viewX + torso.offsetX
+			        + torso.width, viewY - torso.offsetY, torso.umin,
+			        torso.vmin, torso.umax, torso.vmax, tColor);
 		}
 	}
 
+	@Override
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, Color color, float multiply) {
+		drawAt(gl, buffer, viewX, viewY,
+		        Color.getARGB(multiply, multiply, multiply, 1),
+		        dimColor(color, multiply));
+	}
 }

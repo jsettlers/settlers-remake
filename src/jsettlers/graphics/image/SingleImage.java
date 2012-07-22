@@ -290,9 +290,12 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	@Override
-    public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-            float viewY, int iColor) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
+	        float viewY, int iColor) {
+		int textureIndex = getTextureIndex(gl);
+		buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
+		        - getOffsetY(), viewX + getOffsetX() + width, viewY
+				- getOffsetY() - height, 0, 0, getTextureScaleX(),
+		        getTextureScaleY(), iColor);
+	}
 }
