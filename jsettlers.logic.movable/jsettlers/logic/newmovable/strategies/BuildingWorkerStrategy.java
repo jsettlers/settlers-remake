@@ -64,6 +64,11 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 		if (isJobless())
 			return;
 
+		if (!building.isNotDestroyed()) { // check if building is still ok
+			buildingDestroyed();
+			return;
+		}
+
 		// if (movableType == EMovableType.PIG_FARMER) {
 		// System.err.println("Pigfarmer action() with jobType: " + currentJob.getType() + "  and name: " + currentJob.getName());
 		// if (currentJob.getType() == EBuildingJobType.DROP) {
@@ -125,7 +130,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			dropAction(currentJob.getMaterial());
 			break;
 		case DROP_POPPED:
+			boolean oldDone = done;
 			dropAction(poppedMaterial);
+			if (oldDone)
+				poppedMaterial = null;
 			break;
 
 		case PRE_SEARCH:
@@ -236,6 +244,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	private void popToolRequestAction() {
+		if (poppedMaterial != null) {
+			System.err.println("poppedMaterial not null and popping a new one!");
+		}
+
 		ShortPoint2D pos = building.getDoor();
 		poppedMaterial = super.getStrategyGrid().popToolProductionRequest(pos);
 		if (poppedMaterial != null) {
@@ -366,10 +378,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	@Override
 	public void setWorkerJob(IWorkerRequestBuilding building) {
 		this.building = building;
-		building.occupyBuilding(this);
 		this.currentJob = building.getBuildingType().getStartJob();
 		super.enableNothingToDoAction(false);
 		this.done = false;
+		building.occupyBuilding(this);
 	}
 
 	@Override

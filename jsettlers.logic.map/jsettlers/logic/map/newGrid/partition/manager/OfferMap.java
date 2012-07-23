@@ -12,7 +12,7 @@ import jsettlers.logic.map.newGrid.partition.manager.datastructures.Positionable
  * It is also an acceptor that accepts all materials for which we have offers.
  * 
  */
-public class OfferMap extends PositionableHashMap<PartitionManager.Offer> implements ITypeAcceptor<EMaterialType> {
+class OfferMap extends PositionableHashMap<PartitionManager.Offer> implements ITypeAcceptor<EMaterialType> {
 	private static final long serialVersionUID = 194211819683736498L;
 
 	int[] count = new int[EMaterialType.values().length];

@@ -91,8 +91,10 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	public final void occupyBuilding(IManageableWorker worker) {
-		this.worker = worker;
-		super.placeFlag(true);
+		if (super.isNotDestroyed()) {
+			this.worker = worker;
+			super.placeFlag(true);
+		}
 	}
 
 	@Override

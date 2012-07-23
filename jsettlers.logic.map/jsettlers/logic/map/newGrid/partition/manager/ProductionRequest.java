@@ -6,7 +6,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 
-public final class ProductionRequest implements ILocatable, Serializable {
+final class ProductionRequest implements ILocatable, Serializable {
 	private static final long serialVersionUID = -1849601517609060590L;
 
 	private final ShortPoint2D pos;

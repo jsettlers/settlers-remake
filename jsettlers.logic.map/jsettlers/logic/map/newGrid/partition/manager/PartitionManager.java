@@ -255,6 +255,10 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private void handleWorkerCreationRequest() {
 		WorkerCreationRequest workerRequest = workerCreationRequests.poll();
+		if (workerRequest != null && workerRequest.movableType == EMovableType.SMITH) {
+			System.err.println("Smith worker creation requested!");
+		}
+
 		if (workerRequest != null) {
 			EMaterialType tool = workerRequest.movableType.getTool();
 			if (tool != EMaterialType.NO_MATERIAL) {
