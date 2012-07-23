@@ -118,7 +118,7 @@
 	<!-- reset -->
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="hide" dx="-1" dy="2"/>
 	<job name="hide" type="HIDE" successjob="wait" failjob="wait"/>
-	<job name="wait" type="WAIT" successjob="check1" failjob="wait" time="10"/>
+	<job name="wait" type="WAIT" successjob="check1" failjob="wait" time="5"/>
 	<job name="check1" type="AVAILABLE" successjob="check2" failjob="wait" dx="-3" dy="2" material="PIG"/>
 	<job name="check2" type="NOT_FULL" successjob="A_wait" failjob="wait" dx="1" dy="4" material="MEAT"/>
 	

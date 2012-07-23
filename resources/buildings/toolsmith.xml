@@ -105,8 +105,8 @@
     <job name="waithome" type="WAIT" time="1" successjob="checkhome1" failjob="checkhome1" />
     <job name="checkhome1" type="AVAILABLE" material="IRON" dx="4" dy="0" successjob="checkhome2" failjob="waithome" />
     <job name="checkhome2" type="AVAILABLE" material="COAL" dx="-3" dy="1" successjob="checkhome3" failjob="waithome" />
-    <!-- TODO: is this test good? -->
-    <job name="checkhome3" type="NOT_FULL" material="HAMMER" dx="3" dy="2" successjob="checkhome4" failjob="waithome" />
+    
+	<job name="checkhome3" type="NOT_FULL" dx="3" dy="2" successjob="checkhome4" failjob="waithome" />
 
     <!-- Pop the tool we want to produce. -->
     <job name="checkhome4" type="POP_TOOL" successjob="go_to_coal1" failjob="waithome" />
