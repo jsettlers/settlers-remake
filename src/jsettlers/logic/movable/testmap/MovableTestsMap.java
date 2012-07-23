@@ -56,6 +56,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	@Override
+	public int nextDrawableX(int x, int y) {
+		return x + 1;
+	}
+
+	@Override
 	public short getWidth() {
 		return width;
 	}
@@ -142,7 +147,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addJoblessBearer(IManageableBearer bearer) {
+		public void addJobless(IManageableBearer bearer) {
 			if (!materials.isEmpty()) {
 				ShortPoint2D source = materials.pop();
 				final ShortPoint2D targetPos = new ShortPoint2D(RandomSingleton.getInt(0, width - 1), RandomSingleton.getInt(0, height - 1));
@@ -202,11 +207,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addJoblessWorker(IManageableWorker worker) {
+		public void addJobless(IManageableWorker worker) {
 		}
 
 		@Override
-		public void addJoblessDigger(IManageableDigger digger) {
+		public void addJobless(IManageableDigger digger) {
 		}
 
 		@Override
@@ -282,7 +287,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addJoblessBricklayer(IManageableBricklayer bricklayer) {
+		public void addJobless(IManageableBricklayer bricklayer) {
 		}
 
 		@Override
@@ -316,6 +321,22 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public void changePlayerAt(ShortPoint2D pos, byte player) {
+		}
+
+		@Override
+		public void removeJobless(IManageableBearer bearer) {
+		}
+
+		@Override
+		public void removeJobless(IManageableWorker worker) {
+		}
+
+		@Override
+		public void removeJobless(IManageableDigger digger) {
+		}
+
+		@Override
+		public void removeJobless(IManageableBricklayer bricklayer) {
 		}
 
 	};

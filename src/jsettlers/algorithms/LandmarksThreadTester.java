@@ -230,6 +230,11 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
+		public int nextDrawableX(int x, int y) {
+			return x + 1;
+		}
+
+		@Override
 		public byte getPlayerAt(int x, int y) {
 			return 0;
 		}

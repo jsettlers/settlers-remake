@@ -125,4 +125,9 @@ class TestMapGrid implements ISuperGridAStarGrid, IGraphicsGrid {
 	public void setBlockedChangedListener(IBlockedChangedListener listener) {
 		this.listener = listener;
 	}
+
+	@Override
+	public int nextDrawableX(int x, int y) {
+		return x + 1;
+	}
 }

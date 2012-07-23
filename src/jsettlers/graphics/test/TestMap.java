@@ -503,7 +503,10 @@ public class TestMap implements IGraphicsGrid {
 
 	@Override
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
-		// TODO Auto-generated method stub
+	}
 
+	@Override
+	public int nextDrawableX(int x, int y) {
+		return x + 1;
 	}
 }
