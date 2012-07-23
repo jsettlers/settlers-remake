@@ -61,7 +61,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 
 	@Override
 	protected void action() {
-		if (currentJob == null)
+		if (isJobless())
 			return;
 
 		// if (movableType == EMovableType.PIG_FARMER) {
@@ -218,6 +218,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		}
+	}
+
+	private boolean isJobless() {
+		return currentJob == null;
 	}
 
 	private void followPreSearchedAction() {
@@ -385,7 +389,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	private void reportAsJobless() {
-		super.getStrategyGrid().addJoblessWorker(this);
+		super.getStrategyGrid().addJobless(this);
 		super.enableNothingToDoAction(true);
 		this.currentJob = null;
 		this.building = null;
@@ -394,5 +398,9 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 		dropCurrMaterial();
+
+		if (isJobless()) {
+			super.getStrategyGrid().removeJobless(this);
+		}
 	}
 }

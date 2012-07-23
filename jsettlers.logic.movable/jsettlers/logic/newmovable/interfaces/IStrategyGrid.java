@@ -21,13 +21,21 @@ import jsettlers.logic.newmovable.NewMovableStrategy;
  */
 public interface IStrategyGrid {
 
-	void addJoblessBearer(IManageableBearer bearer);
+	void addJobless(IManageableBearer bearer);
 
-	void addJoblessWorker(IManageableWorker worker);
+	void removeJobless(IManageableBearer bearer);
 
-	void addJoblessDigger(IManageableDigger digger);
+	void addJobless(IManageableWorker worker);
 
-	void addJoblessBricklayer(IManageableBricklayer bricklayer);
+	void removeJobless(IManageableWorker worker);
+
+	void addJobless(IManageableDigger digger);
+
+	void removeJobless(IManageableDigger digger);
+
+	void addJobless(IManageableBricklayer bricklayer);
+
+	void removeJobless(IManageableBricklayer bricklayer);
 
 	/**
 	 * Take a material from the stack at given position of given {@link EMaterialType}.

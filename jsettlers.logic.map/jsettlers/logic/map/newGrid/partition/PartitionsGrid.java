@@ -252,23 +252,39 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	public final boolean pushMaterial(ShortPoint2D position, EMaterialType materialType) {
-		return getPartitionObject(position.getX(), position.getY()).pushMaterial(position, materialType);
+		return getPartitionObject(position.getX(), position.getY()).addOffer(position, materialType);
 	}
 
-	public final void addJobless(IManageableBearer manageable) {
-		getPartitionObject(manageable.getPos()).addJobless(manageable);
+	public final void addJobless(IManageableBearer bearer) {
+		getPartitionObject(bearer.getPos()).addJobless(bearer);
+	}
+
+	public void removeJobless(IManageableBearer bearer) {
+		getPartitionObject(bearer.getPos()).removeJobless(bearer);
 	}
 
 	public final void addJobless(IManageableWorker worker) {
 		getPartitionObject(worker.getPos()).addJobless(worker);
 	}
 
+	public void removeJobless(IManageableWorker worker) {
+		getPartitionObject(worker.getPos()).removeJobless(worker);
+	}
+
 	public final void addJobless(IManageableBricklayer bricklayer) {
 		getPartitionObject(bricklayer.getPos()).addJobless(bricklayer);
 	}
 
+	public void removeJobless(IManageableBricklayer bricklayer) {
+		getPartitionObject(bricklayer.getPos()).removeJobless(bricklayer);
+	}
+
 	public final void addJobless(IManageableDigger digger) {
 		getPartitionObject(digger.getPos()).addJobless(digger);
+	}
+
+	public void removeJobless(IManageableDigger digger) {
+		getPartitionObject(digger.getPos()).removeJobless(digger);
 	}
 
 	public final void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
@@ -417,4 +433,5 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	public EMaterialType popToolProduction(ShortPoint2D pos) {
 		return getPartitionObject(pos).popToolProduction(pos);
 	}
+
 }

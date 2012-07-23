@@ -847,16 +847,6 @@ public class MainGrid implements Serializable {
 			landmarksCorrection.reTest(position.getX(), position.getY());
 		}
 
-		// @Override
-		// public final boolean isProtected(short x, short y) {
-		// return flagsGrid.isProtected(x, y);
-		// }
-
-		// @Override
-		// public final boolean isEnforcedByTower(ShortPoint2D pos) {
-		// return partitionsGrid.isEnforcedByTower(pos.getX(), pos.getY());
-		// }
-
 		@Override
 		public final boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D pos) {
 			short x = pos.getX(), y = pos.getY();
@@ -864,53 +854,49 @@ public class MainGrid implements Serializable {
 					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayer() == partitionsGrid.getPlayerAt(x, y));
 		}
 
-		// @Override
-		// public final EResourceType getResourceTypeAt(short x, short y) {
-		// return landscapeGrid.getResourceTypeAt(x, y);
-		// }
-		//
-		// @Override
-		// public final byte getResourceAmountAt(short x, short y) {
-		// return landscapeGrid.getResourceAmountAt(x, y);
-		// }
-		//
-		// @Override
-		// public final boolean canAddRessourceSign(ShortPoint2D pos) {
-		// return super.canAddRessourceSign(pos.getX(), pos.getY());
-		// }
-
-		// @Override
-		// public final EMaterialType stealMaterialAt(ShortPoint2D pos) {
-		// EMaterialType materialType = mapObjectsManager.stealMaterialAt(pos.getX(), pos.getY());
-		// if (materialType != null) {
-		// partitionsGrid.removeOfferAt(pos, materialType);
-		// }
-		// return materialType;
-		// }
-
 		@Override
 		public float getResourceAmountAround(short x, short y, EResourceType type) {
 			return landscapeGrid.getResourceAmountAround(x, y, type);
 		}
 
 		@Override
-		public void addJoblessBearer(IManageableBearer bearer) {
+		public void addJobless(IManageableBearer bearer) {
 			partitionsGrid.addJobless(bearer);
 		}
 
 		@Override
-		public void addJoblessWorker(IManageableWorker worker) {
+		public void removeJobless(IManageableBearer bearer) {
+			partitionsGrid.removeJobless(bearer);
+		}
+
+		@Override
+		public void addJobless(IManageableWorker worker) {
 			partitionsGrid.addJobless(worker);
 		}
 
 		@Override
-		public void addJoblessDigger(IManageableDigger digger) {
+		public void removeJobless(IManageableWorker worker) {
+			partitionsGrid.removeJobless(worker);
+		}
+
+		@Override
+		public void addJobless(IManageableDigger digger) {
 			partitionsGrid.addJobless(digger);
 		}
 
 		@Override
-		public void addJoblessBricklayer(IManageableBricklayer bricklayer) {
+		public void removeJobless(IManageableDigger digger) {
+			partitionsGrid.removeJobless(digger);
+		}
+
+		@Override
+		public void addJobless(IManageableBricklayer bricklayer) {
 			partitionsGrid.addJobless(bricklayer);
+		}
+
+		@Override
+		public void removeJobless(IManageableBricklayer bricklayer) {
+			partitionsGrid.removeJobless(bricklayer);
 		}
 
 		@Override

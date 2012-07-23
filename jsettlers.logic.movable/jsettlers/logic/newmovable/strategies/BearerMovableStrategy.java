@@ -29,7 +29,6 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	private EMovableType targetMovableType;
 
 	private IBarrack barrack;
-
 	private IWorkerRequester workerRequester;
 
 	public BearerMovableStrategy(NewMovable movable) {
@@ -38,7 +37,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	private void reportAsJobless() {
-		super.getStrategyGrid().addJoblessBearer(this);
+		super.getStrategyGrid().addJobless(this);
 	}
 
 	@Override
@@ -223,7 +222,11 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
-		handleJobFailed(false);
+		if (state == EBearerState.JOBLESS) {
+			super.getStrategyGrid().removeJobless(this);
+		} else {
+			handleJobFailed(false);
+		}
 		state = EBearerState.DEAD_OBJECT;
 	}
 

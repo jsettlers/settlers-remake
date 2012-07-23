@@ -35,7 +35,7 @@ import jsettlers.logic.timer.PartitionManagerTimer;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
+public class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
 	private static final long serialVersionUID = 1L;
 
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
@@ -72,7 +72,7 @@ public final class PartitionManager implements ITimerable, Serializable, IWorker
 		PartitionManagerTimer.add(this);
 	}
 
-	public void stop() {
+	public void stopManager() {
 		PartitionManagerTimer.remove(this);
 	}
 
@@ -115,21 +115,37 @@ public final class PartitionManager implements ITimerable, Serializable, IWorker
 		return joblessBearer.removeObjectAt(position);
 	}
 
-	public void addJobless(IManageableBearer manageable) {
-		// try to find him a new job first
-		this.joblessBearer.insert(manageable);
+	public void addJobless(IManageableBearer bearer) {
+		// TODO @Andreas try to find him a new job first
+		this.joblessBearer.insert(bearer);
+	}
+
+	public void removeJobless(IManageableBearer bearer) {
+		this.joblessBearer.remove(bearer);
 	}
 
 	public void addJobless(IManageableDigger digger) {
 		joblessDiggers.insert(digger);
 	}
 
+	public void removeJobless(IManageableDigger digger) {
+		joblessDiggers.remove(digger);
+	}
+
 	public void addJobless(IManageableBricklayer bricklayer) {
 		joblessBricklayers.insert(bricklayer);
 	}
 
+	public void removeJobless(IManageableBricklayer bricklayer) {
+		joblessBricklayers.remove(bricklayer);
+	}
+
 	public void addJobless(IManageableWorker worker) {
 		joblessWorkers.insert(worker);
+	}
+
+	public void removeJobless(IManageableWorker worker) {
+		joblessWorkers.remove(worker);
 	}
 
 	/**

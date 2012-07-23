@@ -93,7 +93,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	private void reportAsJobless() {
 		this.state = EDiggerState.JOBLESS;
 		this.requester = null;
-		super.getStrategyGrid().addJoblessDigger(this);
+		super.getStrategyGrid().addJobless(this);
 	}
 
 	@Override
@@ -116,6 +116,9 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (pathTarget != null) {
 			super.getStrategyGrid().setMarked(pathTarget, false);
+		}
+		if (state == EDiggerState.JOBLESS) {
+			super.getStrategyGrid().removeJobless(this);
 		}
 	}
 

@@ -99,4 +99,8 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		this.data.addAll(joblessBearer.data);
 	}
 
+	public void remove(T object) {
+		this.data.remove(object);
+	}
+
 }

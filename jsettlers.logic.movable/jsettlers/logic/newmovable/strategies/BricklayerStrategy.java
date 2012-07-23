@@ -36,7 +36,7 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 		this.bricklayerTargetPos = null;
 		this.constructionSite = null;
 		this.lookDirection = null;
-		super.getStrategyGrid().addJoblessBricklayer(this);
+		super.getStrategyGrid().addJobless(this);
 	}
 
 	@Override
@@ -80,12 +80,18 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 		}
 	}
 
+	@Override
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
+		if (state == EBricklayerState.JOBLESS) {
+			super.getStrategyGrid().removeJobless(this);
+		}
+	}
+
 	private static enum EBricklayerState {
 		JOBLESS,
 		INIT_JOB,
 		GOING_TO_POS,
 		BUILDING,
-
 	}
 
 }
