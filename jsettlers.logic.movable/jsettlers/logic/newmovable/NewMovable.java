@@ -333,10 +333,15 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			break;
 
 		case PATHING:
+			if (pushingMovable.state == ENewMovableState.DOING_NOTHING) {
+				break; // the other movable just pushed to get space, so we can't do anything for it in this state.
+			}
+
 			if (this.progress >= 1 && !this.path.isFinished()) {
 				if (pushingMovable.direction == this.direction.getInverseDirection()) { // two movables going in opposite direction against each other
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
+
 				} else {
 					ShortPoint2D nextPos = this.direction.getNextHexPoint(this.position);
 					if (grid.hasNoMovableAt(nextPos.getX(), nextPos.getY())) {
