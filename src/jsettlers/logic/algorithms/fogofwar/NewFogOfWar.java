@@ -33,9 +33,9 @@ public final class NewFogOfWar implements Serializable {
 	final short height;
 	byte[][] sight;
 
-	private boolean enabled = true;
+	private transient boolean enabled = true;
 	transient private IFogOfWarGrid grid;
-	private boolean canceled;
+	private transient boolean canceled;
 
 	public NewFogOfWar(short width, short height) {
 		this(width, height, (byte) 0, false);
@@ -60,6 +60,7 @@ public final class NewFogOfWar implements Serializable {
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
+		enabled = true;
 	}
 
 	public void startThread(IFogOfWarGrid grid) {
