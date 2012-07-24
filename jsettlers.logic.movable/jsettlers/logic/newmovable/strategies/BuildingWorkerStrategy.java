@@ -130,10 +130,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			dropAction(currentJob.getMaterial());
 			break;
 		case DROP_POPPED:
-			boolean oldDone = done;
 			dropAction(poppedMaterial);
-			if (oldDone)
-				poppedMaterial = null;
 			break;
 
 		case PRE_SEARCH:
@@ -244,10 +241,6 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	private void popToolRequestAction() {
-		if (poppedMaterial != null) {
-			System.err.println("poppedMaterial not null and popping a new one!");
-		}
-
 		ShortPoint2D pos = building.getDoor();
 		poppedMaterial = super.getStrategyGrid().popToolProductionRequest(pos);
 		if (poppedMaterial != null) {

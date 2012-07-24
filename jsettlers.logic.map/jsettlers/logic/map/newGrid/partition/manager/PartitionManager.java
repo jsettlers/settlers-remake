@@ -17,6 +17,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
+import jsettlers.logic.map.newGrid.partition.manager.datastructures.SimpleSlotQueue;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer.IWorkerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
@@ -63,6 +64,10 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 					EMaterialType.FISHINGROD, EMaterialType.SCYTHE }, new int[] { 50, 50, 30, 30, 30, 30, 30 });
 	private final SlotQueue<EMaterialType, ProductionRequest> weaponProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
 			EMaterialType.values(), new int[EMaterialType.values().length]);
+
+	private final SimpleSlotQueue<EMaterialType, WorkerCreationRequest> toolRequestingWorkerRequests = new SimpleSlotQueue<EMaterialType, WorkerCreationRequest>(
+			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
+					EMaterialType.FISHINGROD, EMaterialType.SCYTHE });
 
 	public PartitionManager() {
 		schedule();
@@ -220,6 +225,8 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		newManager.workerRequests.addAll(this.workerRequests);
 		newManager.toolProductionRequests.addAll(toolProductionRequests);
 		newManager.weaponProductionRequests.addAll(weaponProductionRequests);
+
+		newManager.toolRequestingWorkerRequests.merge(this.toolRequestingWorkerRequests);
 	}
 
 	@Override
@@ -254,31 +261,56 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	private void handleWorkerCreationRequest() {
-		WorkerCreationRequest workerRequest = workerCreationRequests.poll();
-		if (workerRequest != null && workerRequest.movableType == EMovableType.SMITH) {
-			System.err.println("Smith worker creation requested!");
+		EMaterialType[] slotTypes = toolRequestingWorkerRequests.getSlotTypes();
+		for (int slot = 0; slot < slotTypes.length; slot++) {
+			WorkerCreationRequest request = toolRequestingWorkerRequests.popFront(slot);
+			if (request != null) {
+				this.materialTypeAcceptor.materialType = slotTypes[slot];
+				Offer offer = this.materialOffers.getObjectNextTo(request.position, this.materialTypeAcceptor);
+
+				if (offer != null) {
+					IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(request.position);
+					if (manageableBearer != null) {
+						manageableBearer.becomeWorker(this, request.movableType, offer.position);
+						reduceOfferAmount(offer);
+					} else { // no bearer found, so add the request back to the queue.
+						toolRequestingWorkerRequests.pushLast(slot, request);
+					}
+				} else { // no offer found, so add the request back to the queue.
+					toolRequestingWorkerRequests.pushLast(slot, request);
+				}
+			}
 		}
+
+		WorkerCreationRequest workerRequest = workerCreationRequests.poll();
 
 		if (workerRequest != null) {
 			EMaterialType tool = workerRequest.movableType.getTool();
+
 			if (tool != EMaterialType.NO_MATERIAL) {
-				this.materialTypeAcceptor.materialType = tool;
-				Offer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
-				if (offer != null) {
-					IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
-					if (manageableBearer != null) {
-						manageableBearer.becomeWorker(this, workerRequest.movableType, offer.position);
-						reduceOfferAmount(offer);
+
+				if (toolRequestingWorkerRequests.isSlotEmpty(workerRequest.movableType.getTool())) {
+					this.materialTypeAcceptor.materialType = tool;
+					Offer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
+
+					if (offer != null) {
+						IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
+						if (manageableBearer != null) {
+							manageableBearer.becomeWorker(this, workerRequest.movableType, offer.position);
+							reduceOfferAmount(offer);
+						} else {
+							workerCreationRequests.addLast(workerRequest);
+						}
+
 					} else {
-						workerCreationRequests.addLast(workerRequest);
+						toolProductionRequests.add(tool, new ProductionRequest(tool, workerRequest.position));
+						toolRequestingWorkerRequests.pushLast(tool, workerRequest);
 					}
-				} else {
-					if (!workerRequest.produceToolRequested) {
-						requestToolProduction(tool, workerRequest.position);
-						workerRequest.produceToolRequested = true;
-					}
+
+				} else {// don't create a worker with this tool if there are already workers requesting this type of tool
 					workerCreationRequests.addLast(workerRequest);
 				}
+
 			} else {
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
 				if (manageableBearer != null) {
@@ -476,8 +508,6 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		final EMovableType movableType;
 		final ShortPoint2D position;
 
-		boolean produceToolRequested;
-
 		public WorkerCreationRequest(EMovableType movableType, ShortPoint2D position) {
 			this.movableType = movableType;
 			this.position = position;
@@ -585,10 +615,6 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		if (offer != null && offer.materialType == materialType) {
 			reduceOfferAmount(offer);
 		}
-	}
-
-	public final void requestToolProduction(EMaterialType type, ShortPoint2D pos) {
-		toolProductionRequests.add(type, new ProductionRequest(type, pos));
 	}
 
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
