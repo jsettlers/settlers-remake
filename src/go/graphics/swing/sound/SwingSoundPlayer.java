@@ -66,7 +66,7 @@ public class SwingSoundPlayer implements SoundPlayer {
 
 						Sound<Integer> sound = queue.take();
 						long start = System.currentTimeMillis();
-						byte[] buffer = transformData(soundDataRetriever.getSoundData(sound.getStart()));
+						byte[] buffer = transformData(soundDataRetriever.getSoundData(sound.getData()));
 						System.out.println("loading sound took: " + (System.currentTimeMillis() - start) + " ms");
 
 						dataLine.write(buffer, 0, buffer.length);
