@@ -87,7 +87,7 @@ public class DrawBuffer {
     }
 		
 	public void addImage(int texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) {
-		setZ(getZ() + .0001f);
+		setZ(getZ() + .00001f);
 		getBuffer(texture).addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
 	}
 
