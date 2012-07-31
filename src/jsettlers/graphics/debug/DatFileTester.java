@@ -7,7 +7,6 @@ import go.graphics.event.GOKeyEvent;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.swing.AreaContainer;
-import go.graphics.swing.text.JOGLTextDrawer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
@@ -255,7 +254,7 @@ public class DatFileTester {
 
 			int y = 0;
 			int seqIndex = 0;
-			TextDrawer drawer = JOGLTextDrawer.getTextDrawer(EFontSize.NORMAL, null); // FIXME this is just to fix the error
+			TextDrawer drawer = gl2.getTextDrawer(EFontSize.NORMAL);
 			for (int i = 0; i < sequences.size(); i++) {
 				Sequence<T> seq = sequences.get(i);
 				int maxheight;
