@@ -185,6 +185,28 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glDisableClientState(GLES10.GL_COLOR_ARRAY);
 	}
 
+	@Override
+    public void drawTrianglesWithTextureColored(int textureid,
+            ByteBuffer byteBuffer, int currentTriangles) {
+		glBindTexture(textureid);
+
+		GLES10.glEnableClientState(GLES10.GL_COLOR_ARRAY);
+
+		GLES10.glVertexPointer(3, GLES10.GL_FLOAT, 6 * 4, byteBuffer);
+		ByteBuffer texbuffer = byteBuffer.duplicate();
+		texbuffer.position(3 * 4);
+		GLES10.glTexCoordPointer(2, GLES10.GL_FLOAT, 6 * 4, texbuffer);
+		ByteBuffer colorbuffer = byteBuffer.duplicate(); // we need it selden enogh
+														// to allocate a new one.
+		colorbuffer.position(5 * 4);
+		GLES10.glColorPointer(4, GLES10.GL_UNSIGNED_BYTE, 6 * 4, colorbuffer);
+
+		GLES10.glDrawArrays(GLES10.GL_TRIANGLES, 0, currentTriangles * 3);
+		GLES10.glDisableClientState(GLES10.GL_COLOR_ARRAY);
+	    
+    }
+
+
 	private static int getPowerOfTwo(int value) {
 		int guess = 1;
 		while (guess < value) {
@@ -487,12 +509,4 @@ public class AndroidContext implements GLDrawContext {
 	public Context getAndroidContext() {
 		return context;
 	}
-
-	@Override
-    public void drawTrianglesWithTextureColored(int currentTexture,
-            ByteBuffer byteBuffer, int currentTriangles) {
-	    // TODO Auto-generated method stub
-	    
-    }
-
 }
