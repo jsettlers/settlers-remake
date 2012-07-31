@@ -38,7 +38,7 @@ public class ForgettingQueue<T> {
 			rvolume2 = rvolume;
 		}
 		
-		public T2 getStart() {
+		public T2 getData() {
 	        return data;
         }
 		
