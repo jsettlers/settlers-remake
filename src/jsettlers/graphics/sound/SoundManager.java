@@ -217,7 +217,7 @@ public class SoundManager {
 		        throws IOException {
 			reader.skipTo(soundStart);
 
-			int length = reader.read32() / 2;
+			int length = reader.read32() / 2 - 16;
 			reader.read32();
 			reader.read32(); // mostly 22050
 			reader.read32(); // mostly 44100
