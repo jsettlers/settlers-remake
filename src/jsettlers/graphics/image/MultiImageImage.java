@@ -188,7 +188,7 @@ public class MultiImageImage extends Image {
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 	        float viewY, Color color, float multiply) {
 		drawAt(gl, buffer, viewX, viewY,
-		        Color.getARGB(multiply, multiply, multiply, 1),
+		        Color.getABGR(multiply, multiply, multiply, 1),
 		        dimColor(color, multiply));
 	}
 }

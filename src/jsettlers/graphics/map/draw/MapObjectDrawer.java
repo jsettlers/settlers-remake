@@ -934,7 +934,7 @@ public class MapObjectDrawer {
 	}
 
 	private void draw(Image image, int x, int y, float color) {
-		int iColor = Color.getARGB(color, color, color, 1);
+		int iColor = Color.getABGR(color, color, color, 1);
 		draw(image, x, y, iColor);
 	}
 

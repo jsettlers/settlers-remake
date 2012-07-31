@@ -74,10 +74,10 @@ public abstract class Image {
 	public static int dimColor(Color color, float multiply) {
 	    int iColor;
 		if (multiply == 1) {
-			iColor = color.getARGB();
+			iColor = color.getABGR();
 		} else {
 			iColor =
-			        Color.getARGB(color.getRed() * multiply, color.getGreen()
+			        Color.getABGR(color.getRed() * multiply, color.getGreen()
 			                * multiply, color.getBlue() * multiply,
 			                color.getAlpha());
 		}
