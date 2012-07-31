@@ -46,7 +46,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 
 	private static final String PREFS_NAME = "PREFS";
 
-	private static final int SOUND_THREADS = 4;
+	private static final int SOUND_THREADS = 7;
 
 	private GOSurfaceView glView;
 
