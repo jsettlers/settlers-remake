@@ -646,7 +646,7 @@ public class MapObjectDrawer {
 	 *            The player.
 	 */
 	public void drawPlayerBorderObject(int x, int y, byte player) {
-		int color = context.getPlayerColor(player).getARGB();
+		int color = context.getPlayerColor(player).getABGR();
 
 		draw(imageProvider.getSettlerSequence(FILE_BORDERPOST, 65)
 		        .getImageSafe(0), x, y, color);
