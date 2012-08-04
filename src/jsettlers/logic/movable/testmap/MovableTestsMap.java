@@ -339,6 +339,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		public void removeJobless(IManageableBricklayer bricklayer) {
 		}
 
+		@Override
+		public ELandscapeType getLandscapeTypeAt(short x, short y) {
+			return ELandscapeType.GRASS;
+		}
+
 	};
 
 	public INewMovableGrid getMovableGrid() {
