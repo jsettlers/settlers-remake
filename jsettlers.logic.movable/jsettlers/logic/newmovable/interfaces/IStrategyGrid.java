@@ -151,4 +151,15 @@ public interface IStrategyGrid {
 
 	void changePlayerAt(ShortPoint2D pos, byte player);
 
+	/**
+	 * Gets the landscape type at the given position.
+	 * 
+	 * @param x
+	 *            x coordinate of the position to get the landscape type.
+	 * @param y
+	 *            y coordinate of the position to get the landscape type.
+	 * @return {@link ELandscapeType} at the given position.
+	 */
+	ELandscapeType getLandscapeTypeAt(short x, short y);
+
 }

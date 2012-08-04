@@ -535,7 +535,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public byte getHeight() {
+	public byte getAverageHeight() {
 		return this.heightAvg;
 	}
 

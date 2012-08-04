@@ -531,9 +531,9 @@ public class MainGrid implements Serializable {
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : flagsGrid
-					.isBlocked((short) x, (short) y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB()
-					: (flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : 0));
+			return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
 
 		}
 
@@ -561,11 +561,11 @@ public class MainGrid implements Serializable {
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
 		}
-		
+
 		@Override
-	    public int nextDrawableX(int x, int y) {
-		    return x + 1;
-	    }
+		public int nextDrawableX(int x, int y) {
+			return x + 1;
+		}
 	}
 
 	final class MapObjectsManagerGrid implements IMapObjectsManagerGrid {
@@ -1034,6 +1034,11 @@ public class MainGrid implements Serializable {
 		public boolean fitsSearchType(IPathCalculateable pathCalculable, ShortPoint2D pos, ESearchType searchType) {
 			return pathfinderGrid.fitsSearchType(pos.getX(), pos.getY(), searchType, pathCalculable);
 		}
+
+		@Override
+		public ELandscapeType getLandscapeTypeAt(short x, short y) {
+			return landscapeGrid.getLandscapeTypeAt(x, y);
+		}
 	}
 
 	public final class MovableNeighborIterator implements Iterator<NewMovable> {
@@ -1148,8 +1153,10 @@ public class MainGrid implements Serializable {
 
 			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
 			for (ShortPoint2D curr : area) {
-				if (isInBounds(curr.getX(), curr.getY())) {
-					flagsGrid.setBlockedAndProtected(curr.getX(), curr.getY(), false);
+				short x = curr.getX();
+				short y = curr.getY();
+				if (isInBounds(x, y)) {
+					flagsGrid.setBlockedAndProtected(x, y, false);
 				}
 			}
 		}

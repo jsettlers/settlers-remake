@@ -78,7 +78,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private void executeDigg() {
-		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(requester.getHeight() - super.getGrid().getHeightAt(super.getPos()))));
+		super.getGrid().changeHeightAt(super.getPos(), (byte) (Math.signum(requester.getAverageHeight() - super.getGrid().getHeightAt(super.getPos()))));
 		super.getGrid().changeLandscapeAt(super.getPos(), ELandscapeType.FLATTENED);
 		super.getGrid().setMarked(super.getPos(), false);
 	}
@@ -98,7 +98,7 @@ public class DiggerStrategy extends PathableStrategy implements IManageableDigge
 	}
 
 	private boolean needsToChangeHeight(ShortPoint2D pos) {
-		if (super.getGrid().getHeightAt(pos) != requester.getHeight()) {
+		if (super.getGrid().getHeightAt(pos) != requester.getAverageHeight()) {
 			return true;
 		}
 		return false;

@@ -1,5 +1,6 @@
 package jsettlers.logic.newmovable.strategies;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -41,8 +42,12 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 		case PLAYING_ACTION:
 			executeDigg();
+			if (!requester.isRequestActive()) {
+				reportAsJobless();
+				break;
+			}
 		case GOING_TO_POS:
-			if (needsToChangeHeight(super.getPos())) {
+			if (needsToBeWorkedOn(super.getPos())) {
 				super.playAction(EAction.ACTION1, 1f);
 				this.state = EDiggerState.PLAYING_ACTION;
 			} else {
@@ -54,7 +59,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 	private void executeDigg() {
 		ShortPoint2D pos = super.getPos();
-		super.getStrategyGrid().changeHeightTowards(pos.getX(), pos.getY(), requester.getHeight());
+		super.getStrategyGrid().changeHeightTowards(pos.getX(), pos.getY(), requester.getAverageHeight());
 		super.getStrategyGrid().setMarked(super.getPos(), false);
 	}
 
@@ -73,21 +78,29 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	private ShortPoint2D getDiggablePosition() {
-		RelativePoint[] blockedTiles = requester.getBuildingType().getBlockedTiles();
+		RelativePoint[] blockedTiles = requester.getBuildingType().getProtectedTiles();
 		ShortPoint2D buildingPos = requester.getPos();
 		int offset = RandomSingleton.getInt(0, blockedTiles.length - 1);
 
 		for (int i = 0; i < blockedTiles.length; i++) {
 			ShortPoint2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);
-			if (needsToChangeHeight(pos) && !super.getStrategyGrid().isMarked(pos)) {
+			if (needsToBeWorkedOn(pos) && !super.getStrategyGrid().isMarked(pos)) {
 				return pos;
 			}
 		}
 		return null;
 	}
 
+	private boolean needsToBeWorkedOn(ShortPoint2D pos) {
+		return needsToChangeHeight(pos) || isNotFlattened(pos);
+	}
+
+	private boolean isNotFlattened(ShortPoint2D pos) {
+		return super.getStrategyGrid().getLandscapeTypeAt(pos.getX(), pos.getY()) != ELandscapeType.FLATTENED;
+	}
+
 	private boolean needsToChangeHeight(ShortPoint2D pos) {
-		return super.getStrategyGrid().getHeightAt(pos) != requester.getHeight();
+		return super.getStrategyGrid().getHeightAt(pos) != requester.getAverageHeight();
 	}
 
 	private void reportAsJobless() {
