@@ -165,4 +165,8 @@ public final class Path implements Serializable {
 		}
 		return targetPos;
 	}
+
+	public int getStep() {
+		return idx;
+	}
 }
