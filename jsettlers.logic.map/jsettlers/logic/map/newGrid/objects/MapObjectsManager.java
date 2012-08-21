@@ -15,7 +15,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.movable.IHexMovable;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
@@ -231,9 +230,19 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		addMapObject(pos, new AdultTree(pos));
 	}
 
-	public void addArrowObject(IHexMovable enemyPos, ShortPoint2D ownPos, float strength) {
-		ArrowObject arrow = new ArrowObject(enemyPos, ownPos, strength);
-		addMapObject(enemyPos.getPos(), arrow);
+	/**
+	 * Adds an arrow object to the map flying from
+	 * 
+	 * @param attackedPos
+	 *            Attacked position.
+	 * @param shooterPos
+	 *            Position of the shooter.
+	 * @param hitStrength
+	 *            Strength of the hit.
+	 */
+	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, hitStrength);
+		addMapObject(attackedPos, arrow);
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.DECOMPOSE_DELAY, true));
 	}

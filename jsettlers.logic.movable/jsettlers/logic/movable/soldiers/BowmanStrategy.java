@@ -29,7 +29,7 @@ public final class BowmanStrategy extends AbstractSoldierStrategy {
 
 		super.setDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 
-		super.getGrid().getMapObjectsManager().addArrowObject(enemy, super.getPos(), 0.8f);
+		// super.getGrid().getMapObjectsManager().addArrowObject(enemy, super.getPos(), 0.8f);
 	}
 
 	@Override

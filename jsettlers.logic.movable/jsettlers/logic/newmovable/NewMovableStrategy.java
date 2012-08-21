@@ -15,7 +15,8 @@ import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
 import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.newmovable.strategies.DiggerStrategy;
 import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
-import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
+import jsettlers.logic.newmovable.strategies.soldiers.BowmanStrategy;
+import jsettlers.logic.newmovable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.PioneerStrategy;
@@ -39,13 +40,14 @@ public abstract class NewMovableStrategy implements Serializable {
 		case SWORDSMAN_L1:
 		case SWORDSMAN_L2:
 		case SWORDSMAN_L3:
-		case BOWMAN_L1:
-		case BOWMAN_L2:
-		case BOWMAN_L3:
 		case PIKEMAN_L1:
 		case PIKEMAN_L2:
 		case PIKEMAN_L3:
-			return new SoldierStrategy(movable, movableType);
+			return new InfantryStrategy(movable, movableType);
+		case BOWMAN_L1:
+		case BOWMAN_L2:
+		case BOWMAN_L3:
+			return new BowmanStrategy(movable, movableType);
 
 		case BAKER:
 		case CHARCOAL_BURNER:

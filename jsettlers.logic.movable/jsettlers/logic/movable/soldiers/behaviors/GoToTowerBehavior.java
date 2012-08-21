@@ -25,7 +25,7 @@ class GoToTowerBehavior extends SoldierBehavior {
 		switch (super.getSoldier().getSoldierType()) {
 		case BOWMAN:
 			return new BowmanInTowerBehavior(super.getSoldier(), building);
-		case INFANTARY:
+		case INFANTRY:
 		default:
 			return new InfantryInTowerBehavior(super.getSoldier(), building);
 		}

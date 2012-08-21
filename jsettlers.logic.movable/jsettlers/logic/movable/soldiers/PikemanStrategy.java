@@ -32,7 +32,7 @@ public final class PikemanStrategy extends AbstractSoldierStrategy {
 
 	@Override
 	public ESoldierType getSoldierType() {
-		return ESoldierType.INFANTARY;
+		return ESoldierType.INFANTRY;
 	}
 
 }

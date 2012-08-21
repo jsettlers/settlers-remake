@@ -78,7 +78,7 @@ class WatchingBehavior extends SoldierBehavior implements IFightingBehaviorUser 
 		switch (super.soldier.getSoldierType()) {
 		case BOWMAN:
 			return Math.hypot(pos.getX() - enemyPos.getX(), pos.getY() - enemyPos.getY()) <= BOWMAN_FIRE_RADIUS;
-		case INFANTARY:
+		case INFANTRY:
 			return EDirection.getDirection(pos, enemyPos) != null;
 		default:
 			return false;

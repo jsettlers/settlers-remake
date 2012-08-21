@@ -173,4 +173,16 @@ public interface IStrategyGrid {
 	 */
 	NewMovable getEnemyInSearchArea(IMovable movable);
 
+	/**
+	 * Adds an arrow object to the map flying from
+	 * 
+	 * @param attackedPos
+	 *            Attacked position.
+	 * @param shooterPos
+	 *            Position of the shooter.
+	 * @param hitStrength
+	 *            Strength of the hit.
+	 */
+	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
+
 }

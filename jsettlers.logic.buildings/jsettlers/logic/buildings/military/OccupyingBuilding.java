@@ -56,7 +56,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 			for (OccupyerPlace currPlace : occupyerPlaces) {
 				emptyPlaces.add(currPlace);
-				searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTARY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
+				searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTRY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
 			}
 		}
 

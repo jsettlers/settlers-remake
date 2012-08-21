@@ -1,7 +1,5 @@
 package jsettlers.logic.newmovable.strategies.soldiers;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
@@ -11,9 +9,8 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
-public final class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
+public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
-	private static final float SOLDIER_ATTACK_DURATION = 1;
 	private final EMovableType movableType;
 
 	private ESoldierState state = ESoldierState.AGGRESSIVE;
@@ -32,7 +29,7 @@ public final class SoldierStrategy extends NewMovableStrategy implements IBuildi
 			break;
 
 		case HITTING:
-			enemy.hit(0.1f); // decrease the enemy's health
+			hitEnemy(enemy);
 		case ENEMY_FOUND:
 			enemy = super.getStrategyGrid().getEnemyInSearchArea(super.getMovable());
 			if (enemy == null) { // no enemy found, go back in normal mode
@@ -40,9 +37,9 @@ public final class SoldierStrategy extends NewMovableStrategy implements IBuildi
 				break;
 			}
 
-			if (isEnemyAttackable()) { // if enemy is close enough, attack it
+			if (isEnemyAttackable(enemy)) { // if enemy is close enough, attack it
 				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
-				super.playAction(EAction.ACTION1, SOLDIER_ATTACK_DURATION);
+				startAttackAnimation(enemy);
 				state = ESoldierState.HITTING;
 			} else {
 				super.goToPos(enemy.getPos());
@@ -67,9 +64,11 @@ public final class SoldierStrategy extends NewMovableStrategy implements IBuildi
 		}
 	}
 
-	private boolean isEnemyAttackable() {
-		return super.getPos().getDistTo(enemy.getPos()) == 1;
-	}
+	protected abstract void hitEnemy(NewMovable enemy);
+
+	protected abstract void startAttackAnimation(NewMovable enemy);
+
+	protected abstract boolean isEnemyAttackable(NewMovable enemy);
 
 	@Override
 	public void setOccupyableBuilding(IOccupyableBuilding building) {
@@ -99,28 +98,6 @@ public final class SoldierStrategy extends NewMovableStrategy implements IBuildi
 	}
 
 	@Override
-	public ESoldierType getSoldierType() {
-		switch (movableType) {
-		case SWORDSMAN_L1:
-		case SWORDSMAN_L2:
-		case SWORDSMAN_L3:
-		case PIKEMAN_L1:
-		case PIKEMAN_L2:
-		case PIKEMAN_L3:
-			return ESoldierType.INFANTARY;
-
-		case BOWMAN_L1:
-		case BOWMAN_L2:
-		case BOWMAN_L3:
-			return ESoldierType.BOWMAN;
-
-		default:
-			assert false : "Soldier type unknown: " + movableType;
-			return null;
-		}
-	}
-
-	@Override
 	public IMovable getMovable() {
 		return super.getMovable();
 	}
@@ -147,7 +124,7 @@ public final class SoldierStrategy extends NewMovableStrategy implements IBuildi
 				state = ESoldierState.ENEMY_FOUND;
 			} else {
 				ShortPoint2D pos = super.getPos();
-				if (other.getPos().getDistTo(pos) < enemy.getPos().getDistTo(pos)) { // or if the new enemy is closer
+				if (other.getPos().getOnGridDistTo(pos) < enemy.getPos().getOnGridDistTo(pos)) { // or if the new enemy is closer
 					enemy = other;
 				}
 			}

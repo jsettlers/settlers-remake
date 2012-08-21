@@ -636,6 +636,14 @@ public class MainGrid implements Serializable {
 			return landscapeGrid.getResourceAmountAt(x, y);
 		}
 
+		@Override
+		public void hitWithArrowAt(short x, short y, float hitStrength) {
+			NewMovable movable = movableGrid.getMovableAt(x, y);
+			if (movable != null) {
+				movable.hit(hitStrength);
+			}
+		}
+
 	}
 
 	final class LandmarksGrid implements ILandmarksThreadGrid {
@@ -1043,6 +1051,11 @@ public class MainGrid implements Serializable {
 		@Override
 		public NewMovable getEnemyInSearchArea(IMovable movable) {
 			return movableGrid.getEnemyInSearchArea(movable);
+		}
+
+		@Override
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+			mapObjectsManager.addArrowObject(attackedPos, shooterPos, hitStrength);
 		}
 	}
 

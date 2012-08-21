@@ -5,8 +5,9 @@ import java.io.Serializable;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.logic.objects.arrow.IArrowAttackableGrid;
 
-public interface IMapObjectsManagerGrid extends Serializable {
+public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid {
 	AbstractHexMapObject getMapObject(short x, short y, EMapObjectType mapObjectType);
 
 	void setLandscape(short x, short y, ELandscapeType landscapeType);

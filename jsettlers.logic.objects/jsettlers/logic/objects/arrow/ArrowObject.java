@@ -4,30 +4,29 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.movable.IHexMovable;
 import jsettlers.logic.objects.ProgressingSoundableObject;
 
 public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
 	private static final long serialVersionUID = 1702902724559733166L;
 
-	private static final float SECONDS_PER_TILE = 0.03f;
+	private static final float SECONDS_PER_TILE = 0.05f;
 	public static final float DECOMPOSE_DELAY = 60;
 
 	private final short sourceX;
 	private final short sourceY;
 	private final float hitStrength;
 
-	private final IHexMovable target;
+	private final IArrowAttackableGrid grid;
 
-	public ArrowObject(IHexMovable target, ShortPoint2D source, float hitStrength) {
-		super(target.getPos());
-		this.target = target;
+	public ArrowObject(IArrowAttackableGrid grid, ShortPoint2D targetPos, ShortPoint2D shooterPos, float hitStrength) {
+		super(targetPos);
+		this.grid = grid;
 
-		this.sourceX = source.getX();
-		this.sourceY = source.getY();
+		this.sourceX = shooterPos.getX();
+		this.sourceY = shooterPos.getY();
 		this.hitStrength = hitStrength;
 
-		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(source.getX() - target.getPos().getX(), source.getY() - target.getPos().getY())));
+		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(shooterPos.getX() - targetPos.getX(), shooterPos.getY() - targetPos.getY())));
 	}
 
 	@Override
@@ -57,9 +56,7 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	@Override
 	protected void changeState() {
-		if (target.getPos().getX() == getTargetX() && target.getPos().getY() == getTargetY()) {
-			target.hit(hitStrength);
-		}
+		grid.hitWithArrowAt(super.getX(), super.getY(), hitStrength);
 	}
 
 	@Override
@@ -74,11 +71,11 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	@Override
 	public short getTargetX() {
-		return target.getPos().getX();
+		return super.getX();
 	}
 
 	@Override
 	public short getTargetY() {
-		return target.getPos().getY();
+		return super.getY();
 	}
 }
