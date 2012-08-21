@@ -60,10 +60,27 @@ public class ShortPoint2D implements Serializable {
 	 * Computes the hashcode the way ShortPoint2D wants it.
 	 * 
 	 * @param x
+	 *            X coordinate of the position.
 	 * @param y
-	 * @return
+	 *            Y coordinate of the position.
+	 * @return Hashcode of the given position.
 	 */
 	public static int hashCode(int x, int y) {
 		return x * 15494071 + y * 12553;
+	}
+
+	/**
+	 * Gets the number of tiles a movable must at least walk to get from this to the other position.
+	 * 
+	 * @param otherPos
+	 *            The other position.
+	 * 
+	 * @return The distance a movable needs to walk to get from this to the other position.
+	 */
+	public int getDistTo(ShortPoint2D otherPos) {
+		final int dx = Math.abs(x - otherPos.x);
+		final int dy = Math.abs(y - otherPos.y);
+
+		return dx + dy;
 	}
 }

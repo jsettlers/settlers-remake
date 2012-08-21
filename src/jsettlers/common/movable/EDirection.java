@@ -25,12 +25,15 @@ public enum EDirection {
 	public final byte gridDeltaY;
 
 	public final boolean isHorizontal;
+	public final byte ordinal;
 
 	EDirection(int gridDx, int gridDy) {
 		this.gridDeltaX = (byte) gridDx;
 		this.gridDeltaY = (byte) gridDy;
 
 		this.isHorizontal = (gridDy == 0);
+
+		this.ordinal = (byte) super.ordinal();
 	}
 
 	/**
