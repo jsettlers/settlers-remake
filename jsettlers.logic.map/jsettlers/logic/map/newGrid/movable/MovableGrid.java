@@ -2,9 +2,13 @@ package jsettlers.logic.map.newGrid.movable;
 
 import java.io.Serializable;
 
+import jsettlers.common.map.shapes.HexBorderArea;
+import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.landscape.IWalkableGround;
 import jsettlers.logic.newmovable.NewMovable;
 
@@ -45,13 +49,64 @@ public final class MovableGrid implements Serializable {
 		}
 	}
 
-	public final void movableEntered(ShortPoint2D position, NewMovable movable) {
+	/**
+	 * Lets the given movable enter the given position.
+	 * 
+	 * @param position
+	 *            Position to be entered.
+	 * @param movable
+	 *            Movable that enters the position.
+	 * @param informFullArea
+	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
+	 *            If false, only a circle is informed if the given movable is attackable.
+	 */
+	public final void movableEntered(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
 		short x = position.getX();
 		short y = position.getY();
 		this.movableGrid[getIdx(x, y)] = movable;
 		if (movable != null && movable.getMovableType() == EMovableType.BEARER) {
 			ground.walkOn(x, y);
 		}
+
+		// inform all movables of the given movable
+		if (movable.isAttackable()) {
+			IMapArea area;
+			if (informFullArea) {
+				area = new HexGridArea(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
+			} else {
+				area = new HexBorderArea(x, y, (short) (Constants.SOLDIER_SEARCH_RADIUS - 1));
+			}
+
+			boolean foundOne = false;
+			byte movablePlayer = movable.getPlayer();
+
+			for (ShortPoint2D curr : area) {
+				NewMovable currMovable = getMovableAt(curr.getX(), curr.getY());
+				if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+					currMovable.informAboutAttackable(movable);
+
+					if (!foundOne) { // the first found movable is the one closest to the given movable.
+						movable.informAboutAttackable(currMovable);
+						foundOne = true;
+					}
+				}
+			}
+		}
 	}
 
+	public NewMovable getEnemyInSearchArea(IMovable movable) {
+		ShortPoint2D pos = movable.getPos();
+		HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
+
+		byte movablePlayer = movable.getPlayer();
+
+		for (ShortPoint2D curr : area) {
+			NewMovable currMovable = getMovableAt(curr.getX(), curr.getY());
+			if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+				return currMovable;
+			}
+		}
+
+		return null;
+	}
 }

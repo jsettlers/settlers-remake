@@ -110,7 +110,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
 		if (requester == null || requester.isRequestActive()) {
 			return true;
 		} else {

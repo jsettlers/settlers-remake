@@ -194,17 +194,19 @@ public abstract class NewMovableStrategy implements Serializable {
 	 * Checks preconditions before the next path step can be gone.
 	 * 
 	 * @param pathTarget
-	 *            TODO
+	 *            Target of the current path.
+	 * @param step
+	 *            The number of the current step where 1 means the first step.
 	 * 
 	 * @return true if the path should be continued<br>
 	 *         false if it must be stopped.
 	 */
-	protected boolean checkPathStepPreconditions(@SuppressWarnings("unused") ShortPoint2D pathTarget) {
+	protected boolean checkPathStepPreconditions(@SuppressWarnings("unused") ShortPoint2D pathTarget, @SuppressWarnings("unused") int step) {
 		return true;
 	}
 
 	/**
-	 * This method is called when a movable is killed or converted to another strategy and can be used for finalization work.
+	 * This method is called when a movable is killed or converted to another strategy and can be used for finalization work in the strategy.
 	 * 
 	 * @param pathTarget
 	 *            if the movable is currently walking on a path, this is the target of the path<br>
@@ -214,6 +216,15 @@ public abstract class NewMovableStrategy implements Serializable {
 	}
 
 	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D oldTargetPos, @SuppressWarnings("unused") ShortPoint2D targetPos) {
+	}
+
+	/**
+	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
+	 * 
+	 * @param other
+	 *            The other movable.
+	 */
+	protected void informAboutAttackable(@SuppressWarnings("unused") NewMovable other) {
 	}
 
 }

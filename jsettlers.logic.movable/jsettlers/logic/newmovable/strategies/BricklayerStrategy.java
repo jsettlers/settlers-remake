@@ -71,7 +71,7 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
 		if (constructionSite == null || !constructionSite.isConstructionFinished()) {
 			return true;
 		} else {

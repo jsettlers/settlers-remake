@@ -35,9 +35,8 @@ public final class Constants {
 
 	public static final short MOVABLE_VIEW_DISTANCE = 8;
 
-	public static final short BOWMAN_SEARCH_RADIUS = 20;
-
-	public static final short SOWRDSMAN_SEARCH_RADIUS = 13;
+	public static final short SOLDIER_SEARCH_RADIUS = 20;
+	public static final short TOWER_SEARCH_RADIUS = 45;
 
 	/**
 	 * interrupts until arrows are removed from the map again.<br>
@@ -45,13 +44,9 @@ public final class Constants {
 	 */
 	public static final short ARROW_DECOMPOSE_INTERRUPTS = 50 * MOVABLE_INTERRUPTS_PER_SECOND;
 
-	public static final short PIKEMAN_SEARCH_RADIUS = 12;
-
 	public static final byte BRICKLAYER_ACTIONS_PER_MATERIAL = 12;
 
 	public static final int TILES_PER_DIGGER = 15;
-
-	public static final short TOWER_SOLDIER_SEARCH_AREA = 45;
 
 	public static final int PARTITION_MANANGER_RUNS_PER_TICK = 5;
 

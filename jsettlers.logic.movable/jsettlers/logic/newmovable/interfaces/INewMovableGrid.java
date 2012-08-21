@@ -15,11 +15,32 @@ import jsettlers.logic.newmovable.NewMovable;
  */
 public interface INewMovableGrid extends IStrategyGrid {
 
+	/**
+	 * Checks if there is a movable at the given position.
+	 * 
+	 * @param x
+	 *            x coordinate of the position.
+	 * @param y
+	 *            y coordinate of the position.
+	 * @return true if the given position has a movable standing on it.<br>
+	 *         false if there is no movable.
+	 */
 	boolean hasNoMovableAt(short x, short y);
 
 	void leavePosition(ShortPoint2D position, NewMovable movable);
 
-	void enterPosition(ShortPoint2D position, NewMovable movable);
+	/**
+	 * Lets the given movable enter the given position.
+	 * 
+	 * @param position
+	 *            Position to be entered.
+	 * @param movable
+	 *            Movable that enters the position.
+	 * @param informFullArea
+	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
+	 *            If false, only a circle is informed if the given movable is attackable.
+	 */
+	void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea);
 
 	Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos);
 

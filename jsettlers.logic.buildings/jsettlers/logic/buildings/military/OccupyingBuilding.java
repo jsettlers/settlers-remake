@@ -101,7 +101,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			if (!searchedSoldiers.isEmpty()) {
 				if (request == null) {
 					request = new DijkstraContinuableRequest(this, super.getPos().getX(), super.getPos().getY(), (short) 1,
-							Constants.TOWER_SOLDIER_SEARCH_AREA);
+							Constants.TOWER_SEARCH_RADIUS);
 				}
 				request.setSearchType(searchedSoldiers.peek());
 

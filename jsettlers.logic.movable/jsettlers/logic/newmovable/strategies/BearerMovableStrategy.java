@@ -181,7 +181,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	@Override
-	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
 		return requester == null || requester.isRequestActive();
 	}
 

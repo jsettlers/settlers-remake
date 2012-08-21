@@ -5,12 +5,14 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
 /**
@@ -161,5 +163,14 @@ public interface IStrategyGrid {
 	 * @return {@link ELandscapeType} at the given position.
 	 */
 	ELandscapeType getLandscapeTypeAt(short x, short y);
+
+	/**
+	 * Searches for an enemy around the position of the given movable in it's search radius.
+	 * 
+	 * @param movable
+	 *            The movable searching an enemy.
+	 * @return The closest enemy or null if none exists in the search radius.
+	 */
+	NewMovable getEnemyInSearchArea(IMovable movable);
 
 }

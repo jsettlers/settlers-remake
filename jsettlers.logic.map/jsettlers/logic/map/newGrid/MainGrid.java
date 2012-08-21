@@ -991,8 +991,8 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void enterPosition(ShortPoint2D position, NewMovable movable) {
-			movableGrid.movableEntered(position, movable);
+		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
+			movableGrid.movableEntered(position, movable, informFullArea);
 		}
 
 		@Override
@@ -1038,6 +1038,11 @@ public class MainGrid implements Serializable {
 		@Override
 		public ELandscapeType getLandscapeTypeAt(short x, short y) {
 			return landscapeGrid.getLandscapeTypeAt(x, y);
+		}
+
+		@Override
+		public NewMovable getEnemyInSearchArea(IMovable movable) {
+			return movableGrid.getEnemyInSearchArea(movable);
 		}
 	}
 

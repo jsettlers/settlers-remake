@@ -96,7 +96,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		movablesByID.put(this.id, this);
 		allMovables.offer(this);
 
-		grid.enterPosition(position, this);
+		grid.enterPosition(position, this, true);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		this.position = position;
 
 		if (position != null) {
-			grid.enterPosition(this.position, this);
+			grid.enterPosition(this.position, this, true);
 			setState(ENewMovableState.DOING_NOTHING);
 		}
 
@@ -224,7 +224,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	private void pathingAction() {
 		if (progress >= 1) {
-			if (path.isFinished() || !strategy.checkPathStepPreconditions(path.getTargetPos())) {
+			if (path.isFinished() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 				// if path is finished, or canceled by strategy return from here
 				setState(ENewMovableState.DOING_NOTHING);
 				movableAction = EAction.NO_ACTION;
@@ -254,7 +254,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		movableAction = EAction.WALKING;
 		progress -= 1;
 		grid.leavePosition(this.position, this);
-		grid.enterPosition(position, this);
+		grid.enterPosition(position, this, false);
 		this.position = position;
 		isRightstep = !isRightstep;
 	}
@@ -490,7 +490,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	final void setPos(ShortPoint2D position) {
 		if (visible) {
 			grid.leavePosition(this.position, this);
-			grid.enterPosition(position, this);
+			grid.enterPosition(position, this, true);
 		}
 
 		this.position = position;
@@ -501,7 +501,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		} else if (this.visible) { // is visible and gets invisible
 			grid.leavePosition(position, this);
 		} else {
-			grid.enterPosition(position, this);
+			grid.enterPosition(position, this, true);
 		}
 
 		this.visible = visible;
@@ -703,7 +703,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
 		if (canOccupyBuilding()) {
 			((SoldierStrategy) strategy).setOccupyableBuilding(building);
 			return true;
@@ -712,7 +712,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	public boolean canOccupyBuilding() {
+	public final boolean canOccupyBuilding() {
 		return getMovableType().getSelectionType() == ESelectionType.SOLDIERS;
 	}
 
@@ -722,6 +722,27 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		DOING_NOTHING,
 		SLEEPING,
 		GOING_SINGLE_STEP,
+	}
+
+	public final boolean isAttackable() {
+		return movableType.isMoveToAble();
+	}
+
+	/**
+	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
+	 * 
+	 * @param other
+	 *            The other movable.
+	 */
+	public final void informAboutAttackable(NewMovable other) {
+		strategy.informAboutAttackable(other);
+	}
+
+	public final void hit(float hitStrength) {
+		this.health -= hitStrength;
+		if (health <= 0) {
+			this.kill();
+		}
 	}
 
 }
