@@ -792,7 +792,7 @@ public class MapObjectDrawer {
 			for (IBuildingOccupyer occupyer : building.getOccupyers()) {
 				OccupyerPlace place = occupyer.getPlace();
 
-				if (place.getType() == ESoldierType.INFANTARY) {
+				if (place.getType() == ESoldierType.INFANTRY) {
 
 					OriginalImageLink image =
 					        place.looksRight() ? INSIDE_BUILDING_RIGHT
