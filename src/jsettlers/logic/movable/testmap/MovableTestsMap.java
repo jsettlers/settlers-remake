@@ -137,11 +137,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void enterPosition(ShortPoint2D position, NewMovable movable) {
-			movableMap[position.getX()][position.getY()] = movable;
-		}
-
-		@Override
 		public Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos) {
 			return aStar.findPath(pathRequester, targetPos);
 		}
@@ -342,6 +337,20 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public ELandscapeType getLandscapeTypeAt(short x, short y) {
 			return ELandscapeType.GRASS;
+		}
+
+		@Override
+		public NewMovable getEnemyInSearchArea(IMovable movable) {
+			return null;
+		}
+
+		@Override
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+		}
+
+		@Override
+		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
+			movableMap[position.getX()][position.getY()] = movable;
 		}
 
 	};
