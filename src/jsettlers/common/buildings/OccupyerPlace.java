@@ -30,7 +30,7 @@ public class OccupyerPlace implements Serializable {
 	/**
 	 * gets the type of the occupyer.
 	 * 
-	 * @return {@link ESoldierType#INFANTARY} if it is a person that is inside, {@link ESoldierType#BOWMAN} if it is a bowman on the roof.
+	 * @return {@link ESoldierType#INFANTRY} if it is a person that is inside, {@link ESoldierType#BOWMAN} if it is a bowman on the roof.
 	 */
 	public final ESoldierType getType() {
 		return type;
@@ -60,7 +60,7 @@ public class OccupyerPlace implements Serializable {
 	 * @author michael
 	 */
 	public enum ESoldierType {
-		INFANTARY,
+		INFANTRY,
 		BOWMAN
 	}
 
