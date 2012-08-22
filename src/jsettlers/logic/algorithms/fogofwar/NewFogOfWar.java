@@ -8,11 +8,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.fogofwar.circle.CachedRelativeCircleIterator;
-import jsettlers.logic.algorithms.fogofwar.circle.CachedRelativeMapCircle;
+import jsettlers.logic.algorithms.fogofwar.CachedViewCircle.CachedViewCircleIterator;
 
 /**
  * This class holds the fog of war for a given map and player.
@@ -183,7 +181,7 @@ public final class NewFogOfWar implements Serializable {
 
 	final class CircleDrawer {
 		private byte[][] buffer;
-		private final CachedRelativeMapCircle[] cachedCircles = new CachedRelativeMapCircle[MAX_VIEWDISTANCE];
+		private final CachedViewCircle[] cachedCircles = new CachedViewCircle[MAX_VIEWDISTANCE];
 
 		public final void setBuffer(byte[][] buffer) {
 			this.buffer = buffer;
@@ -194,48 +192,33 @@ public final class NewFogOfWar implements Serializable {
 		 * y coordinate is bigger than 0.
 		 */
 		final void drawCircleToBuffer(int bufferX, int bufferY, int viewDistance) {
-			CachedRelativeMapCircle circle = getCachedCircle(viewDistance);
-			final int squaredViewDistance = viewDistance * viewDistance;
-			CachedRelativeCircleIterator iterator = circle.iterator();
+			CachedViewCircle circle = getCachedCircle(viewDistance);
+			CachedViewCircleIterator iterator = circle.iterator(bufferX, bufferY);
 
 			while (iterator.hasNext()) {
-				final int relativeY = iterator.nextY();
-				final int relativeX = iterator.nextX();
+				final int x = iterator.getCurrX();
+				final int y = iterator.getCurrY();
 
-				final int currY = relativeY + bufferY;
-				final int currX = relativeX + bufferX;
-
-				if (currX >= 0 && currX < width && currY > 0 && currY < height) {
-					if (buffer[currX][currY] < CommonConstants.FOG_OF_WAR_VISIBLE) {
-						double squaredDistance = MapCircle.getSquaredDistance(relativeX, relativeY);
-						byte newSight;
-						if (squaredDistance < squaredViewDistance) {
-							newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
-						} else {
-							newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - viewDistance) / PADDING
-									* CommonConstants.FOG_OF_WAR_VISIBLE);
+				if (x >= 0 && x < width && y > 0 && y < height) {
+					byte oldSight = buffer[x][y];
+					if (oldSight < CommonConstants.FOG_OF_WAR_VISIBLE) {
+						byte newSight = iterator.getCurrSight();
+						if (oldSight < newSight) {
+							buffer[x][y] = newSight;
 						}
-						increaseBufferAt(currX, currY, newSight);
 					}
 				}
 			}
 		}
 
-		private CachedRelativeMapCircle getCachedCircle(int viewDistance) {
+		private CachedViewCircle getCachedCircle(int viewDistance) {
 			int radius = Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE);
 			if (cachedCircles[radius] == null) {
-				cachedCircles[radius] = new CachedRelativeMapCircle(radius);
+				cachedCircles[radius] = new CachedViewCircle(radius);
 			}
 
 			return cachedCircles[radius];
 		}
-
-		private final void increaseBufferAt(int x, int y, byte newsight) {
-			if (buffer[x][y] < newsight) {
-				buffer[x][y] = newsight;
-			}
-		}
-
 	}
 
 	public void cancel() {
