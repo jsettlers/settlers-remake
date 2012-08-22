@@ -153,7 +153,7 @@
 <!ATTLIST occupyer
    offsetX CDATA #REQUIRED
    offsetY CDATA #REQUIRED
-   type (INFANTARY|BOWMAN) #REQUIRED
+   type (INFANTRY|BOWMAN) #REQUIRED
    
    soldierX CDATA #REQUIRED
    soldierY CDATA #REQUIRED
