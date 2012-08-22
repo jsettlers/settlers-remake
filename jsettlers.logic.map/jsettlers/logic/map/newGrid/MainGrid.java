@@ -236,7 +236,7 @@ public class MainGrid implements Serializable {
 			building.appearAt(buildingsGrid, pos);
 
 			if (building instanceof IOccupyableBuilding) {
-				NewMovable soldier = createNewMovableAt(((IOccupyableBuilding) building).getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
+				NewMovable soldier = createNewMovableAt(building.getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
 				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
 			}
 		} else if (object instanceof MovableObject) {
@@ -535,6 +535,7 @@ public class MainGrid implements Serializable {
 					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
 					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
 
+			// return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ARROW) != null ? Color.RED.getABGR() : 0;
 		}
 
 		@Override
