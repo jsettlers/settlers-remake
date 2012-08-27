@@ -531,9 +531,11 @@ public class MainGrid implements Serializable {
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
+			// return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
+
+			return Color.BLACK.getARGB();
 
 			// return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ARROW) != null ? Color.RED.getABGR() : 0;
 		}
@@ -991,7 +993,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public boolean hasNoMovableAt(short x, short y) {
-			return movableGrid.getMovableAt(x, y) == null;
+			return movableGrid.hasNoMovableAt(x, y);
 		}
 
 		@Override

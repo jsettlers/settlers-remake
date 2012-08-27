@@ -24,8 +24,11 @@ public final class MovableGrid implements Serializable {
 	private final IWalkableGround ground;
 	private final short width;
 
+	private final short height;
+
 	public MovableGrid(short width, short height, IWalkableGround ground) {
 		this.width = width;
+		this.height = height;
 		this.ground = ground;
 		this.movableGrid = new NewMovable[width * height];
 	}
@@ -63,7 +66,13 @@ public final class MovableGrid implements Serializable {
 	public final void movableEntered(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
 		short x = position.getX();
 		short y = position.getY();
-		this.movableGrid[getIdx(x, y)] = movable;
+
+		int idx = getIdx(x, y);
+		if (idx < 0) {
+			System.out.println("index < 0");
+		}
+
+		this.movableGrid[idx] = movable;
 		if (movable != null && movable.getMovableType() == EMovableType.BEARER) {
 			ground.walkOn(x, y);
 		}
@@ -81,13 +90,17 @@ public final class MovableGrid implements Serializable {
 			byte movablePlayer = movable.getPlayer();
 
 			for (ShortPoint2D curr : area) {
-				NewMovable currMovable = getMovableAt(curr.getX(), curr.getY());
-				if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
-					currMovable.informAboutAttackable(movable);
+				short currX = curr.getX();
+				short currY = curr.getY();
+				if (0 <= currX && currX < width && 0 <= currY && currY < height) {
+					NewMovable currMovable = getMovableAt(currX, currY);
+					if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+						currMovable.informAboutAttackable(movable);
 
-					if (!foundOne) { // the first found movable is the one closest to the given movable.
-						movable.informAboutAttackable(currMovable);
-						foundOne = true;
+						if (!foundOne) { // the first found movable is the one closest to the given movable.
+							movable.informAboutAttackable(currMovable);
+							foundOne = true;
+						}
 					}
 				}
 			}
@@ -108,5 +121,9 @@ public final class MovableGrid implements Serializable {
 		}
 
 		return null;
+	}
+
+	public boolean hasNoMovableAt(short x, short y) {
+		return getMovableAt(x, y) == null;
 	}
 }

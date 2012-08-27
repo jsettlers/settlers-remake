@@ -172,6 +172,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 	@Override
 	public void timerEvent() {
+		if (health <= 0) {
+			return;
+		}
+
 		switch (state) {
 		case SLEEPING:
 			return;
@@ -288,7 +292,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private void flockToDecentralize() {
 		short x = position.getX(), y = position.getY();
 		HexGridArea area = new HexGridArea(x, y, (short) 1, NOTHING_TO_DO_MAX_RADIUS);
-		float dx = 0, dy = 0;
+		int dx = 0, dy = 0;
 		HexGridAreaIterator iter = area.iterator();
 		while (iter.hasNext()) {
 			short currX = iter.getNextX();
@@ -297,20 +301,20 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 			if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
 				factor = iter.getCurrRadius() == 1 ? 6 : 2;
-			} else if (grid.getMovableAt(currX, currY) != null) {
+			} else if (!grid.hasNoMovableAt(currX, currY)) {
 				factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
 			} else {
 				continue;
 			}
 
-			dx += (short) (x - currX) * factor;
-			dy += (short) (y - currY) * factor;
+			dx += (x - currX) * factor;
+			dy += (y - currY) * factor;
 		}
 		dx += direction.gridDeltaX;
 		dy += direction.gridDeltaY;
 
 		if (Math.abs(dx) + Math.abs(dy) >= 4f) {
-			this.goInDirection(EDirection.getApproxDirection(0, 0, (int) dx, (int) dy));
+			this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy));
 			doingNothingProbablity = Math.min(doingNothingProbablity + 0.02f, 0.1f);
 		} else {
 			doingNothingProbablity = Math.max(doingNothingProbablity - 0.02f, 0.06f);
@@ -318,6 +322,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	}
 
 	private void push(NewMovable pushingMovable) {
+		if (health <= 0) {
+			return;
+		}
 
 		switch (state) {
 		case DOING_NOTHING:
@@ -326,14 +333,18 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			}
 
 			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
-				EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
-				pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
-				goInDirection(pushedFromDir);
+				if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
+					return; // the other movable just pushed to get space, we can't do anything for it here.
+				} else {
+					EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+					pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
+					goInDirection(pushedFromDir);
+				}
 			}
 			break;
 
 		case PATHING:
-			if (pushingMovable.state == ENewMovableState.DOING_NOTHING) {
+			if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
 				break; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
@@ -475,7 +486,6 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		ShortPoint2D targetPos = direction.getNextHexPoint(position);
 		this.direction = direction;
 		this.followPath(new Path(targetPos));
-		this.goSinglePathStep();
 		setState(ENewMovableState.PATHING);
 	}
 
@@ -548,6 +558,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		setState(ENewMovableState.PATHING);
 		this.movableAction = EAction.NO_ACTION;
 		progress = 1;
+		pathingAction();
 	}
 
 	/**
