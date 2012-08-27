@@ -33,6 +33,8 @@ public final class HexAStar implements IAStar, IAStarHeapable {
 
 	private final AStarMinHeap open;
 
+	float xFactor = 1f, yFactor = 1.01f;
+
 	public HexAStar(IAStarPathMap map, short width, short height) {
 		this.map = map;
 		this.width = width;
@@ -66,6 +68,10 @@ public final class HexAStar implements IAStar, IAStarHeapable {
 		} else {
 			blockedAtStart = false;
 		}
+
+		float temp = xFactor; // swap the heuristic factors
+		xFactor = yFactor;
+		yFactor = temp;
 
 		final int targetFlatIdx = getFlatIdx(tx, ty);
 
@@ -216,10 +222,10 @@ public final class HexAStar implements IAStar, IAStarHeapable {
 		depthParentHeap[getHeapArrayIdx(identifier)] = idx;
 	}
 
-	private static final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {
+	private final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {
 		final float dx = (short) Math.abs(sx - tx);
 		final float dy = (short) Math.abs(sy - ty);
 
-		return (dx + 1.01f * dy);
+		return (dx * xFactor + yFactor * dy);
 	}
 }
