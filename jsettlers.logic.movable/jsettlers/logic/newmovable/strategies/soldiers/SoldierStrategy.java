@@ -30,6 +30,11 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 		case HITTING:
 			hitEnemy(enemy);
+			if (enemy.getHealth() <= 0) {
+				enemy = null;
+				state = ESoldierState.ENEMY_FOUND;
+				break; // don't directly walk on the enemy's position, because there may be others to walk in first
+			}
 		case ENEMY_FOUND:
 			enemy = super.getStrategyGrid().getEnemyInSearchArea(super.getMovable());
 			if (enemy == null) { // no enemy found, go back in normal mode
