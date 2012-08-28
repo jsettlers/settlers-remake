@@ -321,31 +321,33 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	private void push(NewMovable pushingMovable) {
+	private boolean push(NewMovable pushingMovable) {
 		if (health <= 0) {
-			return;
+			return false;
 		}
 
 		switch (state) {
 		case DOING_NOTHING:
 			if (!enableNothingToDo) { // don't go to random direction if movable shouldn't do something in DOING_NOTHING
-				return;
+				return false;
 			}
 
 			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
 				if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
-					return; // the other movable just pushed to get space, we can't do anything for it here.
+					return false; // the other movable just pushed to get space, we can't do anything for it here.
 				} else {
 					EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
 					goInDirection(pushedFromDir);
+					return true;
 				}
+			} else {
+				return true;
 			}
-			break;
 
 		case PATHING:
 			if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
-				break; // the other movable just pushed to get space, so we can't do anything for it in this state.
+				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
 			if (this.progress >= 1 && !this.path.isFinished()) {
@@ -370,14 +372,19 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 					}
 				}
 			}
-			break;
+			return true;
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			break; // just ignore
+			return false; // we can't do anything
 
 		case SLEEPING:
 			assert false : "got pushed while sleeping: should not be possible!";
+			return false;
+
+		default:
+			assert false : "got pushed in unhandled state: " + state;
+			return false;
 		}
 	}
 
