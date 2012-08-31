@@ -16,6 +16,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	private ESoldierState state = ESoldierState.AGGRESSIVE;
 	private IOccupyableBuilding building;
 	private NewMovable enemy;
+	private ShortPoint2D oldPathTarget;
 
 	public SoldierStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable);
@@ -38,7 +39,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		case ENEMY_FOUND:
 			enemy = super.getStrategyGrid().getEnemyInSearchArea(super.getMovable());
 			if (enemy == null) { // no enemy found, go back in normal mode
-				state = ESoldierState.AGGRESSIVE;
+				changeStateTo(ESoldierState.AGGRESSIVE);
 				break;
 			}
 
@@ -65,6 +66,18 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		case IN_TOWER:
+			break;
+		}
+	}
+
+	private void changeStateTo(ESoldierState state) {
+		this.state = state;
+		switch (state) {
+		case AGGRESSIVE:
+			if (oldPathTarget != null) {
+				super.goToPos(oldPathTarget);
+				oldPathTarget = null;
+			}
 			break;
 		}
 	}
@@ -138,6 +151,18 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return !((state == ESoldierState.ENEMY_FOUND || state == ESoldierState.HITTING) && step >= 2);
+		boolean result = !((state == ESoldierState.ENEMY_FOUND || state == ESoldierState.HITTING) && step >= 2);
+		if (!result && oldPathTarget == null) {
+			oldPathTarget = pathTarget;
+		}
+
+		return result;
+	}
+
+	@Override
+	protected void moveToPathSet(ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+		if (targetPos != null && this.oldPathTarget != null) {
+			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
+		}
 	}
 }

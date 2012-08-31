@@ -114,9 +114,13 @@ public final class MovableGrid implements Serializable {
 		byte movablePlayer = movable.getPlayer();
 
 		for (ShortPoint2D curr : area) {
-			NewMovable currMovable = getMovableAt(curr.getX(), curr.getY());
-			if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
-				return currMovable;
+			short x = curr.getX();
+			short y = curr.getY();
+			if (0 <= x && x < width && 0 <= y && y < height) {
+				NewMovable currMovable = getMovableAt(x, y);
+				if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+					return currMovable;
+				}
 			}
 		}
 

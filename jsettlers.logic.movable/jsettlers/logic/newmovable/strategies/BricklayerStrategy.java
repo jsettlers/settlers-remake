@@ -24,6 +24,8 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 
 	@Override
 	public void setBricklayerJob(IConstructableBuilding constructionSite, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		assert constructionSite != null : "can't set a job with constructionSite == null";
+
 		this.constructionSite = constructionSite;
 		this.bricklayerTargetPos = bricklayerTargetPos;
 		this.lookDirection = direction;

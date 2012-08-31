@@ -241,11 +241,58 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 			if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
 				goSinglePathStep();
 			} else { // step not possible, so try it next time
-				grid.getMovableAt(path.nextX(), path.nextY()).push(this);
+				boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
+				if (!pushedSuccessful && path.getStep() < path.getLength() - 1) {
+					delayCtr++;
+					if (delayCtr > 8) {
+						delayCtr = 0;
+						findWayAroundObstacle();
+					}
+				}
 				return;
 			}
 		} else {
 			progress += WALKING_PROGRESS_INCREASE;
+		}
+	}
+
+	int delayCtr = 0;
+
+	private void findWayAroundObstacle() {
+		EDirection leftDir = direction.getNeighbor(-1);
+		EDirection rightDir = direction.getNeighbor(1);
+
+		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
+		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
+
+		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
+		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
+		ShortPoint2D twoStraight = direction.getNextHexPoint(position, 2);
+
+		ShortPoint2D overNextPos = path.getOverNextPos();
+
+		if (twoStraight.equals(overNextPos)) {
+			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY()) && isValidPosition(leftStraightPos)) {
+				path.goToNextStep();
+				path = new Path(path, leftPos, leftStraightPos);
+				System.out.println("path replanned!");
+			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY()) && isValidPosition(rightStraightPos)) {
+				path.goToNextStep();
+				path = new Path(path, rightPos, rightStraightPos);
+				System.out.println("path replanned!");
+			} else {
+				// TODO @Andreas Eberle maybe calculate a new path
+			}
+		} else if (leftStraightPos.equals(overNextPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY())) {
+			path.goToNextStep();
+			path = new Path(path, leftPos);
+			System.out.println("path replanned!");
+		} else if (rightStraightPos.equals(overNextPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY())) {
+			path.goToNextStep();
+			path = new Path(path, rightPos);
+			System.out.println("path replanned!");
+		} else {
+			// TODO @Andreas Eberle maybe calculate a new path
 		}
 	}
 
@@ -321,6 +368,14 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
+	/**
+	 * A call to this method indicates this movable that it shall leave it's position to free the position for another movable.
+	 * 
+	 * @param pushingMovable
+	 *            The movable pushing at this movable. This should be the movable that want's to get the position!
+	 * @return true if this movable will move out of it's way in the near future <br>
+	 *         false if this movable doesn't move.
+	 */
 	private boolean push(NewMovable pushingMovable) {
 		if (health <= 0) {
 			return false;
@@ -361,8 +416,10 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 						// this movable isn't blocked, so just let it's pathingAction() handle this
 					} else if (pushedFrom == null) {
 						this.pushedFrom = pushingMovable;
-						grid.getMovableAt(nextPos.getX(), nextPos.getY()).push(this);
+						boolean pushingSuccessfull = grid.getMovableAt(nextPos.getX(), nextPos.getY()).push(this);
 						this.pushedFrom = null;
+
+						return pushingSuccessfull;
 					} else {
 						while (pushingMovable != this) {
 							pushingMovable.goSinglePathStep();
@@ -380,6 +437,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 
 		case SLEEPING:
 			assert false : "got pushed while sleeping: should not be possible!";
+			return false;
+
+		case DEBUG_STATE:
 			return false;
 
 		default:
@@ -734,14 +794,6 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		return getMovableType().getSelectionType() == ESelectionType.SOLDIERS;
 	}
 
-	private static enum ENewMovableState {
-		PLAYING_ACTION,
-		PATHING,
-		DOING_NOTHING,
-		SLEEPING,
-		GOING_SINGLE_STEP,
-	}
-
 	public final boolean isAttackable() {
 		return movableType.isMoveToAble();
 	}
@@ -763,4 +815,16 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
+	private static enum ENewMovableState {
+		PLAYING_ACTION,
+		PATHING,
+		DOING_NOTHING,
+		SLEEPING,
+		GOING_SINGLE_STEP,
+
+		/**
+		 * This state may only be used for debugging reasons!
+		 */
+		DEBUG_STATE
+	}
 }
