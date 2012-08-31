@@ -11,7 +11,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Eberle
  * 
  */
-public final class Path implements Serializable {
+public class Path implements Serializable {
 	private static final long serialVersionUID = 1869164120660594918L;
 
 	private final short[] pathX;
@@ -30,6 +30,32 @@ public final class Path implements Serializable {
 	public Path(int length) {
 		pathX = new short[length];
 		pathY = new short[length];
+	}
+
+	/**
+	 * Concatenates a path and a prefix of {@link ShortPoint2D} objects.
+	 * 
+	 * @param oldPath
+	 *            The path to be appended to the prefix.
+	 * @param pathPrefix
+	 *            The path prefix. NOTE: The prefix must start with the current position of the movable!
+	 */
+	public Path(Path oldPath, ShortPoint2D... pathPrefix) {
+		int length = oldPath.getLength() - oldPath.getStep() + pathPrefix.length + 2;
+		pathX = new short[length];
+		pathY = new short[length];
+
+		int i;
+		for (i = 0; i < pathPrefix.length; i++) {
+			insertAt(i, pathPrefix[i].getX(), pathPrefix[i].getY());
+		}
+
+		for (; i < length; i++) {
+			insertAt(i, oldPath.nextX(), oldPath.nextY());
+			oldPath.goToNextStep();
+		}
+
+		initPath();
 	}
 
 	/**
@@ -168,5 +194,16 @@ public final class Path implements Serializable {
 
 	public int getStep() {
 		return idx;
+	}
+
+	public ShortPoint2D getOverNextPos() {
+		if (!isFinished()) {
+			short x = dir.getNextTileX(currX);
+			short y = dir.getNextTileY(currY);
+
+			return new ShortPoint2D(x, y);
+		} else {
+			return null;
+		}
 	}
 }
