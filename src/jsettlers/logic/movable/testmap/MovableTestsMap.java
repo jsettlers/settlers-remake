@@ -152,7 +152,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 					}
 
 					@Override
-					public boolean isRequestActive() {
+					public boolean isDiggerRequestActive() {
 						return true;
 					}
 

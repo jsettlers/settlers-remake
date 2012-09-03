@@ -196,7 +196,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 		}
 
 		@Override
-		public boolean isRequestActive() {
+		public boolean isDiggerRequestActive() {
 			return true;
 		}
 
