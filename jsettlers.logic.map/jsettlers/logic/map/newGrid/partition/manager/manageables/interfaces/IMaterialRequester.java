@@ -18,7 +18,7 @@ public interface IMaterialRequester extends ILocatable, IRequester {
 	ShortPoint2D getPos();
 
 	@Override
-	boolean isRequestActive();
+	boolean isDiggerRequestActive();
 
 	/**
 	 * This method is called when a bearer wasn't able to finish the request.

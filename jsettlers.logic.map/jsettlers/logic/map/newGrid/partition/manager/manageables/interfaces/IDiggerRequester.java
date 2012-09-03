@@ -17,7 +17,7 @@ public interface IDiggerRequester extends IRequester, ILocatable {
 	EBuildingType getBuildingType();
 
 	@Override
-	boolean isRequestActive();
+	boolean isDiggerRequestActive();
 
 	/**
 	 * 

@@ -131,7 +131,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 				workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
 			}
 		case GOING_TO_REQUEST:
-			if (requester != null && requester.isRequestActive()) {
+			if (requester != null && requester.isDiggerRequestActive()) {
 				requester.requestFailed();
 			}
 			break;
@@ -182,7 +182,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return requester == null || requester.isRequestActive();
+		return requester == null || requester.isDiggerRequestActive();
 	}
 
 	@Override

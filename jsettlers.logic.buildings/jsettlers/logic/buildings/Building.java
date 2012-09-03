@@ -526,7 +526,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public boolean isRequestActive() {
+	public boolean isDiggerRequestActive() {
 		return !isConstructionFinished();
 	}
 

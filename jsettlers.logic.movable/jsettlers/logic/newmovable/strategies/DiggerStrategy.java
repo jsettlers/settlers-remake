@@ -42,7 +42,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 		case PLAYING_ACTION:
 			executeDigg();
-			if (!requester.isRequestActive()) {
+			if (!requester.isDiggerRequestActive()) {
 				reportAsJobless();
 				break;
 			}
@@ -111,7 +111,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		if (requester == null || requester.isRequestActive()) {
+		if (requester == null || requester.isDiggerRequestActive()) {
 			return true;
 		} else {
 			if (state != EDiggerState.JOBLESS) {

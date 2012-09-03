@@ -2,7 +2,11 @@ package jsettlers.logic.map.newGrid.partition.manager.datastructures;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
+
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * A simple slot queue that supports {@link #pushLast(int, ElementType)} and {@link #popFront(int)} on the single slots.
@@ -14,7 +18,7 @@ import java.util.LinkedList;
  * @param <ElementType>
  *            Type of the elements.
  */
-public final class SimpleSlotQueue<SlotType, ElementType> implements Serializable {
+public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> implements Serializable {
 	private static final long serialVersionUID = 979224996513554546L;
 
 	private final SlotType[] slotTypes;
@@ -87,6 +91,40 @@ public final class SimpleSlotQueue<SlotType, ElementType> implements Serializabl
 			}
 		} else {
 			throw new UnsupportedOperationException("sloptTypes array of both SimpleSlotQueues must be equal!");
+		}
+	}
+
+	public int getSlotSize(SlotType slotType) {
+		return slotLists[getSlotNumber(slotType)].size();
+	}
+
+	public void moveItemsForPosition(ShortPoint2D position, SimpleSlotQueue<SlotType, ElementType> otherSlotQueue) {
+		assert Arrays.equals(slotTypes, otherSlotQueue.slotTypes);
+
+		for (int idx = 0; idx < slotLists.length; idx++) {
+			Iterator<ElementType> iter = slotLists[idx].iterator();
+			while (iter.hasNext()) {
+				ElementType element = iter.next();
+				if (position.equals(element.getPos())) {
+					iter.remove();
+					otherSlotQueue.pushLast(idx, element);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Adds all elements in the given slotQueue to this one. <br>
+	 * NOTE: The queues must have an equal {@link #slotTypes} array!
+	 * 
+	 * @param otherSlotQueue
+	 *            The other queue.
+	 */
+	public void addAll(SimpleSlotQueue<SlotType, ElementType> otherSlotQueue) {
+		assert Arrays.equals(slotTypes, otherSlotQueue.slotTypes);
+
+		for (int idx = 0; idx < slotLists.length; idx++) {
+			slotLists[idx].addAll(otherSlotQueue.slotLists[idx]);
 		}
 	}
 }

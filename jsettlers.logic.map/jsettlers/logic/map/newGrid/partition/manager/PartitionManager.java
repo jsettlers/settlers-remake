@@ -39,25 +39,28 @@ import jsettlers.logic.timer.PartitionManagerTimer;
 public class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
 	private static final long serialVersionUID = 1L;
 
+	private static final int BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS = 4;
+
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final OfferMap materialOffers = new OfferMap();
-	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, PartitionManager.Request>(EMaterialType.values(),
+	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, Request>(EMaterialType.values(),
 			new int[EMaterialType.values().length]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
 
-	private final SerializableLinkedList<DiggerRequest> diggerRequests = new SerializableLinkedList<PartitionManager.DiggerRequest>();
+	private final SerializableLinkedList<DiggerRequest> diggerRequests = new SerializableLinkedList<DiggerRequest>();
 	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<IManageableDigger>();
 
-	private final SerializableLinkedList<BricklayerRequest> bricklayerRequests = new SerializableLinkedList<PartitionManager.BricklayerRequest>();
+	private final SerializableLinkedList<BricklayerRequest> bricklayerRequests = new SerializableLinkedList<BricklayerRequest>();
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
 
-	private final SerializableLinkedList<WorkerCreationRequest> workerCreationRequests = new SerializableLinkedList<PartitionManager.WorkerCreationRequest>();
-	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<PartitionManager.SoilderCreationRequest>();
+	private final SimpleSlotQueue<EMovableType, WorkerCreationRequest> workerCreationRequests = new SimpleSlotQueue<EMovableType, WorkerCreationRequest>(
+			EMovableType.values());
+	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<SoilderCreationRequest>();
 
 	private final SlotQueue<EMaterialType, ProductionRequest> toolProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
 			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
@@ -176,6 +179,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 		toolProductionRequests.moveItemsForPosition(position, newManager.toolProductionRequests);
 		weaponProductionRequests.moveItemsForPosition(position, newManager.weaponProductionRequests);
+		workerCreationRequests.moveItemsForPosition(position, newManager.workerCreationRequests);
 
 		if (newHasSamePlayer) {
 			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
@@ -194,7 +198,6 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 		removePositionTo(position, this.bricklayerRequests, newManager.bricklayerRequests, newHasSamePlayer);
 		removePositionTo(position, this.diggerRequests, newManager.diggerRequests, newHasSamePlayer);
-		removePositionTo(position, this.workerCreationRequests, newManager.workerCreationRequests, newHasSamePlayer);
 		removePositionTo(position, this.workerRequests, newManager.workerRequests, newHasSamePlayer);
 	}
 
@@ -261,8 +264,59 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	private void handleWorkerCreationRequest() {
+		checkExistingToolRequestingWorkerCreationRequests();
+
+		checkWorkerCreationRequests();
+	}
+
+	private void checkWorkerCreationRequests() {
+		EMovableType[] movableTypes = workerCreationRequests.getSlotTypes();
+		for (int slotIdx = 0; slotIdx < movableTypes.length; slotIdx++) {
+			WorkerCreationRequest workerRequest = workerCreationRequests.popFront(slotIdx);
+
+			if (workerRequest != null) {
+				EMaterialType tool = workerRequest.movableType.getTool();
+
+				if (tool != EMaterialType.NO_MATERIAL) {
+
+					if (toolRequestingWorkerRequests.getSlotSize(workerRequest.movableType.getTool()) <= 3) {
+						this.materialTypeAcceptor.materialType = tool;
+						Offer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
+
+						if (offer != null) {
+							IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
+							if (manageableBearer != null) {
+								manageableBearer.becomeWorker(this, workerRequest.movableType, offer.position);
+								reduceOfferAmount(offer);
+							} else {
+								workerCreationRequests.pushLast(slotIdx, workerRequest);
+							}
+
+						} else {
+							toolProductionRequests.add(tool, new ProductionRequest(tool, workerRequest.position));
+							toolRequestingWorkerRequests.pushLast(tool, workerRequest);
+						}
+
+					} else {// don't create a worker with this tool if there are already workers requesting this type of tool
+						workerCreationRequests.pushLast(slotIdx, workerRequest);
+					}
+
+				} else {
+					IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
+					if (manageableBearer != null) {
+						manageableBearer.becomeWorker(this, workerRequest.movableType);
+					} else {
+						workerCreationRequests.pushLast(slotIdx, workerRequest);
+					}
+				}
+			}
+		}
+	}
+
+	private void checkExistingToolRequestingWorkerCreationRequests() {
 		EMaterialType[] slotTypes = toolRequestingWorkerRequests.getSlotTypes();
 		for (int slot = 0; slot < slotTypes.length; slot++) {
+			// check the existing tool requesting WorkerCreationRequests
 			WorkerCreationRequest request = toolRequestingWorkerRequests.popFront(slot);
 			if (request != null) {
 				this.materialTypeAcceptor.materialType = slotTypes[slot];
@@ -281,50 +335,11 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 				}
 			}
 		}
-
-		WorkerCreationRequest workerRequest = workerCreationRequests.poll();
-
-		if (workerRequest != null) {
-			EMaterialType tool = workerRequest.movableType.getTool();
-
-			if (tool != EMaterialType.NO_MATERIAL) {
-
-				if (toolRequestingWorkerRequests.isSlotEmpty(workerRequest.movableType.getTool())) {
-					this.materialTypeAcceptor.materialType = tool;
-					Offer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
-
-					if (offer != null) {
-						IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
-						if (manageableBearer != null) {
-							manageableBearer.becomeWorker(this, workerRequest.movableType, offer.position);
-							reduceOfferAmount(offer);
-						} else {
-							workerCreationRequests.addLast(workerRequest);
-						}
-
-					} else {
-						toolProductionRequests.add(tool, new ProductionRequest(tool, workerRequest.position));
-						toolRequestingWorkerRequests.pushLast(tool, workerRequest);
-					}
-
-				} else {// don't create a worker with this tool if there are already workers requesting this type of tool
-					workerCreationRequests.addLast(workerRequest);
-				}
-
-			} else {
-				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
-				if (manageableBearer != null) {
-					manageableBearer.becomeWorker(this, workerRequest.movableType);
-				} else {
-					workerCreationRequests.addLast(workerRequest);
-				}
-			}
-		}
 	}
 
 	@Override
 	public void workerCreationRequestFailed(EMovableType type, ShortPoint2D position) {
-		workerCreationRequests.add(new WorkerCreationRequest(type, position));
+		workerCreationRequests.pushLast(type, new WorkerCreationRequest(type, position));
 	}
 
 	private void handleSoldierCreationRequest() {
@@ -341,7 +356,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private void handleDiggerRequest() {
 		DiggerRequest request = diggerRequests.poll();
-		if (request != null) {
+		if (request != null && request.requester.isDiggerRequestActive()) {
 			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPos());
 			if (digger != null) {
 				digger.setDiggerJob(request.requester);
@@ -350,7 +365,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			} else {
 				if (request.amount > request.creationRequested) {
 					request.creationRequested++;
-					createNewTooluser(EMovableType.DIGGER, request.getPos());
+					createNewToolUserIfLimitNotExceeded(EMovableType.DIGGER, request.getPos());
 				}
 			}
 
@@ -362,17 +377,20 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private void handleBricklayerRequest() {
 		BricklayerRequest bricklayerRequest = bricklayerRequests.poll();
-		if (bricklayerRequest != null) {
+		if (bricklayerRequest != null && !bricklayerRequest.building.isConstructionFinished()) {
 			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPos());
 			if (bricklayer != null) {
 				bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction);
 			} else {
-				if (!bricklayerRequest.creationRequested) {
-					bricklayerRequest.creationRequested = true;
-					createNewTooluser(EMovableType.BRICKLAYER, bricklayerRequest.getPos());
-				}
+				createNewToolUserIfLimitNotExceeded(EMovableType.BRICKLAYER, bricklayerRequest.getPos());
 				bricklayerRequests.offerLast(bricklayerRequest);
 			}
+		}
+	}
+
+	private void createNewToolUserIfLimitNotExceeded(EMovableType movableType, ShortPoint2D position) {
+		if (workerCreationRequests.getSlotSize(movableType) <= BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS) {
+			createNewTooluser(movableType, position);
 		}
 	}
 
@@ -399,7 +417,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	private void createNewTooluser(EMovableType movableType, ShortPoint2D position) {
-		workerCreationRequests.addLast(new WorkerCreationRequest(movableType, position));
+		workerCreationRequests.pushLast(movableType, new WorkerCreationRequest(movableType, position));
 	}
 
 	private void reduceOfferAmount(Offer offer) {
@@ -485,7 +503,6 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	static final class BricklayerRequest implements ILocatable, Serializable {
 		private static final long serialVersionUID = -1673422793657988587L;
 
-		boolean creationRequested = false;
 		final Building building;
 		final ShortPoint2D bricklayerTargetPos;
 		final EDirection direction;
