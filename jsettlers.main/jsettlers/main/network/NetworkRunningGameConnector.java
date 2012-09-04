@@ -28,6 +28,11 @@ public class NetworkRunningGameConnector implements IClientThreadListener, INetw
 		proxiedObjectListener = listener;
 	}
 
+	@Override
+	public void removeProxiedObjectListener(IProxiedObjectListener listener) {
+		proxiedObjectListener = null;
+	}
+
 	private static class ProxyObjectsThread extends Thread {
 		LinkedBlockingQueue<ProxyObject> queue = new LinkedBlockingQueue<ProxyObject>();
 		private final ClientThread clientThread;
@@ -108,7 +113,11 @@ public class NetworkRunningGameConnector implements IClientThreadListener, INetw
 
 	@Override
 	public void receivedObject(String sender, Serializable object) {
-		proxiedObjectListener.receivedObject(sender, object);
+		if (proxiedObjectListener != null) {
+			proxiedObjectListener.receivedObject(sender, object);
+		} else {
+			System.err.println("WARNING: receiving network objects but having no listener. Sender: " + sender + "  Object: " + object);
+		}
 	}
 
 	@Override

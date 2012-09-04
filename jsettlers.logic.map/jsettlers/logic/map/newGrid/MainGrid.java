@@ -146,8 +146,6 @@ public class MainGrid implements Serializable {
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
 
-		this.fogOfWar.startThread(new FogOfWarGrid());
-
 		this.partitionsGrid.initPartitionsAlgorithm(movablePathfinderGrid.aStar);
 	}
 
@@ -209,6 +207,11 @@ public class MainGrid implements Serializable {
 
 	private boolean isWaterSafe(int x, int y) {
 		return isInBounds((short) x, (short) y) && landscapeGrid.getLandscapeTypeAt((short) x, (short) y).isWater();
+	}
+
+	public void startThreads() {
+		bordersThread.start();
+		fogOfWar.start(new FogOfWarGrid());
 	}
 
 	public void stopThreads() {
@@ -912,7 +915,9 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D position, EMaterialType materialType) {
-			if (mapObjectsManager.popMaterial(position.getX(), position.getY(), materialType)) {
+			short x = position.getX();
+			short y = position.getY();
+			if (mapObjectsManager.popMaterial(x, y, materialType)) {
 				return true;
 			} else
 				return false;

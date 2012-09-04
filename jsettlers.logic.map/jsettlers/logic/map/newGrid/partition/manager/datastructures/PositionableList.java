@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
+import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -67,12 +67,12 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	 *            if result == null every entry is accepted.
 	 * @return accepted object that's nearest to position
 	 */
-	public T removeObjectNextTo(ShortPoint2D position, IAcceptor<T> acceptor) {
+	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
 		float bestDistance = Float.MAX_VALUE;
 		T currBest = null;
 
 		for (T currEntry : data) {
-			if (acceptor != null && !acceptor.isAccepted(currEntry))
+			if (acceptor != null && !acceptor.accepts(currEntry))
 				continue;
 
 			ShortPoint2D currPosition = currEntry.getPos();

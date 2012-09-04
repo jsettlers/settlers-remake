@@ -4,6 +4,11 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
 
+/**
+ * This class stores several statistical values needed by the UI and some logic components.
+ * @author Andreas Eberle
+ *
+ */
 public class PartitionsStatistics implements IStatisticable {
 	private final int[] numberOfMaterials = new int[EMaterialType.values().length];
 	private final int[] numberOfMovables = new int[EMovableType.values().length];

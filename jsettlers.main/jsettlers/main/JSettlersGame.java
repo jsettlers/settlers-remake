@@ -14,6 +14,7 @@ import jsettlers.input.GuiInterface;
 import jsettlers.input.GuiTaskExecutor;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.timer.MovableTimer;
+import jsettlers.logic.timer.PartitionManagerTimer;
 import jsettlers.logic.timer.Timer100Milli;
 import network.NetworkManager;
 import random.RandomSingleton;
@@ -21,7 +22,7 @@ import synchronic.timer.NetworkTimer;
 
 /**
  * This is a running jsettlers game. It can be started and then stopped once.
- *
+ * 
  * @author michael
  */
 public class JSettlersGame {
@@ -39,20 +40,21 @@ public class JSettlersGame {
 	private MapInterfaceConnector gameConnector;
 	private boolean started = false;
 
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator map, long randomSeed, NetworkManager networkManager, byte playerNumber) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator mapCreator, long randomSeed, NetworkManager networkManager, byte playerNumber) {
 		this.content = content;
-		this.mapcreator = map;
+		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkManager = networkManager;
 		this.playerNumber = playerNumber;
 	}
 
 	/**
-	 * Starts the game in a new thread. Returns immeadiately
+	 * Starts the game in a new thread. Returns immediately.
 	 */
 	public synchronized void start() {
 		if (!started) {
 			started = true;
+
 			new Thread(null, new GameRunner(), "game", 128 * 1024).start();
 		}
 	}
@@ -63,9 +65,9 @@ public class JSettlersGame {
 		public void run() {
 			ProgressConnector progress = content.showProgress();
 
-			NetworkTimer.get().setPausing(true);
+			NetworkTimer gameTimer = NetworkTimer.get();
+			gameTimer.setPausing(true);
 			RandomSingleton.load(randomSeed);
-
 
 			progress.setProgressState(EProgressState.LOADING_MAP, 0.1f);
 
@@ -84,25 +86,9 @@ public class JSettlersGame {
 				return;
 			}
 
-			NetworkTimer.get().setPausing(false);
+			gameTimer.setPausing(false);
 
-			/** random map */
-			// RandomMapFile file =
-			// RandomMapFile.getByName(mapSettings.getMap().getName());
-			// RandomMapEvaluator evaluator = new
-			// RandomMapEvaluator(file.getInstructions(), (byte)
-			// mapSettings.getPlayerCount());
-			// evaluator.createMap(RandomSingleton.get());
-			// IMapData mapGrid = evaluator.getGrid();
-
-			// GameSerializer gameSerializer = new GameSerializer();
-			// try {
-			// grid = gameSerializer.load();
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// grid = null;
-			// }
-
+			// load images
 			progress.setProgressState(EProgressState.LOADING_IMAGES, 0.8f);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), null);
@@ -111,6 +97,7 @@ public class JSettlersGame {
 			connector.addListener(this);
 			connector.loadUIState(uiState);
 
+			grid.startThreads();
 			networkManager.startGameTimer(new GuiTaskExecutor(grid.getGuiInputGrid(), guiInterface));
 
 			gameConnector = connector;
@@ -125,9 +112,11 @@ public class JSettlersGame {
 			}
 
 			networkManager.stop();
+			grid.stopThreads();
+			guiInterface.stop();
 			Timer100Milli.stop();
 			MovableTimer.stop();
-			grid.stopThreads();
+			PartitionManagerTimer.stop();
 
 			listener.gameEnded();
 		}
@@ -150,7 +139,7 @@ public class JSettlersGame {
 
 	/**
 	 * Defines a listener for this game.
-	 *
+	 * 
 	 * @param managedJSettlers
 	 */
 	public void setListener(Listener listener) {

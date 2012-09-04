@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition.manager;
+package jsettlers.logic.map.newGrid.partition.manager.objects;
 
 import java.io.Serializable;
 
@@ -6,11 +6,11 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 
-final class ProductionRequest implements ILocatable, Serializable {
+public final class ProductionRequest implements ILocatable, Serializable {
 	private static final long serialVersionUID = -1849601517609060590L;
 
-	private final ShortPoint2D pos;
-	private final EMaterialType type;
+	public final ShortPoint2D pos;
+	public final EMaterialType type;
 
 	public ProductionRequest(EMaterialType type, ShortPoint2D pos) {
 		this.type = type;
@@ -22,7 +22,4 @@ final class ProductionRequest implements ILocatable, Serializable {
 		return pos;
 	}
 
-	public EMaterialType getType() {
-		return type;
-	}
 }

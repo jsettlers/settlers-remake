@@ -22,6 +22,7 @@ import jsettlers.main.network.NetworkScreenAdapter;
 import jsettlers.network.client.ClientThread;
 import jsettlers.network.server.restapi.MatchDescription;
 import network.NetworkManager;
+import synchronic.timer.NetworkTimer;
 
 /**
  * This is the new main game class
@@ -188,7 +189,8 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 			description.getMapId();
 			MapLoader map = networkScreen.getMapLoader();
 			NetworkRunningGameConnector runningGameConnector = new NetworkRunningGameConnector(client);
-			NetworkManager networkManager = new NetworkManager(runningGameConnector, networkScreen.getMyPlayerNumber(), networkScreen.getPlayerIDs());
+			NetworkManager networkManager = new NetworkManager(runningGameConnector, networkScreen.getMyPlayerNumber(), networkScreen.getPlayerIDs(),
+					NetworkTimer.get());
 
 			client.setListener(runningGameConnector);
 

@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
@@ -47,12 +48,12 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 	 *            if acceptor == null, every object will be accepted.
 	 * @return accepted object that's nearest to position
 	 */
-	public T getObjectNextTo(ShortPoint2D position, IAcceptor<T> acceptor) {
+	public T getObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
 		float bestDistance = Float.MAX_VALUE;
 		T currBest = null;
 
 		for (Entry<ShortPoint2D, T> currEntry : data.entrySet()) {
-			if (acceptor == null || acceptor.isAccepted(currEntry.getValue())) {
+			if (acceptor == null || acceptor.accepts(currEntry.getValue())) {
 				ShortPoint2D currPosition = currEntry.getKey();
 				float currDist = MapCircle.getDistanceSquared(position, currPosition);
 
@@ -66,13 +67,13 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 		return currBest;
 	}
 
-	public T removeObjectNextTo(ShortPoint2D position, IAcceptor<T> acceptor) {
+	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
 		float bestDistance = Float.MAX_VALUE;
 		T currBest = null;
 		ShortPoint2D bestPos = null;
 
 		for (Entry<ShortPoint2D, T> currEntry : data.entrySet()) {
-			if (acceptor == null || acceptor.isAccepted(currEntry.getValue())) {
+			if (acceptor == null || acceptor.accepts(currEntry.getValue())) {
 				ShortPoint2D currPosition = currEntry.getKey();
 				float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
 
@@ -100,23 +101,12 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 		return data.toString();
 	}
 
-	/**
-	 * This interface can be used to specify objects that should be accepted and objects that shouldn't.
-	 * 
-	 * @author Andreas Eberle
-	 * 
-	 * @param <T>
-	 */
-	public static interface IAcceptor<T> {
-		public boolean isAccepted(T object);
-	}
-
 	public void addAll(PositionableHashMap<T> materialOffers) {
 		for (Entry<ShortPoint2D, T> entry : materialOffers.data.entrySet()) {
-			//needed to track the count of elements
+			// needed to track the count of elements
 			set(entry.getKey(), entry.getValue());
 		}
-		//this.data.putAll(materialOffers.data);
+		// this.data.putAll(materialOffers.data);
 	}
 
 }

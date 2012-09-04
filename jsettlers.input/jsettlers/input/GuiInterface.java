@@ -31,7 +31,7 @@ import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
-import jsettlers.logic.algorithms.construction.ConstructMarksThread;
+import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
@@ -47,7 +47,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private final MapInterfaceConnector connector;
 
-	private final ConstructMarksThread constructionMarksCalculator;
+	private final ConstructionMarksThread constructionMarksCalculator;
 	private final NetworkManager manager;
 	private final IGuiInputGrid grid;
 	private final byte player;
@@ -63,7 +63,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.manager = manager;
 		this.grid = grid;
 		this.player = player;
-		this.constructionMarksCalculator = new ConstructMarksThread(grid.getConstructionMarksGrid(), player);
+		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), player);
 		connector.addListener(this);
 	}
 
@@ -415,6 +415,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	public void refreshSelection() {
 		connector.setSelection(null);
 		connector.setSelection(currentSelection);
+	}
+
+	/**
+	 * Shuts down used threads.
+	 */
+	public void stop() {
+		constructionMarksCalculator.cancel();
+		connector.removeListener(this);
 	}
 
 }

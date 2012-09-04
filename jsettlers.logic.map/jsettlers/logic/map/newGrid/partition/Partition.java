@@ -55,4 +55,5 @@ public final class Partition extends PartitionManager implements Serializable {
 	public int getNumberOfElements() {
 		return counter;
 	}
+
 }

@@ -15,7 +15,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.queue.SlotQueue;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableHashMap.IAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.SimpleSlotQueue;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
@@ -26,7 +25,17 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.map.newGrid.partition.manager.objects.BricklayerRequest;
+import jsettlers.logic.map.newGrid.partition.manager.objects.DiggerRequest;
+import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialOffer;
+import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialRequest;
+import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialTypeAcceptor;
+import jsettlers.logic.map.newGrid.partition.manager.objects.MovableTypeAcceptor;
+import jsettlers.logic.map.newGrid.partition.manager.objects.OfferMap;
+import jsettlers.logic.map.newGrid.partition.manager.objects.ProductionRequest;
+import jsettlers.logic.map.newGrid.partition.manager.objects.SoilderCreationRequest;
+import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerCreationRequest;
+import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerRequest;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.PartitionManagerTimer;
 
@@ -45,7 +54,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final OfferMap materialOffers = new OfferMap();
-	private final SlotQueue<EMaterialType, Request> materialRequests = new SlotQueue<EMaterialType, Request>(EMaterialType.values(),
+	private final SlotQueue<EMaterialType, MaterialRequest> materialRequests = new SlotQueue<EMaterialType, MaterialRequest>(EMaterialType.values(),
 			new int[EMaterialType.values().length]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
@@ -85,7 +94,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	public boolean addOffer(ShortPoint2D position, EMaterialType materialType) {
-		Offer existingOffer = materialOffers.getObjectAt(position);
+		MaterialOffer existingOffer = materialOffers.getObjectAt(position);
 		if (existingOffer != null) {
 			if (existingOffer.materialType == materialType) {
 				existingOffer.amount++;
@@ -94,13 +103,13 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 				return false;
 			}
 		} else {
-			materialOffers.set(position, new Offer(position, materialType, (byte) 1));
+			materialOffers.set(position, new MaterialOffer(position, materialType, (byte) 1));
 			return true;
 		}
 	}
 
 	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
-		materialRequests.add(materialType, new Request(requester, materialType, priority));
+		materialRequests.add(materialType, new MaterialRequest(requester, materialType, priority));
 	}
 
 	public void requestDiggers(IDiggerRequester requester, byte amount) {
@@ -169,7 +178,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	public void removePositionTo(final short x, final short y, PartitionManager newManager, boolean newHasSamePlayer) {
 		ShortPoint2D position = new ShortPoint2D(x, y);
 
-		Offer removedOffer = materialOffers.removeObjectAt(position);
+		MaterialOffer removedOffer = materialOffers.removeObjectAt(position);
 		if (removedOffer != null) {// the new manager can not have any offers at that position, because he just occupied it
 			newManager.materialOffers.set(position, removedOffer);
 		}
@@ -281,7 +290,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 					if (toolRequestingWorkerRequests.getSlotSize(workerRequest.movableType.getTool()) <= 3) {
 						this.materialTypeAcceptor.materialType = tool;
-						Offer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
+						MaterialOffer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
 
 						if (offer != null) {
 							IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
@@ -320,7 +329,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			WorkerCreationRequest request = toolRequestingWorkerRequests.popFront(slot);
 			if (request != null) {
 				this.materialTypeAcceptor.materialType = slotTypes[slot];
-				Offer offer = this.materialOffers.getObjectNextTo(request.position, this.materialTypeAcceptor);
+				MaterialOffer offer = this.materialOffers.getObjectNextTo(request.position, this.materialTypeAcceptor);
 
 				if (offer != null) {
 					IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(request.position);
@@ -395,11 +404,11 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	private void handleMaterialRequest() {
-		Request request = materialRequests.pop(materialOffers);
+		MaterialRequest request = materialRequests.pop(materialOffers);
 		if (request != null) {
 
 			materialTypeAcceptor.materialType = request.requested;
-			Offer offer = materialOffers.getObjectNextTo(request.getPos(), materialTypeAcceptor);
+			MaterialOffer offer = materialOffers.getObjectNextTo(request.getPos(), materialTypeAcceptor);
 
 			if (offer == null) {
 				reofferRequest(request);
@@ -420,194 +429,17 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		workerCreationRequests.pushLast(movableType, new WorkerCreationRequest(movableType, position));
 	}
 
-	private void reduceOfferAmount(Offer offer) {
+	private void reduceOfferAmount(MaterialOffer offer) {
 		offer.amount--;
 		if (offer.amount <= 0) {
 			materialOffers.removeObjectAt(offer.position);
 		}
 	}
 
-	private void reofferRequest(Request request) {
+	private void reofferRequest(MaterialRequest request) {
 		// TODO: decrease priority, do something else, ...
 		// request.decreasePriority();
 		materialRequests.add(request.requested, request);
-	}
-
-	static final class Offer implements Serializable {
-		private static final long serialVersionUID = 8516955442065220998L;
-
-		ShortPoint2D position;
-		EMaterialType materialType;
-		byte amount = 0;
-
-		public Offer(ShortPoint2D position, EMaterialType materialType, byte amount) {
-			this.position = position;
-			this.materialType = materialType;
-			this.amount = amount;
-		}
-
-		@Override
-		public String toString() {
-			return "Offer: " + position + "   " + materialType + "    " + amount;
-		}
-
-	}
-
-	final static class Request implements Comparable<Request>, Serializable, ILocatable {
-		private static final long serialVersionUID = -3427364937835501076L;
-
-		final IMaterialRequester requester;
-		final EMaterialType requested;
-		byte priority = 100;
-
-		public Request(IMaterialRequester requester, EMaterialType requested, byte priority) {
-			this.requester = requester;
-			this.requested = requested;
-			this.priority = priority;
-		}
-
-		@Override
-		public int compareTo(Request other) {
-			return other.priority - this.priority;
-		}
-
-		@Override
-		public String toString() {
-			return requested + "   " + requester.getPos() + "    " + priority;
-		}
-
-		@Override
-		public ShortPoint2D getPos() {
-			return requester.getPos();
-		}
-	}
-
-	static final class DiggerRequest implements ILocatable, Serializable {
-		private static final long serialVersionUID = -3781604767367556333L;
-
-		final IDiggerRequester requester;
-		byte amount;
-		byte creationRequested = 0;
-
-		public DiggerRequest(IDiggerRequester requester, byte amount) {
-			this.requester = requester;
-			this.amount = amount;
-		}
-
-		@Override
-		public final ShortPoint2D getPos() {
-			return requester.getPos();
-		}
-	}
-
-	static final class BricklayerRequest implements ILocatable, Serializable {
-		private static final long serialVersionUID = -1673422793657988587L;
-
-		final Building building;
-		final ShortPoint2D bricklayerTargetPos;
-		final EDirection direction;
-
-		public BricklayerRequest(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
-			this.building = building;
-			this.bricklayerTargetPos = bricklayerTargetPos;
-			this.direction = direction;
-		}
-
-		@Override
-		public final ShortPoint2D getPos() {
-			return building.getPos();
-		}
-	}
-
-	static final class WorkerCreationRequest implements ILocatable, Serializable {
-		private static final long serialVersionUID = 3047014371520017602L;
-
-		final EMovableType movableType;
-		final ShortPoint2D position;
-
-		public WorkerCreationRequest(EMovableType movableType, ShortPoint2D position) {
-			this.movableType = movableType;
-			this.position = position;
-		}
-
-		@Override
-		public String toString() {
-			return movableType + "    " + position;
-		}
-
-		@Override
-		public ShortPoint2D getPos() {
-			return position;
-		}
-	}
-
-	static final class SoilderCreationRequest implements ILocatable, Serializable {
-		private static final long serialVersionUID = -3108188242025391145L;
-
-		final IBarrack barrack;
-
-		public SoilderCreationRequest(IBarrack barrack) {
-			this.barrack = barrack;
-		}
-
-		@Override
-		public String toString() {
-			return "SoilderCreationRequest[" + barrack + "|" + barrack.getDoor() + "]";
-		}
-
-		@Override
-		public ShortPoint2D getPos() {
-			return barrack.getDoor();
-		}
-
-		public IBarrack getBarrack() {
-			return barrack;
-		}
-	}
-
-	static final class MaterialTypeAcceptor implements IAcceptor<Offer>, Serializable {
-		private static final long serialVersionUID = 635444536013281565L;
-
-		EMaterialType materialType = null;
-
-		@Override
-		public final boolean isAccepted(Offer offer) {
-			return this.materialType == offer.materialType;
-		}
-	}
-
-	static final class MovableTypeAcceptor implements IAcceptor<IManageableWorker>, Serializable {
-		private static final long serialVersionUID = 111392803354934224L;
-
-		EMovableType movableType = null;
-
-		@Override
-		public final boolean isAccepted(IManageableWorker worker) {
-			return this.movableType == worker.getMovableType();
-		}
-	}
-
-	static final class WorkerRequest implements ILocatable, Serializable {
-		private static final long serialVersionUID = 6420250669583553112L;
-
-		final EMovableType movableType;
-		final IWorkerRequestBuilding building;
-		boolean creationRequested = false;
-
-		public WorkerRequest(EMovableType movableType, IWorkerRequestBuilding building) {
-			this.building = building;
-			this.movableType = movableType;
-		}
-
-		@Override
-		public ShortPoint2D getPos() {
-			return building.getDoor();
-		}
-
-		@Override
-		public String toString() {
-			return movableType + "    " + creationRequested + "     " + building.getBuildingType();
-		}
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -628,7 +460,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	 *            {@link EMaterialType} to be checked.
 	 */
 	public final void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
-		Offer offer = this.materialOffers.getObjectAt(pos);
+		MaterialOffer offer = this.materialOffers.getObjectAt(pos);
 		if (offer != null && offer.materialType == materialType) {
 			reduceOfferAmount(offer);
 		}
@@ -637,7 +469,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
 		ProductionRequest request = toolProductionRequests.pop(closeTo);
 		if (request != null) {
-			return request.getType();
+			return request.type;
 		} else {
 			return null;
 		}
