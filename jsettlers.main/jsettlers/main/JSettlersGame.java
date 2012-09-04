@@ -21,7 +21,7 @@ import synchronic.timer.NetworkTimer;
 
 /**
  * This is a running jsettlers game. It can be started and then stopped once.
- * 
+ *
  * @author michael
  */
 public class JSettlersGame {
@@ -53,7 +53,7 @@ public class JSettlersGame {
 	public synchronized void start() {
 		if (!started) {
 			started = true;
-			new Thread(new GameRunner()).start();
+			new Thread(null, new GameRunner(), "game", 128 * 1024).start();
 		}
 	}
 
@@ -150,7 +150,7 @@ public class JSettlersGame {
 
 	/**
 	 * Defines a listener for this game.
-	 * 
+	 *
 	 * @param managedJSettlers
 	 */
 	public void setListener(Listener listener) {
