@@ -124,7 +124,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		}
 	}
 
-	private LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
+	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
 	// @formatter:off
 	private final ToolNode TOOLBOX = new ToolBox("Werkzege", new ToolNode[] {
@@ -310,9 +310,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private JButton undoButton;
 
-	private LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
+	private final LinkedList<MapDataDelta> undoDeltas =
+	        new LinkedList<MapDataDelta>();
 
-	private LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
+	private final LinkedList<MapDataDelta> redoDeltas =
+	        new LinkedList<MapDataDelta>();
 
 	private final DataTester dataTester;
 
