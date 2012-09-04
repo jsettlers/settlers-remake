@@ -17,6 +17,7 @@ public class BordersThread implements Runnable {
 	private final IBordersThreadGrid grid;
 	private boolean canceled = false;
 	private final LinkedBlockingQueue<ShortPoint2D> positionsQueue = new LinkedBlockingQueue<ShortPoint2D>();
+	private Thread bordersThread;
 
 	/**
 	 * This constructor creates a new instance of {@link BordersThread} and automatically launches a thread for it called "bordersThread".
@@ -26,30 +27,22 @@ public class BordersThread implements Runnable {
 	 */
 	public BordersThread(IBordersThreadGrid grid) {
 		this.grid = grid;
-
-		Thread thread = new Thread(this);
-		thread.setName("bordersThread");
-		thread.setDaemon(true);
-		thread.start();
+		this.bordersThread = new Thread(this);
 	}
 
 	@Override
 	public void run() {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
-
 		while (!canceled) {
 			ShortPoint2D position = null;
 			while (position == null && !canceled) {
 				try {
 					position = positionsQueue.take();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
-			calculateForPosition(position);
+			if (!canceled) {
+				calculateForPosition(position);
+			}
 		}
 	}
 
@@ -108,6 +101,13 @@ public class BordersThread implements Runnable {
 		synchronized (positionsQueue) {
 			positionsQueue.notifyAll();
 		}
+		bordersThread.interrupt();
+	}
+
+	public void start() {
+		bordersThread.setName("bordersThread");
+		bordersThread.setDaemon(true);
+		bordersThread.start();
 	}
 
 }

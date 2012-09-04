@@ -61,7 +61,7 @@ public final class NewFogOfWar implements Serializable {
 		enabled = true;
 	}
 
-	public void startThread(IFogOfWarGrid grid) {
+	public void start(IFogOfWarGrid grid) {
 		this.grid = grid;
 		NewFoWThread thread = new NewFoWThread();
 		thread.start();
@@ -104,8 +104,8 @@ public final class NewFogOfWar implements Serializable {
 
 		NewFoWThread() {
 			super("NewFoWThread");
-			this.buffer = new byte[width][height];
 			super.setDaemon(true);
+			this.buffer = new byte[width][height];
 			drawer = new CircleDrawer();
 		}
 

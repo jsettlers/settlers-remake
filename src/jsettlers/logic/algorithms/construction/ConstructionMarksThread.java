@@ -21,7 +21,7 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class ConstructMarksThread implements Runnable {
+public class ConstructionMarksThread implements Runnable {
 	private final IConstructionMarkableMap map;
 	private final byte player;
 	private final Thread thread;
@@ -35,11 +35,11 @@ public class ConstructMarksThread implements Runnable {
 	private IMapArea lastArea = null;
 	private boolean canceled;
 
-	public ConstructMarksThread(IConstructionMarkableMap map, byte player) {
+	public ConstructionMarksThread(IConstructionMarkableMap map, byte player) {
 		this.map = map;
 		this.player = player;
 
-		thread = new Thread(this, "constrMarksThread");
+		thread = new Thread(this, "ConstructionMarksThread");
 		thread.setDaemon(true);
 		thread.start();
 	}

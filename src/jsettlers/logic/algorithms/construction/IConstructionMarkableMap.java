@@ -4,7 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 
 /**
- * Interface offering the methods needed by {@link ConstructMarksThread}.
+ * Interface offering the methods needed by {@link ConstructionMarksThread}.
  * 
  * @author Andreas Eberle
  */
