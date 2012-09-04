@@ -165,4 +165,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
 		}
 	}
+
+	@Override
+	protected boolean isMoveToAble() {
+		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && state != ESoldierState.IN_TOWER;
+	}
 }

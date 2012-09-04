@@ -120,7 +120,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && state != ENewMovableState.SLEEPING) {
+		if (movableType.isMoveToAble() && state != ENewMovableState.SLEEPING && strategy.isMoveToAble()) {
 			this.moveToRequest = targetPosition;
 		}
 	}

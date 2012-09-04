@@ -34,9 +34,11 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 	 * 
 	 * @param duration
 	 *            in seconds<br>
-	 *            NOTE: duration MAY NEVER BE 0.0f
+	 *            NOTE: duration MAY NEVER BE LESS OR EQUAL TO 0.0f
 	 */
 	protected final void setDuration(float duration) {
+		assert duration > 0 : "duration may never be less or equal to 0.0f";
+
 		this.duration = (int) (duration * 1000);
 		this.startTime = NetworkTimer.getGameTime();
 	}

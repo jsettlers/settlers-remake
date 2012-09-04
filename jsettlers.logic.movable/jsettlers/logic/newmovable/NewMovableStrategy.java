@@ -229,4 +229,8 @@ public abstract class NewMovableStrategy implements Serializable {
 	protected void informAboutAttackable(@SuppressWarnings("unused") NewMovable other) {
 	}
 
+	protected boolean isMoveToAble() {
+		return true;
+	}
+
 }

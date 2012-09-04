@@ -23,7 +23,7 @@ public final class AdultTree extends Tree {
 
 	@Override
 	protected float getGrowthDuration() {
-		return 0;
+		return 0.01f;
 	}
 
 }
