@@ -56,12 +56,16 @@ public class ResourceUpdater implements Runnable {
 	public void run() {
 		try {
 			DefaultHttpClient httpClient = createClient();
-
-			serverrev = loadRevision(httpClient);
 			File versionfile = getVersionFile();
 			String myrev = getMyVersion(versionfile);
+			
+			if (myrev.isEmpty()) {
+				needsUpdate = true;
+			}
 
-			needsUpdate = serverrev != null && !serverrev.equals(myrev);
+			serverrev = loadRevision(httpClient);
+
+			needsUpdate |= serverrev != null && !serverrev.equals(myrev);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
