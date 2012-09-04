@@ -9,13 +9,19 @@ import java.io.Serializable;
 
 import jsettlers.common.position.ShortPoint2D;
 
+/**
+ * This class holds a state of the GUI that can be saved.
+ * 
+ * @author Andreas Eberle
+ */
 public class UIState implements Serializable {
+	private static final long serialVersionUID = 1481484536611544925L;
 
 	/**
 	 * The player that uses the ui.
 	 */
 	private final int player;
-	
+
 	/**
 	 * The center point of the screen.
 	 */
@@ -24,32 +30,33 @@ public class UIState implements Serializable {
 	public UIState(int player, ShortPoint2D startPoint) {
 		this.player = player;
 		this.screenCenter = startPoint;
-    }
-	
+	}
+
 	public ShortPoint2D getScreenCenter() {
-	    return screenCenter;
-    }
-	
+		return screenCenter;
+	}
+
 	public int getPlayer() {
-	    return player;
-    }
-	
+		return player;
+	}
+
 	public void writeTo(OutputStream stream) throws IOException {
 		new ObjectOutputStream(stream).writeObject(this);
 	}
 
 	/**
 	 * Reads the ui state from the given stream.
+	 * 
 	 * @param stream
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static UIState readFrom(InputStream stream) throws IOException {
 		try {
-	        return (UIState) new ObjectInputStream(stream).readObject();
-        } catch (ClassNotFoundException e) {
-	        throw new IOException(e);
-        }
-    }
+			return (UIState) new ObjectInputStream(stream).readObject();
+		} catch (ClassNotFoundException e) {
+			throw new IOException(e);
+		}
+	}
 
 }
