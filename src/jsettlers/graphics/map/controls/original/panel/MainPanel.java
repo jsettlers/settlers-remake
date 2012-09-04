@@ -12,6 +12,7 @@ import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
+import jsettlers.graphics.startscreen.ExecutableAction;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -213,8 +214,8 @@ public class MainPanel extends UIPanel {
 		        && goBackContent != null) {
 			goBack();
 			return null;
-		} else if (action.getActionType() == EActionType.GUI_RUNNABLE) {
-			((Runnable) action).run();
+		} else if (action.getActionType() == EActionType.EXECUTABLE) {
+			((ExecutableAction) action).execute();
 			return null;
 		}else {
 			return action;

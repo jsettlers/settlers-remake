@@ -6,10 +6,10 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.startscreen.ExecutableAction;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -120,16 +120,15 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		return new ChangeOrderAction(add);
 	}
 
-	private class ChangeOrderAction extends Action implements Runnable {
+	private class ChangeOrderAction extends ExecutableAction {
 		private final int add;
 
 		public ChangeOrderAction(int add) {
-			super(EActionType.GUI_RUNNABLE);
 			this.add = add;
 		}
 
 		@Override
-		public void run() {
+		public void execute() {
 			if (selected != null) {
 				reorder(selected, order[selected.ordinal()] + add);
 			}
@@ -226,16 +225,15 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		return action;
 	}
 
-	private class SelectMaterialAction extends Action implements Runnable {
+	private class SelectMaterialAction extends ExecutableAction {
 		private final EMaterialType eMaterialType;
 
 		public SelectMaterialAction(EMaterialType eMaterialType) {
-			super(EActionType.GUI_RUNNABLE);
 			this.eMaterialType = eMaterialType;
 		}
 
 		@Override
-		public void run() {
+		public void execute() {
 			selectMaterial(eMaterialType);
 		}
 

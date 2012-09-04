@@ -180,15 +180,6 @@ public enum EActionType {
 	ASK_DESTROY,
 	
 	/**
-	 * A runnable gui action that is executed when fired from the gui.
-	 * <p>
-	 * only used gui internally, and should normally not be exposed.
-	 * <p>
-	 * must implement {@link Runnable}
-	 */
-	GUI_RUNNABLE, 
-	
-	/**
 	 * Gets called when a network grame should be started.
 	 */
 	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START, 

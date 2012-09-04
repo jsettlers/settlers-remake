@@ -1,20 +1,19 @@
 package jsettlers.graphics.map.controls.mobile;
 
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.startscreen.ExecutableAction;
 
-public class FadeAnimatedFaderAction extends Action implements Runnable {
+public class FadeAnimatedFaderAction extends ExecutableAction {
 	private final AnimatedFader fader;
 	private final float value;
 
 	public FadeAnimatedFaderAction(AnimatedFader fader, float value) {
-		super(EActionType.GUI_RUNNABLE);
+		super();
 		this.fader = fader;
 		this.value = value;
 	}
 	
 	@Override
-	public void run() {
+	public void execute() {
 	    fader.fadeTo(value);
 	}
 }
