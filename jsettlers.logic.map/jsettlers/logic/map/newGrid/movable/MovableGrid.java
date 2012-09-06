@@ -11,6 +11,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.landscape.IWalkableGround;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 
 /**
  * This grid stores the position of the {@link IMovable}s.
@@ -107,7 +108,7 @@ public final class MovableGrid implements Serializable {
 		}
 	}
 
-	public NewMovable getEnemyInSearchArea(IMovable movable) {
+	public NewMovable getEnemyInSearchArea(IAttackable movable) {
 		ShortPoint2D pos = movable.getPos();
 		HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
 

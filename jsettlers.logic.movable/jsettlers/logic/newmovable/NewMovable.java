@@ -23,6 +23,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
@@ -38,7 +39,8 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable {
+public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
+		IAttackable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 	private static final short NOTHING_TO_DO_MAX_RADIUS = 3;
@@ -808,6 +810,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		strategy.informAboutAttackable(other);
 	}
 
+	@Override
 	public final void hit(float hitStrength) {
 		this.health -= hitStrength;
 		if (health <= 0) {

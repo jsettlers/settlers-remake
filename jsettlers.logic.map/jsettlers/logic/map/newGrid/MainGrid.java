@@ -88,6 +88,7 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.stack.IRequestsStackGrid;
 import synchronic.timer.NetworkTimer;
@@ -1057,7 +1058,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public NewMovable getEnemyInSearchArea(IMovable movable) {
+		public NewMovable getEnemyInSearchArea(IAttackable movable) {
 			return movableGrid.getEnemyInSearchArea(movable);
 		}
 

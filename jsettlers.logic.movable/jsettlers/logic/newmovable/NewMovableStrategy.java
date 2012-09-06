@@ -7,8 +7,8 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
 import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
@@ -188,7 +188,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getPlayer();
 	}
 
-	protected IMovable getMovable() {
+	protected NewMovable getMovable() {
 		return movable;
 	}
 
@@ -226,7 +226,7 @@ public abstract class NewMovableStrategy implements Serializable {
 	 * @param other
 	 *            The other movable.
 	 */
-	protected void informAboutAttackable(@SuppressWarnings("unused") NewMovable other) {
+	protected void informAboutAttackable(@SuppressWarnings("unused") IAttackable other) {
 	}
 
 	protected boolean isMoveToAble() {

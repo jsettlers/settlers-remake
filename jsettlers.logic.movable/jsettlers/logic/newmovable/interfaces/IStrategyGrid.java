@@ -5,14 +5,12 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
 /**
@@ -171,7 +169,7 @@ public interface IStrategyGrid {
 	 *            The movable searching an enemy.
 	 * @return The closest enemy or null if none exists in the search radius.
 	 */
-	NewMovable getEnemyInSearchArea(IMovable movable);
+	IAttackable getEnemyInSearchArea(IAttackable movable);
 
 	/**
 	 * Adds an arrow object to the map flying from

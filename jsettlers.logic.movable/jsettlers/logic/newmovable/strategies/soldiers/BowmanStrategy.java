@@ -6,6 +6,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 
 public final class BowmanStrategy extends SoldierStrategy {
 	private static final long serialVersionUID = 7062243467280721040L;
@@ -22,7 +23,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	protected boolean isEnemyAttackable(NewMovable enemy) {
+	protected boolean isEnemyAttackable(IAttackable enemy) {
 		ShortPoint2D pos = super.getPos();
 		ShortPoint2D enemyPos = enemy.getPos();
 
@@ -33,13 +34,13 @@ public final class BowmanStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	protected void startAttackAnimation(NewMovable enemy) {
+	protected void startAttackAnimation(IAttackable enemy) {
 		super.playAction(EAction.ACTION1, BOWMAN_ATTACK_DURATION);
 
 		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), 0.7f);
 	}
 
 	@Override
-	protected void hitEnemy(NewMovable enemy) {
+	protected void hitEnemy(IAttackable enemy) {
 	}
 }

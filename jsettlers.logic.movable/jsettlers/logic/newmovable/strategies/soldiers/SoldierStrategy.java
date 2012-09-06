@@ -2,12 +2,12 @@ package jsettlers.logic.newmovable.strategies.soldiers;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
@@ -15,7 +15,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	private ESoldierState state = ESoldierState.AGGRESSIVE;
 	private IOccupyableBuilding building;
-	private NewMovable enemy;
+	private IAttackable enemy;
 	private ShortPoint2D oldPathTarget;
 
 	public SoldierStrategy(NewMovable movable, EMovableType movableType) {
@@ -82,11 +82,11 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		}
 	}
 
-	protected abstract void hitEnemy(NewMovable enemy);
+	protected abstract void hitEnemy(IAttackable enemy);
 
-	protected abstract void startAttackAnimation(NewMovable enemy);
+	protected abstract void startAttackAnimation(IAttackable enemy);
 
-	protected abstract boolean isEnemyAttackable(NewMovable enemy);
+	protected abstract boolean isEnemyAttackable(IAttackable enemy);
 
 	@Override
 	public void setOccupyableBuilding(IOccupyableBuilding building) {
@@ -116,7 +116,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	public IMovable getMovable() {
+	public NewMovable getMovable() {
 		return super.getMovable();
 	}
 
@@ -135,7 +135,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	protected void informAboutAttackable(NewMovable other) {
+	protected void informAboutAttackable(IAttackable other) {
 		if (state == ESoldierState.AGGRESSIVE) {
 			if (enemy == null) { // if no enemy is set yet
 				enemy = other;
