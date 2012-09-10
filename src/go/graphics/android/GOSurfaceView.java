@@ -1,8 +1,5 @@
 package go.graphics.android;
 
-import java.util.Collection;
-import java.util.Hashtable;
-
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
@@ -10,6 +7,9 @@ import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvoder;
 import go.graphics.event.interpreter.AbstractEventConverter;
+
+import java.util.Collection;
+import java.util.Hashtable;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -260,6 +260,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		public void onDrawFrame(GL10 gl) {
 			GLES10.glClearColor(0, 0, 0, 1);
 			GLES10.glClear(GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_COLOR_BUFFER_BIT);
+			GLES10.glScalef(1, 1, .5f);
 
 			area.drawArea(drawcontext);
 		}
