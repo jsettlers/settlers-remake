@@ -22,18 +22,18 @@ import jsettlers.graphics.map.controls.IControls;
  * <li>A button to open the build menu</li>
  * <li>A button to open the options menu</li>
  * </ul>
- * 
+ *
  * @author michael
  */
 public class SmallControls implements IControls {
-	private TabableButton buildMenuOpener =
+	private final TabableButton buildMenuOpener =
 	        new TabableButton(new Action(EActionType.TOGGLE_BUILD_MENU),
 	                new OriginalImageLink(EImageLinkType.SETTLER, 11, 0, 0),
 	                Labels.getString("action_BUILD"));
 
-	private ScrollArea scrollArea = new ScrollArea();
+	private final ScrollArea scrollArea = new ScrollArea();
 
-	private BuildMenu buildMenu = new BuildMenu();
+	private final BuildMenu buildMenu = new BuildMenu();
 
 	private boolean buildMenuVisible = false;
 
@@ -149,4 +149,7 @@ public class SmallControls implements IControls {
 		return action;
 	}
 
+	@Override
+	public void stop() {
+	}
 }

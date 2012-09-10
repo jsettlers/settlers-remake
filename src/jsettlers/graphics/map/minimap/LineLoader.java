@@ -12,11 +12,13 @@ class LineLoader implements Runnable {
 	private static final short BLACK = 0x01;
 
 	/**
-     * 
+     *
      */
 	private final Minimap minimap;
 
 	private int currentline = 0;
+
+	private boolean stopped;
 
 	public LineLoader(Minimap minimap) {
 		this.minimap = minimap;
@@ -24,7 +26,7 @@ class LineLoader implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!stopped) {
 			updateLine();
 		}
 	};
@@ -43,7 +45,7 @@ class LineLoader implements Runnable {
 	 * context is available, it is updated.
 	 */
 	private void updateLine() {
-		minimap.blockUntilUpdateAllowed();
+		minimap.blockUntilUpdateAllowedOrStopped();
 		for (int i = 0; i < LINES_PER_RUN; i++) {
 
 			if (buffer.length != minimap.getHeight()
@@ -177,5 +179,12 @@ class LineLoader implements Runnable {
 	private short getColor(IMovable settler) {
 		return minimap.getContext().getPlayerColor(settler.getPlayer())
 		        .toShortColor(1);
+	}
+
+	/**
+	 * Stops the execution of this line loader.
+	 */
+	public void stop() {
+		stopped = true;
 	}
 }

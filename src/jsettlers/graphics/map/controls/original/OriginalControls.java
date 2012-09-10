@@ -31,7 +31,7 @@ public class OriginalControls implements IControls {
 
 	private Minimap minimap;
 
-	private MainPanel mainPanel = new MainPanel();
+	private final MainPanel mainPanel = new MainPanel();
 
 	private IOriginalConstants constants;
 
@@ -297,4 +297,9 @@ public class OriginalControls implements IControls {
 	public Action replaceAction(Action action) {
 		return mainPanel.catchAction(action);
 	};
+
+	@Override
+	public void stop() {
+	    minimap.stop();
+	}
 }

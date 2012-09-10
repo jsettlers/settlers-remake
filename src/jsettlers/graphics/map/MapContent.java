@@ -127,7 +127,7 @@ public final class MapContent implements SettlersContent,
 
 	private final Messenger messenger = new Messenger();
 	private final SoundManager soundmanager;
-	private final BackgroundSound bgsound;
+	private final BackgroundSound backgroundSound;
 
 	private ShortPoint2D gotoMarker;
 	private long gotoMarkerTime;
@@ -149,7 +149,7 @@ public final class MapContent implements SettlersContent,
 		buffer = new DrawBuffer(context);
 
 		objectDrawer = new MapObjectDrawer(context, soundmanager, buffer);
-		bgsound = new BackgroundSound(context, soundmanager);
+		backgroundSound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {
 			this.controls = new OriginalControls();
@@ -852,5 +852,10 @@ public final class MapContent implements SettlersContent,
 	public void actionThreadCoughtException(Throwable e) {
 		// This is currently ignroed. TODO: Where to catch exceptions?
 	}
+
+	public void stop() {
+		backgroundSound.stop();
+		controls.stop();
+    }
 
 }

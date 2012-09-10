@@ -13,14 +13,14 @@ import jsettlers.graphics.map.MapDrawContext;
 /**
  * Classes that implement this are capable of displaying the full game controls
  * (minimap, ...) on the screen.
- * 
+ *
  * @author michael
  */
 public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Draws the controls on the screen.
-	 * 
+	 *
 	 * @param gl
 	 *            The gl context to draw at.
 	 */
@@ -28,7 +28,7 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Called when the screen was resized.
-	 * 
+	 *
 	 * @param newWidth
 	 *            The new width of the screen
 	 * @param newHeight
@@ -38,7 +38,7 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Checks if a point is on the ui
-	 * 
+	 *
 	 * @param position
 	 *            The position in screen space to check.
 	 * @return true if the point is in the ui.
@@ -48,7 +48,7 @@ public interface IControls extends IMapInterfaceListener {
 	/**
 	 * Gets the description for a given point, e.g. for tooltipps. May be called
 	 * for any position.
-	 * 
+	 *
 	 * @param position
 	 *            The position
 	 * @return A string describing whatever there is on the ui. May be null.
@@ -57,7 +57,7 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Called whenever the map viewport changes.
-	 * 
+	 *
 	 * @param screenArea
 	 *            The new area of the map.
 	 */
@@ -66,7 +66,7 @@ public interface IControls extends IMapInterfaceListener {
 	/**
 	 * Gets the action for the given ui position, that should be executed if the
 	 * user clicked it.
-	 * 
+	 *
 	 * @param position
 	 *            The positon.
 	 * @return The action for the position.
@@ -76,7 +76,7 @@ public interface IControls extends IMapInterfaceListener {
 	/**
 	 * Handles a draw event. The event may be fired even if it is outside the
 	 * interface.
-	 * 
+	 *
 	 * @param event
 	 *            The event to handle
 	 * @return If the event was handled.
@@ -85,7 +85,7 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Indicates that the user builds the building.
-	 * 
+	 *
 	 * @param type
 	 *            The type the user wants to build.
 	 */
@@ -93,7 +93,7 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Changes the selection for the map.
-	 * 
+	 *
 	 * @param selection
 	 *            the selections.
 	 */
@@ -101,7 +101,7 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Gives the ui access to the draw context that is used to draw the map.
-	 * 
+	 *
 	 * @param context
 	 */
 	void setDrawContext(MapDrawContext context);
@@ -110,10 +110,15 @@ public interface IControls extends IMapInterfaceListener {
 	 * Allows the controls to catch an action the gui would fire.
 	 * <p>
 	 * This can also be used for status info.
-	 * 
+	 *
 	 * @param action
 	 *            The action.
 	 * @return The new action to send. This is often just the old action.
 	 */
 	Action replaceAction(Action action);
+
+	/**
+	 * Stops all background threads the controls may use.
+	 */
+	void stop();
 }

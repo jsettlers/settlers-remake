@@ -18,15 +18,15 @@ import jsettlers.graphics.messages.Message;
  * <p>
  * It also propagates interface events, to get them you can add a interface
  * listener. See {@link IMapInterfaceListener}.
- * 
+ *
  * @author michael
  */
 public class MapInterfaceConnector implements ActionFireable {
 
-	private LinkedList<IMapInterfaceListener> listeners =
+	private final LinkedList<IMapInterfaceListener> listeners =
 	        new LinkedList<IMapInterfaceListener>();
-	
-	private ActionFirerer actionFirerer = new ActionFirerer(
+
+	private final ActionFirerer actionFirerer = new ActionFirerer(
 	        new ActionFireable() {
 		        @Override
 		        public void fireAction(Action action) {
@@ -42,7 +42,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Creates a new connector for the given interface.
-	 * 
+	 *
 	 * @param mapInterface
 	 *            The interface.
 	 */
@@ -53,7 +53,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Sets the current selection that should be displayed in the side panel.
-	 * 
+	 *
 	 * @param selection
 	 *            The selection.
 	 */
@@ -64,7 +64,7 @@ public class MapInterfaceConnector implements ActionFireable {
 	/**
 	 * Scrolls a given point to the center of the view. It needn't be on the
 	 * map.
-	 * 
+	 *
 	 * @param point
 	 *            The point to show.
 	 * @param mark
@@ -76,7 +76,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Adds a listener that listens to interface commands.
-	 * 
+	 *
 	 * @see IMapInterfaceListener
 	 * @param listener
 	 *            The listener.
@@ -92,7 +92,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Removes a given Listener, if it is regisered.
-	 * 
+	 *
 	 * @param listener
 	 *            The listener to remove.
 	 */
@@ -109,7 +109,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Sets the building the user is currently building.
-	 * 
+	 *
 	 * @param buildingType
 	 *            The type of the building.
 	 */
@@ -117,11 +117,31 @@ public class MapInterfaceConnector implements ActionFireable {
 		content.setPreviewBuildingType(buildingType);
 	}
 
+	/**
+	 * Adds a text message to be displayed on the screen.
+	 *
+	 * @param message
+	 *            The message to display.
+	 */
 	public void showMessage(Message message) {
 		content.addMessage(message);
 	}
 
+	/**
+	 * Sets the UI to a given state.
+	 *
+	 * @param uiState
+	 *            The state
+	 */
 	public void loadUIState(UIState uiState) {
 		content.loadUIState(uiState);
+	}
+
+	/**
+	 * Stops all threads related to the graphics display. You may experience
+	 * crazy results when trying to use the map view afterwards.
+	 */
+	public void stop() {
+		content.stop();
 	}
 }

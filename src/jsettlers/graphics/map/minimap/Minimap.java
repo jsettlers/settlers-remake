@@ -13,30 +13,32 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
  * This is the minimap. It is drawn on on the rectangle:
- * 
+ *
  * <pre>
  *       (width * stride | height)      (width * (stride + 1) | height)
  *  (0 | 0)         (width * 1 | 0)
  * </pre>
- * 
+ *
  * currently stride is fixed to mapheigh / 2 / mapwidth
- * 
+ *
  * @author michael
  */
 public final class Minimap {
-	private MapCoordinateConverter converter;
+	private final MapCoordinateConverter converter;
 	private int width;
 	private int height;
 	private int imageIndex = -1;
-	private float stride;
+	private final float stride;
 
 	private boolean imageIsValid = false;
-	private Object update_syncobj = new Object();
+	private final Object update_syncobj = new Object();
 	private final MapDrawContext context;
 
 	private MapRectangle mapViewport;
 	private short[][] buffer;
-	private LinkedList<Integer> updatedLines = new LinkedList<Integer>();
+	private final LinkedList<Integer> updatedLines = new LinkedList<Integer>();
+	private final LineLoader lineLoader;
+	private boolean stopped = false;
 
 	public Minimap(MapDrawContext context) {
 		this.context = context;
@@ -45,8 +47,8 @@ public final class Minimap {
 		converter =
 		        new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1,
 		                1);
-		Thread minimapThread =
-		        new Thread(new LineLoader(this), "minimap loader");
+		lineLoader = new LineLoader(this);
+		Thread minimapThread = new Thread(lineLoader, "minimap loader");
 		minimapThread.setDaemon(true);
 		minimapThread.start();
 	}
@@ -169,7 +171,7 @@ public final class Minimap {
 
 	/**
 	 * Sets the data
-	 * 
+	 *
 	 * @param line
 	 * @param data
 	 */
@@ -217,9 +219,9 @@ public final class Minimap {
 	/**
 	 * a call to this method blocks until it's ok to update a line.
 	 */
-	public void blockUntilUpdateAllowed() {
+	public void blockUntilUpdateAllowedOrStopped() {
 		synchronized (update_syncobj) {
-			while (!updatedLines.isEmpty() || width < 1 || height < 1) {
+			while (!stopped  && (!updatedLines.isEmpty() || width < 1 || height < 1)) {
 				try {
 					update_syncobj.wait();
 				} catch (InterruptedException e) {
@@ -232,5 +234,13 @@ public final class Minimap {
 	public void setBufferArray(short[][] buffer) {
 		this.buffer = buffer;
 	}
+
+	public void stop() {
+		lineLoader.stop();
+		stopped = true;
+		synchronized (update_syncobj) {
+
+        }
+    }
 
 }
