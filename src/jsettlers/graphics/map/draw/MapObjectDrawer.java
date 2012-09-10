@@ -419,7 +419,9 @@ public class MapObjectDrawer {
 		if (movable.getAction() == EAction.WALKING) {
 			int originx = x - movable.getDirection().getGridDeltaX();
 			int originy = y - movable.getDirection().getGridDeltaY();
-			viewX = betweenTilesX(originx, originy, x, y, movable.getMoveProgress());
+			viewX =
+			        betweenTilesX(originx, originy, x, y,
+			                movable.getMoveProgress());
 			viewY = betweenTilesY;
 		} else {
 			int height = context.getHeight(x, y);
@@ -433,7 +435,6 @@ public class MapObjectDrawer {
 		}
 	}
 
-
 	private float betweenTilesX(int startx, int starty, int destinationx,
 	        int destinationy, float progress) {
 		float theight = context.getHeight(startx, starty);
@@ -445,11 +446,12 @@ public class MapObjectDrawer {
 		                + progress
 		                * converter.getViewX(destinationx, destinationy,
 		                        dheight);
-		betweenTilesY = (1 - progress)
-                * converter.getViewY(startx, starty, theight)
-                + progress
-                * converter.getViewY(destinationx, destinationy,
-                        dheight);
+		betweenTilesY =
+		        (1 - progress)
+		                * converter.getViewY(startx, starty, theight)
+		                + progress
+		                * converter.getViewY(destinationx, destinationy,
+		                        dheight);
 		return x;
 	}
 
@@ -797,20 +799,27 @@ public class MapObjectDrawer {
 			for (IBuildingOccupyer occupyer : building.getOccupyers()) {
 				OccupyerPlace place = occupyer.getPlace();
 
-				if (place.getType() == ESoldierType.INFANTRY) {
+				Color color =
+				        context.getPlayerColor(occupyer.getMovable()
+				                .getPlayer());
 
-					OriginalImageLink image =
-					        place.looksRight() ? INSIDE_BUILDING_RIGHT
-					                : INSIDE_BUILDING_LEFT;
-					Color color =
-					        context.getPlayerColor(occupyer.getMovable()
-					                .getPlayer());
-					imageProvider.getImage(image).drawAt(gl, buffer,
-					        viewX + place.getOffsetX(),
-					        viewY + place.getOffsetY(), color, basecolor);
-				} else {
-					draw(occupyer.getMovable());
+				Image image;
+				switch (place.getType()) {
+					case INFANTRY:
+						OriginalImageLink imageLink =
+						        place.looksRight() ? INSIDE_BUILDING_RIGHT
+						                : INSIDE_BUILDING_LEFT;
+						image = imageProvider.getImage(imageLink);
+						break;
+					case BOWMAN:
+					default:
+						image =
+						        this.imageMap.getImageForSettler(occupyer
+						                .getMovable());
 				}
+				image.drawAt(gl, buffer, viewX + place.getOffsetX(), viewY
+				        + place.getOffsetY(), color, basecolor);
+
 			}
 		} catch (ConcurrentModificationException e) {
 			// happens sometime, just ignore it.
