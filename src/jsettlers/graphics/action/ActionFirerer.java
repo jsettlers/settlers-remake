@@ -83,7 +83,7 @@ public class ActionFirerer implements ActionFireable {
 
 			while (!stopped) {
 				try {
-					action = toFire.poll();
+					action = toFire.take();
 					startWatchdog(action.startTime);
 					fireTo.fireAction(action.action);
 					stopWatchdog();
