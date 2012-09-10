@@ -1,15 +1,12 @@
 package jsettlers.graphics.action;
 
-import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This class lets you schedule the firing of actions in a separate thread.
- * 
+ *
  * @author michael
  */
 public class ActionFirerer implements ActionFireable {
@@ -20,19 +17,54 @@ public class ActionFirerer implements ActionFireable {
 
 	private final Thread thread;
 
-	private BlockingQueue<Action> toFire = new LinkedBlockingQueue<Action>();
-	private Queue<Long> fireStartTime = new ConcurrentLinkedQueue<Long>();
+	/**
+	 * The actions that are queued to fire.
+	 */
+	private final LinkedBlockingQueue<FireringAction> toFire =
+	        new LinkedBlockingQueue<FireringAction>();
 
+	/**
+	 * The object we should fire the actions to.
+	 */
 	private final ActionFireable fireTo;
 
-	private ActionThreadBlockingListener listener;
+	/**
+	 * A listener that listens if this action firerer is slow
+	 */
+	private ActionThreadBlockingListener blockingListener;
 
+	/**
+	 * A flag indicating if we notified the {@link #blockingListener} that we
+	 * are blocking.
+	 */
 	private boolean isBlockingSent;
 
+	/**
+	 * Mutex for {@link #blockingListener} and {@link #isBlockingSent}
+	 */
+	private final Object blockingListenerMutex = new Object();
+
+	/**
+	 * The timer that watches for logic freezes.
+	 */
 	private final Timer watchdogTimer = new Timer();
 
-	private TimerTask executingTimerTask;
+	/**
+	 * The timer task that is currently active for the {@link #watchdogTimer}.
+	 */
+	private TimerTask watchdogTimerTask;
 
+	/**
+	 * If we were stopped yet.
+	 */
+	private boolean stopped = false;
+
+	/**
+	 * Creates a new action firerer and starts it.
+	 *
+	 * @param fireTo
+	 *            The object we should fire to.
+	 */
 	public ActionFirerer(ActionFireable fireTo) {
 		this.fireTo = fireTo;
 		this.thread = new ActionFirererThread();
@@ -47,21 +79,20 @@ public class ActionFirerer implements ActionFireable {
 
 		@Override
 		public void run() {
-			while (true) {
-				Action action;
+			FireringAction action;
+
+			while (!stopped) {
 				try {
-					action = toFire.take();
-					long startTime = fireStartTime.poll(); // FIXME @MICHAEL
-														   // NullPointerException
-					startWatchdog(startTime);
-					fireTo.fireAction(action);
+					action = toFire.poll();
+					startWatchdog(action.startTime);
+					fireTo.fireAction(action.action);
 					stopWatchdog();
 
 				} catch (Throwable e) {
 					System.err.println("Exception while habdling action:");
 					e.printStackTrace();
-					if (listener != null) {
-						listener.actionThreadCoughtException(e);
+					if (blockingListener != null) {
+						blockingListener.actionThreadCoughtException(e);
 					}
 				}
 				if (toFire.isEmpty()) {
@@ -69,16 +100,37 @@ public class ActionFirerer implements ActionFireable {
 				}
 			}
 		}
-
 	}
 
+	/**
+	 * An action in the queue.
+	 *
+	 * @author michael
+	 */
+	private static class FireringAction {
+		private final long startTime;
+		private final Action action;
+
+		FireringAction(Action action, long startTime) {
+			this.action = action;
+			this.startTime = startTime;
+		}
+	}
+
+	/**
+	 * Sets the listener to be notified on blocking state changes.
+	 *
+	 * @param listener
+	 */
 	public void setBlockingListener(ActionThreadBlockingListener listener) {
-		this.listener = listener;
+		synchronized (blockingListenerMutex) {
+			this.blockingListener = listener;
+		}
 	}
 
 	public void stopWatchdog() {
-		if (executingTimerTask != null) {
-			executingTimerTask.cancel();
+		if (watchdogTimerTask != null) {
+			watchdogTimerTask.cancel();
 		}
 	}
 
@@ -89,13 +141,13 @@ public class ActionFirerer implements ActionFireable {
 		if (timeUntilFreezeState <= 0) {
 			sendIsBlocking(true);
 		} else {
-			executingTimerTask = new TimerTask() {
+			watchdogTimerTask = new TimerTask() {
 				@Override
 				public void run() {
 					sendIsBlocking(true);
 				}
 			};
-			watchdogTimer.schedule(executingTimerTask, timeUntilFreezeState);
+			watchdogTimer.schedule(watchdogTimerTask, timeUntilFreezeState);
 		}
 	}
 
@@ -104,15 +156,26 @@ public class ActionFirerer implements ActionFireable {
 	}
 
 	private void sendIsBlocking(boolean blocking) {
-		if (isBlockingSent != blocking && listener != null) {
-			listener.actionThreadSlow(blocking);
+		synchronized (blockingListenerMutex) {
+			if (isBlockingSent != blocking && blockingListener != null) {
+				blockingListener.actionThreadSlow(blocking);
+			}
+			isBlockingSent = blocking;
 		}
-		isBlockingSent = blocking;
 	}
 
+	/**
+	 * Schedules an action to be fired.
+	 */
 	@Override
 	public void fireAction(Action action) {
-		toFire.offer(action);
-		fireStartTime.add(System.currentTimeMillis());
+		toFire.offer(new FireringAction(action, System.currentTimeMillis()));
+	}
+
+	/**
+	 * Stops this action firerer. The queue is not emptied by this operation.
+	 */
+	public void stop() {
+		stopped = true;
 	}
 }
