@@ -38,7 +38,7 @@ import jsettlers.graphics.sound.SoundManager;
 
 /**
  * This class handles drawing of objects on the map.
- * 
+ *
  * @author michael
  */
 public class MapObjectDrawer {
@@ -121,7 +121,7 @@ public class MapObjectDrawer {
 
 	private final MapDrawContext context;
 
-	private SettlerImageMap imageMap = SettlerImageMap.getInstance();
+	private final SettlerImageMap imageMap = SettlerImageMap.getInstance();
 	private float betweenTilesY;
 
 	public MapObjectDrawer(MapDrawContext context, SoundManager sound,
@@ -133,7 +133,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a map object at a given position.
-	 * 
+	 *
 	 * @param context
 	 *            The context.
 	 * @param map
@@ -344,7 +344,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a movable
-	 * 
+	 *
 	 * @param movable
 	 *            The movable.
 	 */
@@ -405,7 +405,7 @@ public class MapObjectDrawer {
 		ShortPoint2D pos = movable.getPos();
 		short x = pos.getX();
 		short y = pos.getY();
-		
+
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -413,7 +413,7 @@ public class MapObjectDrawer {
 
 		Color color = context.getPlayerColor(movable.getPlayer());
 		float shade = MapObjectDrawer.getColor(fogstatus);
-		
+
 		float viewX;
 		float viewY;
 		if (movable.getAction() == EAction.WALKING) {
@@ -456,7 +456,7 @@ public class MapObjectDrawer {
 	private void drawSelectionMark(float viewX, float viewY, float health) {
 		float z = buffer.getZ();
 		buffer.setZ(.9f);
-		
+
 		Image image =
 		        ImageProvider.getInstance().getSettlerSequence(4, 7)
 		                .getImageSafe(0);
@@ -469,7 +469,7 @@ public class MapObjectDrawer {
 		                sequence.length() - 1);
 		Image healthImage = sequence.getImageSafe(healthId);
 		healthImage.drawAt(context.getGl(), buffer, viewX, viewY + 38, -1);
-		
+
 		buffer.setZ(z);
 	}
 
@@ -631,7 +631,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * gets a 0 or a 1.
-	 * 
+	 *
 	 * @param pos
 	 * @return
 	 */
@@ -641,15 +641,20 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a player border at a given position.
-	 * 
+	 *
 	 * @param player
 	 *            The player.
 	 */
 	public void drawPlayerBorderObject(int x, int y, byte player) {
-		int color = context.getPlayerColor(player).getABGR();
+		byte fogstatus = context.getVisibleStatus(x, y);
+		if (fogstatus == 0) {
+			return; // break
+		}
+		float base = getColor(fogstatus);
+		Color color = context.getPlayerColor(player);
 
 		draw(imageProvider.getSettlerSequence(FILE_BORDERPOST, 65)
-		        .getImageSafe(0), x, y, color);
+		        .getImageSafe(0), x, y, color, base);
 	}
 
 	private static int getTreeType(int x, int y) {
@@ -670,7 +675,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a stack
-	 * 
+	 *
 	 * @param context
 	 *            The context to draw with
 	 * @param object
@@ -685,7 +690,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the stack directly to the screen.
-	 * 
+	 *
 	 * @param glDrawContext
 	 *            The gl context to draw at.
 	 * @param material
@@ -704,7 +709,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Gets the gray color for a given fog.
-	 * 
+	 *
 	 * @param fogstatus
 	 * @return
 	 */
@@ -714,7 +719,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a given buildng to the context.
-	 * 
+	 *
 	 * @param context
 	 * @param building
 	 * @param color
