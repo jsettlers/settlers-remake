@@ -517,15 +517,25 @@ public class MapObjectDrawer {
 		float progress = object.getStateProgress();
 		int index = Math.round(progress * 2);
 
-		context.beginBetweenTileContext(object.getSourceX(),
+		float x = betweenTilesX(object.getSourceX(),
 		        object.getSourceY(), object.getTargetX(), object.getTargetY(),
 		        progress);
-		context.getGl().glTranslatef(0, -20 * progress * (progress - 1) + 10,
-		        progress >= 1 ? -.9f : buffer.getZ());
 
-		this.imageProvider.getSettlerSequence(FILE, sequence)
-		        .getImageSafe(index).draw(context.getGl(), null, color);
-		context.endTileContext();
+		int iColor = Color.getABGR(color, color, color, 1);
+
+		boolean onGround = progress >= 1;
+		float z = 0;
+		if (onGround) {
+			z = buffer.getZ();
+			buffer.setZ(-.1f);
+			iColor &= 0x7fffffff;
+		}
+		Image image = this.imageProvider.getSettlerSequence(FILE, sequence)
+		        .getImageSafe(index);
+		image.drawAt(context.getGl(), buffer, x, betweenTilesY + 20 * progress * (1 - progress) + 20, iColor);
+		if (onGround) {
+			buffer.setZ(z);
+		}
 	}
 
 	private void drawStones(int x, int y, IMapObject object, float color) {
