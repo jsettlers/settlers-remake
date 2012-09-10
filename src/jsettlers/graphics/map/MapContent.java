@@ -81,7 +81,7 @@ import jsettlers.graphics.sound.SoundManager;
  * </ul>
  * </li>
  * </ul>
- * 
+ *
  * @author michael
  */
 public final class MapContent implements SettlersContent,
@@ -107,7 +107,7 @@ public final class MapContent implements SettlersContent,
 	/**
 	 * The current connector that connects the outside world to us.
 	 */
-	private MapInterfaceConnector connector;
+	private final MapInterfaceConnector connector;
 
 	private FloatRectangle oldScreen;
 
@@ -134,7 +134,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Creates a new map content for the given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
 	 */
@@ -213,7 +213,7 @@ public final class MapContent implements SettlersContent,
 		long foregroundtime = System.currentTimeMillis() - start;
 
 		start = System.currentTimeMillis();
-		gl.glTranslatef(0, 0, .5f);
+		gl.glTranslatef(0, 0, .95f);
 		drawSelectionHint(gl);
 		controls.drawAt(gl);
 		drawMessages(gl);
@@ -492,7 +492,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Draws the background.
-	 * 
+	 *
 	 * @param gl
 	 * @param screen2
 	 */
@@ -566,7 +566,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets a action for a keyboard key
-	 * 
+	 *
 	 * @param keyCode
 	 *            The key
 	 * @return The action that corresponds to the key
@@ -608,7 +608,7 @@ public final class MapContent implements SettlersContent,
 		}
 	}
 
-	private GOEventHandler hoverHandler = new GOModalEventHandler() {
+	private final GOEventHandler hoverHandler = new GOModalEventHandler() {
 		@Override
 		public void phaseChanged(GOEvent event) {
 		}
@@ -668,7 +668,7 @@ public final class MapContent implements SettlersContent,
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
-	private GOEventHandler drawSelectionHandler = new GOModalEventHandler() {
+	private final GOEventHandler drawSelectionHandler = new GOModalEventHandler() {
 
 		@Override
 		public void phaseChanged(GOEvent event) {
@@ -693,7 +693,7 @@ public final class MapContent implements SettlersContent,
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
-	private DrawBuffer buffer;
+	private final DrawBuffer buffer;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {
@@ -747,7 +747,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets the interface connector for the ui.
-	 * 
+	 *
 	 * @return The connector to access the interface.
 	 */
 	public MapInterfaceConnector getInterfaceConnector() {
