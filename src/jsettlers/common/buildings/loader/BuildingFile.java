@@ -160,8 +160,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private void addOccupyer(Attributes attributes) {
 		try {
-			int x = Integer.parseInt(attributes.getValue("offsetX"));
-			int y = Integer.parseInt(attributes.getValue("offsetY"));
+			int x = parseOptionalInteger(attributes.getValue("offsetX"));
+			int y = parseOptionalInteger(attributes.getValue("offsetY"));
 			ESoldierType type = OccupyerPlace.ESoldierType.valueOf(attributes.getValue("type"));
 			RelativePoint position = new RelativePoint(Short.parseShort(attributes.getValue("soldierX")), Short.parseShort(attributes
 					.getValue("soldierY")));
@@ -174,6 +174,21 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
+	/**
+	 * If value != null, the value is parsed. Otherwise, 0 is returned.
+	 * 
+	 * @param value
+	 * @return
+	 * @throws NumberFormatException
+	 */
+	private int parseOptionalInteger(String value) throws NumberFormatException {
+		if (value != null) {
+			return Integer.parseInt(value);
+		} else {
+			return 0;
+		}
+	}
+
 	private void readImageLink(Attributes attributes) {
 		try {
 			ImageLink imageLink;
@@ -181,8 +196,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 				imageLink = getOriginalImageLink(attributes);
 			} else {
 				String name = attributes.getValue("name");
-			    int image = Integer.parseInt(attributes.getValue("image"));
-			    imageLink = ImageLink.fromName(name, image);
+				int image = Integer.parseInt(attributes.getValue("image"));
+				imageLink = ImageLink.fromName(name, image);
 			}
 			String forState = attributes.getValue("for");
 			if ("GUI".equals(forState)) {
@@ -200,13 +215,13 @@ public class BuildingFile implements BuildingJobDataProvider {
 	}
 
 	private static OriginalImageLink getOriginalImageLink(Attributes attributes) {
-	    int file = Integer.parseInt(attributes.getValue("file"));
-	    int sequence = Integer.parseInt(attributes.getValue("sequence"));
-	    int image = Integer.parseInt(attributes.getValue("image"));
-	    EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
-	    OriginalImageLink imageLink = new OriginalImageLink(type, file, sequence, image);
-	    return imageLink;
-    }
+		int file = Integer.parseInt(attributes.getValue("file"));
+		int sequence = Integer.parseInt(attributes.getValue("sequence"));
+		int image = Integer.parseInt(attributes.getValue("image"));
+		EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
+		OriginalImageLink imageLink = new OriginalImageLink(type, file, sequence, image);
+		return imageLink;
+	}
 
 	private void readRelativeBricklayer(Attributes attributes) {
 		try {

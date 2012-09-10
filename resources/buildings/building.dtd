@@ -151,8 +151,8 @@
 
 <!ELEMENT occupyer EMPTY>
 <!ATTLIST occupyer
-   offsetX CDATA #REQUIRED
-   offsetY CDATA #REQUIRED
+   offsetX CDATA #IMPLIED
+   offsetY CDATA #IMPLIED
    type (INFANTRY|BOWMAN) #REQUIRED
    
    soldierX CDATA #REQUIRED

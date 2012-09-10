@@ -101,8 +101,8 @@
     <occupyer offsetX="-16" type="INFANTRY" offsetY="23" soldierX="7" soldierY="0" looksRight="true" />
     <occupyer offsetX="-16" type="INFANTRY" offsetY="23" soldierX="23" soldierY="17" looksRight="true" />
     <occupyer offsetX="-16" type="INFANTRY" offsetY="23" soldierX="41" soldierY="29" looksRight="true" />
-    <occupyer offsetX="13" type="BOWMAN" offsetY="60" soldierX="-24" soldierY="27" />
-    <occupyer offsetX="-7" type="BOWMAN" offsetY="60" soldierX="24" soldierY="27" />
-    <occupyer offsetX="-7" type="BOWMAN" offsetY="60" soldierX="2" soldierY="74" />
+    <occupyer type="BOWMAN" soldierX="-24" soldierY="27" />
+    <occupyer type="BOWMAN" soldierX="24" soldierY="27" />
+    <occupyer type="BOWMAN" soldierX="2" soldierY="74" />
 
 </building>
