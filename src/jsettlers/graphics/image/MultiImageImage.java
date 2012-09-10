@@ -7,7 +7,7 @@ import jsettlers.graphics.reader.ImageMetadata;
 
 /**
  * This is an image inside a multi image map.
- * 
+ *
  * @author michael
  */
 public class MultiImageImage extends Image {
@@ -56,7 +56,7 @@ public class MultiImageImage extends Image {
 		}
 	}
 
-	private static final float IMAGE_DRAW_OFFSET = .5f;
+	private static final float IMAGE_DRAW_OFFSET = 0.5f;
 
 	private static float[] createGeometry(MultiImageMap map,
 	        ImageMetadata settlerMeta, int settlerx, int settlery, Data data) {
@@ -172,15 +172,19 @@ public class MultiImageImage extends Image {
 
 	private void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
 	        float viewY, int sColor, int tColor) {
-		buffer.addImage(map.getTexture(gl), viewX + settler.offsetX, viewY
-		        - settler.offsetY - settler.height, viewX + settler.offsetX
-		        + settler.width, viewY - settler.offsetY, settler.umin,
-		        settler.vmin, settler.umax, settler.vmax, sColor);
+		buffer.addImage(map.getTexture(gl), viewX + settler.offsetX
+		        + IMAGE_DRAW_OFFSET, viewY - settler.offsetY - settler.height
+		        + IMAGE_DRAW_OFFSET, viewX + settler.offsetX + settler.width
+		        + IMAGE_DRAW_OFFSET, viewY - settler.offsetY
+		        + IMAGE_DRAW_OFFSET, settler.umin, settler.vmin, settler.umax,
+		        settler.vmax, sColor);
 		if (torso != null) {
-			buffer.addImage(map.getTexture(gl), viewX + torso.offsetX, viewY
-			        - torso.offsetY - torso.height, viewX + torso.offsetX
-			        + torso.width, viewY - torso.offsetY, torso.umin,
-			        torso.vmin, torso.umax, torso.vmax, tColor);
+			buffer.addImage(map.getTexture(gl), viewX + torso.offsetX
+			        + IMAGE_DRAW_OFFSET, viewY - torso.offsetY - torso.height
+			        + IMAGE_DRAW_OFFSET, viewX + torso.offsetX + torso.width
+			        + IMAGE_DRAW_OFFSET, viewY - torso.offsetY
+			        + IMAGE_DRAW_OFFSET, torso.umin, torso.vmin, torso.umax,
+			        torso.vmax, tColor);
 		}
 	}
 
