@@ -89,7 +89,7 @@ public class ActionFirerer implements ActionFireable {
 					stopWatchdog();
 
 				} catch (Throwable e) {
-					System.err.println("Exception while habdling action:");
+					System.err.println("Exception while handling action:");
 					e.printStackTrace();
 					if (blockingListener != null) {
 						blockingListener.actionThreadCoughtException(e);
