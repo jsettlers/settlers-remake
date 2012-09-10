@@ -15,7 +15,6 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
@@ -67,10 +66,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	protected final void constructionFinishedEvent() {
-		for (RelativePoint curr : super.getBuildingType().getAttackers()) {
-			super.getGrid().getMapObjectsManager()
-					.addSimpleMapObject(curr.calculatePoint(super.getPos()), EMapObjectType.ATTACKABLE_TOWER, false, super.getPlayer());
-		}
+		super.getGrid().getMapObjectsManager().addAttackableTowerObject(super.getDoor(), this);
 	}
 
 	@Override
@@ -130,10 +126,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			MapCircle occupied = getOccupyablePositions();
 			super.getGrid().freeOccupiedArea(occupied, super.getPos());
 
-			int idx = 0;
 			for (TowerOccupyer curr : occupiers) {
-				curr.soldier.leaveOccupyableBuilding(super.getBuildingArea().get(idx));
-				idx++;
+				curr.soldier.leaveOccupyableBuilding();
 			}
 			occupiers.clear();
 		}
@@ -152,18 +146,29 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final void setSoldier(IBuildingOccupyableMovable soldier) {
-		for (OccupyerPlace curr : emptyPlaces) {
-			if (curr.getType() == soldier.getSoldierType()) {
-				emptyPlaces.remove(curr);
-				occupiers.add(new TowerOccupyer(curr, soldier));
-				break;
-			}
-		}
+	public final ShortPoint2D setSoldier(IBuildingOccupyableMovable soldier) {
+		OccupyerPlace freePosition = findFreePositionFor(soldier.getSoldierType());
+
+		emptyPlaces.remove(freePosition);
+		occupiers.add(new TowerOccupyer(freePosition, soldier));
 
 		occupyArea();
 
 		soldier.setSelected(super.isSelected());
+
+		return freePosition.getPosition().calculatePoint(super.getPos());
+	}
+
+	private OccupyerPlace findFreePositionFor(ESoldierType soldierType) {
+		OccupyerPlace freePosition = null;
+		for (OccupyerPlace curr : emptyPlaces) {
+			if (curr.getType() == soldierType) {
+				freePosition = curr;
+
+				break;
+			}
+		}
+		return freePosition;
 	}
 
 	private final void occupyArea() {
@@ -229,6 +234,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return occupiers.isEmpty();
 	}
 
+	public final static LinkedList<OccupyingBuilding> getAllOccupyingBuildings() {
+		return allOccupyingBuildings;
+	}
+
 	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
@@ -251,9 +260,4 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 	}
-
-	public final static LinkedList<OccupyingBuilding> getAllOccupyingBuildings() {
-		return allOccupyingBuildings;
-	}
-
 }

@@ -95,7 +95,7 @@ public final class MovableGrid implements Serializable {
 				short currY = curr.getY();
 				if (0 <= currX && currX < width && 0 <= currY && currY < height) {
 					NewMovable currMovable = getMovableAt(currX, currY);
-					if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+					if (isEnemy(movablePlayer, currMovable)) {
 						currMovable.informAboutAttackable(movable);
 
 						if (!foundOne) { // the first found movable is the one closest to the given movable.
@@ -108,7 +108,7 @@ public final class MovableGrid implements Serializable {
 		}
 	}
 
-	public NewMovable getEnemyInSearchArea(IAttackable movable) {
+	public IAttackable getEnemyInSearchArea(IAttackable movable) {
 		ShortPoint2D pos = movable.getPos();
 		HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
 
@@ -118,14 +118,18 @@ public final class MovableGrid implements Serializable {
 			short x = curr.getX();
 			short y = curr.getY();
 			if (0 <= x && x < width && 0 <= y && y < height) {
-				NewMovable currMovable = getMovableAt(x, y);
-				if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+				IAttackable currMovable = getMovableAt(x, y);
+				if (isEnemy(movablePlayer, currMovable)) {
 					return currMovable;
 				}
 			}
 		}
 
 		return null;
+	}
+
+	private final boolean isEnemy(byte movablePlayer, IAttackable currMovable) {
+		return currMovable != null && currMovable.getPlayer() != movablePlayer && currMovable.isAttackable();
 	}
 
 	public boolean hasNoMovableAt(short x, short y) {

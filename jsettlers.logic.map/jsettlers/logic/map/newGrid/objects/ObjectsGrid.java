@@ -5,9 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 
 /**
  * This grid stores the objects located at each position.
@@ -19,11 +22,13 @@ public final class ObjectsGrid implements Serializable {
 	private static final long serialVersionUID = 2919416226544282748L;
 
 	private final short width;
+	private final short height;
 
 	private transient AbstractHexMapObject[] objectsGrid; // don't use default serialization for this => transient
 
 	public ObjectsGrid(short width, short height) {
 		this.width = width;
+		this.height = height;
 		this.objectsGrid = new AbstractHexMapObject[width * height];
 	}
 
@@ -143,6 +148,26 @@ public final class ObjectsGrid implements Serializable {
 			}
 		}
 		return false;
+	}
+
+	public IAttackable getTowerInSearchArea(IAttackable movable) {
+		ShortPoint2D pos = movable.getPos();
+		HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.TOWER_SEARCH_RADIUS);
+
+		byte movablePlayer = movable.getPlayer();
+
+		for (ShortPoint2D curr : area) {
+			short x = curr.getX();
+			short y = curr.getY();
+			if (0 <= x && x < width && 0 <= y && y < height) {
+				IAttackable currMovable = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+				if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
+					return currMovable;
+				}
+			}
+		}
+
+		return null;
 	}
 
 }

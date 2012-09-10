@@ -524,8 +524,8 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -535,9 +535,9 @@ public class MainGrid implements Serializable {
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			// return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
+			return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
 
 			// return Color.BLACK.getARGB();
 
@@ -1058,8 +1058,25 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public NewMovable getEnemyInSearchArea(IAttackable movable) {
-			return movableGrid.getEnemyInSearchArea(movable);
+		public IAttackable getEnemyInSearchArea(IAttackable movable) {
+			IAttackable enemy = movableGrid.getEnemyInSearchArea(movable);
+
+			IAttackable tower = null;// objectsGrid.getTowerInSearchArea(movable);
+
+			if (enemy == null) {
+				return tower;
+			} else if (tower == null) {
+				return enemy;
+			} else {
+				int enemyDist = movable.getPos().getOnGridDistTo(enemy.getPos());
+				int towerDist = movable.getPos().getOnGridDistTo(tower.getPos());
+
+				if (enemyDist < towerDist) {
+					return enemy;
+				} else {
+					return tower;
+				}
+			}
 		}
 
 		@Override

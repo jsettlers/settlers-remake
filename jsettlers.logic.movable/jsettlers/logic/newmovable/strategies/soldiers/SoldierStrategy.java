@@ -59,9 +59,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		case GOING_TO_TOWER:
+			ShortPoint2D pos = building.setSoldier(this);
+			super.setPosition(pos);
 			super.enableNothingToDoAction(false);
 			super.setVisible(false);
-			building.setSoldier(this);
 			state = ESoldierState.IN_TOWER;
 			break;
 
@@ -121,9 +122,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	public void leaveOccupyableBuilding(ShortPoint2D pos) {
+	public void leaveOccupyableBuilding() {
 		super.enableNothingToDoAction(true);
-		super.setPosition(pos);
 		super.setVisible(true);
 
 		state = ESoldierState.AGGRESSIVE;

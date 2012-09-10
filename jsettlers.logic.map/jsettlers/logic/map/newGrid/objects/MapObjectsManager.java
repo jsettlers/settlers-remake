@@ -14,6 +14,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
@@ -21,6 +22,7 @@ import jsettlers.logic.objects.SelfDeletingMapObject;
 import jsettlers.logic.objects.SoundableSelfDeletingObject;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
+import jsettlers.logic.objects.building.AttackableTowerMapObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.corn.Corn;
@@ -500,6 +502,10 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		public int compareTo(TimeEvent o) {
 			return this.eventTime - o.eventTime;
 		}
+	}
+
+	public void addAttackableTowerObject(ShortPoint2D pos, OccupyingBuilding tower) {
+		this.addMapObject(pos, new AttackableTowerMapObject(tower));
 	}
 
 }

@@ -30,4 +30,11 @@ public interface IAttackable extends ILocatable {
 	 * @return Player of this {@link IAttackable}.
 	 */
 	byte getPlayer();
+
+	/**
+	 * 
+	 * @return true if this movable is currently attackable.<br>
+	 *         false otherwise.
+	 */
+	boolean isAttackable();
 }
