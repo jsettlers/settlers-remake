@@ -48,7 +48,7 @@ import jsettlers.logic.timer.PartitionManagerTimer;
 public class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
 	private static final long serialVersionUID = 1L;
 
-	private static final int BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS = 4;
+	private static final int BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS = 1;
 
 	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();

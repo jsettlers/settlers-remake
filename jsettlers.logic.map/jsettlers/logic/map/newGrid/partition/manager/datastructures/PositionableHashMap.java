@@ -5,8 +5,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 
 /**
@@ -49,13 +49,13 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 	 * @return accepted object that's nearest to position
 	 */
 	public T getObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
-		float bestDistance = Float.MAX_VALUE;
+		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 
 		for (Entry<ShortPoint2D, T> currEntry : data.entrySet()) {
 			if (acceptor == null || acceptor.accepts(currEntry.getValue())) {
 				ShortPoint2D currPosition = currEntry.getKey();
-				float currDist = MapCircle.getDistanceSquared(position, currPosition);
+				int currDist = MathUtils.squareHypot(position, currPosition);
 
 				if (bestDistance > currDist) {
 					bestDistance = currDist;
@@ -63,30 +63,6 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 				}
 			}
 		}
-
-		return currBest;
-	}
-
-	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
-		float bestDistance = Float.MAX_VALUE;
-		T currBest = null;
-		ShortPoint2D bestPos = null;
-
-		for (Entry<ShortPoint2D, T> currEntry : data.entrySet()) {
-			if (acceptor == null || acceptor.accepts(currEntry.getValue())) {
-				ShortPoint2D currPosition = currEntry.getKey();
-				float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
-
-				if (bestDistance > currDist) {
-					bestDistance = currDist;
-					currBest = currEntry.getValue();
-					bestPos = currPosition;
-				}
-			}
-		}
-
-		if (bestPos != null)
-			removeObjectAt(position);
 
 		return currBest;
 	}

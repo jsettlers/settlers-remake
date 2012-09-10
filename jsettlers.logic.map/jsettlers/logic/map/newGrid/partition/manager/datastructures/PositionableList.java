@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MathUtils;
 import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 
 /**
@@ -68,7 +69,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	 * @return accepted object that's nearest to position
 	 */
 	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
-		float bestDistance = Float.MAX_VALUE;
+		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 
 		for (T currEntry : data) {
@@ -76,7 +77,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 				continue;
 
 			ShortPoint2D currPosition = currEntry.getPos();
-			float currDist = (float) Math.hypot(position.getX() - currPosition.getX(), position.getY() - currPosition.getY());
+			int currDist = MathUtils.squareHypot(position, currPosition);
 
 			if (bestDistance > currDist) {
 				bestDistance = currDist;
