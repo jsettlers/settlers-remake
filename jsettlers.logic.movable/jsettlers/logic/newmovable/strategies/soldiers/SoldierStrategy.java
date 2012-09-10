@@ -93,6 +93,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	public void setOccupyableBuilding(IOccupyableBuilding building) {
 		this.building = building;
 		this.state = ESoldierState.INIT_GOTO_TOWER;
+		super.abortPath();
 	}
 
 	/**

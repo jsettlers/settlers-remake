@@ -622,6 +622,12 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		return grid.isValidPosition(this, position);
 	}
 
+	void abortPath() {
+		setState(ENewMovableState.DOING_NOTHING);
+		movableAction = EAction.NO_ACTION;
+		path = null;
+	}
+
 	private void followPath(Path path) {
 		this.path = path;
 		setState(ENewMovableState.PATHING);
@@ -796,6 +802,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		return getMovableType().getSelectionType() == ESelectionType.SOLDIERS;
 	}
 
+	@Override
 	public final boolean isAttackable() {
 		return movableType.isMoveToAble();
 	}
@@ -830,4 +837,5 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		 */
 		DEBUG_STATE
 	}
+
 }

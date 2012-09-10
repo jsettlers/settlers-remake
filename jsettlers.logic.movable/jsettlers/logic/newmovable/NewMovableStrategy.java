@@ -198,6 +198,10 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable;
 	}
 
+	protected final void abortPath() {
+		movable.abortPath();
+	}
+
 	/**
 	 * Checks preconditions before the next path step can be gone.
 	 * 
