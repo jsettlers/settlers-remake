@@ -45,6 +45,10 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	protected final void constructionFinishedEvent() {
+		requestWorker();
+	}
+
+	private void requestWorker() {
 		super.getGrid().requestBuildingWorker(super.getBuildingType().getWorkerType(), this);
 	}
 
@@ -94,6 +98,19 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 		if (super.isNotDestroyed()) {
 			this.worker = worker;
 			super.placeFlag(true);
+			super.createWorkStacks();
+		}
+	}
+
+	@Override
+	public void leaveBuilding(IManageableWorker worker) {
+		if (worker == this.worker) {
+			this.worker = null;
+			super.placeFlag(false);
+			super.releaseRequestStacks();
+			requestWorker();
+		} else {
+			System.err.println("A worker not registered at the building wanted to leave it!");
 		}
 	}
 

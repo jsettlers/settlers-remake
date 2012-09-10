@@ -129,7 +129,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return result;
 	}
 
-	private List<RequestStack> createWorkStacks() {
+	protected void createWorkStacks() {
 		RelativeStack[] requestStacks = type.getRequestStacks();
 		List<RequestStack> result = new LinkedList<RequestStack>();
 
@@ -140,7 +140,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			}
 		}
 
-		return result;
+		this.stacks = result;
 	}
 
 	private void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
@@ -206,18 +206,25 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private void requestDiggers() {
 		if (shouldBeFlatened()) {
-			RelativePoint[] blocked = getBuildingType().getBlockedTiles();
+			RelativePoint[] protectedTiles = getBuildingType().getProtectedTiles();
 			int heightSum = 0;
 
-			for (RelativePoint curr : blocked) {
+			for (RelativePoint curr : protectedTiles) {
 				ShortPoint2D currPos = curr.calculatePoint(this.pos);
 				heightSum += this.grid.getHeightAt(currPos);
 			}
 
-			this.heightAvg = (byte) (heightSum / blocked.length);
-			byte numberOfDiggers = (byte) Math.ceil(((float) blocked.length) / Constants.TILES_PER_DIGGER);
+			this.heightAvg = (byte) (heightSum / protectedTiles.length);
+			byte numberOfDiggers = (byte) Math.ceil(((float) protectedTiles.length) / Constants.TILES_PER_DIGGER);
 
 			grid.requestDiggers(this, numberOfDiggers);
+		}
+	}
+
+	private void requestBricklayers() {
+		RelativeBricklayer[] bricklayers = type.getBricklayers();
+		for (RelativeBricklayer curr : bricklayers) {
+			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
 		}
 	}
 
@@ -276,6 +283,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
+	/**
+	 * This method will be called every 100 ms when the building has finished construction and is not destroyed yet.
+	 */
+	protected abstract void subTimerEvent();
+
 	private boolean isMaterialAvailable() {
 		if (stacks == null)
 			return true;
@@ -286,18 +298,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		return false;
-	}
-
-	/**
-	 * This method will be called every 100 ms when the building has finished construction and is not destroyed yet.
-	 */
-	protected abstract void subTimerEvent();
-
-	private void requestBricklayers() {
-		RelativeBricklayer[] bricklayers = type.getBricklayers();
-		for (RelativeBricklayer curr : bricklayers) {
-			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
-		}
 	}
 
 	private boolean waitedSecond() {
@@ -373,8 +373,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		constructionProgress = 1;
 
 		this.state = STATE_CONSTRUCTED;
-		stacks = createWorkStacks();
-
+		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
+			createWorkStacks();
+		}
 		constructionFinishedEvent();
 	}
 
@@ -461,7 +462,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	protected void killedEvent() {
 	}
 
-	private void releaseRequestStacks() {
+	protected void releaseRequestStacks() {
 		for (RequestStack curr : stacks) {
 			curr.releaseRequests();
 		}
@@ -584,21 +585,20 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case GOLDMINE:
 		case COALMINE:
 			return new MineBuilding(type, player);
-			
-			//XXX This is only for testing!
+
+			// XXX This is only for testing!
 		case LAGERHAUS:
 			return new SpawnBuilding(type, player) {
 				/**
                  * 
                  */
-                private static final long serialVersionUID =
-                        2605958844824648130L;
+				private static final long serialVersionUID = 2605958844824648130L;
 
 				@Override
 				protected byte getProduceLimit() {
 					return 0;
 				}
-				
+
 				@Override
 				protected EMovableType getMovableType() {
 					return EMovableType.BEARER;

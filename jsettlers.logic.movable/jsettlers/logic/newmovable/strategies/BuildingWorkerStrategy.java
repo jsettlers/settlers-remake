@@ -387,8 +387,9 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	private void dropCurrMaterial() {
-		if (super.getMaterial() != EMaterialType.NO_MATERIAL) {
-			super.getStrategyGrid().dropMaterial(super.getPos(), super.getMaterial(), true);
+		EMaterialType material = super.getMaterial();
+		if (material.isDroppable()) {
+			super.getStrategyGrid().dropMaterial(super.getPos(), material, true);
 			super.setMaterial(EMaterialType.NO_MATERIAL);
 		}
 	}
@@ -403,6 +404,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 		dropCurrMaterial();
+
+		if (building != null) {
+			building.leaveBuilding(this);
+		}
 
 		if (isJobless()) {
 			super.getStrategyGrid().removeJobless(this);

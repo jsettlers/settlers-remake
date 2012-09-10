@@ -8,6 +8,12 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 
+/**
+ * Strategy of a bowman.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public final class BowmanStrategy extends SoldierStrategy {
 	private static final long serialVersionUID = 7062243467280721040L;
 	private static final float BOWMAN_ATTACK_DURATION = 0.9f;

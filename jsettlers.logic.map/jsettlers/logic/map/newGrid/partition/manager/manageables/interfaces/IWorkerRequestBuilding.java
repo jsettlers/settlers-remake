@@ -33,4 +33,13 @@ public interface IWorkerRequestBuilding extends IPlayerable {
 	EBuildingType getBuildingType();
 
 	boolean isNotDestroyed();
+
+	/**
+	 * Causes the given worker to be removed from this building.<br>
+	 * Note: This method must be called by any occupying worker if it dies.
+	 * 
+	 * @param worker
+	 *            The worker to be released from this building.
+	 */
+	void leaveBuilding(IManageableWorker worker);
 }

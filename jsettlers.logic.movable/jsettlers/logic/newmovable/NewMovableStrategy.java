@@ -21,6 +21,12 @@ import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy
 import jsettlers.logic.newmovable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.PioneerStrategy;
 
+/**
+ * Abstract super class of all movable strategies.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public abstract class NewMovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
 
