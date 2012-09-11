@@ -1,5 +1,6 @@
 package jsettlers.logic.newmovable.interfaces;
 
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 
 /**
@@ -37,4 +38,10 @@ public interface IAttackable extends ILocatable {
 	 *         false otherwise.
 	 */
 	boolean isAttackable();
+
+	/**
+	 * 
+	 * @return Gets the {@link EMovableType} of this {@link IAttackable}.
+	 */
+	EMovableType getMovableType();
 }

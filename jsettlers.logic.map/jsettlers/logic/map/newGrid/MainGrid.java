@@ -1063,10 +1063,10 @@ public class MainGrid implements Serializable {
 
 			IAttackable tower = null;// objectsGrid.getTowerInSearchArea(movable);
 
-			if (enemy == null) {
-				return tower;
-			} else if (tower == null) {
+			if (tower == null || movable.getMovableType().getTool() == EMaterialType.BOW) {
 				return enemy;
+			} else if (enemy == null) {
+				return tower;
 			} else {
 				int enemyDist = movable.getPos().getOnGridDistTo(enemy.getPos());
 				int towerDist = movable.getPos().getOnGridDistTo(tower.getPos());

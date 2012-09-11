@@ -67,11 +67,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	protected final void constructionFinishedEvent() {
-		super.getGrid().getMapObjectsManager().addAttackableTowerObject(getDefenderPos(), this);
-	}
-
-	private ShortPoint2D getDefenderPos() {
-		return super.getBuildingType().getDefenderPos().calculatePoint(super.getPos());
+		super.getGrid().getMapObjectsManager().addAttackableTowerObject(getDoor(), this);
 	}
 
 	@Override
@@ -142,8 +138,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		allOccupyingBuildings.remove(this);
 
-		ShortPoint2D defenderPos = getDefenderPos();
-		super.getGrid().getMapObjectsManager().removeMapObjectType(defenderPos.getX(), defenderPos.getY(), EMapObjectType.ATTACKABLE_TOWER);
+		super.getGrid().getMapObjectsManager().removeMapObjectType(getDoor().getX(), getDoor().getY(), EMapObjectType.ATTACKABLE_TOWER);
 	}
 
 	@Override
