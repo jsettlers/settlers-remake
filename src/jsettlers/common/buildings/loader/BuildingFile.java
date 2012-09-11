@@ -57,7 +57,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_BUILDMARK = "buildmark";
 	private static final String TAG_IMAGE = "image";
 	private static final String TAG_GROUNDTYE = "ground";
-	private static final String TAG_DEFENDER = "defenderPos";
 
 	private final ArrayList<RelativePoint> blocked = new ArrayList<RelativePoint>();
 
@@ -67,7 +66,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private String startJobName = "";
 	private RelativePoint door = new RelativePoint(0, 0);
-	private RelativePoint defenderPos = new RelativePoint(0, 0);
 	private IBuildingJob startJob = null;
 
 	private EMovableType workerType;
@@ -124,8 +122,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 				startJobName = attributes.getValue(ATTR_JOBNAME);
 			} else if (TAG_DOOR.equals(tagName)) {
 				door = readRelativeTile(attributes);
-			} else if (TAG_DEFENDER.equals(tagName)) {
-				defenderPos = readRelativeTile(attributes);
 			} else if (TAG_WORKCENTER.equals(tagName)) {
 				workCenter = readRelativeTile(attributes);
 			} else if (TAG_FLAG.equals(tagName)) {
@@ -313,10 +309,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	public RelativePoint getDoor() {
 		return door;
-	}
-
-	public RelativePoint getDefenderPos() {
-		return defenderPos;
 	}
 
 	@Override

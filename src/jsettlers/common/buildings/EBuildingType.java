@@ -102,8 +102,6 @@ public enum EBuildingType {
 
 	private final RelativePoint[] buildmarks;
 
-	private final RelativePoint defenderPos;
-
 	private final ELandscapeType[] groundtypes;
 
 	private final short viewdistance;
@@ -118,7 +116,6 @@ public enum EBuildingType {
 		startJob = file.getStartJob();
 		workerType = file.getWorkerType();
 		doorTile = file.getDoor();
-		defenderPos = file.getDefenderPos();
 		blockedTiles = file.getBlockedTiles();
 		protectedTiles = file.getProtectedTiles();
 		stacks = file.getStacks();
@@ -277,10 +274,6 @@ public enum EBuildingType {
 
 	public final BuildingAreaBitSet getBuildingAreaBitSet() {
 		return buildingAreaBitSet;
-	}
-
-	public RelativePoint getDefenderPos() {
-		return defenderPos;
 	}
 
 	public static final class BuildingAreaBitSet {
