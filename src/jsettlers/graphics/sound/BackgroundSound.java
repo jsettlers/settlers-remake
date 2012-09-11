@@ -8,15 +8,15 @@ import jsettlers.graphics.map.MapDrawContext;
 
 /**
  * Plays the background sound for birds and landscapes.
- * 
+ *
  * @author michael
  */
 public class BackgroundSound implements Runnable {
 	private static final float VOLUME = .4f;
 	private final MapDrawContext map;
 	private final SoundManager sound;
-	private Thread thread;
-	private Object waitMutex = new Object();
+	private final Thread thread;
+	private final Object waitMutex = new Object();
 	private boolean stopped = false;
 
 	private final int INDEX_BIRDS1 = 69;
@@ -119,8 +119,10 @@ public class BackgroundSound implements Runnable {
 	}
 
 	public void stop() {
-		stopped = true;
-		waitMutex.notifyAll();
+		synchronized (waitMutex) {
+			stopped = true;
+			waitMutex.notifyAll();
+		}
 	}
 
 }

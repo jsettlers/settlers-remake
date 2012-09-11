@@ -23,6 +23,8 @@ public class ActionFirerer implements ActionFireable {
 	private final LinkedBlockingQueue<FireringAction> toFire =
 	        new LinkedBlockingQueue<FireringAction>();
 
+	private final Object toFireMutex = new Object();
+
 	/**
 	 * The object we should fire the actions to.
 	 */
@@ -47,7 +49,7 @@ public class ActionFirerer implements ActionFireable {
 	/**
 	 * The timer that watches for logic freezes.
 	 */
-	private final Timer watchdogTimer = new Timer();
+	private final Timer watchdogTimer = new Timer("action firerer timer");
 
 	/**
 	 * The timer task that is currently active for the {@link #watchdogTimer}.
@@ -83,7 +85,15 @@ public class ActionFirerer implements ActionFireable {
 
 			while (!stopped) {
 				try {
-					action = toFire.take();
+					synchronized (toFireMutex) {
+						while (toFire.isEmpty() && !stopped) {
+							toFireMutex.wait();
+						}
+						if (stopped) {
+							break;
+						}
+						action = toFire.poll();
+					}
 					startWatchdog(action.startTime);
 					fireTo.fireAction(action.action);
 					stopWatchdog();
@@ -169,13 +179,20 @@ public class ActionFirerer implements ActionFireable {
 	 */
 	@Override
 	public void fireAction(Action action) {
-		toFire.offer(new FireringAction(action, System.currentTimeMillis()));
+		synchronized (toFireMutex) {
+			toFire.offer(new FireringAction(action, System.currentTimeMillis()));
+			toFireMutex.notifyAll();
+		}
 	}
 
 	/**
 	 * Stops this action firerer. The queue is not emptied by this operation.
 	 */
 	public void stop() {
-		stopped = true;
+		synchronized (toFireMutex) {
+			stopped = true;
+			toFireMutex.notifyAll();
+		}
+		watchdogTimer.cancel();
 	}
 }

@@ -142,6 +142,7 @@ public class MapInterfaceConnector implements ActionFireable {
 	 * crazy results when trying to use the map view afterwards.
 	 */
 	public void stop() {
+		actionFirerer.stop();
 		content.stop();
 	}
 }
