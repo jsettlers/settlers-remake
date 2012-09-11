@@ -20,7 +20,6 @@ public class AttackableTowerMapObject extends StandardMapObject implements IAtta
 
 	@Override
 	public ShortPoint2D getPos() {
-		// TODO Auto-generated method stub
 		return tower.getDoor();
 	}
 
@@ -44,7 +43,10 @@ public class AttackableTowerMapObject extends StandardMapObject implements IAtta
 
 	@Override
 	public IMovable getMovable() {
-		// TODO Auto-generated method stub
+		// if (!tower.getOccupyers().isEmpty()) {
+		// return tower.getOccupyers().get(0).getMovable();
+		// } else {
 		return null;
+		// }
 	}
 }
