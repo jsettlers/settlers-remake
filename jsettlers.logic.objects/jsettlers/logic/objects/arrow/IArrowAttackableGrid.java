@@ -9,15 +9,11 @@ package jsettlers.logic.objects.arrow;
 public interface IArrowAttackableGrid {
 
 	/**
-	 * If a movable is currently standing on the given position, it will be hit with the given hitStrength.
+	 * If a movable is currently standing on the given position, it will be hit with the given arrow.
 	 * 
-	 * @param x
-	 *            X coordinate of the position.
-	 * @param y
-	 *            Y coordinate of the position.
-	 * @param hitStrength
-	 *            Strength of the hit.
+	 * @param the
+	 *            arrow hitting the position.
 	 */
-	void hitWithArrowAt(short x, short y, float hitStrength);
+	void hitWithArrowAt(ArrowObject arrowObject);
 
 }

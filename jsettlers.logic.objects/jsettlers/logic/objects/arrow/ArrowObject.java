@@ -9,8 +9,8 @@ import jsettlers.logic.objects.ProgressingSoundableObject;
 public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
 	private static final long serialVersionUID = 1702902724559733166L;
 
-	private static final float SECONDS_PER_TILE = 0.04f;
-	public static final float DECOMPOSE_DELAY = 60;
+	private static final float SECONDS_PER_TILE = 0.024f;
+	public static final float MIN_DECOMPOSE_DELAY = 60;
 
 	private final short sourceX;
 	private final short sourceY;
@@ -56,7 +56,7 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	@Override
 	protected void changeState() {
-		grid.hitWithArrowAt(super.getX(), super.getY(), hitStrength);
+		grid.hitWithArrowAt(this);
 	}
 
 	@Override
@@ -77,5 +77,9 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 	@Override
 	public short getTargetY() {
 		return super.getY();
+	}
+
+	public float getHitStrength() {
+		return hitStrength;
 	}
 }

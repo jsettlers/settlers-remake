@@ -32,6 +32,7 @@ import jsettlers.logic.objects.tree.AdultTree;
 import jsettlers.logic.objects.tree.Tree;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
+import random.RandomSingleton;
 import synchronic.timer.NetworkTimer;
 
 /**
@@ -246,7 +247,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, hitStrength);
 		addMapObject(attackedPos, arrow);
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
-		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.DECOMPOSE_DELAY, true));
+		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true));
 	}
 
 	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, byte player) {

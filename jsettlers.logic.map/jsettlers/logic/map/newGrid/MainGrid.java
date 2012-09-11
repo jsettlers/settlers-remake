@@ -90,6 +90,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
+import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.stack.IRequestsStackGrid;
 import synchronic.timer.NetworkTimer;
 
@@ -644,13 +645,16 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void hitWithArrowAt(short x, short y, float hitStrength) {
+		public void hitWithArrowAt(ArrowObject arrow) {
+			short x = arrow.getTargetX();
+			short y = arrow.getTargetY();
+
 			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable != null) {
-				movable.hit(hitStrength);
+				movable.hit(arrow.getHitStrength());
+				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
 		}
-
 	}
 
 	final class LandmarksGrid implements ILandmarksThreadGrid {
