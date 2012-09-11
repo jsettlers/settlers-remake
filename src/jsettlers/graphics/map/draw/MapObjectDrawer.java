@@ -19,6 +19,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IArrowMapObject;
+import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -329,7 +330,15 @@ public class MapObjectDrawer {
 						draw(seq.getImageSafe(subseq * 15 + substep), x, y,
 						        color);
 					}
-					;
+				}
+					break;
+
+				case ATTACKABLE_TOWER: {
+					IMovable movable = ((IAttackableTowerMapObject) object).getMovable();
+					if (movable != null) {
+						Image image = this.imageMap.getImageForSettler(movable);
+						draw(image, x, y, color);
+					}
 				}
 					break;
 
