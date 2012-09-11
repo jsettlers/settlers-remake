@@ -123,11 +123,12 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	public void leaveOccupyableBuilding() {
+	public void leaveOccupyableBuilding(ShortPoint2D newPosition) {
+		super.setPosition(newPosition);
 		super.enableNothingToDoAction(true);
 		super.setVisible(true);
 
-		state = ESoldierState.AGGRESSIVE;
+		state = ESoldierState.ENEMY_FOUND;
 	}
 
 	@Override

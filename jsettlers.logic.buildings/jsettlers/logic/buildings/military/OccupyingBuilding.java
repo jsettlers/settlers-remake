@@ -10,6 +10,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
@@ -130,8 +131,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			MapCircle occupied = getOccupyablePositions();
 			super.getGrid().freeOccupiedArea(occupied, super.getPos());
 
+			int idx = 0;
+			FreeMapArea buildingArea = super.getBuildingArea();
 			for (TowerOccupyer curr : occupiers) {
-				curr.soldier.leaveOccupyableBuilding();
+				curr.soldier.leaveOccupyableBuilding(buildingArea.get(idx));
+				idx++;
 			}
 			occupiers.clear();
 		}
