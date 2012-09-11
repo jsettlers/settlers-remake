@@ -64,7 +64,7 @@ public enum EBuildingType {
 
 	TEMPLE(31),
 	BIG_TEMPLE(32),
-	
+
 	/**
 	 * Test building for own image files.
 	 */
@@ -97,12 +97,12 @@ public enum EBuildingType {
 	private final ImageLink[] images;
 
 	private final ImageLink[] buildImages;
-	
+
 	private final RelativePoint[] protectedTiles;
 
 	private final RelativePoint[] buildmarks;
-	private final RelativePoint[] attackers;
 
+	private final RelativePoint defenderPos;
 
 	private final ELandscapeType[] groundtypes;
 
@@ -118,6 +118,7 @@ public enum EBuildingType {
 		startJob = file.getStartJob();
 		workerType = file.getWorkerType();
 		doorTile = file.getDoor();
+		defenderPos = file.getDefenderPos();
 		blockedTiles = file.getBlockedTiles();
 		protectedTiles = file.getProtectedTiles();
 		stacks = file.getStacks();
@@ -139,7 +140,6 @@ public enum EBuildingType {
 		}
 
 		buildmarks = file.getBuildmarks();
-		attackers = file.getAttackers();
 		groundtypes = file.getGroundtypes();
 		viewdistance = file.getViewdistance();
 
@@ -237,10 +237,6 @@ public enum EBuildingType {
 		return buildmarks;
 	}
 
-	public RelativePoint[] getAttackers() {
-		return attackers;
-	}
-
 	public final ImageLink[] getBuildImages() {
 		return buildImages;
 	}
@@ -281,6 +277,10 @@ public enum EBuildingType {
 
 	public final BuildingAreaBitSet getBuildingAreaBitSet() {
 		return buildingAreaBitSet;
+	}
+
+	public RelativePoint getDefenderPos() {
+		return defenderPos;
 	}
 
 	public static final class BuildingAreaBitSet {

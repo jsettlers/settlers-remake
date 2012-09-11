@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE building SYSTEM "building.dtd" >
+
 <building worker="" viewdistance="38">
     <ground groundtype="GRASS" />
     <ground groundtype="EARTH" />
@@ -64,4 +65,6 @@
     <occupyer offsetX="-16" type="INFANTRY" offsetY="23" soldierX="3" soldierY="2" looksRight="false"/>
     <occupyer offsetX="-7" offsetY="60" type="BOWMAN" soldierX="-2" soldierY="-6"/>
     <occupyer offsetX="13" offsetY="60" type="BOWMAN" soldierX="-3" soldierY="-6"/>
+    
+    <defenderPos dx="2" dy="1" />
 </building>

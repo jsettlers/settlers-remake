@@ -105,4 +105,6 @@
     <occupyer offsetX="24" type="BOWMAN" offsetY="27" soldierX="-3" soldierY="1" />
     <occupyer offsetX="2" type="BOWMAN" offsetY="74" soldierX="-3" soldierY="3" />
 
+   	<defenderPos dx="-1" dy="2" />
+  
 </building>

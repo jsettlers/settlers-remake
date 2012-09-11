@@ -55,9 +55,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_BRICKLAYER = "bricklayer";
 	private static final String ATTR_DIRECTION = "direction";
 	private static final String TAG_BUILDMARK = "buildmark";
-	private static final String TAG_ATTACKER = "attacker";
 	private static final String TAG_IMAGE = "image";
 	private static final String TAG_GROUNDTYE = "ground";
+	private static final String TAG_DEFENDER = "defenderPos";
 
 	private final ArrayList<RelativePoint> blocked = new ArrayList<RelativePoint>();
 
@@ -67,6 +67,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private String startJobName = "";
 	private RelativePoint door = new RelativePoint(0, 0);
+	private RelativePoint defenderPos = new RelativePoint(0, 0);
 	private IBuildingJob startJob = null;
 
 	private EMovableType workerType;
@@ -77,7 +78,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private RelativePoint workCenter = new RelativePoint(0, 0);
 	private RelativePoint flag = new RelativePoint(0, 0);
 	private ArrayList<RelativePoint> buildmarks = new ArrayList<RelativePoint>();
-	private ArrayList<RelativePoint> attackers = new ArrayList<RelativePoint>();
 	private ImageLink guiimage = new OriginalImageLink(EImageLinkType.GUI, 1, 0, 0);
 	private ArrayList<ImageLink> images = new ArrayList<ImageLink>();
 	private ArrayList<ImageLink> buildImages = new ArrayList<ImageLink>();
@@ -124,6 +124,8 @@ public class BuildingFile implements BuildingJobDataProvider {
 				startJobName = attributes.getValue(ATTR_JOBNAME);
 			} else if (TAG_DOOR.equals(tagName)) {
 				door = readRelativeTile(attributes);
+			} else if (TAG_DEFENDER.equals(tagName)) {
+				defenderPos = readRelativeTile(attributes);
 			} else if (TAG_WORKCENTER.equals(tagName)) {
 				workCenter = readRelativeTile(attributes);
 			} else if (TAG_FLAG.equals(tagName)) {
@@ -142,8 +144,6 @@ public class BuildingFile implements BuildingJobDataProvider {
 				readImageLink(attributes);
 			} else if (TAG_BUILDMARK.equals(tagName)) {
 				buildmarks.add(readRelativeTile(attributes));
-			} else if (TAG_ATTACKER.equals(tagName)) {
-				attackers.add(readRelativeTile(attributes));
 			} else if (TAG_GROUNDTYE.equals(tagName)) {
 				groundtypes.add(ELandscapeType.valueOf(attributes.getValue("groundtype")));
 			} else if (TAG_OCCUPYER.equals(tagName)) {
@@ -315,6 +315,10 @@ public class BuildingFile implements BuildingJobDataProvider {
 		return door;
 	}
 
+	public RelativePoint getDefenderPos() {
+		return defenderPos;
+	}
+
 	@Override
 	public BuildingJobData getJobData(String name) {
 		return jobElements.get(name);
@@ -380,7 +384,4 @@ public class BuildingFile implements BuildingJobDataProvider {
 		return occupyerplaces.toArray(new OccupyerPlace[occupyerplaces.size()]);
 	}
 
-	public RelativePoint[] getAttackers() {
-		return attackers.toArray(new RelativePoint[attackers.size()]);
-	}
 }
