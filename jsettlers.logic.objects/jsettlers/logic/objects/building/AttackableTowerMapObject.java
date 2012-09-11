@@ -1,12 +1,14 @@
 package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.mapobject.IAttackableTowerMapObject;
+import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.objects.StandardMapObject;
 
-public class AttackableTowerMapObject extends StandardMapObject implements IAttackable {
+public class AttackableTowerMapObject extends StandardMapObject implements IAttackable, IAttackableTowerMapObject {
 
 	private static final long serialVersionUID = -5137593316096740750L;
 	private final OccupyingBuilding tower;
@@ -38,5 +40,11 @@ public class AttackableTowerMapObject extends StandardMapObject implements IAtta
 	public boolean isAttackable() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public IMovable getMovable() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
