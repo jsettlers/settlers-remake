@@ -183,4 +183,6 @@ public interface IStrategyGrid {
 	 */
 	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
 
+	boolean hasNoMovableAt(short x, short y);
+
 }

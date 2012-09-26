@@ -3,11 +3,13 @@ package jsettlers.logic.newmovable.strategies.soldiers;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 
 public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
@@ -48,7 +50,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				startAttackAnimation(enemy);
 				state = ESoldierState.HITTING;
 			} else {
-				super.goToPos(enemy.getPos());
+				state = ESoldierState.ENEMY_FOUND;
+				goToEnemy(enemy);
 			}
 
 			break;
@@ -69,6 +72,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		case IN_TOWER:
 			break;
 		}
+	}
+
+	private void goToEnemy(IAttackable enemy) {
+		super.goToPos(enemy.getPos());
 	}
 
 	private void changeStateTo(ESoldierState state) {
@@ -139,15 +146,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	@Override
 	protected void informAboutAttackable(IAttackable other) {
 		if (state == ESoldierState.AGGRESSIVE) {
-			if (enemy == null) { // if no enemy is set yet
-				enemy = other;
-				state = ESoldierState.ENEMY_FOUND;
-			} else {
-				ShortPoint2D pos = super.getPos();
-				if (other.getPos().getOnGridDistTo(pos) < enemy.getPos().getOnGridDistTo(pos)) { // or if the new enemy is closer
-					enemy = other;
-				}
-			}
+			state = ESoldierState.ENEMY_FOUND; // this searches for the enemy on the next timer click
 		}
 	}
 
@@ -171,5 +170,37 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	@Override
 	protected boolean isMoveToAble() {
 		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && state != ESoldierState.IN_TOWER;
+	}
+
+	@Override
+	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
+		if (state == ESoldierState.ENEMY_FOUND) {
+			IStrategyGrid grid = super.getStrategyGrid();
+			EDirection leftDir = direction.getNeighbor(-1);
+			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
+			EDirection rightDir = direction.getNeighbor(1);
+			ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
+
+			if (grid.hasNoMovableAt(leftPos.getX(), leftPos.getY())) {
+				return new Path(leftPos);
+			} else if (grid.hasNoMovableAt(rightPos.getX(), rightPos.getY())) {
+				return new Path(rightPos);
+			} else {
+				EDirection twoLeftDir = direction.getNeighbor(-2);
+				ShortPoint2D twoLeftPos = twoLeftDir.getNextHexPoint(position);
+				EDirection twoRightDir = direction.getNeighbor(2);
+				ShortPoint2D twoRightPos = twoRightDir.getNextHexPoint(position);
+
+				if (grid.hasNoMovableAt(twoLeftPos.getX(), twoLeftPos.getY())) {
+					return new Path(twoLeftPos);
+				} else if (grid.hasNoMovableAt(twoRightPos.getX(), twoRightPos.getY())) {
+					return new Path(twoRightPos);
+				} else {
+					return path;
+				}
+			}
+		} else {
+			return super.findWayAroundObstacle(direction, position, path);
+		}
 	}
 }

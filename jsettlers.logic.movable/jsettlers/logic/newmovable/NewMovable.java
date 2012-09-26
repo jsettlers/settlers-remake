@@ -248,7 +248,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 					delayCtr++;
 					if (delayCtr > 8) {
 						delayCtr = 0;
-						findWayAroundObstacle();
+						path = strategy.findWayAroundObstacle(direction, position, path);
 					}
 				}
 				return;
@@ -258,45 +258,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		}
 	}
 
-	int delayCtr = 0;
-
-	private void findWayAroundObstacle() {
-		EDirection leftDir = direction.getNeighbor(-1);
-		EDirection rightDir = direction.getNeighbor(1);
-
-		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
-		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
-
-		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
-		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
-		ShortPoint2D twoStraight = direction.getNextHexPoint(position, 2);
-
-		ShortPoint2D overNextPos = path.getOverNextPos();
-
-		if (twoStraight.equals(overNextPos)) {
-			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY()) && isValidPosition(leftStraightPos)) {
-				path.goToNextStep();
-				path = new Path(path, leftPos, leftStraightPos);
-				System.out.println("path replanned!");
-			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY()) && isValidPosition(rightStraightPos)) {
-				path.goToNextStep();
-				path = new Path(path, rightPos, rightStraightPos);
-				System.out.println("path replanned!");
-			} else {
-				// TODO @Andreas Eberle maybe calculate a new path
-			}
-		} else if (leftStraightPos.equals(overNextPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY())) {
-			path.goToNextStep();
-			path = new Path(path, leftPos);
-			System.out.println("path replanned!");
-		} else if (rightStraightPos.equals(overNextPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY())) {
-			path.goToNextStep();
-			path = new Path(path, rightPos);
-			System.out.println("path replanned!");
-		} else {
-			// TODO @Andreas Eberle maybe calculate a new path
-		}
-	}
+	private int delayCtr = 0;
 
 	private void goSinglePathStep() {
 		initGoingSingleStep(path.getNextPos());

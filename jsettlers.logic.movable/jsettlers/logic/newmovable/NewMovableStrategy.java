@@ -8,6 +8,7 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
@@ -241,6 +242,48 @@ public abstract class NewMovableStrategy implements Serializable {
 
 	protected boolean isMoveToAble() {
 		return true;
+	}
+
+	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
+		IStrategyGrid grid = movable.getStrategyGrid();
+
+		EDirection leftDir = direction.getNeighbor(-1);
+		EDirection rightDir = direction.getNeighbor(1);
+
+		ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
+		ShortPoint2D leftStraightPos = direction.getNextHexPoint(leftPos);
+
+		ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
+		ShortPoint2D rightStraightPos = direction.getNextHexPoint(rightPos);
+		ShortPoint2D twoStraight = direction.getNextHexPoint(position, 2);
+
+		ShortPoint2D overNextPos = path.getOverNextPos();
+
+		if (twoStraight.equals(overNextPos)) {
+			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY()) && isValidPosition(leftStraightPos)) {
+				path.goToNextStep();
+				path = new Path(path, leftPos, leftStraightPos);
+				System.out.println("path replanned!");
+			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY()) && isValidPosition(rightStraightPos)) {
+				path.goToNextStep();
+				path = new Path(path, rightPos, rightStraightPos);
+				System.out.println("path replanned!");
+			} else {
+				// TODO @Andreas Eberle maybe calculate a new path
+			}
+		} else if (leftStraightPos.equals(overNextPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY())) {
+			path.goToNextStep();
+			path = new Path(path, leftPos);
+			System.out.println("path replanned!");
+		} else if (rightStraightPos.equals(overNextPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY())) {
+			path.goToNextStep();
+			path = new Path(path, rightPos);
+			System.out.println("path replanned!");
+		} else {
+			// TODO @Andreas Eberle maybe calculate a new path
+		}
+
+		return path;
 	}
 
 }
