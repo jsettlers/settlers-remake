@@ -20,6 +20,9 @@ public class OccupyerPlace implements Serializable {
 	private final boolean looksRight;
 
 	public OccupyerPlace(int offsetX, int offsetY, ESoldierType type, RelativePoint position, boolean looksRight) {
+		if (position == null || type == null) {
+			throw new NullPointerException();
+		}
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		this.type = type;
