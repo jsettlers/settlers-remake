@@ -39,7 +39,7 @@ import jsettlers.graphics.sound.SoundManager;
 
 /**
  * This class handles drawing of objects on the map.
- *
+ * 
  * @author michael
  */
 public class MapObjectDrawer {
@@ -134,7 +134,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a map object at a given position.
-	 *
+	 * 
 	 * @param context
 	 *            The context.
 	 * @param map
@@ -334,7 +334,8 @@ public class MapObjectDrawer {
 					break;
 
 				case ATTACKABLE_TOWER: {
-					IMovable movable = ((IAttackableTowerMapObject) object).getMovable();
+					IMovable movable =
+					        ((IAttackableTowerMapObject) object).getMovable();
 					if (movable != null) {
 						Image image = this.imageMap.getImageForSettler(movable);
 						draw(image, x, y, color);
@@ -353,7 +354,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a movable
-	 *
+	 * 
 	 * @param movable
 	 *            The movable.
 	 */
@@ -526,9 +527,9 @@ public class MapObjectDrawer {
 		float progress = object.getStateProgress();
 		int index = Math.round(progress * 2);
 
-		float x = betweenTilesX(object.getSourceX(),
-		        object.getSourceY(), object.getTargetX(), object.getTargetY(),
-		        progress);
+		float x =
+		        betweenTilesX(object.getSourceX(), object.getSourceY(),
+		                object.getTargetX(), object.getTargetY(), progress);
 
 		int iColor = Color.getABGR(color, color, color, 1);
 
@@ -539,9 +540,11 @@ public class MapObjectDrawer {
 			buffer.setZ(-.1f);
 			iColor &= 0x7fffffff;
 		}
-		Image image = this.imageProvider.getSettlerSequence(FILE, sequence)
-		        .getImageSafe(index);
-		image.drawAt(context.getGl(), buffer, x, betweenTilesY + 20 * progress * (1 - progress) + 20, iColor);
+		Image image =
+		        this.imageProvider.getSettlerSequence(FILE, sequence)
+		                .getImageSafe(index);
+		image.drawAt(context.getGl(), buffer, x, betweenTilesY + 20 * progress
+		        * (1 - progress) + 20, iColor);
 		if (onGround) {
 			buffer.setZ(z);
 		}
@@ -652,7 +655,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * gets a 0 or a 1.
-	 *
+	 * 
 	 * @param pos
 	 * @return
 	 */
@@ -662,7 +665,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a player border at a given position.
-	 *
+	 * 
 	 * @param player
 	 *            The player.
 	 */
@@ -696,7 +699,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a stack
-	 *
+	 * 
 	 * @param context
 	 *            The context to draw with
 	 * @param object
@@ -711,7 +714,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the stack directly to the screen.
-	 *
+	 * 
 	 * @param glDrawContext
 	 *            The gl context to draw at.
 	 * @param material
@@ -730,7 +733,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Gets the gray color for a given fog.
-	 *
+	 * 
 	 * @param fogstatus
 	 * @return
 	 */
@@ -740,7 +743,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a given buildng to the context.
-	 *
+	 * 
 	 * @param context
 	 * @param building
 	 * @param color
@@ -791,7 +794,7 @@ public class MapObjectDrawer {
 				}
 
 				if (building instanceof IBuilding.IOccupyed) {
-					drawOccupyers(x, y, (IBuilding.IOccupyed) building, color);
+					drawOccupiers(x, y, (IBuilding.IOccupyed) building, color);
 				}
 
 				for (int i = 1; i < images.length; i++) {
@@ -806,21 +809,27 @@ public class MapObjectDrawer {
 		}
 	}
 
-	private void drawOccupyers(int x, int y, IOccupyed building, float basecolor) {
+	/**
+	 * Draws the occupiers of a building
+	 * @param x The x coordinate of the building
+	 * @param y 
+	 * @param building The occupyed building
+	 * @param basecolor The base color (gray shade).
+	 */
+	private void drawOccupiers(int x, int y, IOccupyed building, float basecolor) {
 		// this can cause a ConcurrentModificationException when
 		// a soldier enters the tower!
 		try {
 			int height = context.getHeight(x, y);
-			float viewX = context.getConverter().getViewX(x, y, height);
-			float viewY = context.getConverter().getViewY(x, y, height);
+			float towerX = context.getConverter().getViewX(x, y, height);
+			float towerY = context.getConverter().getViewY(x, y, height);
 			GLDrawContext gl = context.getGl();
 
 			for (IBuildingOccupyer occupyer : building.getOccupyers()) {
 				OccupyerPlace place = occupyer.getPlace();
 
-				Color color =
-				        context.getPlayerColor(occupyer.getMovable()
-				                .getPlayer());
+				IMovable movable = occupyer.getMovable();
+				Color color = context.getPlayerColor(movable.getPlayer());
 
 				Image image;
 				switch (place.getType()) {
@@ -832,13 +841,16 @@ public class MapObjectDrawer {
 						break;
 					case BOWMAN:
 					default:
-						image =
-						        this.imageMap.getImageForSettler(occupyer
-						                .getMovable());
+						image = this.imageMap.getImageForSettler(movable);
 				}
-				image.drawAt(gl, buffer, viewX + place.getOffsetX(), viewY
-				        + place.getOffsetY(), color, basecolor);
-
+				float viewX = towerX + place.getOffsetX();
+				float viewY = towerY + place.getOffsetY();
+				image.drawAt(gl, buffer, viewX, viewY, color, basecolor);
+				
+				if (place.getType() == ESoldierType.BOWMAN
+				        && movable.isSelected()) {
+					drawSelectionMark(viewX, viewY, movable.getHealth());
+				}
 			}
 		} catch (ConcurrentModificationException e) {
 			// happens sometime, just ignore it.
