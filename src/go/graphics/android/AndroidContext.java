@@ -341,10 +341,10 @@ public class AndroidContext implements GLDrawContext {
 		GLES10.glMatrixMode(GLES10.GL_MODELVIEW);
 		GLES10.glLoadIdentity();
 
-		GLES10.glScalef(2f / width, 2f / height, -1);
+		GLES10.glScalef(2f / width, 2f / height, -.5f);
 		// TODO: do not scale depth by 0.
 
-		GLES10.glTranslatef(-width / 2, -height / 2, .5f);
+		GLES10.glTranslatef(-width / 2, -height / 2, .25f);
 
 		GLES10.glEnableClientState(GLES10.GL_VERTEX_ARRAY);
 		GLES10.glEnableClientState(GLES10.GL_TEXTURE_COORD_ARRAY);

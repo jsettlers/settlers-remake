@@ -260,7 +260,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		public void onDrawFrame(GL10 gl) {
 			GLES10.glClearColor(0, 0, 0, 1);
 			GLES10.glClear(GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_COLOR_BUFFER_BIT);
-			GLES10.glScalef(1, 1, .5f);
+
+			GLES10.glDepthFunc(GLES10.GL_LEQUAL);
+			GLES10.glEnable(GLES10.GL_DEPTH_TEST);
 
 			area.drawArea(drawcontext);
 		}
