@@ -28,7 +28,7 @@ public class MovableTestWindow {
 		MovableTestsMap grid = new MovableTestsMap(100, 100);
 		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
 
-		movable = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, new ShortPoint2D(49, 50), (byte) 0);
+		movable = new NewMovable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(49, 50), (byte) 0);
 		movable.setSelected(true);
 
 		connector.setSelection(new SelectionSet(movable));
@@ -74,9 +74,9 @@ public class MovableTestWindow {
 		{
 			Thread.sleep(3000);
 			// circle of three movables blocking each others path
-			NewMovable m1 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, new ShortPoint2D(50, 65), (byte) 0);
-			NewMovable m2 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, new ShortPoint2D(51, 65), (byte) 0);
-			NewMovable m3 = new NewMovable(grid.getMovableGrid(), EMovableType.TEST_MOVABLE, new ShortPoint2D(50, 64), (byte) 0);
+			NewMovable m1 = new NewMovable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 65), (byte) 0);
+			NewMovable m2 = new NewMovable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(51, 65), (byte) 0);
+			NewMovable m3 = new NewMovable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(50, 64), (byte) 0);
 
 			m1.moveTo(new ShortPoint2D(52, 65));
 			m2.moveTo(new ShortPoint2D(49, 63));

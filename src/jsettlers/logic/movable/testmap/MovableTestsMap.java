@@ -25,7 +25,6 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.objects.stack.StackMapObject;
 import random.RandomSingleton;
@@ -130,6 +129,14 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean hasNoMovableAt(short x, short y) {
 			return isInBounds(x, y) && movableMap[x][y] == null;
+		}
+
+		@Override
+		public boolean isFreePosition(ShortPoint2D position) {
+			short x = position.getX();
+			short y = position.getY();
+
+			return isInBounds(x, y) && !isBlocked(x, y) && movableMap[x][y] == null;
 		}
 
 		@Override
@@ -341,7 +348,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public NewMovable getEnemyInSearchArea(IAttackable movable) {
+		public NewMovable getEnemyInSearchArea(NewMovable movable) {
 			return null;
 		}
 
