@@ -253,6 +253,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 				throw e;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		initializeNullFile();
 
@@ -620,9 +621,9 @@ public class AdvancedDatFileReader implements DatFileSet {
 		initializeIfNeeded();
 
 		MultiImageMap map = new MultiImageMap(width, height, id);
-		//if (!map.hasCache()) {
-			map.addSequences(this, sequences, settlersequences);
-			map.writeCache();
-		//}
+		// if (!map.hasCache()) {
+		map.addSequences(this, sequences, settlersequences);
+		map.writeCache();
+		// }
 	}
 }
