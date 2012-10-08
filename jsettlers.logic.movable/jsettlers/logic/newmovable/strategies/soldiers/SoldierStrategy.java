@@ -20,6 +20,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	private IAttackable enemy;
 	private ShortPoint2D oldPathTarget;
 
+	private boolean inSaveGotoMode = false;
+
 	public SoldierStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable);
 		this.movableType = movableType;
@@ -39,8 +41,16 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				break; // don't directly walk on the enemy's position, because there may be others to walk in first
 			}
 		case ENEMY_FOUND:
+			IAttackable oldEnemy = enemy;
 			enemy = super.getStrategyGrid().getEnemyInSearchArea(super.getMovable());
-			if (enemy == null) { // no enemy found, go back in normal mode
+
+			// check if we have a new enemy. If so, go in unsave mode again.
+			if (oldEnemy != null && oldEnemy != enemy) {
+				inSaveGotoMode = false;
+			}
+
+			// no enemy found, go back in normal mode
+			if (enemy == null) {
 				changeStateTo(ESoldierState.AGGRESSIVE);
 				break;
 			}
@@ -75,11 +85,24 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	private void goToEnemy(IAttackable enemy) {
-		// ShortPoint2D pos = super.getPos();
-		// EDirection dir = EDirection.getApproxDirection(pos, enemy.getPos());
-		//
-		// super.forceGoInDirection(dir);
+		if (inSaveGotoMode) {
+			goToSavely(enemy);
+		} else {
+			ShortPoint2D pos = super.getPos();
+			EDirection dir = EDirection.getApproxDirection(pos, enemy.getPos());
 
+			ShortPoint2D nextPos = dir.getNextHexPoint(pos);
+			if (super.isValidPosition(nextPos)) {
+				super.forceGoInDirection(dir);
+				return;
+			} else {
+				goToSavely(enemy);
+				inSaveGotoMode = true;
+			}
+		}
+	}
+
+	private void goToSavely(IAttackable enemy) {
 		super.goToPos(enemy.getPos());
 	}
 
@@ -169,6 +192,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	protected void moveToPathSet(ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 		if (targetPos != null && this.oldPathTarget != null) {
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
+			inSaveGotoMode = false;
 		}
 	}
 
