@@ -75,6 +75,11 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	private void goToEnemy(IAttackable enemy) {
+		// ShortPoint2D pos = super.getPos();
+		// EDirection dir = EDirection.getApproxDirection(pos, enemy.getPos());
+		//
+		// super.forceGoInDirection(dir);
+
 		super.goToPos(enemy.getPos());
 	}
 

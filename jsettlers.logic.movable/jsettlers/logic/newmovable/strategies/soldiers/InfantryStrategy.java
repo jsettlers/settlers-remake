@@ -2,6 +2,7 @@ package jsettlers.logic.newmovable.strategies.soldiers;
 
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
@@ -27,7 +28,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected boolean isEnemyAttackable(IAttackable enemy) {
-		return super.getPos().getOnGridDistTo(enemy.getPos()) == 1;
+		return EDirection.getDirection(super.getPos(), enemy.getPos()) != null;
 	}
 
 	@Override

@@ -244,9 +244,9 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 				goSinglePathStep();
 			} else { // step not possible, so try it next time
 				boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
-				if (!pushedSuccessful && path.getStep() < path.getLength() - 1) {
+				if (!pushedSuccessful) {
 					delayCtr++;
-					if (delayCtr > 8) {
+					if (delayCtr > 4) {
 						delayCtr = 0;
 						path = strategy.findWayAroundObstacle(direction, position, path);
 					}

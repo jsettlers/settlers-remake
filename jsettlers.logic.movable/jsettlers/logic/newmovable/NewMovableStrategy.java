@@ -245,6 +245,10 @@ public abstract class NewMovableStrategy implements Serializable {
 	}
 
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
+		if (!(path.getStep() < path.getLength() - 1)) { // if path has no position left
+			return path;
+		}
+
 		IStrategyGrid grid = movable.getStrategyGrid();
 
 		EDirection leftDir = direction.getNeighbor(-1);
