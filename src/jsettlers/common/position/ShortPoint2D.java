@@ -78,9 +78,20 @@ public class ShortPoint2D implements Serializable {
 	 * @return The distance a movable needs to walk to get from this to the other position.
 	 */
 	public int getOnGridDistTo(ShortPoint2D otherPos) {
-		final int dx = Math.abs(x - otherPos.x);
-		final int dy = Math.abs(y - otherPos.y);
+		final int dx = x - otherPos.x;
+		final int dy = y - otherPos.y;
+		final int absDx = Math.abs(dx);
+		final int absDy = Math.abs(dy);
 
-		return dx + dy;
+		if (dx * dy > 0) { // dx and dy go in the same direction
+			if (absDx > absDy) {
+				return absDx;
+			} else {
+				return absDy;
+			}
+		} else {
+			return absDx + absDy;
+		}
+
 	}
 }
