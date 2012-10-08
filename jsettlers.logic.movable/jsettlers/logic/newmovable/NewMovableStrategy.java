@@ -15,7 +15,6 @@ import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
 import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
 import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.newmovable.strategies.DiggerStrategy;
-import jsettlers.logic.newmovable.strategies.TestMovableStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.BowmanStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
@@ -39,8 +38,6 @@ public abstract class NewMovableStrategy implements Serializable {
 
 	public static NewMovableStrategy getStrategy(NewMovable movable, EMovableType movableType) {
 		switch (movableType) {
-		case TEST_MOVABLE:
-			return new TestMovableStrategy(movable);
 		case BEARER:
 			return new BearerMovableStrategy(movable);
 

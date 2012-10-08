@@ -68,6 +68,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
@@ -534,11 +535,11 @@ public class MainGrid implements Serializable {
 			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return landscapeGrid.getDebugColor(x, y);
+			// return landscapeGrid.getDebugColor(x, y);
 
-			// return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
+			return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
 
 			// return Color.BLACK.getARGB();
 
@@ -651,7 +652,7 @@ public class MainGrid implements Serializable {
 
 			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable != null) {
-				movable.hit(arrow.getHitStrength());
+				movable.receiveHit(arrow.getHitStrength());
 				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
 		}
@@ -1007,6 +1008,14 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
+		public boolean isFreePosition(ShortPoint2D position) {
+			short x = position.getX();
+			short y = position.getY();
+
+			return isInBounds(x, y) && !flagsGrid.isBlocked(x, y) && movableGrid.hasNoMovableAt(x, y);
+		}
+
+		@Override
 		public void leavePosition(ShortPoint2D position, NewMovable movable) {
 			movableGrid.movableLeft(position, movable);
 		}
@@ -1014,6 +1023,10 @@ public class MainGrid implements Serializable {
 		@Override
 		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
 			movableGrid.movableEntered(position, movable, informFullArea);
+
+			if (movable.isAttackable()) {
+				objectsGrid.informTowersAboutAttackble(position, movable, informFullArea, !EMovableType.isBowman(movable.getMovableType()));
+			}
 		}
 
 		@Override
@@ -1062,25 +1075,41 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(IAttackable movable) {
-			IAttackable enemy = movableGrid.getEnemyInSearchArea(movable);
+		public IAttackable getEnemyInSearchArea(NewMovable movable) {
+			ShortPoint2D pos = movable.getPos();
+			HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
 
-			IAttackable tower = null;// objectsGrid.getTowerInSearchArea(movable);
+			boolean isBowman = EMovableType.isBowman(movable.getMovableType());
 
-			if (tower == null || movable.getMovableType().getTool() == EMaterialType.BOW) {
-				return enemy;
-			} else if (enemy == null) {
-				return tower;
-			} else {
-				int enemyDist = movable.getPos().getOnGridDistTo(enemy.getPos());
-				int towerDist = movable.getPos().getOnGridDistTo(tower.getPos());
+			IAttackable enemy = getEnemyInSearchArea(movable, area, isBowman);
+			if (enemy == null && !isBowman) {
+				enemy = getEnemyInSearchArea(movable, new HexGridArea(pos.getX(), pos.getY(), Constants.SOLDIER_SEARCH_RADIUS,
+						Constants.TOWER_SEARCH_RADIUS), isBowman);
+			}
 
-				if (enemyDist < towerDist) {
-					return enemy;
-				} else {
-					return tower;
+			return enemy;
+		}
+
+		private IAttackable getEnemyInSearchArea(NewMovable movable, HexGridArea area, boolean isBowman) {
+			byte movablePlayer = movable.getPlayer();
+
+			for (ShortPoint2D curr : area) {
+				short x = curr.getX();
+				short y = curr.getY();
+
+				if (0 <= x && x < width && 0 <= y && y < height) {
+					IAttackable currAttackable = movableGrid.getMovableAt(x, y);
+					if (currAttackable == null && !isBowman) {
+						currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+					}
+
+					if (currAttackable != null && MovableGrid.isEnemy(movablePlayer, currAttackable)) {
+						return currAttackable;
+					}
 				}
 			}
+
+			return null;
 		}
 
 		@Override

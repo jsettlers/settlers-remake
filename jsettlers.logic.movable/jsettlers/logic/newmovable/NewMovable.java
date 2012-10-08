@@ -75,8 +75,8 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	private boolean enableNothingToDo = true;
 	private NewMovable pushedFrom;
 
-	private boolean selected = false;
-	private boolean soundPlayed = false;
+	private transient boolean selected = false;
+	private transient boolean soundPlayed = false;
 	private boolean isRightstep = false;
 
 	private float doingNothingProbablity = 0.06f;
@@ -86,9 +86,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		this.position = position;
 		this.player = player;
 		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-
-		// The test movable has no images, so display a bearer
-		this.movableType = movableType == EMovableType.TEST_MOVABLE ? EMovableType.SWORDSMAN_L1 : movableType;
+		this.movableType = movableType;
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
@@ -775,12 +773,13 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	 * @param other
 	 *            The other movable.
 	 */
-	public final void informAboutAttackable(NewMovable other) {
+	@Override
+	public final void informAboutAttackable(IAttackable other) {
 		strategy.informAboutAttackable(other);
 	}
 
 	@Override
-	public final void hit(float hitStrength) {
+	public final void receiveHit(float hitStrength) {
 		this.health -= hitStrength;
 		if (health <= 0) {
 			this.kill();

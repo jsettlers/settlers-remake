@@ -11,6 +11,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
 /**
@@ -169,7 +170,7 @@ public interface IStrategyGrid {
 	 *            The movable searching an enemy.
 	 * @return The closest enemy or null if none exists in the search radius.
 	 */
-	IAttackable getEnemyInSearchArea(IAttackable movable);
+	IAttackable getEnemyInSearchArea(NewMovable movable);
 
 	/**
 	 * Adds an arrow object to the map flying from
@@ -184,5 +185,14 @@ public interface IStrategyGrid {
 	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
 
 	boolean hasNoMovableAt(short x, short y);
+
+	/**
+	 * 
+	 * @param position
+	 *            The position to be checked.
+	 * @return true if the position is on the grid, not blocked and free of other movables. <br>
+	 *         false otherwise.
+	 */
+	boolean isFreePosition(ShortPoint2D position);
 
 }

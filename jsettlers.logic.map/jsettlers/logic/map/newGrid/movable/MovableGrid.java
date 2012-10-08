@@ -95,7 +95,7 @@ public final class MovableGrid implements Serializable {
 				short currY = curr.getY();
 				if (0 <= currX && currX < width && 0 <= currY && currY < height) {
 					NewMovable currMovable = getMovableAt(currX, currY);
-					if (isEnemy(movablePlayer, currMovable)) {
+					if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
 						currMovable.informAboutAttackable(movable);
 
 						if (!foundOne) { // the first found movable is the one closest to the given movable.
@@ -108,28 +108,18 @@ public final class MovableGrid implements Serializable {
 		}
 	}
 
-	public IAttackable getEnemyInSearchArea(IAttackable movable) {
-		ShortPoint2D pos = movable.getPos();
-		HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
-
-		byte movablePlayer = movable.getPlayer();
-
-		for (ShortPoint2D curr : area) {
-			short x = curr.getX();
-			short y = curr.getY();
-			if (0 <= x && x < width && 0 <= y && y < height) {
-				IAttackable currMovable = getMovableAt(x, y);
-				if (isEnemy(movablePlayer, currMovable)) {
-					return currMovable;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	private final boolean isEnemy(byte movablePlayer, IAttackable currMovable) {
-		return currMovable != null && currMovable.getPlayer() != movablePlayer && currMovable.isAttackable();
+	// FIXME @Andreas Eberle replace player everywhere by an object with team and player and move this method to the new class
+	/**
+	 * 
+	 * @param player
+	 *            The player id of the first player.
+	 * @param otherAttackable
+	 *            The other attackable. (Must not be null!)
+	 * 
+	 * @return
+	 */
+	public static boolean isEnemy(byte player, IAttackable otherAttackable) {
+		return otherAttackable.getPlayer() != player && otherAttackable.isAttackable();
 	}
 
 	public boolean hasNoMovableAt(short x, short y) {

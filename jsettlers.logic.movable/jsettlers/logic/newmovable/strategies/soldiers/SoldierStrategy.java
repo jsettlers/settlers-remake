@@ -172,7 +172,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	protected void informAboutAttackable(IAttackable other) {
+	public void informAboutAttackable(IAttackable other) {
 		if (state == ESoldierState.AGGRESSIVE) {
 			state = ESoldierState.ENEMY_FOUND; // this searches for the enemy on the next timer click
 		}
@@ -210,9 +210,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			EDirection rightDir = direction.getNeighbor(1);
 			ShortPoint2D rightPos = rightDir.getNextHexPoint(position);
 
-			if (grid.hasNoMovableAt(leftPos.getX(), leftPos.getY())) {
+			if (grid.isFreePosition(leftPos)) {
 				return new Path(leftPos);
-			} else if (grid.hasNoMovableAt(rightPos.getX(), rightPos.getY())) {
+			} else if (grid.isFreePosition(rightPos)) {
 				return new Path(rightPos);
 			} else {
 				EDirection twoLeftDir = direction.getNeighbor(-2);
@@ -220,9 +220,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				EDirection twoRightDir = direction.getNeighbor(2);
 				ShortPoint2D twoRightPos = twoRightDir.getNextHexPoint(position);
 
-				if (grid.hasNoMovableAt(twoLeftPos.getX(), twoLeftPos.getY())) {
+				if (grid.isFreePosition(twoLeftPos)) {
 					return new Path(twoLeftPos);
-				} else if (grid.hasNoMovableAt(twoRightPos.getX(), twoRightPos.getY())) {
+				} else if (grid.isFreePosition(twoRightPos)) {
 					return new Path(twoRightPos);
 				} else {
 					return path;

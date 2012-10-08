@@ -23,6 +23,7 @@ import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContin
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 import random.RandomSingleton;
 
 /**
@@ -265,5 +266,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			return soldier.getMovable();
 		}
 
+	}
+
+	public void informAboutAttackable(IAttackable attackable) {
+		for (TowerOccupyer currPlace : occupiers) {
+			currPlace.soldier.informAboutAttackable(attackable);
+		}
 	}
 }

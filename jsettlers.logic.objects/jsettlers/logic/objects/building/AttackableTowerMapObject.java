@@ -31,7 +31,7 @@ public class AttackableTowerMapObject extends StandardMapObject implements IAtta
 	}
 
 	@Override
-	public void hit(float strength) {
+	public void receiveHit(float strength) {
 		// TODO Auto-generated method stub
 
 	}
@@ -44,7 +44,6 @@ public class AttackableTowerMapObject extends StandardMapObject implements IAtta
 
 	@Override
 	public boolean isAttackable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -61,5 +60,10 @@ public class AttackableTowerMapObject extends StandardMapObject implements IAtta
 	public EMovableType getMovableType() {
 		assert false : "This should never have been called";
 		return EMovableType.SWORDSMAN_L1;
+	}
+
+	@Override
+	public void informAboutAttackable(IAttackable attackable) {
+		// tower.informAboutAttackable(attackable);
 	}
 }

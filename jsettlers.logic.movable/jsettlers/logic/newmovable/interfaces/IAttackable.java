@@ -16,7 +16,7 @@ public interface IAttackable extends ILocatable {
 	 * @param strength
 	 *            The strength of the hit.
 	 */
-	void hit(float strength);
+	void receiveHit(float strength);
 
 	/**
 	 * Get the health of this {@link IAttackable}.
@@ -44,4 +44,13 @@ public interface IAttackable extends ILocatable {
 	 * @return Gets the {@link EMovableType} of this {@link IAttackable}.
 	 */
 	EMovableType getMovableType();
+
+	/**
+	 * Informs this attackable of an attackable enemy.
+	 * 
+	 * @param attackable
+	 *            The attackable enemy.
+	 */
+	void informAboutAttackable(IAttackable attackable);
+
 }

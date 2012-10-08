@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.map.shapes.HexGridArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
@@ -150,24 +152,41 @@ public final class ObjectsGrid implements Serializable {
 		return false;
 	}
 
-	public IAttackable getTowerInSearchArea(IAttackable movable) {
-		ShortPoint2D pos = movable.getPos();
-		HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.TOWER_SEARCH_RADIUS);
+	/**
+	 * Informs towers of the attackable in their search radius..
+	 * 
+	 * @param position
+	 *            The new position of the movable.
+	 * @param attackable
+	 *            The attackable that moved to the given position.
+	 * @param informFullArea
+	 *            if true, the full area is informed<br>
+	 *            if false, only the border of the area is informed.
+	 * @param b
+	 */
+	public void informTowersAboutAttackble(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
+		IMapArea area;
+		if (informFullArea) {
+			area = new HexGridArea(position.getX(), position.getY(), (short) 1, Constants.TOWER_SEARCH_RADIUS);
+		} else {
+			area = new HexBorderArea(position.getX(), position.getY(), (short) (Constants.TOWER_SEARCH_RADIUS - 1));
+		}
 
-		byte movablePlayer = movable.getPlayer();
+		byte movablePlayer = attackable.getPlayer();
 
 		for (ShortPoint2D curr : area) {
 			short x = curr.getX();
 			short y = curr.getY();
 			if (0 <= x && x < width && 0 <= y && y < height) {
-				IAttackable currMovable = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
-				if (currMovable != null && currMovable.getPlayer() != movablePlayer) {
-					return currMovable;
+				IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+				if (currTower != null && currTower.getPlayer() != movablePlayer) {
+					currTower.informAboutAttackable(attackable);
+
+					if (informAttackable) {
+						attackable.informAboutAttackable(currTower);
+					}
 				}
 			}
 		}
-
-		return null;
 	}
-
 }
