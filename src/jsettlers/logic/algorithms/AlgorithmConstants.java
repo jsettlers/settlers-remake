@@ -11,7 +11,7 @@ public abstract class AlgorithmConstants {
 	/**
 	 * initial number of elements in the min heaps used for pathfinding
 	 */
-	public static final int MINHEAP_INIT_NUMBER_OF_ELEMENTS = 200;
+	public static final int MINHEAP_INIT_NUMBER_OF_ELEMENTS = 1000;
 	/**
 	 * if the construction marks are currently activated and the user does not move the view, the markings will be updated after this time (ms).
 	 */
