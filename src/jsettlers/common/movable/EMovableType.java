@@ -32,7 +32,6 @@ public enum EMovableType {
 
 	THIEF(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
-	TEST_MOVABLE(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 
 	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
@@ -80,5 +79,9 @@ public enum EMovableType {
 
 	public final boolean isMoveToAble() {
 		return !needsPlayersGround;
+	}
+
+	public static boolean isBowman(EMovableType movableType) {
+		return movableType.getTool() == EMaterialType.BOW;
 	}
 }
