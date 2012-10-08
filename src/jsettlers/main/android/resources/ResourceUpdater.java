@@ -66,7 +66,7 @@ public class ResourceUpdater implements Runnable {
 			serverrev = loadRevision(httpClient);
 
 			needsUpdate |= serverrev != null && !serverrev.equals(myrev);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
