@@ -116,11 +116,6 @@ public final class MapContent implements SettlersContent,
 	 */
 	private final IControls controls;
 
-	/**
-	 * zoom factor. The smaller the smaller the settlers get.
-	 */
-	private float zoom = 1;
-
 	private int windowWidth = 1;
 
 	private int windowHeight = 1;
@@ -182,7 +177,7 @@ public final class MapContent implements SettlersContent,
 	}
 
 	private void reapplyContentSizes() {
-		this.context.setSize(windowWidth, windowHeight, zoom);
+		this.context.setSize(windowWidth, windowHeight);
 	}
 
 	@Override
@@ -531,7 +526,7 @@ public final class MapContent implements SettlersContent,
 
 	private void handleZoom(GOZoomEvent zoomEvent) {
 		zoomEvent.setHandler(new GOModalEventHandler() {
-			float startzoom = zoom;
+			float startzoom = context.getScreen().getZoom();
 
 			@Override
 			public void phaseChanged(GOEvent event) {
@@ -791,26 +786,21 @@ public final class MapContent implements SettlersContent,
 			ScreenChangeAction screenAction = (ScreenChangeAction) action;
 			controls.setMapViewport(screenAction.getScreenArea());
 		} else if (action.getActionType() == EActionType.ZOOM_IN) {
-			if (zoom < 1.1) {
-				setZoom(zoom * 2);
+			if (context.getScreen().getZoom() < 1.1) {
+				setZoom(context.getScreen().getZoom() * 2);
 			}
 		} else if (action.getActionType() == EActionType.ZOOM_OUT) {
-			if (zoom > 0.6) {
-				setZoom(zoom / 2);
+			if (context.getScreen().getZoom() > 0.6) {
+				setZoom(context.getScreen().getZoom() / 2);
 			}
 		}
 	}
 
-	private void setZoom(float newzoom) {
-		if (newzoom < .3f) {
-			this.zoom = .3f;
-		} else if (newzoom > 3f) {
-			this.zoom = 3f;
-		} else {
-			this.zoom = newzoom;
-		}
-		reapplyContentSizes();
-	}
+
+	private void setZoom(float f) {
+	    context.getScreen().setZoom(f);
+	    reapplyContentSizes();
+    }
 
 	public void setPreviewBuildingType(EBuildingType buildingType) {
 		controls.displayBuildingBuild(buildingType);

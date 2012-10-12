@@ -13,24 +13,29 @@ public class ScreenPosition {
 	private FloatRectangle screen = new FloatRectangle(0, 0, 1, 1);
 
 	/**
+	 * zoom factor. The smaller the smaller the settlers get.
+	 */
+	private float zoom = 1;
+
+	/**
 	 * The x coordinate of the current screen, without extra panning.
 	 */
 	private float screenCenterX;
 	private float screenCenterY;
 
-	private Hashtable<Object, UIPoint> panProgresses =
+	private final Hashtable<Object, UIPoint> panProgresses =
 	        new Hashtable<Object, UIPoint>();
 
-	private int mapWidth;
+	private final int mapWidth;
 
-	private int mapHeight;
+	private final int mapHeight;
 
 	private final float incline;
 
 	/**
 	 * Sets the map size, the max border, widthout the automatically added
 	 * additional border.
-	 * 
+	 *
 	 * @param mapWidth
 	 * @param mapHeight
 	 *            The width in pixel
@@ -56,23 +61,32 @@ public class ScreenPosition {
 	}
 
 	/**
-	 * Sets the size of the context to width/height.
-	 * 
+	 * Sets the size of the screen without the zoom level applied.
+	 *
 	 * @param newWidth
 	 *            The width.
 	 * @param newHeight
 	 *            The height.
-	 * @param zoom 
+	 * @param zoom
 	 */
 	public void setSize(float newWidth, float newHeight)  {
 		float x = this.screen.getCenterX();
 		float y = this.screen.getCenterY();
-		setScreen(x, y, newWidth, newHeight);
+		setScreen(x, y, newWidth / zoom, newHeight / zoom);
 	}
 
+	public void setZoom(float newzoom) {
+		if (newzoom < .3f) {
+			this.zoom = .3f;
+		} else if (newzoom > 3f) {
+			this.zoom = 3f;
+		} else {
+			this.zoom = newzoom;
+		}
+	}
 	/**
 	 * Sets the center of the screen.
-	 * 
+	 *
 	 * @param x
 	 *            X in pixels.
 	 * @param y
@@ -95,8 +109,8 @@ public class ScreenPosition {
 		int xoffset = 0;
 		int yoffset = 0;
 		for (UIPoint p : this.panProgresses.values()) {
-			xoffset += p.getX();
-			yoffset += p.getY();
+			xoffset += p.getX() / zoom;
+			yoffset += p.getY() / zoom;
 		}
 		setScreen(x - xoffset, y - yoffset, this.screen.getWidth(),
 		        this.screen.getHeight());
@@ -107,7 +121,7 @@ public class ScreenPosition {
 
 	/**
 	 * Sets the screen, and clamps it.
-	 * 
+	 *
 	 * @param centerx
 	 * @param centery
 	 * @param newWidth
@@ -162,9 +176,13 @@ public class ScreenPosition {
 		return this.screen.getHeight();
 	}
 
+	public float getZoom() {
+	    return zoom;
+    }
+
 	/**
 	 * Sets the temporary pan progress for a given pan operation.
-	 * 
+	 *
 	 * @param key
 	 *            The identifier of the event
 	 * @param distance
@@ -177,7 +195,7 @@ public class ScreenPosition {
 
 	/**
 	 * Sets the temporary pan progress for a given pan operation.
-	 * 
+	 *
 	 * @param key
 	 *            The identifier of the event
 	 * @param distance
@@ -185,8 +203,8 @@ public class ScreenPosition {
 	 */
 	public void finishPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.remove(key);
-		setScreenCenter((int) (this.screenCenterX - distance.getX()),
-		        (int) (this.screenCenterY - distance.getY()));
+		setScreenCenter((int) (this.screenCenterX - distance.getX() / zoom),
+		        (int) (this.screenCenterY - distance.getY() / zoom));
 	}
 
 	public FloatRectangle getPosition() {

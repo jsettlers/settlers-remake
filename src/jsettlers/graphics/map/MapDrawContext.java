@@ -30,7 +30,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * <h2>gl setup</h2> With {@link #begin(GLDrawContext)}, the gl state machine is
  * initialized for drawing the map. The draw coordinates can then be given in
  * draw space.
- * 
+ *
  * @author michael
  */
 public final class MapDrawContext {
@@ -41,9 +41,9 @@ public final class MapDrawContext {
 
 	private final IGraphicsGrid map;
 
-	private ScreenPosition screen;
+	private final ScreenPosition screen;
 
-	private MapCoordinateConverter converter;
+	private final MapCoordinateConverter converter;
 	Color[] playerColors = new Color[] {
 	        // red
 	        new Color(0xffe50000),
@@ -69,15 +69,13 @@ public final class MapDrawContext {
 	        new Color(0xff6e750e),
 	};
 
-	private float zoom;
-
 	public boolean ENABLE_ORIGINAL = true;
 
 	// private long beginTime;
 
 	/**
 	 * Creates a new map context for a given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
 	 */
@@ -97,23 +95,19 @@ public final class MapDrawContext {
 
 	/**
 	 * Sets the size of the context to width/height.
-	 * 
+	 *
 	 * @param newWidth
 	 *            The width.
 	 * @param newHeight
 	 *            The height.
-	 * @param zoom
 	 */
-	public void setSize(float windowWidth, float windowHeight, float zoom) {
-		this.zoom = zoom;
-		float newWidth = windowWidth / zoom;
-		float newHeight = windowHeight / zoom;
-		this.screen.setSize(newWidth, newHeight);
+	public void setSize(float windowWidth, float windowHeight) {
+		this.screen.setSize(windowWidth, windowHeight);
 	}
 
 	/**
 	 * Sets the center of the screen.
-	 * 
+	 *
 	 * @param x
 	 *            X in pixels.
 	 * @param y
@@ -126,7 +120,7 @@ public final class MapDrawContext {
 	/**
 	 * Begin a new draw session (=> draw a new image). Sets up the gl screen
 	 * assuming the current viewport is set to (0,0,width,height)
-	 * 
+	 *
 	 * @param gl2
 	 *            The gl context to use.
 	 * @see #end()
@@ -137,8 +131,10 @@ public final class MapDrawContext {
 		// beginTime = System.nanoTime();
 
 		gl2.glPushMatrix();
+		float zoom = screen.getZoom();
 		gl2.glScalef(zoom, zoom, 1);
-		gl2.glTranslatef((int) -this.screen.getLeft() + .5f, (int) -this.screen.getBottom() + .5f, 0);
+		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
+		        (int) -this.screen.getBottom() + .5f, 0);
 	}
 
 	/**
@@ -152,7 +148,7 @@ public final class MapDrawContext {
 	/**
 	 * Gets the current gl context, of <code>null</code> if it is called outside
 	 * a gl drawing session.
-	 * 
+	 *
 	 * @return The gl context that was given to {@link #begin(GLDrawContext)}
 	 */
 	public GLDrawContext getGl() {
@@ -162,7 +158,7 @@ public final class MapDrawContext {
 	/**
 	 * Gets the region of the draw space that is drawn on the screen and
 	 * therefore rendered.
-	 * 
+	 *
 	 * @return The region displayed on the screen as Rectangle.
 	 */
 	public ScreenPosition getScreen() {
@@ -170,7 +166,6 @@ public final class MapDrawContext {
 	}
 
 	/**
-	 * 
 	 * @param x
 	 *            The x coordinate in draw space
 	 * @param y
@@ -208,7 +203,6 @@ public final class MapDrawContext {
 	}
 
 	/**
-	 * 
 	 * @param x
 	 *            The x coordinate in screen space
 	 * @param y
@@ -216,13 +210,14 @@ public final class MapDrawContext {
 	 * @return The map position under the screen point.
 	 */
 	public ShortPoint2D getPositionOnScreen(float x, float y) {
-		return getPositionUnder(x / zoom + this.screen.getLeft(), y / zoom
-		        + this.screen.getBottom());
+		return getPositionUnder(
+		        x / this.screen.getZoom() + this.screen.getLeft(), y
+		                / this.screen.getZoom() + this.screen.getBottom());
 	}
 
 	/**
 	 * Checks two map coordiantes if they are on the map.
-	 * 
+	 *
 	 * @param x
 	 *            The y coordinate in map space.
 	 * @param y
@@ -236,7 +231,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Gets the color for a given player.
-	 * 
+	 *
 	 * @param player
 	 *            The player to get the color for.
 	 * @return The color.
@@ -251,7 +246,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Gets the converter for the map coordinate system
-	 * 
+	 *
 	 * @return The map coordinate converter.
 	 */
 	public MapCoordinateConverter getConverter() {
@@ -260,7 +255,7 @@ public final class MapDrawContext {
 
 	/**
 	 * sets up the gl drawing context to draw a given tile.
-	 * 
+	 *
 	 * @param pos
 	 *            The tile to draw.
 	 */
@@ -282,7 +277,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Sets up drawing between two tiles.
-	 * 
+	 *
 	 * @param tile
 	 *            The start tile
 	 * @param destination
@@ -296,17 +291,23 @@ public final class MapDrawContext {
 		float theight = getHeight(startx, starty);
 		float dheight = getHeight(destinationx, destinationy);
 		float x =
-		        (1 - progress) * this.converter.getViewX(startx, starty, theight)
-		                + progress * this.converter.getViewX(destinationx, destinationy, dheight);
+		        (1 - progress)
+		                * this.converter.getViewX(startx, starty, theight)
+		                + progress
+		                * this.converter.getViewX(destinationx, destinationy,
+		                        dheight);
 		float y =
-		        (1 - progress) * this.converter.getViewY(startx, starty, theight)
-		                + progress * this.converter.getViewY(destinationx, destinationy, dheight);
+		        (1 - progress)
+		                * this.converter.getViewY(startx, starty, theight)
+		                + progress
+		                * this.converter.getViewY(destinationx, destinationy,
+		                        dheight);
 		this.gl.glTranslatef(x, y, 0);
 	}
 
 	/**
 	 * gets a rect on the screen.
-	 * 
+	 *
 	 * @param x1
 	 *            one x (not ordered)
 	 * @param y1
@@ -318,10 +319,10 @@ public final class MapDrawContext {
 	 * @return The rectangle on the map
 	 */
 	public IMapArea getRectangleOnScreen(int x1, int y1, int x2, int y2) {
-		float drawx1 = x1 / zoom + this.screen.getLeft();
-		float drawx2 = x2 / zoom + this.screen.getLeft();
-		float drawy1 = y1 / zoom + this.screen.getBottom();
-		float drawy2 = y2 / zoom + this.screen.getBottom();
+		float drawx1 = x1 / this.screen.getZoom() + this.screen.getLeft();
+		float drawx2 = x2 / this.screen.getZoom() + this.screen.getLeft();
+		float drawy1 = y1 / this.screen.getZoom() + this.screen.getBottom();
+		float drawy2 = y2 / this.screen.getZoom() + this.screen.getBottom();
 		return new HeightedMapRectangle(new FloatRectangle(drawx1, drawy1,
 		        drawx2, drawy2));
 	}
@@ -341,7 +342,7 @@ public final class MapDrawContext {
 		/**
 		 * Creates a new IMapArea that contains the points that are in the
 		 * rectangle on the screen.
-		 * 
+		 *
 		 * @param drawRect
 		 *            The rectangle in draw space
 		 */
