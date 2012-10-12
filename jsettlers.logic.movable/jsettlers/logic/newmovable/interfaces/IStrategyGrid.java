@@ -179,10 +179,12 @@ public interface IStrategyGrid {
 	 *            Attacked position.
 	 * @param shooterPos
 	 *            Position of the shooter.
+	 * @param shooterPlayer
+	 *            The player of the shooter.
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
+	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength);
 
 	boolean hasNoMovableAt(short x, short y);
 

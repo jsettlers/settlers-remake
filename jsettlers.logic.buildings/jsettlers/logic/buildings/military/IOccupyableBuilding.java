@@ -5,7 +5,7 @@ import jsettlers.common.position.ShortPoint2D;
 
 public interface IOccupyableBuilding {
 
-	ShortPoint2D setSoldier(IBuildingOccupyableMovable soldier);
+	ShortPoint2D addSoldier(IBuildingOccupyableMovable soldier);
 
 	ShortPoint2D getDoor();
 

@@ -51,4 +51,13 @@ public final class Constants {
 
 	public static final int PARTITION_MANANGER_RUNS_PER_TICK = 5;
 
+	public static final float GHOST_PLAY_DURATION = 1;
+
+	/**
+	 * If the door is hit, its health is reduced by the hit strength / {@link #DOOR_HIT_RESISTENCY_FACTOR}
+	 */
+	public static final float DOOR_HIT_RESISTENCY_FACTOR = 2;
+
+	public static final float TOWER_DOOR_REGENERATION = 0.01f;
+
 }

@@ -15,13 +15,15 @@ public interface IAttackable extends ILocatable {
 	 * 
 	 * @param strength
 	 *            The strength of the hit.
+	 * @param player
+	 *            The player of the attackable that hit this attackable.
 	 */
-	void receiveHit(float strength);
+	void receiveHit(float strength, byte player);
 
 	/**
 	 * Get the health of this {@link IAttackable}.
 	 * 
-	 * @return Health of the {@link IAttackable}.
+	 * @return Health of the {@link IAttackable} in the intervall [0,1] where 1 is fully healthy and 0 is dead.
 	 */
 	float getHealth();
 

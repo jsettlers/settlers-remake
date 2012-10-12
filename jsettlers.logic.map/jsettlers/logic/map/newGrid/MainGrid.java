@@ -526,20 +526,20 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
-			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
+			// return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
 
 			// return Color.BLACK.getARGB();
 
@@ -652,7 +652,7 @@ public class MainGrid implements Serializable {
 
 			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable != null) {
-				movable.receiveHit(arrow.getHitStrength());
+				movable.receiveHit(arrow.getHitStrength(), arrow.getPlayer());
 				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
 		}
@@ -1055,7 +1055,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player) {
+		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, byte player) {
 			mapObjectsManager.addSelfDeletingMapObject(position, mapObjectType, duration, player);
 		}
 
@@ -1113,8 +1113,8 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
-			mapObjectsManager.addArrowObject(attackedPos, shooterPos, hitStrength);
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+			mapObjectsManager.addArrowObject(attackedPos, shooterPos, shooterPlayer, hitStrength);
 		}
 	}
 
@@ -1252,11 +1252,11 @@ public class MainGrid implements Serializable {
 				StopWatch watch = new MilliStopWatch();
 				watch.start();
 
-				List<OccupyingBuilding> allOccupying = OccupyingBuilding.getAllOccupyingBuildings();
 				int maxSqDistance = 6 * CommonConstants.TOWERRADIUS * CommonConstants.TOWERRADIUS;
 
 				List<OccupyingDistanceCombi> occupyingInRange = new LinkedList<OccupyingDistanceCombi>();
-				for (OccupyingBuilding curr : allOccupying) {
+
+				for (OccupyingBuilding curr : OccupyingBuilding.getAllOccupyingBuildings()) {
 					ShortPoint2D currPos = curr.getPos();
 					int dx = currPos.getX() - pos.getX();
 					int dy = currPos.getY() - pos.getY();
@@ -1503,7 +1503,6 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void changedPartitionAt(short x, short y) {
-
 			landmarksCorrection.reTest(x, y);
 		}
 

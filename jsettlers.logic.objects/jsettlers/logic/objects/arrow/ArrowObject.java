@@ -18,12 +18,15 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	private final IArrowAttackableGrid grid;
 
-	public ArrowObject(IArrowAttackableGrid grid, ShortPoint2D targetPos, ShortPoint2D shooterPos, float hitStrength) {
-		super(targetPos);
-		this.grid = grid;
+	private final byte shooterPlayer;
 
+	public ArrowObject(IArrowAttackableGrid grid, ShortPoint2D targetPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+		super(targetPos);
+
+		this.grid = grid;
 		this.sourceX = shooterPos.getX();
 		this.sourceY = shooterPos.getY();
+		this.shooterPlayer = shooterPlayer;
 		this.hitStrength = hitStrength;
 
 		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(shooterPos.getX() - targetPos.getX(), shooterPos.getY() - targetPos.getY())));
@@ -81,5 +84,9 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	public float getHitStrength() {
 		return hitStrength;
+	}
+
+	public byte getPlayer() {
+		return shooterPlayer;
 	}
 }

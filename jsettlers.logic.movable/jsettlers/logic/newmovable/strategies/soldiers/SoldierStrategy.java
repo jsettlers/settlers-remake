@@ -72,7 +72,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		case GOING_TO_TOWER:
-			ShortPoint2D pos = building.setSoldier(this);
+			ShortPoint2D pos = building.addSoldier(this);
 			super.setPosition(pos);
 			super.enableNothingToDoAction(false);
 			super.setVisible(false);

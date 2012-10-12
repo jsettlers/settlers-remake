@@ -43,6 +43,7 @@ import jsettlers.logic.timer.Timer100Milli;
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable,
 		IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
+
 	private static final byte STATE_CREATED = 0;
 	private static final byte STATE_POSITIONED = 1;
 	private static final byte STATE_WAITING_FOR_MATERIAL = 2;
@@ -56,9 +57,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
 
+	private final EBuildingType type;
+
 	private ShortPoint2D pos;
 	private IBuildingsGrid grid;
-	private final byte player;
+	private byte player;
 	private byte state = STATE_CREATED;
 
 	transient private boolean selected;
@@ -67,7 +70,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private byte heightAvg;
 
 	private short delayCtr = 0;
-	private final EBuildingType type;
 	private List<RequestStack> stacks;
 
 	protected Building(EBuildingType type, byte player) {
@@ -77,7 +79,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		allBuildings.offer(this);
 	}
 
-	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+	private synchronized void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
 		allBuildings.add(this);
 		Timer100Milli.add(this); // the building is added to the timer in positionAt(..)
@@ -623,6 +625,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return allBuildings;
 	}
 
+	public static void dropAllBuildings() {
+		allBuildings.clear();
+		OccupyingBuilding.dropAllBuildings();
+	}
+
 	@Override
 	public final short getViewDistance() {
 		if (isConstructionFinished()) {
@@ -639,6 +646,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public ESelectionType getSelectionType() {
 		return ESelectionType.BUILDING;
+	}
+
+	public void setPlayer(byte player) {
+		this.player = player;
 	}
 
 }

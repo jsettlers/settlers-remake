@@ -14,7 +14,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.input.IGuiMovable;
@@ -24,6 +23,7 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
@@ -39,8 +39,8 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements ITimerable, IMovable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
-		IAttackable {
+public final class NewMovable implements ITimerable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
+		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 	private static final short NOTHING_TO_DO_MAX_RADIUS = 3;
@@ -624,6 +624,11 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		return allMovables;
 	}
 
+	public static void dropAllMovables() {
+		allMovables.clear();
+		movablesByID.clear();
+	}
+
 	/**
 	 * kills this movable.
 	 */
@@ -637,7 +642,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 		movablesByID.remove(this.getID());
 		allMovables.remove(this);
 
-		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, 1, player);
+		grid.addSelfDeletingMapObject(position, EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, player);
 	}
 
 	@Override
@@ -779,7 +784,7 @@ public final class NewMovable implements ITimerable, IMovable, IPathCalculateabl
 	}
 
 	@Override
-	public final void receiveHit(float hitStrength) {
+	public final void receiveHit(float hitStrength, byte player) {
 		this.health -= hitStrength;
 		if (health <= 0) {
 			this.kill();

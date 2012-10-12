@@ -181,9 +181,9 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		short newPartition = initializeNewPartition(getPlayerAt(firstPos));
 		short oldPartition = getPartition(firstPos);
 
-		partitions[getIdx(x, y)] = -1;// this is needed, because the new partition is not determined yet
+		// partitions[getIdx(x, y)] = -1;// this is needed, because the new partition is not determined yet
 		relabelPartition(secondPos.getX(), secondPos.getY(), oldPartition, newPartition, false);
-		partitions[getIdx(x, y)] = oldPartition;
+		// partitions[getIdx(x, y)] = oldPartition;
 	}
 
 	private final byte[] neighborX = EDirection.getXDeltaArray();
@@ -339,20 +339,15 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			short currPartition = getPartitionAt(x, y);
 
 			if (currPartition != newPartition) {
-				if (towers[getIdx(x, y)] <= 0) {
-					if (currPartition < 0) {
-						setPartition(x, y, newPartition);
-						occupiedPositions.add(curr);
+				if (currPartition >= 0 && partitionObjects[currPartition].getPlayer() == newPlayer) {
+					checkForMerge.add(curr);
 
-						if (unblockedOccupied == null && !grid.isBlocked(x, y)) {
-							unblockedOccupied = curr;
-						}
-					} else if (partitionObjects[currPartition].getPlayer() == newPlayer) {
-						checkForMerge.add(curr);
-					}
-				} else {
-					if (partitionObjects[currPartition].getPlayer() == newPlayer) {
-						checkForMerge.add(curr);
+				} else if (towers[getIdx(x, y)] <= 0) {
+					setPartition(x, y, newPartition);
+					occupiedPositions.add(curr);
+
+					if (unblockedOccupied == null && !grid.isBlocked(x, y)) {
+						unblockedOccupied = curr;
 					}
 				}
 			}

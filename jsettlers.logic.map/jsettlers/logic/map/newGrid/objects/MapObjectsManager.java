@@ -10,11 +10,11 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
@@ -22,7 +22,6 @@ import jsettlers.logic.objects.SelfDeletingMapObject;
 import jsettlers.logic.objects.SoundableSelfDeletingObject;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
-import jsettlers.logic.objects.building.AttackableTowerMapObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.corn.Corn;
@@ -243,8 +242,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
-		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, hitStrength);
+	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, shooterPlayer, hitStrength);
 		addMapObject(attackedPos, arrow);
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true));
@@ -505,8 +504,18 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	public void addAttackableTowerObject(ShortPoint2D pos, OccupyingBuilding tower) {
-		this.addMapObject(pos, new AttackableTowerMapObject(tower));
+	/**
+	 * Adds an attackable tower map object to the grid.
+	 * 
+	 * @param position
+	 *            Position the map object will be added.
+	 * @param attackableTowerMapObject
+	 *            The object to be added. NOTE: This object must be an instance of {@link IAttackableTowerMapObject}!
+	 */
+	public void addAttackableTowerObject(ShortPoint2D position, AbstractHexMapObject attackableTowerMapObject) {
+		assert attackableTowerMapObject instanceof IAttackableTowerMapObject;
+
+		this.addMapObject(position, attackableTowerMapObject);
 	}
 
 }

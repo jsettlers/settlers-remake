@@ -25,6 +25,7 @@ public interface INewMovableGrid extends IStrategyGrid {
 	 * @return true if the given position has a movable standing on it.<br>
 	 *         false if there is no movable.
 	 */
+	@Override
 	boolean hasNoMovableAt(short x, short y);
 
 	void leavePosition(ShortPoint2D position, NewMovable movable);
@@ -64,7 +65,7 @@ public interface INewMovableGrid extends IStrategyGrid {
 
 	boolean isBlockedOrProtected(short x, short y);
 
-	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player);
+	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, byte player);
 
 	boolean isInBounds(short x, short y);
 

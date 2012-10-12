@@ -137,7 +137,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		movable.forceGoInDirection(direction);
 	}
 
-	protected final void setPosition(ShortPoint2D pos) {
+	public final void setPosition(ShortPoint2D pos) {
 		movable.setPos(pos);
 	}
 

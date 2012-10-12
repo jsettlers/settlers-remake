@@ -12,7 +12,9 @@ import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.GuiTaskExecutor;
+import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.timer.MovableTimer;
 import jsettlers.logic.timer.PartitionManagerTimer;
 import jsettlers.logic.timer.Timer100Milli;
@@ -22,7 +24,7 @@ import synchronic.timer.NetworkTimer;
 
 /**
  * This is a running jsettlers game. It can be started and then stopped once.
- *
+ * 
  * @author michael
  */
 public class JSettlersGame {
@@ -118,6 +120,8 @@ public class JSettlersGame {
 			Timer100Milli.stop();
 			MovableTimer.stop();
 			PartitionManagerTimer.stop();
+			NewMovable.dropAllMovables();
+			Building.dropAllBuildings();
 
 			listener.gameEnded();
 		}
@@ -140,7 +144,7 @@ public class JSettlersGame {
 
 	/**
 	 * Defines a listener for this game.
-	 *
+	 * 
 	 * @param managedJSettlers
 	 */
 	public void setListener(Listener listener) {

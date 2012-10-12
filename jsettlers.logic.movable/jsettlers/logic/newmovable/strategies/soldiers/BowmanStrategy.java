@@ -43,7 +43,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	protected void startAttackAnimation(IAttackable enemy) {
 		super.playAction(EAction.ACTION1, BOWMAN_ATTACK_DURATION);
 
-		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), 0.1f);
+		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer(), 0.1f);
 	}
 
 	@Override
