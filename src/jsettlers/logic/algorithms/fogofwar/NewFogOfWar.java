@@ -119,7 +119,7 @@ public final class NewFogOfWar implements Serializable {
 				if (enabled) {
 					rebuildSight();
 				}
-				watch.stop("NewFoWThread needed: ");
+				// watch.stop("NewFoWThread needed: ");
 
 				mySleep(800);
 			}
