@@ -13,6 +13,7 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.MoveToAction;
 import jsettlers.graphics.action.PanToAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
@@ -124,14 +125,14 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position) {
+	public Action getActionFor(UIPoint position, boolean selecting) {
 		float relativex =
 		        (float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey =
 		        (float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
 		if (minimap != null && relativey > constants.UI_CENTERY) {
-			action = getForMinimap(relativex, relativey);
+			action = getForMinimap(relativex, relativey, selecting);
 			startMapPosition = null; // to prevent it from jumping back.
 		} else {
 			action = uiBase.getAction(relativex, relativey);
@@ -145,7 +146,8 @@ public class OriginalControls implements IControls {
 		}
 	}
 
-	private PanToAction getForMinimap(float relativex, float relativey) {
+	private Action getForMinimap(float relativex, float relativey,
+	        boolean selecting) {
 		float minimapx =
 		        (relativex - constants.MINIMAP_BOTTOMLEFT_X)
 		                / constants.MINIMAP_WIDTH;
@@ -156,7 +158,11 @@ public class OriginalControls implements IControls {
 		ShortPoint2D clickPosition =
 		        minimap.getClickPositionIfOnMap(minimapx, minimapy);
 		if (clickPosition != null) {
-			return new PanToAction(clickPosition);
+			if (selecting) {
+				return new PanToAction(clickPosition);
+			} else {
+				return new MoveToAction(clickPosition);
+			}
 		} else {
 			return null;
 		}
@@ -203,7 +209,7 @@ public class OriginalControls implements IControls {
 		}
 	}
 
-	private PanToAction getActionForDraw(GODrawEvent event) {
+	private Action getActionForDraw(GODrawEvent event) {
 		UIPoint position = event.getDrawPosition();
 
 		float width = this.uiBase.getPosition().getWidth();
@@ -211,7 +217,7 @@ public class OriginalControls implements IControls {
 		float height = this.uiBase.getPosition().getHeight();
 		float relativey = (float) position.getY() / height;
 
-		return getForMinimap(relativex, relativey);
+		return getForMinimap(relativex, relativey, true);
 	}
 
 	private class DrawMinimapHandler implements GOModalEventHandler {
@@ -221,10 +227,7 @@ public class OriginalControls implements IControls {
 
 		@Override
 		public void finished(GOEvent event) {
-			PanToAction action = getActionForDraw((GODrawEvent) event);
-			if (action != null) {
-				minimap.getContext().scrollTo(action.getCenter());
-			}
+			eventDataChanged(event);
 		}
 
 		@Override
@@ -236,9 +239,10 @@ public class OriginalControls implements IControls {
 
 		@Override
 		public void eventDataChanged(GOEvent event) {
-			PanToAction action = getActionForDraw((GODrawEvent) event);
-			if (action != null) {
-				minimap.getContext().scrollTo(action.getCenter());
+			Action action = getActionForDraw((GODrawEvent) event);
+			if (action instanceof PanToAction) {
+				minimap.getContext().scrollTo(
+				        ((PanToAction) action).getCenter());
 			}
 		}
 
@@ -300,6 +304,6 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public void stop() {
-	    minimap.stop();
+		minimap.stop();
 	}
 }

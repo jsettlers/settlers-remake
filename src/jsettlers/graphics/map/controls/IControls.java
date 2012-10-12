@@ -69,9 +69,11 @@ public interface IControls extends IMapInterfaceListener {
 	 *
 	 * @param position
 	 *            The positon.
+	 * @param selecting
+	 *            If the event is a select event.
 	 * @return The action for the position.
 	 */
-	Action getActionFor(UIPoint position);
+	Action getActionFor(UIPoint position, boolean selecting);
 
 	/**
 	 * Handles a draw event. The event may be fired even if it is outside the

@@ -647,7 +647,7 @@ public final class MapContent implements SettlersContent,
 	private Action getActionForCommand(GOCommandEvent commandEvent) {
 		UIPoint position = commandEvent.getCommandPosition();
 		if (controls.containsPoint(position)) {
-			return controls.getActionFor(position);
+			return controls.getActionFor(position, commandEvent.isSelecting());
 		} else {
 			// handle map click
 			return handleCommandOnMap(commandEvent, position);
