@@ -294,10 +294,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, int duration, byte player) {
-		}
-
-		@Override
 		public void changeHeightTowards(short x, short y, byte targetHeight) {
 		}
 
@@ -353,12 +349,16 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
+			movableMap[position.getX()][position.getY()] = movable;
 		}
 
 		@Override
-		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
-			movableMap[position.getX()][position.getY()] = movable;
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+		}
+
+		@Override
+		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, byte player) {
 		}
 
 	};
