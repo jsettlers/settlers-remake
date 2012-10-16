@@ -19,6 +19,8 @@ public final class BowmanStrategy extends SoldierStrategy {
 	private static final float BOWMAN_ATTACK_DURATION = 0.9f;
 	private static final int SQUARE_BOWMAN_ATTACK_RADIUS = Constants.BOWMAN_ATTACK_RADIUS * Constants.BOWMAN_ATTACK_RADIUS;
 
+	// private static final int SQAURE_BOWMAN_MINIMUM_DISTANCE = Constants.BOWMAN_MIN_ATTACK_DISTANCE * Constants.BOWMAN_MIN_ATTACK_DISTANCE;
+
 	public BowmanStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable, movableType);
 	}
@@ -36,7 +38,10 @@ public final class BowmanStrategy extends SoldierStrategy {
 		final int dx = Math.abs(pos.getX() - enemyPos.getX());
 		final int dy = Math.abs(pos.getY() - enemyPos.getY());
 
-		return dx * dx + dy * dy <= SQUARE_BOWMAN_ATTACK_RADIUS;
+		final int squareDist = dx * dx + dy * dy;
+
+		// SQAURE_BOWMAN_MINIMUM_DISTANCE <= squareDist &&
+		return squareDist <= SQUARE_BOWMAN_ATTACK_RADIUS;
 	}
 
 	@Override

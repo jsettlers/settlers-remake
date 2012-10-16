@@ -13,6 +13,22 @@ import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 
 public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
+
+	/**
+	 * Internal state of the {@link SoldierStrategy} class.
+	 * 
+	 * @author Andreas Eberle
+	 */
+	private static enum ESoldierState {
+		AGGRESSIVE,
+
+		ENEMY_FOUND,
+		HITTING,
+
+		INIT_GOTO_TOWER,
+		GOING_TO_TOWER,
+	}
+
 	private final EMovableType movableType;
 
 	private ESoldierState state = ESoldierState.AGGRESSIVE;
@@ -21,6 +37,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	private ShortPoint2D oldPathTarget;
 
 	private boolean inSaveGotoMode = false;
+
+	private boolean isInTower;
 
 	public SoldierStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable);
@@ -51,6 +69,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
+				if (isInTower) {
+					building.towerDefended(this);
+				}
 				changeStateTo(ESoldierState.AGGRESSIVE);
 				break;
 			}
@@ -59,7 +80,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 				startAttackAnimation(enemy);
 				state = ESoldierState.HITTING;
-			} else {
+			} else if (!isInTower) {
 				state = ESoldierState.ENEMY_FOUND;
 				goToEnemy(enemy);
 			}
@@ -76,11 +97,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			super.setPosition(pos);
 			super.enableNothingToDoAction(false);
 			super.setVisible(false);
-			state = ESoldierState.IN_TOWER;
+			state = ESoldierState.AGGRESSIVE;
+			isInTower = true;
 			break;
 
-		case IN_TOWER:
-			break;
 		}
 	}
 
@@ -131,22 +151,6 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		super.abortPath();
 	}
 
-	/**
-	 * Internal state of the {@link SoldierStrategy} class.
-	 * 
-	 * @author Andreas Eberle
-	 */
-	private static enum ESoldierState {
-		AGGRESSIVE,
-
-		ENEMY_FOUND,
-		HITTING,
-
-		INIT_GOTO_TOWER,
-		GOING_TO_TOWER,
-		IN_TOWER,
-	}
-
 	@Override
 	public EMovableType getMovableType() {
 		return movableType;
@@ -173,9 +177,15 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	@Override
 	public void informAboutAttackable(IAttackable other) {
-		if (state == ESoldierState.AGGRESSIVE) {
+		if (state == ESoldierState.AGGRESSIVE && !isInTower) {
 			state = ESoldierState.ENEMY_FOUND; // this searches for the enemy on the next timer click
 		}
+	}
+
+	@Override
+	public void setDefendingAt(ShortPoint2D pos) {
+		super.setPosition(pos);
+		state = ESoldierState.ENEMY_FOUND;
 	}
 
 	@Override
@@ -198,7 +208,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	@Override
 	protected boolean isMoveToAble() {
-		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && state != ESoldierState.IN_TOWER;
+		return state != ESoldierState.INIT_GOTO_TOWER && state != ESoldierState.GOING_TO_TOWER && !isInTower;
 	}
 
 	@Override

@@ -52,10 +52,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private byte delayCtr;
 
 	private boolean occupiedArea;
-
 	private float doorHealth = 1.0f;
-
 	private boolean inFight;
+	private AttackableTowerMapObject attackableTowerObject = null;
 
 	public OccupyingBuilding(EBuildingType type, byte player) {
 		super(type, player);
@@ -91,9 +90,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private void setAttackableTowerObject(boolean set) {
 		if (set) {
-			super.getGrid().getMapObjectsManager().addAttackableTowerObject(getDoor(), new AttackableTowerMapObject());
+			attackableTowerObject = new AttackableTowerMapObject();
+			super.getGrid().getMapObjectsManager().addAttackableTowerObject(getDoor(), attackableTowerObject);
 		} else {
 			super.getGrid().getMapObjectsManager().removeMapObjectType(getDoor().getX(), getDoor().getY(), EMapObjectType.ATTACKABLE_TOWER);
+			attackableTowerObject = null;
 		}
 	}
 
@@ -267,6 +268,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		for (TowerOccupyer curr : occupiers) {
 			curr.soldier.setSelected(selected);
 		}
+
+		if (attackableTowerObject != null && attackableTowerObject.currDefender != null) {
+			attackableTowerObject.currDefender.soldier.setSelected(selected);
+		}
 	}
 
 	private final ESearchType getSearchType(EMovableType movableType) {
@@ -297,6 +302,13 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	public final boolean isOccupied() {
 		return occupiers.isEmpty();
+	}
+
+	@Override
+	public void towerDefended(IBuildingOccupyableMovable soldier) {
+		inFight = false;
+		occupiers.add(new TowerOccupyer(attackableTowerObject.currDefender.place, soldier));
+		attackableTowerObject.currDefender = null;
 	}
 
 	public final static LinkedList<OccupyingBuilding> getAllOccupyingBuildings() {
@@ -361,7 +373,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					OccupyingBuilding.this.getGrid().getMapObjectsManager()
 							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
-					currDefender = occupiers.isEmpty() ? null : occupiers.removeFirst();
+					pollNewDefender();
 				}
 			} else if (currDefender != null) {
 				IAttackableMovable movable = currDefender.soldier.getMovable();
@@ -375,10 +387,18 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 						emptyPlaces.add(currDefender.place); // request a new soldier.
 						searchedSoldiers.add(getSearchType(currDefender.soldier.getMovableType()));
 
-						currDefender = occupiers.removeFirst();
-						currDefender.soldier.setPosition(getDoor());
+						pollNewDefender();
 					}
 				}
+			}
+		}
+
+		private void pollNewDefender() {
+			if (occupiers.isEmpty()) {
+				currDefender = null;
+			} else {
+				currDefender = occupiers.removeFirst();
+				currDefender.soldier.setDefendingAt(getPos());
 			}
 		}
 

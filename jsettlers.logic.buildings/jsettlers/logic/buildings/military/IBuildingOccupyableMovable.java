@@ -34,4 +34,12 @@ public interface IBuildingOccupyableMovable {
 	 */
 	void setPosition(ShortPoint2D door);
 
+	/**
+	 * This method is called when this movable has to defend it's building at the given position.
+	 * 
+	 * @param pos
+	 *            The position the defending movable is standing.
+	 */
+	void setDefendingAt(ShortPoint2D pos);
+
 }

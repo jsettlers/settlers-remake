@@ -17,4 +17,12 @@ public interface IOccupyableBuilding {
 
 	byte getPlayer();
 
+	/**
+	 * This method is called by the soldier when he finished defending the tower.
+	 * 
+	 * @param soldier
+	 *            The soldier that defended the tower.
+	 */
+	void towerDefended(IBuildingOccupyableMovable soldier);
+
 }

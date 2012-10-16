@@ -38,6 +38,7 @@ public final class Constants {
 	public static final short SOLDIER_SEARCH_RADIUS = 30;
 	public static final short TOWER_SEARCH_RADIUS = 45;
 	public static final int BOWMAN_ATTACK_RADIUS = 20;
+	public static final int BOWMAN_MIN_ATTACK_DISTANCE = 5;
 
 	/**
 	 * interrupts until arrows are removed from the map again.<br>
