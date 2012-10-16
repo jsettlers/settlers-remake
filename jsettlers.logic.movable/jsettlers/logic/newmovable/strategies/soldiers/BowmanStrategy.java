@@ -16,7 +16,7 @@ import jsettlers.logic.newmovable.interfaces.IAttackable;
  */
 public final class BowmanStrategy extends SoldierStrategy {
 	private static final long serialVersionUID = 7062243467280721040L;
-	private static final float BOWMAN_ATTACK_DURATION = 0.9f;
+	private static final float BOWMAN_ATTACK_DURATION = 1.2f;
 	private static final int SQUARE_BOWMAN_ATTACK_RADIUS = Constants.BOWMAN_ATTACK_RADIUS * Constants.BOWMAN_ATTACK_RADIUS;
 
 	// private static final int SQAURE_BOWMAN_MINIMUM_DISTANCE = Constants.BOWMAN_MIN_ATTACK_DISTANCE * Constants.BOWMAN_MIN_ATTACK_DISTANCE;
@@ -48,7 +48,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	protected void startAttackAnimation(IAttackable enemy) {
 		super.playAction(EAction.ACTION1, BOWMAN_ATTACK_DURATION);
 
-		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer(), 0.1f);
+		super.getStrategyGrid().addArrowObject(enemy.getPos(), super.getPos(), super.getPlayer(), 0.08f);
 	}
 
 	@Override

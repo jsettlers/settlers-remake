@@ -22,7 +22,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	private static enum ESoldierState {
 		AGGRESSIVE,
 
-		ENEMY_FOUND,
+		SEARCH_FOR_ENEMIES,
 		HITTING,
 
 		INIT_GOTO_TOWER,
@@ -55,10 +55,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			hitEnemy(enemy);
 			if (enemy.getHealth() <= 0) {
 				enemy = null;
-				state = ESoldierState.ENEMY_FOUND;
+				state = ESoldierState.SEARCH_FOR_ENEMIES;
 				break; // don't directly walk on the enemy's position, because there may be others to walk in first
 			}
-		case ENEMY_FOUND:
+		case SEARCH_FOR_ENEMIES:
 			IAttackable oldEnemy = enemy;
 			enemy = super.getStrategyGrid().getEnemyInSearchArea(super.getMovable());
 
@@ -81,7 +81,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				startAttackAnimation(enemy);
 				state = ESoldierState.HITTING;
 			} else if (!isInTower) {
-				state = ESoldierState.ENEMY_FOUND;
+				state = ESoldierState.SEARCH_FOR_ENEMIES;
 				goToEnemy(enemy);
 			}
 
@@ -93,12 +93,16 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		case GOING_TO_TOWER:
-			ShortPoint2D pos = building.addSoldier(this);
-			super.setPosition(pos);
-			super.enableNothingToDoAction(false);
-			super.setVisible(false);
-			state = ESoldierState.AGGRESSIVE;
-			isInTower = true;
+			if (building.isNotDestroyed() && building.getPlayer() == super.getPlayer()) {
+				ShortPoint2D pos = building.addSoldier(this);
+				super.setPosition(pos);
+				super.enableNothingToDoAction(false);
+				super.setVisible(false);
+				state = ESoldierState.AGGRESSIVE;
+				isInTower = true;
+			} else {
+				state = ESoldierState.SEARCH_FOR_ENEMIES; // do a check of the surrounding to find possible enemies.
+			}
 			break;
 
 		}
@@ -167,7 +171,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		super.enableNothingToDoAction(true);
 		super.setVisible(true);
 
-		state = ESoldierState.ENEMY_FOUND;
+		isInTower = false;
+		state = ESoldierState.SEARCH_FOR_ENEMIES;
 	}
 
 	@Override
@@ -178,21 +183,25 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	@Override
 	public void informAboutAttackable(IAttackable other) {
 		if (state == ESoldierState.AGGRESSIVE && !isInTower) {
-			state = ESoldierState.ENEMY_FOUND; // this searches for the enemy on the next timer click
+			state = ESoldierState.SEARCH_FOR_ENEMIES; // this searches for the enemy on the next timer click
 		}
 	}
 
 	@Override
 	public void setDefendingAt(ShortPoint2D pos) {
 		super.setPosition(pos);
-		state = ESoldierState.ENEMY_FOUND;
+		state = ESoldierState.SEARCH_FOR_ENEMIES;
 	}
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		boolean result = !((state == ESoldierState.ENEMY_FOUND || state == ESoldierState.HITTING) && step >= 2);
+		boolean result = !((state == ESoldierState.SEARCH_FOR_ENEMIES || state == ESoldierState.HITTING) && step >= 2);
 		if (!result && oldPathTarget == null) {
 			oldPathTarget = pathTarget;
+		}
+
+		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayer() != super.getPlayer())) {
+			result = false;
 		}
 
 		return result;
@@ -213,7 +222,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	@Override
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
-		if (state == ESoldierState.ENEMY_FOUND) {
+		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
 			IStrategyGrid grid = super.getStrategyGrid();
 			EDirection leftDir = direction.getNeighbor(-1);
 			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
