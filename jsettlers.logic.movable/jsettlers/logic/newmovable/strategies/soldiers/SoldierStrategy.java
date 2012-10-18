@@ -1,5 +1,7 @@
 package jsettlers.logic.newmovable.strategies.soldiers;
 
+import jsettlers.common.buildings.OccupyerPlace;
+import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -40,6 +42,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	private boolean isInTower;
 
+	private ShortPoint2D inTowerAttackPosition;
+
+	private boolean defending;
+
 	public SoldierStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable);
 		this.movableType = movableType;
@@ -60,7 +66,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			}
 		case SEARCH_FOR_ENEMIES:
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(super.getMovable());
+			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getSearchDistance(isInTower));
 
 			// check if we have a new enemy. If so, go in unsave mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
@@ -69,8 +75,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 			// no enemy found, go back in normal mode
 			if (enemy == null) {
-				if (isInTower) {
+				if (defending) {
 					building.towerDefended(this);
+					defending = false;
 				}
 				changeStateTo(ESoldierState.AGGRESSIVE);
 				break;
@@ -94,10 +101,15 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 		case GOING_TO_TOWER:
 			if (building.isNotDestroyed() && building.getPlayer() == super.getPlayer()) {
-				ShortPoint2D pos = building.addSoldier(this);
-				super.setPosition(pos);
+				OccupyerPlace place = building.addSoldier(this);
+				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
 				super.enableNothingToDoAction(false);
 				super.setVisible(false);
+
+				if (isBowman()) {
+					this.inTowerAttackPosition = building.getTowerBowmanSearchPosition(place);
+				}
+
 				state = ESoldierState.AGGRESSIVE;
 				isInTower = true;
 			} else {
@@ -106,6 +118,16 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		}
+	}
+
+	protected abstract short getSearchDistance(boolean isInTower);
+
+	private ShortPoint2D getAttackPosition() {
+		return isInTower && isBowman() ? inTowerAttackPosition : super.getPos();
+	}
+
+	private boolean isBowman() {
+		return getSoldierType() == ESoldierType.BOWMAN;
 	}
 
 	private void goToEnemy(IAttackable enemy) {
@@ -153,6 +175,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		this.building = building;
 		this.state = ESoldierState.INIT_GOTO_TOWER;
 		super.abortPath();
+		this.oldPathTarget = null; // this prevents that the soldiers go to this position after he leaves the tower.
 	}
 
 	@Override
@@ -182,7 +205,11 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	@Override
 	public void informAboutAttackable(IAttackable other) {
-		if (state == ESoldierState.AGGRESSIVE && !isInTower) {
+		if (isInTower) {
+			if (getSoldierType() == ESoldierType.BOWMAN) {
+				state = ESoldierState.SEARCH_FOR_ENEMIES;
+			}
+		} else if (state == ESoldierState.AGGRESSIVE) {
 			state = ESoldierState.SEARCH_FOR_ENEMIES; // this searches for the enemy on the next timer click
 		}
 	}
@@ -191,6 +218,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	public void setDefendingAt(ShortPoint2D pos) {
 		super.setPosition(pos);
 		state = ESoldierState.SEARCH_FOR_ENEMIES;
+		defending = true;
 	}
 
 	@Override

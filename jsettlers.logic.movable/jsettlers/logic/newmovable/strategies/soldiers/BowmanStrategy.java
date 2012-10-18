@@ -26,7 +26,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	public ESoldierType getSoldierType() {
+	public final ESoldierType getSoldierType() {
 		return ESoldierType.BOWMAN;
 	}
 
@@ -53,5 +53,10 @@ public final class BowmanStrategy extends SoldierStrategy {
 
 	@Override
 	protected void hitEnemy(IAttackable enemy) {
+	}
+
+	@Override
+	protected short getSearchDistance(boolean isInTower) {
+		return isInTower ? Constants.TOWER_SEARCH_RADIUS : Constants.BOWMAN_ATTACK_RADIUS;
 	}
 }

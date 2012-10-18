@@ -1,11 +1,17 @@
 package jsettlers.logic.buildings.military;
 
+import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 
 public interface IOccupyableBuilding {
 
-	ShortPoint2D addSoldier(IBuildingOccupyableMovable soldier);
+	/**
+	 * 
+	 * @param soldier
+	 * @return
+	 */
+	OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier);
 
 	ShortPoint2D getDoor();
 
@@ -24,5 +30,7 @@ public interface IOccupyableBuilding {
 	 *            The soldier that defended the tower.
 	 */
 	void towerDefended(IBuildingOccupyableMovable soldier);
+
+	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place);
 
 }

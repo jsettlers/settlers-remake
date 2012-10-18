@@ -16,6 +16,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.newmovable.interfaces.IInformable;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
@@ -24,6 +25,7 @@ import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
+import jsettlers.logic.objects.building.InformableMapObject;
 import jsettlers.logic.objects.corn.Corn;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
@@ -516,6 +518,18 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		assert attackableTowerMapObject instanceof IAttackableTowerMapObject;
 
 		this.addMapObject(position, attackableTowerMapObject);
+	}
+
+	/**
+	 * Adds a map object that informs the given {@link IInformable} about attackable enemies in the area.
+	 * 
+	 * @param position
+	 *            The position the object should be added.
+	 * @param informable
+	 *            The {@link IInformable} that will be informed of enemies.
+	 */
+	public void addInformableMapObjectAt(ShortPoint2D position, IInformable informable) {
+		this.addMapObject(position, new InformableMapObject(informable));
 	}
 
 }

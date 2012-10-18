@@ -185,9 +185,12 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			int idx = 0;
 			FreeMapArea buildingArea = super.getBuildingArea();
 			for (TowerOccupyer curr : occupiers) {
-				curr.soldier.leaveOccupyableBuilding(buildingArea.get(idx));
+				addInformableMapObject(curr, false);// if curr is a bowman, this removes the informable map object.
+
+				curr.getSoldier().leaveOccupyableBuilding(buildingArea.get(idx));
 				idx++;
 			}
+
 			occupiers.clear();
 		}
 
@@ -212,17 +215,56 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final ShortPoint2D addSoldier(IBuildingOccupyableMovable soldier) {
+	public final OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier) {
 		OccupyerPlace freePosition = findFreePositionFor(soldier.getSoldierType());
 
 		emptyPlaces.remove(freePosition);
-		occupiers.add(new TowerOccupyer(freePosition, soldier));
+		TowerOccupyer towerOccupier = new TowerOccupyer(freePosition, soldier);
+		occupiers.add(towerOccupier);
 
 		occupyArea();
 
 		soldier.setSelected(super.isSelected());
 
-		return freePosition.getPosition().calculatePoint(super.getPos());
+		addInformableMapObject(towerOccupier, true);
+
+		return freePosition;
+	}
+
+	protected TowerOccupyer removeSoldier() {
+		TowerOccupyer removedSoldier = occupiers.removeFirst();
+
+		addInformableMapObject(removedSoldier, false);
+
+		return removedSoldier;
+	}
+
+	/**
+	 * Adds or removes the informable map object for the given soldier.
+	 * 
+	 * @param soldier
+	 * @param add
+	 *            if true, the object is added<br>
+	 *            if false, the object is removed.
+	 */
+	private void addInformableMapObject(TowerOccupyer soldier, boolean add) {
+		if (soldier.place.getType() == ESoldierType.BOWMAN) {
+			ShortPoint2D position = getTowerBowmanSearchPosition(soldier.place);
+
+			if (add) {
+				super.getGrid().getMapObjectsManager().addInformableMapObjectAt(position, soldier.getSoldier().getMovable());
+			} else {
+				super.getGrid().getMapObjectsManager().removeMapObjectType(position.getX(), position.getY(), EMapObjectType.INFORMABLE_MAP_OBJECT);
+			}
+		}
+	}
+
+	@Override
+	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place) {
+		ShortPoint2D pos = place.getPosition().calculatePoint(super.getPos());
+		// FIXME @Andreas Eberle introduce new field in the buildings xml file
+		ShortPoint2D position = new ShortPoint2D(pos.getX() + 3, pos.getY() + 6);
+		return position;
 	}
 
 	private OccupyerPlace findFreePositionFor(ESoldierType soldierType) {
@@ -255,7 +297,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	public final ShortPoint2D getPosition(IBuildingOccupyableMovable soldier) {
 		for (TowerOccupyer curr : occupiers) {
-			if (curr.soldier == soldier) {
+			if (curr.getSoldier() == soldier) {
 				return curr.place.getPosition().calculatePoint(super.getPos());
 			}
 		}
@@ -266,11 +308,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	public final void setSelected(boolean selected) {
 		super.setSelected(selected);
 		for (TowerOccupyer curr : occupiers) {
-			curr.soldier.setSelected(selected);
+			curr.getSoldier().setSelected(selected);
 		}
 
 		if (attackableTowerObject != null && attackableTowerObject.currDefender != null) {
-			attackableTowerObject.currDefender.soldier.setSelected(selected);
+			attackableTowerObject.currDefender.getSoldier().setSelected(selected);
 		}
 	}
 
@@ -340,6 +382,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			return soldier.getMovable();
 		}
 
+		public IBuildingOccupyableMovable getSoldier() {
+			return soldier;
+		}
+
 	}
 
 	/**
@@ -376,7 +422,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					pollNewDefender();
 				}
 			} else if (currDefender != null) {
-				IAttackableMovable movable = currDefender.soldier.getMovable();
+				IAttackableMovable movable = currDefender.getSoldier().getMovable();
 				movable.receiveHit(strength, player);
 
 				if (movable.getHealth() <= 0) {
@@ -385,7 +431,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 						changePlayerTo(player);
 					} else {
 						emptyPlaces.add(currDefender.place); // request a new soldier.
-						searchedSoldiers.add(getSearchType(currDefender.soldier.getMovableType()));
+						searchedSoldiers.add(getSearchType(currDefender.getSoldier().getMovableType()));
 
 						pollNewDefender();
 					}
@@ -397,8 +443,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			if (occupiers.isEmpty()) {
 				currDefender = null;
 			} else {
-				currDefender = occupiers.removeFirst();
-				currDefender.soldier.setDefendingAt(getPos());
+				currDefender = removeSoldier();
+				currDefender.getSoldier().setDefendingAt(getPos());
 			}
 		}
 
@@ -418,7 +464,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		@Override
 		public IMovable getMovable() {
-			return currDefender == null ? null : currDefender.soldier.getMovable();
+			return currDefender == null ? null : currDefender.getSoldier().getMovable();
 		}
 
 		@Override
@@ -429,9 +475,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		@Override
 		public void informAboutAttackable(IAttackable attackable) {
-			for (TowerOccupyer currPlace : occupiers) {
-				currPlace.soldier.informAboutAttackable(attackable);
-			}
 		}
 	}
 

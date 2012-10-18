@@ -526,8 +526,8 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -537,9 +537,10 @@ public class MainGrid implements Serializable {
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			// return flagsGrid.isMarked((short) x, (short) y) ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0)));
+			return flagsGrid.isMarked((short) x, (short) y) ? Color.ORANGE.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+					EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
@@ -1022,10 +1023,11 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
-			movableGrid.movableEntered(position, movable, informFullArea);
+			movableGrid.movableEntered(position, movable);
 
 			if (movable.isAttackable()) {
-				objectsGrid.informTowersAboutAttackble(position, movable, informFullArea, !EMovableType.isBowman(movable.getMovableType()));
+				movableGrid.informMovables(movable, position.getX(), position.getY(), informFullArea);
+				objectsGrid.informObjectsAboutAttackble(position, movable, informFullArea, !EMovableType.isBowman(movable.getMovableType()));
 			}
 		}
 
@@ -1075,24 +1077,22 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(NewMovable movable) {
-			ShortPoint2D pos = movable.getPos();
-			HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
+		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable attackable, short searchRadius) {
+			ShortPoint2D pos = attackable.getPos();
+			HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, searchRadius);
 
-			boolean isBowman = EMovableType.isBowman(movable.getMovableType());
+			boolean isBowman = EMovableType.isBowman(attackable.getMovableType());
 
-			IAttackable enemy = getEnemyInSearchArea(movable, area, isBowman);
+			IAttackable enemy = getEnemyInSearchArea(attackable.getPlayer(), area, isBowman);
 			if (enemy == null && !isBowman) {
-				enemy = getEnemyInSearchArea(movable, new HexGridArea(pos.getX(), pos.getY(), Constants.SOLDIER_SEARCH_RADIUS,
+				enemy = getEnemyInSearchArea(attackable.getPlayer(), new HexGridArea(pos.getX(), pos.getY(), searchRadius,
 						Constants.TOWER_SEARCH_RADIUS), isBowman);
 			}
 
 			return enemy;
 		}
 
-		private IAttackable getEnemyInSearchArea(NewMovable movable, HexGridArea area, boolean isBowman) {
-			byte movablePlayer = movable.getPlayer();
-
+		private IAttackable getEnemyInSearchArea(byte movablePlayer, HexGridArea area, boolean isBowman) {
 			for (ShortPoint2D curr : area) {
 				short x = curr.getX();
 				short y = curr.getY();

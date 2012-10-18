@@ -60,11 +60,8 @@ public final class MovableGrid implements Serializable {
 	 *            Position to be entered.
 	 * @param movable
 	 *            Movable that enters the position.
-	 * @param informFullArea
-	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
-	 *            If false, only a circle is informed if the given movable is attackable.
 	 */
-	public final void movableEntered(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
+	public final void movableEntered(ShortPoint2D position, NewMovable movable) {
 		short x = position.getX();
 		short y = position.getY();
 
@@ -78,30 +75,43 @@ public final class MovableGrid implements Serializable {
 			ground.walkOn(x, y);
 		}
 
+	}
+
+	/**
+	 * 
+	 * @param movable
+	 *            The movable that needs to inform the others.
+	 * @param x
+	 *            x coordinate of the movables position.
+	 * @param y
+	 *            y coordinate of the movables position.
+	 * @param informFullArea
+	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
+	 *            If false, only a circle is informed if the given movable is attackable.
+	 */
+	public void informMovables(NewMovable movable, short x, short y, boolean informFullArea) {
 		// inform all movables of the given movable
-		if (movable.isAttackable()) {
-			IMapArea area;
-			if (informFullArea) {
-				area = new HexGridArea(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
-			} else {
-				area = new HexBorderArea(x, y, (short) (Constants.SOLDIER_SEARCH_RADIUS - 1));
-			}
+		IMapArea area;
+		if (informFullArea) {
+			area = new HexGridArea(x, y, (short) 1, Constants.SOLDIER_SEARCH_RADIUS);
+		} else {
+			area = new HexBorderArea(x, y, (short) (Constants.SOLDIER_SEARCH_RADIUS - 1));
+		}
 
-			boolean foundOne = false;
-			byte movablePlayer = movable.getPlayer();
+		boolean foundOne = false;
+		byte movablePlayer = movable.getPlayer();
 
-			for (ShortPoint2D curr : area) {
-				short currX = curr.getX();
-				short currY = curr.getY();
-				if (0 <= currX && currX < width && 0 <= currY && currY < height) {
-					NewMovable currMovable = getMovableAt(currX, currY);
-					if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
-						currMovable.informAboutAttackable(movable);
+		for (ShortPoint2D curr : area) {
+			short currX = curr.getX();
+			short currY = curr.getY();
+			if (0 <= currX && currX < width && 0 <= currY && currY < height) {
+				NewMovable currMovable = getMovableAt(currX, currY);
+				if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
+					currMovable.informAboutAttackable(movable);
 
-						if (!foundOne) { // the first found movable is the one closest to the given movable.
-							movable.informAboutAttackable(currMovable);
-							foundOne = true;
-						}
+					if (!foundOne) { // the first found movable is the one closest to the given movable.
+						movable.informAboutAttackable(currMovable);
+						foundOne = true;
 					}
 				}
 			}

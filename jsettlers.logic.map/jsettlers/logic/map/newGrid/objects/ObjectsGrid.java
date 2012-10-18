@@ -13,6 +13,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.newmovable.interfaces.IInformable;
 
 /**
  * This grid stores the objects located at each position.
@@ -164,7 +165,7 @@ public final class ObjectsGrid implements Serializable {
 	 *            if false, only the border of the area is informed.
 	 * @param b
 	 */
-	public void informTowersAboutAttackble(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
+	public void informObjectsAboutAttackble(ShortPoint2D position, IAttackable attackable, boolean informFullArea, boolean informAttackable) {
 		IMapArea area;
 		if (informFullArea) {
 			area = new HexGridArea(position.getX(), position.getY(), (short) 1, Constants.TOWER_SEARCH_RADIUS);
@@ -179,12 +180,18 @@ public final class ObjectsGrid implements Serializable {
 			short y = curr.getY();
 			if (0 <= x && x < width && 0 <= y && y < height) {
 				IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
+
 				if (currTower != null && currTower.getPlayer() != movablePlayer) {
 					currTower.informAboutAttackable(attackable);
 
 					if (informAttackable) {
 						attackable.informAboutAttackable(currTower);
 					}
+				}
+
+				IInformable currInformable = (IInformable) getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT);
+				if (currInformable != null) {
+					currInformable.informAboutAttackable(attackable);
 				}
 			}
 		}

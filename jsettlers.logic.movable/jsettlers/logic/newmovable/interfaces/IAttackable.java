@@ -9,7 +9,7 @@ import jsettlers.common.position.ILocatable;
  * @author Andreas Eberle
  * 
  */
-public interface IAttackable extends ILocatable {
+public interface IAttackable extends ILocatable, IInformable {
 	/**
 	 * Hits this attackable with the given strength.
 	 * 
@@ -46,13 +46,5 @@ public interface IAttackable extends ILocatable {
 	 * @return Gets the {@link EMovableType} of this {@link IAttackable}.
 	 */
 	EMovableType getMovableType();
-
-	/**
-	 * Informs this attackable of an attackable enemy.
-	 * 
-	 * @param attackable
-	 *            The attackable enemy.
-	 */
-	void informAboutAttackable(IAttackable attackable);
 
 }

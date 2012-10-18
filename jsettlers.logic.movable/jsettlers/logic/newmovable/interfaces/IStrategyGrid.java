@@ -11,7 +11,6 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
 /**
@@ -166,11 +165,15 @@ public interface IStrategyGrid {
 	/**
 	 * Searches for an enemy around the position of the given movable in it's search radius.
 	 * 
+	 * @param centerPos
+	 *            The center position to start the search.
 	 * @param movable
 	 *            The movable searching an enemy.
+	 * @param searchRadius
+	 *            The radius of the search for enemy attackables.
 	 * @return The closest enemy or null if none exists in the search radius.
 	 */
-	IAttackable getEnemyInSearchArea(NewMovable movable);
+	IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short searchRadius);
 
 	/**
 	 * Adds an arrow object to the map flying from
