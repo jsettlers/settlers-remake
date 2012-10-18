@@ -103,9 +103,15 @@ public enum EMapObjectType {
 	FISH_DECORATION,
 
 	/**
-	 * doesn't need to be drawn
+	 * Doesn't need to be drawn. <br>
+	 * Must implement {@link IAttackableTowerMapObject}.
 	 */
-	ATTACKABLE_TOWER;
+	ATTACKABLE_TOWER,
+
+	/**
+	 * doesn't need to be drawn.
+	 */
+	INFORMABLE_MAP_OBJECT;
 
 	public static final EMapObjectType[] values = EMapObjectType.values();
 	public final byte ordinal;
