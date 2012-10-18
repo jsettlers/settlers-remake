@@ -28,7 +28,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	protected boolean isEnemyAttackable(IAttackable enemy) {
+	protected boolean isEnemyAttackable(IAttackable enemy, boolean isInTower) {
 		return EDirection.getDirection(super.getPos(), enemy.getPos()) != null;
 	}
 

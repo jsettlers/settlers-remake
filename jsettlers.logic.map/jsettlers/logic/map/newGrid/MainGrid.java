@@ -1077,22 +1077,20 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable attackable, short searchRadius) {
-			ShortPoint2D pos = attackable.getPos();
-			HexGridArea area = new HexGridArea(pos.getX(), pos.getY(), (short) 1, searchRadius);
+		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable searchingAttackable, short searchRadius) {
+			boolean isBowman = EMovableType.isBowman(searchingAttackable.getMovableType());
 
-			boolean isBowman = EMovableType.isBowman(attackable.getMovableType());
-
-			IAttackable enemy = getEnemyInSearchArea(attackable.getPlayer(), area, isBowman);
+			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.getX(), position.getY(), (short) 1,
+					searchRadius), isBowman);
 			if (enemy == null && !isBowman) {
-				enemy = getEnemyInSearchArea(attackable.getPlayer(), new HexGridArea(pos.getX(), pos.getY(), searchRadius,
+				enemy = getEnemyInSearchArea(searchingAttackable.getPlayer(), new HexGridArea(position.getX(), position.getY(), searchRadius,
 						Constants.TOWER_SEARCH_RADIUS), isBowman);
 			}
 
 			return enemy;
 		}
 
-		private IAttackable getEnemyInSearchArea(byte movablePlayer, HexGridArea area, boolean isBowman) {
+		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman) {
 			for (ShortPoint2D curr : area) {
 				short x = curr.getX();
 				short y = curr.getY();
@@ -1103,7 +1101,7 @@ public class MainGrid implements Serializable {
 						currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 					}
 
-					if (currAttackable != null && MovableGrid.isEnemy(movablePlayer, currAttackable)) {
+					if (currAttackable != null && MovableGrid.isEnemy(searchingPlayer, currAttackable)) {
 						return currAttackable;
 					}
 				}

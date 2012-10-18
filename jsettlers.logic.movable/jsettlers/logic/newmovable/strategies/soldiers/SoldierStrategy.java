@@ -83,7 +83,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				break;
 			}
 
-			if (isEnemyAttackable(enemy)) { // if enemy is close enough, attack it
+			if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
 				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 				startAttackAnimation(enemy);
 				state = ESoldierState.HITTING;
@@ -168,7 +168,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	protected abstract void startAttackAnimation(IAttackable enemy);
 
-	protected abstract boolean isEnemyAttackable(IAttackable enemy);
+	protected abstract boolean isEnemyAttackable(IAttackable enemy, boolean isInTower);
 
 	@Override
 	public void setOccupyableBuilding(IOccupyableBuilding building) {
@@ -205,11 +205,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	@Override
 	public void informAboutAttackable(IAttackable other) {
-		if (isInTower) {
-			if (getSoldierType() == ESoldierType.BOWMAN) {
-				state = ESoldierState.SEARCH_FOR_ENEMIES;
-			}
-		} else if (state == ESoldierState.AGGRESSIVE) {
+		if (state == ESoldierState.AGGRESSIVE && (!isInTower || getSoldierType() == ESoldierType.BOWMAN)) {
 			state = ESoldierState.SEARCH_FOR_ENEMIES; // this searches for the enemy on the next timer click
 		}
 	}

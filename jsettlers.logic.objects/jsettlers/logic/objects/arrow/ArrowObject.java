@@ -9,7 +9,7 @@ import jsettlers.logic.objects.ProgressingSoundableObject;
 public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
 	private static final long serialVersionUID = 1702902724559733166L;
 
-	private static final float SECONDS_PER_TILE = 0.020f;
+	private static final float SECONDS_PER_TILE = 0.011f;
 	public static final float MIN_DECOMPOSE_DELAY = 60;
 
 	private final short sourceX;
