@@ -4,20 +4,18 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.Dimension;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.ISettlersGameDisplay;
-import jsettlers.graphics.JOGLPanel;
-import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.swing.JOGLPanel;
+import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ManagedJSettlers;
 import jsettlers.main.MapDataMapCreator;
@@ -26,18 +24,7 @@ import network.NetworkManager;
 public class SwingManagedJSettlers {
 
 	static { // sets the native library path for the system dependent jogl libs
-		JoglLibraryPathInitializer.initLibraryPath();
-
-		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
-		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
-		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
-
-		SoundManager.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/Snd"));
-		SoundManager.addLookupPath(new File("D:/Games/Siedler3/Snd"));
-		SoundManager.addLookupPath(new File("C:/Program Files/siedler 3/Snd"));
-
-		CommonConstants.ENABLE_DEBUG_COLORS = true;
+		SwingResourceLoader.setupSwingPaths();
 	}
 
 	/**
@@ -49,7 +36,7 @@ public class SwingManagedJSettlers {
 	 * @throws ClassNotFoundException
 	 */
 	public static void main(String[] args) {
-		ResourceManager.setProvider(new ResourceProvider());
+		ResourceManager.setProvider(new SwingResourceProvider());
 		ManagedJSettlers game = new ManagedJSettlers();
 		game.start(getGui());
 
@@ -65,7 +52,7 @@ public class SwingManagedJSettlers {
 	 * @param mapname
 	 */
 	public static void startMap(IMapDataProvider data) {
-		ResourceManager.setProvider(new ResourceProvider());
+		ResourceManager.setProvider(new SwingResourceProvider());
 		// TODO: detect exit
 		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager(), (byte) 0);
 		game.start();
