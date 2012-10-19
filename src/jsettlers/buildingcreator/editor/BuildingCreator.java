@@ -37,14 +37,13 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.JOGLPanel;
-import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.swing.JOGLPanel;
+import jsettlers.graphics.swing.SwingResourceLoader;
 
 /**
  * This is the main building creator class.
@@ -53,16 +52,7 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public class BuildingCreator implements IMapInterfaceListener {
 	static { // sets the native library path for the system dependent jogl libs
-		JoglLibraryPathInitializer.initLibraryPath();
-
-		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
-		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
-		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
-
-		SoundManager.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/Snd"));
-		SoundManager.addLookupPath(new File("D:/Games/Siedler3/Snd"));
-		SoundManager.addLookupPath(new File("C:/Program Files/siedler 3/Snd"));
+		SwingResourceLoader.setupSwingPaths();
 	}
 
 	private BuildingDefinition definition;
