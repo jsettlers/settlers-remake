@@ -2,10 +2,12 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import jsettlers.common.Color;
 import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.material.EMaterialType;
@@ -316,14 +318,28 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(position).releaseRequestsAt(position, materialType);
 	}
 
-	public final List<ShortPoint2D> occupyArea(MapCircle toBeOccupied, ShortPoint2D occupiersPosition, byte newPlayer) {
+	public final List<ShortPoint2D> occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte newPlayer) {
 		MilliStopWatch watch = new MilliStopWatch();
 		watch.start();
 
-		changePlayerAt(occupiersPosition.getX(), occupiersPosition.getY(), newPlayer);
-
-		short newPartition = getPartition(occupiersPosition);
 		List<ShortPoint2D> occupiedPositions = new ArrayList<ShortPoint2D>();
+
+		Iterator<ShortPoint2D> groundAreaIter = groundArea.iterator();
+		ShortPoint2D firstPos = groundAreaIter.next();
+		changePlayerAt(firstPos.getX(), firstPos.getY(), newPlayer);
+		short newPartition = getPartition(firstPos);
+		occupiedPositions.add(firstPos);
+
+		while (groundAreaIter.hasNext()) {
+			ShortPoint2D curr = groundAreaIter.next();
+			short x = curr.getX();
+			short y = curr.getY();
+			if (getPartition(x, y) != newPartition) {
+				this.setPartition(x, y, newPartition);
+				occupiedPositions.add(curr);
+			}
+		}
+
 		List<ShortPoint2D> checkForMerge = new ArrayList<ShortPoint2D>();
 
 		ShortPoint2D unblockedOccupied = null;

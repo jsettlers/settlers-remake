@@ -32,6 +32,7 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -526,8 +527,8 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -537,10 +538,10 @@ public class MainGrid implements Serializable {
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked((short) x, (short) y) ? Color.ORANGE.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-					EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-					EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-					.getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0))));
+			// return flagsGrid.isMarked((short) x, (short) y) ? Color.ORANGE.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+			// EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
+			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
+			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
@@ -1237,8 +1238,8 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void occupyArea(MapCircle toBeOccupied, ShortPoint2D occupiersPosition, byte player) {
-			List<ShortPoint2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, occupiersPosition, player);
+		public final void occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte player) {
+			List<ShortPoint2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, groundArea, player);
 			bordersThread.checkPositions(occupiedPositions);
 			landmarksCorrection.addLandmarkedPositions(occupiedPositions);
 		}

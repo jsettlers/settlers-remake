@@ -1,6 +1,7 @@
 package jsettlers.logic.buildings;
 
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -74,7 +75,7 @@ public interface IBuildingsGrid {
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 
-	void occupyArea(MapCircle toBeOccupied, ShortPoint2D occupiersPosition, byte player);
+	void occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte player);
 
 	void removeBuildingAt(ShortPoint2D pos);
 

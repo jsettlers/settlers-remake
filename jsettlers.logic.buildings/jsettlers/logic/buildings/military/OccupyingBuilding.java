@@ -282,7 +282,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final void occupyArea() {
 		if (!occupiedArea) {
 			MapCircle occupying = getOccupyablePositions();
-			super.getGrid().occupyArea(occupying, super.getPos(), super.getPlayer());
+			super.getGrid().occupyArea(occupying, new FreeMapArea(super.getPos(), super.getBuildingType().getProtectedTiles()), super.getPlayer());
 			occupiedArea = true;
 		}
 	}
