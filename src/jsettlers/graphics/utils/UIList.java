@@ -8,8 +8,8 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.ExecutableAction;
 
 public class UIList<T extends UIListItem> implements UIElement {
 	private static final OriginalImageLink SCROLLBAR_TOP = new OriginalImageLink(

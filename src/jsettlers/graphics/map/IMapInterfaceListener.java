@@ -1,6 +1,5 @@
 package jsettlers.graphics.map;
 
-import jsettlers.graphics.JOGLPanel;
 import jsettlers.graphics.action.Action;
 
 /**

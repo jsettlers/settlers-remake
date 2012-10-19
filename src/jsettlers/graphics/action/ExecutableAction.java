@@ -1,7 +1,5 @@
-package jsettlers.graphics.startscreen;
+package jsettlers.graphics.action;
 
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 
 /**
  * This is an action tha can be executed.

@@ -111,7 +111,9 @@ public class MapObjectDrawer {
 	private static final int ANIMALS_FILE = 6;
 	private static final int FISH_SEQ = 7;
 	private static final AnimationSequence TREE_TEST_SEQUENCE =
-	        new AnimationSequence("tree_test", 0, 5);;
+	        new AnimationSequence("tree_test", 0, 5);
+	private static final int MOVE_TO_MARKER_SEQUENCE = 0;
+	private static final int MARKER_FILE = 3;
 
 	int animationStep = 0;
 
@@ -990,4 +992,8 @@ public class MapObjectDrawer {
 
 		image.drawAt(context.getGl(), buffer, viewX, viewY, color);
 	}
+
+	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
+	    drawByProgress(moveToMarker.getX(), moveToMarker.getY(), MARKER_FILE, MOVE_TO_MARKER_SEQUENCE, progress, 1);
+    }
 }

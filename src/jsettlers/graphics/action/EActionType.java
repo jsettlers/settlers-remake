@@ -187,6 +187,11 @@ public enum EActionType {
 	/**
 	 * Toggles if original graphics should be used by the gui.
 	 */
-	TOGGLE_ORIGINAL_GRAPHICS
+	TOGGLE_ORIGINAL_GRAPHICS, 
+	
+	/**
+	 * The user wants to go back.
+	 */
+	BACK
 
 }

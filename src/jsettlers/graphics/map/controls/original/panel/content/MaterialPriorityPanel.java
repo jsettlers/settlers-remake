@@ -6,10 +6,10 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.ExecutableAction;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 

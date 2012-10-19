@@ -16,6 +16,7 @@ import jsettlers.graphics.INetworkScreenAdapter.INetworkPlayer;
 import jsettlers.graphics.INetworkScreenAdapter.INetworkScreenListener;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.utils.Button;

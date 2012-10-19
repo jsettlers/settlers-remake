@@ -4,6 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.IOriginalConstants;
@@ -12,7 +13,6 @@ import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
-import jsettlers.graphics.startscreen.ExecutableAction;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 

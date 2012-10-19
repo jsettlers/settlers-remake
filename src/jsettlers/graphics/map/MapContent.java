@@ -124,9 +124,12 @@ public final class MapContent implements SettlersContent,
 	private final SoundManager soundmanager;
 	private final BackgroundSound backgroundSound;
 
-	private ShortPoint2D gotoMarker;
-	private long gotoMarkerTime;
+	private ShortPoint2D scrollMarker;
+	private long scrollMarkerTime;
 
+	private ShortPoint2D moveToMarker;
+	private long moveToMarkerTime;
+	
 	/**
 	 * Creates a new map content for the given map.
 	 *
@@ -182,6 +185,7 @@ public final class MapContent implements SettlersContent,
 
 	@Override
 	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
+		try {
 		if (newWidth != windowWidth || newHeight != windowHeight) {
 			resizeTo(newWidth, newHeight);
 		}
@@ -200,8 +204,11 @@ public final class MapContent implements SettlersContent,
 		start = System.currentTimeMillis();
 		drawMain(screen);
 
-		if (gotoMarker != null) {
-			drawGotoMarker();
+		if (scrollMarker != null) {
+			drawScrollMarker();
+		}
+		if (moveToMarker != null) {
+			drawMoveToMarker();
 		}
 
 		this.context.end();
@@ -224,18 +231,31 @@ public final class MapContent implements SettlersContent,
 			System.out.println("Background: " + bgtime + "ms, Foreground: "
 			        + foregroundtime + "ms, UI: " + uitime + "ms");
 		}
+		} catch (Throwable t) {
+			System.err.println("Main draw handler cought throwable:");
+			t.printStackTrace(System.err);
+		}
 	}
 
-	private void drawGotoMarker() {
-		long timediff = System.currentTimeMillis() - gotoMarkerTime;
+	private void drawScrollMarker() {
+		long timediff = System.currentTimeMillis() - scrollMarkerTime;
 		if (timediff > GOTO_MARK_TIME) {
-			gotoMarker = null;
+			scrollMarker = null;
 		} else {
-			context.beginTileContext(gotoMarker.getX(), gotoMarker.getY());
+			context.beginTileContext(scrollMarker.getX(), scrollMarker.getY());
 			ImageProvider.getInstance().getSettlerSequence(3, 1)
 			        .getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1)
 			        .draw(context.getGl(), null, 1);
 			context.endTileContext();
+		}
+	}
+
+	private void drawMoveToMarker() {
+		long timediff = System.currentTimeMillis() - moveToMarkerTime;
+		if (timediff >= GOTO_MARK_TIME) {
+			moveToMarker = null;
+		} else {
+			objectDrawer.drawMoveToMarker(moveToMarker, timediff / GOTO_MARK_TIME);
 		}
 	}
 
@@ -572,6 +592,8 @@ public final class MapContent implements SettlersContent,
 		} else if ("P".equalsIgnoreCase(keyCode)
 		        || "PAUSE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SPEED_TOGGLE_PAUSE);
+		} else if ("BACK".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.BACK);
 		} else if ("+".equals(keyCode)) {
 			return new Action(EActionType.SPEED_FASTER);
 		} else if ("-".equals(keyCode)) {
@@ -756,8 +778,8 @@ public final class MapContent implements SettlersContent,
 	public void scrollTo(ShortPoint2D point, boolean mark) {
 		this.context.scrollTo(point);
 		if (mark) {
-			gotoMarker = point;
-			gotoMarkerTime = System.currentTimeMillis();
+			scrollMarker = point;
+			scrollMarkerTime = System.currentTimeMillis();
 		}
 	}
 
@@ -793,6 +815,10 @@ public final class MapContent implements SettlersContent,
 			if (context.getScreen().getZoom() > 0.6) {
 				setZoom(context.getScreen().getZoom() / 2);
 			}
+		} else if (action.getActionType() == EActionType.MOVE_TO) {
+
+			moveToMarker = ((MoveToAction) action).getPosition();
+			moveToMarkerTime = System.currentTimeMillis();
 		}
 	}
 
