@@ -37,12 +37,12 @@ public final class JoglLibraryPathInitializer {
 
 			/*
 			 * Explanation: At first the system property is updated with the new
-			 * value. This might be a relative path – or maybe you want to
+			 * value. This might be a relative path or maybe you want to
 			 * create that path dynamically. The Classloader has a static field
 			 * (sys_paths) that contains the paths. If that field is set to
 			 * null, it is initialized automatically. Therefore forcing that
 			 * field to null will result into the reevaluation of the library
-			 * path as soon as loadLibrary() is called…
+			 * path as soon as loadLibrary() is called.
 			 */
 		} catch (SecurityException e) {
 			e.printStackTrace();
