@@ -18,17 +18,17 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.JOGLPanel;
-import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.swing.JOGLPanel;
+import jsettlers.graphics.swing.JoglLibraryPathInitializer;
+import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
 import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
-import jsettlers.main.swing.ResourceProvider;
 
 public class LandmarksThreadTester {
 	static { // sets the native library path for the system dependent jogl libs
@@ -62,7 +62,7 @@ public class LandmarksThreadTester {
 			}
 		});
 
-		ResourceManager.setProvider(new ResourceProvider());
+		ResourceManager.setProvider(new SwingResourceProvider());
 
 		map = new Map();
 

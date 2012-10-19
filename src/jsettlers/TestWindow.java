@@ -10,14 +10,14 @@ import javax.swing.JFrame;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.JOGLPanel;
-import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.main.swing.ResourceProvider;
+import jsettlers.graphics.swing.JOGLPanel;
+import jsettlers.graphics.swing.JoglLibraryPathInitializer;
+import jsettlers.graphics.swing.SwingResourceProvider;
 
 public class TestWindow {
 	static { // sets the native library path for the system dependent jogl libs
@@ -37,7 +37,7 @@ public class TestWindow {
 	}
 
 	public static MapInterfaceConnector openTestWindow(IGraphicsGrid map) {
-		ResourceManager.setProvider(new ResourceProvider());
+		ResourceManager.setProvider(new SwingResourceProvider());
 
 		JFrame window = new JFrame("window test");
 

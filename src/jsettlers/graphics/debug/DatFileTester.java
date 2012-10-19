@@ -21,7 +21,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 import jsettlers.common.Color;
-import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.LandscapeImage;
@@ -30,6 +29,7 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
+import jsettlers.graphics.swing.JoglLibraryPathInitializer;
 
 public class DatFileTester {
 
