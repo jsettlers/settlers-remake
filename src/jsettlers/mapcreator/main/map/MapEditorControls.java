@@ -92,7 +92,7 @@ public class MapEditorControls implements IControls {
 	}
 
 	@Override
-	public Action getActionFor(UIPoint position) {
+	public Action getActionFor(UIPoint position, boolean select) {
 		return null;
 	}
 
@@ -121,5 +121,11 @@ public class MapEditorControls implements IControls {
 	public Action replaceAction(Action action) {
 		return action;
 	}
+
+	@Override
+    public void stop() {
+	    // TODO Auto-generated method stub
+	    
+    }
 
 }

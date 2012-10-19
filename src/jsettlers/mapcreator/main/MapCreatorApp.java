@@ -23,13 +23,13 @@ import javax.swing.SpinnerListModel;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.JoglLibraryPathInitializer;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.swing.JoglLibraryPathInitializer;
+import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
-import jsettlers.main.swing.ResourceProvider;
 
 public class MapCreatorApp {
 	private static final MapFileHeader DEFAULT = new MapFileHeader(MapType.NORMAL, "new map", "", (short) 300, (short) 300, (short) 1, (short) 10,
@@ -45,7 +45,7 @@ public class MapCreatorApp {
 		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
-		ResourceManager.setProvider(new ResourceProvider());
+		ResourceManager.setProvider(new SwingResourceProvider());
 	}
 
 	public static void main(String[] args) {
