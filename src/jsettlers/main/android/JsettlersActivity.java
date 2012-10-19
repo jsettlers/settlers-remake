@@ -232,7 +232,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	@Override
 	public void onBackPressed() {
 		if (glView != null && state == EAndroidUIState.SHOW_ACTIVE_GAME) {
-			glView.fireKey("PAUSE");
+			glView.fireKey("BACK");
 		} else if (state == EAndroidUIState.SHOW_GAMELIST) {
 			showStartscreenContent();
 		} else {
