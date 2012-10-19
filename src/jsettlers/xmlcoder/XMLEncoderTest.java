@@ -26,7 +26,7 @@ public class XMLEncoderTest {
 		o.intA = 42;
 		o.floatA = 42.42f;
 		o.stringA = "hello world";
-		o.stringArray = new String[] { "Str‰‰‰‰g1", "string2", null, null };
+		o.stringArray = new String[] { "String1", "string2", null, null };
 		o.doubleArray = new double[] { 0.123, 1, 2, 3, 4, 5 };
 		o.setInnerObject(new InnerTestClass());
 		o.getInnerObject().setInnerFloat(123.4f);
