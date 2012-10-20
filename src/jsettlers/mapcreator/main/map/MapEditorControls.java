@@ -113,7 +113,7 @@ public class MapEditorControls implements IControls {
 	}
 
 	@Override
-	public void setDrawContext(MapDrawContext context) {
+	public void setDrawContext(ActionFireable actionFireable, MapDrawContext context) {
 		this.context = context;
 	}
 
