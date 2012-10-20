@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">jsettlers.graphics.androidui</string>
+    <string name="buildings_headline">All Buildings</string>
+    <string name="pause_text">Click Back again to quit.</string>
+    <string name="pause_quit">Quit Game</string>
+    <string name="pause_resume">Resume</string>
 </resources>

@@ -1,24 +1,29 @@
-package jsettlers.graphics.map.controls.mobile;
+package jsettlers.graphics.androidui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.androidui.actions.ConstructBuilding;
+import jsettlers.graphics.androidui.actions.ContextAction;
+import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
+import jsettlers.graphics.androidui.menu.BuildMenu;
+import jsettlers.graphics.androidui.menu.PauseMenu;
+import jsettlers.graphics.androidui.menu.selection.BuildingMenu;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.graphics.map.controls.mobile.actions.ConstructBuilding;
-import jsettlers.graphics.map.controls.mobile.actions.ContextAction;
-import jsettlers.graphics.map.controls.small.BuildMenu;
 import jsettlers.graphics.utils.Button;
 
 /**
@@ -41,7 +46,12 @@ public class MobileControls implements IControls {
 	private MobileMenu activeMenu = null;
 	private final Object activeMenuMutex = new Object();
 
-	private final MobileMenu buildMenu = new BuildMenu();
+	/**
+	 * The container we need to display android menus.
+	 */
+	private final AndroidMenuPutable androidMenuPutable;
+
+	private final MobileMenu buildMenu;
 	Button showBuildButton = new Button(new ExecutableAction() {
 		@Override
 		public void execute() {
@@ -54,13 +64,21 @@ public class MobileControls implements IControls {
 	Button showSelectionButton = new Button(new ExecutableAction() {
 		@Override
 		public void execute() {
-
+			showSelectionMenu();
 		}
 	}, new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
 	        new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
 	        Labels.getString("show-build-menu"));
 
 	private NavigationPoint naviPoint = new NavigationPoint(null);
+	private final PauseMenu pauseMenu;
+	private ISelectionSet selection;
+
+	public MobileControls(AndroidMenuPutable p) {
+		androidMenuPutable = p;
+		buildMenu = new BuildMenu(androidMenuPutable);
+		pauseMenu = new PauseMenu(androidMenuPutable);
+	}
 
 	public void drawAt(GLDrawContext gl) {
 		if (!naviPoint.isPanInProgress()) {
@@ -85,7 +103,13 @@ public class MobileControls implements IControls {
 
 	protected void setActiveMenu(MobileMenu activeMenu) {
 		synchronized (activeMenuMutex) {
+			if (this.activeMenu != null) {
+				this.activeMenu.hide();
+			}
 			this.activeMenu = activeMenu;
+			if (this.activeMenu != null) {
+				this.activeMenu.show();
+			}
 		}
 	}
 
@@ -141,10 +165,18 @@ public class MobileControls implements IControls {
 	@Override
 	public Action replaceAction(Action action) {
 		synchronized (activeMenuMutex) {
-			if (action.getActionType() == EActionType.BACK
-			        && activeMenu != null) {
-				activeMenu = null;
+			if (action.getActionType() == EActionType.EXECUTABLE) {
+				((ExecutableAction) action).execute();
 				return null;
+			} else if (action.getActionType() == EActionType.BACK) {
+				if (activeMenu == pauseMenu) {
+					return new Action(EActionType.EXIT);
+				} else if (activeMenu != null) {
+					setActiveMenu(null);
+					return null;
+				} else {
+					return new Action(EActionType.SPEED_SET_PAUSE);
+				}
 			} else {
 				return action;
 			}
@@ -166,8 +198,11 @@ public class MobileControls implements IControls {
 
 	@Override
 	public void action(Action action) {
-		if (action.getActionType() == EActionType.EXECUTABLE) {
-			((ExecutableAction) action).execute();
+		if (action.getActionType() == EActionType.SPEED_SET_PAUSE) {
+			setActiveMenu(pauseMenu);
+		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
+		        && activeMenu == pauseMenu) {
+			setActiveMenu(null);
 		}
 	}
 
@@ -194,11 +229,21 @@ public class MobileControls implements IControls {
 
 	@Override
 	public void displaySelection(ISelectionSet selection) {
-		
+		this.selection = selection;
+	}
+
+	protected void showSelectionMenu() {
+		switch (selection.getSelectionType()) {
+			case BUILDING:
+				setActiveMenu(new BuildingMenu(androidMenuPutable,
+				        (IBuilding) selection.get(0)));
+		}
 	}
 
 	@Override
-	public void setDrawContext(MapDrawContext context) {
+	public void setDrawContext(ActionFireable actionFireable,
+	        MapDrawContext context) {
+		androidMenuPutable.setActionFireable(actionFireable);
 		naviPoint = new NavigationPoint(context);
 	}
 

@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.controls.mobile.actions;
+package jsettlers.graphics.androidui.actions;
 
 /**
  * This is something the user is currenlty doing

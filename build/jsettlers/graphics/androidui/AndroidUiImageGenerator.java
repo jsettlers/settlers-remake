@@ -2,13 +2,17 @@ package jsettlers.graphics.androidui;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ShortBuffer;
 
 import javax.imageio.ImageIO;
 
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.images.DirectImageLink;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.SingleImage;
@@ -27,6 +31,10 @@ public class AndroidUiImageGenerator {
 
 	private int resolution = 0;
 
+	private File listOutputDirectory = null;
+
+	private String listOutputClass = null;
+
 	public void setDestinationDirectory(File sourceDirectory) {
 		this.destinationDirectory = sourceDirectory;
 	}
@@ -35,28 +43,87 @@ public class AndroidUiImageGenerator {
 		this.resolution = resolution;
 	}
 
-	public void execute() {
+	public void setListOutputDirectory(File listOutputDirectory) {
+		this.listOutputDirectory = listOutputDirectory;
+	}
+
+	public void setListOutputClass(String listOutputClass) {
+		this.listOutputClass = listOutputClass;
+	}
+
+	public void execute() throws IOException{
 		if (destinationDirectory == null) {
 			throw new RuntimeException(
 			        "please use destinationDirectory=\"...\"");
 		}
 
-		ResourceManager.setProvider(new SwingResourceProvider(new File(new File("").getAbsolutePath()).getParentFile().getParent().replace(
-		        '\\', '/')+ "/jsettlers.common"));
+		ResourceManager.setProvider(new SwingResourceProvider(new File(
+		        new File("").getAbsolutePath()).getParentFile().getParent()
+		        .replace('\\', '/')
+		        + "/jsettlers.common"));
 		SwingResourceLoader.setupSwingPaths();
+		
+		String listOutputPackage = listOutputClass.replaceAll("\\.\\w*$", "");
+		File listOutputDir =
+		        new File(listOutputDirectory.getAbsolutePath() + "/"
+		                + listOutputPackage.replaceAll("\\.", "/"));
+		listOutputDir.mkdirs();
+		PrintWriter listOutput =
+		        new PrintWriter(listOutputDirectory.getAbsolutePath() + "/"
+		                + listOutputClass.replaceAll("\\.", "/") + ".java");
+
+		listOutput.println("package " + listOutputPackage + ";");
+
+		listOutput.println("import jsettlers.graphics.androidui.R;");
+
+		listOutput.println("public class "
+		        + listOutputClass.replaceAll("(.*\\.)*", "") + " {");
+		exportBuildingImages(listOutput);
+		exportMaterialImages(listOutput);
+		listOutput.println("}");
+		
+		listOutput.close();
+	}
+
+	private void exportBuildingImages(PrintWriter listOutput) {
+	    listOutput
+		        .println("\tpublic static final int[] BUILDING_IMAGE_MAP = new int[] {");
+
 		ImageProvider i = ImageProvider.getInstance();
 
 		for (EBuildingType t : EBuildingType.values()) {
-			File file =
-			        new File(destinationDirectory, t.toString().toLowerCase()
-			                + ".png");
+			String name = t.toString().toLowerCase();
+			File file = new File(destinationDirectory, name + ".png");
+			
 			Image guiImage = i.getImage(t.getGuiImage());
 			if (guiImage instanceof SingleImage) {
 				export((SingleImage) guiImage, file);
 			}
+			listOutput.println("\t\tR.drawable." + name + ",");
 		}
-	}
 
+		listOutput.println("\t};");
+    }
+
+	private void exportMaterialImages(PrintWriter listOutput) {
+	    listOutput
+		        .println("\tpublic static final int[] MATERIAL_IMAGE_MAP = new int[] {");
+
+		ImageProvider i = ImageProvider.getInstance();
+
+		for (EMaterialType t : EMaterialType.values()) {
+			String name = t.toString().toLowerCase();
+			File file = new File(destinationDirectory, "mat_" + name + ".png");
+			
+			Image guiImage = i.getGuiImage(t.getGuiFile(), t.getGuiIconBase() + resolution);
+			if (guiImage instanceof SingleImage) {
+				export((SingleImage) guiImage, file);
+			}
+			listOutput.println("\t\tR.drawable.mat_" + name + ",");
+		}
+
+		listOutput.println("\t};");
+    }
 	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
 		int width = image.getWidth();
@@ -65,7 +132,8 @@ public class AndroidUiImageGenerator {
 			return;
 		}
 
-		BufferedImage rendered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage rendered =
+		        new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		ShortBuffer data = image.getData().duplicate();
 		data.rewind();
 		int[] rgbArray = new int[data.remaining()];

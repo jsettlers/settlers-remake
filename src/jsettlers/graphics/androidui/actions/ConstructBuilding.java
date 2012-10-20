@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.controls.mobile.actions;
+package jsettlers.graphics.androidui.actions;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.localization.Labels;

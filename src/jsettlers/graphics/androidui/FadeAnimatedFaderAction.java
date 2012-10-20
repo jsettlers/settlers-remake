@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.controls.mobile;
+package jsettlers.graphics.androidui;
 
 import jsettlers.graphics.action.ExecutableAction;
 

@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.controls.mobile;
+package jsettlers.graphics.androidui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;

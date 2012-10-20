@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.controls.mobile;
+package jsettlers.graphics.androidui;
 
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;

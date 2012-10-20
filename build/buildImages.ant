@@ -20,7 +20,7 @@
           target: default              
          ================================= -->
     <target name="default" depends="loadLib" description="Builds the android image files needed for the menu">
-		<exportBuildings destinationDirectory="${directory}/../res/drawable-mdpi"/>
+		<exportGraphics destinationDirectory="${directory}/../res/drawable-mdpi" listOutputDirectory="${directory}/../gen" listOutputClass="jsettlers.graphics.androidui.Graphics"/>
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 
@@ -29,7 +29,7 @@
     <target name="loadLib">
         <mkdir dir=".buildScripts" />
         <javac srcdir="${directory}:${workspace}/jsettlers.graphics.swing/src:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir=".buildScripts" />
-        <taskdef name="exportBuildings" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath=".buildScripts" />
+        <taskdef name="exportGraphics" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath=".buildScripts" />
     </target>
 
 </project>

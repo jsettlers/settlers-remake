@@ -1,4 +1,4 @@
-package jsettlers.graphics.map.controls.mobile;
+package jsettlers.graphics.androidui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
@@ -37,5 +37,13 @@ public class NormalMobileMenu extends UIPanel implements MobileMenu {
 	public void addButton(Button button, float width, float height) {
 		
 	}
+
+	@Override
+    public void show() {
+    }
+
+	@Override
+    public void hide() {
+    }
 	
 }
