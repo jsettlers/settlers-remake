@@ -43,6 +43,12 @@
                 android:text="" />
         </ScrollView>
 
+        <Button
+            android:id="@+id/maplist_deletebutton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/local_game_delete" />
+
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"

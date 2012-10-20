@@ -26,4 +26,5 @@
     <string name="illegal_playercount_too_low">So wenige Spieler können auf der Karte nicht spielen</string>
     <string name="send">Senden</string>
     <string name="accept_start">Start erlauben</string>
+    <string name="local_game_delete">Spielstand löschen</string>
 </resources>
