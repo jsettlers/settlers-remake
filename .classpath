@@ -13,5 +13,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.network.objects"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.graphics.androidui"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -12,6 +12,8 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.INetworkScreenAdapter;
 import jsettlers.graphics.ISettlersGameDisplay;
+import jsettlers.graphics.androidui.MobileControls;
+import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -265,6 +267,7 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 	public ProgressConnector showProgress() {
 		return showProgress(true);
 	}
+
 	public ProgressConnector showProgress(final boolean gameStart) {
 		runOnUiThread(new Runnable() {
 			@Override
@@ -272,14 +275,17 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 				state = EAndroidUIState.SHOW_PROGRESS;
 
 				if (gameStart) {
-				displayedStartScreen = null; }
+					displayedStartScreen = null;
+				}
 
 				setContentView(R.layout.progress);
 
 				if (gameStart) {
-				glHolderView = (FrameLayout) findViewById(R.id.hiddenGlView);
+					glHolderView =
+					        (FrameLayout) findViewById(R.id.hiddenGlView);
 
-				preloadGlView(); }
+					preloadGlView();
+				}
 			}
 		});
 		return new AProgressConnector(this);
@@ -403,16 +409,17 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 					        getSharedPreferences(PREFS_NAME, 0);
 					final String name = settings.getString("resumegame", "");
 					ILoadableGame foundMap = null;
-					for (ILoadableGame map : displayedStartScreen.getLoadableGames()) {
+					for (ILoadableGame map : displayedStartScreen
+					        .getLoadableGames()) {
 						if (name.equals(map.getName())) {
-							foundMap  = map;
+							foundMap = map;
 						}
 					}
-					
+
 					if (foundMap != null) {
 						displayedStartScreen.loadGame(foundMap);
 					} else {
-						//TODO: tell the user that an error occurred.
+						// TODO: tell the user that an error occurred.
 					}
 				}
 			}
@@ -456,7 +463,10 @@ public class JsettlersActivity extends Activity implements ISettlersGameDisplay 
 		state = EAndroidUIState.SHOW_ACTIVE_GAME;
 
 		AndroidSoundPlayer player = new AndroidSoundPlayer(SOUND_THREADS);
-		final MapContent content = new MapContent(map, player);
+		FrameLayout parentView = (FrameLayout) findViewById(R.id.menuContainer);
+		final MapContent content =
+		        new MapContent(map, player, new MobileControls(
+		                new AndroidMenuPutable(parentView)));
 
 		this.runOnUiThread(new Runnable() {
 			@Override
