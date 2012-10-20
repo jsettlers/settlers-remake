@@ -80,7 +80,7 @@ public abstract class AndroidMobileMenu implements MobileMenu, Hideable {
 	}
 
 	protected OnClickListener generateActionListener(Action action, boolean hideOnClick) {
-	    return new ActionClickListener(putable,action, hideOnClick ? this : null);
+	    return new ActionClickListener(putable, action, hideOnClick ? this : null);
     };
 
 }

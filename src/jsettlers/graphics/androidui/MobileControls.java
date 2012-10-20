@@ -203,6 +203,15 @@ public class MobileControls implements IControls {
 		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
 		        && activeMenu == pauseMenu) {
 			setActiveMenu(null);
+		} else if (action.getActionType() == EActionType.SELECT_POINT) {
+			setActiveAction(null);
+		} else if (action.getActionType() == EActionType.SET_WORK_AREA) {
+			setActiveAction(new ContextAction() {
+				@Override
+				public String getDesciption() {
+					return Labels.getString("click_to_select_workarea");
+				}
+			});
 		}
 	}
 
@@ -218,12 +227,17 @@ public class MobileControls implements IControls {
 
 	@Override
 	public void displayBuildingBuild(EBuildingType type) {
+		if (type == null) {
+			setActiveAction(null);
+		} else {
+			setActiveAction(new ConstructBuilding(type));
+
+		}
+	}
+
+	private void setActiveAction(ContextAction activeAction) {
 		synchronized (activeActionMutex) {
-			if (type == null) {
-				activeAction = null;
-			} else {
-				activeAction = new ConstructBuilding(type);
-			}
+			this.activeAction = activeAction;
 		}
 	}
 

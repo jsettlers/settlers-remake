@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
@@ -26,6 +28,8 @@ public class BuildingMenu extends AndroidMobileMenu {
 
 	private LinearLayout tabContent;
 
+	private ImageButton workingButton;
+
 	private class MaterialTab implements OnClickListener {
 		private EMaterialType mat;
 		private ImageButton button;
@@ -41,7 +45,7 @@ public class BuildingMenu extends AndroidMobileMenu {
 		}
 
 		public void setActiveMaterial(EMaterialType active) {
-			button.setEnabled(mat == active);
+			button.setEnabled(mat != active);
 		}
 	}
 
@@ -55,10 +59,10 @@ public class BuildingMenu extends AndroidMobileMenu {
 		for (MaterialTab t : tabList) {
 			t.setActiveMaterial(mat);
 		}
-		
+
 		if (tabContent != null) {
 			tabContent.removeAllViews();
-			//TODO: stats
+			// TODO: stats
 		}
 	}
 
@@ -77,16 +81,42 @@ public class BuildingMenu extends AndroidMobileMenu {
 			title.setText(name);
 		}
 
-		TableLayout tabs =
-		        (TableLayout) menu.findViewById(R.id.building_tabs);
+		TableLayout tabs = (TableLayout) menu.findViewById(R.id.building_tabs);
 
 		for (EMaterialType mat : new EMaterialType[] {
 		        EMaterialType.PICK, EMaterialType.AXE
 		}) {
 			addMaterialTab(tabs, mat);
 		}
-		
+
+		if (building.getBuildingType().getWorkradius() > 0) {
+			TableRow row = new TableRow(getContext());
+			ImageButton button = new ImageButton(getContext());
+			button.setImageResource(R.drawable.building_set_workarea);
+			button.setOnClickListener(generateActionListener(new Action(EActionType.SET_WORK_AREA), true));
+			row.addView(button);
+			tabs.addView(row);
+		}
+
+		{
+			TableRow row = new TableRow(getContext());
+			workingButton = new ImageButton(getContext());
+			reloadWorkingButton();
+			row.addView(workingButton);
+			tabs.addView(row);
+		}
+
 		tabContent = (LinearLayout) menu.findViewById(R.id.building_tabcontent);
+	}
+
+	private void reloadWorkingButton() {
+		workingButton
+		        .setImageResource(building.isWorking() ? R.drawable.building_stop_working
+		                : R.drawable.building_start_working);
+		// TODO: We should not hide here, but we would need to reload on action!
+		workingButton.setOnClickListener(generateActionListener(new Action(
+		        building.isWorking() ? EActionType.STOP_WORKING
+		                : EActionType.START_WORKING), true));
 	}
 
 	private void addMaterialTab(TableLayout tabs, EMaterialType mat) {
@@ -94,11 +124,11 @@ public class BuildingMenu extends AndroidMobileMenu {
 		ImageButton button = new ImageButton(getContext());
 		button.setImageResource(Graphics.MATERIAL_IMAGE_MAP[mat.ordinal()]);
 		row.addView(button);
-		
+
 		TextView count = new TextView(getContext());
 		count.setText("?");
 		row.addView(count);
-		
+
 		tabs.addView(row);
 		MaterialTab materialTab = new MaterialTab(button, count, mat);
 		button.setOnClickListener(materialTab);
