@@ -32,7 +32,7 @@ public interface IStartScreenConnector {
 		String getDescription();
 
 		short[] getImage();
-		
+
 		/**
 		 * Creates a loadable game. This method should return fast.
 		 * <p>
@@ -58,6 +58,14 @@ public interface IStartScreenConnector {
 
 		short[] getImage();
 	}
+
+	/**
+	 * Deletes a game from the list of games.
+	 * 
+	 * @param game
+	 *            the game to delete.
+	 */
+	void deleteLoadableGame(ILoadableGame game);
 
 	/* - - - - - callbacks - - - - - */
 	/**
@@ -93,6 +101,7 @@ public interface IStartScreenConnector {
 
 	/**
 	 * Requests to join a network game.
+	 * 
 	 * @param match
 	 */
 	void joinNetworkGame(IMatch match);
