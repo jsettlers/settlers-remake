@@ -2,6 +2,8 @@ package jsettlers.graphics.map.minimap;
 
 import go.graphics.GLDrawContext;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.LinkedList;
 
@@ -13,14 +15,14 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
  * This is the minimap. It is drawn on on the rectangle:
- *
+ * 
  * <pre>
  *       (width * stride | height)      (width * (stride + 1) | height)
  *  (0 | 0)         (width * 1 | 0)
  * </pre>
- *
+ * 
  * currently stride is fixed to mapheigh / 2 / mapwidth
- *
+ * 
  * @author michael
  */
 public final class Minimap {
@@ -68,7 +70,9 @@ public final class Minimap {
 				if (imageIndex < 0) {
 					context.deleteTexture(imageIndex);
 				}
-				ShortBuffer data = ShortBuffer.allocate(width * height);
+				ShortBuffer data =
+				        ByteBuffer.allocateDirect(width * height * 2)
+				                .order(ByteOrder.nativeOrder()).asShortBuffer();
 				for (int i = 0; i < width * height; i++) {
 					data.put((short) 0x0001);
 				}
@@ -79,7 +83,8 @@ public final class Minimap {
 			}
 
 			if (!updatedLines.isEmpty()) {
-				ShortBuffer currData = ShortBuffer.allocate(width);
+				ShortBuffer currData =
+				        ByteBuffer.allocateDirect(width * 2).asShortBuffer();
 				for (Integer currLine : updatedLines) {
 					currData.position(0);
 					currData.put(buffer[currLine]);
@@ -133,32 +138,44 @@ public final class Minimap {
 		        converter.getViewX(mapViewport.getLineEndX(0), firstY, 0)
 		                * width;
 		int lastY = mapViewport.getLineY(mapViewport.getLines());
-		float minviewy = Math.max(converter.getViewY(lineStartX, lastY, 0), 0) * height;
+		float minviewy =
+		        Math.max(converter.getViewY(lineStartX, lastY, 0), 0) * height;
 
-		context.drawLine(new float[] {
-				//bottom left
+		context.drawLine(
+		        new float[] {
+		                // bottom left
 		        Math.max(minviewx, minviewy / height * stride * width),
-		        minviewy,
-		        0,
-		        // bottom right
-		        Math.min(maxviewx, (minviewy / height * stride + 1) * width),
-		        minviewy,
-		        0,
-		        Math.min(maxviewx, (maxviewy / height * stride + 1) * width),
-		        Math.max((Math.min(maxviewx, (maxviewy / height * stride + 1) * width) - width) / width / stride * height, minviewy),
-		        0,
-		        // top right
-		        Math.min(maxviewx, (maxviewy / height * stride + 1) * width),
-		        maxviewy,
-		        0,
-		        // top left
-		        Math.max(minviewx, maxviewy / height * stride * width),
-		        maxviewy,
-		        0,
-		        Math.max(minviewx, minviewy / height * stride * width),
-		        Math.min(Math.max(minviewx, minviewy / height * stride * width) / width /stride * height, maxviewy),
-		        0,
-		}, true);
+		                minviewy,
+		                0,
+		                // bottom right
+		                Math.min(maxviewx, (minviewy / height * stride + 1)
+		                        * width),
+		                minviewy,
+		                0,
+		                Math.min(maxviewx, (maxviewy / height * stride + 1)
+		                        * width),
+		                Math.max(
+		                        (Math.min(maxviewx,
+		                                (maxviewy / height * stride + 1)
+		                                        * width) - width)
+		                                / width / stride * height, minviewy),
+		                0,
+		                // top right
+		                Math.min(maxviewx, (maxviewy / height * stride + 1)
+		                        * width),
+		                maxviewy,
+		                0,
+		                // top left
+		                Math.max(minviewx, maxviewy / height * stride * width),
+		                maxviewy,
+		                0,
+		                Math.max(minviewx, minviewy / height * stride * width),
+		                Math.min(
+		                        Math.max(minviewx, minviewy / height * stride
+		                                * width)
+		                                / width / stride * height, maxviewy),
+		                0,
+		        }, true);
 	}
 
 	public int getWidth() {
@@ -171,7 +188,7 @@ public final class Minimap {
 
 	/**
 	 * Sets the data
-	 *
+	 * 
 	 * @param line
 	 * @param data
 	 */
@@ -221,7 +238,8 @@ public final class Minimap {
 	 */
 	public void blockUntilUpdateAllowedOrStopped() {
 		synchronized (update_syncobj) {
-			while (!stopped  && (!updatedLines.isEmpty() || width < 1 || height < 1)) {
+			while (!stopped
+			        && (!updatedLines.isEmpty() || width < 1 || height < 1)) {
 				try {
 					update_syncobj.wait();
 				} catch (InterruptedException e) {
@@ -240,7 +258,7 @@ public final class Minimap {
 		stopped = true;
 		synchronized (update_syncobj) {
 
-        }
-    }
+		}
+	}
 
 }

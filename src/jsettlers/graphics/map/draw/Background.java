@@ -4,7 +4,8 @@ import go.graphics.GLDrawContext;
 import go.graphics.GLDrawContext.GLBuffer;
 
 import java.io.IOException;
-import java.nio.ShortBuffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.BitSet;
 
 import jsettlers.common.CommonConstants;
@@ -889,9 +890,10 @@ public class Background implements IGraphicsBackgroundListener {
 					data = getTexture();
 				}
 			}
-			ShortBuffer buffer = ShortBuffer.wrap(data);
+			ByteBuffer buffer = ByteBuffer.allocateDirect(data.length * 2).order(ByteOrder.nativeOrder());
+			buffer.asShortBuffer().put(data);
 			texture =
-			        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer);
+			        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer.asShortBuffer());
 
 			System.out.println("Background texture generated in "
 			        + (System.currentTimeMillis() - starttime) + "ms");
