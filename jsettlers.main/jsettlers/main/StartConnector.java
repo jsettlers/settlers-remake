@@ -34,6 +34,11 @@ class StartConnector implements IStartScreenConnector {
 	public List<? extends ILoadableGame> getLoadableGames() {
 		return mapList.getSavedMaps();
 	}
+	
+	@Override
+	public void deleteLoadableGame(ILoadableGame game) {
+	    mapList.deleteLoadableGame(game);
+	}
 
 	@Override
 	public void startNewGame(IGameSettings game) {
