@@ -11,6 +11,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.MoveToAction;
@@ -291,7 +292,7 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public void setDrawContext(MapDrawContext context) {
+	public void setDrawContext(ActionFireable actionFireable, MapDrawContext context) {
 		this.context = context;
 		this.minimap = new Minimap(context);
 

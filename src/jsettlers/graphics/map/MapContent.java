@@ -154,7 +154,7 @@ public final class MapContent implements SettlersContent,
 		} else {
 			this.controls = controls;
 		}
-		this.controls.setDrawContext(context);
+		this.controls.setDrawContext(this, context);
 		// controls = new SmallControls();
 
 		this.connector = new MapInterfaceConnector(this);

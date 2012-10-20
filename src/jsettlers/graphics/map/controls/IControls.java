@@ -7,6 +7,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapDrawContext;
 
@@ -103,10 +104,10 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Gives the ui access to the draw context that is used to draw the map.
-	 *
+	 * @param actionFireable TODO
 	 * @param context
 	 */
-	void setDrawContext(MapDrawContext context);
+	void setDrawContext(ActionFireable actionFireable, MapDrawContext context);
 
 	/**
 	 * Allows the controls to catch an action the gui would fire.
