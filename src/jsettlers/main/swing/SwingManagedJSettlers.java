@@ -1,5 +1,6 @@
 package jsettlers.main.swing;
 
+import go.graphics.nativegl.NativeAreaWindow;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
@@ -14,8 +15,8 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.JOGLPanel;
-import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.graphics.swing.SwingResourceLoader;
+import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ManagedJSettlers;
 import jsettlers.main.MapDataMapCreator;
@@ -54,23 +55,32 @@ public class SwingManagedJSettlers {
 	public static void startMap(IMapDataProvider data) {
 		ResourceManager.setProvider(new SwingResourceProvider());
 		// TODO: detect exit
-		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager(), (byte) 0);
+		JSettlersGame game =
+		        new JSettlersGame(getGui(), new MapDataMapCreator(data),
+		                123456L, new NetworkManager(), (byte) 0);
 		game.start();
 	}
 
 	private static ISettlersGameDisplay getGui() {
 		JOGLPanel content = new JOGLPanel(new SwingSoundPlayer());
-		JFrame jsettlersWnd = new JFrame("jsettlers");
-		AreaContainer panel = new AreaContainer(content.getArea());
-		panel.setPreferredSize(new Dimension(640, 480));
-		jsettlersWnd.add(panel);
-		panel.requestFocusInWindow();
 
-		jsettlersWnd.pack();
-		jsettlersWnd.setSize(1200, 800);
-		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jsettlersWnd.setVisible(true);
-		jsettlersWnd.setLocationRelativeTo(null);
+		try {
+			new NativeAreaWindow(content.getArea());
+		} catch (Throwable t) {
+			t.printStackTrace();
+			
+			JFrame jsettlersWnd = new JFrame("jsettlers");
+			AreaContainer panel = new AreaContainer(content.getArea());
+			panel.setPreferredSize(new Dimension(640, 480));
+			jsettlersWnd.add(panel);
+			panel.requestFocusInWindow();
+
+			jsettlersWnd.pack();
+			jsettlersWnd.setSize(1200, 800);
+			jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			jsettlersWnd.setVisible(true);
+			jsettlersWnd.setLocationRelativeTo(null);
+		}
 		return content;
 	}
 }

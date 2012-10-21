@@ -9,5 +9,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.graphics"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.networking"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.nativegl"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
