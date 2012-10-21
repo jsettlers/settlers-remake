@@ -12,6 +12,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectable;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.BuildAction;
@@ -137,19 +138,19 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				setActiveAction(null);
 			} else {
 				MoveToAction moveToAction = (MoveToAction) action;
-				ShortPoint2D pos = moveToAction.getPosition();
 
-				moveTo(pos);
+				if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
+					setBuildingWorkArea(moveToAction.getPosition());
+
+				} else {
+					moveTo(moveToAction.getPosition());
+				}
 			}
 			break;
 
 		case SET_WORK_AREA:
 			if (currentSelection.getSize() > 0) {
-				ISelectable selected = currentSelection.iterator().next();
-				if (selected instanceof Building) {
-					ShortPoint2D pos = ((SelectAction) action).getPosition();
-					scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, pos, ((Building) selected).getPos()));
-				}
+				setBuildingWorkArea(((SelectAction) action).getPosition());
 			}
 			break;
 
@@ -190,6 +191,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+		}
+	}
+
+	private void setBuildingWorkArea(ShortPoint2D position) {
+		ISelectable selected = currentSelection.iterator().next();
+		if (selected instanceof Building) {
+			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, position, ((Building) selected).getPos()));
 		}
 	}
 
