@@ -26,12 +26,8 @@ GLvoid resizeGlWindow(GLsizei width, GLsizei height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	GLfloat m[16] = {
-			2.0f / width, 0, 0, 0,
-			0, 2.0f/height, 0, 0,
-			0, 0, -.5f, 0,
-			-1, -1, .5f, 1
-	};
+	GLfloat m[16] = { 2.0f / width, 0, 0, 0, 0, 2.0f / height, 0, 0, 0, 0, -.5f,
+			0, -1, -1, .5f, 1 };
 
 	glMultMatrixf(m);
 
@@ -51,7 +47,8 @@ GLvoid resizeGlWindow(GLsizei width, GLsizei height) {
 	glEnable(GL_TEXTURE_2D);
 
 	jmethodID resizeMID = getWindowMID("resizeTo", "(II)V");
-	(*windowEnv)->CallVoidMethod(windowEnv, windowObject, resizeMID, (jint) width, (jint) height);
+	(*windowEnv)->CallVoidMethod(windowEnv, windowObject, resizeMID,
+			(jint) width, (jint) height);
 }
 
 GLvoid drawGlWindow() {
@@ -62,6 +59,123 @@ GLvoid drawGlWindow() {
 
 	glutSwapBuffers();
 	glutPostRedisplay();
+}
+
+GLvoid mouseMotionCallback(int x, int y) {
+	jmethodID mouseMID = getWindowMID("mousePositionChanged", "(II)V");
+	(*windowEnv)->CallVoidMethod(windowEnv, windowObject, mouseMID, x, y);
+}
+
+GLvoid mouseCallback(int button, int state, int x, int y) {
+	jmethodID mouseMID = getWindowMID("mouseStateChanged", "(IZII)V");
+	int jbutton = 0;
+	if (button == GLUT_MIDDLE_BUTTON) {
+		jbutton = 1;
+	} else if (button == GLUT_RIGHT_BUTTON) {
+		jbutton = 2;
+	}
+
+	(*windowEnv)->CallVoidMethod(windowEnv, windowObject, mouseMID, jbutton,
+			(jboolean) (state == GLUT_DOWN), x, y);
+}
+
+GLvoid mouseEntryCallback(int state) {
+	jmethodID mouseMID = getWindowMID("mouseInsideWindow", "(Z)V");
+	(*windowEnv)->CallVoidMethod(windowEnv, windowObject, mouseMID,
+			state == GLUT_ENTERED);
+}
+
+void pressKey(char* key, jboolean up) {
+	jstring jkey = (*windowEnv)->NewStringUTF(windowEnv, key);
+	jmethodID mouseMID = getWindowMID("keyPressed", "(Ljava/lang/String;Z)V");
+	(*windowEnv)->CallVoidMethod(windowEnv, windowObject, mouseMID, jkey, up);
+}
+
+GLvoid keyboardCallback(unsigned char key, int x, int y, jboolean up) {
+	if (key == 127) {
+		pressKey("DELETE", up);
+	} else if (key == 27) {
+		pressKey("BACK", up);
+
+	} else if (key >= 32) {
+		char keyString[] = { (char) key, 0 };
+		pressKey(keyString, up);
+	}
+}
+
+GLvoid keyboardCallbackDown(unsigned char key, int x, int y) {
+	keyboardCallback(key, x, y, JNI_FALSE);
+}
+
+GLvoid keyboardCallbackUp(unsigned char key, int x, int y) {
+	keyboardCallback(key, x, y, JNI_TRUE);
+}
+
+GLvoid keyboardSpecialCallback(int key, int x, int y, jboolean up) {
+	char* keyString = NULL;
+
+	switch (key) {
+	case GLUT_KEY_F1:
+		keyString = "F1";
+		break;
+	case GLUT_KEY_F2:
+		keyString = "F2";
+		break;
+	case GLUT_KEY_F3:
+		keyString = "F3";
+		break;
+	case GLUT_KEY_F4:
+		keyString = "F4";
+		break;
+	case GLUT_KEY_F5:
+		keyString = "F5";
+		break;
+	case GLUT_KEY_F6:
+		keyString = "F6";
+		break;
+	case GLUT_KEY_F7:
+		keyString = "F7";
+		break;
+	case GLUT_KEY_F8:
+		keyString = "F8";
+		break;
+	case GLUT_KEY_F9:
+		keyString = "F9";
+		break;
+	case GLUT_KEY_F10:
+		keyString = "F10";
+		break;
+	case GLUT_KEY_F11:
+		keyString = "F11";
+		break;
+	case GLUT_KEY_F12:
+		keyString = "F12";
+		break;
+	case GLUT_KEY_LEFT:
+		keyString = "LEFT";
+		break;
+	case GLUT_KEY_RIGHT:
+		keyString = "RIGHT";
+		break;
+	case GLUT_KEY_UP:
+		keyString = "UP";
+		break;
+	case GLUT_KEY_DOWN:
+		keyString = "DOWN";
+		break;
+	}
+
+	if (keyString != NULL ) {
+		pressKey(keyString, up);
+	}
+}
+
+GLvoid keyboardSpecialCallbackDown(int key, int x, int y) {
+	keyboardSpecialCallback(key, x, y, JNI_FALSE);
+}
+
+GLvoid keyboardSpecialCallbackUp(int key, int x, int y) {
+	keyboardSpecialCallback(key, x, y, JNI_TRUE);
 }
 
 JNIEXPORT void JNICALL Java_go_graphics_nativegl_NativeAreaWindow_openWindow_1native(
@@ -79,6 +193,14 @@ JNIEXPORT void JNICALL Java_go_graphics_nativegl_NativeAreaWindow_openWindow_1na
 	glutCreateWindow(title_native);
 	glutReshapeFunc(resizeGlWindow);
 	glutDisplayFunc(drawGlWindow);
+	glutMouseFunc(mouseCallback);
+	glutMotionFunc(mouseMotionCallback);
+	glutPassiveMotionFunc(mouseMotionCallback);
+	glutEntryFunc(mouseEntryCallback);
+	glutKeyboardFunc(keyboardCallbackDown);
+	glutSpecialFunc(keyboardSpecialCallbackDown);
+	glutKeyboardUpFunc(keyboardCallbackUp);
+	glutSpecialUpFunc(keyboardSpecialCallbackUp);
 
 	glewInit();
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

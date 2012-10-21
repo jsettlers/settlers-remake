@@ -10,7 +10,11 @@ public class NativeAreaWindow {
 
 	private Area content;
 
-	private GLDrawContext glWrapper = new NativeGLWrapper();
+	private GLDrawContext glWrapper = new IndirectBufferLoadableGlWrapper();
+
+	private final NativeEventConverter eventConverter;
+
+	private int height;
 
 	private final class OpenGLThread implements Runnable {
 		@Override
@@ -21,6 +25,7 @@ public class NativeAreaWindow {
 
 	public NativeAreaWindow(Area content) {
 		this.content = content;
+		eventConverter = new NativeEventConverter(content);
 		loadLibrary();
 		new Thread(new OpenGLThread(), "gl").start();
 	}
@@ -53,15 +58,37 @@ public class NativeAreaWindow {
 	private native void openWindow_native();
 
 	private void drawContent() {
-		System.out.println("drawing");
-		
 		content.drawArea(glWrapper);
 	}
 
 	private void resizeTo(int width, int height) {
-		System.out.println("resized");
+		this.height = height;
 		content.setWidth(width);
 		content.setHeight(height);
+	}
+
+	private void mouseStateChanged(int button, boolean down, int x, int y) {
+		if (down) {
+			eventConverter.mouseDown(button, x, height - y);
+		} else {
+			eventConverter.mouseUp(button, x, height - y);
+		}
+	}
+
+	private void keyPressed(String key, boolean up) {
+		if (up) {
+			eventConverter.keyReleased(key);
+		} else {
+			eventConverter.keyPressed(key);
+		}
+	}
+
+	private void mousePositionChanged(int x, int y) {
+		eventConverter.mousePositionChanged(x, height - y);
+	}
+
+	private void mouseInsideWindow(boolean inside) {
+		eventConverter.mouseInsideWindow(inside);
 	}
 
 	public static void main(String[] args) {
