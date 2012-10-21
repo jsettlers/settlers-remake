@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
@@ -650,6 +651,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public void setPlayer(byte player) {
 		this.player = player;
+	}
+
+	@Override
+	public List<IBuildingMaterial> getMaterials() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

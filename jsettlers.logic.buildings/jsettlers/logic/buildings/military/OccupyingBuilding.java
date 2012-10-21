@@ -361,6 +361,24 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		allOccupyingBuildings.clear();
 	}
 
+	@Override
+	public int getMaximumRequestedSoldiers(ESoldierType type) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getCurrentlyCommingSoldiers(ESoldierType type) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
