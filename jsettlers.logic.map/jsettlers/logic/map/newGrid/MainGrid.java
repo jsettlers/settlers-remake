@@ -254,8 +254,10 @@ public class MainGrid implements Serializable {
 	public MapFileHeader generateSaveHeader() {
 		// TODO: description
 		// TODO: count alive players, count all players
+		short[] bgimage = new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
+		
 		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(),
-				new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
+				bgimage);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {

@@ -2,12 +2,13 @@ package jsettlers.logic.stack;
 
 import java.io.Serializable;
 
+import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
 
-public class RequestStack implements Serializable, IMaterialRequester {
+public class RequestStack implements Serializable, IMaterialRequester, IBuildingMaterial {
 	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ShortPoint2D position;
@@ -75,5 +76,15 @@ public class RequestStack implements Serializable, IMaterialRequester {
 	public void requestFailed() {
 		requestMaterial(); // so just request again
 	}
+
+	@Override
+    public int getMaterialCount() {
+	    return getStackSize();
+    }
+
+	@Override
+    public boolean isOffering() {
+	    return false;
+    }
 
 }

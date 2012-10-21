@@ -2,6 +2,7 @@ package jsettlers.logic.buildings;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -652,11 +653,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void setPlayer(byte player) {
 		this.player = player;
 	}
-
+	
 	@Override
 	public List<IBuildingMaterial> getMaterials() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
+		materials.addAll(stacks);
+		//TODO @Andreas: Add a list of offering stacks to this building. 
+	    return materials;
 	}
 
 }

@@ -56,6 +56,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private boolean inFight;
 	private AttackableTowerMapObject attackableTowerObject = null;
 
+	private final int[] maximumRequestedSoldiers = new int[ESoldierType.values().length];
+
 	public OccupyingBuilding(EBuildingType type, byte player) {
 		super(type, player);
 
@@ -361,24 +363,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		allOccupyingBuildings.clear();
 	}
 
-	@Override
-	public int getMaximumRequestedSoldiers(ESoldierType type) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getCurrentlyCommingSoldiers(ESoldierType type) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
@@ -495,5 +479,47 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		public void informAboutAttackable(IAttackable attackable) {
 		}
 	}
+
+	@Override
+    public int getMaximumRequestedSoldiers(ESoldierType type) {
+	    return maximumRequestedSoldiers[type.ordinal()];
+    }
+
+	@Override
+	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
+		final OccupyerPlace[] occupyerPlaces =
+		        super.getBuildingType().getOccupyerPlaces();
+		int physicalMax = 0;
+		for (OccupyerPlace place : occupyerPlaces) {
+			if (place.getType() == type) {
+				physicalMax++;
+			}
+		}
+		if (max > physicalMax) {
+			maximumRequestedSoldiers[type.ordinal()] = physicalMax;
+		} else if (max <= 0) {
+			maximumRequestedSoldiers[type.ordinal()] = 0;
+			/* There mus always be someone in a tower, or at least requested. */
+			/*
+			 * NOTE: We might skip this, and instead let the last soldier not
+			 * leave the tower if the tower would become empty afterwards
+			 */
+			boolean isEmpty = true;
+			for (int count : maximumRequestedSoldiers) {
+				isEmpty &= count == 0;
+			}
+			if (isEmpty && physicalMax >= 1) {
+				maximumRequestedSoldiers[type.ordinal()] = 1;
+			}
+		} else {
+			maximumRequestedSoldiers[type.ordinal()] = max;
+		}
+	}
+
+	@Override
+    public int getCurrentlyCommingSoldiers(ESoldierType type) {
+	    // TODO Auto-generated method stub
+	    return 0;
+    }
 
 }
