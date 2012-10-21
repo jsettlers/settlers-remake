@@ -364,8 +364,12 @@ public class MapObjectDrawer {
 		Image image = this.imageMap.getImageForSettler(movable);
 		drawImage(movable, image);
 
+		playMovableSound(movable);
+	}
+
+	private void playMovableSound(IMovable movable) {
 		if (!movable.isSoundPlayed()) {
-			EAction action = movable.getAction();
+			final EAction action = movable.getAction();
 			if (action == EAction.ACTION1) {
 				playSoundAction1(movable.getMovableType());
 				movable.setSoundPlayed();
@@ -813,10 +817,14 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the occupiers of a building
-	 * @param x The x coordinate of the building
-	 * @param y 
-	 * @param building The occupyed building
-	 * @param basecolor The base color (gray shade).
+	 * 
+	 * @param x
+	 *            The x coordinate of the building
+	 * @param y
+	 * @param building
+	 *            The occupyed building
+	 * @param basecolor
+	 *            The base color (gray shade).
 	 */
 	private void drawOccupiers(int x, int y, IOccupyed building, float basecolor) {
 		// this can cause a ConcurrentModificationException when
@@ -848,10 +856,12 @@ public class MapObjectDrawer {
 				float viewX = towerX + place.getOffsetX();
 				float viewY = towerY + place.getOffsetY();
 				image.drawAt(gl, buffer, viewX, viewY, color, basecolor);
-				
-				if (place.getType() == ESoldierType.BOWMAN
-				        && movable.isSelected()) {
-					drawSelectionMark(viewX, viewY, movable.getHealth());
+
+				if (place.getType() == ESoldierType.BOWMAN) {
+					playMovableSound(movable);
+					if (movable.isSelected()) {
+						drawSelectionMark(viewX, viewY, movable.getHealth());
+					}
 				}
 			}
 		} catch (ConcurrentModificationException e) {
@@ -994,6 +1004,7 @@ public class MapObjectDrawer {
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
-	    drawByProgress(moveToMarker.getX(), moveToMarker.getY(), MARKER_FILE, MOVE_TO_MARKER_SEQUENCE, progress, 1);
-    }
+		drawByProgress(moveToMarker.getX(), moveToMarker.getY(), MARKER_FILE,
+		        MOVE_TO_MARKER_SEQUENCE, progress, 1);
+	}
 }
