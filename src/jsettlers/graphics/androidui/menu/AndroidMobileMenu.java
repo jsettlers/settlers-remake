@@ -6,6 +6,7 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.androidui.MobileMenu;
+import jsettlers.graphics.androidui.actions.ContextAction;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,5 +83,10 @@ public abstract class AndroidMobileMenu implements MobileMenu, Hideable {
 	protected OnClickListener generateActionListener(Action action, boolean hideOnClick) {
 	    return new ActionClickListener(putable, action, hideOnClick ? this : null);
     };
+
+
+	protected void setActiveAction(ContextAction action) {
+	    putable.setActiveAction(action);
+    }
 
 }

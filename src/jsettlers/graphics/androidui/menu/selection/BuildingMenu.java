@@ -3,11 +3,14 @@ package jsettlers.graphics.androidui.menu.selection;
 import java.util.ArrayList;
 
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
+import jsettlers.graphics.androidui.actions.SelectWorkareaAction;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.AndroidMobileMenu;
 import jsettlers.graphics.localization.Labels;
@@ -31,21 +34,24 @@ public class BuildingMenu extends AndroidMobileMenu {
 	private ImageButton workingButton;
 
 	private class MaterialTab implements OnClickListener {
-		private EMaterialType mat;
+		private IBuildingMaterial mat;
 		private ImageButton button;
+		private TextView count;
 
-		public MaterialTab(ImageButton button, TextView count, EMaterialType mat) {
+		public MaterialTab(ImageButton button, TextView count,
+		        IBuildingMaterial mat) {
 			this.button = button;
+			this.count = count;
 			this.mat = mat;
 		}
 
 		@Override
 		public void onClick(View arg0) {
-			showMaterialContent(mat);
+			showMaterialContent(mat.getMaterialType());
 		}
 
 		public void setActiveMaterial(EMaterialType active) {
-			button.setEnabled(mat != active);
+			button.setEnabled(mat.getMaterialType() != active);
 		}
 	}
 
@@ -83,9 +89,7 @@ public class BuildingMenu extends AndroidMobileMenu {
 
 		TableLayout tabs = (TableLayout) menu.findViewById(R.id.building_tabs);
 
-		for (EMaterialType mat : new EMaterialType[] {
-		        EMaterialType.PICK, EMaterialType.AXE
-		}) {
+		for (IBuildingMaterial mat : building.getMaterials()) {
 			addMaterialTab(tabs, mat);
 		}
 
@@ -93,7 +97,12 @@ public class BuildingMenu extends AndroidMobileMenu {
 			TableRow row = new TableRow(getContext());
 			ImageButton button = new ImageButton(getContext());
 			button.setImageResource(R.drawable.building_set_workarea);
-			button.setOnClickListener(generateActionListener(new Action(EActionType.SET_WORK_AREA), true));
+			button.setOnClickListener(generateActionListener(new ExecutableAction() {
+				@Override
+				public void execute() {
+				    setActiveAction(new SelectWorkareaAction());
+				}
+			}, true));
 			row.addView(button);
 			tabs.addView(row);
 		}
@@ -119,14 +128,15 @@ public class BuildingMenu extends AndroidMobileMenu {
 		                : EActionType.START_WORKING), true));
 	}
 
-	private void addMaterialTab(TableLayout tabs, EMaterialType mat) {
+	private void addMaterialTab(TableLayout tabs, IBuildingMaterial mat) {
 		TableRow row = new TableRow(getContext());
 		ImageButton button = new ImageButton(getContext());
-		button.setImageResource(Graphics.MATERIAL_IMAGE_MAP[mat.ordinal()]);
+		button.setImageResource(Graphics.MATERIAL_IMAGE_MAP[mat
+		        .getMaterialType().ordinal()]);
 		row.addView(button);
 
 		TextView count = new TextView(getContext());
-		count.setText("?");
+		count.setText(mat.getMaterialCount() + "");
 		row.addView(count);
 
 		tabs.addView(row);

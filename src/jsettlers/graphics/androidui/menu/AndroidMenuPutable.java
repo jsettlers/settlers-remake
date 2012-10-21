@@ -2,6 +2,8 @@ package jsettlers.graphics.androidui.menu;
 
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.androidui.actions.ContextAction;
+import jsettlers.graphics.androidui.actions.ContextActionListener;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -17,6 +19,8 @@ public class AndroidMenuPutable implements ActionFireable {
 	private final FrameLayout parentView;
 
 	private ActionFireable actionFireable;
+
+	private ContextActionListener contextActionListener;
 
 	/**
 	 * Creates a new {@link AndroidMenuPutable}.
@@ -50,5 +54,14 @@ public class AndroidMenuPutable implements ActionFireable {
 		if (actionFireable != null) {
 			actionFireable.fireAction(action);
 		}
+	}
+
+	protected void setActiveAction(ContextAction action) {
+		contextActionListener.contextActionChanged(action);
+	}
+
+	public void setContextActionListener(
+	        ContextActionListener contextActionListener) {
+		this.contextActionListener = contextActionListener;
 	}
 }

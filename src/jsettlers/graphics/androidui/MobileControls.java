@@ -10,6 +10,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -17,6 +18,8 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.androidui.actions.ConstructBuilding;
 import jsettlers.graphics.androidui.actions.ContextAction;
+import jsettlers.graphics.androidui.actions.ContextActionListener;
+import jsettlers.graphics.androidui.actions.MoveToOnClick;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.BuildMenu;
 import jsettlers.graphics.androidui.menu.PauseMenu;
@@ -31,7 +34,7 @@ import jsettlers.graphics.utils.Button;
  * 
  * @author michael
  */
-public class MobileControls implements IControls {
+public class MobileControls implements IControls, ContextActionListener {
 
 	private static final float SIZEFACTOR = .5f;
 	/**
@@ -76,6 +79,7 @@ public class MobileControls implements IControls {
 
 	public MobileControls(AndroidMenuPutable p) {
 		androidMenuPutable = p;
+		p.setContextActionListener(this);
 		buildMenu = new BuildMenu(androidMenuPutable);
 		pauseMenu = new PauseMenu(androidMenuPutable);
 	}
@@ -164,23 +168,31 @@ public class MobileControls implements IControls {
 
 	@Override
 	public Action replaceAction(Action action) {
-		synchronized (activeMenuMutex) {
-			if (action.getActionType() == EActionType.EXECUTABLE) {
-				((ExecutableAction) action).execute();
-				return null;
-			} else if (action.getActionType() == EActionType.BACK) {
-				if (activeMenu == pauseMenu) {
-					return new Action(EActionType.EXIT);
-				} else if (activeMenu != null) {
-					setActiveMenu(null);
-					return null;
-				} else {
-					return new Action(EActionType.SPEED_SET_PAUSE);
-				}
-			} else {
-				return action;
+		Action replaced = action;
+		System.out.println("Ready to replace: " + action);
+		synchronized (activeActionMutex) {
+			if (activeAction != null) {
+				replaced = activeAction.replaceAction(replaced);
 			}
 		}
+
+		synchronized (activeMenuMutex) {
+			if (action.getActionType() == EActionType.EXECUTABLE) {
+				((ExecutableAction) replaced).execute();
+				replaced = null;
+			} else if (action.getActionType() == EActionType.BACK) {
+				if (activeMenu == pauseMenu) {
+					replaced = new Action(EActionType.EXIT);
+				} else if (activeMenu != null) {
+					setActiveMenu(null);
+					replaced = null;
+				} else {
+					replaced = new Action(EActionType.SPEED_SET_PAUSE);
+				}
+			}
+		}
+
+		return replaced;
 	}
 
 	@Override
@@ -203,15 +215,10 @@ public class MobileControls implements IControls {
 		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
 		        && activeMenu == pauseMenu) {
 			setActiveMenu(null);
-		} else if (action.getActionType() == EActionType.SELECT_POINT) {
+		} else if (action.getActionType() == EActionType.SET_WORK_AREA
+		        || action.getActionType() == EActionType.SELECT_POINT
+		        || action.getActionType() == EActionType.MOVE_TO) {
 			setActiveAction(null);
-		} else if (action.getActionType() == EActionType.SET_WORK_AREA) {
-			setActiveAction(new ContextAction() {
-				@Override
-				public String getDesciption() {
-					return Labels.getString("click_to_select_workarea");
-				}
-			});
 		}
 	}
 
@@ -242,8 +249,18 @@ public class MobileControls implements IControls {
 	}
 
 	@Override
+	public void contextActionChanged(ContextAction newAction) {
+		setActiveAction(newAction);
+	}
+
+	@Override
 	public void displaySelection(ISelectionSet selection) {
 		this.selection = selection;
+		if (selection != null
+		        && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection
+		                .getSelectionType() == ESelectionType.SPECIALISTS)) {
+			setActiveAction(new MoveToOnClick());
+		}
 	}
 
 	protected void showSelectionMenu() {
