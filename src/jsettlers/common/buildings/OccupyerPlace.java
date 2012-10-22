@@ -69,6 +69,7 @@ public class OccupyerPlace implements Serializable {
 
 	/**
 	 * Whether the solier should look to the right.
+	 * 
 	 * @return A boolean value.
 	 */
 	public final boolean looksRight() {
@@ -77,6 +78,7 @@ public class OccupyerPlace implements Serializable {
 
 	/**
 	 * Gets the point over which the soldier is standing.
+	 * 
 	 * @return The position relative to the building.
 	 */
 	public final RelativePoint getPosition() {
