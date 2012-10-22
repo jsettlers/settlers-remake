@@ -92,14 +92,14 @@ public class AndroidUiImageGenerator {
 		ImageProvider i = ImageProvider.getInstance();
 
 		for (EBuildingType t : EBuildingType.values()) {
-			String name = t.toString().toLowerCase();
+			String name = "bui_" + t.toString().toLowerCase();
 			File file = new File(destinationDirectory, name + ".png");
 			
 			Image guiImage = i.getImage(t.getGuiImage());
 			if (guiImage instanceof SingleImage) {
 				export((SingleImage) guiImage, file);
+				listOutput.println("\t\tR.drawable." + name + ",");
 			}
-			listOutput.println("\t\tR.drawable." + name + ",");
 		}
 
 		listOutput.println("\t};");
@@ -112,18 +112,19 @@ public class AndroidUiImageGenerator {
 		ImageProvider i = ImageProvider.getInstance();
 
 		for (EMaterialType t : EMaterialType.values()) {
-			String name = t.toString().toLowerCase();
-			File file = new File(destinationDirectory, "mat_" + name + ".png");
+			String name = "mat_" + t.toString().toLowerCase();
+			File file = new File(destinationDirectory, name + ".png");
 			
 			Image guiImage = i.getGuiImage(t.getGuiFile(), t.getGuiIconBase() + resolution);
 			if (guiImage instanceof SingleImage) {
 				export((SingleImage) guiImage, file);
+				listOutput.println("\t\tR.drawable." + name + ",");
 			}
-			listOutput.println("\t\tR.drawable.mat_" + name + ",");
 		}
 
 		listOutput.println("\t};");
     }
+	
 	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
 		int width = image.getWidth();
