@@ -55,9 +55,7 @@ public class SwingManagedJSettlers {
 	public static void startMap(IMapDataProvider data) {
 		ResourceManager.setProvider(new SwingResourceProvider());
 		// TODO: detect exit
-		JSettlersGame game =
-		        new JSettlersGame(getGui(), new MapDataMapCreator(data),
-		                123456L, new NetworkManager(), (byte) 0);
+		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager(), (byte) 0);
 		game.start();
 	}
 
@@ -67,8 +65,8 @@ public class SwingManagedJSettlers {
 		try {
 			new NativeAreaWindow(content.getArea());
 		} catch (Throwable t) {
-			t.printStackTrace();
-			
+			SwingResourceLoader.setupSwingPaths();
+
 			JFrame jsettlersWnd = new JFrame("jsettlers");
 			AreaContainer panel = new AreaContainer(content.getArea());
 			panel.setPreferredSize(new Dimension(640, 480));
