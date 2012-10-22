@@ -57,6 +57,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private AttackableTowerMapObject attackableTowerObject = null;
 
 	private final int[] maximumRequestedSoldiers = new int[ESoldierType.values().length];
+	private final int[] currentlyCommingSoldiers = new int[ESoldierType.values().length];
 
 	public OccupyingBuilding(EBuildingType type, byte player) {
 		super(type, player);
@@ -166,10 +167,23 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 					NewMovable soldier = super.getGrid().getMovable(path.getTargetPos());
 					if (soldier != null && soldier.setOccupyableBuilding(this)) {
-						searchedSoldiers.pop();
+						ESearchType searchedSoldier = searchedSoldiers.pop();
+						currentlyCommingSoldiers[getSoldierType(searchedSoldier).ordinal()]++;
 					}// soldier wasn't at the position
 				}
 			}
+		}
+	}
+
+	private ESoldierType getSoldierType(ESearchType searchedSoldier) {
+		switch (searchedSoldier) {
+		case SOLDIER_BOWMAN:
+			return ESoldierType.BOWMAN;
+		case SOLDIER_PIKEMAN:
+		case SOLDIER_SWORDSMAN:
+			return ESoldierType.INFANTRY;
+		default:
+			throw new IllegalArgumentException(searchedSoldier + " is no soldier search type!");
 		}
 	}
 
@@ -221,6 +235,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		OccupyerPlace freePosition = findFreePositionFor(soldier.getSoldierType());
 
 		emptyPlaces.remove(freePosition);
+		currentlyCommingSoldiers[freePosition.getType().ordinal()]--;
+
 		TowerOccupyer towerOccupier = new TowerOccupyer(freePosition, soldier);
 		occupiers.add(towerOccupier);
 
@@ -290,8 +306,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final void requestFailed(EMovableType movableType) {
-		ESearchType searchType = getSearchType(movableType);
+	public final void requestFailed(EMovableType soldierType) {
+		ESearchType searchType = getSearchType(soldierType);
+
+		currentlyCommingSoldiers[getSoldierType(searchType).ordinal()]--;
+
 		if (searchType != null)
 			searchedSoldiers.add(searchType);
 	}
@@ -361,6 +380,45 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	public static void dropAllBuildings() {
 		allOccupyingBuildings.clear();
+	}
+
+	@Override
+	public int getMaximumRequestedSoldiers(ESoldierType type) {
+		return maximumRequestedSoldiers[type.ordinal()];
+	}
+
+	@Override
+	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
+		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
+		int physicalMax = 0;
+		for (OccupyerPlace place : occupyerPlaces) {
+			if (place.getType() == type) {
+				physicalMax++;
+			}
+		}
+		if (max > physicalMax) {
+			maximumRequestedSoldiers[type.ordinal()] = physicalMax;
+		} else if (max <= 0) {
+			maximumRequestedSoldiers[type.ordinal()] = 0;
+			/* There must always be someone in a tower, or at least requested. */
+			/*
+			 * NOTE: We might skip this, and instead let the last soldier not leave the tower if the tower would become empty afterwards
+			 */
+			boolean isEmpty = true;
+			for (int count : maximumRequestedSoldiers) {
+				isEmpty &= count == 0;
+			}
+			if (isEmpty && physicalMax >= 1) {
+				maximumRequestedSoldiers[type.ordinal()] = 1;
+			}
+		} else {
+			maximumRequestedSoldiers[type.ordinal()] = max;
+		}
+	}
+
+	@Override
+	public int getCurrentlyCommingSoldiers(ESoldierType type) {
+		return currentlyCommingSoldiers[type.ordinal()];
 	}
 
 	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
@@ -479,47 +537,5 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		public void informAboutAttackable(IAttackable attackable) {
 		}
 	}
-
-	@Override
-    public int getMaximumRequestedSoldiers(ESoldierType type) {
-	    return maximumRequestedSoldiers[type.ordinal()];
-    }
-
-	@Override
-	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
-		final OccupyerPlace[] occupyerPlaces =
-		        super.getBuildingType().getOccupyerPlaces();
-		int physicalMax = 0;
-		for (OccupyerPlace place : occupyerPlaces) {
-			if (place.getType() == type) {
-				physicalMax++;
-			}
-		}
-		if (max > physicalMax) {
-			maximumRequestedSoldiers[type.ordinal()] = physicalMax;
-		} else if (max <= 0) {
-			maximumRequestedSoldiers[type.ordinal()] = 0;
-			/* There mus always be someone in a tower, or at least requested. */
-			/*
-			 * NOTE: We might skip this, and instead let the last soldier not
-			 * leave the tower if the tower would become empty afterwards
-			 */
-			boolean isEmpty = true;
-			for (int count : maximumRequestedSoldiers) {
-				isEmpty &= count == 0;
-			}
-			if (isEmpty && physicalMax >= 1) {
-				maximumRequestedSoldiers[type.ordinal()] = 1;
-			}
-		} else {
-			maximumRequestedSoldiers[type.ordinal()] = max;
-		}
-	}
-
-	@Override
-    public int getCurrentlyCommingSoldiers(ESoldierType type) {
-	    // TODO Auto-generated method stub
-	    return 0;
-    }
 
 }
