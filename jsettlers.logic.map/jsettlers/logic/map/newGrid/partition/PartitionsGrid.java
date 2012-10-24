@@ -3,6 +3,7 @@ package jsettlers.logic.map.newGrid.partition;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.Color;
@@ -403,7 +404,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	public final List<ShortPoint2D> freeOccupiedArea(MapCircle occupied, ShortPoint2D occupiersPosition) {
 		short partiton = getPartition(occupiersPosition);
-		List<ShortPoint2D> totallyFreePositions = new ArrayList<ShortPoint2D>();
+		// a LinkedList is used, because the user needs to delete random elements
+		List<ShortPoint2D> totallyFreePositions = new LinkedList<ShortPoint2D>();
 
 		for (ShortPoint2D curr : occupied) {
 			short x = curr.getX();

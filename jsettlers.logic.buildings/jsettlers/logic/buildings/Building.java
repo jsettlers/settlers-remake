@@ -467,10 +467,12 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	protected void releaseRequestStacks() {
-		for (RequestStack curr : stacks) {
-			curr.releaseRequests();
+		if (stacks != null) {
+			for (RequestStack curr : stacks) {
+				curr.releaseRequests();
+			}
+			stacks = new LinkedList<RequestStack>();
 		}
-		stacks = new LinkedList<RequestStack>();
 	}
 
 	public void setWorkAreaCenter(@SuppressWarnings("unused") ShortPoint2D workAreaCenter) {
@@ -653,13 +655,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public void setPlayer(byte player) {
 		this.player = player;
 	}
-	
+
 	@Override
 	public List<IBuildingMaterial> getMaterials() {
 		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
 		materials.addAll(stacks);
-		//TODO @Andreas: Add a list of offering stacks to this building. 
-	    return materials;
+		// TODO @Andreas: Add a list of offering stacks to this building.
+		return materials;
 	}
 
 }

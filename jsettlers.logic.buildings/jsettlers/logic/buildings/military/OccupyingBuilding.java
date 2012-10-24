@@ -111,12 +111,13 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		searchedSoldiers.clear();
 		emptyPlaces.clear();
 
+		super.setPlayer(player); // set the new player.
+
 		if (occupiedArea) { // free the area if it had been occupied.
 			freeArea();
 			occupiedArea = false;
 		}
 
-		super.setPlayer(player); // set the new player.
 		doorHealth = 0.1f;
 
 		super.placeFlag(true);

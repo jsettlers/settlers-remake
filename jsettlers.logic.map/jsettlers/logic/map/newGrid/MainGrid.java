@@ -255,9 +255,8 @@ public class MainGrid implements Serializable {
 		// TODO: description
 		// TODO: count alive players, count all players
 		short[] bgimage = new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
-		
-		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(),
-				bgimage);
+
+		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgimage);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
@@ -1195,6 +1194,7 @@ public class MainGrid implements Serializable {
 				if (canConstructAt(area)) {
 					setProtectedState(area, true);
 					mapObjectsManager.addBuildingTo(position, newBuilding);
+					objectsGrid.setBuildingArea(area, newBuilding);
 					return true;
 				} else {
 					return false;
@@ -1217,8 +1217,9 @@ public class MainGrid implements Serializable {
 			for (ShortPoint2D curr : area) {
 				short x = curr.getX();
 				short y = curr.getY();
+
 				if (!isInBounds(x, y) || flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y)) {
-					isFree = false;
+					isFree = false; // TODO @Andreas Eberle remove if
 				}
 			}
 			return isFree;
@@ -1230,6 +1231,9 @@ public class MainGrid implements Serializable {
 			mapObjectsManager.removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.BUILDING);
 
 			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
+
+			objectsGrid.setBuildingArea(area, null);
+
 			for (ShortPoint2D curr : area) {
 				short x = curr.getX();
 				short y = curr.getY();
@@ -1242,6 +1246,11 @@ public class MainGrid implements Serializable {
 		@Override
 		public final void occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte player) {
 			List<ShortPoint2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, groundArea, player);
+
+			for (ShortPoint2D curr : occupiedPositions) {
+				destroyBuildingOn(curr.getX(), curr.getY(), player);
+			}
+
 			bordersThread.checkPositions(occupiedPositions);
 			landmarksCorrection.addLandmarkedPositions(occupiedPositions);
 		}
@@ -1253,7 +1262,7 @@ public class MainGrid implements Serializable {
 				StopWatch watch = new MilliStopWatch();
 				watch.start();
 
-				int maxSqDistance = 6 * CommonConstants.TOWERRADIUS * CommonConstants.TOWERRADIUS;
+				final int maxSqDistance = 6 * CommonConstants.TOWERRADIUS * CommonConstants.TOWERRADIUS;
 
 				List<OccupyingDistanceCombi> occupyingInRange = new LinkedList<OccupyingDistanceCombi>();
 
@@ -1269,28 +1278,39 @@ public class MainGrid implements Serializable {
 
 				if (!occupyingInRange.isEmpty()) {
 					Collections.sort(occupyingInRange);
-					FreeMapArea freedArea = new FreeMapArea(totallyFreed);
 
 					for (OccupyingDistanceCombi currOcc : occupyingInRange) {
 						MapCircle currOccArea = currOcc.building.getOccupyablePositions();
 
-						Iterator<ShortPoint2D> iter = freedArea.iterator();
+						Iterator<ShortPoint2D> iter = totallyFreed.iterator();
 						for (ShortPoint2D currPos = iter.next(); iter.hasNext(); currPos = iter.next()) {
 							if (currOccArea.contains(currPos)) {
 								iter.remove();
-								partitionsGrid.occupyAt(currPos.getX(), currPos.getY(), currOcc.building.getPlayer());
+								short x = currPos.getX();
+								short y = currPos.getY();
+
+								partitionsGrid.occupyAt(x, y, currOcc.building.getPlayer());
 								bordersThread.checkPosition(currPos);
-								landmarksCorrection.reTest(currPos.getX(), currPos.getY());
+								landmarksCorrection.reTest(x, y);
+
+								destroyBuildingOn(x, y, currOcc.building.getPlayer());
 							}
 						}
 
-						if (freedArea.isEmpty()) {
+						if (totallyFreed.isEmpty()) {
 							break;
 						}
 					}
 				}
 
 				watch.stop("------------------ freeOccupiedArea needed: ");
+			}
+		}
+
+		private void destroyBuildingOn(short x, short y, byte newPlayer) {
+			Building building = objectsGrid.getBuildingOn(x, y);
+			if (building != null && newPlayer != building.getPlayer()) {
+				building.kill();
 			}
 		}
 
@@ -1470,7 +1490,7 @@ public class MainGrid implements Serializable {
 			boolean pausing = NetworkTimer.isPausing();
 			NetworkTimer.get().setPausing(true);
 			try {
-				Thread.sleep(30); // FIXME @Andreas serializer should wait until
+				Thread.sleep(100); // FIXME @Andreas serializer should wait until
 									// threads did their work!
 			} catch (InterruptedException e) {
 				e.printStackTrace();

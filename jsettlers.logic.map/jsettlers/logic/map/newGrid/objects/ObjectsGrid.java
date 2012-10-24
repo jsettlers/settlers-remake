@@ -5,12 +5,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IInformable;
@@ -28,11 +30,13 @@ public final class ObjectsGrid implements Serializable {
 	private final short height;
 
 	private transient AbstractHexMapObject[] objectsGrid; // don't use default serialization for this => transient
+	private final Building[] buildingsGrid;
 
 	public ObjectsGrid(short width, short height) {
 		this.width = width;
 		this.height = height;
 		this.objectsGrid = new AbstractHexMapObject[width * height];
+		this.buildingsGrid = new Building[width * height];
 	}
 
 	private final void writeObject(ObjectOutputStream oos) throws IOException {
@@ -195,5 +199,15 @@ public final class ObjectsGrid implements Serializable {
 				}
 			}
 		}
+	}
+
+	public void setBuildingArea(FreeMapArea area, Building buildingValue) {
+		for (ShortPoint2D curr : area) {
+			buildingsGrid[getIdx(curr.getX(), curr.getY())] = buildingValue;
+		}
+	}
+
+	public Building getBuildingOn(short x, short y) {
+		return buildingsGrid[getIdx(x, y)];
 	}
 }
