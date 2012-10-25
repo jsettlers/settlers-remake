@@ -8,6 +8,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.FilterIterator;
 import jsettlers.common.utils.collections.IPredicate;
+import jsettlers.common.utils.partitioning.IBorderVisitor;
 import jsettlers.common.utils.partitioning.PartitionCalculator;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
@@ -86,7 +87,8 @@ public class TestNewPartitioner {
 
 			@Override
 			public boolean evaluate(ShortPoint2D pos) {
-				return !circle3.contains(pos) && !circle2.contains(pos) && !circle1.contains(pos) || circle4.contains(pos);
+				return !circle3.contains(pos) && !circle2.contains(pos) && !circle1.contains(pos) || circle4.contains(pos)
+						|| (pos.getX() == 230 && pos.getY() == 200);
 			}
 		};
 
@@ -115,6 +117,8 @@ public class TestNewPartitioner {
 			}
 		}
 
+		partitioner.traverseBorders(getBorderVisitor(grid));
+
 		System.out.println("number of partitions: " + partitioner.getNumberOfPartitions());
 		for (int i = 0; i < partitioner.getNumberOfPartitions(); i++) {
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i + 1);
@@ -122,6 +126,21 @@ public class TestNewPartitioner {
 		}
 
 		watch.stop("the test needed");
+	}
+
+	private static IBorderVisitor getBorderVisitor(final MainGrid grid) {
+		return new IBorderVisitor() {
+
+			@Override
+			public void visit(int x, int y) {
+				grid.partitionsGrid.setPartitionAndPlayerAt((short) x, (short) y, (short) 7);
+			}
+
+			@Override
+			public void traversingFinished() {
+
+			}
+		};
 	}
 
 	private static ShortPoint2D getPos(int x, int y) {
