@@ -181,7 +181,7 @@ public class DataTester implements Runnable {
 		EBuildingType type = buildingObject.getType();
 		if (type == EBuildingType.TOWER || type == EBuildingType.BIG_TOWER
 		        || type == EBuildingType.CASTLE) {
-			MapCircle circle = new MapCircle(x, y, CommonConstants.TOWERRADIUS);
+			MapCircle circle = new MapCircle(x, y, CommonConstants.TOWER_RADIUS);
 			drawCircle(players, player, circle);
 		}
 	}
