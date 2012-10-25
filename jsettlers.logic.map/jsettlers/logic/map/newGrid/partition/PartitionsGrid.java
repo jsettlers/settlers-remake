@@ -9,7 +9,6 @@ import java.util.List;
 import jsettlers.common.Color;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -319,7 +318,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(position).releaseRequestsAt(position, materialType);
 	}
 
-	public final List<ShortPoint2D> occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte newPlayer) {
+	public final List<ShortPoint2D> occupyArea(IMapArea toBeOccupied, IMapArea groundArea, byte newPlayer) {
 		MilliStopWatch watch = new MilliStopWatch();
 		watch.start();
 
@@ -402,7 +401,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return towers[getIdx(x, y)] > 0;
 	}
 
-	public final List<ShortPoint2D> freeOccupiedArea(MapCircle occupied, ShortPoint2D occupiersPosition) {
+	public final List<ShortPoint2D> freeOccupiedArea(IMapArea occupied, ShortPoint2D occupiersPosition) {
 		short partiton = getPartition(occupiersPosition);
 		// a LinkedList is used, because the user needs to delete random elements
 		List<ShortPoint2D> totallyFreePositions = new LinkedList<ShortPoint2D>();

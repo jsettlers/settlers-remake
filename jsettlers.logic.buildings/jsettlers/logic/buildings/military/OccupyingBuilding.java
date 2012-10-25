@@ -25,6 +25,7 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.IOccupyingBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
@@ -39,7 +40,8 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding, Serializable {
+public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding, Serializable,
+		IOccupyingBuilding {
 	private static final long serialVersionUID = 5267249978497095473L;
 
 	private static LinkedList<OccupyingBuilding> allOccupyingBuildings = new LinkedList<OccupyingBuilding>();
@@ -101,7 +103,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 	}
 
-	public void changePlayerTo(byte player) {
+	void changePlayerTo(byte player) {
 		assert occupiers.isEmpty() : "there cannot be any occupies in the tower when changing the player.";
 
 		setAttackableTowerObject(false);
@@ -132,8 +134,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 	}
 
+	@Override
 	public final MapCircle getOccupyablePositions() {
-		return new MapCircle(super.getPos(), CommonConstants.TOWERRADIUS);
+		return new MapCircle(super.getPos(), CommonConstants.TOWER_RADIUS);
 	}
 
 	@Override
@@ -218,7 +221,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private void freeArea() {
 		MapCircle occupied = getOccupyablePositions();
-		super.getGrid().freeOccupiedArea(occupied, super.getPos());
+		super.getGrid().freeOccupiedArea(occupied, super.getPos(), allOccupyingBuildings);
 	}
 
 	@Override

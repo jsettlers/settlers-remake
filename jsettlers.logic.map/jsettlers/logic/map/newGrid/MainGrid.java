@@ -33,7 +33,6 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
@@ -67,7 +66,6 @@ import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
-import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
@@ -1244,7 +1242,7 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte player) {
+		public final void occupyArea(IMapArea toBeOccupied, IMapArea groundArea, byte player) {
 			List<ShortPoint2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, groundArea, player);
 
 			for (ShortPoint2D curr : occupiedPositions) {
@@ -1256,17 +1254,17 @@ public class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void freeOccupiedArea(MapCircle occupied, ShortPoint2D pos) {
+		public final void freeOccupiedArea(IMapArea occupied, ShortPoint2D pos, List<? extends IOccupyingBuilding> otherOccupiers) {
 			List<ShortPoint2D> totallyFreed = partitionsGrid.freeOccupiedArea(occupied, pos);
 			if (!totallyFreed.isEmpty()) {
 				StopWatch watch = new MilliStopWatch();
 				watch.start();
 
-				final int maxSqDistance = 6 * CommonConstants.TOWERRADIUS * CommonConstants.TOWERRADIUS;
+				final int maxSqDistance = 6 * CommonConstants.TOWER_RADIUS * CommonConstants.TOWER_RADIUS;
 
 				List<OccupyingDistanceCombi> occupyingInRange = new LinkedList<OccupyingDistanceCombi>();
 
-				for (OccupyingBuilding curr : OccupyingBuilding.getAllOccupyingBuildings()) {
+				for (IOccupyingBuilding curr : otherOccupiers) {
 					ShortPoint2D currPos = curr.getPos();
 					int dx = currPos.getX() - pos.getX();
 					int dy = currPos.getY() - pos.getY();
@@ -1280,7 +1278,7 @@ public class MainGrid implements Serializable {
 					Collections.sort(occupyingInRange);
 
 					for (OccupyingDistanceCombi currOcc : occupyingInRange) {
-						MapCircle currOccArea = currOcc.building.getOccupyablePositions();
+						IMapArea currOccArea = currOcc.building.getOccupyablePositions();
 
 						Iterator<ShortPoint2D> iter = totallyFreed.iterator();
 						for (ShortPoint2D currPos = iter.next(); iter.hasNext(); currPos = iter.next()) {
@@ -1316,9 +1314,9 @@ public class MainGrid implements Serializable {
 
 		private final class OccupyingDistanceCombi implements Comparable<OccupyingDistanceCombi> {
 			final int sqDistance;
-			final OccupyingBuilding building;
+			final IOccupyingBuilding building;
 
-			OccupyingDistanceCombi(int sqDistance, OccupyingBuilding building) {
+			OccupyingDistanceCombi(int sqDistance, IOccupyingBuilding building) {
 				this.sqDistance = sqDistance;
 				this.building = building;
 			}

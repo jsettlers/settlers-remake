@@ -1,14 +1,16 @@
 package jsettlers.logic.buildings;
 
+import java.util.List;
+
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
+import jsettlers.logic.map.newGrid.IOccupyingBuilding;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
@@ -75,7 +77,7 @@ public interface IBuildingsGrid {
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 
-	void occupyArea(MapCircle toBeOccupied, IMapArea groundArea, byte player);
+	void occupyArea(IMapArea toBeOccupied, IMapArea groundArea, byte player);
 
 	void removeBuildingAt(ShortPoint2D pos);
 
@@ -83,9 +85,10 @@ public interface IBuildingsGrid {
 	 * this method removes the enforcement in the given area
 	 * 
 	 * @param occupied
-	 * @param pos
+	 * @param position
+	 * @param otherOccupiers
 	 */
-	void freeOccupiedArea(MapCircle occupied, ShortPoint2D pos);
+	void freeOccupiedArea(IMapArea occupied, ShortPoint2D position, List<? extends IOccupyingBuilding> otherOccupiers);
 
 	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
