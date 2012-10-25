@@ -59,7 +59,12 @@ public class SwingManagedJSettlers {
 		game.start();
 	}
 
-	private static ISettlersGameDisplay getGui() {
+	/**
+	 * Creates a new SWING GUI for the game.
+	 * 
+	 * @return
+	 */
+	public static ISettlersGameDisplay getGui() {
 		JOGLPanel content = new JOGLPanel(new SwingSoundPlayer());
 
 		try {
