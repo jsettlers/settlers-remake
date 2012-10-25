@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.SRectangle;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * This class gives a fast lookup (in O(1)) for contains if a MapArea is given by a list of n positions.<br>
@@ -21,15 +21,15 @@ public final class FreeMapArea implements IMapArea {
 	private static final long serialVersionUID = 6331090134655931952L;
 
 	private final List<ShortPoint2D> positions;
-	private final short xOffset;
-	private final short yOffset;
+	private final int xOffset;
+	private final int yOffset;
 	private final boolean[][] areaMap;
 	private final int width;
 	private final int height;
 
 	/**
 	 * @param positions
-	 *            the positions this map area shall contain.
+	 *            the positions this map area will contain.
 	 */
 	public FreeMapArea(List<ShortPoint2D> positions) {
 		assert positions.size() > 0 : "positions must contain at least one value!!";
@@ -41,6 +41,31 @@ public final class FreeMapArea implements IMapArea {
 		yOffset = bounds.getYMin();
 		width = bounds.getWidth() + 1;
 		height = bounds.getHeight() + 1;
+
+		areaMap = new boolean[width][height];
+		setPositionsToMap(areaMap, positions);
+	}
+
+	/**
+	 * 
+	 * @param positions
+	 * @param minX
+	 *            Minimum x value in the list of positions.
+	 * @param minY
+	 *            Minimum y value in the list of positions.
+	 * @param width
+	 *            minX + width -1 is the maximum x value in the list of positions.
+	 * @param height
+	 *            minY + height -1 is the maximum y value in the list of positions.
+	 */
+	public FreeMapArea(List<ShortPoint2D> positions, int minX, int minY, int width, int height) {
+		assert positions.size() > 0 : "positions must contain at least one value!!";
+
+		this.positions = positions;
+		this.xOffset = minX;
+		this.yOffset = minY;
+		this.width = width;
+		this.height = height;
 
 		areaMap = new boolean[width][height];
 		setPositionsToMap(areaMap, positions);
