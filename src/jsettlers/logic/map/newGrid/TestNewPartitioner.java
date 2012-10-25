@@ -1,8 +1,5 @@
 package jsettlers.logic.map.newGrid;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
@@ -29,9 +26,6 @@ public class TestNewPartitioner {
 
 	private static final short HEIGHT = 400;
 	private static final short WIDTH = 400;
-	private static final byte DEFAULT_PLAYER = 3;
-
-	private static List<TestOccupyingBuilding> buildings = new LinkedList<TestOccupyingBuilding>();
 
 	public static void main(String args[]) {
 		ImageProvider.getInstance().startPreloading();
@@ -53,7 +47,7 @@ public class TestNewPartitioner {
 		// start GUI
 		ISettlersGameDisplay gui = SwingManagedJSettlers.getGui();
 		MapInterfaceConnector connector = gui.showGameMap(grid.graphicsGrid, null);
-		connector.loadUIState(new UIState(0, getPos(140, 100)));
+		connector.loadUIState(new UIState(0, getPos(200, 200)));
 		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
@@ -79,7 +73,7 @@ public class TestNewPartitioner {
 	private static void executeTests(MainGrid grid) {
 		StopWatch watch = new MilliStopWatch();
 
-		final int radius = 100;
+		final int radius = 40;
 		final int xPos = 200;
 		final int yPos = 200;
 		final ShortPoint2D center = getPos(xPos, yPos);
@@ -98,10 +92,6 @@ public class TestNewPartitioner {
 
 		FilterIterator<ShortPoint2D> filtered = new FilterIterator<ShortPoint2D>(new MapCircle(center, radius), predicate);
 
-		// for (ShortPoint2D curr : filtered) {
-		// grid.movablePathfinderGrid.changePlayerAt(curr, (byte) 1);
-		// }
-
 		double xFactor = 1.2;
 		double yFactor = 1.2;
 
@@ -114,14 +104,21 @@ public class TestNewPartitioner {
 		PartitionCalculator partitioner = new PartitionCalculator(filtered, minX, minY, maxX, maxY);
 		partitioner.calculatePartitions();
 
+		minX = partitioner.getMinX();
+		minY = partitioner.getMinY();
 		int width = partitioner.getWidth();
-		minX--;
-		minY--;
+		int height = partitioner.getHeight();
 
-		for (int y = 0; y < partitioner.getHeight(); y++) {
+		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				grid.partitionsGrid.setPartitionAndPlayerAt((short) (x + minX), (short) (y + minY), (byte) (partitioner.getPartitionAt(x, y) + 1));
 			}
+		}
+
+		System.out.println("number of partitions: " + partitioner.getNumberOfPartitions());
+		for (int i = 0; i < partitioner.getNumberOfPartitions(); i++) {
+			ShortPoint2D pos = partitioner.getPartitionBorderPos(i + 1);
+			grid.setLandscapeTypeAt(pos.getX(), pos.getY(), ELandscapeType.RIVER1);
 		}
 
 		watch.stop("the test needed");

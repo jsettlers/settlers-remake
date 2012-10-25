@@ -6,19 +6,26 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 public final class PartitionCalculator {
+	private static final int MAX_NUMBER_OF_PARTITIONS = 1000;
 	private static final int[] neighborX = { EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX };
 	private static final int[] neighborY = { EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY };
 
+	private final int minX;
+	private final int minY;
 	private final int width;
 	private final int height;
 	private final BitSet containing;
 	private final short[] partitionGrid;
-	private final short[] partitions = new short[1000];
+
+	private final ShortPoint2D[] partitionBorderPos = new ShortPoint2D[MAX_NUMBER_OF_PARTITIONS];
+
+	private short[] partitions = new short[MAX_NUMBER_OF_PARTITIONS];
 	private short nextFreePartition = 1;
+	private short neededPartitions;
 
 	public PartitionCalculator(Iterable<ShortPoint2D> positions, int minX, int minY, int maxX, int maxY) {
-		minX--; // this increases the window, so that no position can lay on the border.
-		minY--;
+		this.minX = --minX; // this increases the window, so that no position can lay on the border.
+		this.minY = --minY;
 		maxX++;
 		maxY++;
 		width = maxX - minX + 1;
@@ -63,17 +70,20 @@ public final class PartitionCalculator {
 					}
 
 					if (westPartition != -1 && northEastPartition != -1 && partitions[westPartition] != partitions[northEastPartition]) {
-						// mergePartitions
+						// mergePartitions if west and northeast are not equal but set
 						short newPartition = (short) Math.min(partitions[westPartition], partitions[northEastPartition]);
 						partitions[westPartition] = newPartition;
 						partitions[northEastPartition] = newPartition;
 						partitionGrid[index] = newPartition;
 
-					} else if (partition != -1) {
+					} else if (partition != -1) { // just set the value.
 						partitionGrid[index] = partitions[partition];
-					} else {
+
+					} else { // create a new partition
 						partitionGrid[index] = nextFreePartition;
 						partitions[nextFreePartition] = nextFreePartition;
+						partitionBorderPos[nextFreePartition] = new ShortPoint2D(x + minX, y + minY);
+
 						nextFreePartition++;
 					}
 
@@ -81,15 +91,28 @@ public final class PartitionCalculator {
 			}
 		}
 
-		for (short i = 0; i < nextFreePartition; i++) {
+		// post processing
+		short[] compacted = new short[partitions.length];
+		short compactedCount = 0;
+
+		for (short i = 1; i < nextFreePartition; i++) {
 			short representative = i;
 			short nextRep;
 
 			while (representative != (nextRep = partitions[representative])) {
 				representative = nextRep;
 			}
+
+			if (compacted[representative] == 0) {
+				compacted[representative] = ++compactedCount;
+				partitionBorderPos[compactedCount] = partitionBorderPos[representative];
+			}
+
 			partitions[i] = representative;
+			compacted[i] = compacted[representative];
 		}
+		partitions = compacted;
+		neededPartitions = compactedCount;
 	}
 
 	public int getWidth() {
@@ -101,8 +124,22 @@ public final class PartitionCalculator {
 	}
 
 	public short getPartitionAt(int x, int y) {
-		// return partitionGrid[x + y * width];
 		return partitions[partitionGrid[x + y * width]];
 	}
 
+	public int getMinX() {
+		return minX;
+	}
+
+	public int getMinY() {
+		return minY;
+	}
+
+	public int getNumberOfPartitions() {
+		return neededPartitions;
+	}
+
+	public ShortPoint2D getPartitionBorderPos(int partitionIdx) {
+		return partitionBorderPos[partitionIdx];
+	}
 }
