@@ -773,7 +773,7 @@ public class MapObjectDrawer {
 				Image image = imageProvider.getImage(link);
 				draw(image, x, y, color);
 			}
-
+			
 			for (ImageLink link : type.getImages()) {
 				Image image = imageProvider.getImage(link);
 				drawWithConstructionMask(x, y, maskState, image, color);
@@ -886,61 +886,24 @@ public class MapObjectDrawer {
 		if (!(unsafeimage instanceof SingleImage)) {
 			return; // should not happen
 		}
-		context.beginTileContext(x, y);
+		int height = context.getHeight(x, y);
+		float viewX = context.getConverter().getViewX(x, y, height);
+		float viewY = context.getConverter().getViewY(x, y, height);
+		int iColor = Color.getABGR(color, color, color, 1);
 
 		SingleImage image = (SingleImage) unsafeimage;
 		// number of tiles in x direction, can be adjusted for performance
 		int tiles = 6;
 
-		float toplineBottom =
-		        (int) (maskState * image.getHeight())
-		                / (float) image.getHeight();
-		float toplineTop = Math.min(1, toplineBottom + .1f);
+		float toplineBottom = 1 - maskState;
+		float toplineTop = Math.max(0, toplineBottom - .1f);
 
-		float[] tris = new float[(tiles + 2) * 3 * 5];
-
-		addPointToArray(tris, 0, 0, 0, image);
-		addPointToArray(tris, 1, 1, 0, image);
-		addPointToArray(tris, 2, 0, toplineBottom, image);
-		addPointToArray(tris, 3, 1, 0, image);
-		addPointToArray(tris, 4, 1, toplineBottom, image);
-		addPointToArray(tris, 5, 0, toplineBottom, image);
+		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 0, 1, 1, 1, 0, toplineBottom, iColor);
+		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 1, 1, 1, toplineBottom, 0, toplineBottom, iColor);
 
 		for (int i = 0; i < tiles; i++) {
-			addPointToArray(tris, 6 + i * 3, 1.0f / tiles * i, toplineBottom,
-			        image);
-			addPointToArray(tris, 7 + i * 3, 1.0f / tiles * (i + 1),
-			        toplineBottom, image);
-			addPointToArray(tris, 8 + i * 3, 1.0f / tiles * (i + .5f),
-			        toplineTop, image);
+			image.drawTriangle(context.getGl(), buffer, viewX, viewY,  1.0f / tiles * i, toplineBottom, 1.0f / tiles * (i + 1), toplineBottom, 1.0f / tiles * (i + .5f), toplineTop, iColor);
 		}
-
-		GLDrawContext gl = context.getGl();
-		gl.color(color, color, color, 1);
-		gl.drawTrianglesWithTexture(image.getTextureIndex(gl), tris);
-
-		context.endTileContext();
-	}
-
-	private static void addPointToArray(float[] array, int pointindex, float u,
-	        float v, SingleImage image) {
-		int left = image.getOffsetX();
-		int top = -image.getOffsetY();
-		int bottom = top - image.getHeight();
-
-		int x = left + (int) (image.getWidth() * u);
-		int y = bottom + (int) (image.getHeight() * v);
-
-		int offset = pointindex * 5;
-		array[offset] = x;
-		array[offset + 1] = y;
-		array[offset + 2] = 0;
-		// .5px offset because it works ...
-		array[offset + 3] = u * image.getTextureScaleX();// +
-		                                                 // .5f/image.getWidth();
-		array[offset + 4] =
-		        image.getTextureScaleY() - v * image.getTextureScaleY() + .5f
-		                / image.getHeight();
 	}
 
 	private void drawPlayerableByProgress(int x, int y, int file,

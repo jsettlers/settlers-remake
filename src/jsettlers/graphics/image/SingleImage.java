@@ -298,4 +298,39 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				- getOffsetY() - height, 0, 0, getTextureScaleX(),
 		        getTextureScaleY(), iColor);
 	}
+
+	protected float convertU(float relativeU) {
+		return relativeU * getTextureScaleX();
+	}
+	
+	protected float convertV(float relativeV) {
+		return relativeV * getTextureScaleY();
+	}
+	
+	/**
+	 * Draws a triangle part of this image on the image buffer.
+	 * @param gl The context to use
+	 * @param buffer The buffer to draw on.
+	 * @param viewX Image center x coordinate
+	 * @param viewY Image center y coordinate
+	 * @param u1
+	 * @param v1
+	 * @param u2
+	 * @param v2
+	 * @param u3
+	 * @param v3
+	 * @param activeColor 
+	 */
+	public void drawTriangle(GLDrawContext gl, DrawBuffer buffer, float viewX,
+            float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+	    DrawBuffer.Buffer buffer2 = buffer.getBuffer( getTextureIndex(gl));
+	    float left = getOffsetX() + viewX;
+	    float top = -getOffsetY() + viewY;
+	    
+	    
+		buffer2.addTirangle(left + u1 * width, top - v1 * height, left + u2
+		        * width, top - v2 * height, left + u3 * width, top - v3
+		        * height, convertU(u1), convertV(v1), convertU(u2),
+		        convertV(v2), convertU(u3), convertV(v3), activeColor);
+    }
 }

@@ -11,7 +11,7 @@ public class DrawBuffer {
 	private final MapDrawContext context;
 	private float z;
 
-	class Buffer {
+	public class Buffer {
 		/**
 		 * Bytes we need for one vertex
 		 */
@@ -65,6 +65,16 @@ public class DrawBuffer {
 			currentTriangles += 2;
         }
 		
+		public void addTirangle(float x1, float y1, float x2, float y2, float x3, float y3, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+			if (currentTriangles >= BUFFER_TRIANGLES - 1) {
+				draw();
+			}
+			addPointPrimitive(x1, y1, u1, v1, activeColor);
+			addPointPrimitive(x2, y2, u2, v2, activeColor);
+			addPointPrimitive(x3, y3, u3, v3, activeColor);
+			currentTriangles += 1;
+		}
+		
 		private void addPointPrimitive(float x1, float y1, float u, float v, int activeColor) {
 			byteBuffer.putFloat(x1);
 			byteBuffer.putFloat(y1);
@@ -91,7 +101,7 @@ public class DrawBuffer {
 		getBuffer(texture).addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
 	}
 
-	protected Buffer getBuffer(int texture) {
+	public Buffer getBuffer(int texture) {
 		for (int i = 0; i < BUFFERS; i++) {
 			if (drawBuffers[i].currentTexture == texture) {
 				return drawBuffers[i];
