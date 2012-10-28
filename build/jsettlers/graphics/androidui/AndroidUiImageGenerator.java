@@ -99,6 +99,8 @@ public class AndroidUiImageGenerator {
 			if (guiImage instanceof SingleImage) {
 				export((SingleImage) guiImage, file);
 				listOutput.println("\t\tR.drawable." + name + ",");
+			} else {
+				listOutput.println("\t\t-1,");
 			}
 		}
 
@@ -119,6 +121,8 @@ public class AndroidUiImageGenerator {
 			if (guiImage instanceof SingleImage) {
 				export((SingleImage) guiImage, file);
 				listOutput.println("\t\tR.drawable." + name + ",");
+			} else {
+				listOutput.println("\t\t-1,");
 			}
 		}
 

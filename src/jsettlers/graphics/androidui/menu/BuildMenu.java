@@ -30,13 +30,15 @@ public class BuildMenu extends AndroidMobileMenu {
 				currentRow = new TableRow(menu.getContext());
 				list.addView(currentRow);
 			}
-
+			
+			int resourceId = Graphics.BUILDING_IMAGE_MAP[type.ordinal()];
+			if (resourceId != -1) {
 			ImageButton b = new ImageButton(menu.getContext());
-			b.setImageResource(Graphics.BUILDING_IMAGE_MAP[type
-			        .ordinal()]);
+			b.setImageResource(resourceId);
 			b.setOnClickListener(generateActionListener(new BuildAction(type),
 			        true));
 			currentRow.addView(b);
+			}
 		}
 
 	}
