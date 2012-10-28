@@ -340,7 +340,8 @@ public class MapObjectDrawer {
 					        ((IAttackableTowerMapObject) object).getMovable();
 					if (movable != null) {
 						Image image = this.imageMap.getImageForSettler(movable);
-						draw(image, x, y, color);
+						drawMovableAt(movable, image, x, y);
+						playMovableSound(movable);
 					}
 				}
 					break;
@@ -422,6 +423,10 @@ public class MapObjectDrawer {
 		short x = pos.getX();
 		short y = pos.getY();
 
+		drawMovableAt(movable, image, x, y);
+	}
+
+	private void drawMovableAt(IMovable movable, Image image, int x, int y) {
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -773,7 +778,7 @@ public class MapObjectDrawer {
 				Image image = imageProvider.getImage(link);
 				draw(image, x, y, color);
 			}
-			
+
 			for (ImageLink link : type.getImages()) {
 				Image image = imageProvider.getImage(link);
 				drawWithConstructionMask(x, y, maskState, image, color);
@@ -898,11 +903,15 @@ public class MapObjectDrawer {
 		float toplineBottom = 1 - maskState;
 		float toplineTop = Math.max(0, toplineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 0, 1, 1, 1, 0, toplineBottom, iColor);
-		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 1, 1, 1, toplineBottom, 0, toplineBottom, iColor);
+		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 0, 1, 1, 1,
+		        0, toplineBottom, iColor);
+		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 1, 1, 1,
+		        toplineBottom, 0, toplineBottom, iColor);
 
 		for (int i = 0; i < tiles; i++) {
-			image.drawTriangle(context.getGl(), buffer, viewX, viewY,  1.0f / tiles * i, toplineBottom, 1.0f / tiles * (i + 1), toplineBottom, 1.0f / tiles * (i + .5f), toplineTop, iColor);
+			image.drawTriangle(context.getGl(), buffer, viewX, viewY, 1.0f
+			        / tiles * i, toplineBottom, 1.0f / tiles * (i + 1),
+			        toplineBottom, 1.0f / tiles * (i + .5f), toplineTop, iColor);
 		}
 	}
 
