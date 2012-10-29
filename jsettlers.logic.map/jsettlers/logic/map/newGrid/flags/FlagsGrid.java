@@ -3,11 +3,6 @@ package jsettlers.logic.map.newGrid.flags;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.logging.StopWatch;
-import jsettlers.logic.algorithms.partitions.BlockedPartitioner;
-import jsettlers.logic.algorithms.partitions.IBlockedPartitionerGrid;
-
 /**
  * Grid that's storing the blocked information for fast access.
  * 
@@ -88,21 +83,6 @@ public final class FlagsGrid implements Serializable {
 
 	public short getBlockedPartition(short x, short y) {
 		return this.blockedPartitions[getIdx(x, y)];
-	}
-
-	public void calculateBlockedPartitions() {
-		BlockedPartitioner partitioner = new BlockedPartitioner(new IBlockedPartitionerGrid() {
-			@Override
-			public boolean isBlocked(int x, int y) {
-				return FlagsGrid.this.isBlocked((short) x, (short) y);
-			}
-		}, width, height);
-
-		StopWatch watch = new MilliStopWatch();
-		partitioner.calculate();
-		watch.stop("Blocked partitioner needed");
-
-		this.blockedPartitions = partitioner.getPartitions();
 	}
 
 }
