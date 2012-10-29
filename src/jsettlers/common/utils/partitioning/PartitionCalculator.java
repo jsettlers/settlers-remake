@@ -4,6 +4,8 @@ import java.util.BitSet;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.borders.traversing.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.borders.traversing.IContainingProvider;
 
 public final class PartitionCalculator {
 	private static final int MAX_NUMBER_OF_PARTITIONS = 1000;
@@ -145,54 +147,17 @@ public final class PartitionCalculator {
 		return partitionBorderPositions[partitionIdx];
 	}
 
-	public void traverseBorders(IBorderVisitor visitor) {
-		for (int i = 0; i < neededPartitions; i++) {
-			traverseBorder(partitionBorderPositions[i + 1], visitor);
-			visitor.traversingFinished();
-		}
-	}
-
-	private void traverseBorder(ShortPoint2D startPos, IBorderVisitor visitor) {
-		final int startInsideX = startPos.getX() - minX;
-		final int startInsideY = startPos.getY() - minY;
-
-		int insideX = startInsideX;
-		int insideY = startInsideY;
-
-		int outsideX = -1;
-		int outsideY = -1;
-
-		// determine first outside position
-		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-			outsideX = insideX + neighborX[i];
-			outsideY = insideY + neighborY[i];
-
-			if (!containing.get(outsideX + outsideY * width)) {
-				break;
+	public void traverseBorders(IPartitionBorderVisitor visitor) {
+		final IContainingProvider containingProvider = new IContainingProvider() {
+			@Override
+			public boolean contains(int x, int y) {
+				return containing.get((x - minX) + (y - minY) * width);
 			}
+		};
+
+		for (short i = 1; i <= neededPartitions; i++) {
+			visitor.startingTraversing(i);
+			BorderTraversingAlgorithm.traverseBorder(containingProvider, partitionBorderPositions[i], visitor);
 		}
-
-		final int startOutsideX = outsideX;
-		final int startOutsideY = outsideY;
-
-		visitor.visit(startOutsideX + minX, startOutsideY + minY);
-
-		do {
-			EDirection outInDir = EDirection.getDirection(insideX - outsideX, insideY - outsideY);
-			EDirection neighborDir = outInDir.getNeighbor(-1);
-
-			int neighborX = neighborDir.gridDeltaX + outsideX;
-			int neighborY = neighborDir.gridDeltaY + outsideY;
-
-			if (containing.get(neighborX + neighborY * width)) {
-				insideX = neighborX;
-				insideY = neighborY;
-			} else {
-				outsideX = neighborX;
-				outsideY = neighborY;
-
-				visitor.visit(outsideX + minX, outsideY + minY);
-			}
-		} while (insideX != startInsideX || insideY != startInsideY || outsideX != startOutsideX || outsideY != startOutsideY);
 	}
 }

@@ -2,7 +2,6 @@ package jsettlers.xmlcoder;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import jsettlers.network.webserver.xml.AEXMLEncoder;
 
@@ -14,8 +13,7 @@ public class XMLEncoderTest {
 	private double[] doubleArray;
 	private InnerTestClass innerObject;
 
-	public static void main(String args[]) throws IllegalArgumentException, IOException, IllegalAccessException, InvocationTargetException,
-			ClassNotFoundException {
+	public static void main(String args[]) throws IllegalArgumentException, IOException {
 		XMLEncoderTest o = getInitializedTestObject();
 
 		new AEXMLEncoder(new FileOutputStream("test.xml")).writeObject(o);

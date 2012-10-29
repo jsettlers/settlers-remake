@@ -4,11 +4,12 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.FilterIterator;
 import jsettlers.common.utils.collections.IPredicate;
-import jsettlers.common.utils.partitioning.IBorderVisitor;
+import jsettlers.common.utils.partitioning.IPartitionBorderVisitor;
 import jsettlers.common.utils.partitioning.PartitionCalculator;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
@@ -72,6 +73,8 @@ public class TestNewPartitioner {
 	}
 
 	private static void executeTests(MainGrid grid) {
+		initGrid(grid);
+
 		StopWatch watch = new MilliStopWatch();
 
 		final int radius = 40;
@@ -113,7 +116,10 @@ public class TestNewPartitioner {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				grid.partitionsGrid.setPartitionAndPlayerAt((short) (x + minX), (short) (y + minY), (byte) (partitioner.getPartitionAt(x, y) + 1));
+				short partition = partitioner.getPartitionAt(x, y);
+				if (partition > 0) {
+					grid.partitionsGrid.setPartitionAndPlayerAt((short) (x + minX), (short) (y + minY), (byte) partition);
+				}
 			}
 		}
 
@@ -128,18 +134,50 @@ public class TestNewPartitioner {
 		watch.stop("the test needed");
 	}
 
-	private static IBorderVisitor getBorderVisitor(final MainGrid grid) {
-		return new IBorderVisitor() {
+	private static void initGrid(MainGrid grid) {
+		setCircleToGrid(grid, 150, 230, 50, (short) 7);
+		setCircleToGrid(grid, 150, 150, 50, (short) 5);
+		setCircleToGrid(grid, 228, 230, 20, (short) 6);
+	}
+
+	private static void setCircleToGrid(MainGrid grid, int x, int y, int radius, short partition) {
+		MapCircle c1 = new MapCircle(getPos(x, y), radius);
+		for (ShortPoint2D curr : c1) {
+			grid.partitionsGrid.setPartitionAndPlayerAt(curr.getX(), curr.getY(), partition);
+		}
+	}
+
+	private static IPartitionBorderVisitor getBorderVisitor(final MainGrid grid) {
+		return new IPartitionBorderVisitor() {
+			short lastPartititon;
+			short innerPartition;
+
+			byte players[] = { 0, 1, 1, 1, 1, 2, 3, 1 };
+
+			@Override
+			public void startingTraversing(short partitionId) {
+				innerPartition = partitionId;
+				lastPartititon = -1;
+			}
 
 			@Override
 			public void visit(int x, int y) {
-				grid.partitionsGrid.setPartitionAndPlayerAt((short) x, (short) y, (short) 7);
+				grid.mapObjectsManager.addSimpleMapObject(getPos(x, y), EMapObjectType.BUILDINGSITE_POST, false, (byte) 0);
+
+				short currPartition = grid.partitionsGrid.getPartition((short) x, (short) y);
+				if (currPartition != lastPartititon && currPartition >= 0) {
+					if (players[currPartition] == players[innerPartition]) {
+						merge(currPartition, innerPartition);
+					}
+				}
+
+				lastPartititon = currPartition;
 			}
 
-			@Override
-			public void traversingFinished() {
-
+			private void merge(short partition1, short partition2) {
+				System.out.println("merge partitions " + partition1 + " and " + partition2);
 			}
+
 		};
 	}
 
