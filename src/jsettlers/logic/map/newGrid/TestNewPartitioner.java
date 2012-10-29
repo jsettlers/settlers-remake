@@ -9,8 +9,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.collections.FilterIterator;
 import jsettlers.common.utils.collections.IPredicate;
-import jsettlers.common.utils.partitioning.IPartitionBorderVisitor;
-import jsettlers.common.utils.partitioning.PartitionCalculator;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -19,6 +17,10 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.logic.algorithms.borders.traversing.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.borders.traversing.IBorderVisitor;
+import jsettlers.logic.algorithms.borders.traversing.IContainingProvider;
+import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class TestNewPartitioner {
@@ -72,7 +74,7 @@ public class TestNewPartitioner {
 		}.start();
 	}
 
-	private static void executeTests(MainGrid grid) {
+	private static void executeTests(final MainGrid grid) {
 		initGrid(grid);
 
 		StopWatch watch = new MilliStopWatch();
@@ -106,7 +108,7 @@ public class TestNewPartitioner {
 		int maxX = (int) (xPos + radius * xFactor);
 		int maxY = (int) (yPos + radius * yFactor);
 
-		PartitionCalculator partitioner = new PartitionCalculator(filtered, minX, minY, maxX, maxY);
+		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, minX, minY, maxX, maxY);
 		partitioner.calculatePartitions();
 
 		minX = partitioner.getMinX();
@@ -123,12 +125,18 @@ public class TestNewPartitioner {
 			}
 		}
 
-		partitioner.traverseBorders(getBorderVisitor(grid));
-
 		System.out.println("number of partitions: " + partitioner.getNumberOfPartitions());
-		for (int i = 0; i < partitioner.getNumberOfPartitions(); i++) {
-			ShortPoint2D pos = partitioner.getPartitionBorderPos(i + 1);
+		for (int i = 1; i <= partitioner.getNumberOfPartitions(); i++) {
+			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
 			grid.setLandscapeTypeAt(pos.getX(), pos.getY(), ELandscapeType.RIVER1);
+
+			final byte partition = (byte) i;
+			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
+				@Override
+				public boolean contains(int x, int y) {
+					return grid.partitionsGrid.getPartitionAt((short) x, (short) y) == partition;
+				}
+			}, pos, getBorderVisitor(grid, partition));
 		}
 
 		watch.stop("the test needed");
@@ -147,18 +155,11 @@ public class TestNewPartitioner {
 		}
 	}
 
-	private static IPartitionBorderVisitor getBorderVisitor(final MainGrid grid) {
-		return new IPartitionBorderVisitor() {
+	private static IBorderVisitor getBorderVisitor(final MainGrid grid, final short innerPartition) {
+		return new IBorderVisitor() {
 			short lastPartititon;
-			short innerPartition;
 
 			byte players[] = { 0, 1, 1, 1, 1, 2, 3, 1 };
-
-			@Override
-			public void startingTraversing(short partitionId) {
-				innerPartition = partitionId;
-				lastPartititon = -1;
-			}
 
 			@Override
 			public void visit(int x, int y) {
