@@ -85,4 +85,12 @@ public final class FlagsGrid implements Serializable {
 		return this.blockedPartitions[getIdx(x, y)];
 	}
 
+	/**
+	 * FOR TESTS ONLY!
+	 * 
+	 * @return
+	 */
+	BitSet getBlockedGrid() {
+		return blockedGrid;
+	}
 }
