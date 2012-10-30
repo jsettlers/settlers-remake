@@ -17,6 +17,7 @@ public final class PartitionCalculatorAlgorithm {
 			EDirection.EAST.gridDeltaX, EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX };
 	private static final int[] neighborY = { EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY,
 			EDirection.EAST.gridDeltaY, EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY };
+	private static final int INCREASE_FACTOR = 2;
 
 	private final int minX;
 	private final int minY;
@@ -24,10 +25,11 @@ public final class PartitionCalculatorAlgorithm {
 	private final int height;
 	private final BitSet containing;
 	private final short[] partitionsGrid;
-
-	private final ShortPoint2D[] partitionBorderPositions = new ShortPoint2D[MAX_NUMBER_OF_PARTITIONS];
+	private final boolean invertBitSet;
 
 	private short[] partitions = new short[MAX_NUMBER_OF_PARTITIONS];
+	private ShortPoint2D[] partitionBorderPositions = new ShortPoint2D[MAX_NUMBER_OF_PARTITIONS];
+
 	private short nextFreePartition = 1;
 	private short neededPartitions;
 
@@ -36,22 +38,34 @@ public final class PartitionCalculatorAlgorithm {
 		this.minY = --minY;
 		maxX++;
 		maxY++;
-		width = maxX - minX + 1;
-		height = maxY - minY + 1;
+		this.width = maxX - minX + 1;
+		this.height = maxY - minY + 1;
 
-		containing = new BitSet(width * height);
+		this.containing = new BitSet(width * height);
 		for (ShortPoint2D curr : positions) {
 			containing.set((curr.getX() - minX) + (curr.getY() - minY) * width);
 		}
 
-		partitionsGrid = new short[width * height];
+		this.partitionsGrid = new short[width * height];
+		this.invertBitSet = false;
+	}
+
+	public PartitionCalculatorAlgorithm(int minX, int minY, int width, int height, BitSet containing, boolean invertBitSet) {
+		this.minX = minX;
+		this.minY = minY;
+		this.width = width;
+		this.height = height;
+
+		this.containing = containing;
+		this.invertBitSet = invertBitSet;
+		this.partitionsGrid = new short[width * height];
 	}
 
 	public void calculatePartitions() {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int index = x + y * width;
-				if (containing.get(index)) {
+				if (containing.get(index) ^ invertBitSet) {
 
 					int westX = x + neighborX[0];
 					int westY = y + neighborY[0];
@@ -62,17 +76,17 @@ public final class PartitionCalculatorAlgorithm {
 
 					int partition = -1;
 					int westPartition = -1;
-					if (containing.get(westX + westY * width)) {
+					if (containing.get(westX + westY * width) ^ invertBitSet) {
 						westPartition = partitionsGrid[westX + westY * width];
 						partition = westPartition;
 					}
 
-					if (containing.get(northWestX + northWestY * width)) {
+					if (containing.get(northWestX + northWestY * width) ^ invertBitSet) {
 						partition = partitionsGrid[northWestX + northWestY * width];
 					}
 
 					int northEastPartition = -1;
-					if (containing.get(northEastX + northEastY * width)) {
+					if (containing.get(northEastX + northEastY * width) ^ invertBitSet) {
 						northEastPartition = partitionsGrid[northEastX + northEastY * width];
 						partition = northEastPartition;
 					}
@@ -93,6 +107,16 @@ public final class PartitionCalculatorAlgorithm {
 						partitionBorderPositions[nextFreePartition] = new ShortPoint2D(x + minX, y + minY);
 
 						nextFreePartition++;
+
+						if (nextFreePartition >= partitions.length) {
+							short[] oldPartitions = partitions;
+							partitions = new short[oldPartitions.length * INCREASE_FACTOR];
+							System.arraycopy(oldPartitions, 0, partitions, 0, oldPartitions.length);
+
+							ShortPoint2D[] oldBorderPositions = partitionBorderPositions;
+							partitionBorderPositions = new ShortPoint2D[oldBorderPositions.length * INCREASE_FACTOR];
+							System.arraycopy(oldBorderPositions, 0, partitionBorderPositions, 0, oldBorderPositions.length);
+						}
 					}
 
 				}
