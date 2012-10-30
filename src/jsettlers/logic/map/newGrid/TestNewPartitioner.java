@@ -79,7 +79,7 @@ public class TestNewPartitioner {
 
 		StopWatch watch = new MilliStopWatch();
 
-		final int radius = 40;
+		final int radius = 130;
 		final int xPos = 200;
 		final int yPos = 200;
 		final ShortPoint2D center = getPos(xPos, yPos);
