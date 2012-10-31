@@ -9,8 +9,7 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
- * This is a texture file. It contains a short array and can write images to the
- * file.
+ * This is a texture file. It contains a short array and can write images to the file.
  * 
  * @author michael
  */
@@ -64,9 +63,8 @@ public class TextureFile {
 			}
 		}
 
-		return new TexturePosition((float) startx / this.width, (float) starty
-		        / this.height, (float) (startx + width + 1) / this.width,
-		        (float) (starty + height + 1) / this.height);
+		return new TexturePosition((float) startx / this.width, (float) starty / this.height, (float) (startx + width + 1) / this.width,
+				(float) (starty + height + 1) / this.height);
 	}
 
 	public void write() throws IOException {
@@ -75,5 +73,6 @@ public class TextureFile {
 		while (shortBuffer.hasRemaining()) {
 			out.writeShort(shortBuffer.get());
 		}
+		out.close();
 	}
 }

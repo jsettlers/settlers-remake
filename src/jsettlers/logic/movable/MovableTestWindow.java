@@ -49,6 +49,8 @@ public class MovableTestWindow {
 				case FAST_FORWARD:
 					NetworkTimer.get().fastForward();
 					break;
+				default:
+					break;
 				}
 			}
 		});
