@@ -33,6 +33,21 @@ public final class PartitionCalculatorAlgorithm {
 	private short nextFreePartition = 1;
 	private short neededPartitions;
 
+	/**
+	 * Creates a new {@link PartitionCalculatorAlgorithm}. The given positions are positions in the created partitions. Non mentioned positions are
+	 * seen as outside of partitions.
+	 * 
+	 * @param positions
+	 *            The positions of the calculated partitions.
+	 * @param minX
+	 *            The smallest x coordinate in the list of positions.
+	 * @param minY
+	 *            The smallest y coordinate in the list of positions.
+	 * @param maxX
+	 *            The biggest x coordinate in the list of positions.
+	 * @param maxY
+	 *            The biggest y coordinate in the list of positions.
+	 */
 	public PartitionCalculatorAlgorithm(Iterable<ShortPoint2D> positions, int minX, int minY, int maxX, int maxY) {
 		this.minX = --minX; // this increases the window, so that no position can lay on the border.
 		this.minY = --minY;
@@ -50,6 +65,25 @@ public final class PartitionCalculatorAlgorithm {
 		this.invertBitSet = false;
 	}
 
+	/**
+	 * Creates a new {@link PartitionCalculatorAlgorithm}. The given {@link BitSet} defines the positions that need to be in the partitions and the
+	 * ones that mustn't.
+	 * 
+	 * @param minX
+	 *            The x offset of the {@link BitSet}.
+	 * @param minY
+	 *            The y offset of the {@link BitSet}.
+	 * @param width
+	 *            The width of the grid defined by the {@link BitSet}.
+	 * @param height
+	 *            The height of the grid defined by the {@link BitSet}.
+	 * @param containing
+	 *            The {@link BitSet} defining the positions in the partitions and the ones not. <br>
+	 *            NOTE: The {@link BitSet} must be indexed with x + y * width
+	 * @param invertBitSet
+	 *            If false: all positions returning TRUE are seen as in the partitions.<br>
+	 *            If true: all positions returning FALSE are seen as in the partitions.
+	 */
 	public PartitionCalculatorAlgorithm(int minX, int minY, int width, int height, BitSet containing, boolean invertBitSet) {
 		this.minX = minX;
 		this.minY = minY;
@@ -61,6 +95,10 @@ public final class PartitionCalculatorAlgorithm {
 		this.partitionsGrid = new short[width * height];
 	}
 
+	/**
+	 * Calculates the partitions. <br>
+	 * The results can be accessed with the supplied getter methods.
+	 */
 	public void calculatePartitions() {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
