@@ -9,8 +9,7 @@ import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
 
 /**
- * This is a map data receiver that stores the given data and provides access to
- * it via the {@link IMapData} interface.
+ * This is a map data receiver that stores the given data and provides access to it via the {@link IMapData} interface.
  * 
  * @author michael
  */
@@ -18,13 +17,16 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 
 	private int width;
 	private int height;
+
 	private int playerCount;
 	private PlayerStart[] playerStarts;
+
 	private byte[][] heights;
 	private ELandscapeType[][] landscapes;
 	private MapObject[][] mapObjects;
 	private byte[][] resourceTypes;
 	private byte[][] resourceAmount;
+	private short[][] blockedPartitions;
 
 	@Override
 	public void setDimension(int width, int height, int playerCount) {
@@ -37,6 +39,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 		this.mapObjects = new MapObject[width][height];
 		this.resourceTypes = new byte[width][height];
 		this.resourceAmount = new byte[width][height];
+		this.blockedPartitions = new short[width][height];
 	}
 
 	@Override
@@ -97,18 +100,28 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	}
 
 	@Override
-    public EResourceType getResourceType(short x, short y) {
-	    return EResourceType.values[resourceTypes[x][y]];
-    }
+	public EResourceType getResourceType(short x, short y) {
+		return EResourceType.values[resourceTypes[x][y]];
+	}
 
 	@Override
-    public byte getResourceAmount(short x, short y) {
-	    return resourceAmount[x][y];
-    }
+	public byte getResourceAmount(short x, short y) {
+		return resourceAmount[x][y];
+	}
 
 	@Override
-    public void setResources(int x, int y, EResourceType type, byte amount) {
-	    resourceAmount[x][y] = amount;
-	    resourceTypes[x][y] = type.ordinal;
-    }
+	public void setResources(int x, int y, EResourceType type, byte amount) {
+		resourceAmount[x][y] = amount;
+		resourceTypes[x][y] = type.ordinal;
+	}
+
+	@Override
+	public short getBlockedPartition(short x, short y) {
+		return blockedPartitions[x][y];
+	}
+
+	@Override
+	public void setBlockedPartition(int x, int y, short blockedPartition) {
+		blockedPartitions[x][y] = blockedPartition;
+	}
 }

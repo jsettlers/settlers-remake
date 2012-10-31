@@ -165,6 +165,7 @@ public class MainGrid implements Serializable {
 				setLandscapeTypeAt(x, y, landscape);
 				landscapeGrid.setHeightAt(x, y, mapGrid.getLandscapeHeight(x, y));
 				landscapeGrid.setResourceAt(x, y, mapGrid.getResourceType(x, y), mapGrid.getResourceAmount(x, y));
+				landscapeGrid.setBlockedPartition(x, y, mapGrid.getBlockedPartition(x, y));
 			}
 		}
 
@@ -286,15 +287,11 @@ public class MainGrid implements Serializable {
 		return movable;
 	}
 
-	private final boolean isLandscapeBlocking(ELandscapeType landscape) {
-		return landscape.isWater() || landscape == ELandscapeType.MOOR || landscape == ELandscapeType.MOORINNER || landscape == ELandscapeType.SNOW;
-	}
-
 	protected final void setLandscapeTypeAt(short x, short y, ELandscapeType newType) {
-		if (isLandscapeBlocking(newType)) {
+		if (newType.isBlocking) {
 			flagsGrid.setBlockedAndProtected(x, y, true);
 		} else {
-			if (isLandscapeBlocking(landscapeGrid.getLandscapeTypeAt(x, y))) {
+			if (landscapeGrid.getLandscapeTypeAt(x, y).isBlocking) {
 				flagsGrid.setBlockedAndProtected(x, y, false);
 			}
 		}
@@ -523,8 +520,11 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			short value = (short) (landscapeGrid.getBlockedPartitionAt((short) x, (short) y) + 1);
 			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);

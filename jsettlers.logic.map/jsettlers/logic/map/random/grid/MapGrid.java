@@ -30,10 +30,12 @@ import jsettlers.logic.map.random.noise.NoiseGenerator;
  */
 public class MapGrid implements IMapData {
 	private static final int MINDISTANCE = 2;
-	private final ELandscapeType[][] types;
-	private final MapObject[][] objects;
+
 	private final int height;
 	private final int width;
+
+	private final ELandscapeType[][] types;
+	private final MapObject[][] objects;
 
 	private final NoiseGenerator heightGenerator = new NoiseGenerator();
 
@@ -292,7 +294,7 @@ public class MapGrid implements IMapData {
 			return EResourceType.FISH;
 		}
 	}
-	
+
 	public static byte getResourceAmount(ELandscapeType landscape, Random rand) {
 		if (landscape == ELandscapeType.MOUNTAIN || landscape.isWater()) {
 			return (byte) rand.nextInt(Byte.MAX_VALUE + 1);
@@ -302,13 +304,18 @@ public class MapGrid implements IMapData {
 	}
 
 	@Override
-    public EResourceType getResourceType(short x, short y) {
-	    return EResourceType.FISH;
-    }
+	public EResourceType getResourceType(short x, short y) {
+		return EResourceType.FISH;
+	}
 
 	@Override
-    public byte getResourceAmount(short x, short y) {
-	    return 0;
-    }
+	public byte getResourceAmount(short x, short y) {
+		return 0;
+	}
+
+	@Override
+	public short getBlockedPartition(short x, short y) {
+		return 0; // TODO @Michael Zangl: let the blocked partitions be calculated.
+	}
 
 }

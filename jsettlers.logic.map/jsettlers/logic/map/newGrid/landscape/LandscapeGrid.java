@@ -22,6 +22,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private final byte[] resourceAmount;
 	private final byte[] temporaryFlatened;
 	private final byte[] resourceType;
+	private final short[] blockedPartitions;
 
 	private final short width;
 	private final short height;
@@ -34,11 +35,13 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	public LandscapeGrid(short width, short height) {
 		this.width = width;
 		this.height = height;
-		this.heightGrid = new byte[width * height];
-		this.landscapeGrid = new byte[width * height];
-		this.resourceAmount = new byte[width * height];
-		this.resourceType = new byte[width * height];
-		this.temporaryFlatened = new byte[width * height];
+		int tiles = width * height;
+		this.heightGrid = new byte[tiles];
+		this.landscapeGrid = new byte[tiles];
+		this.resourceAmount = new byte[tiles];
+		this.resourceType = new byte[tiles];
+		this.temporaryFlatened = new byte[tiles];
+		this.blockedPartitions = new short[tiles];
 
 		initDebugColors();
 
@@ -217,6 +220,14 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		} else {
 			return false;
 		}
+	}
+
+	public void setBlockedPartition(short x, short y, short blockedPartition) {
+		this.blockedPartitions[x + y * width] = blockedPartition;
+	}
+
+	public short getBlockedPartitionAt(short x, short y) {
+		return this.blockedPartitions[x + y * width];
 	}
 
 }

@@ -39,20 +39,21 @@ import jsettlers.logic.map.random.grid.MapGrid;
  * <p>
  * width * height bytes: height map
  * <p>
- * For each map object (until end of file): 16 bit x, 16 bit y, 8 bit type,
- * String for additional data.
+ * For each map object (until end of file): 16 bit x, 16 bit y, 8 bit type, String for additional data.
  * 
  * @author michael
  * @see IMapData
  */
 public class MapDataSerializer {
 	private static final int VERSION = 1;
+	private static final int VERSION_WITH_RESOURCES = 2;
+	private static final int VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS = 3;
+
 	private static final int TYPE_TREE = 1;
 	private static final int TYPE_STONE = 2;
 	private static final int TYPE_BUILDING = 3;
 	private static final int TYPE_MOVABLE = 4;
 	private static final int TYPE_STACK = 5;
-	private static final int VERSION_WITH_RESOURCES = 2;
 
 	/**
 	 * Serializes the given data to the output stream.
@@ -64,13 +65,12 @@ public class MapDataSerializer {
 	 * @throws IOException
 	 *             If an IO error occured.
 	 */
-	public static void serialize(IMapData data, OutputStream out)
-	        throws IOException {
+	public static void serialize(IMapData data, OutputStream out) throws IOException {
 		DataOutputStream stream = new DataOutputStream(out);
 		int width = data.getWidth();
 		int height = data.getHeight();
 
-		stream.writeShort(VERSION_WITH_RESOURCES);
+		stream.writeShort(VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS);
 		stream.writeShort(width);
 		stream.writeShort(height);
 
@@ -99,7 +99,13 @@ public class MapDataSerializer {
 				stream.writeByte(data.getResourceAmount(x, y));
 			}
 		}
-		
+
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
+				stream.writeShort(data.getBlockedPartition(x, y));
+			}
+		}
+
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				MapObject object = data.getMapObject(x, y);
@@ -107,27 +113,23 @@ public class MapDataSerializer {
 					writeObject(stream, x, y, TYPE_TREE, "");
 				} else if (object instanceof MapStoneObject) {
 					int capacity = ((MapStoneObject) object).getCapacity();
-					writeObject(stream, x, y, TYPE_STONE,
-					        Integer.toString(capacity));
+					writeObject(stream, x, y, TYPE_STONE, Integer.toString(capacity));
 				} else if (object instanceof BuildingObject) {
 					int player = ((BuildingObject) object).getPlayer();
-					writeObject(stream, x, y, TYPE_BUILDING,
-					        ((BuildingObject) object).getType() + "," + player);
+					writeObject(stream, x, y, TYPE_BUILDING, ((BuildingObject) object).getType() + "," + player);
 				} else if (object instanceof MovableObject) {
 					int player = ((MovableObject) object).getPlayer();
-					writeObject(stream, x, y, TYPE_MOVABLE,
-					        ((MovableObject) object).getType() + "," + player);
+					writeObject(stream, x, y, TYPE_MOVABLE, ((MovableObject) object).getType() + "," + player);
 				} else if (object instanceof StackObject) {
 					int capacity = ((StackObject) object).getCount();
-					writeObject(stream, x, y, TYPE_STACK,
-					        ((StackObject) object).getType() + "," + capacity);
+					writeObject(stream, x, y, TYPE_STACK, ((StackObject) object).getType() + "," + capacity);
 				}
 			}
 		}
+
 	}
 
-	private static void writeObject(DataOutputStream stream, int x, int y,
-	        int type, String string) throws IOException {
+	private static void writeObject(DataOutputStream stream, int x, int y, int type, String string) throws IOException {
 		stream.writeShort(x);
 		stream.writeShort(y);
 		stream.writeByte(type);
@@ -144,13 +146,12 @@ public class MapDataSerializer {
 	 * @throws IOException
 	 *             If an error occured during deserialization.
 	 */
-	public static void deserialize(IMapDataReceiver data, InputStream in)
-	        throws IOException {
+	public static void deserialize(IMapDataReceiver data, InputStream in) throws IOException {
 		try {
 			DataInputStream stream = new DataInputStream(in);
 			int version = stream.readShort();
 
-			if (version != VERSION && version != VERSION_WITH_RESOURCES) {
+			if (!(version == VERSION || version == VERSION_WITH_RESOURCES || version == VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS)) {
 				throw new IOException("wrong stream version, got: " + version);
 			}
 			Random rand = new Random(123);
@@ -174,11 +175,9 @@ public class MapDataSerializer {
 					byte type = stream.readByte();
 					data.setLandscape(x, y, types[type]);
 					if (version < VERSION_WITH_RESOURCES) {
-						//fallback. Can be removed once all maps use new format.
-						EResourceType type2 =
-						        MapGrid.getResourceType(types[type], rand);
-						data.setResources(x, y, type2,
-						        MapGrid.getResourceAmount(types[type], rand));
+						// fallback. Can be removed once all maps use new format.
+						EResourceType type2 = MapGrid.getResourceType(types[type], rand);
+						data.setResources(x, y, type2, MapGrid.getResourceAmount(types[type], rand));
 					}
 				}
 			}
@@ -201,6 +200,14 @@ public class MapDataSerializer {
 
 			}
 
+			if (version >= VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS) {
+				for (int x = 0; x < width; x++) {
+					for (int y = 0; y < height; y++) {
+						data.setBlockedPartition(x, y, stream.readShort());
+					}
+				}
+			}
+
 			while (stream.available() > 0) {
 				int x = stream.readShort();
 				int y = stream.readShort();
@@ -219,45 +226,43 @@ public class MapDataSerializer {
 
 	private static MapObject getObject(int type, String string) {
 		switch (type) {
-			case TYPE_TREE:
-				return MapTreeObject.getInstance();
+		case TYPE_TREE:
+			return MapTreeObject.getInstance();
 
-			case TYPE_STONE:
-				return MapStoneObject.getInstance(Integer.parseInt(string));
+		case TYPE_STONE:
+			return MapStoneObject.getInstance(Integer.parseInt(string));
 
-			case TYPE_STACK: {
-				String[] parts = string.split(",");
-				return new StackObject(EMaterialType.valueOf(parts[0]),
-				        Integer.valueOf(parts[1]));
-			}
+		case TYPE_STACK: {
+			String[] parts = string.split(",");
+			return new StackObject(EMaterialType.valueOf(parts[0]), Integer.valueOf(parts[1]));
+		}
 
-			case TYPE_MOVABLE: {
-				String[] parts = string.split(",");
-				return new MovableObject(EMovableType.valueOf(parts[0]),
-				        Byte.valueOf(parts[1]));
-			}
+		case TYPE_MOVABLE: {
+			String[] parts = string.split(",");
+			return new MovableObject(EMovableType.valueOf(parts[0]), Byte.valueOf(parts[1]));
+		}
 
-			case TYPE_BUILDING: {
-				String[] parts = string.split(",");
-				return new BuildingObject(EBuildingType.valueOf(parts[0]),
-				        Byte.valueOf(parts[1]));
-			}
+		case TYPE_BUILDING: {
+			String[] parts = string.split(",");
+			return new BuildingObject(EBuildingType.valueOf(parts[0]), Byte.valueOf(parts[1]));
+		}
 
-			default:
-				return null;
+		default:
+			return null;
 		}
 	}
 
 	/**
 	 * Receives the map data.
 	 * <p>
-	 * Before any other set methods, {@link #setDimension(int, int, int)} is
-	 * called exactly once.
+	 * Before any other set methods, {@link #setDimension(int, int, int)} is called exactly once.
 	 * 
 	 * @author michael
 	 */
 	public interface IMapDataReceiver {
 		void setDimension(int width, int height, int playerCount);
+
+		void setBlockedPartition(int x, int y, short blockedPartition);
 
 		void setPlayerStart(byte player, int x, int y);
 
