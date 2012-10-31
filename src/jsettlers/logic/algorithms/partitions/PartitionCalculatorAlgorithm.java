@@ -13,10 +13,8 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public final class PartitionCalculatorAlgorithm {
 	private static final int MAX_NUMBER_OF_PARTITIONS = 1000;
-	private static final int[] neighborX = { EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX,
-			EDirection.EAST.gridDeltaX, EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX };
-	private static final int[] neighborY = { EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY,
-			EDirection.EAST.gridDeltaY, EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY };
+	private static final int[] neighborX = { EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX };
+	private static final int[] neighborY = { EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY };
 	private static final int INCREASE_FACTOR = 2;
 
 	private final int minX;
@@ -117,6 +115,10 @@ public final class PartitionCalculatorAlgorithm {
 					if (containing.get(westX + westY * width) ^ invertBitSet) {
 						westPartition = partitionsGrid[westX + westY * width];
 						partition = westPartition;
+					}
+
+					if (northWestY < 0) {
+						System.out.println();
 					}
 
 					if (containing.get(northWestX + northWestY * width) ^ invertBitSet) {
