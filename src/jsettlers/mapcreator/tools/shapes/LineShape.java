@@ -7,8 +7,7 @@ import jsettlers.mapcreator.localization.EditorLabels;
 public class LineShape extends ShapeType {
 
 	@Override
-	public void setAffectedStatus(byte[][] fields, ShortPoint2D start,
-	        ShortPoint2D end) {
+	public void setAffectedStatus(byte[][] fields, ShortPoint2D start, ShortPoint2D end) {
 		ShortPoint2D current = start;
 		if (shouldDrawAt(current)) {
 			setFieldToMax(fields, current);
@@ -22,7 +21,7 @@ public class LineShape extends ShapeType {
 		}
 	}
 
-	protected boolean shouldDrawAt(ShortPoint2D current) {
+	protected boolean shouldDrawAt(@SuppressWarnings("unused") ShortPoint2D current) {
 		return true;
 	}
 
@@ -41,7 +40,7 @@ public class LineShape extends ShapeType {
 
 	@Override
 	public String getName() {
-	    return EditorLabels.getLabel("line");
+		return EditorLabels.getLabel("line");
 	}
 
 }

@@ -18,8 +18,7 @@ public class PlaceTemplateTool implements Tool {
 	private final TemplateObject[] objects;
 	private final IPlayerSetter player;
 
-	public PlaceTemplateTool(String name, TemplateObject[] objects,
-	        IPlayerSetter player) {
+	public PlaceTemplateTool(String name, TemplateObject[] objects, IPlayerSetter player) {
 		this.name = name;
 		this.objects = objects;
 		this.player = player;
@@ -32,9 +31,7 @@ public class PlaceTemplateTool implements Tool {
 
 	@Override
 	public ShapeType[] getShapes() {
-		return new ShapeType[] {
-			new PointShape()
-		};
+		return new ShapeType[] { new PointShape() };
 	}
 
 	private void addAround(MapData map, ShortPoint2D start) {
@@ -71,7 +68,7 @@ public class PlaceTemplateTool implements Tool {
 		 *            The current player
 		 * @return
 		 */
-		public MapObject getObject(byte player) {
+		public MapObject getObject(@SuppressWarnings("unused") byte player) {
 			return object;
 		}
 	}
@@ -110,8 +107,7 @@ public class PlaceTemplateTool implements Tool {
 	}
 
 	@Override
-	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
-	        ShortPoint2D end, double uidx) {
+	public void apply(MapData map, ShapeType shape, ShortPoint2D start, ShortPoint2D end, double uidx) {
 	}
 
 }

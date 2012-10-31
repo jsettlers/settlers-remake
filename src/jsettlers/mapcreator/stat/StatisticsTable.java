@@ -13,14 +13,12 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.mapcreator.data.MapData;
 
 public class StatisticsTable extends AbstractTableModel {
+	private static final long serialVersionUID = -3492356821401542476L;
 
 	private static final int MATERIAL_START = 0;
-	private static final int MOVABLE_START = MATERIAL_START
-	        + EMaterialType.values().length;
-	private static final int BUILDING_START = MOVABLE_START
-	        + EMovableType.values().length;
-	private static final int END_POS = BUILDING_START
-	        + EBuildingType.values().length;
+	private static final int MOVABLE_START = MATERIAL_START + EMaterialType.values().length;
+	private static final int BUILDING_START = MOVABLE_START + EMovableType.values().length;
+	private static final int END_POS = BUILDING_START + EBuildingType.values().length;
 	private final int playercount;
 	private final int[][] counts;
 	private String[] rowNames;
@@ -63,16 +61,16 @@ public class StatisticsTable extends AbstractTableModel {
 	}
 
 	private static int getRow(MapObject mapObject) {
-	    if (mapObject instanceof BuildingObject) {
-	    	return BUILDING_START + ((BuildingObject) mapObject).getType().ordinal();
-	    } else if (mapObject instanceof MovableObject) {
-	    	return MOVABLE_START + ((MovableObject) mapObject).getType().ordinal();
-	    } else if (mapObject instanceof StackObject) {
-	    	return BUILDING_START + ((StackObject) mapObject).getType().ordinal();
-	    }
-		
+		if (mapObject instanceof BuildingObject) {
+			return BUILDING_START + ((BuildingObject) mapObject).getType().ordinal();
+		} else if (mapObject instanceof MovableObject) {
+			return MOVABLE_START + ((MovableObject) mapObject).getType().ordinal();
+		} else if (mapObject instanceof StackObject) {
+			return BUILDING_START + ((StackObject) mapObject).getType().ordinal();
+		}
+
 		return -1;
-    }
+	}
 
 	private static String getName(int row) {
 		if (row >= BUILDING_START) {
@@ -98,17 +96,15 @@ public class StatisticsTable extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int col) {
 		if (col > 0) {
-		return Integer.toString(counts[row][col - 1]);
+			return Integer.toString(counts[row][col - 1]);
 		} else {
 			return rowNames[row];
 		}
 	}
-	
+
 	@Override
 	public String getColumnName(int col) {
-	    return col > 0 ? "player " + (col - 1) : "";
+		return col > 0 ? "player " + (col - 1) : "";
 	}
-	
-	
 
 }
