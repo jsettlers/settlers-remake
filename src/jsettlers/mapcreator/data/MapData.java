@@ -2,12 +2,14 @@ package jsettlers.mapcreator.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.BitSet;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.BuildingObject;
@@ -22,6 +24,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.map.save.MapDataSerializer;
 import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
 import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
@@ -49,13 +52,13 @@ public class MapData implements IMapData {
 	private final int height;
 
 	private final ELandscapeType[][] landscapes;
+	private final byte[][] heights;
 	private final ObjectContainer[][] objects;
 
-	private final LandscapeFader fader = new LandscapeFader();
-	private IGraphicsBackgroundListener backgroundListener;
-	private final byte[][] heights;
-	private final byte[][] resourceAmount;
 	private final EResourceType[][] resources;
+	private final byte[][] resourceAmount;
+	private final short[][] blockedPartitions;
+
 	private MapDataDelta undoDelta;
 	private int playercount;
 	private ShortPoint2D[] playerStarts;
@@ -65,16 +68,16 @@ public class MapData implements IMapData {
 	private boolean[][] doneBuffer;
 	private boolean[][] failpoints;
 
+	private final LandscapeFader fader = new LandscapeFader();
+	private IGraphicsBackgroundListener backgroundListener;
+
 	public MapData(int width, int height, int playercount, ELandscapeType ground) {
 		if (width <= 0 || height <= 0) {
-			throw new IllegalArgumentException(
-			        "width and height must be positive");
+			throw new IllegalArgumentException("width and height must be positive");
 		}
 
 		if (width > Short.MAX_VALUE || height > Short.MAX_VALUE) {
-			throw new IllegalArgumentException(
-			        "width and height must be less than "
-			                + (Short.MAX_VALUE + 1));
+			throw new IllegalArgumentException("width and height must be less than " + (Short.MAX_VALUE + 1));
 		}
 
 		if (playercount <= 0 || playercount >= CommonConstants.MAX_PLAYERS) {
@@ -94,6 +97,7 @@ public class MapData implements IMapData {
 		this.resourceAmount = new byte[width][height];
 		this.resources = new EResourceType[width][height];
 		this.objects = new ObjectContainer[width][height];
+		this.blockedPartitions = new short[width][height];
 		this.doneBuffer = new boolean[width][height];
 
 		for (int x = 0; x < width; x++) {
@@ -106,8 +110,7 @@ public class MapData implements IMapData {
 	}
 
 	public MapData(IMapData data) {
-		this(data.getWidth(), data.getHeight(), data.getPlayerCount(),
-		        ELandscapeType.GRASS);
+		this(data.getWidth(), data.getHeight(), data.getPlayerCount(), ELandscapeType.GRASS);
 
 		for (short x = 0; x < width; x++) {
 			for (short y = 0; y < height; y++) {
@@ -204,11 +207,11 @@ public class MapData implements IMapData {
 		for (int y = ymin; y < ymax; y++) {
 			for (int x = xmin; x < xmax; x++) {
 				if (area.contains(new ShortPoint2D(x, y))) { // < we cannot use
-					                                         // done[x][y],
-					                                         // because done
-					                                         // flag
-					                                         // is set for other
-					                                         // tiles, too.
+																// done[x][y],
+																// because done
+																// flag
+																// is set for other
+																// tiles, too.
 					for (EDirection dir : EDirection.values) {
 						int tx = x + dir.getGridDeltaX();
 						int ty = y + dir.getGridDeltaY();
@@ -233,15 +236,12 @@ public class MapData implements IMapData {
 			}
 		}
 
-		System.out.println("Found " + tasks.size()
-		        + " tiles, starting to work on them...");
+		System.out.println("Found " + tasks.size() + " tiles, starting to work on them...");
 		while (!tasks.isEmpty()) {
 			FadeTask task = tasks.poll();
 			assert contains(task.x, task.y);
 
-			ELandscapeType[] fade =
-			        fader.getLandscapesBetween(task.type,
-			                landscapes[task.x][task.y]);
+			ELandscapeType[] fade = fader.getLandscapesBetween(task.type, landscapes[task.x][task.y]);
 
 			if (fade == null || fade.length <= 2) {
 				continue; // nothing to do
@@ -321,15 +321,18 @@ public class MapData implements IMapData {
 
 		@Override
 		public void setDimension(int width, int height, int playercount) {
-			data =
-			        new MapData(width, height, playercount,
-			                ELandscapeType.GRASS);
+			data = new MapData(width, height, playercount, ELandscapeType.GRASS);
 		}
 
 		@Override
 		public void setResources(int x, int y, EResourceType type, byte amount) {
 			data.resources[x][y] = type;
 			data.resourceAmount[x][y] = amount;
+		}
+
+		@Override
+		public void setBlockedPartition(int x, int y, short blockedPartition) {
+			data.blockedPartitions[x][y] = blockedPartition;
 		}
 	}
 
@@ -340,8 +343,7 @@ public class MapData implements IMapData {
 		private final int x;
 
 		/**
-		 * A task to set the landscape at a given point to the landscpae close
-		 * to type.
+		 * A task to set the landscape at a given point to the landscpae close to type.
 		 * 
 		 * @param x
 		 *            The x position where to fade
@@ -369,8 +371,7 @@ public class MapData implements IMapData {
 				return false;
 			}
 			if (objects[x][y] instanceof LandscapeConstraint) {
-				LandscapeConstraint constraint =
-				        (LandscapeConstraint) objects[x][y];
+				LandscapeConstraint constraint = (LandscapeConstraint) objects[x][y];
 				if (!allowsLandscape(type, constraint)) {
 					return false;
 				}
@@ -385,8 +386,7 @@ public class MapData implements IMapData {
 		return true;
 	}
 
-	private static boolean allowsLandscape(ELandscapeType type,
-	        LandscapeConstraint constraint) {
+	private static boolean allowsLandscape(ELandscapeType type, LandscapeConstraint constraint) {
 		boolean allowed = false;
 		for (ELandscapeType t : constraint.getAllowedLandscapes()) {
 			if (t == type) {
@@ -409,18 +409,13 @@ public class MapData implements IMapData {
 		} else if (object instanceof MapStoneObject) {
 			container = new StoneObjectContainer((MapStoneObject) object);
 		} else if (object instanceof MovableObject) {
-			container =
-			        new MovableObjectContainer((MovableObject) object, x, y);
+			container = new MovableObjectContainer((MovableObject) object, x, y);
 		} else if (object instanceof StackObject) {
 			container = new StackContainer((StackObject) object);
 		} else if (object instanceof BuildingObject) {
-			container =
-			        new BuildingContainer((BuildingObject) object,
-			                new ShortPoint2D(x, y));
+			container = new BuildingContainer((BuildingObject) object, new ShortPoint2D(x, y));
 			landscapes = ((BuildingObject) object).getType().getGroundtypes();
-			protector =
-			        new ProtectLandscapeConstraint(((BuildingObject) object)
-			                .getType().getGroundtypes());
+			protector = new ProtectLandscapeConstraint(((BuildingObject) object).getType().getGroundtypes());
 		} else if (object instanceof MapDecorationObject) {
 			container = new MapObjectContainer((MapDecorationObject) object);
 		} else {
@@ -431,12 +426,9 @@ public class MapData implements IMapData {
 		ShortPoint2D start = new ShortPoint2D(x, y);
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
-			if (!contains(abs.getX(), abs.getY())
-			        || objects[abs.getX()][abs.getY()] != null
-			        || !landscapeAllowsObjects(getLandscape(abs.getX(),
-			                abs.getY()))
-			        || !listAllowsLandscape(landscapes,
-			                getLandscape(abs.getX(), abs.getY()))) {
+			if (!contains(abs.getX(), abs.getY()) || objects[abs.getX()][abs.getY()] != null
+					|| !landscapeAllowsObjects(getLandscape(abs.getX(), abs.getY()))
+					|| !listAllowsLandscape(landscapes, getLandscape(abs.getX(), abs.getY()))) {
 				allowed = false;
 			}
 		}
@@ -452,8 +444,7 @@ public class MapData implements IMapData {
 		}
 	}
 
-	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2,
-	        ELandscapeType landscape) {
+	public static boolean listAllowsLandscape(ELandscapeType[] landscapes2, ELandscapeType landscape) {
 		if (landscapes2 == null) {
 			return true;
 		} else {
@@ -499,11 +490,8 @@ public class MapData implements IMapData {
 	}
 
 	private static boolean landscapeAllowsObjects(ELandscapeType type) {
-		return !type.isWater() && type != ELandscapeType.SNOW
-		        && type != ELandscapeType.RIVER1
-		        && type != ELandscapeType.RIVER2
-		        && type != ELandscapeType.RIVER3
-		        && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
+		return !type.isWater() && type != ELandscapeType.SNOW && type != ELandscapeType.RIVER1 && type != ELandscapeType.RIVER2
+				&& type != ELandscapeType.RIVER3 && type != ELandscapeType.RIVER4 && type != ELandscapeType.MOOR;
 	}
 
 	@Override
@@ -592,7 +580,7 @@ public class MapData implements IMapData {
 			objects[adder.x][adder.y] = adder.obj;
 			adder = adder.next;
 		}
-		
+
 		ResourceChanger res = delta.getChangeResources();
 		while (res != null) {
 			inverse.changeResource(res.x, res.y, resources[res.x][res.y], resourceAmount[res.x][res.y]);
@@ -600,7 +588,7 @@ public class MapData implements IMapData {
 			resourceAmount[res.x][res.y] = res.amount;
 			res = res.next;
 		}
-		
+
 		// start points
 		StartPointSetter start = delta.getStartPoints();
 		while (start != null) {
@@ -634,8 +622,7 @@ public class MapData implements IMapData {
 				ShortPoint2D pos = point.calculatePoint(start);
 
 				if (contains(pos.getX(), pos.getY())) {
-					undoDelta.addObject(pos.getX(), pos.getY(),
-					        objects[pos.getX()][pos.getY()]);
+					undoDelta.addObject(pos.getX(), pos.getY(), objects[pos.getX()][pos.getY()]);
 					objects[pos.getX()][pos.getY()] = null;
 				}
 			}
@@ -678,9 +665,7 @@ public class MapData implements IMapData {
 
 		ShortPoint2D[] newPlayerStarts = new ShortPoint2D[maxPlayer];
 		for (int i = 0; i < maxPlayer; i++) {
-			newPlayerStarts[i] =
-			        i < playercount ? playerStarts[i] : new ShortPoint2D(
-			                width / 2, height / 2);
+			newPlayerStarts[i] = i < playercount ? playerStarts[i] : new ShortPoint2D(width / 2, height / 2);
 		}
 		this.playercount = maxPlayer;
 		this.playerStarts = newPlayerStarts;
@@ -710,5 +695,40 @@ public class MapData implements IMapData {
 			this.undoDelta.changeResource(x, y, resources[x][y], resourceAmount[x][y]);
 			resourceAmount[x][y] = amount;
 		}
+	}
+
+	@Override
+	public short getBlockedPartition(short x, short y) {
+		return blockedPartitions[x][y];
+	}
+
+	/**
+	 * This method must be called before the data is saved to execute actions that need to be done before that.
+	 */
+	public void doPreSaveActions() {
+		calculateBlockedPartitions();
+	}
+
+	private void calculateBlockedPartitions() {
+		MilliStopWatch watch = new MilliStopWatch();
+
+		BitSet blocked = new BitSet(width * height);
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				blocked.set(x + width * y, landscapes[x][y].isBlocking);
+			}
+		}
+
+		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, width, height, blocked, true);
+		partitionCalculator.calculatePartitions();
+
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				blockedPartitions[x][y] = partitionCalculator.getPartitionAt(x, y);
+			}
+		}
+
+		watch.stop("Calculating partitions needed");
+		System.out.println("found " + partitionCalculator.getNumberOfPartitions() + " partitions.");
 	}
 }

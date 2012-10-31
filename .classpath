@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.main.swing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.logic"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

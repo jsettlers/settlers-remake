@@ -310,11 +310,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	private JButton undoButton;
 
-	private final LinkedList<MapDataDelta> undoDeltas =
-	        new LinkedList<MapDataDelta>();
+	private final LinkedList<MapDataDelta> undoDeltas = new LinkedList<MapDataDelta>();
 
-	private final LinkedList<MapDataDelta> redoDeltas =
-	        new LinkedList<MapDataDelta>();
+	private final LinkedList<MapDataDelta> redoDeltas = new LinkedList<MapDataDelta>();
 
 	private final DataTester dataTester;
 
@@ -528,6 +526,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			short[] image = new PreviewImageCreator(data).getPreviewImage();
 			MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getDescription(), header.getWidth(),
 					header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
+			data.doPreSaveActions();
 			MapList.getDefaultList().saveMap(imagedHeader, data);
 		} catch (Throwable e) {
 			e.printStackTrace();
