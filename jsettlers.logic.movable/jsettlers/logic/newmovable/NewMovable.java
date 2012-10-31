@@ -194,6 +194,9 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 		case PATHING:
 			pathingAction();
 			break;
+
+		default:
+			break;
 		}
 
 		if (moveToRequest != null) {
@@ -217,6 +220,9 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 				if (path != null) {
 					this.strategy.moveToPathSet(oldTargetPos, path.getTargetPos());
 				}
+				break;
+
+			default:
 				break;
 			}
 		}

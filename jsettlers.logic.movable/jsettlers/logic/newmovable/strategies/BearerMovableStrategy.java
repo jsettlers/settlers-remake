@@ -152,6 +152,10 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 
 		case DEAD_OBJECT:
 			break;
+		case JOBLESS:
+			break;
+		default:
+			break;
 		}
 
 		EMaterialType carriedMaterial = super.setMaterial(EMaterialType.NO_MATERIAL);

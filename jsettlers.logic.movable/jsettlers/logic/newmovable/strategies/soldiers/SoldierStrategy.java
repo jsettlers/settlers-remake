@@ -61,7 +61,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			hitEnemy(enemy);
 			if (enemy.getHealth() <= 0) {
 				enemy = null;
-				state = ESoldierState.SEARCH_FOR_ENEMIES;
+				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 				break; // don't directly walk on the enemy's position, because there may be others to walk in first
 			}
 		case SEARCH_FOR_ENEMIES:
@@ -86,9 +86,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			if (isEnemyAttackable(enemy, isInTower)) { // if enemy is close enough, attack it
 				super.lookInDirection(EDirection.getApproxDirection(super.getPos(), enemy.getPos()));
 				startAttackAnimation(enemy);
-				state = ESoldierState.HITTING;
+				changeStateTo(ESoldierState.HITTING);
 			} else if (!isInTower) {
-				state = ESoldierState.SEARCH_FOR_ENEMIES;
+				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 				goToEnemy(enemy);
 			}
 
@@ -96,7 +96,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 		case INIT_GOTO_TOWER:
 			super.goToPos(building.getDoor());
-			state = ESoldierState.GOING_TO_TOWER;
+			changeStateTo(ESoldierState.GOING_TO_TOWER);
 			break;
 
 		case GOING_TO_TOWER:
@@ -110,10 +110,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 					this.inTowerAttackPosition = building.getTowerBowmanSearchPosition(place);
 				}
 
-				state = ESoldierState.AGGRESSIVE;
+				changeStateTo(ESoldierState.AGGRESSIVE);
 				isInTower = true;
 			} else {
-				state = ESoldierState.SEARCH_FOR_ENEMIES; // do a check of the surrounding to find possible enemies.
+				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES); // do a check of the surrounding to find possible enemies.
 			}
 			break;
 
@@ -161,6 +161,9 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				oldPathTarget = null;
 			}
 			break;
+
+		default:
+			break;
 		}
 	}
 
@@ -173,7 +176,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	@Override
 	public void setOccupyableBuilding(IOccupyableBuilding building) {
 		this.building = building;
-		this.state = ESoldierState.INIT_GOTO_TOWER;
+		changeStateTo(ESoldierState.INIT_GOTO_TOWER);
 		super.abortPath();
 		this.oldPathTarget = null; // this prevents that the soldiers go to this position after he leaves the tower.
 	}
@@ -195,7 +198,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 		super.setVisible(true);
 
 		isInTower = false;
-		state = ESoldierState.SEARCH_FOR_ENEMIES;
+		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 	}
 
 	@Override
@@ -206,14 +209,14 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	@Override
 	public void informAboutAttackable(IAttackable other) {
 		if (state == ESoldierState.AGGRESSIVE && (!isInTower || getSoldierType() == ESoldierType.BOWMAN)) {
-			state = ESoldierState.SEARCH_FOR_ENEMIES; // this searches for the enemy on the next timer click
+			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES); // this searches for the enemy on the next timer click
 		}
 	}
 
 	@Override
 	public void setDefendingAt(ShortPoint2D pos) {
 		super.setPosition(pos);
-		state = ESoldierState.SEARCH_FOR_ENEMIES;
+		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 		defending = true;
 	}
 
