@@ -352,6 +352,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				} else {
 					return; // prevent resetting the current action
 				}
+			default:
+				break;
 			}
 
 			setActiveAction(null);

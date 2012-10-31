@@ -13,7 +13,6 @@ public final class FlagsGrid implements Serializable {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
-	private final short height;
 
 	private final BitSet blockedGrid;
 	private final BitSet markedGrid;
@@ -24,7 +23,6 @@ public final class FlagsGrid implements Serializable {
 
 	public FlagsGrid(final short width, final short height) {
 		this.width = width;
-		this.height = height;
 
 		this.blockedGrid = new BitSet(width * height);
 		this.protectedGrid = new BitSet(width * height);
