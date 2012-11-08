@@ -288,7 +288,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 				if (tool != EMaterialType.NO_MATERIAL) {
 
-					if (toolRequestingWorkerRequests.getSlotSize(workerRequest.movableType.getTool()) <= 3) {
+					if (toolRequestingWorkerRequests.getSlotSize(tool) <= 3) {
 						this.materialTypeAcceptor.materialType = tool;
 						MaterialOffer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
 

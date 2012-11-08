@@ -29,11 +29,7 @@ public final class FlagsGrid implements Serializable {
 	}
 
 	public boolean isBlocked(short x, short y) {
-		return blockedGrid.get(getIdx(x, y));
-	}
-
-	private final int getIdx(int x, int y) {
-		return y * width + x;
+		return blockedGrid.get(x + y * width);
 	}
 
 	/**
@@ -48,32 +44,32 @@ public final class FlagsGrid implements Serializable {
 	 *            otherwise it will be set to unblocked and unprotected.
 	 */
 	public void setBlockedAndProtected(short x, short y, boolean blocked) {
-		final int idx = getIdx(x, y);
+		final int idx = x + y * width;
 		this.blockedGrid.set(idx, blocked);
 		this.protectedGrid.set(idx, blocked);
 	}
 
 	public boolean isMarked(short x, short y) {
-		return this.markedGrid.get(getIdx(x, y));
+		return this.markedGrid.get(x + y * width);
 	}
 
 	public void setMarked(short x, short y, boolean marked) {
-		this.markedGrid.set(getIdx(x, y), marked);
+		this.markedGrid.set(x + y * width, marked);
 	}
 
 	public boolean isProtected(short x, short y) {
-		return this.protectedGrid.get(getIdx(x, y));
+		return this.protectedGrid.get(x + y * width);
 	}
 
 	public void setProtected(short x, short y, boolean setProtected) {
-		this.protectedGrid.set(getIdx(x, y), setProtected);
+		this.protectedGrid.set(x + y * width, setProtected);
 	}
 
 	public boolean isBorderAt(short x, short y) {
-		return this.bordersGrid.get(getIdx(x, y));
+		return this.bordersGrid.get(x + y * width);
 	}
 
 	public void setBorderAt(short x, short y, boolean setProtected) {
-		this.bordersGrid.set(getIdx(x, y), setProtected);
+		this.bordersGrid.set(x + y * width, setProtected);
 	}
 }

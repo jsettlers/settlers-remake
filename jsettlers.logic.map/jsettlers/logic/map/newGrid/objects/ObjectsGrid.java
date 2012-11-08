@@ -57,10 +57,6 @@ public final class ObjectsGrid implements Serializable {
 		}
 	}
 
-	private final int getIdx(int x, int y) {
-		return y * width + x;
-	}
-
 	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		int length = ois.readInt();
@@ -79,17 +75,17 @@ public final class ObjectsGrid implements Serializable {
 	}
 
 	public final AbstractHexMapObject getObjectsAt(short x, short y) {
-		return objectsGrid[getIdx(x, y)];
+		return objectsGrid[x + y * width];
 	}
 
 	public final AbstractHexMapObject getMapObjectAt(short x, short y, EMapObjectType mapObjectType) {
-		AbstractHexMapObject mapObjectHead = objectsGrid[getIdx(x, y)];
+		AbstractHexMapObject mapObjectHead = objectsGrid[x + y * width];
 
 		return mapObjectHead != null ? mapObjectHead.getMapObject(mapObjectType) : null;
 	}
 
 	public final AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
-		final int idx = getIdx(x, y);
+		final int idx = x + y * width;
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];
 
 		AbstractHexMapObject removed = null;
@@ -105,7 +101,7 @@ public final class ObjectsGrid implements Serializable {
 	}
 
 	public final boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
-		final int idx = getIdx(x, y);
+		final int idx = x + y * width;
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];
 		if (mapObjectHead != null) {
 			boolean removed;
@@ -122,7 +118,7 @@ public final class ObjectsGrid implements Serializable {
 	}
 
 	public final void addMapObjectAt(short x, short y, AbstractHexMapObject mapObject) {
-		final int idx = getIdx(x, y);
+		final int idx = x + y * width;
 
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];
 
@@ -134,13 +130,13 @@ public final class ObjectsGrid implements Serializable {
 	}
 
 	public final boolean hasCuttableObject(short x, short y, EMapObjectType mapObjectType) {
-		AbstractHexMapObject mapObjectHead = objectsGrid[getIdx(x, y)];
+		AbstractHexMapObject mapObjectHead = objectsGrid[x + y * width];
 
 		return mapObjectHead != null && mapObjectHead.hasCuttableObject(mapObjectType);
 	}
 
 	public final boolean hasMapObjectType(short x, short y, EMapObjectType mapObjectType) {
-		AbstractHexMapObject mapObjectHead = objectsGrid[getIdx(x, y)];
+		AbstractHexMapObject mapObjectHead = objectsGrid[x + y * width];
 
 		return mapObjectHead != null && mapObjectHead.hasMapObjectType(mapObjectType);
 	}
@@ -203,11 +199,11 @@ public final class ObjectsGrid implements Serializable {
 
 	public void setBuildingArea(FreeMapArea area, Building buildingValue) {
 		for (ShortPoint2D curr : area) {
-			buildingsGrid[getIdx(curr.getX(), curr.getY())] = buildingValue;
+			buildingsGrid[curr.getX() + curr.getY() * width] = buildingValue;
 		}
 	}
 
 	public Building getBuildingOn(short x, short y) {
-		return buildingsGrid[getIdx(x, y)];
+		return buildingsGrid[x + y * width];
 	}
 }

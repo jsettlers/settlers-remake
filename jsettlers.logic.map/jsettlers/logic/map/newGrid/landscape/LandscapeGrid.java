@@ -65,27 +65,27 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public final byte getHeightAt(short x, short y) {
-		return heightGrid[getIdx(x, y)];
+		return heightGrid[x + y * width];
 	}
 
 	public final void setHeightAt(short x, short y, byte height) {
-		this.heightGrid[getIdx(x, y)] = height;
+		this.heightGrid[x + y * width] = height;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
 	public final ELandscapeType getLandscapeTypeAt(short x, short y) {
-		return ELandscapeType.values[landscapeGrid[getIdx(x, y)]];
+		return ELandscapeType.values[landscapeGrid[x + y * width]];
 	}
 
 	public final void setDebugColor(short x, short y, int argb) {
 		if (CommonConstants.ENABLE_DEBUG_COLORS) {
-			debugColors[getIdx(x, y)] = argb;
+			debugColors[x + y * width] = argb;
 		}
 	}
 
 	public final int getDebugColor(int x, int y) {
 		if (CommonConstants.ENABLE_DEBUG_COLORS) {
-			return debugColors[getIdx(x, y)];
+			return debugColors[x + y * width];
 		} else {
 			return 0;
 		}
@@ -99,21 +99,17 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 	}
 
-	private final int getIdx(int x, int y) {
-		return y * width + x;
-	}
-
 	public final void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
-		if (landscapeType == ELandscapeType.FLATTENED && this.landscapeGrid[getIdx(x, y)] != ELandscapeType.FLATTENED.ordinal) {
+		if (landscapeType == ELandscapeType.FLATTENED && this.landscapeGrid[x + y * width] != ELandscapeType.FLATTENED.ordinal) {
 			flattenedResetter.addPosition(x, y);
 		}
 
-		this.landscapeGrid[getIdx(x, y)] = landscapeType.ordinal;
+		this.landscapeGrid[x + y * width] = landscapeType.ordinal;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
 	public final void changeHeightAt(short x, short y, byte delta) {
-		this.heightGrid[getIdx(x, y)] += delta;
+		this.heightGrid[x + y * width] += delta;
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
@@ -126,8 +122,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	}
 
 	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
-		this.resourceType[getIdx(x, y)] = resourceType.ordinal;
-		this.resourceAmount[getIdx(x, y)] = amount;
+		this.resourceType[x + y * width] = resourceType.ordinal;
+		this.resourceAmount[x + y * width] = amount;
 	}
 
 	/**
@@ -138,19 +134,19 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 * @return The amount of resources, where 0 is no resources and {@link Byte.MAX_VALUE} means full resources.
 	 */
 	public final byte getResourceAmountAt(short x, short y) {
-		return resourceAmount[getIdx(x, y)];
+		return resourceAmount[x + y * width];
 	}
 
 	public final EResourceType getResourceTypeAt(short x, short y) {
-		return EResourceType.values[resourceType[getIdx(x, y)]];
+		return EResourceType.values[resourceType[x + y * width]];
 	}
 
 	public final boolean hasResourceAt(short x, short y, EResourceType resourceType) {
-		return getResourceTypeAt(x, y) == resourceType && resourceAmount[getIdx(x, y)] > 0;
+		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x + y * width] > 0;
 	}
 
 	public final void pickResourceAt(short x, short y) {
-		resourceAmount[getIdx(x, y)]--;
+		resourceAmount[x + y * width]--;
 	}
 
 	/**
@@ -168,7 +164,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	@Override
 	public final void walkOn(int x, int y) {
-		int i = getIdx(x, y);
+		int i = x + y * width;
 		if (temporaryFlatened[i] < 100) {
 			temporaryFlatened[i] += 3;
 			if (temporaryFlatened[i] > 20) {
@@ -200,8 +196,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		int found = 0;
 		for (int currentx = minx; currentx <= maxx; currentx++) {
 			for (int currenty = miny; currenty <= maxy; currenty++) {
-				if (resourceType[getIdx(currentx, currenty)] == type.ordinal) {
-					found += resourceAmount[getIdx(x, y)];
+				if (resourceType[currentx + currenty * width] == type.ordinal) {
+					found += resourceAmount[x + y * width];
 				}
 			}
 		}
@@ -210,7 +206,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	@Override
 	public boolean countFlattenedDown(short x, short y) {
-		int i = getIdx(x, y);
+		int i = x + y * width;
 
 		temporaryFlatened[i]--;
 		if (temporaryFlatened[i] <= -30) {

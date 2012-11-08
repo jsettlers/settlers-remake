@@ -34,20 +34,16 @@ public final class MovableGrid implements Serializable {
 		this.movableGrid = new NewMovable[width * height];
 	}
 
-	private final int getIdx(int x, int y) {
-		return y * width + x;
-	}
-
 	public final NewMovable getMovableAt(short x, short y) {
-		return this.movableGrid[getIdx(x, y)];
+		return this.movableGrid[x + y * width];
 	}
 
 	public final void setMovable(short x, short y, NewMovable movable) {
-		this.movableGrid[getIdx(x, y)] = movable;
+		this.movableGrid[x + y * width] = movable;
 	}
 
 	public final void movableLeft(ShortPoint2D position, NewMovable movable) {
-		int idx = getIdx(position.getX(), position.getY());
+		int idx = position.getX() + position.getY() * width;
 		if (this.movableGrid[idx] == movable) {
 			this.movableGrid[idx] = null;
 		}
@@ -65,7 +61,7 @@ public final class MovableGrid implements Serializable {
 		short x = position.getX();
 		short y = position.getY();
 
-		int idx = getIdx(x, y);
+		int idx = x + y * width;
 		if (idx < 0) {
 			System.out.println("index < 0");
 		}
