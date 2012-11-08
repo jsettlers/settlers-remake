@@ -1,5 +1,7 @@
 package jsettlers.logic.buildings.military;
 
+import java.util.List;
+
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -77,12 +79,15 @@ public class Barrack extends Building implements IBarrack {
 
 	@Override
 	public EMovableType popWeaponForBearer() {
-		for (RequestStack stack : super.getStacks()) {
+		List<RequestStack> stacks = super.getStacks();
+		for (RequestStack stack : stacks) {
 			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
 					|| stack.getMaterialType() == EMaterialType.SPEAR) {
-				stack.pop();
-				requestedBearer--;
-				return getSoldierType(stack.getMaterialType());
+				if (stack.hasMaterial()) {
+					stack.pop();
+					requestedBearer--;
+					return getSoldierType(stack.getMaterialType());
+				}
 			}
 		}
 

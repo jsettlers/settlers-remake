@@ -8,6 +8,7 @@ import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -222,6 +223,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			popToolRequestAction();
 			break;
 
+		case POP_WEAPON:
+			popWeaponRequestAction();
+			break;
+
 		}
 	}
 
@@ -237,6 +242,18 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private void placeOrRemovePigAction() {
 		ShortPoint2D pos = getCurrentJobPos();
 		super.getStrategyGrid().placePigAt(pos, currentJob.getType() == EBuildingJobType.PIG_PLACE);
+		jobFinished();
+	}
+
+	private void popWeaponRequestAction() {
+		float random = RandomSingleton.nextF();
+		if (random < 0.5) {
+			poppedMaterial = EMaterialType.SWORD;
+		} else if (random < 0.8) {
+			poppedMaterial = EMaterialType.SPEAR;
+		} else {
+			poppedMaterial = EMaterialType.BOW;
+		}
 		jobFinished();
 	}
 
@@ -311,16 +328,22 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private boolean isProductive() {
 		switch (building.getBuildingType()) {
 		case FISHER:
-			// TODO: look into the water, not at the sand.
-			return hasProductiveResources(super.getPos(), EResourceType.FISH);
+			EDirection fishDirection = super.getStrategyGrid().getDirectionOfSearched(super.getPos(), ESearchType.FISHABLE);
+			if (fishDirection != null) {
+				return hasProductiveResources(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
+			} else {
+				return false;
+			}
 		case COALMINE:
 			return hasProductiveResources(building.getDoor(), EResourceType.COAL);
 		case IRONMINE:
 			return hasProductiveResources(building.getDoor(), EResourceType.IRON);
 		case GOLDMINE:
 			return hasProductiveResources(building.getDoor(), EResourceType.GOLD);
+
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	private boolean hasProductiveResources(ShortPoint2D pos, EResourceType type) {
