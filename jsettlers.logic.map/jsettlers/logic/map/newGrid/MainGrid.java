@@ -59,7 +59,6 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
-import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
@@ -487,6 +486,11 @@ public final class MainGrid implements Serializable {
 			landscapeGrid.setDebugColor(x, y, color.getARGB());
 		}
 
+		@Override
+		public short getBlockedPartition(short x, short y) {
+			return landscapeGrid.getBlockedPartitionAt(x, y);
+		}
+
 	}
 
 	final class GraphicsGrid implements IGraphicsGrid {
@@ -525,8 +529,8 @@ public final class MainGrid implements Serializable {
 			// short value = (short) (landscapeGrid.getBlockedPartitionAt((short) x, (short) y) + 1);
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
-			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -534,7 +538,7 @@ public final class MainGrid implements Serializable {
 			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
 			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// return landscapeGrid.getDebugColor(x, y);
+			return landscapeGrid.getDebugColor(x, y);
 
 			// return flagsGrid.isMarked((short) x, (short) y) ? Color.ORANGE.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
 			// EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
@@ -661,7 +665,7 @@ public final class MainGrid implements Serializable {
 	final class LandmarksGrid implements ILandmarksThreadGrid {
 		@Override
 		public final boolean isBlocked(short x, short y) {
-			return flagsGrid.isBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
+			return MainGrid.this.isInBounds(x, y) && flagsGrid.isBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
 		}
 
 		@Override
@@ -789,7 +793,7 @@ public final class MainGrid implements Serializable {
 	final class MovablePathfinderGrid implements INewMovableGrid, Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
-		transient IAStar aStar;
+		transient HexAStar aStar;
 		transient DijkstraAlgorithm dijkstra;
 		private transient InAreaFinder inAreaFinder;
 		private transient PathfinderGrid pathfinderGrid;
