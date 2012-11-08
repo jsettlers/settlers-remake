@@ -14,7 +14,10 @@ public interface IBorderVisitor {
 	 *            X coordinate.
 	 * @param y
 	 *            Y coordinate.
+	 * 
+	 * @return True if the traversing shall be continued.<br>
+	 *         False if it shall be stopped.
 	 */
-	void visit(int x, int y);
+	boolean visit(int x, int y);
 
 }

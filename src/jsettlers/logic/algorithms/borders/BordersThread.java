@@ -47,41 +47,46 @@ public class BordersThread implements Runnable {
 	}
 
 	private void calculateForPosition(ShortPoint2D position) {
-		byte player = grid.getPlayerAt(position.getX(), position.getY());
+		short x = position.getX();
+		short y = position.getY();
+		byte player = grid.getPlayerAt(x, y);
 		boolean isBorder = false;
 
-		for (EDirection currDir : EDirection.values) {
-			short currNeighborX = currDir.getNextTileX(position.getX());
-			short currNeighborY = currDir.getNextTileY(position.getY());
+		if (grid.getBlockedPartition(x, y) > 0) { // the position is not a blocked landscape
+			for (EDirection currDir : EDirection.values) {
+				short currNeighborX = currDir.getNextTileX(x);
+				short currNeighborY = currDir.getNextTileY(y);
 
-			if (!grid.isInBounds(currNeighborX, currNeighborY)) {
-				continue;
-			}
-
-			byte neighborPlayer = grid.getPlayerAt(currNeighborX, currNeighborY);
-			boolean neighborIsBorder = false;
-
-			if (neighborPlayer != player) {
-				isBorder = true;
-			}
-
-			if (neighborPlayer >= 0) { // this position is occupied by a player
-
-				for (EDirection currNeighborDir : EDirection.values) {
-					short nextX = currNeighborDir.getNextTileX(currNeighborX);
-					short nextY = currNeighborDir.getNextTileY(currNeighborY);
-
-					if (grid.isInBounds(nextX, nextY) && grid.getPlayerAt(nextX, nextY) != neighborPlayer) {
-						neighborIsBorder = true;
-						break;
-					}
+				if (!grid.isInBounds(currNeighborX, currNeighborY)) {
+					continue;
 				}
-			} // else the position is not occupied -> don't display a border here
 
-			grid.setBorderAt(currNeighborX, currNeighborY, neighborIsBorder);
+				byte neighborPlayer = grid.getPlayerAt(currNeighborX, currNeighborY);
+				boolean neighborIsBorder = false;
+
+				if (neighborPlayer != player && grid.getBlockedPartition(currNeighborX, currNeighborY) > 0) {
+					isBorder = true;
+				}
+
+				if (neighborPlayer >= 0) { // this position is occupied by a player
+
+					for (EDirection currNeighborDir : EDirection.values) {
+						short nextX = currNeighborDir.getNextTileX(currNeighborX);
+						short nextY = currNeighborDir.getNextTileY(currNeighborY);
+
+						if (grid.isInBounds(nextX, nextY) && grid.getPlayerAt(nextX, nextY) != neighborPlayer
+								&& grid.getBlockedPartition(nextX, nextY) > 0) {
+							neighborIsBorder = true;
+							break;
+						}
+					}
+				} // else the position is not occupied -> don't display a border here
+
+				grid.setBorderAt(currNeighborX, currNeighborY, neighborIsBorder);
+			}
 		}
 
-		grid.setBorderAt(position.getX(), position.getY(), isBorder && player >= 0);
+		grid.setBorderAt(x, y, isBorder && player >= 0);
 	}
 
 	public void checkPosition(ShortPoint2D position) {

@@ -1,11 +1,13 @@
 package jsettlers.logic.algorithms.landmarks;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.borders.traversing.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.borders.traversing.IBorderVisitor;
+import jsettlers.logic.algorithms.borders.traversing.IContainingProvider;
 
 /**
  * Thread to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area of
@@ -17,14 +19,21 @@ import jsettlers.common.position.ShortPoint2D;
 public final class LandmarksCorrectingThread extends Thread {
 	private final ILandmarksThreadGrid grid;
 	private final LinkedBlockingQueue<ShortPoint2D> queue = new LinkedBlockingQueue<ShortPoint2D>();
+	private final IContainingProvider containingProvider;
+
 	private boolean canceled;
 
 	public LandmarksCorrectingThread(ILandmarksThreadGrid map) {
 		super("LandmarksCorrectingThread");
 		this.grid = map;
+		this.containingProvider = new IContainingProvider() {
+			@Override
+			public boolean contains(int x, int y) {
+				return grid.isBlocked((short) x, (short) y);
+			}
+		};
 
 		this.setDaemon(true);
-		this.start();
 	}
 
 	@Override
@@ -36,108 +45,114 @@ public final class LandmarksCorrectingThread extends Thread {
 
 		while (!canceled) {
 			try {
-				Thread.sleep(1);
+				ShortPoint2D startPos = queue.take();
+
+				if (startPos != null) {
+					checkLandmarks(startPos);
+				}
 			} catch (InterruptedException e) {
 			}
-
-			ShortPoint2D startPos = null;
-			while (startPos == null) {
-				try {
-					startPos = queue.take();
-				} catch (InterruptedException e) {
-				}
-			}
-			checkLandmarks(startPos);
 		}
 	}
 
 	private final void checkLandmarks(ShortPoint2D startPos) {
-		if (grid.isBlocked(startPos.getX(), startPos.getY()))
+		short startX = startPos.getX();
+		short startY = startPos.getY();
+
+		if (grid.isBlocked(startX, startY))
 			return;
 
 		short startPartition = grid.getPartitionAt(startPos.getX(), startPos.getY());
 
-		LinkedList<EDirection> allBlockedDirections = getBlockedDirection(startPos);
-		if (allBlockedDirections.size() < EDirection.NUMBER_OF_DIRECTIONS) { // check if this is not an enclosed position
-			for (EDirection startDirection : allBlockedDirections) {
-				checkLandmarks(startPos, startPartition, startDirection);
-			}
-		}
-	}
-
-	private final void checkLandmarks(ShortPoint2D startPos, short startPartition, EDirection startDirection) {
-		EDirection blockedDir = startDirection;
-
-		ShortPoint2D blocked = blockedDir.getNextHexPoint(startPos);
-		ShortPoint2D currBase = startPos;
-		LinkedList<ShortPoint2D> blockedBorder = new LinkedList<ShortPoint2D>();
-
-		blockedBorder.add(blocked);
-
-		for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-			EDirection neighborDir = blockedDir.getNeighbor(-1);
-			ShortPoint2D neighborPos = neighborDir.getNextHexPoint(currBase);
-
-			if (!grid.isInBounds(neighborPos.getX(), neighborPos.getY())) {
-				takeOverBlockedLand(blockedBorder, startPartition);
-				break;
-			} else if (grid.isBlocked(neighborPos.getX(), neighborPos.getY())) {
-				blocked = neighborPos;
-				if (blocked.equals(blockedBorder.getFirst())) {
-					takeOverBlockedLand(blockedBorder, startPartition);
-					break;
-				} else {
-					blockedDir = neighborDir;
-					blockedBorder.add(blocked);
-					i = 0;
-				}
-			} else if (grid.getPartitionAt(neighborPos.getX(), neighborPos.getY()) == startPartition) {
-				currBase = neighborPos;
-				blockedDir = EDirection.getDirection(currBase, blocked);
-				i = 0;
-
-				if (neighborPos.equals(startPos)) {
-					takeOverBlockedLand(blockedBorder, startPartition);
-					break;
-				}
-			} else {
-				break;
-			}
-		}
-	}
-
-	private final void takeOverBlockedLand(LinkedList<ShortPoint2D> blockedBorder, short startPartition) {
-		for (ShortPoint2D curr : blockedBorder) {
-			short y = curr.getY();
-			for (short x = curr.getX();; x++) {
-				if (grid.isInBounds(x, y) && grid.isBlocked(x, y)) {
-					grid.setPartitionAndPlayerAt(x, y, startPartition);
-				} else {
-					break;
-				}
-			}
-
-			for (short x = (short) (curr.getX() - 1);; x--) {
-				if (grid.isInBounds(x, y) && grid.isBlocked(x, y)) {
-					grid.setPartitionAndPlayerAt(x, y, startPartition);
-				} else {
-					break;
-				}
-			}
-		}
-	}
-
-	private final LinkedList<EDirection> getBlockedDirection(ShortPoint2D position) {
-		LinkedList<EDirection> blockedDirections = new LinkedList<EDirection>();
-
 		for (EDirection currDir : EDirection.values) {
-			short currX = currDir.getNextTileX(position.getX());
-			short currY = currDir.getNextTileY(position.getY());
-			if (grid.isInBounds(currX, currY) && grid.isBlocked(currX, currY)) {
-				blockedDirections.add(currDir);
+			short currX = (short) (startX + currDir.gridDeltaX);
+			short currY = (short) (startY + currDir.gridDeltaY);
+
+			if (grid.isBlocked(currX, currY)) {
+				if (needsRelabel(currX, currY, startPartition)) {
+					System.out.println("relabel needed at " + currX + "|" + currY + " with startPartition: " + startPartition);
+					relabel(grid.getBlockedPartition(startX, startY), currX, currY, startPartition);
+				}
 			}
 		}
-		return blockedDirections;
+	}
+
+	private void relabel(final short outsideBlockedPartition, final short blockedX, final short blockedY, final short newPartition) {
+
+		BorderTraversingAlgorithm.traverseBorder(containingProvider, new ShortPoint2D(blockedX, blockedY), new IBorderVisitor() {
+			int lastX = -1;
+			int lastY = -1;
+
+			@Override
+			public boolean visit(int x, int y) {
+				int dy = y - lastY;
+
+				if (dy < 0 && lastY != -1) {
+					relabelLine((short) lastX, (short) lastY, outsideBlockedPartition, newPartition);
+					relabelLine((short) x, (short) y, outsideBlockedPartition, newPartition);
+				}
+				lastY = y;
+				lastX = x;
+
+				return true;
+			}
+		});
+	}
+
+	final void relabelLine(short startX, short startY, short outsideBlockedPartition, short newPartition) {
+
+		// go left
+		short x = startX;
+		do {
+			x--;
+
+			final boolean isBlocked = grid.isBlocked(x, startY);
+
+			if (isBlocked) {
+				grid.setPartitionAndPlayerAt(x, startY, newPartition);
+			} else {
+				short currBlockedPartition = grid.getBlockedPartition(x, startY);
+				if (currBlockedPartition == outsideBlockedPartition) {
+					break;
+				}
+			}
+		} while (x > 0); // prevent out of border
+
+		// go right
+		x = startX;
+		final short highestX = (short) (grid.getWidth() - 1);
+		do {
+			x++;
+
+			final boolean isBlocked = grid.isBlocked(x, startY);
+
+			if (isBlocked) {
+				grid.setPartitionAndPlayerAt(x, startY, newPartition);
+			} else {
+				short currBlockedPartition = grid.getBlockedPartition(x, startY);
+				if (currBlockedPartition == outsideBlockedPartition) {
+					break;
+				}
+			}
+		} while (x < highestX); // prevent out of border
+
+	}
+
+	/**
+	 * Checks if the blocked partition given by the coordinates blockedX and blockedY is surrounded by the given partition.
+	 * 
+	 * @param blockedX
+	 * @param blockedY
+	 * @param partition
+	 * @return
+	 */
+	private boolean needsRelabel(short blockedX, short blockedY, final short partition) {
+		return BorderTraversingAlgorithm.traverseBorder(containingProvider, new ShortPoint2D(blockedX, blockedY), new IBorderVisitor() {
+			@Override
+			public boolean visit(int x, int y) {
+				return grid.getPartitionAt((short) x, (short) y) == partition;
+			}
+		});
 	}
 
 	public final void addLandmarkedPosition(ShortPoint2D pos) {

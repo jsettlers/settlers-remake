@@ -17,8 +17,10 @@ public class BorderTraversingAlgorithm {
 	 *            The start position for the traversing. This position must be in the area but at the border!
 	 * @param visitor
 	 *            The visitor that will be called for every border position (a border position is a position outside the border!).
+	 * @return true if the whole border has been traversed.<br>
+	 *         false if the traversing has been canceled by the {@link IBorderVisitor}'s visit() method.
 	 */
-	public static void traverseBorder(IContainingProvider containingProvider, ShortPoint2D startPos, IBorderVisitor visitor) {
+	public static boolean traverseBorder(IContainingProvider containingProvider, ShortPoint2D startPos, IBorderVisitor visitor) {
 		final int startInsideX = startPos.getX();
 		final int startInsideY = startPos.getY();
 
@@ -42,13 +44,15 @@ public class BorderTraversingAlgorithm {
 		}
 
 		if (!foundOutsidePos) { // no neighbor of the start position is on the outside.
-			return;
+			return false;
 		}
 
 		final int startOutsideX = outsideX;
 		final int startOutsideY = outsideY;
 
-		visitor.visit(startOutsideX, startOutsideY);
+		if (!visitor.visit(startOutsideX, startOutsideY)) {
+			return false;
+		}
 
 		do {
 			EDirection outInDir = EDirection.getDirection(insideX - outsideX, insideY - outsideY);
@@ -64,9 +68,13 @@ public class BorderTraversingAlgorithm {
 				outsideX = neighborX;
 				outsideY = neighborY;
 
-				visitor.visit(outsideX, outsideY);
+				if (!visitor.visit(outsideX, outsideY)) {
+					return false;
+				}
 			}
 		} while (insideX != startInsideX || insideY != startInsideY || outsideX != startOutsideX || outsideY != startOutsideY);
+
+		return true;
 	}
 
 }
