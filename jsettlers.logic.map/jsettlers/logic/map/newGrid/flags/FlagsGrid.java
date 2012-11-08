@@ -19,8 +19,6 @@ public final class FlagsGrid implements Serializable {
 	private final BitSet protectedGrid;
 	private final BitSet bordersGrid;
 
-	private short[] blockedPartitions;
-
 	public FlagsGrid(final short width, final short height) {
 		this.width = width;
 
@@ -77,18 +75,5 @@ public final class FlagsGrid implements Serializable {
 
 	public void setBorderAt(short x, short y, boolean setProtected) {
 		this.bordersGrid.set(getIdx(x, y), setProtected);
-	}
-
-	public short getBlockedPartition(short x, short y) {
-		return this.blockedPartitions[getIdx(x, y)];
-	}
-
-	/**
-	 * FOR TESTS ONLY!
-	 * 
-	 * @return
-	 */
-	BitSet getBlockedGrid() {
-		return blockedGrid;
 	}
 }

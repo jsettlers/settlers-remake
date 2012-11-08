@@ -53,7 +53,7 @@ import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
 import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
-import jsettlers.logic.algorithms.landmarks.NewLandmarkCorrection;
+import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
@@ -99,7 +99,7 @@ import synchronic.timer.NetworkTimer;
  * 
  * @author Andreas Eberle
  */
-public class MainGrid implements Serializable {
+public final class MainGrid implements Serializable {
 	private static final long serialVersionUID = 3824511313693431423L;
 
 	final short width;
@@ -117,7 +117,7 @@ public class MainGrid implements Serializable {
 	final NewFogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
-	transient NewLandmarkCorrection landmarksCorrection;
+	transient LandmarksCorrectingThread landmarksCorrection;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
@@ -143,7 +143,7 @@ public class MainGrid implements Serializable {
 
 	private void initAdditionalGrids() {
 		this.graphicsGrid = new GraphicsGrid();
-		this.landmarksCorrection = new NewLandmarkCorrection(new LandmarksGrid());
+		this.landmarksCorrection = new LandmarksCorrectingThread(new LandmarksGrid());
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
@@ -212,11 +212,13 @@ public class MainGrid implements Serializable {
 	public void startThreads() {
 		bordersThread.start();
 		fogOfWar.start(new FogOfWarGrid());
+		landmarksCorrection.start();
 	}
 
 	public void stopThreads() {
 		bordersThread.cancel();
 		fogOfWar.cancel();
+		landmarksCorrection.cancel();
 	}
 
 	public static MainGrid create(IMapData mapGrid) {
@@ -520,11 +522,11 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			short value = (short) (landscapeGrid.getBlockedPartitionAt((short) x, (short) y) + 1);
-			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// short value = (short) (landscapeGrid.getBlockedPartitionAt((short) x, (short) y) + 1);
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+
+			short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -659,7 +661,7 @@ public class MainGrid implements Serializable {
 	final class LandmarksGrid implements ILandmarksThreadGrid {
 		@Override
 		public final boolean isBlocked(short x, short y) {
-			return flagsGrid.isBlocked(x, y);
+			return flagsGrid.isBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
 		}
 
 		@Override
@@ -691,6 +693,11 @@ public class MainGrid implements Serializable {
 		@Override
 		public short getWidth() {
 			return width;
+		}
+
+		@Override
+		public final short getBlockedPartition(short x, short y) {
+			return landscapeGrid.getBlockedPartitionAt(x, y);
 		}
 	}
 
@@ -862,7 +869,7 @@ public class MainGrid implements Serializable {
 		public void changePlayerAt(ShortPoint2D position, byte player) {
 			partitionsGrid.changePlayerAt(position.getX(), position.getY(), player);
 			bordersThread.checkPosition(position);
-			landmarksCorrection.reTest(position.getX(), position.getY());
+			landmarksCorrection.addLandmarkedPosition(position);
 		}
 
 		@Override
@@ -1162,6 +1169,11 @@ public class MainGrid implements Serializable {
 		public final boolean isInBounds(short x, short y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
+
+		@Override
+		public final short getBlockedPartition(short x, short y) {
+			return landscapeGrid.getBlockedPartitionAt(x, y);
+		}
 	}
 
 	final class BuildingsGrid implements IBuildingsGrid, Serializable {
@@ -1286,7 +1298,7 @@ public class MainGrid implements Serializable {
 
 								partitionsGrid.occupyAt(x, y, currOcc.building.getPlayer());
 								bordersThread.checkPosition(currPos);
-								landmarksCorrection.reTest(x, y);
+								landmarksCorrection.addLandmarkedPosition(currPos);
 
 								destroyBuildingOn(x, y, currOcc.building.getPlayer());
 							}
@@ -1519,7 +1531,7 @@ public class MainGrid implements Serializable {
 
 		@Override
 		public final void changedPartitionAt(short x, short y) {
-			landmarksCorrection.reTest(x, y);
+			landmarksCorrection.addLandmarkedPosition(new ShortPoint2D(x, y));
 		}
 
 		@Override
