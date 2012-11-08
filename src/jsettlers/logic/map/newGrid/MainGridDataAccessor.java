@@ -1,6 +1,7 @@
 package jsettlers.logic.map.newGrid;
 
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
+import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 
 public class MainGridDataAccessor {
 	private MainGrid grid;
@@ -19,5 +20,9 @@ public class MainGridDataAccessor {
 
 	public FlagsGrid getFlagsGrid() {
 		return grid.flagsGrid;
+	}
+
+	public LandscapeGrid getLandscapeGrid() {
+		return grid.landscapeGrid;
 	}
 }

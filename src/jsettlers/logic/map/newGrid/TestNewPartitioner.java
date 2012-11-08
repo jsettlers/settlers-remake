@@ -162,7 +162,7 @@ public class TestNewPartitioner {
 			byte players[] = { 0, 1, 1, 1, 1, 2, 3, 1 };
 
 			@Override
-			public void visit(int x, int y) {
+			public boolean visit(int x, int y) {
 				grid.mapObjectsManager.addSimpleMapObject(getPos(x, y), EMapObjectType.BUILDINGSITE_POST, false, (byte) 0);
 
 				short currPartition = grid.partitionsGrid.getPartition((short) x, (short) y);
@@ -173,6 +173,8 @@ public class TestNewPartitioner {
 				}
 
 				lastPartititon = currPartition;
+
+				return true;
 			}
 
 			private void merge(short partition1, short partition2) {

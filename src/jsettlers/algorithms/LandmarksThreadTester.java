@@ -181,6 +181,11 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
+		public short getBlockedPartition(short x, short y) {
+			return 1; // not a blocked landscape
+		}
+
+		@Override
 		public short getPartitionAt(short x, short y) {
 			return partitions[x][y];
 		}

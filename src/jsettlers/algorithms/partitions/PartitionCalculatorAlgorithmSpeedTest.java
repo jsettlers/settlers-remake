@@ -1,6 +1,7 @@
 package jsettlers.algorithms.partitions;
 
 import java.io.File;
+import java.util.BitSet;
 
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
@@ -10,7 +11,7 @@ import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.newGrid.MainGridDataAccessor;
-import jsettlers.logic.map.newGrid.flags.FlagsGridDataAccessor;
+import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import random.RandomSingleton;
@@ -24,18 +25,27 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 	}
 
 	public static void main(String[] args) throws MapLoadException, InterruptedException {
-		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap-2012-04-17_09-26-33.map")).getMainGrid();
+		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap-2012-10-31_14-02-41.map")).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
-		FlagsGridDataAccessor flagsAccessor = new FlagsGridDataAccessor(gridAccessor.getFlagsGrid());
+
+		short width = gridAccessor.getWidth();
+		short height = gridAccessor.getHeight();
+		BitSet blockingSet = new BitSet(width * height);
+		LandscapeGrid landscapeGrid = gridAccessor.getLandscapeGrid();
+
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				blockingSet.set(x + y * width, landscapeGrid.getLandscapeTypeAt(x, y).isBlocking);
+			}
+		}
 
 		Thread.sleep(500);
 
 		MilliStopWatch watch = new MilliStopWatch();
 
-		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, gridAccessor.getWidth(), gridAccessor.getHeight(),
-				flagsAccessor.getBlockedGrid(), true);
+		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, width, height, blockingSet, true);
 		partitioner.calculatePartitions();
-		System.out.println("number of partitions: " + partitioner.getNumberOfPartitions());
+		System.out.println("\n\n\n\nnumber of partitions: " + partitioner.getNumberOfPartitions());
 
 		watch.stop("partitioning test needed:");
 
