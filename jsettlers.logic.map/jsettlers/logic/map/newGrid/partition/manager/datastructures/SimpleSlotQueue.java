@@ -40,8 +40,8 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 	}
 
 	public void pushLast(int slotNumber, ElementType element) {
-		if (0 <= slotNumber && slotNumber < getSlotTypes().length) {
-			slotLists[slotNumber].addLast(element);
+		if (0 <= slotNumber && slotNumber < slotTypes.length) {
+			slotLists[slotNumber].push(element);
 		}
 	}
 
@@ -50,8 +50,8 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 	}
 
 	public ElementType popFront(int slotNumber) {
-		if (0 <= slotNumber && slotNumber < getSlotTypes().length) {
-			return slotLists[slotNumber].isEmpty() ? null : slotLists[slotNumber].pop();
+		if (0 <= slotNumber && slotNumber < slotTypes.length) {
+			return slotLists[slotNumber].pollLast();
 		} else {
 			return null;
 		}
@@ -65,9 +65,11 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 		return slotLists[slotNumber].isEmpty();
 	}
 
-	private int getSlotNumber(SlotType type) {
-		for (int i = 0; i < getSlotTypes().length; i++) {
-			if (getSlotTypes()[i].equals(type)) {
+	private final int getSlotNumber(SlotType type) {
+		final int slots = slotTypes.length;
+
+		for (int i = 0; i < slots; i++) {
+			if (slotTypes[i].equals(type)) {
 				return i;
 			}
 		}
@@ -75,7 +77,7 @@ public final class SimpleSlotQueue<SlotType, ElementType extends ILocatable> imp
 	}
 
 	public SlotType[] getSlotTypes() {
-		return slotTypes.clone();
+		return slotTypes;
 	}
 
 	/**
