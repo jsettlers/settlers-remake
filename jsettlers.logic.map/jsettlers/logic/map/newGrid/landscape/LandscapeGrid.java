@@ -8,6 +8,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
+import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
 
 /**
  * This grid stores the height and the {@link ELandscapeType} of every position.
@@ -224,6 +225,20 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public short getBlockedPartitionAt(short x, short y) {
 		return this.blockedPartitions[x + y * width];
+	}
+
+	public IPreviewImageDataSupplier getPreviewImageDataSupplier() {
+		return new IPreviewImageDataSupplier() {
+			@Override
+			public byte getLandscapeHeight(short x, short y) {
+				return getHeightAt(x, y);
+			}
+
+			@Override
+			public ELandscapeType getLandscape(short x, short y) {
+				return getLandscapeTypeAt(x, y);
+			}
+		};
 	}
 
 }

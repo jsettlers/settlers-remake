@@ -62,6 +62,7 @@ import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
+import jsettlers.logic.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
@@ -251,9 +252,12 @@ public final class MainGrid implements Serializable {
 	public MapFileHeader generateSaveHeader() {
 		// TODO: description
 		// TODO: count alive players, count all players
-		short[] bgimage = new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
+		PreviewImageCreator previewImageCreator = new PreviewImageCreator(width, height, MapFileHeader.PREVIEW_IMAGE_SIZE,
+				landscapeGrid.getPreviewImageDataSupplier());
 
-		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgimage);
+		short[] bgImage = previewImageCreator.getPreviewImage();
+
+		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgImage);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {
