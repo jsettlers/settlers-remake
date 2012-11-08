@@ -64,13 +64,13 @@ import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.logic.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.logic.map.save.MapDataSerializer;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
-import jsettlers.mapcreator.data.PreviewImageCreator;
 import jsettlers.mapcreator.localization.EditorLabels;
 import jsettlers.mapcreator.main.DataTester.TestResultReceiver;
 import jsettlers.mapcreator.main.action.AbortDrawingAction;
@@ -523,7 +523,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	protected void save() {
 		try {
-			short[] image = new PreviewImageCreator(data).getPreviewImage();
+			short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
+					data.getPreviewImageDataSupplier()).getPreviewImage();
 			MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getDescription(), header.getWidth(),
 					header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
 			data.doPreSaveActions();

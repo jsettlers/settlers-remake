@@ -25,6 +25,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
+import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.logic.map.save.MapDataSerializer;
 import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
 import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
@@ -730,5 +731,19 @@ public class MapData implements IMapData {
 
 		watch.stop("Calculating partitions needed");
 		System.out.println("found " + partitionCalculator.getNumberOfPartitions() + " partitions.");
+	}
+
+	public IPreviewImageDataSupplier getPreviewImageDataSupplier() {
+		return new IPreviewImageDataSupplier() {
+			@Override
+			public byte getLandscapeHeight(short x, short y) {
+				return heights[x][y];
+			}
+
+			@Override
+			public ELandscapeType getLandscape(short x, short y) {
+				return landscapes[x][y];
+			}
+		};
 	}
 }
