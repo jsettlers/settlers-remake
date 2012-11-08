@@ -97,28 +97,22 @@
 	<startjob name="go_to_door" />
 
 	<!-- wait at home cycle -->
-	<job name="go_to_door" type="GO_TO" dx="3" dy="0" successjob="hide"
-		failjob="hide" />
+	<job name="go_to_door" type="GO_TO" dx="3" dy="0" successjob="hide" failjob="hide" />
 	<job name="hide" type="HIDE" successjob="waithome" failjob="hide" />
-	<job name="waithome" type="WAIT" time="1" successjob="checkhome1"
-		failjob="checkhome1" />
-	<job name="checkhome1" type="AVAILABLE" material="IRON" dx="3" dy="3"
-		successjob="checkhome2" failjob="waithome" />
-	<job name="checkhome2" type="AVAILABLE" material="COAL" dx="-2" dy="2"
-		successjob="checkhome3" failjob="waithome" />
-    <job name="checkhome3" type="NOT_FULL" material="SWORD" dx="4"
-        dy="1" successjob="go_to_work1" failjob="waithome" />
+	
+	<job name="waithome" type="WAIT" time="1" successjob="checkhome1" failjob="checkhome1" />
+	<job name="checkhome1" type="AVAILABLE" material="IRON" dx="3" dy="3" successjob="checkhome2" failjob="waithome" />
+	<job name="checkhome2" type="AVAILABLE" material="COAL" dx="-2" dy="2" successjob="checkhome3" failjob="waithome" />
+    <job name="checkhome3" type="NOT_FULL" material="SWORD" dx="4" dy="1" successjob="checkhome4" failjob="waithome" />
+    
+    <job name="checkhome4" type="POP_WEAPON" successjob="go_to_work1" failjob="waithome" />
+    
 
-	<job name="go_to_work1" type="SHOW" dx="3" dy="0" successjob="go_to_work2"
-		failjob="waithome" />
-	<job name="go_to_work2" type="WALK" direction="SOUTH_EAST"
-		successjob="go_to_work3" failjob="go_to_door" />
-	<job name="go_to_work3" type="WALK" direction="SOUTH_WEST"
-		successjob="go_to_work4" failjob="go_to_door" />
-	<job name="go_to_work4" type="WALK" direction="SOUTH_WEST"
-		successjob="go_to_work5" failjob="go_to_door" />
-	<job name="go_to_work5" type="WALK" direction="WEST" successjob="pickiron1"
-		failjob="go_to_door" />
+	<job name="go_to_work1" type="SHOW" dx="3" dy="0" successjob="go_to_work2" failjob="waithome" />
+	<job name="go_to_work2" type="WALK" direction="SOUTH_EAST" successjob="go_to_work3" failjob="go_to_door" />
+	<job name="go_to_work3" type="WALK" direction="SOUTH_WEST" successjob="go_to_work4" failjob="go_to_door" />
+	<job name="go_to_work4" type="WALK" direction="SOUTH_WEST" successjob="go_to_work5" failjob="go_to_door" />
+	<job name="go_to_work5" type="WALK" direction="WEST" successjob="pickiron1" failjob="go_to_door" />
 
 	<!-- work cycle, starts at iron stack (3, 3) -->
 	<job name="pickiron1" type="DROP" material="NO_MATERIAL"
@@ -182,37 +176,23 @@
 		failjob="go_to_door" />
 
 	<!-- take weapon -->
-	<job name="take_weapon1" type="DROP" material="NO_MATERIAL"
-		successjob="take_weapon2" failjob="go_to_door" />
-	<job name="take_weapon2" type="SET_MATERIAL" material="SWORD"
-		successjob="take_weapon3" failjob="go_to_door" />
-	<job name="take_weapon3" type="TAKE" material="NO_MATERIAL"
-		successjob="go_drop_sword1" failjob="go_to_door" />
+	<job name="take_weapon1" type="DROP" material="NO_MATERIAL" successjob="take_weapon2" failjob="go_to_door" />
+	<job name="take_weapon2" type="SET_MATERIAL" material="SWORD" successjob="take_weapon3" failjob="go_to_door" />
+	<job name="take_weapon3" type="TAKE" material="NO_MATERIAL" successjob="go_drop_sword1" failjob="go_to_door" />
 
-	<job name="go_drop_sword1" type="WALK" direction="SOUTH_WEST"
-		successjob="go_drop_sword2" failjob="go_to_door" />
-	<job name="go_drop_sword2" type="WALK" direction="SOUTH_EAST"
-		successjob="go_drop_sword3" failjob="go_to_door" />
-	<job name="go_drop_sword3" type="WALK" direction="SOUTH_EAST"
-		successjob="go_drop_sword4" failjob="go_to_door" />
-	<job name="go_drop_sword4" type="WALK" direction="EAST" successjob="go_drop_sword5"
-		failjob="go_to_door" />
-	<job name="go_drop_sword5" type="WALK" direction="EAST" successjob="go_drop_sword6"
-		failjob="go_to_door" />
-	<job name="go_drop_sword6" type="WALK" direction="NORTH_EAST"
-		successjob="go_drop_sword7" failjob="go_to_door" />
-	<job name="go_drop_sword7" type="WALK" direction="NORTH_EAST"
-		successjob="go_drop_sword8" failjob="go_to_door" />
-	<job name="go_drop_sword8" type="WALK" direction="NORTH_EAST"
-		successjob="drop_weapon1" failjob="go_to_door" />
+	<job name="go_drop_sword1" type="WALK" direction="SOUTH_WEST" successjob="go_drop_sword2" failjob="go_to_door" />
+	<job name="go_drop_sword2" type="WALK" direction="SOUTH_EAST" successjob="go_drop_sword3" failjob="go_to_door" />
+	<job name="go_drop_sword3" type="WALK" direction="SOUTH_EAST" successjob="go_drop_sword4" failjob="go_to_door" />
+	<job name="go_drop_sword4" type="WALK" direction="EAST" successjob="go_drop_sword5" failjob="go_to_door" />
+	<job name="go_drop_sword5" type="WALK" direction="EAST" successjob="go_drop_sword6" failjob="go_to_door" />
+	<job name="go_drop_sword6" type="WALK" direction="NORTH_EAST" successjob="go_drop_sword7" failjob="go_to_door" />
+	<job name="go_drop_sword7" type="WALK" direction="NORTH_EAST" successjob="go_drop_sword8" failjob="go_to_door" />
+	<job name="go_drop_sword8" type="WALK" direction="NORTH_EAST" successjob="drop_weapon1" failjob="go_to_door" />
 
 	<!-- drop weapon at (4, 1) -->
-	<job name="drop_weapon1" type="DROP" material="SWORD"
-		successjob="drop_weapon2" failjob="go_to_door" />
-	<job name="drop_weapon2" type="SET_MATERIAL" material="NO_MATERIAL"
-		successjob="drop_weapon3" failjob="go_to_door" />
-	<job name="drop_weapon3" type="TAKE" material="NO_MATERIAL"
-		successjob="go_inside" failjob="go_to_door" />
+	<job name="drop_weapon1" type="DROP_POPPED"	successjob="drop_weapon2" failjob="go_to_door" />
+	<job name="drop_weapon2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="drop_weapon3" failjob="go_to_door" />
+	<job name="drop_weapon3" type="TAKE" material="NO_MATERIAL" successjob="go_inside" failjob="go_to_door" />
 
 <!-- deactivated -->
 	<job name="check_continue1" type="AVAILABLE" material="IRON" dx="3"
