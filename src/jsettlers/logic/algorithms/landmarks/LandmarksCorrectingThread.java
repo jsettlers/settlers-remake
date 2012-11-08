@@ -56,8 +56,8 @@ public final class LandmarksCorrectingThread extends Thread {
 	}
 
 	private final void checkLandmarks(ShortPoint2D startPos) {
-		short startX = startPos.getX();
-		short startY = startPos.getY();
+		final short startX = startPos.getX();
+		final short startY = startPos.getY();
 
 		if (grid.isBlocked(startX, startY))
 			return;

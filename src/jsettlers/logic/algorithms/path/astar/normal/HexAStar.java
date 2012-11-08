@@ -59,7 +59,7 @@ public final class HexAStar implements IAStar, IAStarHeapable {
 		final boolean blockedAtStart;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
-		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty)) {
+		} else if (!isInBounds(tx, ty) || isBlocked(requester, tx, ty) || map.getBlockedPartition(sx, sy) != map.getBlockedPartition(tx, ty)) {
 			return null; // target can not be reached
 		} else if (sx == tx && sy == ty) {
 			return null;

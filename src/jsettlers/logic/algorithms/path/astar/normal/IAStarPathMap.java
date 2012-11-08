@@ -31,4 +31,13 @@ public interface IAStarPathMap {
 
 	void setDebugColor(short x, short y, Color color);
 
+	/**
+	 * Gets the id of of the blocked partition of the given coordinates.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	short getBlockedPartition(short x, short y);
+
 }

@@ -45,4 +45,9 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 	@Override
 	public void setDebugColor(short x, short y, Color color) {
 	}
+
+	@Override
+	public short getBlockedPartition(short x, short y) {
+		return 1;
+	}
 }
