@@ -105,7 +105,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 		aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-				return super.isBlocked(requester, x, y) || requester != null && partitionsGrid.getPlayerAt(x, y) != requester.getPlayer();
+				return super.isBlocked(requester, x, y) || requester != null && partitionsGrid.getPlayerAt(x, y) != requester.getPlayerId();
 			}
 		};
 		IPartitionableGrid partitionableGrid = new IPartitionableGrid() {

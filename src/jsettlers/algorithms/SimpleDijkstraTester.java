@@ -44,7 +44,7 @@ public class SimpleDijkstraTester {
 			}
 
 			@Override
-			public byte getPlayer() {
+			public byte getPlayerId() {
 				// TODO Auto-generated method stub
 				return 0;
 			}

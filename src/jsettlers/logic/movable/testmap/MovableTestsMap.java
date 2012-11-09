@@ -101,7 +101,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	@Override
-	public byte getPlayerAt(int x, int y) {
+	public byte getPlayerIdAt(int x, int y) {
 		return 0;
 	}
 
@@ -301,7 +301,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position) {
 			short x = position.getX(), y = position.getY();
-			return isInBounds(x, y) && !isBlocked(x, y) && (!pathRequester.needsPlayersGround() || pathRequester.getPlayer() == getPlayerAt(x, y));
+			return isInBounds(x, y) && !isBlocked(x, y) && (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == getPlayerAt(x, y));
 		}
 
 		@Override

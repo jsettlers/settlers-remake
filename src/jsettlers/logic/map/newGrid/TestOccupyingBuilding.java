@@ -26,7 +26,7 @@ class TestOccupyingBuilding implements IOccupyingBuilding {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 

@@ -54,7 +54,7 @@ public class TestSettler implements IMovable {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return this.player;
 	}
 

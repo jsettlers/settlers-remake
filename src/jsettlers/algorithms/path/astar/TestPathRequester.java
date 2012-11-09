@@ -5,7 +5,7 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 
 public final class TestPathRequester implements IPathCalculateable {
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return 0;
 	}
 

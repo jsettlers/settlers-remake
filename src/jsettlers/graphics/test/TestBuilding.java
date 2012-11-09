@@ -38,7 +38,7 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return 0;
 	}
 
