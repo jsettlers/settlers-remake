@@ -187,7 +187,7 @@ public class PartitionsAlgorithm {
 		private ShortPoint2D pos;
 
 		@Override
-		public byte getPlayer() {
+		public byte getPlayerId() {
 			return player;
 		}
 
