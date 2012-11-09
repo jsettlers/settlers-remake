@@ -27,8 +27,8 @@ public class MovableObjectContainer implements ObjectContainer, IMovable {
 	}
 
 	@Override
-	public byte getPlayer() {
-		return movableObject.getPlayer();
+	public byte getPlayerId() {
+		return movableObject.getPlayerId();
 	}
 
 	@Override

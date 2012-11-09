@@ -54,8 +54,8 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public byte getPlayer() {
-		return object.getPlayer();
+	public byte getPlayerId() {
+		return object.getPlayerId();
 	}
 
 	@Override

@@ -167,16 +167,16 @@ public class DataTester implements Runnable {
 				testFailed("Building " + type + " outside map", pos);
 			} else if (!MapData.listAllowsLandscape(type.getGroundtypes(), data.getLandscape(pos.getX(), pos.getY()))) {
 				testFailed("Building " + type + " cannot be placed on " + data.getLandscape(pos.getX(), pos.getY()), pos);
-			} else if (players[pos.getX()][pos.getY()] != buildingObject.getPlayer()) {
-				testFailed("Building " + type + " of player " + buildingObject.getPlayer() + ", but is on " + players[x][y] + "'s land", pos);
+			} else if (players[pos.getX()][pos.getY()] != buildingObject.getPlayerId()) {
+				testFailed("Building " + type + " of player " + buildingObject.getPlayerId() + ", but is on " + players[x][y] + "'s land", pos);
 			} else if (type.getGroundtypes()[0] != ELandscapeType.MOUNTAIN && data.getLandscapeHeight(pos.getX(), pos.getY()) != height) {
-				testFailed("Building " + type + " of player " + buildingObject.getPlayer() + " must be on flat ground", pos);
+				testFailed("Building " + type + " of player " + buildingObject.getPlayerId() + " must be on flat ground", pos);
 			}
 		}
 	}
 
 	private void drawBuildingCircle(byte[][] players, int x, int y, BuildingObject buildingObject) {
-		byte player = buildingObject.getPlayer();
+		byte player = buildingObject.getPlayerId();
 		EBuildingType type = buildingObject.getType();
 		if (type == EBuildingType.TOWER || type == EBuildingType.BIG_TOWER || type == EBuildingType.CASTLE) {
 			MapCircle circle = new MapCircle(x, y, CommonConstants.TOWER_RADIUS);
