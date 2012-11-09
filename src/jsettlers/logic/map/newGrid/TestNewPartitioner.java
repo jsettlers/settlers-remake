@@ -35,7 +35,7 @@ public class TestNewPartitioner {
 		ImageProvider.getInstance().startPreloading();
 		ResourceManager.setProvider(new SwingResourceProvider());
 
-		final MainGrid grid = new MainGrid(WIDTH, HEIGHT);
+		final MainGrid grid = new MainGrid(WIDTH, HEIGHT, (byte) 10);
 
 		grid.fogOfWar.toggleEnabled();
 
@@ -163,7 +163,8 @@ public class TestNewPartitioner {
 
 			@Override
 			public boolean visit(int x, int y) {
-				grid.mapObjectsManager.addSimpleMapObject(getPos(x, y), EMapObjectType.BUILDINGSITE_POST, false, (byte) 0);
+				grid.mapObjectsManager.addSimpleMapObject(getPos(x, y), EMapObjectType.BUILDINGSITE_POST, false,
+						grid.partitionsGrid.getPlayerForId((byte) 0));
 
 				short currPartition = grid.partitionsGrid.getPartition((short) x, (short) y);
 				if (currPartition != lastPartititon && currPartition >= 0) {

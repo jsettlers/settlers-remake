@@ -28,6 +28,7 @@ import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.objects.stack.StackMapObject;
+import jsettlers.logic.player.Player;
 import random.RandomSingleton;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
@@ -201,11 +202,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public byte getPlayerAt(short x, short y) {
-			return 0;
-		}
-
-		@Override
 		public boolean isBlocked(short x, short y) {
 			return false;
 		}
@@ -301,7 +297,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position) {
 			short x = position.getX(), y = position.getY();
-			return isInBounds(x, y) && !isBlocked(x, y) && (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == getPlayerAt(x, y));
+			return isInBounds(x, y) && !isBlocked(x, y)
+					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == getPlayerIdAt(x, y));
 		}
 
 		@Override
@@ -320,7 +317,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void changePlayerAt(ShortPoint2D pos, byte player) {
+		public void changePlayerAt(ShortPoint2D pos, Player player) {
 		}
 
 		@Override
@@ -355,11 +352,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, Player shooterPlayer, float hitStrength) {
 		}
 
 		@Override
-		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, byte player) {
+		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player) {
 		}
 
 	};

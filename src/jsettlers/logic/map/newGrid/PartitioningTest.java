@@ -19,6 +19,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.logic.player.Player;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class PartitioningTest {
@@ -28,7 +29,7 @@ public class PartitioningTest {
 
 	private static final short HEIGHT = 400;
 	private static final short WIDTH = 400;
-	private static final byte DEFAULT_PLAYER = 3;
+	private static final byte DEFAULT_PLAYER_ID = 3;
 
 	private static List<TestOccupyingBuilding> buildings = new LinkedList<TestOccupyingBuilding>();
 
@@ -36,7 +37,7 @@ public class PartitioningTest {
 		ImageProvider.getInstance().startPreloading();
 		ResourceManager.setProvider(new SwingResourceProvider());
 
-		final MainGrid grid = new MainGrid(WIDTH, HEIGHT);
+		final MainGrid grid = new MainGrid(WIDTH, HEIGHT, (byte) 10);
 
 		grid.fogOfWar.toggleEnabled();
 
@@ -44,7 +45,7 @@ public class PartitioningTest {
 		for (short y = 0; y < HEIGHT; y++) {
 			for (short x = 0; x < WIDTH; x++) {
 				grid.setLandscapeTypeAt(x, y, ELandscapeType.GRASS);
-				grid.movablePathfinderGrid.changePlayerAt(getPos(x, y), DEFAULT_PLAYER);
+				grid.movablePathfinderGrid.changePlayerAt(getPos(x, y), grid.partitionsGrid.getPlayerForId(DEFAULT_PLAYER_ID));
 			}
 		}
 		grid.bordersThread.start();
@@ -99,14 +100,14 @@ public class PartitioningTest {
 		watch.stop("the test needed");
 	}
 
-	private static void changeTowerPlayerAt(MainGrid grid, int x, int y, int newPlayer) {
+	private static void changeTowerPlayerAt(MainGrid grid, int x, int y, int newPlayerId) {
 		ShortPoint2D pos = getPos(x, y);
 		TestOccupyingBuilding building = getBuildingAt(pos);
 
-		building.setPlayer(newPlayer);
+		building.setPlayer(getPlayerForId(grid, newPlayerId));
 		grid.buildingsGrid.freeOccupiedArea(building.getOccupyablePositions(), pos, buildings);
 		grid.buildingsGrid.occupyArea(building.getOccupyablePositions(), new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()),
-				(byte) newPlayer);
+				grid.partitionsGrid.getPlayerForId((byte) newPlayerId));
 	}
 
 	private static void realeaseTowerAreaAt(MainGrid grid, int x, int y) {
@@ -136,12 +137,16 @@ public class PartitioningTest {
 		return null;
 	}
 
-	private static void createTowerAreaAt(MainGrid grid, int x, int y, int player) {
+	private static void createTowerAreaAt(MainGrid grid, int x, int y, int playerId) {
 		ShortPoint2D pos = getPos(x, y);
-		TestOccupyingBuilding building = new TestOccupyingBuilding(pos, (byte) player);
+		TestOccupyingBuilding building = new TestOccupyingBuilding(pos, getPlayerForId(grid, playerId));
 		buildings.add(building);
-		grid.buildingsGrid
-				.occupyArea(building.getOccupyablePositions(), new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()), (byte) player);
+		grid.buildingsGrid.occupyArea(building.getOccupyablePositions(), new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()),
+				getPlayerForId(grid, (byte) playerId));
+	}
+
+	private static Player getPlayerForId(MainGrid grid, int playerId) {
+		return grid.partitionsGrid.getPlayerForId((byte) playerId);
 	}
 
 	private static ShortPoint2D getPos(int x, int y) {

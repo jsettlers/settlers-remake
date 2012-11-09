@@ -68,10 +68,10 @@ public class PartitionsGridTestingWnd extends JFrame {
 	private static void initiateTests(PartitionsGridTestingWnd frame) {
 		PartitionsGrid partitionsGrid = frame.partitionsGrid;
 
-		partitionsGrid.changePlayerAt((short) 1, (short) 0, (byte) 0);
-		partitionsGrid.changePlayerAt((short) 2, (short) 2, (byte) 0);
-		partitionsGrid.changePlayerAt((short) 1, (short) 2, (byte) 0);
-		partitionsGrid.changePlayerAt((short) 2, (short) 0, (byte) 0);
+		changePlayerAt(partitionsGrid, 1, 0, 0);
+		changePlayerAt(partitionsGrid, 2, 2, 0);
+		changePlayerAt(partitionsGrid, 1, 2, 0);
+		changePlayerAt(partitionsGrid, 2, 0, 0);
 
 		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
 		partitionsGrid.pushMaterial(new ShortPoint2D(2, 0), EMaterialType.PLANK);
@@ -84,18 +84,22 @@ public class PartitionsGridTestingWnd extends JFrame {
 
 		frame.aStarMap.setBlocked(1, 1, true);
 
-		partitionsGrid.changePlayerAt((short) 1, (short) 1, (byte) 0);
+		changePlayerAt(partitionsGrid, 1, 1, 0);
 
 		System.out.println("--------------------------(expected nothing)");
 
-		partitionsGrid.changePlayerAt((short) 0, (short) 1, (byte) 0);
+		changePlayerAt(partitionsGrid, 0, 1, 0);
 
 		System.out.println("--------------------------(expected nothing)");
 
-		partitionsGrid.changePlayerAt((short) 0, (short) 0, (byte) 0);
+		changePlayerAt(partitionsGrid, 0, 0, 0);
 
 		System.out.println();
 
+	}
+
+	private static void changePlayerAt(PartitionsGrid partitionsGrid, int x, int y, int playerId) {
+		partitionsGrid.changePlayerAt((short) x, (short) y, partitionsGrid.getPlayerForId((byte) playerId));
 	}
 
 	/**
@@ -105,7 +109,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 		aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT) {
 			@Override
 			public boolean isBlocked(IPathCalculateable requester, short x, short y) {
-				return super.isBlocked(requester, x, y) || requester != null && partitionsGrid.getPlayerAt(x, y) != requester.getPlayerId();
+				return super.isBlocked(requester, x, y) || requester != null && partitionsGrid.getPlayerIdAt(x, y) != requester.getPlayerId();
 			}
 		};
 		IPartitionableGrid partitionableGrid = new IPartitionableGrid() {
@@ -125,7 +129,7 @@ public class PartitionsGridTestingWnd extends JFrame {
 			}
 		};
 
-		partitionsGrid = new PartitionsGrid(WIDTH, HEIGHT, partitionableGrid);
+		partitionsGrid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, partitionableGrid);
 		partitionsGrid.initPartitionsAlgorithm(new HexAStar(aStarMap, WIDTH, HEIGHT));
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

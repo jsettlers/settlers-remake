@@ -4,13 +4,14 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.player.Player;
 
 class TestOccupyingBuilding implements IOccupyingBuilding {
 
 	private final ShortPoint2D pos;
-	private byte player;
+	private Player player;
 
-	TestOccupyingBuilding(ShortPoint2D pos, byte player) {
+	TestOccupyingBuilding(ShortPoint2D pos, Player player) {
 		this.pos = pos;
 		this.player = player;
 	}
@@ -26,12 +27,12 @@ class TestOccupyingBuilding implements IOccupyingBuilding {
 	}
 
 	@Override
-	public byte getPlayerId() {
+	public Player getPlayer() {
 		return player;
 	}
 
-	public void setPlayer(int newPlayer) {
-		this.player = (byte) newPlayer;
+	public void setPlayer(Player newPlayer) {
+		this.player = newPlayer;
 	}
 
 }
