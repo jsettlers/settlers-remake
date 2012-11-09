@@ -432,7 +432,7 @@ public class MapObjectDrawer {
 			return; // break
 		}
 
-		Color color = context.getPlayerColor(movable.getPlayer());
+		Color color = context.getPlayerColor(movable.getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogstatus);
 
 		float viewX;
@@ -844,7 +844,7 @@ public class MapObjectDrawer {
 				OccupyerPlace place = occupyer.getPlace();
 
 				IMovable movable = occupyer.getMovable();
-				Color color = context.getPlayerColor(movable.getPlayer());
+				Color color = context.getPlayerColor(movable.getPlayerId());
 
 				Image image;
 				switch (place.getType()) {
@@ -929,7 +929,7 @@ public class MapObjectDrawer {
 	private Color getColor(IMapObject object) {
 		Color color = null;
 		if (object instanceof IPlayerable) {
-			color = context.getPlayerColor(((IPlayerable) object).getPlayer());
+			color = context.getPlayerColor(((IPlayerable) object).getPlayerId());
 		}
 		return color;
 	}

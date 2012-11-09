@@ -166,7 +166,7 @@ class LineLoader implements Runnable {
 				if (settler != null) {
 					color = getColor(settler);
 				} else if (map.isBorder(x, y)) {
-					byte player = map.getPlayerAt(x, y);
+					byte player = map.getPlayerIdAt(x, y);
 					Color playerColor =
 					        minimap.getContext().getPlayerColor(player);
 					color = playerColor.toShortColor(1);
@@ -177,7 +177,7 @@ class LineLoader implements Runnable {
 	}
 
 	private short getColor(IMovable settler) {
-		return minimap.getContext().getPlayerColor(settler.getPlayer())
+		return minimap.getContext().getPlayerColor(settler.getPlayerId())
 		        .toShortColor(1);
 	}
 

@@ -434,7 +434,7 @@ public final class MapContent implements SettlersContent,
 		}
 
 		if (map.isBorder(x, y)) {
-			byte player = map.getPlayerAt(x, y);
+			byte player = map.getPlayerIdAt(x, y);
 			objectDrawer.drawPlayerBorderObject(x, y, player);
 		}
 	}
