@@ -95,16 +95,22 @@ public final class PioneerStrategy extends NewMovableStrategy {
 		return super.fitsSearchType(pos, ESearchType.FOREIGN_GROUND);
 	}
 
-	private static enum EPioneerState {
-		JOBLESS,
-		GOING_TO_POS,
-		WORKING_ON_POS
-	}
-
 	@Override
 	protected void moveToPathSet(ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 		this.state = EPioneerState.GOING_TO_POS;
 		centerPos = null;
+	}
+
+	/**
+	 * Internal state of a {@link PioneerStrategy}.
+	 * 
+	 * @author Andreas Eberle
+	 * 
+	 */
+	private static enum EPioneerState {
+		JOBLESS,
+		GOING_TO_POS,
+		WORKING_ON_POS
 	}
 
 }

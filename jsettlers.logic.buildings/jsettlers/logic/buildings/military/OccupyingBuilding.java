@@ -30,12 +30,11 @@ import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
 import jsettlers.logic.objects.StandardMapObject;
+import jsettlers.logic.player.Player;
 import random.RandomSingleton;
 
 /**
- * Tower building.
- * 
- * <p>
+ * This is a tower building that can request soldiers and let them defend the tower.
  * 
  * @author Andreas Eberle
  * 
@@ -61,7 +60,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final int[] maximumRequestedSoldiers = new int[ESoldierType.values().length];
 	private final int[] currentlyCommingSoldiers = new int[ESoldierType.values().length];
 
-	public OccupyingBuilding(EBuildingType type, byte player) {
+	public OccupyingBuilding(EBuildingType type, Player player) {
 		super(type, player);
 
 		this.occupiers = new LinkedList<TowerOccupyer>(); // for testing purposes
@@ -103,7 +102,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 	}
 
-	void changePlayerTo(byte player) {
+	void changePlayerTo(Player player) {
 		assert occupiers.isEmpty() : "there cannot be any occupies in the tower when changing the player.";
 
 		setAttackableTowerObject(false);
@@ -304,7 +303,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final void occupyArea() {
 		if (!occupiedArea) {
 			MapCircle occupying = getOccupyablePositions();
-			super.getGrid().occupyArea(occupying, new FreeMapArea(super.getPos(), super.getBuildingType().getProtectedTiles()), super.getPlayerId());
+			super.getGrid().occupyArea(occupying, new FreeMapArea(super.getPos(), super.getBuildingType().getProtectedTiles()), super.getPlayer());
 			occupiedArea = true;
 		}
 	}
@@ -472,7 +471,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		@Override
-		public void receiveHit(float strength, byte player) {
+		public void receiveHit(float strength, Player player) {
 			if (doorHealth > 0) {
 				doorHealth -= strength / Constants.DOOR_HIT_RESISTENCY_FACTOR;
 
@@ -481,7 +480,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					inFight = true;
 
 					OccupyingBuilding.this.getGrid().getMapObjectsManager()
-							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayerId());
+							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
 					pollNewDefender();
 				}

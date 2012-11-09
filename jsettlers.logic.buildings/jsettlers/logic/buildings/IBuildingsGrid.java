@@ -16,6 +16,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBar
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
@@ -77,7 +78,7 @@ public interface IBuildingsGrid {
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 
-	void occupyArea(IMapArea toBeOccupied, IMapArea groundArea, byte player);
+	void occupyArea(IMapArea toBeOccupied, IMapArea groundArea, Player player);
 
 	void removeBuildingAt(ShortPoint2D pos);
 

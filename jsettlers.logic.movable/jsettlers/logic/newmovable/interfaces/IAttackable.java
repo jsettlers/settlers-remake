@@ -2,6 +2,7 @@ package jsettlers.logic.newmovable.interfaces;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
+import jsettlers.logic.player.Player;
 
 /**
  * This interface defines the methods needed by soldiers to able to attack the implementor of this interface.
@@ -18,7 +19,7 @@ public interface IAttackable extends ILocatable, IInformable {
 	 * @param player
 	 *            The player of the attackable that hit this attackable.
 	 */
-	void receiveHit(float strength, byte player);
+	void receiveHit(float strength, Player player);
 
 	/**
 	 * Get the health of this {@link IAttackable}.

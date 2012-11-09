@@ -20,6 +20,7 @@ import jsettlers.logic.newmovable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.newmovable.strategies.specialists.PioneerStrategy;
+import jsettlers.logic.player.Player;
 
 /**
  * Abstract super class of all movable strategies.
@@ -188,8 +189,8 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getMaterial();
 	}
 
-	protected final byte getPlayer() {
-		return movable.getPlayerId();
+	protected final Player getPlayer() {
+		return movable.getPlayer();
 	}
 
 	protected NewMovable getMovable() {

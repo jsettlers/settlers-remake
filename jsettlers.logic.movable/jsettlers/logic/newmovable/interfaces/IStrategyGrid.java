@@ -12,6 +12,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBric
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.player.Player;
 
 /**
  * Defines methods needed by the {@link NewMovableStrategy}.
@@ -149,7 +150,13 @@ public interface IStrategyGrid {
 	 */
 	void changeHeightTowards(short x, short y, byte targetHeight);
 
-	void changePlayerAt(ShortPoint2D pos, byte player);
+	/**
+	 * Changes the player at the given position to the given player.
+	 * 
+	 * @param pos
+	 * @param player
+	 */
+	void changePlayerAt(ShortPoint2D pos, Player player);
 
 	/**
 	 * Gets the landscape type at the given position.
@@ -182,12 +189,12 @@ public interface IStrategyGrid {
 	 *            Attacked position.
 	 * @param shooterPos
 	 *            Position of the shooter.
-	 * @param shooterPlayer
+	 * @param player
 	 *            The player of the shooter.
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength);
+	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, Player player, float hitStrength);
 
 	boolean hasNoMovableAt(short x, short y);
 

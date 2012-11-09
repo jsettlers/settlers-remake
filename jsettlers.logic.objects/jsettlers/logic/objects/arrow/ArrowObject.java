@@ -5,6 +5,7 @@ import jsettlers.common.mapobject.IArrowMapObject;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.objects.ProgressingSoundableObject;
+import jsettlers.logic.player.Player;
 
 public final class ArrowObject extends ProgressingSoundableObject implements IArrowMapObject {
 	private static final long serialVersionUID = 1702902724559733166L;
@@ -18,9 +19,9 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 
 	private final IArrowAttackableGrid grid;
 
-	private final byte shooterPlayer;
+	private final Player shooterPlayer;
 
-	public ArrowObject(IArrowAttackableGrid grid, ShortPoint2D targetPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+	public ArrowObject(IArrowAttackableGrid grid, ShortPoint2D targetPos, ShortPoint2D shooterPos, Player shooterPlayer, float hitStrength) {
 		super(targetPos);
 
 		this.grid = grid;
@@ -86,7 +87,7 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 		return hitStrength;
 	}
 
-	public byte getPlayer() {
+	public Player getPlayer() {
 		return shooterPlayer;
 	}
 }

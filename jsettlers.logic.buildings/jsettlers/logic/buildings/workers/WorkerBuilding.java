@@ -7,9 +7,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
 
 /**
+ * This class is a building with a worker that can fulfill it's job.
  * 
  * @author Andreas Eberle
  * 
@@ -22,7 +24,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	private boolean isWorking = true;
 	private IManageableWorker worker;;
 
-	public WorkerBuilding(EBuildingType type, byte player) {
+	public WorkerBuilding(EBuildingType type, Player player) {
 		super(type, player);
 	}
 

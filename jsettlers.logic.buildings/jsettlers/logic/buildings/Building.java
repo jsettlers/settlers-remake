@@ -37,6 +37,7 @@ import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.LimittedRequestStack;
 import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.ITimerable;
@@ -63,7 +64,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private ShortPoint2D pos;
 	private IBuildingsGrid grid;
-	private byte player;
+	private Player player;
 	private byte state = STATE_CREATED;
 
 	transient private boolean selected;
@@ -74,7 +75,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private short delayCtr = 0;
 	private List<RequestStack> stacks;
 
-	protected Building(EBuildingType type, byte player) {
+	protected Building(EBuildingType type, Player player) {
 		this.type = type;
 		this.player = player;
 
@@ -102,20 +103,37 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return false;
 	}
 
-	public final void constructAt(IBuildingsGrid grid, ShortPoint2D pos) {
-		assert state == STATE_CREATED : "building can not be positioned in this state";
+	// TODO @Andreas Eberle: refactor building creating
+	public final void constructAt(IBuildingsGrid grid, ShortPoint2D pos, boolean fullyConstructed) {
+		if (fullyConstructed) {
+			appearAt(grid, pos);
+		} else {
+			assert state == STATE_CREATED : "building can not be positioned in this state";
 
-		boolean itWorked = positionAt(grid, pos);
+			boolean itWorked = positionAt(grid, pos);
 
-		if (itWorked) {
-			stacks = createConstructionStacks();
+			if (itWorked) {
+				stacks = createConstructionStacks();
 
-			placeAdditionalMapObjects(grid, pos, true);
+				placeAdditionalMapObjects(grid, pos, true);
 
-			this.state = STATE_POSITIONED;
+				this.state = STATE_POSITIONED;
 
-			requestDiggers();
+				requestDiggers();
+			}
 		}
+	}
+
+	private final void appearAt(IBuildingsGrid grid, ShortPoint2D pos) {
+		this.state = STATE_CONSTRUCTED;
+
+		positionAt(grid, pos);
+
+		if (this.pos != null) {
+			grid.setBlocked(getBuildingArea(), true);
+			finishConstruction();
+		}
+		appearedEvent();
 	}
 
 	private List<RequestStack> createConstructionStacks() {
@@ -149,14 +167,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
 		if (place) {
-			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, (byte) -1);
+			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, null);
 		} else {
 			grid.getMapObjectsManager().removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.BUILDINGSITE_SIGN);
 		}
 
 		for (RelativePoint curr : type.getBuildmarks()) {
 			if (place) {
-				grid.getMapObjectsManager().addSimpleMapObject(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST, false, (byte) -1);
+				grid.getMapObjectsManager().addSimpleMapObject(curr.calculatePoint(pos), EMapObjectType.BUILDINGSITE_POST, false, null);
 			} else {
 				ShortPoint2D postPos = curr.calculatePoint(pos);
 				grid.getMapObjectsManager().removeMapObjectType(postPos.getX(), postPos.getY(), EMapObjectType.BUILDINGSITE_POST);
@@ -192,18 +210,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	protected abstract void positionedEvent(ShortPoint2D pos);
-
-	public final void appearAt(IBuildingsGrid grid, ShortPoint2D pos) {
-		this.state = STATE_CONSTRUCTED;
-
-		positionAt(grid, pos);
-
-		if (this.pos != null) {
-			grid.setBlocked(getBuildingArea(), true);
-			finishConstruction();
-		}
-		appearedEvent();
-	}
 
 	protected void appearedEvent() {
 	}
@@ -325,6 +331,14 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public byte getPlayerId() {
+		return player.playerId;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
+	public final Player getPlayer() {
 		return player;
 	}
 
@@ -550,7 +564,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return state != STATE_DESTROYED;
 	}
 
-	public static Building getBuilding(EBuildingType type, byte player) {
+	public static Building getBuilding(EBuildingType type, Player player) {
 		switch (type) {
 		case BIG_LIVINGHOUSE:
 			return new BigLivinghouse(player);
@@ -650,10 +664,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public ESelectionType getSelectionType() {
 		return ESelectionType.BUILDING;
-	}
-
-	public void setPlayer(byte player) {
-		this.player = player;
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
 import random.RandomSingleton;
@@ -56,7 +57,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	private EMovableType movableType;
 	private NewMovableStrategy strategy;
-	private byte player;
+	private Player player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
 	private EAction movableAction = EAction.NO_ACTION;
@@ -81,7 +82,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	private float doingNothingProbablity = 0.06f;
 
-	public NewMovable(INewMovableGrid grid, EMovableType movableType, ShortPoint2D position, byte player) {
+	public NewMovable(INewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
 		this.position = position;
 		this.player = player;
@@ -653,6 +654,15 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	@Override
 	public final byte getPlayerId() {
+		return player.playerId;
+	}
+
+	/**
+	 * Gets the player object of this movable.
+	 * 
+	 * @return The player object of this movable.
+	 */
+	public final Player getPlayer() {
 		return player;
 	}
 
@@ -790,7 +800,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	@Override
-	public final void receiveHit(float hitStrength, byte player) {
+	public final void receiveHit(float hitStrength, Player player) {
 		this.health -= hitStrength;
 		if (health <= 0) {
 			this.kill();

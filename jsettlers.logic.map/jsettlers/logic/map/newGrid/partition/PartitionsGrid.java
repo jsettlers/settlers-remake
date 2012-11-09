@@ -26,6 +26,8 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.player.Player;
+import jsettlers.logic.player.Team;
 
 /**
  * This class handles the partitions of the map.
@@ -35,9 +37,12 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMat
  */
 public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable {
 	private static final long serialVersionUID = 8919380724171427679L;
+	private static final byte NO_PLAYER_PARTITION = (byte) -1;
 
 	private final short width;
 	private final short height;
+	private final Player[] players;
+
 	private final short[] partitions;
 	private final byte[] towers;
 
@@ -49,17 +54,27 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	transient private PartitionsAlgorithm partitionsAlgorithm;
 	private final IPartitionableGrid grid;
 
-	public PartitionsGrid(final short width, final short height, IPartitionableGrid grid) {
+	public PartitionsGrid(final short width, final short height, byte numberOfPlayers, IPartitionableGrid grid) {
 		this.width = width;
 		this.height = height;
+		this.players = createPlayers(numberOfPlayers);
 		this.grid = grid;
 		this.partitions = new short[width * height];
 		this.towers = new byte[width * height];
-		this.nullPartition = new Partition((byte) -1, height * width);
+		this.nullPartition = new Partition(NO_PLAYER_PARTITION, height * width);
 
 		for (int idx = 0; idx < partitions.length; idx++) {
-			this.partitions[idx] = -1;
+			this.partitions[idx] = NO_PLAYER_PARTITION;
 		}
+	}
+
+	private Player[] createPlayers(byte numberOfPlayers) {
+		Player[] players = new Player[numberOfPlayers];
+		for (byte i = 0; i < numberOfPlayers; i++) {
+			Team team = new Team(i);
+			players[i] = new Player(i, team);
+		}
+		return players;
 	}
 
 	private final int getIdx(int x, int y) {
@@ -71,12 +86,28 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public final byte getPlayerAt(ShortPoint2D position) {
+	public final byte getPlayerIdAt(ShortPoint2D position) {
 		return isInBounds(position) ? this.getPartitionObject(position.getX(), position.getY()).getPlayer() : -1;
 	}
 
-	public final byte getPlayerAt(short x, short y) {
-		return getPartitionObject(x, y).getPlayer();
+	/**
+	 * Gets the id of the player at the given position.<br>
+	 * NOTE: The given coordinates must be on the grid!
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public byte getPlayerIdAt(short x, short y) {
+		return this.getPartitionObject(x, y).getPlayer();
+	}
+
+	public final Player getPlayerAt(short x, short y) {
+		return players[getPartitionObject(x, y).getPlayer()];
+	}
+
+	public final Player getPlayerForId(byte playerId) {
+		return players[playerId];
 	}
 
 	public final short getPartitionAt(short x, short y) {
@@ -156,14 +187,14 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	@Override
-	public final void createPartition(final short x, final short y, byte player) {
-		short partition = initializeNewPartition(player);
+	public final void createPartition(final short x, final short y, byte playerId) {
+		short partition = initializeNewPartition(playerId);
 		setPartition(x, y, partition);
 	}
 
-	private final short initializeNewPartition(byte player) {
+	private final short initializeNewPartition(byte playerId) {
 		short partition = getFreePartitionIndex();
-		this.partitionObjects[partition] = new Partition(player);
+		this.partitionObjects[partition] = new Partition(playerId);
 		return partition;
 	}
 
@@ -180,7 +211,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	@Override
 	public final void dividePartition(final short x, final short y, ShortPoint2D firstPos, ShortPoint2D secondPos) {
 		System.out.println("DIVIDE!!");
-		short newPartition = initializeNewPartition(getPlayerAt(firstPos));
+		short newPartition = initializeNewPartition(getPlayerIdAt(firstPos));
 		short oldPartition = getPartition(firstPos);
 
 		// partitions[getIdx(x, y)] = -1;// this is needed, because the new partition is not determined yet
@@ -238,9 +269,9 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		}
 	}
 
-	public final void changePlayerAt(short x, short y, byte newPlayer) {
-		if (getPlayerAt(x, y) != newPlayer) {
-			this.partitionsAlgorithm.calculateNewPartition(x, y, newPlayer);
+	public final void changePlayerAt(short x, short y, Player newPlayer) {
+		if (getPlayerIdAt(x, y) != newPlayer.playerId) {
+			this.partitionsAlgorithm.calculateNewPartition(x, y, newPlayer.playerId);
 		}
 	}
 
@@ -318,7 +349,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(position).releaseRequestsAt(position, materialType);
 	}
 
-	public final List<ShortPoint2D> occupyArea(IMapArea toBeOccupied, IMapArea groundArea, byte newPlayer) {
+	public final List<ShortPoint2D> occupyArea(IMapArea toBeOccupied, IMapArea groundArea, Player newPlayer) {
 		MilliStopWatch watch = new MilliStopWatch();
 		watch.start();
 
@@ -343,6 +374,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		List<ShortPoint2D> checkForMerge = new ArrayList<ShortPoint2D>();
 
 		ShortPoint2D unblockedOccupied = null;
+		byte newPlayerId = newPlayer.playerId;
 
 		for (ShortPoint2D curr : toBeOccupied) {
 			short x = curr.getX();
@@ -355,7 +387,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			short currPartition = getPartitionAt(x, y);
 
 			if (currPartition != newPartition) {
-				if (currPartition >= 0 && partitionObjects[currPartition].getPlayer() == newPlayer) {
+				if (currPartition >= 0 && partitionObjects[currPartition].getPlayer() == newPlayerId) {
 					checkForMerge.add(curr);
 
 				} else if (towers[getIdx(x, y)] <= 0) {
@@ -387,7 +419,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		for (short i = 0; i < foundPartions.length; i++) {
 			ShortPoint2D pos = foundPartions[i];
 			if (pos != null && (i - 1) != newPartition) {
-				if (getPartitionObject((short) (i - 1)).getPlayer() == newPlayer) {
+				if (getPartitionObject((short) (i - 1)).getPlayer() == newPlayerId) {
 					this.mergePartitions(pos.getX(), pos.getY(), unblockedOccupied.getX(), unblockedOccupied.getY());
 				}
 			}
@@ -437,7 +469,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	 * @param y
 	 * @param newPlayer
 	 */
-	public final void occupyAt(short x, short y, byte newPlayer) {
+	public final void occupyAt(short x, short y, Player newPlayer) {
 		changePlayerAt(x, y, newPlayer);
 		towers[getIdx(x, y)]++;
 	}

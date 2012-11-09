@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final byte playerId;
+	public final byte playerId;
 	private final Team team;
 
 	public Player(byte playerId, Team team) {

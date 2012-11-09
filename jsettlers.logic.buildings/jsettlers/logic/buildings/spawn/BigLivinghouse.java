@@ -2,8 +2,10 @@ package jsettlers.logic.buildings.spawn;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.player.Player;
 
 /**
+ * This class represents a big apartment house that spawns {@link #PRODUCE_LIMIT} ({@value #PRODUCE_LIMIT}) new bearers.
  * 
  * @author Andreas Eberle
  * 
@@ -13,7 +15,7 @@ public final class BigLivinghouse extends SpawnBuilding {
 
 	private static final byte PRODUCE_LIMIT = 100;
 
-	public BigLivinghouse(byte player) {
+	public BigLivinghouse(Player player) {
 		super(EBuildingType.BIG_LIVINGHOUSE, player);
 	}
 

@@ -2,9 +2,10 @@ package jsettlers.logic.buildings.workers;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.logic.player.Player;
 
 /**
- * This is a mill building with the ability to rotate
+ * This is a mill building with the ability to rotate.
  * 
  * @author Andreas Eberle
  */
@@ -14,7 +15,7 @@ public final class MillBuilding extends WorkerBuilding implements IBuilding.IMil
 	private boolean rotating;
 	private boolean soundPlayed;
 
-	public MillBuilding(EBuildingType type, byte player) {
+	public MillBuilding(EBuildingType type, Player player) {
 		super(type, player);
 	}
 

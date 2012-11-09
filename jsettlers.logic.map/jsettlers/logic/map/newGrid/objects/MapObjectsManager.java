@@ -31,6 +31,7 @@ import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.objects.tree.AdultTree;
 import jsettlers.logic.objects.tree.Tree;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
 import random.RandomSingleton;
@@ -129,7 +130,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 			stone.cutOff();
 
 			if (!stone.canBeCut()) {
-				addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, (byte) -1);
+				addSelfDeletingMapObject(pos, EMapObjectType.CUT_OFF_STONE, Stone.DECOMPOSE_DELAY, null);
 				removeMapObjectType(x, y, EMapObjectType.STONE);
 			}
 		}
@@ -241,33 +242,37 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	 *            Attacked position.
 	 * @param shooterPos
 	 *            Position of the shooter.
+	 * @param shooterPlayer
+	 *            The player of the shooter.
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayer, float hitStrength) {
+	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, Player shooterPlayer, float hitStrength) {
 		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, shooterPlayer, hitStrength);
 		addMapObject(attackedPos, arrow);
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true));
 	}
 
-	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, byte player) {
-		addMapObject(pos, new StandardMapObject(objectType, blocking, player));
+	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, Player player) {
+		addMapObject(pos, new StandardMapObject(objectType, blocking, player != null ? player.playerId : -1));
 	}
 
 	public void addBuildingWorkAreaObject(ShortPoint2D pos, float radius) {
 		addMapObject(pos, new BuildingWorkAreaMarkObject(radius));
 	}
 
-	public void addSelfDeletingMapObject(ShortPoint2D pos, EMapObjectType mapObjectType, float duration, byte player) {
+	public void addSelfDeletingMapObject(ShortPoint2D pos, EMapObjectType mapObjectType, float duration, Player player) {
 		SelfDeletingMapObject object;
+		byte playerId = player != null ? player.playerId : -1;
+
 		switch (mapObjectType) {
 		case GHOST:
 		case BUILDING_DECONSTRUCTION_SMOKE:
-			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration, player);
+			object = new SoundableSelfDeletingObject(pos, mapObjectType, duration, playerId);
 			break;
 		default:
-			object = new SelfDeletingMapObject(pos, mapObjectType, duration, player);
+			object = new SelfDeletingMapObject(pos, mapObjectType, duration, playerId);
 			break;
 		}
 		addMapObject(pos, object);

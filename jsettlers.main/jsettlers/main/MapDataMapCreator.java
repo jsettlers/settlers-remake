@@ -10,12 +10,12 @@ import jsettlers.logic.map.newGrid.MainGrid;
 public class MapDataMapCreator implements IGameCreator {
 
 	private final IMapDataProvider map;
-	
+
 	private IMapData data;
 
 	public MapDataMapCreator(IMapDataProvider map) {
 		this.map = map;
-    }
+	}
 
 	@Override
 	public MainGrid getMainGrid() throws MapLoadException {
@@ -23,10 +23,10 @@ public class MapDataMapCreator implements IGameCreator {
 			data = map.getData();
 		}
 
-		MainGrid mainGrid = MainGrid.create(data);
-        if (mainGrid == null) {
-        	throw new MapLoadException("loaded map was null");
-        }
+		MainGrid mainGrid = MainGrid.create(data, (byte) data.getPlayerCount());
+		if (mainGrid == null) {
+			throw new MapLoadException("loaded map was null");
+		}
 		return mainGrid;
 	}
 

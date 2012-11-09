@@ -120,7 +120,7 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 				loadAll();
 			}
 			if (mapData != null) {
-				mainGrid = MainGrid.create(mapData);
+				mainGrid = MainGrid.create(mapData, (byte) mapData.getPlayerCount());
 				if (mainGrid == null) {
 					throw new MapLoadException("loaded map was null");
 				}

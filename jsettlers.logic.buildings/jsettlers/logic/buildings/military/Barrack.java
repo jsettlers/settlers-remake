@@ -10,6 +10,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
 
 /**
@@ -24,7 +25,7 @@ public class Barrack extends Building implements IBarrack {
 
 	private int requestedBearer = 0;
 
-	public Barrack(byte player) {
+	public Barrack(Player player) {
 		super(EBuildingType.BARRACK, player);
 	}
 

@@ -3,7 +3,14 @@ package jsettlers.logic.buildings.military;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.player.Player;
 
+/**
+ * This interface defines the methods needed by a tower that it can request soldiers to get in.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public interface IOccupyableBuilding {
 
 	/**
@@ -21,8 +28,6 @@ public interface IOccupyableBuilding {
 
 	boolean isNotDestroyed();
 
-	byte getPlayerId();
-
 	/**
 	 * This method is called by the soldier when he finished defending the tower.
 	 * 
@@ -32,5 +37,11 @@ public interface IOccupyableBuilding {
 	void towerDefended(IBuildingOccupyableMovable soldier);
 
 	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place);
+
+	/**
+	 * 
+	 * @return The player of this building object.
+	 */
+	Player getPlayer();
 
 }

@@ -6,6 +6,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.player.Player;
 
 /**
  * Defines all methods needed by a {@link NewMovable} to use the implementor as its grid.
@@ -51,21 +52,25 @@ public interface INewMovableGrid extends IStrategyGrid {
 
 	NewMovable getMovableAt(short x, short y);
 
-	/**
-	 * 
-	 * @param x
-	 * @param y
-	 * @return player currently occupying the given position.
-	 */
-	byte getPlayerAt(short x, short y);
-
 	boolean isBlocked(short x, short y);
 
 	boolean isProtected(short x, short y);
 
 	boolean isBlockedOrProtected(short x, short y);
 
-	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, byte player);
+	/**
+	 * Adds a map object to the grid that deletes itself after the given duration.
+	 * 
+	 * @param position
+	 *            The position to add the map object.
+	 * @param mapObjectType
+	 *            The {@link EMapObjectType} of the map object that will be added.
+	 * @param duration
+	 *            The time (in seconds) the map object will stay on the grid.
+	 * @param player
+	 *            The {@link Player} of the map object.
+	 */
+	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player);
 
 	boolean isInBounds(short x, short y);
 
