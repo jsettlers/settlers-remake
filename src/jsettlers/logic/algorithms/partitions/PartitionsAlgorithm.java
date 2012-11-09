@@ -69,7 +69,7 @@ public class PartitionsAlgorithm {
 		short newPartition = -1;
 
 		for (ShortPoint2D currPos : new MapNeighboursArea(x, y)) {
-			if (grid.getPlayerAt(currPos) == newPlayer) {
+			if (grid.getPlayerIdAt(currPos) == newPlayer) {
 				if (newPartition == -1) { // neighbor has same player and we have no partition found yet -> add to the same partition
 					newPartition = grid.getPartition(currPos);
 					grid.setPartition(x, y, newPartition);
@@ -132,7 +132,7 @@ public class PartitionsAlgorithm {
 		}
 
 		if (disconnectedCtr > 1) {
-			byte oldPlayer = grid.getPlayerAt(disconnected[0]);
+			byte oldPlayer = grid.getPlayerIdAt(disconnected[0]);
 			if (!existsPathBetween(disconnected[1], disconnected[0], oldPlayer)) { // [0] and [1] are not connected
 				grid.dividePartition(x, y, disconnected[1], disconnected[0]);
 

@@ -24,9 +24,9 @@ public interface IPartionsAlgorithmMap {
 	 * 
 	 * @param position
 	 *            position the team is requested for
-	 * @return team occupying this position
+	 * @return the id of the player occupying this position
 	 */
-	byte getPlayerAt(final ShortPoint2D position);
+	byte getPlayerIdAt(final ShortPoint2D position);
 
 	/**
 	 * Sets the given partition to the given position.

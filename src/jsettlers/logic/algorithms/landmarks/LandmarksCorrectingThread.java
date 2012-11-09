@@ -70,7 +70,7 @@ public final class LandmarksCorrectingThread extends Thread {
 
 			if (grid.isBlocked(currX, currY)) {
 				if (needsRelabel(currX, currY, startPartition)) {
-					System.out.println("relabel needed at " + currX + "|" + currY + " with startPartition: " + startPartition);
+					// System.out.println("relabel needed at " + currX + "|" + currY + " with startPartition: " + startPartition);
 					relabel(grid.getBlockedPartition(startX, startY), currX, currY, startPartition);
 				}
 			}
