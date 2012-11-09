@@ -49,9 +49,9 @@ public class BuildingtestMap implements IGraphicsGrid {
 	public IMapObject getMapObjectsAt(int x, int y) {
 		if (tiles[x][y].getBuilding() != null) {
 			return tiles[x][y].getBuilding();
-		} else {
-			return tiles[x][y].getHeadMapObject();
 		}
+
+		return tiles[x][y].getHeadMapObject();
 	}
 
 	@Override
@@ -100,8 +100,8 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-    public int nextDrawableX(int x, int y) {
-	    return x + 1;
-    }
+	public int nextDrawableX(int x, int y) {
+		return x + 1;
+	}
 
 }
