@@ -75,7 +75,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public byte getPlayerAt(int x, int y) {
+	public byte getPlayerIdAt(int x, int y) {
 		return 0;
 	}
 

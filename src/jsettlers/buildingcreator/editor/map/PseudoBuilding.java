@@ -37,7 +37,7 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return 0;
 	}
 
