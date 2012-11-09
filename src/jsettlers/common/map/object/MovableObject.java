@@ -18,7 +18,7 @@ public class MovableObject implements MapObject, IPlayerable {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 

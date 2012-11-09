@@ -85,9 +85,9 @@ public interface IGraphicsGrid {
 	 * @param y
 	 *            y coordinate
 	 * @return -1 if this position has no player (for example when it is not occupied)<br>
-	 *         otherwise: the player number occupying this position.
+	 *         otherwise: the id of the player occupying this position.
 	 */
-	byte getPlayerAt(int x, int y);
+	byte getPlayerIdAt(int x, int y);
 
 	/**
 	 * 

@@ -18,7 +18,7 @@ public class BuildingObject implements MapObject, IPlayerable {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 
