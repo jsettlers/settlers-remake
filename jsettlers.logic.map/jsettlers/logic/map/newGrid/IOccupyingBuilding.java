@@ -7,6 +7,6 @@ public interface IOccupyingBuilding extends ILocatable {
 
 	IMapArea getOccupyablePositions();
 
-	byte getPlayer();
+	byte getPlayerId();
 
 }

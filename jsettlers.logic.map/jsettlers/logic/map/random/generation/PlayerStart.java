@@ -25,7 +25,7 @@ public class PlayerStart extends ShortPoint2D implements IPlayerable {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 

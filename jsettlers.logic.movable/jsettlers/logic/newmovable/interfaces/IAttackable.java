@@ -32,7 +32,7 @@ public interface IAttackable extends ILocatable, IInformable {
 	 * 
 	 * @return Player of this {@link IAttackable}.
 	 */
-	byte getPlayer();
+	byte getPlayerId();
 
 	/**
 	 * 

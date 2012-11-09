@@ -324,7 +324,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 

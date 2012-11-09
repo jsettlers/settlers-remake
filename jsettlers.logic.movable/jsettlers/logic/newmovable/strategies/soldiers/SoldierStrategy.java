@@ -100,7 +100,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		case GOING_TO_TOWER:
-			if (building.isNotDestroyed() && building.getPlayer() == super.getPlayer()) {
+			if (building.isNotDestroyed() && building.getPlayerId() == super.getPlayer()) {
 				OccupyerPlace place = building.addSoldier(this);
 				super.setPosition(place.getPosition().calculatePoint(building.getDoor()));
 				super.enableNothingToDoAction(false);
@@ -227,7 +227,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			oldPathTarget = pathTarget;
 		}
 
-		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayer() != super.getPlayer())) {
+		if (state == ESoldierState.GOING_TO_TOWER && (!building.isNotDestroyed() || building.getPlayerId() != super.getPlayer())) {
 			result = false;
 		}
 

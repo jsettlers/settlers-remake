@@ -172,7 +172,7 @@ public class RandomMapEvaluator {
 			double y = height / 2 + Math.cos(alpha) * height / 3;
 			playerStarts[i] =
 			        new PlayerStart((short) x, (short) y,
-			                playerSetting.getPlayer(),
+			                playerSetting.getPlayerId(),
 			                playerSetting.getAlliance());
 			i++;
 		}

@@ -17,7 +17,7 @@ public class PlayerSetting implements IPlayerable {
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 }

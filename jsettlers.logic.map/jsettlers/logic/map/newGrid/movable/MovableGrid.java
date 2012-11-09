@@ -95,7 +95,7 @@ public final class MovableGrid implements Serializable {
 		}
 
 		boolean foundOne = false;
-		byte movablePlayer = movable.getPlayer();
+		byte movablePlayer = movable.getPlayerId();
 
 		for (ShortPoint2D curr : area) {
 			short currX = curr.getX();
@@ -125,7 +125,7 @@ public final class MovableGrid implements Serializable {
 	 * @return
 	 */
 	public static boolean isEnemy(byte player, IAttackable otherAttackable) {
-		return otherAttackable.getPlayer() != player && otherAttackable.isAttackable();
+		return otherAttackable.getPlayerId() != player && otherAttackable.isAttackable();
 	}
 
 	public boolean hasNoMovableAt(short x, short y) {

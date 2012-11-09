@@ -115,10 +115,10 @@ public class MapDataSerializer {
 					int capacity = ((MapStoneObject) object).getCapacity();
 					writeObject(stream, x, y, TYPE_STONE, Integer.toString(capacity));
 				} else if (object instanceof BuildingObject) {
-					int player = ((BuildingObject) object).getPlayer();
+					int player = ((BuildingObject) object).getPlayerId();
 					writeObject(stream, x, y, TYPE_BUILDING, ((BuildingObject) object).getType() + "," + player);
 				} else if (object instanceof MovableObject) {
-					int player = ((MovableObject) object).getPlayer();
+					int player = ((MovableObject) object).getPlayerId();
 					writeObject(stream, x, y, TYPE_MOVABLE, ((MovableObject) object).getType() + "," + player);
 				} else if (object instanceof StackObject) {
 					int capacity = ((StackObject) object).getCount();

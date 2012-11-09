@@ -321,11 +321,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		for (ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
 			IGuiMovable movable = grid.getMovable(curr.getX(), curr.getY());
-			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayer() == player)) {
+			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayerId() == player)) {
 				selectionSet.add(movable);
 			}
 			IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
-			if (building != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || building.getPlayer() == player)) {
+			if (building != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || building.getPlayerId() == player)) {
 				selectionSet.add(building);
 			}
 		}

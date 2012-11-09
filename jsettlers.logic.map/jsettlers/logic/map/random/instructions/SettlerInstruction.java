@@ -23,7 +23,7 @@ public class SettlerInstruction extends ObjectInstruction {
 	protected MapObject getObject(PlayerStart start, Random random) {
 		EMovableType type = getParameter("type", random, EMovableType.class);
 
-		return new MovableObject(type, start.getPlayer());
+		return new MovableObject(type, start.getPlayerId());
 	}
 
 	@Override

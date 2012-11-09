@@ -31,7 +31,7 @@ public class BuildingInstruction extends ObjectInstruction {
 			        PlaceholderObject.getInstance());
 		}
 
-		grid.setMapObject(x, y, new BuildingObject(type, start.getPlayer()));
+		grid.setMapObject(x, y, new BuildingObject(type, start.getPlayerId()));
 	}
 
 	@Override

@@ -304,7 +304,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final void occupyArea() {
 		if (!occupiedArea) {
 			MapCircle occupying = getOccupyablePositions();
-			super.getGrid().occupyArea(occupying, new FreeMapArea(super.getPos(), super.getBuildingType().getProtectedTiles()), super.getPlayer());
+			super.getGrid().occupyArea(occupying, new FreeMapArea(super.getPos(), super.getBuildingType().getProtectedTiles()), super.getPlayerId());
 			occupiedArea = true;
 		}
 	}
@@ -463,7 +463,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		private TowerOccupyer currDefender;
 
 		public AttackableTowerMapObject() {
-			super(EMapObjectType.ATTACKABLE_TOWER, false, OccupyingBuilding.this.getPlayer());
+			super(EMapObjectType.ATTACKABLE_TOWER, false, OccupyingBuilding.this.getPlayerId());
 		}
 
 		@Override
@@ -481,7 +481,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					inFight = true;
 
 					OccupyingBuilding.this.getGrid().getMapObjectsManager()
-							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
+							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayerId());
 
 					pollNewDefender();
 				}

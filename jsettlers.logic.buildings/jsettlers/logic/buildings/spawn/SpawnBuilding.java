@@ -41,7 +41,7 @@ public abstract class SpawnBuilding extends Building {
 				if (movableAtDoor == null) {
 					delayCtr = 0;
 
-					movableAtDoor = new NewMovable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
+					movableAtDoor = new NewMovable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayerId());
 					produced++;
 				}
 

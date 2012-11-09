@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="jsettlers.logic.objects"/>
 	<classpathentry kind="src" path="jsettlers.logic.buildings"/>
 	<classpathentry kind="src" path="jsettlers.logic.movable"/>
+	<classpathentry kind="src" path="jsettlers.logic.player"/>
 	<classpathentry kind="src" path="jsettlers.logic.map"/>
 	<classpathentry kind="src" path="jsettlers.logic.constants"/>
 	<classpathentry kind="src" path="jsettlers.main"/>

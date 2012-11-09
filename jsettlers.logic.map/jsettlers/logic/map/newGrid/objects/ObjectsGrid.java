@@ -173,7 +173,7 @@ public final class ObjectsGrid implements Serializable {
 			area = new HexBorderArea(position.getX(), position.getY(), (short) (Constants.TOWER_SEARCH_RADIUS - 1));
 		}
 
-		byte movablePlayer = attackable.getPlayer();
+		byte movablePlayer = attackable.getPlayerId();
 
 		for (ShortPoint2D curr : area) {
 			short x = curr.getX();
@@ -181,7 +181,7 @@ public final class ObjectsGrid implements Serializable {
 			if (0 <= x && x < width && 0 <= y && y < height) {
 				IAttackable currTower = (IAttackable) getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 
-				if (currTower != null && currTower.getPlayer() != movablePlayer) {
+				if (currTower != null && currTower.getPlayerId() != movablePlayer) {
 					currTower.informAboutAttackable(attackable);
 
 					if (informAttackable) {

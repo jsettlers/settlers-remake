@@ -189,7 +189,7 @@ public abstract class NewMovableStrategy implements Serializable {
 	}
 
 	protected final byte getPlayer() {
-		return movable.getPlayer();
+		return movable.getPlayerId();
 	}
 
 	protected NewMovable getMovable() {

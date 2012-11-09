@@ -56,7 +56,7 @@ public class SelfDeletingMapObject extends ProgressingObject implements IPlayera
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 

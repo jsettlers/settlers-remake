@@ -652,7 +652,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	@Override
-	public final byte getPlayer() {
+	public final byte getPlayerId() {
 		return player;
 	}
 

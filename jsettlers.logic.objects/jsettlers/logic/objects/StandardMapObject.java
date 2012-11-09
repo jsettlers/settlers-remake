@@ -43,7 +43,7 @@ public class StandardMapObject extends AbstractHexMapObject implements IPlayerab
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 }

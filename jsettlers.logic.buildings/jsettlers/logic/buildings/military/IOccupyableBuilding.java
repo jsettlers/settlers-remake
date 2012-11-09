@@ -21,7 +21,7 @@ public interface IOccupyableBuilding {
 
 	boolean isNotDestroyed();
 
-	byte getPlayer();
+	byte getPlayerId();
 
 	/**
 	 * This method is called by the soldier when he finished defending the tower.

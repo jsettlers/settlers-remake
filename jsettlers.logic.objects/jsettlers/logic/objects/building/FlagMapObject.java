@@ -43,7 +43,7 @@ public final class FlagMapObject extends AbstractHexMapObject implements IPlayer
 	}
 
 	@Override
-	public byte getPlayer() {
+	public byte getPlayerId() {
 		return player;
 	}
 
