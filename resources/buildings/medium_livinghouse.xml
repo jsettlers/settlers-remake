@@ -101,6 +101,13 @@
 	<bricklayer dx="6" dy="2" direction="NORTH_WEST" />
 	<flag dx="0" dy="4" />
 
+	<buildmark dx="-1" dy="2" />
+	<buildmark dx="3" dy="3" />
+	<buildmark dx="5" dy="4" />
+	<buildmark dx="5" dy="0" />
+	<buildmark dx="0" dy="-4" />
+	<buildmark dx="3" dy="5" />
+	
 	
 	<image file="14" for="GUI" type="GUI" sequence="75" image="0"/>
     <image file="13" type="SETTLER" for="FINAL" image="0" sequence="25"/>
