@@ -49,7 +49,7 @@ public class BordersThread implements Runnable {
 	private void calculateForPosition(ShortPoint2D position) {
 		short x = position.getX();
 		short y = position.getY();
-		byte player = grid.getPlayerÎdAt(x, y);
+		byte player = grid.getPlayerIdAt(x, y);
 		boolean isBorder = false;
 
 		if (grid.getBlockedPartition(x, y) > 0) { // the position is not a blocked landscape
@@ -61,7 +61,7 @@ public class BordersThread implements Runnable {
 					continue;
 				}
 
-				byte neighborPlayer = grid.getPlayerÎdAt(currNeighborX, currNeighborY);
+				byte neighborPlayer = grid.getPlayerIdAt(currNeighborX, currNeighborY);
 				boolean neighborIsBorder = false;
 
 				if (neighborPlayer != player && grid.getBlockedPartition(currNeighborX, currNeighborY) > 0) {
@@ -74,7 +74,7 @@ public class BordersThread implements Runnable {
 						short nextX = currNeighborDir.getNextTileX(currNeighborX);
 						short nextY = currNeighborDir.getNextTileY(currNeighborY);
 
-						if (grid.isInBounds(nextX, nextY) && grid.getPlayerÎdAt(nextX, nextY) != neighborPlayer
+						if (grid.isInBounds(nextX, nextY) && grid.getPlayerIdAt(nextX, nextY) != neighborPlayer
 								&& grid.getBlockedPartition(nextX, nextY) > 0) {
 							neighborIsBorder = true;
 							break;

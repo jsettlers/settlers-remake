@@ -17,7 +17,7 @@ public interface IBordersThreadGrid {
 	 *            y coordinate
 	 * @return the player that's currently occupying the given position.
 	 */
-	byte getPlayerÎdAt(short x, short y);
+	byte getPlayerIdAt(short x, short y);
 
 	/**
 	 * Sets if the given position is a border tile or not.
