@@ -100,7 +100,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public int nextDrawableX(int x, int y) {
+	public int nextDrawableX(int x, int y, int maxX) {
 		return x + 1;
 	}
 
