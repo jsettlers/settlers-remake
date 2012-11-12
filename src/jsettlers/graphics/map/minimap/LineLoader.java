@@ -5,6 +5,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.IMovable;
+import jsettlers.graphics.map.MapDrawContext;
 
 class LineLoader implements Runnable {
 	private static final short TRANSPARENT = 0;
@@ -74,66 +75,69 @@ class LineLoader implements Runnable {
 
 	private void calculateLineData(final int currentline) {
 		// may change!
-		int safewidth = this.minimap.getWidth();
-		int safeheight = this.minimap.getHeight();
-		IGraphicsGrid map = this.minimap.getContext().getMap();
+		final int safeWidth = this.minimap.getWidth();
+		final int safeHeight = this.minimap.getHeight();
+		final MapDrawContext context = this.minimap.getContext();
+		final IGraphicsGrid map = context.getMap();
 
 		// for height shades
-		int maplineheight = map.getHeight() / safeheight + 1;
+		final short mapWidth = map.getWidth();
+		final short mapHeight = map.getHeight();
+
+		int mapLineHeight = mapHeight / safeHeight + 1;
 
 		// first map tile in line
-		int mapmaxy =
-		        (int) ((1 - (float) currentline / safeheight) * map.getHeight());
+		int mapMaxY =
+		        (int) ((1 - (float) currentline / safeHeight) * mapHeight);
 		// first map line not in line
-		int mapminy =
-		        (int) ((1 - (float) (currentline + 1) / safeheight) * map
-		                .getHeight());
-		if (mapminy == mapmaxy) {
-			if (mapmaxy == map.getHeight()) {
-				mapminy = map.getHeight() - 1;
+		int mapMinY =
+		        (int) ((1 - (float) (currentline + 1) / safeHeight) * mapHeight);
+		if (mapMinY == mapMaxY) {
+			if (mapMaxY == mapHeight) {
+				mapMinY = mapHeight - 1;
 			} else {
-				mapmaxy = mapminy - 1;
+				mapMaxY = mapMinY - 1;
 			}
 		}
 
-		for (int x = currXOffset; x < safewidth; x += 5) {
-			int mapminx = (int) ((float) x / safewidth * map.getWidth());
-			int mapmaxx = (int) ((float) (x + 1) / safewidth * map.getWidth());
+		for (int x = currXOffset; x < safeWidth; x += 5) {
+			int mapMinX = (int) ((float) x / safeWidth * mapWidth);
+			int mapMaxX = (int) ((float) (x + 1) / safeWidth * mapWidth);
 
-			if (mapminx != 0 && mapmaxx == mapminx) {
-				mapminx = mapmaxx - 1;
+			if (mapMinX != 0 && mapMaxX == mapMinX) {
+				mapMinX = mapMaxX - 1;
 			}
-			int centerx = (mapmaxx + mapminx) / 2;
-			int centery = (mapmaxy + mapminy) / 2;
+			int centerX = (mapMaxX + mapMinX) / 2;
+			int centerY = (mapMaxY + mapMinY) / 2;
 
 			short color = TRANSPARENT;
-			if (minimap.getContext().getMap()
-			        .getVisibleStatus(centerx, centery) > CommonConstants.FOG_OF_WAR_EXPLORED) {
-				color = getSettlerForArea(mapminx, mapminy, mapmaxx, mapmaxy);
+			if (map.getVisibleStatus(centerX, centerY) > CommonConstants.FOG_OF_WAR_EXPLORED) {
+				color =
+				        getSettlerForArea(map, context, mapMinX, mapMinY,
+				                mapMaxX, mapMaxY);
 			}
 
 			if (color == TRANSPARENT) {
 				float basecolor =
-				        (float) minimap.getContext().getVisibleStatus(centerx,
-				                centery)
+				        ((float) map.getVisibleStatus(centerX, centerY))
 				                / CommonConstants.FOG_OF_WAR_VISIBLE;
 				int dheight =
-				        map.getHeightAt(centerx, mapminy)
-				                - map.getHeightAt(
-				                        centerx,
-				                        Math.min(mapminy + maplineheight,
-				                                map.getHeight() - 1));
+				        map.getHeightAt(centerX, mapMinY)
+				                - map.getHeightAt(centerX, Math.min(mapMinY
+				                        + mapLineHeight, mapHeight - 1));
 				basecolor *= (1 + .15f * dheight);
 
 				if (basecolor >= 0) {
 					color =
-					        getLandscapeForArea(mapminx, mapminy, mapmaxx,
-					                mapmaxy, basecolor);
+					        getLandscapeForArea(map, mapMinX, mapMinY, mapMaxX,
+					                mapMaxY, basecolor);
 				}
 			}
+
 			if (color == TRANSPARENT) {
 				color = BLACK;
 			}
+
 			buffer[currentline][x] = color;
 		}
 
@@ -141,44 +145,36 @@ class LineLoader implements Runnable {
 		currXOffset %= X_STEP_WIDTH;
 	}
 
-	private short getLandscapeForArea(int mapminx, int mapminy, int mapmaxx,
-	        int mapmaxy, float basecolor) {
+	private static short getLandscapeForArea(IGraphicsGrid map, int mapminx,
+	        int mapminy, int mapmaxx, int mapmaxy, float basecolor) {
 		int centerx = (mapmaxx + mapminx) / 2;
 		int centery = (mapmaxy + mapminy) / 2;
 
-		IGraphicsGrid map = this.minimap.getContext().getMap();
-		return getColorForLandscape(map.getLandscapeTypeAt(centerx, centery),
-		        basecolor);
+		ELandscapeType landscapeType = map.getLandscapeTypeAt(centerx, centery);
+
+		return landscapeType.color.toShortColor(basecolor);
 	}
 
-	private static short getColorForLandscape(ELandscapeType landscape,
-	        float basecolor) {
-		return landscape.getColor().toShortColor(basecolor);
-	}
-
-	private short getSettlerForArea(int mapminx, int mapminy, int mapmaxx,
+	private static short getSettlerForArea(IGraphicsGrid map,
+	        MapDrawContext context, int mapminx, int mapminy, int mapmaxx,
 	        int mapmaxy) {
 		short color = TRANSPARENT;
-		IGraphicsGrid map = this.minimap.getContext().getMap();
+
 		for (int y = mapminy; y < mapmaxy && color == TRANSPARENT; y++) {
 			for (int x = mapminx; x < mapmaxx && color == TRANSPARENT; x++) {
 				IMovable settler = map.getMovableAt(x, y);
 				if (settler != null) {
-					color = getColor(settler);
+					color =
+					        context.getPlayerColor(settler.getPlayerId())
+					                .toShortColor(1);
 				} else if (map.isBorder(x, y)) {
 					byte player = map.getPlayerIdAt(x, y);
-					Color playerColor =
-					        minimap.getContext().getPlayerColor(player);
+					Color playerColor = context.getPlayerColor(player);
 					color = playerColor.toShortColor(1);
 				}
 			}
 		}
 		return color;
-	}
-
-	private short getColor(IMovable settler) {
-		return minimap.getContext().getPlayerColor(settler.getPlayerId())
-		        .toShortColor(1);
 	}
 
 	/**

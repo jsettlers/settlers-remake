@@ -81,7 +81,7 @@ import jsettlers.graphics.sound.SoundManager;
  * </ul>
  * </li>
  * </ul>
- *
+ * 
  * @author michael
  */
 public final class MapContent implements SettlersContent,
@@ -129,10 +129,10 @@ public final class MapContent implements SettlersContent,
 
 	private ShortPoint2D moveToMarker;
 	private long moveToMarkerTime;
-	
+
 	/**
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param map
 	 *            The map.
 	 */
@@ -186,51 +186,52 @@ public final class MapContent implements SettlersContent,
 	@Override
 	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
 		try {
-		if (newWidth != windowWidth || newHeight != windowHeight) {
-			resizeTo(newWidth, newHeight);
-		}
+			if (newWidth != windowWidth || newHeight != windowHeight) {
+				resizeTo(newWidth, newHeight);
+			}
 
-		adaptScreenSize();
-		this.objectDrawer.increaseAnimationStep();
+			adaptScreenSize();
+			this.objectDrawer.increaseAnimationStep();
 
-		this.context.begin(gl);
-		long start = System.currentTimeMillis();
+			this.context.begin(gl);
+			long start = System.currentTimeMillis();
 
-		FloatRectangle screen =
-		        this.context.getScreen().getPosition().bigger(SCREEN_PADDING);
-		drawBackground(screen);
-		long bgtime = System.currentTimeMillis() - start;
+			FloatRectangle screen =
+			        this.context.getScreen().getPosition()
+			                .bigger(SCREEN_PADDING);
+			drawBackground(screen);
+			long bgtime = System.currentTimeMillis() - start;
 
-		start = System.currentTimeMillis();
-		drawMain(screen);
+			start = System.currentTimeMillis();
+			drawMain(screen);
 
-		if (scrollMarker != null) {
-			drawScrollMarker();
-		}
-		if (moveToMarker != null) {
-			drawMoveToMarker();
-		}
+			if (scrollMarker != null) {
+				drawScrollMarker();
+			}
+			if (moveToMarker != null) {
+				drawMoveToMarker();
+			}
 
-		this.context.end();
-		long foregroundtime = System.currentTimeMillis() - start;
+			this.context.end();
+			long foregroundtime = System.currentTimeMillis() - start;
 
-		start = System.currentTimeMillis();
-		gl.glTranslatef(0, 0, .95f);
-		drawSelectionHint(gl);
-		controls.drawAt(gl);
-		drawMessages(gl);
+			start = System.currentTimeMillis();
+			gl.glTranslatef(0, 0, .95f);
+			drawSelectionHint(gl);
+			controls.drawAt(gl);
+			drawMessages(gl);
 
-		drawFramerate(gl);
-		if (actionThreadIsSlow) {
-			drawActionThreadSlow(gl);
-		}
-		drawTooltip(gl);
-		long uitime = System.currentTimeMillis() - start;
+			drawFramerate(gl);
+			if (actionThreadIsSlow) {
+				drawActionThreadSlow(gl);
+			}
+			drawTooltip(gl);
+			long uitime = System.currentTimeMillis() - start;
 
-		if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
-			System.out.println("Background: " + bgtime + "ms, Foreground: "
-			        + foregroundtime + "ms, UI: " + uitime + "ms");
-		}
+			if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
+				System.out.println("Background: " + bgtime + "ms, Foreground: "
+				        + foregroundtime + "ms, UI: " + uitime + "ms");
+			}
 		} catch (Throwable t) {
 			System.err.println("Main draw handler cought throwable:");
 			t.printStackTrace(System.err);
@@ -255,7 +256,8 @@ public final class MapContent implements SettlersContent,
 		if (timediff >= GOTO_MARK_TIME) {
 			moveToMarker = null;
 		} else {
-			objectDrawer.drawMoveToMarker(moveToMarker, timediff / GOTO_MARK_TIME);
+			objectDrawer.drawMoveToMarker(moveToMarker, timediff
+			        / GOTO_MARK_TIME);
 		}
 	}
 
@@ -383,7 +385,7 @@ public final class MapContent implements SettlersContent,
 
 			int endX = Math.min(area.getLineEndX(line), width - 1);
 			int startX = Math.max(area.getLineStartX(line), 0);
-			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y)) {
+			for (int x = startX; x <= endX; x = map.nextDrawableX(x, y, endX)) {
 				drawTile(x, y);
 				if (!linePartuallyVisible) {
 					double drawspacey =
@@ -424,8 +426,7 @@ public final class MapContent implements SettlersContent,
 	private void drawTile(int x, int y) {
 		IMapObject object = map.getMapObjectsAt(x, y);
 		if (object != null) {
-			this.objectDrawer.drawMapObject(this.map, x, y,
-			        object);
+			this.objectDrawer.drawMapObject(this.map, x, y, object);
 		}
 
 		IMovable movable = map.getMovableAt(x, y);
@@ -507,7 +508,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Draws the background.
-	 *
+	 * 
 	 * @param gl
 	 * @param screen2
 	 */
@@ -581,7 +582,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets a action for a keyboard key
-	 *
+	 * 
 	 * @param keyCode
 	 *            The key
 	 * @return The action that corresponds to the key
@@ -685,28 +686,31 @@ public final class MapContent implements SettlersContent,
 		drawEvent.setHandler(this.drawSelectionHandler);
 	}
 
-	private final GOEventHandler drawSelectionHandler = new GOModalEventHandler() {
+	private final GOEventHandler drawSelectionHandler =
+	        new GOModalEventHandler() {
 
-		@Override
-		public void phaseChanged(GOEvent event) {
-		}
+		        @Override
+		        public void phaseChanged(GOEvent event) {
+		        }
 
-		@Override
-		public void finished(GOEvent event) {
-			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), true);
-		}
+		        @Override
+		        public void finished(GOEvent event) {
+			        updateSelectionArea(
+			                ((GODrawEvent) event).getDrawPosition(), true);
+		        }
 
-		@Override
-		public void aborted(GOEvent event) {
-			abortSelectionArea();
-		}
+		        @Override
+		        public void aborted(GOEvent event) {
+			        abortSelectionArea();
+		        }
 
-		@Override
-		public void eventDataChanged(GOEvent event) {
-			updateSelectionArea(((GODrawEvent) event).getDrawPosition(), false);
-		}
+		        @Override
+		        public void eventDataChanged(GOEvent event) {
+			        updateSelectionArea(
+			                ((GODrawEvent) event).getDrawPosition(), false);
+		        }
 
-	};
+	        };
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
@@ -764,7 +768,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets the interface connector for the ui.
-	 *
+	 * 
 	 * @return The connector to access the interface.
 	 */
 	public MapInterfaceConnector getInterfaceConnector() {
@@ -822,11 +826,10 @@ public final class MapContent implements SettlersContent,
 		}
 	}
 
-
 	private void setZoom(float f) {
-	    context.getScreen().setZoom(f);
-	    reapplyContentSizes();
-    }
+		context.getScreen().setZoom(f);
+		reapplyContentSizes();
+	}
 
 	public void setPreviewBuildingType(EBuildingType buildingType) {
 		controls.displayBuildingBuild(buildingType);
@@ -872,6 +875,6 @@ public final class MapContent implements SettlersContent,
 	public void stop() {
 		backgroundSound.stop();
 		controls.stop();
-    }
+	}
 
 }
