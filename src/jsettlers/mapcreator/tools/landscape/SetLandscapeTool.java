@@ -56,10 +56,10 @@ public class SetLandscapeTool implements Tool {
 			buffer = new GlobalShapeBuffer(map.getWidth(), map.getHeight());
 		}
 
-		short startx = start.getX();
-		short endx = end.getX();
-		short starty = start.getY();
-		short endy = end.getY();
+		short startx = start.x;
+		short endx = end.x;
+		short starty = start.y;
+		short endy = end.y;
 		int size = shape.getSize();
 		int usedminx = Math.min(startx, endx) - size - 3;
 		int usedminy = Math.min(starty, endy) - (int) (size / MapCircle.Y_SCALE) - 3;

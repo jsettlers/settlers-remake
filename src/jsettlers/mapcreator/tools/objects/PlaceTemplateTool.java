@@ -36,8 +36,8 @@ public class PlaceTemplateTool implements Tool {
 
 	private void addAround(MapData map, ShortPoint2D start) {
 		for (TemplateObject object : objects) {
-			int x = start.getX() + object.getDx();
-			int y = start.getY() + object.getDy();
+			int x = start.x + object.getDx();
+			int y = start.y + object.getDy();
 			map.placeObject(object.getObject(player.getActivePlayer()), x, y);
 		}
 	}

@@ -164,8 +164,8 @@ public class MapData implements IMapData {
 		int xmin = Integer.MAX_VALUE;
 		int xmax = Integer.MIN_VALUE;
 		for (ShortPoint2D pos : area) {
-			short x = pos.getX();
-			short y = pos.getY();
+			short x = pos.x;
+			short y = pos.y;
 			if (contains(x, y)) {
 				if (setLandscape(x, y, type)) {
 					doneBuffer[x][y] = true;
@@ -427,9 +427,9 @@ public class MapData implements IMapData {
 		ShortPoint2D start = new ShortPoint2D(x, y);
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
-			if (!contains(abs.getX(), abs.getY()) || objects[abs.getX()][abs.getY()] != null
-					|| !landscapeAllowsObjects(getLandscape(abs.getX(), abs.getY()))
-					|| !listAllowsLandscape(landscapes, getLandscape(abs.getX(), abs.getY()))) {
+			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null
+					|| !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
+					|| !listAllowsLandscape(landscapes, getLandscape(abs.x, abs.y))) {
 				allowed = false;
 			}
 		}
@@ -437,8 +437,8 @@ public class MapData implements IMapData {
 		if (allowed) {
 			for (RelativePoint p : container.getProtectedArea()) {
 				ShortPoint2D abs = p.calculatePoint(start);
-				objects[abs.getX()][abs.getY()] = protector;
-				undoDelta.removeObject(abs.getX(), abs.getY());
+				objects[abs.x][abs.y] = protector;
+				undoDelta.removeObject(abs.x, abs.y);
 			}
 			objects[x][y] = container;
 			undoDelta.removeObject(x, y);
@@ -622,9 +622,9 @@ public class MapData implements IMapData {
 			for (RelativePoint point : area) {
 				ShortPoint2D pos = point.calculatePoint(start);
 
-				if (contains(pos.getX(), pos.getY())) {
-					undoDelta.addObject(pos.getX(), pos.getY(), objects[pos.getX()][pos.getY()]);
-					objects[pos.getX()][pos.getY()] = null;
+				if (contains(pos.x, pos.y)) {
+					undoDelta.addObject(pos.x, pos.y, objects[pos.x][pos.y]);
+					objects[pos.x][pos.y] = null;
 				}
 			}
 		}

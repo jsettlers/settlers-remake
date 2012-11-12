@@ -118,11 +118,11 @@ public class DataTester implements Runnable {
 
 		for (int player = 0; player < data.getPlayerCount(); player++) {
 			ShortPoint2D point = data.getStartPoint(player);
-			if (players[point.getX()][point.getY()] != player) {
+			if (players[point.x][point.y] != player) {
 				testFailed("Player " + player + " has invalid start point", point);
 			}
 			// mark
-			borders[point.getX()][point.getY()] = true;
+			borders[point.x][point.y] = true;
 		}
 
 		data.setPlayers(players);
@@ -163,13 +163,13 @@ public class DataTester implements Runnable {
 		int height = data.getLandscapeHeight(x, y);
 		for (RelativePoint p : type.getProtectedTiles()) {
 			ShortPoint2D pos = p.calculatePoint(start);
-			if (!data.contains(pos.getX(), pos.getY())) {
+			if (!data.contains(pos.x, pos.y)) {
 				testFailed("Building " + type + " outside map", pos);
-			} else if (!MapData.listAllowsLandscape(type.getGroundtypes(), data.getLandscape(pos.getX(), pos.getY()))) {
-				testFailed("Building " + type + " cannot be placed on " + data.getLandscape(pos.getX(), pos.getY()), pos);
-			} else if (players[pos.getX()][pos.getY()] != buildingObject.getPlayerId()) {
+			} else if (!MapData.listAllowsLandscape(type.getGroundtypes(), data.getLandscape(pos.x, pos.y))) {
+				testFailed("Building " + type + " cannot be placed on " + data.getLandscape(pos.x, pos.y), pos);
+			} else if (players[pos.x][pos.y] != buildingObject.getPlayerId()) {
 				testFailed("Building " + type + " of player " + buildingObject.getPlayerId() + ", but is on " + players[x][y] + "'s land", pos);
-			} else if (type.getGroundtypes()[0] != ELandscapeType.MOUNTAIN && data.getLandscapeHeight(pos.getX(), pos.getY()) != height) {
+			} else if (type.getGroundtypes()[0] != ELandscapeType.MOUNTAIN && data.getLandscapeHeight(pos.x, pos.y) != height) {
 				testFailed("Building " + type + " of player " + buildingObject.getPlayerId() + " must be on flat ground", pos);
 			}
 		}
@@ -186,8 +186,8 @@ public class DataTester implements Runnable {
 
 	private void drawCircle(byte[][] players, byte player, MapCircle circle) {
 		for (ShortPoint2D pos : circle) {
-			if (data.contains(pos.getX(), pos.getY()) && players[pos.getX()][pos.getY()] == -1) {
-				players[pos.getX()][pos.getY()] = player;
+			if (data.contains(pos.x, pos.y) && players[pos.x][pos.y] == -1) {
+				players[pos.x][pos.y] = player;
 			}
 		}
 	}
@@ -222,7 +222,7 @@ public class DataTester implements Runnable {
 		successful = false;
 		result = string;
 		resultPosition = pos;
-		failpoints[pos.getX()][pos.getY()] = true;
+		failpoints[pos.x][pos.y] = true;
 		errors.add(new Error(pos, string));
 	}
 

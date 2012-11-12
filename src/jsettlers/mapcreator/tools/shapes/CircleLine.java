@@ -19,10 +19,10 @@ public class CircleLine {
 	private final double length;
 
 	public CircleLine(ShortPoint2D start, ShortPoint2D end) {
-		this.startx = start.getX();
-		this.starty = start.getY();
-		this.endx = end.getX();
-		this.endy = end.getY();
+		this.startx = start.x;
+		this.starty = start.y;
+		this.endx = end.x;
+		this.endy = end.y;
 
 		int nx = endx - startx;
 		int ny = endy - starty;

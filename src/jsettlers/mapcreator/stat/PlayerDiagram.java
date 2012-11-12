@@ -26,8 +26,8 @@ public class PlayerDiagram extends JPanel {
 
 	public PlayerDiagram(MapData data, int player) {
 		ShortPoint2D start = data.getStartPoint(player);
-		int startx = start.getX();
-		int starty = start.getY();
+		int startx = start.x;
+		int starty = start.y;
 
 		founds = new int[TYPE_COUNT][WATCHED_DISTANCE];
 		for (int x = 0; x < data.getWidth(); x++) {

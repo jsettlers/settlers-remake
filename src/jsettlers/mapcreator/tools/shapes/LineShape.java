@@ -26,8 +26,8 @@ public class LineShape extends ShapeType {
 	}
 
 	private static void setFieldToMax(byte[][] fields, ShortPoint2D current) {
-		short x = current.getX();
-		short y = current.getY();
+		short x = current.x;
+		short y = current.y;
 		if (x < fields.length && x >= 0 && y >= 0 && y < fields[x].length) {
 			fields[x][y] = Byte.MAX_VALUE;
 		}

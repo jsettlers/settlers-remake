@@ -19,8 +19,8 @@ public class ByteMapArea implements IMapArea {
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		short y = position.getY();
-		short x = position.getX();
+		short y = position.y;
+		short x = position.x;
 		return x >= 0 && y >= 0 && x < status.length && y < status[x].length && status[x][y] > Byte.MAX_VALUE / 2;
 	}
 
