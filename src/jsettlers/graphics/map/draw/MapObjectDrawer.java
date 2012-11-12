@@ -420,8 +420,8 @@ public class MapObjectDrawer {
 
 	private void drawImage(IMovable movable, Image image) {
 		ShortPoint2D pos = movable.getPos();
-		short x = pos.getX();
-		short y = pos.getY();
+		short x = pos.x;
+		short y = pos.y;
 
 		drawMovableAt(movable, image, x, y);
 	}
@@ -976,7 +976,7 @@ public class MapObjectDrawer {
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
-		drawByProgress(moveToMarker.getX(), moveToMarker.getY(), MARKER_FILE,
+		drawByProgress(moveToMarker.x, moveToMarker.y, MARKER_FILE,
 		        MOVE_TO_MARKER_SEQUENCE, progress, 1);
 	}
 }

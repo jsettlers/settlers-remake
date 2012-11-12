@@ -243,7 +243,7 @@ public final class MapContent implements SettlersContent,
 		if (timediff > GOTO_MARK_TIME) {
 			scrollMarker = null;
 		} else {
-			context.beginTileContext(scrollMarker.getX(), scrollMarker.getY());
+			context.beginTileContext(scrollMarker.x, scrollMarker.y);
 			ImageProvider.getInstance().getSettlerSequence(3, 1)
 			        .getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1)
 			        .draw(context.getGl(), null, 1);
@@ -491,8 +491,8 @@ public final class MapContent implements SettlersContent,
 		        };
 
 		for (ShortPoint2D pos : tiles) {
-			short x = pos.getX();
-			short y = pos.getY();
+			short x = pos.x;
+			short y = pos.y;
 			int argb = map.getDebugColorAt(x, y);
 			if (argb != 0) {
 				this.context.beginTileContext(x, y);
@@ -722,7 +722,7 @@ public final class MapContent implements SettlersContent,
 		float x = (float) position.getX();
 		float y = (float) position.getY();
 		ShortPoint2D onMap = this.context.getPositionOnScreen(x, y);
-		if (this.context.checkMapCoordinates(onMap.getX(), onMap.getY())) {
+		if (this.context.checkMapCoordinates(onMap.x, onMap.y)) {
 			Action action;
 			if (commandEvent.isSelecting()) {
 				action = new SelectAction(onMap);

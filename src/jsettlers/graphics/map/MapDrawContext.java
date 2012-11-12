@@ -177,8 +177,8 @@ public final class MapDrawContext {
 		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
 
 		UIPoint onscreen =
-		        converter.getView(currentPoint.getX(), currentPoint.getY(),
-		                getHeight(currentPoint.getX(), currentPoint.getY()));
+		        converter.getView(currentPoint.x, currentPoint.y,
+		                getHeight(currentPoint.x, currentPoint.y));
 		double currentbest = onscreen.distance(desiredOnScreen);
 
 		boolean couldBeImproved;
@@ -187,8 +187,8 @@ public final class MapDrawContext {
 
 			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
 				onscreen =
-				        converter.getView(p.getX(), p.getY(),
-				                getHeight(p.getX(), p.getY()));
+				        converter.getView(p.x, p.y,
+				                getHeight(p.x, p.y));
 				double newDistance = onscreen.distance(desiredOnScreen);
 				if (newDistance < currentbest) {
 					currentbest = newDistance;
@@ -353,9 +353,9 @@ public final class MapDrawContext {
 
 		@Override
 		public boolean contains(ShortPoint2D point) {
-			int height = getHeight(point.getX(), point.getY());
-			float x = converter.getViewX(point.getX(), point.getY(), height);
-			float y = converter.getViewY(point.getX(), point.getY(), height);
+			int height = getHeight(point.x, point.y);
+			float x = converter.getViewX(point.x, point.y, height);
+			float y = converter.getViewY(point.x, point.y, height);
 			return drawRect.contains(x, y);
 		}
 
@@ -425,9 +425,9 @@ public final class MapDrawContext {
 	}
 
 	public void scrollTo(ShortPoint2D point) {
-		int height = getHeight(point.getX(), point.getY());
-		float x = converter.getViewX(point.getX(), point.getY(), height);
-		float y = converter.getViewY(point.getX(), point.getY(), height);
+		int height = getHeight(point.x, point.y);
+		float x = converter.getViewX(point.x, point.y, height);
+		float y = converter.getViewY(point.x, point.y, height);
 		screen.setScreenCenter(x, y);
 	}
 
