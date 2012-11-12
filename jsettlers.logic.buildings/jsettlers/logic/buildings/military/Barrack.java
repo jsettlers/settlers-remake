@@ -6,7 +6,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
@@ -59,23 +58,8 @@ public class Barrack extends Building implements IBarrack {
 	}
 
 	@Override
-	protected void constructionFinishedEvent() {
-		placeFlag(true);
-	}
-
-	@Override
 	protected EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_DOOR;
-	}
-
-	/**
-	 * Gets the flag position.
-	 * 
-	 * @return The point in map space.
-	 */
-	public ShortPoint2D getFlag() {
-		RelativePoint flag = getBuildingType().getFlag();
-		return calculateRealPoint(flag.getDx(), flag.getDy());
 	}
 
 	@Override
@@ -116,6 +100,10 @@ public class Barrack extends Building implements IBarrack {
 	@Override
 	public void bearerRequestFailed() {
 		requestedBearer--;
+	}
+
+	@Override
+	protected void constructionFinishedEvent() {
 	}
 
 }
