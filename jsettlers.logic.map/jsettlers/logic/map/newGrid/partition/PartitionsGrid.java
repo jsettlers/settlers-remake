@@ -98,11 +98,11 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	 * @param y
 	 * @return
 	 */
-	public byte getPlayerIdAt(short x, short y) {
+	public byte getPlayerIdAt(int x, int y) {
 		return this.getPartitionObject(x, y).getPlayer();
 	}
 
-	public final Player getPlayerAt(short x, short y) {
+	public final Player getPlayerAt(int x, int y) {
 		return players[getPartitionObject(x, y).getPlayer()];
 	}
 
@@ -110,7 +110,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return players[playerId];
 	}
 
-	public final short getPartitionAt(short x, short y) {
+	public final short getPartitionAt(int x, int y) {
 		return this.partitions[getIdx(x, y)];
 	}
 
@@ -118,7 +118,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		return getPartitionObject(getPartition(pos));
 	}
 
-	private final Partition getPartitionObject(short x, short y) {
+	private final Partition getPartitionObject(int x, int y) {
 		return getPartitionObject(getPartitionAt(x, y));
 	}
 
@@ -458,7 +458,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		getPartitionObject(pos).removeOfferAt(pos, materialType);
 	}
 
-	public final int getTowerCounterAt(short x, short y) {
+	public final int getTowerCounterAt(int x, int y) {
 		return towers[getIdx(x, y)];
 	}
 

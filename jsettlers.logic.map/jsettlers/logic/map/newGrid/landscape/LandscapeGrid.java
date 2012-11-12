@@ -65,7 +65,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 	}
 
-	public final byte getHeightAt(short x, short y) {
+	public final byte getHeightAt(int x, int y) {
 		return heightGrid[x + y * width];
 	}
 
@@ -74,7 +74,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public final ELandscapeType getLandscapeTypeAt(short x, short y) {
+	public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 		return ELandscapeType.values[landscapeGrid[x + y * width]];
 	}
 
@@ -134,15 +134,15 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 * @param y
 	 * @return The amount of resources, where 0 is no resources and {@link Byte.MAX_VALUE} means full resources.
 	 */
-	public final byte getResourceAmountAt(short x, short y) {
+	public final byte getResourceAmountAt(int x, int y) {
 		return resourceAmount[x + y * width];
 	}
 
-	public final EResourceType getResourceTypeAt(short x, short y) {
+	public final EResourceType getResourceTypeAt(int x, int y) {
 		return EResourceType.values[resourceType[x + y * width]];
 	}
 
-	public final boolean hasResourceAt(short x, short y, EResourceType resourceType) {
+	public final boolean hasResourceAt(int x, int y, EResourceType resourceType) {
 		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x + y * width] > 0;
 	}
 
@@ -189,7 +189,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 	}
 
-	public float getResourceAmountAround(short x, short y, EResourceType type) {
+	public float getResourceAmountAround(int x, int y, EResourceType type) {
 		int minx = Math.max(x - 1, 0);
 		int maxx = Math.max(x + 1, width - 1);
 		int miny = Math.max(y - 1, 0);
@@ -223,7 +223,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		this.blockedPartitions[x + y * width] = blockedPartition;
 	}
 
-	public short getBlockedPartitionAt(short x, short y) {
+	public short getBlockedPartitionAt(int x, int y) {
 		return this.blockedPartitions[x + y * width];
 	}
 

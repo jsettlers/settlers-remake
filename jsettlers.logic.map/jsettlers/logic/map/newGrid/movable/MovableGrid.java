@@ -34,7 +34,7 @@ public final class MovableGrid implements Serializable {
 		this.movableGrid = new NewMovable[width * height];
 	}
 
-	public final NewMovable getMovableAt(short x, short y) {
+	public final NewMovable getMovableAt(int x, int y) {
 		return this.movableGrid[x + y * width];
 	}
 
@@ -128,7 +128,7 @@ public final class MovableGrid implements Serializable {
 		return otherAttackable.getPlayerId() != player && otherAttackable.isAttackable();
 	}
 
-	public boolean hasNoMovableAt(short x, short y) {
+	public boolean hasNoMovableAt(int x, int y) {
 		return getMovableAt(x, y) == null;
 	}
 }

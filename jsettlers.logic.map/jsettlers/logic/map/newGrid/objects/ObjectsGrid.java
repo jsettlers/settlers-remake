@@ -74,11 +74,11 @@ public final class ObjectsGrid implements Serializable {
 		}
 	}
 
-	public final AbstractHexMapObject getObjectsAt(short x, short y) {
+	public final AbstractHexMapObject getObjectsAt(int x, int y) {
 		return objectsGrid[x + y * width];
 	}
 
-	public final AbstractHexMapObject getMapObjectAt(short x, short y, EMapObjectType mapObjectType) {
+	public final AbstractHexMapObject getMapObjectAt(int x, int y, EMapObjectType mapObjectType) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x + y * width];
 
 		return mapObjectHead != null ? mapObjectHead.getMapObject(mapObjectType) : null;

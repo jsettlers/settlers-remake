@@ -28,7 +28,7 @@ public final class FlagsGrid implements Serializable {
 		this.bordersGrid = new BitSet(width * height);
 	}
 
-	public boolean isBlocked(short x, short y) {
+	public boolean isBlocked(int x, int y) {
 		return blockedGrid.get(x + y * width);
 	}
 
@@ -49,7 +49,7 @@ public final class FlagsGrid implements Serializable {
 		this.protectedGrid.set(idx, blocked);
 	}
 
-	public boolean isMarked(short x, short y) {
+	public boolean isMarked(int x, int y) {
 		return this.markedGrid.get(x + y * width);
 	}
 
@@ -57,7 +57,7 @@ public final class FlagsGrid implements Serializable {
 		this.markedGrid.set(x + y * width, marked);
 	}
 
-	public boolean isProtected(short x, short y) {
+	public boolean isProtected(int x, int y) {
 		return this.protectedGrid.get(x + y * width);
 	}
 
@@ -65,7 +65,7 @@ public final class FlagsGrid implements Serializable {
 		this.protectedGrid.set(x + y * width, setProtected);
 	}
 
-	public boolean isBorderAt(short x, short y) {
+	public boolean isBorderAt(int x, int y) {
 		return this.bordersGrid.get(x + y * width);
 	}
 

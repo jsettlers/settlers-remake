@@ -531,58 +531,58 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final IMovable getMovableAt(int x, int y) {
-			return movableGrid.getMovableAt((short) x, (short) y);
+			return movableGrid.getMovableAt(x, y);
 		}
 
 		@Override
 		public final IMapObject getMapObjectsAt(int x, int y) {
-			return objectsGrid.getObjectsAt((short) x, (short) y);
+			return objectsGrid.getObjectsAt(x, y);
 		}
 
 		@Override
 		public final byte getHeightAt(int x, int y) {
-			return landscapeGrid.getHeightAt((short) x, (short) y);
+			return landscapeGrid.getHeightAt(x, y);
 		}
 
 		@Override
 		public final ELandscapeType getLandscapeTypeAt(int x, int y) {
-			return landscapeGrid.getLandscapeTypeAt((short) x, (short) y);
+			return landscapeGrid.getLandscapeTypeAt(x, y);
 		}
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			// short value = (short) (landscapeGrid.getBlockedPartitionAt((short) x, (short) y) + 1);
+			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// short value = (short) (partitionsGrid.getPartitionAt((short) x, (short) y) + 1);
+			// int value = partitionsGrid.getPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// short value = (short) (partitionsGrid.getTowerCounterAt((short) x, (short) y) + 1);
+			// int value = partitionsGrid.getTowerCounterAt(x, y) + 1;
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// short value = (short) (partitionsGrid.getPlayerAt((short) x, (short) y) + 1);
-			// return new Color((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// int value = partitionsGrid.getPlayerAt(x, y).playerId + 1;
+			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return landscapeGrid.getDebugColor(x, y);
+			// return landscapeGrid.getDebugColor(x, y);
 
-			// return flagsGrid.isMarked((short) x, (short) y) ? Color.ORANGE.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-			// EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid.getMapObjectAt((short) x, (short) y,
-			// EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB() : (flagsGrid.isBlocked((short) x, (short) y) ? Color.BLACK
-			// .getARGB() : (flagsGrid.isProtected((short) x, (short) y) ? Color.BLUE.getARGB() : 0))));
+			return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+					: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
-			// return objectsGrid.getMapObjectAt((short) x, (short) y, EMapObjectType.ARROW) != null ? Color.RED.getABGR() : 0;
+			// return objectsGrid.getMapObjectAt( x, y, EMapObjectType.ARROW) != null ? Color.RED.getABGR() : 0;
 		}
 
 		@Override
 		public final boolean isBorder(int x, int y) {
-			return flagsGrid.isBorderAt((short) x, (short) y);
+			return flagsGrid.isBorderAt(x, y);
 		}
 
 		@Override
 		public final byte getPlayerIdAt(int x, int y) {
-			return partitionsGrid.getPlayerIdAt((short) x, (short) y);
+			return partitionsGrid.getPlayerIdAt(x, y);
 		}
 
 		@Override
@@ -601,7 +601,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public int nextDrawableX(int x, int y) {
+		public int nextDrawableX(int x, int y, int maxX) {
 			return x + 1;
 		}
 	}
