@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class ShortPoint2D implements Serializable {
 	private static final long serialVersionUID = -6227987796843655750L;
 
-	protected final short x;
-	protected final short y;
+	public final short x;
+	public final short y;
 
 	public ShortPoint2D(short x, short y) {
 		this.x = x;
@@ -80,6 +80,17 @@ public class ShortPoint2D implements Serializable {
 	public int getOnGridDistTo(ShortPoint2D otherPos) {
 		final int dx = x - otherPos.x;
 		final int dy = y - otherPos.y;
+		return getOnGridDist(dx, dy);
+	}
+
+	/**
+	 * Gets the number of tiles a movable must at least walk to get from (0|0) to (dx|dy).
+	 * 
+	 * @param dx
+	 * @param dy
+	 * @return
+	 */
+	public static int getOnGridDist(final int dx, final int dy) {
 		final int absDx = Math.abs(dx);
 		final int absDy = Math.abs(dy);
 
@@ -92,6 +103,5 @@ public class ShortPoint2D implements Serializable {
 		} else {
 			return absDx + absDy;
 		}
-
 	}
 }

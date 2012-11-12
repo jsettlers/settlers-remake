@@ -1,5 +1,8 @@
 package jsettlers.common.map.shapes;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -17,7 +20,7 @@ public final class HexGridArea implements IMapArea {
 	final short maxRadius;
 
 	/**
-	 * hexagon from including {@link #startRadius} to including {@link #maxRadius}
+	 * Hexagon area from including {@link #startRadius} to including {@link #maxRadius}
 	 * 
 	 * @param cX
 	 *            center x
@@ -28,11 +31,11 @@ public final class HexGridArea implements IMapArea {
 	 * @param maxRadius
 	 *            inclusive outer radius
 	 */
-	public HexGridArea(short cX, short cY, short startRadius, short maxRadius) {
-		this.cX = cX;
-		this.cY = cY;
-		this.startRadius = startRadius;
-		this.maxRadius = maxRadius;
+	public HexGridArea(int cX, int cY, int startRadius, int maxRadius) {
+		this.cX = (short) cX;
+		this.cY = (short) cY;
+		this.startRadius = (short) startRadius;
+		this.maxRadius = (short) maxRadius;
 	}
 
 	@Override
@@ -45,74 +48,77 @@ public final class HexGridArea implements IMapArea {
 		return new HexGridAreaIterator(this);
 	}
 
-	public static final class HexGridAreaIterator implements ICoordinateIterator {
-		private static final byte[] directionIncreaseX = { -1, 0, 1, 1, 0, -1 };
-		private static final byte[] directionIncreaseY = { 0, 1, 1, 0, -1, -1 };
-
+	public static final class HexGridAreaIterator implements Iterator<ShortPoint2D>, Serializable {
 		private static final long serialVersionUID = -8760653162789299782L;
+
+		private static final byte[] directionIncreaseX = { EDirection.SOUTH_EAST.gridDeltaX, EDirection.SOUTH_WEST.gridDeltaX,
+				EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX, EDirection.EAST.gridDeltaX };
+		private static final byte[] directionIncreaseY = { EDirection.SOUTH_EAST.gridDeltaY, EDirection.SOUTH_WEST.gridDeltaY,
+				EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY, EDirection.EAST.gridDeltaY };
+		private static final int MAX_DIRECTIONS_IDX = EDirection.NUMBER_OF_DIRECTIONS - 1;
+
 		private final HexGridArea hexGridArea;
 		private short radius;
 		private short x;
 		private short y;
-		private byte direction = 0;
-		private short length = 0;
+		private int direction;
+		private short length = 1;
 
 		public HexGridAreaIterator(HexGridArea hexGridArea) {
 			this.hexGridArea = hexGridArea;
 			radius = hexGridArea.startRadius;
-			calcNewXY();
-		}
 
-		private final void calcNewXY() {
 			x = hexGridArea.cX;
-			y = (short) (hexGridArea.cY - radius);
+			y = (short) (hexGridArea.cY - radius); // radius * NORTH_EAST
+
+			if (hexGridArea.startRadius == 0) {
+				direction = EDirection.NUMBER_OF_DIRECTIONS;
+			} else {
+				direction = 0;
+				x += EDirection.SOUTH_EAST.gridDeltaX;
+				y += EDirection.SOUTH_EAST.gridDeltaY;
+			}
 		}
 
 		@Override
 		public boolean hasNext() {
-			if (length >= radius) {
-				direction++;
-				if (direction >= EDirection.NUMBER_OF_DIRECTIONS) {
-					radius++;
-					if (radius >= hexGridArea.maxRadius) {
-						return false;
-					}
+			return radius <= hexGridArea.maxRadius;
+		}
 
-					direction = 0;
-					calcNewXY();
-				}
-				length = 0;
-			}
-
-			x += directionIncreaseX[direction];
-			y += directionIncreaseY[direction];
-			length++;
-			return true;
+		public short getRadiusOfNext() {
+			return radius;
 		}
 
 		@Override
 		public ShortPoint2D next() {
-			return new ShortPoint2D(x, y);
+			ShortPoint2D result = new ShortPoint2D(x, y);
+
+			if (length >= radius) {
+				length = 0;
+				direction++;
+
+				if (direction >= EDirection.NUMBER_OF_DIRECTIONS) {
+					x += directionIncreaseX[MAX_DIRECTIONS_IDX];
+					y += directionIncreaseY[MAX_DIRECTIONS_IDX];
+
+					direction = 0;
+					length = 1;
+					radius++;
+
+					return result;
+				}
+			}
+			length++;
+
+			x += directionIncreaseX[direction];
+			y += directionIncreaseY[direction];
+
+			return result;
 		}
 
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("not implemented!");
 		}
-
-		@Override
-		public short getNextX() {
-			return x;
-		}
-
-		@Override
-		public short getNextY() {
-			return y;
-		}
-
-		public final short getCurrRadius() {
-			return radius;
-		}
 	}
-
 }
