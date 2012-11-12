@@ -116,7 +116,9 @@ public interface IGraphicsGrid {
 	 * 
 	 * @param x
 	 * @param y
+	 * @param maxX
+	 *            the maximum x that needs to be searched.
 	 * @return a value bigger than x, might be outside the map.
 	 */
-	int nextDrawableX(int x, int y);
+	int nextDrawableX(int x, int y, int maxX);
 }
