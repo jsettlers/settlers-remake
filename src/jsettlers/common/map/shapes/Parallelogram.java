@@ -55,8 +55,8 @@ public class Parallelogram implements IMapArea {
 
 	@Override
 	public boolean contains(ShortPoint2D position) {
-		int x = position.getX();
-		int y = position.getY();
+		int x = position.x;
+		int y = position.y;
 		return x >= minx && x <= maxx && y >= miny && y <= maxy;
 	}
 

@@ -17,7 +17,7 @@ public final class HexBorderArea implements IMapArea {
 	private short centerY;
 
 	public HexBorderArea(ShortPoint2D center, short radius) {
-		this(center.getX(), center.getY(), radius);
+		this(center.x, center.y, radius);
 	}
 
 	public HexBorderArea(short centerX, short centerY, short radius) {

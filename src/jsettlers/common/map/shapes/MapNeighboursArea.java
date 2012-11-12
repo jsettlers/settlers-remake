@@ -12,8 +12,8 @@ public class MapNeighboursArea implements IMapArea {
 	private final short y;
 
 	public MapNeighboursArea(ShortPoint2D center) {
-		this.x = center.getX();
-		this.y = center.getY();
+		this.x = center.x;
+		this.y = center.y;
 	}
 
 	public MapNeighboursArea(final short x, final short y) {

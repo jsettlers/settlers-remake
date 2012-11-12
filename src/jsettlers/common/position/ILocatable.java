@@ -26,8 +26,8 @@ public interface ILocatable {
 			int closestIdx = 0;
 			float closestDist = Short.MAX_VALUE;
 
-			short tx = target.getX();
-			short ty = target.getY();
+			short tx = target.x;
+			short ty = target.y;
 
 			int idx = 0;
 			for (ILocatable curr : toBeCompared) {
@@ -44,7 +44,7 @@ public interface ILocatable {
 		}
 
 		public static float getHeuristic(ShortPoint2D pos, short tx, short ty) {
-			return (float) Math.hypot(pos.getX() - tx, pos.getY() - ty);
+			return (float) Math.hypot(pos.x - tx, pos.y - ty);
 		}
 	}
 }

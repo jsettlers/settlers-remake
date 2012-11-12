@@ -46,10 +46,10 @@ public class MapCircleBorder implements IMapArea {
 		if (point == null) {
 			return false;
 		}
-		short line = point.getY();
+		short line = point.y;
 		float prevLineWidth = baseCircle.getHalfLineWidth(line - baseCircle.getCenterY() - 1);
 		float nextLineWidth = baseCircle.getHalfLineWidth(line - baseCircle.getCenterY() + 1);
-		float xDistToCenter = Math.abs(-point.getX() - .5f * (baseCircle.getCenterY() - line) + baseCircle.getCenterX());
+		float xDistToCenter = Math.abs(-point.x - .5f * (baseCircle.getCenterY() - line) + baseCircle.getCenterX());
 		return xDistToCenter < prevLineWidth && xDistToCenter < nextLineWidth;
 	}
 

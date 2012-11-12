@@ -26,7 +26,7 @@ public final class MapCircle implements IMapArea {
 	public final static float Y_SCALE = (float) Math.sqrt(3) / 2.0f * .999999f;
 
 	public MapCircle(ShortPoint2D pos, float radius) {
-		this(pos.getX(), pos.getY(), radius);
+		this(pos.x, pos.y, radius);
 	}
 
 	public MapCircle(int cx, int cy, float radius) {
@@ -37,7 +37,7 @@ public final class MapCircle implements IMapArea {
 
 	@Override
 	public final boolean contains(ShortPoint2D position) {
-		return contains(position.getX(), position.getY());
+		return contains(position.x, position.y);
 	}
 
 	public final boolean contains(int x, int y) {
@@ -82,7 +82,7 @@ public final class MapCircle implements IMapArea {
 	}
 
 	public static final float getDistanceSquared(ShortPoint2D pos1, ShortPoint2D pos2) {
-		return getDistanceSquared(pos1.getX(), pos1.getY(), pos2.getX(), pos2.getY());
+		return getDistanceSquared(pos1.x, pos1.y, pos2.x, pos2.y);
 	}
 
 	public static final float getDistanceSquared(int x1, int y1, int x2, int y2) {

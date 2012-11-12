@@ -99,19 +99,19 @@ public final class FreeMapArea implements IMapArea {
 	}
 
 	final int getMapY(ShortPoint2D pos) {
-		return pos.getY() - yOffset;
+		return pos.y - yOffset;
 	}
 
 	final int getMapX(ShortPoint2D pos) {
-		return pos.getX() - xOffset;
+		return pos.x - xOffset;
 	}
 
 	private final SRectangle getBounds(List<ShortPoint2D> positions) {
 		short xMin = Short.MAX_VALUE, xMax = 0, yMin = Short.MAX_VALUE, yMax = 0;
 
 		for (ShortPoint2D curr : positions) {
-			short x = curr.getX();
-			short y = curr.getY();
+			short x = curr.x;
+			short y = curr.y;
 			if (x < xMin)
 				xMin = x;
 			if (x > xMax)
@@ -132,8 +132,8 @@ public final class FreeMapArea implements IMapArea {
 	}
 
 	private final boolean isValidPos(ShortPoint2D pos) {
-		int dx = pos.getX() - xOffset;
-		int dy = pos.getY() - yOffset;
+		int dx = pos.x - xOffset;
+		int dy = pos.y - yOffset;
 		return dx >= 0 && dy >= 0 && dx < width && dy < height;
 	}
 

@@ -62,7 +62,7 @@ public enum EDirection {
 	 *         null if it does not exist
 	 */
 	public static final EDirection getDirection(ShortPoint2D first, ShortPoint2D second) {
-		return getDirection(first.getX(), first.getY(), second.getX(), second.getY());
+		return getDirection(first.x, first.y, second.x, second.y);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public enum EDirection {
 	 * @return
 	 */
 	public static EDirection getApproxDirection(ShortPoint2D first, ShortPoint2D second) {
-		return getApproxDirection(first.getX(), first.getY(), second.getX(), second.getY());
+		return getApproxDirection(first.x, first.y, second.x, second.y);
 	}
 
 	/**
@@ -197,11 +197,11 @@ public enum EDirection {
 	 * @return
 	 */
 	public ShortPoint2D getNextHexPoint(ShortPoint2D pos) {
-		return getNextHexPoint(pos.getX(), pos.getY());
+		return getNextHexPoint(pos.x, pos.y);
 	}
 
 	public ShortPoint2D getNextHexPoint(ShortPoint2D pos, int steps) {
-		return new ShortPoint2D(pos.getX() + gridDeltaX * steps, pos.getY() + gridDeltaY * steps);
+		return new ShortPoint2D(pos.x + gridDeltaX * steps, pos.y + gridDeltaY * steps);
 	}
 
 	/**

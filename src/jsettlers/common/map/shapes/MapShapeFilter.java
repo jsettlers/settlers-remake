@@ -46,8 +46,8 @@ public class MapShapeFilter implements IMapArea {
 	}
 
 	private boolean inMap(ShortPoint2D position) {
-		int x = position.getX();
-		int y = position.getY();
+		int x = position.x;
+		int y = position.y;
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 

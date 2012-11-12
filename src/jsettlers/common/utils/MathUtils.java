@@ -31,6 +31,6 @@ public final class MathUtils {
 	 * @return
 	 */
 	public static int squareHypot(ShortPoint2D pos1, ShortPoint2D pos2) {
-		return squareHypot(pos1.getX() - pos2.getX(), pos1.getY() - pos2.getY());
+		return squareHypot(pos1.x - pos2.x, pos1.y - pos2.y);
 	}
 }

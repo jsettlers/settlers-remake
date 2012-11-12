@@ -30,7 +30,7 @@ public final class MapRectangle implements IMapArea {
 
 	@Override
 	public final boolean contains(ShortPoint2D position) {
-		return contains(position.getX(), position.getY());
+		return contains(position.x, position.y);
 	}
 
 	public final boolean contains(int x, int y) {

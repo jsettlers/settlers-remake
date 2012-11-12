@@ -25,14 +25,6 @@ public class ShortPoint2D implements Serializable {
 		this((short) x, (short) y);
 	}
 
-	public short getX() {
-		return x;
-	}
-
-	public short getY() {
-		return y;
-	}
-
 	@Override
 	public String toString() {
 		return "(" + x + "|" + y + ")";
@@ -48,7 +40,7 @@ public class ShortPoint2D implements Serializable {
 	}
 
 	public boolean equals(ShortPoint2D other) {
-		return other != null && other.getX() == x && other.getY() == y;
+		return other != null && other.x == x && other.y == y;
 	}
 
 	@Override
