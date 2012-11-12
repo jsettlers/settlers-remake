@@ -7,6 +7,7 @@ package jsettlers.logic.constants;
  * 
  */
 public final class Constants {
+
 	/**
 	 * private constructor, because no instances of this class can be created.
 	 */
@@ -34,6 +35,8 @@ public final class Constants {
 	public static final float MOVABLE_TAKE_DROP_DURATION = 0.5f;
 
 	public static final short MOVABLE_VIEW_DISTANCE = 8;
+
+	public static final short MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS = 2;
 
 	public static final short SOLDIER_SEARCH_RADIUS = 30;
 	public static final short TOWER_SEARCH_RADIUS = 40;

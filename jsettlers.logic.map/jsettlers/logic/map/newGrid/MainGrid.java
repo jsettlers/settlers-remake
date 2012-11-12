@@ -551,8 +551,8 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
-			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
+			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// int value = partitionsGrid.getPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
@@ -565,10 +565,10 @@ public final class MainGrid implements Serializable {
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-					: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+			// .getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+			// : (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
@@ -1142,39 +1142,34 @@ public final class MainGrid implements Serializable {
 		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, Player shooterPlayer, float hitStrength) {
 			mapObjectsManager.addArrowObject(attackedPos, shooterPos, shooterPlayer, hitStrength);
 		}
-	}
-
-	public final class MovableNeighborIterator implements Iterator<NewMovable> {
-		private final HexGridAreaIterator hexIterator;
-		private NewMovable currMovable;
-
-		public MovableNeighborIterator(ShortPoint2D pos, byte radius) {
-			this.hexIterator = new HexGridArea(pos.getX(), pos.getY(), (short) 0, radius).iterator();
-		}
 
 		@Override
-		public boolean hasNext() {
-			while (hexIterator.hasNext()) {
-				if (isInBounds(hexIterator.getNextX(), hexIterator.getNextY())
-						&& (currMovable = movableGrid.getMovableAt(hexIterator.getNextX(), hexIterator.getNextY())) != null) {
-					return true;
+		public final ShortPoint2D calcDecentralizeVector(short x, short y) {
+			HexGridArea area = new HexGridArea(x, y, (short) 1, Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS);
+			HexGridAreaIterator iter = area.iterator();
+			int dx = 0, dy = 0;
+
+			while (iter.hasNext()) {
+				short radius = iter.getRadiusOfNext();
+				ShortPoint2D curr = iter.next();
+				short currX = curr.x;
+				short currY = curr.y;
+
+				int factor;
+
+				if (!MainGrid.this.isInBounds(currX, currY) || flagsGrid.isBlocked(currX, currY)) {
+					factor = radius == 1 ? 6 : 2;
+				} else if (!movableGrid.hasNoMovableAt(currX, currY)) {
+					factor = Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS - radius + 1;
+				} else {
+					continue;
 				}
+
+				dx += (x - currX) * factor;
+				dy += (y - currY) * factor;
 			}
-			return false;
-		}
 
-		@Override
-		public NewMovable next() {
-			return currMovable;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-
-		public final int getCurrRadius() {
-			return hexIterator.getCurrRadius();
+			return new ShortPoint2D(dx, dy);
 		}
 	}
 

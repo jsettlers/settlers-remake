@@ -6,8 +6,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import jsettlers.common.map.shapes.HexGridArea;
-import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
@@ -44,8 +42,6 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
-	private static final short NOTHING_TO_DO_MAX_RADIUS = 3;
-
 	private static final HashMap<Integer, NewMovable> movablesByID = new HashMap<Integer, NewMovable>();
 	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
 	private static int nextID = Integer.MIN_VALUE;
@@ -306,30 +302,11 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	private void flockToDecentralize() {
-		short x = position.getX(), y = position.getY();
-		HexGridArea area = new HexGridArea(x, y, (short) 1, NOTHING_TO_DO_MAX_RADIUS);
-		int dx = 0, dy = 0;
-		HexGridAreaIterator iter = area.iterator();
-		while (iter.hasNext()) {
-			short currX = iter.getNextX();
-			short currY = iter.getNextY();
-			int factor;
+		ShortPoint2D decentVector = grid.calcDecentralizeVector(position.getX(), position.getY());
+		int dx = direction.gridDeltaX + decentVector.x;
+		int dy = direction.gridDeltaY + decentVector.y;
 
-			if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
-				factor = iter.getCurrRadius() == 1 ? 6 : 2;
-			} else if (!grid.hasNoMovableAt(currX, currY)) {
-				factor = NOTHING_TO_DO_MAX_RADIUS - iter.getCurrRadius() + 1;
-			} else {
-				continue;
-			}
-
-			dx += (x - currX) * factor;
-			dy += (y - currY) * factor;
-		}
-		dx += direction.gridDeltaX;
-		dy += direction.gridDeltaY;
-
-		if (Math.abs(dx) + Math.abs(dy) >= 4f) {
+		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
 			this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy));
 			doingNothingProbablity = Math.min(doingNothingProbablity + 0.02f, 0.1f);
 		} else {

@@ -76,4 +76,6 @@ public interface INewMovableGrid extends IStrategyGrid {
 
 	boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position);
 
+	ShortPoint2D calcDecentralizeVector(short x, short y);
+
 }
