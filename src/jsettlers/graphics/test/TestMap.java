@@ -132,7 +132,7 @@ public class TestMap implements IGraphicsGrid {
 	}
 
 	public TestTile getTile(ShortPoint2D pos) {
-		return getTile(pos.getX(), pos.getY());
+		return getTile(pos.x, pos.y);
 	}
 
 	private void addBuildings() {
@@ -271,8 +271,8 @@ public class TestMap implements IGraphicsGrid {
 			MapCircle circle = new MapCircle((short) cx, (short) cy, (float) r);
 
 			for (ShortPoint2D pos : new MapShapeFilter(circle, WIDTH, HEIGHT)) {
-				double add = (r - circle.distanceToCenter(pos.getX(), pos.getY())) / 5;
-				this.heights[pos.getX()][pos.getY()] += (byte) add;
+				double add = (r - circle.distanceToCenter(pos.x, pos.y)) / 5;
+				this.heights[pos.x][pos.y] += (byte) add;
 			}
 		}
 		for (int x = 0; x < WIDTH; x++) {

@@ -93,7 +93,7 @@ public class CircleTest {
 		boolean[][] foundByIterator = new boolean[TEST_WIDTH][TEST_WIDTH];
 
 		for (ShortPoint2D pos : circle) {
-			foundByIterator[pos.getX()][pos.getY()] = true;
+			foundByIterator[pos.x][pos.y] = true;
 		}
 
 		for (int x = 0; x < TEST_WIDTH; x++) {

@@ -62,7 +62,7 @@ public class HexGridAreaTest {
 	}
 
 	private void assertPositions(ShortPoint2D center, int startRadius, int maxRadius, int expectedCount) {
-		HexGridArea area = new HexGridArea(center.getX(), center.getY(), startRadius, maxRadius);
+		HexGridArea area = new HexGridArea(center.x, center.y, startRadius, maxRadius);
 
 		int count = 0;
 		for (ShortPoint2D pos : area) {

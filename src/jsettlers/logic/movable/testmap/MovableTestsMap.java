@@ -123,8 +123,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	private final INewMovableGrid movableGrid = new INewMovableGrid() {
 		@Override
 		public void leavePosition(ShortPoint2D position, NewMovable movable) {
-			if (movableMap[position.getX()][position.getY()] == movable) {
-				movableMap[position.getX()][position.getY()] = null;
+			if (movableMap[position.x][position.y] == movable) {
+				movableMap[position.x][position.y] = null;
 			}
 		}
 
@@ -135,8 +135,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean isFreePosition(ShortPoint2D position) {
-			short x = position.getX();
-			short y = position.getY();
+			short x = position.x;
+			short y = position.y;
 
 			return isInBounds(x, y) && !isBlocked(x, y) && movableMap[x][y] == null;
 		}
@@ -170,7 +170,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 					public ShortPoint2D getPos() {
 						return targetPos;
 					}
-				}, materialTypeMap[source.getX()][source.getY()]);
+				}, materialTypeMap[source.x][source.y]);
 			}
 		}
 
@@ -178,8 +178,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType) {
-			if (materialTypeMap[pos.getX()][pos.getY()] == materialType && materialAmmountMap[pos.getX()][pos.getY()] > 0) {
-				materialAmmountMap[pos.getX()][pos.getY()]--;
+			if (materialTypeMap[pos.x][pos.y] == materialType && materialAmmountMap[pos.x][pos.y] > 0) {
+				materialAmmountMap[pos.x][pos.y]--;
 				return true;
 			} else {
 				return false;
@@ -188,8 +188,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer) {
-			materialTypeMap[pos.getX()][pos.getY()] = materialType;
-			materialAmmountMap[pos.getX()][pos.getY()]++;
+			materialTypeMap[pos.x][pos.y] = materialType;
+			materialAmmountMap[pos.x][pos.y]++;
 
 			materials.add(pos);
 
@@ -296,7 +296,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position) {
-			short x = position.getX(), y = position.getY();
+			short x = position.x, y = position.y;
 			return isInBounds(x, y) && !isBlocked(x, y)
 					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == getPlayerIdAt(x, y));
 		}
@@ -348,7 +348,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
-			movableMap[position.getX()][position.getY()] = movable;
+			movableMap[position.x][position.y] = movable;
 		}
 
 		@Override

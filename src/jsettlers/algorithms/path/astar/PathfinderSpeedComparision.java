@@ -56,7 +56,7 @@ public class PathfinderSpeedComparision {
 			ShortPoint2D start = getUnblocktPosition(requester, random, map, width, height);
 			ShortPoint2D target = getUnblocktPosition(requester, random, map, width, height);
 
-			astar.findPath(requester, start.getX(), start.getY(), target.getX(), target.getY());
+			astar.findPath(requester, start.x, start.y, target.x, target.y);
 			System.out.print(i + ", ");
 		}
 

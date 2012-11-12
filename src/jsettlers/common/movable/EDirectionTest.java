@@ -22,7 +22,7 @@ public class EDirectionTest {
 		for (EDirection currDir : EDirection.values) {
 			ShortPoint2D target = currDir.getNextHexPoint(new ShortPoint2D(startX, startY));
 
-			EDirection calculatedDir = EDirection.getDirectionOfMultipleSteps(target.getX() - startX, target.getY() - startY);
+			EDirection calculatedDir = EDirection.getDirectionOfMultipleSteps(target.x - startX, target.y - startY);
 			assertNotNull(calculatedDir);
 			assertEquals(currDir, calculatedDir);
 		}
@@ -37,7 +37,7 @@ public class EDirectionTest {
 			for (int i = 1; i < 30; i++) {
 				ShortPoint2D target = currDir.getNextHexPoint(new ShortPoint2D(startX, startY), i);
 
-				EDirection calculatedDir = EDirection.getDirectionOfMultipleSteps(target.getX() - startX, target.getY() - startY);
+				EDirection calculatedDir = EDirection.getDirectionOfMultipleSteps(target.x - startX, target.y - startY);
 				assertNotNull(calculatedDir);
 				assertEquals(currDir, calculatedDir);
 			}

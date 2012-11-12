@@ -93,7 +93,7 @@ public class TestNewPartitioner {
 			@Override
 			public boolean evaluate(ShortPoint2D pos) {
 				return !circle3.contains(pos) && !circle2.contains(pos) && !circle1.contains(pos) || circle4.contains(pos)
-						|| (pos.getX() == 230 && pos.getY() == 200);
+						|| (pos.x == 230 && pos.y == 200);
 			}
 		};
 
@@ -128,7 +128,7 @@ public class TestNewPartitioner {
 		System.out.println("number of partitions: " + partitioner.getNumberOfPartitions());
 		for (int i = 1; i <= partitioner.getNumberOfPartitions(); i++) {
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
-			grid.setLandscapeTypeAt(pos.getX(), pos.getY(), ELandscapeType.RIVER1);
+			grid.setLandscapeTypeAt(pos.x, pos.y, ELandscapeType.RIVER1);
 
 			final byte partition = (byte) i;
 			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
@@ -151,7 +151,7 @@ public class TestNewPartitioner {
 	private static void setCircleToGrid(MainGrid grid, int x, int y, int radius, short partition) {
 		MapCircle c1 = new MapCircle(getPos(x, y), radius);
 		for (ShortPoint2D curr : c1) {
-			grid.partitionsGrid.setPartitionAndPlayerAt(curr.getX(), curr.getY(), partition);
+			grid.partitionsGrid.setPartitionAndPlayerAt(curr.x, curr.y, partition);
 		}
 	}
 
