@@ -50,7 +50,7 @@ public class PlayerBaseInstruction extends LandInstruction {
 		        MeshLandscapeType.parse(getParameter("on", random), null);
 
 		for (PlayerStart start : starts) {
-			Point2D point = new Point2D(start.getX(), start.getY());
+			Point2D point = new Point2D(start.x, start.y);
 
 			SiteCriterium criterium =
 			        new SiteDistanceCriterium(point, getParameter("distance",

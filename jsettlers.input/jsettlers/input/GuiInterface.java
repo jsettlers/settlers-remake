@@ -264,8 +264,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		int count = 0;
 		for (ISelectable member : currentSelection) {
 			if (member instanceof ILocatable) {
-				x += ((ILocatable) member).getPos().getX();
-				y += ((ILocatable) member).getPos().getY();
+				x += ((ILocatable) member).getPos().x;
+				y += ((ILocatable) member).getPos().y;
 				count++;
 			}
 		}
@@ -320,11 +320,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		SelectionSet selectionSet = new SelectionSet();
 
 		for (ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
-			IGuiMovable movable = grid.getMovable(curr.getX(), curr.getY());
+			IGuiMovable movable = grid.getMovable(curr.x, curr.y);
 			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayerId() == player)) {
 				selectionSet.add(movable);
 			}
-			IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
+			IBuilding building = grid.getBuildingAt(curr.x, curr.y);
 			if (building != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || building.getPlayerId() == player)) {
 				selectionSet.add(building);
 			}
@@ -336,7 +336,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void handleSelectPointAction(SelectAction action) {
 		SelectAction selectAction = action;
 		ShortPoint2D pos = selectAction.getPosition();
-		System.out.println("clicked: ( " + pos.getX() + " | " + pos.getY() + " )");
+		System.out.println("clicked: ( " + pos.x + " | " + pos.y + " )");
 
 		if (activeAction == null) {
 			select(pos);
@@ -366,8 +366,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void select(ShortPoint2D pos) {
 		if (grid.isInBounds(pos)) {
-			short x = pos.getX();
-			short y = pos.getY();
+			short x = pos.x;
+			short y = pos.y;
 
 			IGuiMovable m1 = grid.getMovable((short) (x + 1), (short) (y + 1));
 			IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
@@ -396,9 +396,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private IBuilding getBuildingAround(ShortPoint2D pos) {
-		for (ShortPoint2D curr : new MapCircle(pos.getX(), pos.getY(), 5)) {
+		for (ShortPoint2D curr : new MapCircle(pos.x, pos.y, 5)) {
 			if (grid.isInBounds(curr)) {
-				IBuilding building = grid.getBuildingAt(curr.getX(), curr.getY());
+				IBuilding building = grid.getBuildingAt(curr.x, curr.y);
 				if (building != null) {
 					return building;
 				}

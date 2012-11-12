@@ -43,7 +43,7 @@ public final class MovableGrid implements Serializable {
 	}
 
 	public final void movableLeft(ShortPoint2D position, NewMovable movable) {
-		int idx = position.getX() + position.getY() * width;
+		int idx = position.x + position.y * width;
 		if (this.movableGrid[idx] == movable) {
 			this.movableGrid[idx] = null;
 		}
@@ -58,8 +58,8 @@ public final class MovableGrid implements Serializable {
 	 *            Movable that enters the position.
 	 */
 	public final void movableEntered(ShortPoint2D position, NewMovable movable) {
-		short x = position.getX();
-		short y = position.getY();
+		short x = position.x;
+		short y = position.y;
 
 		int idx = x + y * width;
 		if (idx < 0) {
@@ -98,8 +98,8 @@ public final class MovableGrid implements Serializable {
 		byte movablePlayer = movable.getPlayerId();
 
 		for (ShortPoint2D curr : area) {
-			short currX = curr.getX();
-			short currY = curr.getY();
+			short currX = curr.x;
+			short currY = curr.y;
 			if (0 <= currX && currX < width && 0 <= currY && currY < height) {
 				NewMovable currMovable = getMovableAt(currX, currY);
 				if (currMovable != null && isEnemy(movablePlayer, currMovable)) {

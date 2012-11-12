@@ -97,7 +97,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			attackableTowerObject = new AttackableTowerMapObject();
 			super.getGrid().getMapObjectsManager().addAttackableTowerObject(getDoor(), attackableTowerObject);
 		} else {
-			super.getGrid().getMapObjectsManager().removeMapObjectType(getDoor().getX(), getDoor().getY(), EMapObjectType.ATTACKABLE_TOWER);
+			super.getGrid().getMapObjectsManager().removeMapObjectType(getDoor().x, getDoor().y, EMapObjectType.ATTACKABLE_TOWER);
 			attackableTowerObject = null;
 		}
 	}
@@ -159,7 +159,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 			if (!searchedSoldiers.isEmpty()) {
 				if (request == null) {
-					request = new DijkstraContinuableRequest(this, super.getPos().getX(), super.getPos().getY(), (short) 1,
+					request = new DijkstraContinuableRequest(this, super.getPos().x, super.getPos().y, (short) 1,
 							Constants.TOWER_SEARCH_RADIUS);
 				}
 				request.setSearchType(searchedSoldiers.peek());
@@ -275,7 +275,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			if (add) {
 				super.getGrid().getMapObjectsManager().addInformableMapObjectAt(position, soldier.getSoldier().getMovable());
 			} else {
-				super.getGrid().getMapObjectsManager().removeMapObjectType(position.getX(), position.getY(), EMapObjectType.INFORMABLE_MAP_OBJECT);
+				super.getGrid().getMapObjectsManager().removeMapObjectType(position.x, position.y, EMapObjectType.INFORMABLE_MAP_OBJECT);
 			}
 		}
 	}
@@ -284,7 +284,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	public ShortPoint2D getTowerBowmanSearchPosition(OccupyerPlace place) {
 		ShortPoint2D pos = place.getPosition().calculatePoint(super.getPos());
 		// FIXME @Andreas Eberle introduce new field in the buildings xml file
-		ShortPoint2D position = new ShortPoint2D(pos.getX() + 3, pos.getY() + 6);
+		ShortPoint2D position = new ShortPoint2D(pos.x + 3, pos.y + 6);
 		return position;
 	}
 

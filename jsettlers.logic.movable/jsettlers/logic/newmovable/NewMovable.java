@@ -134,7 +134,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 			if (goInDirection(currDir)) {
 				break;
 			} else {
-				NewMovable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.getX()), currDir.getNextTileY(position.getY()));
+				NewMovable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
 				if (movableAtPos != null) {
 					movableAtPos.push(this);
 				}
@@ -151,7 +151,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	 * @return this movable
 	 */
 	protected final NewMovable positionAt(ShortPoint2D position) {
-		assert grid.hasNoMovableAt(position.getX(), position.getY()) : "given position not free for movable! " + position;
+		assert grid.hasNoMovableAt(position.x, position.y) : "given position not free for movable! " + position;
 
 		if (this.position != null) {
 			grid.leavePosition(this.position, this);
@@ -239,7 +239,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 				return;
 			}
 
-			direction = EDirection.getDirection(position.getX(), position.getY(), path.nextX(), path.nextY());
+			direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
 
 			if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
 				goSinglePathStep();
@@ -284,8 +284,8 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	private void doingNothingAction() {
-		if (grid.isBlocked(position.getX(), position.getY())) {
-			Path newPath = grid.searchDijkstra(this, position.getX(), position.getY(), (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
+		if (grid.isBlocked(position.x, position.y)) {
+			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
 			if (newPath == null) {
 				kill();
 			} else {
@@ -302,7 +302,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	private void flockToDecentralize() {
-		ShortPoint2D decentVector = grid.calcDecentralizeVector(position.getX(), position.getY());
+		ShortPoint2D decentVector = grid.calcDecentralizeVector(position.x, position.y);
 		int dx = direction.gridDeltaX + decentVector.x;
 		int dy = direction.gridDeltaY + decentVector.y;
 
@@ -358,11 +358,11 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 				} else {
 					ShortPoint2D nextPos = this.direction.getNextHexPoint(this.position);
-					if (grid.hasNoMovableAt(nextPos.getX(), nextPos.getY())) {
+					if (grid.hasNoMovableAt(nextPos.x, nextPos.y)) {
 						// this movable isn't blocked, so just let it's pathingAction() handle this
 					} else if (pushedFrom == null) {
 						this.pushedFrom = pushingMovable;
-						boolean pushingSuccessfull = grid.getMovableAt(nextPos.getX(), nextPos.getY()).push(this);
+						boolean pushingSuccessfull = grid.getMovableAt(nextPos.x, nextPos.y).push(this);
 						this.pushedFrom = null;
 
 						return pushingSuccessfull;
@@ -478,7 +478,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	 */
 	final boolean goInDirection(EDirection direction) {
 		ShortPoint2D pos = direction.getNextHexPoint(position);
-		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.getX(), pos.getY())) {
+		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y)) {
 			initGoingSingleStep(pos);
 			this.direction = direction;
 			progressIncrease = WALKING_PROGRESS_INCREASE;

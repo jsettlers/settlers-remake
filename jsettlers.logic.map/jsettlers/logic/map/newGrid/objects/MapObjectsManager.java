@@ -93,7 +93,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 			return true;
 
 		case PLANTABLE_TREE:
-			return plantTree(new ShortPoint2D(pos.getX(), pos.getY() + 1));
+			return plantTree(new ShortPoint2D(pos.x, pos.y + 1));
 
 		case CUTTABLE_CORN:
 			return cutCorn(pos);
@@ -111,8 +111,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private boolean addRessourceSign(ShortPoint2D pos) {
-		EResourceType resourceType = grid.getRessourceTypeAt(pos.getX(), pos.getY());
-		byte resourceAmount = grid.getRessourceAmountAt(pos.getX(), pos.getY());
+		EResourceType resourceType = grid.getRessourceTypeAt(pos.x, pos.y);
+		byte resourceAmount = grid.getRessourceAmountAt(pos.x, pos.y);
 
 		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, resourceAmount / ((float) Byte.MAX_VALUE));
 		addMapObject(pos, object);
@@ -122,8 +122,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private void cutStone(ShortPoint2D pos) {
-		short x = (short) (pos.getX() - 1);
-		short y = (short) (pos.getY() + 1);
+		short x = (short) (pos.x - 1);
+		short y = (short) (pos.y + 1);
 		AbstractHexMapObject stone = grid.getMapObject(x, y, EMapObjectType.STONE);
 
 		if (stone != null) {
@@ -144,9 +144,9 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private boolean plantCorn(ShortPoint2D pos) {
-		grid.setLandscape(pos.getX(), pos.getY(), ELandscapeType.EARTH);
+		grid.setLandscape(pos.x, pos.y, ELandscapeType.EARTH);
 		for (ShortPoint2D curr : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
-			grid.setLandscape(curr.getX(), curr.getY(), ELandscapeType.EARTH);
+			grid.setLandscape(curr.x, curr.y, ELandscapeType.EARTH);
 		}
 		Corn corn = new Corn(pos);
 		addMapObject(pos, corn);
@@ -157,8 +157,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private boolean cutCorn(ShortPoint2D pos) {
-		short x = pos.getX();
-		short y = pos.getY();
+		short x = pos.x;
+		short y = pos.y;
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject corn = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.CORN_ADULT);
 			if (corn != null && corn.cutOff()) {
@@ -170,8 +170,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private boolean cutTree(ShortPoint2D pos) {
-		short x = (short) (pos.getX() - 1);
-		short y = (short) (pos.getY() - 1);
+		short x = (short) (pos.x - 1);
+		short y = (short) (pos.y - 1);
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.TREE_ADULT);
 			if (tree != null && tree.cutOff()) {
@@ -183,7 +183,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	private final boolean addMapObject(ShortPoint2D pos, AbstractHexMapObject mapObject) {
-		return addMapObject(pos.getX(), pos.getY(), mapObject);
+		return addMapObject(pos.x, pos.y, mapObject);
 	}
 
 	private final boolean addMapObject(short x, short y, AbstractHexMapObject mapObject) {
@@ -293,7 +293,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	}
 
 	public boolean canPush(ShortPoint2D position) {
-		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.getX(), position.getY(), EMapObjectType.STACK_OBJECT);
+		StackMapObject stackObject = (StackMapObject) grid.getMapObject(position.x, position.y, EMapObjectType.STACK_OBJECT);
 		int sum = 0;
 
 		while (stackObject != null) { // find correct stack
@@ -445,22 +445,22 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 
 	public void placePig(ShortPoint2D pos, boolean place) {
 		if (place) {
-			AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
+			AbstractHexMapObject pig = grid.getMapObject(pos.x, pos.y, EMapObjectType.PIG);
 			if (pig == null) {
 				addMapObject(pos, new PigObject());
 			}
 		} else {
-			removeMapObjectType(pos.getX(), pos.getY(), EMapObjectType.PIG);
+			removeMapObjectType(pos.x, pos.y, EMapObjectType.PIG);
 		}
 	}
 
 	public boolean isPigThere(ShortPoint2D pos) {
-		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
+		AbstractHexMapObject pig = grid.getMapObject(pos.x, pos.y, EMapObjectType.PIG);
 		return pig != null;
 	}
 
 	public boolean isPigAdult(ShortPoint2D pos) {
-		AbstractHexMapObject pig = grid.getMapObject(pos.getX(), pos.getY(), EMapObjectType.PIG);
+		AbstractHexMapObject pig = grid.getMapObject(pos.x, pos.y, EMapObjectType.PIG);
 		return pig != null && pig.canBeCut();
 	}
 

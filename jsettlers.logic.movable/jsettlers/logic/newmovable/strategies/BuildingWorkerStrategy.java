@@ -347,7 +347,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	private boolean hasProductiveResources(ShortPoint2D pos, EResourceType type) {
-		float amount = super.getStrategyGrid().getResourceAmountAround(pos.getX(), pos.getY(), type);
+		float amount = super.getStrategyGrid().getResourceAmountAround(pos.x, pos.y, type);
 		return RandomSingleton.get().nextFloat() < amount;
 	}
 

@@ -41,8 +41,8 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	@Override
 	protected final void positionedEvent(ShortPoint2D pos) {
 		ShortPoint2D workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
-		workAreaCenterX = workAreaCenter.getX();
-		workAreaCenterY = workAreaCenter.getY();
+		workAreaCenterX = workAreaCenter.x;
+		workAreaCenterY = workAreaCenter.y;
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	public final void setWorkAreaCenter(ShortPoint2D workAreaCenter) {
-		this.workAreaCenterX = workAreaCenter.getX();
-		this.workAreaCenterY = workAreaCenter.getY();
+		this.workAreaCenterX = workAreaCenter.x;
+		this.workAreaCenterY = workAreaCenter.y;
 	}
 
 	@Override

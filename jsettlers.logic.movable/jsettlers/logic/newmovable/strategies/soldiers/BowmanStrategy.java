@@ -36,8 +36,8 @@ public final class BowmanStrategy extends SoldierStrategy {
 		ShortPoint2D pos = super.getPos();
 		ShortPoint2D enemyPos = enemy.getPos();
 
-		final int dx = Math.abs(pos.getX() - enemyPos.getX());
-		final int dy = Math.abs(pos.getY() - enemyPos.getY());
+		final int dx = Math.abs(pos.x - enemyPos.x);
+		final int dy = Math.abs(pos.y - enemyPos.y);
 
 		final int squareDist = dx * dx + dy * dy;
 

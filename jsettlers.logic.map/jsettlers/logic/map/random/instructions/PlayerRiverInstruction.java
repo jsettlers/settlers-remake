@@ -39,8 +39,8 @@ public class PlayerRiverInstruction extends LandInstruction {
 	public void execute(LandscapeMesh landscape, PlayerStart[] starts,
 	        Random random) {
 		for (PlayerStart start : starts) {
-			int x = start.getX() + getIntParameter("dx", random);
-			int y = start.getY() + getIntParameter("dy", random);
+			int x = start.x + getIntParameter("dx", random);
+			int y = start.y + getIntParameter("dy", random);
 
 			MeshSite sea = findSeaSite(x, y, landscape, random);
 

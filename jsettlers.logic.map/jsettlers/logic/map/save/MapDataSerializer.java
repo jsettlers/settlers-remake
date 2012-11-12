@@ -77,8 +77,8 @@ public class MapDataSerializer {
 		stream.writeByte(data.getPlayerCount());
 		for (int player = 0; player < data.getPlayerCount(); player++) {
 			ShortPoint2D start = data.getStartPoint(player);
-			stream.writeShort(start.getX());
-			stream.writeShort(start.getY());
+			stream.writeShort(start.x);
+			stream.writeShort(start.y);
 		}
 
 		for (int x = 0; x < width; x++) {

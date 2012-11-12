@@ -70,7 +70,7 @@ final class FlattenedResetter implements ITimerable, Serializable {
 
 			for (Iterator<ShortPoint2D> iter = positions.iterator(); iter.hasNext();) {
 				ShortPoint2D currPos = iter.next();
-				if (grid.countFlattenedDown(currPos.getX(), currPos.getY())) {
+				if (grid.countFlattenedDown(currPos.x, currPos.y)) {
 					iter.remove();
 				}
 			}

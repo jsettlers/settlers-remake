@@ -51,7 +51,7 @@ public class GroupMatcher extends TileMatcher {
 				}
 				current = possible.poll();
 				for (ShortPoint2D pos : new MapShapeFilter(new MapNeighboursArea(current), grid.getWidth(), grid.getHeight())) {
-					if (!found.contains(pos) && Math.hypot(pos.getX() - startx, pos.getY() - starty) < distance) {
+					if (!found.contains(pos) && Math.hypot(pos.x - startx, pos.y - starty) < distance) {
 						possible.offer(pos);
 						found.add(pos);
 					}

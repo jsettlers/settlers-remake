@@ -73,7 +73,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 		centerPos = null;
 
 		ShortPoint2D pos = super.getPos();
-		if (super.preSearchPath(true, pos.getX(), pos.getY(), (short) 30, ESearchType.RESOURCE_SIGNABLE)) {
+		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE)) {
 			super.followPresearchedPath();
 			this.state = EPioneerState.GOING_TO_POS;
 			return;
@@ -88,7 +88,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 
 		for (ShortPoint2D satelitePos : new HexBorderArea(super.getPos(), (short) 2)) {
 			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
-				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
+				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
 					bestNeighbourPos = satelitePos;

@@ -58,7 +58,7 @@ public final class PioneerStrategy extends NewMovableStrategy {
 		centerPos = null;
 
 		ShortPoint2D pos = super.getPos();
-		if (super.preSearchPath(true, pos.getX(), pos.getY(), (short) 30, ESearchType.FOREIGN_GROUND)) {
+		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.FOREIGN_GROUND)) {
 			super.followPresearchedPath();
 			this.state = EPioneerState.GOING_TO_POS;
 			return;
@@ -76,7 +76,7 @@ public final class PioneerStrategy extends NewMovableStrategy {
 			ShortPoint2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
 
 			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
-				double distance = Math.hypot(satelitePos.getX() - centerPos.getX(), satelitePos.getY() - centerPos.getY());
+				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
 					bestNeighbourDir = sateliteDir;

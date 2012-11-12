@@ -51,7 +51,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		switch (guiTask.getGuiAction()) {
 		case SET_WORK_AREA: {
 			WorkAreaGuiTask task = (WorkAreaGuiTask) guiTask;
-			setWorkArea(task.getPosition(), task.getBuildingPos().getX(), task.getBuildingPos().getY());
+			setWorkArea(task.getPosition(), task.getBuildingPos().x, task.getBuildingPos().y);
 		}
 			break;
 
@@ -81,7 +81,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case DESTROY_BUILDING: {
 			ShortPoint2D buildingPos = ((DestroyBuildingGuiTask) guiTask).getPosition();
-			((Building) grid.getBuildingAt(buildingPos.getX(), buildingPos.getY())).kill();
+			((Building) grid.getBuildingAt(buildingPos.x, buildingPos.y)).kill();
 		}
 			break;
 

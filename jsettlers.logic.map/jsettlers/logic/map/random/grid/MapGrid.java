@@ -60,8 +60,8 @@ public class MapGrid implements IMapData {
 		for (MeshEdge edge : mesh.getEdges()) {
 			LineDrawer drawer = new LineDrawer(noisyEdges.get(edge));
 			for (ShortPoint2D position : drawer) {
-				short x = clampX(position.getX());
-				short y = clampY(position.getY());
+				short x = clampX(position.x);
+				short y = clampY(position.y);
 				edgeMap[x][y] = edge;
 			}
 		}
@@ -101,8 +101,8 @@ public class MapGrid implements IMapData {
 
 			while (!sitePoints.isEmpty()) {
 				ShortPoint2D point = sitePoints.poll();
-				short x = point.getX();
-				short y = point.getY();
+				short x = point.x;
+				short y = point.y;
 				if (types[x][y] == null) {
 					types[x][y] = landscape;
 					for (ShortPoint2D toAdd : new MapNeighboursArea(point)) {
@@ -248,8 +248,8 @@ public class MapGrid implements IMapData {
 
 	public void reserveArea(int x, int y, int radius) {
 		for (ShortPoint2D pos : new MapShapeFilter(new MapCircle((short) x, (short) y, radius), width, height)) {
-			if (objects[pos.getX()][pos.getY()] == null) {
-				objects[pos.getX()][pos.getY()] = PlaceholderObject.getInstance();
+			if (objects[pos.x][pos.y] == null) {
+				objects[pos.x][pos.y] = PlaceholderObject.getInstance();
 			}
 		}
 	}

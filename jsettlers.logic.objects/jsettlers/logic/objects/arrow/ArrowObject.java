@@ -25,12 +25,12 @@ public final class ArrowObject extends ProgressingSoundableObject implements IAr
 		super(targetPos);
 
 		this.grid = grid;
-		this.sourceX = shooterPos.getX();
-		this.sourceY = shooterPos.getY();
+		this.sourceX = shooterPos.x;
+		this.sourceY = shooterPos.y;
 		this.shooterPlayer = shooterPlayer;
 		this.hitStrength = hitStrength;
 
-		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(shooterPos.getX() - targetPos.getX(), shooterPos.getY() - targetPos.getY())));
+		super.setDuration((float) (SECONDS_PER_TILE * Math.hypot(shooterPos.x - targetPos.x, shooterPos.y - targetPos.y)));
 	}
 
 	@Override

@@ -262,22 +262,22 @@ public abstract class NewMovableStrategy implements Serializable {
 		ShortPoint2D overNextPos = path.getOverNextPos();
 
 		if (twoStraight.equals(overNextPos)) {
-			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY()) && isValidPosition(leftStraightPos)) {
+			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y) && isValidPosition(leftStraightPos)) {
 				path.goToNextStep();
 				path = new Path(path, leftPos, leftStraightPos);
 				System.out.println("path replanned!");
-			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY()) && isValidPosition(rightStraightPos)) {
+			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y) && isValidPosition(rightStraightPos)) {
 				path.goToNextStep();
 				path = new Path(path, rightPos, rightStraightPos);
 				System.out.println("path replanned!");
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}
-		} else if (leftStraightPos.equals(overNextPos) && grid.hasNoMovableAt(leftPos.getX(), leftPos.getY())) {
+		} else if (leftStraightPos.equals(overNextPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y)) {
 			path.goToNextStep();
 			path = new Path(path, leftPos);
 			System.out.println("path replanned!");
-		} else if (rightStraightPos.equals(overNextPos) && grid.hasNoMovableAt(rightPos.getX(), rightPos.getY())) {
+		} else if (rightStraightPos.equals(overNextPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y)) {
 			path.goToNextStep();
 			path = new Path(path, rightPos);
 			System.out.println("path replanned!");

@@ -16,8 +16,8 @@ public abstract class AbstractObjectsManagerObject extends AbstractHexMapObject 
 	private final short y;
 
 	protected AbstractObjectsManagerObject(ShortPoint2D pos) {
-		this.x = pos.getX();
-		this.y = pos.getY();
+		this.x = pos.x;
+		this.y = pos.y;
 	}
 
 	protected abstract void changeState();

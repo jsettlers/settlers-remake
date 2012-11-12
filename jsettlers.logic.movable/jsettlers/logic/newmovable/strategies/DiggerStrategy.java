@@ -59,7 +59,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 	private void executeDigg() {
 		ShortPoint2D pos = super.getPos();
-		super.getStrategyGrid().changeHeightTowards(pos.getX(), pos.getY(), requester.getAverageHeight());
+		super.getStrategyGrid().changeHeightTowards(pos.x, pos.y, requester.getAverageHeight());
 		super.getStrategyGrid().setMarked(super.getPos(), false);
 	}
 
@@ -96,7 +96,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	private boolean isNotFlattened(ShortPoint2D pos) {
-		return super.getStrategyGrid().getLandscapeTypeAt(pos.getX(), pos.getY()) != ELandscapeType.FLATTENED;
+		return super.getStrategyGrid().getLandscapeTypeAt(pos.x, pos.y) != ELandscapeType.FLATTENED;
 	}
 
 	private boolean needsToChangeHeight(ShortPoint2D pos) {

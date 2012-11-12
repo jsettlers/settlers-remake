@@ -17,8 +17,8 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 
 	public void execute(MapGrid grid, PlayerStart[] starts, Random random) {
 		for (PlayerStart start : starts) {
-			int startx = start.getX() + getIntParameter("dx", random);
-			int starty = start.getY() + getIntParameter("dy", random);
+			int startx = start.x + getIntParameter("dx", random);
+			int starty = start.y + getIntParameter("dy", random);
 
 			ELandscapeType onLandscape = GridLandscapeType.convert(MeshLandscapeType.parse(getParameter("on", random), null));
 			LandFilter filter = getPlaceFilter(onLandscape, grid);
@@ -37,7 +37,7 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 
 			int i = 0;
 			for (ShortPoint2D place : matcher) {
-				placeObject(grid, start, place.getX(), place.getY(), random);
+				placeObject(grid, start, place.x, place.y, random);
 				i++;
 				if (i >= count) {
 					break;
@@ -57,8 +57,8 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 
 		@Override
 		public boolean isPlaceable(ShortPoint2D point) {
-			return grid.isObjectPlaceable(point.getX(), point.getY())
-					&& (onLandscape == null || onLandscape.equals(grid.getLandscape(point.getX(), point.getY())));
+			return grid.isObjectPlaceable(point.x, point.y)
+					&& (onLandscape == null || onLandscape.equals(grid.getLandscape(point.x, point.y)));
 		}
 	}
 

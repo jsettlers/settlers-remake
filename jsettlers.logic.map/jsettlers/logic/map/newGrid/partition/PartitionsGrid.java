@@ -87,7 +87,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	@Override
 	public final byte getPlayerIdAt(ShortPoint2D position) {
-		return isInBounds(position) ? this.getPartitionObject(position.getX(), position.getY()).getPlayer() : -1;
+		return isInBounds(position) ? this.getPartitionObject(position.x, position.y).getPlayer() : -1;
 	}
 
 	/**
@@ -131,7 +131,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	@Override
 	public final short getPartition(ShortPoint2D position) {
-		return getPartition(position.getX(), position.getY());
+		return getPartition(position.x, position.y);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		short oldPartition = getPartition(firstPos);
 
 		// partitions[getIdx(x, y)] = -1;// this is needed, because the new partition is not determined yet
-		relabelPartition(secondPos.getX(), secondPos.getY(), oldPartition, newPartition, false);
+		relabelPartition(secondPos.x, secondPos.y, oldPartition, newPartition, false);
 		// partitions[getIdx(x, y)] = oldPartition;
 	}
 
@@ -276,7 +276,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	private final boolean isInBounds(ShortPoint2D position) {
-		return isInBounds(position.getX(), position.getY());
+		return isInBounds(position.x, position.y);
 	}
 
 	@Override
@@ -285,7 +285,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 	}
 
 	public final boolean pushMaterial(ShortPoint2D position, EMaterialType materialType) {
-		return getPartitionObject(position.getX(), position.getY()).addOffer(position, materialType);
+		return getPartitionObject(position.x, position.y).addOffer(position, materialType);
 	}
 
 	public final void addJobless(IManageableBearer bearer) {
@@ -357,14 +357,14 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 		Iterator<ShortPoint2D> groundAreaIter = groundArea.iterator();
 		ShortPoint2D firstPos = groundAreaIter.next();
-		changePlayerAt(firstPos.getX(), firstPos.getY(), newPlayer);
+		changePlayerAt(firstPos.x, firstPos.y, newPlayer);
 		short newPartition = getPartition(firstPos);
 		occupiedPositions.add(firstPos);
 
 		while (groundAreaIter.hasNext()) {
 			ShortPoint2D curr = groundAreaIter.next();
-			short x = curr.getX();
-			short y = curr.getY();
+			short x = curr.x;
+			short y = curr.y;
 			if (getPartition(x, y) != newPartition) {
 				this.setPartition(x, y, newPartition);
 				occupiedPositions.add(curr);
@@ -377,8 +377,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		byte newPlayerId = newPlayer.playerId;
 
 		for (ShortPoint2D curr : toBeOccupied) {
-			short x = curr.getX();
-			short y = curr.getY();
+			short x = curr.x;
+			short y = curr.y;
 
 			if (!isInBounds(x, y)) {
 				continue;
@@ -420,7 +420,7 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 			ShortPoint2D pos = foundPartions[i];
 			if (pos != null && (i - 1) != newPartition) {
 				if (getPartitionObject((short) (i - 1)).getPlayer() == newPlayerId) {
-					this.mergePartitions(pos.getX(), pos.getY(), unblockedOccupied.getX(), unblockedOccupied.getY());
+					this.mergePartitions(pos.x, pos.y, unblockedOccupied.x, unblockedOccupied.y);
 				}
 			}
 		}
@@ -439,8 +439,8 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		List<ShortPoint2D> totallyFreePositions = new LinkedList<ShortPoint2D>();
 
 		for (ShortPoint2D curr : occupied) {
-			short x = curr.getX();
-			short y = curr.getY();
+			short x = curr.x;
+			short y = curr.y;
 			if (isInBounds(x, y) && getPartitionAt(x, y) == partiton) {
 				final int idx = getIdx(x, y);
 				towers[idx]--;
