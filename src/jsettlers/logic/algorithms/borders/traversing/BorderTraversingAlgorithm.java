@@ -21,8 +21,8 @@ public class BorderTraversingAlgorithm {
 	 *         false if the traversing has been canceled by the {@link IBorderVisitor}'s visit() method.
 	 */
 	public static boolean traverseBorder(IContainingProvider containingProvider, ShortPoint2D startPos, IBorderVisitor visitor) {
-		final int startInsideX = startPos.getX();
-		final int startInsideY = startPos.getY();
+		final int startInsideX = startPos.x;
+		final int startInsideY = startPos.y;
 
 		int insideX = startInsideX;
 		int insideY = startInsideY;

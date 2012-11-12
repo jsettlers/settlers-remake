@@ -51,7 +51,7 @@ public final class AStarJPS implements IAStar, IAStarHeapable {
 	@Override
 	public final Path findPath(IPathCalculateable requester, ShortPoint2D target) {
 		ShortPoint2D pos = requester.getPos();
-		return findPath(requester, pos.getX(), pos.getY(), target.getX(), target.getY());
+		return findPath(requester, pos.x, pos.y, target.x, target.y);
 	}
 
 	@Override

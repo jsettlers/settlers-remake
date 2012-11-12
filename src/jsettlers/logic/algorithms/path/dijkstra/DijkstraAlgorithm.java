@@ -63,7 +63,7 @@ public final class DijkstraAlgorithm {
 
 	private final Path findPathTo(IPathCalculateable requester, short tx, short ty) {
 		ShortPoint2D pos = requester.getPos();
-		return aStar.findPath(requester, pos.getX(), pos.getY(), tx, ty);
+		return aStar.findPath(requester, pos.x, pos.y, tx, ty);
 	}
 
 	private final boolean isInBounds(short x, short y) {
@@ -103,7 +103,7 @@ public final class DijkstraAlgorithm {
 		}
 
 		public boolean isCenterAt(ShortPoint2D pos) {
-			return pos != null && pos.getX() == cX && pos.getY() == cY;
+			return pos != null && pos.x == cX && pos.y == cY;
 		}
 
 		void setRadius(short radius) {

@@ -56,13 +56,13 @@ public final class LandmarksCorrectingThread extends Thread {
 	}
 
 	private final void checkLandmarks(ShortPoint2D startPos) {
-		final short startX = startPos.getX();
-		final short startY = startPos.getY();
+		final short startX = startPos.x;
+		final short startY = startPos.y;
 
 		if (grid.isBlocked(startX, startY))
 			return;
 
-		short startPartition = grid.getPartitionAt(startPos.getX(), startPos.getY());
+		short startPartition = grid.getPartitionAt(startPos.x, startPos.y);
 
 		for (EDirection currDir : EDirection.values) {
 			short currX = (short) (startX + currDir.gridDeltaX);

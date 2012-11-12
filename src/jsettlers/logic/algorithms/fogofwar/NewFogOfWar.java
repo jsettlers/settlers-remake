@@ -163,7 +163,7 @@ public final class NewFogOfWar implements Serializable {
 					if (distance > 0) {
 						ShortPoint2D pos = curr.getPos();
 						if (pos != null)
-							drawer.drawCircleToBuffer(pos.getX(), pos.getY(), distance);
+							drawer.drawCircleToBuffer(pos.x, pos.y, distance);
 					}
 				}
 			}

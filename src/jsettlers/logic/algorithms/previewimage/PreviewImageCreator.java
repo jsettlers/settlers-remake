@@ -112,8 +112,8 @@ public final class PreviewImageCreator {
 				toTest = p.invert().calculatePoint(current);
 			}
 
-			short x = toTest.getX();
-			short y = toTest.getY();
+			short x = toTest.x;
+			short y = toTest.y;
 			if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
 				height += dataSupplier.getLandscapeHeight(x, y);
 				count += 1;
@@ -123,7 +123,7 @@ public final class PreviewImageCreator {
 		if (count > 0) {
 			return height / count;
 		} else {
-			return dataSupplier.getLandscapeHeight(current.getX(), current.getY());
+			return dataSupplier.getLandscapeHeight(current.x, current.y);
 		}
 	}
 }

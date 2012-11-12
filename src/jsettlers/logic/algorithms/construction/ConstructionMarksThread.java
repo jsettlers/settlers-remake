@@ -153,7 +153,7 @@ public class ConstructionMarksThread implements Runnable {
 	 */
 	private void removeConstructionMarks(IMapArea area) {
 		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
-			map.setConstructMarking(pos.getX(), pos.getY(), (byte) -1);
+			map.setConstructMarking(pos.x, pos.y, (byte) -1);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class ConstructionMarksThread implements Runnable {
 	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
 		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
 			if (!notIn.contains(pos)) {
-				map.setConstructMarking(pos.getX(), pos.getY(), (byte) -1);
+				map.setConstructMarking(pos.x, pos.y, (byte) -1);
 			}
 		}
 	}

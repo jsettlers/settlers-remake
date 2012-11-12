@@ -76,9 +76,9 @@ public class PartitionsAlgorithm {
 					if (this.grid.isBlockedForPeople(x, y)) {
 						break;
 					}
-				} else if (!this.grid.isBlockedForPeople(currPos.getX(), currPos.getY())) {
+				} else if (!this.grid.isBlockedForPeople(currPos.x, currPos.y)) {
 					if (grid.getPartition(currPos) != newPartition) { // neighbor is an other partition but has same player
-						newPartition = grid.mergePartitions(currPos.getX(), currPos.getY(), x, y);
+						newPartition = grid.mergePartitions(currPos.x, currPos.y, x, y);
 					}// else: neighbor has same player and same partition
 				}
 			}
@@ -105,7 +105,7 @@ public class PartitionsAlgorithm {
 
 		for (EDirection dir : EDirection.values) {
 			ShortPoint2D currPos = dir.getNextHexPoint(x, y);
-			if (!grid.isInBounds(currPos.getX(), currPos.getY())) {
+			if (!grid.isInBounds(currPos.x, currPos.y)) {
 				continue;
 			}
 

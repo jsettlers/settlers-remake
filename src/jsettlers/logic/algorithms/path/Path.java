@@ -47,7 +47,7 @@ public class Path implements Serializable {
 
 		int i;
 		for (i = 0; i < pathPrefix.length; i++) {
-			insertAt(i, pathPrefix[i].getX(), pathPrefix[i].getY());
+			insertAt(i, pathPrefix[i].x, pathPrefix[i].y);
 		}
 
 		for (; i < length; i++) {
@@ -66,7 +66,7 @@ public class Path implements Serializable {
 	 */
 	public Path(ShortPoint2D position) {
 		this(1);
-		insertAt(0, position.getX(), position.getY());
+		insertAt(0, position.x, position.y);
 		initPath();
 	}
 

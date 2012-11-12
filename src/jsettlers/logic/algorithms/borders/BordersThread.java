@@ -47,8 +47,8 @@ public class BordersThread implements Runnable {
 	}
 
 	private void calculateForPosition(ShortPoint2D position) {
-		short x = position.getX();
-		short y = position.getY();
+		short x = position.x;
+		short y = position.y;
 		byte player = grid.getPlayerIdAt(x, y);
 		boolean isBorder = false;
 

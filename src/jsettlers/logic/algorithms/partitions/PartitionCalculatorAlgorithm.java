@@ -56,7 +56,7 @@ public final class PartitionCalculatorAlgorithm {
 
 		this.containing = new BitSet(width * height);
 		for (ShortPoint2D curr : positions) {
-			containing.set((curr.getX() - minX) + (curr.getY() - minY) * width);
+			containing.set((curr.x - minX) + (curr.y - minY) * width);
 		}
 
 		this.partitionsGrid = new short[width * height];
