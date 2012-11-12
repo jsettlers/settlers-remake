@@ -1,7 +1,7 @@
 /**
  * 
  */
-package jsettlers.common.map.shapes.test;
+package jsettlers.common.map.shapes;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -359,6 +359,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player) {
 		}
 
+		@Override
+		public ShortPoint2D calcDecentralizeVector(short x, short y) {
+			return new ShortPoint2D(0, 0);
+		}
+
 	};
 
 	public INewMovableGrid getMovableGrid() {
