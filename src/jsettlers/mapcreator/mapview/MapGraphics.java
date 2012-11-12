@@ -39,8 +39,7 @@ public class MapGraphics implements IGraphicsGrid {
 		if (showResources) {
 			byte amount = data.getResourceAmount((short) x, (short) y);
 			if (amount > 0) {
-				return ResourceMapObject.get(
-				        data.getResourceType((short) x, (short) y), amount);
+				return ResourceMapObject.get(data.getResourceType((short) x, (short) y), amount);
 			} else {
 				return null;
 			}
@@ -90,8 +89,7 @@ public class MapGraphics implements IGraphicsGrid {
 	}
 
 	@Override
-	public void setBackgroundListener(
-	        IGraphicsBackgroundListener backgroundListener) {
+	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 		data.setListener(backgroundListener);
 	}
 
@@ -100,8 +98,8 @@ public class MapGraphics implements IGraphicsGrid {
 	}
 
 	@Override
-    public int nextDrawableX(int x, int y) {
-	    return x + 1;
-    }
+	public int nextDrawableX(int x, int y, int maxX) {
+		return x + 1;
+	}
 
 }
