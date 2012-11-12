@@ -212,7 +212,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 			ShortPoint2D pos = sAction.getPosition();
 			RelativePoint relative = absoluteToRelative(pos);
 
-			positionDisplayer.setText("x = " + (pos.getX() - BuildingtestMap.OFFSET) + ", y = " + (pos.getY() - BuildingtestMap.OFFSET));
+			positionDisplayer.setText("x = " + (pos.x - BuildingtestMap.OFFSET) + ", y = " + (pos.y - BuildingtestMap.OFFSET));
 
 			if (tool == ToolType.SET_BLOCKED) {
 				toogleUsedTile(relative);
@@ -272,7 +272,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 	}
 
 	private RelativePoint absoluteToRelative(ShortPoint2D pos) {
-		RelativePoint tile = new RelativePoint(pos.getX() - BuildingtestMap.OFFSET, pos.getY() - BuildingtestMap.OFFSET);
+		RelativePoint tile = new RelativePoint(pos.x - BuildingtestMap.OFFSET, pos.y - BuildingtestMap.OFFSET);
 		return tile;
 	}
 

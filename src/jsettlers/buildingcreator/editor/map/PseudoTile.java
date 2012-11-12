@@ -53,7 +53,7 @@ public class PseudoTile {
 	}
 
 	public boolean equals(ShortPoint2D other) {
-		return other.getX() == x && other.getY() == y;
+		return other.x == x && other.y == y;
 	}
 
 	@Override

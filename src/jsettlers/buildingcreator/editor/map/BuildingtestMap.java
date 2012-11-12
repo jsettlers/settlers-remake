@@ -80,7 +80,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	public PseudoTile getTile(ShortPoint2D pos) {
-		return tiles[pos.getX()][pos.getY()];
+		return tiles[pos.x][pos.y];
 	}
 
 	@Override
