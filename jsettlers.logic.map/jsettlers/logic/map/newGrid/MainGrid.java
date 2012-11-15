@@ -148,8 +148,6 @@ public final class MainGrid implements Serializable {
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
-
-		this.partitionsGrid.initPartitionsAlgorithm(movablePathfinderGrid.aStar);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -551,11 +549,11 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
-			int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
-			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
-
-			// int value = partitionsGrid.getPartitionAt(x, y) + 1;
+			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+
+			int value = partitionsGrid.getPartitionAt(x, y) + 1;
+			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// int value = partitionsGrid.getTowerCounterAt(x, y) + 1;
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);

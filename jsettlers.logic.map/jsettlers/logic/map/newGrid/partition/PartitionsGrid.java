@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +18,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
-import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
@@ -66,6 +67,18 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 		for (int idx = 0; idx < partitions.length; idx++) {
 			this.partitions[idx] = NO_PLAYER_PARTITION;
 		}
+
+		initTransientFields();
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+
+		initTransientFields();
+	}
+
+	private void initTransientFields() {
+		this.partitionsAlgorithm = new PartitionsAlgorithm(this, new PartitionsDividedTester(width, this.partitions));
 	}
 
 	private Player[] createPlayers(byte numberOfPlayers) {
@@ -79,10 +92,6 @@ public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable
 
 	private final int getIdx(int x, int y) {
 		return y * width + x;
-	}
-
-	public final void initPartitionsAlgorithm(IAStar aStar) {
-		this.partitionsAlgorithm = new PartitionsAlgorithm(this, aStar);
 	}
 
 	@Override
