@@ -96,7 +96,7 @@ public final class LandmarksCorrectingThread extends Thread {
 
 				return true;
 			}
-		});
+		}, true);
 	}
 
 	final void relabelLine(short startX, short startY, short outsideBlockedPartition, short newPartition) {
@@ -152,7 +152,7 @@ public final class LandmarksCorrectingThread extends Thread {
 			public boolean visit(int x, int y) {
 				return grid.getPartitionAt((short) x, (short) y) == partition;
 			}
-		});
+		}, true);
 	}
 
 	public final void addLandmarkedPosition(ShortPoint2D pos) {

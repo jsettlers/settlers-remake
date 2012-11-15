@@ -17,10 +17,14 @@ public class BorderTraversingAlgorithm {
 	 *            The start position for the traversing. This position must be in the area but at the border!
 	 * @param visitor
 	 *            The visitor that will be called for every border position (a border position is a position outside the border!).
+	 * @param visitOutside
+	 *            If true the positions on the outside will be visited.<br>
+	 *            If false the inside positions will be visited.
 	 * @return true if the whole border has been traversed.<br>
 	 *         false if the traversing has been canceled by the {@link IBorderVisitor}'s visit() method.
 	 */
-	public static boolean traverseBorder(IContainingProvider containingProvider, ShortPoint2D startPos, IBorderVisitor visitor) {
+	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos, final IBorderVisitor visitor,
+			boolean visitOutside) {
 		final int startInsideX = startPos.x;
 		final int startInsideY = startPos.y;
 
@@ -64,11 +68,15 @@ public class BorderTraversingAlgorithm {
 			if (containingProvider.contains(neighborX, neighborY)) {
 				insideX = neighborX;
 				insideY = neighborY;
+
+				if (!visitOutside && !visitor.visit(insideX, insideY)) {
+					return false;
+				}
 			} else {
 				outsideX = neighborX;
 				outsideY = neighborY;
 
-				if (!visitor.visit(outsideX, outsideY)) {
+				if (visitOutside && !visitor.visit(outsideX, outsideY)) {
 					return false;
 				}
 			}

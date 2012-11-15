@@ -3,9 +3,6 @@ package jsettlers.logic.algorithms.partitions;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
-import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
-import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 
 /**
  * Calculates the partitions of the Map and combines partitions of the same player when they get in contact with each other or divides partitions that
@@ -16,8 +13,7 @@ import jsettlers.logic.algorithms.path.astar.normal.IAStar;
  */
 public class PartitionsAlgorithm {
 	private final IPartionsAlgorithmMap grid;
-	private final IAStar aStar;
-	private final AStarPathable aStarPathable;
+	private IPartitionDividedTester partitionDividedTester;
 
 	/**
 	 * Constructor of {@link PartitionsAlgorithm}.
@@ -27,10 +23,9 @@ public class PartitionsAlgorithm {
 	 * @param aStar
 	 *            This is the aStar used by the algorithm.
 	 */
-	public PartitionsAlgorithm(final IPartionsAlgorithmMap partitionsMap, final IAStar aStar) {
+	public PartitionsAlgorithm(IPartionsAlgorithmMap partitionsMap, IPartitionDividedTester partitionDividedTester) {
 		this.grid = partitionsMap;
-		this.aStar = aStar;
-		this.aStarPathable = new AStarPathable();
+		this.partitionDividedTester = partitionDividedTester;
 	}
 
 	/**
@@ -132,15 +127,14 @@ public class PartitionsAlgorithm {
 		}
 
 		if (disconnectedCtr > 1) {
-			byte oldPlayer = grid.getPlayerIdAt(disconnected[0]);
-			if (!existsPathBetween(disconnected[1], disconnected[0], oldPlayer)) { // [0] and [1] are not connected
+			if (!isPartitionNotDivided(disconnected[1], disconnected[0], oldPartition)) { // [0] and [1] are not connected
 				grid.dividePartition(x, y, disconnected[1], disconnected[0]);
 
 				if (disconnectedCtr == 3) {
-					if (!existsPathBetween(disconnected[2], disconnected[1], oldPlayer)) { // [2] and [1] are not connected
+					if (!isPartitionNotDivided(disconnected[2], disconnected[1], oldPartition)) { // [2] and [1] are not connected
 						grid.dividePartition(x, y, disconnected[2], disconnected[1]);
 
-						if (existsPathBetween(disconnected[2], disconnected[0], oldPlayer)) { // [2] and [0] are not connected
+						if (isPartitionNotDivided(disconnected[2], disconnected[0], oldPartition)) { // [2] and [0] are not connected
 							grid.dividePartition(x, y, disconnected[2], disconnected[0]);
 						} else {
 							// [2] and [0] are connected
@@ -153,7 +147,7 @@ public class PartitionsAlgorithm {
 				}
 			} else { // [0] and [1] are connected
 				if (disconnectedCtr == 3) {
-					if (!existsPathBetween(disconnected[2], disconnected[1], oldPlayer)) { // but [2] is not connected to [0] and [1]
+					if (!isPartitionNotDivided(disconnected[2], disconnected[1], oldPartition)) { // but [2] is not connected to [0] and [1]
 						grid.dividePartition(x, y, disconnected[2], disconnected[1]);
 					} else {
 						// [0], [1], [2] are connected
@@ -167,39 +161,8 @@ public class PartitionsAlgorithm {
 		}
 	}
 
-	private boolean existsPathBetween(final ShortPoint2D firstPos, final ShortPoint2D secondPos, final byte player) {
-		aStarPathable.pos = firstPos;
-		aStarPathable.player = player;
-
-		// TODO PERFORMANCE IMPROVE: develop an optimized algorithm to detect if two tiles are connected by one partition
-
-		return aStar.findPath(aStarPathable, secondPos) != null;
+	private boolean isPartitionNotDivided(final ShortPoint2D firstPos, final ShortPoint2D secondPos, final short partition) {
+		return partitionDividedTester.isPartitionNotDivided(firstPos, secondPos, partition);
 	}
 
-	/**
-	 * Class that's needed to be able to use the {@link HexAStar} algorithm.
-	 * 
-	 * @author Andreas Eberle
-	 * 
-	 */
-	private class AStarPathable implements IPathCalculateable {
-		private byte player;
-		private ShortPoint2D pos;
-
-		@Override
-		public byte getPlayerId() {
-			return player;
-		}
-
-		@Override
-		public ShortPoint2D getPos() {
-			return pos;
-		}
-
-		@Override
-		public boolean needsPlayersGround() {
-			return true;
-		}
-
-	}
 }
