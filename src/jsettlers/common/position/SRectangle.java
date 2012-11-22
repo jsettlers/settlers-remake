@@ -9,10 +9,10 @@ public class SRectangle implements Serializable {
      */
 	private static final long serialVersionUID = 3854066932718449211L;
 
-	private final short xMin;
-	private final short yMin;
-	private final short xMax;
-	private final short yMax;
+	public final short xMin;
+	public final short yMin;
+	public final short xMax;
+	public final short yMax;
 
 	public SRectangle(short xMin, short yMin, short xMax, short yMax) {
 		this.xMin = xMin;
@@ -21,28 +21,20 @@ public class SRectangle implements Serializable {
 		this.yMax = yMax;
 	}
 
-	public short getXMin() {
-		return xMin;
-	}
-
-	public short getYMin() {
-		return yMin;
-	}
-
-	public short getXMax() {
-		return xMax;
-	}
-
-	public short getYMax() {
-		return yMax;
-	}
-
 	public int getWidth() {
-		return xMax - xMin;
+		return xMax - xMin + 1;
 	}
 
 	public int getHeight() {
-		return yMax - yMin;
+		return yMax - yMin + 1;
 	}
 
+	public boolean contains(ShortPoint2D pos) {
+		return xMin <= pos.x && pos.x <= xMax && yMin <= pos.y && pos.y <= yMax;
+	}
+
+	@Override
+	public String toString() {
+		return "xMin: " + xMin + " yMin: " + yMin + "  xMax: " + xMax + " yMax: " + yMax;
+	}
 }

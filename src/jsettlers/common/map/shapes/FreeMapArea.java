@@ -37,8 +37,8 @@ public final class FreeMapArea implements IMapArea {
 		this.positions = positions;
 		SRectangle bounds = getBounds(positions);
 
-		xOffset = bounds.getXMin();
-		yOffset = bounds.getYMin();
+		xOffset = bounds.xMin;
+		yOffset = bounds.yMin;
 		width = bounds.getWidth() + 1;
 		height = bounds.getHeight() + 1;
 

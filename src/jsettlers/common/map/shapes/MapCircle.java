@@ -1,5 +1,6 @@
 package jsettlers.common.map.shapes;
 
+import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -127,5 +128,17 @@ public final class MapCircle implements IMapArea {
 
 	public final short getCenterX() {
 		return cx;
+	}
+
+	/**
+	 * Calculates the outer borders of this map circle. That means that all positions of this circle are inside the returned rectangle.
+	 * 
+	 * @return
+	 */
+	public SRectangle getBorders() {
+		short yRadius = (short) (radius / MapCircle.Y_SCALE + 1); // +1 to make sure all positions are in
+		short halfLineWidth = (short) (radius * 1.2f);
+
+		return new SRectangle((short) (cx - halfLineWidth), (short) (cy - yRadius), (short) (cx + halfLineWidth), (short) (cy + yRadius));
 	}
 }
