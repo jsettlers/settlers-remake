@@ -1,11 +1,11 @@
 package jsettlers.logic.map.newGrid.partition;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.borders.traversing.BorderTraversingAlgorithm;
-import jsettlers.logic.algorithms.borders.traversing.IBorderVisitor;
-import jsettlers.logic.algorithms.borders.traversing.IContainingProvider;
 import jsettlers.logic.algorithms.partitions.IPartitionDividedTester;
 import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
+import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
+import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 
 /**
  * This class implements the {@link IPartitionDividedTester} interface and is used by the {@link PartitionsGrid} to supply the
@@ -33,7 +33,7 @@ public class PartitionsDividedTester implements IPartitionDividedTester {
 			public boolean contains(int x, int y) {
 				return partitionsGrid[x + y * width] == partition;
 			}
-		}, pos1, new IBorderVisitor() {
+		}, pos1, new ITraversingVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				return pos2X != x || pos2Y != y;

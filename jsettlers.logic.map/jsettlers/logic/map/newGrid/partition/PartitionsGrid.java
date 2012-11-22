@@ -4,29 +4,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.common.Color;
-import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.map.shapes.IMapArea;
-import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EDirection;
-import jsettlers.common.movable.EMovableType;
+import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.position.ILocatable;
+import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.partitions.IPartionsAlgorithmMap;
-import jsettlers.logic.algorithms.partitions.PartitionsAlgorithm;
-import jsettlers.logic.buildings.Building;
-import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.common.utils.Tuple;
+import jsettlers.common.utils.collections.IPredicate;
+import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
+import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
+import jsettlers.logic.algorithms.traversing.area.AreaTraversingAlgorithm;
+import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -36,455 +31,492 @@ import jsettlers.logic.player.Team;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionsGrid implements IPartionsAlgorithmMap, Serializable {
+public final class PartitionsGrid implements Serializable {
 	private static final long serialVersionUID = 8919380724171427679L;
-	private static final byte NO_PLAYER_PARTITION = (byte) -1;
 
-	private final short width;
-	private final short height;
-	private final Player[] players;
+	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 1000;
+	private static final int NO_PLAYER_PARTITION_ID = 0;
 
-	private final short[] partitions;
-	private final byte[] towers;
+	private final PartitionOccupyingTowerList occupyingTowers = new PartitionOccupyingTowerList();
 
-	/**
-	 * This array stores the partition objects handled by this class.<br>
-	 */
-	private final Partition[] partitionObjects = new Partition[1024]; // TODO make the array grow dynamically
-	private final Partition nullPartition;
-	transient private PartitionsAlgorithm partitionsAlgorithm;
-	private final IPartitionableGrid grid;
+	final short width;
+	final short height;
+	final Player[] players;
 
-	public PartitionsGrid(final short width, final short height, byte numberOfPlayers, IPartitionableGrid grid) {
+	final short[] partitions;
+	final byte[] towers;
+
+	final Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
+	final short[] partitionRepresentative = new short[NUMBER_OF_START_PARTITION_OBJECTS];
+
+	private transient PartitionsDividedTester partitionsDividedTester;
+
+	private short nextFreePartition = 1;
+
+	public PartitionsGrid(short width, short height, byte numberOfPlayers) {
 		this.width = width;
 		this.height = height;
-		this.players = createPlayers(numberOfPlayers);
-		this.grid = grid;
-		this.partitions = new short[width * height];
-		this.towers = new byte[width * height];
-		this.nullPartition = new Partition(NO_PLAYER_PARTITION, height * width);
-
-		for (int idx = 0; idx < partitions.length; idx++) {
-			this.partitions[idx] = NO_PLAYER_PARTITION;
+		this.players = new Player[numberOfPlayers];
+		for (byte i = 0; i < numberOfPlayers; i++) {
+			Team team = new Team(i);
+			this.players[i] = new Player(i, team);
 		}
 
-		initTransientFields();
+		this.partitions = new short[width * height];
+		this.towers = new byte[width * height];
+
+		// the no player partition (the manager won't be started)
+		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition((byte) -1, width * height);
+		this.partitionRepresentative[NO_PLAYER_PARTITION_ID] = NO_PLAYER_PARTITION_ID;
+
+		initAdditionalFields();
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-
-		initTransientFields();
+		initAdditionalFields();
 	}
 
-	private void initTransientFields() {
-		this.partitionsAlgorithm = new PartitionsAlgorithm(this, new PartitionsDividedTester(width, this.partitions));
+	private void initAdditionalFields() {
+		this.partitionsDividedTester = new PartitionsDividedTester(width, partitions);
 	}
 
-	private Player[] createPlayers(byte numberOfPlayers) {
-		Player[] players = new Player[numberOfPlayers];
-		for (byte i = 0; i < numberOfPlayers; i++) {
-			Team team = new Team(i);
-			players[i] = new Player(i, team);
-		}
-		return players;
-	}
-
-	private final int getIdx(int x, int y) {
-		return y * width + x;
-	}
-
-	@Override
-	public final byte getPlayerIdAt(ShortPoint2D position) {
-		return isInBounds(position) ? this.getPartitionObject(position.x, position.y).getPlayer() : -1;
+	public short getPartitionIdAt(int x, int y) {
+		return partitionRepresentative[partitions[x + y * width]];
 	}
 
 	/**
-	 * Gets the id of the player at the given position.<br>
-	 * NOTE: The given coordinates must be on the grid!
+	 * ONLY FOR TESTING: <br>
+	 * This method gives the currently set partition at the given partition and not their representative. <br>
+	 * Therefore it can be used for viewing the unmerged partitions.
 	 * 
 	 * @param x
 	 * @param y
 	 * @return
 	 */
+	short getRealPartitionIdAt(int x, int y) {
+		return partitions[x + y * width];
+	}
+
+	public Partition getPartitionAt(int x, int y) {
+		return partitionObjects[partitions[x + y * width]];
+	}
+
+	public Partition getPartitionAt(ILocatable locatable) {
+		ShortPoint2D pos = locatable.getPos();
+		return getPartitionAt(pos.x, pos.y);
+	}
+
 	public byte getPlayerIdAt(int x, int y) {
-		return this.getPartitionObject(x, y).getPlayer();
+		return getPartitionAt(x, y).playerId;
 	}
 
-	public final Player getPlayerAt(int x, int y) {
-		return players[getPartitionObject(x, y).getPlayer()];
-	}
-
-	public final Player getPlayerForId(byte playerId) {
+	public Player getPlayer(int playerId) {
 		return players[playerId];
 	}
 
-	public final short getPartitionAt(int x, int y) {
-		return this.partitions[getIdx(x, y)];
+	public Player getPlayerAt(int x, int y) {
+		return players[partitionObjects[partitions[x + y * width]].playerId];
 	}
 
-	private final Partition getPartitionObject(ShortPoint2D pos) {
-		return getPartitionObject(getPartition(pos));
+	public byte getTowerCountAt(int x, int y) {
+		return towers[x + y * width];
 	}
 
-	private final Partition getPartitionObject(int x, int y) {
-		return getPartitionObject(getPartitionAt(x, y));
+	public boolean isEnforcedByTower(int x, int y) {
+		return towers[x + y * width] > 0;
 	}
 
-	private final Partition getPartitionObject(short partition) {
-		if (partition >= 0)
-			return this.partitionObjects[partition];
-		else
-			return nullPartition;
+	/**
+	 * Occupies the given area for the given playerId if it is not already occupied by towers of an enemy.
+	 * 
+	 * @param playerId
+	 *            The id of the occupying player.
+	 * @param influencingArea
+	 *            The area affected by the tower.
+	 */
+	public void addTowerAndOccupyArea(byte playerId, MapCircle influencingArea) {
+		// occupy the area
+		occupyArea(playerId, influencingArea, influencingArea.getBorders());
+
+		// add the new tower object
+		occupyingTowers.add(new PartitionOccupyingTower(playerId, influencingArea));
 	}
 
-	@Override
-	public final short getPartition(ShortPoint2D position) {
-		return getPartition(position.x, position.y);
+	/**
+	 * Removes the tower at the given position from the grid.
+	 * 
+	 * @param pos
+	 *            The position of the tower.
+	 * @return
+	 */
+	public Iterable<ShortPoint2D> removeTowerAndFreeOccupiedArea(ShortPoint2D pos) {
+		// get the tower object and the informations of it.
+		PartitionOccupyingTower tower = occupyingTowers.removeAt(pos);
+		if (tower == null) {
+			return new LinkedList<ShortPoint2D>();
+		}
+
+		// reduce the tower counter
+		changeTowerCounter(tower.playerId, tower.area, -1);
+
+		checkOtherTowersInArea(tower);
+
+		return tower.area;
 	}
 
-	@Override
-	public final short getPartition(short x, short y) {
-		return this.partitions[getIdx(x, y)];
+	public Iterable<ShortPoint2D> changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId, final FreeMapArea groundArea) {
+		// get the tower object and the informations of it.
+		PartitionOccupyingTower tower = occupyingTowers.removeAt(towerPosition);
+		if (tower == null) {
+			return new LinkedList<ShortPoint2D>(); // return if no tower has been found
+		}
+
+		IteratorFilter<ShortPoint2D> areaWithoutGround = new IteratorFilter<ShortPoint2D>(tower.area, new IPredicate<ShortPoint2D>() {
+			@Override
+			public boolean evaluate(ShortPoint2D pos) {
+				return !groundArea.contains(pos);
+			}
+		});
+		// reduce the tower counter
+		changeTowerCounter(tower.playerId, areaWithoutGround, -1);
+
+		// let the other towers occupy the area
+		checkOtherTowersInArea(tower);
+
+		// set the tower counter of the groundArea to 0 => the ground area will be occupied
+		for (ShortPoint2D currPos : groundArea) {
+			towers[currPos.x + currPos.y * width] = 0;
+		}
+
+		// occupy the area for the new player
+		occupyArea(newPlayerId, tower.area, tower.area.getBorders());
+
+		occupyingTowers.add(new PartitionOccupyingTower(newPlayerId, tower.area));
+
+		return tower.area;
 	}
 
-	@Override
-	public final void setPartition(final short x, final short y, short newPartition) {
-		Partition newPartitionObject = getPartitionObject(newPartition);
+	/**
+	 * Checks if other towers that intersect the area of the given tower can occupy free positions of the area of the given tower and lets them do so.
+	 * 
+	 * @param tower
+	 */
+	private void checkOtherTowersInArea(PartitionOccupyingTower tower) {
+		// get the positions that may change their owner.
+		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
+			@Override
+			public boolean evaluate(ShortPoint2D pos) {
+				final int idx = pos.x + pos.y * width;
+				return towers[idx] <= 0;
+			}
+		};
+		// save the free positions in the list because the list must not change during the otherTowers loop
+		ArrayList<ShortPoint2D> freedPositions = new IteratorFilter<ShortPoint2D>(tower.area, predicate).toList();
 
-		Partition oldPartitionObject = getPartitionObject(x, y);
-		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
-		grid.setDebugColor(x, y, Color.GREEN);
+		// check if other towers occupy the area
+		if (!freedPositions.isEmpty()) { // if at least one position may change the player
+			List<Tuple<Integer, PartitionOccupyingTower>> otherTowers = occupyingTowers.getTowersOfOthersInRange(tower.position,
+					(int) tower.area.getRadius(), tower.playerId);
+			// sort the towers by their distance to the removed tower
+			Collections.sort(otherTowers, Tuple.<Integer, PartitionOccupyingTower> getE1Comparator());
 
-		this.partitions[getIdx(x, y)] = newPartition;
+			for (Tuple<Integer, PartitionOccupyingTower> curr : otherTowers) {
+				PartitionOccupyingTower currTower = curr.e2;
 
-		grid.changedPartitionAt(x, y);
+				final MapCircle currArea = currTower.area;
+
+				IteratorFilter<ShortPoint2D> area = new IteratorFilter<ShortPoint2D>(freedPositions, new IPredicate<ShortPoint2D>() {
+					@Override
+					public boolean evaluate(ShortPoint2D object) {
+						return currArea.contains(object);
+					}
+				});
+
+				occupyArea(currTower.playerId, area, currArea.getBorders());
+			}
+		}
 	}
 
-	public final void setPartitionAndPlayerAt(short x, short y, short partition) {
-		this.partitions[getIdx(x, y)] = partition;
+	/**
+	 * Occupies the given area for the given playerId.
+	 * 
+	 * @param playerId
+	 * @param influencingArea
+	 * @param borders
+	 */
+	private void occupyArea(byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {
+		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
+			@Override
+			public boolean evaluate(ShortPoint2D pos) {
+				return towers[pos.x + pos.y * width] <= 0;
+			}
+		};
+
+		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate);
+
+		// create PartitionCalculator
+		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, borders.xMin, borders.yMin, borders.xMax, borders.yMax);
+		partitioner.calculatePartitions();
+
+		// take over the positions
+		short[] newPartitionsMap = acquirePartitionedArea(playerId, partitioner);
+
+		// check for needed merges
+		checkForMergesAndDivides(playerId, partitioner, newPartitionsMap);
+
+		// increase the tower counter
+		changeTowerCounter(playerId, influencingArea, +1);
 	}
 
-	@Override
-	public final short mergePartitions(final short x1, final short y1, final short x2, final short y2) {
-		System.out.println("MERGE!!");
+	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
+		for (int i = 1; i <= partitioner.getNumberOfPartitions(); i++) {
+			// traverse the border of the partition and collect the partitions around the partition
+			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this);
 
-		short firstPartition = getPartition(x1, y1);
-		short secondPartition = getPartition(x2, y2);
+			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
+			final short innerPartition = newPartitionsMap[i];
 
-		assert firstPartition != -1 && secondPartition != -1 : "-1 partitions can not be merged!!";
-		assert x1 != x2 || y1 != y2 : "can not merge two equal partitions";
+			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
+				@Override
+				public boolean contains(int x, int y) {
+					return partitions[x + y * width] == innerPartition;
+				}
+			}, pos, borderVisitor, true);
 
-		Partition firstObject = partitionObjects[firstPartition];
-		Partition secondObject = partitionObjects[secondPartition];
+			// get the partitions around the partition.
+			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList = borderVisitor.getPartitionsList();
 
-		short newPartition;
+			// check for divides
+			HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
+			for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
+				ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartition.e1);
+				if (existingPartitionPos != null) {
+					checkIfDividePartition(currPartition.e1, currPartition.e2, existingPartitionPos);
+				} else {
+					foundPartitionsSet.put(currPartition.e1, currPartition.e2);
+				}
+			}
 
-		// for better performance, relabel the smaller partition
-		if (firstObject.getNumberOfElements() > secondObject.getNumberOfElements()) {
-			newPartition = firstPartition;
-			relabelPartition(x2, y2, secondPartition, firstPartition, true);
-			secondObject.mergeInto(firstObject);
-		} else {
-			newPartition = secondPartition;
-			relabelPartition(x1, y1, firstPartition, secondPartition, true);
-			firstObject.mergeInto(secondObject);
+			// check if partitions need to be merged
+			partitionsList.addLast(partitionsList.getFirst()); // add first at the end
+
+			for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
+				if (partitionObjects[currPartition.e1].playerId == playerId
+						&& partitionRepresentative[currPartition.e1] != partitionRepresentative[innerPartition]) {
+					mergePartitions(currPartition.e1, innerPartition);
+				}
+			}
 
 		}
+
+	}
+
+	/**
+	 * Checks if the given partitions is divided and the both given positions are on separated parts of the partition.
+	 * 
+	 * @param partition
+	 * @param pos1
+	 * @param pos2
+	 */
+	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
+		System.out.println("Checking if partition " + partition + " needs to be divided at " + pos1 + " and " + pos2);
+		if (!partitionsDividedTester.isPartitionNotDivided(pos1, pos2, partition)) {
+			dividePartition(partition, pos1, pos2);
+		}
+	}
+
+	private short[] acquirePartitionedArea(byte playerId, PartitionCalculatorAlgorithm partitioner) {
+		int numberOfNewPartitions = partitioner.getNumberOfPartitions() + 1; // +1 because 0 is the id for not influenced positions
+		short[] newPartitionsMap = new short[numberOfNewPartitions];
+		for (int i = 1; i < numberOfNewPartitions; i++) {
+			newPartitionsMap[i] = createNewPartition(playerId);
+		}
+
+		int minX = partitioner.getMinX();
+		int minY = partitioner.getMinY();
+		int width = partitioner.getWidth();
+		int height = partitioner.getHeight();
+
+		for (short dY = 0; dY < height; dY++) {
+			for (int dX = 0; dX < width; dX++) {
+				short partition = partitioner.getPartitionAt(dX, dY);
+				if (partition > 0) {
+					short x = (short) (dX + minX);
+					short y = (short) (dY + minY);
+
+					// Set the new partitions and take over goods and so on
+					changePartitionUncheckedAt(x, y, newPartitionsMap[partition]);
+				}
+			}
+		}
+
+		return newPartitionsMap;
+	}
+
+	private void changeTowerCounter(final byte playerId, Iterable<ShortPoint2D> influencingArea, int delta) {
+		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
+			@Override
+			public boolean evaluate(ShortPoint2D pos) {
+				return partitionObjects[partitions[pos.x + pos.y * width]].playerId == playerId;
+			}
+		};
+
+		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate);
+
+		for (ShortPoint2D pos : filtered) {
+			towers[pos.x + pos.y * width] += delta;
+		}
+	}
+
+	/**
+	 * Merges two partitions. The smaller partition is merged into the bigger one.
+	 * 
+	 * @param partition1
+	 * @param partition2
+	 * @return The resulting partition
+	 */
+	short mergePartitions(short partition1, short partition2) {
+		short biggerPartition;
+		short smallerPartition;
+
+		if (partitionObjects[partition1].getNumberOfElements() >= partitionObjects[partition2].getNumberOfElements()) {
+			biggerPartition = partition1;
+			smallerPartition = partition2;
+		} else {
+			biggerPartition = partition2;
+			smallerPartition = partition1;
+		}
+		biggerPartition = partitionRepresentative[biggerPartition]; // ensure that we have the top representative
+		smallerPartition = partitionRepresentative[smallerPartition];
+
+		assert biggerPartition != smallerPartition : "the partitions can not be the same!";
+
+		System.out.println("merging partitions: " + biggerPartition + " and " + smallerPartition);
+
+		Partition biggerPartitionObject = partitionObjects[biggerPartition];
+		Partition smallerPartitionObject = partitionObjects[smallerPartition];
+
+		smallerPartitionObject.mergeInto(biggerPartitionObject);
+		smallerPartitionObject.stopManager();
+
+		partitionObjects[smallerPartition] = biggerPartitionObject;
+		partitionRepresentative[smallerPartition] = biggerPartition;
+
+		/**
+		 * Flatten all hierarchies: <br>
+		 * start situation: 1 <- 2 and 3 <- 4 <br>
+		 * merge of 4 and 2 leads to a merge of 1 and 3. Say 1 is the resulting partition. Then we get: <br>
+		 * 1 <- 2, 1 <- 3 <- 4 <br>
+		 * The chain 1 <- 3 <- 4 will be cut to 1 <- 3 and 1 <- 4 by the following code. <br>
+		 */
+		int numberOfPartitions = partitionObjects.length;
+		for (int i = 1; i < numberOfPartitions; i++) {
+			if (partitionRepresentative[i] == smallerPartition) {
+				partitionRepresentative[i] = biggerPartition;
+				partitionObjects[i] = biggerPartitionObject;
+			}
+		}
+
+		return biggerPartition;
+	}
+
+	/**
+	 * Divides the given partition. The both positions must be on the border of the given partition and be on the parts that are now distinct and
+	 * shall be divided. NOTE: There will be no check if the partition is really divided!
+	 * 
+	 * @param oldPartition
+	 *            The original partition that now needs to be divided.
+	 * @param pos1
+	 *            A position on one of the separated parts of the partition.
+	 * @param pos2
+	 *            A position on the other separated part of the partition.
+	 */
+	void dividePartition(final short oldPartition, ShortPoint2D pos1, ShortPoint2D pos2) {
+		if (oldPartition == NO_PLAYER_PARTITION_ID) {
+			return; // don't divide the no player partition
+		}
+
+		System.out.println("Dividing " + pos1 + " and " + pos2 + " of partition " + oldPartition);
+
+		Partition partitionObject = partitionObjects[oldPartition];
+		ShortPoint2D relabelStartPos = partitionObject.getPositionCloserToGravityCenter(pos1, pos2);
+		short newPartition = createNewPartition(partitionObject.playerId);
+
+		relabelArea(oldPartition, relabelStartPos, newPartition);
+	}
+
+	/**
+	 * Relabels all of the given old partition connected to the start position to the new partition.
+	 * 
+	 * @param oldPartition
+	 *            The id of the old partition.
+	 * @param relabelStartPos
+	 *            The start position of the relabeling. Only positions connected to this position by other positions of the old partition will be
+	 *            relabeled.
+	 * @param newPartition
+	 *            The id of the new partition.
+	 */
+	private void relabelArea(final short oldPartition, ShortPoint2D relabelStartPos, final short newPartition) {
+		// relabel the partition
+		IContainingProvider containingProvider = new IContainingProvider() {
+			@Override
+			public boolean contains(int x, int y) {
+				return partitionRepresentative[partitions[x + y * width]] == oldPartition;
+			}
+		};
+
+		ITraversingVisitor relabelAreaVisitor = new ITraversingVisitor() {
+			@Override
+			public boolean visit(int x, int y) {
+				changePartitionUncheckedAt(x, y, newPartition);
+				return true;
+			}
+		};
+		AreaTraversingAlgorithm.traverseArea(containingProvider, relabelAreaVisitor, relabelStartPos, height);
+	}
+
+	/**
+	 * Changes the partition at the given position to the given new partition. <br>
+	 * NOTE: There will be no checks if the new partition exists or if this change divides an other partition or should lead to a merge.
+	 * 
+	 * @param x
+	 *            x coordinate of the position.
+	 * @param y
+	 *            y coordinate of the position.
+	 * @param newPartition
+	 *            The new partition that will be set at the given partition.
+	 */
+	void changePartitionUncheckedAt(int x, int y, short newPartition) {
+		int idx = x + y * width;
+		Partition oldPartitionObject = partitionObjects[partitions[idx]];
+		Partition newPartitionObject = partitionObjects[newPartition];
+
+		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
+		partitions[idx] = newPartition;
+	}
+
+	short createNewPartition(byte player) {
+		short newPartition = nextFreePartition;
+		Partition newPartitionObject = new Partition(player);
+		newPartitionObject.startManager();
+		partitionObjects[newPartition] = newPartitionObject;
+		partitionRepresentative[newPartition] = newPartition;
+
+		do { // update the nextFreePartition variable
+			nextFreePartition++;
+			if (nextFreePartition >= partitionObjects.length) {
+				throw new RuntimeException("Increasing the number of possible partitions is not implemented yet!");
+			}
+		} while (partitionObjects[nextFreePartition] != null);
 
 		return newPartition;
 	}
 
-	@Override
-	public final void createPartition(final short x, final short y, byte playerId) {
-		short partition = initializeNewPartition(playerId);
-		setPartition(x, y, partition);
-	}
-
-	private final short initializeNewPartition(byte playerId) {
-		short partition = getFreePartitionIndex();
-		this.partitionObjects[partition] = new Partition(playerId);
-		return partition;
-	}
-
-	private final short getFreePartitionIndex() {
-		for (short i = 0; i < this.partitionObjects.length; i++) {
-			if (this.partitionObjects[i] == null || this.partitionObjects[i].isEmpty())
-				return i;
+	public void setPartitionAt(short x, short y, short newPartition) {
+		if (getPartitionIdAt(x, y) != partitionRepresentative[newPartition]) {
+			changePartitionUncheckedAt(x, y, newPartition);
 		}
-
-		System.err.println("HAVE NO PARTITIONS LEFT!!!");
-		return (short) (this.partitionObjects.length - 1);
-	}
-
-	@Override
-	public final void dividePartition(final short x, final short y, ShortPoint2D firstPos, ShortPoint2D secondPos) {
-		System.out.println("DIVIDE!!");
-		short newPartition = initializeNewPartition(getPlayerIdAt(firstPos));
-		short oldPartition = getPartition(firstPos);
-
-		// partitions[getIdx(x, y)] = -1;// this is needed, because the new partition is not determined yet
-		relabelPartition(secondPos.x, secondPos.y, oldPartition, newPartition, false);
-		// partitions[getIdx(x, y)] = oldPartition;
-	}
-
-	private final byte[] neighborX = EDirection.getXDeltaArray();
-	private final byte[] neighborY = EDirection.getYDeltaArray();
-
-	/**
-	 * 
-	 * @param inX
-	 * @param inY
-	 * @param oldPartition
-	 * @param newPartition
-	 * @param justRelabel
-	 *            if true, only the partition will be changed.<br>
-	 *            if false, the partition will be changed and for every changed position the contents of that position in the old manager will be
-	 *            moved to the new manager.
-	 */
-	private final void relabelPartition(short inX, short inY, short oldPartition, short newPartition, boolean justRelabel) {
-		final short MAX_LENGTH = 10000;
-		final short[] pointsBuffer = new short[MAX_LENGTH]; // array is used to reduce the number of recursions
-		pointsBuffer[0] = inX;
-		pointsBuffer[1] = inY;
-		short length = 2;
-
-		while (length > 0) {
-			short y = pointsBuffer[--length];
-			short x = pointsBuffer[--length];
-			if (partitions[getIdx(x, y)] != oldPartition) {
-				continue; // the partition may already have changed.
-			}
-
-			if (justRelabel) {
-				this.partitions[getIdx(x, y)] = newPartition;
-			} else {
-				setPartition(x, y, newPartition);
-			}
-			boolean currIsBlocked = grid.isBlocked(x, y);
-
-			for (byte i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-				short currX = (short) (x + neighborX[i]);
-				short currY = (short) (y + neighborY[i]);
-				if (isInBounds(currX, currY) && partitions[getIdx(currX, currY)] == oldPartition && (!currIsBlocked || grid.isBlocked(currX, currY))) {
-					if (length < MAX_LENGTH) {
-						pointsBuffer[length++] = currX;
-						pointsBuffer[length++] = currY;
-					} else {
-						relabelPartition(currX, currY, oldPartition, newPartition, justRelabel);
-					}
-				}
-			}
-		}
-	}
-
-	public final void changePlayerAt(short x, short y, Player newPlayer) {
-		if (getPlayerIdAt(x, y) != newPlayer.playerId) {
-			this.partitionsAlgorithm.calculateNewPartition(x, y, newPlayer.playerId);
-		}
-	}
-
-	private final boolean isInBounds(ShortPoint2D position) {
-		return isInBounds(position.x, position.y);
-	}
-
-	@Override
-	public final boolean isInBounds(short x, short y) {
-		return 0 <= x && x < width && 0 <= y && y < height;
-	}
-
-	public final boolean pushMaterial(ShortPoint2D position, EMaterialType materialType) {
-		return getPartitionObject(position.x, position.y).addOffer(position, materialType);
-	}
-
-	public final void addJobless(IManageableBearer bearer) {
-		getPartitionObject(bearer.getPos()).addJobless(bearer);
-	}
-
-	public void removeJobless(IManageableBearer bearer) {
-		getPartitionObject(bearer.getPos()).removeJobless(bearer);
-	}
-
-	public final void addJobless(IManageableWorker worker) {
-		getPartitionObject(worker.getPos()).addJobless(worker);
-	}
-
-	public void removeJobless(IManageableWorker worker) {
-		getPartitionObject(worker.getPos()).removeJobless(worker);
-	}
-
-	public final void addJobless(IManageableBricklayer bricklayer) {
-		getPartitionObject(bricklayer.getPos()).addJobless(bricklayer);
-	}
-
-	public void removeJobless(IManageableBricklayer bricklayer) {
-		getPartitionObject(bricklayer.getPos()).removeJobless(bricklayer);
-	}
-
-	public final void addJobless(IManageableDigger digger) {
-		getPartitionObject(digger.getPos()).addJobless(digger);
-	}
-
-	public void removeJobless(IManageableDigger digger) {
-		getPartitionObject(digger.getPos()).removeJobless(digger);
-	}
-
-	public final void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
-		getPartitionObject(requester.getPos()).request(requester, materialType, priority);
-	}
-
-	public final void requestDiggers(IDiggerRequester requester, byte amount) {
-		getPartitionObject(requester.getPos()).requestDiggers(requester, amount);
-	}
-
-	public final void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
-		getPartitionObject(building.getPos()).requestBricklayer(building, bricklayerTargetPos, direction);
-	}
-
-	public final void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
-		getPartitionObject(workerBuilding.getPos()).requestBuildingWorker(workerType, workerBuilding);
-	}
-
-	@Override
-	public final boolean isBlockedForPeople(short x, short y) {
-		return grid.isBlocked(x, y);
-	}
-
-	public final void requestSoilderable(IBarrack barrack) {
-		getPartitionObject(barrack.getDoor()).requestSoilderable(barrack);
-	}
-
-	public final void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
-		getPartitionObject(position).releaseRequestsAt(position, materialType);
-	}
-
-	public final List<ShortPoint2D> occupyArea(IMapArea toBeOccupied, IMapArea groundArea, Player newPlayer) {
-		MilliStopWatch watch = new MilliStopWatch();
-		watch.start();
-
-		List<ShortPoint2D> occupiedPositions = new ArrayList<ShortPoint2D>();
-
-		Iterator<ShortPoint2D> groundAreaIter = groundArea.iterator();
-		ShortPoint2D firstPos = groundAreaIter.next();
-		changePlayerAt(firstPos.x, firstPos.y, newPlayer);
-		short newPartition = getPartition(firstPos);
-		occupiedPositions.add(firstPos);
-
-		while (groundAreaIter.hasNext()) {
-			ShortPoint2D curr = groundAreaIter.next();
-			short x = curr.x;
-			short y = curr.y;
-			if (getPartition(x, y) != newPartition) {
-				this.setPartition(x, y, newPartition);
-				occupiedPositions.add(curr);
-			}
-		}
-
-		List<ShortPoint2D> checkForMerge = new ArrayList<ShortPoint2D>();
-
-		ShortPoint2D unblockedOccupied = null;
-		byte newPlayerId = newPlayer.playerId;
-
-		for (ShortPoint2D curr : toBeOccupied) {
-			short x = curr.x;
-			short y = curr.y;
-
-			if (!isInBounds(x, y)) {
-				continue;
-			}
-
-			short currPartition = getPartitionAt(x, y);
-
-			if (currPartition != newPartition) {
-				if (currPartition >= 0 && partitionObjects[currPartition].getPlayer() == newPlayerId) {
-					checkForMerge.add(curr);
-
-				} else if (towers[getIdx(x, y)] <= 0) {
-					setPartition(x, y, newPartition);
-					occupiedPositions.add(curr);
-
-					if (unblockedOccupied == null && !grid.isBlocked(x, y)) {
-						unblockedOccupied = curr;
-					}
-				}
-			}
-
-			if (getPlayerAt(x, y) == newPlayer) {
-				towers[getIdx(x, y)]++;
-
-				for (ShortPoint2D neighbor : new MapNeighboursArea(curr)) {
-					if (isInBounds(neighbor) && !toBeOccupied.contains(neighbor)) {
-						checkForMerge.add(neighbor);
-					}
-				}
-			}
-		}
-
-		ShortPoint2D[] foundPartions = new ShortPoint2D[partitionObjects.length];
-		for (ShortPoint2D curr : checkForMerge) {
-			foundPartions[getPartition(curr) + 1] = curr; // +1 to have no conflict with unoccupied area
-		}
-
-		for (short i = 0; i < foundPartions.length; i++) {
-			ShortPoint2D pos = foundPartions[i];
-			if (pos != null && (i - 1) != newPartition) {
-				if (getPartitionObject((short) (i - 1)).getPlayer() == newPlayerId) {
-					this.mergePartitions(pos.x, pos.y, unblockedOccupied.x, unblockedOccupied.y);
-				}
-			}
-		}
-
-		watch.stop("occupying area needed---------------------------------------------------------------------------------------------");
-		return occupiedPositions;
-	}
-
-	public final boolean isEnforcedByTower(short x, short y) {
-		return towers[getIdx(x, y)] > 0;
-	}
-
-	public final List<ShortPoint2D> freeOccupiedArea(IMapArea occupied, ShortPoint2D occupiersPosition) {
-		short partiton = getPartition(occupiersPosition);
-		// a LinkedList is used, because the user needs to delete random elements
-		List<ShortPoint2D> totallyFreePositions = new LinkedList<ShortPoint2D>();
-
-		for (ShortPoint2D curr : occupied) {
-			short x = curr.x;
-			short y = curr.y;
-			if (isInBounds(x, y) && getPartitionAt(x, y) == partiton) {
-				final int idx = getIdx(x, y);
-				towers[idx]--;
-				if (towers[idx] <= 0) {
-					totallyFreePositions.add(curr);
-					towers[idx] = 0; // just to ensure that the array is ok (<0 would be wrong)
-				}
-			}
-		}
-
-		return totallyFreePositions;
-	}
-
-	public final void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
-		getPartitionObject(pos).removeOfferAt(pos, materialType);
-	}
-
-	public final int getTowerCounterAt(int x, int y) {
-		return towers[getIdx(x, y)];
-	}
-
-	/**
-	 * Used by towers to occupy a single position.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param newPlayer
-	 */
-	public final void occupyAt(short x, short y, Player newPlayer) {
-		changePlayerAt(x, y, newPlayer);
-		towers[getIdx(x, y)]++;
-	}
-
-	public EMaterialType popToolProduction(ShortPoint2D pos) {
-		return getPartitionObject(pos).popToolProduction(pos);
 	}
 
 }

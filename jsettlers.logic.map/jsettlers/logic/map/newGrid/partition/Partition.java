@@ -2,6 +2,7 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.io.Serializable;
 
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 
 /**
@@ -13,11 +14,13 @@ import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 public final class Partition extends PartitionManager implements Serializable {
 	private static final long serialVersionUID = -2087692347209993840L;
 
+	final byte playerId;
 	private int counter = 0;
-	private final byte player;
+	private int xSum = 0;
+	private int ySum = 0;
 
 	public Partition(final byte player) {
-		this.player = player;
+		this.playerId = player;
 	}
 
 	public Partition(byte player, int size) {
@@ -25,20 +28,24 @@ public final class Partition extends PartitionManager implements Serializable {
 		this.counter = size;
 	}
 
-	void decrement() {
+	void decrement(int x, int y) {
 		counter--;
+		xSum -= x;
+		ySum -= y;
 	}
 
-	public void increment() {
+	public void increment(int x, int y) {
 		counter++;
+		xSum += x;
+		ySum += y;
 	}
 
-	public void removePositionTo(final short x, final short y, final Partition newPartitionObject) {
+	public void removePositionTo(final int x, final int y, final Partition newPartitionObject) {
 		assert this != newPartitionObject : "ERROR: newManager can not be the same as this manager!!";
 
-		this.decrement();
-		newPartitionObject.increment();
-		super.removePositionTo(x, y, newPartitionObject, newPartitionObject.player == this.player);
+		this.decrement(x, y);
+		newPartitionObject.increment(x, y);
+		super.removePositionTo(x, y, newPartitionObject, newPartitionObject.playerId == this.playerId);
 
 		if (isEmpty())
 			super.stopManager();
@@ -48,12 +55,27 @@ public final class Partition extends PartitionManager implements Serializable {
 		return counter <= 0;
 	}
 
-	public byte getPlayer() {
-		return player;
+	public byte getPlayerId() {
+		return playerId;
 	}
 
 	public int getNumberOfElements() {
 		return counter;
 	}
 
+	/**
+	 * 
+	 * @param pos1
+	 * @param pos2
+	 * @return The position with the bigger distance to the gravity center of this partition.
+	 */
+	public ShortPoint2D getPositionCloserToGravityCenter(ShortPoint2D pos1, ShortPoint2D pos2) {
+		int gravityX = xSum / counter;
+		int gravityY = ySum / counter;
+
+		int dist1 = ShortPoint2D.getOnGridDist(gravityX - pos1.x, gravityY - pos1.y);
+		int dist2 = ShortPoint2D.getOnGridDist(gravityX - pos2.x, gravityY - pos2.y);
+
+		return dist1 >= dist2 ? pos1 : pos2;
+	}
 }

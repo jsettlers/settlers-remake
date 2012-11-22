@@ -1,6 +1,7 @@
 package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -9,7 +10,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Eberle
  * 
  */
-public interface IBarrack {
+public interface IBarrack extends ILocatable {
 
 	/**
 	 * 

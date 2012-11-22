@@ -159,8 +159,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 			if (!searchedSoldiers.isEmpty()) {
 				if (request == null) {
-					request = new DijkstraContinuableRequest(this, super.getPos().x, super.getPos().y, (short) 1,
-							Constants.TOWER_SEARCH_RADIUS);
+					request = new DijkstraContinuableRequest(this, super.getPos().x, super.getPos().y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
 				}
 				request.setSearchType(searchedSoldiers.peek());
 
@@ -219,8 +218,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	private void freeArea() {
-		MapCircle occupied = getOccupyablePositions();
-		super.getGrid().freeOccupiedArea(occupied, super.getPos(), allOccupyingBuildings);
+		super.getGrid().freeAreaOccupiedByTower(super.getPos());
 	}
 
 	@Override
@@ -243,7 +241,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		TowerOccupyer towerOccupier = new TowerOccupyer(freePosition, soldier);
 		occupiers.add(towerOccupier);
 
-		occupyArea();
+		occupyArea(); // FIXME changing the player of a tower must be corrected
 
 		soldier.setSelected(super.isSelected());
 
@@ -303,7 +301,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final void occupyArea() {
 		if (!occupiedArea) {
 			MapCircle occupying = getOccupyablePositions();
-			super.getGrid().occupyArea(occupying, new FreeMapArea(super.getPos(), super.getBuildingType().getProtectedTiles()), super.getPlayer());
+			super.getGrid().occupyAreaByTower(super.getPlayer(), occupying);
 			occupiedArea = true;
 		}
 	}

@@ -81,15 +81,14 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
 					EMaterialType.FISHINGROD, EMaterialType.SCYTHE });
 
-	public PartitionManager() {
-		schedule();
-	}
+	private boolean stopped;
 
-	private void schedule() {
+	public void startManager() {
 		PartitionManagerTimer.add(this);
 	}
 
 	public void stopManager() {
+		stopped = true;
 		PartitionManagerTimer.remove(this);
 	}
 
@@ -175,7 +174,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	 *            NOTE: the new manager MUST NOT be null!
 	 * @param newHasSamePlayer
 	 */
-	public void removePositionTo(final short x, final short y, PartitionManager newManager, boolean newHasSamePlayer) {
+	public void removePositionTo(final int x, final int y, PartitionManager newManager, boolean newHasSamePlayer) {
 		ShortPoint2D position = new ShortPoint2D(x, y);
 
 		MaterialOffer removedOffer = materialOffers.removeObjectAt(position);
@@ -444,7 +443,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		schedule();
+		startManager();
 	}
 
 	public void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
@@ -480,4 +479,13 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		throw new UnsupportedOperationException("CAN'T KILL PARTITION MANAGER!! THIS REALLY SHOULD NOT HAPPEN!");
 	}
 
+	/**
+	 * FOR TESTS ONLY!
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	public MaterialOffer getMaterialOfferAt(ShortPoint2D pos) {
+		return this.materialOffers.getObjectAt(pos);
+	}
 }

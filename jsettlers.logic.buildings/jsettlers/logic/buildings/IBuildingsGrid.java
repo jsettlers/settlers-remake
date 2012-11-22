@@ -1,16 +1,13 @@
 package jsettlers.logic.buildings;
 
-import java.util.List;
-
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.newGrid.IOccupyingBuilding;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
@@ -78,18 +75,7 @@ public interface IBuildingsGrid {
 
 	void setBlocked(FreeMapArea buildingArea, boolean blocked);
 
-	void occupyArea(IMapArea toBeOccupied, IMapArea groundArea, Player player);
-
 	void removeBuildingAt(ShortPoint2D pos);
-
-	/**
-	 * this method removes the enforcement in the given area
-	 * 
-	 * @param occupied
-	 * @param position
-	 * @param otherOccupiers
-	 */
-	void freeOccupiedArea(IMapArea occupied, ShortPoint2D position, List<? extends IOccupyingBuilding> otherOccupiers);
 
 	void pushMaterialsTo(ShortPoint2D position, EMaterialType type, byte numberOf);
 
@@ -97,4 +83,29 @@ public interface IBuildingsGrid {
 	 * @return dijkstra algorithm to be used by buildings.
 	 */
 	DijkstraAlgorithm getDijkstra();
+
+	/**
+	 * Occupies the given area for the given player.
+	 * 
+	 * @param player
+	 * @param influencingArea
+	 */
+	void occupyAreaByTower(Player player, MapCircle influencingArea);
+
+	/**
+	 * Frees the area occupied by the tower at the given position.
+	 * 
+	 * @param towerPosition
+	 */
+	void freeAreaOccupiedByTower(ShortPoint2D towerPosition);
+
+	/**
+	 * Changes the player of the tower at the given position to the given new player. The given groundArea will always become occupied by the new
+	 * player.
+	 * 
+	 * @param towerPosition
+	 * @param newPlayer
+	 * @param groundArea
+	 */
+	void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, final FreeMapArea groundArea);
 }

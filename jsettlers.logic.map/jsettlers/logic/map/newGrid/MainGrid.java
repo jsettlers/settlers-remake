@@ -4,22 +4,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.Color;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.EBuildingType.BuildingAreaBitSet;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IMapData;
@@ -32,7 +25,7 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
-import jsettlers.common.map.shapes.IMapArea;
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
@@ -127,7 +120,7 @@ public final class MainGrid implements Serializable {
 		this.width = width;
 		this.height = height;
 
-		this.partitionsGrid = new PartitionsGrid(width, height, numberOfPlayers, new PartitionableGrid());
+		this.partitionsGrid = new PartitionsGrid(width, height, numberOfPlayers);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
@@ -237,7 +230,7 @@ public final class MainGrid implements Serializable {
 			placeStack(pos, ((StackObject) object).getType(), ((StackObject) object).getCount());
 		} else if (object instanceof BuildingObject) {
 			BuildingObject buildingObject = (BuildingObject) object;
-			Building building = constructBuildingAt(pos, buildingObject.getType(), partitionsGrid.getPlayerForId(buildingObject.getPlayerId()), true);
+			Building building = constructBuildingAt(pos, buildingObject.getType(), partitionsGrid.getPlayer(buildingObject.getPlayerId()), true);
 
 			if (building instanceof IOccupyableBuilding) {
 				NewMovable soldier = createNewMovableAt(building.getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
@@ -245,7 +238,7 @@ public final class MainGrid implements Serializable {
 			}
 		} else if (object instanceof MovableObject) {
 			MovableObject movableObject = (MovableObject) object;
-			createNewMovableAt(pos, movableObject.getType(), partitionsGrid.getPlayerForId(movableObject.getPlayerId()));
+			createNewMovableAt(pos, movableObject.getType(), partitionsGrid.getPlayer(movableObject.getPlayerId()));
 		}
 	}
 
@@ -552,7 +545,7 @@ public final class MainGrid implements Serializable {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			int value = partitionsGrid.getPartitionAt(x, y) + 1;
+			int value = partitionsGrid.getPartitionIdAt(x, y) + 1;
 			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// int value = partitionsGrid.getTowerCounterAt(x, y) + 1;
@@ -698,12 +691,12 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final short getPartitionAt(short x, short y) {
-			return partitionsGrid.getPartitionAt(x, y);
+			return partitionsGrid.getPartitionIdAt(x, y);
 		}
 
 		@Override
 		public final void setPartitionAndPlayerAt(short x, short y, short partition) {
-			partitionsGrid.setPartitionAndPlayerAt(x, y, partition);
+			partitionsGrid.setPartitionAt(x, y, partition);
 			bordersThread.checkPosition(new ShortPoint2D(x, y));
 
 			AbstractHexMapObject building = objectsGrid.getMapObjectAt(x, y, EMapObjectType.BUILDING);
@@ -888,10 +881,10 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void changePlayerAt(ShortPoint2D position, Player player) {
-			partitionsGrid.changePlayerAt(position.x, position.y, player);
-			bordersThread.checkPosition(position);
-			landmarksCorrection.addLandmarkedPosition(position);
+		public void changePlayerAt(ShortPoint2D position, Player player) { // FIXME @Andreas Eberle make pioneer work again
+			// partitionsGrid.changePlayerAt(position.x, position.y, player);
+			// bordersThread.checkPosition(position);
+			// landmarksCorrection.addLandmarkedPosition(position);
 		}
 
 		@Override
@@ -908,42 +901,42 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void addJobless(IManageableBearer bearer) {
-			partitionsGrid.addJobless(bearer);
+			partitionsGrid.getPartitionAt(bearer).addJobless(bearer);
 		}
 
 		@Override
 		public void removeJobless(IManageableBearer bearer) {
-			partitionsGrid.removeJobless(bearer);
+			partitionsGrid.getPartitionAt(bearer).removeJobless(bearer);
 		}
 
 		@Override
 		public void addJobless(IManageableWorker worker) {
-			partitionsGrid.addJobless(worker);
+			partitionsGrid.getPartitionAt(worker).addJobless(worker);
 		}
 
 		@Override
 		public void removeJobless(IManageableWorker worker) {
-			partitionsGrid.removeJobless(worker);
+			partitionsGrid.getPartitionAt(worker).removeJobless(worker);
 		}
 
 		@Override
 		public void addJobless(IManageableDigger digger) {
-			partitionsGrid.addJobless(digger);
+			partitionsGrid.getPartitionAt(digger).addJobless(digger);
 		}
 
 		@Override
 		public void removeJobless(IManageableDigger digger) {
-			partitionsGrid.removeJobless(digger);
+			partitionsGrid.getPartitionAt(digger).removeJobless(digger);
 		}
 
 		@Override
 		public void addJobless(IManageableBricklayer bricklayer) {
-			partitionsGrid.addJobless(bricklayer);
+			partitionsGrid.getPartitionAt(bricklayer).addJobless(bricklayer);
 		}
 
 		@Override
 		public void removeJobless(IManageableBricklayer bricklayer) {
-			partitionsGrid.removeJobless(bricklayer);
+			partitionsGrid.getPartitionAt(bricklayer).removeJobless(bricklayer);
 		}
 
 		@Override
@@ -960,7 +953,7 @@ public final class MainGrid implements Serializable {
 		public boolean dropMaterial(ShortPoint2D position, EMaterialType materialType, boolean offer) {
 			if (mapObjectsManager.pushMaterial(position.x, position.y, materialType)) {
 				if (offer) {
-					partitionsGrid.pushMaterial(position, materialType);
+					partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
 				}
 				return true;
 			} else
@@ -999,7 +992,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public EMaterialType popToolProductionRequest(ShortPoint2D pos) {
-			return partitionsGrid.popToolProduction(pos);
+			return partitionsGrid.getPartitionAt(pos.x, pos.y).popToolProduction(pos);
 		}
 
 		@Override
@@ -1268,93 +1261,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void occupyArea(IMapArea toBeOccupied, IMapArea groundArea, Player player) {
-			List<ShortPoint2D> occupiedPositions = partitionsGrid.occupyArea(toBeOccupied, groundArea, player);
-
-			for (ShortPoint2D curr : occupiedPositions) {
-				destroyBuildingOn(curr.x, curr.y, player);
-			}
-
-			bordersThread.checkPositions(occupiedPositions);
-			landmarksCorrection.addLandmarkedPositions(occupiedPositions);
-		}
-
-		@Override
-		public final void freeOccupiedArea(IMapArea occupied, ShortPoint2D pos, List<? extends IOccupyingBuilding> otherOccupiers) {
-			List<ShortPoint2D> totallyFreed = partitionsGrid.freeOccupiedArea(occupied, pos);
-			if (!totallyFreed.isEmpty()) {
-				StopWatch watch = new MilliStopWatch();
-				watch.start();
-
-				final int maxSqDistance = 6 * CommonConstants.TOWER_RADIUS * CommonConstants.TOWER_RADIUS;
-
-				List<OccupyingDistanceCombi> occupyingInRange = new LinkedList<OccupyingDistanceCombi>();
-
-				for (IOccupyingBuilding curr : otherOccupiers) {
-					ShortPoint2D currPos = curr.getPos();
-					int dx = currPos.x - pos.x;
-					int dy = currPos.y - pos.y;
-					int sqDistance = dx * dx + dy * dy;
-					if (sqDistance <= maxSqDistance && sqDistance > 0) { // > 0 to remove the tower just freeing the position
-						occupyingInRange.add(new OccupyingDistanceCombi(sqDistance, curr));
-					}
-				}
-
-				if (!occupyingInRange.isEmpty()) {
-					Collections.sort(occupyingInRange);
-
-					for (OccupyingDistanceCombi currOcc : occupyingInRange) {
-						IMapArea currOccArea = currOcc.building.getOccupyablePositions();
-
-						Iterator<ShortPoint2D> iter = totallyFreed.iterator();
-						for (ShortPoint2D currPos = iter.next(); iter.hasNext(); currPos = iter.next()) {
-							if (currOccArea.contains(currPos)) {
-								iter.remove();
-								short x = currPos.x;
-								short y = currPos.y;
-
-								partitionsGrid.occupyAt(x, y, currOcc.building.getPlayer());
-								bordersThread.checkPosition(currPos);
-								landmarksCorrection.addLandmarkedPosition(currPos);
-
-								destroyBuildingOn(x, y, currOcc.building.getPlayer());
-							}
-						}
-
-						if (totallyFreed.isEmpty()) {
-							break;
-						}
-					}
-				}
-
-				watch.stop("------------------ freeOccupiedArea needed: ");
-			}
-		}
-
-		private void destroyBuildingOn(short x, short y, Player newPlayer) {
-			Building building = objectsGrid.getBuildingOn(x, y);
-			if (building != null && newPlayer != building.getPlayer()) {
-				building.kill();
-			}
-		}
-
-		private final class OccupyingDistanceCombi implements Comparable<OccupyingDistanceCombi> {
-			final int sqDistance;
-			final IOccupyingBuilding building;
-
-			OccupyingDistanceCombi(int sqDistance, IOccupyingBuilding building) {
-				this.sqDistance = sqDistance;
-				this.building = building;
-			}
-
-			@Override
-			public final int compareTo(OccupyingDistanceCombi arg) {
-				return sqDistance - arg.sqDistance;
-			}
-
-		}
-
-		@Override
 		public final void setBlocked(FreeMapArea area, boolean blocked) {
 			for (ShortPoint2D curr : area) {
 				if (MainGrid.this.isInBounds(curr.x, curr.y))
@@ -1389,12 +1295,12 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final void requestDiggers(IDiggerRequester requester, byte amount) {
-			partitionsGrid.requestDiggers(requester, amount);
+			partitionsGrid.getPartitionAt(requester).requestDiggers(requester, amount);
 		}
 
 		@Override
 		public final void requestBricklayer(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
-			partitionsGrid.requestBricklayer(building, bricklayerTargetPos, direction);
+			partitionsGrid.getPartitionAt(building).requestBricklayer(building, bricklayerTargetPos, direction);
 		}
 
 		@Override
@@ -1404,12 +1310,12 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final void requestBuildingWorker(EMovableType workerType, WorkerBuilding workerBuilding) {
-			partitionsGrid.requestBuildingWorker(workerType, workerBuilding);
+			partitionsGrid.getPartitionAt(workerBuilding).requestBuildingWorker(workerType, workerBuilding);
 		}
 
 		@Override
 		public final void requestSoilderable(IBarrack barrack) {
-			partitionsGrid.requestSoilderable(barrack);
+			partitionsGrid.getPartitionAt(barrack).requestSoilderable(barrack);
 		}
 
 		@Override
@@ -1422,7 +1328,7 @@ public final class MainGrid implements Serializable {
 
 			@Override
 			public final void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
-				partitionsGrid.request(requester, materialType, priority);
+				partitionsGrid.getPartitionAt(requester).request(requester, materialType, priority);
 			}
 
 			@Override
@@ -1442,13 +1348,34 @@ public final class MainGrid implements Serializable {
 
 			@Override
 			public final void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
-				partitionsGrid.releaseRequestsAt(position, materialType);
+				partitionsGrid.getPartitionAt(position.x, position.y).releaseRequestsAt(position, materialType);
 
 				byte stackSize = mapObjectsManager.getStackSize(position.x, position.y, materialType);
 				for (byte i = 0; i < stackSize; i++) {
-					partitionsGrid.pushMaterial(position, materialType);
+					partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
 				}
 			}
+		}
+
+		@Override
+		public void occupyAreaByTower(Player player, MapCircle influencingArea) {
+			partitionsGrid.addTowerAndOccupyArea(player.playerId, influencingArea);
+			bordersThread.checkPositions(influencingArea);
+			landmarksCorrection.addLandmarkedPositions(influencingArea);
+		}
+
+		@Override
+		public void freeAreaOccupiedByTower(ShortPoint2D towerPosition) {
+			Iterable<ShortPoint2D> changedPositions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
+			bordersThread.checkPositions(changedPositions);
+			landmarksCorrection.addLandmarkedPositions(changedPositions);
+		}
+
+		@Override
+		public void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, FreeMapArea groundArea) {
+			Iterable<ShortPoint2D> changedPositions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId, groundArea);
+			bordersThread.checkPositions(changedPositions);
+			landmarksCorrection.addLandmarkedPositions(changedPositions);
 		}
 
 	}
