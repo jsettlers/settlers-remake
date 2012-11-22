@@ -1,4 +1,4 @@
-package jsettlers.logic.algorithms.borders.traversing;
+package jsettlers.logic.algorithms.traversing.borders;
 
 /**
  * This interface defines a method needed by the {@link BorderTraversingAlgorithm}. The implementor of this interface defines the area the

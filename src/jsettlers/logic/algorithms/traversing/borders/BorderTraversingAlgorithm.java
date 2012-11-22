@@ -1,9 +1,20 @@
-package jsettlers.logic.algorithms.borders.traversing;
+package jsettlers.logic.algorithms.traversing.borders;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 
-public class BorderTraversingAlgorithm {
+/**
+ * 
+ * @author Andreas Eberle
+ */
+public final class BorderTraversingAlgorithm {
+
+	/**
+	 * No instances of this class shall be created.
+	 */
+	private BorderTraversingAlgorithm() {
+	}
 
 	/**
 	 * Traverses the border of an area defined by the given {@link IContainingProvider} starting at {@link startPos}. The given visitor is called for
@@ -21,9 +32,9 @@ public class BorderTraversingAlgorithm {
 	 *            If true the positions on the outside will be visited.<br>
 	 *            If false the inside positions will be visited.
 	 * @return true if the whole border has been traversed.<br>
-	 *         false if the traversing has been canceled by the {@link IBorderVisitor}'s visit() method.
+	 *         false if the traversing has been canceled by the {@link ITraversingVisitor}'s visit() method.
 	 */
-	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos, final IBorderVisitor visitor,
+	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos, final ITraversingVisitor visitor,
 			boolean visitOutside) {
 		final int startInsideX = startPos.x;
 		final int startInsideY = startPos.y;

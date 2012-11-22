@@ -1,13 +1,12 @@
 package jsettlers.logic.algorithms.landmarks;
 
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.borders.traversing.BorderTraversingAlgorithm;
-import jsettlers.logic.algorithms.borders.traversing.IBorderVisitor;
-import jsettlers.logic.algorithms.borders.traversing.IContainingProvider;
+import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
+import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 
 /**
  * Thread to correct the landmarks. For example if Pioneers set all landmarks around a lake, this Thread will recognize it and take over the area of
@@ -79,7 +78,7 @@ public final class LandmarksCorrectingThread extends Thread {
 
 	private void relabel(final short outsideBlockedPartition, final short blockedX, final short blockedY, final short newPartition) {
 
-		BorderTraversingAlgorithm.traverseBorder(containingProvider, new ShortPoint2D(blockedX, blockedY), new IBorderVisitor() {
+		BorderTraversingAlgorithm.traverseBorder(containingProvider, new ShortPoint2D(blockedX, blockedY), new ITraversingVisitor() {
 			int lastX = -1;
 			int lastY = -1;
 
@@ -147,7 +146,7 @@ public final class LandmarksCorrectingThread extends Thread {
 	 * @return
 	 */
 	private boolean needsRelabel(short blockedX, short blockedY, final short partition) {
-		return BorderTraversingAlgorithm.traverseBorder(containingProvider, new ShortPoint2D(blockedX, blockedY), new IBorderVisitor() {
+		return BorderTraversingAlgorithm.traverseBorder(containingProvider, new ShortPoint2D(blockedX, blockedY), new ITraversingVisitor() {
 			@Override
 			public boolean visit(int x, int y) {
 				return grid.getPartitionAt((short) x, (short) y) == partition;
@@ -159,8 +158,10 @@ public final class LandmarksCorrectingThread extends Thread {
 		queue.offer(pos);
 	}
 
-	public final void addLandmarkedPositions(List<ShortPoint2D> occupiedPositions) {
-		queue.addAll(occupiedPositions);
+	public final void addLandmarkedPositions(Iterable<ShortPoint2D> occupiedPositions) {
+		for (ShortPoint2D currPos : occupiedPositions) {
+			queue.offer(currPos);
+		}
 	}
 
 	public void cancel() {

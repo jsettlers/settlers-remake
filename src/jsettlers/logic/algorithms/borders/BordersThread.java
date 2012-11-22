@@ -1,6 +1,5 @@
 package jsettlers.logic.algorithms.borders;
 
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import jsettlers.common.movable.EDirection;
@@ -95,9 +94,11 @@ public class BordersThread implements Runnable {
 		}
 	}
 
-	public void checkPositions(List<ShortPoint2D> occupiedPositions) {
+	public void checkPositions(Iterable<ShortPoint2D> positions) {
 		synchronized (positionsQueue) {
-			this.positionsQueue.addAll(occupiedPositions);
+			for (ShortPoint2D currPos : positions) {
+				positionsQueue.offer(currPos);
+			}
 		}
 	}
 
