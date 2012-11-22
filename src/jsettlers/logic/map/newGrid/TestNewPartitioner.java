@@ -7,7 +7,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.common.utils.collections.FilterIterator;
+import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
@@ -17,10 +17,10 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
-import jsettlers.logic.algorithms.borders.traversing.BorderTraversingAlgorithm;
-import jsettlers.logic.algorithms.borders.traversing.IBorderVisitor;
-import jsettlers.logic.algorithms.borders.traversing.IContainingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
+import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
+import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class TestNewPartitioner {
@@ -97,7 +97,7 @@ public class TestNewPartitioner {
 			}
 		};
 
-		FilterIterator<ShortPoint2D> filtered = new FilterIterator<ShortPoint2D>(new MapCircle(center, radius), predicate);
+		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(new MapCircle(center, radius), predicate);
 
 		double xFactor = 1.2;
 		double yFactor = 1.2;
@@ -136,7 +136,7 @@ public class TestNewPartitioner {
 				public boolean contains(int x, int y) {
 					return grid.partitionsGrid.getPartitionAt((short) x, (short) y) == partition;
 				}
-			}, pos, getBorderVisitor(grid, partition));
+			}, pos, getBorderVisitor(grid, partition), true);
 		}
 
 		watch.stop("the test needed");
@@ -155,8 +155,8 @@ public class TestNewPartitioner {
 		}
 	}
 
-	private static IBorderVisitor getBorderVisitor(final MainGrid grid, final short innerPartition) {
-		return new IBorderVisitor() {
+	private static ITraversingVisitor getBorderVisitor(final MainGrid grid, final short innerPartition) {
+		return new ITraversingVisitor() {
 			short lastPartititon;
 
 			byte players[] = { 0, 1, 1, 1, 1, 2, 3, 1 };

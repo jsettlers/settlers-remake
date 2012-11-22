@@ -18,7 +18,7 @@ import org.junit.Test;
 /**
  * @author michael
  */
-public class CircleTest {
+public class MapAreasTest {
 
 	private static final int TEST_WIDTH = 100;
 

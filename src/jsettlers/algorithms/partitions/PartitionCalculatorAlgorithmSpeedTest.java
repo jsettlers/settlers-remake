@@ -25,7 +25,7 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 	}
 
 	public static void main(String[] args) throws MapLoadException, InterruptedException {
-		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap-2012-10-31_14-02-41.map")).getMainGrid();
+		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap.map")).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();

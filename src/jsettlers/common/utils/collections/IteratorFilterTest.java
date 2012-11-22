@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FilterIteratorTest {
+public class IteratorFilterTest {
 
 	private LinkedList<Integer> list;
 
@@ -33,7 +33,7 @@ public class FilterIteratorTest {
 				expected.add(curr);
 		}
 
-		assertEqualality(expected, new FilterIterator<Integer>(list, new IPredicate<Integer>() {
+		assertEqualality(expected, new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
 			@Override
 			public boolean evaluate(Integer object) {
 				return object % 2 == 1;
@@ -49,7 +49,7 @@ public class FilterIteratorTest {
 				expected.add(curr);
 		}
 
-		assertEqualality(expected, new FilterIterator<Integer>(list, new IPredicate<Integer>() {
+		assertEqualality(expected, new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
 			@Override
 			public boolean evaluate(Integer object) {
 				return object % 2 == 0;
@@ -57,8 +57,23 @@ public class FilterIteratorTest {
 		}));
 	}
 
-	private void assertEqualality(LinkedList<Integer> expectedList, FilterIterator<Integer> filterIterator) {
+	@Test
+	public void testUseFilterTwoTimes() {
+		IteratorFilter<Integer> filter = new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
+			@Override
+			public boolean evaluate(Integer object) {
+				return true;
+			}
+		});
+
+		assertEqualality(list, filter);
+		assertEqualality(list, filter);
+	}
+
+	private void assertEqualality(LinkedList<Integer> expectedList, IteratorFilter<Integer> iteratorFilter) {
 		Iterator<Integer> expectedIter = expectedList.iterator();
+
+		Iterator<Integer> filterIterator = iteratorFilter.iterator();
 
 		while (expectedIter.hasNext() && filterIterator.hasNext()) {
 			Integer expected = expectedIter.next();
