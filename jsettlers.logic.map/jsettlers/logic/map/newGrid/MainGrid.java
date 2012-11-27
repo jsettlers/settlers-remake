@@ -547,14 +547,14 @@ public final class MainGrid implements Serializable {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			int value = partitionsGrid.getPartitionIdAt(x, y) + 1;
-			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// int value = partitionsGrid.getPartitionIdAt(x, y) + 1;
+			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// int value = partitionsGrid.getTowerCounterAt(x, y) + 1;
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
-			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
+			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
 
@@ -674,7 +674,7 @@ public final class MainGrid implements Serializable {
 
 			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable != null) {
-				movable.receiveHit(arrow.getHitStrength(), arrow.getPlayer());
+				movable.receiveHit(arrow.getHitStrength(), arrow.getSourcePos());
 				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
 		}
@@ -1132,8 +1132,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, Player shooterPlayer, float hitStrength) {
-			mapObjectsManager.addArrowObject(attackedPos, shooterPos, shooterPlayer, hitStrength);
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+			mapObjectsManager.addArrowObject(attackedPos, shooterPos, hitStrength);
 		}
 
 		@Override

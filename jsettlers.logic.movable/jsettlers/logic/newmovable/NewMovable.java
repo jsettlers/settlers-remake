@@ -777,7 +777,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	@Override
-	public final void receiveHit(float hitStrength, Player player) {
+	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos) {
 		this.health -= hitStrength;
 		if (health <= 0) {
 			this.kill();

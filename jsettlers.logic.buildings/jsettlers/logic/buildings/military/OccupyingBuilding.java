@@ -102,35 +102,50 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 	}
 
-	void changePlayerTo(Player player) {
-		assert occupiers.isEmpty() : "there cannot be any occupies in the tower when changing the player.";
+	void changePlayerTo(ShortPoint2D attackerPos) {
+		assert occupiers.isEmpty() : "there cannot be any occupiers in the tower when changing the player.";
+
+		NewMovable enemy = super.getGrid().getMovable(attackerPos);
+		Player newPlayer = enemy.getPlayer();
 
 		setAttackableTowerObject(false);
 		super.placeFlag(false);
 
-		request = null;
-		searchedSoldiers.clear();
-		emptyPlaces.clear();
+		resetSoldierSearch();
 
-		super.setPlayer(player); // set the new player.
+		super.setPlayer(newPlayer);
 
 		if (occupiedArea) { // free the area if it had been occupied.
-			freeArea();
-			occupiedArea = false;
+			super.getGrid().changePlayerOfTower(super.getPos(), newPlayer, super.getBuildingArea());
+		} else {
+			occupyAreaIfNeeded();
 		}
+
+		initSoldierRequests();
+		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
+		enemy.setOccupyableBuilding(this);
+		currentlyCommingSoldiers[ESoldierType.INFANTRY.ordinal()]++;
 
 		doorHealth = 0.1f;
 
 		super.placeFlag(true);
 		setAttackableTowerObject(true);
+	}
 
-		initSoldierRequests();
+	private void resetSoldierSearch() {
+		request = null;
+		searchedSoldiers.clear();
+		emptyPlaces.clear();
+		for (int i = 0; i < currentlyCommingSoldiers.length; i++) {
+			currentlyCommingSoldiers[i] = 0;
+		}
 	}
 
 	@Override
 	protected final void appearedEvent() {
-		occupyArea();
+		occupyAreaIfNeeded();
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
+		currentlyCommingSoldiers[ESoldierType.INFANTRY.ordinal()]++;
 	}
 
 	@Override
@@ -241,7 +256,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		TowerOccupyer towerOccupier = new TowerOccupyer(freePosition, soldier);
 		occupiers.add(towerOccupier);
 
-		occupyArea(); // FIXME changing the player of a tower must be corrected
+		occupyAreaIfNeeded(); // FIXME changing the player of a tower must be corrected
 
 		soldier.setSelected(super.isSelected());
 
@@ -298,7 +313,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return freePosition;
 	}
 
-	private final void occupyArea() {
+	private final void occupyAreaIfNeeded() {
 		if (!occupiedArea) {
 			MapCircle occupying = getOccupyablePositions();
 			super.getGrid().occupyAreaByTower(super.getPlayer(), occupying);
@@ -469,7 +484,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		@Override
-		public void receiveHit(float strength, Player player) {
+		public void receiveHit(float strength, ShortPoint2D attackerPos) {
 			if (doorHealth > 0) {
 				doorHealth -= strength / Constants.DOOR_HIT_RESISTENCY_FACTOR;
 
@@ -484,12 +499,12 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				}
 			} else if (currDefender != null) {
 				IAttackableMovable movable = currDefender.getSoldier().getMovable();
-				movable.receiveHit(strength, player);
+				movable.receiveHit(strength, attackerPos);
 
 				if (movable.getHealth() <= 0) {
 					if (occupiers.isEmpty()) {
 						currDefender = null;
-						changePlayerTo(player);
+						changePlayerTo(attackerPos);
 					} else {
 						emptyPlaces.add(currDefender.place); // request a new soldier.
 						searchedSoldiers.add(getSearchType(currDefender.getSoldier().getMovableType()));

@@ -265,11 +265,11 @@ public abstract class NewMovableStrategy implements Serializable {
 			if (isValidPosition(leftPos) && grid.hasNoMovableAt(leftPos.x, leftPos.y) && isValidPosition(leftStraightPos)) {
 				path.goToNextStep();
 				path = new Path(path, leftPos, leftStraightPos);
-				System.out.println("path replanned!");
+				// System.out.println("path replanned!");
 			} else if (isValidPosition(rightPos) && grid.hasNoMovableAt(rightPos.x, rightPos.y) && isValidPosition(rightStraightPos)) {
 				path.goToNextStep();
 				path = new Path(path, rightPos, rightStraightPos);
-				System.out.println("path replanned!");
+				// System.out.println("path replanned!");
 			} else {
 				// TODO @Andreas Eberle maybe calculate a new path
 			}

@@ -59,6 +59,10 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 		case HITTING:
 			hitEnemy(enemy);
+			if (state != ESoldierState.HITTING) {
+				break; // the soldier could have entered an attacked tower
+			}
+
 			if (enemy.getHealth() <= 0) {
 				enemy = null;
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
