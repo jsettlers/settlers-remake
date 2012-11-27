@@ -113,8 +113,8 @@ public class JSettlersGame {
 				}
 			}
 
+			NetworkTimer.get().setPausing(true);
 			connector.stop();
-			networkManager.stop();
 			grid.stopThreads();
 			guiInterface.stop();
 			Timer100Milli.stop();
@@ -122,6 +122,7 @@ public class JSettlersGame {
 			PartitionManagerTimer.stop();
 			NewMovable.dropAllMovables();
 			Building.dropAllBuildings();
+			networkManager.stop();
 
 			listener.gameEnded();
 		}

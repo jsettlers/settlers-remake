@@ -152,12 +152,14 @@ public final class MainGrid implements Serializable {
 		bordersThread.start();
 		fogOfWar.start(new FogOfWarGrid());
 		landmarksCorrection.start();
+		partitionsGrid.startThreads();
 	}
 
 	public void stopThreads() {
 		bordersThread.cancel();
 		fogOfWar.cancel();
 		landmarksCorrection.cancel();
+		partitionsGrid.cancelThreads();
 	}
 
 	public static MainGrid create(IMapData mapGrid, byte players) {
@@ -551,7 +553,7 @@ public final class MainGrid implements Serializable {
 			// int value = partitionsGrid.getTowerCounterAt(x, y) + 1;
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// int value = partitionsGrid.getPlayerAt(x, y).playerId + 1;
+			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
@@ -881,10 +883,10 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void changePlayerAt(ShortPoint2D position, Player player) { // FIXME @Andreas Eberle make pioneer work again
-			// partitionsGrid.changePlayerAt(position.x, position.y, player);
-			// bordersThread.checkPosition(position);
-			// landmarksCorrection.addLandmarkedPosition(position);
+		public void changePlayerAt(ShortPoint2D position, Player player) {
+			partitionsGrid.changePlayerAt(position, player.playerId);
+			bordersThread.checkPosition(position);
+			landmarksCorrection.addLandmarkedPosition(position);
 		}
 
 		@Override
@@ -1229,17 +1231,15 @@ public final class MainGrid implements Serializable {
 		}
 
 		private final boolean canConstructAt(FreeMapArea area) {
-			boolean isFree = true;
-
 			for (ShortPoint2D curr : area) {
 				short x = curr.x;
 				short y = curr.y;
 
 				if (!isInBounds(x, y) || flagsGrid.isProtected(x, y) || flagsGrid.isBlocked(x, y)) {
-					isFree = false; // TODO @Andreas Eberle remove if
+					return false;
 				}
 			}
-			return isFree;
+			return true;
 		}
 
 		@Override

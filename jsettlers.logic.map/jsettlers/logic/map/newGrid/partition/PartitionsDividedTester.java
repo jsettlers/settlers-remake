@@ -16,11 +16,11 @@ import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
  */
 public class PartitionsDividedTester implements IPartitionDividedTester {
 	private final short width;
-	private final short[] partitionsGrid;
+	private final PartitionsGrid grid;
 
-	public PartitionsDividedTester(short width, short[] partitionsGrid) {
+	public PartitionsDividedTester(short width, PartitionsGrid grid) {
 		this.width = width;
-		this.partitionsGrid = partitionsGrid;
+		this.grid = grid;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class PartitionsDividedTester implements IPartitionDividedTester {
 		boolean pos2NotOnBorder = BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return partitionsGrid[x + y * width] == partition;
+				return grid.partitionRepresentative[grid.partitions[x + y * width]] == partition;
 			}
 		}, pos1, new ITraversingVisitor() {
 			@Override

@@ -40,6 +40,15 @@ public final class Partition extends PartitionManager implements Serializable {
 		ySum += y;
 	}
 
+	@Override
+	public void mergeInto(PartitionManager newManager) {
+		super.mergeInto(newManager);
+
+		counter = 0;
+		xSum = 0;
+		ySum = 0;
+	}
+
 	public void removePositionTo(final int x, final int y, final Partition newPartitionObject) {
 		assert this != newPartitionObject : "ERROR: newManager can not be the same as this manager!!";
 
@@ -71,7 +80,7 @@ public final class Partition extends PartitionManager implements Serializable {
 	 */
 	public ShortPoint2D getPositionCloserToGravityCenter(ShortPoint2D pos1, ShortPoint2D pos2) {
 		int gravityX = xSum / counter;
-		int gravityY = ySum / counter;
+		int gravityY = ySum / counter;// (523|431) and (525|432)
 
 		int dist1 = ShortPoint2D.getOnGridDist(gravityX - pos1.x, gravityY - pos1.y);
 		int dist2 = ShortPoint2D.getOnGridDist(gravityX - pos2.x, gravityY - pos2.y);

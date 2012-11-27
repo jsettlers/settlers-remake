@@ -81,15 +81,20 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
 					EMaterialType.FISHINGROD, EMaterialType.SCYTHE });
 
-	private boolean stopped;
+	private boolean stopped = true;
 
 	public void startManager() {
+		stopped = false;
 		PartitionManagerTimer.add(this);
 	}
 
 	public void stopManager() {
 		stopped = true;
 		PartitionManagerTimer.remove(this);
+	}
+
+	public boolean isStopped() {
+		return stopped;
 	}
 
 	public boolean addOffer(ShortPoint2D position, EMaterialType materialType) {

@@ -11,6 +11,7 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -34,7 +35,7 @@ import jsettlers.logic.player.Team;
 public final class PartitionsGrid implements Serializable {
 	private static final long serialVersionUID = 8919380724171427679L;
 
-	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 1000;
+	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 2000;
 	private static final int NO_PLAYER_PARTITION_ID = 0;
 
 	private final PartitionOccupyingTowerList occupyingTowers = new PartitionOccupyingTowerList();
@@ -50,8 +51,8 @@ public final class PartitionsGrid implements Serializable {
 	final short[] partitionRepresentative = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
 	private transient PartitionsDividedTester partitionsDividedTester;
-
-	private short nextFreePartition = 1;
+	private transient PartitionsGridNormalizer gridNormalizer;
+	private transient Object partitionsWriteLock;
 
 	public PartitionsGrid(short width, short height, byte numberOfPlayers) {
 		this.width = width;
@@ -78,7 +79,17 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	private void initAdditionalFields() {
-		this.partitionsDividedTester = new PartitionsDividedTester(width, partitions);
+		this.partitionsDividedTester = new PartitionsDividedTester(width, this);
+		partitionsWriteLock = new Object();
+		this.gridNormalizer = new PartitionsGridNormalizer(this, partitionsWriteLock);
+	}
+
+	public void startThreads() {
+		this.gridNormalizer.start();
+	}
+
+	public void cancelThreads() {
+		this.gridNormalizer.cancel();
 	}
 
 	public short getPartitionIdAt(int x, int y) {
@@ -165,6 +176,15 @@ public final class PartitionsGrid implements Serializable {
 		return tower.area;
 	}
 
+	/**
+	 * Changes the player of the tower at given position to the new player. After this operation, the given ground area will always be occupied by the
+	 * new player.
+	 * 
+	 * @param towerPosition
+	 * @param newPlayerId
+	 * @param groundArea
+	 * @return
+	 */
 	public Iterable<ShortPoint2D> changePlayerOfTower(ShortPoint2D towerPosition, byte newPlayerId, final FreeMapArea groundArea) {
 		// get the tower object and the informations of it.
 		PartitionOccupyingTower tower = occupyingTowers.removeAt(towerPosition);
@@ -195,6 +215,22 @@ public final class PartitionsGrid implements Serializable {
 		occupyingTowers.add(new PartitionOccupyingTower(newPlayerId, tower.area));
 
 		return tower.area;
+	}
+
+	public void changePlayerAt(ShortPoint2D position, byte playerId) {
+		int idx = position.x + position.y * width;
+		if (towers[idx] <= 0) {
+			short newPartition = createNewPartition(playerId);
+			changePartitionUncheckedAt(position.x, position.y, newPartition);
+
+			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this);
+
+			for (EDirection currDir : EDirection.values) {
+				borderVisitor.visit(currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
+			}
+
+			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());
+		}
 	}
 
 	/**
@@ -280,36 +316,39 @@ public final class PartitionsGrid implements Serializable {
 			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 				@Override
 				public boolean contains(int x, int y) {
-					return partitions[x + y * width] == innerPartition;
+					return partitionRepresentative[partitions[x + y * width]] == partitionRepresentative[innerPartition];
 				}
 			}, pos, borderVisitor, true);
 
 			// get the partitions around the partition.
 			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList = borderVisitor.getPartitionsList();
 
-			// check for divides
-			HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
-			for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-				ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartition.e1);
-				if (existingPartitionPos != null) {
-					checkIfDividePartition(currPartition.e1, currPartition.e2, existingPartitionPos);
-				} else {
-					foundPartitionsSet.put(currPartition.e1, currPartition.e2);
-				}
+			checkMergesAndDividesOnPartitionsList(playerId, innerPartition, partitionsList);
+		}
+	}
+
+	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition,
+			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList) {
+		// check for divides
+		HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
+		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
+			ShortPoint2D existingPartitionPos = foundPartitionsSet.get(currPartition.e1);
+			if (existingPartitionPos != null) {
+				checkIfDividePartition(currPartition.e1, currPartition.e2, existingPartitionPos);
+			} else {
+				foundPartitionsSet.put(currPartition.e1, currPartition.e2);
 			}
-
-			// check if partitions need to be merged
-			partitionsList.addLast(partitionsList.getFirst()); // add first at the end
-
-			for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-				if (partitionObjects[currPartition.e1].playerId == playerId
-						&& partitionRepresentative[currPartition.e1] != partitionRepresentative[innerPartition]) {
-					mergePartitions(currPartition.e1, innerPartition);
-				}
-			}
-
 		}
 
+		// check if partitions need to be merged
+		partitionsList.addLast(partitionsList.getFirst()); // add first at the end
+
+		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
+			if (partitionObjects[currPartition.e1].playerId == playerId
+					&& partitionRepresentative[currPartition.e1] != partitionRepresentative[innerPartition]) {
+				mergePartitions(currPartition.e1, innerPartition);
+			}
+		}
 	}
 
 	/**
@@ -437,10 +476,11 @@ public final class PartitionsGrid implements Serializable {
 			return; // don't divide the no player partition
 		}
 
-		System.out.println("Dividing " + pos1 + " and " + pos2 + " of partition " + oldPartition);
-
 		Partition partitionObject = partitionObjects[oldPartition];
 		ShortPoint2D relabelStartPos = partitionObject.getPositionCloserToGravityCenter(pos1, pos2);
+
+		System.out.println("Dividing " + pos1 + " and " + pos2 + " of partition " + oldPartition + " with relabelStartPos: " + relabelStartPos);
+
 		short newPartition = createNewPartition(partitionObject.playerId);
 
 		relabelArea(oldPartition, relabelStartPos, newPartition);
@@ -473,7 +513,7 @@ public final class PartitionsGrid implements Serializable {
 				return true;
 			}
 		};
-		AreaTraversingAlgorithm.traverseArea(containingProvider, relabelAreaVisitor, relabelStartPos, height);
+		AreaTraversingAlgorithm.traverseArea(containingProvider, relabelAreaVisitor, relabelStartPos, width, height);
 	}
 
 	/**
@@ -493,22 +533,24 @@ public final class PartitionsGrid implements Serializable {
 		Partition newPartitionObject = partitionObjects[newPartition];
 
 		oldPartitionObject.removePositionTo(x, y, newPartitionObject);
-		partitions[idx] = newPartition;
+		synchronized (partitionsWriteLock) {
+			partitions[idx] = newPartition;
+		}
 	}
 
 	short createNewPartition(byte player) {
-		short newPartition = nextFreePartition;
+		short newPartition = 1;
+		while (partitionObjects[newPartition] != null) { // get a free partition
+			newPartition++;
+			if (newPartition >= partitionObjects.length) {
+				throw new RuntimeException("Increasing the number of possible partitions is not implemented yet!");
+			}
+		}
+
 		Partition newPartitionObject = new Partition(player);
 		newPartitionObject.startManager();
 		partitionObjects[newPartition] = newPartitionObject;
 		partitionRepresentative[newPartition] = newPartition;
-
-		do { // update the nextFreePartition variable
-			nextFreePartition++;
-			if (nextFreePartition >= partitionObjects.length) {
-				throw new RuntimeException("Increasing the number of possible partitions is not implemented yet!");
-			}
-		} while (partitionObjects[nextFreePartition] != null);
 
 		return newPartition;
 	}
