@@ -1,8 +1,11 @@
 package jsettlers.logic.algorithms.traversing.area;
 
+import java.util.BitSet;
+import java.util.LinkedList;
+
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
-import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 
 /**
@@ -27,37 +30,39 @@ public final class AreaTraversingAlgorithm {
 	 * @param visitor
 	 *            The visitor that will be called on every position in the connected area reachable from the given start position.
 	 * @param startPos
-	 *            A start position lying on the border of the expected area.
-	 * @param maxHeight
-	 *            The maximum y value that can be reached.
+	 *            A start position somewhere in the area.
+	 * @param width
+	 *            The width of the area. So the maximum x value may be width - 1;
+	 * @param height
+	 *            The height of the area. So the maximum y value may be height - 1;
+	 * 
 	 * @return true if the traversing finished<br>
 	 *         false if the visitor returned false at any position and therefore caused the traversing to be canceled.
 	 */
-	public static boolean traverseArea(IContainingProvider containingProvider, ITraversingVisitor visitor, ShortPoint2D startPos, int maxHeight) {
-		BordersInformationVisitor bordersInfoVisitor = new BordersInformationVisitor(startPos, maxHeight);
+	public static boolean traverseArea(IContainingProvider containingProvider, ITraversingVisitor visitor, ShortPoint2D startPos, int width,
+			int height) {
 
-		// traverse the border to get the borders of the area.
-		BorderTraversingAlgorithm.traverseBorder(containingProvider, startPos, bordersInfoVisitor, false);
+		LinkedList<ShortPoint2D> stack = new LinkedList<ShortPoint2D>();
+		stack.push(startPos);
+		BitSet touched = new BitSet(width * height);
+		touched.set(startPos.x + startPos.y * width);
 
-		int minY = bordersInfoVisitor.minY;
-		int maxY = bordersInfoVisitor.maxY;
-		int[] xMin = bordersInfoVisitor.xMin;
-		int[] xMax = bordersInfoVisitor.xMax;
-
-		for (int y = minY; y <= maxY; y++) {
-			if (!traverseLine(containingProvider, visitor, xMin[y], xMax[y], y)) {
+		while (!stack.isEmpty()) {
+			ShortPoint2D currPos = stack.poll();
+			if (!visitor.visit(currPos.x, currPos.y)) {
 				return false;
 			}
-		}
 
-		return true;
-	}
+			for (EDirection dir : EDirection.values) {
+				int nextX = dir.gridDeltaX + currPos.x;
+				int nextY = dir.gridDeltaY + currPos.y;
 
-	private static boolean traverseLine(IContainingProvider containingProvider, ITraversingVisitor visitor, int xMin, int xMax, int y) {
-		for (int x = xMin; x <= xMax; x++) {
-			if (containingProvider.contains(x, y)) {
-				if (!visitor.visit(x, y)) {
-					return false;
+				if (0 <= nextX && nextX <= width && 0 <= nextY && nextY <= height) {
+					int nextIdx = nextX + nextY * width;
+					if (!touched.get(nextIdx) && containingProvider.contains(nextX, nextY)) {
+						stack.push(new ShortPoint2D(nextX, nextY));
+						touched.set(nextIdx);
+					}
 				}
 			}
 		}
