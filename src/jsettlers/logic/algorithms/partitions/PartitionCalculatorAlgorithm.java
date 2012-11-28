@@ -23,7 +23,7 @@ public final class PartitionCalculatorAlgorithm {
 	private final int height;
 	private final BitSet containing;
 	private final short[] partitionsGrid;
-	private final boolean invertBitSet;
+	private final IBlockingProvider blockingProvider;
 
 	private short[] partitions = new short[MAX_NUMBER_OF_PARTITIONS];
 	private ShortPoint2D[] partitionBorderPositions = new ShortPoint2D[MAX_NUMBER_OF_PARTITIONS];
@@ -37,6 +37,8 @@ public final class PartitionCalculatorAlgorithm {
 	 * 
 	 * @param positions
 	 *            The positions of the calculated partitions.
+	 * @param blockingProvider
+	 *            Provides the information if a position is blocked or not.
 	 * @param minX
 	 *            The smallest x coordinate in the list of positions.
 	 * @param minY
@@ -46,7 +48,7 @@ public final class PartitionCalculatorAlgorithm {
 	 * @param maxY
 	 *            The biggest y coordinate in the list of positions.
 	 */
-	public PartitionCalculatorAlgorithm(Iterable<ShortPoint2D> positions, int minX, int minY, int maxX, int maxY) {
+	public PartitionCalculatorAlgorithm(Iterable<ShortPoint2D> positions, IBlockingProvider blockingProvider, int minX, int minY, int maxX, int maxY) {
 		this.minX = --minX; // this increases the window, so that no position can lay on the border.
 		this.minY = --minY;
 		maxX++;
@@ -54,13 +56,14 @@ public final class PartitionCalculatorAlgorithm {
 		this.width = maxX - minX + 1;
 		this.height = maxY - minY + 1;
 
+		this.blockingProvider = blockingProvider;
+
 		this.containing = new BitSet(width * height);
 		for (ShortPoint2D curr : positions) {
 			containing.set((curr.x - minX) + (curr.y - minY) * width);
 		}
 
 		this.partitionsGrid = new short[width * height];
-		this.invertBitSet = false;
 	}
 
 	/**
@@ -78,18 +81,17 @@ public final class PartitionCalculatorAlgorithm {
 	 * @param containing
 	 *            The {@link BitSet} defining the positions in the partitions and the ones not. <br>
 	 *            NOTE: The {@link BitSet} must be indexed with x + y * width
-	 * @param invertBitSet
-	 *            If false: all positions returning TRUE are seen as in the partitions.<br>
-	 *            If true: all positions returning FALSE are seen as in the partitions.
+	 * @param blockingProvider
+	 *            Provides the information if a position is blocked or not.
 	 */
-	public PartitionCalculatorAlgorithm(int minX, int minY, int width, int height, BitSet containing, boolean invertBitSet) {
+	public PartitionCalculatorAlgorithm(int minX, int minY, int width, int height, BitSet containing, IBlockingProvider blockingProvider) {
 		this.minX = minX;
 		this.minY = minY;
 		this.width = width;
 		this.height = height;
 
 		this.containing = containing;
-		this.invertBitSet = invertBitSet;
+		this.blockingProvider = blockingProvider;
 		this.partitionsGrid = new short[width * height];
 	}
 
@@ -98,10 +100,20 @@ public final class PartitionCalculatorAlgorithm {
 	 * The results can be accessed with the supplied getter methods.
 	 */
 	public void calculatePartitions() {
+		short blockedPartition = -1;
+
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int index = x + y * width;
-				if (containing.get(index) ^ invertBitSet) {
+				if (containing.get(index)) {
+
+					if (blockingProvider.isBlocked(minX + x, minY + y)) {
+						if (blockedPartition == -1) {
+							blockedPartition = createNewPartition(y, x);
+						}
+						partitionsGrid[index] = blockedPartition;
+						continue;
+					}
 
 					int westX = x + neighborX[0];
 					int westY = y + neighborY[0];
@@ -112,21 +124,18 @@ public final class PartitionCalculatorAlgorithm {
 
 					int partition = -1;
 					int westPartition = -1;
-					if (containing.get(westX + westY * width) ^ invertBitSet) {
+					int northEastPartition = -1;
+
+					if (containing.get(westX + westY * width) && !blockingProvider.isBlocked(minX + westX, minY + westY)) {
 						westPartition = partitionsGrid[westX + westY * width];
 						partition = westPartition;
 					}
 
-					if (northWestY < 0) {
-						System.out.println();
-					}
-
-					if (containing.get(northWestX + northWestY * width) ^ invertBitSet) {
+					if (containing.get(northWestX + northWestY * width) && !blockingProvider.isBlocked(minX + northWestX, minY + northWestY)) {
 						partition = partitionsGrid[northWestX + northWestY * width];
 					}
 
-					int northEastPartition = -1;
-					if (containing.get(northEastX + northEastY * width) ^ invertBitSet) {
+					if (containing.get(northEastX + northEastY * width) && !blockingProvider.isBlocked(minX + northEastX, minY + northEastY)) {
 						northEastPartition = partitionsGrid[northEastX + northEastY * width];
 						partition = northEastPartition;
 					}
@@ -142,21 +151,7 @@ public final class PartitionCalculatorAlgorithm {
 						partitionsGrid[index] = partitions[partition];
 
 					} else { // create a new partition
-						partitionsGrid[index] = nextFreePartition;
-						partitions[nextFreePartition] = nextFreePartition;
-						partitionBorderPositions[nextFreePartition] = new ShortPoint2D(x + minX, y + minY);
-
-						nextFreePartition++;
-
-						if (nextFreePartition >= partitions.length) {
-							short[] oldPartitions = partitions;
-							partitions = new short[oldPartitions.length * INCREASE_FACTOR];
-							System.arraycopy(oldPartitions, 0, partitions, 0, oldPartitions.length);
-
-							ShortPoint2D[] oldBorderPositions = partitionBorderPositions;
-							partitionBorderPositions = new ShortPoint2D[oldBorderPositions.length * INCREASE_FACTOR];
-							System.arraycopy(oldBorderPositions, 0, partitionBorderPositions, 0, oldBorderPositions.length);
-						}
+						partitionsGrid[index] = createNewPartition(y, x);
 					}
 
 				}
@@ -164,6 +159,28 @@ public final class PartitionCalculatorAlgorithm {
 		}
 
 		// post processing
+		normalizePartitions();
+	}
+
+	private short createNewPartition(int y, int x) {
+		short newPartition = nextFreePartition;
+
+		partitions[newPartition] = newPartition;
+		partitionBorderPositions[newPartition] = new ShortPoint2D(minX + x, minY + y);
+
+		nextFreePartition++;
+
+		if (nextFreePartition >= partitions.length) {
+			increasePartitionArraySize();
+		}
+
+		return newPartition;
+	}
+
+	/**
+	 * Normalizes the partitions and compacts them.
+	 */
+	private void normalizePartitions() {
 		short[] compacted = new short[partitions.length];
 		short compactedCount = 0;
 
@@ -185,6 +202,16 @@ public final class PartitionCalculatorAlgorithm {
 		}
 		partitions = compacted;
 		neededPartitions = compactedCount;
+	}
+
+	private void increasePartitionArraySize() {
+		short[] oldPartitions = partitions;
+		partitions = new short[oldPartitions.length * INCREASE_FACTOR];
+		System.arraycopy(oldPartitions, 0, partitions, 0, oldPartitions.length);
+
+		ShortPoint2D[] oldBorderPositions = partitionBorderPositions;
+		partitionBorderPositions = new ShortPoint2D[oldBorderPositions.length * INCREASE_FACTOR];
+		System.arraycopy(oldBorderPositions, 0, partitionBorderPositions, 0, oldBorderPositions.length);
 	}
 
 	public int getWidth() {
