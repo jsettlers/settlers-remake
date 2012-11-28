@@ -120,14 +120,14 @@ public final class MainGrid implements Serializable {
 		this.width = width;
 		this.height = height;
 
-		this.partitionsGrid = new PartitionsGrid(width, height, numberOfPlayers);
+		this.flagsGrid = new FlagsGrid(width, height);
+		this.partitionsGrid = new PartitionsGrid(width, height, numberOfPlayers, flagsGrid);
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
 		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.objectsGrid = new ObjectsGrid(width, height);
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
-		this.flagsGrid = new FlagsGrid(width, height);
 
 		this.buildingsGrid = new BuildingsGrid();
 		this.fogOfWar = new NewFogOfWar(width, height);
@@ -547,14 +547,17 @@ public final class MainGrid implements Serializable {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// int value = partitionsGrid.getPartitionIdAt(x, y) + 1;
+			int value = partitionsGrid.getPartitionIdAt(x, y) + 1;
+			return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+
+			// int value = partitionsGrid.getRealPartitionIdAt(x, y) + 1;
 			// return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// int value = partitionsGrid.getTowerCounterAt(x, y) + 1;
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
-			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
+			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
 

@@ -19,6 +19,7 @@ import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.algorithms.interfaces.IContainingProvider;
+import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 import jsettlers.logic.algorithms.traversing.area.AreaTraversingAlgorithm;
@@ -43,6 +44,7 @@ public final class PartitionsGrid implements Serializable {
 	final short width;
 	final short height;
 	final Player[] players;
+	private final IBlockingProvider blockingProvider;
 
 	final short[] partitions;
 	final byte[] towers;
@@ -53,9 +55,10 @@ public final class PartitionsGrid implements Serializable {
 	private transient PartitionsGridNormalizer gridNormalizer;
 	private transient Object partitionsWriteLock;
 
-	public PartitionsGrid(short width, short height, byte numberOfPlayers) {
+	public PartitionsGrid(short width, short height, byte numberOfPlayers, IBlockingProvider blockingProvider) {
 		this.width = width;
 		this.height = height;
+		this.blockingProvider = blockingProvider;
 		this.players = new Player[numberOfPlayers];
 		for (byte i = 0; i < numberOfPlayers; i++) {
 			Team team = new Team(i);
@@ -103,7 +106,7 @@ public final class PartitionsGrid implements Serializable {
 	 * @param y
 	 * @return
 	 */
-	short getRealPartitionIdAt(int x, int y) {
+	public short getRealPartitionIdAt(int x, int y) {
 		return partitions[x + y * width];
 	}
 
@@ -221,8 +224,8 @@ public final class PartitionsGrid implements Serializable {
 			short newPartition = createNewPartition(playerId);
 			changePartitionUncheckedAt(position.x, position.y, newPartition);
 
-			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this);
-
+			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
+			// visit the direct neighbors of the position
 			for (EDirection currDir : EDirection.values) {
 				borderVisitor.visit(currDir.gridDeltaX + position.x, currDir.gridDeltaY + position.y);
 			}
@@ -290,7 +293,8 @@ public final class PartitionsGrid implements Serializable {
 		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate);
 
 		// create PartitionCalculator
-		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, borders.xMin, borders.yMin, borders.xMax, borders.yMax);
+		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, blockingProvider, borders.xMin, borders.yMin,
+				borders.xMax, borders.yMax);
 		partitioner.calculatePartitions();
 
 		// take over the positions
@@ -306,9 +310,13 @@ public final class PartitionsGrid implements Serializable {
 	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
 		for (int i = 1; i <= partitioner.getNumberOfPartitions(); i++) {
 			// traverse the border of the partition and collect the partitions around the partition
-			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this);
+			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 
 			ShortPoint2D pos = partitioner.getPartitionBorderPos(i);
+			if (blockingProvider.isBlocked(pos.x, pos.y)) {
+				continue; // do not check the blocked partition
+			}
+
 			final short innerPartition = newPartitionsMap[i];
 
 			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
@@ -327,6 +335,10 @@ public final class PartitionsGrid implements Serializable {
 
 	private void checkMergesAndDividesOnPartitionsList(byte playerId, final short innerPartition,
 			LinkedList<Tuple<Short, ShortPoint2D>> partitionsList) {
+		if (partitionsList.isEmpty()) {
+			return; // nothing to do
+		}
+
 		// check for divides
 		HashMap<Short, ShortPoint2D> foundPartitionsSet = new HashMap<Short, ShortPoint2D>();
 		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {

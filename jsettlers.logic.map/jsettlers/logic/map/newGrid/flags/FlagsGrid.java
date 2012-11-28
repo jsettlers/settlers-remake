@@ -3,13 +3,15 @@ package jsettlers.logic.map.newGrid.flags;
 import java.io.Serializable;
 import java.util.BitSet;
 
+import jsettlers.logic.algorithms.partitions.IBlockingProvider;
+
 /**
  * Grid that's storing the blocked information for fast access.
  * 
  * @author Andreas Eberle
  * 
  */
-public final class FlagsGrid implements Serializable {
+public final class FlagsGrid implements Serializable, IBlockingProvider {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
@@ -28,6 +30,7 @@ public final class FlagsGrid implements Serializable {
 		this.bordersGrid = new BitSet(width * height);
 	}
 
+	@Override
 	public boolean isBlocked(int x, int y) {
 		return blockedGrid.get(x + y * width);
 	}

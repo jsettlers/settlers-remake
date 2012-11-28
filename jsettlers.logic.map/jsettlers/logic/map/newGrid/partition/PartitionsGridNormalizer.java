@@ -60,9 +60,11 @@ final class PartitionsGridNormalizer extends Thread {
 				}
 			}
 
-			for (int i = 1; i < maxPartitions; i++) {
-				if (stoppedManagers.get(i)) {
-					grid.partitionObjects[i] = null;
+			synchronized (lock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
+				for (int i = 1; i < maxPartitions; i++) {
+					if (stoppedManagers.get(i)) {
+						grid.partitionObjects[i] = null;
+					}
 				}
 			}
 
