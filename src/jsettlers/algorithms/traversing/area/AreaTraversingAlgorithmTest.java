@@ -9,9 +9,9 @@ import java.util.LinkedList;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 import jsettlers.logic.algorithms.traversing.area.AreaTraversingAlgorithm;
-import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 
 import org.junit.Test;
 

@@ -17,10 +17,10 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
-import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class TestNewPartitioner {
