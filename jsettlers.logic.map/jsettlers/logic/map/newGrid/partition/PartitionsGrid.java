@@ -18,11 +18,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 import jsettlers.logic.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
-import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -50,7 +50,6 @@ public final class PartitionsGrid implements Serializable {
 	final Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 	final short[] partitionRepresentative = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
-	private transient PartitionsDividedTester partitionsDividedTester;
 	private transient PartitionsGridNormalizer gridNormalizer;
 	private transient Object partitionsWriteLock;
 
@@ -79,7 +78,6 @@ public final class PartitionsGrid implements Serializable {
 	}
 
 	private void initAdditionalFields() {
-		this.partitionsDividedTester = new PartitionsDividedTester(width, this);
 		partitionsWriteLock = new Object();
 		this.gridNormalizer = new PartitionsGridNormalizer(this, partitionsWriteLock);
 	}
@@ -360,7 +358,7 @@ public final class PartitionsGrid implements Serializable {
 	 */
 	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
 		System.out.println("Checking if partition " + partition + " needs to be divided at " + pos1 + " and " + pos2);
-		if (!partitionsDividedTester.isPartitionNotDivided(pos1, pos2, partition)) {
+		if (!PartitionsDividedTester.isPartitionNotDivided(this, pos1, pos2, partition)) {
 			dividePartition(partition, pos1, pos2);
 		}
 	}
