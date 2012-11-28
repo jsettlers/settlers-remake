@@ -352,16 +352,16 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, Player shooterPlayer, float hitStrength) {
-		}
-
-		@Override
 		public void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player) {
 		}
 
 		@Override
 		public ShortPoint2D calcDecentralizeVector(short x, short y) {
 			return new ShortPoint2D(0, 0);
+		}
+
+		@Override
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
 		}
 
 	};

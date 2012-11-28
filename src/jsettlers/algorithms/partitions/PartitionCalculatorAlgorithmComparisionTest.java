@@ -1,9 +1,10 @@
 package jsettlers.algorithms.partitions;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.util.BitSet;
 
-import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.swing.SwingResourceLoader;
@@ -15,9 +16,12 @@ import jsettlers.logic.map.newGrid.MainGridDataAccessor;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
+
+import org.junit.Test;
+
 import random.RandomSingleton;
 
-public class PartitionCalculatorAlgorithmSpeedTest {
+public class PartitionCalculatorAlgorithmComparisionTest {
 
 	static { // sets the native library path for the system dependent jogl libs
 		SwingResourceLoader.setupSwingPaths();
@@ -25,7 +29,8 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 		RandomSingleton.load(0);
 	}
 
-	public static void main(String[] args) throws MapLoadException, InterruptedException {
+	@Test
+	public void testCompareOldAndNew() throws MapLoadException {
 		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap.map")).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
@@ -40,16 +45,14 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 			}
 		}
 
-		Thread.sleep(500);
-
-		MilliStopWatch watch = new MilliStopWatch();
-
 		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockingSet, IBlockingProvider.DEFAULT_PROVIDER);
 		partitioner.calculatePartitions();
 		System.out.println("\n\n\n\nnumber of partitions: " + partitioner.getNumberOfPartitions());
 
-		watch.stop("partitioning test needed:");
-
-		System.exit(0);
+		for (short y = 0; y < height; y++) {
+			for (short x = 0; x < width; x++) {
+				assertEquals(gridAccessor.getLandscapeGrid().getBlockedPartitionAt(x, y), partitioner.getPartitionAt(x, y));
+			}
+		}
 	}
 }
