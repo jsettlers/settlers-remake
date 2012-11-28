@@ -5,8 +5,8 @@ import java.util.LinkedList;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
-import jsettlers.logic.algorithms.traversing.borders.IContainingProvider;
 
 /**
  * This algorithm offers a method to traverse a connected area with an {@link ITraversingVisitor}.

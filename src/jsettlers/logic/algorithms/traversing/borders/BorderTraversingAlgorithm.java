@@ -2,6 +2,7 @@ package jsettlers.logic.algorithms.traversing.borders;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 
 /**

@@ -1,8 +1,9 @@
-package jsettlers.logic.algorithms.traversing.borders;
+package jsettlers.logic.algorithms.interfaces;
+
+import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
 
 /**
- * This interface defines a method needed by the {@link BorderTraversingAlgorithm}. The implementor of this interface defines the area the
- * {@link BorderTraversingAlgorithm} is walking around.
+ * This interface defines a method a contains(x,y) method needed by several algorithms (e.g. {@link BorderTraversingAlgorithm} ).
  * 
  * @author Andreas Eberle
  * 
