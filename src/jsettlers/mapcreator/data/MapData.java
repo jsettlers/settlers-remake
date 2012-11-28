@@ -24,6 +24,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.logic.map.save.MapDataSerializer;
@@ -427,8 +428,7 @@ public class MapData implements IMapData {
 		ShortPoint2D start = new ShortPoint2D(x, y);
 		for (RelativePoint p : container.getProtectedArea()) {
 			ShortPoint2D abs = p.calculatePoint(start);
-			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null
-					|| !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
+			if (!contains(abs.x, abs.y) || objects[abs.x][abs.y] != null || !landscapeAllowsObjects(getLandscape(abs.x, abs.y))
 					|| !listAllowsLandscape(landscapes, getLandscape(abs.x, abs.y))) {
 				allowed = false;
 			}
@@ -713,14 +713,14 @@ public class MapData implements IMapData {
 	private void calculateBlockedPartitions() {
 		MilliStopWatch watch = new MilliStopWatch();
 
-		BitSet blocked = new BitSet(width * height);
+		BitSet notBlockedSet = new BitSet(width * height);
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
-				blocked.set(x + width * y, landscapes[x][y].isBlocking);
+				notBlockedSet.set(x + width * y, !landscapes[x][y].isBlocking);
 			}
 		}
 
-		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, width, height, blocked, true);
+		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockedSet, IBlockingProvider.DEFAULT_PROVIDER);
 		partitionCalculator.calculatePartitions();
 
 		for (short y = 0; y < height; y++) {
