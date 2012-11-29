@@ -165,7 +165,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.stacks = result;
 	}
 
-	private void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
+	protected void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
 		if (place) {
 			grid.getMapObjectsManager().addSimpleMapObject(pos, EMapObjectType.BUILDINGSITE_SIGN, false, null);
 		} else {

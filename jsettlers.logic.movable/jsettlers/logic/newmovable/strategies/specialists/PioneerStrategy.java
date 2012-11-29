@@ -96,7 +96,7 @@ public final class PioneerStrategy extends NewMovableStrategy {
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 		this.state = EPioneerState.GOING_TO_POS;
 		centerPos = null;
 	}

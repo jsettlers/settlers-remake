@@ -239,7 +239,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 		if (targetPos != null && this.oldPathTarget != null) {
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
 			inSaveGotoMode = false;

@@ -226,7 +226,17 @@ public abstract class NewMovableStrategy implements Serializable {
 	protected void strategyKilledEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
 	}
 
-	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D oldTargetPos, @SuppressWarnings("unused") ShortPoint2D targetPos) {
+	/**
+	 * 
+	 * @param oldPosition
+	 *            The position the movable was positioned before the new path has been calculated and the first step on the new path has been done.
+	 * @param oldTargetPos
+	 *            The target position of the old path or null if no old path was set.
+	 * @param targetPos
+	 *            The new target position.
+	 */
+	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D oldPosition, @SuppressWarnings("unused") ShortPoint2D oldTargetPos,
+			@SuppressWarnings("unused") ShortPoint2D targetPos) {
 	}
 
 	/**

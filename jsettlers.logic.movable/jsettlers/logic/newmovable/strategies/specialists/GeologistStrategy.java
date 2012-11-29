@@ -33,7 +33,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 				this.centerPos = pos;
 			}
 
-			super.getStrategyGrid().setMarked(pos, false);
+			super.getStrategyGrid().setMarked(pos, false); // unmark the pos for the following check
 			if (canWorkOnPos(pos)) {
 				super.getStrategyGrid().setMarked(pos, true);
 				super.playAction(EAction.ACTION1, ACTION1_DURATION);
@@ -114,11 +114,11 @@ public final class GeologistStrategy extends NewMovableStrategy {
 	}
 
 	@Override
-	protected void moveToPathSet(ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 		this.state = EPioneerState.GOING_TO_POS;
 		centerPos = null;
 
-		super.getStrategyGrid().setMarked(super.getPos(), false);
+		super.getStrategyGrid().setMarked(oldPosition, false);
 
 		if (oldTargetPos != null) {
 			super.getStrategyGrid().setMarked(oldTargetPos, false);
