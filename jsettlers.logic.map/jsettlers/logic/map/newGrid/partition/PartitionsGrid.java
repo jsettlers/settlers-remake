@@ -52,7 +52,7 @@ public final class PartitionsGrid implements Serializable {
 	final Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 	final short[] partitionRepresentative = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
-	private transient PartitionsGridNormalizer gridNormalizer;
+	private transient PartitionsGridNormalizerThread gridNormalizer;
 	private transient Object partitionsWriteLock;
 
 	public PartitionsGrid(short width, short height, byte numberOfPlayers, IBlockingProvider blockingProvider) {
@@ -82,7 +82,7 @@ public final class PartitionsGrid implements Serializable {
 
 	private void initAdditionalFields() {
 		partitionsWriteLock = new Object();
-		this.gridNormalizer = new PartitionsGridNormalizer(this, partitionsWriteLock);
+		this.gridNormalizer = new PartitionsGridNormalizerThread(this, partitionsWriteLock);
 	}
 
 	public void startThreads() {

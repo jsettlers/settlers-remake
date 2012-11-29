@@ -2,13 +2,13 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.util.BitSet;
 
-final class PartitionsGridNormalizer extends Thread {
+final class PartitionsGridNormalizerThread extends Thread {
 
 	private final PartitionsGrid grid;
 	private final Object lock;
 	private boolean running = true;
 
-	PartitionsGridNormalizer(PartitionsGrid grid, Object lock) {
+	PartitionsGridNormalizerThread(PartitionsGrid grid, Object lock) {
 		super("PartitionsGridNormalizer");
 		this.grid = grid;
 		this.lock = lock;
