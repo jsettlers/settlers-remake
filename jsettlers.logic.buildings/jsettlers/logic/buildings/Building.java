@@ -645,7 +645,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public static void dropAllBuildings() {
 		allBuildings.clear();
-		OccupyingBuilding.dropAllBuildings();
 	}
 
 	@Override

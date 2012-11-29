@@ -1,7 +1,5 @@
 package jsettlers.logic.buildings.military;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +41,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		IOccupyingBuilding {
 	private static final long serialVersionUID = 5267249978497095473L;
 
-	private static LinkedList<OccupyingBuilding> allOccupyingBuildings = new LinkedList<OccupyingBuilding>();
-
 	private final LinkedList<TowerOccupyer> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
@@ -67,14 +63,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		initSoldierRequests();
 
-		allOccupyingBuildings.add(this);
-
 		delayCtr = (byte) RandomSingleton.getInt(0, 3);
-	}
-
-	private synchronized void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		allOccupyingBuildings.add(this);
 	}
 
 	private void initSoldierRequests() {
@@ -116,7 +105,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		super.setPlayer(newPlayer);
 
 		if (occupiedArea) { // free the area if it had been occupied.
-			super.getGrid().changePlayerOfTower(super.getPos(), newPlayer, super.getBuildingArea());
+			ShortPoint2D pos = super.getPos();
+			FreeMapArea protectedArea = new FreeMapArea(pos, getBuildingType().getProtectedTiles());
+			super.getGrid().changePlayerOfTower(pos, newPlayer, protectedArea);
 		} else {
 			occupyAreaIfNeeded();
 		}
@@ -226,8 +217,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 			occupiers.clear();
 		}
-
-		allOccupyingBuildings.remove(this);
 
 		setAttackableTowerObject(false);
 	}
@@ -386,16 +375,11 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	public void towerDefended(IBuildingOccupyableMovable soldier) {
 		inFight = false;
+		if (attackableTowerObject.currDefender == null) {
+			System.out.println();
+		}
 		occupiers.add(new TowerOccupyer(attackableTowerObject.currDefender.place, soldier));
 		attackableTowerObject.currDefender = null;
-	}
-
-	public final static LinkedList<OccupyingBuilding> getAllOccupyingBuildings() {
-		return allOccupyingBuildings;
-	}
-
-	public static void dropAllBuildings() {
-		allOccupyingBuildings.clear();
 	}
 
 	@Override
@@ -440,8 +424,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
-		private final OccupyerPlace place;
-		private final IBuildingOccupyableMovable soldier;
+		final OccupyerPlace place;
+		final IBuildingOccupyableMovable soldier;
 
 		TowerOccupyer(OccupyerPlace place, IBuildingOccupyableMovable soldier) {
 			this.place = place;
@@ -485,6 +469,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		@Override
 		public void receiveHit(float strength, ShortPoint2D attackerPos) {
+			if (getGrid().getMovable(attackerPos).getPlayer() == getPlayer()) {
+				return; // this can happen directly after the tower changed its player
+			}
+
 			if (doorHealth > 0) {
 				doorHealth -= strength / Constants.DOOR_HIT_RESISTENCY_FACTOR;
 
