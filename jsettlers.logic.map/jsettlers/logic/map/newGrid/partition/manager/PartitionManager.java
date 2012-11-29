@@ -227,7 +227,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		}
 	}
 
-	public void mergeInto(PartitionManager newManager) {
+	public final void mergeInto(PartitionManager newManager) {
 		newManager.bricklayerRequests.addAll(this.bricklayerRequests);
 		newManager.diggerRequests.addAll(this.diggerRequests);
 		newManager.joblessBearer.addAll(this.joblessBearer);

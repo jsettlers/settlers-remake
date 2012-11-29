@@ -40,9 +40,11 @@ public final class Partition extends PartitionManager implements Serializable {
 		ySum += y;
 	}
 
-	@Override
-	public void mergeInto(PartitionManager newManager) {
-		super.mergeInto(newManager);
+	public void mergeInto(Partition newPartition) {
+		super.mergeInto(newPartition);
+		newPartition.counter += this.counter;
+		newPartition.xSum += xSum;
+		newPartition.ySum += ySum;
 
 		counter = 0;
 		xSum = 0;
