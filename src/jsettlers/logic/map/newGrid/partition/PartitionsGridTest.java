@@ -10,6 +10,7 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialOffer;
 
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class PartitionsGridTest {
 	private static final short WIDTH = 200;
 	private static final short HEIGHT = 200;
 
-	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10);
+	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IBlockingProvider.DEFAULT_PROVIDER);
 
 	@Test
 	public void testMergeNoArea() {
@@ -170,8 +171,8 @@ public class PartitionsGridTest {
 		assertEquals(grid.getPartitionIdAt(50, 100), grid.getPartitionIdAt(150, 100));
 		assertEquals(grid.getPartitionIdAt(100, 100), grid.getPartitionIdAt(150, 100));
 
-		addTower(1, 75, 50, 40);
-		addTower(1, 125, 150, 40);
+		addTower(1, 75, 55, 42);
+		addTower(1, 125, 150, 42);
 		// partitions still should be connected
 		assertEquals(grid.getPartitionIdAt(50, 100), grid.getPartitionIdAt(150, 100));
 
@@ -179,6 +180,8 @@ public class PartitionsGridTest {
 		// now the partitions should be divided
 		assertTrue(grid.getPartitionIdAt(50, 100) != grid.getPartitionIdAt(150, 100));
 		assertCircleIs(getTowerCircle(50, 100, 40), grid.getPartitionIdAt(50, 100));
+		assertCircleIs(getTowerCircle(150, 100, 40), grid.getPartitionIdAt(150, 100));
+		assertEquals(grid.getPartitionIdAt(75, 55), grid.getPartitionIdAt(125, 150));
 
 		assertOfferAt(materialPos, EMaterialType.STONE, 2);
 	}

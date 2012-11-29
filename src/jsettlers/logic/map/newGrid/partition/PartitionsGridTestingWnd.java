@@ -17,6 +17,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.UIState;
+import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 
 public class PartitionsGridTestingWnd {
 
@@ -48,7 +49,7 @@ public class PartitionsGridTestingWnd {
 	private final PartitionsGrid grid;
 
 	private PartitionsGridTestingWnd() {
-		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10);
+		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IBlockingProvider.DEFAULT_PROVIDER);
 	}
 
 	private void startTest() {
@@ -62,16 +63,29 @@ public class PartitionsGridTestingWnd {
 		//
 		// partitionsGrid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(80, 80));
 
-		addTower(0, 150, 200, 40);
-		addTower(0, 250, 200, 40);
+		//
+		// addTower(0, 150, 200, 40);
+		// addTower(0, 250, 200, 40);
+		//
+		// addTower(0, 200, 200, 40);
+		// addTower(0, 220, 220, 40);
+		//
+		// changePlayerOfTower(150, 200, 1);
+		// changePlayerOfTower(200, 200, 2);
 
-		addTower(0, 200, 200, 40);
-		addTower(0, 220, 220, 40);
+		addTower(0, 50, 100, 40);
+		addTower(0, 150, 100, 40);
+		addTower(0, 100, 100, 40);
+		addTower(1, 75, 55, 44);
+		addTower(1, 125, 150, 44);
 
-		changePlayerOfTower(150, 200, 1);
-		changePlayerOfTower(200, 200, 2);
+		removeTower(100, 100);
 
 		// grid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(150, 200));
+	}
+
+	private void removeTower(int x, int y) {
+		grid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(x, y));
 	}
 
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
