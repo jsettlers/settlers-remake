@@ -52,6 +52,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	final Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 	final short[] partitionRepresentative = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
+	private final short[] blockedPartitionsForPlayers;
+
 	private transient PartitionsGridNormalizerThread gridNormalizer;
 	private transient Object partitionsWriteLock;
 
@@ -61,10 +63,12 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.blockingProvider = blockingProvider;
 		blockingProvider.registerListener(this);
 
-		this.players = new Player[numberOfPlayers];
-		for (byte i = 0; i < numberOfPlayers; i++) {
-			Team team = new Team(i);
-			this.players[i] = new Player(i, team);
+		this.players = new Player[numberOfPlayers]; // create the players.
+		this.blockedPartitionsForPlayers = new short[numberOfPlayers];
+		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
+			Team team = new Team(playerId);
+			this.players[playerId] = new Player(playerId, team);
+			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
 
 		this.partitions = new short[width * height];
@@ -310,7 +314,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
-		for (int i = 1; i <= partitioner.getNumberOfPartitions(); i++) {
+		for (int i = PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS; i <= partitioner.getNumberOfPartitions(); i++) {
 			// traverse the border of the partition and collect the partitions around the partition
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 
@@ -378,9 +382,11 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	private short[] acquirePartitionedArea(byte playerId, PartitionCalculatorAlgorithm partitioner) {
-		int numberOfNewPartitions = partitioner.getNumberOfPartitions() + 1; // +1 because 0 is the id for not influenced positions
+		int numberOfNewPartitions = partitioner.getNumberOfPartitions() + PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS;
 		short[] newPartitionsMap = new short[numberOfNewPartitions];
-		for (int i = 1; i < numberOfNewPartitions; i++) {
+		newPartitionsMap[PartitionCalculatorAlgorithm.BLOCKED_PARTITION] = blockedPartitionsForPlayers[playerId];
+
+		for (int i = PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS; i < numberOfNewPartitions; i++) {
 			newPartitionsMap[i] = createNewPartition(playerId);
 		}
 
@@ -392,7 +398,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		for (short dY = 0; dY < height; dY++) {
 			for (int dX = 0; dX < width; dX++) {
 				short partition = partitioner.getPartitionAt(dX, dY);
-				if (partition > 0) {
+
+				if (partition != PartitionCalculatorAlgorithm.NO_PARTITION) {
 					short x = (short) (dX + minX);
 					short y = (short) (dY + minY);
 
