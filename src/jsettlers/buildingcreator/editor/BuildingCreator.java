@@ -38,7 +38,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.SelectAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -47,7 +47,7 @@ import jsettlers.graphics.swing.SwingResourceLoader;
 
 /**
  * This is the main building creator class.
- * 
+ *
  * @author michael
  */
 public class BuildingCreator implements IMapInterfaceListener {
@@ -207,8 +207,8 @@ public class BuildingCreator implements IMapInterfaceListener {
 
 	@Override
 	public void action(Action action) {
-		if (action instanceof SelectAction) {
-			SelectAction sAction = (SelectAction) action;
+		if (action instanceof PointAction) {
+			PointAction sAction = (PointAction) action;
 			ShortPoint2D pos = sAction.getPosition();
 			RelativePoint relative = absoluteToRelative(pos);
 
