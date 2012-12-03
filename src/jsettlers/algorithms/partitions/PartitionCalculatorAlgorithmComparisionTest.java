@@ -45,7 +45,7 @@ public class PartitionCalculatorAlgorithmComparisionTest {
 			}
 		}
 
-		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockingSet, IBlockingProvider.DEFAULT_PROVIDER);
+		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockingSet, IBlockingProvider.DEFAULT_IMPLEMENTATION);
 		partitioner.calculatePartitions();
 		System.out.println("\n\n\n\nnumber of partitions: " + partitioner.getNumberOfPartitions());
 

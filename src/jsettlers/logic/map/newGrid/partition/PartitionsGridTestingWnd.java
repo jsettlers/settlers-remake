@@ -17,7 +17,6 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.UIState;
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 
 public class PartitionsGridTestingWnd {
 
@@ -49,7 +48,7 @@ public class PartitionsGridTestingWnd {
 	private final PartitionsGrid grid;
 
 	private PartitionsGridTestingWnd() {
-		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IBlockingProvider.DEFAULT_PROVIDER);
+		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IPartitionsGridBlockingProvider.DEFAULT_IMPLEMENTATION);
 	}
 
 	private void startTest() {
@@ -88,6 +87,7 @@ public class PartitionsGridTestingWnd {
 		grid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(x, y));
 	}
 
+	@SuppressWarnings("unused")
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
 		grid.changePlayerOfTower(pos, (byte) newPlayer, new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()));

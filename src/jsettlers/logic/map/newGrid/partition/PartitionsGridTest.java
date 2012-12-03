@@ -10,7 +10,6 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialOffer;
 
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class PartitionsGridTest {
 	private static final short WIDTH = 200;
 	private static final short HEIGHT = 200;
 
-	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IBlockingProvider.DEFAULT_PROVIDER);
+	private final PartitionsGrid grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IPartitionsGridBlockingProvider.DEFAULT_IMPLEMENTATION);
 
 	@Test
 	public void testMergeNoArea() {
