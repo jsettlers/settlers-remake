@@ -12,7 +12,11 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  */
 public final class PartitionCalculatorAlgorithm {
-	private static final int MAX_NUMBER_OF_PARTITIONS = 1000;
+	public static final short NO_PARTITION = 0;
+	public static final short BLOCKED_PARTITION = 1;
+	public static final short NUMBER_OF_RESERVED_PARTITIONS = 2;
+
+	private static final int NUMBER_OF_START_PARTITIONS = 1000;
 	private static final int[] neighborX = { EDirection.WEST.gridDeltaX, EDirection.NORTH_WEST.gridDeltaX, EDirection.NORTH_EAST.gridDeltaX };
 	private static final int[] neighborY = { EDirection.WEST.gridDeltaY, EDirection.NORTH_WEST.gridDeltaY, EDirection.NORTH_EAST.gridDeltaY };
 	private static final int INCREASE_FACTOR = 2;
@@ -25,10 +29,10 @@ public final class PartitionCalculatorAlgorithm {
 	private final short[] partitionsGrid;
 	private final IBlockingProvider blockingProvider;
 
-	private short[] partitions = new short[MAX_NUMBER_OF_PARTITIONS];
-	private ShortPoint2D[] partitionBorderPositions = new ShortPoint2D[MAX_NUMBER_OF_PARTITIONS];
+	private short[] partitions = new short[NUMBER_OF_START_PARTITIONS];
+	private ShortPoint2D[] partitionBorderPositions = new ShortPoint2D[NUMBER_OF_START_PARTITIONS];
 
-	private short nextFreePartition = 1;
+	private short nextFreePartition = NUMBER_OF_RESERVED_PARTITIONS;
 	private short neededPartitions;
 
 	/**
@@ -64,6 +68,7 @@ public final class PartitionCalculatorAlgorithm {
 		}
 
 		this.partitionsGrid = new short[width * height];
+		this.partitions[BLOCKED_PARTITION] = BLOCKED_PARTITION;
 	}
 
 	/**
@@ -100,18 +105,13 @@ public final class PartitionCalculatorAlgorithm {
 	 * The results can be accessed with the supplied getter methods.
 	 */
 	public void calculatePartitions() {
-		short blockedPartition = -1;
-
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int index = x + y * width;
 				if (containing.get(index)) {
 
 					if (blockingProvider.isBlocked(minX + x, minY + y)) {
-						if (blockedPartition == -1) {
-							blockedPartition = createNewPartition(y, x);
-						}
-						partitionsGrid[index] = blockedPartition;
+						partitionsGrid[index] = BLOCKED_PARTITION;
 						continue;
 					}
 
@@ -126,34 +126,45 @@ public final class PartitionCalculatorAlgorithm {
 					int westPartition = -1;
 					int northEastPartition = -1;
 
-					if (containing.get(westX + westY * width) && !blockingProvider.isBlocked(minX + westX, minY + westY)) {
-						westPartition = partitionsGrid[westX + westY * width];
-						partition = westPartition;
+					if (containing.get(westX + westY * width)) {
+						short currPartition = partitionsGrid[westX + westY * width];
+						if (currPartition != BLOCKED_PARTITION) {
+							westPartition = currPartition;
+							partition = currPartition;
+						}
 					}
 
-					if (containing.get(northWestX + northWestY * width) && !blockingProvider.isBlocked(minX + northWestX, minY + northWestY)) {
-						partition = partitionsGrid[northWestX + northWestY * width];
+					if (containing.get(northWestX + northWestY * width)) {
+						short currPartition = partitionsGrid[northWestX + northWestY * width];
+						if (currPartition != BLOCKED_PARTITION) {
+							partition = currPartition;
+						}
 					}
 
-					if (containing.get(northEastX + northEastY * width) && !blockingProvider.isBlocked(minX + northEastX, minY + northEastY)) {
-						northEastPartition = partitionsGrid[northEastX + northEastY * width];
-						partition = northEastPartition;
+					if (containing.get(northEastX + northEastY * width)) {
+						short currPartition = partitionsGrid[northEastX + northEastY * width];
+						if (currPartition != BLOCKED_PARTITION) {
+							northEastPartition = currPartition;
+							partition = currPartition;
+						}
 					}
 
 					if (westPartition != -1 && northEastPartition != -1 && partitions[westPartition] != partitions[northEastPartition]) {
-						// mergePartitions if west and northeast are not equal but set
+						// mergePartitions if west and northeast are not equal, not blocked but already set
 						short newPartition = (short) Math.min(partitions[westPartition], partitions[northEastPartition]);
 						partitions[westPartition] = newPartition;
 						partitions[northEastPartition] = newPartition;
 						partitionsGrid[index] = newPartition;
 
+						if (westPartition == BLOCKED_PARTITION || northEastPartition == BLOCKED_PARTITION) {
+							System.out.println();
+						}
 					} else if (partition != -1) { // just set the value.
 						partitionsGrid[index] = partitions[partition];
 
 					} else { // create a new partition
 						partitionsGrid[index] = createNewPartition(y, x);
 					}
-
 				}
 			}
 		}
@@ -181,10 +192,13 @@ public final class PartitionCalculatorAlgorithm {
 	 * Normalizes the partitions and compacts them.
 	 */
 	private void normalizePartitions() {
-		short[] compacted = new short[partitions.length];
-		short compactedCount = 0;
+		short[] compacted = new short[partitions.length + 1];
+		compacted[NO_PARTITION] = NO_PARTITION;
+		compacted[BLOCKED_PARTITION] = BLOCKED_PARTITION;
 
-		for (short i = 1; i < nextFreePartition; i++) {
+		short compactedCount = NUMBER_OF_RESERVED_PARTITIONS;
+
+		for (short i = NUMBER_OF_RESERVED_PARTITIONS; i < nextFreePartition; i++) {
 			short representative = i;
 			short nextRep;
 
@@ -193,7 +207,7 @@ public final class PartitionCalculatorAlgorithm {
 			}
 
 			if (compacted[representative] == 0) {
-				compacted[representative] = ++compactedCount;
+				compacted[representative] = compactedCount++;
 				partitionBorderPositions[compactedCount] = partitionBorderPositions[representative];
 			}
 
@@ -201,7 +215,7 @@ public final class PartitionCalculatorAlgorithm {
 			compacted[i] = compacted[representative];
 		}
 		partitions = compacted;
-		neededPartitions = compactedCount;
+		neededPartitions = (short) (compactedCount - 1);
 	}
 
 	private void increasePartitionArraySize() {
