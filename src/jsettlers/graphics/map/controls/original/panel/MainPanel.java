@@ -5,7 +5,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.graphics.action.SelectAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.IOriginalConstants;
 import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
@@ -18,7 +18,7 @@ import jsettlers.graphics.utils.UIPanel;
 
 /**
  * This class handles the contents of the main panel.
- * 
+ *
  * @author michael
  */
 public class MainPanel extends UIPanel {
@@ -63,7 +63,7 @@ public class MainPanel extends UIPanel {
 	        new TabButton(EContentType.PRODUCTION, BUTTONS_FILE, 78, 90, ""),
 	};
 
-	private UIPanel contentContainer = new UIPanel();
+	private final UIPanel contentContainer = new UIPanel();
 
 	private IOriginalConstants constants;
 
@@ -168,7 +168,7 @@ public class MainPanel extends UIPanel {
 
 	/**
 	 * Resize everything according to constants.
-	 * 
+	 *
 	 * @param constants
 	 */
 	public void useConstants(IOriginalConstants constants) {
@@ -206,8 +206,8 @@ public class MainPanel extends UIPanel {
 			return null;
 		} else if (action.getActionType() == EActionType.SELECT_POINT
 		        && selectAction != null) {
-			ShortPoint2D position = ((SelectAction) action).getPosition();
-			SelectAction replaced = new SelectAction(position, selectAction);
+			ShortPoint2D position = ((PointAction) action).getPosition();
+			PointAction replaced = new PointAction(selectAction, position);
 			goBack();
 			return replaced;
 		} else if (action.getActionType() == EActionType.ABORT

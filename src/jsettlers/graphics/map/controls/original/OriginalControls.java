@@ -14,8 +14,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.action.MoveToAction;
-import jsettlers.graphics.action.PanToAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
@@ -160,9 +159,9 @@ public class OriginalControls implements IControls {
 		        minimap.getClickPositionIfOnMap(minimapx, minimapy);
 		if (clickPosition != null) {
 			if (selecting) {
-				return new PanToAction(clickPosition);
+				return new PointAction(EActionType.PAN_TO, clickPosition);
 			} else {
-				return new MoveToAction(clickPosition);
+				return new PointAction(EActionType.SELECT_POINT, clickPosition);
 			}
 		} else {
 			return null;
@@ -241,9 +240,9 @@ public class OriginalControls implements IControls {
 		@Override
 		public void eventDataChanged(GOEvent event) {
 			Action action = getActionForDraw((GODrawEvent) event);
-			if (action instanceof PanToAction) {
+			if (action.getActionType() == EActionType.PAN_TO) {
 				minimap.getContext().scrollTo(
-				        ((PanToAction) action).getCenter());
+				        ((PointAction) action).getPosition());
 			}
 		}
 

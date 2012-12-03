@@ -2,13 +2,13 @@ package jsettlers.graphics.action;
 
 /**
  * This defines the type of the action.
- * 
+ *
  * @author michael
  */
 public enum EActionType {
 	/**
 	 * Builds a building, the building has to be supplied by the action.
-	 * 
+	 *
 	 * @see BuildAction
 	 */
 	BUILD,
@@ -20,7 +20,7 @@ public enum EActionType {
 
 	/**
 	 * Select a point on the map.
-	 * 
+	 *
 	 * @see SelectAction
 	 */
 	SELECT_POINT,
@@ -57,7 +57,7 @@ public enum EActionType {
 
 	/**
 	 * Lets the settler move to a given point.
-	 * 
+	 *
 	 * @see MoveToAction
 	 */
 	MOVE_TO,
@@ -69,14 +69,14 @@ public enum EActionType {
 
 	/**
 	 * Selects an area of the screen.
-	 * 
+	 *
 	 * @see SelectAreaAction
 	 */
 	SELECT_AREA,
 
 	/**
 	 * The screen changed.
-	 * 
+	 *
 	 * @see ScreenChangeAction
 	 */
 	SCREEN_CHANGE,
@@ -88,7 +88,7 @@ public enum EActionType {
 
 	/**
 	 * Changes the side panel content.
-	 * 
+	 *
 	 * @see ChangePanelAction
 	 */
 	CHANGE_PANEL,
@@ -132,7 +132,7 @@ public enum EActionType {
 
 	/**
 	 * used to convert any movable to another.<br>
-	 * 
+	 *
 	 * @see ConvertAction
 	 */
 	CONVERT,
@@ -157,38 +157,46 @@ public enum EActionType {
 	 * Exit the game. Does not ask any more.
 	 */
 	EXIT,
+
+	/**
+	 * Sets the speed to be not paused.
+	 */
 	SPEED_UNSET_PAUSE,
+
+	/**
+	 * Sets the speed to be paused.
+	 */
 	SPEED_SET_PAUSE,
 
 	/**
 	 * Unspecified action.
 	 */
-	UNSPECIFIED, 
-	
+	UNSPECIFIED,
+
 	/**
 	 * Asks the user to set a work area.
 	 */
-	ASK_SET_WORK_AREA, 
-	
+	ASK_SET_WORK_AREA,
+
 	/**
 	 * Aborts the current user action.
 	 */
-	ABORT, 
+	ABORT,
 	/**
 	 * Asks the user if he wants to destroy the building.
 	 */
 	ASK_DESTROY,
-	
+
 	/**
 	 * Gets called when a network grame should be started.
 	 */
-	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START, 
-	
+	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START,
+
 	/**
 	 * Toggles if original graphics should be used by the gui.
 	 */
-	TOGGLE_ORIGINAL_GRAPHICS, 
-	
+	TOGGLE_ORIGINAL_GRAPHICS,
+
 	/**
 	 * The user wants to go back.
 	 */

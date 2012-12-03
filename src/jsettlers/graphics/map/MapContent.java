@@ -36,10 +36,8 @@ import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
 import jsettlers.graphics.action.ActionThreadBlockingListener;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.action.MoveToAction;
-import jsettlers.graphics.action.PanToAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
-import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
@@ -81,7 +79,7 @@ import jsettlers.graphics.sound.SoundManager;
  * </ul>
  * </li>
  * </ul>
- * 
+ *
  * @author michael
  */
 public final class MapContent implements SettlersContent,
@@ -132,7 +130,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Creates a new map content for the given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
 	 */
@@ -508,7 +506,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Draws the background.
-	 * 
+	 *
 	 * @param gl
 	 * @param screen2
 	 */
@@ -582,7 +580,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets a action for a keyboard key
-	 * 
+	 *
 	 * @param keyCode
 	 *            The key
 	 * @return The action that corresponds to the key
@@ -725,9 +723,9 @@ public final class MapContent implements SettlersContent,
 		if (this.context.checkMapCoordinates(onMap.x, onMap.y)) {
 			Action action;
 			if (commandEvent.isSelecting()) {
-				action = new SelectAction(onMap);
+				action = new PointAction(EActionType.SELECT_POINT, onMap);
 			} else {
-				action = new MoveToAction(onMap);
+				action = new PointAction(EActionType.MOVE_TO, onMap);
 			}
 			return action;
 		}
@@ -768,7 +766,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets the interface connector for the ui.
-	 * 
+	 *
 	 * @return The connector to access the interface.
 	 */
 	public MapInterfaceConnector getInterfaceConnector() {
@@ -806,8 +804,8 @@ public final class MapContent implements SettlersContent,
 		} else if (action.getActionType() == EActionType.TOGGLE_ORIGINAL_GRAPHICS) {
 			context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
 		} else if (action.getActionType() == EActionType.PAN_TO) {
-			PanToAction panAction = (PanToAction) action;
-			scrollTo(panAction.getCenter(), false);
+			PointAction panAction = (PointAction) action;
+			scrollTo(panAction.getPosition(), false);
 		} else if (action.getActionType() == EActionType.SCREEN_CHANGE) {
 			ScreenChangeAction screenAction = (ScreenChangeAction) action;
 			controls.setMapViewport(screenAction.getScreenArea());
@@ -821,7 +819,7 @@ public final class MapContent implements SettlersContent,
 			}
 		} else if (action.getActionType() == EActionType.MOVE_TO) {
 
-			moveToMarker = ((MoveToAction) action).getPosition();
+			moveToMarker = ((PointAction) action).getPosition();
 			moveToMarkerTime = System.currentTimeMillis();
 		}
 	}
