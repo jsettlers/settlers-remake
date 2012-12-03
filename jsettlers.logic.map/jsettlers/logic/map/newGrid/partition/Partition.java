@@ -81,8 +81,15 @@ public final class Partition extends PartitionManager implements Serializable {
 	 * @return The position with the bigger distance to the gravity center of this partition.
 	 */
 	public ShortPoint2D getPositionCloserToGravityCenter(ShortPoint2D pos1, ShortPoint2D pos2) {
-		int gravityX = xSum / counter;
-		int gravityY = ySum / counter;// (523|431) and (525|432)
+		int gravityY;
+		int gravityX;
+		if (counter > 0) {
+			gravityX = xSum / counter;
+			gravityY = ySum / counter;
+		} else {
+			gravityX = 0;
+			gravityY = 0;
+		}
 
 		int dist1 = ShortPoint2D.getOnGridDist(gravityX - pos1.x, gravityY - pos1.y);
 		int dist2 = ShortPoint2D.getOnGridDist(gravityX - pos2.x, gravityY - pos2.y);

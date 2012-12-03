@@ -23,7 +23,6 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.IOccupyingBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
@@ -37,8 +36,7 @@ import random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding, Serializable,
-		IOccupyingBuilding {
+public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding, Serializable {
 	private static final long serialVersionUID = 5267249978497095473L;
 
 	private final LinkedList<TowerOccupyer> occupiers;
@@ -137,11 +135,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		occupyAreaIfNeeded();
 		searchedSoldiers.remove(ESearchType.SOLDIER_SWORDSMAN);
 		currentlyCommingSoldiers[ESoldierType.INFANTRY.ordinal()]++;
-	}
-
-	@Override
-	public final MapCircle getOccupyablePositions() {
-		return new MapCircle(super.getPos(), CommonConstants.TOWER_RADIUS);
 	}
 
 	@Override
@@ -304,7 +297,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private final void occupyAreaIfNeeded() {
 		if (!occupiedArea) {
-			MapCircle occupying = getOccupyablePositions();
+			MapCircle occupying = new MapCircle(super.getPos(), CommonConstants.TOWER_RADIUS);
 			super.getGrid().occupyAreaByTower(super.getPlayer(), occupying);
 			occupiedArea = true;
 		}

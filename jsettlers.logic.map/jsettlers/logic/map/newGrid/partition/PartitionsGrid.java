@@ -33,7 +33,7 @@ import jsettlers.logic.player.Team;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionsGrid implements Serializable {
+public final class PartitionsGrid implements Serializable, IBlockingChangedListener {
 	private static final long serialVersionUID = 8919380724171427679L;
 
 	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 2000;
@@ -55,10 +55,12 @@ public final class PartitionsGrid implements Serializable {
 	private transient PartitionsGridNormalizerThread gridNormalizer;
 	private transient Object partitionsWriteLock;
 
-	public PartitionsGrid(short width, short height, byte numberOfPlayers, IBlockingProvider blockingProvider) {
+	public PartitionsGrid(short width, short height, byte numberOfPlayers, IPartitionsGridBlockingProvider blockingProvider) {
 		this.width = width;
 		this.height = height;
 		this.blockingProvider = blockingProvider;
+		blockingProvider.registerListener(this);
+
 		this.players = new Player[numberOfPlayers];
 		for (byte i = 0; i < numberOfPlayers; i++) {
 			Team team = new Team(i);
@@ -571,4 +573,39 @@ public final class PartitionsGrid implements Serializable {
 		}
 	}
 
+	@Override
+	public void blockingChanged(int x, int y, boolean newBlockingValue) {
+		if (newBlockingValue) {// if the value changed to blocking, ignore it
+			return;
+		}
+
+		int idx = x + y * width;
+		short currPartition = partitions[idx];
+
+		// if the position has a player
+		if (currPartition != NO_PLAYER_PARTITION_ID) {
+			// create a new partition for the given position and add the position to the partition
+			byte playerId = partitionObjects[currPartition].playerId;
+			short newPartition = createNewPartition(playerId);
+			changePartitionUncheckedAt(x, y, newPartition);
+
+			// check all neighbors for merges
+			for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+				int currNeighborX = x + EDirection.values[i].gridDeltaX;
+				int currNeighborY = y + EDirection.values[i].gridDeltaY;
+
+				// if the neighbor is not blocked (if it is blocked, we can not merge)
+				if (!blockingProvider.isBlocked(currNeighborX, currNeighborY)) {
+
+					short neighborPartition = partitions[currNeighborX + currNeighborY * width];
+					byte neighborPlayer = partitionObjects[neighborPartition].playerId;
+
+					// if the position and the neighbor are from the same player, then merge the partitions
+					if (playerId == neighborPlayer && partitionRepresentative[newPartition] != partitionRepresentative[neighborPartition]) {
+						mergePartitions(newPartition, neighborPartition);
+					}
+				}
+			}
+		}
+	}
 }

@@ -3,7 +3,8 @@ package jsettlers.logic.map.newGrid.flags;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
+import jsettlers.logic.map.newGrid.partition.IBlockingChangedListener;
+import jsettlers.logic.map.newGrid.partition.IPartitionsGridBlockingProvider;
 
 /**
  * Grid that's storing the blocked information for fast access.
@@ -11,7 +12,7 @@ import jsettlers.logic.algorithms.partitions.IBlockingProvider;
  * @author Andreas Eberle
  * 
  */
-public final class FlagsGrid implements Serializable, IBlockingProvider {
+public final class FlagsGrid implements Serializable, IPartitionsGridBlockingProvider {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
@@ -20,6 +21,8 @@ public final class FlagsGrid implements Serializable, IBlockingProvider {
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
 	private final BitSet bordersGrid;
+
+	private IBlockingChangedListener blockingChangedListener = null;
 
 	public FlagsGrid(final short width, final short height) {
 		this.width = width;
@@ -50,6 +53,10 @@ public final class FlagsGrid implements Serializable, IBlockingProvider {
 		final int idx = x + y * width;
 		this.blockedGrid.set(idx, blocked);
 		this.protectedGrid.set(idx, blocked);
+
+		if (blockingChangedListener != null) {
+			this.blockingChangedListener.blockingChanged(x, y, blocked);
+		}
 	}
 
 	public boolean isMarked(int x, int y) {
@@ -74,5 +81,10 @@ public final class FlagsGrid implements Serializable, IBlockingProvider {
 
 	public void setBorderAt(short x, short y, boolean setProtected) {
 		this.bordersGrid.set(x + y * width, setProtected);
+	}
+
+	@Override
+	public void registerListener(IBlockingChangedListener listener) {
+		this.blockingChangedListener = listener;
 	}
 }

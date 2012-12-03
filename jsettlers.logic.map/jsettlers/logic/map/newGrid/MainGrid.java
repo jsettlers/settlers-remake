@@ -137,7 +137,7 @@ public final class MainGrid implements Serializable {
 
 	private void initAdditionalGrids() {
 		this.graphicsGrid = new GraphicsGrid();
-		this.landmarksCorrection = new LandmarksCorrectingThread(new LandmarksGrid());
+		this.landmarksCorrection = new LandmarksCorrectingThread(new LandmarksThreadGrid());
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
@@ -683,7 +683,7 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class LandmarksGrid implements ILandmarksThreadGrid {
+	final class LandmarksThreadGrid implements ILandmarksThreadGrid {
 		@Override
 		public final boolean isBlocked(short x, short y) {
 			return MainGrid.this.isInBounds(x, y) && flagsGrid.isBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
