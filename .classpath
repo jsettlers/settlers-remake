@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/jogl.all.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.nativegl"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
