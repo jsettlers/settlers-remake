@@ -1,5 +1,6 @@
 package jsettlers.logic.algorithms.partitions;
 
+
 /**
  * This interface defines a provider for blocking information. It can be used to find out if a position is blocking or not.
  * 
@@ -10,7 +11,7 @@ public interface IBlockingProvider {
 	/**
 	 * This {@link IBlockingProvider} always returns false, so that no position will be seen as blocked.
 	 */
-	public static final IBlockingProvider DEFAULT_PROVIDER = new IBlockingProvider() {
+	public static final IBlockingProvider DEFAULT_IMPLEMENTATION = new IBlockingProvider() {
 		@Override
 		public boolean isBlocked(int x, int y) {
 			return false;
@@ -28,4 +29,5 @@ public interface IBlockingProvider {
 	 *         false otherwise.
 	 */
 	boolean isBlocked(int x, int y);
+
 }
