@@ -60,7 +60,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.action.SelectAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -745,9 +745,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			data.apply(delta);
 			data.resetUndoDelta();
 			dataTester.retest();
-		} else if (action instanceof SelectAction) {
+		} else if (action.getActionType() == EActionType.SELECT_POINT) {
 			if (tool != null) {
-				SelectAction lineAction = (SelectAction) action;
+				PointAction lineAction = (PointAction) action;
 
 				ShapeType shape = getActiveShape();
 
