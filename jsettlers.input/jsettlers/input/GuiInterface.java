@@ -18,9 +18,8 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.action.MoveToAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
-import jsettlers.graphics.action.SelectAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -41,7 +40,7 @@ import synchronic.timer.NetworkTimer;
 
 /**
  * class to handle the events provided by the user through jsettlers.graphics
- * 
+ *
  * @author Andreas Eberle
  */
 public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInterface {
@@ -98,24 +97,29 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SPEED_SLOW:
-			if (!manager.isMultiplayer())
-				NetworkTimer.setGameSpeed(0.5f);
+			if (!manager.isMultiplayer()) {
+	            NetworkTimer.setGameSpeed(0.5f);
+            }
 			break;
 		case SPEED_FAST:
-			if (!manager.isMultiplayer())
-				NetworkTimer.setGameSpeed(2.0f);
+			if (!manager.isMultiplayer()) {
+	            NetworkTimer.setGameSpeed(2.0f);
+            }
 			break;
 		case SPEED_FASTER:
-			if (!manager.isMultiplayer())
-				NetworkTimer.multiplyGameSpeed(1.2f);
+			if (!manager.isMultiplayer()) {
+	            NetworkTimer.multiplyGameSpeed(1.2f);
+            }
 			break;
 		case SPEED_SLOWER:
-			if (!manager.isMultiplayer())
-				NetworkTimer.multiplyGameSpeed(1 / 1.2f);
+			if (!manager.isMultiplayer()) {
+	            NetworkTimer.multiplyGameSpeed(1 / 1.2f);
+            }
 			break;
 		case SPEED_NORMAL:
-			if (!manager.isMultiplayer())
-				NetworkTimer.setGameSpeed(1.0f);
+			if (!manager.isMultiplayer()) {
+	            NetworkTimer.setGameSpeed(1.0f);
+            }
 			break;
 
 		case FAST_FORWARD:
@@ -125,7 +129,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SELECT_POINT:
-			handleSelectPointAction((SelectAction) action);
+			handleSelectPointAction((PointAction) action);
 			break;
 
 		case SELECT_AREA:
@@ -137,7 +141,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				cancelBuildingCreation();
 				setActiveAction(null);
 			} else {
-				MoveToAction moveToAction = (MoveToAction) action;
+				PointAction moveToAction = (PointAction) action;
 
 				if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
 					setBuildingWorkArea(moveToAction.getPosition());
@@ -150,7 +154,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_WORK_AREA:
 			if (currentSelection.getSize() > 0) {
-				setBuildingWorkArea(((SelectAction) action).getPosition());
+				setBuildingWorkArea(((PointAction) action).getPosition());
 			}
 			break;
 
@@ -237,8 +241,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			return;
 		}
 
-		if (convertables.size() > 0)
-			manager.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
+		if (convertables.size() > 0) {
+	        manager.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
+        }
 	}
 
 	private void cancelBuildingCreation() {
@@ -333,9 +338,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		setSelection(selectionSet);
 	}
 
-	private void handleSelectPointAction(SelectAction action) {
-		SelectAction selectAction = action;
-		ShortPoint2D pos = selectAction.getPosition();
+	private void handleSelectPointAction(PointAction action) {
+		ShortPoint2D pos = action.getPosition();
 		System.out.println("clicked: ( " + pos.x + " | " + pos.y + " )");
 
 		if (activeAction == null) {
@@ -409,7 +413,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	/**
 	 * Sets the selection.
-	 * 
+	 *
 	 * @param selection
 	 *            The selected items. Not null!
 	 */
