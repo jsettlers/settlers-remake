@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import jsettlers.common.position.ILocatable;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
@@ -16,18 +17,18 @@ import jsettlers.mapcreator.localization.EditorLabels;
  *
  */
 public class ErrorsWindow implements ListSelectionListener {
-	
-	private JFrame window;
-	private JList elist;
+
+	private final JFrame window;
+	private final JList<ILocatable> elist;
 	private final ErrorList list;
 	private final IScrollToAble scrollTo;
 
 	public ErrorsWindow(ErrorList list, IScrollToAble scrollTo) {
 		this.list = list;
 		this.scrollTo = scrollTo;
-		elist = new JList(list);
+		elist = new JList<ILocatable>(list);
 		elist.addListSelectionListener(this);
-		
+
 		window = new JFrame(EditorLabels.getLabel("errors"));
 		window.add(new JScrollPane(elist));
 		window.setPreferredSize(new Dimension(500, 300));
@@ -35,7 +36,7 @@ public class ErrorsWindow implements ListSelectionListener {
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
-	
+
 	public boolean isClosed() {
 		return !window.isVisible();
 	}
@@ -51,5 +52,5 @@ public class ErrorsWindow implements ListSelectionListener {
 	public void show() {
 	    window.toFront();
     }
-	
+
 }

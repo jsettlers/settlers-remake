@@ -36,7 +36,7 @@ public class MapCreatorApp {
 			null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE ]);
 	private static final String[] GROUND_TYPES = new String[] { ELandscapeType.WATER8.toString(), ELandscapeType.GRASS.toString(),
 			ELandscapeType.DRY_GRASS.toString(), ELandscapeType.SNOW.toString(), ELandscapeType.DESERT.toString(), };
-	private JFrame selectMapFrame;
+	private final JFrame selectMapFrame;
 
 	static { // sets the native library path for the system dependent jogl libs
 		JoglLibraryPathInitializer.initLibraryPath();

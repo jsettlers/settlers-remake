@@ -124,8 +124,7 @@ public class MapEditorControls implements IControls {
 
 	@Override
     public void stop() {
-	    // TODO Auto-generated method stub
-	    
+	    /* we ignore this. stop means exit... */
     }
-
+	
 }
