@@ -5,7 +5,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.MoveToAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.SelectionSet;
@@ -41,7 +41,7 @@ public class MovableTestWindow {
 			public void action(Action action) {
 				switch (action.getActionType()) {
 				case MOVE_TO:
-					movable.moveTo(((MoveToAction) action).getPosition());
+					movable.moveTo(((PointAction) action).getPosition());
 					break;
 				case SPEED_FASTER:
 					NetworkTimer.multiplyGameSpeed(1.2f);

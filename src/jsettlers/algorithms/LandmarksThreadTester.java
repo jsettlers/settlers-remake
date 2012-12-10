@@ -20,7 +20,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.action.SelectAction;
+import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -72,7 +72,7 @@ public class LandmarksThreadTester {
 			@Override
 			public void action(Action action) {
 				if (action.getActionType() == EActionType.SELECT_POINT) {
-					System.out.println("clicked: " + ((SelectAction) action).getPosition());
+					System.out.println("clicked: " + ((PointAction) action).getPosition());
 				}
 			}
 		});
