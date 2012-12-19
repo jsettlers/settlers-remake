@@ -42,19 +42,16 @@ public class PartitionsGridTest {
 
 	@Test
 	public void testMergeAndRepresentatives() {
-		short partition1 = grid.createNewPartition((byte) 1);
-		short partition2 = grid.createNewPartition((byte) 1);
-		short partition3 = grid.createNewPartition((byte) 1);
-		short partition4 = grid.createNewPartition((byte) 1);
-		short partition5 = grid.createNewPartition((byte) 1);
+		short partitions[] = new short[] { grid.createNewPartition((byte) 1), grid.createNewPartition((byte) 1), grid.createNewPartition((byte) 1),
+				grid.createNewPartition((byte) 1), grid.createNewPartition((byte) 1) };
 
-		grid.mergePartitions(partition1, partition2);
-		grid.mergePartitions(partition3, partition4);
-		grid.mergePartitions(partition1, partition4);
-		grid.mergePartitions(partition4, partition5);
+		grid.mergePartitions(partitions[0], partitions[1]);
+		grid.mergePartitions(partitions[2], partitions[3]);
+		grid.mergePartitions(partitions[0], partitions[3]);
+		grid.mergePartitions(partitions[3], partitions[4]);
 
-		for (int i = 1; i < 5; i++) { // all partitions are merged and should have the same representative
-			assertEquals(grid.partitionRepresentative[i], grid.partitionRepresentative[i + 1]);
+		for (int i = 0; i < partitions.length - 1; i++) { // all partitions are merged and should have the same representative
+			assertEquals(grid.partitionRepresentative[partitions[i]], grid.partitionRepresentative[partitions[i + 1]]);
 		}
 	}
 
@@ -200,6 +197,29 @@ public class PartitionsGridTest {
 
 		assertEquals(oldPartitionId, grid.getPartitionIdAt(70, 100));
 		assertTrue(oldPartitionId != grid.getPartitionIdAt(50, 100));
+	}
+
+	@Test
+	public void testTowerCount() {
+		addTower(0, 82, 120, 40);
+		addTower(0, 75, 85, 40);
+		addTower(0, 125, 105, 40);
+		addTower(0, 94, 71, 40);
+
+		assertEquals(2, grid.getTowerCountAt(82, 120));
+		assertEquals(3, grid.getTowerCountAt(75, 85));
+		assertEquals(2, grid.getTowerCountAt(125, 105));
+		assertEquals(3, grid.getTowerCountAt(94, 71));
+
+		changePlayerOfTower(82, 120, 1);
+		changePlayerOfTower(75, 85, 1);
+		changePlayerOfTower(125, 105, 1);
+		changePlayerOfTower(94, 71, 1);
+
+		assertEquals(2, grid.getTowerCountAt(82, 120));
+		assertEquals(3, grid.getTowerCountAt(75, 85));
+		assertEquals(2, grid.getTowerCountAt(125, 105));
+		assertEquals(3, grid.getTowerCountAt(94, 71));
 	}
 
 	private void changePlayerOfTower(int x, int y, int newPlayer) {

@@ -14,11 +14,11 @@ import org.junit.Test;
 
 public class PartitionsCalculatorAlgorithmTest {
 
-	private static final int HEIGHT = 30;
-	private static final int WIDTH = 30;
+	private static final int HEIGHT = 100;
+	private static final int WIDTH = 100;
 
 	@Test
-	public void test() {
+	public void testSqaureWithBlockingLine() {
 		BitSet containing = new BitSet(HEIGHT * WIDTH);
 		for (int y = 0; y < HEIGHT; y++) {
 			for (int x = 0; x < WIDTH; x++) {
@@ -39,7 +39,7 @@ public class PartitionsCalculatorAlgorithmTest {
 
 		// visualizeAlgoResult(blockingProvider, algo);
 
-		assertEquals(2, algo.getNumberOfPartitions());
+		assertEquals(PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS + 2, algo.getNumberOfPartitions());
 	}
 
 	@SuppressWarnings("unused")
@@ -51,8 +51,11 @@ public class PartitionsCalculatorAlgorithmTest {
 
 				value = algo.getPartitionAt(x, y) + 1;
 
-				return blockingProvider.isBlocked(x, y) ? Color.BLACK.getABGR() : Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f,
-						((value / 9) % 3) * 0.33f, 1);
+				// boolean isBlocked = blockingProvider.isBlocked(x, y);
+				boolean isBlocked = false;
+
+				return isBlocked ? Color.BLACK.getABGR() : Color
+						.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 			}
 		});
 

@@ -1,5 +1,7 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import java.util.BitSet;
+
 import jsettlers.TestWindow;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
@@ -9,8 +11,10 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
@@ -22,6 +26,8 @@ public class PartitionsGridTestingWnd {
 
 	protected static final short HEIGHT = 400;
 	protected static final short WIDTH = 400;
+
+	private final BitSet blockedGrid = new BitSet(WIDTH * HEIGHT);
 
 	public static void main(String args[]) throws InterruptedException {
 		PartitionsGridTestingWnd testWnd = new PartitionsGridTestingWnd();
@@ -48,7 +54,17 @@ public class PartitionsGridTestingWnd {
 	private final PartitionsGrid grid;
 
 	private PartitionsGridTestingWnd() {
-		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, IPartitionsGridBlockingProvider.DEFAULT_IMPLEMENTATION);
+		this.grid = new PartitionsGrid(WIDTH, HEIGHT, (byte) 10, new IPartitionsGridBlockingProvider() {
+
+			@Override
+			public boolean isBlocked(int x, int y) {
+				return blockedGrid.get(x + y * WIDTH);
+			}
+
+			@Override
+			public void registerListener(IBlockingChangedListener listener) {
+			}
+		});
 	}
 
 	private void startTest() {
@@ -72,18 +88,28 @@ public class PartitionsGridTestingWnd {
 		// changePlayerOfTower(150, 200, 1);
 		// changePlayerOfTower(200, 200, 2);
 
-		addTower(0, 50, 100, 40);
-		addTower(0, 150, 100, 40);
-		addTower(0, 100, 100, 40);
-		addTower(1, 75, 55, 44);
-		addTower(1, 125, 150, 44);
+		// bridge test case
+		// addTower(0, 50, 100, 40);
+		// addTower(0, 150, 100, 40);
+		// addTower(0, 100, 100, 40);
+		// addTower(1, 75, 55, 44);
+		// addTower(1, 125, 150, 44);
+		//
+		// removeTower(100, 100);
 
-		removeTower(100, 100);
+		addTower(0, 82, 120, 40);
+		addTower(0, 75, 85, 40);
+		addTower(0, 125, 105, 40);
+		addTower(0, 94, 71, 40);
 
-		// grid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(150, 200));
+		changePlayerOfTower(82, 120, 1);
+		changePlayerOfTower(75, 85, 1);
+		changePlayerOfTower(125, 105, 1);
+		changePlayerOfTower(94, 71, 1);
 	}
 
 	private void removeTower(int x, int y) {
+		blockArea(getTowerBlockArea(x, y), false);
 		grid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(x, y));
 	}
 
@@ -94,7 +120,18 @@ public class PartitionsGridTestingWnd {
 	}
 
 	private void addTower(int playerId, int x, int y, int radius) {
+		blockArea(getTowerBlockArea(x, y), true);
 		grid.addTowerAndOccupyArea((byte) playerId, new MapCircle(new ShortPoint2D(x, y), radius));
+	}
+
+	private IMapArea getTowerBlockArea(int x, int y) {
+		return new FreeMapArea(new ShortPoint2D(x, y), EBuildingType.TOWER.getBlockedTiles());
+	}
+
+	private void blockArea(IMapArea area, boolean block) {
+		for (ShortPoint2D curr : area) {
+			blockedGrid.set(curr.x + curr.y * WIDTH, block);
+		}
 	}
 
 	private IGraphicsGrid getGraphicsGrid() {
@@ -115,6 +152,14 @@ public class PartitionsGridTestingWnd {
 
 			@Override
 			public boolean isBorder(int x, int y) {
+				byte playerAtPos = getPlayerIdAt(x, y);
+				for (EDirection dir : EDirection.values) {
+					int currX = x + dir.gridDeltaX;
+					int currY = y + dir.gridDeltaY;
+					if (currX >= 0 && currY >= 0 && currX < WIDTH && currY < HEIGHT && playerAtPos != getPlayerIdAt(currX, currY)) {
+						return true;
+					}
+				}
 				return false;
 			}
 
@@ -130,7 +175,7 @@ public class PartitionsGridTestingWnd {
 
 			@Override
 			public byte getPlayerIdAt(int x, int y) {
-				return 0;
+				return grid.getPlayerIdAt(x, y);
 			}
 
 			@Override
@@ -161,8 +206,8 @@ public class PartitionsGridTestingWnd {
 			@Override
 			public int getDebugColorAt(int x, int y) {
 				// int value = grid.getRealPartitionIdAt(x, y);
-				int value = grid.getPartitionIdAt(x, y);
-				// int value = grid.getTowerCountAt(x, y);
+				// int value = grid.getPartitionIdAt(x, y);
+				int value = grid.getTowerCountAt(x, y);
 				// int value = grid.getPlayerIdAt(x, y) + 1; // +1 to get -1 player displayed as black
 
 				return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
