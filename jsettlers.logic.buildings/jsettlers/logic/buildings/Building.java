@@ -127,13 +127,16 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private final void appearAt(IBuildingsGrid grid, ShortPoint2D pos) {
 		this.state = STATE_CONSTRUCTED;
 
-		positionAt(grid, pos);
+		boolean itWorked = positionAt(grid, pos);
 
-		if (this.pos != null) {
+		if (itWorked) {
 			grid.setBlocked(getBuildingArea(), true);
 			finishConstruction();
+
+			appearedEvent();
+		} else {
+			kill();
 		}
-		appearedEvent();
 	}
 
 	private List<RequestStack> createConstructionStacks() {

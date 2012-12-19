@@ -44,4 +44,12 @@ public interface IOccupyableBuilding {
 	 */
 	Player getPlayer();
 
+	/**
+	 * Removes the given soldier from this building.
+	 * 
+	 * @param soldier
+	 *            The soldier that will be removed.
+	 */
+	void removeSoldier(IBuildingOccupyableMovable soldier);
+
 }

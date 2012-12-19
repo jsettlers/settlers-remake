@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.map.shapes.FreeMapArea;
+import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
@@ -218,8 +219,11 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		// occupy the area for the new player
 		occupyArea(newPlayerId, tower.area, tower.area.getBorders());
+		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower.area);
+		occupyingTowers.add(newTower);
 
-		occupyingTowers.add(new PartitionOccupyingTower(newPlayerId, tower.area));
+		// recalculate the tower counter for the ground area
+		recalculateTowerCounter(newTower, groundArea);
 
 		return tower.area;
 	}
@@ -237,6 +241,39 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 
 			checkMergesAndDividesOnPartitionsList(playerId, newPartition, borderVisitor.getPartitionsList());
+		}
+	}
+
+	/**
+	 * Recalculates the tower counter for the given area. <br>
+	 * NOTE: The given area must completely belong to the given player!
+	 * 
+	 * @param area
+	 * @param playerId
+	 */
+	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
+		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, (int) tower.area.getRadius());
+
+		for (ShortPoint2D curr : area) {
+			towers[curr.x + curr.y * width] = 0;
+		}
+
+		for (Tuple<Integer, PartitionOccupyingTower> currTower : towersInRange) {
+			if (currTower.e2.playerId == tower.playerId) {
+				final MapCircle currArea = currTower.e2.area;
+
+				// define the positions that need to get their towers count increased.
+				IteratorFilter<ShortPoint2D> increasePositions = new IteratorFilter<ShortPoint2D>(area, new IPredicate<ShortPoint2D>() {
+					@Override
+					public boolean evaluate(ShortPoint2D position) {
+						return currArea.contains(position);
+					}
+				});
+
+				for (ShortPoint2D curr : increasePositions) {
+					towers[curr.x + curr.y * width]++;
+				}
+			}
 		}
 	}
 
@@ -259,12 +296,16 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		// check if other towers occupy the area
 		if (!freedPositions.isEmpty()) { // if at least one position may change the player
-			List<Tuple<Integer, PartitionOccupyingTower>> otherTowers = occupyingTowers.getTowersOfOthersInRange(tower.position,
-					(int) tower.area.getRadius(), tower.playerId);
+			List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position,
+					(int) tower.area.getRadius());
 			// sort the towers by their distance to the removed tower
-			Collections.sort(otherTowers, Tuple.<Integer, PartitionOccupyingTower> getE1Comparator());
+			Collections.sort(towersInRange, Tuple.<Integer, PartitionOccupyingTower> getE1Comparator());
 
-			for (Tuple<Integer, PartitionOccupyingTower> curr : otherTowers) {
+			for (Tuple<Integer, PartitionOccupyingTower> curr : towersInRange) {
+				if (curr.e2.playerId == tower.playerId) {
+					continue; // only work on towers of other players.
+				}
+
 				PartitionOccupyingTower currTower = curr.e2;
 
 				final MapCircle currArea = currTower.area;
@@ -314,7 +355,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
-		for (int i = PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS; i <= partitioner.getNumberOfPartitions(); i++) {
+		for (int i = PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS; i < partitioner.getNumberOfPartitions(); i++) {
 			// traverse the border of the partition and collect the partitions around the partition
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 
@@ -382,7 +423,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	private short[] acquirePartitionedArea(byte playerId, PartitionCalculatorAlgorithm partitioner) {
-		int numberOfNewPartitions = partitioner.getNumberOfPartitions() + PartitionCalculatorAlgorithm.NUMBER_OF_RESERVED_PARTITIONS;
+		int numberOfNewPartitions = partitioner.getNumberOfPartitions();
 		short[] newPartitionsMap = new short[numberOfNewPartitions];
 		newPartitionsMap[PartitionCalculatorAlgorithm.BLOCKED_PARTITION] = blockedPartitionsForPlayers[playerId];
 
@@ -576,6 +617,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	public void setPartitionAt(short x, short y, short newPartition) {
 		if (getPartitionIdAt(x, y) != partitionRepresentative[newPartition]) {
+			if (x == 106 && y == 212) {
+				System.out.println();
+			}
+
 			changePartitionUncheckedAt(x, y, newPartition);
 		}
 	}

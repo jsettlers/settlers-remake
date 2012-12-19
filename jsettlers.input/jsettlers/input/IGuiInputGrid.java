@@ -54,4 +54,14 @@ public interface IGuiInputGrid {
 	 *            {@link EBuildingType} of the new building.
 	 */
 	void constructBuildingAt(ShortPoint2D position, EBuildingType type);
+
+	/**
+	 * This method can be used to print debug output when the given position is clicked by the user.
+	 * 
+	 * @param x
+	 *            x coordinate of the position.
+	 * @param y
+	 *            y coordinate of the position.
+	 */
+	void postionClicked(short x, short y);
 }

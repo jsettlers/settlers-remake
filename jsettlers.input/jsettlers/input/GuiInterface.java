@@ -40,7 +40,7 @@ import synchronic.timer.NetworkTimer;
 
 /**
  * class to handle the events provided by the user through jsettlers.graphics
- *
+ * 
  * @author Andreas Eberle
  */
 public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInterface {
@@ -98,28 +98,28 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SPEED_SLOW:
 			if (!manager.isMultiplayer()) {
-	            NetworkTimer.setGameSpeed(0.5f);
-            }
+				NetworkTimer.setGameSpeed(0.5f);
+			}
 			break;
 		case SPEED_FAST:
 			if (!manager.isMultiplayer()) {
-	            NetworkTimer.setGameSpeed(2.0f);
-            }
+				NetworkTimer.setGameSpeed(2.0f);
+			}
 			break;
 		case SPEED_FASTER:
 			if (!manager.isMultiplayer()) {
-	            NetworkTimer.multiplyGameSpeed(1.2f);
-            }
+				NetworkTimer.multiplyGameSpeed(1.2f);
+			}
 			break;
 		case SPEED_SLOWER:
 			if (!manager.isMultiplayer()) {
-	            NetworkTimer.multiplyGameSpeed(1 / 1.2f);
-            }
+				NetworkTimer.multiplyGameSpeed(1 / 1.2f);
+			}
 			break;
 		case SPEED_NORMAL:
 			if (!manager.isMultiplayer()) {
-	            NetworkTimer.setGameSpeed(1.0f);
-            }
+				NetworkTimer.setGameSpeed(1.0f);
+			}
 			break;
 
 		case FAST_FORWARD:
@@ -242,8 +242,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		if (convertables.size() > 0) {
-	        manager.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
-        }
+			manager.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
+		}
 	}
 
 	private void cancelBuildingCreation() {
@@ -340,8 +340,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private void handleSelectPointAction(PointAction action) {
 		ShortPoint2D pos = action.getPosition();
-		System.out.println("clicked: ( " + pos.x + " | " + pos.y + " )");
 
+		// only for debugging
+		grid.postionClicked(pos.x, pos.y);
+
+		// check what's to do
 		if (activeAction == null) {
 			select(pos);
 		} else {
@@ -373,13 +376,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			short x = pos.x;
 			short y = pos.y;
 
-			IGuiMovable m1 = grid.getMovable((short) (x + 1), (short) (y + 1));
+			IGuiMovable m1 = grid.getMovable(x, y);
+			IGuiMovable m3 = grid.getMovable((short) (x + 1), (short) (y + 1));
 			IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
-			IGuiMovable m3 = grid.getMovable(x, y);
 			IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
 			if (m1 != null) {
 				setSelection(new SelectionSet(m1));
+				System.out.println("found movable at selection pos: " + pos);
 			} else if (m2 != null) {
 				setSelection(new SelectionSet(m2));
 			} else if (m3 != null) {
@@ -413,7 +417,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	/**
 	 * Sets the selection.
-	 *
+	 * 
 	 * @param selection
 	 *            The selected items. Not null!
 	 */

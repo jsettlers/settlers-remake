@@ -39,7 +39,7 @@ import random.RandomSingleton;
 public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding, Serializable {
 	private static final long serialVersionUID = 5267249978497095473L;
 
-	private final LinkedList<TowerOccupyer> occupiers;
+	private final LinkedList<TowerOccupier> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
 
@@ -57,7 +57,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	public OccupyingBuilding(EBuildingType type, Player player) {
 		super(type, player);
 
-		this.occupiers = new LinkedList<TowerOccupyer>(); // for testing purposes
+		this.occupiers = new LinkedList<TowerOccupier>(); // for testing purposes
 
 		initSoldierRequests();
 
@@ -68,10 +68,14 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		final OccupyerPlace[] occupyerPlaces = super.getBuildingType().getOccupyerPlaces();
 		if (occupyerPlaces.length > 0) {
 			for (OccupyerPlace currPlace : occupyerPlaces) {
-				emptyPlaces.add(currPlace);
-				searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTRY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
+				requestSoldierForPlace(currPlace);
 			}
 		}
+	}
+
+	private void requestSoldierForPlace(OccupyerPlace currPlace) {
+		emptyPlaces.add(currPlace);
+		searchedSoldiers.add(currPlace.getType() == ESoldierType.INFANTRY ? ESearchType.SOLDIER_SWORDSMAN : ESearchType.SOLDIER_BOWMAN);
 	}
 
 	@Override
@@ -201,7 +205,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 			int idx = 0;
 			FreeMapArea buildingArea = super.getBuildingArea();
-			for (TowerOccupyer curr : occupiers) {
+			for (TowerOccupier curr : occupiers) {
 				addInformableMapObject(curr, false);// if curr is a bowman, this removes the informable map object.
 
 				curr.getSoldier().leaveOccupyableBuilding(buildingArea.get(idx));
@@ -235,10 +239,10 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		emptyPlaces.remove(freePosition);
 		currentlyCommingSoldiers[freePosition.getType().ordinal()]--;
 
-		TowerOccupyer towerOccupier = new TowerOccupyer(freePosition, soldier);
+		TowerOccupier towerOccupier = new TowerOccupier(freePosition, soldier);
 		occupiers.add(towerOccupier);
 
-		occupyAreaIfNeeded(); // FIXME changing the player of a tower must be corrected
+		occupyAreaIfNeeded();
 
 		soldier.setSelected(super.isSelected());
 
@@ -247,8 +251,28 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return freePosition;
 	}
 
-	protected TowerOccupyer removeSoldier() {
-		TowerOccupyer removedSoldier = occupiers.removeFirst();
+	@Override
+	public void removeSoldier(IBuildingOccupyableMovable soldier) {
+		TowerOccupier occupier = null;
+		for (TowerOccupier currOccupier : occupiers) {
+			if (currOccupier.soldier == soldier) {
+				occupier = currOccupier;
+				break;
+			}
+		}
+
+		// if the soldier is not in the tower, just return
+		if (occupier == null) {
+			return;
+		}
+
+		// remove the soldier and request a new one
+		occupiers.remove(occupier);
+		requestSoldierForPlace(occupier.place);
+	}
+
+	protected TowerOccupier removeSoldier() {
+		TowerOccupier removedSoldier = occupiers.removeFirst();
 
 		addInformableMapObject(removedSoldier, false);
 
@@ -263,7 +287,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	 *            if true, the object is added<br>
 	 *            if false, the object is removed.
 	 */
-	private void addInformableMapObject(TowerOccupyer soldier, boolean add) {
+	private void addInformableMapObject(TowerOccupier soldier, boolean add) {
 		if (soldier.place.getType() == ESoldierType.BOWMAN) {
 			ShortPoint2D position = getTowerBowmanSearchPosition(soldier.place);
 
@@ -315,7 +339,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public final ShortPoint2D getPosition(IBuildingOccupyableMovable soldier) {
-		for (TowerOccupyer curr : occupiers) {
+		for (TowerOccupier curr : occupiers) {
 			if (curr.getSoldier() == soldier) {
 				return curr.place.getPosition().calculatePoint(super.getPos());
 			}
@@ -326,7 +350,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	@Override
 	public final void setSelected(boolean selected) {
 		super.setSelected(selected);
-		for (TowerOccupyer curr : occupiers) {
+		for (TowerOccupier curr : occupiers) {
 			curr.getSoldier().setSelected(selected);
 		}
 
@@ -371,8 +395,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		if (attackableTowerObject.currDefender == null) {
 			System.out.println();
 		}
-		occupiers.add(new TowerOccupyer(attackableTowerObject.currDefender.place, soldier));
+		occupiers.add(new TowerOccupier(attackableTowerObject.currDefender.place, soldier));
 		attackableTowerObject.currDefender = null;
+		doorHealth = 0.1f;
 	}
 
 	@Override
@@ -414,13 +439,13 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		return currentlyCommingSoldiers[type.ordinal()];
 	}
 
-	private final static class TowerOccupyer implements IBuildingOccupyer, Serializable {
+	private final static class TowerOccupier implements IBuildingOccupyer, Serializable {
 		private static final long serialVersionUID = -1491427078923346232L;
 
 		final OccupyerPlace place;
 		final IBuildingOccupyableMovable soldier;
 
-		TowerOccupyer(OccupyerPlace place, IBuildingOccupyableMovable soldier) {
+		TowerOccupier(OccupyerPlace place, IBuildingOccupyableMovable soldier) {
 			this.place = place;
 			this.soldier = soldier;
 		}
@@ -449,7 +474,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	 */
 	public class AttackableTowerMapObject extends StandardMapObject implements IAttackable, IAttackableTowerMapObject {
 		private static final long serialVersionUID = -5137593316096740750L;
-		private TowerOccupyer currDefender;
+		private TowerOccupier currDefender;
 
 		public AttackableTowerMapObject() {
 			super(EMapObjectType.ATTACKABLE_TOWER, false, OccupyingBuilding.this.getPlayerId());

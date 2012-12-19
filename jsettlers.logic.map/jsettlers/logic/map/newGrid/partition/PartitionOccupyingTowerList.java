@@ -40,37 +40,6 @@ final class PartitionOccupyingTowerList extends LinkedList<PartitionOccupyingTow
 		return null;
 	}
 
-	/**
-	 * Returns the {@link PartitionOccupyingTower} objects with areas that intersect the given area and aren't of the same player with their distance
-	 * to given position.<br>
-	 * 
-	 * @param position
-	 *            Position of the tower defining the center of it's area.
-	 * @param radius
-	 *            Radius of it's area.
-	 * @param playerId
-	 *            The id of the towers player. Only towers with another playerId will be returned.
-	 * @return
-	 */
-	public List<Tuple<Integer, PartitionOccupyingTower>> getTowersOfOthersInRange(ShortPoint2D position, int radius, byte playerId) {
-		LinkedList<Tuple<Integer, PartitionOccupyingTower>> result = new LinkedList<Tuple<Integer, PartitionOccupyingTower>>();
-
-		for (PartitionOccupyingTower curr : this) {
-			if (curr.playerId == playerId) {// skip the towers of this player.
-				continue;
-			}
-
-			int sqDist = (int) MapCircle.getDistanceSquared(position.x, position.y, curr.position.x, curr.position.y);
-			int maxDist = radius + (int) (curr.area.getRadius());
-
-			if (sqDist <= (maxDist * maxDist)) {
-				result.add(new Tuple<Integer, PartitionOccupyingTower>(sqDist, curr));
-			}
-		}
-
-		return result;
-	}
-
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.writeInt(super.size());
 		for (PartitionOccupyingTower curr : this) {
@@ -83,5 +52,29 @@ final class PartitionOccupyingTowerList extends LinkedList<PartitionOccupyingTow
 		for (int i = 0; i < size; i++) {
 			this.add((PartitionOccupyingTower) ois.readObject());
 		}
+	}
+
+	/**
+	 * Returns the {@link PartitionOccupyingTower} objects with areas that intersect the area specified by the given position and radius.
+	 * 
+	 * @param position
+	 *            Position of the tower defining the center of it's area.
+	 * @param radius
+	 *            Radius of it's area.
+	 * @return
+	 */
+	public List<Tuple<Integer, PartitionOccupyingTower>> getTowersInRange(ShortPoint2D center, int radius) {
+		LinkedList<Tuple<Integer, PartitionOccupyingTower>> result = new LinkedList<Tuple<Integer, PartitionOccupyingTower>>();
+
+		for (PartitionOccupyingTower curr : this) {
+			int sqDist = (int) MapCircle.getDistanceSquared(center.x, center.y, curr.position.x, curr.position.y);
+			int maxDist = radius + (int) (curr.area.getRadius());
+
+			if (sqDist <= (maxDist * maxDist)) {
+				result.add(new Tuple<Integer, PartitionOccupyingTower>(sqDist, curr));
+			}
+		}
+
+		return result;
 	}
 }

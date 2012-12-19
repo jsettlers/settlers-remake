@@ -282,4 +282,15 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			return super.findWayAroundObstacle(direction, position, path);
 		}
 	}
+
+	@Override
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
+		if (building != null) {
+			if (isInTower) {
+				building.removeSoldier(this);
+			} else {
+				building.requestFailed(movableType);
+			}
+		}
+	}
 }
