@@ -13,15 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author michael
  */
 public class JoglLoader {
-	private static final String[] LIBNAMES =
-	        new String[] {
-	                "gluegen-rt",
-	                "jogl_desktop",
-	                "jogl_es1",
-	                "jogl_es2",
-	                "nativewindow_awt",
-	                "newt"
-	        };
+	private static final String[] LIBNAMES = new String[] { "gluegen-rt", "jogl_desktop", "jogl_es1", "jogl_es2", "nativewindow_awt", "newt" };
 	private static Queue<File> loadFiles = null;
 
 	public static void loadLibs() {
@@ -39,9 +31,7 @@ public class JoglLoader {
 	}
 
 	private static void loadSingleLib(String file) throws IOException {
-		File temporary =
-		        File.createTempFile("jogl-" + file, "." + getExtension());
-		FileOutputStream out = new FileOutputStream(temporary);
+		File temporary = File.createTempFile("jogl-" + file, "." + getExtension());
 
 		String filename = getLibDir() + System.mapLibraryName(file);
 		InputStream in = JoglLoader.class.getResourceAsStream(filename);
@@ -49,7 +39,9 @@ public class JoglLoader {
 		if (in == null) {
 			throw new IOException("could not load lib: not found");
 		}
-		
+
+		FileOutputStream out = new FileOutputStream(temporary);
+
 		int n;
 		byte buffer[] = new byte[4096];
 		while ((n = in.read(buffer)) != -1) {
@@ -71,11 +63,11 @@ public class JoglLoader {
 		return ".so";
 	}
 
-//	private static void addUnloadTask() {
-//		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-//			public void run() {
-//			}
-//		}, "jogl cleanup task"));
-//	}
+	// private static void addUnloadTask() {
+	// Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+	// public void run() {
+	// }
+	// }, "jogl cleanup task"));
+	// }
 
 }
