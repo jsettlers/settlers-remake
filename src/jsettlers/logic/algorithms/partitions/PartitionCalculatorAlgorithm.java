@@ -215,7 +215,7 @@ public final class PartitionCalculatorAlgorithm {
 			compacted[i] = compacted[representative];
 		}
 		partitions = compacted;
-		neededPartitions = (short) (compactedCount - 1);
+		neededPartitions = compactedCount;
 	}
 
 	private void increasePartitionArraySize() {

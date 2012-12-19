@@ -72,8 +72,8 @@ public class ConstructionMarksThread implements Runnable {
 
 			} catch (InterruptedException e) {
 				// do nothing
-			} catch (Throwable e) { // this thread must never be destroyed due to errors
-				e.printStackTrace();
+			} catch (Throwable t) { // this thread must never be destroyed due to errors
+				t.printStackTrace();
 			}
 		}
 	}
