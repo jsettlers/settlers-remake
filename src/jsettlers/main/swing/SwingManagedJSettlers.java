@@ -36,14 +36,14 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		ResourceManager.setProvider(new SwingResourceProvider());
 		ManagedJSettlers game = new ManagedJSettlers();
 		game.start(getGui());
 
 		ImageProvider.getInstance().startPreloading();
 
-		// NetworkTimer.loadLogging("logs/2011_11_02-11_39_44.log");
+		// NetworkTimer.loadLogging("logs/2012_12_19-07_44_01.log");
 		// NetworkTimer.activateLogging("logs");
 	}
 
