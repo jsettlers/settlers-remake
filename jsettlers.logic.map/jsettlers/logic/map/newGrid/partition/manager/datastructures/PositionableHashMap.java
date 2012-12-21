@@ -82,7 +82,6 @@ public class PositionableHashMap<T> implements Iterable<T>, Serializable {
 			// needed to track the count of elements
 			set(entry.getKey(), entry.getValue());
 		}
-		// this.data.putAll(materialOffers.data);
 	}
 
 }

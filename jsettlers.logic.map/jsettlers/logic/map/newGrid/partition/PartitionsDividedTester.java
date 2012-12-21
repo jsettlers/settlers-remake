@@ -39,7 +39,7 @@ final class PartitionsDividedTester {
 		boolean pos2NotOnBorder = BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return grid.partitionRepresentative[grid.partitions[x + y * width]] == partition;
+				return grid.partitionRepresentatives[grid.partitions[x + y * width]] == partition;
 			}
 		}, pos1, new ITraversingVisitor() {
 			@Override

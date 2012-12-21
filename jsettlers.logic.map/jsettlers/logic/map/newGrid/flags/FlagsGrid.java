@@ -1,8 +1,11 @@
 package jsettlers.logic.map.newGrid.flags;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.map.newGrid.partition.IBlockingChangedListener;
 import jsettlers.logic.map.newGrid.partition.IPartitionsGridBlockingProvider;
 
@@ -24,6 +27,8 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 
 	private IBlockingChangedListener blockingChangedListener = null;
 
+	private transient IContainingProvider blockedContainingProvider;
+
 	public FlagsGrid(final short width, final short height) {
 		this.width = width;
 
@@ -31,6 +36,22 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 		this.protectedGrid = new BitSet(width * height);
 		this.markedGrid = new BitSet(width * height);
 		this.bordersGrid = new BitSet(width * height);
+
+		initAdditional();
+	}
+
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		initAdditional();
+	}
+
+	private void initAdditional() {
+		this.blockedContainingProvider = new IContainingProvider() {
+			@Override
+			public boolean contains(int x, int y) {
+				return blockedGrid.get(x + y * width);
+			}
+		};
 	}
 
 	@Override
@@ -86,5 +107,13 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 	@Override
 	public void registerListener(IBlockingChangedListener listener) {
 		this.blockingChangedListener = listener;
+	}
+
+	/**
+	 * 
+	 * @return Returns an {@link IContainingProvider} that returns true for every blocked position.
+	 */
+	public IContainingProvider getBlockedContainingProvider() {
+		return blockedContainingProvider;
 	}
 }

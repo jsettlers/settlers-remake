@@ -7,7 +7,14 @@ import jsettlers.common.utils.Tuple;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 
-public final class PartitionsListingBorderVisitor implements ITraversingVisitor {
+/**
+ * This class implements the {@link ITraversingVisitor} and is used to detect all the partitions that are on the traversed positions.<br>
+ * NOTE: This class is especially used for detecting necessary merges and divides when a position has changed player.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+final class PartitionsListingBorderVisitor implements ITraversingVisitor {
 
 	private final PartitionsGrid grid;
 	private final IBlockingProvider blockingProvider;
@@ -25,7 +32,7 @@ public final class PartitionsListingBorderVisitor implements ITraversingVisitor 
 		if (blockingProvider.isBlocked(x, y)) {
 			lastPartititon = -1;
 		} else {
-			short currPartition = grid.partitionRepresentative[grid.partitions[x + y * grid.width]];
+			short currPartition = grid.partitionRepresentatives[grid.partitions[x + y * grid.width]];
 
 			if (currPartition != lastPartititon) {
 				partitionsList.addLast(new Tuple<Short, ShortPoint2D>(currPartition, new ShortPoint2D(x, y)));

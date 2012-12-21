@@ -34,7 +34,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
@@ -45,8 +44,8 @@ import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
-import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
-import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
+import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
+import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
@@ -68,7 +67,7 @@ import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
-import jsettlers.logic.map.newGrid.partition.IPartitionableGrid;
+import jsettlers.logic.map.newGrid.partition.IPlayerChangedListener;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
@@ -111,10 +110,10 @@ public final class MainGrid implements Serializable {
 	final NewFogOfWar fogOfWar;
 
 	transient IGraphicsGrid graphicsGrid;
-	transient LandmarksCorrectingThread landmarksCorrection;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
+	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
 	public MainGrid(short width, short height, byte numberOfPlayers) {
 		this.width = width;
@@ -132,33 +131,33 @@ public final class MainGrid implements Serializable {
 		this.buildingsGrid = new BuildingsGrid();
 		this.fogOfWar = new NewFogOfWar(width, height);
 
-		initAdditionalGrids();
+		initAdditional();
 	}
 
-	private void initAdditionalGrids() {
+	private void initAdditional() {
 		this.graphicsGrid = new GraphicsGrid();
-		this.landmarksCorrection = new LandmarksCorrectingThread(new LandmarksThreadGrid());
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
 		this.guiInputGrid = new GUIInputGrid();
+
+		this.partitionsGrid.setPlayerChangedListener(new PlayerChangedListener());
+		this.enclosedBlockedAreaFinderGrid = new EnclosedBlockedAreaFinderGrid();
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		initAdditionalGrids();
+		initAdditional();
 	}
 
 	public void startThreads() {
 		bordersThread.start();
 		fogOfWar.start(new FogOfWarGrid());
-		landmarksCorrection.start();
 		partitionsGrid.startThreads();
 	}
 
 	public void stopThreads() {
 		bordersThread.cancel();
 		fogOfWar.cancel();
-		landmarksCorrection.cancel();
 		partitionsGrid.cancelThreads();
 	}
 
@@ -278,7 +277,7 @@ public final class MainGrid implements Serializable {
 		return movablePathfinderGrid.pathfinderGrid;
 	}
 
-	public final boolean isInBounds(short x, short y) {
+	public final boolean isInBounds(int x, int y) {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
@@ -315,6 +314,10 @@ public final class MainGrid implements Serializable {
 			}
 		}
 		landscapeGrid.setLandscapeTypeAt(x, y, newType);
+	}
+
+	final void checkForEnclosedBlockedArea(ShortPoint2D position) {
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, flagsGrid.getBlockedContainingProvider(), position);
 	}
 
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -546,13 +549,13 @@ public final class MainGrid implements Serializable {
 		public final int getDebugColorAt(int x, int y) {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 
-			// int value = partitionsGrid.getPartitionIdAt(x, y) + 1;
+			// int value = partitionsGrid.getPartitionIdAt(x, y);
 
-			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
+			int value = partitionsGrid.getRealPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
 
-			int value = partitionsGrid.getTowerCountAt(x, y) + 1;
+			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
 
 			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
@@ -680,31 +683,25 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class LandmarksThreadGrid implements ILandmarksThreadGrid {
+	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
 		@Override
-		public final boolean isBlocked(short x, short y) {
+		public final boolean isBlocked(int x, int y) {
 			return MainGrid.this.isInBounds(x, y) && flagsGrid.isBlocked(x, y) && landscapeGrid.getBlockedPartitionAt(x, y) > 0;
 		}
 
 		@Override
-		public final boolean isInBounds(short x, short y) {
+		public final boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
 
 		@Override
-		public final short getPartitionAt(short x, short y) {
+		public final short getPartitionAt(int x, int y) {
 			return partitionsGrid.getPartitionIdAt(x, y);
 		}
 
 		@Override
-		public final void setPartitionAndPlayerAt(short x, short y, short partition) {
+		public final void setPartitionAt(int x, int y, short partition) {
 			partitionsGrid.setPartitionAt(x, y, partition);
-			bordersThread.checkPosition(new ShortPoint2D(x, y));
-
-			AbstractHexMapObject building = objectsGrid.getMapObjectAt(x, y, EMapObjectType.BUILDING);
-			if (building != null && ((IPlayerable) building).getPlayerId() != partitionsGrid.getPlayerIdAt(x, y)) {
-				((Building) building).kill();
-			}
 		}
 
 		@Override
@@ -717,10 +714,6 @@ public final class MainGrid implements Serializable {
 			return width;
 		}
 
-		@Override
-		public final short getBlockedPartition(short x, short y) {
-			return landscapeGrid.getBlockedPartitionAt(x, y);
-		}
 	}
 
 	final class ConstructionMarksGrid implements IConstructionMarkableMap {
@@ -886,7 +879,8 @@ public final class MainGrid implements Serializable {
 		public void changePlayerAt(ShortPoint2D position, Player player) {
 			partitionsGrid.changePlayerAt(position, player.playerId);
 			bordersThread.checkPosition(position);
-			landmarksCorrection.addLandmarkedPosition(position);
+
+			checkForEnclosedBlockedArea(position);
 		}
 
 		@Override
@@ -1208,7 +1202,7 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean setBuilding(ShortPoint2D position, Building newBuilding) {
 			if (MainGrid.this.isInBounds(position.x, position.y)) {
-				FreeMapArea area = new FreeMapArea(position, newBuilding.getBuildingType().getProtectedTiles());
+				FreeMapArea area = new FreeMapArea(position, newBuilding.getBuildingType().getBlockedTiles());
 
 				if (canConstructAt(area)) {
 					setProtectedState(area, true);
@@ -1360,24 +1354,26 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void occupyAreaByTower(Player player, MapCircle influencingArea) {
 			partitionsGrid.addTowerAndOccupyArea(player.playerId, influencingArea);
-			bordersThread.checkPositions(influencingArea);
-			landmarksCorrection.addLandmarkedPositions(influencingArea);
+			checkAllPositionsForEnclosedBlockedAreas(influencingArea); // TODO @Andreas Eberle only test the borders of changed areas!!
 		}
 
 		@Override
 		public void freeAreaOccupiedByTower(ShortPoint2D towerPosition) {
-			Iterable<ShortPoint2D> changedPositions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
-			bordersThread.checkPositions(changedPositions);
-			landmarksCorrection.addLandmarkedPositions(changedPositions);
+			Iterable<ShortPoint2D> positions = partitionsGrid.removeTowerAndFreeOccupiedArea(towerPosition);
+			checkAllPositionsForEnclosedBlockedAreas(positions);
 		}
 
 		@Override
 		public void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, FreeMapArea groundArea) {
-			Iterable<ShortPoint2D> changedPositions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId, groundArea);
-			bordersThread.checkPositions(changedPositions);
-			landmarksCorrection.addLandmarkedPositions(changedPositions);
+			Iterable<ShortPoint2D> positions = partitionsGrid.changePlayerOfTower(towerPosition, newPlayer.playerId, groundArea);
+			checkAllPositionsForEnclosedBlockedAreas(positions);
 		}
 
+		private void checkAllPositionsForEnclosedBlockedAreas(Iterable<ShortPoint2D> area) {
+			for (ShortPoint2D curr : area) {
+				checkForEnclosedBlockedArea(curr);
+			}
+		}
 	}
 
 	final class GUIInputGrid implements IGuiInputGrid {
@@ -1465,24 +1461,25 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class PartitionableGrid implements IPartitionableGrid, Serializable {
-		private static final long serialVersionUID = 5631266851555264047L;
+	/**
+	 * This class implements the {@link IPlayerChangedListener} interface and executes all work that needs to be done when a position of the grid
+	 * changes it's player.
+	 * 
+	 * @author Andreas Eberle
+	 * 
+	 */
+	final class PlayerChangedListener implements IPlayerChangedListener {
 
 		@Override
-		public final boolean isBlocked(short x, short y) {
-			return flagsGrid.isBlocked(x, y);
-		}
+		public void playerChangedAt(int x, int y, byte newPlayerId) {
+			final ShortPoint2D position = new ShortPoint2D(x, y);
+			bordersThread.checkPosition(position);
 
-		@Override
-		public final void changedPartitionAt(short x, short y) {
-			landmarksCorrection.addLandmarkedPosition(new ShortPoint2D(x, y));
+			Building building = objectsGrid.getBuildingOn(x, y);
+			if (building != null && building.getPlayerId() != newPlayerId) {
+				building.kill();
+			}
 		}
-
-		@Override
-		public final void setDebugColor(final short x, final short y, Color color) {
-			landscapeGrid.setDebugColor(x, y, color.getARGB());
-		}
-
 	}
 
 	final class FogOfWarGrid implements IFogOfWarGrid {
