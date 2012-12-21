@@ -57,7 +57,7 @@ public class ConstructionMarksThread implements Runnable {
 				while (buildingType != null && !canceled) {
 					if (!NetworkTimer.isPausing()) {
 						StopWatch watch = new MilliStopWatch();
-						watch.start();
+						watch.restart();
 
 						calculateConstructMarks();
 

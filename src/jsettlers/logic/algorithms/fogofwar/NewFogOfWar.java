@@ -115,7 +115,7 @@ public final class NewFogOfWar implements Serializable {
 
 			while (!canceled) {
 				StopWatch watch = new MilliStopWatch();
-				watch.start();
+				watch.restart();
 				if (enabled) {
 					rebuildSight();
 				}
