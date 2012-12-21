@@ -8,25 +8,25 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import jsettlers.common.position.ILocatable;
 import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
  * This is a window that contains a list of errors.
+ * 
  * @author michaelz
- *
+ * 
  */
 public class ErrorsWindow implements ListSelectionListener {
 
 	private final JFrame window;
-	private final JList<ILocatable> elist;
+	private final JList elist;
 	private final ErrorList list;
 	private final IScrollToAble scrollTo;
 
 	public ErrorsWindow(ErrorList list, IScrollToAble scrollTo) {
 		this.list = list;
 		this.scrollTo = scrollTo;
-		elist = new JList<ILocatable>(list);
+		elist = new JList(list);
 		elist.addListSelectionListener(this);
 
 		window = new JFrame(EditorLabels.getLabel("errors"));
@@ -42,15 +42,15 @@ public class ErrorsWindow implements ListSelectionListener {
 	}
 
 	@Override
-    public void valueChanged(ListSelectionEvent arg0) {
-	    int index = elist.getSelectedIndex();
-	    if (index  > 0) {
-	    	scrollTo.scrollTo(list.getElementAt(index).getPos());
-	    }
-    }
+	public void valueChanged(ListSelectionEvent arg0) {
+		int index = elist.getSelectedIndex();
+		if (index > 0) {
+			scrollTo.scrollTo(list.getElementAt(index).getPos());
+		}
+	}
 
 	public void show() {
-	    window.toFront();
-    }
+		window.toFront();
+	}
 
 }

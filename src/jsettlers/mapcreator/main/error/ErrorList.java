@@ -6,12 +6,12 @@ import javax.swing.AbstractListModel;
 
 import jsettlers.common.position.ILocatable;
 
-public class ErrorList extends AbstractListModel<ILocatable> {
+public class ErrorList extends AbstractListModel {
 
 	/**
      *
      */
-    private static final long serialVersionUID = -6645362444519496534L;
+	private static final long serialVersionUID = -6645362444519496534L;
 
 	private ArrayList<Error> errors = new ArrayList<Error>();
 
