@@ -9,7 +9,7 @@ package jsettlers.common.logging;
 public class NanoStopWatch extends StopWatch {
 
 	@Override
-	public void start() {
+	public void restart() {
 		start = System.nanoTime();
 	}
 

@@ -9,7 +9,7 @@ package jsettlers.common.logging;
 public class MilliStopWatch extends StopWatch {
 
 	@Override
-	public void start() {
+	public void restart() {
 		start = System.currentTimeMillis();
 	}
 

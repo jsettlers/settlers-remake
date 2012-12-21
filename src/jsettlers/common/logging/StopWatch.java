@@ -12,13 +12,13 @@ public abstract class StopWatch {
 	protected long diff;
 
 	public StopWatch() {
-		start();
+		restart();
 	}
 
 	/**
 	 * saves the current time.
 	 */
-	public abstract void start();
+	public abstract void restart();
 
 	/**
 	 * calculates the difference from start to now
