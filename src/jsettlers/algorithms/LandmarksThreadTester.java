@@ -27,8 +27,9 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.JOGLPanel;
 import jsettlers.graphics.swing.JoglLibraryPathInitializer;
 import jsettlers.graphics.swing.SwingResourceProvider;
-import jsettlers.logic.algorithms.landmarks.ILandmarksThreadGrid;
-import jsettlers.logic.algorithms.landmarks.LandmarksCorrectingThread;
+import jsettlers.logic.algorithms.interfaces.IContainingProvider;
+import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
+import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 
 public class LandmarksThreadTester {
 	static { // sets the native library path for the system dependent jogl libs
@@ -43,7 +44,6 @@ public class LandmarksThreadTester {
 	protected static final int WIDTH = 20;
 	protected static final int HEIGHT = 20;
 	private static Map map;
-	private static LandmarksCorrectingThread thread;
 
 	public static void main(String args[]) {
 
@@ -89,8 +89,6 @@ public class LandmarksThreadTester {
 		jsettlersWnd.setVisible(true);
 		jsettlersWnd.setLocationRelativeTo(null);
 
-		thread = new LandmarksCorrectingThread(map);
-
 		test1();
 		test2();
 	}
@@ -134,9 +132,14 @@ public class LandmarksThreadTester {
 	}
 
 	private static void setPartition(int x, int y, int partition) {
-		map.setPartitionAndPlayerAt((short) x, (short) y, (short) partition);
+		map.setPartitionAt((short) x, (short) y, (short) partition);
 		ShortPoint2D pos = new ShortPoint2D(x, y);
-		thread.addLandmarkedPosition(pos);
+		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(map, new IContainingProvider() {
+			@Override
+			public boolean contains(int x, int y) {
+				return map.blocked[x][y];
+			}
+		}, pos);
 	}
 
 	// private static void printMap(Map map) {
@@ -161,32 +164,27 @@ public class LandmarksThreadTester {
 	// }
 	// }
 
-	private static class Map implements ILandmarksThreadGrid, IGraphicsGrid {
+	private static class Map implements IEnclosedBlockedAreaFinderGrid, IGraphicsGrid {
 		short[][] partitions = new short[WIDTH][HEIGHT];
 		boolean[][] blocked = new boolean[WIDTH][HEIGHT];
 
 		@Override
-		public void setPartitionAndPlayerAt(short x, short y, short partition) {
+		public void setPartitionAt(int x, int y, short partition) {
 			this.partitions[x][y] = partition;
 		}
 
 		@Override
-		public boolean isInBounds(short x, short y) {
+		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < WIDTH && 0 <= y && y < HEIGHT;
 		}
 
 		@Override
-		public boolean isBlocked(short x, short y) {
+		public boolean isBlocked(int x, int y) {
 			return blocked[x][y];
 		}
 
 		@Override
-		public short getBlockedPartition(short x, short y) {
-			return 1; // not a blocked landscape
-		}
-
-		@Override
-		public short getPartitionAt(short x, short y) {
+		public short getPartitionAt(int x, int y) {
 			return partitions[x][y];
 		}
 

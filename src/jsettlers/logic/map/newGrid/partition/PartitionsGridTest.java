@@ -51,7 +51,7 @@ public class PartitionsGridTest {
 		grid.mergePartitions(partitions[3], partitions[4]);
 
 		for (int i = 0; i < partitions.length - 1; i++) { // all partitions are merged and should have the same representative
-			assertEquals(grid.partitionRepresentative[partitions[i]], grid.partitionRepresentative[partitions[i + 1]]);
+			assertEquals(grid.partitionRepresentatives[partitions[i]], grid.partitionRepresentatives[partitions[i + 1]]);
 		}
 	}
 

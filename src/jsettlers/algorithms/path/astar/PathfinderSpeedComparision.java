@@ -50,7 +50,7 @@ public class PathfinderSpeedComparision {
 		Thread.sleep(300);
 
 		MilliStopWatch watch = new MilliStopWatch();
-		watch.start();
+		watch.restart();
 
 		for (int i = 0; i < numberOfPaths; i++) {
 			ShortPoint2D start = getUnblocktPosition(requester, random, map, width, height);
