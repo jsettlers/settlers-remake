@@ -38,6 +38,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
@@ -47,10 +48,10 @@ import jsettlers.graphics.swing.SwingResourceLoader;
 
 /**
  * This is the main building creator class.
- *
+ * 
  * @author michael
  */
-public class BuildingCreator implements IMapInterfaceListener {
+public class BuildingCreatorApp implements IMapInterfaceListener {
 	static { // sets the native library path for the system dependent jogl libs
 		SwingResourceLoader.setupSwingPaths();
 	}
@@ -63,7 +64,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 	private JPanel actionList;
 	private JLabel positionDisplayer;
 
-	private BuildingCreator() {
+	private BuildingCreatorApp() {
 		ResourceManager.setProvider(new IResourceProvider() {
 			@Override
 			public InputStream getFile(String name) throws IOException {
@@ -154,6 +155,8 @@ public class BuildingCreator implements IMapInterfaceListener {
 		window.pack();
 		window.setSize(600, 500);
 		window.setVisible(true);
+
+		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
 	}
 
 	private JButton createToolChangeBar() {
@@ -202,7 +205,7 @@ public class BuildingCreator implements IMapInterfaceListener {
 		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 
-		new BuildingCreator();
+		new BuildingCreatorApp();
 	}
 
 	@Override
