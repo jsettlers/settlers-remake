@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * 
  * @author Andreas Eberle
  */
-public final class AStarMinHeap {
+public final class AStarMinHeap extends AbstractMinPriorityQueue {
 	private final ArrayList<Integer> heap = new ArrayList<Integer>();
 	private int size = 0;
 	private final IAStarHeapable rankSupplier;
@@ -34,6 +34,7 @@ public final class AStarMinHeap {
 	 * @param elementID
 	 *            The element to add.
 	 */
+	@Override
 	public void insert(int elementID) {
 		if (heap.size() > size) {
 			heap.set(size, elementID);
@@ -68,7 +69,7 @@ public final class AStarMinHeap {
 		int parentIdx = getParentIdx(idx);
 
 		int parentElementID = heap.get(parentIdx);
-		if (rankSupplier.getHeapRank(parentElementID) > rankSupplier.getHeapRank(elementID)) {
+		if (rankSupplier.getRank(parentElementID) > rankSupplier.getRank(elementID)) {
 			heap.set(parentIdx, elementID);
 			heap.set(idx, parentElementID);
 			rankSupplier.setHeapIdx(parentElementID, idx);
@@ -77,7 +78,6 @@ public final class AStarMinHeap {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -85,6 +85,7 @@ public final class AStarMinHeap {
 	 * 
 	 * @return true if the heap is empty.
 	 */
+	@Override
 	public final boolean isEmpty() {
 		return size == 0;
 	}
@@ -96,6 +97,7 @@ public final class AStarMinHeap {
 	 * 
 	 * @return The deleted element, or -1 if the heap was empty.
 	 */
+	@Override
 	public int deleteMin() {
 		if (size <= 0) {
 			return -1;
@@ -124,7 +126,7 @@ public final class AStarMinHeap {
 			if (rightChildIdx < size) {
 				int rightChildID = heap.get(rightChildIdx);
 
-				if (rankSupplier.getHeapRank(leftChildID) < rankSupplier.getHeapRank(rightChildID)) {
+				if (rankSupplier.getRank(leftChildID) < rankSupplier.getRank(rightChildID)) {
 					smaller = leftChildID;
 					smallerIdx = getLeftChildIdx(idx);
 				} else {
@@ -136,7 +138,7 @@ public final class AStarMinHeap {
 				smallerIdx = getLeftChildIdx(idx);
 			}
 
-			if (rankSupplier.getHeapRank(smaller) < rankSupplier.getHeapRank(elementID)) {
+			if (rankSupplier.getRank(smaller) < rankSupplier.getRank(elementID)) {
 				heap.set(idx, smaller);
 				rankSupplier.setHeapIdx(smaller, idx);
 				heap.set(smallerIdx, elementID);
@@ -183,7 +185,7 @@ public final class AStarMinHeap {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("\t");
 		for (int i = 0; i < size; i++) {
-			buffer.append(rankSupplier.getHeapRank(heap.get(i)) + "\t");
+			buffer.append(rankSupplier.getRank(heap.get(i)) + "\t");
 		}
 		return buffer.toString();
 	}
@@ -191,6 +193,7 @@ public final class AStarMinHeap {
 	/**
 	 * Clears the heap, that means that all elements are removed.
 	 */
+	@Override
 	public final void clear() {
 		size = 0;
 	}
@@ -200,6 +203,7 @@ public final class AStarMinHeap {
 	 * 
 	 * @return The size of the heap.
 	 */
+	@Override
 	public final int size() {
 		return size;
 	}
@@ -210,6 +214,7 @@ public final class AStarMinHeap {
 	 * @param element
 	 *            The element to remove
 	 */
+	@Override
 	public void remove(int element) {
 		Integer idx = rankSupplier.getHeapIdx(element);
 
@@ -248,20 +253,25 @@ public final class AStarMinHeap {
 		int left = getLeftChildIdx(pos);
 		int right = getRightChildIdx(pos);
 		if (left < size) {
-			if (rankSupplier.getHeapRank(heap.get(left)) < rankSupplier.getHeapRank(curr)) {
+			if (rankSupplier.getRank(heap.get(left)) < rankSupplier.getRank(curr)) {
 				return false;
 			} else {
 				return checkHeap(left);
 			}
 		}
 		if (right < size) {
-			if (rankSupplier.getHeapRank(heap.get(right)) < rankSupplier.getHeapRank(curr)) {
+			if (rankSupplier.getRank(heap.get(right)) < rankSupplier.getRank(curr)) {
 				return false;
 			} else {
 				return checkHeap(right);
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void increasedPriority(int elementID, float oldRank) {
+		siftUp(elementID);
 	}
 
 }

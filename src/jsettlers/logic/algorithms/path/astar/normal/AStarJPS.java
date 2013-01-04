@@ -9,6 +9,7 @@ import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.algorithms.path.astar.AbstractAStar;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -16,7 +17,7 @@ import jsettlers.logic.algorithms.path.Path;
  * @author Andreas Eberle
  * 
  */
-public final class AStarJPS implements IAStar, IAStarHeapable {
+public final class AStarJPS extends AbstractAStar implements IAStarHeapable {
 	private final IAStarPathMap map;
 
 	private final short height;
@@ -291,7 +292,7 @@ public final class AStarJPS implements IAStar, IAStarHeapable {
 	}
 
 	@Override
-	public final float getHeapRank(int identifier) {
+	public final float getRank(int identifier) {
 		return costsAndHeuristics[getCostsIdx(identifier)] + costsAndHeuristics[getHeuristicIdx(identifier)];
 	}
 

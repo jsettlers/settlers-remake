@@ -8,7 +8,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.normal.IAStar;
+import jsettlers.logic.algorithms.path.astar.AbstractAStar;
 
 /**
  * this class implements a strict dijkstra algorithm
@@ -23,9 +23,9 @@ public final class DijkstraAlgorithm {
 
 	private final IDijkstraPathMap map;
 	private final short height, width;
-	private final IAStar aStar;
+	private final AbstractAStar aStar;
 
-	public DijkstraAlgorithm(IDijkstraPathMap map, IAStar aStar, short width, short height) {
+	public DijkstraAlgorithm(IDijkstraPathMap map, AbstractAStar aStar, short width, short height) {
 		this.map = map;
 		this.aStar = aStar;
 		this.width = width;

@@ -1,9 +1,10 @@
 package jsettlers.logic.algorithms.path.astar.normal;
 
-public interface IAStarHeapable {
+import jsettlers.logic.algorithms.path.astar.queues.IRankSupplier;
+
+public interface IAStarHeapable extends IRankSupplier {
 	int getHeapIdx(int elementID);
 
 	void setHeapIdx(int elementID, int idx);
 
-	float getHeapRank(int parentElementID);
 }

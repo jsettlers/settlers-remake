@@ -1,14 +1,16 @@
-package jsettlers.logic.algorithms.path.astar.normal;
+package jsettlers.logic.algorithms.path.astar;
 
 import java.util.BitSet;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.AlgorithmConstants;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.AbstractAStar;
+import jsettlers.logic.algorithms.path.astar.normal.AbstractMinPriorityQueue;
+import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
+import jsettlers.logic.algorithms.path.astar.queues.IRankSupplier;
+import jsettlers.logic.algorithms.path.astar.queues.bucket.MinBucketQueue;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -16,7 +18,7 @@ import jsettlers.logic.algorithms.path.astar.AbstractAStar;
  * @author Andreas Eberle
  * 
  */
-public final class HexAStar extends AbstractAStar implements IAStarHeapable {
+public final class BucketQueueAStar extends AbstractAStar implements IRankSupplier {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
 	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
 
@@ -34,13 +36,15 @@ public final class HexAStar extends AbstractAStar implements IAStarHeapable {
 
 	private final AbstractMinPriorityQueue open;
 
-	float xFactor = 1.01f, yFactor = 1.02f;
+	// float xFactor = 1.01f, yFactor = 1.02f;
+	float xFactor = 1f, yFactor = 1f;
 
-	public HexAStar(IAStarPathMap map, short width, short height) {
+	public BucketQueueAStar(IAStarPathMap map, short width, short height) {
 		this.map = map;
 		this.width = width;
 		this.height = height;
-		this.open = new AStarMinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
+		// this.open = new AStarMinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
+		this.open = new MinBucketQueue(this, width * height);
 
 		this.openList = new BitSet(width * height);
 		this.closedList = new BitSet(width * height);
@@ -213,16 +217,6 @@ public final class HexAStar extends AbstractAStar implements IAStarHeapable {
 	@Override
 	public final float getRank(int identifier) {
 		return costsAndHeuristics[getCostsIdx(identifier)] + costsAndHeuristics[getHeuristicIdx(identifier)];
-	}
-
-	@Override
-	public final int getHeapIdx(int identifier) {
-		return depthParentHeap[getHeapArrayIdx(identifier)];
-	}
-
-	@Override
-	public final void setHeapIdx(int identifier, int idx) {
-		depthParentHeap[getHeapArrayIdx(identifier)] = idx;
 	}
 
 	private final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {
