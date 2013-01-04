@@ -7,9 +7,10 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.astar.AbstractAStar;
+import jsettlers.logic.algorithms.path.astar.BucketQueueAStar;
 import jsettlers.logic.algorithms.path.astar.normal.AStarJPS;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
-import jsettlers.logic.algorithms.path.astar.normal.IAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.map.newGrid.MainGrid;
 
@@ -23,24 +24,26 @@ public class PathfinderSpeedComparision {
 		short height = mainGrid.getGraphicsGrid().getHeight();
 		IAStarPathMap map = mainGrid.getPathfinderGrid();
 
-		IAStar astar1 = new HexAStar(map, width, height);
-		IAStar astar2 = new AStarJPS(map, width, height);
+		AbstractAStar astars[] = { new BucketQueueAStar(map, width, height), new HexAStar(map, width, height), new AStarJPS(map, width, height) };
 
 		for (int i = 0; i < 30; i++) {
 			System.out.println("\n");
 		}
 
-		testAStar(PATH_RANDOM_SEED, astar1, map, 10, width, height); // just to get the arrays in the cache
-		long aStar1Time = testAStar(PATH_RANDOM_SEED, astar1, map, NUMBER_OF_PATHS, width, height);
+		long aStarTimes[] = new long[astars.length];
+		for (int i = 0; i < astars.length; i++) {
+			testAStar(PATH_RANDOM_SEED, astars[i], map, 10, width, height); // just to get the arrays in the cache
+			aStarTimes[i] = testAStar(PATH_RANDOM_SEED, astars[i], map, NUMBER_OF_PATHS, width, height);
+		}
 
-		testAStar(PATH_RANDOM_SEED, astar2, map, 10, width, height); // just to get the arrays in the cache
-		long aStar2Time = testAStar(PATH_RANDOM_SEED, astar2, map, NUMBER_OF_PATHS, width, height);
+		for (int i = 0; i < astars.length; i++) {
+			System.out.println("aStar" + i + " (" + astars[i].getClass() + ") avg: " + ((float) aStarTimes[i]) / NUMBER_OF_PATHS + " ms");
+		}
 
-		System.out.println("aStar1 (" + astar1.getClass() + ") avg: " + ((float) aStar1Time) / NUMBER_OF_PATHS + " ms");
-		System.out.println("aStar2 (" + astar2.getClass() + ")  avg: " + ((float) aStar2Time) / NUMBER_OF_PATHS + " ms");
+		System.exit(0);
 	}
 
-	private static long testAStar(int randomSeed, IAStar astar, IAStarPathMap map, int numberOfPaths, short width, short height)
+	private static long testAStar(int randomSeed, AbstractAStar astar, IAStarPathMap map, int numberOfPaths, short width, short height)
 			throws InterruptedException {
 
 		Random random = new Random(randomSeed);
@@ -50,23 +53,20 @@ public class PathfinderSpeedComparision {
 		Thread.sleep(300);
 
 		MilliStopWatch watch = new MilliStopWatch();
-		watch.restart();
 
 		for (int i = 0; i < numberOfPaths; i++) {
-			ShortPoint2D start = getUnblocktPosition(requester, random, map, width, height);
-			ShortPoint2D target = getUnblocktPosition(requester, random, map, width, height);
+			ShortPoint2D start = getUnblocktRandomPosition(requester, random, map, width, height);
+			ShortPoint2D target = getUnblocktRandomPosition(requester, random, map, width, height);
 
 			astar.findPath(requester, start.x, start.y, target.x, target.y);
 			System.out.print(i + ", ");
 		}
 
-		watch.stop();
-
 		System.out.println();
 		return watch.getDiff();
 	}
 
-	public static ShortPoint2D getUnblocktPosition(IPathCalculateable requester, Random random, IAStarPathMap map, int width, int height) {
+	public static ShortPoint2D getUnblocktRandomPosition(IPathCalculateable requester, Random random, IAStarPathMap map, int width, int height) {
 		short x, y;
 		do {
 			x = (short) random.nextInt(width);

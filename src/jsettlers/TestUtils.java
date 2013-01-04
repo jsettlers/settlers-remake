@@ -13,7 +13,7 @@ public final class TestUtils {
 
 	public static MainGrid getMap() throws MapLoadException {
 		RandomSingleton.load(123456L);
-		MapLoader loader = new MapLoader(new File("../jsettlers.common/resources/maps/bigmap-2012-04-17_09-26-33.map"));
+		MapLoader loader = new MapLoader(new File("../jsettlers.common/resources/maps/bigmap.map"));
 		return loader.getMainGrid();
 	}
 
