@@ -1,7 +1,7 @@
 package jsettlers.common.logging;
 
 /**
- * this class implements a simple stop watch.
+ * This class implements a simple stop watch that records the time in milliseconds.
  * 
  * @author Andreas Eberle
  * 
@@ -9,18 +9,12 @@ package jsettlers.common.logging;
 public class MilliStopWatch extends StopWatch {
 
 	@Override
-	public void restart() {
-		start = System.currentTimeMillis();
-	}
-
-	@Override
-	public void stop() {
-		diff = System.currentTimeMillis() - start;
+	public long now() {
+		return System.currentTimeMillis();
 	}
 
 	@Override
 	protected String getUnit() {
 		return "ms";
 	}
-
 }

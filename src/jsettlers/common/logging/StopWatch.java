@@ -8,8 +8,7 @@ package jsettlers.common.logging;
  */
 public abstract class StopWatch {
 
-	protected long start;
-	protected long diff;
+	private long start;
 
 	public StopWatch() {
 		restart();
@@ -18,12 +17,9 @@ public abstract class StopWatch {
 	/**
 	 * saves the current time.
 	 */
-	public abstract void restart();
-
-	/**
-	 * calculates the difference from start to now
-	 */
-	public abstract void stop();
+	public final void restart() {
+		start = now();
+	}
 
 	/**
 	 * calculates the difference from start to now and prints the result.
@@ -32,17 +28,22 @@ public abstract class StopWatch {
 	 *            text to be pretended to the measured difference
 	 */
 	public void stop(String leadingText) {
-		stop();
-		System.out.println(leadingText + ": " + diff + " " + getUnit());
+		System.out.println(leadingText + ": " + getDiff() + " " + getUnit());
 	}
 
 	protected abstract String getUnit();
 
 	/**
 	 * 
-	 * @return measured difference.
+	 * @return Returns the difference in time from the start (or last restart) to now.
 	 */
-	public long getDiff() {
-		return diff;
+	public final long getDiff() {
+		return now() - start;
 	}
+
+	/**
+	 * 
+	 * @return Returns the current time in the unit of this {@link StopWatch}.
+	 */
+	public abstract long now();
 }

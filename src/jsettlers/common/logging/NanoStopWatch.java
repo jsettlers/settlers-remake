@@ -1,7 +1,7 @@
 package jsettlers.common.logging;
 
 /**
- * this class implements a simple stop watch.
+ * This class implements a simple stop watch that records the time in nanoseconds.
  * 
  * @author Andreas Eberle
  * 
@@ -9,13 +9,8 @@ package jsettlers.common.logging;
 public class NanoStopWatch extends StopWatch {
 
 	@Override
-	public void restart() {
-		start = System.nanoTime();
-	}
-
-	@Override
-	public void stop() {
-		diff = System.nanoTime() - start;
+	public long now() {
+		return System.nanoTime();
 	}
 
 	@Override
