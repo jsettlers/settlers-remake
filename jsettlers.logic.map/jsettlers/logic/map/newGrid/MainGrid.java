@@ -51,7 +51,7 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.AbstractAStar;
-import jsettlers.logic.algorithms.path.astar.BucketQueueAStar;
+import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
@@ -552,20 +552,20 @@ public final class MainGrid implements Serializable {
 
 			// int value = partitionsGrid.getPartitionIdAt(x, y);
 
-			int value = partitionsGrid.getRealPartitionIdAt(x, y);
+			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
 
 			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
 
-			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-			// .getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-			// : (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+					: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
@@ -822,7 +822,7 @@ public final class MainGrid implements Serializable {
 		private final void initPathfinders() {
 			pathfinderGrid = new PathfinderGrid();
 
-			aStar = new BucketQueueAStar(pathfinderGrid, width, height);
+			aStar = new HexAStar(pathfinderGrid, width, height);
 			dijkstra = new DijkstraAlgorithm(pathfinderGrid, aStar, width, height);
 			inAreaFinder = new InAreaFinder(pathfinderGrid, width, height);
 		}
@@ -1203,12 +1203,12 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final boolean setBuilding(ShortPoint2D position, Building newBuilding) {
 			if (MainGrid.this.isInBounds(position.x, position.y)) {
-				FreeMapArea area = new FreeMapArea(position, newBuilding.getBuildingType().getBlockedTiles());
+				FreeMapArea protectedArea = new FreeMapArea(position, newBuilding.getBuildingType().getProtectedTiles());
 
-				if (canConstructAt(area)) {
-					setProtectedState(area, true);
+				if (canConstructAt(protectedArea)) {
+					setProtectedState(protectedArea, true);
 					mapObjectsManager.addBuildingTo(position, newBuilding);
-					objectsGrid.setBuildingArea(area, newBuilding);
+					objectsGrid.setBuildingArea(new FreeMapArea(position, newBuilding.getBuildingType().getBlockedTiles()), newBuilding);
 					return true;
 				} else {
 					return false;

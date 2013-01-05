@@ -197,9 +197,9 @@ public final class ObjectsGrid implements Serializable {
 		}
 	}
 
-	public void setBuildingArea(FreeMapArea area, Building buildingValue) {
+	public void setBuildingArea(FreeMapArea area, Building building) {
 		for (ShortPoint2D curr : area) {
-			buildingsGrid[curr.x + curr.y * width] = buildingValue;
+			buildingsGrid[curr.x + curr.y * width] = building;
 		}
 	}
 
