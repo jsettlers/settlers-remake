@@ -28,7 +28,7 @@ public class DoubleLinkedListTest {
 
 		for (int i = TEST_NUMBERS - 1; i >= 0; i--) {
 			assertEquals(i + 1, list.size());
-			assertEquals(i, list.popFront());
+			assertEquals(i, list.popFront().value);
 		}
 
 		assertEquals(0, list.size());
@@ -70,7 +70,7 @@ public class DoubleLinkedListTest {
 			if (i == 4 || i == 7) { // skip the removed values
 				continue;
 			}
-			assertEquals(i, list.popFront());
+			assertEquals(i, list.popFront().value);
 		}
 
 		assertEquals(0, list.size());
@@ -93,7 +93,7 @@ public class DoubleLinkedListTest {
 	private void assertListsEqual(DoubleLinkedIntList copy) {
 		assertEquals(list.size(), copy.size());
 		while (!list.isEmpty()) {
-			assertEquals(list.popFront(), copy.popFront());
+			assertEquals(list.popFront().value, copy.popFront().value);
 		}
 	}
 
