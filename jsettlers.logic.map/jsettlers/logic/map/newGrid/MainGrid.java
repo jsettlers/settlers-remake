@@ -51,7 +51,7 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
 import jsettlers.logic.algorithms.path.astar.AbstractAStar;
-import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
+import jsettlers.logic.algorithms.path.astar.BucketQueueAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
@@ -822,7 +822,7 @@ public final class MainGrid implements Serializable {
 		private final void initPathfinders() {
 			pathfinderGrid = new PathfinderGrid();
 
-			aStar = new HexAStar(pathfinderGrid, width, height);
+			aStar = new BucketQueueAStar(pathfinderGrid, width, height);
 			dijkstra = new DijkstraAlgorithm(pathfinderGrid, aStar, width, height);
 			inAreaFinder = new InAreaFinder(pathfinderGrid, width, height);
 		}
