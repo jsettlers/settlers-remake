@@ -182,12 +182,13 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 
 	private final void initStartNode(short sx, short sy, short tx, short ty) {
 		int flatIdx = getFlatIdx(sx, sy);
-		open.insert(flatIdx);
-		openList.set(flatIdx);
 		depthParentHeap[getDepthIdx(flatIdx)] = 0;
 		depthParentHeap[getParentIdx(flatIdx)] = -1;
 		costsAndHeuristics[getCostsIdx(flatIdx)] = 0;
 		costsAndHeuristics[getHeuristicIdx(flatIdx)] = getHeuristicCost(sx, sy, tx, ty);
+
+		open.insert(flatIdx);
+		openList.set(flatIdx);
 	}
 
 	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {

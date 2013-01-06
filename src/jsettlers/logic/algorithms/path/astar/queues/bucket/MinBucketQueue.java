@@ -28,13 +28,14 @@ public final class MinBucketQueue extends AbstractMinPriorityQueue {
 		}
 
 		this.handles = new DoubleLinkedIntListItem[maxNumberOfIds];
+		for (int i = 0; i < maxNumberOfIds; i++) {
+			handles[i] = new DoubleLinkedIntListItem(i);
+		}
 	}
 
 	@Override
 	public void insert(int elementId) {
-		final DoubleLinkedIntListItem handle = buckets[getRankIdx(elementId)].pushFront(elementId);
-		handles[elementId] = handle;
-
+		buckets[getRankIdx(elementId)].pushFront(handles[elementId]);
 		size++;
 	}
 
@@ -78,7 +79,7 @@ public final class MinBucketQueue extends AbstractMinPriorityQueue {
 		}
 		size--;
 
-		final int elementId = buckets[minIdx].popFront();
+		final int elementId = buckets[minIdx].popFront().value;
 
 		return elementId;
 	}

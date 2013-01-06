@@ -13,26 +13,30 @@ public final class DoubleLinkedIntList {
 
 	public DoubleLinkedIntListItem pushFront(int value) {
 		DoubleLinkedIntListItem newItem = new DoubleLinkedIntListItem(value);
+		pushFront(newItem);
+		return newItem;
+	}
 
+	public void pushFront(DoubleLinkedIntListItem newItem) {
 		newItem.next = head.next;
 		newItem.prev = head;
 		newItem.next.prev = newItem;
 		head.next = newItem;
 
 		size++;
-
-		return newItem;
 	}
 
-	public int popFront() {
+	public DoubleLinkedIntListItem popFront() {
 		final DoubleLinkedIntListItem item = head.next;
 
 		item.next.prev = head;
 		head.next = item.next;
+		item.next = null;
+		item.prev = null;
 
 		size--;
 
-		return item.value;
+		return item;
 	}
 
 	public void remove(DoubleLinkedIntListItem item) {
@@ -86,4 +90,5 @@ public final class DoubleLinkedIntList {
 
 		return copy;
 	}
+
 }

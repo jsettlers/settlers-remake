@@ -41,7 +41,7 @@ public class Path implements Serializable {
 	 *            The path prefix. NOTE: The prefix must start with the current position of the movable!
 	 */
 	public Path(Path oldPath, ShortPoint2D... pathPrefix) {
-		int length = oldPath.getLength() - oldPath.getStep() + pathPrefix.length + 2;
+		int length = oldPath.getLength() - oldPath.getStep() + pathPrefix.length + 2; // FIXME @Andreas Eberle length of paths is incorrect!!
 		pathX = new short[length];
 		pathY = new short[length];
 
