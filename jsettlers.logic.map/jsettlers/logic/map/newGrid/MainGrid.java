@@ -560,12 +560,12 @@ public final class MainGrid implements Serializable {
 
 			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			// return landscapeGrid.getDebugColor(x, y);
+			return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-					: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+			// .getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+			// : (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
@@ -805,10 +805,11 @@ public final class MainGrid implements Serializable {
 	final class MovablePathfinderGrid implements INewMovableGrid, Serializable {
 		private static final long serialVersionUID = 4006228724969442801L;
 
-		transient AbstractAStar aStar;
-		transient DijkstraAlgorithm dijkstra;
-		private transient InAreaFinder inAreaFinder;
 		private transient PathfinderGrid pathfinderGrid;
+
+		private transient AbstractAStar aStar;
+		transient DijkstraAlgorithm dijkstra; // not private, because it's used by BuildingsGrid
+		private transient InAreaFinder inAreaFinder;
 
 		public MovablePathfinderGrid() {
 			initPathfinders();
