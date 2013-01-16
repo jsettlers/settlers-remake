@@ -373,29 +373,29 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	// ==================== IAStarPathMap ==============================================================
 
 	@Override
-	public boolean isBlocked(IPathCalculateable requester, short x, short y) {
+	public boolean isBlocked(IPathCalculateable requester, int x, int y) {
 		return false;
 	}
 
 	@Override
-	public float getCost(short sx, short sy, short tx, short ty) {
+	public float getCost(int sx, int sy, int tx, int ty) {
 		return 1;
 	}
 
 	@Override
-	public void markAsOpen(short x, short y) {
+	public void markAsOpen(int x, int y) {
 	}
 
 	@Override
-	public void markAsClosed(short x, short y) {
+	public void markAsClosed(int x, int y) {
 	}
 
 	@Override
-	public void setDebugColor(short x, short y, Color color) {
+	public void setDebugColor(int x, int y, Color color) {
 	}
 
 	@Override
-	public short getBlockedPartition(short x, short y) {
+	public short getBlockedPartition(int x, int y) {
 		return 1;
 	}
 }
