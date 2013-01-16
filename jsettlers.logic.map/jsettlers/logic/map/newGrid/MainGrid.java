@@ -325,33 +325,33 @@ public final class MainGrid implements Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
 		@Override
-		public boolean isBlocked(IPathCalculateable requester, short x, short y) {
+		public boolean isBlocked(IPathCalculateable requester, int x, int y) {
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
 
 		@Override
-		public final float getCost(short sx, short sy, short tx, short ty) {
+		public final float getCost(int sx, int sy, int tx, int ty) {
 			// return Constants.TILE_PATHFINDER_COST * (flagsGrid.isProtected(sx, sy) ? 3.5f : 1);
 			return 1;
 		}
 
 		@Override
-		public final void markAsOpen(short x, short y) {
+		public final void markAsOpen(int x, int y) {
 			landscapeGrid.setDebugColor(x, y, Color.BLUE.getARGB());
 		}
 
 		@Override
-		public final void markAsClosed(short x, short y) {
+		public final void markAsClosed(int x, int y) {
 			landscapeGrid.setDebugColor(x, y, Color.RED.getARGB());
 		}
 
 		@Override
-		public final void setDijkstraSearched(short x, short y) {
+		public final void setDijkstraSearched(int x, int y) {
 			markAsOpen(x, y);
 		}
 
 		@Override
-		public final boolean fitsSearchType(short x, short y, ESearchType searchType, IPathCalculateable pathCalculable) {
+		public final boolean fitsSearchType(int x, int y, ESearchType searchType, IPathCalculateable pathCalculable) {
 			switch (searchType) {
 
 			case FOREIGN_GROUND:
@@ -363,7 +363,7 @@ public final class MainGrid implements Serializable {
 						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_TREE:
-				return y < height - 1 && isTreePlantable(x, (short) (y + 1)) && !hasProtectedNeighbor(x, (short) (y + 1))
+				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
 						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_CORN:
@@ -410,7 +410,7 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		protected final boolean canAddRessourceSign(short x, short y) {
+		protected final boolean canAddRessourceSign(int x, int y) {
 			return x % 2 == 0
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
@@ -419,7 +419,7 @@ public final class MainGrid implements Serializable {
 							EMapObjectType.FOUND_GOLD));
 		}
 
-		private final boolean isSoldierAt(short x, short y, ESearchType searchType, byte player) {
+		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
 			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
@@ -442,11 +442,11 @@ public final class MainGrid implements Serializable {
 			}
 		}
 
-		private final boolean isMarked(short x, short y) {
+		private final boolean isMarked(int x, int y) {
 			return flagsGrid.isMarked(x, y);
 		}
 
-		private final boolean hasProtectedNeighbor(short x, short y) {
+		private final boolean hasProtectedNeighbor(int x, int y) {
 			for (EDirection currDir : EDirection.values) {
 				if (flagsGrid.isProtected(currDir.getNextTileX(x), currDir.getNextTileY(y)))
 					return true;
@@ -454,7 +454,7 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private final boolean hasNeighbourLandscape(short x, short y, ELandscapeType landscape) {
+		private final boolean hasNeighbourLandscape(int x, int y, ELandscapeType landscape) {
 			for (ShortPoint2D pos : new MapNeighboursArea(new ShortPoint2D(x, y))) {
 				short currX = pos.x;
 				short currY = pos.y;
@@ -465,17 +465,17 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private final boolean hasSamePlayer(short x, short y, IPathCalculateable requester) {
+		private final boolean hasSamePlayer(int x, int y, IPathCalculateable requester) {
 			return partitionsGrid.getPlayerIdAt(x, y) == requester.getPlayerId();
 		}
 
-		private final boolean isRiver(short x, short y) {
+		private final boolean isRiver(int x, int y) {
 			ELandscapeType type = landscapeGrid.getLandscapeTypeAt(x, y);
 			return type == ELandscapeType.RIVER1 || type == ELandscapeType.RIVER2 || type == ELandscapeType.RIVER3 || type == ELandscapeType.RIVER4;
 		}
 
-		final boolean isTreePlantable(short x, short y) {
-			return landscapeGrid.getLandscapeTypeAt(x, y).isGrass() && !flagsGrid.isProtected(x, y) && !hasBlockedNeighbor(x, y);
+		final boolean isTreePlantable(int x, int y) {
+			return landscapeGrid.getLandscapeTypeAt(x, y).isGrass() && !flagsGrid.isProtected(x, y) && !hasBlockedNeighbor((short) x, (short) y);
 		}
 
 		private final boolean hasBlockedNeighbor(short x, short y) {
@@ -490,7 +490,7 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private final boolean isCornPlantable(short x, short y) {
+		private final boolean isCornPlantable(int x, int y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
 			return (landscapeType.isGrass() || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y) && !hasProtectedNeighbor(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
@@ -499,17 +499,17 @@ public final class MainGrid implements Serializable {
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING);
 		}
 
-		private final boolean isCornCuttable(short x, short y) {
+		private final boolean isCornCuttable(int x, int y) {
 			return objectsGrid.hasCuttableObject(x, y, EMapObjectType.CORN_ADULT);
 		}
 
 		@Override
-		public void setDebugColor(short x, short y, Color color) {
+		public void setDebugColor(int x, int y, Color color) {
 			landscapeGrid.setDebugColor(x, y, color.getARGB());
 		}
 
 		@Override
-		public short getBlockedPartition(short x, short y) {
+		public short getBlockedPartition(int x, int y) {
 			return landscapeGrid.getBlockedPartitionAt(x, y);
 		}
 
@@ -632,7 +632,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final AbstractHexMapObject getMapObject(short x, short y, EMapObjectType mapObjectType) {
+		public final AbstractHexMapObject getMapObject(int x, int y, EMapObjectType mapObjectType) {
 			return objectsGrid.getMapObjectAt(x, y, mapObjectType);
 		}
 

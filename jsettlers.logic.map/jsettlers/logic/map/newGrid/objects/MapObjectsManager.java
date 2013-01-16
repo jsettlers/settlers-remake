@@ -412,7 +412,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	public final boolean hasStealableMaterial(short x, short y) {
+	public final boolean hasStealableMaterial(int x, int y) {
 		StackMapObject stackObject = (StackMapObject) grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT);
 
 		while (stackObject != null) { // find all stacks

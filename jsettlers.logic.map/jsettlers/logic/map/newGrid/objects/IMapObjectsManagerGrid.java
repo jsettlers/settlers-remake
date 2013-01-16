@@ -8,7 +8,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.objects.arrow.IArrowAttackableGrid;
 
 public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid {
-	AbstractHexMapObject getMapObject(short x, short y, EMapObjectType mapObjectType);
+	AbstractHexMapObject getMapObject(int x, int y, EMapObjectType mapObjectType);
 
 	void setLandscape(short x, short y, ELandscapeType landscapeType);
 

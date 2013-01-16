@@ -78,7 +78,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return ELandscapeType.values[landscapeGrid[x + y * width]];
 	}
 
-	public final void setDebugColor(short x, short y, int argb) {
+	public final void setDebugColor(int x, int y, int argb) {
 		if (CommonConstants.ENABLE_DEBUG_COLORS) {
 			debugColors[x + y * width] = argb;
 		}
