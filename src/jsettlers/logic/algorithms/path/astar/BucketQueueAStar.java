@@ -7,9 +7,9 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.normal.AbstractNewMinPriorityQueue;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
-import jsettlers.logic.algorithms.path.astar.queues.bucket.MinBucketQueue;
+import jsettlers.logic.algorithms.path.astar.queues.bucket.AbstractBucketQueue;
+import jsettlers.logic.algorithms.path.astar.queues.bucket.ListMinBucketQueue;
 
 /**
  * AStar algorithm to find paths from A to B on a hex grid
@@ -29,27 +29,24 @@ public final class BucketQueueAStar extends AbstractAStar {
 	private final BitSet openBitSet;
 	private final BitSet closedBitSet;
 
-	final float[] costsAndHeuristics;
+	final float[] costs;
 
 	final int[] depthParentHeap;
 
-	private final AbstractNewMinPriorityQueue open;
-
-	// float xFactor = 1.01f, yFactor = 1.02f;
-	float xFactor = 1f, yFactor = 1f;
+	private final AbstractBucketQueue open;
 
 	public BucketQueueAStar(IAStarPathMap map, short width, short height) {
 		this.map = map;
 		this.width = width;
 		this.height = height;
 
-		this.open = new MinBucketQueue(width * height);
+		this.open = new ListMinBucketQueue(width * height);
 
 		this.openBitSet = new BitSet(width * height);
 		this.closedBitSet = new BitSet(width * height);
-		this.costsAndHeuristics = new float[width * height];
+		this.costs = new float[width * height];
 
-		this.depthParentHeap = new int[width * height * 3];
+		this.depthParentHeap = new int[width * height * 2];
 	}
 
 	@Override
@@ -73,10 +70,6 @@ public final class BucketQueueAStar extends AbstractAStar {
 			blockedAtStart = false;
 		}
 
-		float temp = xFactor; // swap the heuristic factors
-		xFactor = yFactor;
-		yFactor = temp;
-
 		final int targetFlatIdx = getFlatIdx(tx, ty);
 
 		closedBitSet.clear();
@@ -89,8 +82,8 @@ public final class BucketQueueAStar extends AbstractAStar {
 		while (!open.isEmpty()) {
 			int currFlatIdx = open.deleteMin();
 
-			short x = getX(currFlatIdx);
-			short y = getY(currFlatIdx);
+			final int x = getX(currFlatIdx);
+			final int y = getY(currFlatIdx);
 
 			setClosed(x, y);
 
@@ -99,29 +92,32 @@ public final class BucketQueueAStar extends AbstractAStar {
 				break;
 			}
 
+			final float currPositionCosts = costs[currFlatIdx];
+
 			for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
-				short neighborX = (short) (x + xDeltaArray[i]);
-				short neighborY = (short) (y + yDeltaArray[i]);
+				final int neighborX = x + xDeltaArray[i];
+				final int neighborY = y + yDeltaArray[i];
 
 				if (isValidPosition(requester, neighborX, neighborY, blockedAtStart)) {
-					int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
+					final int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
 					if (!closedBitSet.get(flatNeighborIdx)) {
-						float newCosts = costsAndHeuristics[currFlatIdx] + map.getCost(x, y, neighborX, neighborY);
+						final float newCosts = currPositionCosts + map.getCost(x, y, neighborX, neighborY);
+
 						if (openBitSet.get(flatNeighborIdx)) {
-							final float oldCosts = costsAndHeuristics[flatNeighborIdx];
+							final float oldCosts = costs[flatNeighborIdx];
 
 							if (oldCosts > newCosts) {
-								costsAndHeuristics[flatNeighborIdx] = newCosts;
+								costs[flatNeighborIdx] = newCosts;
 								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 
-								float heuristicCosts = getHeuristicCost(neighborX, neighborY, tx, ty);
+								int heuristicCosts = getHeuristicCost(neighborX, neighborY, tx, ty);
 								open.increasedPriority(flatNeighborIdx, oldCosts + heuristicCosts, newCosts + heuristicCosts);
 							}
 
 						} else {
-							costsAndHeuristics[flatNeighborIdx] = newCosts;
+							costs[flatNeighborIdx] = newCosts;
 							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
 							openBitSet.set(flatNeighborIdx);
@@ -143,7 +139,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 
 			while (idx > 0) {
 				idx--;
-				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
+				path.insertAt(idx, (short) getX(parentFlatIdx), (short) getY(parentFlatIdx));
 				parentFlatIdx = depthParentHeap[getParentIdx(parentFlatIdx)];
 			}
 
@@ -156,61 +152,57 @@ public final class BucketQueueAStar extends AbstractAStar {
 	}
 
 	private static final int getDepthIdx(int flatIdx) {
-		return 3 * flatIdx;
+		return 2 * flatIdx;
 	}
 
 	private static final int getParentIdx(int flatIdx) {
-		return 3 * flatIdx + 1;
+		return 2 * flatIdx + 1;
 	}
 
-	static final int getHeapArrayIdx(int flatIdx) {
-		return 3 * flatIdx + 2;
-	}
-
-	private final void setClosed(short x, short y) {
+	private final void setClosed(int x, int y) {
 		closedBitSet.set(getFlatIdx(x, y));
 		map.markAsClosed(x, y);
 	}
 
-	private final void initStartNode(short sx, short sy, short tx, short ty) {
+	private final void initStartNode(int sx, int sy, int tx, int ty) {
 		int flatIdx = getFlatIdx(sx, sy);
 		depthParentHeap[getDepthIdx(flatIdx)] = 0;
 		depthParentHeap[getParentIdx(flatIdx)] = -1;
-		costsAndHeuristics[flatIdx] = 0;
+		costs[flatIdx] = 0;
 
 		open.insert(flatIdx, 0 + getHeuristicCost(sx, sy, tx, ty));
 		openBitSet.set(flatIdx);
 	}
 
-	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
+	private final boolean isValidPosition(IPathCalculateable requester, int x, int y, boolean blockedAtStart) {
 		return isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
 	}
 
-	private final boolean isInBounds(short x, short y) {
+	private final boolean isInBounds(int x, int y) {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	private final boolean isBlocked(IPathCalculateable requester, short x, short y) {
+	private final boolean isBlocked(IPathCalculateable requester, int x, int y) {
 		return map.isBlocked(requester, x, y);
 	}
 
-	private final int getFlatIdx(short x, short y) {
+	private final int getFlatIdx(int x, int y) {
 		return y * width + x;
 	}
 
-	private final short getX(int flatIdx) {
-		return (short) (flatIdx % width);
+	private final int getX(int flatIdx) {
+		return flatIdx % width;
 	}
 
-	private final short getY(int flatIdx) {
-		return (short) (flatIdx / width);
+	private final int getY(int flatIdx) {
+		return flatIdx / width;
 	}
 
-	private final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {
-		final float dx = (tx - sx) * xFactor;
-		final float dy = (ty - sy) * yFactor;
-		final float absDx = Math.abs(dx);
-		final float absDy = Math.abs(dy);
+	private final int getHeuristicCost(final int sx, final int sy, final int tx, final int ty) {
+		final int dx = (tx - sx);
+		final int dy = (ty - sy);
+		final int absDx = Math.abs(dx);
+		final int absDy = Math.abs(dy);
 
 		if (dx * dy > 0) { // dx and dy go in the same direction
 			if (absDx > absDy) {

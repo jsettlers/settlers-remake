@@ -1,37 +1,33 @@
 package jsettlers.logic.algorithms.path.astar.queues.bucket;
 
-import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntList;
-import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntListItem;
-import jsettlers.logic.algorithms.path.astar.normal.AbstractNewMinPriorityQueue;
+import jsettlers.logic.algorithms.path.arrays.IntArrayStack;
 
-public final class MinBucketQueue extends AbstractNewMinPriorityQueue {
+public final class ArrayMinBucketQueue extends AbstractBucketQueue {
 	/**
 	 * NOTE: The number of buckets MUST BE a power of 2!!
 	 */
 	private static final int NUMBER_OF_BUCKETS = 4;
 	private static final int MODULO_MASK = NUMBER_OF_BUCKETS - 1;
+	private static final int BUCKET_START_SIZE = 10000;
 
-	private final DoubleLinkedIntList[] buckets;
-	private final DoubleLinkedIntListItem[] handles;
+	private final IntArrayStack[] buckets;
+	private final int[] handles;
 
 	private int minIdx = 0;
 	private int size = 0;
 
-	public MinBucketQueue(int maxNumberOfIds) {
-		this.buckets = new DoubleLinkedIntList[NUMBER_OF_BUCKETS];
+	public ArrayMinBucketQueue(int maxNumberOfIds) {
+		this.buckets = new IntArrayStack[NUMBER_OF_BUCKETS];
 		for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
-			this.buckets[i] = new DoubleLinkedIntList();
+			this.buckets[i] = new IntArrayStack(BUCKET_START_SIZE);
 		}
 
-		this.handles = new DoubleLinkedIntListItem[maxNumberOfIds];
-		for (int i = 0; i < maxNumberOfIds; i++) {
-			handles[i] = new DoubleLinkedIntListItem(i);
-		}
+		this.handles = new int[maxNumberOfIds];
 	}
 
 	@Override
 	public void insert(int elementId, float rank) {
-		buckets[getRankIdx(rank)].pushFront(handles[elementId]);
+		handles[elementId] = buckets[getRankIdx(rank)].pushFront(elementId);
 		size++;
 	}
 
@@ -65,7 +61,7 @@ public final class MinBucketQueue extends AbstractNewMinPriorityQueue {
 		}
 		size--;
 
-		final int elementId = buckets[minIdx].popFront().value;
+		final int elementId = buckets[minIdx].popFront();
 
 		return elementId;
 	}

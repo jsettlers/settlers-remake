@@ -1,6 +1,6 @@
-package jsettlers.logic.algorithms.path.astar.normal;
+package jsettlers.logic.algorithms.path.astar.queues.bucket;
 
-public abstract class AbstractNewMinPriorityQueue {
+public abstract class AbstractBucketQueue {
 	public abstract void insert(int elementId, float rank);
 
 	public abstract int size();
