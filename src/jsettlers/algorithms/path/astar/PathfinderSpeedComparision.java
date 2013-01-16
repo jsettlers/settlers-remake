@@ -16,6 +16,8 @@ import jsettlers.logic.map.newGrid.MainGrid;
 
 public class PathfinderSpeedComparision {
 	private static final int NUMBER_OF_PATHS = 200;
+	private static final int MIN_START_TARGET_DISTANCE = 800;
+
 	private static final int PATH_RANDOM_SEED = 1234;
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException {
@@ -57,6 +59,12 @@ public class PathfinderSpeedComparision {
 		for (int i = 0; i < numberOfPaths; i++) {
 			ShortPoint2D start = getUnblocktRandomPosition(requester, random, map, width, height);
 			ShortPoint2D target = getUnblocktRandomPosition(requester, random, map, width, height);
+
+			if (ShortPoint2D.getOnGridDist(target.x - start.x, target.y - start.y) < MIN_START_TARGET_DISTANCE) { // only tests paths with at least
+																													// 200 length
+				i--;
+				continue;
+			}
 
 			astar.findPath(requester, start.x, start.y, target.x, target.y);
 			System.out.print(i + ", ");
