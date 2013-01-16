@@ -171,11 +171,11 @@ public enum EDirection {
 		return null;
 	}
 
-	public final short getNextTileX(short x) {
+	public final short getNextTileX(int x) {
 		return (short) (x + gridDeltaX);
 	}
 
-	public final short getNextTileY(short y) {
+	public final short getNextTileY(int y) {
 		return (short) (y + gridDeltaY);
 	}
 
@@ -186,7 +186,7 @@ public enum EDirection {
 	 * @param y
 	 * @return
 	 */
-	public ShortPoint2D getNextHexPoint(short x, short y) {
+	public ShortPoint2D getNextHexPoint(int x, int y) {
 		return new ShortPoint2D(getNextTileX(x), getNextTileY(y));
 	}
 
