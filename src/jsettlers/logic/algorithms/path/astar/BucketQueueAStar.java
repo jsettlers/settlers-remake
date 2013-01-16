@@ -7,9 +7,8 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.normal.AbstractMinPriorityQueue;
+import jsettlers.logic.algorithms.path.astar.normal.AbstractNewMinPriorityQueue;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
-import jsettlers.logic.algorithms.path.astar.queues.IRankSupplier;
 import jsettlers.logic.algorithms.path.astar.queues.bucket.MinBucketQueue;
 
 /**
@@ -18,7 +17,7 @@ import jsettlers.logic.algorithms.path.astar.queues.bucket.MinBucketQueue;
  * @author Andreas Eberle
  * 
  */
-public final class BucketQueueAStar extends AbstractAStar implements IRankSupplier {
+public final class BucketQueueAStar extends AbstractAStar {
 	private static final byte[] xDeltaArray = EDirection.getXDeltaArray();
 	private static final byte[] yDeltaArray = EDirection.getYDeltaArray();
 
@@ -27,14 +26,14 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 	private final short height;
 	private final short width;
 
-	private final BitSet openList;
-	private final BitSet closedList;
+	private final BitSet openBitSet;
+	private final BitSet closedBitSet;
 
 	final float[] costsAndHeuristics;
 
 	final int[] depthParentHeap;
 
-	private final AbstractMinPriorityQueue open;
+	private final AbstractNewMinPriorityQueue open;
 
 	// float xFactor = 1.01f, yFactor = 1.02f;
 	float xFactor = 1f, yFactor = 1f;
@@ -43,12 +42,12 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 		this.map = map;
 		this.width = width;
 		this.height = height;
-		// this.open = new AStarMinHeap(this, AlgorithmConstants.MINHEAP_INIT_NUMBER_OF_ELEMENTS);
-		this.open = new MinBucketQueue(this, width * height);
 
-		this.openList = new BitSet(width * height);
-		this.closedList = new BitSet(width * height);
-		this.costsAndHeuristics = new float[width * height * 2];
+		this.open = new MinBucketQueue(width * height);
+
+		this.openBitSet = new BitSet(width * height);
+		this.closedBitSet = new BitSet(width * height);
+		this.costsAndHeuristics = new float[width * height];
 
 		this.depthParentHeap = new int[width * height * 3];
 	}
@@ -80,8 +79,8 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 
 		final int targetFlatIdx = getFlatIdx(tx, ty);
 
-		closedList.clear();
-		openList.clear();
+		closedBitSet.clear();
+		openBitSet.clear();
 
 		open.clear();
 		boolean found = false;
@@ -107,25 +106,26 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 				if (isValidPosition(requester, neighborX, neighborY, blockedAtStart)) {
 					int flatNeighborIdx = getFlatIdx(neighborX, neighborY);
 
-					if (!closedList.get(flatNeighborIdx)) {
-						float newCosts = costsAndHeuristics[getCostsIdx(currFlatIdx)] + map.getCost(x, y, neighborX, neighborY);
-						if (openList.get(flatNeighborIdx)) {
-							if (costsAndHeuristics[getCostsIdx(flatNeighborIdx)] > newCosts) {
-								float oldRank = getRank(flatNeighborIdx);
+					if (!closedBitSet.get(flatNeighborIdx)) {
+						float newCosts = costsAndHeuristics[currFlatIdx] + map.getCost(x, y, neighborX, neighborY);
+						if (openBitSet.get(flatNeighborIdx)) {
+							final float oldCosts = costsAndHeuristics[flatNeighborIdx];
 
-								costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
-								// costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
+							if (oldCosts > newCosts) {
+								costsAndHeuristics[flatNeighborIdx] = newCosts;
 								depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 								depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
-								open.increasedPriority(flatNeighborIdx, oldRank);
+
+								float heuristicCosts = getHeuristicCost(neighborX, neighborY, tx, ty);
+								open.increasedPriority(flatNeighborIdx, oldCosts + heuristicCosts, newCosts + heuristicCosts);
 							}
+
 						} else {
-							costsAndHeuristics[getCostsIdx(flatNeighborIdx)] = newCosts;
-							costsAndHeuristics[getHeuristicIdx(flatNeighborIdx)] = getHeuristicCost(neighborX, neighborY, tx, ty);
+							costsAndHeuristics[flatNeighborIdx] = newCosts;
 							depthParentHeap[getDepthIdx(flatNeighborIdx)] = depthParentHeap[getDepthIdx(currFlatIdx)] + 1;
 							depthParentHeap[getParentIdx(flatNeighborIdx)] = currFlatIdx;
-							openList.set(flatNeighborIdx);
-							open.insert(flatNeighborIdx);
+							openBitSet.set(flatNeighborIdx);
+							open.insert(flatNeighborIdx, newCosts + getHeuristicCost(neighborX, neighborY, tx, ty));
 
 							map.markAsOpen(neighborX, neighborY);
 						}
@@ -155,14 +155,6 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 		return null;
 	}
 
-	private static final int getHeuristicIdx(int flatIdx) {
-		return flatIdx * 2 + 1;
-	}
-
-	private static final int getCostsIdx(int flatIdx) {
-		return flatIdx * 2;
-	}
-
 	private static final int getDepthIdx(int flatIdx) {
 		return 3 * flatIdx;
 	}
@@ -176,7 +168,7 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 	}
 
 	private final void setClosed(short x, short y) {
-		closedList.set(getFlatIdx(x, y));
+		closedBitSet.set(getFlatIdx(x, y));
 		map.markAsClosed(x, y);
 	}
 
@@ -184,11 +176,10 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 		int flatIdx = getFlatIdx(sx, sy);
 		depthParentHeap[getDepthIdx(flatIdx)] = 0;
 		depthParentHeap[getParentIdx(flatIdx)] = -1;
-		costsAndHeuristics[getCostsIdx(flatIdx)] = 0;
-		costsAndHeuristics[getHeuristicIdx(flatIdx)] = getHeuristicCost(sx, sy, tx, ty);
+		costsAndHeuristics[flatIdx] = 0;
 
-		open.insert(flatIdx);
-		openList.set(flatIdx);
+		open.insert(flatIdx, 0 + getHeuristicCost(sx, sy, tx, ty));
+		openBitSet.set(flatIdx);
 	}
 
 	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
@@ -213,11 +204,6 @@ public final class BucketQueueAStar extends AbstractAStar implements IRankSuppli
 
 	private final short getY(int flatIdx) {
 		return (short) (flatIdx / width);
-	}
-
-	@Override
-	public final float getRank(int identifier) {
-		return costsAndHeuristics[getCostsIdx(identifier)] + costsAndHeuristics[getHeuristicIdx(identifier)];
 	}
 
 	private final float getHeuristicCost(final short sx, final short sy, final short tx, final short ty) {

@@ -2,26 +2,22 @@ package jsettlers.logic.algorithms.path.astar.queues.bucket;
 
 import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntList;
 import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntListItem;
-import jsettlers.logic.algorithms.path.astar.normal.AbstractMinPriorityQueue;
-import jsettlers.logic.algorithms.path.astar.queues.IRankSupplier;
+import jsettlers.logic.algorithms.path.astar.normal.AbstractNewMinPriorityQueue;
 
-public final class MinBucketQueue extends AbstractMinPriorityQueue {
+public final class MinBucketQueue extends AbstractNewMinPriorityQueue {
 	/**
 	 * NOTE: The number of buckets MUST BE a power of 2!!
 	 */
 	private static final int NUMBER_OF_BUCKETS = 4;
 	private static final int MODULO_MASK = NUMBER_OF_BUCKETS - 1;
 
-	private final IRankSupplier rankSupplier;
 	private final DoubleLinkedIntList[] buckets;
 	private final DoubleLinkedIntListItem[] handles;
 
 	private int minIdx = 0;
 	private int size = 0;
 
-	public MinBucketQueue(IRankSupplier rankSupplier, int maxNumberOfIds) {
-		this.rankSupplier = rankSupplier;
-
+	public MinBucketQueue(int maxNumberOfIds) {
 		this.buckets = new DoubleLinkedIntList[NUMBER_OF_BUCKETS];
 		for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
 			this.buckets[i] = new DoubleLinkedIntList();
@@ -34,28 +30,18 @@ public final class MinBucketQueue extends AbstractMinPriorityQueue {
 	}
 
 	@Override
-	public void insert(int elementId) {
-		buckets[getRankIdx(elementId)].pushFront(handles[elementId]);
+	public void insert(int elementId, float rank) {
+		buckets[getRankIdx(rank)].pushFront(handles[elementId]);
 		size++;
 	}
 
-	private final int getRankIdx(int elementId) {
-		float rank = rankSupplier.getRank(elementId);
-		return getRankIdx(rank);
-	}
-
-	private final int getRankIdx(float rank) {
+	private static final int getRankIdx(float rank) {
 		return ((int) rank) & MODULO_MASK;
 	}
 
 	@Override
 	public int size() {
 		return size;
-	}
-
-	@Override
-	public void remove(int elementId) {
-		remove(elementId, getRankIdx(elementId));
 	}
 
 	private final void remove(int elementId, int rankIdx) {
@@ -85,9 +71,9 @@ public final class MinBucketQueue extends AbstractMinPriorityQueue {
 	}
 
 	@Override
-	public void increasedPriority(int elementId, float oldRank) {
+	public void increasedPriority(int elementId, float oldRank, float newRank) {
 		remove(elementId, getRankIdx(oldRank));
-		insert(elementId);
+		insert(elementId, newRank);
 	}
 
 	@Override
