@@ -1,4 +1,6 @@
-package jsettlers.logic.algorithms.path.astar.lists;
+package jsettlers.logic.algorithms.path.astar.queues.bucket;
+
+import jsettlers.common.utils.collections.list.DoubleLinkedListItem;
 
 /**
  * This class represents a single item of a {@link DoubleLinkedIntList}.
@@ -6,11 +8,9 @@ package jsettlers.logic.algorithms.path.astar.lists;
  * @author Andreas Eberle
  * 
  */
-public final class DoubleLinkedIntListItem {
+public final class DoubleLinkedIntListItem extends DoubleLinkedListItem<DoubleLinkedIntListItem> {
 
 	public final int value;
-	DoubleLinkedIntListItem prev;
-	DoubleLinkedIntListItem next;
 
 	public DoubleLinkedIntListItem(int value) {
 		this.value = value;
@@ -19,8 +19,6 @@ public final class DoubleLinkedIntListItem {
 
 	public DoubleLinkedIntListItem() {
 		value = -1;
-		prev = this;
-		next = this;
 	}
 
 	@Override

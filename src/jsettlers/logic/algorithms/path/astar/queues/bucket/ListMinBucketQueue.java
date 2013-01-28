@@ -1,7 +1,6 @@
 package jsettlers.logic.algorithms.path.astar.queues.bucket;
 
-import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntList;
-import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntListItem;
+import jsettlers.common.utils.collections.list.DoubleLinkedList;
 
 /**
  * This class implements a minimum bucket priority queue with double liked lists.
@@ -19,16 +18,17 @@ public final class ListMinBucketQueue extends AbstractBucketQueue {
 	public static final int NUMBER_OF_BUCKETS = 4;
 	private static final int MODULO_MASK = NUMBER_OF_BUCKETS - 1;
 
-	private final DoubleLinkedIntList[] buckets;
+	private final DoubleLinkedList<DoubleLinkedIntListItem>[] buckets;
 	private final DoubleLinkedIntListItem[] handles;
 
 	private int minIdx = 0;
 	private int size = 0;
 
+	@SuppressWarnings("unchecked")
 	public ListMinBucketQueue(int maxNumberOfIds) {
-		this.buckets = new DoubleLinkedIntList[NUMBER_OF_BUCKETS];
+		this.buckets = new DoubleLinkedList[NUMBER_OF_BUCKETS];
 		for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
-			this.buckets[i] = new DoubleLinkedIntList();
+			this.buckets[i] = new DoubleLinkedList<DoubleLinkedIntListItem>();
 		}
 
 		this.handles = new DoubleLinkedIntListItem[maxNumberOfIds];
