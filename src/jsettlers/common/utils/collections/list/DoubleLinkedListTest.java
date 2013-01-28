@@ -1,8 +1,7 @@
-package jsettlers.algorithms.path.astar.lists;
+package jsettlers.common.utils.collections.list;
 
 import static org.junit.Assert.assertEquals;
-import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntList;
-import jsettlers.logic.algorithms.path.astar.lists.DoubleLinkedIntListItem;
+import jsettlers.logic.algorithms.path.astar.queues.bucket.DoubleLinkedIntListItem;
 
 import org.junit.Test;
 
@@ -15,14 +14,14 @@ import org.junit.Test;
 public class DoubleLinkedListTest {
 	private static final int TEST_NUMBERS = 10;
 
-	private DoubleLinkedIntList list = new DoubleLinkedIntList();
+	private DoubleLinkedList<DoubleLinkedIntListItem> list = new DoubleLinkedList<DoubleLinkedIntListItem>();
 
 	@Test
 	public void testPushAndPop() {
 		assertEquals(0, list.size());
 
 		for (int i = 0; i < TEST_NUMBERS; i++) {
-			list.pushFront(i);
+			list.pushFront(new DoubleLinkedIntListItem(i));
 			assertEquals(i + 1, list.size());
 		}
 
@@ -44,7 +43,7 @@ public class DoubleLinkedListTest {
 	@Test
 	public void testPushAndPopWithClear() {
 		for (int i = 0; i < TEST_NUMBERS; i++) {
-			list.pushFront(i);
+			list.pushFront(new DoubleLinkedIntListItem(i));
 		}
 
 		assertEquals(TEST_NUMBERS, list.size());
@@ -59,7 +58,8 @@ public class DoubleLinkedListTest {
 		DoubleLinkedIntListItem handles[] = new DoubleLinkedIntListItem[TEST_NUMBERS];
 
 		for (int i = 0; i < TEST_NUMBERS; i++) {
-			handles[i] = list.pushFront(i);
+			handles[i] = new DoubleLinkedIntListItem(i);
+			list.pushFront(handles[i]);
 		}
 
 		list.remove(handles[4]);
@@ -74,27 +74,6 @@ public class DoubleLinkedListTest {
 		}
 
 		assertEquals(0, list.size());
-	}
-
-	@Test
-	public void testDeepCopy() {
-		for (int i = 0; i < TEST_NUMBERS; i++) {
-			list.pushFront(i);
-		}
-
-		assertEquals(TEST_NUMBERS, list.size());
-
-		DoubleLinkedIntList copy = list.deepCopy();
-		copy.assertCorrect();
-
-		assertListsEqual(copy);
-	}
-
-	private void assertListsEqual(DoubleLinkedIntList copy) {
-		assertEquals(list.size(), copy.size());
-		while (!list.isEmpty()) {
-			assertEquals(list.popFront().value, copy.popFront().value);
-		}
 	}
 
 }
