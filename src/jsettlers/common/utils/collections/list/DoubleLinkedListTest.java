@@ -1,6 +1,10 @@
 package jsettlers.common.utils.collections.list;
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
+import jsettlers.TestUtils;
 import jsettlers.logic.algorithms.path.astar.queues.bucket.DoubleLinkedIntListItem;
 
 import org.junit.Test;
@@ -17,7 +21,7 @@ public class DoubleLinkedListTest {
 	private DoubleLinkedList<DoubleLinkedIntListItem> list = new DoubleLinkedList<DoubleLinkedIntListItem>();
 
 	@Test
-	public void testPushAndPop() {
+	public void testPushFrontAndPopFront() {
 		assertEquals(0, list.size());
 
 		for (int i = 0; i < TEST_NUMBERS; i++) {
@@ -34,14 +38,38 @@ public class DoubleLinkedListTest {
 	}
 
 	@Test
-	public void testPushAndPopMulti() {
+	public void testPushEndAndPopFront() {
+		assertEquals(0, list.size());
+
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+			assertEquals(i + 1, list.size());
+		}
+
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			assertEquals(10 - i, list.size());
+			assertEquals(i, list.popFront().value);
+		}
+
+		assertEquals(0, list.size());
+	}
+
+	@Test
+	public void testPushFrontAndPopFrontMulti() {
 		for (int i = 0; i < 5; i++) {
-			testPushAndPop();
+			testPushFrontAndPopFront();
 		}
 	}
 
 	@Test
-	public void testPushAndPopWithClear() {
+	public void testPushEndAndPopFrontMulti() {
+		for (int i = 0; i < 5; i++) {
+			testPushEndAndPopFront();
+		}
+	}
+
+	@Test
+	public void testPushFrontAndPopFrontWithClear() {
 		for (int i = 0; i < TEST_NUMBERS; i++) {
 			list.pushFront(new DoubleLinkedIntListItem(i));
 		}
@@ -50,7 +78,20 @@ public class DoubleLinkedListTest {
 		list.clear();
 		assertEquals(0, list.size());
 
-		testPushAndPop();
+		testPushFrontAndPopFront();
+	}
+
+	@Test
+	public void testPushEndAndPopFrontWithClear() {
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+		}
+
+		assertEquals(TEST_NUMBERS, list.size());
+		list.clear();
+		assertEquals(0, list.size());
+
+		testPushEndAndPopFront();
 	}
 
 	@Test
@@ -74,6 +115,29 @@ public class DoubleLinkedListTest {
 		}
 
 		assertEquals(0, list.size());
+	}
+
+	@Test
+	public void testSerialization() throws IOException, ClassNotFoundException {
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+		}
+
+		DoubleLinkedList<DoubleLinkedIntListItem> readList = TestUtils.serializeAndDeserialize(list);
+
+		assertListEquals(list, readList);
+	}
+
+	private void assertListEquals(DoubleLinkedList<DoubleLinkedIntListItem> list0, DoubleLinkedList<DoubleLinkedIntListItem> list1) {
+		assertEquals(list0.size(), list1.size());
+
+		int size = list0.size();
+		for (int i = 0; i < size; i++) {
+			assertEquals(list0.popFront().value, list1.popFront().value);
+		}
+
+		assertEquals(0, list0.size());
+		assertEquals(0, list1.size());
 	}
 
 }
