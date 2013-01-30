@@ -1,20 +1,28 @@
 package jsettlers.common.utils.collections.list;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 /**
  * This class implements a double linked list of {@link DoubleLinkedListItem}s.
- * <p />
- * NOTE: Type safety is not preserved when doing a {@link #popFront()} on an empty queue.
  * 
  * @author Andreas Eberle
  * 
  */
-public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> {
+public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implements Serializable {
+	private static final long serialVersionUID = -8229566677756169997L;
 
-	private final T head;
-	private int size = 0;
+	private transient T head;
+	private transient int size = 0;
+
+	public DoubleLinkedList() {
+		initHead();
+	}
 
 	@SuppressWarnings("unchecked")
-	public DoubleLinkedList() {
+	private void initHead() {
 		head = (T) new DoubleLinkedListItem<T>();
 		head.next = head;
 		head.prev = head;
@@ -29,6 +37,22 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> {
 		size++;
 	}
 
+	public void pushEnd(T newItem) {
+		newItem.next = head;
+		newItem.prev = head.prev;
+		newItem.prev.next = newItem;
+		head.prev = newItem;
+
+		size++;
+	}
+
+	/**
+	 * Pops the first element from this list.
+	 * <p />
+	 * NOTE: NEVER EVER call popFront on an empty queue! There will be no internal checks!
+	 * 
+	 * @return
+	 */
 	public T popFront() {
 		final T item = head.next;
 
@@ -40,6 +64,10 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> {
 		size--;
 
 		return item;
+	}
+
+	public T getFront() {
+		return head.next;
 	}
 
 	public void remove(DoubleLinkedListItem<T> item) {
@@ -63,13 +91,77 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> {
 		return size == 0;
 	}
 
-	public void assertCorrect() {
-		assert size == 0 || (head.next != head && head.prev != head);
+	/**
+	 * Generates a new array of {@link DoubleLinkedList}s of the given length. The array will be filled with new {@link DoubleLinkedList} objects.
+	 * 
+	 * @param length
+	 *            Length of the resulting array.
+	 * @return
+	 */
+	public static <T extends DoubleLinkedListItem<T>> DoubleLinkedList<T>[] getArray(final int length) {
+		@SuppressWarnings("unchecked")
+		DoubleLinkedList<T>[] array = new DoubleLinkedList[length];
+		for (int i = 0; i < length; i++) {
+			array[i] = new DoubleLinkedList<T>();
+		}
 
-		DoubleLinkedListItem<T> curr = head.next;
+		return array;
+	}
+
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		oos.writeInt(size);
+
+		T curr = head.next;
 		for (int i = 0; i < size; i++) {
-			assert curr != head && (i == 0 || curr.prev != head);
+			oos.writeObject(curr);
 			curr = curr.next;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		initHead();
+
+		int size = ois.readInt();
+
+		for (int i = 0; i < size; i++) {
+			pushEnd((T) ois.readObject());
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+
+		@SuppressWarnings("unchecked")
+		DoubleLinkedList<T> other = (DoubleLinkedList<T>) obj;
+		if (size != other.size)
+			return false;
+
+		if (head == null) {
+			if (other.head != null)
+				return false;
+		} else if (!head.equals(other.head))
+			return false;
+
+		T thisCurr = head.next;
+		T otherCurr = other.head.next;
+		for (int i = 0; i < size; i++) {
+			if (thisCurr == null) {
+				if (otherCurr != null)
+					return false;
+			} else if (!thisCurr.equals(otherCurr))
+				return false;
+
+			thisCurr = thisCurr.next;
+			otherCurr = otherCurr.next;
+		}
+
+		return true;
 	}
 }
