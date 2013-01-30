@@ -38,9 +38,10 @@ public enum EMaterialType {
 	WHITE_BREAD((short) 0, (short) 0, (short) 0, false),
 	BASKET((short) 0, (short) 0, (short) 0, false),
 	TREE((short) 0, (short) 0, (short) 0, false),
-	PLANT((short) 0, (short) 0, (short) 0, false), ;
+	PLANT((short) 0, (short) 0, (short) 0, false);
 
 	public static final EMaterialType[] values = EMaterialType.values();
+	public static final int NUMBER_OF_MATERIALS = values.length;
 
 	private final short stackIndex;
 	private final short guiBase;

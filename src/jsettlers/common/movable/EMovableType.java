@@ -49,6 +49,9 @@ public enum EMovableType {
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
 
+	public static final EMovableType[] values = EMovableType.values();
+	public static final int NUMBER_OF_MOVABLETYPES = values.length;
+
 	private final EMaterialType tool;
 	private final ESelectionType selectionType;
 	private final boolean needsPlayersGround;
