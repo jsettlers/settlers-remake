@@ -169,7 +169,7 @@ public class MapDataSerializer {
 				data.setPlayerStart((byte) player, x, y);
 			}
 
-			ELandscapeType[] types = ELandscapeType.values();
+			ELandscapeType[] types = ELandscapeType.values;
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
 					byte type = stream.readByte();

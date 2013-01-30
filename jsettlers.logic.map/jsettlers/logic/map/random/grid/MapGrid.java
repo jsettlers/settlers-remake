@@ -289,7 +289,7 @@ public class MapGrid implements IMapData {
 
 	public static EResourceType getResourceType(ELandscapeType landscape, Random rand) {
 		if (landscape == ELandscapeType.MOUNTAIN) {
-			return EResourceType.values()[rand.nextInt(3)];
+			return EResourceType.values[rand.nextInt(3)];
 		} else {
 			return EResourceType.FISH;
 		}

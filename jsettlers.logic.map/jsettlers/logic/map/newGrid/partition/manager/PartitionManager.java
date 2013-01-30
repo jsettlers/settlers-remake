@@ -54,8 +54,8 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
 	private final OfferMap materialOffers = new OfferMap();
-	private final SlotQueue<EMaterialType, MaterialRequest> materialRequests = new SlotQueue<EMaterialType, MaterialRequest>(EMaterialType.values(),
-			new int[EMaterialType.values().length]);
+	private final SlotQueue<EMaterialType, MaterialRequest> materialRequests = new SlotQueue<EMaterialType, MaterialRequest>(EMaterialType.values,
+			new int[EMaterialType.NUMBER_OF_MATERIALS]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
@@ -68,14 +68,14 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
 
 	private final SimpleSlotQueue<EMovableType, WorkerCreationRequest> workerCreationRequests = new SimpleSlotQueue<EMovableType, WorkerCreationRequest>(
-			EMovableType.values());
+			EMovableType.values);
 	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<SoilderCreationRequest>();
 
 	private final SlotQueue<EMaterialType, ProductionRequest> toolProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
 			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
 					EMaterialType.FISHINGROD, EMaterialType.SCYTHE }, new int[] { 50, 50, 30, 30, 30, 30, 30 });
 	private final SlotQueue<EMaterialType, ProductionRequest> weaponProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
-			EMaterialType.values(), new int[EMaterialType.values().length]);
+			EMaterialType.values, new int[EMaterialType.NUMBER_OF_MATERIALS]);
 
 	private final SimpleSlotQueue<EMaterialType, WorkerCreationRequest> toolRequestingWorkerRequests = new SimpleSlotQueue<EMaterialType, WorkerCreationRequest>(
 			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,

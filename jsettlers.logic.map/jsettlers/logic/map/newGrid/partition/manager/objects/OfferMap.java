@@ -14,7 +14,7 @@ import jsettlers.logic.map.newGrid.partition.manager.datastructures.Positionable
 public class OfferMap extends PositionableHashMap<MaterialOffer> implements ITypeAcceptor<EMaterialType> {
 	private static final long serialVersionUID = 194211819683736498L;
 
-	private int[] count = new int[EMaterialType.values().length];
+	private int[] count = new int[EMaterialType.NUMBER_OF_MATERIALS];
 
 	@Override
 	public void set(ShortPoint2D position, MaterialOffer object) {
