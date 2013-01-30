@@ -9,6 +9,7 @@ import jsettlers.common.utils.collections.list.DoubleLinkedListItem;
  * 
  */
 public final class DoubleLinkedIntListItem extends DoubleLinkedListItem<DoubleLinkedIntListItem> {
+	private static final long serialVersionUID = -4196178838347323078L;
 
 	public final int value;
 

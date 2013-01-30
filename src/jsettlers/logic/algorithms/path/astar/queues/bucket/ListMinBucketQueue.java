@@ -24,12 +24,8 @@ public final class ListMinBucketQueue extends AbstractBucketQueue {
 	private int minIdx = 0;
 	private int size = 0;
 
-	@SuppressWarnings("unchecked")
 	public ListMinBucketQueue(int maxNumberOfIds) {
-		this.buckets = new DoubleLinkedList[NUMBER_OF_BUCKETS];
-		for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
-			this.buckets[i] = new DoubleLinkedList<DoubleLinkedIntListItem>();
-		}
+		this.buckets = DoubleLinkedList.getArray(NUMBER_OF_BUCKETS);
 
 		this.handles = new DoubleLinkedIntListItem[maxNumberOfIds];
 		for (int i = 0; i < maxNumberOfIds; i++) {
