@@ -1,8 +1,9 @@
 package jsettlers.logic.map.newGrid.newManager;
 
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.utils.collections.list.DoubleLinkedListItem;
 
-public abstract class MaterialRequestPriorityQueueItem extends DoubleLinkedListItem<MaterialRequestPriorityQueueItem> {
+public abstract class MaterialRequestPriorityQueueItem extends DoubleLinkedListItem<MaterialRequestPriorityQueueItem> implements ILocatable {
 	private static final long serialVersionUID = -5941459671438965185L;
 
 	private EPriority priority = EPriority.LOW;

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import jsettlers.TestUtils;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 
 import org.junit.Test;
@@ -152,12 +153,19 @@ public class MaterialRequestPriorityQueueTest {
 	private static class TestMaterialRequest extends MaterialRequestPriorityQueueItem {
 		private static final long serialVersionUID = 3244165203515699980L;
 
+		private final ShortPoint2D position;
+
 		private int stillNeeded;
 		private int onStack;
 
-		public TestMaterialRequest(int stillNeeded, int onStack) {
+		public TestMaterialRequest(ShortPoint2D position, int stillNeeded, int onStack) {
+			this.position = position;
 			this.stillNeeded = stillNeeded;
 			this.onStack = onStack;
+		}
+
+		public TestMaterialRequest(int stillNeeded, int onStack) {
+			this(new ShortPoint2D(0, 0), stillNeeded, onStack);
 		}
 
 		@Override
@@ -184,6 +192,11 @@ public class MaterialRequestPriorityQueueTest {
 			if (stillNeeded != other.stillNeeded)
 				return false;
 			return true;
+		}
+
+		@Override
+		public ShortPoint2D getPos() {
+			return position;
 		}
 	}
 }
