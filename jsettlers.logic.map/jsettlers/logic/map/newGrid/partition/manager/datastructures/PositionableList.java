@@ -59,6 +59,22 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	}
 
 	/**
+	 * Returns the first object found at the given position or null.
+	 * 
+	 * @param position
+	 *            The position to look for.
+	 * @return Returns the found object at the given position or null if no object has been found.
+	 */
+	public T getObjectAt(ShortPoint2D position) {
+		for (T curr : data) {
+			if (curr.getPos().equals(position)) {
+				return curr;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Finds the object that's closest to the given position and removes it.
 	 * 
 	 * @param position
@@ -69,6 +85,15 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 	 * @return accepted object that's nearest to position
 	 */
 	public T removeObjectNextTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) {
+		T currBest = getObjectCloseTo(position, acceptor);
+
+		if (currBest != null)
+			data.remove(currBest);
+
+		return currBest;
+	}
+
+	private T getObjectCloseTo(ShortPoint2D position, ITypeAcceptor<T> acceptor) { // TODO: @Andreas Eberle: check if the acceptor is needed any more
 		int bestDistance = Integer.MAX_VALUE;
 		T currBest = null;
 
@@ -84,11 +109,11 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 				currBest = currEntry;
 			}
 		}
-
-		if (currBest != null)
-			data.remove(currBest);
-
 		return currBest;
+	}
+
+	public T getObjectCloseTo(ShortPoint2D position) {
+		return getObjectCloseTo(position, null);
 	}
 
 	@Override
@@ -102,6 +127,10 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 
 	public void remove(T object) {
 		this.data.remove(object);
+	}
+
+	public boolean isEmpty() {
+		return data.isEmpty();
 	}
 
 }

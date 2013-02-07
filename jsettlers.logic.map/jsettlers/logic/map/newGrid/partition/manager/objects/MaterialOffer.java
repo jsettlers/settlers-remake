@@ -22,5 +22,4 @@ public final class MaterialOffer implements Serializable {
 	public String toString() {
 		return "Offer: " + position + "   " + materialType + "    " + amount;
 	}
-
 }
