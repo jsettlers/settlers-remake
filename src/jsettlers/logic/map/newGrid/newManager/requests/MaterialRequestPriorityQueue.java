@@ -1,19 +1,26 @@
-package jsettlers.logic.map.newGrid.newManager;
+package jsettlers.logic.map.newGrid.newManager.requests;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
 import jsettlers.common.utils.collections.list.DoubleLinkedList;
+import jsettlers.logic.map.newGrid.newManager.EMaterialPriority;
 
-class MaterialRequestPriorityQueue implements Serializable {
+/**
+ * This class is a priority queue for material requests. The possible priorities are specified in the {@link EMaterialPriority} enum.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public final class MaterialRequestPriorityQueue implements Serializable {
 	private static final long serialVersionUID = 4856036773080549412L;
 
-	private static final int DEFAULT_INSERT_PRIORITY = EPriority.LOW.ordinal;
+	private static final int DEFAULT_INSERT_PRIORITY = EMaterialPriority.LOW.ordinal;
 
 	private final DoubleLinkedList<MaterialRequestPriorityQueueItem>[] queues;
 
-	MaterialRequestPriorityQueue() {
-		this.queues = DoubleLinkedList.getArray(EPriority.NUMBER_OF_PRIORITIES);
+	public MaterialRequestPriorityQueue() {
+		this.queues = DoubleLinkedList.getArray(EMaterialPriority.NUMBER_OF_PRIORITIES);
 	}
 
 	/**
@@ -25,21 +32,32 @@ class MaterialRequestPriorityQueue implements Serializable {
 	 * @param newPriority
 	 * @param queueItem
 	 */
-	void updatePriority(EPriority oldPriority, EPriority newPriority, MaterialRequestPriorityQueueItem queueItem) {
+	void updatePriority(EMaterialPriority oldPriority, EMaterialPriority newPriority, MaterialRequestPriorityQueueItem queueItem) {
 		queues[oldPriority.ordinal].remove(queueItem);
 		queues[newPriority.ordinal].pushFront(queueItem); // TODO @Andreas Eberle: check if this should be pushEnd()
 	}
 
+	/**
+	 * Inserts the request with the default priority.
+	 * 
+	 * @param materialRequest
+	 *            The {@link MaterialRequestPriorityQueueItem} that shall be inserted.
+	 */
 	public void insertRequest(MaterialRequestPriorityQueueItem materialRequest) {
 		queues[DEFAULT_INSERT_PRIORITY].pushEnd(materialRequest);
 		materialRequest.requestQueue = this;
 	}
 
-	public MaterialRequestPriorityQueueItem popHighest() {
+	/**
+	 * 
+	 * @return Returns request with the highest priority<br>
+	 *         or null if none exists.
+	 */
+	public MaterialRequestPriorityQueueItem getHighestRequest() {
 		MaterialRequestPriorityQueueItem result = null;
 
 		// Start with highest priority to lower ones. Skip the EPriority.STOPPED queue (index 0)
-		for (int prio = EPriority.NUMBER_OF_PRIORITIES - 1; prio >= 1; prio--) {
+		for (int prio = EMaterialPriority.NUMBER_OF_PRIORITIES - 1; prio >= 1; prio--) {
 			DoubleLinkedList<MaterialRequestPriorityQueueItem> queue = queues[prio];
 
 			int numberOfElements = queue.size();

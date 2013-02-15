@@ -3,48 +3,41 @@ package jsettlers.logic.map.newGrid.newManager;
 import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.newManager.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.newGrid.newManager.interfaces.IManagerBearer;
-import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;
+import jsettlers.logic.map.newGrid.newManager.offers.MaterialOffer;
+import jsettlers.logic.map.newGrid.newManager.offers.OffersList;
+import jsettlers.logic.map.newGrid.newManager.requests.MaterialRequestPriorityQueue;
+import jsettlers.logic.map.newGrid.newManager.requests.MaterialRequestPriorityQueueItem;
 
-public class MaterialsManager implements Serializable {
+/**
+ * This class implements an algorithm to distribute material transport jobs to jobless bearers.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public final class MaterialsManager implements Serializable {
 	private static final long serialVersionUID = 6395951461349453696L;
 
-	private final PositionableList<MaterialOffer>[] offersLists;
+	private final OffersList offersList;
 	private final MaterialRequestPriorityQueue[] requestQueues;
 	private final IJoblessSupplier joblessSupplier;
 
-	@SuppressWarnings("unchecked")
-	public MaterialsManager(IJoblessSupplier joblessSupplier) {
+	/**
+	 * Creates a new {@link MaterialsManager} that uses the given {@link IJoblessSupplier} and {@link OffersList} for it's operations.
+	 * 
+	 * @param joblessSupplier
+	 *            {@link IJoblessSupplier} providing the jobless bearers.
+	 * @param offersList
+	 *            {@link OffersList} providing the offered materials.
+	 */
+	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList) {
 		this.joblessSupplier = joblessSupplier;
-		offersLists = new PositionableList[EMaterialType.NUMBER_OF_MATERIALS];
-		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			offersLists[i] = new PositionableList<MaterialOffer>();
-		}
+		this.offersList = offersList;
 
 		requestQueues = new MaterialRequestPriorityQueue[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			requestQueues[i] = new MaterialRequestPriorityQueue();
-		}
-	}
-
-	/**
-	 * Insert an offered material at the given position.
-	 * 
-	 * @param position
-	 *            The position the offered material is located.
-	 * @param material
-	 *            The material that is offered at the given position.
-	 */
-	public void addOffer(ShortPoint2D position, EMaterialType material) {
-		PositionableList<MaterialOffer> list = offersLists[material.ordinal];
-
-		MaterialOffer existingOffer = list.getObjectAt(position);
-		if (existingOffer != null) {
-			existingOffer.amount++;
-		} else {
-			list.insert(new MaterialOffer(position, material, (byte) 1));
 		}
 	}
 
@@ -62,33 +55,26 @@ public class MaterialsManager implements Serializable {
 
 	public void distributeJobs() {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS && !joblessSupplier.isEmpty(); i++) {
-			distributeJobForSlot(i);
+			distributeJobForMaterial(EMaterialType.values[i]);
 		}
 	}
 
-	private void distributeJobForSlot(int slotIdx) {
-		PositionableList<MaterialOffer> offersSlot = offersLists[slotIdx];
-		if (offersSlot.isEmpty() || joblessSupplier.isEmpty()) // no offers? or no jobless? just return
+	private void distributeJobForMaterial(EMaterialType materialType) {
+		if (offersList.isEmpty(materialType) || joblessSupplier.isEmpty()) // no offers? or no jobless? just return
 			return;
 
-		MaterialRequestPriorityQueueItem request = requestQueues[slotIdx].popHighest();
+		MaterialRequestPriorityQueueItem request = requestQueues[materialType.ordinal].getHighestRequest();
 
 		if (request == null) // no request, return
 			return;
 
-		MaterialOffer offer = offersSlot.getObjectCloseTo(request.getPos());
+		MaterialOffer offer = offersList.removeOfferCloseTo(materialType, request.getPos());
 
 		assert offer != null : "The offer can't be null here!";
 
 		IManagerBearer jobless = joblessSupplier.removeJoblessCloseTo(offer.getPos());
 
 		assert jobless != null : "The jobless can't be null here!";
-
-		offer.amount--;
-		if (offer.amount <= 0) { // if the offer is now empty.
-			offersSlot.remove(offer);
-		}
-		request.inDelivery++;
 
 		jobless.deliver(offer, request);
 	}

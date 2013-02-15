@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.newManager;
+package jsettlers.logic.map.newGrid.newManager.requests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,9 +11,16 @@ import java.io.IOException;
 import jsettlers.TestUtils;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.newGrid.newManager.EMaterialPriority;
 
 import org.junit.Test;
 
+/**
+ * This is a test for the {@link MaterialRequestPriorityQueue} data structure.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class MaterialRequestPriorityQueueTest {
 
 	private final MaterialRequestPriorityQueue queue = new MaterialRequestPriorityQueue();
@@ -66,7 +73,7 @@ public class MaterialRequestPriorityQueueTest {
 		}
 
 		assertSame(firstReq, popHighest());
-		secondReq.updatePriority(EPriority.HIGH);
+		secondReq.updatePriority(EMaterialPriority.HIGH);
 
 		assertSame(secondReq, popHighest());
 		assertSame(secondReq, popHighest());
@@ -92,7 +99,7 @@ public class MaterialRequestPriorityQueueTest {
 		}
 
 		assertSame(firstReq, popHighest());
-		firstReq.updatePriority(EPriority.STOPPED);
+		firstReq.updatePriority(EMaterialPriority.STOPPED);
 
 		assertSame(secondReq, popHighest());
 		assertSame(secondReq, popHighest());
@@ -113,8 +120,8 @@ public class MaterialRequestPriorityQueueTest {
 			queue.insertRequest(request3);
 			queue.insertRequest(request4);
 
-			request1.updatePriority(EPriority.HIGH);
-			request2.updatePriority(EPriority.STOPPED);
+			request1.updatePriority(EMaterialPriority.HIGH);
+			request2.updatePriority(EMaterialPriority.STOPPED);
 		}
 
 		//
@@ -131,8 +138,8 @@ public class MaterialRequestPriorityQueueTest {
 			queue2.insertRequest(request3);
 			queue2.insertRequest(request4);
 
-			request1.updatePriority(EPriority.HIGH);
-			request2.updatePriority(EPriority.STOPPED);
+			request1.updatePriority(EMaterialPriority.HIGH);
+			request2.updatePriority(EMaterialPriority.STOPPED);
 		}
 
 		//
@@ -143,7 +150,7 @@ public class MaterialRequestPriorityQueueTest {
 	}
 
 	private MaterialRequestPriorityQueueItem popHighest() {
-		MaterialRequestPriorityQueueItem result = queue.popHighest();
+		MaterialRequestPriorityQueueItem result = queue.getHighestRequest();
 		if (result != null) {
 			result.inDelivery++; // this needs to be done to emulate the user of the queue.
 		}
@@ -197,6 +204,11 @@ public class MaterialRequestPriorityQueueTest {
 		@Override
 		public ShortPoint2D getPos() {
 			return position;
+		}
+
+		@Override
+		protected void materialDelivered() {
+			stillNeeded--;
 		}
 	}
 }

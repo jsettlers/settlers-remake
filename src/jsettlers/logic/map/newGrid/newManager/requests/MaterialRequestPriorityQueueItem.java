@@ -1,16 +1,25 @@
-package jsettlers.logic.map.newGrid.newManager;
+package jsettlers.logic.map.newGrid.newManager.requests;
 
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.utils.collections.list.DoubleLinkedListItem;
+import jsettlers.logic.map.newGrid.newManager.EMaterialPriority;
+import jsettlers.logic.map.newGrid.newManager.interfaces.IMaterialRequest;
 
-public abstract class MaterialRequestPriorityQueueItem extends DoubleLinkedListItem<MaterialRequestPriorityQueueItem> implements ILocatable {
+/**
+ * This class defines a {@link DoubleLinkedListItem} that can be used by the {@link MaterialRequestPriorityQueue}.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public abstract class MaterialRequestPriorityQueueItem extends DoubleLinkedListItem<MaterialRequestPriorityQueueItem> implements ILocatable,
+		IMaterialRequest {
 	private static final long serialVersionUID = -5941459671438965185L;
 
-	private EPriority priority = EPriority.LOW;
+	private EMaterialPriority priority = EMaterialPriority.LOW;
 	MaterialRequestPriorityQueue requestQueue;
 	int inDelivery;
 
-	public void updatePriority(EPriority newPriority) {
+	public void updatePriority(EMaterialPriority newPriority) {
 		if (newPriority != priority) {
 			requestQueue.updatePriority(priority, newPriority, this);
 			this.priority = newPriority;
@@ -45,4 +54,22 @@ public abstract class MaterialRequestPriorityQueueItem extends DoubleLinkedListI
 	 * @return The max number of request parts that can be in delivery.
 	 */
 	public abstract int getInDeliveryable();
+
+	@Override
+	public void setInDelivery() {
+		inDelivery++;
+	}
+
+	@Override
+	public void deliveryFulfilled() {
+		materialDelivered();
+		inDelivery--;
+	}
+
+	protected abstract void materialDelivered();
+
+	@Override
+	public void deliveryAborted() {
+		inDelivery--;
+	}
 }

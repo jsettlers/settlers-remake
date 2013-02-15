@@ -1,8 +1,7 @@
 package jsettlers.logic.map.newGrid.newManager.interfaces;
 
-import jsettlers.logic.map.newGrid.newManager.MaterialOffer;
-import jsettlers.logic.map.newGrid.newManager.MaterialRequestPriorityQueueItem;
 import jsettlers.logic.map.newGrid.newManager.MaterialsManager;
+import jsettlers.logic.map.newGrid.newManager.offers.MaterialOffer;
 
 /**
  * This interface describes a bearer that can be used by the {@link MaterialsManager} to give job orders.
@@ -18,6 +17,6 @@ public interface IManagerBearer {
 	 * @param offer
 	 * @param request
 	 */
-	void deliver(MaterialOffer offer, MaterialRequestPriorityQueueItem request);
+	void deliver(MaterialOffer offer, IMaterialRequest request);
 
 }
