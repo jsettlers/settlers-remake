@@ -13,6 +13,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.object.BuildingObject;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -126,21 +127,26 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-    public List<IBuildingMaterial> getMaterials() {
-	    return Collections.emptyList();
-    }
+	public List<IBuildingMaterial> getMaterials() {
+		return Collections.emptyList();
+	}
 
 	@Override
-    public int getMaximumRequestedSoldiers(ESoldierType type) {
-	    return 0;
-    }
+	public int getMaximumRequestedSoldiers(ESoldierType type) {
+		return 0;
+	}
 
 	@Override
-    public void setMaximumRequestedSoldiers(ESoldierType type, int max) {	    
-    }
+	public void setMaximumRequestedSoldiers(ESoldierType type, int max) {
+	}
 
 	@Override
-    public int getCurrentlyCommingSoldiers(ESoldierType type) {
-	    return 0;
-    }
+	public int getCurrentlyCommingSoldiers(ESoldierType type) {
+		return 0;
+	}
+
+	@Override
+	public EPriority getPriority() {
+		return EPriority.LOW;
+	}
 }
