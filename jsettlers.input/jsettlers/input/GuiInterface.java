@@ -8,6 +8,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ILocatable;
@@ -21,6 +22,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.task.ConvertGuiTask;
@@ -29,6 +31,7 @@ import jsettlers.input.task.EGuiAction;
 import jsettlers.input.task.GeneralGuiTask;
 import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
+import jsettlers.input.task.SetBuildingPriorityGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
@@ -162,6 +165,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			destroySelected();
 			break;
 
+		case SET_BUILDING_PRIORITY:
+			setBuildingPriority(((SetBuildingPriorityAction) action).getNewPriority());
+			break;
+
 		case STOP_WORKING:
 			stopOrStartWorkingAction(true);
 			break;
@@ -261,6 +268,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			manager.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
 		}
 		setSelection(new SelectionSet());
+	}
+
+	private void setBuildingPriority(EPriority newPriority) {
+		if (currentSelection != null && currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
+			manager.scheduleTask(new SetBuildingPriorityGuiTask(((Building) currentSelection.iterator().next()).getPos(), newPriority));
+		}
 	}
 
 	private void showSelection() {

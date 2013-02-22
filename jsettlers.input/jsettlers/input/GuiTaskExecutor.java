@@ -13,6 +13,7 @@ import jsettlers.input.task.EGuiAction;
 import jsettlers.input.task.GeneralGuiTask;
 import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
+import jsettlers.input.task.SetBuildingPriorityGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
@@ -98,7 +99,15 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			convertMovables((ConvertGuiTask) guiTask);
 			break;
 
+		case SET_BUILDING_PRIORITY:
+			setBuildingPriority((SetBuildingPriorityGuiTask) guiTask);
+			break;
 		}
+	}
+
+	private void setBuildingPriority(SetBuildingPriorityGuiTask guiTask) {
+		ShortPoint2D pos = guiTask.getBuildingPosition();
+		((Building) grid.getBuildingAt(pos.x, pos.y)).setPriority(guiTask.getNewPriority());
 	}
 
 	private void convertMovables(ConvertGuiTask guiTask) {

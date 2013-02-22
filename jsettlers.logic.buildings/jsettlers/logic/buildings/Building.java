@@ -684,4 +684,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return materials;
 	}
 
+	public void setPriority(EPriority newPriority) {
+		this.priority = newPriority;
+		for (RequestStack curr : stacks) {
+			curr.setPriority(newPriority);
+		}
+	}
+
 }
