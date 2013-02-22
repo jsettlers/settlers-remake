@@ -689,6 +689,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (RequestStack curr : stacks) {
 			curr.setPriority(newPriority);
 		}
+
+		this.stopOrStartWorking(newPriority == EPriority.STOPPED);
 	}
 
 }
