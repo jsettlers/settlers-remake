@@ -117,5 +117,4 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 */
 		int getCurrentlyCommingSoldiers(ESoldierType type);
 	}
-
 }
