@@ -1,7 +1,7 @@
 package jsettlers.logic.constants;
 
 /**
- * some constants of jsettlers.logics
+ * This class defines the constants of jsettlers.logic.
  * 
  * @author Andreas Eberle
  * 
@@ -64,5 +64,12 @@ public final class Constants {
 	public static final float DOOR_HIT_RESISTENCY_FACTOR = 2;
 
 	public static final float TOWER_DOOR_REGENERATION = 0.01f;
+
+	/**
+	 * Defines the percentage used to calculate the payback of materials when a building is destroyed.<br>
+	 * The formula defines that you get back {@value #BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR} of the materials already invested in the
+	 * building.
+	 */
+	public static final float BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR = 0.5f;
 
 }

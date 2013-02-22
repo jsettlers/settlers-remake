@@ -108,4 +108,5 @@ public interface IBuildingsGrid {
 	 * @param groundArea
 	 */
 	void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, final FreeMapArea groundArea);
+
 }

@@ -24,14 +24,15 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.newGrid.partition.manager.materials.MaterialsManager;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IJoblessSupplier;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.newGrid.partition.manager.materials.offers.MaterialOffer;
+import jsettlers.logic.map.newGrid.partition.manager.materials.offers.OffersList;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.newGrid.partition.manager.objects.BricklayerRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.DiggerRequest;
-import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialOffer;
-import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialRequest;
-import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialTypeAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.objects.MovableTypeAcceptor;
-import jsettlers.logic.map.newGrid.partition.manager.objects.OfferMap;
 import jsettlers.logic.map.newGrid.partition.manager.objects.ProductionRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.SoilderCreationRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerCreationRequest;
@@ -50,13 +51,24 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private static final int BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS = 1;
 
-	private final MaterialTypeAcceptor materialTypeAcceptor = new MaterialTypeAcceptor();
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
 
-	private final OfferMap materialOffers = new OfferMap();
-	private final SlotQueue<EMaterialType, MaterialRequest> materialRequests = new SlotQueue<EMaterialType, MaterialRequest>(EMaterialType.values,
-			new int[EMaterialType.NUMBER_OF_MATERIALS]);
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
+
+	private final OffersList materialOffers = new OffersList();
+	private final MaterialsManager materialsManager = new MaterialsManager(new IJoblessSupplier() {
+		private static final long serialVersionUID = -113397265091126902L;
+
+		@Override
+		public IManagerBearer removeJoblessCloseTo(ShortPoint2D position) {
+			return joblessBearer.removeObjectNextTo(position);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return joblessBearer.isEmpty();
+		}
+	}, materialOffers);
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
@@ -97,23 +109,12 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		return stopped;
 	}
 
-	public boolean addOffer(ShortPoint2D position, EMaterialType materialType) {
-		MaterialOffer existingOffer = materialOffers.getObjectAt(position);
-		if (existingOffer != null) {
-			if (existingOffer.materialType == materialType) {
-				existingOffer.amount++;
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			materialOffers.set(position, new MaterialOffer(position, materialType, (byte) 1));
-			return true;
-		}
+	public void addOffer(ShortPoint2D position, EMaterialType materialType) {
+		materialOffers.addOffer(position, materialType);
 	}
 
-	public void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
-		materialRequests.add(materialType, new MaterialRequest(requester, materialType, priority));
+	public void request(EMaterialType materialType, MaterialRequestObject requestObject) {
+		materialsManager.addRequestObject(materialType, requestObject);
 	}
 
 	public void requestDiggers(IDiggerRequester requester, byte amount) {
@@ -182,19 +183,15 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	public void removePositionTo(final int x, final int y, PartitionManager newManager, boolean newHasSamePlayer) {
 		ShortPoint2D position = new ShortPoint2D(x, y);
 
-		MaterialOffer removedOffer = materialOffers.removeObjectAt(position);
-		if (removedOffer != null) {// the new manager can not have any offers at that position, because he just occupied it
-			newManager.materialOffers.set(position, removedOffer);
-		}
-
-		// TODO: use newHasSamePlayer
-		materialRequests.moveItemsForPosition(position, newManager.materialRequests);
+		materialOffers.moveOffersAtPositionTo(position, newManager.materialOffers);
 
 		toolProductionRequests.moveItemsForPosition(position, newManager.toolProductionRequests);
 		weaponProductionRequests.moveItemsForPosition(position, newManager.weaponProductionRequests);
 		workerCreationRequests.moveItemsForPosition(position, newManager.workerCreationRequests);
 
 		if (newHasSamePlayer) {
+			materialsManager.movePositionTo(position, newManager.materialsManager);
+
 			IManageableBearer bearer = joblessBearer.removeObjectAt(position);
 			if (bearer != null)
 				newManager.addJobless(bearer);
@@ -235,7 +232,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		newManager.joblessDiggers.addAll(this.joblessDiggers);
 		newManager.joblessWorkers.addAll(this.joblessWorkers);
 		newManager.materialOffers.addAll(this.materialOffers);
-		newManager.materialRequests.addAll(this.materialRequests);
+		this.materialsManager.mergeInto(newManager.materialsManager);
 		newManager.soilderCreationRequests.addAll(this.soilderCreationRequests);
 		newManager.workerCreationRequests.addAll(this.workerCreationRequests);
 		newManager.workerRequests.addAll(this.workerRequests);
@@ -247,7 +244,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	@Override
 	public final void timerEvent() {
-		handleMaterialRequest();
+		materialsManager.distributeJobs();
 
 		handleWorkerCreationRequest();
 		handleSoldierCreationRequest();
@@ -293,14 +290,12 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 				if (tool != EMaterialType.NO_MATERIAL) {
 
 					if (toolRequestingWorkerRequests.getSlotSize(tool) <= 3) {
-						this.materialTypeAcceptor.materialType = tool;
-						MaterialOffer offer = this.materialOffers.getObjectNextTo(workerRequest.position, this.materialTypeAcceptor);
+						MaterialOffer offer = this.materialOffers.removeOfferCloseTo(workerRequest.movableType.getTool(), workerRequest.position);
 
 						if (offer != null) {
 							IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
 							if (manageableBearer != null) {
-								manageableBearer.becomeWorker(this, workerRequest.movableType, offer.position);
-								reduceOfferAmount(offer);
+								manageableBearer.becomeWorker(this, workerRequest.movableType, offer.getPos());
 							} else {
 								workerCreationRequests.pushLast(slotIdx, workerRequest);
 							}
@@ -332,16 +327,16 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			// check the existing tool requesting WorkerCreationRequests
 			WorkerCreationRequest request = toolRequestingWorkerRequests.popFront(slot);
 			if (request != null) {
-				this.materialTypeAcceptor.materialType = slotTypes[slot];
-				MaterialOffer offer = this.materialOffers.getObjectNextTo(request.position, this.materialTypeAcceptor);
+				EMaterialType toolType = slotTypes[slot];
+				if (!this.materialOffers.isEmpty(toolType)) {
+					MaterialOffer offer = this.materialOffers.removeOfferCloseTo(toolType, request.position);
 
-				if (offer != null) {
 					IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(request.position);
 					if (manageableBearer != null) {
-						manageableBearer.becomeWorker(this, request.movableType, offer.position);
-						reduceOfferAmount(offer);
+						manageableBearer.becomeWorker(this, request.movableType, offer.getPos());
 					} else { // no bearer found, so add the request back to the queue.
 						toolRequestingWorkerRequests.pushLast(slot, request);
+						this.materialOffers.addOffer(offer.getPos(), toolType);
 					}
 				} else { // no offer found, so add the request back to the queue.
 					toolRequestingWorkerRequests.pushLast(slot, request);
@@ -407,52 +402,13 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		}
 	}
 
-	private void handleMaterialRequest() {
-		MaterialRequest request = materialRequests.pop(materialOffers);
-		if (request != null) {
-
-			materialTypeAcceptor.materialType = request.requested;
-			MaterialOffer offer = materialOffers.getObjectNextTo(request.getPos(), materialTypeAcceptor);
-
-			if (offer == null) {
-				reofferRequest(request);
-			} else {
-				IManageableBearer manageable = joblessBearer.removeObjectNextTo(offer.position);
-
-				if (manageable != null) {
-					reduceOfferAmount(offer);
-					manageable.executeJob(offer.position, request.requester, offer.materialType);
-				} else {
-					reofferRequest(request);
-				}
-			}
-		}
-	}
-
 	private void createNewTooluser(EMovableType movableType, ShortPoint2D position) {
 		workerCreationRequests.pushLast(movableType, new WorkerCreationRequest(movableType, position));
-	}
-
-	private void reduceOfferAmount(MaterialOffer offer) {
-		offer.amount--;
-		if (offer.amount <= 0) {
-			materialOffers.removeObjectAt(offer.position);
-		}
-	}
-
-	private void reofferRequest(MaterialRequest request) {
-		// TODO: decrease priority, do something else, ...
-		// request.decreasePriority();
-		materialRequests.add(request.requested, request);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		startManager();
-	}
-
-	public void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
-		materialRequests.removeOfType(materialType, position);
 	}
 
 	/**
@@ -464,10 +420,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	 *            {@link EMaterialType} to be checked.
 	 */
 	public final void removeOfferAt(ShortPoint2D pos, EMaterialType materialType) {
-		MaterialOffer offer = this.materialOffers.getObjectAt(pos);
-		if (offer != null && offer.materialType == materialType) {
-			reduceOfferAmount(offer);
-		}
+		this.materialOffers.removeOfferAt(pos, materialType);
 	}
 
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
@@ -488,9 +441,10 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	 * FOR TESTS ONLY!
 	 * 
 	 * @param pos
+	 * @param material
 	 * @return
 	 */
-	public MaterialOffer getMaterialOfferAt(ShortPoint2D pos) {
-		return this.materialOffers.getObjectAt(pos);
+	public MaterialOffer getMaterialOfferAt(ShortPoint2D pos, EMaterialType material) {
+		return this.materialOffers.getOfferObjectAt(pos, material);
 	}
 }

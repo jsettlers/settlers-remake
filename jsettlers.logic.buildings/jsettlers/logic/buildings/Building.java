@@ -17,6 +17,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
@@ -38,7 +39,6 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.ICon
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.stack.LimittedRequestStack;
 import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
@@ -66,6 +66,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private IBuildingsGrid grid;
 	private Player player;
 	private byte state = STATE_CREATED;
+	private EPriority priority = EPriority.LOW;
 
 	transient private boolean selected;
 
@@ -146,7 +147,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() > 0) {
-				result.add(new LimittedRequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), currStack
+				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), currStack
 						.requiredForBuild()));
 			}
 		}
@@ -465,16 +466,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				if (curr.requiredForBuild() > 0) {
 					ShortPoint2D position = buildingArea.get(posIdx);
 					posIdx += 2;
-					grid.pushMaterialsTo(position, curr.getType(), (byte) Math.min(curr.requiredForBuild() / 2, Constants.STACK_SIZE));
+					byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
+							Constants.STACK_SIZE);
+					grid.pushMaterialsTo(position, curr.getType(), paybackAmount);
 				}
 			}
 		} else {
 			for (RequestStack stack : stacks) {
 				posIdx += 2;
-				int numberOfPopped = ((LimittedRequestStack) stack).getNumberOfPopped() / 2;
-				if (numberOfPopped > 0) {
+				int paybackAmpunt = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
+				if (paybackAmpunt > 0) {
 					ShortPoint2D position = buildingArea.get(posIdx);
-					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(numberOfPopped, Constants.STACK_SIZE));
+					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(paybackAmpunt, Constants.STACK_SIZE));
 				}
 			}
 		}
@@ -547,6 +550,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public boolean isWorking() {
 		return false;
+	}
+
+	@Override
+	public EPriority getPriority() {
+		return priority;
 	}
 
 	@Override

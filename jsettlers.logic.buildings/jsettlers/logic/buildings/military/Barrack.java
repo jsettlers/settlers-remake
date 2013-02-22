@@ -4,25 +4,23 @@ import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.stack.IRequestStackListener;
 import jsettlers.logic.stack.RequestStack;
 
 /**
- * This is the barrack building. It requests bearers to become soldiers.
+ * This is the barrack building. It requests weapons and bearers to make them to soldiers.
  * 
  * @author Andreas Eberle
  */
-public class Barrack extends Building implements IBarrack {
+public final class Barrack extends Building implements IBarrack {
 	private static final long serialVersionUID = -6541972855836598068L;
-
-	private boolean stoppedWorking = false;
-
-	private int requestedBearer = 0;
 
 	public Barrack(Player player) {
 		super(EBuildingType.BARRACK, player);
@@ -30,31 +28,15 @@ public class Barrack extends Building implements IBarrack {
 
 	@Override
 	public void stopOrStartWorking(boolean stop) {
-		stoppedWorking = stop;
+		EPriority priority = stop ? EPriority.STOPPED : EPriority.LOW;
+
+		for (RequestStack curr : super.getStacks()) {
+			curr.setPriority(priority);
+		}
 	}
 
 	@Override
 	protected void positionedEvent(ShortPoint2D pos) {
-
-	}
-
-	@Override
-	protected void subTimerEvent() {
-		if (!stoppedWorking) {
-			int availableWeapons = 0;
-
-			for (RequestStack stack : super.getStacks()) {
-				if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
-						|| stack.getMaterialType() == EMaterialType.SPEAR) {
-					availableWeapons += stack.getStackSize();
-				}
-			}
-
-			while (requestedBearer < availableWeapons) {
-				super.getGrid().requestSoilderable(this);
-				requestedBearer++;
-			}
-		}
 	}
 
 	@Override
@@ -70,7 +52,6 @@ public class Barrack extends Building implements IBarrack {
 					|| stack.getMaterialType() == EMaterialType.SPEAR) {
 				if (stack.hasMaterial()) {
 					stack.pop();
-					requestedBearer--;
 					return getSoldierType(stack.getMaterialType());
 				}
 			}
@@ -99,11 +80,25 @@ public class Barrack extends Building implements IBarrack {
 
 	@Override
 	public void bearerRequestFailed() {
-		requestedBearer--;
+		super.getGrid().requestSoilderable(this);
 	}
 
 	@Override
 	protected void constructionFinishedEvent() {
+		IRequestStackListener listener = new IRequestStackListener() {
+			@Override
+			public void materialDelivered(RequestStack stack) {
+				getGrid().requestSoilderable(Barrack.this);
+			}
+		};
+
+		for (RequestStack curr : super.getStacks()) {
+			curr.setListener(listener);
+		}
+	}
+
+	@Override
+	protected void subTimerEvent() {
 	}
 
 }

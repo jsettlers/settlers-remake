@@ -9,14 +9,19 @@ import jsettlers.common.position.ILocatable;
  * @author Andreas Eberle
  * 
  */
-public interface IDiggerRequester extends IRequester, ILocatable {
+public interface IDiggerRequester extends ILocatable {
 	/**
 	 * 
 	 * @return {@link EBuildingType} of the requesting building.
 	 */
 	EBuildingType getBuildingType();
 
-	@Override
+	/**
+	 * Indicates if the request from this requester is still active or has been canceled.
+	 * 
+	 * @return true if the request is still active<br>
+	 *         false if the request has been canceled.
+	 */
 	boolean isDiggerRequestActive();
 
 	/**

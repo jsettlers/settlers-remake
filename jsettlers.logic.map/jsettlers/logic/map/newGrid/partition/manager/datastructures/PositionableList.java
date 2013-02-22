@@ -121,8 +121,8 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return data.toString();
 	}
 
-	public void addAll(PositionableList<T> joblessBearer) {
-		this.data.addAll(joblessBearer.data);
+	public void addAll(PositionableList<T> otherList) {
+		this.data.addAll(otherList.data);
 	}
 
 	public void remove(T object) {
@@ -131,6 +131,17 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 
 	public boolean isEmpty() {
 		return data.isEmpty();
+	}
+
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList) {
+		Iterator<T> iter = data.iterator();
+		while (iter.hasNext()) {
+			T curr = iter.next();
+			if (curr.getPos().equals(position)) {
+				iter.remove();
+				newList.data.add(curr);
+			}
+		}
 	}
 
 }

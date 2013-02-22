@@ -7,7 +7,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
@@ -23,7 +23,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	private EBearerState state = EBearerState.JOBLESS;
 
 	private ShortPoint2D offer;
-	private IMaterialRequester requester;
+	private IMaterialRequest request;
 	private EMaterialType materialType;
 
 	private EMovableType targetMovableType;
@@ -48,10 +48,13 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		case INIT_CONVERT_WITH_TOOL_JOB:
 		case INIT_CARRY_JOB:
 			state = EBearerState.GOING_TO_OFFER;
-			if (!super.goToPos(offer)) {
-				handleJobFailed(true);
+
+			if (!super.getPos().equals(offer)) { // if we are not at the offers position, go to it.
+				if (!super.goToPos(offer)) {
+					handleJobFailed(true);
+				}
+				break;
 			}
-			break;
 		case GOING_TO_OFFER:
 			if (super.getPos().equals(offer)) {
 				super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
@@ -62,14 +65,14 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			break;
 		case TAKING:
 			if (super.getStrategyGrid().takeMaterial(super.getPos(), materialType)) {
-				if (requester == null) { // we handle a convert with tool job
+				if (request == null) { // we handle a convert with tool job
 					state = EBearerState.DEAD_OBJECT;
 					super.convertTo(targetMovableType);
 				} else {
 					super.setMaterial(materialType);
 					offer = null;
 					state = EBearerState.GOING_TO_REQUEST;
-					if (!super.goToPos(requester.getPos())) {
+					if (!super.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
 						handleJobFailed(true);
 					}
 				}
@@ -78,7 +81,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			}
 			break;
 		case GOING_TO_REQUEST:
-			if (super.getPos().equals(requester.getPos())) {
+			if (super.getPos().equals(request.getPos())) {
 				super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.DROPPING;
 			} else {
@@ -86,9 +89,10 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			}
 			break;
 		case DROPPING:
-			drop(materialType);
+			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, !request.isActive()); // if request is inactive, offer the material
 			super.setMaterial(EMaterialType.NO_MATERIAL);
-			requester = null;
+			request.deliveryFulfilled();
+			request = null;
 			materialType = null;
 			state = EBearerState.JOBLESS;
 			reportAsJobless();
@@ -131,8 +135,8 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 				workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
 			}
 		case GOING_TO_REQUEST:
-			if (requester != null && requester.isDiggerRequestActive()) {
-				requester.requestFailed();
+			if (request != null && request.isActive()) {
+				request.deliveryAborted();
 			}
 			break;
 
@@ -164,7 +168,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		}
 
 		offer = null;
-		requester = null;
+		request = null;
 		materialType = null;
 		targetMovableType = null;
 		workerRequester = null;
@@ -180,22 +184,19 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		super.getStrategyGrid().dropMaterial(offer, materialType, true);
 	}
 
-	private void drop(EMaterialType materialType) {
-		super.getStrategyGrid().dropMaterial(super.getPos(), materialType, false);
-	}
-
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		return requester == null || requester.isDiggerRequestActive();
+		return request == null || request.isActive();
 	}
 
 	@Override
-	public void executeJob(ShortPoint2D offer, IMaterialRequester requester, EMaterialType materialType) {
+	public void deliver(EMaterialType materialType, ShortPoint2D offer, IMaterialRequest request) {
 		this.offer = offer;
-		this.requester = requester;
+		this.request = request;
 		this.materialType = materialType;
 
 		this.state = EBearerState.INIT_CARRY_JOB;
+		request.deliveryAccepted();
 	}
 
 	@Override
@@ -204,7 +205,6 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		this.targetMovableType = movableType;
 		this.state = EBearerState.INIT_CONVERT_JOB;
 		this.offer = null;
-		this.requester = null;
 		this.materialType = null;
 	}
 
@@ -213,7 +213,6 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 		this.workerRequester = requester;
 		this.targetMovableType = movableType;
 		this.offer = offer;
-		this.requester = null;
 		this.materialType = movableType.getTool();
 		this.state = EBearerState.INIT_CONVERT_WITH_TOOL_JOB;
 	}
@@ -235,7 +234,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	/**
-	 * states of a bearer.
+	 * This enum defines the internal states of a bearer.
 	 * 
 	 * @author Andreas Eberle
 	 * 

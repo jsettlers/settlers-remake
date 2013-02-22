@@ -3,63 +3,116 @@ package jsettlers.logic.stack;
 import java.io.Serializable;
 
 import jsettlers.common.buildings.IBuildingMaterial;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
 
-public class RequestStack implements Serializable, IMaterialRequester, IBuildingMaterial {
+/**
+ * This class represents a requesting stack of a building. It can handle unlimited and bounded amounts of requests.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public class RequestStack extends MaterialRequestObject implements Serializable, IBuildingMaterial {
 	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ShortPoint2D position;
 	private final EMaterialType materialType;
+
 	private final IRequestsStackGrid grid;
 
-	private boolean requesting = true;
+	private short stillNeeded;
+	private short popped;
 
+	private IRequestStackListener listener = null;
+
+	/**
+	 * Creates a new unbounded {@link RequestStack} to request an unlimited amount of the given {@link EMaterialType} at the given position.
+	 * 
+	 * @param grid
+	 *            The {@link IRequestsStackGrid} to be used as base for this {@link RequestStack}.
+	 * @param position
+	 *            The position the stack will be.
+	 * @param materialType
+	 *            The {@link EMaterialType} requested by this stack.
+	 */
 	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType) {
+		this(grid, position, materialType, Short.MAX_VALUE);
+	}
+
+	/**
+	 * Creates a new bounded {@link RequestStack} to request a limited amount of the given {@link EMaterialType} at the given position.
+	 * 
+	 * @param grid
+	 *            The {@link IRequestsStackGrid} to be used as base for this {@link RequestStack}.
+	 * @param position
+	 *            The position the stack will be.
+	 * @param materialType
+	 *            The {@link EMaterialType} requested by this stack.
+	 * @param requestedAmount
+	 *            The number of materials requested.
+	 */
+	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, short requestedAmount) {
 		this.grid = grid;
 		this.position = position;
 		this.materialType = materialType;
 
-		for (int i = 0; i < Constants.STACK_SIZE; i++) {
-			requestMaterial();
-		}
-	}
-
-	protected void requestMaterial() {
-		if (requesting)
-			grid.request(this, materialType, (byte) 0);
+		this.stillNeeded = requestedAmount;
+		grid.request(materialType, this);
 	}
 
 	public boolean hasMaterial() {
 		return grid.hasMaterial(position, materialType);
 	}
 
+	/**
+	 * Pops a material from this stack. The material is of the type returned by {@link #getMaterialType()} and specified in the constructor.
+	 */
 	public void pop() {
 		grid.popMaterial(position, materialType);
-		requestMaterial();
+		popped++;
 	}
 
+	/**
+	 * This method gives the number of popped materials.
+	 * <p />
+	 * Due to the size of the variable, this method should only be used on limited stacks. Unlimited stacks my run into an overflow of the popped
+	 * value.
+	 * 
+	 * @return Returns the number of materials popped from this stack.
+	 */
+	public short getNumberOfPopped() {
+		return popped;
+	}
+
+	/**
+	 * Checks if all needed materials have been delivered. Therefore this method is only useful with bounded request stacks.
+	 * 
+	 * @return Returns true if this is a bounded stack and all the requested material has been delivered, <br>
+	 *         false otherwise.
+	 */
 	public boolean isFullfilled() {
-		return true;
+		return stillNeeded <= 0;
 	}
 
 	public ShortPoint2D getPosition() {
 		return position;
 	}
 
+	@Override
 	public EMaterialType getMaterialType() {
 		return materialType;
 	}
 
-	public byte getStackSize() {
-		return grid.getStackSize(position, materialType);
+	public void setPriority(EPriority priority) {
+		super.updatePriority(priority);
 	}
 
 	public void releaseRequests() {
-		requesting = false;
-		grid.releaseRequestsAt(position, materialType);
+		stillNeeded = 0;
+		grid.createOffersForAvailableMaterials(position, materialType);
 	}
 
 	@Override
@@ -68,23 +121,46 @@ public class RequestStack implements Serializable, IMaterialRequester, IBuilding
 	}
 
 	@Override
-	public boolean isDiggerRequestActive() {
-		return requesting;
+	public int getMaterialCount() {
+		return grid.getStackSize(position, materialType);
 	}
 
 	@Override
-	public void requestFailed() {
-		requestMaterial(); // so just request again
+	public boolean isOffering() {
+		return false;
 	}
 
 	@Override
-    public int getMaterialCount() {
-	    return getStackSize();
-    }
+	public int getStillNeeded() {
+		return stillNeeded;
+	}
 
 	@Override
-    public boolean isOffering() {
-	    return false;
-    }
+	public int getInDeliveryable() {
+		return Constants.STACK_SIZE - getMaterialCount();
+	}
 
+	@Override
+	protected void materialDelivered() {
+		if (stillNeeded < Short.MAX_VALUE) {
+			stillNeeded--;
+		}
+
+		if (listener != null) {
+			listener.materialDelivered(this);
+		}
+	}
+
+	/**
+	 * Registers the given listener to receive the events of this stack. <br>
+	 * To remove the listener just set null as the new listener.
+	 * <p />
+	 * NOTE: Only one listener can be registered at a time!
+	 * 
+	 * @param listener
+	 *            The new listener or null if the old listener should just be removed.
+	 */
+	public void setListener(IRequestStackListener listener) {
+		this.listener = listener;
+	}
 }

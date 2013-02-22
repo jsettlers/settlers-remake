@@ -52,7 +52,7 @@ public final class Partition extends PartitionManager implements Serializable {
 	}
 
 	public void removePositionTo(final int x, final int y, final Partition newPartitionObject) {
-		assert this != newPartitionObject : "ERROR: newManager can not be the same as this manager!!";
+		assert this != newPartitionObject : "ERROR: newManager can not be the same as this manager. At (" + x + "|" + y + ")";
 
 		this.decrement(x, y);
 		newPartitionObject.increment(x, y);

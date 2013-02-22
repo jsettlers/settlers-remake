@@ -1,11 +1,10 @@
 package jsettlers.logic.map.newGrid.partition.manager.manageables;
 
-import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IManagerBearer;
 
 /**
  * This interface defines methods needed by a bearer to be managed by a PartitionManager.
@@ -13,9 +12,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMat
  * @author Andreas Eberle
  * 
  */
-public interface IManageableBearer extends IManageable, ILocatable {
-
-	void executeJob(ShortPoint2D offer, IMaterialRequester requester, EMaterialType materialType);
+public interface IManageableBearer extends IManageable, ILocatable, IManagerBearer {
 
 	void becomeWorker(IWorkerRequester requester, EMovableType movableType);
 

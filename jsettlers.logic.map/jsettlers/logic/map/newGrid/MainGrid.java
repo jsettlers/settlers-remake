@@ -69,6 +69,7 @@ import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
 import jsettlers.logic.map.newGrid.partition.IPlayerChangedListener;
+import jsettlers.logic.map.newGrid.partition.Partition;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
@@ -76,7 +77,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
@@ -550,7 +551,7 @@ public final class MainGrid implements Serializable {
 		public final int getDebugColorAt(int x, int y) {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 
-			// int value = partitionsGrid.getPartitionIdAt(x, y);
+			int value = partitionsGrid.getPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
 
@@ -558,9 +559,9 @@ public final class MainGrid implements Serializable {
 
 			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
 
-			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
-			return landscapeGrid.getDebugColor(x, y);
+			// return landscapeGrid.getDebugColor(x, y);
 
 			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
 			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
@@ -1323,8 +1324,8 @@ public final class MainGrid implements Serializable {
 			private static final long serialVersionUID = 1278397366408051067L;
 
 			@Override
-			public final void request(IMaterialRequester requester, EMaterialType materialType, byte priority) {
-				partitionsGrid.getPartitionAt(requester).request(requester, materialType, priority);
+			public final void request(EMaterialType materialType, MaterialRequestObject requestObject) {
+				partitionsGrid.getPartitionAt(requestObject).request(materialType, requestObject);
 			}
 
 			@Override
@@ -1343,12 +1344,12 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			public final void releaseRequestsAt(ShortPoint2D position, EMaterialType materialType) {
-				partitionsGrid.getPartitionAt(position.x, position.y).releaseRequestsAt(position, materialType);
-
+			// FIXME @Andreas Eberle: implement check to prevent multiple offers for the same material
+			public final void createOffersForAvailableMaterials(ShortPoint2D position, EMaterialType materialType) {
 				byte stackSize = mapObjectsManager.getStackSize(position.x, position.y, materialType);
+				Partition partition = partitionsGrid.getPartitionAt(position.x, position.y);
 				for (byte i = 0; i < stackSize; i++) {
-					partitionsGrid.getPartitionAt(position.x, position.y).addOffer(position, materialType);
+					partition.addOffer(position, materialType);
 				}
 			}
 		}
