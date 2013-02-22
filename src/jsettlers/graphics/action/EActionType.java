@@ -1,14 +1,15 @@
 package jsettlers.graphics.action;
 
 /**
- * This defines the type of the action.
- *
+ * This enum defines the type of the action.
+ * 
  * @author michael
+ * @author Andreas Eberle
  */
 public enum EActionType {
 	/**
 	 * Builds a building, the building has to be supplied by the action.
-	 *
+	 * 
 	 * @see BuildAction
 	 */
 	BUILD,
@@ -20,7 +21,7 @@ public enum EActionType {
 
 	/**
 	 * Select a point on the map.
-	 *
+	 * 
 	 * @see SelectAction
 	 */
 	SELECT_POINT,
@@ -51,13 +52,14 @@ public enum EActionType {
 
 	/**
 	 * Request to set the working area of the building.
+	 * 
 	 * @see SelectAction
 	 */
 	SET_WORK_AREA,
 
 	/**
 	 * Lets the settler move to a given point.
-	 *
+	 * 
 	 * @see MoveToAction
 	 */
 	MOVE_TO,
@@ -69,14 +71,14 @@ public enum EActionType {
 
 	/**
 	 * Selects an area of the screen.
-	 *
+	 * 
 	 * @see SelectAreaAction
 	 */
 	SELECT_AREA,
 
 	/**
 	 * The screen changed.
-	 *
+	 * 
 	 * @see ScreenChangeAction
 	 */
 	SCREEN_CHANGE,
@@ -88,7 +90,7 @@ public enum EActionType {
 
 	/**
 	 * Changes the side panel content.
-	 *
+	 * 
 	 * @see ChangePanelAction
 	 */
 	CHANGE_PANEL,
@@ -132,7 +134,7 @@ public enum EActionType {
 
 	/**
 	 * used to convert any movable to another.<br>
-	 *
+	 * 
 	 * @see ConvertAction
 	 */
 	CONVERT,
@@ -190,7 +192,9 @@ public enum EActionType {
 	/**
 	 * Gets called when a network grame should be started.
 	 */
-	START_NETWORK, JOIN_NETWORK, TOGGLE_ALLOW_START,
+	START_NETWORK,
+	JOIN_NETWORK,
+	TOGGLE_ALLOW_START,
 
 	/**
 	 * Toggles if original graphics should be used by the gui.
@@ -200,6 +204,12 @@ public enum EActionType {
 	/**
 	 * The user wants to go back.
 	 */
-	BACK
+	BACK,
 
+	/**
+	 * The user wants to set the priority of the building.
+	 * 
+	 * @see
+	 */
+	SET_BUILDING_PRIORITY
 }
