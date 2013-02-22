@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * This class implements a double linked list of {@link DoubleLinkedListItem}s.
@@ -11,10 +12,10 @@ import java.io.Serializable;
  * @author Andreas Eberle
  * 
  */
-public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implements Serializable {
+public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implements Serializable, Iterable<T> {
 	private static final long serialVersionUID = -8229566677756169997L;
 
-	private transient T head;
+	transient T head;
 	private transient int size = 0;
 
 	public DoubleLinkedList() {
@@ -163,5 +164,27 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		}
 
 		return true;
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new DoubleLinkedListIterator<T>(this);
+	}
+
+	/**
+	 * Adds all elements of this list to the given {@link DoubleLinkedList}. After this operation this list will not contain any elements.
+	 * 
+	 * @param newList
+	 *            The list to append all the elements of this list.
+	 */
+	public void mergeInto(DoubleLinkedList<T> newList) {
+		newList.head.prev.next = this.head.next;
+		this.head.next.prev = newList.head.prev;
+		this.head.prev.next = newList.head;
+		newList.head.prev = this.head.prev;
+
+		this.head.next = this.head;
+		this.head.prev = this.head;
+		this.size = 0;
 	}
 }
