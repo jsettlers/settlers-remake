@@ -8,6 +8,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
@@ -88,7 +89,12 @@ public class TestBuilding implements IBuilding {
 	}
 
 	@Override
-    public List<IBuildingMaterial> getMaterials() {
-	    return Collections.emptyList();
-    }
+	public List<IBuildingMaterial> getMaterials() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public EPriority getPriority() {
+		return EPriority.LOW;
+	}
 }

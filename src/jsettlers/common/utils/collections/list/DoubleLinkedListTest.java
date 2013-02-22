@@ -1,8 +1,11 @@
 package jsettlers.common.utils.collections.list;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import jsettlers.TestUtils;
 import jsettlers.logic.algorithms.path.astar.queues.bucket.DoubleLinkedIntListItem;
@@ -126,6 +129,86 @@ public class DoubleLinkedListTest {
 		DoubleLinkedList<DoubleLinkedIntListItem> readList = TestUtils.serializeAndDeserialize(list);
 
 		assertListEquals(list, readList);
+	}
+
+	@Test
+	public void testIteratorLoop() {
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+		}
+
+		int i = 0;
+		for (DoubleLinkedIntListItem curr : list) {
+			assertEquals(i, curr.value);
+			i++;
+		}
+	}
+
+	@Test
+	public void testIteratorRemove() {
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+		}
+
+		int i = 0;
+		Iterator<DoubleLinkedIntListItem> iter = list.iterator();
+		while (iter.hasNext()) {
+			assertEquals(i, iter.next().value);
+			iter.remove();
+			i++;
+		}
+
+		assertEquals(TEST_NUMBERS, i);
+		assertEquals(0, list.size());
+		assertTrue(list.isEmpty());
+		assertFalse(list.iterator().hasNext());
+	}
+
+	@Test
+	public void testIteratorRemoveHalf() {
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+		}
+
+		int i = 0;
+		Iterator<DoubleLinkedIntListItem> iter = list.iterator();
+		while (iter.hasNext()) {
+			DoubleLinkedIntListItem curr = iter.next();
+			assertEquals(i, curr.value);
+			if (curr.value % 2 == 0) {
+				iter.remove();
+			}
+			i++;
+		}
+
+		assertEquals(TEST_NUMBERS / 2, list.size());
+		assertTrue(list.iterator().hasNext());
+
+		i = 1;
+		for (DoubleLinkedIntListItem curr : list) {
+			assertEquals(i, curr.value);
+			i += 2;
+		}
+	}
+
+	@Test
+	public void testMerge() {
+		DoubleLinkedList<DoubleLinkedIntListItem> list2 = new DoubleLinkedList<DoubleLinkedIntListItem>();
+		for (int i = 0; i < TEST_NUMBERS; i++) {
+			list.pushEnd(new DoubleLinkedIntListItem(i));
+			list2.pushEnd(new DoubleLinkedIntListItem(i));
+		}
+
+		list2.mergeInto(list);
+		assertEquals(0, list2.size());
+		assertEquals(list2.head, ((DoubleLinkedListItem<DoubleLinkedIntListItem>) list2.head).next);
+		assertEquals(list2.head, ((DoubleLinkedListItem<DoubleLinkedIntListItem>) list2.head).prev);
+
+		int i = 0;
+		for (DoubleLinkedIntListItem curr : list) {
+			assertEquals(i % TEST_NUMBERS, curr.value);
+			i++;
+		}
 	}
 
 	private void assertListEquals(DoubleLinkedList<DoubleLinkedIntListItem> list0, DoubleLinkedList<DoubleLinkedIntListItem> list1) {

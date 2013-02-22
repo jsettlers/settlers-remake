@@ -10,7 +10,7 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.objects.MaterialOffer;
+import jsettlers.logic.map.newGrid.partition.manager.materials.offers.MaterialOffer;
 
 import org.junit.Test;
 
@@ -65,8 +65,6 @@ public class PartitionsGridTest {
 		Partition noPlayerPartition = grid.getPartitionAt(materialTestPos.x, materialTestPos.y);
 		assertEquals(WIDTH * HEIGHT, noPlayerPartition.getNumberOfElements()); // test if no player partition has all positions
 
-		// assert no material at the test position
-		assertNull(noPlayerPartition.getMaterialOfferAt(materialTestPos));
 		// put material at the test position
 		noPlayerPartition.addOffer(materialTestPos, EMaterialType.STONE);
 		noPlayerPartition.addOffer(materialTestPos, EMaterialType.STONE);
@@ -79,7 +77,7 @@ public class PartitionsGridTest {
 
 		assertEquals(1, grid.getPartitionAt(materialTestPos.x, materialTestPos.y).getPlayerId());
 		assertOfferAt(materialTestPos, EMaterialType.STONE, 2); // assert the offer switch to partition1
-		assertNull(noPlayerPartition.getMaterialOfferAt(materialTestPos)); // assert the no player partition removed the offer
+		assertNull(noPlayerPartition.getMaterialOfferAt(materialTestPos, EMaterialType.STONE)); // assert the no player partition removed the offer
 
 		int positionsPartition2 = setPartitionInCircle(partition2, 125, 125, 30);
 		assertEquals(positionsPartition2, grid.getPartitionAt((short) 125, (short) 125).getNumberOfElements());
@@ -246,10 +244,9 @@ public class PartitionsGridTest {
 	}
 
 	private void assertOfferAt(ShortPoint2D materialTestPos, EMaterialType material, int amount) {
-		MaterialOffer offer = grid.getPartitionAt(materialTestPos.x, materialTestPos.y).getMaterialOfferAt(materialTestPos);
+		MaterialOffer offer = grid.getPartitionAt(materialTestPos.x, materialTestPos.y).getMaterialOfferAt(materialTestPos, material);
 		assertNotNull(offer);
-		assertEquals(amount, offer.amount);
-		assertEquals(material, offer.materialType);
+		assertEquals(amount, offer.getAmount());
 	}
 
 	private int setPartitionInCircle(short partition, int x, int y, float radius) {

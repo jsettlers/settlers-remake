@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.newManager.requests;
+package jsettlers.logic.map.newGrid.partition.manager.materials.requests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,9 +9,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import jsettlers.TestUtils;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.newManager.EMaterialPriority;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestPriorityQueue;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
 
 import org.junit.Test;
 
@@ -64,7 +66,7 @@ public class MaterialRequestPriorityQueueTest {
 		queue.insertRequest(request1);
 		queue.insertRequest(request2);
 
-		MaterialRequestPriorityQueueItem firstReq = popHighest();
+		MaterialRequestObject firstReq = popHighest();
 		TestMaterialRequest secondReq;
 		if (firstReq == request1) {
 			secondReq = request2;
@@ -73,7 +75,7 @@ public class MaterialRequestPriorityQueueTest {
 		}
 
 		assertSame(firstReq, popHighest());
-		secondReq.updatePriority(EMaterialPriority.HIGH);
+		secondReq.updatePriority(EPriority.HIGH);
 
 		assertSame(secondReq, popHighest());
 		assertSame(secondReq, popHighest());
@@ -90,7 +92,7 @@ public class MaterialRequestPriorityQueueTest {
 		queue.insertRequest(request1);
 		queue.insertRequest(request2);
 
-		MaterialRequestPriorityQueueItem firstReq = popHighest();
+		MaterialRequestObject firstReq = popHighest();
 		TestMaterialRequest secondReq;
 		if (firstReq == request1) {
 			secondReq = request2;
@@ -99,7 +101,7 @@ public class MaterialRequestPriorityQueueTest {
 		}
 
 		assertSame(firstReq, popHighest());
-		firstReq.updatePriority(EMaterialPriority.STOPPED);
+		firstReq.updatePriority(EPriority.STOPPED);
 
 		assertSame(secondReq, popHighest());
 		assertSame(secondReq, popHighest());
@@ -120,8 +122,8 @@ public class MaterialRequestPriorityQueueTest {
 			queue.insertRequest(request3);
 			queue.insertRequest(request4);
 
-			request1.updatePriority(EMaterialPriority.HIGH);
-			request2.updatePriority(EMaterialPriority.STOPPED);
+			request1.updatePriority(EPriority.HIGH);
+			request2.updatePriority(EPriority.STOPPED);
 		}
 
 		//
@@ -138,8 +140,8 @@ public class MaterialRequestPriorityQueueTest {
 			queue2.insertRequest(request3);
 			queue2.insertRequest(request4);
 
-			request1.updatePriority(EMaterialPriority.HIGH);
-			request2.updatePriority(EMaterialPriority.STOPPED);
+			request1.updatePriority(EPriority.HIGH);
+			request2.updatePriority(EPriority.STOPPED);
 		}
 
 		//
@@ -149,15 +151,15 @@ public class MaterialRequestPriorityQueueTest {
 		assertEquals(queue, deSerializedQueue);
 	}
 
-	private MaterialRequestPriorityQueueItem popHighest() {
-		MaterialRequestPriorityQueueItem result = queue.getHighestRequest();
+	private MaterialRequestObject popHighest() {
+		MaterialRequestObject result = queue.getHighestRequest();
 		if (result != null) {
-			result.inDelivery++; // this needs to be done to emulate the user of the queue.
+			result.deliveryAccepted(); // this needs to be done to emulate the user of the queue.
 		}
 		return result;
 	}
 
-	private static class TestMaterialRequest extends MaterialRequestPriorityQueueItem {
+	private static class TestMaterialRequest extends MaterialRequestObject {
 		private static final long serialVersionUID = 3244165203515699980L;
 
 		private final ShortPoint2D position;

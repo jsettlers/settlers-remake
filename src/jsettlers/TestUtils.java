@@ -22,12 +22,12 @@ public final class TestUtils {
 		return loader.getMainGrid();
 	}
 
-	public static <T> T serializeAndDeserialize(T list) throws IOException,
+	public static <T> T serializeAndDeserialize(T object) throws IOException,
 			ClassNotFoundException {
 		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(byteOutStream);
 
-		oos.writeObject(list);
+		oos.writeObject(object);
 		oos.close();
 
 		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(byteOutStream.toByteArray()));

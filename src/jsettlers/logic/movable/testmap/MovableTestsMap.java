@@ -23,7 +23,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IMaterialRequester;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
@@ -156,21 +156,30 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 			if (!materials.isEmpty()) {
 				ShortPoint2D source = materials.pop();
 				final ShortPoint2D targetPos = new ShortPoint2D(RandomSingleton.getInt(0, width - 1), RandomSingleton.getInt(0, height - 1));
-				bearer.executeJob(source, new IMaterialRequester() {
-					@Override
-					public void requestFailed() {
-					}
-
-					@Override
-					public boolean isDiggerRequestActive() {
-						return true;
-					}
+				bearer.deliver(materialTypeMap[source.x][source.y], source, new IMaterialRequest() {
 
 					@Override
 					public ShortPoint2D getPos() {
 						return targetPos;
 					}
-				}, materialTypeMap[source.x][source.y]);
+
+					@Override
+					public boolean isActive() {
+						return true;
+					}
+
+					@Override
+					public void deliveryFulfilled() {
+					}
+
+					@Override
+					public void deliveryAccepted() {
+					}
+
+					@Override
+					public void deliveryAborted() {
+					}
+				});
 			}
 		}
 
