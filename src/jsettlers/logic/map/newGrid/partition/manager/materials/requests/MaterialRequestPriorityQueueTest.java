@@ -12,8 +12,6 @@ import jsettlers.TestUtils;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestPriorityQueue;
-import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
 
 import org.junit.Test;
 
@@ -211,6 +209,11 @@ public class MaterialRequestPriorityQueueTest {
 		@Override
 		protected void materialDelivered() {
 			stillNeeded--;
+		}
+
+		@Override
+		protected boolean isRoundRobinRequest() {
+			return false;
 		}
 	}
 }
