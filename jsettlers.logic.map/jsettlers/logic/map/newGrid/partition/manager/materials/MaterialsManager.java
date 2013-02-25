@@ -7,6 +7,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialsManagerSettings;
 import jsettlers.logic.map.newGrid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.map.newGrid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
@@ -25,6 +26,8 @@ public final class MaterialsManager implements Serializable {
 	private final MaterialRequestPriorityQueue[] requestQueues;
 	private final IJoblessSupplier joblessSupplier;
 
+	private final IMaterialsManagerSettings settings;
+
 	/**
 	 * Creates a new {@link MaterialsManager} that uses the given {@link IJoblessSupplier} and {@link OffersList} for it's operations.
 	 * 
@@ -33,9 +36,10 @@ public final class MaterialsManager implements Serializable {
 	 * @param offersList
 	 *            {@link OffersList} providing the offered materials.
 	 */
-	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList) {
+	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IMaterialsManagerSettings settings) {
 		this.joblessSupplier = joblessSupplier;
 		this.offersList = offersList;
+		this.settings = settings;
 
 		requestQueues = new MaterialRequestPriorityQueue[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
@@ -56,8 +60,8 @@ public final class MaterialsManager implements Serializable {
 	}
 
 	public void distributeJobs() {
-		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS && !joblessSupplier.isEmpty(); i++) {
-			distributeJobForMaterial(EMaterialType.values[i]);
+		for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS && !joblessSupplier.isEmpty(); i++) {
+			distributeJobForMaterial(settings.getMaterialTypeForPrio(i));
 		}
 	}
 

@@ -37,6 +37,7 @@ import jsettlers.logic.map.newGrid.partition.manager.objects.ProductionRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.SoilderCreationRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerRequest;
+import jsettlers.logic.map.newGrid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.PartitionManagerTimer;
 
@@ -68,7 +69,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		public boolean isEmpty() {
 			return joblessBearer.isEmpty();
 		}
-	}, materialOffers);
+	}, materialOffers, new PartitionManagerSettings());
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
