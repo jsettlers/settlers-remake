@@ -6,6 +6,7 @@ import jsettlers.TestUtils;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.materials.offers.OffersList;
+import jsettlers.logic.map.newGrid.partition.manager.settings.PartitionManagerSettings;
 
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ import org.junit.Test;
 public class MaterialsManagerTest {
 	private final OffersList offersList = new OffersList();
 	private final JoblessSupplierMock joblessSupplier = new JoblessSupplierMock();
-	private final MaterialsManager manager = new MaterialsManager(joblessSupplier, offersList);
+	private final MaterialsManager manager = new MaterialsManager(joblessSupplier, offersList, new PartitionManagerSettings());
 
 	@Test
 	public void testSerialization() throws IOException, ClassNotFoundException {
