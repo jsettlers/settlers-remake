@@ -36,7 +36,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	 * 
 	 * @return Returns true if this {@link MaterialRequestObject} is in a queue.
 	 */
-	public final boolean isInQueue() {
+	protected final boolean isInQueue() {
 		return requestQueue != null;
 	}
 
@@ -61,14 +61,14 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	 * @return Returns the number of materials that are still needed by this {@link MaterialRequestObject}.<br>
 	 *         (That means, that materials that are in delivery are not counted here!)
 	 */
-	public abstract int getStillNeeded();
+	protected abstract int getStillNeeded();
 
 	/**
 	 * Gets the number of deliveries that can currently be done in parallel.
 	 * 
 	 * @return The max number of request parts that can be in delivery.
 	 */
-	public abstract int getInDeliveryable();
+	protected abstract int getInDeliveryable();
 
 	@Override
 	public void deliveryAccepted() {
@@ -95,4 +95,6 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	public boolean isActive() {
 		return priority != EPriority.STOPPED && inDelivery <= getStillNeeded() && inDelivery <= getInDeliveryable();
 	}
+
+	protected abstract boolean isRoundRobinRequest();
 }

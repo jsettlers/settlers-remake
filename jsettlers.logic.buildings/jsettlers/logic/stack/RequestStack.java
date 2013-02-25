@@ -3,8 +3,8 @@ package jsettlers.logic.stack;
 import java.io.Serializable;
 
 import jsettlers.common.buildings.IBuildingMaterial;
-import jsettlers.common.material.EPriority;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
@@ -131,12 +131,12 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	}
 
 	@Override
-	public int getStillNeeded() {
+	protected int getStillNeeded() {
 		return stillNeeded;
 	}
 
 	@Override
-	public int getInDeliveryable() {
+	protected int getInDeliveryable() {
 		return Constants.STACK_SIZE - getMaterialCount();
 	}
 
@@ -162,5 +162,10 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 */
 	public void setListener(IRequestStackListener listener) {
 		this.listener = listener;
+	}
+
+	@Override
+	protected boolean isRoundRobinRequest() {
+		return stillNeeded == Short.MAX_VALUE;
 	}
 }

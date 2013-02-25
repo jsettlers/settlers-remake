@@ -83,6 +83,10 @@ public final class MaterialRequestPriorityQueue implements Serializable {
 
 				// everything fine, take this request
 				else {
+					if (result.isRoundRobinRequest()) {
+						queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
+					}
+
 					return result;
 				}
 			}
