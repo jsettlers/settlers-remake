@@ -24,7 +24,7 @@ public class BuildMenu extends AndroidMobileMenu {
 		                .findViewById(R.id.build_list);
 
 		TableRow currentRow = null;
-		for (EBuildingType type : EBuildingType.values()) {
+		for (EBuildingType type : EBuildingType.values) {
 			if (currentRow == null
 			        || currentRow.getChildCount() >= ITEMS_PER_ROW) {
 				currentRow = new TableRow(menu.getContext());
