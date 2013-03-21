@@ -9,21 +9,27 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import jsettlers.TestUtils;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 
 import org.junit.Test;
 
+import random.RandomSingleton;
+
 /**
- * This is a test for the {@link MaterialRequestPriorityQueue} data structure.
+ * This is a test for the {@link MaterialsForBuildingsRequestPrioQueue} data structure.
  * 
  * @author Andreas Eberle
  * 
  */
-public class MaterialRequestPriorityQueueTest {
+public class SimpleMaterialRequestPriorityQueueTest {
+	static {
+		RandomSingleton.load(1000);
+	}
 
-	private final MaterialRequestPriorityQueue queue = new MaterialRequestPriorityQueue();
+	private final SimpleMaterialRequestPriorityQueue queue = new SimpleMaterialRequestPriorityQueue();
 
 	@Test
 	public void testInsertAndRemoveOne() {
@@ -126,7 +132,7 @@ public class MaterialRequestPriorityQueueTest {
 
 		//
 
-		MaterialRequestPriorityQueue queue2 = new MaterialRequestPriorityQueue();
+		SimpleMaterialRequestPriorityQueue queue2 = new SimpleMaterialRequestPriorityQueue();
 		{
 			TestMaterialRequest request1 = new TestMaterialRequest(4, 0);
 			TestMaterialRequest request2 = new TestMaterialRequest(2, 0);
@@ -144,7 +150,7 @@ public class MaterialRequestPriorityQueueTest {
 
 		//
 
-		MaterialRequestPriorityQueue deSerializedQueue = TestUtils.serializeAndDeserialize(queue);
+		SimpleMaterialRequestPriorityQueue deSerializedQueue = TestUtils.serializeAndDeserialize(queue);
 		assertEquals(queue, queue2);
 		assertEquals(queue, deSerializedQueue);
 	}
@@ -214,6 +220,11 @@ public class MaterialRequestPriorityQueueTest {
 		@Override
 		protected boolean isRoundRobinRequest() {
 			return false;
+		}
+
+		@Override
+		public EBuildingType getBuildingType() {
+			return null;
 		}
 	}
 }
