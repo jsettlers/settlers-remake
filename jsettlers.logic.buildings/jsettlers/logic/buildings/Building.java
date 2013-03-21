@@ -147,7 +147,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() > 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), currStack
+				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), type, currStack
 						.requiredForBuild()));
 			}
 		}
@@ -162,7 +162,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() == 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType()));
+				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), type));
 			}
 		}
 

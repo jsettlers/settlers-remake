@@ -7,11 +7,13 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IManagerBearer;
-import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialsManagerSettings;
+import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialsManagerSettingsProvider;
 import jsettlers.logic.map.newGrid.partition.manager.materials.offers.MaterialOffer;
 import jsettlers.logic.map.newGrid.partition.manager.materials.offers.OffersList;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.AbstractMaterialRequestPriorityQueue;
 import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
-import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestPriorityQueue;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialsForBuildingsRequestPrioQueue;
+import jsettlers.logic.map.newGrid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
 
 /**
  * This class implements an algorithm to distribute material transport jobs to jobless bearers.
@@ -23,10 +25,10 @@ public final class MaterialsManager implements Serializable {
 	private static final long serialVersionUID = 6395951461349453696L;
 
 	private final OffersList offersList;
-	private final MaterialRequestPriorityQueue[] requestQueues;
+	private final AbstractMaterialRequestPriorityQueue[] requestQueues;
 	private final IJoblessSupplier joblessSupplier;
 
-	private final IMaterialsManagerSettings settings;
+	private final IMaterialsManagerSettingsProvider settings;
 
 	/**
 	 * Creates a new {@link MaterialsManager} that uses the given {@link IJoblessSupplier} and {@link OffersList} for it's operations.
@@ -36,14 +38,19 @@ public final class MaterialsManager implements Serializable {
 	 * @param offersList
 	 *            {@link OffersList} providing the offered materials.
 	 */
-	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IMaterialsManagerSettings settings) {
+	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IMaterialsManagerSettingsProvider settings) {
 		this.joblessSupplier = joblessSupplier;
 		this.offersList = offersList;
 		this.settings = settings;
 
-		requestQueues = new MaterialRequestPriorityQueue[EMaterialType.NUMBER_OF_MATERIALS];
+		requestQueues = new AbstractMaterialRequestPriorityQueue[EMaterialType.NUMBER_OF_MATERIALS];
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			requestQueues[i] = new MaterialRequestPriorityQueue();
+			EMaterialType materialType = EMaterialType.values[i];
+			if (materialType.isDistributionConfigurable()) {
+				requestQueues[i] = new MaterialsForBuildingsRequestPrioQueue(settings.getDistributionSettings(materialType));
+			} else {
+				requestQueues[i] = new SimpleMaterialRequestPriorityQueue();
+			}
 		}
 	}
 

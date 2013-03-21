@@ -2,6 +2,7 @@ package jsettlers.logic.stack;
 
 import java.io.Serializable;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
@@ -20,6 +21,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	private final ShortPoint2D position;
 	private final EMaterialType materialType;
+	private final EBuildingType buildingType;
 
 	private final IRequestsStackGrid grid;
 
@@ -38,8 +40,8 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @param materialType
 	 *            The {@link EMaterialType} requested by this stack.
 	 */
-	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType) {
-		this(grid, position, materialType, Short.MAX_VALUE);
+	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, EBuildingType buildingType) {
+		this(grid, position, materialType, buildingType, Short.MAX_VALUE);
 	}
 
 	/**
@@ -51,13 +53,15 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 *            The position the stack will be.
 	 * @param materialType
 	 *            The {@link EMaterialType} requested by this stack.
+	 * @param buildingType
 	 * @param requestedAmount
 	 *            The number of materials requested.
 	 */
-	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, short requestedAmount) {
+	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, EBuildingType buildingType, short requestedAmount) {
 		this.grid = grid;
 		this.position = position;
 		this.materialType = materialType;
+		this.buildingType = buildingType;
 
 		this.stillNeeded = requestedAmount;
 		grid.request(materialType, this);
@@ -167,5 +171,10 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	@Override
 	protected boolean isRoundRobinRequest() {
 		return stillNeeded == Short.MAX_VALUE;
+	}
+
+	@Override
+	public EBuildingType getBuildingType() {
+		return buildingType;
 	}
 }

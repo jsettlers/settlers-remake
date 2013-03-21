@@ -1,12 +1,13 @@
 package jsettlers.logic.map.newGrid.partition.manager.materials.requests;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.utils.collections.list.DoubleLinkedListItem;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
 
 /**
- * This class defines a {@link DoubleLinkedListItem} that can be used by the {@link MaterialRequestPriorityQueue}.
+ * This class defines a {@link DoubleLinkedListItem} that can be used by the {@link AbstractMaterialRequestPriorityQueue}.
  * 
  * @author Andreas Eberle
  * 
@@ -16,7 +17,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	private static final long serialVersionUID = -5941459671438965185L;
 
 	private EPriority priority = EPriority.LOW;
-	MaterialRequestPriorityQueue requestQueue;
+	AbstractMaterialRequestPriorityQueue requestQueue;
 	int inDelivery;
 
 	/**
@@ -97,4 +98,6 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	}
 
 	protected abstract boolean isRoundRobinRequest();
+
+	protected abstract EBuildingType getBuildingType();
 }
