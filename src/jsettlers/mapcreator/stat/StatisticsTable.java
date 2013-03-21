@@ -18,7 +18,7 @@ public class StatisticsTable extends AbstractTableModel {
 	private static final int MATERIAL_START = 0;
 	private static final int MOVABLE_START = MATERIAL_START + EMaterialType.values().length;
 	private static final int BUILDING_START = MOVABLE_START + EMovableType.values().length;
-	private static final int END_POS = BUILDING_START + EBuildingType.values().length;
+	private static final int END_POS = BUILDING_START + EBuildingType.NUMBER_OF_BUILDINGS;
 	private final int playercount;
 	private final int[][] counts;
 	private String[] rowNames;
