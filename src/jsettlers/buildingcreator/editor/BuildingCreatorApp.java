@@ -197,7 +197,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 
 	private EBuildingType askType() {
 		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
-				EBuildingType.values(), null);
+				EBuildingType.values, null);
 	}
 
 	public static void main(String[] args) {
