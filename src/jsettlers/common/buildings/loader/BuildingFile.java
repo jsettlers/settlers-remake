@@ -230,7 +230,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 		} catch (NumberFormatException e) {
 			System.err.println("Warning: illegal number for stack attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
-			System.err.println("Illegal material name in " + buildingName);
+			System.err.println("Illegal direction name in " + buildingName);
 		}
 	}
 

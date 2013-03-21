@@ -70,6 +70,11 @@ public enum EBuildingType {
 	 */
 	LAGERHAUS(0);
 
+	public static final EBuildingType[] values = EBuildingType.values();
+	public static final int NUMBER_OF_BUILDINGS = values.length;
+
+	public final int ordinal;
+
 	private final IBuildingJob startJob;
 
 	private final EMovableType workerType;
@@ -111,6 +116,8 @@ public enum EBuildingType {
 	private final BuildingAreaBitSet buildingAreaBitSet;
 
 	EBuildingType(int imageIndex) {
+		this.ordinal = ordinal();
+
 		this.imageIndex = imageIndex;
 		BuildingFile file = new BuildingFile(this.toString());
 		startJob = file.getStartJob();
