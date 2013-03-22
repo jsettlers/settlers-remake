@@ -13,9 +13,6 @@ import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
-import jsettlers.common.map.shapes.MapCircle;
-import jsettlers.common.map.shapes.MapCircleBorder;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
@@ -421,7 +418,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public void setSelected(boolean selected) {
 		this.selected = selected;
-		drawWorkAreaCircle(selected);
 	}
 
 	@Override
@@ -448,7 +444,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		grid.removeBuildingAt(pos);
 		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION,
 				player);
-		drawWorkAreaCircle(false);
 		placeAdditionalMapObjects(grid, pos, false);
 		placeFlag(false);
 
@@ -496,50 +491,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	public void setWorkAreaCenter(@SuppressWarnings("unused") ShortPoint2D workAreaCenter) {
-	}
-
-	/**
-	 * @param draw
-	 *            true if the circle should be drawn<br>
-	 *            false if it should be removed.
-	 * @param center
-	 * @param radius
-	 */
-	public void drawWorkAreaCircle(boolean draw) {
-		ShortPoint2D center = getWorkAreaCenter();
-		if (center != null) {
-			short radius = type.getWorkradius();
-			for (ShortPoint2D pos : getCircle(grid, center, radius)) {
-				addOrRemoveMarkObject(draw, grid, pos, 1.0f);
-			}
-			for (ShortPoint2D pos : getCircle(grid, center, .75f * radius)) {
-				addOrRemoveMarkObject(draw, grid, pos, 0.66f);
-			}
-			for (ShortPoint2D pos : getCircle(grid, center, .5f * radius)) {
-				addOrRemoveMarkObject(draw, grid, pos, 0.33f);
-			}
-			for (ShortPoint2D pos : getCircle(grid, center, .25f * radius)) {
-				addOrRemoveMarkObject(draw, grid, pos, 0f);
-			}
-		}
-	}
-
-	protected ShortPoint2D getWorkAreaCenter() {
-		return null;
-	}
-
-	private void addOrRemoveMarkObject(boolean draw, IBuildingsGrid grid, ShortPoint2D pos, float progress) {
-		if (draw) {
-			grid.getMapObjectsManager().addBuildingWorkAreaObject(pos, progress);
-		} else {
-			grid.getMapObjectsManager().removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
-		}
-	}
-
-	private MapShapeFilter getCircle(IBuildingsGrid grid, ShortPoint2D center, float radius) {
-		MapCircle baseCircle = new MapCircle(center, radius);
-		MapCircleBorder border = new MapCircleBorder(baseCircle);
-		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());
 	}
 
 	@Override

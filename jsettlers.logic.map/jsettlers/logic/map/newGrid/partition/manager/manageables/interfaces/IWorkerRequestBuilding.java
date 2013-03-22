@@ -20,9 +20,7 @@ public interface IWorkerRequestBuilding extends IPlayerable {
 	 */
 	ShortPoint2D getDoor();
 
-	short getWorkAreaCenterX();
-
-	short getWorkAreaCenterY();
+	ShortPoint2D getWorkAreaCenter();
 
 	boolean popMaterial(ShortPoint2D position, EMaterialType material);
 

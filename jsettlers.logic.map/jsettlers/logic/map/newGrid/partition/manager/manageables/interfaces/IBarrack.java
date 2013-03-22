@@ -30,4 +30,9 @@ public interface IBarrack extends ILocatable {
 	 */
 	void bearerRequestFailed();
 
+	/**
+	 * 
+	 * @return Returns the position where the newly created soldier should walk.
+	 */
+	ShortPoint2D getSoldierTargetPosition();
 }

@@ -4,11 +4,11 @@ import java.util.List;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.common.material.EPriority;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestStackListener;
@@ -19,7 +19,7 @@ import jsettlers.logic.stack.RequestStack;
  * 
  * @author Andreas Eberle
  */
-public final class Barrack extends Building implements IBarrack {
+public final class Barrack extends WorkAreaBuilding implements IBarrack {
 	private static final long serialVersionUID = -6541972855836598068L;
 
 	public Barrack(Player player) {
@@ -33,10 +33,6 @@ public final class Barrack extends Building implements IBarrack {
 		for (RequestStack curr : super.getStacks()) {
 			curr.setPriority(priority);
 		}
-	}
-
-	@Override
-	protected void positionedEvent(ShortPoint2D pos) {
 	}
 
 	@Override
@@ -99,6 +95,11 @@ public final class Barrack extends Building implements IBarrack {
 
 	@Override
 	protected void subTimerEvent() {
+	}
+
+	@Override
+	public ShortPoint2D getSoldierTargetPosition() {
+		return super.getWorkAreaCenter();
 	}
 
 }

@@ -4,7 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.player.Player;
@@ -16,13 +16,11 @@ import jsettlers.logic.stack.RequestStack;
  * @author Andreas Eberle
  * 
  */
-public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
+public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBuilding {
 	private static final long serialVersionUID = 7050284039312172046L;
 
-	private short workAreaCenterX;
-	private short workAreaCenterY;
 	private boolean isWorking = true;
-	private IManageableWorker worker;;
+	private IManageableWorker worker;
 
 	public WorkerBuilding(EBuildingType type, Player player) {
 		super(type, player);
@@ -39,13 +37,6 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	protected final void positionedEvent(ShortPoint2D pos) {
-		ShortPoint2D workAreaCenter = getBuildingType().getWorkcenter().calculatePoint(pos);
-		workAreaCenterX = workAreaCenter.x;
-		workAreaCenterY = workAreaCenter.y;
-	}
-
-	@Override
 	protected final void constructionFinishedEvent() {
 		requestWorker();
 	}
@@ -56,27 +47,6 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 
 	@Override
 	protected final void subTimerEvent() {
-	}
-
-	@Override
-	public final void setWorkAreaCenter(ShortPoint2D workAreaCenter) {
-		this.workAreaCenterX = workAreaCenter.x;
-		this.workAreaCenterY = workAreaCenter.y;
-	}
-
-	@Override
-	public final short getWorkAreaCenterX() {
-		return workAreaCenterX;
-	}
-
-	@Override
-	public final short getWorkAreaCenterY() {
-		return workAreaCenterY;
-	}
-
-	@Override
-	protected final ShortPoint2D getWorkAreaCenter() {
-		return new ShortPoint2D(workAreaCenterX, workAreaCenterY);
 	}
 
 	@Override
@@ -105,7 +75,7 @@ public class WorkerBuilding extends Building implements IWorkerRequestBuilding {
 	}
 
 	@Override
-	public void leaveBuilding(IManageableWorker worker) {
+	public final void leaveBuilding(IManageableWorker worker) {
 		if (worker == this.worker) {
 			this.worker = null;
 			super.placeFlag(false);

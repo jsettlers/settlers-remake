@@ -304,7 +304,9 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private void preSearchPathAction(boolean dijkstra) {
 		super.setPosition(getCurrentJobPos());
 
-		boolean pathFound = super.preSearchPath(dijkstra, building.getWorkAreaCenterX(), building.getWorkAreaCenterY(), building.getBuildingType()
+		ShortPoint2D workAreaCenter = building.getWorkAreaCenter();
+
+		boolean pathFound = super.preSearchPath(dijkstra, workAreaCenter.x, workAreaCenter.y, building.getBuildingType()
 				.getWorkradius(), currentJob.getSearchType());
 		if (pathFound) {
 			jobFinished();

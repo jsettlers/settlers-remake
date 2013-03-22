@@ -169,12 +169,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		Building building = (Building) grid.getBuildingAt(buildingX, buildingY);
 
 		if (building != null) {
-			building.drawWorkAreaCircle(false);
 			building.setWorkAreaCenter(pos);
-
-			if (building.isSelected()) {
-				building.drawWorkAreaCircle(true);
-			}
 		}
 	}
 

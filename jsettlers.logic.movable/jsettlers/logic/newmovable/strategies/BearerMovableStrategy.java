@@ -117,6 +117,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			} else {
 				this.state = EBearerState.DEAD_OBJECT;
 				super.convertTo(movableType);
+				super.goToPos(barrack.getSoldierTargetPosition());
 			}
 			break;
 
