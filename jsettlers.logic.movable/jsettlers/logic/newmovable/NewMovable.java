@@ -151,7 +151,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	 * @return this movable
 	 */
 	protected final NewMovable positionAt(ShortPoint2D position) {
-		assert grid.hasNoMovableAt(position.x, position.y) : "given position not free for movable! " + position;
+		assert position == null || grid.hasNoMovableAt(position.x, position.y) : "given position not free for movable! " + position;
 
 		if (this.position != null) {
 			grid.leavePosition(this.position, this);

@@ -130,6 +130,16 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(buildingTypesToIndex);
+		result = prime * result + Arrays.hashCode(queues);
+		result = prime * result + ((settings == null) ? 0 : settings.hashCode());
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -138,7 +148,6 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 		if (getClass() != obj.getClass())
 			return false;
 		MaterialsForBuildingsRequestPrioQueue other = (MaterialsForBuildingsRequestPrioQueue) obj;
-
 		if (!Arrays.equals(buildingTypesToIndex, other.buildingTypesToIndex))
 			return false;
 		if (!Arrays.deepEquals(queues, other.queues))
