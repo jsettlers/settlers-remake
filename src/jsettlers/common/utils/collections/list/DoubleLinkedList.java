@@ -147,20 +147,21 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		if (head == null) {
 			if (other.head != null)
 				return false;
-		} else if (!head.equals(other.head))
+		} else if (!head.equals(other.head)) {
 			return false;
-
-		T thisCurr = head.next;
-		T otherCurr = other.head.next;
-		for (int i = 0; i < size; i++) {
-			if (thisCurr == null) {
-				if (otherCurr != null)
+		} else {
+			T thisCurr = head.next;
+			T otherCurr = other.head.next;
+			for (int i = 0; i < size; i++) {
+				if (thisCurr == null) {
+					if (otherCurr != null)
+						return false;
+				} else if (!thisCurr.equals(otherCurr))
 					return false;
-			} else if (!thisCurr.equals(otherCurr))
-				return false;
 
-			thisCurr = thisCurr.next;
-			otherCurr = otherCurr.next;
+				thisCurr = thisCurr.next;
+				otherCurr = otherCurr.next;
+			}
 		}
 
 		return true;

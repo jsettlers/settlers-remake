@@ -32,7 +32,7 @@ public class MapCircleIterator implements Iterator<ShortPoint2D> {
 
 	@Override
 	public final boolean hasNext() {
-		return currenty < radius / MapCircle.Y_SCALE && currentx != Float.NaN;
+		return currenty < radius / MapCircle.Y_SCALE;
 	}
 
 	/**

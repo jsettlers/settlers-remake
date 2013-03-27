@@ -64,7 +64,8 @@ public class RelativePoint implements Serializable {
 		}
 	}
 
-	public final int getHashCode() {
+	@Override
+	public final int hashCode() {
 		return getDy() << 16 + getDx();
 	}
 
@@ -82,7 +83,7 @@ public class RelativePoint implements Serializable {
 	}
 
 	public RelativePoint invert() {
-	    return new RelativePoint(-dx, -dy);
-    }
+		return new RelativePoint(-dx, -dy);
+	}
 
 }
