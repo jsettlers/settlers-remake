@@ -89,24 +89,18 @@ public class BordersThread implements Runnable {
 	}
 
 	public void checkPosition(ShortPoint2D position) {
-		synchronized (positionsQueue) {
-			this.positionsQueue.offer(position);
-		}
+		this.positionsQueue.offer(position);
 	}
 
 	public void checkPositions(Iterable<ShortPoint2D> positions) {
-		synchronized (positionsQueue) {
-			for (ShortPoint2D currPos : positions) {
-				positionsQueue.offer(currPos);
-			}
+		for (ShortPoint2D currPos : positions) {
+			positionsQueue.offer(currPos);
 		}
 	}
 
 	public void cancel() {
 		this.canceled = true;
-		synchronized (positionsQueue) {
-			positionsQueue.notifyAll();
-		}
+		positionsQueue.notifyAll();
 		bordersThread.interrupt();
 	}
 

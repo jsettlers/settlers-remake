@@ -175,15 +175,11 @@ public class ConstructionMarksThread implements Runnable {
 
 	public void setScreen(MapRectangle mapArea) {
 		this.mapArea = mapArea;
-		refreshMarkings();
+		this.notifyAll();
 	}
 
 	public void setBuildingType(EBuildingType type) {
 		this.buildingType = type;
-		refreshMarkings();
-	}
-
-	public synchronized void refreshMarkings() {
 		this.notifyAll();
 	}
 
@@ -191,5 +187,4 @@ public class ConstructionMarksThread implements Runnable {
 		canceled = true;
 		thread.interrupt();
 	}
-
 }
