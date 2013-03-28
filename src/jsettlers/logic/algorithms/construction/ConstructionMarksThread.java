@@ -173,12 +173,12 @@ public class ConstructionMarksThread implements Runnable {
 		}
 	}
 
-	public void setScreen(MapRectangle mapArea) {
+	public synchronized void setScreen(MapRectangle mapArea) {
 		this.mapArea = mapArea;
 		this.notifyAll();
 	}
 
-	public void setBuildingType(EBuildingType type) {
+	public synchronized void setBuildingType(EBuildingType type) {
 		this.buildingType = type;
 		this.notifyAll();
 	}
