@@ -120,18 +120,14 @@ public class MapObjectDrawer {
 	private final ImageProvider imageProvider = ImageProvider.getInstance();
 	private final SoundManager sound;
 
-	private final DrawBuffer buffer;
-
 	private final MapDrawContext context;
 
 	private final SettlerImageMap imageMap = SettlerImageMap.getInstance();
 	private float betweenTilesY;
 
-	public MapObjectDrawer(MapDrawContext context, SoundManager sound,
-	        DrawBuffer buffer) {
+	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
 		this.context = context;
 		this.sound = sound;
-		this.buffer = buffer;
 	}
 
 	/**
@@ -266,10 +262,10 @@ public class MapObjectDrawer {
 					break;
 
 				case FLAG_ROOF:
-					float z = buffer.getZ();
-					buffer.setZ(.89f);
+					float z = context.getDrawBuffer().getZ();
+					context.getDrawBuffer().setZ(.89f);
 					drawPlayerableWaving(x, y, 13, 64, object, color);
-					buffer.setZ(z);
+					context.getDrawBuffer().setZ(z);
 					break;
 
 				case BUILDING:
@@ -449,7 +445,8 @@ public class MapObjectDrawer {
 			viewX = context.getConverter().getViewX(x, y, height);
 			viewY = context.getConverter().getViewY(x, y, height);
 		}
-		image.drawAt(context.getGl(), buffer, viewX, viewY, color, shade);
+		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY,
+		        color, shade);
 
 		if (movable.isSelected()) {
 			drawSelectionMark(viewX, viewY, movable.getHealth());
@@ -477,13 +474,14 @@ public class MapObjectDrawer {
 	}
 
 	private void drawSelectionMark(float viewX, float viewY, float health) {
-		float z = buffer.getZ();
-		buffer.setZ(.9f);
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(.9f);
 
 		Image image =
 		        ImageProvider.getInstance().getSettlerSequence(4, 7)
 		                .getImageSafe(0);
-		image.drawAt(context.getGl(), buffer, viewX, viewY + 20, -1);
+		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX,
+		        viewY + 20, -1);
 
 		Sequence<? extends Image> sequence =
 		        ImageProvider.getInstance().getSettlerSequence(4, 6);
@@ -491,9 +489,10 @@ public class MapObjectDrawer {
 		        Math.min((int) ((1 - health) * sequence.length()),
 		                sequence.length() - 1);
 		Image healthImage = sequence.getImageSafe(healthId);
-		healthImage.drawAt(context.getGl(), buffer, viewX, viewY + 38, -1);
+		healthImage.drawAt(context.getGl(), context.getDrawBuffer(), viewX,
+		        viewY + 38, -1);
 
-		buffer.setZ(z);
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private void playSound(IMapObject object, int soundid) {
@@ -547,17 +546,17 @@ public class MapObjectDrawer {
 		boolean onGround = progress >= 1;
 		float z = 0;
 		if (onGround) {
-			z = buffer.getZ();
-			buffer.setZ(-.1f);
+			z = context.getDrawBuffer().getZ();
+			context.getDrawBuffer().setZ(-.1f);
 			iColor &= 0x7fffffff;
 		}
 		Image image =
 		        this.imageProvider.getSettlerSequence(FILE, sequence)
 		                .getImageSafe(index);
-		image.drawAt(context.getGl(), buffer, x, betweenTilesY + 20 * progress
-		        * (1 - progress) + 20, iColor);
+		image.drawAt(context.getGl(), context.getDrawBuffer(), x, betweenTilesY
+		        + 20 * progress * (1 - progress) + 20, iColor);
 		if (onGround) {
-			buffer.setZ(z);
+			context.getDrawBuffer().setZ(z);
 		}
 	}
 
@@ -860,7 +859,8 @@ public class MapObjectDrawer {
 				}
 				float viewX = towerX + place.getOffsetX();
 				float viewY = towerY + place.getOffsetY();
-				image.drawAt(gl, buffer, viewX, viewY, color, basecolor);
+				image.drawAt(gl, context.getDrawBuffer(), viewX, viewY, color,
+				        basecolor);
 
 				if (place.getType() == ESoldierType.BOWMAN) {
 					playMovableSound(movable);
@@ -875,15 +875,15 @@ public class MapObjectDrawer {
 	}
 
 	private void drawBuildingSelectMarker(int x, int y) {
-		float z = buffer.getZ();
-		buffer.setZ(.9f);
+		float z = context.getDrawBuffer().getZ();
+		context.getDrawBuffer().setZ(.9f);
 
 		Image image =
 		        imageProvider.getSettlerSequence(SELECTMARK_FILE,
 		                SELECTMARK_SEQUENCE).getImageSafe(0);
 		draw(image, x, y, -1);
 
-		buffer.setZ(z);
+		context.getDrawBuffer().setZ(z);
 	}
 
 	private void drawWithConstructionMask(int x, int y, float maskState,
@@ -903,15 +903,16 @@ public class MapObjectDrawer {
 		float toplineBottom = 1 - maskState;
 		float toplineTop = Math.max(0, toplineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 0, 1, 1, 1,
-		        0, toplineBottom, iColor);
-		image.drawTriangle(context.getGl(), buffer, viewX, viewY, 1, 1, 1,
-		        toplineBottom, 0, toplineBottom, iColor);
+		image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX,
+		        viewY, 0, 1, 1, 1, 0, toplineBottom, iColor);
+		image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX,
+		        viewY, 1, 1, 1, toplineBottom, 0, toplineBottom, iColor);
 
 		for (int i = 0; i < tiles; i++) {
-			image.drawTriangle(context.getGl(), buffer, viewX, viewY, 1.0f
-			        / tiles * i, toplineBottom, 1.0f / tiles * (i + 1),
-			        toplineBottom, 1.0f / tiles * (i + .5f), toplineTop, iColor);
+			image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX,
+			        viewY, 1.0f / tiles * i, toplineBottom, 1.0f / tiles
+			                * (i + 1), toplineBottom, 1.0f / tiles * (i + .5f),
+			        toplineTop, iColor);
 		}
 	}
 
@@ -929,7 +930,8 @@ public class MapObjectDrawer {
 	private Color getColor(IMapObject object) {
 		Color color = null;
 		if (object instanceof IPlayerable) {
-			color = context.getPlayerColor(((IPlayerable) object).getPlayerId());
+			color =
+			        context.getPlayerColor(((IPlayerable) object).getPlayerId());
 		}
 		return color;
 	}
@@ -959,7 +961,8 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 
-		image.drawAt(context.getGl(), buffer, viewX, viewY, color, basecolor);
+		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY,
+		        color, basecolor);
 	}
 
 	private void draw(Image image, int x, int y, float color) {
@@ -972,7 +975,8 @@ public class MapObjectDrawer {
 		float viewX = context.getConverter().getViewX(x, y, height);
 		float viewY = context.getConverter().getViewY(x, y, height);
 
-		image.drawAt(context.getGl(), buffer, viewX, viewY, color);
+		image.drawAt(context.getGl(), context.getDrawBuffer(), viewX, viewY,
+		        color);
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {

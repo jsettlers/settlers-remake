@@ -2,6 +2,8 @@ package jsettlers.graphics.map;
 
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
+import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
 import java.util.Iterator;
 
@@ -13,6 +15,7 @@ import jsettlers.common.map.shapes.MapNeighboursArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
@@ -30,12 +33,13 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * <h2>gl setup</h2> With {@link #begin(GLDrawContext)}, the gl state machine is
  * initialized for drawing the map. The draw coordinates can then be given in
  * draw space.
- *
+ * <h2>Draw buffer</h2> We hold a draw buffer everyone drawing with the map draw
+ * context can use. The buffer should be flushed when drawing one component
+ * finished. When the draw buffer is used after a call to end(), the buffer is invalid.
+ * 
  * @author michael
  */
-public final class MapDrawContext {
-
-	// private static final byte HEIGHT_FACTOR = 4;
+public final class MapDrawContext implements IGLProvider {
 
 	private GLDrawContext gl = null;
 
@@ -71,16 +75,24 @@ public final class MapDrawContext {
 
 	public boolean ENABLE_ORIGINAL = true;
 
+	/**
+	 * The basic draw buffer we use.
+	 */
+	private final DrawBuffer buffer;
+
+	private final ReplaceableTextDrawer textDrawer;
+
 	// private long beginTime;
 
 	/**
 	 * Creates a new map context for a given map.
-	 *
+	 * 
 	 * @param map
 	 *            The map.
 	 */
-	public MapDrawContext(IGraphicsGrid map) {
+	public MapDrawContext(IGraphicsGrid map, ReplaceableTextDrawer textDrawer) {
 		this.map = map;
+		this.textDrawer = textDrawer;
 		float incline =
 		        DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
 		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
@@ -91,11 +103,13 @@ public final class MapDrawContext {
 		        MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
 		                DrawConstants.DISTANCE_Y, map.getWidth(),
 		                map.getHeight());
+
+		buffer = new DrawBuffer(this);
 	}
 
 	/**
 	 * Sets the size of the context to width/height.
-	 *
+	 * 
 	 * @param newWidth
 	 *            The width.
 	 * @param newHeight
@@ -107,7 +121,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Sets the center of the screen.
-	 *
+	 * 
 	 * @param x
 	 *            X in pixels.
 	 * @param y
@@ -120,7 +134,7 @@ public final class MapDrawContext {
 	/**
 	 * Begin a new draw session (=> draw a new image). Sets up the gl screen
 	 * assuming the current viewport is set to (0,0,width,height)
-	 *
+	 * 
 	 * @param gl2
 	 *            The gl context to use.
 	 * @see #end()
@@ -148,17 +162,33 @@ public final class MapDrawContext {
 	/**
 	 * Gets the current gl context, of <code>null</code> if it is called outside
 	 * a gl drawing session.
-	 *
+	 * 
 	 * @return The gl context that was given to {@link #begin(GLDrawContext)}
 	 */
-	public GLDrawContext getGl() {
+	@Override
+    public GLDrawContext getGl() {
 		return this.gl;
+	}
+
+	public DrawBuffer getDrawBuffer() {
+		return buffer;
+	}
+
+	/**
+	 * Gets the text drawer for the draw context. Use this method instead of the
+	 * opengl one, because we might override it.
+	 * 
+	 * @param size
+	 * @return
+	 */
+	public TextDrawer getTextDrawer(EFontSize size) {
+		return textDrawer.getTextDrawer(gl, size);
 	}
 
 	/**
 	 * Gets the region of the draw space that is drawn on the screen and
 	 * therefore rendered.
-	 *
+	 * 
 	 * @return The region displayed on the screen as Rectangle.
 	 */
 	public ScreenPosition getScreen() {
@@ -186,9 +216,7 @@ public final class MapDrawContext {
 			couldBeImproved = false;
 
 			for (ShortPoint2D p : new MapNeighboursArea(currentPoint)) {
-				onscreen =
-				        converter.getView(p.x, p.y,
-				                getHeight(p.x, p.y));
+				onscreen = converter.getView(p.x, p.y, getHeight(p.x, p.y));
 				double newDistance = onscreen.distance(desiredOnScreen);
 				if (newDistance < currentbest) {
 					currentbest = newDistance;
@@ -217,7 +245,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Checks two map coordiantes if they are on the map.
-	 *
+	 * 
 	 * @param x
 	 *            The y coordinate in map space.
 	 * @param y
@@ -231,7 +259,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Gets the color for a given player.
-	 *
+	 * 
 	 * @param player
 	 *            The player to get the color for.
 	 * @return The color.
@@ -246,7 +274,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Gets the converter for the map coordinate system
-	 *
+	 * 
 	 * @return The map coordinate converter.
 	 */
 	public MapCoordinateConverter getConverter() {
@@ -255,7 +283,7 @@ public final class MapDrawContext {
 
 	/**
 	 * sets up the gl drawing context to draw a given tile.
-	 *
+	 * 
 	 * @param pos
 	 *            The tile to draw.
 	 */
@@ -277,7 +305,7 @@ public final class MapDrawContext {
 
 	/**
 	 * Sets up drawing between two tiles.
-	 *
+	 * 
 	 * @param tile
 	 *            The start tile
 	 * @param destination
@@ -307,7 +335,7 @@ public final class MapDrawContext {
 
 	/**
 	 * gets a rect on the screen.
-	 *
+	 * 
 	 * @param x1
 	 *            one x (not ordered)
 	 * @param y1
@@ -342,7 +370,7 @@ public final class MapDrawContext {
 		/**
 		 * Creates a new IMapArea that contains the points that are in the
 		 * rectangle on the screen.
-		 *
+		 * 
 		 * @param drawRect
 		 *            The rectangle in draw space
 		 */
@@ -361,10 +389,10 @@ public final class MapDrawContext {
 
 		@Override
 		public Iterator<ShortPoint2D> iterator() {
-			return new MyIterator();
+			return new ScreenIterator();
 		}
 
-		private class MyIterator implements Iterator<ShortPoint2D> {
+		private class ScreenIterator implements Iterator<ShortPoint2D> {
 			/**
 			 * How many lines to search at least.
 			 */
@@ -373,7 +401,7 @@ public final class MapDrawContext {
 			private int currentLine = 0;
 			private int currentX;
 
-			private MyIterator() {
+			private ScreenIterator() {
 				currentX = base.getLineStartX(0);
 				next = new ShortPoint2D(currentX, base.getLineY(0));
 				if (!contains(next)) {

@@ -39,11 +39,11 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.OriginalControls;
 import jsettlers.graphics.map.draw.Background;
-import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.map.draw.MapObjectDrawer;
 import jsettlers.graphics.messages.Message;
@@ -79,7 +79,7 @@ import jsettlers.graphics.sound.SoundManager;
  * </ul>
  * </li>
  * </ul>
- *
+ * 
  * @author michael
  */
 public final class MapContent implements SettlersContent,
@@ -128,9 +128,11 @@ public final class MapContent implements SettlersContent,
 	private ShortPoint2D moveToMarker;
 	private long moveToMarkerTime;
 
+	private final ReplaceableTextDrawer textDrawer;
+
 	/**
 	 * Creates a new map content for the given map.
-	 *
+	 * 
 	 * @param map
 	 *            The map.
 	 */
@@ -140,11 +142,11 @@ public final class MapContent implements SettlersContent,
 
 	public MapContent(IGraphicsGrid map, SoundPlayer player, IControls controls) {
 		this.map = map;
-		this.context = new MapDrawContext(map);
+		textDrawer = new ReplaceableTextDrawer();
+		this.context = new MapDrawContext(map, textDrawer);
 		this.soundmanager = new SoundManager(player);
-		buffer = new DrawBuffer(context);
 
-		objectDrawer = new MapObjectDrawer(context, soundmanager, buffer);
+		objectDrawer = new MapObjectDrawer(context, soundmanager);
 		backgroundSound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {
@@ -184,6 +186,11 @@ public final class MapContent implements SettlersContent,
 	@Override
 	public void drawContent(GLDrawContext gl, int newWidth, int newHeight) {
 		try {
+			// TODO: Do only check once.
+			if (textDrawer.getTextDrawer(gl, EFontSize.NORMAL).getWidth("a") == 0) {
+				textDrawer.setTextDrawerFactory(new FontDrawerFactory());
+			}
+
 			if (newWidth != windowWidth || newHeight != windowHeight) {
 				resizeTo(newWidth, newHeight);
 			}
@@ -260,7 +267,7 @@ public final class MapContent implements SettlersContent,
 	}
 
 	private void drawMessages(GLDrawContext gl) {
-		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		// TODO: don't let logic wait until we rendered.
 		synchronized (messenger) {
 			int messageIndex = 0;
@@ -333,11 +340,11 @@ public final class MapContent implements SettlersContent,
 
 	private UIPoint currentSelectionAreaStart;
 
-	private void drawFramerate(GLDrawContext gl2) {
+	private void drawFramerate(GLDrawContext gl) {
 		long currentFrame = System.nanoTime();
 		double framerate = 1000000000.0 / (currentFrame - this.lastFrame);
 		String frames = new DecimalFormat("###.##").format(framerate);
-		TextDrawer drawer = gl2.getTextDrawer(EFontSize.NORMAL);
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		drawer.drawString(200, 5, "FPS: " + frames);
 
 		this.lastFrame = currentFrame;
@@ -345,14 +352,14 @@ public final class MapContent implements SettlersContent,
 
 	private void drawTooltip(GLDrawContext gl) {
 		if (!tooltipString.isEmpty()) {
-			TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
+			TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 			drawer.drawString((int) mousePosition.getX(),
 			        (int) mousePosition.getY(), tooltipString);
 		}
 	}
 
 	private void drawActionThreadSlow(GLDrawContext gl) {
-		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		String string = Labels.getString("action_firerer_slow");
 		float x = windowWidth - (float) drawer.getWidth(string) - 40;
 		float y = windowHeight - (float) drawer.getHeight(string) - 10;
@@ -418,7 +425,7 @@ public final class MapContent implements SettlersContent,
 			drawDebugColors();
 		}
 
-		buffer.flush();
+		context.getDrawBuffer().flush();
 	}
 
 	private void drawTile(int x, int y) {
@@ -506,7 +513,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Draws the background.
-	 *
+	 * 
 	 * @param gl
 	 * @param screen2
 	 */
@@ -580,7 +587,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets a action for a keyboard key
-	 *
+	 * 
 	 * @param keyCode
 	 *            The key
 	 * @return The action that corresponds to the key
@@ -712,7 +719,6 @@ public final class MapContent implements SettlersContent,
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
-	private final DrawBuffer buffer;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {
@@ -766,7 +772,7 @@ public final class MapContent implements SettlersContent,
 
 	/**
 	 * Gets the interface connector for the ui.
-	 *
+	 * 
 	 * @return The connector to access the interface.
 	 */
 	public MapInterfaceConnector getInterfaceConnector() {
@@ -874,5 +880,4 @@ public final class MapContent implements SettlersContent,
 		backgroundSound.stop();
 		controls.stop();
 	}
-
 }

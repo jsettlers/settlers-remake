@@ -3,12 +3,12 @@ package jsettlers.graphics.map.draw;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.map.IGLProvider;
 
 public class DrawBuffer {
 	
 	private static final int BUFFERS = 5;
-	private final MapDrawContext context;
+	private final IGLProvider context;
 	private float z;
 
 	public class Buffer {
@@ -88,7 +88,7 @@ public class DrawBuffer {
 	private int lastFreedBuffer = 0;
 	private final Buffer[] drawBuffers;
 
-	public DrawBuffer(MapDrawContext context) {
+	public DrawBuffer(IGLProvider context) {
 		this.context = context;
 		drawBuffers = new Buffer[BUFFERS];
 		for (int i = 0; i < BUFFERS; i++) {
@@ -133,6 +133,4 @@ public class DrawBuffer {
 	public void setZ(float z) {
 	    this.z = z;
     }
-
-	
 }
