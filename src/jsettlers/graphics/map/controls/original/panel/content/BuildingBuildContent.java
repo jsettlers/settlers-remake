@@ -46,6 +46,7 @@ public class BuildingBuildContent implements ContentFactory, IContextListener {
 	        EBuildingType.SMALL_LIVINGHOUSE,
 	        EBuildingType.MEDIUM_LIVINGHOUSE,
 	        EBuildingType.BIG_LIVINGHOUSE,
+	        EBuildingType.STOCK,
 	        EBuildingType.LAGERHAUS,
 	};
 
