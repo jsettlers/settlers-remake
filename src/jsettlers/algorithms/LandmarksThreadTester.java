@@ -5,7 +5,6 @@ import go.graphics.sound.SoundPlayer;
 import go.graphics.swing.AreaContainer;
 
 import java.awt.Dimension;
-import java.io.File;
 
 import javax.swing.JFrame;
 
@@ -23,9 +22,8 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.JOGLPanel;
-import jsettlers.graphics.swing.JoglLibraryPathInitializer;
+import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
@@ -33,12 +31,7 @@ import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 
 public class LandmarksThreadTester {
 	static { // sets the native library path for the system dependent jogl libs
-		JoglLibraryPathInitializer.initLibraryPath();
-
-		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
-		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
-		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
+		SwingResourceLoader.setupSwingPaths();
 	}
 
 	protected static final int WIDTH = 20;
