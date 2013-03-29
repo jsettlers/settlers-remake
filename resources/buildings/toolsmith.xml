@@ -128,10 +128,10 @@
     <!-- coal is invisible, so no set mat. -->
     <job name="take_coal2" type="TAKE" material="COAL" successjob="drop_coal1" failjob="drop_coal1" />
 
-    <job name="drop_coal1" type="WALK" direction="EAST" successjob="drop_coal2" failjob="go_to_door" />
+    <job name="drop_coal1" type="WALK" direction="NORTH_EAST" successjob="drop_coal2" failjob="go_to_door" />
     <job name="drop_coal2" type="DROP" material="NO_MATERIAL" successjob="drop_coal3" failjob="go_to_door" />
     <job name="drop_coal3" type="TAKE" material="COAL" successjob="drop_coal4" failjob="go_to_door" />
-    <job name="drop_coal4" type="WALK" direction="WEST" successjob="go_to_iron1" failjob="go_to_door" />
+    <job name="drop_coal4" type="WALK" direction="SOUTH_WEST" successjob="go_to_iron1" failjob="go_to_door" />
 
     <job name="go_to_iron1" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron2" failjob="go_to_door" />
     <job name="go_to_iron2" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron3" failjob="go_to_door" />

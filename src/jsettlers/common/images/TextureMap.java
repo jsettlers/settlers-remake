@@ -12,9 +12,15 @@ public final class TextureMap {
 	}
 
 	private static final String[] names = new String[] {
+		"font.0",
+		"font.1",
+		"font_grid.0",
 		"lagerhaus.0",
 	};
 	private static final int[] indexes = new int[] {
+		1,
+		2,
 		0,
+		3,
 	};
 }
