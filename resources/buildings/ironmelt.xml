@@ -114,7 +114,7 @@
 	<!-- going home job -->
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="waithome"
 		dx="2" dy="0" />
-	<job name="waithome" type="WAIT" successjob="gohome" failjob="waithome"
+	<job name="waithome" type="WAIT" successjob="hide" failjob="hide"
 		time="1.0" />
 	<job name="hide" type="HIDE" successjob="reset" failjob="reset" />
 	<job name="reset" type="SET_MATERIAL" successjob="wait" failjob="wait"
@@ -143,10 +143,10 @@
 	<!-- take ore -->
 	<job name="takeore1" type="DROP" successjob="takeore2" failjob="gohome"
 		material="NO_MATERIAL" />
-	<job name="takeore2" type="SET_MATERIAL" successjob="takeore3"
+	<job name="takeore2" type="SET_MATERIAL" successjob="goputore0"
 		failjob="gohome" material="IRONORE" />
-	<job name="takeore3" type="TAKE" successjob="goputore0" failjob="gohome"
-		material="IRONORE" />
+	<!-- <job name="takeore3" type="TAKE" successjob="goputore0" failjob="gohome"
+		material="IRONORE" /> -->
 
 	<!-- put it into the melt -->
 	<job name="goputore0" type="WALK" successjob="goputore1" failjob="gohome"
@@ -167,28 +167,28 @@
 		failjob="gohome" direction="NORTH_EAST" />
 	<job name="goputore8" type="DROP" successjob="goputore9" failjob="gohome"
 		material="NO_MATERIAL" />
-	<job name="goputore9" type="SET_MATERIAL" successjob="goputore10"
+	<job name="goputore9" type="SET_MATERIAL" successjob="putcoal1"
 		failjob="gohome" material="NO_MATERIAL" />
-	<job name="goputore10" type="TAKE" successjob="putcoal1" failjob="gohome"
-		material="NO_MATERIAL" />
+	<!-- <job name="goputore10" type="TAKE" successjob="putcoal1" failjob="gohome"
+		material="NO_MATERIAL" /> -->
 
 	<!-- add some coal -->
 	<job name="putcoal1" type="LOOK_AT" successjob="putcoal2" failjob="gohome"
 		direction="NORTH_WEST" />
 	<job name="putcoal2" type="DROP" successjob="putcoal3" failjob="gohome"
 		material="NO_MATERIAL" />
-	<job name="putcoal3" type="SET_MATERIAL" successjob="putcoal4"
+	<job name="putcoal3" type="SET_MATERIAL" successjob="putcoal5"
 		failjob="gohome" material="COAL" />
-	<job name="putcoal4" type="TAKE" successjob="putcoal5" failjob="gohome"
-		material="COAL" />
+	<!-- <job name="putcoal4" type="TAKE" successjob="putcoal5" failjob="gohome"
+		material="COAL" /> -->
 	<job name="putcoal5" type="LOOK_AT" successjob="putcoal6" failjob="gohome"
 		direction="NORTH_EAST" />
 	<job name="putcoal6" type="DROP" successjob="putcoal7" failjob="gohome"
 		material="NO_MATERIAL" />
-	<job name="putcoal7" type="SET_MATERIAL" successjob="putcoal8"
+	<job name="putcoal7" type="SET_MATERIAL" successjob="gopot1"
 		failjob="gohome" material="NO_MATERIAL" />
-	<job name="putcoal8" type="TAKE" successjob="gopot1" failjob="gohome"
-		material="NO_MATERIAL" />
+	<!-- <job name="putcoal8" type="TAKE" successjob="gopot1" failjob="gohome"
+		material="NO_MATERIAL" /> -->
 
 	<!-- go in front of the melting pot -->
 	<job name="gopot1" type="WALK" successjob="gopot2" failjob="gohome"
@@ -209,10 +209,10 @@
 	<!-- take the iron -->
 	<job name="takeiron1" type="DROP" successjob="takeiron2" failjob="gohome"
 		material="NO_MATERIAL" />
-	<job name="takeiron2" type="SET_MATERIAL" successjob="takeiron3"
+	<job name="takeiron2" type="SET_MATERIAL" successjob="bringiron1"
 		failjob="gohome" material="COAL" />
-	<job name="takeiron3" type="TAKE" successjob="bringiron1" failjob="gohome"
-		material="NO_MATERIAL" />
+	<!-- <job name="takeiron3" type="TAKE" successjob="bringiron1" failjob="gohome"
+		material="NO_MATERIAL" /> -->
 	<job name="bringiron1" type="WALK" successjob="bringiron2" failjob="gohome"
 		direction="NORTH_EAST" />
 	<job name="bringiron2" type="WALK" successjob="bringiron3" failjob="gohome"
@@ -223,10 +223,10 @@
 		direction="NORTH_EAST" />
 	<job name="bringiron5" type="DROP" successjob="bringiron6" failjob="gohome"
 		material="IRON" />
-	<job name="bringiron6" type="SET_MATERIAL" successjob="bringiron7"
+	<job name="bringiron6" type="SET_MATERIAL" successjob="checkB1"
 		failjob="gohome" material="NO_MATERIAL" />
-	<job name="bringiron7" type="TAKE" successjob="checkB1" failjob="gohome"
-		material="NO_MATERIAL" />
+	<!-- <job name="bringiron7" type="TAKE" successjob="checkB1" failjob="gohome"
+		material="NO_MATERIAL" /> -->
 
 	<!-- do not disappear if there is still stuff left -->
 	<job name="checkB1" type="AVAILABLE" successjob="checkB2" failjob="gohome"

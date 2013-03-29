@@ -163,10 +163,12 @@
 
     <job name="drop_iron1" type="DROP" material="NO_MATERIAL" successjob="drop_iron2" failjob="go_to_door" />
     <job name="drop_iron2" type="SET_MATERIAL" material="HAMMER" successjob="drop_iron3" failjob="go_to_door" />
-    <job name="drop_iron3" type="SMOKE_ON" dx="-3" dy="-1" successjob="drop_iron4" failjob="go_to_door" />
-    <job name="drop_iron4" type="PLAY_ACTION1" time="1" successjob="drop_iron5" failjob="go_to_door" />
-    <job name="drop_iron5" type="SMOKE_OFF" dx="-3" dy="-1" successjob="drop_iron6" failjob="go_to_door" />
-    <job name="drop_iron6" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" />
+    <job name="drop_iron3" type="TAKE" material="NO_MATERIAL" successjob="drop_iron4" failjob="go_to_door" />
+    <job name="drop_iron4" type="SMOKE_ON" dx="-3" dy="-1" successjob="drop_iron5" failjob="go_to_door" />
+    <job name="drop_iron5" type="WAIT" time="5" successjob="drop_iron6" failjob="go_to_door" />
+    <job name="drop_iron6" type="DROP" material="NO_MATERIAL" successjob="drop_iron7" failjob="go_to_door" />
+    <job name="drop_iron7" type="SMOKE_OFF" dx="-3" dy="-1" successjob="drop_iron8" failjob="go_to_door" />
+    <job name="drop_iron8" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" />
 
     <job name="go_to_hammer1" type="WALK" direction="SOUTH_WEST" successjob="go_to_hammer2" failjob="go_to_door" />
     <job name="go_to_hammer2" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer3" failjob="go_to_door" />
