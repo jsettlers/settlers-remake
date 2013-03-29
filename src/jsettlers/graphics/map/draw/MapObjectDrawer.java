@@ -68,19 +68,19 @@ public class MapObjectDrawer {
 	/**
 	 * Tree falling speed. bigger => faster.
 	 */
-	private static final float TREE_FALLING_SPEED = 10f;
+	private static final float TREE_FALLING_SPEED = 1/0.001f;
 	/**
-	 * First images in tree cutting sequence
+	 * 
 	 */
-	private static final int TREE_ROT_IMAGES = 5;
+	private static final int TREE_ROT_IMAGES = 4;
 
 	/**
-	 * First images in tree cutting sequence
+	 * 
 	 */
 	private static final int TREE_SMALL = 12;
 
 	/**
-	 * First images in tree cutting sequence
+	 * 
 	 */
 	private static final int TREE_MEDIUM = 11;
 
@@ -628,10 +628,13 @@ public class MapObjectDrawer {
 				imageStep = TREE_FALL_IMAGES - 1;
 			}
 		} else if (progress < IMapObject.TREE_CUT_2) {
+			// cut image 1
 			imageStep = TREE_FALL_IMAGES;
-		} else if (progress < IMapObject.TREE_CUT_2) {
+		} else if (progress < IMapObject.TREE_CUT_3) {
+			// cut image 2
 			imageStep = TREE_FALL_IMAGES + 1;
 		} else if (progress < IMapObject.TREE_TAKEN) {
+			// cut image 3
 			imageStep = TREE_FALL_IMAGES + 2;
 		} else {
 			int relativeStep =
