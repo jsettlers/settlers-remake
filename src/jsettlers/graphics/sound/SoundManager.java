@@ -27,6 +27,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * 31/32 (soldier ?) <br>
  * 33 Bowman <br>
  * 35 soldier killed <br>
+ * 36 building getting removed <br>
  * 39: pigs <br>
  * 40: donkey <br>
  * 41: donkey <br>
@@ -58,36 +59,60 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
  * @author michael
  */
 public class SoundManager {
-
 	private static final int SEQUENCE_N = 118;
 	public static final int NOTIFY_ATTACKED = 80;
+
+	/**
+	 * The lookup paths for the dat files.
+	 */
+
 	private final SoundPlayer player;
 
 	private final Random random = new Random();
+
+	private static ArrayList<File> lookupPaths = new ArrayList<File>();
+
+	/**
+	 * The start positions of all the playable sounds.
+	 */
+	private int[][] soundStarts;
+	private boolean initializing = false;
 
 	public SoundManager(SoundPlayer player) {
 		this.player = player;
 		initialize();
 	}
 
-	/**
-	 * The lookup paths for the dat files.
-	 */
-	private static ArrayList<File> lookupPaths = new ArrayList<File>();
-	private int[][] playerids;
-	private boolean initializing = false;
-
 	private void loadSounds() throws FileNotFoundException, IOException {
-		File sndfile = null;
-		synchronized (lookupPaths) {
-			for (File dir : lookupPaths) {
-				File file = new File(dir, "Siedler3_00.dat");
-				if (file.exists()) {
-					sndfile = file;
-					break;
-				}
-			}
+		ByteReader reader = openSoundFile();
+
+		this.soundStarts = getSoundStarts(reader);
+		player.setSoundDataRetriever(new SoundDataRetriever(reader));
+	}
+
+	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
+		int[] seqheaderstarts = new int[SEQUENCE_N];
+		for (int i = 0; i < SEQUENCE_N; i++) {
+			seqheaderstarts[i] = reader.read32();
 		}
+
+		int[][] playerids = new int[SEQUENCE_N][];
+		for (int i = 0; i < SEQUENCE_N; i++) {
+			reader.skipTo(seqheaderstarts[i]);
+			int alternaitvecount = reader.read32();
+			int[] starts = new int[alternaitvecount];
+			for (int j = 0; j < alternaitvecount; j++) {
+				starts[j] = reader.read32();
+			}
+
+			playerids[i] = starts;
+		}
+		return playerids;
+	}
+
+	protected static ByteReader openSoundFile() throws IOException,
+	        FileNotFoundException {
+		File sndfile = getSoundFile();
 
 		if (sndfile == null) {
 			throw new IOException("Sound file not found.");
@@ -116,41 +141,21 @@ public class SoundManager {
 		});
 
 		reader.skipTo(0x24);
-		int[] seqheaderstarts = new int[SEQUENCE_N];
-		for (int i = 0; i < SEQUENCE_N; i++) {
-			seqheaderstarts[i] = reader.read32();
-		}
+		return reader;
+	}
 
-		playerids = new int[SEQUENCE_N][];
-		for (int i = 0; i < SEQUENCE_N; i++) {
-			reader.skipTo(seqheaderstarts[i]);
-			int alternaitvecount = reader.read32();
-			int[] starts = new int[alternaitvecount];
-			for (int j = 0; j < alternaitvecount; j++) {
-				starts[j] = reader.read32();
+	private static File getSoundFile() {
+		File sndfile = null;
+		synchronized (lookupPaths) {
+			for (File dir : lookupPaths) {
+				File file = new File(dir, "Siedler3_00.dat");
+				if (file.exists()) {
+					sndfile = file;
+					break;
+				}
 			}
-
-			playerids[i] = starts;
-
-			// int[] sounds = new int[alternaitvecount];
-			// for (int j = 0; j < alternaitvecount; j++) {
-			// reader.skipTo(starts[j]);
-			//
-			// int length = reader.read32() / 2;
-			// reader.read32();
-			// reader.read32(); // mostly 22050
-			// reader.read32(); // mostly 44100
-			// reader.read32();
-			// System.out.println("sound file " + i + ", alternaitve " + j
-			// + ", startbyte: " + starts[0] + ", startsample: "
-			// + starts[j] / 2 + ", endsample: "
-			// + (starts[j] / 2 + length));
-			// sounds[j] = player.load(loadSound(reader, length));
-			// }
-			// playerids[i] = sounds;
 		}
-
-		player.setSoundDataRetriever(new SoundDataRetriever(reader));
+		return sndfile;
 	}
 
 	// private static short[] loadSound(ByteReader reader, int length)
@@ -169,8 +174,8 @@ public class SoundManager {
 	public void playSound(int soundid, float volume1, float volume2) {
 		initialize();
 
-		if (playerids != null && soundid >= 0 && soundid < SEQUENCE_N) {
-			int[] alternatives = playerids[soundid];
+		if (soundStarts != null && soundid >= 0 && soundid < SEQUENCE_N) {
+			int[] alternatives = soundStarts[soundid];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
 				player.playSound(alternatives[rand], volume1, volume2);
@@ -204,7 +209,7 @@ public class SoundManager {
 		}
 	}
 
-	private static class SoundDataRetriever implements ISoundDataRetriever {
+	protected static class SoundDataRetriever implements ISoundDataRetriever {
 
 		private final ByteReader reader;
 
@@ -215,31 +220,32 @@ public class SoundManager {
 		@Override
 		public synchronized short[] getSoundData(int soundStart)
 		        throws IOException {
-			reader.skipTo(soundStart);
+			return SoundManager.getSoundData(reader, soundStart);
+		}
+	}
+	
+	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
+		reader.skipTo(start);
 
-			int length = reader.read32() / 2 - 16;
-			reader.read32();
-			reader.read32(); // mostly 22050
-			reader.read32(); // mostly 44100
-			reader.read32();
+		int length = reader.read32() / 2 - 16;
+		reader.read32();
+		reader.read32(); // mostly 22050
+		reader.read32(); // mostly 44100
+		reader.read32();
 
-			System.out.println("playing sound, startbyte: " + soundStart
-			        + "  length: " + length);
-			return loadSound(reader, length);
+		return loadSound(reader, length);
+	}
+
+	private static short[] loadSound(ByteReader reader, int length)
+	        throws IOException {
+		if (length < 0) {
+			return new short[0];
+		}
+		short[] data = new short[length];
+		for (int i = 0; i < length; i++) {
+			data[i] = (short) reader.read16signed();
 		}
 
-		private static short[] loadSound(ByteReader reader, int length)
-		        throws IOException {
-			if (length < 0) {
-				return new short[0];
-			}
-			short[] data = new short[length];
-			for (int i = 0; i < length; i++) {
-				data[i] = (short) reader.read16signed();
-			}
-
-			return data;
-		}
-
+		return data;
 	}
 }

@@ -204,8 +204,7 @@ public class MapObjectDrawer {
 				case BUILDING_DECONSTRUCTION_SMOKE:
 					drawByProgress(x, y, 13, 38, object.getStateProgress(),
 					        color);
-					// <TODO this is not the right sound.
-					playSound(object, 35);
+					playSound(object, 36);
 					break;
 
 				case FOUND_COAL:
