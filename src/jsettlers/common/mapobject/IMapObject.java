@@ -7,10 +7,10 @@ package jsettlers.common.mapobject;
  * 
  */
 public interface IMapObject {
-	public static final float TREE_CUT_1 = 0.1F;
-	public static final float TREE_CUT_2 = 0.2F;
-	public static final float TREE_CUT_3 = 0.3F;
-	public static final float TREE_TAKEN = 0.4F;
+	public static final float TREE_CUT_1 = 0.03F;
+	public static final float TREE_CUT_2 = 0.06F;
+	public static final float TREE_CUT_3 = 0.09F;
+	public static final float TREE_TAKEN = 0.1F;
 
 	/**
 	 * Gets the type of the object.
