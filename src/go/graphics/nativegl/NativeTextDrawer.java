@@ -24,7 +24,7 @@ public class NativeTextDrawer implements TextDrawer {
 	@Override
 	public double getWidth(String string) {
 		// TODO Auto-generated method stub
-		return string.length();
+		return 0;
 	}
 
 	@Override
