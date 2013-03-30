@@ -568,6 +568,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case COALMINE:
 			return new MineBuilding(type, player);
 
+		case STOCK:
+			return new StockBuilding(player);
+
 			// XXX This is only for testing!
 		case LAGERHAUS:
 			return new SpawnBuilding(type, player) {
