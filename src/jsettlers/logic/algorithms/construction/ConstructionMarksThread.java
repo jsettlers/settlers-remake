@@ -1,16 +1,9 @@
 package jsettlers.logic.algorithms.construction;
 
-import java.util.BitSet;
-
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.EBuildingType.BuildingAreaBitSet;
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
-import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.map.shapes.MapShapeFilter;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
 import synchronic.timer.NetworkTimer;
 
@@ -21,10 +14,12 @@ import synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class ConstructionMarksThread implements Runnable {
-	private final IConstructionMarkableMap map;
-	private final byte player;
+public final class ConstructionMarksThread implements Runnable {
+
+	private final NewConstructionMarksAlgorithm algorithm;
 	private final Thread thread;
+
+	private boolean canceled;
 
 	/**
 	 * area of tiles to be checked.
@@ -32,12 +27,8 @@ public class ConstructionMarksThread implements Runnable {
 	private MapRectangle mapArea = null;
 	private EBuildingType buildingType = null;
 
-	private IMapArea lastArea = null;
-	private boolean canceled;
-
 	public ConstructionMarksThread(IConstructionMarkableMap map, byte player) {
-		this.map = map;
-		this.player = player;
+		algorithm = new NewConstructionMarksAlgorithm(map, player);
 
 		thread = new Thread(this, "ConstructionMarksThread");
 		thread.setDaemon(true);
@@ -59,7 +50,12 @@ public class ConstructionMarksThread implements Runnable {
 						StopWatch watch = new MilliStopWatch();
 						watch.restart();
 
-						calculateConstructMarks();
+						EBuildingType buildingType = this.buildingType;
+						MapRectangle mapArea = this.mapArea;
+						if (buildingType != null && mapArea != null) { // if the task has already been canceled
+							algorithm.calculateConstructMarks(mapArea, buildingType.getBuildingAreaBitSet(), buildingType.getGroundtypes(),
+									buildingType.getBlockedTiles());
+						}
 
 						watch.stop("calculation of construction marks");
 					}
@@ -67,108 +63,11 @@ public class ConstructionMarksThread implements Runnable {
 						wait(AlgorithmConstants.CONSTRUCT_MARKS_MAX_REFRESH_TIME);
 					}
 				}
-				removeConstructionMarks(lastArea);
-				lastArea = null;
-
+				algorithm.removeConstructionMarks();
 			} catch (InterruptedException e) {
 				// do nothing
 			} catch (Throwable t) { // this thread must never be destroyed due to errors
 				t.printStackTrace();
-			}
-		}
-	}
-
-	private void calculateConstructMarks() {
-		MapRectangle mapArea = this.mapArea; // local variables needed to prevent errors caused by synchronization
-		EBuildingType buildingType = this.buildingType;
-
-		if (buildingType == null || mapArea == null) {
-			return;
-		}
-		if (lastArea != null) {
-			removeConstructionMarks(lastArea, mapArea);
-		}
-
-		final BuildingAreaBitSet buildingSet = buildingType.getBuildingAreaBitSet();
-
-		final short minX = (short) (mapArea.getLineStartX(0));
-		final short maxX = (short) (mapArea.getLineEndX(mapArea.getLines() - 1));
-		final short minY = (mapArea.getMinY());
-
-		final short width = (short) (maxX - minX + 1);
-		final short height = mapArea.getHeight();
-		final short setWidth = (short) (width + buildingSet.width);
-		final short setHeight = (short) (height + buildingSet.height);
-
-		BitSet areaSet = new BitSet(setWidth * setHeight);
-
-		final ELandscapeType[] landscapeTypes = buildingType.getGroundtypes();
-		for (short y = 0; y < setHeight; y++) {
-			for (short x = 0; x < setWidth; x++) {
-				boolean canConstruct = map.canUsePositionForConstruction((short) (minX + buildingSet.minX + x),
-						(short) (y + buildingSet.minY + minY), landscapeTypes, player);
-				areaSet.set(x + y * setWidth, canConstruct);
-			}
-		}
-
-		for (short line = 0; line < mapArea.getLines(); line++) {
-			final short mapY = (short) mapArea.getLineY(line);
-			final int endX = mapArea.getLineEndX(line);
-			for (short mapX = (short) mapArea.getLineStartX(line); mapX < endX; mapX++) {
-				if (map.isInBounds(mapX, mapY)) { // needed because of map.setConstructMarking()
-					byte value;
-					if (checkPosition(mapX - minX, mapY - minY, areaSet, setWidth, buildingSet)) {
-						value = map.getConstructionMarkValue(mapX, mapY, buildingType);
-						if (value > Byte.MAX_VALUE) {
-							value = -1;
-						}
-					} else {
-						value = -1;
-					}
-					map.setConstructMarking(mapX, mapY, value);
-				}
-			}
-		}
-		lastArea = mapArea;
-	}
-
-	private static final boolean checkPosition(int offsetX, int offsetY, BitSet areaSet, short areaWidth, BuildingAreaBitSet buildingSet) {
-		for (short x = 0; x < buildingSet.width; x++) {
-			for (short y = 0; y < buildingSet.height; y++) {
-				if (buildingSet.getWithoutOffset(x, y)) { // is position needed?
-					if (!areaSet.get((x + offsetX) + (y + offsetY) * areaWidth)) { // is position not ok?
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Removes all construction marks in the given area.
-	 * 
-	 * @param area
-	 *            The area to remove the marks
-	 */
-	private void removeConstructionMarks(IMapArea area) {
-		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
-			map.setConstructMarking(pos.x, pos.y, (byte) -1);
-		}
-	}
-
-	/**
-	 * Removes all construction marks in the given area.
-	 * 
-	 * @param area
-	 *            The area to remove the marks
-	 * @param notIn
-	 *            The area of marks that should be skipped.
-	 */
-	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
-		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
-			if (!notIn.contains(pos)) {
-				map.setConstructMarking(pos.x, pos.y, (byte) -1);
 			}
 		}
 	}
@@ -178,8 +77,8 @@ public class ConstructionMarksThread implements Runnable {
 		this.notifyAll();
 	}
 
-	public synchronized void setBuildingType(EBuildingType type) {
-		this.buildingType = type;
+	public synchronized void setBuildingType(EBuildingType buildingType) {
+		this.buildingType = buildingType;
 		this.notifyAll();
 	}
 

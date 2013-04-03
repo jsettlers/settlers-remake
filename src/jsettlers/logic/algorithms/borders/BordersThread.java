@@ -100,7 +100,6 @@ public class BordersThread implements Runnable {
 
 	public void cancel() {
 		this.canceled = true;
-		positionsQueue.notifyAll();
 		bordersThread.interrupt();
 	}
 
