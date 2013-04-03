@@ -100,7 +100,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 	}
 
-	public final void setLandscapeTypeAt(short x, short y, ELandscapeType landscapeType) {
+	public final void setLandscapeTypeAt(int x, int y, ELandscapeType landscapeType) {
 		if (landscapeType == ELandscapeType.FLATTENED && this.landscapeGrid[x + y * width] != ELandscapeType.FLATTENED.ordinal) {
 			flattenedResetter.addPosition(x, y);
 		}
@@ -159,7 +159,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		private static final long serialVersionUID = -332117701485179252L;
 
 		@Override
-		public final void backgroundChangedAt(short x, short y) {
+		public final void backgroundChangedAt(int x, int y) {
 		}
 	}
 

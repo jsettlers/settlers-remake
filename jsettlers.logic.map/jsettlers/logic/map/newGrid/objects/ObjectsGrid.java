@@ -84,7 +84,7 @@ public final class ObjectsGrid implements Serializable {
 		return mapObjectHead != null ? mapObjectHead.getMapObject(mapObjectType) : null;
 	}
 
-	public final AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+	public final AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType) {
 		final int idx = x + y * width;
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];
 
@@ -100,7 +100,7 @@ public final class ObjectsGrid implements Serializable {
 		return removed;
 	}
 
-	public final boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
+	public final boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject) {
 		final int idx = x + y * width;
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];
 		if (mapObjectHead != null) {
@@ -117,7 +117,7 @@ public final class ObjectsGrid implements Serializable {
 			return false;
 	}
 
-	public final void addMapObjectAt(short x, short y, AbstractHexMapObject mapObject) {
+	public final void addMapObjectAt(int x, int y, AbstractHexMapObject mapObject) {
 		final int idx = x + y * width;
 
 		AbstractHexMapObject mapObjectHead = objectsGrid[idx];

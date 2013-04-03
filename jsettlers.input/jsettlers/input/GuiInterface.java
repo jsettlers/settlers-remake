@@ -80,7 +80,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		case BUILD:
 			this.setSelection(new SelectionSet());
 			EBuildingType buildingType = ((BuildAction) action).getBuilding();
-			System.err.println("build: " + buildingType);
+			System.out.println("build: " + buildingType);
 			this.previewBuilding = buildingType; // FIXME implement a way to give graphics grid the preview building
 			connector.setPreviewBuildingType(buildingType);
 			constructionMarksCalculator.setBuildingType(buildingType);
@@ -364,7 +364,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			switch (activeAction.getActionType()) {
 			case BUILD:
 				EBuildingType type = previewBuilding;
-				ShortPoint2D pos2 = grid.getConstructablePositionAround(pos, type);
+				ShortPoint2D pos2 = grid.getConstructablePosition(pos, type, InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
 				if (pos2 != null) {
 					cancelBuildingCreation();
 					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos2, type));

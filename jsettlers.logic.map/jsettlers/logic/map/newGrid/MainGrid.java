@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.EBuildingType.BuildingAreaBitSet;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -307,7 +306,7 @@ public final class MainGrid implements Serializable {
 		return building;
 	}
 
-	protected final void setLandscapeTypeAt(short x, short y, ELandscapeType newType) {
+	protected final void setLandscapeTypeAt(int x, int y, ELandscapeType newType) {
 		if (newType.isBlocking) {
 			flagsGrid.setBlockedAndProtected(x, y, true);
 		} else {
@@ -608,27 +607,27 @@ public final class MainGrid implements Serializable {
 		private static final long serialVersionUID = 6223899915568781576L;
 
 		@Override
-		public final void setLandscape(short x, short y, ELandscapeType landscapeType) {
+		public final void setLandscape(int x, int y, ELandscapeType landscapeType) {
 			setLandscapeTypeAt(x, y, landscapeType);
 		}
 
 		@Override
-		public final void setBlocked(short x, short y, boolean blocked) {
+		public final void setBlocked(int x, int y, boolean blocked) {
 			flagsGrid.setBlockedAndProtected(x, y, blocked);
 		}
 
 		@Override
-		public final AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+		public final AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType) {
 			return objectsGrid.removeMapObjectType(x, y, mapObjectType);
 		}
 
 		@Override
-		public final boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
+		public final boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject) {
 			return objectsGrid.removeMapObject(x, y, mapObject);
 		}
 
 		@Override
-		public final boolean isBlocked(short x, short y) {
+		public final boolean isBlocked(int x, int y) {
 			return flagsGrid.isBlocked(x, y);
 		}
 
@@ -638,7 +637,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void addMapObject(short x, short y, AbstractHexMapObject mapObject) {
+		public final void addMapObject(int x, int y, AbstractHexMapObject mapObject) {
 			objectsGrid.addMapObjectAt(x, y, mapObject);
 		}
 
@@ -653,22 +652,22 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isInBounds(short x, short y) {
+		public final boolean isInBounds(int x, int y) {
 			return MainGrid.this.isInBounds(x, y);
 		}
 
 		@Override
-		public final void setProtected(short x, short y, boolean protect) {
+		public final void setProtected(int x, int y, boolean protect) {
 			flagsGrid.setProtected(x, y, protect);
 		}
 
 		@Override
-		public EResourceType getRessourceTypeAt(short x, short y) {
+		public EResourceType getRessourceTypeAt(int x, int y) {
 			return landscapeGrid.getResourceTypeAt(x, y);
 		}
 
 		@Override
-		public byte getRessourceAmountAt(short x, short y) {
+		public byte getRessourceAmountAt(int x, int y) {
 			return landscapeGrid.getResourceAmountAt(x, y);
 		}
 
@@ -720,8 +719,14 @@ public final class MainGrid implements Serializable {
 
 	final class ConstructionMarksGrid implements IConstructionMarkableMap {
 		@Override
-		public final void setConstructMarking(short x, short y, byte value) {
-			mapObjectsManager.setConstructionMarking(x, y, value);
+		public final void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
+			if (isInBounds(x, y)) {
+				if (set) {
+					mapObjectsManager.setConstructionMarking(x, y, getConstructionMarkValue(x, y, flattenPositions));
+				} else {
+					mapObjectsManager.setConstructionMarking(x, y, (byte) -1);
+				}
+			}
 		}
 
 		@Override
@@ -737,23 +742,23 @@ public final class MainGrid implements Serializable {
 		final boolean canConstructAt(short x, short y, EBuildingType type, Player player) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			for (RelativePoint curr : type.getProtectedTiles()) {
-				short currX = curr.calculateX(x);
-				short currY = curr.calculateY(y);
+				int currX = curr.calculateX(x);
+				int currY = curr.calculateY(y);
 
 				if (!canUsePositionForConstruction(currX, currY, landscapes, player.playerId)) {
 					return false;
 				}
 			}
-			return getConstructionMarkValue(x, y, type) >= 0;
+			return getConstructionMarkValue(x, y, type.getBlockedTiles()) >= 0;
 		}
 
 		@Override
-		public final boolean canUsePositionForConstruction(short x, short y, ELandscapeType[] landscapeTypes, byte player) {
+		public final boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player) {
 			return MainGrid.this.isInBounds(x, y) && !flagsGrid.isProtected(x, y) && partitionsGrid.getPlayerIdAt(x, y) == player
 					&& isAllowedLandscape(x, y, landscapeTypes);
 		}
 
-		private final boolean isAllowedLandscape(short x, short y, ELandscapeType[] landscapes) {
+		private final boolean isAllowedLandscape(int x, int y, ELandscapeType[] landscapes) {
 			ELandscapeType landscapeAt = landscapeGrid.getLandscapeTypeAt(x, y);
 			for (byte i = 0; i < landscapes.length; i++) {
 				if (landscapeAt == landscapes[i]) {
@@ -763,37 +768,22 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		@Override
-		public final boolean isInBounds(short x, short y) {
-			return MainGrid.this.isInBounds(x, y);
-		}
-
-		@Override
-		public byte getConstructionMarkValue(short mapX, short mapY, EBuildingType buildingType) {
-			final BuildingAreaBitSet buildingSet = buildingType.getBuildingAreaBitSet();
+		private byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			int sum = 0;
 
-			for (short x = buildingSet.minX; x <= buildingSet.maxX; x++) {
-				for (short y = buildingSet.minX; y <= buildingSet.maxX; y++) {
-					if (buildingSet.get(x, y)) {
-						sum += landscapeGrid.getHeightAt((short) (mapX + x), (short) (mapY + y));
-					}
-				}
+			for (RelativePoint currPos : flattenPositions) {
+				sum += landscapeGrid.getHeightAt(currPos.calculateX(mapX), currPos.calculateY(mapY));
 			}
 
-			int avg = sum / buildingSet.numberOfPositions;
+			float avg = ((float) sum) / flattenPositions.length;
 			float diff = 0;
-			for (short x = buildingSet.minX; x <= buildingSet.maxX; x++) {
-				for (short y = buildingSet.minX; y <= buildingSet.maxX; y++) {
-					if (buildingSet.get(x, y)) {
-						float currDiff = Math.abs(landscapeGrid.getHeightAt((short) (mapX + x), (short) (mapY + y))) - avg;
-						diff += currDiff;
-					}
-				}
+
+			for (RelativePoint currPos : flattenPositions) {
+				float currDiff = Math.abs(landscapeGrid.getHeightAt(currPos.calculateX(mapX), currPos.calculateY(mapY)) - avg);
+				diff += currDiff;
 			}
 
-			diff /= buildingSet.numberOfPositions;
-			int result = (int) (2 * diff);
+			int result = (int) (Constants.CONSTRUCTION_MARK_SCALE_FACTOR * Math.pow(diff, Constants.CONSTRUCTION_MARK_POW_FACTOR) / flattenPositions.length);
 
 			if (result <= Byte.MAX_VALUE) {
 				return (byte) result;
@@ -1411,16 +1401,18 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final ShortPoint2D getConstructablePositionAround(ShortPoint2D pos, EBuildingType type) {
+		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, boolean useNeighbors) {
 			Player player = partitionsGrid.getPlayerAt(pos.x, pos.y);
 			if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, player)) {
 				return pos;
-			} else {
+			} else if (useNeighbors) {
 				for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
 					if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, player)) {
 						return neighbour;
 					}
 				}
+				return null;
+			} else {
 				return null;
 			}
 		}

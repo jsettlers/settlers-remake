@@ -10,28 +10,28 @@ import jsettlers.logic.objects.arrow.IArrowAttackableGrid;
 public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGrid {
 	AbstractHexMapObject getMapObject(int x, int y, EMapObjectType mapObjectType);
 
-	void setLandscape(short x, short y, ELandscapeType landscapeType);
+	void setLandscape(int x, int y, ELandscapeType landscapeType);
 
-	void addMapObject(short x, short y, AbstractHexMapObject mapObject);
+	void addMapObject(int x, int y, AbstractHexMapObject mapObject);
 
-	boolean isBlocked(short x, short y);
+	boolean isBlocked(int x, int y);
 
-	void setBlocked(short x, short y, boolean blocked);
+	void setBlocked(int x, int y, boolean blocked);
 
-	AbstractHexMapObject removeMapObjectType(short x, short y, EMapObjectType mapObjectType);
+	AbstractHexMapObject removeMapObjectType(int x, int y, EMapObjectType mapObjectType);
 
-	boolean removeMapObject(short x, short y, AbstractHexMapObject mapObject);
+	boolean removeMapObject(int x, int y, AbstractHexMapObject mapObject);
 
 	short getWidth();
 
 	short getHeight();
 
-	boolean isInBounds(short x, short y);
+	boolean isInBounds(int x, int y);
 
-	void setProtected(short x, short y, boolean protect);
+	void setProtected(int x, int y, boolean protect);
 
-	EResourceType getRessourceTypeAt(short x, short y);
+	EResourceType getRessourceTypeAt(int x, int y);
 
-	byte getRessourceAmountAt(short x, short y);
+	byte getRessourceAmountAt(int x, int y);
 
 }

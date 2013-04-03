@@ -186,10 +186,10 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		return addMapObject(pos.x, pos.y, mapObject);
 	}
 
-	private final boolean addMapObject(short x, short y, AbstractHexMapObject mapObject) {
+	private final boolean addMapObject(int x, int y, AbstractHexMapObject mapObject) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			short currX = point.calculateX(x);
-			short currY = point.calculateY(y);
+			int currX = point.calculateX(x);
+			int currY = point.calculateY(y);
 			if (!grid.isInBounds(currX, currY) || grid.isBlocked(currX, currY)) {
 				return false;
 			}
@@ -201,7 +201,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		return true;
 	}
 
-	public void removeMapObjectType(short x, short y, EMapObjectType mapObjectType) {
+	public void removeMapObjectType(int x, int y, EMapObjectType mapObjectType) {
 		AbstractHexMapObject removed = grid.removeMapObjectType(x, y, mapObjectType);
 
 		if (removed != null) {
@@ -217,10 +217,10 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		}
 	}
 
-	private void setBlockedForObject(short oldX, short oldY, AbstractHexMapObject mapObject, boolean blocked) {
+	private void setBlockedForObject(int oldX, int oldY, AbstractHexMapObject mapObject, boolean blocked) {
 		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			short newX = point.calculateX(oldX);
-			short newY = point.calculateY(oldY);
+			int newX = point.calculateX(oldX);
+			int newY = point.calculateY(oldY);
 			if (grid.isInBounds(newX, newY)) {
 				grid.setBlocked(newX, newY, blocked);
 			}
@@ -279,7 +279,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		timingQueue.add(new TimeEvent(object, duration, true));
 	}
 
-	public void setConstructionMarking(short x, short y, byte value) {
+	public void setConstructionMarking(int x, int y, byte value) {
 		if (value >= 0) {
 			ConstructionMarkObject markObject = (ConstructionMarkObject) grid.getMapObject(x, y, EMapObjectType.CONSTRUCTION_MARK);
 			if (markObject == null) {

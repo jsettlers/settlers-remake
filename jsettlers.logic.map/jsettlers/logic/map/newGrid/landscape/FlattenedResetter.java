@@ -58,7 +58,7 @@ final class FlattenedResetter implements ITimerable, Serializable {
 		Timer100Milli.add(this);
 	}
 
-	public void addPosition(short x, short y) {
+	public void addPosition(int x, int y) {
 		positions.add(new ShortPoint2D(x, y));
 	}
 

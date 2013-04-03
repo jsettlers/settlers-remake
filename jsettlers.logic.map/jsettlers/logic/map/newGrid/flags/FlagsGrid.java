@@ -70,7 +70,7 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 	 *            the position will be set to blocked and protected if blocked == true<br>
 	 *            otherwise it will be set to unblocked and unprotected.
 	 */
-	public void setBlockedAndProtected(short x, short y, boolean blocked) {
+	public void setBlockedAndProtected(int x, int y, boolean blocked) {
 		final int idx = x + y * width;
 		this.blockedGrid.set(idx, blocked);
 		this.protectedGrid.set(idx, blocked);
@@ -92,7 +92,7 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 		return this.protectedGrid.get(x + y * width);
 	}
 
-	public void setProtected(short x, short y, boolean setProtected) {
+	public void setProtected(int x, int y, boolean setProtected) {
 		this.protectedGrid.set(x + y * width, setProtected);
 	}
 
