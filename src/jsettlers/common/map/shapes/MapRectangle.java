@@ -28,6 +28,10 @@ public final class MapRectangle implements IMapArea {
 		this.height = height;
 	}
 
+	public MapRectangle(int minx, int miny, int width, int height) {
+		this((short) minx, (short) miny, (short) width, (short) height);
+	}
+
 	@Override
 	public final boolean contains(ShortPoint2D position) {
 		return contains(position.x, position.y);
