@@ -890,10 +890,13 @@ public class Background implements IGraphicsBackgroundListener {
 					data = getTexture();
 				}
 			}
-			ByteBuffer buffer = ByteBuffer.allocateDirect(data.length * 2).order(ByteOrder.nativeOrder());
+			ByteBuffer buffer =
+			        ByteBuffer.allocateDirect(data.length * 2).order(
+			                ByteOrder.nativeOrder());
 			buffer.asShortBuffer().put(data);
 			texture =
-			        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE, buffer.asShortBuffer());
+			        context.generateTexture(TEXTURE_SIZE, TEXTURE_SIZE,
+			                buffer.asShortBuffer());
 
 			System.out.println("Background texture generated in "
 			        + (System.currentTimeMillis() - starttime) + "ms");
@@ -914,7 +917,7 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 
 		@Override
-		public void writeLine(short[] data, int length) throws IOException { 
+		public void writeLine(short[] data, int length) throws IOException {
 			if (arrayoffset < maxoffset) {
 				for (int i = 0; i < cellsize; i++) {
 					this.data[arrayoffset + i] = data[i % length];
@@ -1269,7 +1272,7 @@ public class Background implements IGraphicsBackgroundListener {
 		} else if (outer == ELandscapeType.MOUNTAINBORDER
 		        && inner == ELandscapeType.GRAVEL) {
 			index = 233;
-			
+
 		} else {
 			index = outer.getImageNumber();
 			useSecond = false; // force!
@@ -1575,19 +1578,19 @@ public class Background implements IGraphicsBackgroundListener {
 		float[] relativeTexCoords = texturePos.getRelativecoords();
 
 		{
-			//top
+			// top
 			float u = (relativeTexCoords[0] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[1] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y, u, v, fogBase + 0);
 		}
 		{
-			//left
+			// left
 			float u = (relativeTexCoords[2] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[3] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y + 1, u, v, fogBase + 2);
 		}
 		{
-			//right
+			// right
 			float u = (relativeTexCoords[4] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[5] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
@@ -1661,19 +1664,19 @@ public class Background implements IGraphicsBackgroundListener {
 		float[] relativeTexCoords = texturePos.getRelativecoords();
 
 		{
-			//left
+			// left
 			float u = (relativeTexCoords[0] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[1] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x, y, u, v, fogBase + 0);
 		}
 		{
-			//bottom
+			// bottom
 			float u = (relativeTexCoords[2] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[3] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x + 1, y + 1, u, v, fogBase + 3);
 		}
 		{
-			//right
+			// right
 			float u = (relativeTexCoords[4] + adddx) / TEXTURE_SIZE;
 			float v = (relativeTexCoords[5] + adddy) / TEXTURE_SIZE;
 			addPointToGeometry(context, buffer, x + 1, y, u, v, fogBase + 1);
@@ -1720,7 +1723,7 @@ public class Background implements IGraphicsBackgroundListener {
 	}
 
 	@Override
-	public void backgroundChangedAt(short x, short y) {
+	public void backgroundChangedAt(int x, int y) {
 		if (oldBufferPosition != null) {
 			if (oldBufferPosition.contains(x, y)) {
 				invalidatePoint(x, y);
