@@ -1,5 +1,7 @@
 package jsettlers.logic.newmovable.interfaces;
 
+import java.io.Serializable;
+
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
@@ -20,23 +22,24 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public interface IStrategyGrid {
+public abstract class AbstractStrategyGrid implements Serializable {
+	private static final long serialVersionUID = 5560951888790865783L;
 
-	void addJobless(IManageableBearer bearer);
+	public abstract void addJobless(IManageableBearer bearer);
 
-	void removeJobless(IManageableBearer bearer);
+	public abstract void removeJobless(IManageableBearer bearer);
 
-	void addJobless(IManageableWorker worker);
+	public abstract void addJobless(IManageableWorker worker);
 
-	void removeJobless(IManageableWorker worker);
+	public abstract void removeJobless(IManageableWorker worker);
 
-	void addJobless(IManageableDigger digger);
+	public abstract void addJobless(IManageableDigger digger);
 
-	void removeJobless(IManageableDigger digger);
+	public abstract void removeJobless(IManageableDigger digger);
 
-	void addJobless(IManageableBricklayer bricklayer);
+	public abstract void addJobless(IManageableBricklayer bricklayer);
 
-	void removeJobless(IManageableBricklayer bricklayer);
+	public abstract void removeJobless(IManageableBricklayer bricklayer);
 
 	/**
 	 * Take a material from the stack at given position of given {@link EMaterialType}.
@@ -46,7 +49,7 @@ public interface IStrategyGrid {
 	 * @return true if the material was available<br>
 	 *         false otherwise.
 	 */
-	boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType);
+	public abstract boolean takeMaterial(ShortPoint2D pos, EMaterialType materialType);
 
 	/**
 	 * Drop a material of given type at given position.
@@ -54,9 +57,9 @@ public interface IStrategyGrid {
 	 * @param pos
 	 * @param materialType
 	 */
-	boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
+	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
 
-	float getResourceAmountAround(short x, short y, EResourceType type);
+	public abstract float getResourceAmountAround(short x, short y, EResourceType type);
 
 	/**
 	 * 
@@ -65,7 +68,7 @@ public interface IStrategyGrid {
 	 * @return in what direction you have to look from the given position to directly look at the given search type<br>
 	 *         or null if the search type isn't a neighbor of the given position.
 	 */
-	EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType);
+	public abstract EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType);
 
 	/**
 	 * 
@@ -74,7 +77,7 @@ public interface IStrategyGrid {
 	 * @return true if the given position can be used to execute the search type.<br>
 	 *         false if it can not
 	 */
-	boolean executeSearchType(ShortPoint2D pos, ESearchType searchType);
+	public abstract boolean executeSearchType(ShortPoint2D pos, ESearchType searchType);
 
 	/**
 	 * Checks if the given position fits the given search type.
@@ -87,11 +90,11 @@ public interface IStrategyGrid {
 	 *            search type to be checked
 	 * @return true if the search type fits the given position.
 	 */
-	boolean fitsSearchType(IPathCalculateable pathCalculateable, ShortPoint2D pos, ESearchType searchType);
+	public abstract boolean fitsSearchType(IPathCalculateable pathCalculateable, ShortPoint2D pos, ESearchType searchType);
 
-	EMaterialType popToolProductionRequest(ShortPoint2D pos);
+	public abstract EMaterialType popToolProductionRequest(ShortPoint2D pos);
 
-	void placePigAt(ShortPoint2D pos, boolean place);
+	public abstract void placePigAt(ShortPoint2D pos, boolean place);
 
 	/**
 	 * 
@@ -99,14 +102,14 @@ public interface IStrategyGrid {
 	 * @return true if there is a pig at given pos<br>
 	 *         false otherwise.
 	 */
-	boolean hasPigAt(ShortPoint2D position);
+	public abstract boolean hasPigAt(ShortPoint2D position);
 
 	/**
 	 * 
 	 * @param position
 	 * @return true if there is a pig on given position.
 	 */
-	boolean isPigAdult(ShortPoint2D position);
+	public abstract boolean isPigAdult(ShortPoint2D position);
 
 	/**
 	 * Show smoke or remove it at the given position.
@@ -117,7 +120,7 @@ public interface IStrategyGrid {
 	 *            if true, smoke will be turned on, <br>
 	 *            if false, it will be turned of.
 	 */
-	void placeSmoke(ShortPoint2D position, boolean smokeOn);
+	public abstract void placeSmoke(ShortPoint2D position, boolean smokeOn);
 
 	/**
 	 * checks if there can be put any more materials on the given position.
@@ -125,7 +128,7 @@ public interface IStrategyGrid {
 	 * @param position
 	 * @return
 	 */
-	boolean canPushMaterial(ShortPoint2D position);
+	public abstract boolean canPushMaterial(ShortPoint2D position);
 
 	/**
 	 * Checks if the given {@link EMaterialType} can be popped from the given position.
@@ -134,13 +137,13 @@ public interface IStrategyGrid {
 	 * @param material
 	 * @return
 	 */
-	boolean canPop(ShortPoint2D position, EMaterialType material);
+	public abstract boolean canPop(ShortPoint2D position, EMaterialType material);
 
-	byte getHeightAt(ShortPoint2D position);
+	public abstract byte getHeightAt(ShortPoint2D position);
 
-	boolean isMarked(ShortPoint2D position);
+	public abstract boolean isMarked(ShortPoint2D position);
 
-	void setMarked(ShortPoint2D position, boolean marked);
+	public abstract void setMarked(ShortPoint2D position, boolean marked);
 
 	/**
 	 * Changes the height of the given position towards the given targetHeight and changes the landscape type to {@link ELandscapeType}.FLATTENED
@@ -148,7 +151,7 @@ public interface IStrategyGrid {
 	 * @param position
 	 * @param targetHeight
 	 */
-	void changeHeightTowards(short x, short y, byte targetHeight);
+	public abstract void changeHeightTowards(short x, short y, byte targetHeight);
 
 	/**
 	 * Changes the player at the given position to the given player.
@@ -156,7 +159,7 @@ public interface IStrategyGrid {
 	 * @param pos
 	 * @param player
 	 */
-	void changePlayerAt(ShortPoint2D pos, Player player);
+	public abstract void changePlayerAt(ShortPoint2D pos, Player player);
 
 	/**
 	 * Gets the landscape type at the given position.
@@ -167,7 +170,7 @@ public interface IStrategyGrid {
 	 *            y coordinate of the position to get the landscape type.
 	 * @return {@link ELandscapeType} at the given position.
 	 */
-	ELandscapeType getLandscapeTypeAt(short x, short y);
+	public abstract ELandscapeType getLandscapeTypeAt(short x, short y);
 
 	/**
 	 * Searches for an enemy around the position of the given movable in it's search radius.
@@ -180,7 +183,7 @@ public interface IStrategyGrid {
 	 *            The radius of the search for enemy attackables.
 	 * @return The closest enemy or null if none exists in the search radius.
 	 */
-	IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short searchRadius);
+	public abstract IAttackable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable movable, short searchRadius);
 
 	/**
 	 * Adds an arrow object to the map flying from
@@ -192,9 +195,9 @@ public interface IStrategyGrid {
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
+	public abstract void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
 
-	boolean hasNoMovableAt(short x, short y);
+	public abstract boolean hasNoMovableAt(short x, short y);
 
 	/**
 	 * 
@@ -203,6 +206,6 @@ public interface IStrategyGrid {
 	 * @return true if the position is on the grid, not blocked and free of other movables. <br>
 	 *         false otherwise.
 	 */
-	boolean isFreePosition(ShortPoint2D position);
+	public abstract boolean isFreePosition(ShortPoint2D position);
 
 }

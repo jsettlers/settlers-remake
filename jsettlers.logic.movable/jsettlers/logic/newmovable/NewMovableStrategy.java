@@ -10,7 +10,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
+import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
 import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
 import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
@@ -112,7 +112,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.goToPos(targetPos);
 	}
 
-	protected final IStrategyGrid getStrategyGrid() {
+	protected final AbstractStrategyGrid getStrategyGrid() {
 		return movable.getStrategyGrid();
 	}
 
@@ -257,7 +257,7 @@ public abstract class NewMovableStrategy implements Serializable {
 			return path;
 		}
 
-		IStrategyGrid grid = movable.getStrategyGrid();
+		AbstractStrategyGrid grid = movable.getStrategyGrid();
 
 		EDirection leftDir = direction.getNeighbor(-1);
 		EDirection rightDir = direction.getNeighbor(1);

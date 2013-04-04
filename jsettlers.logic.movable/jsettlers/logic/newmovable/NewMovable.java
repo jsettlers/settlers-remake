@@ -24,8 +24,8 @@ import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
-import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
-import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
+import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.ITimerable;
@@ -46,7 +46,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
 	private static int nextID = Integer.MIN_VALUE;
 
-	private final INewMovableGrid grid;
+	private final AbstractNewMovableGrid grid;
 	private final int id;
 
 	private ENewMovableState state = ENewMovableState.DOING_NOTHING;
@@ -78,7 +78,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	private float doingNothingProbablity = 0.06f;
 
-	public NewMovable(INewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+	public NewMovable(AbstractNewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
 		this.position = position;
 		this.player = player;
@@ -501,9 +501,9 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	/**
 	 * 
-	 * @return {@link IStrategyGrid} that can be used by the strategy to gain informations from the grid.
+	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
 	 */
-	final IStrategyGrid getStrategyGrid() {
+	final AbstractStrategyGrid getStrategyGrid() {
 		return grid;
 	}
 

@@ -11,7 +11,7 @@ import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IStrategyGrid;
+import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 
 public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
@@ -254,7 +254,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	@Override
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
 		if (state == ESoldierState.SEARCH_FOR_ENEMIES) {
-			IStrategyGrid grid = super.getStrategyGrid();
+			AbstractStrategyGrid grid = super.getStrategyGrid();
 			EDirection leftDir = direction.getNeighbor(-1);
 			ShortPoint2D leftPos = leftDir.getNextHexPoint(position);
 			EDirection rightDir = direction.getNeighbor(1);

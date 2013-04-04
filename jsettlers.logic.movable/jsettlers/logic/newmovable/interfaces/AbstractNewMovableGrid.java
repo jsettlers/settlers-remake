@@ -14,7 +14,8 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public interface INewMovableGrid extends IStrategyGrid {
+public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
+	private static final long serialVersionUID = -236805842467532505L;
 
 	/**
 	 * Checks if there is a movable at the given position.
@@ -27,9 +28,9 @@ public interface INewMovableGrid extends IStrategyGrid {
 	 *         false if there is no movable.
 	 */
 	@Override
-	boolean hasNoMovableAt(short x, short y);
+	public abstract boolean hasNoMovableAt(short x, short y);
 
-	void leavePosition(ShortPoint2D position, NewMovable movable);
+	public abstract void leavePosition(ShortPoint2D position, NewMovable movable);
 
 	/**
 	 * Lets the given movable enter the given position.
@@ -42,21 +43,21 @@ public interface INewMovableGrid extends IStrategyGrid {
 	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
 	 *            If false, only a circle is informed if the given movable is attackable.
 	 */
-	void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea);
+	public abstract void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea);
 
-	Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos);
+	public abstract Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos);
 
-	Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
-	Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
-	NewMovable getMovableAt(short x, short y);
+	public abstract NewMovable getMovableAt(short x, short y);
 
-	boolean isBlocked(short x, short y);
+	public abstract boolean isBlocked(short x, short y);
 
-	boolean isProtected(short x, short y);
+	public abstract boolean isProtected(short x, short y);
 
-	boolean isBlockedOrProtected(short x, short y);
+	public abstract boolean isBlockedOrProtected(short x, short y);
 
 	/**
 	 * Adds a map object to the grid that deletes itself after the given duration.
@@ -70,12 +71,12 @@ public interface INewMovableGrid extends IStrategyGrid {
 	 * @param player
 	 *            The {@link Player} of the map object.
 	 */
-	void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player);
+	public abstract void addSelfDeletingMapObject(ShortPoint2D position, EMapObjectType mapObjectType, float duration, Player player);
 
-	boolean isInBounds(short x, short y);
+	public abstract boolean isInBounds(short x, short y);
 
-	boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position);
+	public abstract boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position);
 
-	ShortPoint2D calcDecentralizeVector(short x, short y);
+	public abstract ShortPoint2D calcDecentralizeVector(short x, short y);
 
 }

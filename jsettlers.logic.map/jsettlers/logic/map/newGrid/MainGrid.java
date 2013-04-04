@@ -39,7 +39,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.input.IGuiInputGrid;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
-import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
+import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
@@ -81,8 +81,8 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
@@ -717,7 +717,7 @@ public final class MainGrid implements Serializable {
 
 	}
 
-	final class ConstructionMarksGrid implements IConstructionMarkableMap {
+	final class ConstructionMarksGrid extends AbstractConstructionMarkableMap {
 		@Override
 		public final void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {
@@ -754,7 +754,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player) {
-			return MainGrid.this.isInBounds(x, y) && !flagsGrid.isProtected(x, y) && partitionsGrid.getPlayerIdAt(x, y) == player
+			return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && partitionsGrid.getPlayerIdAt(x, y) == player
 					&& isAllowedLandscape(x, y, landscapeTypes);
 		}
 
@@ -793,7 +793,7 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class MovablePathfinderGrid implements INewMovableGrid, Serializable {
+	final class MovablePathfinderGrid extends AbstractNewMovableGrid {
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		private transient PathfinderGrid pathfinderGrid;
@@ -1276,7 +1276,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final INewMovableGrid getMovableGrid() {
+		public final AbstractNewMovableGrid getMovableGrid() {
 			return movablePathfinderGrid;
 		}
 
@@ -1441,7 +1441,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IConstructionMarkableMap getConstructionMarksGrid() {
+		public AbstractConstructionMarkableMap getConstructionMarksGrid() {
 			return constructionMarksGrid;
 		}
 
