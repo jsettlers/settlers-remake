@@ -9,7 +9,7 @@ import jsettlers.common.buildings.BuildingAreaBitSetTest;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.logic.algorithms.construction.IConstructionMarkableMap;
+import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.logic.algorithms.construction.NewConstructionMarksAlgorithm;
 
 import org.junit.Test;
@@ -111,7 +111,7 @@ public class ConstructionMarksAlgorithmTest {
 		return true;
 	}
 
-	public class TestMap implements IConstructionMarkableMap {
+	public class TestMap extends AbstractConstructionMarkableMap {
 		short width = 10;
 		short height = 10;
 

@@ -26,7 +26,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.INewMovableGrid;
+import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import random.RandomSingleton;
@@ -120,7 +120,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 
-	private final INewMovableGrid movableGrid = new INewMovableGrid() {
+	private final AbstractNewMovableGrid movableGrid = new AbstractNewMovableGrid() {
 		@Override
 		public void leavePosition(ShortPoint2D position, NewMovable movable) {
 			if (movableMap[position.x][position.y] == movable) {
@@ -375,7 +375,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	};
 
-	public INewMovableGrid getMovableGrid() {
+	public AbstractNewMovableGrid getMovableGrid() {
 		return movableGrid;
 	}
 
