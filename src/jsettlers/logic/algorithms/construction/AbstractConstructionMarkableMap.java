@@ -8,7 +8,7 @@ import jsettlers.common.position.RelativePoint;
  * 
  * @author Andreas Eberle
  */
-public interface IConstructionMarkableMap {
+public abstract class AbstractConstructionMarkableMap {
 
 	/**
 	 * Sets or removes a construction mark
@@ -22,17 +22,17 @@ public interface IConstructionMarkableMap {
 	 * @param flattenPositions
 	 *            The positions that need to be flattened to position this building. This value might be null whenever set is false.
 	 */
-	void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
+	public abstract void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
 
 	/**
 	 * @return width of map.
 	 */
-	short getWidth();
+	public abstract short getWidth();
 
 	/**
 	 * @return height of map
 	 */
-	short getHeight();
+	public abstract short getHeight();
 
 	/**
 	 * Checks if the given position is valid to build a building of given player that can stand on the given {@link ELandscapeType}s. Bounds checks
@@ -49,6 +49,6 @@ public interface IConstructionMarkableMap {
 	 * @return true if a building can be positioned at the given position<br>
 	 *         false otherwise.
 	 */
-	boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player);
+	public abstract boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player);
 
 }

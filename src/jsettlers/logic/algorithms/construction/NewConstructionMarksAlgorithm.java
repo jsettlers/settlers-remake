@@ -17,12 +17,12 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  */
 public final class NewConstructionMarksAlgorithm {
-	private final IConstructionMarkableMap map;
+	private final AbstractConstructionMarkableMap map;
 	private final byte player;
 
 	private MapRectangle lastArea = null;
 
-	public NewConstructionMarksAlgorithm(IConstructionMarkableMap map, byte player) {
+	public NewConstructionMarksAlgorithm(AbstractConstructionMarkableMap map, byte player) {
 		this.map = map;
 		this.player = player;
 	}
@@ -33,7 +33,7 @@ public final class NewConstructionMarksAlgorithm {
 			removeConstructionMarks(lastArea, mapArea);
 		}
 
-		//
+		// declare local variables
 		final short[] xJumps = buildingArea.xJumps;
 		final short[] yJumps = buildingArea.yJumps;
 
@@ -58,8 +58,8 @@ public final class NewConstructionMarksAlgorithm {
 				}
 
 				// go over all positions of the building and check if they are free
-				for (int buildingDx = 0; buildingDx < buildingAreaWidth; buildingDx++) {
-					for (int buildingDy = 0; buildingDy < buildingAreaHeight; buildingDy++) {
+				for (int buildingDx = buildingAreaWidth - 1; buildingDx >= 0; buildingDx--) {
+					for (int buildingDy = buildingAreaHeight - 1; buildingDy >= 0; buildingDy--) {
 						int index = buildingDx + buildingDy * buildingAreaWidth;
 
 						// if the position must be free, but isn't

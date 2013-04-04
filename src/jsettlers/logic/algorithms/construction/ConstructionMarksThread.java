@@ -27,7 +27,7 @@ public final class ConstructionMarksThread implements Runnable {
 	private MapRectangle mapArea = null;
 	private EBuildingType buildingType = null;
 
-	public ConstructionMarksThread(IConstructionMarkableMap map, byte player) {
+	public ConstructionMarksThread(AbstractConstructionMarkableMap map, byte player) {
 		algorithm = new NewConstructionMarksAlgorithm(map, player);
 
 		thread = new Thread(this, "ConstructionMarksThread");

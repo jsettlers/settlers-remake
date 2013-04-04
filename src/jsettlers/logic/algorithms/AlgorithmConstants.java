@@ -15,6 +15,6 @@ public abstract class AlgorithmConstants {
 	/**
 	 * if the construction marks are currently activated and the user does not move the view, the markings will be updated after this time (ms).
 	 */
-	public static final int CONSTRUCT_MARKS_MAX_REFRESH_TIME = 1000;
+	public static final int CONSTRUCT_MARKS_MAX_REFRESH_TIME = 1300;
 
 }
