@@ -190,7 +190,7 @@ public enum EActionType {
 	ASK_DESTROY,
 
 	/**
-	 * Gets called when a network grame should be started.
+	 * Gets called when a network game should be started.
 	 */
 	START_NETWORK,
 	JOIN_NETWORK,
@@ -211,5 +211,10 @@ public enum EActionType {
 	 * 
 	 * @see
 	 */
-	SET_BUILDING_PRIORITY
+	SET_BUILDING_PRIORITY,
+	/**
+	 * The user wants to change the settings for the distribution of a material
+	 * to the receiving buildings.
+	 */
+	SET_MATERIAL_DISTRIBUTION_SETTINGS
 }
