@@ -10,6 +10,7 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 import jsettlers.logic.map.newGrid.partition.manager.materials.offers.MaterialOffer;
 
 import org.junit.Test;
@@ -151,7 +152,7 @@ public class PartitionsGridTest {
 	public void testDividePartitionsByRemovingTower() {
 		addTower(0, 50, 100, 40);
 		// add two stones
-		Partition partition = grid.getPartitionAt(50, 100);
+		PartitionManager partition = grid.getPartitionAt(50, 100);
 		ShortPoint2D materialPos = new ShortPoint2D(75, 100);
 		partition.addOffer(materialPos, EMaterialType.STONE);
 		partition.addOffer(materialPos, EMaterialType.STONE);

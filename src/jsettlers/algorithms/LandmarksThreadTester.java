@@ -13,6 +13,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
@@ -247,6 +248,11 @@ public class LandmarksThreadTester {
 
 		@Override
 		public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
+		}
+
+		@Override
+		public IPartitionSettings getPartitionSettings(int x, int y) {
+			return null;
 		}
 
 	}

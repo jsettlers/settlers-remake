@@ -8,6 +8,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -25,8 +26,8 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import random.RandomSingleton;
@@ -121,6 +122,8 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	private final AbstractNewMovableGrid movableGrid = new AbstractNewMovableGrid() {
+		private static final long serialVersionUID = 610513829074598238L;
+
 		@Override
 		public void leavePosition(ShortPoint2D position, NewMovable movable) {
 			if (movableMap[position.x][position.y] == movable) {
@@ -406,5 +409,10 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	@Override
 	public short getBlockedPartition(int x, int y) {
 		return 1;
+	}
+
+	@Override
+	public IPartitionSettings getPartitionSettings(int x, int y) {
+		return null;
 	}
 }

@@ -10,6 +10,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -21,6 +22,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.UIState;
+import jsettlers.logic.map.newGrid.flags.IBlockingChangedListener;
 
 public class PartitionsGridTestingWnd {
 
@@ -108,12 +110,12 @@ public class PartitionsGridTestingWnd {
 		changePlayerOfTower(94, 71, 1);
 	}
 
+	@SuppressWarnings("unused")
 	private void removeTower(int x, int y) {
 		blockArea(getTowerBlockArea(x, y), false);
 		grid.removeTowerAndFreeOccupiedArea(new ShortPoint2D(x, y));
 	}
 
-	@SuppressWarnings("unused")
 	private void changePlayerOfTower(int x, int y, int newPlayer) {
 		ShortPoint2D pos = new ShortPoint2D(x, y);
 		grid.changePlayerOfTower(pos, (byte) newPlayer, new FreeMapArea(pos, EBuildingType.TOWER.getProtectedTiles()));
@@ -211,6 +213,11 @@ public class PartitionsGridTestingWnd {
 				// int value = grid.getPlayerIdAt(x, y) + 1; // +1 to get -1 player displayed as black
 
 				return Color.getARGB((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			}
+
+			@Override
+			public IPartitionSettings getPartitionSettings(int x, int y) {
+				return null;
 			}
 		};
 	}
