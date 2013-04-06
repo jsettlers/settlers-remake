@@ -5,18 +5,24 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
 
 final class NullStatistics implements IStatisticable {
-    @Override
-    public int getNumberOf(EMovableType movableType) {
-        return 0;
-    }
+	@Override
+	public int getGameTime() {
+		return 0;
+	}
 
-    @Override
-    public int getNumberOf(EMaterialType materialType) {
-        return 0;
-    }
+	@Override
+	public int getNumberOf(EMovableType movableType) {
+		return 0;
+	}
 
-    @Override
-    public int getJoblessBearers() {
-        return 0;
-    }
+	@Override
+	public int getNumberOf(EMaterialType materialType) {
+		return 0;
+	}
+
+	@Override
+	public int getJoblessBearers() {
+		return 0;
+	}
+
 }
