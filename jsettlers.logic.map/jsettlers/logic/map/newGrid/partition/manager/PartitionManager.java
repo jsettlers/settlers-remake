@@ -49,14 +49,14 @@ import jsettlers.logic.timer.PartitionManagerTimer;
  */
 public class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
 	private static final long serialVersionUID = 1L;
-
 	private static final int BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS = 1;
 
+	private final PartitionManagerSettings settings = new PartitionManagerSettings();
+
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
-
 	private final PositionableList<IManageableBearer> joblessBearer = new PositionableList<IManageableBearer>();
-
 	private final OffersList materialOffers = new OffersList();
+
 	private final MaterialsManager materialsManager = new MaterialsManager(new IJoblessSupplier() {
 		private static final long serialVersionUID = -113397265091126902L;
 
@@ -69,7 +69,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		public boolean isEmpty() {
 			return joblessBearer.isEmpty();
 		}
-	}, materialOffers, new PartitionManagerSettings());
+	}, materialOffers, settings);
 
 	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
@@ -447,5 +447,9 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	 */
 	public MaterialOffer getMaterialOfferAt(ShortPoint2D pos, EMaterialType material) {
 		return this.materialOffers.getOfferObjectAt(pos, material);
+	}
+
+	public PartitionManagerSettings getSettings() {
+		return settings;
 	}
 }

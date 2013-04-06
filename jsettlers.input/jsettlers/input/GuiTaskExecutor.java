@@ -14,6 +14,7 @@ import jsettlers.input.task.GeneralGuiTask;
 import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SetBuildingPriorityGuiTask;
+import jsettlers.input.task.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
@@ -102,6 +103,13 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		case SET_BUILDING_PRIORITY:
 			setBuildingPriority((SetBuildingPriorityGuiTask) guiTask);
 			break;
+
+		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
+			SetMaterialDistributionSettingsGuiTask task = (SetMaterialDistributionSettingsGuiTask) guiTask;
+			grid.setMaterialDistributionSettings(task.getManagerPosition(), task.getMaterialType(), task.getProbabilities());
+		}
+			break;
+
 		}
 	}
 

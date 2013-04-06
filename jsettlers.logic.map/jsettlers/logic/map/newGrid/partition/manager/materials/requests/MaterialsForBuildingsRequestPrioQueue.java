@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.list.DoubleLinkedList;
@@ -23,12 +24,12 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 	private final DoubleLinkedList<MaterialRequestObject> queues[][];
 
-	private final IMaterialsToBuildingsDistributionSettingsProvider settings;
+	private final IMaterialsDistributionSettings settings;
 
 	private transient int[] buildingTypesToIndex;
 
 	@SuppressWarnings("unchecked")
-	public MaterialsForBuildingsRequestPrioQueue(IMaterialsToBuildingsDistributionSettingsProvider settings) {
+	public MaterialsForBuildingsRequestPrioQueue(IMaterialsDistributionSettings settings) {
 		this.settings = settings;
 
 		queues = new DoubleLinkedList[EPriority.NUMBER_OF_PRIORITIES][];

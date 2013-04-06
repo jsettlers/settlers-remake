@@ -1,4 +1,4 @@
-package jsettlers.logic.map.newGrid.partition;
+package jsettlers.logic.map.newGrid.flags;
 
 /**
  * This interface defines a listener for changes on the blocking grid.

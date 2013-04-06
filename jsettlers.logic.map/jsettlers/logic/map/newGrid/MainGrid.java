@@ -21,6 +21,7 @@ import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
@@ -68,8 +69,8 @@ import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.objects.ObjectsGrid;
 import jsettlers.logic.map.newGrid.partition.IPlayerChangedListener;
-import jsettlers.logic.map.newGrid.partition.Partition;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
+import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
@@ -600,6 +601,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public int nextDrawableX(int x, int y, int maxX) {
 			return x + 1;
+		}
+
+		@Override
+		public IPartitionSettings getPartitionSettings(int x, int y) {
+			return partitionsGrid.getSettingsForManagerAt(x, y);
 		}
 	}
 
@@ -1337,7 +1343,7 @@ public final class MainGrid implements Serializable {
 			// FIXME @Andreas Eberle: implement check to prevent multiple offers for the same material
 			public final void createOffersForAvailableMaterials(ShortPoint2D position, EMaterialType materialType) {
 				byte stackSize = mapObjectsManager.getStackSize(position.x, position.y, materialType);
-				Partition partition = partitionsGrid.getPartitionAt(position.x, position.y);
+				PartitionManager partition = partitionsGrid.getPartitionAt(position.x, position.y);
 				for (byte i = 0; i < stackSize; i++) {
 					partition.addOffer(position, materialType);
 				}
@@ -1453,6 +1459,13 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void postionClicked(short x, short y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y));
+		}
+
+		@Override
+		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
+			if (isInBounds(managerPosition))
+				partitionsGrid.getSettingsForManagerAt(managerPosition.x, managerPosition.y).getDistributionSettings(materialType)
+						.setProbabilities(probabilities);
 		}
 	}
 

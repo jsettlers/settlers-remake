@@ -23,6 +23,7 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
+import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.task.ConvertGuiTask;
@@ -32,6 +33,7 @@ import jsettlers.input.task.GeneralGuiTask;
 import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SetBuildingPriorityGuiTask;
+import jsettlers.input.task.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
@@ -165,10 +167,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			destroySelected();
 			break;
 
-		case SET_BUILDING_PRIORITY:
-			setBuildingPriority(((SetBuildingPriorityAction) action).getNewPriority());
-			break;
-
 		case STOP_WORKING:
 			stopOrStartWorkingAction(true);
 			break;
@@ -198,6 +196,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case CONVERT:
 			sendConvertAction((ConvertAction) action);
+			break;
+
+		case SET_BUILDING_PRIORITY:
+			setBuildingPriority(((SetBuildingPriorityAction) action).getNewPriority());
+			break;
+
+		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
+			SetMaterialDistributionSettingsAction task = (SetMaterialDistributionSettingsAction) action;
+			manager.scheduleTask(new SetMaterialDistributionSettingsGuiTask(task.getManagerPosition(), task.getMaterialType(), task
+					.getProbabilities()));
+		}
 			break;
 
 		default:

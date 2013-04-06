@@ -1,6 +1,7 @@
 package jsettlers.logic.map.newGrid.partition;
 
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
+import jsettlers.logic.map.newGrid.flags.IBlockingChangedListener;
 
 /**
  * This is an extended {@link IBlockingProvider}. Implementors of this interface also need to supply the possibility to register a listener for

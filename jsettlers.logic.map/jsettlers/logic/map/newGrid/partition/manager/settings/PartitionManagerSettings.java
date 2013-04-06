@@ -1,11 +1,10 @@
 package jsettlers.logic.map.newGrid.partition.manager.settings;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.MaterialsOfBuildings;
+import java.io.Serializable;
+
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
-import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialsManagerSettingsProvider;
-import jsettlers.logic.map.newGrid.partition.manager.materials.requests.IMaterialsToBuildingsDistributionSettingsProvider;
 
 /**
  * This class bundles all settings for the {@link PartitionManager}.
@@ -13,7 +12,7 @@ import jsettlers.logic.map.newGrid.partition.manager.materials.requests.IMateria
  * @author Andreas Eberle
  * 
  */
-public class PartitionManagerSettings implements IMaterialsManagerSettingsProvider {
+public final class PartitionManagerSettings implements IPartitionSettings, Serializable {
 	private static final long serialVersionUID = -6269898822727665606L;
 
 	private final EMaterialType[] materialTypeForPriorities;
@@ -38,59 +37,7 @@ public class PartitionManagerSettings implements IMaterialsManagerSettingsProvid
 	}
 
 	@Override
-	public IMaterialsToBuildingsDistributionSettingsProvider getDistributionSettings(final EMaterialType materialType) {
+	public DistributionSettingsForMaterial getDistributionSettings(final EMaterialType materialType) {
 		return settingsOfMaterials[materialType.ordinal];
-	}
-
-	private static final class DistributionSettingsForMaterial implements IMaterialsToBuildingsDistributionSettingsProvider {
-		private static final long serialVersionUID = -8519244429973606793L;
-
-		final EMaterialType materialType;
-		final EBuildingType[] requestingBuildings;
-		final float[] probabilitys;
-
-		DistributionSettingsForMaterial(EMaterialType materialType) {
-			this.materialType = materialType;
-			this.requestingBuildings = MaterialsOfBuildings.getBuildingTypesRequestingMaterial(materialType);
-			this.probabilitys = new float[requestingBuildings.length];
-
-			float value = 1.0f / probabilitys.length;
-			for (int i = 0; i < probabilitys.length; i++) {
-				probabilitys[i] = value;
-			}
-		}
-
-		@Override
-		public int getNumberOfBuildings() {
-			return requestingBuildings.length;
-		}
-
-		@Override
-		public EBuildingType getBuildingType(int index) {
-			return requestingBuildings[index];
-		}
-
-		@Override
-		public float getProbablity(int index) {
-			return probabilitys[index];
-		}
-
-		@Override
-		public EMaterialType getMaterialType() {
-			return materialType;
-		}
-
-		@Override
-		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("DistributionSettings for ").append(materialType).append(": ");
-
-			for (int i = 0; i < requestingBuildings.length; i++) {
-				buffer.append(requestingBuildings[i]).append("(").append(probabilitys[i]).append("), ");
-			}
-
-			return buffer.toString();
-		}
-
 	}
 }

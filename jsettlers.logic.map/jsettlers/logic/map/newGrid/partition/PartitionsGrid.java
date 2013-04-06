@@ -25,6 +25,9 @@ import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 import jsettlers.logic.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.logic.map.newGrid.flags.IBlockingChangedListener;
+import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
+import jsettlers.logic.map.newGrid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -124,7 +127,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return partitionObjects[partitions[x + y * width]];
 	}
 
-	public Partition getPartitionAt(ILocatable locatable) {
+	public PartitionManager getPartitionAt(ILocatable locatable) {
 		ShortPoint2D pos = locatable.getPos();
 		return getPartitionAt(pos.x, pos.y);
 	}
@@ -695,5 +698,9 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		} else {
 			this.playerChangedListener = listener;
 		}
+	}
+
+	public PartitionManagerSettings getSettingsForManagerAt(int x, int y) {
+		return getPartitionAt(x, y).getSettings();
 	}
 }

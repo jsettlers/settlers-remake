@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
 
@@ -68,4 +69,19 @@ public interface IGuiInputGrid {
 	 *            y coordinate of the position.
 	 */
 	void postionClicked(short x, short y);
+
+	/**
+	 * Sets the distribution settings for the given materialType in the manager at the given managerPosition.
+	 * 
+	 * @param managerPosition
+	 *            The position of the manger to set the given settings.
+	 * @param materialType
+	 *            The {@link EMaterialType} of the material the given settings shall be used for.
+	 * @param probabilities
+	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by
+	 *            MaterialsOfBuildings.getBuildingTypesRequestingMaterial(materialType).
+	 * 
+	 */
+	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities);
+
 }

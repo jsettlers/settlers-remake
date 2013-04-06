@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.BitSet;
 
 import jsettlers.logic.algorithms.interfaces.IContainingProvider;
-import jsettlers.logic.map.newGrid.partition.IBlockingChangedListener;
 import jsettlers.logic.map.newGrid.partition.IPartitionsGridBlockingProvider;
 
 /**

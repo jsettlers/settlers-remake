@@ -3,6 +3,7 @@ package jsettlers.logic.map.newGrid.partition;
 import java.util.BitSet;
 
 import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 
 /**
  * This class implements a Thread that periodically checks if there are to much merged partitions on the grid. Merged partitions aren't needed an so,
@@ -60,7 +61,7 @@ final class PartitionsGridNormalizerThread extends Thread {
 			int counter = 0;
 
 			for (int i = 1; i < maxPartitions; i++) {
-				Partition partitionObject = grid.partitionObjects[i];
+				PartitionManager partitionObject = grid.partitionObjects[i];
 
 				if (partitionObject != null && grid.partitionRepresentatives[i] != i) {
 					stoppedManagers.set(i);
