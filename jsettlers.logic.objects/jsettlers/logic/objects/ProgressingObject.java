@@ -22,7 +22,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 
 	@Override
 	public float getStateProgress() {
-		float progress = (NetworkTimer.getGameTime() - startTime) / ((float) duration);
+		float progress = (NetworkTimer.get().getGameTime() - startTime) / ((float) duration);
 		if (progress < 1) {
 			return progress;
 		} else {
@@ -40,7 +40,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 		// assert duration > 0 : "duration may never be less or equal to 0.0f"; TODO @Andreas Eberle enable this assertion again!
 
 		this.duration = (int) (duration * 1000);
-		this.startTime = NetworkTimer.getGameTime();
+		this.startTime = NetworkTimer.get().getGameTime();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 	 */
 	protected final void setDurationWithVariation(float duration) {
 		this.duration = (int) (duration * 1000);
-		this.startTime = NetworkTimer.getGameTime() - RandomSingleton.getInt(0, (int) (duration * 100));
+		this.startTime = NetworkTimer.get().getGameTime() - RandomSingleton.getInt(0, (int) (duration * 100));
 	}
 
 	/**

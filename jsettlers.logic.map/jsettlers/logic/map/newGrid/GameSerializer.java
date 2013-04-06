@@ -65,7 +65,7 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				oos.writeInt(NetworkTimer.getGameTime());
+				oos.writeInt(NetworkTimer.get().getGameTime());
 				oos.writeObject(grid);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -84,7 +84,7 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				NetworkTimer.setGameTime(ois.readInt());
+				NetworkTimer.get().setGameTime(ois.readInt());
 				grid = (MainGrid) ois.readObject();
 			} catch (IOException e) {
 				e.printStackTrace();

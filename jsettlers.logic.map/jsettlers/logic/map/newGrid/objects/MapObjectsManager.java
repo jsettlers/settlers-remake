@@ -61,7 +61,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 
 	@Override
 	public void timerEvent() {
-		int gameTime = NetworkTimer.getGameTime();
+		int gameTime = NetworkTimer.get().getGameTime();
 
 		TimeEvent curr = null;
 		curr = timingQueue.peek();
@@ -490,7 +490,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		protected TimeEvent(AbstractObjectsManagerObject mapObject, float duration, boolean shouldRemove) {
 			this.mapObject = mapObject;
 			this.shouldRemove = shouldRemove;
-			this.eventTime = (int) (NetworkTimer.getGameTime() + duration * 1000);
+			this.eventTime = (int) (NetworkTimer.get().getGameTime() + duration * 1000);
 		}
 
 		public boolean isOutDated(int gameTime) {

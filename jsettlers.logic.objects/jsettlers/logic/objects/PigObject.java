@@ -20,7 +20,7 @@ public class PigObject extends AbstractHexMapObject {
 	private final int starttime;
 
 	public PigObject() {
-		starttime = NetworkTimer.getGameTime();
+		starttime = NetworkTimer.get().getGameTime();
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class PigObject extends AbstractHexMapObject {
 
 	@Override
 	public boolean canBeCut() {
-		return (NetworkTimer.getGameTime() - starttime) > LIVE_TIME;
+		return (NetworkTimer.get().getGameTime() - starttime) > LIVE_TIME;
 	}
 
 }
