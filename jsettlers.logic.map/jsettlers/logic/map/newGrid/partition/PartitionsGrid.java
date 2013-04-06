@@ -141,7 +141,12 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	public Player getPlayerAt(int x, int y) {
-		return players[partitionObjects[partitions[x + y * width]].playerId];
+		short playerId = partitionObjects[partitions[x + y * width]].playerId;
+		if (playerId >= 0) {
+			return players[playerId];
+		} else {
+			return null;
+		}
 	}
 
 	public byte getTowerCountAt(int x, int y) {

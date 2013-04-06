@@ -1409,18 +1409,21 @@ public final class MainGrid implements Serializable {
 		@Override
 		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, boolean useNeighbors) {
 			Player player = partitionsGrid.getPlayerAt(pos.x, pos.y);
-			if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, player)) {
-				return pos;
-			} else if (useNeighbors) {
-				for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
-					if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, player)) {
-						return neighbour;
+
+			if (player != null) {
+				if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, player)) {
+					return pos;
+				} else if (useNeighbors) {
+					for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
+						if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, player)) {
+							return neighbour;
+						}
 					}
+					return null;
 				}
-				return null;
-			} else {
-				return null;
 			}
+
+			return null;
 		}
 
 		@Override
