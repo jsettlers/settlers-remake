@@ -5,16 +5,16 @@ import java.util.List;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import android.view.LayoutInflater;
 
-public class LoadableMapListAdapter extends MapListAdapter {
+public class LoadableMapListAdapter extends MapListAdapter<ILoadableGame> {
 
 	private final List<? extends ILoadableGame> maps;
 
 	public LoadableMapListAdapter(LayoutInflater inflater,
-            List<? extends ILoadableGame> maps) {
-	    super(inflater);
+	        List<? extends ILoadableGame> maps) {
+		super(inflater);
 		this.maps = maps;
-    }
-	
+	}
+
 	@Override
 	public int getCount() {
 		return maps.size();
@@ -24,19 +24,19 @@ public class LoadableMapListAdapter extends MapListAdapter {
 	public ILoadableGame getItem(int arg0) {
 		return maps.get(arg0);
 	}
-	
+
 	@Override
-	protected String getTitle(int arg0) {
-	    ILoadableGame map = maps.get(arg0);
+	public String getTitle(int arg0) {
+		ILoadableGame map = maps.get(arg0);
 		String title = map.getName();
-	    return title;
-    }
+		return title;
+	}
 
 	@Override
 	protected short[] getImage(int arg0) {
-	    ILoadableGame map = maps.get(arg0);
-	    return map.getImage();
-    }
+		ILoadableGame map = maps.get(arg0);
+		return map.getImage();
+	}
 
 	@Override
 	protected String getDescriptionString(int mapn) {
@@ -48,6 +48,5 @@ public class LoadableMapListAdapter extends MapListAdapter {
 	public boolean isEmpty() {
 		return maps.isEmpty();
 	}
-	
 
 }

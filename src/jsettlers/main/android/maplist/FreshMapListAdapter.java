@@ -5,7 +5,7 @@ import java.util.List;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import android.view.LayoutInflater;
 
-public class FreshMapListAdapter extends MapListAdapter {
+public class FreshMapListAdapter extends MapListAdapter<IMapItem> {
 
 	private final List<? extends IMapItem> maps;
 
@@ -25,7 +25,7 @@ public class FreshMapListAdapter extends MapListAdapter {
 	}
 	
 	@Override
-	protected String getTitle(int arg0) {
+    public String getTitle(int arg0) {
 	    IMapItem map = maps.get(arg0);
 		String title = map.getName();
 	    return title;

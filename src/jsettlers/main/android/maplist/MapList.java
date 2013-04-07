@@ -24,25 +24,25 @@ import android.widget.Toast;
  * 
  * @author michael
  */
+@Deprecated
 public class MapList {
-	private final class ListItemClickListener implements
-            OnItemClickListener {
-	    @Override
-	    public void onItemClick(AdapterView<?> arg0, View arg1, int itemid,
-	            long arg3) {
-	    	if (startmode == STARTMODE_LOAD_SINGLE) {
-	    		LoadableMapListAdapter adapter =
-	    		        (LoadableMapListAdapter) arg0.getAdapter();
-	    		selectLoadableMap(adapter.getItem(itemid));
-	    	} else if (startmode == STARTMODE_LOAD_MULTIPLAYER) {
-	    		// TODO: load network games
-	    	} else {
-	    		FreshMapListAdapter adapter =
-	    		        (FreshMapListAdapter) arg0.getAdapter();
-	    		selectFreshMap(adapter.getItem(itemid));
-	    	}
-	    }
-    }
+	private final class ListItemClickListener implements OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int itemid,
+		        long arg3) {
+			if (startmode == STARTMODE_LOAD_SINGLE) {
+				LoadableMapListAdapter adapter =
+				        (LoadableMapListAdapter) arg0.getAdapter();
+				selectLoadableMap(adapter.getItem(itemid));
+			} else if (startmode == STARTMODE_LOAD_MULTIPLAYER) {
+				// TODO: load network games
+			} else {
+				FreshMapListAdapter adapter =
+				        (FreshMapListAdapter) arg0.getAdapter();
+				selectFreshMap(adapter.getItem(itemid));
+			}
+		}
+	}
 
 	private static final String TEST_IP_ADDR = "";
 
@@ -61,7 +61,6 @@ public class MapList {
 	private EditText playerField;
 
 	private ILoadableGame selectedLoadableMap;
-
 
 	private MapListAdapter adapter;
 
@@ -178,15 +177,15 @@ public class MapList {
 	}
 
 	protected void deleteGame() {
-	    if (startmode == STARTMODE_LOAD_SINGLE) {
-	    	if (selectedLoadableMap != null) {
-	    		//TODO: Do not run this on UI thread.
-	    		connector.deleteLoadableGame(selectedLoadableMap);
-	    		selectLoadableMap(null);
-	    		adapter.notifyDataSetChanged();
-	    	}
-	    }
-    }
+		if (startmode == STARTMODE_LOAD_SINGLE) {
+			if (selectedLoadableMap != null) {
+				// TODO: Do not run this on UI thread.
+				connector.deleteLoadableGame(selectedLoadableMap);
+				selectLoadableMap(null);
+				adapter.notifyDataSetChanged();
+			}
+		}
+	}
 
 	private void loadSingleGame() {
 		if (selectedLoadableMap != null) {

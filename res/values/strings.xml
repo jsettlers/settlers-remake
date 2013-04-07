@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Loading...</string>
     <string name="app_name">Jsettlers</string>
+    <string name="please_wait">Bitte warten</string>
+    
     <string name="f12_string">Vorspielen</string>
     <string name="save_string">Speichern</string>
     <string name="stop_string">Stop</string>
@@ -10,21 +11,35 @@
     <string name="pause_string">Pause</string>
     <string name="plus_string">+</string>
     <string name="minus_string">-</string>
-    <string name="please_wait">Bitte warten</string>
+    
     <string name="local_game">Einzelspieler</string>
     <string name="local_game_new">Neues Spiel</string>
     <string name="local_game_load">Spielstand laden</string>
-    <string name="network_game">Netzwerkspiel</string>
-    <string name="network_game_new">Einleiten</string>
-    <string name="network_game_join">Beitreten</string>
-    <string name="network_game_load">Wiederherstellen</string>
     <string name="local_game_resume">Weiterspielen</string>
+    <string name="local_game_resume_error">Es trat ein Fehler beim Laden des Spielstandes auf.</string>
+    <string name="network_game">Netzwerkspiel</string>
+    <string name="startscreen_network_new">Einleiten</string>
+    <string name="startscreen_network_join">Beitreten</string>
+    <string name="startscreen_network_load">Wiederherstellen</string>
+    
     <string name="game_title">Willkommen zu JSettlers</string>
+    
+    <string name="maplist_local_new_headline">Neues Spiel starten</string>
+    <string name="maplist_local_new_submit">Starten</string>
+    <string name="maplist_local_load_headline">Spielstand laden</string>
+    <string name="maplist_local_load_submit">Laden</string>
+    <string name="maplist_network_new_headline">Ein neues Netzwerkspiel einleiten</string>
+    <string name="maplist_network_new_submit">Einleiten</string>
+    <string name="maplist_network_join_headline">Einem Netzwerkspiel beitreten</string>
+    <string name="maplist_network_join_submit">Beitreten</string>
+    
     <string name="player_count">Spieler</string>
     <string name="illegal_playercount">Ungültige Spielerzahl</string>
     <string name="illegal_playercount_too_high">So viele Spieler können auf der Karte nicht spielen</string>
     <string name="illegal_playercount_too_low">So wenige Spieler können auf der Karte nicht spielen</string>
+    
     <string name="send">Senden</string>
     <string name="accept_start">Start erlauben</string>
     <string name="local_game_delete">Spielstand löschen</string>
+
 </resources>

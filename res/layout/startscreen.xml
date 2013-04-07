@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@color/bg" >
 
     <TextView
         android:id="@+id/textView3"
@@ -39,24 +40,21 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
-                android:id="@+id/local_game_new"
+                android:id="@+id/startscreen_local_new"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="startGameButtonClicked"
                 android:text="@string/local_game_new" />
 
             <Button
-                android:id="@+id/local_game_load"
+                android:id="@+id/startscreen_local_load"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="loadGameButtonClicked"
                 android:text="@string/local_game_load" />
 
             <Button
-                android:id="@+id/resume_game_button"
+                android:id="@+id/startscreen_resume"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="resumeGameButtonClicked"
                 android:text="@string/local_game_resume" />
         </LinearLayout>
 
@@ -78,23 +76,22 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/startscreen_network_new"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="startNetworkGameButtonClicked"
-                android:text="@string/network_game_new" />
+                android:text="@string/startscreen_network_new" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/startscreen_network_join"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/network_game_join" />
+                android:text="@string/startscreen_network_join" />
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/startscreen_network_load"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/network_game_load" />
+                android:text="@string/startscreen_network_load" />
         </LinearLayout>
     </LinearLayout>
 

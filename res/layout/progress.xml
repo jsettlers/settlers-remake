@@ -1,30 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/bg" >
 
-    <FrameLayout
-        android:id="@+id/hiddenGlView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff" >
-    </FrameLayout>
-    
-    <FrameLayout
-        android:id="@+id/menuContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible">
-    </FrameLayout>
-    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
          android:id="@+id/progressAllContnet"
-         android:visibility="visible"
-        android:background="#000000" >
+         android:visibility="visible" >
 
         <LinearLayout
             android:id="@+id/linearLayout1"

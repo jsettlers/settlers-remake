@@ -2,8 +2,6 @@ package jsettlers.main.android.maplist;
 
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
-import jsettlers.main.android.R.id;
-import jsettlers.main.android.R.layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +9,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public abstract class MapListAdapter extends BaseAdapter {
+public abstract class MapListAdapter<T> extends BaseAdapter {
 
 	private final LayoutInflater inflater;
 
 	public MapListAdapter(LayoutInflater inflater) {
 		this.inflater = inflater;
 	}
-
 
 	@Override
 	public long getItemId(int arg0) {
@@ -51,9 +48,13 @@ public abstract class MapListAdapter extends BaseAdapter {
 		image.setImageBitmap(PreviewImageConverter.toBitmap(bitmap));
 		return view;
 	}
-	
-	protected abstract String getTitle(int arg0);
+
+	public abstract String getTitle(int arg0);
+
 	protected abstract short[] getImage(int arg0);
+
+	@Override
+	public abstract T getItem(int position);
 
 	@Override
 	public int getViewTypeCount() {
@@ -65,8 +66,6 @@ public abstract class MapListAdapter extends BaseAdapter {
 		return true;
 	}
 
-
 	protected abstract String getDescriptionString(int mapn);
-
 
 }
