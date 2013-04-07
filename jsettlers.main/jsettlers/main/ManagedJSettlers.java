@@ -204,4 +204,8 @@ public class ManagedJSettlers implements Listener, IGameStarter, INetworkStartLi
 		}
 	}
 
+	public void stop() {
+		stopOldStuff();
+    }
+
 }
