@@ -209,12 +209,14 @@ public enum EActionType {
 	/**
 	 * The user wants to set the priority of the building.
 	 * 
-	 * @see
+	 * @see SetBuildingPriorityAction
 	 */
 	SET_BUILDING_PRIORITY,
+	
 	/**
 	 * The user wants to change the settings for the distribution of a material
 	 * to the receiving buildings.
+	 * @see SetMaterialDistributionSettingsAction
 	 */
 	SET_MATERIAL_DISTRIBUTION_SETTINGS
 }

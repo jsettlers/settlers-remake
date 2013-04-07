@@ -3,7 +3,8 @@ package jsettlers.graphics.action;
 import jsettlers.common.material.EPriority;
 
 /**
- * This {@link Action} is used to set the priority of a building.
+ * This {@link Action} is used to set the priority of a building. When it is
+ * fired, the priority is set for the current selection.
  * 
  * @author Andreas Eberle
  */

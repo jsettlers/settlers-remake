@@ -1,6 +1,7 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.MaterialsOfBuildings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -45,6 +46,7 @@ public class SetMaterialDistributionSettingsAction extends Action {
 	 *         to the {@link EBuildingType} given by
 	 *         MaterialsOfBuildings.getBuildingTypesRequestingMaterial(
 	 *         {@link #getMaterialType()}).
+	 * @see MaterialsOfBuildings#getBuildingTypesRequestingMaterial(EMaterialType)
 	 */
 	public float[] getProbabilities() {
 		return probabilities;
