@@ -7,6 +7,8 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -36,10 +38,11 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException,
+	        IOException, ClassNotFoundException {
 		ResourceManager.setProvider(new SwingResourceProvider());
 		ManagedJSettlers game = new ManagedJSettlers();
-		game.start(getGui());
+		game.start(getGui(args));
 
 		ImageProvider.getInstance().startPreloading();
 
@@ -55,35 +58,54 @@ public class SwingManagedJSettlers {
 	public static void startMap(IMapDataProvider data) {
 		ResourceManager.setProvider(new SwingResourceProvider());
 		// TODO: detect exit
-		JSettlersGame game = new JSettlersGame(getGui(), new MapDataMapCreator(data), 123456L, new NetworkManager(), (byte) 0);
+		JSettlersGame game =
+		        new JSettlersGame(getGui(new String[0]), new MapDataMapCreator(
+		                data), 123456L, new NetworkManager(), (byte) 0);
 		game.start();
 	}
 
 	/**
 	 * Creates a new SWING GUI for the game.
 	 * 
+	 * @param args
 	 * @return
 	 */
-	public static ISettlersGameDisplay getGui() {
+	public static ISettlersGameDisplay getGui(String[] args) {
+		List<String> argsList = Arrays.asList(args);
+
 		JOGLPanel content = new JOGLPanel(new SwingSoundPlayer());
 
-		try {
-			new NativeAreaWindow(content.getArea());
-		} catch (Throwable t) {
-			SwingResourceLoader.setupSwingPaths();
-
-			JFrame jsettlersWnd = new JFrame("jsettlers");
-			AreaContainer panel = new AreaContainer(content.getArea());
-			panel.setPreferredSize(new Dimension(640, 480));
-			jsettlersWnd.add(panel);
-			panel.requestFocusInWindow();
-
-			jsettlersWnd.pack();
-			jsettlersWnd.setSize(1200, 800);
-			jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			jsettlersWnd.setVisible(true);
-			jsettlersWnd.setLocationRelativeTo(null);
+		if (argsList.contains("--force-jogl")) {
+			startJogl(content);
+		} else if (argsList.contains("--force-native")) {
+			startNative(content);
+		} else {
+			try {
+				startNative(content);
+			} catch (Throwable t) {
+				startJogl(content);
+			}
 		}
 		return content;
+	}
+
+	private static void startJogl(JOGLPanel content) {
+		SwingResourceLoader.setupSwingPaths();
+
+		JFrame jsettlersWnd = new JFrame("jsettlers");
+		AreaContainer panel = new AreaContainer(content.getArea());
+		panel.setPreferredSize(new Dimension(640, 480));
+		jsettlersWnd.add(panel);
+		panel.requestFocusInWindow();
+
+		jsettlersWnd.pack();
+		jsettlersWnd.setSize(1200, 800);
+		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jsettlersWnd.setVisible(true);
+		jsettlersWnd.setLocationRelativeTo(null);
+	}
+
+	private static void startNative(JOGLPanel content) {
+		new NativeAreaWindow(content.getArea());
 	}
 }
