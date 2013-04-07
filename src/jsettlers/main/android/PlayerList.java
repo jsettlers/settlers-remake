@@ -50,14 +50,17 @@ public class PlayerList extends BaseAdapter {
 		INetworkPlayer item = getItem(idx);
 		String name = item == null ? "" : item.getPlayerName();
 		view.setText(name);
+		view.setTextColor(item != null && item.isReady() ? R.color.network_ready
+		        : R.color.network_not_ready);
 		return view;
 	}
 
 	public void changed() {
-		playerList = networkScreen.getPlayers();
+		final INetworkPlayer[] newList = networkScreen.getPlayers();
 		view.post(new Runnable() {
 			@Override
 			public void run() {
+				playerList = newList;
 				notifyDataSetChanged();
 			}
 		});

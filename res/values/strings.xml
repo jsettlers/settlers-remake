@@ -41,5 +41,6 @@
     <string name="send">Senden</string>
     <string name="accept_start">Start erlauben</string>
     <string name="local_game_delete">Spielstand löschen</string>
+    <string name="network_start">Starten</string>
 
 </resources>

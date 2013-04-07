@@ -94,5 +94,10 @@ public class ProgressFragment extends JsettlersFragment {
 	public ProgressConnector getConnector() {
 		return connector;
 	}
+	
+	@Override
+	public boolean shouldAddToBackStack() {
+	    return false;
+	}
 
 }

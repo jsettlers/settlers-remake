@@ -1,6 +1,11 @@
 package jsettlers.main.android.fragments;
 
+import java.io.File;
+
+import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.main.android.R;
+import jsettlers.main.android.resources.ResourceProvider;
+import jsettlers.main.android.resources.UpdateListener;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +65,36 @@ public class StartScreenFragment extends JsettlersFragment {
 			public void onClick(View v) {
 				getJsettlersActivity().showFragment(
 				        new JoinNetworkGameFragment());
+			}
+		});
+
+		// TODO: integrate it nicely.
+		Button update = (Button) view.findViewById(R.id.startscreen_update);
+		update.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ProgressFragment fragment = new ProgressFragment();
+				getJsettlersActivity().showFragment(fragment);
+				ProgressConnector c = fragment.getConnector();
+				ResourceProvider provider =
+				        new ResourceProvider(getJsettlersActivity(),
+				                new File[] {
+					                getJsettlersActivity().getExternalFilesDir(
+					                        null)
+				                });
+				provider.startUpdate(new UpdateListener() {
+					@Override
+					public void resourceUpdateFinished() {
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								getJsettlersActivity().showStartScreen(
+								        getJsettlersActivity()
+								                .getStartConnector());
+							}
+						});
+					}
+				}, c);
 			}
 		});
 	}

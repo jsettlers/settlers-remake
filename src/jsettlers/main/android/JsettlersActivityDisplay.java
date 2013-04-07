@@ -7,6 +7,7 @@ import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
+import jsettlers.main.android.fragments.NetworkScreenFragment;
 import jsettlers.main.android.fragments.ProgressFragment;
 import android.widget.Toast;
 
@@ -38,8 +39,7 @@ public class JsettlersActivityDisplay implements ISettlersGameDisplay {
 
 	@Override
 	public void showNetworkScreen(INetworkScreenAdapter networkScreen) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("TODO");
+		jsettlersActivity.showFragment(new NetworkScreenFragment(networkScreen));
 	}
 
 	@Override
