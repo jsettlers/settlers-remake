@@ -1,6 +1,7 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.common.network.IMatch;
+import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.main.android.R;
 import jsettlers.main.android.maplist.JoinableMapListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
@@ -14,8 +15,11 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IMatch> {
 		LayoutInflater inflater =
 		        (LayoutInflater) getActivity().getSystemService(
 		                Context.LAYOUT_INFLATER_SERVICE);
-		return new JoinableMapListAdapter(inflater, getJsettlersActivity()
-		        .getStartConnector().getNetworkConnector());
+		INetworkConnector networkConnector =
+		        getJsettlersActivity().getStartConnector()
+		                .getNetworkConnector();
+		networkConnector.setServerAddress(null);
+		return new JoinableMapListAdapter(inflater, networkConnector);
 	}
 
 	@Override
@@ -54,13 +58,13 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IMatch> {
 	}
 
 	@Override
-    protected int getHeadlineText() {
-	    return R.string.maplist_network_join_headline;
-    }
+	protected int getHeadlineText() {
+		return R.string.maplist_network_join_headline;
+	}
 
 	@Override
-    protected int getStartButtonText() {
-	    return R.string.maplist_network_join_submit;
-    }
+	protected int getStartButtonText() {
+		return R.string.maplist_network_join_submit;
+	}
 
 }
