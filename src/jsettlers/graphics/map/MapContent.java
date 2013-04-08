@@ -30,6 +30,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
+import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -129,19 +130,24 @@ public final class MapContent implements SettlersContent,
 	private long moveToMarkerTime;
 
 	private final ReplaceableTextDrawer textDrawer;
+	private final IStatisticable playerStatistics;
 
 	/**
 	 * Creates a new map content for the given map.
 	 * 
 	 * @param map
 	 *            The map.
+	 * @param playerStatistics
 	 */
-	public MapContent(IGraphicsGrid map, SoundPlayer player) {
-		this(map, player, null);
+	public MapContent(IGraphicsGrid map, IStatisticable playerStatistics,
+	        SoundPlayer player) {
+		this(map, playerStatistics, player, null);
 	}
 
-	public MapContent(IGraphicsGrid map, SoundPlayer player, IControls controls) {
+	public MapContent(IGraphicsGrid map, IStatisticable playerStatistics,
+	        SoundPlayer player, IControls controls) {
 		this.map = map;
+		this.playerStatistics = playerStatistics;
 		textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map, textDrawer);
 		this.soundmanager = new SoundManager(player);
@@ -161,15 +167,6 @@ public final class MapContent implements SettlersContent,
 		this.connector.addListener(this);
 
 		map.setBackgroundListener(background);
-
-		// sound testing code
-		// new Timer().schedule(new TimerTask() {
-		// private int soundid = 0;
-		// @Override
-		// public void run() {
-		// soundmanager.playSound(soundid++);
-		// }
-		// }, 1000, 5000);
 	}
 
 	private void resizeTo(int newWindowWidth, int newWindowHeight) {
@@ -336,18 +333,20 @@ public final class MapContent implements SettlersContent,
 		}
 	}
 
-	private long lastFrame = 0;
-
 	private UIPoint currentSelectionAreaStart;
+	private final FramerateComputer framerate = new FramerateComputer();
 
 	private void drawFramerate(GLDrawContext gl) {
-		long currentFrame = System.nanoTime();
-		double framerate = 1000000000.0 / (currentFrame - this.lastFrame);
-		String frames = new DecimalFormat("###.##").format(framerate);
-		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
-		drawer.drawString(200, 5, "FPS: " + frames);
+		framerate.nextFrame();
+		String frames = new DecimalFormat("###.#").format(framerate.getRate());
+		String gametime = playerStatistics.getGameTime() + "";
 
-		this.lastFrame = currentFrame;
+		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
+		double spacing = drawer.getWidth("____________");
+		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
+		drawer.drawString(windowWidth - (float) spacing, y, "FPS: " + frames);
+		drawer.drawString(windowWidth - 2 * (float) spacing, y, "Time: "
+		        + gametime);
 	}
 
 	private void drawTooltip(GLDrawContext gl) {
@@ -524,7 +523,9 @@ public final class MapContent implements SettlersContent,
 	@Override
 	public void handleEvent(GOEvent event) {
 		if (event instanceof GOPanEvent) {
-			event.setHandler(new PanHandler(this.context.getScreen()));
+			if (!controls.containsPoint(((GOPanEvent) event).getPanCenter())) {
+				event.setHandler(new PanHandler(this.context.getScreen()));
+			}
 		} else if (event instanceof GOCommandEvent) {
 			GOCommandEvent commandEvent = (GOCommandEvent) event;
 			Action action = getActionForCommand(commandEvent);
