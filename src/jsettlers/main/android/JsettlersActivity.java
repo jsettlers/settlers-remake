@@ -11,6 +11,7 @@ import java.io.File;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
+import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -192,10 +193,11 @@ public class JsettlersActivity extends Activity {
 
 	public MapInterfaceConnector showGameMap(IGraphicsGrid map,
 	        IStatisticable playerStatistics) {
-		showMapFragment();
+		GameCommandFragment p = showMapFragment();
 
 		MapContent content =
-		        new MapContent(map, playerStatistics, soundPlayer, null);
+		        new MapContent(map, playerStatistics, soundPlayer,
+		                new MobileControls(p.getPutable(this)));
 		goRegion.setContent(content);
 		return content.getInterfaceConnector();
 	}
@@ -207,13 +209,15 @@ public class JsettlersActivity extends Activity {
 		goRegion.setContent(content);
 	}
 
-	private void showMapFragment() {
+	private GameCommandFragment showMapFragment() {
+		final GameCommandFragment cFragment = new GameCommandFragment();
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				showFragment(new GameCommandFragment());
+				showFragment(cFragment);
 			}
 		});
+		return cFragment;
 	}
 
 	public void fireKey(String string) {
