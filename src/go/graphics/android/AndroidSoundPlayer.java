@@ -18,6 +18,8 @@ public class AndroidSoundPlayer implements SoundPlayer {
 
 	private ISoundDataRetriever soundDataRetriever;
 
+	private boolean paused;
+
 	public AndroidSoundPlayer(int parallelSounds) {
 		ThreadGroup soundgroup = new ThreadGroup("soundplayer");
 		for (int i = 0; i < parallelSounds; i++) {
@@ -28,7 +30,9 @@ public class AndroidSoundPlayer implements SoundPlayer {
 	@Override
 	public void playSound(int soundStart, float lvolume, float rvolume) {
 		try {
-			queue.offer(soundStart, lvolume, rvolume);
+			if (!paused) {
+				queue.offer(soundStart, lvolume, rvolume);
+			}
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -67,5 +71,9 @@ public class AndroidSoundPlayer implements SoundPlayer {
 	public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
 		this.soundDataRetriever = soundDataRetriever;
 	}
+
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+    }
 
 }

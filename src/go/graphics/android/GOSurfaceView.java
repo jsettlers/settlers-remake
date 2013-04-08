@@ -8,6 +8,7 @@ import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandlerProvoder;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -17,6 +18,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.opengl.GLES10;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
@@ -26,8 +28,10 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	private final Area area;
 
 	private final ActionAdapter actionAdapter = new ActionAdapter(this);
-	
+
 	private AndroidContext drawcontext;
+
+	private boolean canPreserveContext = false;
 
 	public GOSurfaceView(Context context, Area area) {
 		super(context);
@@ -35,9 +39,25 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		setRenderer(new Renderer(context));
 		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-		//api level 11 :-(
-		//super.setPreserveEGLContextOnPause(true);
+		tryEnableContextPreservation();
 		area.addRedrawListener(this);
+	}
+
+	private void tryEnableContextPreservation() {
+		// api level 11 :-(
+		// super.setPreserveEGLContextOnPause(true);
+		try {
+			Method m =
+			        GLSurfaceView.class.getMethod(
+			                "setPreserveEGLContextOnPause", Boolean.TYPE);
+			m.invoke(this, true);
+		} catch (Throwable t) {
+			Log.w("gl", "Could not enable context preservation");
+		}
+	}
+
+	public boolean canPreserveContext() {
+		return canPreserveContext;
 	}
 
 	@Override
@@ -45,6 +65,18 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		actionAdapter.onTouchEvent(e);
 
 		return true;
+	}
+
+	@Override
+	public void onPause() {
+		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		super.onResume();
 	}
 
 	private class ActionAdapter extends AbstractEventConverter {
@@ -269,7 +301,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		@Override
 		public void onSurfaceChanged(GL10 gl, int width, int height) {
-			System.out.println("opengl suface changed");
 			area.setWidth(width);
 			area.setHeight(height);
 			drawcontext.reinit(width, height);
@@ -277,7 +308,6 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-			System.out.println("opengl suface created");
 		}
 
 	}
@@ -297,7 +327,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	}
 
 	public GLDrawContext getDrawContext() {
-	    return drawcontext;
-    }
+		return drawcontext;
+	}
 
 }
