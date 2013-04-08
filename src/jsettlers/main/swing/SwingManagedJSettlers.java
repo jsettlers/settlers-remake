@@ -8,10 +8,12 @@ import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JFrame;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.ISettlersGameDisplay;
@@ -40,14 +42,25 @@ public class SwingManagedJSettlers {
 	 */
 	public static void main(String[] args) throws FileNotFoundException,
 	        IOException, ClassNotFoundException {
+		List<String> argsList = Arrays.asList(args);
+
+		loadDebugSettings(argsList);
+
 		ResourceManager.setProvider(new SwingResourceProvider());
 		ManagedJSettlers game = new ManagedJSettlers();
-		game.start(getGui(args));
+		game.start(getGui(argsList));
 
 		ImageProvider.getInstance().startPreloading();
 
 		// NetworkTimer.loadLogging("logs/2012_12_19-07_44_01.log");
 		// NetworkTimer.activateLogging("logs");
+	}
+
+	private static void loadDebugSettings(List<String> argsList) {
+		if (argsList.contains("--control-all")) {
+			CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
+			CommonConstants.ENABLE_ALL_PLAYER_SELECTION = true;
+		}
 	}
 
 	/**
@@ -59,20 +72,19 @@ public class SwingManagedJSettlers {
 		ResourceManager.setProvider(new SwingResourceProvider());
 		// TODO: detect exit
 		JSettlersGame game =
-		        new JSettlersGame(getGui(new String[0]), new MapDataMapCreator(
-		                data), 123456L, new NetworkManager(), (byte) 0);
+		        new JSettlersGame(getGui(Collections.<String> emptyList()),
+		                new MapDataMapCreator(data), 123456L,
+		                new NetworkManager(), (byte) 0);
 		game.start();
 	}
 
 	/**
 	 * Creates a new SWING GUI for the game.
 	 * 
-	 * @param args
+	 * @param argsList
 	 * @return
 	 */
-	public static ISettlersGameDisplay getGui(String[] args) {
-		List<String> argsList = Arrays.asList(args);
-
+	public static ISettlersGameDisplay getGui(List<String> argsList) {
 		JOGLPanel content = new JOGLPanel(new SwingSoundPlayer());
 
 		if (argsList.contains("--force-jogl")) {
