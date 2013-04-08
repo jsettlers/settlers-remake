@@ -387,7 +387,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		window.setVisible(true);
 		window.setLocationRelativeTo(null);
 
-		MapContent content = new MapContent(map, new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
+		MapContent content = new MapContent(map, new NullStats(), new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = content.getInterfaceConnector();
 		region.setContent(content);
 
