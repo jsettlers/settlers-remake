@@ -217,7 +217,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private void requestDiggers() {
 		if (shouldBeFlatened()) {
-			RelativePoint[] protectedTiles = getBuildingType().getProtectedTiles();
+			RelativePoint[] protectedTiles = getFlattenTiles();
 			int heightSum = 0;
 
 			for (RelativePoint curr : protectedTiles) {
@@ -645,6 +645,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 
 		this.stopOrStartWorking(newPriority == EPriority.STOPPED);
+	}
+
+	public final RelativePoint[] getFlattenTiles() {
+		return type.getProtectedTiles();
 	}
 
 }

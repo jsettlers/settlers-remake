@@ -110,7 +110,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public void flattenAndChangeHeightTowards(short x, short y, byte targetHeight) {
+	public void flattenAndChangeHeightTowards(int x, int y, byte targetHeight) {
 		final int index = x + y * width;
 
 		this.heightGrid[index] += Math.signum(targetHeight - this.heightGrid[index]);

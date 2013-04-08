@@ -304,6 +304,14 @@ public final class MainGrid implements Serializable {
 	final Building constructBuildingAt(ShortPoint2D position, EBuildingType type, Player player, boolean fullyConstructed) {
 		Building building = Building.getBuilding(type, player);
 		building.constructAt(buildingsGrid, position, fullyConstructed);
+
+		if (fullyConstructed) {
+			byte buildingHeight = landscapeGrid.getHeightAt(position.x, position.y);
+			for (RelativePoint curr : building.getFlattenTiles()) {
+				landscapeGrid.flattenAndChangeHeightTowards(curr.getDx() + position.x, curr.getDy() + position.y, buildingHeight);
+			}
+		}
+
 		return building;
 	}
 
