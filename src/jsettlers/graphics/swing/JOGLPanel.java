@@ -73,14 +73,15 @@ public class JOGLPanel implements ISettlersGameDisplay {
 	@Override
 	public synchronized MapInterfaceConnector showGameMap(
 	        final IGraphicsGrid map, IStatisticable playerStatistics) {
-		MapContent content = new MapContent(map, player);
+		MapContent content = new MapContent(map, playerStatistics, player);
 		changeContent(content);
 
 		Timer timer = new Timer(true);
 		redrawTimerTask = new TimerTask() {
 			@Override
 			public void run() {
-				// TODO: this is only for testing. Implement a real animator on Jogl.
+				// TODO: this is only for testing. Implement a real animator on
+				// Jogl.
 				JOGLPanel.this.region.requestRedraw();
 			}
 		};
@@ -103,9 +104,9 @@ public class JOGLPanel implements ISettlersGameDisplay {
 	}
 
 	@Override
-    public void showErrorMessage(String string) {
-	    // TODO Display error message on gui
-	    
-    }
+	public void showErrorMessage(String string) {
+		// TODO Display error message on gui
+
+	}
 
 }
