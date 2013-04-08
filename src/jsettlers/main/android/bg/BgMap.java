@@ -22,7 +22,6 @@ public class BgMap implements IGraphicsGrid {
 	private final BgFish tree = new BgFish(EMapObjectType.TREE_ADULT);
 
 	private final double[] randoms = new double[17];
-	private final IMovable movable = new BgMovable();
 
 	public BgMap() {
 		for (int i = 0; i < randoms.length; i++) {
@@ -52,7 +51,7 @@ public class BgMap implements IGraphicsGrid {
 		if (x > MOVABLE_BORDER
 		        && getLandscapeTypeAt(x, y) == ELandscapeType.GRASS
 		        && getRand(x, y) > 1 - MOVABLE_PROBABILITY) {
-			return movable;
+			return new BgMovable(new ShortPoint2D(x, y));
 		} else {
 			return null;
 		}

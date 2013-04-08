@@ -10,6 +10,12 @@ import jsettlers.common.selectable.ESelectionType;
 
 public class BgMovable implements IMovable {
 
+	private ShortPoint2D point;
+
+	public BgMovable(ShortPoint2D point) {
+		this.point = point;
+	}
+	
 	@Override
 	public byte getPlayerId() {
 		return 0;
@@ -64,12 +70,12 @@ public class BgMovable implements IMovable {
 
 	@Override
 	public EMaterialType getMaterial() {
-		return null;
+		return EMaterialType.NO_MATERIAL;
 	}
 
 	@Override
 	public ShortPoint2D getPos() {
-		return null;
+		return point;
 	}
 
 	@Override
