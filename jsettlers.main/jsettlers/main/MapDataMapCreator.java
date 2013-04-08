@@ -19,11 +19,17 @@ public class MapDataMapCreator implements IGameCreator {
 
 	@Override
 	public MainGrid getMainGrid() throws MapLoadException {
+		return getMainGrid((byte) 0);
+	}
+
+	@Override
+	public MainGrid getMainGrid(byte player) throws MapLoadException {
 		if (data == null) {
 			data = map.getData();
 		}
 
-		MainGrid mainGrid = MainGrid.create(data, (byte) data.getPlayerCount());
+		MainGrid mainGrid =
+		        MainGrid.create(data, (byte) data.getPlayerCount(), player);
 		if (mainGrid == null) {
 			throw new MapLoadException("loaded map was null");
 		}

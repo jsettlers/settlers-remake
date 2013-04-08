@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.Color;
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
@@ -117,7 +118,7 @@ public final class MainGrid implements Serializable {
 	transient IGuiInputGrid guiInputGrid;
 	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
-	public MainGrid(short width, short height, byte numberOfPlayers) {
+	public MainGrid(short width, short height, byte numberOfPlayers, byte fowPlayer) {
 		this.width = width;
 		this.height = height;
 
@@ -131,7 +132,7 @@ public final class MainGrid implements Serializable {
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 
 		this.buildingsGrid = new BuildingsGrid();
-		this.fogOfWar = new NewFogOfWar(width, height);
+		this.fogOfWar = new NewFogOfWar(width, height, fowPlayer, false);
 
 		initAdditional();
 	}
@@ -163,12 +164,12 @@ public final class MainGrid implements Serializable {
 		partitionsGrid.cancelThreads();
 	}
 
-	public static MainGrid create(IMapData mapGrid, byte players) {
-		return new MainGrid(mapGrid, players);
+	public static MainGrid create(IMapData mapGrid, byte players, byte fowPlayer) {
+		return new MainGrid(mapGrid, players, fowPlayer);
 	}
 
-	private MainGrid(IMapData mapGrid, byte players) {
-		this((short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players);
+	private MainGrid(IMapData mapGrid, byte players, byte fowPlayer) {
+		this((short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players, fowPlayer);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -1414,8 +1415,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, boolean useNeighbors) {
-			Player player = partitionsGrid.getPlayerAt(pos.x, pos.y);
+		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId, boolean useNeighbors) {
+			Player player;
+			if (CommonConstants.ENABLE_ALL_PLAYER_SELECTION) {
+				player = partitionsGrid.getPlayerAt(pos.x, pos.y);
+			} else {
+				player = partitionsGrid.getPlayer(playerId);
+			}
 
 			if (player != null) {
 				if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, player)) {

@@ -10,6 +10,8 @@ import jsettlers.logic.map.newGrid.MainGrid;
  * @author michael
  */
 public interface IGameCreator {
+	@Deprecated
 	public MainGrid getMainGrid() throws MapLoadException;
+	public MainGrid getMainGrid(byte player) throws MapLoadException;
 	public UIState getUISettings(int player) throws MapLoadException;
 }

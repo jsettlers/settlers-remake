@@ -46,6 +46,12 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 	}
 
 	@Override
+	public MainGrid getMainGrid(byte player) throws MapLoadException {
+		return loader.getMainGrid(player);
+	}
+	
+
+	@Override
 	public UIState getUISettings(int player) throws MapLoadException {
 		return loader.getUISettings(player);
 	}

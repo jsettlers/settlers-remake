@@ -80,7 +80,7 @@ public class JSettlersGame {
 
 			UIState uiState;
 			try {
-				grid = mapcreator.getMainGrid();
+				grid = mapcreator.getMainGrid(playerNumber);
 				uiState = mapcreator.getUISettings(playerNumber);
 				mapcreator = null;
 			} catch (MapLoadException e1) {
