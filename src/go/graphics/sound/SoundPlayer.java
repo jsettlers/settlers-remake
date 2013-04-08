@@ -14,4 +14,5 @@ public interface SoundPlayer {
 	public void playSound(int soundStart, float lvolume, float rvolume);
 
 	public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever);
+
 }
