@@ -17,9 +17,9 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static final int TEXTURE_HEIGHT = 256;
 	private static final int TEXTURE_WIDTH = 256;
 
-	private static AndroidTextDrawer[] instances = new AndroidTextDrawer[EFontSize
-	        .values().length];
-	
+	private static AndroidTextDrawer[] instances =
+	        new AndroidTextDrawer[EFontSize.values().length];
+
 	private final EFontSize size;
 	private final AndroidContext context;
 	private int texture = 0;
@@ -61,7 +61,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private int[] lastused;
 	private TextView renderer;
 
-	public AndroidTextDrawer(EFontSize size, AndroidContext context) {
+	private AndroidTextDrawer(EFontSize size, AndroidContext context) {
 		this.size = size;
 		this.context = context;
 	}
@@ -110,8 +110,9 @@ public class AndroidTextDrawer implements TextDrawer {
 				unnededrating = lastused[i];
 			}
 		}
-		
-		//System.out.println("string cache miss for " + string + ", allocating new line: " + unnededline);
+
+		// System.out.println("string cache miss for " + string +
+		// ", allocating new line: " + unnededline);
 
 		// render the new text to that line.
 		Bitmap bitmap =
@@ -150,7 +151,7 @@ public class AndroidTextDrawer implements TextDrawer {
 
 			texturepos[1] = lineheight;
 			texturepos[16] = lineheight;
-			
+
 		}
 	}
 
@@ -177,6 +178,12 @@ public class AndroidTextDrawer implements TextDrawer {
 			instances[ordinal] = new AndroidTextDrawer(size, context);
 		}
 		return instances[ordinal];
+	}
+
+	public static void invalidateTextures() {
+		for (int i = 0; i < instances.length; i++) {
+			instances[i] = null;
+		}
 	}
 
 }

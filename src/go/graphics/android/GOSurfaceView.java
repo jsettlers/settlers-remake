@@ -12,7 +12,10 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLContext;
+import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
@@ -31,12 +34,13 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 	private AndroidContext drawcontext;
 
-	private boolean canPreserveContext = false;
+	private IContextDestroyedListener contextDestroyedListener = null;
 
 	public GOSurfaceView(Context context, Area area) {
 		super(context);
 		this.area = area;
 
+		setEGLContextFactory(new Factory());
 		setRenderer(new Renderer(context));
 		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 		tryEnableContextPreservation();
@@ -52,12 +56,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			                "setPreserveEGLContextOnPause", Boolean.TYPE);
 			m.invoke(this, true);
 		} catch (Throwable t) {
-			Log.w("gl", "Could not enable context preservation");
+			Log.d("gl", "Could not enable context preservation");
 		}
-	}
-
-	public boolean canPreserveContext() {
-		return canPreserveContext;
 	}
 
 	@Override
@@ -309,6 +309,29 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		}
+	}
+
+	private class Factory implements EGLContextFactory {
+
+		@Override
+		public EGLContext createContext(EGL10 arg0, EGLDisplay display,
+		        EGLConfig config) {
+			int[] attributes = new int[] {EGL10.EGL_NONE};
+			return arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT,
+			        attributes);
+		}
+
+		@Override
+		public void destroyContext(EGL10 arg0, EGLDisplay arg1, EGLContext arg2) {
+			Log.w("gl", "Invalidating texture context");
+			drawcontext.invalidateContext();
+			AndroidTextDrawer.invalidateTextures();
+			IContextDestroyedListener listener = contextDestroyedListener;
+			if (listener != null) {
+				listener.glContextDestroyed();
+			}
+			arg0.eglDestroyContext(arg1, arg2);
+		}
 
 	}
 
@@ -328,6 +351,11 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 	public GLDrawContext getDrawContext() {
 		return drawcontext;
+	}
+
+	public void setContextDestroyedListener(
+	        IContextDestroyedListener contextDestroyedListener) {
+		this.contextDestroyedListener = contextDestroyedListener;
 	}
 
 }
