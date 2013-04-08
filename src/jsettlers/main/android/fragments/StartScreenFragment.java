@@ -1,17 +1,14 @@
 package jsettlers.main.android.fragments;
 
-import java.io.File;
-
-import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.main.android.R;
-import jsettlers.main.android.resources.ResourceProvider;
-import jsettlers.main.android.resources.UpdateListener;
+import jsettlers.main.android.Revision;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class StartScreenFragment extends JsettlersFragment {
 
@@ -68,35 +65,8 @@ public class StartScreenFragment extends JsettlersFragment {
 			}
 		});
 
-		// TODO: integrate it nicely.
-		Button update = (Button) view.findViewById(R.id.startscreen_update);
-		update.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ProgressFragment fragment = new ProgressFragment();
-				getJsettlersActivity().showFragment(fragment);
-				ProgressConnector c = fragment.getConnector();
-				ResourceProvider provider =
-				        new ResourceProvider(getJsettlersActivity(),
-				                new File[] {
-					                getJsettlersActivity().getExternalFilesDir(
-					                        null)
-				                });
-				provider.startUpdate(new UpdateListener() {
-					@Override
-					public void resourceUpdateFinished() {
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								getJsettlersActivity().showStartScreen(
-								        getJsettlersActivity()
-								                .getStartConnector());
-							}
-						});
-					}
-				}, c);
-			}
-		});
+		TextView rev = (TextView) view.findViewById(R.id.startscreen_rev);
+		rev.setText("r" + Revision.REVISION);
 	}
 
 	@Override

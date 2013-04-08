@@ -23,6 +23,7 @@ import jsettlers.main.android.bg.BgStats;
 import jsettlers.main.android.fragments.GameCommandFragment;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
+import jsettlers.main.android.fragments.UpdateResourcesFragment;
 import jsettlers.main.android.resources.ResourceProvider;
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -42,6 +43,7 @@ public class JsettlersActivity extends Activity {
 	private Region goRegion;
 	private AndroidSoundPlayer soundPlayer;
 	private boolean glInForeground;
+	private ResourceProvider provider;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class JsettlersActivity extends Activity {
 		keepScreenOn();
 		setContentView(R.layout.base);
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
-		addImageLookups();
+		loadImageLookups();
 
 		goRegion = new Region(Region.POSITION_CENTER);
 		Area goArea = new Area();
@@ -59,7 +61,11 @@ public class JsettlersActivity extends Activity {
 		((FrameLayout) findViewById(R.id.base_gl)).addView(goView);
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 
-		getManager().start(new JsettlersActivityDisplay(this));
+		if (provider.needsUpdate()) {
+			showFragment(new UpdateResourcesFragment(provider));
+		} else {
+			showStartScreen();
+		}
 
 		showBgMap();
 	}
@@ -117,7 +123,7 @@ public class JsettlersActivity extends Activity {
 		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
-	private void addImageLookups() {
+	private void loadImageLookups() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
@@ -135,7 +141,7 @@ public class JsettlersActivity extends Activity {
 			ImageProvider.getInstance().addLookupPath(file);
 			SoundManager.addLookupPath(new File(file, "Snd"));
 		}
-		ResourceProvider provider = new ResourceProvider(this, files);
+		provider = new ResourceProvider(this, files);
 		ResourceManager.setProvider(provider);
 	}
 
@@ -149,6 +155,14 @@ public class JsettlersActivity extends Activity {
 	}
 
 	/* - - - - - - - Fragment stuff - - - - - - */
+
+	public void showStartScreen() {
+		if (connector != null) {
+			showStartScreen(connector);
+		} else {
+			getManager().start(new JsettlersActivityDisplay(this));
+		}
+	}
 
 	/**
 	 * Shows the start screen.

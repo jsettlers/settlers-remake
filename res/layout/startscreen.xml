@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:orientation="vertical"
-    android:background="@color/bg" >
+    android:background="@color/bg"
+    android:orientation="vertical" >
 
     <TextView
         android:id="@+id/textView3"
@@ -19,8 +19,8 @@
         android:id="@+id/startmenu_outer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:baselineAligned="true"
         android:layout_weight="1"
+        android:baselineAligned="true"
         android:orientation="horizontal" >
 
         <LinearLayout
@@ -95,11 +95,11 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/startscreen_update"
-        style="?android:attr/buttonStyleSmall"
+    <TextView
+        android:id="@+id/startscreen_rev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="update" />
+        android:layout_gravity="right"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>

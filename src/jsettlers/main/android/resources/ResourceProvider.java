@@ -17,25 +17,24 @@ public class ResourceProvider implements IResourceProvider {
 
 	public ResourceProvider(Context context, File[] dirs) {
 		this.dirs = dirs;
-		this.updater = new ResourceUpdater(context.getResources(), dirs[0]);
+		this.updater = new ResourceUpdater(context, dirs[0]);
 		new Thread(updater, "resource updater").start();
 	}
-	
+
 	public boolean needsUpdate() {
 		return updater.needsUpdate();
 	}
-	
+
 	public void startUpdate(final UpdateListener listener, ProgressConnector c) {
 		updater.startUpdate(listener, c);
 	}
 
-
 	@Override
 	public InputStream getFile(String name) throws IOException {
 		try {
-	        this.updater.waitUntilUpdateFinished();
-        } catch (InterruptedException e) {
-        }
+			this.updater.waitUntilUpdateFinished();
+		} catch (InterruptedException e) {
+		}
 		String[] parts = name.split("/");
 		for (File dir : dirs) {
 			File found = searchFileIn(dir, parts);
@@ -44,8 +43,10 @@ public class ResourceProvider implements IResourceProvider {
 				return new FileInputStream(found);
 			}
 		}
-		System.err.println("File " + name + " not found. Place it in JSettlers dir!");
-		throw new IOException("File " + name + " not found. Place it in JSettlers dir!");
+		System.err.println("File " + name
+		        + " not found. Place it in JSettlers dir!");
+		throw new IOException("File " + name
+		        + " not found. Place it in JSettlers dir!");
 	}
 
 	private static File searchFileIn(File dir, String[] parts) {
@@ -65,19 +66,20 @@ public class ResourceProvider implements IResourceProvider {
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
 		File outFile = new File(dirs[0].getAbsolutePath() + "/" + name);
-		System.err.println("--------------------------------" + outFile.getAbsolutePath());
+		System.err.println("--------------------------------"
+		        + outFile.getAbsolutePath());
 		outFile.getParentFile().mkdirs();
 		return new FileOutputStream(outFile);
 	}
 
 	@Override
-    public File getSaveDirectory() {
-	    return dirs[0];
-    }
+	public File getSaveDirectory() {
+		return dirs[0];
+	}
 
 	@Override
-    public File getTempDirectory() {
-	    return dirs[0];
-    }
+	public File getTempDirectory() {
+		return dirs[0];
+	}
 
 }

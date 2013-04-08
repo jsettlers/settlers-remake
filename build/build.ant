@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     08.04.2013 13:23:34                                                        
+
+     build-android    
+     Additional build stuff needed for andrid main project
+                   
+     michael                                                                
+     ====================================================================== -->
+<project name="build-android" default="extract-rev">
+    <description>
+            Additional build stuff needed for andrid main project
+    </description>
+
+    <!-- ================================= 
+          target: extract-rev             
+         ================================= -->
+    <target name="extract-rev" depends="find-rev" description="Additional build stuff needed for andrid main project">
+        <echo file="../gen/jsettlers/main/android/Revision.java">
+            <![CDATA[ 
+package jsettlers.main.android;
+
+public class Revision {
+	/**
+	 * The current game revision, as extracted from svn.
+	 */
+	public static int REVISION = ${svn-rev};
+
+	private Revision() {
+	}
+}
+]]>
+        </echo>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: find-rev                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="find-rev">
+        <exec executable="svn" output="svninfo.xml" failonerror="true">
+            <arg line="info --xml .." />
+        </exec>
+        <xmlproperty file="svninfo.xml" collapseattributes="true" prefix="svn" />
+        <echo message="SVN Revision: ${svn.info.entry.commit.revision}" />
+        <property name="svn-rev" value="${svn.info.entry.commit.revision}" />
+        <delete file="svninfo.xml" />
+    </target>
+
+</project>
