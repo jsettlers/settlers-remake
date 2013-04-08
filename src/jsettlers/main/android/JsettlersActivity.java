@@ -18,6 +18,7 @@ import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.main.ManagedJSettlers;
 import jsettlers.main.android.bg.BgControls;
 import jsettlers.main.android.bg.BgMap;
+import jsettlers.main.android.bg.BgStats;
 import jsettlers.main.android.fragments.GameCommandFragment;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
@@ -175,14 +176,16 @@ public class JsettlersActivity extends Activity {
 	        IStatisticable playerStatistics) {
 		showMapFragment();
 
-		MapContent content = new MapContent(map, soundPlayer, null);
+		MapContent content =
+		        new MapContent(map, playerStatistics, soundPlayer, null);
 		goRegion.setContent(content);
 		return content.getInterfaceConnector();
 	}
 
 	public void showBgMap() {
 		MapContent content =
-		        new MapContent(new BgMap(), soundPlayer, new BgControls());
+		        new MapContent(new BgMap(), new BgStats(), soundPlayer,
+		                new BgControls());
 		goRegion.setContent(content);
 	}
 
