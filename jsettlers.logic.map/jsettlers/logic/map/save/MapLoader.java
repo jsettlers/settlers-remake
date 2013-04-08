@@ -30,10 +30,10 @@ import jsettlers.main.IGameCreator;
  * @author michael
  */
 public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetworkableMap, Comparable<MapLoader> {
-	private static final byte USER_PLAYER = 0;
 	private final File file;
 	private MapFileHeader header;
 	private MainGrid mainGrid;
+	private ShortPoint2D[] startPoints;
 	private UIState uiState;
 	private IMapData mapData;
 
@@ -74,7 +74,6 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 
 			if (header.getType() == MapType.NORMAL) {
 				// load a normal map file
-				uiState = new UIState(0, new ShortPoint2D(0, 0));
 				MapDataReceiver data = new MapDataReceiver();
 				MapDataSerializer.deserialize(data, stream);
 				loadBy(data);
@@ -110,7 +109,10 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 	}
 
 	private void loadBy(IMapData data) {
-		uiState = new UIState(USER_PLAYER, data.getStartPoint(USER_PLAYER));
+		startPoints = new ShortPoint2D[data.getPlayerCount()];
+		for (int i= 0; i < startPoints.length; i++) {
+			startPoints[i] = data.getStartPoint(i);
+		}
 	}
 
 	@Override
@@ -134,10 +136,14 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 	@Override
 	public UIState getUISettings(int player) throws MapLoadException {
 		try {
-			if (uiState == null) {
+			if (uiState == null && startPoints == null) {
 				loadAll();
 			}
-			return uiState;
+			if (uiState != null) {
+				return uiState;
+			} else {
+				return new UIState(player, startPoints[player]);
+			}
 		} catch (IOException e) {
 			throw new MapLoadException(e);
 		}
