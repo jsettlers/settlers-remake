@@ -1477,6 +1477,12 @@ public final class MainGrid implements Serializable {
 				partitionsGrid.getSettingsForManagerAt(managerPosition.x, managerPosition.y).getDistributionSettings(materialType)
 						.setProbabilities(probabilities);
 		}
+
+		@Override
+		public void setMaterialPrioritiesSetting(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
+			if (isInBounds(managerPosition))
+				partitionsGrid.getSettingsForManagerAt(managerPosition.x, managerPosition.y).setMaterialTypesForPriorities(materialTypeForPriority);
+		}
 	}
 
 	/**

@@ -24,6 +24,7 @@ import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
+import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.task.ConvertGuiTask;
@@ -34,6 +35,7 @@ import jsettlers.input.task.MovableGuiTask;
 import jsettlers.input.task.MoveToGuiTask;
 import jsettlers.input.task.SetBuildingPriorityGuiTask;
 import jsettlers.input.task.SetMaterialDistributionSettingsGuiTask;
+import jsettlers.input.task.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.task.SimpleGuiTask;
 import jsettlers.input.task.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
@@ -203,11 +205,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
-			SetMaterialDistributionSettingsAction task = (SetMaterialDistributionSettingsAction) action;
-			manager.scheduleTask(new SetMaterialDistributionSettingsGuiTask(task.getManagerPosition(), task.getMaterialType(), task
+			SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
+			manager.scheduleTask(new SetMaterialDistributionSettingsGuiTask(a.getManagerPosition(), a.getMaterialType(), a
 					.getProbabilities()));
-		}
 			break;
+		}
+
+		case SET_MATERIAL_PRIORITIES: {
+			SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
+			manager.scheduleTask(new SetMaterialPrioritiesGuiTask(a.getManagerPosition(), a.getMaterialTypeForPriority()));
+			break;
+		}
 
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");

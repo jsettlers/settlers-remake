@@ -40,4 +40,18 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 	public DistributionSettingsForMaterial getDistributionSettings(final EMaterialType materialType) {
 		return settingsOfMaterials[materialType.ordinal];
 	}
+
+	/**
+	 * Sets the setting for the priorities of the droppable {@link EMaterialType}s.
+	 * 
+	 * @param materialTypeForPriority
+	 *            An array of all droppable {@link EMaterialType}s. The first element has the highest priority, the last one has the lowest.
+	 */
+	public void setMaterialTypesForPriorities(EMaterialType[] materialTypeForPriority) {
+		assert this.materialTypeForPriorities.length == materialTypeForPriority.length;
+
+		for (int i = 0; i < materialTypeForPriority.length; i++) {
+			this.materialTypeForPriorities[i] = materialTypeForPriorities[i];
+		}
+	}
 }

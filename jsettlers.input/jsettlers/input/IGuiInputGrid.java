@@ -84,4 +84,14 @@ public interface IGuiInputGrid {
 	 */
 	void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities);
 
+	/**
+	 * Sets the material priorities setting in the given manager at the given managerPosition.
+	 * 
+	 * @param managerPosition
+	 *            The position of the manger to set the given settings.
+	 * @param materialTypeForPriority
+	 *            The {@link EMaterialType}s for the priorities. The first element has the highest priority, the last one has the lowest.
+	 */
+	void setMaterialPrioritiesSetting(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority);
+
 }
