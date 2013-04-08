@@ -2,6 +2,7 @@ package jsettlers.main.android;
 
 import go.graphics.android.AndroidSoundPlayer;
 import go.graphics.android.GOSurfaceView;
+import go.graphics.android.IContextDestroyedListener;
 import go.graphics.area.Area;
 import go.graphics.region.Region;
 
@@ -81,9 +82,12 @@ public class JsettlersActivity extends Activity {
 		goView.onPause();
 		soundPlayer.setPaused(true);
 
-		if (!goView.canPreserveContext()) {
-			ImageProvider.getInstance().invalidateAll();
-		}
+		goView.setContextDestroyedListener(new IContextDestroyedListener() {
+			@Override
+			public void glContextDestroyed() {
+				ImageProvider.getInstance().invalidateAll();
+			}
+		});
 	}
 
 	@Override
