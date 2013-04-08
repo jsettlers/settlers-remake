@@ -11,11 +11,16 @@
         android:text="@string/buildings_headline"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TableLayout
-        android:id="@+id/build_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" >
 
-    </TableLayout>
+        <TableLayout
+            android:id="@+id/build_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+        </TableLayout>
+    </ScrollView>
 
 </LinearLayout>
