@@ -1012,9 +1012,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public void changeHeightTowards(short x, short y, byte targetHeight) {
-			byte currHeight = landscapeGrid.getHeightAt(x, y);
-			landscapeGrid.setHeightAt(x, y, (byte) (currHeight + Math.signum(targetHeight - currHeight)));
-			landscapeGrid.setLandscapeTypeAt(x, y, ELandscapeType.FLATTENED);
+			landscapeGrid.flattenAndChangeHeightTowards(x, y, targetHeight);
 		}
 
 		@Override
@@ -1249,6 +1247,7 @@ public final class MainGrid implements Serializable {
 				short y = curr.y;
 				if (isInBounds(x, y)) {
 					flagsGrid.setBlockedAndProtected(x, y, false);
+					landscapeGrid.activateUnflattening(x, y);
 				}
 			}
 		}

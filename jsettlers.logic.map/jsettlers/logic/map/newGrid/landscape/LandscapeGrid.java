@@ -9,6 +9,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
+import random.RandomSingleton;
 
 /**
  * This grid stores the height and the {@link ELandscapeType} of every position.
@@ -69,11 +70,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return heightGrid[x + y * width];
 	}
 
-	public final void setHeightAt(short x, short y, byte height) {
-		this.heightGrid[x + y * width] = height;
-		backgroundListener.backgroundChangedAt(x, y);
-	}
-
 	public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 		return ELandscapeType.values[landscapeGrid[x + y * width]];
 	}
@@ -109,8 +105,18 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
-	public final void changeHeightAt(short x, short y, byte delta) {
-		this.heightGrid[x + y * width] += delta;
+	public final void setHeightAt(short x, short y, byte height) {
+		this.heightGrid[x + y * width] = height;
+		backgroundListener.backgroundChangedAt(x, y);
+	}
+
+	public void flattenAndChangeHeightTowards(short x, short y, byte targetHeight) {
+		final int index = x + y * width;
+
+		this.heightGrid[index] += Math.signum(targetHeight - this.heightGrid[index]);
+		this.landscapeGrid[index] = ELandscapeType.FLATTENED.ordinal;
+		this.temporaryFlatened[index] = Byte.MAX_VALUE; // cancel the flattening
+
 		backgroundListener.backgroundChangedAt(x, y);
 	}
 
@@ -207,13 +213,21 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	@Override
 	public boolean countFlattenedDown(short x, short y) {
-		int i = x + y * width;
+		final int index = x + y * width;
 
-		temporaryFlatened[i]--;
-		if (temporaryFlatened[i] <= -30) {
-			temporaryFlatened[i] = 0;
+		byte flattenedValue = temporaryFlatened[index];
+
+		if (flattenedValue == Byte.MAX_VALUE) { // the unflattening has been canceled.
+			return true; // tell the flattened resetter that it does not need to work on this pos again.
+		}
+
+		// count down the value
+		flattenedValue--;
+		temporaryFlatened[index] = flattenedValue;
+		if (flattenedValue <= -30) { // if the value is smaller than the hysteresis, set it to zero
+			temporaryFlatened[index] = 0;
 			setLandscapeTypeAt(x, y, ELandscapeType.GRASS);
-			return true;
+			return true; // tell the flattened resetter that it does not need to work on this pos again.
 		} else {
 			return false;
 		}
@@ -239,6 +253,19 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 				return getLandscapeTypeAt(x, y);
 			}
 		};
+	}
+
+	/**
+	 * This method activates the unflattening process. This causes a flattened position to be turned into grass after a while.
+	 * 
+	 * @param x
+	 *            X coordinate of the position.
+	 * @param y
+	 *            Y coordinate of the position.
+	 */
+	public void activateUnflattening(short x, short y) {
+		this.temporaryFlatened[x + y * width] = (byte) (40 + RandomSingleton.nextF() * 80);
+		this.flattenedResetter.addPosition(x, y);
 	}
 
 }
