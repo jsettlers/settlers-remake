@@ -220,7 +220,7 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void action(Action action) {
 		if (action.getActionType() == EActionType.SPEED_SET_PAUSE) {
 			setActiveMenu(pauseMenu);
-		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
+		}  else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
 		        && androidMenuPutable.getActiveMenu() == pauseMenu) {
 			setActiveMenu(null);
 		} else if (action.getActionType() == EActionType.SET_WORK_AREA

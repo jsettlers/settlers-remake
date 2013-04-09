@@ -3,10 +3,11 @@ package jsettlers.graphics.androidui.menu;
 import go.graphics.UIPoint;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Handler;
 import android.view.View.OnClickListener;
 
 public abstract class AndroidMenu extends Fragment implements Hideable {
@@ -23,7 +24,6 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 
 	@Override
 	public void onResume() {
-		backgroundAlreadyClicked = false;
 		super.onResume();
 	}
 
@@ -31,12 +31,12 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 		/*
 		 * A click on the background should bring us back to the game.
 		 */
-		if (!backgroundAlreadyClicked) {
-			backgroundAlreadyClicked = true;
-			return new Action(EActionType.BACK);
-		} else {
-			return null;
-		}
+		return new ExecutableAction() {
+			@Override
+			public void execute() {
+				requestHide();
+			}
+		};
 	}
 
 	/*
@@ -45,10 +45,12 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 	 */
 	@Override
 	public void requestHide() {
-		Action hideAction = getHideAction();
-		if (hideAction != null) {
-			putable.fireAction(hideAction);
-		}
+		new Handler(getContext().getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				putable.hideMenu();
+			}
+		});
 	}
 
 	protected OnClickListener generateActionListener(Action action,
@@ -83,9 +85,9 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 	public boolean onBackButtonPressed() {
 		return false;
 	}
-	
+
 	public AndroidMenuPutable getPutable() {
-	    return putable;
-    }
+		return putable;
+	}
 
 }

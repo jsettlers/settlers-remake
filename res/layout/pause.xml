@@ -1,36 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/dialog_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/pause_text" />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="183dp"
-        android:layout_marginTop="70dp"
-        android:text="@string/pause_text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_margin="10sp"
+        android:text="@string/pause_hint"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <Button
-        android:id="@+id/pause_quit"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginRight="46dp"
-        android:layout_marginTop="36dp"
-        android:text="@string/pause_quit" />
+        android:layout_gravity="center" >
 
-    <Button
-        android:id="@+id/pause_resume"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/pause_quit"
-        android:layout_marginTop="21dp"
-        android:layout_toRightOf="@+id/pause_quit"
+        <Button
+            android:id="@+id/pause_resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
         android:text="@string/pause_resume" />
 
-</RelativeLayout>
+        <Button
+        android:id="@+id/pause_quit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+        android:text="@string/pause_quit"  />
+
+    </LinearLayout>
+
+</LinearLayout>

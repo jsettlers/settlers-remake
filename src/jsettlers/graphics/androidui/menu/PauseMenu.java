@@ -30,7 +30,7 @@ public class PauseMenu extends AndroidMenu {
 
 		Button resume = (Button) view.findViewById(R.id.pause_resume);
 		resume.setOnClickListener(generateActionListener(new Action(
-		        EActionType.SPEED_UNSET_PAUSE), true));
+		        EActionType.SPEED_UNSET_PAUSE), false));
 	}
 
 	@Override
