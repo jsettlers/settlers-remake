@@ -37,8 +37,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.map.UIState;
 import jsettlers.input.IGuiInputGrid;
+import jsettlers.input.UIState;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
@@ -1470,7 +1470,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void save() throws FileNotFoundException, IOException, InterruptedException {
+		public final void save(UIState uiState) throws FileNotFoundException, IOException, InterruptedException {
 			boolean pausing = NetworkTimer.isPausing();
 			NetworkTimer.get().setPausing(true);
 			try {
@@ -1482,7 +1482,7 @@ public final class MainGrid implements Serializable {
 
 			MapList list = MapList.getDefaultList();
 			// TODO @Andreas Eberle: pass on ui state.
-			list.saveMap(new UIState(0, new ShortPoint2D(0, 0)), MainGrid.this);
+			list.saveMap(uiState, MainGrid.this);
 
 			NetworkTimer.get().setPausing(pausing);
 		}

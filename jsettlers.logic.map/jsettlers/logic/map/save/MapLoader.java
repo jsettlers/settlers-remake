@@ -12,9 +12,9 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.network.INetworkableMap;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
+import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.random.RandomMapEvaluator;
@@ -110,14 +110,14 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 
 	private void loadBy(IMapData data) {
 		startPoints = new ShortPoint2D[data.getPlayerCount()];
-		for (int i= 0; i < startPoints.length; i++) {
+		for (int i = 0; i < startPoints.length; i++) {
 			startPoints[i] = data.getStartPoint(i);
 		}
 	}
 
 	@Override
 	public MainGrid getMainGrid() throws MapLoadException {
-		return getMainGrid((byte)0);
+		return getMainGrid((byte) 0);
 	}
 
 	@Override
@@ -128,8 +128,8 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 			}
 			if (mapData != null) {
 				mainGrid =
-				        MainGrid.create(mapData,
-				                (byte) mapData.getPlayerCount(), player);
+						MainGrid.create(mapData,
+								(byte) mapData.getPlayerCount(), player);
 				if (mainGrid == null) {
 					throw new MapLoadException("loaded map was null");
 				}
@@ -149,7 +149,7 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 			if (uiState != null) {
 				return uiState;
 			} else {
-				return new UIState(player, startPoints[player]);
+				return new UIState(startPoints[player]);
 			}
 		} catch (IOException e) {
 			throw new MapLoadException(e);

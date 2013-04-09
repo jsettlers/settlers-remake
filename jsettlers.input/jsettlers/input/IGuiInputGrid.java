@@ -29,8 +29,7 @@ public interface IGuiInputGrid {
 	IGuiMovable getMovable(short x, short y);
 
 	/**
-	 * Gets a position where the building can be constructed some points around
-	 * pos.
+	 * Gets a position where the building can be constructed some points around pos.
 	 * 
 	 * @param position
 	 *            THe position
@@ -39,16 +38,22 @@ public interface IGuiInputGrid {
 	 * @param player
 	 *            The player that wants to construct the building.
 	 * @param useNeighborPositionsForConstruction
-	 *            If this is true, not only the given position is checked, if it
-	 *            can be used to construct a building, but also the neighbors.<br>
+	 *            If this is true, not only the given position is checked, if it can be used to construct a building, but also the neighbors.<br>
 	 *            If this is false, only the given position will be checked.
-	 * @return <code>null</code> if no position was found, the position
-	 *         otherwise.
+	 * @return <code>null</code> if no position was found, the position otherwise.
 	 */
 	ShortPoint2D getConstructablePosition(ShortPoint2D position,
-	        EBuildingType type, byte player, boolean useNeighbors);
+			EBuildingType type, byte player, boolean useNeighbors);
 
-	void save() throws FileNotFoundException, IOException, InterruptedException;
+	/**
+	 * Saves the map with the given {@link UIState}.
+	 * 
+	 * @param uiState
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	void save(UIState uiState) throws FileNotFoundException, IOException, InterruptedException;
 
 	void toggleFogOfWar();
 
@@ -59,16 +64,14 @@ public interface IGuiInputGrid {
 	 * 
 	 * @param position
 	 *            Position the new building will be placed. <br>
-	 *            NOTE: There will be no validation if this position is allowed!
-	 *            This must be done prior to this call.
+	 *            NOTE: There will be no validation if this position is allowed! This must be done prior to this call.
 	 * @param type
 	 *            {@link EBuildingType} of the new building.
 	 */
 	void constructBuildingAt(ShortPoint2D position, EBuildingType type);
 
 	/**
-	 * This method can be used to print debug output when the given position is
-	 * clicked by the user.
+	 * This method can be used to print debug output when the given position is clicked by the user.
 	 * 
 	 * @param x
 	 *            x coordinate of the position.
@@ -78,34 +81,28 @@ public interface IGuiInputGrid {
 	void postionClicked(short x, short y);
 
 	/**
-	 * Sets the distribution settings for the given materialType in the manager
-	 * at the given managerPosition.
+	 * Sets the distribution settings for the given materialType in the manager at the given managerPosition.
 	 * 
 	 * @param managerPosition
 	 *            The position of the manger to set the given settings.
 	 * @param materialType
-	 *            The {@link EMaterialType} of the material the given settings
-	 *            shall be used for.
+	 *            The {@link EMaterialType} of the material the given settings shall be used for.
 	 * @param probabilities
-	 *            The probabilities for the distribution of the given
-	 *            materialType to the {@link EBuildingType}s specified by
-	 *            MaterialsOfBuildings
+	 *            The probabilities for the distribution of the given materialType to the {@link EBuildingType}s specified by MaterialsOfBuildings
 	 *            .getBuildingTypesRequestingMaterial(materialType).
 	 */
 	void setMaterialDistributionSettings(ShortPoint2D managerPosition,
-	        EMaterialType materialType, float[] probabilities);
+			EMaterialType materialType, float[] probabilities);
 
 	/**
-	 * Sets the material priorities setting in the given manager at the given
-	 * managerPosition.
+	 * Sets the material priorities setting in the given manager at the given managerPosition.
 	 * 
 	 * @param managerPosition
 	 *            The position of the manger to set the given settings.
 	 * @param materialTypeForPriority
-	 *            The {@link EMaterialType}s for the priorities. The first
-	 *            element has the highest priority, the last one has the lowest.
+	 *            The {@link EMaterialType}s for the priorities. The first element has the highest priority, the last one has the lowest.
 	 */
 	void setMaterialPrioritiesSetting(ShortPoint2D managerPosition,
-	        EMaterialType[] materialTypeForPriority);
+			EMaterialType[] materialTypeForPriority);
 
 }

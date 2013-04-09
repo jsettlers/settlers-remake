@@ -1,5 +1,6 @@
 package jsettlers.input;
 
+
 /**
  * Interface for TaskExecutor to give commands to the GuiInterface using the executor.
  * 
@@ -12,5 +13,11 @@ public interface ITaskExecutorGuiInterface {
 	 * refresh the current selection, because it's possible, that movables changed.
 	 */
 	void refreshSelection();
+
+	/**
+	 * 
+	 * @return Returns the current {@link UIState} that can be used to save it with a savegame.
+	 */
+	UIState getUIState();
 
 }

@@ -3,8 +3,8 @@ package jsettlers.main;
 import java.util.Date;
 
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
+import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapLoader;

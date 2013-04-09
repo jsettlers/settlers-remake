@@ -465,6 +465,11 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		connector.setSelection(currentSelection);
 	}
 
+	@Override
+	public UIState getUIState() {
+		return new UIState(connector.getScreenPosition());
+	}
+
 	/**
 	 * Shuts down used threads.
 	 */

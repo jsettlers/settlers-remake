@@ -72,7 +72,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case QUICK_SAVE:
 			try {
-				grid.save();
+				grid.save(guiInterface.getUIState());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

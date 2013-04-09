@@ -3,7 +3,7 @@ package jsettlers.main;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.IMapDataProvider;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.map.UIState;
+import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.MainGrid;
 
 @Deprecated
@@ -29,7 +29,7 @@ public class MapDataMapCreator implements IGameCreator {
 		}
 
 		MainGrid mainGrid =
-		        MainGrid.create(data, (byte) data.getPlayerCount(), player);
+				MainGrid.create(data, (byte) data.getPlayerCount(), player);
 		if (mainGrid == null) {
 			throw new MapLoadException("loaded map was null");
 		}
@@ -41,7 +41,7 @@ public class MapDataMapCreator implements IGameCreator {
 		if (data == null) {
 			data = map.getData();
 		}
-		return new UIState(player, data.getStartPoint(player));
+		return new UIState(data.getStartPoint(player));
 	}
 
 }

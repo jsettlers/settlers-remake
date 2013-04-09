@@ -6,12 +6,12 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.GuiTaskExecutor;
+import jsettlers.input.UIState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.newmovable.NewMovable;
@@ -98,7 +98,7 @@ public class JSettlersGame {
 			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), playerNumber);
 
 			connector.addListener(this);
-			connector.loadUIState(uiState);
+			connector.scrollTo(uiState.getScreenCenter(), false);
 
 			grid.startThreads();
 			networkManager.startGameTimer(new GuiTaskExecutor(grid.getGuiInputGrid(), guiInterface));

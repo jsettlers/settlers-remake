@@ -1,7 +1,7 @@
 package jsettlers.main;
 
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.map.UIState;
+import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.MainGrid;
 
 /**
