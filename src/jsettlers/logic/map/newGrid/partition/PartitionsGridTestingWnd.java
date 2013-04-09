@@ -21,7 +21,6 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.UIState;
 import jsettlers.logic.map.newGrid.flags.IBlockingChangedListener;
 
 public class PartitionsGridTestingWnd {
@@ -36,7 +35,7 @@ public class PartitionsGridTestingWnd {
 
 		// open the window
 		MapInterfaceConnector connector = TestWindow.openTestWindow(testWnd.getGraphicsGrid());
-		connector.loadUIState(new UIState(0, new ShortPoint2D(200, 200)));
+		connector.scrollTo(new ShortPoint2D(200, 200), false);
 		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));
