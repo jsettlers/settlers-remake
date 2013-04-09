@@ -114,5 +114,11 @@ public class GameCommandFragment extends JsettlersFragment implements
 			transaction.commit();
 		}
 	}
+	
+	@Override
+	public boolean onBackButtonPressed() {
+		getJsettlersActivity().fireKey("BACK");
+	    return true;
+	}
 
 }

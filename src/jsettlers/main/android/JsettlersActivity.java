@@ -27,6 +27,7 @@ import jsettlers.main.android.fragments.StartScreenFragment;
 import jsettlers.main.android.fragments.UpdateResourcesFragment;
 import jsettlers.main.android.resources.ResourceProvider;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -172,19 +173,32 @@ public class JsettlersActivity extends Activity {
 	 */
 	public void showStartScreen(IStartScreenConnector connector) {
 		this.connector = connector;
-		getFragmentManager().popBackStack(null,
-		        FragmentManager.POP_BACK_STACK_INCLUSIVE);
 		showFragment(new StartScreenFragment());
 	}
 
 	public void showFragment(JsettlersFragment fragment) {
 		FragmentManager manager = getFragmentManager();
+		if (!fragment.shouldAddToBackStack()) {
+			manager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		}
 		FragmentTransaction transaction = manager.beginTransaction();
 		if (fragment.shouldAddToBackStack()) {
 			transaction.addToBackStack(fragment.getName());
 		}
 		transaction.replace(R.id.base_menu, fragment);
 		transaction.commit();
+	}
+
+	@Override
+	public void onBackPressed() {
+		FragmentManager manager = getFragmentManager();
+		Fragment last = manager.findFragmentById(R.id.base_menu);
+		if (last instanceof JsettlersFragment) {
+			if (((JsettlersFragment) last).onBackButtonPressed()) {
+				return;
+			}
+		}
+		super.onBackPressed();
 	}
 
 	public IStartScreenConnector getStartConnector() {

@@ -110,4 +110,10 @@ public class NetworkScreenFragment extends JsettlersFragment implements
 	public void addChatMessage(String message) {
 		chatAdapter.addChatMessage(message);
 	}
+	
+	public boolean onBackButtonPressed() {
+		networkScreen.leaveGame();
+		getJsettlersActivity().showStartScreen();
+		return true;
+	};
 }

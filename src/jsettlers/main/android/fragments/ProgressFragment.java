@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This displays a progress bar on the screen. TODO: We should call some abort
@@ -94,10 +95,12 @@ public class ProgressFragment extends JsettlersFragment {
 	public ProgressConnector getConnector() {
 		return connector;
 	}
-	
+
 	@Override
-	public boolean shouldAddToBackStack() {
-	    return false;
+	public boolean onBackButtonPressed() {
+		Toast.makeText(getActivity(), "TODO: Back while in progress",
+		        Toast.LENGTH_LONG).show();
+		return true;
 	}
 
 }
