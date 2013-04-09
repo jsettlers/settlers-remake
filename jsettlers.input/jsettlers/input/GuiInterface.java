@@ -102,6 +102,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		case SPEED_TOGGLE_PAUSE:
 			NetworkTimer.get().invertPausing();
 			break;
+			
+		case SPEED_SET_PAUSE:
+			NetworkTimer.get().setPausing(true);
+			break;
+			
+		case SPEED_UNSET_PAUSE:
+			NetworkTimer.get().setPausing(false);
+			break;
 
 		case SPEED_SLOW:
 			if (!manager.isMultiplayer()) {
