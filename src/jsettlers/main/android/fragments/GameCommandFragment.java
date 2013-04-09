@@ -3,6 +3,7 @@ package jsettlers.main.android.fragments;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.main.android.R;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -98,23 +99,29 @@ public class GameCommandFragment extends JsettlersFragment implements
 
 	@Override
 	public void showMenuFragment(Fragment fragment) {
-		FragmentTransaction transaction =
-		        getActivity().getFragmentManager().beginTransaction();
-		transaction.replace(MY_ID, fragment, "android-menu");
-		transaction.commit();
+		Activity activity = getActivity();
+		if (activity != null) {
+			FragmentTransaction transaction =
+			        activity.getFragmentManager().beginTransaction();
+			transaction.replace(MY_ID, fragment, "android-menu");
+			transaction.commit();
+		}
 	}
 
 	@Override
 	public void hideMenu() {
-		FragmentManager getManager = getActivity().getFragmentManager();
-		Fragment fragment = getManager.findFragmentByTag("android-menu");
-		if (fragment != null) {
-			FragmentTransaction transaction = getManager.beginTransaction();
-			transaction.remove(fragment);
-			transaction.commit();
+		Activity activity = getActivity();
+		if (activity != null) {
+			FragmentManager getManager = activity.getFragmentManager();
+			Fragment fragment = getManager.findFragmentByTag("android-menu");
+			if (fragment != null) {
+				FragmentTransaction transaction = getManager.beginTransaction();
+				transaction.remove(fragment);
+				transaction.commit();
+			}
 		}
 	}
-	
+
 	@Override
 	public boolean onBackButtonPressed() {
 		getJsettlersActivity().fireKey("BACK");
