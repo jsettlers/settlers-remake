@@ -342,10 +342,10 @@ public final class MapContent implements SettlersContent,
 		String gametime = playerStatistics.getGameTime() + "";
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
-		double spacing = drawer.getWidth("____________");
+		double spacing = drawer.getWidth("_");
 		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
-		drawer.drawString(windowWidth - (float) spacing, y, "FPS: " + frames);
-		drawer.drawString(windowWidth - 2 * (float) spacing, y, "Time: "
+		drawer.drawString(windowWidth - 9 * (float) spacing, y, "FPS: " + frames);
+		drawer.drawString(windowWidth - 23 * (float) spacing, y, "Time: "
 		        + gametime);
 	}
 
@@ -360,8 +360,8 @@ public final class MapContent implements SettlersContent,
 	private void drawActionThreadSlow(GLDrawContext gl) {
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		String string = Labels.getString("action_firerer_slow");
-		float x = windowWidth - (float) drawer.getWidth(string) - 40;
-		float y = windowHeight - (float) drawer.getHeight(string) - 10;
+		float x = windowWidth - (float) drawer.getWidth(string) - 5;
+		float y = windowHeight - 3 * (float) drawer.getHeight(string);
 		drawer.drawString(x, y, string);
 	}
 
