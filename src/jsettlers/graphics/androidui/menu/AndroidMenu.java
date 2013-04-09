@@ -75,4 +75,17 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 	public void poll() {
 	}
 
+	/**
+	 * Called when the back button is pressed while we are active.
+	 * 
+	 * @return <code>true</code> if we handled the press.
+	 */
+	public boolean onBackButtonPressed() {
+		return false;
+	}
+	
+	public AndroidMenuPutable getPutable() {
+	    return putable;
+    }
+
 }

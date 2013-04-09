@@ -33,9 +33,14 @@ public class PauseMenu extends AndroidMenu {
 		        EActionType.SPEED_UNSET_PAUSE), true));
 	}
 
-	 @Override
-	 public Action getActionFor(UIPoint position) {
-	 return new Action(EActionType.SPEED_UNSET_PAUSE);
-	 }
+	@Override
+	public Action getActionFor(UIPoint position) {
+		return new Action(EActionType.SPEED_UNSET_PAUSE);
+	}
 
+	@Override
+	public boolean onBackButtonPressed() {
+		getActionFireable().fireAction(new Action(EActionType.EXIT));
+		return true;
+	}
 }

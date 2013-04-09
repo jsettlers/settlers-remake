@@ -130,6 +130,8 @@ public class BuildingMenu extends AndroidMenu {
 			addMaterialTab(tabs, mat);
 		}
 
+		addSpace(tabs);
+
 		if (building.getBuildingType().getWorkradius() > 0) {
 			ImageButton button =
 			        generateImageButtonTab(tabs,
@@ -157,9 +159,27 @@ public class BuildingMenu extends AndroidMenu {
 			// highPriorityButton = generateImageButtonTab(tabs,
 			// R.drawable.building_);
 			reloadWorkingButton(building.getPriority());
+
+			ImageButton destroyButton =
+			        generateImageButtonTab(tabs, R.drawable.building_destroy);
+			destroyButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					getPutable().showMenuFragment(
+					        new DestroyBuildingDialog(getPutable()));
+				}
+			});
 		}
 
 		tabContent = (LinearLayout) view.findViewById(R.id.building_tabcontent);
+	}
+
+	private void addSpace(TableLayout tabs) {
+		View space = new TableRow(getContext());
+		TableLayout.LayoutParams params = new TableLayout.LayoutParams();
+		params.weight = 1;
+		space.setLayoutParams(params);
+		tabs.addView(space);
 	}
 
 	private ImageButton generateImageButtonTab(TableLayout tabs, int resource) {
@@ -172,10 +192,15 @@ public class BuildingMenu extends AndroidMenu {
 	}
 
 	private void reloadWorkingButton(EPriority priority) {
-		workButton.setVisibility(priority != EPriority.LOW ? View.VISIBLE
-		        : View.INVISIBLE);
-		pauseButton.setVisibility(priority != EPriority.STOPPED ? View.VISIBLE
-		        : View.INVISIBLE);
+		if (workButton != null) {
+			workButton.setVisibility(priority != EPriority.LOW ? View.VISIBLE
+			        : View.INVISIBLE);
+		}
+		if (pauseButton != null) {
+			pauseButton
+			        .setVisibility(priority != EPriority.STOPPED ? View.VISIBLE
+			                : View.INVISIBLE);
+		}
 		lastPriority = priority;
 	}
 

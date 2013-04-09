@@ -50,9 +50,6 @@ public class MobileControls implements IControls, ContextActionListener {
 	private ContextAction activeAction = null;
 	private final Object activeActionMutex = new Object();
 
-	private AndroidMenu activeMenu = null;
-	private final Object activeMenuMutex = new Object();
-
 	/**
 	 * The container we need to display android menus.
 	 */
@@ -101,12 +98,10 @@ public class MobileControls implements IControls, ContextActionListener {
 				        activeAction.getDesciption());
 			}
 		}
-		synchronized (activeMenuMutex) {
-			if (activeMenu != null) {
-				gl.color(0, 0, 0, .5f);
-				gl.fillQuad(0, 0, width, height);
-				// activeMenu.drawAt(gl);
-			}
+		if (androidMenuPutable.getActiveMenu() != null) {
+			gl.color(0, 0, 0, .5f);
+			gl.fillQuad(0, 0, width, height);
+			// activeMenu.drawAt(gl);
 		}
 		// TODO: Reuse, less frequent
 		new Handler(androidMenuPutable.getContext().getMainLooper())
@@ -119,21 +114,17 @@ public class MobileControls implements IControls, ContextActionListener {
 	}
 
 	private void pollActiveMenu() {
-		synchronized (activeMenuMutex) {
-			if (activeMenu != null) {
-				activeMenu.poll();
-			}
+		AndroidMenu activeMenu = androidMenuPutable.getActiveMenu();
+		if (activeMenu != null) {
+			activeMenu.poll();
 		}
 	}
 
 	protected void setActiveMenu(AndroidMenu activeMenu) {
-		synchronized (activeMenuMutex) {
-			this.activeMenu = activeMenu;
-			if (this.activeMenu != null) {
-				androidMenuPutable.showMenuFragment(activeMenu);
-			} else {
-				androidMenuPutable.hideMenu();
-			}
+		if (activeMenu != null) {
+			androidMenuPutable.showMenuFragment(activeMenu);
+		} else {
+			androidMenuPutable.hideMenu();
 		}
 	}
 
@@ -157,7 +148,7 @@ public class MobileControls implements IControls, ContextActionListener {
 
 	@Override
 	public boolean containsPoint(UIPoint position) {
-		if (activeMenu != null) {
+		if (androidMenuPutable.getActiveMenu() != null) {
 			return true;
 		} else {
 			float rHeight = SIZEFACTOR * height;
@@ -169,19 +160,18 @@ public class MobileControls implements IControls, ContextActionListener {
 
 	@Override
 	public Action getActionFor(UIPoint position, boolean selecting) {
-		synchronized (activeMenuMutex) {
-			if (activeMenu != null) {
-				return activeMenu.getActionFor(position);
+		AndroidMenu activeMenu = androidMenuPutable.getActiveMenu();
+		if (activeMenu != null) {
+			return activeMenu.getActionFor(position);
+		} else {
+			float y = (float) position.getY();
+			float x = (float) position.getX();
+			if (showBuildButton.getPosition().contains(x, y)) {
+				return showBuildButton.getAction();
+			} else if (showSelectionButton.getPosition().contains(x, y)) {
+				return showSelectionButton.getAction();
 			} else {
-				float y = (float) position.getY();
-				float x = (float) position.getX();
-				if (showBuildButton.getPosition().contains(x, y)) {
-					return showBuildButton.getAction();
-				} else if (showSelectionButton.getPosition().contains(x, y)) {
-					return showSelectionButton.getAction();
-				} else {
-					return null;
-				}
+				return null;
 			}
 		}
 	}
@@ -196,17 +186,15 @@ public class MobileControls implements IControls, ContextActionListener {
 			}
 		}
 
-		synchronized (activeMenuMutex) {
-			if (action.getActionType() == EActionType.EXECUTABLE) {
-				((ExecutableAction) replaced).execute();
-				replaced = null;
-			} else if (action.getActionType() == EActionType.BACK) {
-				if (activeMenu == pauseMenu) {
-					replaced = new Action(EActionType.EXIT);
-				} else if (activeMenu != null) {
-					setActiveMenu(null);
-					replaced = null;
-				} else {
+		if (action.getActionType() == EActionType.EXECUTABLE) {
+			((ExecutableAction) replaced).execute();
+			replaced = null;
+		} else if (action.getActionType() == EActionType.BACK) {
+			AndroidMenu activeMenu = androidMenuPutable.getActiveMenu();
+			replaced = null;
+			if (activeMenu == null || !activeMenu.onBackButtonPressed()) {
+				boolean menuWentBack = androidMenuPutable.goBackInMenu();
+				if (!menuWentBack) {
 					replaced = new Action(EActionType.SPEED_SET_PAUSE);
 				}
 			}
@@ -233,7 +221,7 @@ public class MobileControls implements IControls, ContextActionListener {
 		if (action.getActionType() == EActionType.SPEED_SET_PAUSE) {
 			setActiveMenu(pauseMenu);
 		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
-		        && activeMenu == pauseMenu) {
+		        && androidMenuPutable.getActiveMenu() == pauseMenu) {
 			setActiveMenu(null);
 		} else if (action.getActionType() == EActionType.SET_WORK_AREA
 		        || action.getActionType() == EActionType.SELECT_POINT

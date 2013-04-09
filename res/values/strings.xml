@@ -4,4 +4,7 @@
     <string name="pause_text">Click Back again to quit.</string>
     <string name="pause_quit">Quit Game</string>
     <string name="pause_resume">Resume</string>
+    <string name="building_destroy_ok">Abreisen</string>
+    <string name="building_destroy_abort">Abbrechen</string>
+    <string name="building_destroy_text">Gebäude wirklich abreisen?</string>
 </resources>

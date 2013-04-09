@@ -1,10 +1,11 @@
 package jsettlers.graphics.androidui.menu;
 
+import java.util.ArrayList;
+
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
-import android.app.Fragment;
 import android.content.Context;
 import android.view.LayoutInflater;
 
@@ -13,7 +14,7 @@ import android.view.LayoutInflater;
  * 
  * @author michael
  */
-public class AndroidMenuPutable implements ActionFireable, IFragmentHandler {
+public class AndroidMenuPutable implements ActionFireable {
 	private final LayoutInflater layoutInflater;
 
 	private ActionFireable actionFireable;
@@ -23,6 +24,9 @@ public class AndroidMenuPutable implements ActionFireable, IFragmentHandler {
 	private final IFragmentHandler fragmentHandler;
 
 	private final Context context;
+
+	private ArrayList<AndroidMenu> activeMenu = new ArrayList<AndroidMenu>();
+	private final Object activeMenuMutex = new Object();
 
 	/**
 	 * Creates a new {@link AndroidMenuPutable}.
@@ -60,18 +64,49 @@ public class AndroidMenuPutable implements ActionFireable, IFragmentHandler {
 		this.contextActionListener = contextActionListener;
 	}
 
-	@Override
-	public void showMenuFragment(Fragment fragment) {
-		// TODO: Handle own back stack here.
-		fragmentHandler.showMenuFragment(fragment);
+	/**
+	 * Shows a new fragment. Only call from UI thread.
+	 * 
+	 * @param fragment
+	 */
+	public void showMenuFragment(AndroidMenu fragment) {
+		synchronized (activeMenuMutex) {
+			activeMenu.add(fragment);
+			fragmentHandler.showMenuFragment(fragment);
+		}
 	}
 
-	@Override
 	public void hideMenu() {
-		fragmentHandler.hideMenu();
+		synchronized (activeMenuMutex) {
+			activeMenu.clear();
+			fragmentHandler.hideMenu();
+		}
+	}
+
+	public boolean goBackInMenu() {
+		synchronized (activeMenuMutex) {
+			int size = activeMenu.size();
+			if (size >= 2) {
+				activeMenu.remove(size - 1);
+				fragmentHandler.showMenuFragment(activeMenu.get(size - 2));
+				return true;
+			} else if (size >= 1) {
+				hideMenu();
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 
 	public Context getContext() {
 		return context;
+	}
+
+	public AndroidMenu getActiveMenu() {
+		synchronized (activeMenuMutex) {
+			return activeMenu.isEmpty() ? null : activeMenu.get(activeMenu
+			        .size() - 1);
+		}
 	}
 }
