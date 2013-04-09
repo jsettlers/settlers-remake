@@ -137,16 +137,17 @@ public class MapInterfaceConnector implements ActionFireable {
 	}
 
 	/**
-	 * Gets the position of the screen.
+	 * Gets the state of the content.
 	 * 
-	 * @return Position of the screen that can be used to be saved with the map.
-	 *         This position can be used as input for
-	 *         {@link #scrollTo(ShortPoint2D, boolean)}.
+	 * @return The state of the UI so that it can be restored by setting it on
+	 *         {@link MapContent} creation.
+	 * @see #loadUIState(UIStateData)
 	 */
-	public ShortPoint2D getScreenPosition() {
-		return new ShortPoint2D(0, 0);
-		// TODO @Michael Zangl: Please supply the screen position here.
-		// The given value will directly be used as value for the call to
-		// scrollTo(...)
+	public UIStateData getUIState() {
+		return content.getUIState();
+	}
+
+	public void loadUIState(UIStateData state) {
+		content.loadUIState(state);
 	}
 }

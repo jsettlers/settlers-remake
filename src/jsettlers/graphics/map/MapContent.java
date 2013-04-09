@@ -876,4 +876,20 @@ public final class MapContent implements SettlersContent,
 		backgroundSound.stop();
 		controls.stop();
 	}
+
+	protected void loadUIState(UIStateData state) {
+		if (state.getStartPoint() != null) {
+			scrollTo(state.getStartPoint(), false);
+		} else {
+			setZoom(state.getZoom());
+			context.getScreen().setScreenCenter(state.getScreenCenterX(),
+			        state.getScreenCenterY());
+		}
+	}
+
+	protected UIStateData getUIState() {
+		ScreenPosition screen = context.getScreen();
+		return new UIStateData(screen.getScreenCenterX(),
+		        screen.getScreenCenterY(), screen.getZoom());
+	}
 }

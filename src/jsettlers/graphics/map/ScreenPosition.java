@@ -35,7 +35,7 @@ public class ScreenPosition {
 	/**
 	 * Sets the map size, the max border, widthout the automatically added
 	 * additional border.
-	 *
+	 * 
 	 * @param mapWidth
 	 * @param mapHeight
 	 *            The width in pixel
@@ -62,14 +62,14 @@ public class ScreenPosition {
 
 	/**
 	 * Sets the size of the screen without the zoom level applied.
-	 *
+	 * 
 	 * @param newWidth
 	 *            The width.
 	 * @param newHeight
 	 *            The height.
 	 * @param zoom
 	 */
-	public void setSize(float newWidth, float newHeight)  {
+	public void setSize(float newWidth, float newHeight) {
 		float x = this.screen.getCenterX();
 		float y = this.screen.getCenterY();
 		setScreen(x, y, newWidth / zoom, newHeight / zoom);
@@ -84,9 +84,10 @@ public class ScreenPosition {
 			this.zoom = newzoom;
 		}
 	}
+
 	/**
 	 * Sets the center of the screen.
-	 *
+	 * 
 	 * @param x
 	 *            X in pixels.
 	 * @param y
@@ -96,6 +97,27 @@ public class ScreenPosition {
 		this.screenCenterX = x;
 		this.screenCenterY = y;
 		recalculateScreen();
+	}
+
+	/**
+	 * Gets the current center of the screen
+	 * 
+	 * @return The x coordinate of the center. This also includes any ongoing
+	 *         pan operations.
+	 */
+	public float getScreenCenterX() {
+		return this.screen.getCenterX();
+	}
+
+
+	/**
+	 * Gets the current center of the screen
+	 * 
+	 * @return The y coordinate of the center. This also includes any ongoing
+	 *         pan operations.
+	 */
+	public float getScreenCenterY() {
+		return screenCenterY;
 	}
 
 	/**
@@ -121,7 +143,7 @@ public class ScreenPosition {
 
 	/**
 	 * Sets the screen, and clamps it.
-	 *
+	 * 
 	 * @param centerx
 	 * @param centery
 	 * @param newWidth
@@ -177,12 +199,12 @@ public class ScreenPosition {
 	}
 
 	public float getZoom() {
-	    return zoom;
-    }
+		return zoom;
+	}
 
 	/**
 	 * Sets the temporary pan progress for a given pan operation.
-	 *
+	 * 
 	 * @param key
 	 *            The identifier of the event
 	 * @param distance
@@ -195,7 +217,7 @@ public class ScreenPosition {
 
 	/**
 	 * Sets the temporary pan progress for a given pan operation.
-	 *
+	 * 
 	 * @param key
 	 *            The identifier of the event
 	 * @param distance
