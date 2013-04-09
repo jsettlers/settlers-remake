@@ -50,8 +50,8 @@ public class MapList {
 
 		File[] files = dir.listFiles();
 		if (files == null) {
-			throw new IllegalArgumentException(
-			        "map directory is not a directory.");
+			throw new IllegalArgumentException("map directory "
+			        + dir.getAbsolutePath() + " is not a directory.");
 		}
 
 		for (File file : files) {
