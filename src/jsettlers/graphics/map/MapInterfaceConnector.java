@@ -18,7 +18,7 @@ import jsettlers.graphics.messages.Message;
  * <p>
  * It also propagates interface events, to get them you can add a interface
  * listener. See {@link IMapInterfaceListener}.
- *
+ * 
  * @author michael
  */
 public class MapInterfaceConnector implements ActionFireable {
@@ -42,7 +42,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Creates a new connector for the given interface.
-	 *
+	 * 
 	 * @param mapInterface
 	 *            The interface.
 	 */
@@ -53,7 +53,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Sets the current selection that should be displayed in the side panel.
-	 *
+	 * 
 	 * @param selection
 	 *            The selection.
 	 */
@@ -64,7 +64,7 @@ public class MapInterfaceConnector implements ActionFireable {
 	/**
 	 * Scrolls a given point to the center of the view. It needn't be on the
 	 * map.
-	 *
+	 * 
 	 * @param point
 	 *            The point to show.
 	 * @param mark
@@ -76,7 +76,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Adds a listener that listens to interface commands.
-	 *
+	 * 
 	 * @see IMapInterfaceListener
 	 * @param listener
 	 *            The listener.
@@ -92,7 +92,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Removes a given Listener, if it is regisered.
-	 *
+	 * 
 	 * @param listener
 	 *            The listener to remove.
 	 */
@@ -109,7 +109,7 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Sets the building the user is currently building.
-	 *
+	 * 
 	 * @param buildingType
 	 *            The type of the building.
 	 */
@@ -119,22 +119,12 @@ public class MapInterfaceConnector implements ActionFireable {
 
 	/**
 	 * Adds a text message to be displayed on the screen.
-	 *
+	 * 
 	 * @param message
 	 *            The message to display.
 	 */
 	public void showMessage(Message message) {
 		content.addMessage(message);
-	}
-
-	/**
-	 * Sets the UI to a given state.
-	 *
-	 * @param uiState
-	 *            The state
-	 */
-	public void loadUIState(UIState uiState) {
-		content.loadUIState(uiState);
 	}
 
 	/**
@@ -144,5 +134,19 @@ public class MapInterfaceConnector implements ActionFireable {
 	public void stop() {
 		actionFirerer.stop();
 		content.stop();
+	}
+
+	/**
+	 * Gets the position of the screen.
+	 * 
+	 * @return Position of the screen that can be used to be saved with the map.
+	 *         This position can be used as input for
+	 *         {@link #scrollTo(ShortPoint2D, boolean)}.
+	 */
+	public ShortPoint2D getScreenPosition() {
+		return new ShortPoint2D(0, 0);
+		// TODO @Michael Zangl: Please supply the screen position here.
+		// The given value will directly be used as value for the call to
+		// scrollTo(...)
 	}
 }

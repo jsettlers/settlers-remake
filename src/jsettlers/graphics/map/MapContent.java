@@ -854,11 +854,6 @@ public final class MapContent implements SettlersContent,
 		}
 	}
 
-	public void loadUIState(UIState uiState) {
-		scrollTo(uiState.getScreenCenter(), false);
-		// TODO: player number
-	}
-
 	@Override
 	public void fireAction(Action action) {
 		Action fire = controls.replaceAction(action);
