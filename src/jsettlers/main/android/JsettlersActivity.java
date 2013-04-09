@@ -44,8 +44,8 @@ public class JsettlersActivity extends Activity {
 	private GOSurfaceView goView;
 	private Region goRegion;
 	private AndroidSoundPlayer soundPlayer;
-	private boolean glInForeground;
 	private ResourceProvider provider;
+	private MapContent activeBgMapContent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +207,7 @@ public class JsettlersActivity extends Activity {
 
 	public MapInterfaceConnector showGameMap(IGraphicsGrid map,
 	        IStatisticable playerStatistics) {
+		stopBgMapThreads();
 		GameCommandFragment p = showMapFragment();
 
 		MapContent content =
@@ -217,11 +218,19 @@ public class JsettlersActivity extends Activity {
 	}
 
 	public void showBgMap() {
-		MapContent content =
+		stopBgMapThreads();
+		activeBgMapContent = 
 		        new MapContent(new BgMap(), new BgStats(), soundPlayer,
 		                new BgControls());
-		goRegion.setContent(content);
+		goRegion.setContent(activeBgMapContent);
 	}
+
+	private void stopBgMapThreads() {
+	    if (activeBgMapContent != null) {
+			activeBgMapContent.stop();
+			activeBgMapContent = null;
+		}
+    }
 
 	private GameCommandFragment showMapFragment() {
 		final GameCommandFragment cFragment = new GameCommandFragment();
