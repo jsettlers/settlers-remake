@@ -15,7 +15,7 @@ public class SwingResourceProvider implements IResourceProvider {
 	//private File userPath;
 
 	public SwingResourceProvider() {
-		this(new File(new File("").getAbsolutePath()).getParent().replace(
+		this(new File("").getAbsoluteFile().getParent().replace(
 		        '\\', '/')+ "/jsettlers.common");
 	}
 	
