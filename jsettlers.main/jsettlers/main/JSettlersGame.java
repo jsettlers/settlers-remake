@@ -98,7 +98,7 @@ public class JSettlersGame {
 			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), playerNumber);
 
 			connector.addListener(this);
-			connector.scrollTo(uiState.getScreenCenter(), false);
+			connector.loadUIState(uiState.getUiStateData());
 
 			grid.startThreads();
 			networkManager.startGameTimer(new GuiTaskExecutor(grid.getGuiInputGrid(), guiInterface));

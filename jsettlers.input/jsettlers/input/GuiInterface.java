@@ -467,7 +467,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	@Override
 	public UIState getUIState() {
-		return new UIState(connector.getScreenPosition());
+		return new UIState(connector.getUIState());
 	}
 
 	/**

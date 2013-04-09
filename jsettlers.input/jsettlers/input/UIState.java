@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.map.UIStateData;
 
 /**
  * This class holds a state of the GUI that can be saved.
@@ -20,14 +21,18 @@ public class UIState implements Serializable {
 	/**
 	 * The center point of the screen.
 	 */
-	private final ShortPoint2D screenCenter;
+	private final UIStateData uiStateData;
 
-	public UIState(ShortPoint2D startPoint) {
-		this.screenCenter = startPoint;
+	public UIState(UIStateData uiStateData) {
+		this.uiStateData = uiStateData;
 	}
 
-	public ShortPoint2D getScreenCenter() {
-		return screenCenter;
+	public UIState(ShortPoint2D startPoint) {
+		this.uiStateData = new UIStateData(startPoint);
+    }
+
+	public UIStateData getUiStateData() {
+		return uiStateData;
 	}
 
 	public void writeTo(OutputStream stream) throws IOException {
