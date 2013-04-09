@@ -245,12 +245,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private boolean isFlatened() {
 		if (shouldBeFlatened()) {
-			for (RelativePoint currPos : type.getBlockedTiles()) {
-				if (grid.getHeightAt(currPos.calculatePoint(this.pos)) != heightAvg) {
-					return false;
-				}
-			}
-			return true;
+			return grid.isAreaFlattenedAtHeight(pos, getFlattenTiles(), heightAvg);
 		} else {
 			return true;
 		}

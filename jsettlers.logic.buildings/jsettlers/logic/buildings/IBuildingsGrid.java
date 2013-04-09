@@ -1,10 +1,12 @@
 package jsettlers.logic.buildings;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
@@ -108,5 +110,15 @@ public interface IBuildingsGrid {
 	 * @param groundArea
 	 */
 	void changePlayerOfTower(ShortPoint2D towerPosition, Player newPlayer, final FreeMapArea groundArea);
+
+	/**
+	 * Checks if the given relative area has the flattened landscape type and the given height.
+	 * 
+	 * @param position
+	 * @param positions
+	 * @param expectedHeight
+	 * @return Returns true if the area has the given height and the landscape type {@link ELandscapeType}.FLATTENED.
+	 */
+	boolean isAreaFlattenedAtHeight(ShortPoint2D position, RelativePoint[] positions, byte expectedHeight);
 
 }

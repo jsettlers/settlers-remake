@@ -377,7 +377,7 @@ public final class MainGrid implements Serializable {
 						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_CORN:
-				return isCornPlantable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y) && !flagsGrid.isProtected(x, y);
+				return !isMarked(x, y) && !flagsGrid.isProtected(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
 
 			case CUTTABLE_CORN:
 				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
@@ -502,11 +502,33 @@ public final class MainGrid implements Serializable {
 
 		private final boolean isCornPlantable(int x, int y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType.isGrass() || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y) && !hasProtectedNeighbor(x, y)
+			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
+					&& !hasProtectedNeighbor(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT)
-					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING);
+					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING)
+					&& areAllNeighborsOneOf(x, y, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+		}
+
+		private boolean areAllNeighborsOneOf(int x, int y, int radius, ELandscapeType... types) {
+			for (ShortPoint2D currPos : new HexGridArea(x, y, 1, radius)) {
+				boolean found = false;
+
+				ELandscapeType neighborType = landscapeGrid.getLandscapeTypeAt(currPos.x, currPos.y);
+				for (ELandscapeType currType : types) {
+					if (neighborType == currType) {
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		private final boolean isCornCuttable(int x, int y) {
@@ -1022,6 +1044,9 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void changeHeightTowards(short x, short y, byte targetHeight) {
 			landscapeGrid.flattenAndChangeHeightTowards(x, y, targetHeight);
+			objectsGrid.removeMapObjectType(x, y, EMapObjectType.CORN_ADULT);
+			objectsGrid.removeMapObjectType(x, y, EMapObjectType.CORN_DEAD);
+			objectsGrid.removeMapObjectType(x, y, EMapObjectType.CORN_GROWING);
 		}
 
 		@Override
@@ -1380,6 +1405,11 @@ public final class MainGrid implements Serializable {
 			for (ShortPoint2D curr : area) {
 				checkForEnclosedBlockedArea(curr);
 			}
+		}
+
+		@Override
+		public boolean isAreaFlattenedAtHeight(ShortPoint2D position, RelativePoint[] positions, byte expectedHeight) {
+			return landscapeGrid.isAreaFlattenedAtHeight(position, positions, expectedHeight);
 		}
 	}
 

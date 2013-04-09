@@ -8,6 +8,8 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
+import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
 import random.RandomSingleton;
 
@@ -268,4 +270,14 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		this.flattenedResetter.addPosition(x, y);
 	}
 
+	public boolean isAreaFlattenedAtHeight(ShortPoint2D position, RelativePoint[] positions, byte expectedHeight) {
+		for (RelativePoint currPos : positions) {
+			int index = currPos.calculateX(position.x) + currPos.calculateY(position.y) * width;
+
+			if (heightGrid[index] != expectedHeight || landscapeGrid[index] != ELandscapeType.FLATTENED.ordinal) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

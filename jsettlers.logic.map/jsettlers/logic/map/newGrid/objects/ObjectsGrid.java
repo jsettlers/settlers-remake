@@ -206,4 +206,5 @@ public final class ObjectsGrid implements Serializable {
 	public Building getBuildingOn(int x, int y) {
 		return buildingsGrid[x + y * width];
 	}
+
 }

@@ -84,7 +84,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 
 		for (int i = 0; i < blockedTiles.length; i++) {
 			ShortPoint2D pos = blockedTiles[(i + offset) % blockedTiles.length].calculatePoint(buildingPos);
-			if (needsToBeWorkedOn(pos) && !super.getStrategyGrid().isMarked(pos)) {
+			if (!super.getStrategyGrid().isMarked(pos) && needsToBeWorkedOn(pos)) {
 				return pos;
 			}
 		}
