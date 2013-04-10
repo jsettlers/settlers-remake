@@ -386,7 +386,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	@Override
 	public final boolean isOccupied() {
-		return occupiers.isEmpty();
+		return !occupiers.isEmpty();
 	}
 
 	@Override

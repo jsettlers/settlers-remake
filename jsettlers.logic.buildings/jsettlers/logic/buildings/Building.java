@@ -23,6 +23,8 @@ import jsettlers.common.selectable.ESelectionType;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
+import jsettlers.logic.buildings.others.DefaultBuilding;
+import jsettlers.logic.buildings.others.StockBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
@@ -585,6 +587,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				}
 			};
 
+		case LOOKOUT_TOWER:
+			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
+
 		default:
 			System.err.println("couldn't create new building, because type is unknown: " + type);
 			return null;
@@ -611,9 +616,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	public final short getViewDistance() {
 		if (isConstructionFinished()) {
 			if (isOccupied()) {
-				return UNOCCUPIED_VIEW_DISTANCE;
+				return type.getViewDistance();
 			} else {
-				return getBuildingType().getViewDistance();
+				return UNOCCUPIED_VIEW_DISTANCE;
 			}
 		} else {
 			return UNCONSTRUCTED_VIEW_DISTANCE;

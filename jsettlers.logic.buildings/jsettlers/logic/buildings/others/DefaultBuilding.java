@@ -1,26 +1,27 @@
-package jsettlers.logic.buildings;
+package jsettlers.logic.buildings.others;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.buildings.Building;
 import jsettlers.logic.player.Player;
 
 /**
- * This is a stock building that can store materials.
+ * This is a default building. It can be used for every building type that has no real function.
  * 
  * @author Andreas Eberle
  * 
  */
-public final class StockBuilding extends Building {
+public final class DefaultBuilding extends Building {
 	private static final long serialVersionUID = 1L;
 
-	protected StockBuilding(Player player) {
-		super(EBuildingType.STOCK, player);
+	public DefaultBuilding(EBuildingType buildingType, Player player) {
+		super(buildingType, player);
 	}
 
 	@Override
 	public boolean isOccupied() {
-		return false;
+		return true;
 	}
 
 	@Override
