@@ -22,7 +22,7 @@ public final class NewFogOfWar implements Serializable {
 	/**
 	 * Longest distance any unit may look
 	 */
-	static final byte MAX_VIEWDISTANCE = 55;
+	static final byte MAX_VIEWDISTANCE = 65;
 	static final int PADDING = 10;
 
 	private final byte player;
@@ -84,7 +84,6 @@ public final class NewFogOfWar implements Serializable {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private final boolean isPlayerOK(IPlayerable playerable) {
 		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayerId() == player));
 	}
@@ -212,7 +211,7 @@ public final class NewFogOfWar implements Serializable {
 		}
 
 		private CachedViewCircle getCachedCircle(int viewDistance) {
-			int radius = Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE);
+			int radius = Math.min(viewDistance + PADDING, MAX_VIEWDISTANCE - 1);
 			if (cachedCircles[radius] == null) {
 				cachedCircles[radius] = new CachedViewCircle(radius);
 			}
