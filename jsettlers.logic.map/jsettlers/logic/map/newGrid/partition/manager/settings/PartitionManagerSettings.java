@@ -15,6 +15,13 @@ import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 public final class PartitionManagerSettings implements IPartitionSettings, Serializable {
 	private static final long serialVersionUID = -6269898822727665606L;
 
+	private static final DistributionSettingsForMaterial[] defaultSettings = new DistributionSettingsForMaterial[EMaterialType.NUMBER_OF_MATERIALS];
+	static {
+		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
+			defaultSettings[i] = new DistributionSettingsForMaterial(EMaterialType.values[i]);
+		}
+	}
+
 	private final EMaterialType[] materialTypeForPriorities;
 	private final DistributionSettingsForMaterial[] settingsOfMaterials;
 
@@ -26,8 +33,11 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			EMaterialType materialType = EMaterialType.values[i];
 
-			if (materialType.isDistributionConfigurable())
+			if (materialType.isDistributionConfigurable()) {
 				settingsOfMaterials[i] = new DistributionSettingsForMaterial(materialType);
+			} else {
+				settingsOfMaterials[i] = defaultSettings[i];
+			}
 		}
 	}
 

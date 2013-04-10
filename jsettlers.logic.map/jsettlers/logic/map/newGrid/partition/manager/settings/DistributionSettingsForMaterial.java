@@ -31,9 +31,11 @@ public final class DistributionSettingsForMaterial implements IMaterialsDistribu
 		this.requestingBuildings = MaterialsOfBuildings.getBuildingTypesRequestingMaterial(materialType);
 		this.probabilities = new float[requestingBuildings.length];
 
-		float value = 1.0f / probabilities.length;
-		for (int i = 0; i < probabilities.length; i++) {
-			probabilities[i] = value;
+		if (probabilities.length > 0) {
+			float value = 1.0f / probabilities.length;
+			for (int i = 0; i < probabilities.length; i++) {
+				probabilities[i] = value;
+			}
 		}
 	}
 
@@ -59,6 +61,7 @@ public final class DistributionSettingsForMaterial implements IMaterialsDistribu
 
 	public void setProbabilities(float[] probabilities) {
 		assert probabilities.length == this.probabilities.length : "The new probabilities have an incrorrect length! (" + materialType + ")";
+		assert materialType.isDistributionConfigurable() : "Cannot configure distribution of materialtype " + materialType;
 
 		float sum = 0;
 		for (int i = 0; i < this.probabilities.length; i++) {
