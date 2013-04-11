@@ -19,7 +19,7 @@ import jsettlers.logic.stack.RequestStack;
  * 
  * @author Andreas Eberle
  */
-public final class Barrack extends WorkAreaBuilding implements IBarrack {
+public final class Barrack extends WorkAreaBuilding implements IBarrack, IRequestStackListener {
 	private static final long serialVersionUID = -6541972855836598068L;
 
 	public Barrack(Player player) {
@@ -81,15 +81,8 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack {
 
 	@Override
 	protected void constructionFinishedEvent() {
-		IRequestStackListener listener = new IRequestStackListener() {
-			@Override
-			public void materialDelivered(RequestStack stack) {
-				getGrid().requestSoilderable(Barrack.this);
-			}
-		};
-
 		for (RequestStack curr : super.getStacks()) {
-			curr.setListener(listener);
+			curr.setListener(this);
 		}
 	}
 
@@ -102,4 +95,8 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack {
 		return super.getWorkAreaCenter();
 	}
 
+	@Override
+	public void materialDelivered(RequestStack stack) {
+		getGrid().requestSoilderable(Barrack.this);
+	}
 }

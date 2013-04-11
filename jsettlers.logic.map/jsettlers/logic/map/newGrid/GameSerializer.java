@@ -9,6 +9,12 @@ import java.io.OutputStream;
 import jsettlers.common.map.MapLoadException;
 import synchronic.timer.NetworkTimer;
 
+/**
+ * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class GameSerializer {
 
 	private static final long SAVE_STACK_SIZE = 1024 * 1024; // size of the save thread's stack
@@ -26,12 +32,17 @@ public class GameSerializer {
 	public void save(MainGrid grid, OutputStream out) throws IOException {
 		final ObjectOutputStream oos = new ObjectOutputStream(out);
 
-		Thread t = new Thread(null, new GameSaveTask(grid, oos), "SaveThread", SAVE_STACK_SIZE);
+		GameSaveTask runnable = new GameSaveTask(grid, oos);
+		Thread t = new Thread(null, runnable, "SaveThread", SAVE_STACK_SIZE);
 		t.start();
 		try {
 			t.join();
 		} catch (InterruptedException e) {
 			throw new IOException(e);
+		}
+
+		if (runnable.exception != null) {
+			throw new IOException("Error saving map.", runnable.exception);
 		}
 
 		oos.flush();
@@ -47,7 +58,11 @@ public class GameSerializer {
 			t.start();
 			t.join();
 
-			return runnable.grid;
+			if (runnable.grid != null) {
+				return runnable.grid;
+			} else {
+				throw new MapLoadException("Error loading map.", runnable.exception);
+			}
 		} catch (Throwable t) {
 			throw new MapLoadException(t);
 		}
@@ -56,6 +71,7 @@ public class GameSerializer {
 	private final class GameSaveTask implements Runnable {
 		private final MainGrid grid;
 		private final ObjectOutputStream oos;
+		Throwable exception = null;
 
 		private GameSaveTask(MainGrid grid, ObjectOutputStream oos) {
 			this.grid = grid;
@@ -67,8 +83,9 @@ public class GameSerializer {
 			try {
 				oos.writeInt(NetworkTimer.get().getGameTime());
 				oos.writeObject(grid);
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Throwable t) {
+				t.printStackTrace();
+				this.exception = t;
 			}
 		}
 	}
@@ -76,6 +93,7 @@ public class GameSerializer {
 	private static final class LoadRunnable implements Runnable {
 		private final ObjectInputStream ois;
 		MainGrid grid = null;
+		Throwable exception = null;
 
 		private LoadRunnable(ObjectInputStream ois) {
 			this.ois = ois;
@@ -86,10 +104,9 @@ public class GameSerializer {
 			try {
 				NetworkTimer.get().setGameTime(ois.readInt());
 				grid = (MainGrid) ois.readObject();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+			} catch (Throwable t) {
+				t.printStackTrace();
+				this.exception = t;
 			}
 		}
 	}
