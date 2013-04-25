@@ -79,12 +79,12 @@ public class MapEditorControls implements IControls {
 
 	@Override
 	public boolean containsPoint(UIPoint position) {
-		return true;
+		return false;
 	}
 
 	@Override
 	public String getDescriptionFor(UIPoint position) {
-		return toMapPosition(position).toString();
+		return "";
 	}
 
 	@Override
@@ -120,6 +120,11 @@ public class MapEditorControls implements IControls {
 	@Override
 	public Action replaceAction(Action action) {
 		return action;
+	}
+	
+	@Override
+	public String getMapTooltip(ShortPoint2D point) {
+		return point.toString();
 	}
 
 	@Override

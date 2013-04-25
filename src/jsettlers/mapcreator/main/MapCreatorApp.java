@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -23,8 +22,7 @@ import javax.swing.SpinnerListModel;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.swing.JoglLibraryPathInitializer;
+import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
@@ -39,12 +37,7 @@ public class MapCreatorApp {
 	private final JFrame selectMapFrame;
 
 	static { // sets the native library path for the system dependent jogl libs
-		JoglLibraryPathInitializer.initLibraryPath();
-
-		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
-		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
-		provider.addLookupPath(new File("C:/Program Files/siedler 3/GFX"));
+		SwingResourceLoader.setupSwingPaths();
 		ResourceManager.setProvider(new SwingResourceProvider());
 	}
 
