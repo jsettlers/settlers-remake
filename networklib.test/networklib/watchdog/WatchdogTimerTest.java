@@ -62,7 +62,7 @@ public class WatchdogTimerTest {
 		timer.start();
 		assertEquals(0, observer.callCtr);
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 5; i++) {
 			timer.reset();
 			assertEquals(0, observer.callCtr);
 			Thread.sleep(90);

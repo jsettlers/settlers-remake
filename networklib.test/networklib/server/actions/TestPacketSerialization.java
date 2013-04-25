@@ -12,7 +12,7 @@ import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.IDeserializingable;
 import networklib.channel.Packet;
-import networklib.channel.listeners.BufferPacketListener;
+import networklib.channel.listeners.BufferingPacketListener;
 import networklib.server.actions.packets.AcknowledgePacket;
 import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
 import networklib.server.actions.packets.KeyOnlyPacket;
@@ -41,8 +41,22 @@ public class TestPacketSerialization {
 	private Channel c1;
 	private Channel c2;
 
+	@Before
+	public void setUp() throws InterruptedException {
+		TestUtils util = new TestUtils();
+		Channel[] channels = util.setUpLoopbackChannels();
+		c1 = channels[0];
+		c2 = channels[1];
+	}
+
+	@After
+	public void tearDown() {
+		c1.close();
+		c2.close();
+	}
+
 	private Packet packet;
-	private BufferPacketListener<? extends Packet> listener;
+	private BufferingPacketListener<? extends Packet> listener;
 
 	@Parameters
 	public static Collection<Object[]> data() {
@@ -84,21 +98,7 @@ public class TestPacketSerialization {
 	 */
 	public <T extends Packet> TestPacketSerialization(T packet, IDeserializingable<T> deserializer) {
 		this.packet = packet;
-		this.listener = new BufferPacketListener<T>(packet.getKey(), deserializer);
-	}
-
-	@Before
-	public void setUp() throws InterruptedException {
-		TestUtils util = new TestUtils();
-		util.setUpLoopbackChannels();
-		c1 = util.getChannel1();
-		c2 = util.getChannel2();
-	}
-
-	@After
-	public void tearDown() {
-		c1.close();
-		c2.close();
+		this.listener = new BufferingPacketListener<T>(packet.getKey(), deserializer);
 	}
 
 	@Test

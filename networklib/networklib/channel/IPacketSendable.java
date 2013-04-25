@@ -12,10 +12,8 @@ public interface IPacketSendable {
 	 * 
 	 * @param packet
 	 *            The {@link Packet} to be sent.
-	 * @return true if the {@link Packet} has been sent successfully<br>
-	 *         false if it hasn't been sent. This can happen if the {@link IPacketSendable} is already closed or an error occurred.
 	 */
-	boolean sendPacket(Packet packet);
+	void sendPacket(Packet packet);
 
 	/**
 	 * 

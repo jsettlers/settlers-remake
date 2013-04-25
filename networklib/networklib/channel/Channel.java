@@ -2,10 +2,8 @@ package networklib.channel;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
@@ -52,18 +50,28 @@ public class Channel implements IPacketSendable, Runnable {
 		thread = new Thread(this, "ChannelForSocket_" + socket);
 	}
 
-	public void start() {
-		thread.start();
-	}
-
 	public Channel(String host, int port) throws UnknownHostException, IOException {
 		this(new Socket(host, port));
 	}
 
+	/**
+	 * Starts the message receiving of this {@link Channel}.
+	 * <p />
+	 * NOTE: This method may only be called once!
+	 * 
+	 * @throws IllegalThreadStateException
+	 *             If the thread was already started.
+	 * 
+	 * @see <code>Thread.start()</code>
+	 */
+	public void start() {
+		thread.start();
+	}
+
 	@Override
-	public synchronized boolean sendPacket(Packet packet) {
+	public synchronized void sendPacket(Packet packet) {
 		if (socket.isClosed())
-			return false;
+			return;
 
 		try {
 			final int key = packet.getKey();
@@ -71,9 +79,7 @@ public class Channel implements IPacketSendable, Runnable {
 			packet.serialize(outStream);
 			outStream.flush();
 
-			return true;
 		} catch (IOException e) {
-			return false;
 		}
 	}
 
@@ -107,10 +113,12 @@ public class Channel implements IPacketSendable, Runnable {
 				} else {
 					System.err.println("WARNING: NO LISTENER FOUND. key: " + key);
 				}
-			} catch (EOFException e) {
-			} catch (SocketException e) {
+
 			} catch (Exception e) {
-				e.printStackTrace();
+				try {
+					socket.close();
+				} catch (IOException ex) {
+				}
 			}
 		}
 

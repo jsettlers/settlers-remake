@@ -9,6 +9,7 @@ import networklib.TestUtils;
 import networklib.channel.Channel;
 import networklib.channel.feedthrough.FeedthroughBufferPacket;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,9 +27,15 @@ public class TaskPacketTest {
 	@Before
 	public void setUp() throws InterruptedException {
 		TestUtils util = new TestUtils();
-		util.setUpLoopbackChannels();
-		c1 = util.getChannel1();
-		c2 = util.getChannel2();
+		Channel[] channels = util.setUpLoopbackChannels();
+		c1 = channels[0];
+		c2 = channels[1];
+	}
+
+	@After
+	public void tearDown() {
+		c1.close();
+		c2.close();
 	}
 
 	@Test

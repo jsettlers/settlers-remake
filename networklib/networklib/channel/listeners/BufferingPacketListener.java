@@ -14,12 +14,12 @@ import networklib.channel.Packet;
  * 
  * @param <T>
  */
-public class BufferPacketListener<T extends Packet> extends PacketChannelListener<T> {
+public class BufferingPacketListener<T extends Packet> extends PacketChannelListener<T> {
 
 	private final Object lock = new Object();
 	private List<T> packets = new LinkedList<T>();
 
-	public BufferPacketListener(int key, IDeserializingable<T> deserializer) {
+	public BufferingPacketListener(int key, IDeserializingable<T> deserializer) {
 		super(key, deserializer);
 	}
 
