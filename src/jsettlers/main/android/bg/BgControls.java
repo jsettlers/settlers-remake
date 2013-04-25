@@ -5,6 +5,7 @@ import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -81,6 +82,11 @@ public class BgControls implements IControls {
 
 	@Override
 	public void stop() {
+	}
+
+	@Override
+	public String getMapTooltip(ShortPoint2D point) {
+		return null;
 	}
 
 }
