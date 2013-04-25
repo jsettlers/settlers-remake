@@ -300,7 +300,12 @@ public class OriginalControls implements IControls {
 	@Override
 	public Action replaceAction(Action action) {
 		return mainPanel.catchAction(action);
-	};
+	}
+
+	@Override
+	public String getMapTooltip(ShortPoint2D point) {
+		return null;
+	}
 
 	@Override
 	public void stop() {

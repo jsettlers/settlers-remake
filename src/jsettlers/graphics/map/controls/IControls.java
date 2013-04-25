@@ -5,6 +5,7 @@ import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
@@ -104,8 +105,12 @@ public interface IControls extends IMapInterfaceListener {
 
 	/**
 	 * Gives the ui access to the draw context that is used to draw the map.
-	 * @param actionFireable TODO
+	 * 
+	 * @param actionFireable
+	 *            An object we can fire actions to when we want to initiate an
+	 *            action ourselves.
 	 * @param context
+	 *            The map context used.
 	 */
 	void setDrawContext(ActionFireable actionFireable, MapDrawContext context);
 
@@ -119,6 +124,16 @@ public interface IControls extends IMapInterfaceListener {
 	 * @return The new action to send. This is often just the old action.
 	 */
 	Action replaceAction(Action action);
+
+	/**
+	 * Gets a tooltip for the given map position.
+	 * 
+	 * @param point
+	 *            The x/y coordinate, may be outside map.
+	 * @return The tooltip text, or an empty String or <code>null</code> if
+	 *         nothing should be displayed.
+	 */
+	String getMapTooltip(ShortPoint2D point);
 
 	/**
 	 * Stops all background threads the controls may use.

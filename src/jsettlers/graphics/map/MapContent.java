@@ -668,10 +668,13 @@ public final class MapContent implements SettlersContent,
 
 		if (controls.containsPoint(position)) {
 			tooltipString = controls.getDescriptionFor(position);
-			if (tooltipString == null) {
-				tooltipString = "";
-			}
 		} else {
+			float x = (float) position.getX();
+			float y = (float) position.getY();
+			ShortPoint2D onMap = this.context.getPositionOnScreen(x, y);
+			tooltipString = controls.getMapTooltip(onMap);
+		}
+		if (tooltipString == null) {
 			tooltipString = "";
 		}
 	}
