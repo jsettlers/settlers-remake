@@ -1,7 +1,9 @@
 package networklib.server.actions.reject;
 
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
+import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
+import networklib.server.actions.packets.RejectPacket;
 
 /**
  * 
@@ -11,7 +13,7 @@ import networklib.channel.listeners.PacketChannelListener;
 public class RejectListener extends PacketChannelListener<RejectPacket> {
 
 	public RejectListener() {
-		super(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.DEFAULT_DESERIALIZER);
+		super(NetworkConstants.Keys.REJECT_PACKET, new GenericDeserializer<RejectPacket>(RejectPacket.class));
 	}
 
 	@Override

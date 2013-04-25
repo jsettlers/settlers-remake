@@ -31,6 +31,8 @@ public class Channel implements IPacketSendable, Runnable {
 
 	private final PingPacketListener pingListener;
 
+	private IChannelClosedListener channelClosedListener;
+
 	/**
 	 * Creates a new Channel with the given socket as the underlying communication method.
 	 * 
@@ -59,13 +61,20 @@ public class Channel implements IPacketSendable, Runnable {
 	}
 
 	@Override
-	public synchronized void sendPacket(Packet packet) throws IOException {
-		final int key = packet.getKey();
+	public synchronized boolean sendPacket(Packet packet) {
+		if (socket.isClosed())
+			return false;
 
-		outStream.writeInt(key);
-		packet.serialize(outStream);
+		try {
+			final int key = packet.getKey();
+			outStream.writeInt(key);
+			packet.serialize(outStream);
+			outStream.flush();
 
-		outStream.flush();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -106,6 +115,10 @@ public class Channel implements IPacketSendable, Runnable {
 		}
 
 		close(); // release the resources
+
+		if (channelClosedListener != null) {
+			channelClosedListener.channelClosed();
+		}
 		System.out.println("Channel listener shut down: " + socket);
 	}
 
@@ -117,7 +130,6 @@ public class Channel implements IPacketSendable, Runnable {
 			inStream.close();
 		} catch (IOException e1) {
 		}
-		listenerRegistry.clear();
 
 		try {
 			outStream.close();
@@ -158,4 +170,22 @@ public class Channel implements IPacketSendable, Runnable {
 		pingListener.initPinging();
 	}
 
+	/**
+	 * Sets an {@link IChannelClosedListener} to this {@link Channel}. The given listener will be informed when the {@link Channel} has been shut
+	 * down.
+	 * <p />
+	 * NOTE: To remove a listener, just call this method with <code>null</code> as argument.<br>
+	 * NOTE2: Only one listener may be registered at a time. By setting a new listener, the old one will be replaced.
+	 * 
+	 * @param channelClosedListener
+	 *            The new {@link IChannelClosedListener} that shall be registered on this {@link Channel}.
+	 */
+	public void setChannelClosedListener(IChannelClosedListener channelClosedListener) {
+		this.channelClosedListener = channelClosedListener;
+	}
+
+	@Override
+	public boolean isClosed() {
+		return socket.isClosed();
+	}
 }

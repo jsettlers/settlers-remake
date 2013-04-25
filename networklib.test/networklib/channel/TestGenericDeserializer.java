@@ -7,11 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import networklib.NetworkConstants;
 import networklib.TestUtils;
-import networklib.channel.Channel;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.NetworkConstants;
-import networklib.channel.Packet;
 import networklib.channel.listeners.PacketChannelListener;
 
 import org.junit.Before;
@@ -32,7 +29,7 @@ public class TestGenericDeserializer {
 	}
 
 	@Test
-	public void testGenericPacket() throws IOException, InterruptedException {
+	public void testGenericPacket() throws InterruptedException {
 		GenericTestPacketListener listener = new GenericTestPacketListener();
 		c1.registerListener(listener);
 

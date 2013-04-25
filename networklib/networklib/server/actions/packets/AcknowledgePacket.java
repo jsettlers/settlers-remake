@@ -1,11 +1,10 @@
-package networklib.server.actions.ack;
+package networklib.server.actions.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.channel.IDeserializingable;
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
 import networklib.channel.Packet;
 
 /**
@@ -13,18 +12,6 @@ import networklib.channel.Packet;
  * @author Andreas Eberle
  */
 public class AcknowledgePacket extends Packet {
-	/**
-	 * This is the default implementation of the {@link IDeserializingable} interface to deserialize objects of this class.
-	 */
-	public static final IDeserializingable<AcknowledgePacket> DEFAULT_DESERIALIZER = new IDeserializingable<AcknowledgePacket>() {
-		@Override
-		public AcknowledgePacket deserialize(int key, DataInputStream dis) throws IOException {
-			AcknowledgePacket packet = new AcknowledgePacket();
-			packet.deserialize(dis);
-			return packet;
-		}
-	};
-
 	private int acknowledgedKey;
 
 	public AcknowledgePacket() {
@@ -48,5 +35,27 @@ public class AcknowledgePacket extends Packet {
 
 	public int getAcknowledgedKey() {
 		return acknowledgedKey;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + acknowledgedKey;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AcknowledgePacket other = (AcknowledgePacket) obj;
+		if (acknowledgedKey != other.acknowledgedKey)
+			return false;
+		return true;
 	}
 }

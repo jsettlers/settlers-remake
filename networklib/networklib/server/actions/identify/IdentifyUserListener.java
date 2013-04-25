@@ -2,13 +2,13 @@ package networklib.server.actions.identify;
 
 import java.io.IOException;
 
+import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
-import networklib.channel.NetworkConstants;
 import networklib.channel.listeners.PacketChannelListener;
-import networklib.server.actions.ack.AcknowledgePacket;
+import networklib.server.actions.packets.AcknowledgePacket;
 import networklib.server.actions.packets.PlayerInfoPacket;
-import networklib.server.actions.reject.RejectPacket;
+import networklib.server.actions.packets.RejectPacket;
 import networklib.server.game.Player;
 
 /**

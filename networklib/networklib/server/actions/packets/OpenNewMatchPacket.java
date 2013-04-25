@@ -3,81 +3,65 @@ package networklib.server.actions.packets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import networklib.NetworkConstants;
 import networklib.channel.Packet;
-import networklib.server.game.Match;
 
 /**
  * 
  * @author Andreas Eberle
  * 
  */
-public class MatchInfoPacket extends Packet {
-	private String id;
+public class OpenNewMatchPacket extends Packet {
 	private String matchName;
+	private byte maxPlayers;
 	private MapInfoPacket mapInfo;
-	private PlayerInfoPacket[] players;
 
-	public MatchInfoPacket() {
-		super(NetworkConstants.Keys.MATCH_INFO);
+	public OpenNewMatchPacket() {
+		super(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH);
 	}
 
-	public MatchInfoPacket(String id, String matchName, MapInfoPacket mapInfo, PlayerInfoPacket[] players) {
+	public OpenNewMatchPacket(String matchName, byte maxPlayers, MapInfoPacket mapInfo) {
 		this();
-		this.id = id;
 		this.matchName = matchName;
+		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
-		this.players = players;
-	}
-
-	public MatchInfoPacket(Match match) {
-		this();
-		id = match.getId();
-		matchName = match.getName();
-		mapInfo = match.getMap();
-		players = match.getPlayerInfos();
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
-		dos.writeUTF(id);
 		dos.writeUTF(matchName);
+		dos.writeByte(maxPlayers);
 		mapInfo.serialize(dos);
-
-		PlayerInfoPacket[] players = this.players;
-		dos.writeInt(players.length);
-		for (PlayerInfoPacket curr : players) {
-			curr.serialize(dos);
-		}
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
-		id = dis.readUTF();
 		matchName = dis.readUTF();
+		maxPlayers = dis.readByte();
 		mapInfo = new MapInfoPacket();
 		mapInfo.deserialize(dis);
+	}
 
-		int length = dis.readInt();
-		PlayerInfoPacket[] players = new PlayerInfoPacket[length];
-		for (int i = 0; i < length; i++) {
-			PlayerInfoPacket curr = new PlayerInfoPacket();
-			curr.deserialize(dis);
-			players[i] = curr;
-		}
-		this.players = players;
+	public String getMatchName() {
+		return matchName;
+	}
+
+	public MapInfoPacket getMapInfo() {
+		return mapInfo;
+	}
+
+	public byte getMaxPlayers() {
+		return maxPlayers;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((mapInfo == null) ? 0 : mapInfo.hashCode());
 		result = prime * result + ((matchName == null) ? 0 : matchName.hashCode());
-		result = prime * result + Arrays.hashCode(players);
+		result = prime * result + maxPlayers;
 		return result;
 	}
 
@@ -89,12 +73,7 @@ public class MatchInfoPacket extends Packet {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MatchInfoPacket other = (MatchInfoPacket) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
+		OpenNewMatchPacket other = (OpenNewMatchPacket) obj;
 		if (mapInfo == null) {
 			if (other.mapInfo != null)
 				return false;
@@ -105,7 +84,7 @@ public class MatchInfoPacket extends Packet {
 				return false;
 		} else if (!matchName.equals(other.matchName))
 			return false;
-		if (!Arrays.equals(players, other.players))
+		if (maxPlayers != other.maxPlayers)
 			return false;
 		return true;
 	}

@@ -30,8 +30,25 @@ public class InMemoryDB implements IDBFacade {
 	}
 
 	@Override
-	public List<Match> getJoinableMatches() {
+	public void removePlayer(Player player) {
+		playerMap.remove(player.getId());
+	}
 
+	@Override
+	public Match getRunningMatchOf(Player player) {
+		synchronized (matches) {
+			for (Match curr : matches.values()) {
+				if (curr.isRunning() && curr.hasPlayer(player)) {
+					return curr;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public List<Match> getJoinableMatches() {
 		List<Match> result = new LinkedList<Match>();
 
 		synchronized (matches) {
@@ -47,8 +64,22 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public List<Match> getJoinableRunningMatches(Player player) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Match> result = new LinkedList<Match>();
+
+		synchronized (matches) {
+			for (Match curr : matches.values()) {
+				if (curr.isRunning() && curr.hasPlayer(player)) {
+					result.add(curr);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public void storeMatch(Match match) {
+		matches.put(match.getId(), match);
 	}
 
 }

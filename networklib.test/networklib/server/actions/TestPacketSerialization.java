@@ -2,23 +2,25 @@ package networklib.server.actions;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.IDeserializingable;
-import networklib.channel.NetworkConstants;
 import networklib.channel.Packet;
 import networklib.channel.listeners.BufferPacketListener;
+import networklib.server.actions.packets.AcknowledgePacket;
 import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
 import networklib.server.actions.packets.KeyOnlyPacket;
 import networklib.server.actions.packets.MapInfoPacket;
 import networklib.server.actions.packets.MatchInfoPacket;
+import networklib.server.actions.packets.OpenNewMatchPacket;
 import networklib.server.actions.packets.PlayerInfoPacket;
+import networklib.server.actions.packets.RejectPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +53,10 @@ public class TestPacketSerialization {
 				{ createMatchInfoPacket(), d(MatchInfoPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[] { createMatchInfoPacket(), createMatchInfoPacket() }),
-						d(ArrayOfMatchInfosPacket.class) }
+						d(ArrayOfMatchInfosPacket.class) },
+				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName")), d(OpenNewMatchPacket.class) },
+				{ new AcknowledgePacket(NetworkConstants.Keys.MATCH_INFO), d(AcknowledgePacket.class) },
+				{ new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) }
 		};
 		return Arrays.asList(data);
 	}
@@ -97,11 +102,11 @@ public class TestPacketSerialization {
 	}
 
 	@Test
-	public void testSerializationAndDeserialization() throws IOException, InterruptedException {
+	public void testSerializationAndDeserialization() throws InterruptedException {
 		c2.registerListener(listener);
 		c1.sendPacket(packet);
 
-		Thread.sleep(10);
+		Thread.sleep(20);
 
 		List<? extends Packet> bufferedPackets = listener.popBufferedPackets();
 		assertEquals(1, bufferedPackets.size());

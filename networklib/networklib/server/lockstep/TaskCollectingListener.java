@@ -3,8 +3,8 @@ package networklib.server.lockstep;
 import java.util.LinkedList;
 import java.util.List;
 
+import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
-import networklib.channel.NetworkConstants;
 import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.feedthrough.FeedthroughablePacket;
 import networklib.channel.listeners.PacketChannelListener;

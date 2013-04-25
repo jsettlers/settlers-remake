@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.IDeserializingable;
-import networklib.channel.NetworkConstants;
 import networklib.channel.listeners.PacketChannelListener;
 import networklib.server.actions.packets.KeyOnlyPacket;
 import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
@@ -20,15 +20,15 @@ import networklib.server.game.Player;
  * @author Andreas Eberle
  * 
  */
-public class GetMatchesListener extends PacketChannelListener<KeyOnlyPacket> {
+public class RequestMatchesListener extends PacketChannelListener<KeyOnlyPacket> {
 
 	private final IMatchesSupplier matchesSupplier;
 	private final Channel channel;
 	private final Player player;
 
 	@SuppressWarnings("unchecked")
-	public GetMatchesListener(Channel channel, IMatchesSupplier matchesSupplier, Player player) {
-		super(new int[] { NetworkConstants.Keys.GET_MATCHES, NetworkConstants.Keys.GET_PLAYERS_RUNNING_MATCHES },
+	public RequestMatchesListener(Channel channel, IMatchesSupplier matchesSupplier, Player player) {
+		super(new int[] { NetworkConstants.Keys.REQUEST_MATCHES, NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES },
 				new IDeserializingable[] { KeyOnlyPacket.DEFAULT_DESERIALIZER, KeyOnlyPacket.DEFAULT_DESERIALIZER });
 
 		this.channel = channel;
@@ -40,9 +40,9 @@ public class GetMatchesListener extends PacketChannelListener<KeyOnlyPacket> {
 	protected void receivePacket(KeyOnlyPacket deserialized) throws IOException {
 		List<Match> matches;
 
-		if (deserialized.getKey() == NetworkConstants.Keys.GET_MATCHES) {
+		if (deserialized.getKey() == NetworkConstants.Keys.REQUEST_MATCHES) {
 			matches = matchesSupplier.getJoinableMatches();
-		} else if (deserialized.getKey() == NetworkConstants.Keys.GET_PLAYERS_RUNNING_MATCHES) {
+		} else if (deserialized.getKey() == NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES) {
 			matches = matchesSupplier.getJoinableRunningMatches(player);
 		} else {
 			matches = new LinkedList<Match>();

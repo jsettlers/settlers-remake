@@ -17,7 +17,7 @@ public interface IMatchesSupplier {
 	/**
 	 * 
 	 * @param player
-	 * @return Returns a list of matches that are already running and the given player can join.
+	 * @return Returns a list of running matches where the given player had already participated.
 	 */
 	List<Match> getJoinableRunningMatches(Player player);
 

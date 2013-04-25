@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import networklib.NetworkConstants;
 import networklib.channel.Channel;
-import networklib.channel.NetworkConstants;
 import networklib.log.Log;
 import networklib.server.actions.identify.IdentifyUserListener;
 import networklib.server.db.inMemory.InMemoryDB;

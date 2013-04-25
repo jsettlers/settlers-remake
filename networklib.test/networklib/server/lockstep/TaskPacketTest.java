@@ -2,12 +2,11 @@ package networklib.server.lockstep;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.List;
 
+import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.Channel;
-import networklib.channel.NetworkConstants;
 import networklib.channel.feedthrough.FeedthroughBufferPacket;
 
 import org.junit.Before;
@@ -33,7 +32,7 @@ public class TaskPacketTest {
 	}
 
 	@Test
-	public void testSendAndReceive() throws IOException, InterruptedException {
+	public void testSendAndReceive() throws InterruptedException {
 		// c1 is the channel of the client
 		// c2 is the channel of the server
 

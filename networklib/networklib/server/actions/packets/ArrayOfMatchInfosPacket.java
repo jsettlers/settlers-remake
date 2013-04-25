@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
 import networklib.channel.Packet;
 
 /**

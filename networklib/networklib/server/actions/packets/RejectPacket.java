@@ -1,11 +1,10 @@
-package networklib.server.actions.reject;
+package networklib.server.actions.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.channel.IDeserializingable;
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
 import networklib.channel.Packet;
 
 /**
@@ -14,18 +13,6 @@ import networklib.channel.Packet;
  * 
  */
 public class RejectPacket extends Packet {
-	/**
-	 * This is the default implementation of the {@link IDeserializingable} interface to deserialize objects of this class.
-	 */
-	public static final IDeserializingable<RejectPacket> DEFAULT_DESERIALIZER = new IDeserializingable<RejectPacket>() {
-		@Override
-		public RejectPacket deserialize(int key, DataInputStream dis) throws IOException {
-			RejectPacket packet = new RejectPacket();
-			packet.deserialize(dis);
-			return packet;
-		}
-	};
-
 	private int errorMessageId;
 	private int rejectedKey;
 
@@ -57,5 +44,30 @@ public class RejectPacket extends Packet {
 
 	public int getRejectedKey() {
 		return rejectedKey;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + errorMessageId;
+		result = prime * result + rejectedKey;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RejectPacket other = (RejectPacket) obj;
+		if (errorMessageId != other.errorMessageId)
+			return false;
+		if (rejectedKey != other.rejectedKey)
+			return false;
+		return true;
 	}
 }

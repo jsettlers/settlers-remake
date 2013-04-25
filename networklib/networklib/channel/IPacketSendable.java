@@ -1,7 +1,5 @@
 package networklib.channel;
 
-import java.io.IOException;
-
 /**
  * This interface defines the method need to send a {@link Packet} object.
  * 
@@ -14,8 +12,15 @@ public interface IPacketSendable {
 	 * 
 	 * @param packet
 	 *            The {@link Packet} to be sent.
-	 * @throws IOException
-	 *             If an I/O error occurs.
+	 * @return true if the {@link Packet} has been sent successfully<br>
+	 *         false if it hasn't been sent. This can happen if the {@link IPacketSendable} is already closed or an error occurred.
 	 */
-	void sendPacket(Packet packet) throws IOException;
+	boolean sendPacket(Packet packet);
+
+	/**
+	 * 
+	 * @return True if this {@link IPacketSendable} is already closed.<br>
+	 *         False if it is not closed.
+	 */
+	boolean isClosed();
 }

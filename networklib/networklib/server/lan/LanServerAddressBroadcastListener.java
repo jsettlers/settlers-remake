@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
 
 /**
  * Listens for a broadcasted address of a LAN game server.

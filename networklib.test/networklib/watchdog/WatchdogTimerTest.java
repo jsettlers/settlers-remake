@@ -14,6 +14,16 @@ public class WatchdogTimerTest {
 
 	WatchdogTestObserver observer = new WatchdogTestObserver();
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testIncorrectConstructorArgument1() {
+		new WatchdogTimer(0, observer);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testIncorrectConstructorArgument2() {
+		new WatchdogTimer(-1, observer);
+	}
+
 	@Test
 	public void testTimeout() throws InterruptedException {
 		assertEquals(0, observer.callCtr);
@@ -83,6 +93,27 @@ public class WatchdogTimerTest {
 
 		Thread.sleep(50);
 		assertEquals(2, observer.callCtr);
+	}
+
+	@Test
+	public void testInterruptingWatchdog() throws InterruptedException {
+		assertEquals(0, observer.callCtr);
+
+		WatchdogTimer timer = new WatchdogTimer(100, observer);
+		Thread t = new Thread(timer);
+		t.start();
+
+		assertEquals(0, observer.callCtr);
+		Thread.sleep(10);
+
+		t.interrupt(); // interrupt and check that the time doesn't change
+
+		Thread.sleep(20);
+		assertEquals(0, observer.callCtr);
+
+		Thread.sleep(80);
+
+		assertEquals(1, observer.callCtr);
 	}
 
 	private static class WatchdogTestObserver implements IWatchdogObserver {

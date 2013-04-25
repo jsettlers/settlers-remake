@@ -1,10 +1,8 @@
 package networklib.channel.ping;
 
-import java.io.IOException;
-
+import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.IDeserializingable;
-import networklib.channel.NetworkConstants;
 import networklib.channel.listeners.PacketChannelListener;
 
 /**
@@ -37,11 +35,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> {
 	}
 
 	private void sendPing(long receiverTime) {
-		try {
-			channel.sendPacket(new PingPacket(System.currentTimeMillis(), receiverTime));
-		} catch (IOException e) {
-			// e.printStackTrace();
-		}
+		channel.sendPacket(new PingPacket(System.currentTimeMillis(), receiverTime));
 	}
 
 	/**

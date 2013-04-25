@@ -4,7 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
+import networklib.channel.IDeserializingable;
 import networklib.channel.Packet;
 
 /**
@@ -13,17 +14,38 @@ import networklib.channel.Packet;
  * 
  */
 public class PlayerInfoPacket extends Packet {
+	public static IDeserializingable<PlayerInfoPacket> DEFAULT_DESERIALIZER = new IDeserializingable<PlayerInfoPacket>() {
+		@Override
+		public PlayerInfoPacket deserialize(int key, DataInputStream dis) throws IOException {
+			PlayerInfoPacket packet = new PlayerInfoPacket(key);
+			packet.deserialize(dis);
+			return packet;
+		}
+	};
+
 	private String id;
 	private String name;
 
 	public PlayerInfoPacket() {
-		super(NetworkConstants.Keys.PLAYER_INFO);
+		this(NetworkConstants.Keys.PLAYER_INFO);
+	}
+
+	public PlayerInfoPacket(int key) {
+		super(key);
 	}
 
 	public PlayerInfoPacket(String id, String name) {
-		this();
+		this(NetworkConstants.Keys.PLAYER_INFO, id, name);
+	}
+
+	public PlayerInfoPacket(int key, String id, String name) {
+		this(key);
 		this.id = id;
 		this.name = name;
+	}
+
+	public PlayerInfoPacket(int key, PlayerInfoPacket playerInfo) {
+		this(key, playerInfo.id, playerInfo.name);
 	}
 
 	@Override

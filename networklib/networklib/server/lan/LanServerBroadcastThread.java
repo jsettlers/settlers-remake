@@ -8,7 +8,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 
-import networklib.channel.NetworkConstants;
+import networklib.NetworkConstants;
 
 /**
  * This thread broadcasts a small package over the network to inform LAN members of the server address
