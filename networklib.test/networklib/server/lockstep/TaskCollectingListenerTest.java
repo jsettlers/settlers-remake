@@ -7,7 +7,9 @@ import java.util.List;
 import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.Channel;
+import networklib.channel.TestPacket;
 import networklib.channel.feedthrough.FeedthroughBufferPacket;
+import networklib.channel.listeners.BufferingPacketListener;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +22,7 @@ import org.junit.Test;
  * @author Andreas Eberle
  * 
  */
-public class TaskPacketTest {
+public class TaskCollectingListenerTest {
 	private Channel c1;
 	private Channel c2;
 
@@ -43,25 +45,26 @@ public class TaskPacketTest {
 		// c1 is the channel of the client
 		// c2 is the channel of the server
 
-		TestFeedthroughListener testPacketListener = new TestFeedthroughListener(NetworkConstants.Keys.SYNCHRONOUS_TASK);
-		c1.registerListener(testPacketListener);
+		BufferingPacketListener<TestPacket> clientListener = new BufferingPacketListener<TestPacket>(
+				NetworkConstants.Keys.SYNCHRONOUS_TASK, TestPacket.DEFAULT_DESERIALIZER);
+		c1.registerListener(clientListener);
 
-		TaskCollectingListener taskListener = new TaskCollectingListener();
-		c2.registerListener(taskListener);
+		TaskCollectingListener serverListener = new TaskCollectingListener();
+		c2.registerListener(serverListener);
 
-		TestFeedthroughPacket testPacket1 = new TestFeedthroughPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, "TestMessage42", 4711);
+		TestPacket testPacket1 = new TestPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, "TestMessage42", 4711);
 		c1.sendPacket(testPacket1); // send packet 1 to server
-		TestFeedthroughPacket testPacket2 = new TestFeedthroughPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK,
+		TestPacket testPacket2 = new TestPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK,
 				"Bla Böb Bün0928ä38(/§/)\"=$(;:I\"H))!", -2342323);
 		c1.sendPacket(testPacket2); // send packet 2 to server
 
 		Thread.sleep(10);
 
-		List<FeedthroughBufferPacket> taskPackets = taskListener.getAndResetTasks(); // get collected tasks of server
+		List<FeedthroughBufferPacket> taskPackets = serverListener.getAndResetTasks(); // get collected tasks of server
 
-		assertEquals(0, testPacketListener.packets.size());
+		assertEquals(0, clientListener.popBufferedPackets().size());
 		assertEquals(2, taskPackets.size());
-		assertEquals(0, taskListener.getAndResetTasks().size());
+		assertEquals(0, serverListener.getAndResetTasks().size());
 
 		for (FeedthroughBufferPacket curr : taskPackets) { // send packets back to client
 			c2.sendPacket(curr);
@@ -69,9 +72,11 @@ public class TaskPacketTest {
 
 		Thread.sleep(10);
 
-		assertEquals(0, taskListener.getAndResetTasks().size()); // server must have 0 packets
-		assertEquals(2, testPacketListener.packets.size()); // client must have 2 packets
-		assertEquals(testPacket1, testPacketListener.packets.get(0)); // check that the packets are correctly received
-		assertEquals(testPacket2, testPacketListener.packets.get(1));
+		List<TestPacket> packets = clientListener.popBufferedPackets();
+
+		assertEquals(0, serverListener.getAndResetTasks().size()); // server must have 0 packets
+		assertEquals(2, packets.size()); // client must have 2 packets
+		assertEquals(testPacket1, packets.get(0)); // check that the packets are correctly received
+		assertEquals(testPacket2, packets.get(1));
 	}
 }

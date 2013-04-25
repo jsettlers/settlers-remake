@@ -4,8 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+
 import networklib.NetworkConstants;
 import networklib.TestUtils;
+import networklib.channel.listeners.BufferingPacketListener;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,15 +43,21 @@ public class ChannelTest {
 
 	@Test
 	public void testConnection() throws Exception {
-		TestPacketListener listener = new TestPacketListener(1);
-		c2.registerListener(listener);
-		TestPacket testPackage = new TestPacket(1);
+		TestPacketListener listener1 = new TestPacketListener(1);
+		TestPacketListener listener2 = new TestPacketListener(1);
+		c1.registerListener(listener1);
+		c2.registerListener(listener2);
+		TestPacket testPackage = new TestPacket(1, "dlkfjs", -23423);
 		c1.sendPacket(testPackage);
+		c2.sendPacket(testPackage);
 
-		closeAndJoin();
+		Thread.sleep(10);
 
-		assertEquals(1, listener.packets.size());
-		assertEquals(testPackage, listener.packets.get(0));
+		assertEquals(1, listener1.packets.size());
+		assertEquals(testPackage, listener1.packets.get(0));
+
+		assertEquals(1, listener2.packets.size());
+		assertEquals(testPackage, listener2.packets.get(0));
 	}
 
 	@Test
@@ -60,7 +71,7 @@ public class ChannelTest {
 			c1.sendPacket(new TestPacket(1, i));
 		}
 
-		closeAndJoin();
+		Thread.sleep(10);
 
 		assertEquals(NUMBER_OF_PACKETS, listener.packets.size());
 
@@ -159,11 +170,68 @@ public class ChannelTest {
 		testConnection(); // now the normal test should still work.
 	}
 
-	private void closeAndJoin() throws InterruptedException {
-		Thread.sleep(100);
-		c1.close();
-		c2.close();
-		c1.join();
-		c2.join();
+	@Test
+	public void testRemovingListener() throws Exception {
+		TestPacketListener listener = new TestPacketListener(1);
+		c2.registerListener(listener);
+
+		TestPacket testPackage = new TestPacket(1);
+		c1.sendPacket(testPackage);
+
+		Thread.sleep(10);
+
+		assertEquals(1, listener.packets.size());
+		assertEquals(testPackage, listener.packets.get(0));
+
+		c2.removeListener(listener.getKeys()[0]);
+
+		c1.sendPacket(testPackage);
+		Thread.sleep(30);
+		assertEquals(1, listener.packets.size());
 	}
+
+	@Test
+	public void testReadNotAllFromStream() throws Exception {
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(2, new IDeserializingable<TestPacket>() {
+			@Override
+			public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
+				dis.readInt();
+
+				return new TestPacket(key);
+			}
+		});
+
+		c2.registerListener(listener);
+
+		TestPacket testPacket = new TestPacket(2, "dfsdufh", 4);
+		c1.sendPacket(testPacket);
+
+		Thread.sleep(10);
+		assertEquals(1, listener.popBufferedPackets().size());
+
+		testConnection(); // test if connection is still ok
+	}
+
+	@Test
+	public void testReadMoreFromStream() throws Exception {
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(2, new IDeserializingable<TestPacket>() {
+			@Override
+			public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
+				TestPacket packet = new TestPacket(key);
+				packet.deserialize(dis);
+				dis.readInt(); // try to read some more bytes
+				dis.readUTF();
+				dis.readInt();
+				return packet;
+			}
+		});
+
+		c2.registerListener(listener);
+
+		TestPacket testPacket = new TestPacket(2, "dfsdufh", 4);
+		c1.sendPacket(testPacket);
+
+		testConnection(); // test if connection is still ok
+	}
+
 }

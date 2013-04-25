@@ -14,7 +14,7 @@ import networklib.channel.Packet;
  * @author Andreas Eberle
  * 
  */
-public final class FeedthroughBufferPacket extends FeedthroughablePacket {
+public final class FeedthroughBufferPacket extends Packet {
 	private byte[] data;
 
 	public FeedthroughBufferPacket() {
@@ -22,12 +22,13 @@ public final class FeedthroughBufferPacket extends FeedthroughablePacket {
 	}
 
 	@Override
-	protected void serializeData(DataOutputStream dos) throws IOException {
+	public void serialize(DataOutputStream dos) throws IOException {
 		dos.write(data);
 	}
 
 	@Override
-	protected void deserializeData(int length, DataInputStream dis) throws IOException {
+	public void deserialize(DataInputStream dis) throws IOException {
+		final int length = dis.available();
 		this.data = new byte[length];
 
 		int alreadyRead = 0;

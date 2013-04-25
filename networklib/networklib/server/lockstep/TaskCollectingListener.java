@@ -5,13 +5,13 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
+import networklib.channel.Packet;
 import networklib.channel.feedthrough.FeedthroughBufferPacket;
-import networklib.channel.feedthrough.FeedthroughablePacket;
 import networklib.channel.listeners.PacketChannelListener;
 
 /**
- * This listener collects all {@link FeedthroughablePacket} packets for the {@link NetworkConstants}.Keys.SYNCHRONOUS_TASK key and adds them to a
- * list. The elements can then be removed to be send to the clients as batch.
+ * This listener collects {@link Packet}s for the {@link NetworkConstants}.Keys.SYNCHRONOUS_TASK key and adds them to a list. The elements can then be
+ * removed from the list to be send to the clients as batch.
  * 
  * @author Andreas Eberle
  * 

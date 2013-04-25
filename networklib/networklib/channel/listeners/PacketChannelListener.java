@@ -42,7 +42,7 @@ public abstract class PacketChannelListener<T extends Packet> implements IChanne
 	}
 
 	@Override
-	public final void receive(int key, DataInputStream stream) throws IOException, ClassNotFoundException {
+	public final void receive(int key, int length, DataInputStream stream) throws IOException, ClassNotFoundException {
 		IDeserializingable<T> deserializer = deserializers.get(key);
 		assert deserializer != null;
 

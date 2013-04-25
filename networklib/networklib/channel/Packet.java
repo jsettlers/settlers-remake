@@ -45,10 +45,8 @@ public abstract class Packet {
 
 	/**
 	 * Deserializes an object of this type from the given {@link DataInputStream}.
-	 * 
 	 * @param dis
 	 *            The {@link DataInputStream} that's supplying the serialized data.
-	 * 
 	 * @throws IOException
 	 *             If an I/O error occurs.
 	 */

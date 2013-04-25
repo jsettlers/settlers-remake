@@ -23,10 +23,13 @@ public interface IChannelListener {
 	 * 
 	 * @param key
 	 *            The key of the message.
+	 * @param length
+	 *            Number of bytes on the stream.
 	 * @param stream
 	 *            The {@link DataInputStream} offering the data.
+	 * 
 	 * @throws Exception
 	 *             If an I/O error occurs.
 	 */
-	void receive(int key, DataInputStream stream) throws Exception;
+	void receive(int key, int length, DataInputStream stream) throws Exception;
 }

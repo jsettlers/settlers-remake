@@ -1,5 +1,7 @@
 package networklib.channel;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,6 +26,9 @@ public class Channel implements IPacketSendable, Runnable {
 	private final Socket socket;
 	private final DataOutputStream outStream;
 	private final DataInputStream inStream;
+
+	private final ByteArrayOutputStream byteBufferOutStream = new ByteArrayOutputStream();
+	private final DataOutputStream bufferDataOutStream = new DataOutputStream(byteBufferOutStream);
 
 	private final HashMap<Integer, IChannelListener> listenerRegistry = new HashMap<Integer, IChannelListener>();
 
@@ -74,13 +79,27 @@ public class Channel implements IPacketSendable, Runnable {
 			return;
 
 		try {
-			final int key = packet.getKey();
-			outStream.writeInt(key);
-			packet.serialize(outStream);
-			outStream.flush();
-
+			sendPacketData(packet);
 		} catch (IOException e) {
 		}
+	}
+
+	private void sendPacketData(Packet packet) throws IOException {
+
+		final int key = packet.getKey();
+
+		bufferDataOutStream.flush();
+		byteBufferOutStream.reset();
+
+		packet.serialize(bufferDataOutStream); // write packet to buffer to calculate length
+		bufferDataOutStream.flush();
+		final int length = byteBufferOutStream.size();
+
+		outStream.writeInt(key); // write key, length and the data
+		outStream.writeInt(length);
+		byteBufferOutStream.writeTo(outStream);
+
+		outStream.flush();
 	}
 
 	/**
@@ -105,13 +124,20 @@ public class Channel implements IPacketSendable, Runnable {
 		while (!socket.isClosed()) {
 			try {
 				int key = inStream.readInt();
+				int length = inStream.readInt();
+
+				DataInputStream bufferIn = readBytesToBuffer(inStream, length);
 
 				IChannelListener listener = listenerRegistry.get(key);
 
 				if (listener != null) {
-					listener.receive(key, inStream);
+					try {
+						listener.receive(key, length, bufferIn);
+					} catch (Exception e) { // ignore exceptions thrown in receive
+						System.err.println(e.getMessage());
+					}
 				} else {
-					System.err.println("WARNING: NO LISTENER FOUND. key: " + key);
+					System.err.println("WARNING: NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
 				}
 
 			} catch (Exception e) {
@@ -128,6 +154,22 @@ public class Channel implements IPacketSendable, Runnable {
 			channelClosedListener.channelClosed();
 		}
 		System.out.println("Channel listener shut down: " + socket);
+	}
+
+	private DataInputStream readBytesToBuffer(DataInputStream inStream, int length) throws IOException {
+		byte[] data = new byte[length];
+
+		int alreadyRead = 0;
+		while (length - alreadyRead > 0) {
+			int numberOfBytesRead = inStream.read(data, alreadyRead, length - alreadyRead);
+			if (numberOfBytesRead < 0) {
+				throw new IOException("Stream ended to early!");
+			}
+
+			alreadyRead += numberOfBytesRead;
+		}
+
+		return new DataInputStream(new ByteArrayInputStream(data));
 	}
 
 	/**
@@ -150,16 +192,6 @@ public class Channel implements IPacketSendable, Runnable {
 		}
 
 		thread.interrupt();
-	}
-
-	/**
-	 * 
-	 * @see Thread.join()
-	 * 
-	 * @throws InterruptedException
-	 */
-	public void join() throws InterruptedException {
-		thread.join();
 	}
 
 	/**
