@@ -86,6 +86,7 @@ public class MobileControls implements IControls, ContextActionListener {
 		pauseMenu = new PauseMenu(androidMenuPutable);
 	}
 
+	@Override
 	public void drawAt(GLDrawContext gl) {
 		if (!naviPoint.isPanInProgress()) {
 			showBuildButton.drawAt(gl);
@@ -298,5 +299,10 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void stop() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String getMapTooltip(ShortPoint2D point) {
+		return null;
 	}
 }
