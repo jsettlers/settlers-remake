@@ -339,14 +339,17 @@ public final class MapContent implements SettlersContent,
 	private void drawFramerate(GLDrawContext gl) {
 		framerate.nextFrame();
 		String frames = new DecimalFormat("###.#").format(framerate.getRate());
-		String gametime = playerStatistics.getGameTime() + "";
+		long gametime = playerStatistics.getGameTime() / 1000;
+		String timeString =
+		        String.format("%d:%02d:%02d", gametime / 60 / 60,
+		                (gametime / 60) % 60, (gametime) % 60);
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		double spacing = drawer.getWidth("_");
 		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
 		drawer.drawString(windowWidth - 9 * (float) spacing, y, "FPS: " + frames);
 		drawer.drawString(windowWidth - 23 * (float) spacing, y, "Time: "
-		        + gametime);
+		        + timeString);
 	}
 
 	private void drawTooltip(GLDrawContext gl) {
