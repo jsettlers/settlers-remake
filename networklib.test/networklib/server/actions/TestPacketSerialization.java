@@ -13,7 +13,6 @@ import networklib.channel.GenericDeserializer;
 import networklib.channel.IDeserializingable;
 import networklib.channel.Packet;
 import networklib.channel.listeners.BufferingPacketListener;
-import networklib.server.actions.packets.AcknowledgePacket;
 import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
 import networklib.server.actions.packets.KeyOnlyPacket;
 import networklib.server.actions.packets.MapInfoPacket;
@@ -61,15 +60,15 @@ public class TestPacketSerialization {
 	@Parameters
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ new KeyOnlyPacket(NetworkConstants.Keys.LIST_OF_MATCHES), KeyOnlyPacket.DEFAULT_DESERIALIZER },
+				{ new KeyOnlyPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES), KeyOnlyPacket.DEFAULT_DESERIALIZER },
 				{ new PlayerInfoPacket("IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/"), d(PlayerInfoPacket.class) },
+				{ new PlayerInfoPacket(23, "IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/"), PlayerInfoPacket.WITH_KEY_DESERIALIZER },
 				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(§\"(/!=°", "authorId8unsdkjfn8932", "authorName uHh89023u9h"), d(MapInfoPacket.class) },
 				{ createMatchInfoPacket(), d(MatchInfoPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[] { createMatchInfoPacket(), createMatchInfoPacket() }),
 						d(ArrayOfMatchInfosPacket.class) },
 				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName")), d(OpenNewMatchPacket.class) },
-				{ new AcknowledgePacket(NetworkConstants.Keys.MATCH_INFO), d(AcknowledgePacket.class) },
 				{ new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) }
 		};
 		return Arrays.asList(data);
@@ -81,7 +80,7 @@ public class TestPacketSerialization {
 				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2"),
 				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2")
 		};
-		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", mapInfo, players);
+		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players);
 	}
 
 	private static <T extends Packet> Object d(Class<T> classType) {

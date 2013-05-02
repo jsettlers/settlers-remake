@@ -14,7 +14,7 @@ import networklib.channel.Packet;
  * 
  */
 public class PlayerInfoPacket extends Packet {
-	public static IDeserializingable<PlayerInfoPacket> DEFAULT_DESERIALIZER = new IDeserializingable<PlayerInfoPacket>() {
+	public static IDeserializingable<PlayerInfoPacket> WITH_KEY_DESERIALIZER = new IDeserializingable<PlayerInfoPacket>() {
 		@Override
 		public PlayerInfoPacket deserialize(int key, DataInputStream dis) throws IOException {
 			PlayerInfoPacket packet = new PlayerInfoPacket(key);

@@ -16,7 +16,7 @@ import networklib.server.game.Player;
  */
 public class InMemoryDB implements IDBFacade {
 
-	private HashMap<String, Player> playerMap = new HashMap<String, Player>();
+	private HashMap<String, Player> players = new HashMap<String, Player>();
 	private HashMap<String, Match> matches = new HashMap<String, Match>();
 
 	@Override
@@ -26,12 +26,12 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public void storePlayer(Player player) {
-		playerMap.put(player.getId(), player);
+		players.put(player.getId(), player);
 	}
 
 	@Override
 	public void removePlayer(Player player) {
-		playerMap.remove(player.getId());
+		players.remove(player.getId());
 	}
 
 	@Override
@@ -80,6 +80,14 @@ public class InMemoryDB implements IDBFacade {
 	@Override
 	public void storeMatch(Match match) {
 		matches.put(match.getId(), match);
+	}
+
+	public int getNumberOfPlayers() {
+		return players.size();
+	}
+
+	public Player getPlayer(String id) {
+		return players.get(id);
 	}
 
 }

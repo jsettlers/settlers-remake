@@ -17,6 +17,7 @@ import networklib.server.game.Match;
 public class MatchInfoPacket extends Packet {
 	private String id;
 	private String matchName;
+	private byte maxPlayers;
 	private MapInfoPacket mapInfo;
 	private PlayerInfoPacket[] players;
 
@@ -24,10 +25,11 @@ public class MatchInfoPacket extends Packet {
 		super(NetworkConstants.Keys.MATCH_INFO);
 	}
 
-	public MatchInfoPacket(String id, String matchName, MapInfoPacket mapInfo, PlayerInfoPacket[] players) {
+	public MatchInfoPacket(String id, String matchName, byte maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players) {
 		this();
 		this.id = id;
 		this.matchName = matchName;
+		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
 		this.players = players;
 	}
@@ -36,6 +38,7 @@ public class MatchInfoPacket extends Packet {
 		this();
 		id = match.getId();
 		matchName = match.getName();
+		maxPlayers = match.getMaxPlayers();
 		mapInfo = match.getMap();
 		players = match.getPlayerInfos();
 	}
@@ -44,6 +47,7 @@ public class MatchInfoPacket extends Packet {
 	public void serialize(DataOutputStream dos) throws IOException {
 		dos.writeUTF(id);
 		dos.writeUTF(matchName);
+		dos.writeByte(maxPlayers);
 		mapInfo.serialize(dos);
 
 		PlayerInfoPacket[] players = this.players;
@@ -57,6 +61,7 @@ public class MatchInfoPacket extends Packet {
 	public void deserialize(DataInputStream dis) throws IOException {
 		id = dis.readUTF();
 		matchName = dis.readUTF();
+		maxPlayers = dis.readByte();
 		mapInfo = new MapInfoPacket();
 		mapInfo.deserialize(dis);
 
@@ -70,6 +75,46 @@ public class MatchInfoPacket extends Packet {
 		this.players = players;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getMatchName() {
+		return matchName;
+	}
+
+	public void setMatchName(String matchName) {
+		this.matchName = matchName;
+	}
+
+	public MapInfoPacket getMapInfo() {
+		return mapInfo;
+	}
+
+	public void setMapInfo(MapInfoPacket mapInfo) {
+		this.mapInfo = mapInfo;
+	}
+
+	public PlayerInfoPacket[] getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(PlayerInfoPacket[] players) {
+		this.players = players;
+	}
+
+	public byte getMaxPlayers() {
+		return maxPlayers;
+	}
+
+	public void setMaxPlayers(byte maxPlayers) {
+		this.maxPlayers = maxPlayers;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -77,6 +122,7 @@ public class MatchInfoPacket extends Packet {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((mapInfo == null) ? 0 : mapInfo.hashCode());
 		result = prime * result + ((matchName == null) ? 0 : matchName.hashCode());
+		result = prime * result + maxPlayers;
 		result = prime * result + Arrays.hashCode(players);
 		return result;
 	}
@@ -104,6 +150,8 @@ public class MatchInfoPacket extends Packet {
 			if (other.matchName != null)
 				return false;
 		} else if (!matchName.equals(other.matchName))
+			return false;
+		if (maxPlayers != other.maxPlayers)
 			return false;
 		if (!Arrays.equals(players, other.players))
 			return false;

@@ -39,6 +39,7 @@ public final class NetworkConstants {
 
 		public static final int UNAUTHORIZED = 1;
 		public static final int UNKNOWN_ERROR = -1;
+		public static final int INVALID_STATE_ERROR = -2;
 	}
 
 	/**
@@ -59,8 +60,6 @@ public final class NetworkConstants {
 
 		public static final int REJECT_PACKET = -4;
 
-		public static final int ACKNOWLEDGE_PACKET = -5;
-
 		public static final int MAP_INFO = -6;
 
 		public static final int TEST = -7;
@@ -71,14 +70,17 @@ public final class NetworkConstants {
 
 		public static final int REQUEST_MATCHES = -10;
 
-		public static final int LIST_OF_MATCHES = -11;
+		public static final int ARRAY_OF_MATCHES = -11;
 
 		public static final int REQUEST_PLAYERS_RUNNING_MATCHES = -12;
 
 		public static final int REQUEST_OPEN_NEW_MATCH = -13;
 
+		public static final int PLAYER_JOINED = -15;
+		public static final int PLAYER_LEFT = -17;
 		public static final int PLAYER_DISCONNECTED = -14;
 
-		public static final int PLAYER_JOINED = -15;
+		public static final int REQUEST_LEAVE_MATCH = -16;
+
 	}
 }

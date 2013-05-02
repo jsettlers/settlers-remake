@@ -8,7 +8,7 @@ package networklib.channel;
  */
 public interface IPacketSendable {
 	/**
-	 * Sends the given {@link Packet}.
+	 * Sends the given {@link Packet}. This method by block for a while until the packet is send.
 	 * 
 	 * @param packet
 	 *            The {@link Packet} to be sent.

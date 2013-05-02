@@ -7,7 +7,6 @@ import java.net.Socket;
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.log.Log;
-import networklib.server.actions.identify.IdentifyUserListener;
 import networklib.server.db.inMemory.InMemoryDB;
 import networklib.server.lan.LanServerAddressBroadcastListener;
 import networklib.server.lan.LanServerBroadcastThread;
@@ -45,7 +44,7 @@ public class GameServerThread extends Thread {
 
 				Channel clientChannel = new Channel(clientSocket);
 
-				clientChannel.registerListener(new IdentifyUserListener(clientChannel, manager));
+				manager.identifyNewChannel(clientChannel);
 
 				Log.log("accepted new client (" + ++counter + "): " + clientSocket);
 			} catch (IOException e) {

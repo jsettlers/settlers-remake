@@ -18,7 +18,7 @@ public class ArrayOfMatchInfosPacket extends Packet {
 	private MatchInfoPacket[] matches;
 
 	public ArrayOfMatchInfosPacket() {
-		super(NetworkConstants.Keys.LIST_OF_MATCHES);
+		super(NetworkConstants.Keys.ARRAY_OF_MATCHES);
 	}
 
 	public ArrayOfMatchInfosPacket(MatchInfoPacket[] matches) {
@@ -65,6 +65,14 @@ public class ArrayOfMatchInfosPacket extends Packet {
 		if (!Arrays.equals(matches, other.matches))
 			return false;
 		return true;
+	}
+
+	public MatchInfoPacket[] getMatches() {
+		return matches;
+	}
+
+	public void setMatches(MatchInfoPacket[] matches) {
+		this.matches = matches;
 	}
 
 }

@@ -1,6 +1,7 @@
 package networklib.server.db;
 
-import networklib.server.actions.matches.IMatchesSupplier;
+import java.util.List;
+
 import networklib.server.game.Match;
 import networklib.server.game.Player;
 
@@ -10,7 +11,7 @@ import networklib.server.game.Player;
  * @author Andreas Eberle
  * 
  */
-public interface IDBFacade extends IMatchesSupplier {
+public interface IDBFacade {
 
 	/**
 	 * Checks if the player is allowed to connect to the server.
@@ -35,4 +36,7 @@ public interface IDBFacade extends IMatchesSupplier {
 
 	void storeMatch(Match match);
 
+	List<Match> getJoinableMatches();
+
+	List<Match> getJoinableRunningMatches(Player player);
 }

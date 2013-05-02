@@ -7,7 +7,6 @@ import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
 import networklib.server.actions.packets.MatchInfoPacket;
 import networklib.server.actions.packets.OpenNewMatchPacket;
-import networklib.server.actions.packets.RejectPacket;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
 
@@ -31,13 +30,7 @@ public class RequestOpenNewMatchListener extends PacketChannelListener<OpenNewMa
 
 	@Override
 	protected void receivePacket(OpenNewMatchPacket packet) throws IOException {
-		Match match = matchCreator.createNewMatch(packet, player);
-
-		if (match != null) {
-			player.getChannel().sendPacket(new MatchInfoPacket(match));
-		} else {
-			player.getChannel().sendPacket(new RejectPacket(NetworkConstants.Strings.UNKNOWN_ERROR, NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
-		}
+		matchCreator.createNewMatch(packet, player);
 	}
 
 }

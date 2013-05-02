@@ -162,8 +162,8 @@ public class ChannelTest {
 
 	@Test
 	public void testSendingMessageWithoutListener() throws Exception {
-		c1.sendPacket(new TestPacket(NetworkConstants.Keys.LIST_OF_MATCHES));
-		c2.sendPacket(new TestPacket(NetworkConstants.Keys.LIST_OF_MATCHES)); // test both channels
+		c1.sendPacket(new TestPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES));
+		c2.sendPacket(new TestPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES)); // test both channels
 
 		Thread.sleep(10);
 

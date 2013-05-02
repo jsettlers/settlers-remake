@@ -96,16 +96,24 @@ public class Match {
 	private void sendAsyncMessage(Packet packet) {
 		synchronized (players) {
 			for (Player curr : players) {
-				curr.getChannel().sendPacket(packet);
+				curr.sendPacket(packet);
 			}
 		}
 	}
 
-	public void joinPlayer(Player player) {
+	public void join(Player player) {
 		synchronized (players) {
 			sendAsyncMessage(new PlayerInfoPacket(NetworkConstants.Keys.PLAYER_JOINED, player.getPlayerInfo())); // inform the others
 
 			players.add(player);
+		}
+	}
+
+	public void playerLeft(Player player) {
+		synchronized (players) {
+			players.remove(player);
+
+			sendAsyncMessage(new PlayerInfoPacket(NetworkConstants.Keys.PLAYER_LEFT, player.getPlayerInfo())); // inform the others
 		}
 	}
 }

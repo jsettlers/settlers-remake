@@ -6,7 +6,7 @@ import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
-import networklib.server.actions.packets.AcknowledgePacket;
+import networklib.server.actions.packets.KeyOnlyPacket;
 import networklib.server.actions.packets.PlayerInfoPacket;
 import networklib.server.actions.packets.RejectPacket;
 import networklib.server.game.Player;
@@ -30,7 +30,7 @@ public class IdentifyUserListener extends PacketChannelListener<PlayerInfoPacket
 	@Override
 	protected void receivePacket(PlayerInfoPacket playerInfo) throws IOException {
 		if (userAcceptor.acceptNewPlayer(new Player(playerInfo, channel))) {
-			channel.sendPacket(new AcknowledgePacket(playerInfo.getKey()));
+			channel.sendPacket(new KeyOnlyPacket(NetworkConstants.Keys.IDENTIFY_USER));
 		} else {
 			channel.sendPacket(new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, playerInfo.getKey()));
 		}
