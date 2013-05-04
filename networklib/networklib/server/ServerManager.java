@@ -8,6 +8,7 @@ import networklib.client.exceptions.InvalidStateException;
 import networklib.server.db.IDBFacade;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
+import networklib.server.listeners.ServerChannelClosedListener;
 import networklib.server.listeners.identify.IdentifyUserListener;
 import networklib.server.listeners.matches.RequestLeaveMatchListener;
 import networklib.server.listeners.matches.RequestMatchesListener;
@@ -92,8 +93,13 @@ public class ServerManager implements IServerManager {
 		Match match = new Match(matchInfo.getMatchName(), matchInfo.getMaxPlayers(), matchInfo.getMapInfo());
 		db.storeMatch(match);
 
+		joinMatch(match, player);
+	}
+
+	private void joinMatch(Match match, Player player) {
 		try {
 			player.joinMatch(match);
+			player.getChannel().sendPacket(new MatchInfoPacket(match));
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
 			player.getChannel().sendPacket(

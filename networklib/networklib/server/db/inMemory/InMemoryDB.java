@@ -90,4 +90,11 @@ public class InMemoryDB implements IDBFacade {
 		return players.get(id);
 	}
 
+	public int getNumberOfMatches() {
+		return matches.size();
+	}
+
+	public Match getMatch(String id) {
+		return matches.get(id);
+	}
 }

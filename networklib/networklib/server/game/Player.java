@@ -3,7 +3,6 @@ package networklib.server.game;
 import networklib.channel.Channel;
 import networklib.channel.Packet;
 import networklib.client.exceptions.InvalidStateException;
-import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.PlayerInfoPacket;
 
 /**
@@ -43,8 +42,6 @@ public class Player {
 
 		this.match = match;
 		match.join(this);
-
-		channel.sendPacket(new MatchInfoPacket(match));
 	}
 
 	public void sendPacket(Packet packet) {

@@ -1,12 +1,15 @@
-package networklib.server;
+package networklib.server.listeners;
 
 import networklib.channel.IChannelClosedListener;
+import networklib.server.IServerManager;
 import networklib.server.game.Player;
 
-class ServerChannelClosedListener implements IChannelClosedListener {
-	/**
-	 * 
-	 */
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public class ServerChannelClosedListener implements IChannelClosedListener {
 	private final IServerManager serverManager;
 	private final Player player;
 

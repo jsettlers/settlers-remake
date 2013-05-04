@@ -13,11 +13,11 @@ import networklib.server.packets.MatchInfoPacket;
  * @author Andreas Eberle
  * 
  */
-public class OpenedMatchListener extends PacketChannelListener<MatchInfoPacket> {
+public class JoinedMatchListener extends PacketChannelListener<MatchInfoPacket> {
 	private final NetworkClient client;
 	private final IPacketReceiver<MatchInfoPacket> listener;
 
-	public OpenedMatchListener(NetworkClient client, IPacketReceiver<MatchInfoPacket> listener) {
+	public JoinedMatchListener(NetworkClient client, IPacketReceiver<MatchInfoPacket> listener) {
 		super(NetworkConstants.Keys.MATCH_INFO, new GenericDeserializer<MatchInfoPacket>(MatchInfoPacket.class));
 
 		this.client = client;

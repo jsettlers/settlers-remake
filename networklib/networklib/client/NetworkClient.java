@@ -67,7 +67,7 @@ public class NetworkClient {
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
-		channel.registerListener(new OpenedMatchListener(this, listener));
+		channel.registerListener(new JoinedMatchListener(this, listener));
 		channel.sendPacketAsync(new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
 	}
 
@@ -76,6 +76,13 @@ public class NetworkClient {
 
 		channel.sendPacketAsync(new KeyOnlyPacket(NetworkConstants.Keys.REQUEST_LEAVE_MATCH));
 		state = EPlayerState.LOGGED_IN;
+	}
+
+	public void reqeustJoinMatch(IPacketReceiver<MatchInfoPacket> joinedEventListener, MatchInfoPacket match) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
+
+		channel.registerListener(new JoinedMatchListener(this, joinedEventListener));
+		channel.sendPacketAsync(match);
 	}
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {
