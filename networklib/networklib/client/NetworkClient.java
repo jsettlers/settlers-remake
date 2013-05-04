@@ -7,13 +7,13 @@ import networklib.channel.IChannelClosedListener;
 import networklib.channel.Packet;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.IPacketReceiver;
-import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
-import networklib.server.actions.packets.KeyOnlyPacket;
-import networklib.server.actions.packets.MapInfoPacket;
-import networklib.server.actions.packets.MatchInfoPacket;
-import networklib.server.actions.packets.OpenNewMatchPacket;
-import networklib.server.actions.packets.PlayerInfoPacket;
 import networklib.server.game.EPlayerState;
+import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.KeyOnlyPacket;
+import networklib.server.packets.MapInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.OpenNewMatchPacket;
+import networklib.server.packets.PlayerInfoPacket;
 
 /**
  * The {@link NetworkClient} class offers an interface to the servers methods. All methods of the {@link NetworkClient} class will never block. All

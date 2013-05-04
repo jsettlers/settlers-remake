@@ -68,7 +68,7 @@ public class InMemoryDB implements IDBFacade {
 
 		synchronized (matches) {
 			for (Match curr : matches.values()) {
-				if (curr.isRunning() && curr.hasPlayer(player)) {
+				if (curr.isRunning() && curr.hasLeftPlayer(player)) {
 					result.add(curr);
 				}
 			}

@@ -6,7 +6,7 @@ import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
 import networklib.client.receiver.IPacketReceiver;
-import networklib.server.actions.packets.MatchInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
 
 /**
  * 

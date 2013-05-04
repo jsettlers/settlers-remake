@@ -4,28 +4,25 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
-import networklib.channel.IChannelClosedListener;
 import networklib.client.exceptions.InvalidStateException;
-import networklib.server.actions.identify.IUserAcceptor;
-import networklib.server.actions.identify.IdentifyUserListener;
-import networklib.server.actions.matches.IMatchesSupplier;
-import networklib.server.actions.matches.INewMatchCreator;
-import networklib.server.actions.matches.RequestMatchesListener;
-import networklib.server.actions.matches.RequestOpenNewMatchListener;
-import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
-import networklib.server.actions.packets.MatchInfoPacket;
-import networklib.server.actions.packets.OpenNewMatchPacket;
-import networklib.server.actions.packets.RejectPacket;
 import networklib.server.db.IDBFacade;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
+import networklib.server.listeners.identify.IdentifyUserListener;
+import networklib.server.listeners.matches.RequestLeaveMatchListener;
+import networklib.server.listeners.matches.RequestMatchesListener;
+import networklib.server.listeners.matches.RequestOpenNewMatchListener;
+import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.OpenNewMatchPacket;
+import networklib.server.packets.RejectPacket;
 
 /**
  * 
  * @author Andreas Eberle
  * 
  */
-public class ServerManager implements IUserAcceptor, IMatchesSupplier, INewMatchCreator {
+public class ServerManager implements IServerManager {
 
 	private final IDBFacade db;
 
@@ -45,9 +42,10 @@ public class ServerManager implements IUserAcceptor, IMatchesSupplier, INewMatch
 			Channel channel = player.getChannel();
 			channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
 
-			channel.setChannelClosedListener(new ServerChannelClosedListener(player));
+			channel.setChannelClosedListener(new ServerChannelClosedListener(this, player));
 			channel.registerListener(new RequestMatchesListener(this, player));
 			channel.registerListener(new RequestOpenNewMatchListener(this, player));
+			channel.registerListener(new RequestLeaveMatchListener(this, player));
 
 			return true;
 		} else {
@@ -80,7 +78,8 @@ public class ServerManager implements IUserAcceptor, IMatchesSupplier, INewMatch
 		sendMatchesList(player, matches);
 	}
 
-	void channelClosed(Player player) {
+	@Override
+	public void channelClosed(Player player) {
 		db.removePlayer(player);
 		Match match = db.getRunningMatchOf(player);
 		if (match != null) {
@@ -95,8 +94,6 @@ public class ServerManager implements IUserAcceptor, IMatchesSupplier, INewMatch
 
 		try {
 			player.joinMatch(match);
-
-			player.getChannel().sendPacket(new MatchInfoPacket(match));
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
 			player.getChannel().sendPacket(
@@ -104,16 +101,12 @@ public class ServerManager implements IUserAcceptor, IMatchesSupplier, INewMatch
 		}
 	}
 
-	private class ServerChannelClosedListener implements IChannelClosedListener {
-		private final Player player;
-
-		public ServerChannelClosedListener(Player player) {
-			this.player = player;
-		}
-
-		@Override
-		public void channelClosed() {
-			ServerManager.this.channelClosed(player);
+	@Override
+	public void leaveMatch(Player player) {
+		try {
+			player.leaveMatch();
+		} catch (InvalidStateException e) {
+			e.printStackTrace();
 		}
 	}
 

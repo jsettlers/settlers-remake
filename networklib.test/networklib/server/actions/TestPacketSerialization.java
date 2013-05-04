@@ -13,13 +13,13 @@ import networklib.channel.GenericDeserializer;
 import networklib.channel.IDeserializingable;
 import networklib.channel.Packet;
 import networklib.channel.listeners.BufferingPacketListener;
-import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
-import networklib.server.actions.packets.KeyOnlyPacket;
-import networklib.server.actions.packets.MapInfoPacket;
-import networklib.server.actions.packets.MatchInfoPacket;
-import networklib.server.actions.packets.OpenNewMatchPacket;
-import networklib.server.actions.packets.PlayerInfoPacket;
-import networklib.server.actions.packets.RejectPacket;
+import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.KeyOnlyPacket;
+import networklib.server.packets.MapInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.OpenNewMatchPacket;
+import networklib.server.packets.PlayerInfoPacket;
+import networklib.server.packets.RejectPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -105,7 +105,7 @@ public class TestPacketSerialization {
 		c2.registerListener(listener);
 		c1.sendPacket(packet);
 
-		Thread.sleep(20);
+		Thread.sleep(30);
 
 		List<? extends Packet> bufferedPackets = listener.popBufferedPackets();
 		assertEquals(1, bufferedPackets.size());

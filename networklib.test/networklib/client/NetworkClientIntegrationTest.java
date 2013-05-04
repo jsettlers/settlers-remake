@@ -13,12 +13,12 @@ import networklib.channel.TestPacketListener;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.server.ServerManager;
-import networklib.server.actions.packets.ArrayOfMatchInfosPacket;
-import networklib.server.actions.packets.MapInfoPacket;
-import networklib.server.actions.packets.MatchInfoPacket;
 import networklib.server.db.inMemory.InMemoryDB;
 import networklib.server.game.EPlayerState;
 import networklib.server.game.Player;
+import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.MapInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -126,9 +126,19 @@ public class NetworkClientIntegrationTest {
 	}
 
 	@Test
-	public void testOpenMatch() throws InvalidStateException, InterruptedException {
+	public void testOpenMatchWithLogin() throws InvalidStateException, InterruptedException {
 		testLogIn();
 
+		testOpenMatch();
+	}
+
+	/**
+	 * NOTE: The client must already be logged in!
+	 * 
+	 * @throws InvalidStateException
+	 * @throws InterruptedException
+	 */
+	private void testOpenMatch() throws InvalidStateException, InterruptedException {
 		BufferingPacketReceiver<ArrayOfMatchInfosPacket> matchesListener = new BufferingPacketReceiver<ArrayOfMatchInfosPacket>();
 		assertEquals(0, matchesListener.popBufferedPackets().size());
 
@@ -158,14 +168,25 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testGetPlayersRunningMatches() throws InvalidStateException, InterruptedException {
-		testOpenMatch(); // log in and open a new match.
-
-		client.requestLeaveMatch();
+		testLogIn();
 
 		BufferingPacketReceiver<ArrayOfMatchInfosPacket> listener = new BufferingPacketReceiver<ArrayOfMatchInfosPacket>();
 		client.requestPlayersRunningMatches(listener);
 
 		Thread.sleep(100);
-		assertEquals(1, listener.popBufferedPackets().size());
+		List<ArrayOfMatchInfosPacket> packets = listener.popBufferedPackets();
+		assertEquals(1, packets.size());
+		assertEquals(0, packets.get(0).getMatches().length);
+
+		testOpenMatch(); // log in and open a new match.
+
+		client.requestLeaveMatch();
+
+		client.requestPlayersRunningMatches(listener);
+
+		Thread.sleep(100);
+		packets = listener.popBufferedPackets();
+		assertEquals(1, packets.size());
+		assertEquals(1, packets.get(0).getMatches().length);
 	}
 }

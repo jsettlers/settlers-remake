@@ -1,14 +1,13 @@
-package networklib.server.actions.matches;
+package networklib.server;
 
-import networklib.server.actions.packets.OpenNewMatchPacket;
 import networklib.server.game.Player;
+import networklib.server.packets.OpenNewMatchPacket;
 
-/**
- * 
- * @author Andreas Eberle
- * 
- */
-public interface INewMatchCreator {
+public interface IServerManager {
+
+	boolean acceptNewPlayer(Player player);
+
+	void leaveMatch(Player player);
 
 	/**
 	 * Creates a new match with the given name and the given map for the given {@link Player} and joins the player to the match.
@@ -20,4 +19,14 @@ public interface INewMatchCreator {
 	 */
 	void createNewMatch(OpenNewMatchPacket matchInfo, Player player);
 
+	void sendJoinableMatches(Player player);
+
+	/**
+	 * 
+	 * @param player
+	 * @return Returns a list of running matches where the given player had already participated.
+	 */
+	void sendJoinableRunningMatches(Player player);
+
+	void channelClosed(Player player);
 }

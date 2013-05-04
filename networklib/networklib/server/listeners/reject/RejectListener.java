@@ -1,9 +1,9 @@
-package networklib.server.actions.reject;
+package networklib.server.listeners.reject;
 
 import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
-import networklib.server.actions.packets.RejectPacket;
+import networklib.server.packets.RejectPacket;
 
 /**
  * 

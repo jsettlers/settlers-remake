@@ -1,12 +1,13 @@
-package networklib.server.actions.matches;
+package networklib.server.listeners.matches;
 
 import java.io.IOException;
 
 import networklib.NetworkConstants;
 import networklib.channel.IDeserializingable;
 import networklib.channel.listeners.PacketChannelListener;
-import networklib.server.actions.packets.KeyOnlyPacket;
+import networklib.server.IServerManager;
 import networklib.server.game.Player;
+import networklib.server.packets.KeyOnlyPacket;
 
 /**
  * This {@link PacketChannelListener} handles requests for the matches list and the list of running games of the player.
@@ -16,24 +17,24 @@ import networklib.server.game.Player;
  */
 public class RequestMatchesListener extends PacketChannelListener<KeyOnlyPacket> {
 
-	private final IMatchesSupplier matchesSupplier;
+	private final IServerManager serverManager;
 	private final Player player;
 
 	@SuppressWarnings("unchecked")
-	public RequestMatchesListener(IMatchesSupplier matchesSupplier, Player player) {
+	public RequestMatchesListener(IServerManager serverManager, Player player) {
 		super(new int[] { NetworkConstants.Keys.REQUEST_MATCHES, NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES },
 				new IDeserializingable[] { KeyOnlyPacket.DEFAULT_DESERIALIZER, KeyOnlyPacket.DEFAULT_DESERIALIZER });
 
-		this.matchesSupplier = matchesSupplier;
+		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
 	protected void receivePacket(KeyOnlyPacket deserialized) throws IOException {
 		if (deserialized.getKey() == NetworkConstants.Keys.REQUEST_MATCHES) {
-			matchesSupplier.sendJoinableMatches(player);
+			serverManager.sendJoinableMatches(player);
 		} else if (deserialized.getKey() == NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES) {
-			matchesSupplier.sendJoinableRunningMatches(player);
+			serverManager.sendJoinableRunningMatches(player);
 		}
 	}
 }

@@ -3,7 +3,8 @@ package networklib.server.game;
 import networklib.channel.Channel;
 import networklib.channel.Packet;
 import networklib.client.exceptions.InvalidStateException;
-import networklib.server.actions.packets.PlayerInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.PlayerInfoPacket;
 
 /**
  * 
@@ -34,6 +35,7 @@ public class Player {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 
 		match.playerLeft(this);
+		match = null;
 	}
 
 	public void joinMatch(Match match) throws InvalidStateException {
@@ -41,6 +43,8 @@ public class Player {
 
 		this.match = match;
 		match.join(this);
+
+		channel.sendPacket(new MatchInfoPacket(match));
 	}
 
 	public void sendPacket(Packet packet) {

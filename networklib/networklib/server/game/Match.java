@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import networklib.NetworkConstants;
 import networklib.channel.Packet;
-import networklib.server.actions.packets.MapInfoPacket;
-import networklib.server.actions.packets.PlayerInfoPacket;
+import networklib.server.packets.MapInfoPacket;
+import networklib.server.packets.PlayerInfoPacket;
 
 /**
  * 
@@ -17,6 +17,7 @@ public class Match {
 
 	private final String id = UUID.randomUUID().toString();
 	private final LinkedList<Player> players = new LinkedList<Player>();
+	private final LinkedList<Player> leftPlayers = new LinkedList<Player>();
 	private final byte maxPlayers;
 	private final MapInfoPacket map;
 	private final String name;
@@ -74,6 +75,18 @@ public class Match {
 		return getPlayer(player.getId()) != null;
 	}
 
+	public boolean hasLeftPlayer(String playerId) {
+		synchronized (leftPlayers) {
+			for (Player curr : players) {
+				if (curr.getId().equals(playerId)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
 	public Player getPlayer(String playerId) {
 		synchronized (players) {
 			for (Player curr : players) {
@@ -113,7 +126,14 @@ public class Match {
 		synchronized (players) {
 			players.remove(player);
 
+			if (isRunning()) {
+				synchronized (leftPlayers) {
+					leftPlayers.add(player);
+				}
+			}
+
 			sendAsyncMessage(new PlayerInfoPacket(NetworkConstants.Keys.PLAYER_LEFT, player.getPlayerInfo())); // inform the others
 		}
 	}
+
 }

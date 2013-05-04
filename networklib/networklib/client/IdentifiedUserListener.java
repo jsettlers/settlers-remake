@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import networklib.NetworkConstants;
 import networklib.channel.listeners.PacketChannelListener;
-import networklib.server.actions.packets.KeyOnlyPacket;
+import networklib.server.packets.KeyOnlyPacket;
 
 /**
  * 
