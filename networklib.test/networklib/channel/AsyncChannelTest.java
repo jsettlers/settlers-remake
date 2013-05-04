@@ -3,11 +3,11 @@ package networklib.channel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.listeners.BufferingPacketListener;
 
@@ -15,7 +15,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test for class {@link AsyncChannel}.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class AsyncChannelTest {
+	private static final int TEST_KEY = NetworkConstants.Keys.TEST_PACKET;
+
 	private AsyncChannel c1;
 	private AsyncChannel c2;
 
@@ -35,14 +43,14 @@ public class AsyncChannelTest {
 
 	@Test
 	public void testAsyncSendTime() throws InterruptedException {
-		BufferingPacketListener<BlockingTestPacket> listener = new BufferingPacketListener<BlockingTestPacket>(1,
+		BufferingPacketListener<BlockingTestPacket> listener = new BufferingPacketListener<BlockingTestPacket>(TEST_KEY,
 				BlockingTestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
-		BlockingTestPacket testPackage = new BlockingTestPacket(1, "bla", -234234);
+		BlockingTestPacket testPackage = new BlockingTestPacket("bla", -234234);
 
 		long start = System.currentTimeMillis();
-		c1.sendPacketAsync(testPackage);
+		c1.sendPacketAsync(TEST_KEY, testPackage);
 		assertTrue(System.currentTimeMillis() - start < 5); // check that the sending is asynchronous
 
 		Thread.sleep(100);
@@ -57,15 +65,14 @@ public class AsyncChannelTest {
 	public void testAsyncReceiveTime() throws InterruptedException {
 		final int RUNS = 10;
 
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(1,
-				TestPacket.DEFAULT_DESERIALIZER);
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(TEST_KEY, TestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
-		TestPacket testPackage = new TestPacket(1, "bla", -234234);
+		TestPacket testPackage = new TestPacket("bla", -234234);
 
 		for (int i = 0; i < RUNS; i++) {
 			long start = System.currentTimeMillis();
-			c1.sendPacketAsync(testPackage);
+			c1.sendPacketAsync(TEST_KEY, testPackage);
 			assertTrue(System.currentTimeMillis() - start < 5); // check that the sending is asynchronous
 		}
 
@@ -87,21 +94,14 @@ public class AsyncChannelTest {
 	 * 
 	 */
 	public static class BlockingTestPacket extends TestPacket {
-		public static final IDeserializingable<BlockingTestPacket> DEFAULT_DESERIALIZER = new IDeserializingable<BlockingTestPacket>() {
-			@Override
-			public BlockingTestPacket deserialize(int key, DataInputStream dis) throws IOException {
-				BlockingTestPacket packet = new BlockingTestPacket(key);
-				packet.deserialize(dis);
-				return packet;
-			}
-		};
+		public static final IDeserializingable<BlockingTestPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<BlockingTestPacket>(
+				BlockingTestPacket.class);
 
-		public BlockingTestPacket(int key, String testString, int testInt) {
-			super(key, testString, testInt);
+		public BlockingTestPacket(String testString, int testInt) {
+			super(testString, testInt);
 		}
 
-		public BlockingTestPacket(int key) {
-			super(key);
+		public BlockingTestPacket() {
 		}
 
 		@Override

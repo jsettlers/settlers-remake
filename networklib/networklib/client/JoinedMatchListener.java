@@ -18,14 +18,14 @@ public class JoinedMatchListener extends PacketChannelListener<MatchInfoPacket> 
 	private final IPacketReceiver<MatchInfoPacket> listener;
 
 	public JoinedMatchListener(NetworkClient client, IPacketReceiver<MatchInfoPacket> listener) {
-		super(NetworkConstants.Keys.MATCH_INFO, new GenericDeserializer<MatchInfoPacket>(MatchInfoPacket.class));
+		super(NetworkConstants.Keys.PLAYER_JOINED, new GenericDeserializer<MatchInfoPacket>(MatchInfoPacket.class));
 
 		this.client = client;
 		this.listener = listener;
 	}
 
 	@Override
-	protected void receivePacket(MatchInfoPacket deserialized) throws IOException {
+	protected void receivePacket(int key, MatchInfoPacket deserialized) throws IOException {
 		client.openedMatch(deserialized);
 		listener.receivePacket(deserialized);
 	}

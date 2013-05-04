@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import networklib.channel.IDeserializingable;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * This implementation of a {@link PacketChannelListener} collects the received packets to buffer them.
@@ -24,7 +24,7 @@ public class BufferingPacketListener<T extends Packet> extends PacketChannelList
 	}
 
 	@Override
-	protected void receivePacket(T deserialized) throws IOException {
+	protected void receivePacket(int key, T deserialized) throws IOException {
 		synchronized (lock) {
 			packets.add(deserialized);
 		}

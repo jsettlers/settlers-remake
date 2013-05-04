@@ -4,9 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.NetworkConstants;
-import networklib.channel.IDeserializingable;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * 
@@ -14,38 +12,15 @@ import networklib.channel.Packet;
  * 
  */
 public class PlayerInfoPacket extends Packet {
-	public static IDeserializingable<PlayerInfoPacket> WITH_KEY_DESERIALIZER = new IDeserializingable<PlayerInfoPacket>() {
-		@Override
-		public PlayerInfoPacket deserialize(int key, DataInputStream dis) throws IOException {
-			PlayerInfoPacket packet = new PlayerInfoPacket(key);
-			packet.deserialize(dis);
-			return packet;
-		}
-	};
-
 	private String id;
 	private String name;
 
 	public PlayerInfoPacket() {
-		this(NetworkConstants.Keys.PLAYER_INFO);
-	}
-
-	public PlayerInfoPacket(int key) {
-		super(key);
 	}
 
 	public PlayerInfoPacket(String id, String name) {
-		this(NetworkConstants.Keys.PLAYER_INFO, id, name);
-	}
-
-	public PlayerInfoPacket(int key, String id, String name) {
-		this(key);
 		this.id = id;
 		this.name = name;
-	}
-
-	public PlayerInfoPacket(int key, PlayerInfoPacket playerInfo) {
-		this(key, playerInfo.id, playerInfo.name);
 	}
 
 	@Override
@@ -71,7 +46,7 @@ public class PlayerInfoPacket extends Packet {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
@@ -81,7 +56,7 @@ public class PlayerInfoPacket extends Packet {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -98,4 +73,5 @@ public class PlayerInfoPacket extends Packet {
 			return false;
 		return true;
 	}
+
 }

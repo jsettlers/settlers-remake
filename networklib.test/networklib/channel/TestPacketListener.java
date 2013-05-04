@@ -13,7 +13,7 @@ public class TestPacketListener extends PacketChannelListener<TestPacket> {
 	public final LinkedList<TestPacket> packets = new LinkedList<TestPacket>();
 
 	@Override
-	protected void receivePacket(TestPacket deserialized) {
+	protected void receivePacket(int key, TestPacket deserialized) {
 		this.packets.addLast(deserialized);
 	}
 

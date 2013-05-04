@@ -4,8 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * 
@@ -18,11 +17,9 @@ public class OpenNewMatchPacket extends Packet {
 	private MapInfoPacket mapInfo;
 
 	public OpenNewMatchPacket() {
-		super(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH);
 	}
 
 	public OpenNewMatchPacket(String matchName, byte maxPlayers, MapInfoPacket mapInfo) {
-		this();
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
@@ -58,7 +55,7 @@ public class OpenNewMatchPacket extends Packet {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + ((mapInfo == null) ? 0 : mapInfo.hashCode());
 		result = prime * result + ((matchName == null) ? 0 : matchName.hashCode());
 		result = prime * result + maxPlayers;
@@ -69,7 +66,7 @@ public class OpenNewMatchPacket extends Packet {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -88,5 +85,4 @@ public class OpenNewMatchPacket extends Packet {
 			return false;
 		return true;
 	}
-
 }

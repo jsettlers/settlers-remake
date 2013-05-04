@@ -1,6 +1,6 @@
 package networklib.client.receiver;
 
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 import networklib.client.NetworkClient;
 
 /**

@@ -3,9 +3,9 @@ package networklib.channel.feedthrough;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
-import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * This class extends the {@link Packet} class and does not really deserialize the data. It just stores the bytes to write them back on the stream
@@ -18,7 +18,10 @@ public final class FeedthroughBufferPacket extends Packet {
 	private byte[] data;
 
 	public FeedthroughBufferPacket() {
-		super(NetworkConstants.Keys.SYNCHRONOUS_TASK);
+	}
+
+	public FeedthroughBufferPacket(byte[] data) {
+		this.data = data;
 	}
 
 	@Override
@@ -42,4 +45,25 @@ public final class FeedthroughBufferPacket extends Packet {
 		}
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(data);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FeedthroughBufferPacket other = (FeedthroughBufferPacket) obj;
+		if (!Arrays.equals(data, other.data))
+			return false;
+		return true;
+	}
 }

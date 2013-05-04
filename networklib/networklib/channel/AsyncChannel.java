@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import networklib.channel.packet.Packet;
+
 /**
  * This is a {@link Channel} implementation with asynchronous sending. The packets that shall be send, will be buffered and send by an extra thread.
  * 
@@ -13,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class AsyncChannel extends Channel {
 
-	private final LinkedBlockingQueue<Packet> sendBuffer = new LinkedBlockingQueue<Packet>();
+	private final LinkedBlockingQueue<PacketWithKey> sendBuffer = new LinkedBlockingQueue<PacketWithKey>();
 	private final Thread senderThread;
 
 	public AsyncChannel(String host, int port) throws UnknownHostException, IOException {
@@ -31,14 +33,14 @@ public class AsyncChannel extends Channel {
 			@Override
 			public void run() {
 				while (!isClosed()) {
-					Packet packet = null;
+					PacketWithKey packetWithKey = null;
 					try {
-						packet = sendBuffer.take();
+						packetWithKey = sendBuffer.take();
 					} catch (InterruptedException e) {
 					}
 
-					if (packet != null) {
-						sendPacket(packet);
+					if (packetWithKey != null) {
+						sendPacket(packetWithKey.key, packetWithKey.packet);
 					}
 				}
 			}
@@ -67,13 +69,23 @@ public class AsyncChannel extends Channel {
 	 * @param packet
 	 *            Packet to be sent.
 	 */
-	public synchronized void sendPacketAsync(Packet packet) {
-		sendBuffer.offer(packet);
+	public synchronized void sendPacketAsync(int key, Packet packet) {
+		sendBuffer.offer(new PacketWithKey(key, packet));
 	}
 
 	@Override
 	public void close() {
 		super.close();
 		senderThread.interrupt();
+	}
+
+	private class PacketWithKey {
+		final int key;
+		final Packet packet;
+
+		PacketWithKey(int key, Packet packet) {
+			this.key = key;
+			this.packet = packet;
+		}
 	}
 }

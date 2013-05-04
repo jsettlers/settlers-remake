@@ -17,7 +17,7 @@ public class RejectListener extends PacketChannelListener<RejectPacket> {
 	}
 
 	@Override
-	protected void receivePacket(RejectPacket rejectPacket) {
+	protected void receivePacket(int key, RejectPacket rejectPacket) {
 		System.out.println("errorMessageId: " + rejectPacket.getErrorMessageId() + "  rejectedKey: " + rejectPacket.getRejectedKey());
 	}
 

@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import networklib.channel.Channel;
 import networklib.channel.IChannelListener;
 import networklib.channel.IDeserializingable;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * This abstract class deserializes the packet received from a {@link Channel} with the {@link IDeserializingable}s supplied for each key and defines
@@ -46,9 +46,9 @@ public abstract class PacketChannelListener<T extends Packet> implements IChanne
 		IDeserializingable<T> deserializer = deserializers.get(key);
 		assert deserializer != null;
 
-		receivePacket(deserializer.deserialize(key, stream));
+		receivePacket(key, deserializer.deserialize(key, stream));
 	}
 
-	protected abstract void receivePacket(T deserialized) throws IOException;
+	protected abstract void receivePacket(int key, T packet) throws IOException;
 
 }

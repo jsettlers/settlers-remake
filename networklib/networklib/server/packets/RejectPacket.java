@@ -4,8 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * 
@@ -17,11 +16,9 @@ public class RejectPacket extends Packet {
 	private int rejectedKey;
 
 	public RejectPacket() {
-		super(NetworkConstants.Keys.REJECT_PACKET);
 	}
 
 	public RejectPacket(int errorMessageId, int rejectedKey) {
-		this();
 		this.errorMessageId = errorMessageId;
 		this.rejectedKey = rejectedKey;
 	}
@@ -49,7 +46,7 @@ public class RejectPacket extends Packet {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + errorMessageId;
 		result = prime * result + rejectedKey;
 		return result;
@@ -59,7 +56,7 @@ public class RejectPacket extends Packet {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;

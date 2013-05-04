@@ -4,9 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.NetworkConstants;
-import networklib.channel.IDeserializingable;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * This packet is used to determine the ping of a channel.
@@ -15,24 +13,13 @@ import networklib.channel.Packet;
  * 
  */
 public class PingPacket extends Packet {
-	public static IDeserializingable<PingPacket> PING_PACKET_DESERIALIZER = new IDeserializingable<PingPacket>() {
-		@Override
-		public PingPacket deserialize(int key, DataInputStream dis) throws IOException {
-			PingPacket packet = new PingPacket();
-			packet.deserialize(dis);
-			return packet;
-		}
-	};
-
 	private long senderTime;
 	private long receiverTime;
 
 	public PingPacket() {
-		super(NetworkConstants.Keys.PING);
 	}
 
 	public PingPacket(long senderTime, long receiverTime) {
-		super(NetworkConstants.Keys.PING);
 		this.senderTime = senderTime;
 		this.receiverTime = receiverTime;
 	}
@@ -65,4 +52,28 @@ public class PingPacket extends Packet {
 		this.receiverTime = receiverTime;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (receiverTime ^ (receiverTime >>> 32));
+		result = prime * result + (int) (senderTime ^ (senderTime >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PingPacket other = (PingPacket) obj;
+		if (receiverTime != other.receiverTime)
+			return false;
+		if (senderTime != other.senderTime)
+			return false;
+		return true;
+	}
 }

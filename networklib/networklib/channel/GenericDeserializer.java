@@ -3,6 +3,8 @@ package networklib.channel;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import networklib.channel.packet.Packet;
+
 /**
  * This is a generic implementation of {@link IDeserializingable} that simply calls the {@link Packet}.deserialize() method.
  * 

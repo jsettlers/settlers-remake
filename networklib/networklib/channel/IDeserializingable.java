@@ -3,6 +3,8 @@ package networklib.channel;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import networklib.channel.packet.Packet;
+
 /**
  * This interface defines a method to deserialize {@link Packet} data received by a {@link Channel}.
  * 

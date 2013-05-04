@@ -52,11 +52,10 @@ public class TaskCollectingListenerTest {
 		TaskCollectingListener serverListener = new TaskCollectingListener();
 		c2.registerListener(serverListener);
 
-		TestPacket testPacket1 = new TestPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, "TestMessage42", 4711);
-		c1.sendPacket(testPacket1); // send packet 1 to server
-		TestPacket testPacket2 = new TestPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK,
-				"Bla Böb Bün0928ä38(/§/)\"=$(;:I\"H))!", -2342323);
-		c1.sendPacket(testPacket2); // send packet 2 to server
+		TestPacket testPacket1 = new TestPacket("TestMessage42", 4711);
+		c1.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, testPacket1); // send packet 1 to server
+		TestPacket testPacket2 = new TestPacket("Bla Böb Bün0928ä38(/§/)\"=$(;:I\"H))!", -2342323);
+		c1.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, testPacket2); // send packet 2 to server
 
 		Thread.sleep(10);
 
@@ -67,7 +66,7 @@ public class TaskCollectingListenerTest {
 		assertEquals(0, serverListener.getAndResetTasks().size());
 
 		for (FeedthroughBufferPacket curr : taskPackets) { // send packets back to client
-			c2.sendPacket(curr);
+			c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, curr);
 		}
 
 		Thread.sleep(10);

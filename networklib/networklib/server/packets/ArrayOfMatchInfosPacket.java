@@ -5,8 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * 
@@ -18,11 +17,9 @@ public class ArrayOfMatchInfosPacket extends Packet {
 	private MatchInfoPacket[] matches;
 
 	public ArrayOfMatchInfosPacket() {
-		super(NetworkConstants.Keys.ARRAY_OF_MATCHES);
 	}
 
 	public ArrayOfMatchInfosPacket(MatchInfoPacket[] matches) {
-		this();
 		this.matches = matches;
 	}
 
@@ -45,28 +42,6 @@ public class ArrayOfMatchInfosPacket extends Packet {
 		}
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Arrays.hashCode(matches);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ArrayOfMatchInfosPacket other = (ArrayOfMatchInfosPacket) obj;
-		if (!Arrays.equals(matches, other.matches))
-			return false;
-		return true;
-	}
-
 	public MatchInfoPacket[] getMatches() {
 		return matches;
 	}
@@ -75,4 +50,25 @@ public class ArrayOfMatchInfosPacket extends Packet {
 		this.matches = matches;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(matches);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ArrayOfMatchInfosPacket other = (ArrayOfMatchInfosPacket) obj;
+		if (!Arrays.equals(matches, other.matches))
+			return false;
+		return true;
+	}
 }

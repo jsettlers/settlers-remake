@@ -23,6 +23,7 @@ import org.junit.Test;
  * 
  */
 public class ChannelTest {
+	private static final int TEST_KEY = NetworkConstants.Keys.TEST_PACKET;
 
 	private Channel c1;
 	private Channel c2;
@@ -43,15 +44,15 @@ public class ChannelTest {
 
 	@Test
 	public void testConnection() throws Exception {
-		TestPacketListener listener1 = new TestPacketListener(1);
-		TestPacketListener listener2 = new TestPacketListener(1);
+		TestPacketListener listener1 = new TestPacketListener(TEST_KEY);
+		TestPacketListener listener2 = new TestPacketListener(TEST_KEY);
 		c1.registerListener(listener1);
 		c2.registerListener(listener2);
-		TestPacket testPackage = new TestPacket(1, "dlkfjs", -23423);
-		c1.sendPacket(testPackage);
-		c2.sendPacket(testPackage);
+		TestPacket testPackage = new TestPacket("dlkfjs", -23423);
+		c1.sendPacket(TEST_KEY, testPackage);
+		c2.sendPacket(TEST_KEY, testPackage);
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 
 		assertEquals(1, listener1.packets.size());
 		assertEquals(testPackage, listener1.packets.get(0));
@@ -62,13 +63,13 @@ public class ChannelTest {
 
 	@Test
 	public void testMultiPackets() throws Exception {
-		TestPacketListener listener = new TestPacketListener(1);
+		TestPacketListener listener = new TestPacketListener(TEST_KEY);
 		c2.registerListener(listener);
 
 		final int NUMBER_OF_PACKETS = 200;
 
 		for (int i = 0; i < NUMBER_OF_PACKETS; i++) {
-			c1.sendPacket(new TestPacket(1, i));
+			c1.sendPacket(TEST_KEY, new TestPacket(i));
 		}
 
 		Thread.sleep(10);
@@ -156,14 +157,14 @@ public class ChannelTest {
 		c1.close();
 		c2.close();
 
-		c1.sendPacket(new TestPacket(2));
-		c2.sendPacket(new TestPacket(2));
+		c1.sendPacket(TEST_KEY, new TestPacket("sdfsdf", 1434));
+		c2.sendPacket(TEST_KEY, new TestPacket("dsfsw", 32423));
 	}
 
 	@Test
 	public void testSendingMessageWithoutListener() throws Exception {
-		c1.sendPacket(new TestPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES));
-		c2.sendPacket(new TestPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES)); // test both channels
+		c1.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, new TestPacket("sdfsfäüö", -2342));
+		c2.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, new TestPacket("dsfs", 4234)); // test both channels
 
 		Thread.sleep(10);
 
@@ -172,11 +173,11 @@ public class ChannelTest {
 
 	@Test
 	public void testRemovingListener() throws Exception {
-		TestPacketListener listener = new TestPacketListener(1);
+		TestPacketListener listener = new TestPacketListener(TEST_KEY);
 		c2.registerListener(listener);
 
-		TestPacket testPackage = new TestPacket(1);
-		c1.sendPacket(testPackage);
+		TestPacket testPackage = new TestPacket("dsfs", 2332);
+		c1.sendPacket(TEST_KEY, testPackage);
 
 		Thread.sleep(10);
 
@@ -185,14 +186,14 @@ public class ChannelTest {
 
 		c2.removeListener(listener.getKeys()[0]);
 
-		c1.sendPacket(testPackage);
+		c1.sendPacket(TEST_KEY, testPackage);
 		Thread.sleep(30);
 		assertEquals(1, listener.packets.size());
 	}
 
 	@Test
 	public void testReadNotAllFromStream() throws Exception {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(2, new IDeserializingable<TestPacket>() {
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(TEST_KEY, new IDeserializingable<TestPacket>() {
 			@Override
 			public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
 				dis.readInt();
@@ -203,8 +204,8 @@ public class ChannelTest {
 
 		c2.registerListener(listener);
 
-		TestPacket testPacket = new TestPacket(2, "dfsdufh", 4);
-		c1.sendPacket(testPacket);
+		TestPacket testPacket = new TestPacket("dfsdufh", 4);
+		c1.sendPacket(TEST_KEY, testPacket);
 
 		Thread.sleep(10);
 		assertEquals(1, listener.popBufferedPackets().size());
@@ -214,7 +215,7 @@ public class ChannelTest {
 
 	@Test
 	public void testReadMoreFromStream() throws Exception {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(2, new IDeserializingable<TestPacket>() {
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(TEST_KEY, new IDeserializingable<TestPacket>() {
 			@Override
 			public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
 				TestPacket packet = new TestPacket(key);
@@ -228,8 +229,10 @@ public class ChannelTest {
 
 		c2.registerListener(listener);
 
-		TestPacket testPacket = new TestPacket(2, "dfsdufh", 4);
-		c1.sendPacket(testPacket);
+		TestPacket testPacket = new TestPacket("dfsdufh", 4);
+		c1.sendPacket(TEST_KEY, testPacket);
+
+		Thread.sleep(100);
 
 		testConnection(); // test if connection is still ok
 	}

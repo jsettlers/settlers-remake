@@ -5,8 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 import networklib.server.game.Match;
 
 /**
@@ -22,11 +21,9 @@ public class MatchInfoPacket extends Packet {
 	private PlayerInfoPacket[] players;
 
 	public MatchInfoPacket() {
-		super(NetworkConstants.Keys.MATCH_INFO);
 	}
 
 	public MatchInfoPacket(String id, String matchName, byte maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players) {
-		this();
 		this.id = id;
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
@@ -118,7 +115,7 @@ public class MatchInfoPacket extends Packet {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((mapInfo == null) ? 0 : mapInfo.hashCode());
 		result = prime * result + ((matchName == null) ? 0 : matchName.hashCode());
@@ -131,7 +128,7 @@ public class MatchInfoPacket extends Packet {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -157,5 +154,4 @@ public class MatchInfoPacket extends Packet {
 			return false;
 		return true;
 	}
-
 }

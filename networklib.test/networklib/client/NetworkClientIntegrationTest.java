@@ -62,8 +62,8 @@ public class NetworkClientIntegrationTest {
 		TestPacketListener listener = new TestPacketListener(NetworkConstants.Keys.MAP_INFO);
 		clientChannel.registerListener(listener);
 
-		TestPacket testPacket = new TestPacket(NetworkConstants.Keys.MAP_INFO, "sdlfjsh", 2324);
-		serverChannel.sendPacket(testPacket);
+		TestPacket testPacket = new TestPacket("sdlfjsh", 2324);
+		serverChannel.sendPacket(NetworkConstants.Keys.MAP_INFO, testPacket);
 
 		Thread.sleep(10);
 
@@ -156,7 +156,7 @@ public class NetworkClientIntegrationTest {
 		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName");
 		client.requestOpenNewMatch(matchListener, matchName, maxPlayers, mapInfo);
 
-		Thread.sleep(70);
+		Thread.sleep(100);
 
 		List<MatchInfoPacket> matches = matchListener.popBufferedPackets();
 		assertEquals(1, matches.size());

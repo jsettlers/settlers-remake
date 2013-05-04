@@ -30,7 +30,7 @@ public class RequestOpenNewMatchListener extends PacketChannelListener<OpenNewMa
 	}
 
 	@Override
-	protected void receivePacket(OpenNewMatchPacket packet) throws IOException {
+	protected void receivePacket(int key, OpenNewMatchPacket packet) throws IOException {
 		serverManager.createNewMatch(packet, player);
 	}
 

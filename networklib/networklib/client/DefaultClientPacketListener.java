@@ -3,8 +3,8 @@ package networklib.client;
 import java.io.IOException;
 
 import networklib.channel.IDeserializingable;
-import networklib.channel.Packet;
 import networklib.channel.listeners.PacketChannelListener;
+import networklib.channel.packet.Packet;
 import networklib.client.receiver.IPacketReceiver;
 
 /**
@@ -25,7 +25,7 @@ public class DefaultClientPacketListener<T extends Packet> extends PacketChannel
 	}
 
 	@Override
-	protected void receivePacket(T packet) throws IOException {
+	protected void receivePacket(int key, T packet) throws IOException {
 		receiver.receivePacket(packet);
 	}
 

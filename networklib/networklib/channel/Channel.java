@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import networklib.channel.packet.Packet;
 import networklib.channel.ping.PingPacket;
 import networklib.channel.ping.PingPacketListener;
 import networklib.channel.ping.RoundTripTime;
@@ -20,7 +21,7 @@ import networklib.channel.ping.RoundTripTime;
  * @author Andreas Eberle
  * 
  */
-public class Channel implements IPacketSendable, Runnable {
+public class Channel implements Runnable {
 	private final Thread thread;
 
 	private final Socket socket;
@@ -73,21 +74,17 @@ public class Channel implements IPacketSendable, Runnable {
 		thread.start();
 	}
 
-	@Override
-	public synchronized void sendPacket(Packet packet) {
+	public synchronized void sendPacket(int key, Packet packet) {
 		if (socket.isClosed())
 			return;
 
 		try {
-			sendPacketData(packet);
+			sendPacketData(key, packet);
 		} catch (IOException e) {
 		}
 	}
 
-	private void sendPacketData(Packet packet) throws IOException {
-
-		final int key = packet.getKey();
-
+	private void sendPacketData(int key, Packet packet) throws IOException {
 		bufferDataOutStream.flush();
 		byteBufferOutStream.reset();
 
@@ -224,7 +221,6 @@ public class Channel implements IPacketSendable, Runnable {
 		this.channelClosedListener = channelClosedListener;
 	}
 
-	@Override
 	public boolean isClosed() {
 		return socket.isClosed();
 	}

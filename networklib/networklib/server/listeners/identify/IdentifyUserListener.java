@@ -6,9 +6,9 @@ import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
+import networklib.channel.packet.EmptyPacket;
 import networklib.server.IServerManager;
 import networklib.server.game.Player;
-import networklib.server.packets.KeyOnlyPacket;
 import networklib.server.packets.PlayerInfoPacket;
 import networklib.server.packets.RejectPacket;
 
@@ -29,12 +29,12 @@ public class IdentifyUserListener extends PacketChannelListener<PlayerInfoPacket
 	}
 
 	@Override
-	protected void receivePacket(PlayerInfoPacket playerInfo) throws IOException {
+	protected void receivePacket(int key, PlayerInfoPacket playerInfo) throws IOException {
 		if (userAcceptor.acceptNewPlayer(new Player(playerInfo, channel))) {
-			channel.sendPacket(new KeyOnlyPacket(NetworkConstants.Keys.IDENTIFY_USER));
+			channel.sendPacket(NetworkConstants.Keys.IDENTIFY_USER, new EmptyPacket());
 		} else {
-			channel.sendPacket(new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, playerInfo.getKey()));
+			channel.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED,
+					NetworkConstants.Keys.IDENTIFY_USER));
 		}
 	}
-
 }

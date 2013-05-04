@@ -1,7 +1,7 @@
 package networklib.server.game;
 
 import networklib.channel.Channel;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.server.packets.PlayerInfoPacket;
 
@@ -42,13 +42,14 @@ public class Player {
 
 		this.match = match;
 		match.join(this);
-	}
-
-	public void sendPacket(Packet packet) {
-		channel.sendPacket(packet);
+		state = EPlayerState.IN_MATCH;
 	}
 
 	public Channel getChannel() {
 		return channel;
+	}
+
+	public void sendPacket(int key, Packet packet) {
+		channel.sendPacket(key, packet);
 	}
 }

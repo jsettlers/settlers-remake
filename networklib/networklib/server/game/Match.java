@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 import networklib.server.packets.MapInfoPacket;
 import networklib.server.packets.PlayerInfoPacket;
 
@@ -103,20 +103,20 @@ public class Match {
 		Player matchPlayer = getPlayer(player.getId());
 		assert matchPlayer != null : "Given player not found in this match! " + this + "  Player: " + player;
 
-		sendAsyncMessage(new PlayerInfoPacket(NetworkConstants.Keys.PLAYER_DISCONNECTED, matchPlayer.getPlayerInfo()));
+		sendAsyncMessage(NetworkConstants.Keys.PLAYER_DISCONNECTED, matchPlayer.getPlayerInfo());
 	}
 
-	private void sendAsyncMessage(Packet packet) {
+	private void sendAsyncMessage(int key, Packet packet) {
 		synchronized (players) {
 			for (Player curr : players) {
-				curr.sendPacket(packet);
+				curr.sendPacket(key, packet);
 			}
 		}
 	}
 
 	public void join(Player player) {
 		synchronized (players) {
-			sendAsyncMessage(new PlayerInfoPacket(NetworkConstants.Keys.PLAYER_JOINED, player.getPlayerInfo())); // inform the others
+			sendAsyncMessage(NetworkConstants.Keys.PLAYER_JOINED, player.getPlayerInfo()); // inform the others
 
 			players.add(player);
 		}
@@ -132,7 +132,7 @@ public class Match {
 				}
 			}
 
-			sendAsyncMessage(new PlayerInfoPacket(NetworkConstants.Keys.PLAYER_LEFT, player.getPlayerInfo())); // inform the others
+			sendAsyncMessage(NetworkConstants.Keys.PLAYER_LEFT, player.getPlayerInfo()); // inform the others
 		}
 	}
 

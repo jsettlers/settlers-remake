@@ -4,8 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.NetworkConstants;
-import networklib.channel.Packet;
+import networklib.channel.packet.Packet;
 
 /**
  * 
@@ -20,11 +19,9 @@ public class MapInfoPacket extends Packet {
 	private String authorName;
 
 	public MapInfoPacket() {
-		super(NetworkConstants.Keys.MAP_INFO);
 	}
 
 	public MapInfoPacket(String id, String name, String authorId, String authorName) {
-		this();
 		this.id = id;
 		this.name = name;
 		this.authorId = authorId;
@@ -66,7 +63,7 @@ public class MapInfoPacket extends Packet {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + ((authorId == null) ? 0 : authorId.hashCode());
 		result = prime * result + ((authorName == null) ? 0 : authorName.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -78,7 +75,7 @@ public class MapInfoPacket extends Packet {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;

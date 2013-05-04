@@ -2,7 +2,7 @@ package networklib.channel.ping;
 
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
-import networklib.channel.IDeserializingable;
+import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
 
 /**
@@ -14,19 +14,17 @@ import networklib.channel.listeners.PacketChannelListener;
 public class PingPacketListener extends PacketChannelListener<PingPacket> {
 
 	private final Channel channel;
-
 	private RoundTripTime currRtt;
 
-	@SuppressWarnings("unchecked")
 	public PingPacketListener(Channel channel) {
-		super(new int[] { NetworkConstants.Keys.PING }, new IDeserializingable[] { PingPacket.PING_PACKET_DESERIALIZER });
+		super(NetworkConstants.Keys.PING, new GenericDeserializer<PingPacket>(PingPacket.class));
 
 		this.channel = channel;
 		channel.registerListener(this);
 	}
 
 	@Override
-	protected void receivePacket(PingPacket receivedPing) {
+	protected void receivePacket(int key, PingPacket receivedPing) {
 		long now = System.currentTimeMillis();
 		int rtt = (int) (now - receivedPing.getReceiverTime());
 		currRtt = new RoundTripTime(now, rtt);
@@ -35,7 +33,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> {
 	}
 
 	private void sendPing(long receiverTime) {
-		channel.sendPacket(new PingPacket(System.currentTimeMillis(), receiverTime));
+		channel.sendPacket(NetworkConstants.Keys.PING, new PingPacket(System.currentTimeMillis(), receiverTime));
 	}
 
 	/**

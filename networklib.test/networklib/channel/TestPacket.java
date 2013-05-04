@@ -4,34 +4,27 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import networklib.channel.packet.Packet;
+
 /**
  * 
  * @author Andreas Eberle
  * 
  */
 public class TestPacket extends Packet {
-	public static final IDeserializingable<TestPacket> DEFAULT_DESERIALIZER = new IDeserializingable<TestPacket>() {
-		@Override
-		public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
-			TestPacket packet = new TestPacket(key);
-			packet.deserialize(dis);
-			return packet;
-		}
-	};
+	public static final IDeserializingable<TestPacket> DEFAULT_DESERIALIZER = new GenericDeserializer<TestPacket>(TestPacket.class);
 
 	private int testInt;
 	private String testString;
 
-	public TestPacket(int key, int testInt) {
-		this(key, "TestMessage", testInt);
+	public TestPacket() {
 	}
 
-	public TestPacket(int key) {
-		this(key, "TestMessage", -2);
+	public TestPacket(int testInt) {
+		this("TestMessage", testInt);
 	}
 
-	public TestPacket(int key, String testString, int testInt) {
-		super(key);
+	public TestPacket(String testString, int testInt) {
 		this.testString = testString;
 		this.testInt = testInt;
 	}

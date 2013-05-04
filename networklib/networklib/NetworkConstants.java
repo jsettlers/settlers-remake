@@ -62,25 +62,23 @@ public final class NetworkConstants {
 
 		public static final int MAP_INFO = -6;
 
-		public static final int TEST = -7;
+		public static final int TEST_PACKET = -7;
 
 		public static final int MATCH_INFO = -8;
 
 		public static final int PLAYER_INFO = -9;
 
-		public static final int REQUEST_MATCHES = -10;
+		public static final int ARRAY_OF_MATCHES = -10;
 
-		public static final int ARRAY_OF_MATCHES = -11;
+		public static final int PLAYER_JOINED = -11;
+		public static final int PLAYER_LEFT = -12;
+		public static final int PLAYER_DISCONNECTED = -13;
 
-		public static final int REQUEST_PLAYERS_RUNNING_MATCHES = -12;
-
-		public static final int REQUEST_OPEN_NEW_MATCH = -13;
-
-		public static final int PLAYER_JOINED = -15;
-		public static final int PLAYER_LEFT = -17;
-		public static final int PLAYER_DISCONNECTED = -14;
-
-		public static final int REQUEST_LEAVE_MATCH = -16;
+		public static final int REQUEST_MATCHES = -14;
+		public static final int REQUEST_PLAYERS_RUNNING_MATCHES = -15;
+		public static final int REQUEST_OPEN_NEW_MATCH = -16;
+		public static final int REQUEST_LEAVE_MATCH = -17;
+		public static final int REQUEST_JOIN_MATCH = -18;
 
 	}
 }

@@ -4,12 +4,12 @@ import networklib.NetworkConstants;
 import networklib.channel.AsyncChannel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.IChannelClosedListener;
-import networklib.channel.Packet;
+import networklib.channel.packet.EmptyPacket;
+import networklib.channel.packet.Packet;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.server.game.EPlayerState;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
-import networklib.server.packets.KeyOnlyPacket;
 import networklib.server.packets.MapInfoPacket;
 import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.OpenNewMatchPacket;
@@ -43,24 +43,24 @@ public class NetworkClient {
 	public void logIn(String id, String name) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.CHANNEL_CONNECTED);
 
-		playerInfo = new PlayerInfoPacket(NetworkConstants.Keys.IDENTIFY_USER, id, name);
+		playerInfo = new PlayerInfoPacket(id, name);
 
 		channel.registerListener(new IdentifiedUserListener(this));
-		channel.sendPacketAsync(playerInfo);
+		channel.sendPacketAsync(NetworkConstants.Keys.IDENTIFY_USER, playerInfo);
 	}
 
 	public void requestMatches(IPacketReceiver<ArrayOfMatchInfosPacket> listener) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class, listener));
-		channel.sendPacketAsync(new KeyOnlyPacket(NetworkConstants.Keys.REQUEST_MATCHES));
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_MATCHES, new EmptyPacket());
 	}
 
 	public void requestPlayersRunningMatches(IPacketReceiver<ArrayOfMatchInfosPacket> listener) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class, listener));
-		channel.sendPacketAsync(new KeyOnlyPacket(NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES));
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES, new EmptyPacket());
 	}
 
 	public void requestOpenNewMatch(IPacketReceiver<MatchInfoPacket> listener, String matchName, byte maxPlayers, MapInfoPacket mapInfo)
@@ -68,13 +68,13 @@ public class NetworkClient {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
 		channel.registerListener(new JoinedMatchListener(this, listener));
-		channel.sendPacketAsync(new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
 	}
 
 	public void requestLeaveMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 
-		channel.sendPacketAsync(new KeyOnlyPacket(NetworkConstants.Keys.REQUEST_LEAVE_MATCH));
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 		state = EPlayerState.LOGGED_IN;
 	}
 
@@ -82,7 +82,7 @@ public class NetworkClient {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
 		channel.registerListener(new JoinedMatchListener(this, joinedEventListener));
-		channel.sendPacketAsync(match);
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
 	}
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {

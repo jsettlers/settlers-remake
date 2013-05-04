@@ -27,9 +27,9 @@ public class BufferingPacketReceiverTest {
 	@Test
 	public void testAddMultipleAndPop() {
 		TestPacket[] packets = new TestPacket[] {
-				new TestPacket(3, "sgpks", -23424),
-				new TestPacket(434, "dsdssdfdsfsfsfgpdsf", 8767624),
-				new TestPacket(23, "&/)(&(/\"QZ)U", 234)
+				new TestPacket("sgpks", -23424),
+				new TestPacket("dsdssdfdsfsfsfgpdsf", 8767624),
+				new TestPacket("&/)(&(/\"QZ)U", 234)
 		};
 
 		for (TestPacket curr : packets) {

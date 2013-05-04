@@ -11,10 +11,11 @@ import networklib.TestUtils;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.IDeserializingable;
-import networklib.channel.Packet;
+import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.listeners.BufferingPacketListener;
+import networklib.channel.packet.EmptyPacket;
+import networklib.channel.packet.Packet;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
-import networklib.server.packets.KeyOnlyPacket;
 import networklib.server.packets.MapInfoPacket;
 import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.OpenNewMatchPacket;
@@ -60,16 +61,16 @@ public class TestPacketSerialization {
 	@Parameters
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
-				{ new KeyOnlyPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES), KeyOnlyPacket.DEFAULT_DESERIALIZER },
+				{ new EmptyPacket(), EmptyPacket.DEFAULT_DESERIALIZER },
 				{ new PlayerInfoPacket("IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/"), d(PlayerInfoPacket.class) },
-				{ new PlayerInfoPacket(23, "IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/"), PlayerInfoPacket.WITH_KEY_DESERIALIZER },
 				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(§\"(/!=°", "authorId8unsdkjfn8932", "authorName uHh89023u9h"), d(MapInfoPacket.class) },
 				{ createMatchInfoPacket(), d(MatchInfoPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[] { createMatchInfoPacket(), createMatchInfoPacket() }),
 						d(ArrayOfMatchInfosPacket.class) },
 				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName")), d(OpenNewMatchPacket.class) },
-				{ new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) }
+				{ new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
+				{ new FeedthroughBufferPacket("sdfsfsdf".getBytes()), d(FeedthroughBufferPacket.class) }
 		};
 		return Arrays.asList(data);
 	}
@@ -97,13 +98,13 @@ public class TestPacketSerialization {
 	 */
 	public <T extends Packet> TestPacketSerialization(T packet, IDeserializingable<T> deserializer) {
 		this.packet = packet;
-		this.listener = new BufferingPacketListener<T>(packet.getKey(), deserializer);
+		this.listener = new BufferingPacketListener<T>(NetworkConstants.Keys.TEST_PACKET, deserializer);
 	}
 
 	@Test
 	public void testSerializationAndDeserialization() throws InterruptedException {
 		c2.registerListener(listener);
-		c1.sendPacket(packet);
+		c1.sendPacket(NetworkConstants.Keys.TEST_PACKET, packet);
 
 		Thread.sleep(30);
 
@@ -111,5 +112,4 @@ public class TestPacketSerialization {
 		assertEquals(1, bufferedPackets.size());
 		assertEquals(packet, bufferedPackets.get(0));
 	}
-
 }

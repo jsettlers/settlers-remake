@@ -5,9 +5,9 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
-import networklib.channel.Packet;
 import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.listeners.PacketChannelListener;
+import networklib.channel.packet.Packet;
 
 /**
  * This listener collects {@link Packet}s for the {@link NetworkConstants}.Keys.SYNCHRONOUS_TASK key and adds them to a list. The elements can then be
@@ -34,7 +34,7 @@ public class TaskCollectingListener extends PacketChannelListener<FeedthroughBuf
 	}
 
 	@Override
-	protected void receivePacket(FeedthroughBufferPacket deserialized) {
+	protected void receivePacket(int key, FeedthroughBufferPacket deserialized) {
 		currTasksList.add(deserialized);
 	}
 }

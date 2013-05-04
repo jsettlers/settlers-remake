@@ -69,7 +69,7 @@ public class ServerManager implements IServerManager {
 			i++;
 		}
 
-		player.sendPacket(new ArrayOfMatchInfosPacket(matchInfoPackets));
+		player.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, new ArrayOfMatchInfosPacket(matchInfoPackets));
 	}
 
 	@Override
@@ -99,11 +99,11 @@ public class ServerManager implements IServerManager {
 	private void joinMatch(Match match, Player player) {
 		try {
 			player.joinMatch(match);
-			player.getChannel().sendPacket(new MatchInfoPacket(match));
+			player.sendPacket(NetworkConstants.Keys.PLAYER_JOINED, new MatchInfoPacket(match));
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
-			player.getChannel().sendPacket(
-					new RejectPacket(NetworkConstants.Strings.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
+			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Strings.INVALID_STATE_ERROR,
+					NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
 		}
 	}
 
