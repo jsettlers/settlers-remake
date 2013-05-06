@@ -29,7 +29,7 @@ public class ChannelTest {
 	private Channel c2;
 
 	@Before
-	public void setUp() throws InterruptedException {
+	public void setUp() throws IOException {
 		TestUtils util = new TestUtils();
 		Channel[] channels = util.setUpLoopbackChannels();
 		c1 = channels[0];
@@ -207,7 +207,7 @@ public class ChannelTest {
 		TestPacket testPacket = new TestPacket("dfsdufh", 4);
 		c1.sendPacket(TEST_KEY, testPacket);
 
-		Thread.sleep(10);
+		Thread.sleep(50);
 		assertEquals(1, listener.popBufferedPackets().size());
 
 		testConnection(); // test if connection is still ok

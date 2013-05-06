@@ -2,6 +2,7 @@ package networklib.server.actions;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +43,7 @@ public class TestPacketSerialization {
 	private Channel c2;
 
 	@Before
-	public void setUp() throws InterruptedException {
+	public void setUp() throws IOException {
 		TestUtils util = new TestUtils();
 		Channel[] channels = util.setUpLoopbackChannels();
 		c1 = channels[0];

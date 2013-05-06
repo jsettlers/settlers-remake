@@ -2,6 +2,7 @@ package networklib.client;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.List;
 
 import networklib.NetworkConstants;
@@ -40,7 +41,7 @@ public class NetworkClientIntegrationTest {
 	private NetworkClient client;
 
 	@Before
-	public void setUp() throws InterruptedException {
+	public void setUp() throws IOException {
 		TestUtils util = new TestUtils();
 
 		AsyncChannel[] channels = util.setUpAsyncLoopbackChannels();

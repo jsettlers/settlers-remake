@@ -28,7 +28,7 @@ public class AsyncChannelTest {
 	private AsyncChannel c2;
 
 	@Before
-	public void setUp() throws InterruptedException {
+	public void setUp() throws IOException {
 		TestUtils util = new TestUtils();
 		AsyncChannel[] channels = util.setUpAsyncLoopbackChannels();
 		c1 = channels[0];
