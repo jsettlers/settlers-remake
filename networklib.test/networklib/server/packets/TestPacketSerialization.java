@@ -1,4 +1,4 @@
-package networklib.server.actions;
+package networklib.server.packets;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,12 +16,6 @@ import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.listeners.BufferingPacketListener;
 import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
-import networklib.server.packets.ArrayOfMatchInfosPacket;
-import networklib.server.packets.MapInfoPacket;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.OpenNewMatchPacket;
-import networklib.server.packets.PlayerInfoPacket;
-import networklib.server.packets.RejectPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -70,8 +64,10 @@ public class TestPacketSerialization {
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[] { createMatchInfoPacket(), createMatchInfoPacket() }),
 						d(ArrayOfMatchInfosPacket.class) },
 				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName")), d(OpenNewMatchPacket.class) },
-				{ new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
-				{ new FeedthroughBufferPacket("sdfsfsdf".getBytes()), d(FeedthroughBufferPacket.class) }
+				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
+				{ new FeedthroughBufferPacket("sdfsfsdf".getBytes()), d(FeedthroughBufferPacket.class) },
+				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
+				{ new MatchInfoUpdatePacket(34, createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) }
 		};
 		return Arrays.asList(data);
 	}

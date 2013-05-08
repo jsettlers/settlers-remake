@@ -6,6 +6,9 @@ import java.util.UUID;
 import networklib.NetworkConstants;
 import networklib.channel.packet.Packet;
 import networklib.server.packets.MapInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.MatchInfoUpdatePacket;
+import networklib.server.packets.MatchStartPacket;
 import networklib.server.packets.PlayerInfoPacket;
 
 /**
@@ -77,7 +80,7 @@ public class Match {
 
 	public boolean hasLeftPlayer(String playerId) {
 		synchronized (leftPlayers) {
-			for (Player curr : players) {
+			for (Player curr : leftPlayers) {
 				if (curr.getId().equals(playerId)) {
 					return true;
 				}
@@ -99,14 +102,15 @@ public class Match {
 		}
 	}
 
-	public void notifyPlayerLeft(Player player) {
-		Player matchPlayer = getPlayer(player.getId());
-		assert matchPlayer != null : "Given player not found in this match! " + this + "  Player: " + player;
-
-		sendAsyncMessage(NetworkConstants.Keys.PLAYER_DISCONNECTED, matchPlayer.getPlayerInfo());
+	private void sendMatchInfoUpdate(int updateReason) {
+		sendMessage(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason));
 	}
 
-	private void sendAsyncMessage(int key, Packet packet) {
+	private MatchInfoUpdatePacket generateMatchInfoUpdate(int updateReason) {
+		return new MatchInfoUpdatePacket(updateReason, new MatchInfoPacket(this));
+	}
+
+	private void sendMessage(int key, Packet packet) {
 		synchronized (players) {
 			for (Player curr : players) {
 				curr.sendPacket(key, packet);
@@ -116,9 +120,9 @@ public class Match {
 
 	public void join(Player player) {
 		synchronized (players) {
-			sendAsyncMessage(NetworkConstants.Keys.PLAYER_JOINED, player.getPlayerInfo()); // inform the others
-
 			players.add(player);
+
+			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_JOINED);
 		}
 	}
 
@@ -126,14 +130,25 @@ public class Match {
 		synchronized (players) {
 			players.remove(player);
 
+			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT);
+			player.sendPacket(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT));
+
 			if (isRunning()) {
 				synchronized (leftPlayers) {
 					leftPlayers.add(player);
 				}
 			}
-
-			sendAsyncMessage(NetworkConstants.Keys.PLAYER_LEFT, player.getPlayerInfo()); // inform the others
 		}
+	}
+
+	public void startMatch() {
+		state = EMatchState.RUNNING;
+
+		for (Player player : players) {
+			player.matchStarted();
+		}
+
+		sendMessage(NetworkConstants.Keys.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
 	}
 
 }

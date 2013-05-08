@@ -20,6 +20,7 @@ import networklib.server.game.Player;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
 import networklib.server.packets.MapInfoPacket;
 import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.MatchInfoUpdatePacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +49,7 @@ public class NetworkClientIntegrationTest {
 		clientChannel = channels[0];
 		serverChannel = channels[1];
 
-		client = new NetworkClient(clientChannel);
+		client = new NetworkClient(clientChannel, null);
 		manager.identifyNewChannel(serverChannel);
 	}
 
@@ -60,11 +61,11 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testConnection() throws InterruptedException {
-		TestPacketListener listener = new TestPacketListener(NetworkConstants.Keys.MAP_INFO);
+		TestPacketListener listener = new TestPacketListener(NetworkConstants.Keys.REQUEST_MATCHES);
 		clientChannel.registerListener(listener);
 
 		TestPacket testPacket = new TestPacket("sdlfjsh", 2324);
-		serverChannel.sendPacket(NetworkConstants.Keys.MAP_INFO, testPacket);
+		serverChannel.sendPacket(NetworkConstants.Keys.REQUEST_MATCHES, testPacket);
 
 		Thread.sleep(10);
 
@@ -101,7 +102,7 @@ public class NetworkClientIntegrationTest {
 
 	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateUnconnected() throws InvalidStateException {
-		client.requestOpenNewMatch(null, null, (byte) 0, null);
+		client.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
 	}
 
 	@Test
@@ -151,17 +152,17 @@ public class NetworkClientIntegrationTest {
 		assertEquals(1, arrayOfMatches.size()); // check that we got one result for the request
 		assertEquals(0, arrayOfMatches.get(0).getMatches().length); // currently no matches should be in the result, because non should be open
 
-		BufferingPacketReceiver<MatchInfoPacket> matchListener = new BufferingPacketReceiver<MatchInfoPacket>();
+		BufferingPacketReceiver<MatchInfoUpdatePacket> matchUpdateListener = new BufferingPacketReceiver<MatchInfoUpdatePacket>();
 		final String matchName = "TestMatch";
 		final byte maxPlayers = (byte) 5;
 		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName");
-		client.requestOpenNewMatch(matchListener, matchName, maxPlayers, mapInfo);
+		client.requestOpenNewMatch(matchName, maxPlayers, mapInfo, null, matchUpdateListener, null);
 
 		Thread.sleep(100);
 
-		List<MatchInfoPacket> matches = matchListener.popBufferedPackets();
+		List<MatchInfoUpdatePacket> matches = matchUpdateListener.popBufferedPackets();
 		assertEquals(1, matches.size());
-		MatchInfoPacket match = matches.get(0);
+		MatchInfoPacket match = matches.get(0).getMatchInfo();
 		assertEquals(matchName, match.getMatchName());
 		assertEquals(maxPlayers, match.getMaxPlayers());
 		assertEquals(mapInfo, match.getMapInfo());
@@ -181,7 +182,10 @@ public class NetworkClientIntegrationTest {
 
 		testOpenMatch(); // log in and open a new match.
 
+		client.requestStartMatch();
 		client.requestLeaveMatch();
+
+		Thread.sleep(100);
 
 		client.requestPlayersRunningMatches(listener);
 

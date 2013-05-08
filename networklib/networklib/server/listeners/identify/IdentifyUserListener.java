@@ -33,7 +33,7 @@ public class IdentifyUserListener extends PacketChannelListener<PlayerInfoPacket
 		if (userAcceptor.acceptNewPlayer(new Player(playerInfo, channel))) {
 			channel.sendPacket(NetworkConstants.Keys.IDENTIFY_USER, new EmptyPacket());
 		} else {
-			channel.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Strings.UNAUTHORIZED,
+			channel.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED,
 					NetworkConstants.Keys.IDENTIFY_USER));
 		}
 	}

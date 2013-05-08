@@ -30,14 +30,17 @@ public class Player {
 		return playerInfo.getId();
 	}
 
-	public void leaveMatch() throws InvalidStateException {
+	public synchronized void leaveMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 
-		match.playerLeft(this);
-		match = null;
+		if (match != null) {
+			match.playerLeft(this);
+			match = null;
+		}
+		state = EPlayerState.LOGGED_IN;
 	}
 
-	public void joinMatch(Match match) throws InvalidStateException {
+	public synchronized void joinMatch(Match match) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
 		this.match = match;
@@ -51,5 +54,19 @@ public class Player {
 
 	public void sendPacket(int key, Packet packet) {
 		channel.sendPacket(key, packet);
+	}
+
+	public synchronized boolean isInMatch() {
+		return state == EPlayerState.IN_MATCH || state == EPlayerState.IN_RUNNING_MATCH;
+	}
+
+	public void startMatch() throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+
+		match.startMatch();
+	}
+
+	void matchStarted() {
+		state = EPlayerState.IN_RUNNING_MATCH;
 	}
 }

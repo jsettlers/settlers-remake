@@ -24,6 +24,6 @@ public class IdentifiedUserListener extends PacketChannelListener<EmptyPacket> {
 
 	@Override
 	protected void receivePacket(int key, EmptyPacket packet) throws IOException {
-		networkClient.identifiedUser();
+		networkClient.identifiedUserEvent();
 	}
 }

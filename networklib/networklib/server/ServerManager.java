@@ -13,6 +13,7 @@ import networklib.server.listeners.identify.IdentifyUserListener;
 import networklib.server.listeners.matches.RequestLeaveMatchListener;
 import networklib.server.listeners.matches.RequestMatchesListener;
 import networklib.server.listeners.matches.RequestOpenNewMatchListener;
+import networklib.server.listeners.matches.RequestStartMatchListener;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
 import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.OpenNewMatchPacket;
@@ -47,6 +48,7 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new RequestMatchesListener(this, player));
 			channel.registerListener(new RequestOpenNewMatchListener(this, player));
 			channel.registerListener(new RequestLeaveMatchListener(this, player));
+			channel.registerListener(new RequestStartMatchListener(this, player));
 
 			return true;
 		} else {
@@ -82,9 +84,13 @@ public class ServerManager implements IServerManager {
 	@Override
 	public void channelClosed(Player player) {
 		db.removePlayer(player);
-		Match match = db.getRunningMatchOf(player);
-		if (match != null) {
-			match.notifyPlayerLeft(player);
+
+		if (player.isInMatch()) {
+			try {
+				player.leaveMatch();
+			} catch (InvalidStateException e) {
+				assert false : "This may never happen here!";
+			}
 		}
 	}
 
@@ -99,11 +105,10 @@ public class ServerManager implements IServerManager {
 	private void joinMatch(Match match, Player player) {
 		try {
 			player.joinMatch(match);
-			player.sendPacket(NetworkConstants.Keys.PLAYER_JOINED, new MatchInfoPacket(match));
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
-			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Strings.INVALID_STATE_ERROR,
-					NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
+			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
 		}
 	}
 
@@ -111,6 +116,15 @@ public class ServerManager implements IServerManager {
 	public void leaveMatch(Player player) {
 		try {
 			player.leaveMatch();
+		} catch (InvalidStateException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void startMatch(Player player) {
+		try {
+			player.startMatch();
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
 		}

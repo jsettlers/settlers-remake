@@ -10,8 +10,11 @@ import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.server.game.EPlayerState;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.ChatMessagePacket;
 import networklib.server.packets.MapInfoPacket;
 import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.MatchInfoUpdatePacket;
+import networklib.server.packets.MatchStartPacket;
 import networklib.server.packets.OpenNewMatchPacket;
 import networklib.server.packets.PlayerInfoPacket;
 
@@ -28,14 +31,25 @@ public class NetworkClient {
 
 	private EPlayerState state = EPlayerState.CHANNEL_CONNECTED;
 	private PlayerInfoPacket playerInfo;
+
 	private MatchInfoPacket matchInfo;
 
-	public NetworkClient(AsyncChannel channel) {
+	/**
+	 * 
+	 * @param channel
+	 * @param channelClosedListener
+	 *            The listener to be called when the channel is closed<br>
+	 *            or null, if no listener should be registered.
+	 */
+	public NetworkClient(AsyncChannel channel, final IChannelClosedListener channelClosedListener) {
 		this.channel = channel;
 		channel.setChannelClosedListener(new IChannelClosedListener() {
 			@Override
 			public void channelClosed() {
 				close();
+
+				if (channelClosedListener != null)
+					channelClosedListener.channelClosed();
 			}
 		});
 	}
@@ -63,11 +77,24 @@ public class NetworkClient {
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES, new EmptyPacket());
 	}
 
-	public void requestOpenNewMatch(IPacketReceiver<MatchInfoPacket> listener, String matchName, byte maxPlayers, MapInfoPacket mapInfo)
+	/**
+	 * 
+	 * @param matchName
+	 * @param maxPlayers
+	 * @param mapInfo
+	 * @param matchStartedListener
+	 * @param matchInfoUpdatedListener
+	 *            This listener will receive all further updates on the match.
+	 * @param chatMessageReceiver
+	 * @throws InvalidStateException
+	 */
+	public void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, IPacketReceiver<MatchStartPacket> matchStartedListener,
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
-		channel.registerListener(new JoinedMatchListener(this, listener));
+		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
+
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
 	}
 
@@ -75,14 +102,29 @@ public class NetworkClient {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
-		state = EPlayerState.LOGGED_IN;
 	}
 
-	public void reqeustJoinMatch(IPacketReceiver<MatchInfoPacket> joinedEventListener, MatchInfoPacket match) throws InvalidStateException {
+	public void reqeustJoinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
+			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
-		channel.registerListener(new JoinedMatchListener(this, joinedEventListener));
+		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
+
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
+	}
+
+	private void registerMatchStartListeners(IPacketReceiver<MatchStartPacket> matchStartedListener,
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver) {
+		channel.registerListener(new MatchInfoUpdatedListener(this, matchInfoUpdatedListener));
+		channel.registerListener(new MatchStartedListener(this, matchStartedListener));
+		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.CHAT_MESSAGE, ChatMessagePacket.class, chatMessageReceiver));
+	}
+
+	public void requestStartMatch() throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {
@@ -98,13 +140,55 @@ public class NetworkClient {
 		channel.close();
 	}
 
-	void openedMatch(MatchInfoPacket matchInfo) {
-		this.state = EPlayerState.IN_MATCH;
-		this.matchInfo = matchInfo;
+	void identifiedUserEvent() {
+		this.state = EPlayerState.LOGGED_IN;
+
+		channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
 	}
 
-	void identifiedUser() {
-		this.state = EPlayerState.LOGGED_IN;
+	private void playerJoinedEvent(MatchInfoPacket matchInfo) {
+		if (this.matchInfo == null) { // only if we joined.
+			this.state = EPlayerState.IN_MATCH;
+			this.matchInfo = matchInfo;
+		}
+	}
+
+	private void playerLeftEvent(MatchInfoPacket matchInfo) {
+		assert matchInfo != null && matchInfo.getId().equals(matchInfo.getId()) : "received match info for wrong match! " + matchInfo.getId();
+
+		boolean stillInGame = false;
+		for (PlayerInfoPacket currPlayer : matchInfo.getPlayers()) {
+			if (currPlayer.getId().equals(playerInfo.getId())) {
+				stillInGame = true;
+				break;
+			}
+		}
+
+		if (!stillInGame) {
+			state = EPlayerState.LOGGED_IN;
+			matchInfo = null;
+
+			channel.removeListener(NetworkConstants.Keys.MATCH_INFO_UPDATE);
+			channel.removeListener(NetworkConstants.Keys.CHAT_MESSAGE);
+		}
+	}
+
+	void matchStartedEvent() {
+		this.state = EPlayerState.IN_RUNNING_MATCH;
+
+		channel.removeListener(NetworkConstants.Keys.MATCH_STARTED);
+	}
+
+	void matchInfoUpdated(MatchInfoUpdatePacket matchInfoUpdate) {
+		switch (matchInfoUpdate.getUpdateReason()) {
+		case NetworkConstants.Messages.PLAYER_LEFT:
+			playerLeftEvent(matchInfoUpdate.getMatchInfo());
+			break;
+
+		case NetworkConstants.Messages.PLAYER_JOINED:
+			playerJoinedEvent(matchInfoUpdate.getMatchInfo());
+			break;
+		}
 	}
 
 }

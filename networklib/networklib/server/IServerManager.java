@@ -29,4 +29,11 @@ public interface IServerManager {
 	void sendJoinableRunningMatches(Player player);
 
 	void channelClosed(Player player);
+
+	/**
+	 * Starts the match of the given player.
+	 * 
+	 * @param player
+	 */
+	void startMatch(Player player);
 }
