@@ -39,11 +39,11 @@ public final class NetworkConstants {
 
 		public static final int PLAYER_JOINED = 1;
 		public static final int PLAYER_LEFT = 2;
-		public static final int PLAYER_DISCONNECTED = 3;
 
 		public static final int UNAUTHORIZED = -1;
 		public static final int UNKNOWN_ERROR = -2;
 		public static final int INVALID_STATE_ERROR = -3;
+		public static final int NO_LISTENER_FOUND = -4;
 
 	}
 

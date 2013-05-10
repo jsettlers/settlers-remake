@@ -110,7 +110,7 @@ public class Match {
 		return new MatchInfoUpdatePacket(updateReason, new MatchInfoPacket(this));
 	}
 
-	private void sendMessage(int key, Packet packet) {
+	public void sendMessage(int key, Packet packet) {
 		synchronized (players) {
 			for (Player curr : players) {
 				curr.sendPacket(key, packet);

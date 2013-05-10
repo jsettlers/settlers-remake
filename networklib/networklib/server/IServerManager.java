@@ -1,6 +1,7 @@
 package networklib.server;
 
 import networklib.server.game.Player;
+import networklib.server.packets.ChatMessagePacket;
 import networklib.server.packets.OpenNewMatchPacket;
 
 public interface IServerManager {
@@ -36,4 +37,6 @@ public interface IServerManager {
 	 * @param player
 	 */
 	void startMatch(Player player);
+
+	void forwardChatMessage(Player player, ChatMessagePacket packet);
 }

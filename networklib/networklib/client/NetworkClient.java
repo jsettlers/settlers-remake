@@ -6,7 +6,9 @@ import networklib.channel.GenericDeserializer;
 import networklib.channel.IChannelClosedListener;
 import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
+import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.server.game.EPlayerState;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
@@ -114,17 +116,23 @@ public class NetworkClient {
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
 	}
 
+	public void requestStartMatch() throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
+	}
+
+	public void sendChatMessage(String message) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
+
+		channel.sendPacketAsync(NetworkConstants.Keys.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
+	}
+
 	private void registerMatchStartListeners(IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver) {
 		channel.registerListener(new MatchInfoUpdatedListener(this, matchInfoUpdatedListener));
 		channel.registerListener(new MatchStartedListener(this, matchStartedListener));
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.CHAT_MESSAGE, ChatMessagePacket.class, chatMessageReceiver));
-	}
-
-	public void requestStartMatch() throws InvalidStateException {
-		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
-
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {
@@ -183,12 +191,18 @@ public class NetworkClient {
 		switch (matchInfoUpdate.getUpdateReason()) {
 		case NetworkConstants.Messages.PLAYER_LEFT:
 			playerLeftEvent(matchInfoUpdate.getMatchInfo());
-			break;
+			return;
 
 		case NetworkConstants.Messages.PLAYER_JOINED:
 			playerJoinedEvent(matchInfoUpdate.getMatchInfo());
 			break;
 		}
+
+		matchInfo = matchInfoUpdate.getMatchInfo();
+	}
+
+	public void registerRejectReceiver(BufferingPacketReceiver<RejectPacket> rejectListener) {
+		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.class, rejectListener));
 	}
 
 }

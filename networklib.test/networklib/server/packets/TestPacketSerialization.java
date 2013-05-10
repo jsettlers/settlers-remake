@@ -16,6 +16,7 @@ import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.listeners.BufferingPacketListener;
 import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
+import networklib.channel.reject.RejectPacket;
 
 import org.junit.After;
 import org.junit.Before;

@@ -68,4 +68,18 @@ public class ChatMessagePacket extends Packet {
 		return true;
 	}
 
+	/**
+	 * @return the authorId
+	 */
+	public String getAuthorId() {
+		return authorId;
+	}
+
+	/**
+	 * @return the message
+	 */
+	public String getMessage() {
+		return message;
+	}
+
 }

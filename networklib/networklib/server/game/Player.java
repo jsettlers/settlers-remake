@@ -1,8 +1,10 @@
 package networklib.server.game;
 
+import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.packet.Packet;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.server.packets.ChatMessagePacket;
 import networklib.server.packets.PlayerInfoPacket;
 
 /**
@@ -68,5 +70,11 @@ public class Player {
 
 	void matchStarted() {
 		state = EPlayerState.IN_RUNNING_MATCH;
+	}
+
+	public void forwardChatMessage(ChatMessagePacket packet) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
+
+		match.sendMessage(NetworkConstants.Keys.CHAT_MESSAGE, packet);
 	}
 }

@@ -26,7 +26,8 @@ public class DefaultClientPacketListener<T extends Packet> extends PacketChannel
 
 	@Override
 	protected void receivePacket(int key, T packet) throws IOException {
-		receiver.receivePacket(packet);
+		if (receiver != null)
+			receiver.receivePacket(packet);
 	}
 
 }

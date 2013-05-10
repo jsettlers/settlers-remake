@@ -4,10 +4,12 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
+import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.server.db.IDBFacade;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
+import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.ServerChannelClosedListener;
 import networklib.server.listeners.identify.IdentifyUserListener;
 import networklib.server.listeners.matches.RequestLeaveMatchListener;
@@ -15,9 +17,9 @@ import networklib.server.listeners.matches.RequestMatchesListener;
 import networklib.server.listeners.matches.RequestOpenNewMatchListener;
 import networklib.server.listeners.matches.RequestStartMatchListener;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.ChatMessagePacket;
 import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.OpenNewMatchPacket;
-import networklib.server.packets.RejectPacket;
 
 /**
  * 
@@ -49,6 +51,7 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new RequestOpenNewMatchListener(this, player));
 			channel.registerListener(new RequestLeaveMatchListener(this, player));
 			channel.registerListener(new RequestStartMatchListener(this, player));
+			channel.registerListener(new ChatMessageForwardingListener(this, player));
 
 			return true;
 		} else {
@@ -125,6 +128,17 @@ public class ServerManager implements IServerManager {
 	public void startMatch(Player player) {
 		try {
 			player.startMatch();
+		} catch (InvalidStateException e) {
+			e.printStackTrace();
+			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_START_MATCH));
+		}
+	}
+
+	@Override
+	public void forwardChatMessage(Player player, ChatMessagePacket packet) {
+		try {
+			player.forwardChatMessage(packet);
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
 		}

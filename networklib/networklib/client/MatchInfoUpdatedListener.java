@@ -27,7 +27,9 @@ public class MatchInfoUpdatedListener extends PacketChannelListener<MatchInfoUpd
 	@Override
 	protected void receivePacket(int key, MatchInfoUpdatePacket packet) throws IOException {
 		client.matchInfoUpdated(packet);
-		listener.receivePacket(packet);
+
+		if (listener != null)
+			listener.receivePacket(packet);
 	}
 
 }

@@ -9,10 +9,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import networklib.NetworkConstants;
 import networklib.channel.packet.Packet;
 import networklib.channel.ping.PingPacket;
 import networklib.channel.ping.PingPacketListener;
 import networklib.channel.ping.RoundTripTime;
+import networklib.channel.reject.RejectPacket;
 
 /**
  * This class builds up a logical channel between to network partners. The class allows to send data of type {@link Packet} to the partner and to
@@ -135,6 +137,10 @@ public class Channel implements Runnable {
 					}
 				} else {
 					System.err.println("WARNING: NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
+
+					if (key != NetworkConstants.Keys.REJECT_PACKET) { // prevent endless loop
+						sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Messages.NO_LISTENER_FOUND, key));
+					}
 				}
 
 			} catch (Exception e) {

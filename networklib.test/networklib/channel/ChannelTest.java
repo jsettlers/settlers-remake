@@ -7,10 +7,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.listeners.BufferingPacketListener;
+import networklib.channel.packet.EmptyPacket;
+import networklib.channel.reject.RejectPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -237,4 +240,38 @@ public class ChannelTest {
 		testConnection(); // test if connection is still ok
 	}
 
+	@Test
+	public void testRejectSendingForUnlistenedPackets() throws InterruptedException {
+		// construct and connect the listener for reject packets
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.Keys.REJECT_PACKET,
+				new GenericDeserializer<RejectPacket>(RejectPacket.class));
+		c1.registerListener(c1RejectListener);
+
+		// send the packet for an unconnected key from the channel with a reject listener
+		c1.sendPacket(TEST_KEY, new EmptyPacket());
+		assertEquals(0, c1RejectListener.popBufferedPackets().size());
+
+		Thread.sleep(10);
+		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
+		assertEquals(1, rejects.size());
+		assertEquals(NetworkConstants.Messages.NO_LISTENER_FOUND, rejects.get(0).getErrorMessageId());
+		assertEquals(TEST_KEY, rejects.get(0).getRejectedKey());
+	}
+
+	@Test
+	public void testRejectSendingForUnlistenedPacketsLoopProtection() throws InterruptedException {
+		// construct and connect the listener for reject packets
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.Keys.REJECT_PACKET,
+				new GenericDeserializer<RejectPacket>(RejectPacket.class));
+		c1.registerListener(c1RejectListener);
+
+		// send the packet for an unconnected key from the channel without a reject listener
+		// this provokes a reject packet being send back to c2 BUT this MUST NOT cause a reject packet send to c1.
+		c2.sendPacket(TEST_KEY, new EmptyPacket());
+		assertEquals(0, c1RejectListener.popBufferedPackets().size());
+
+		Thread.sleep(50);
+		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
+		assertEquals(0, rejects.size());
+	}
 }

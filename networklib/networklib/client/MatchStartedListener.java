@@ -28,7 +28,8 @@ public class MatchStartedListener extends PacketChannelListener<MatchStartPacket
 	protected void receivePacket(int key, MatchStartPacket packet) throws IOException {
 		networkClient.matchStartedEvent();
 
-		matchStartedListener.receivePacket(packet);
+		if (matchStartedListener != null)
+			matchStartedListener.receivePacket(packet);
 	}
 
 }

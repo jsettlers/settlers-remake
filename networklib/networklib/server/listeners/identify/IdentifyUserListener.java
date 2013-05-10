@@ -7,10 +7,10 @@ import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
 import networklib.channel.packet.EmptyPacket;
+import networklib.channel.reject.RejectPacket;
 import networklib.server.IServerManager;
 import networklib.server.game.Player;
 import networklib.server.packets.PlayerInfoPacket;
-import networklib.server.packets.RejectPacket;
 
 /**
  * 
