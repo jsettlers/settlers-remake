@@ -94,7 +94,8 @@ public class InMemoryDB implements IDBFacade {
 		return matches.size();
 	}
 
-	public Match getMatch(String id) {
+	@Override
+	public Match getMatchById(String id) {
 		return matches.get(id);
 	}
 }

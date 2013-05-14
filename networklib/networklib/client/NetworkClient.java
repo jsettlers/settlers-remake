@@ -1,5 +1,7 @@
 package networklib.client;
 
+import java.util.Timer;
+
 import networklib.NetworkConstants;
 import networklib.channel.AsyncChannel;
 import networklib.channel.GenericDeserializer;
@@ -10,6 +12,12 @@ import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.receiver.IPacketReceiver;
+import networklib.client.task.ITaskReceiver;
+import networklib.client.task.TaskPacket;
+import networklib.client.task.TaskPacketListener;
+import networklib.client.time.ISynchronizableClock;
+import networklib.client.time.TimeSyncSenderTimerTask;
+import networklib.client.time.TimeSynchronizationListener;
 import networklib.server.game.EPlayerState;
 import networklib.server.packets.ArrayOfMatchInfosPacket;
 import networklib.server.packets.ChatMessagePacket;
@@ -30,6 +38,7 @@ import networklib.server.packets.PlayerInfoPacket;
 public class NetworkClient {
 
 	private final AsyncChannel channel;
+	private final Timer timer;
 
 	private EPlayerState state = EPlayerState.CHANNEL_CONNECTED;
 	private PlayerInfoPacket playerInfo;
@@ -54,6 +63,8 @@ public class NetworkClient {
 					channelClosedListener.channelClosed();
 			}
 		});
+
+		timer = new Timer("NetworkClientTimer");
 	}
 
 	public void logIn(String id, String name) throws InvalidStateException {
@@ -88,51 +99,66 @@ public class NetworkClient {
 	 * @param matchInfoUpdatedListener
 	 *            This listener will receive all further updates on the match.
 	 * @param chatMessageReceiver
+	 * @param taskReceiver
 	 * @throws InvalidStateException
 	 */
 	public void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, IPacketReceiver<MatchStartPacket> matchStartedListener,
-			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver,
+			ITaskReceiver taskReceiver)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
-
-		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-
+		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver, taskReceiver);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
 	}
 
 	public void requestLeaveMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
-
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 
 	public void reqeustJoinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
-			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver,
+			ITaskReceiver taskReceiver)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
-
-		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-
+		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver, taskReceiver);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
 	}
 
 	public void requestStartMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
-
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
 	public void sendChatMessage(String message) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
-
 		channel.sendPacketAsync(NetworkConstants.Keys.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
 	}
 
+	public void sendTask(TaskPacket task) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
+		channel.sendPacketAsync(NetworkConstants.Keys.SYNCHRONOUS_TASK, task);
+	}
+
+	public void registerRejectReceiver(BufferingPacketReceiver<RejectPacket> rejectListener) {
+		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.class, rejectListener));
+	}
+
+	public void startTimeSynchronization(ISynchronizableClock clock) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
+
+		channel.registerListener(new TimeSynchronizationListener(channel, clock));
+		TimeSyncSenderTimerTask timeSyncSender = new TimeSyncSenderTimerTask(channel, clock);
+		timer.schedule(timeSyncSender, 0, NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL);
+	}
+
 	private void registerMatchStartListeners(IPacketReceiver<MatchStartPacket> matchStartedListener,
-			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver) {
+			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver,
+			ITaskReceiver taskReceiver) {
 		channel.registerListener(new MatchInfoUpdatedListener(this, matchInfoUpdatedListener));
 		channel.registerListener(new MatchStartedListener(this, matchStartedListener));
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.CHAT_MESSAGE, ChatMessagePacket.class, chatMessageReceiver));
+		channel.registerListener(new TaskPacketListener(taskReceiver));
 	}
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {
@@ -145,12 +171,12 @@ public class NetworkClient {
 
 	public void close() {
 		state = EPlayerState.DISCONNECTED;
+		timer.cancel();
 		channel.close();
 	}
 
 	void identifiedUserEvent() {
 		this.state = EPlayerState.LOGGED_IN;
-
 		channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
 	}
 
@@ -183,7 +209,6 @@ public class NetworkClient {
 
 	void matchStartedEvent() {
 		this.state = EPlayerState.IN_RUNNING_MATCH;
-
 		channel.removeListener(NetworkConstants.Keys.MATCH_STARTED);
 	}
 
@@ -199,10 +224,6 @@ public class NetworkClient {
 		}
 
 		matchInfo = matchInfoUpdate.getMatchInfo();
-	}
-
-	public void registerRejectReceiver(BufferingPacketReceiver<RejectPacket> rejectListener) {
-		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.class, rejectListener));
 	}
 
 }

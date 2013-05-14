@@ -1,4 +1,4 @@
-package networklib.server.packets;
+package networklib.packets;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,6 +17,16 @@ import networklib.channel.listeners.BufferingPacketListener;
 import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
 import networklib.channel.reject.RejectPacket;
+import networklib.client.task.TaskPacket;
+import networklib.client.task.TestTaskPacket;
+import networklib.server.packets.ArrayOfMatchInfosPacket;
+import networklib.server.packets.MapInfoPacket;
+import networklib.server.packets.MatchInfoPacket;
+import networklib.server.packets.MatchInfoUpdatePacket;
+import networklib.server.packets.MatchStartPacket;
+import networklib.server.packets.OpenNewMatchPacket;
+import networklib.server.packets.PlayerInfoPacket;
+import networklib.server.packets.TimeSyncPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,15 +42,14 @@ import org.junit.runners.Parameterized.Parameters;
  * 
  */
 @RunWith(value = Parameterized.class)
-public class TestPacketSerialization {
+public class PacketSerializationTest {
 
 	private Channel c1;
 	private Channel c2;
 
 	@Before
 	public void setUp() throws IOException {
-		TestUtils util = new TestUtils();
-		Channel[] channels = util.setUpLoopbackChannels();
+		Channel[] channels = TestUtils.setUpLoopbackChannels();
 		c1 = channels[0];
 		c2 = channels[1];
 	}
@@ -68,7 +77,9 @@ public class TestPacketSerialization {
 				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new FeedthroughBufferPacket("sdfsfsdf".getBytes()), d(FeedthroughBufferPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
-				{ new MatchInfoUpdatePacket(34, createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) }
+				{ new MatchInfoUpdatePacket(34, createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
+				{ new TestTaskPacket("tesdfköäl9/&%/%&\"\\u8u23jo", 23424, (byte) -2), TaskPacket.DEFAULT_DESERIALIZER },
+				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) }
 		};
 		return Arrays.asList(data);
 	}
@@ -94,7 +105,7 @@ public class TestPacketSerialization {
 	 * @param deserializer
 	 *            The {@link IDeserializingable} used to deserialize the given packet.
 	 */
-	public <T extends Packet> TestPacketSerialization(T packet, IDeserializingable<T> deserializer) {
+	public <T extends Packet> PacketSerializationTest(T packet, IDeserializingable<T> deserializer) {
 		this.packet = packet;
 		this.listener = new BufferingPacketListener<T>(NetworkConstants.Keys.TEST_PACKET, deserializer);
 	}

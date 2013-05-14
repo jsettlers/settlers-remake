@@ -40,16 +40,8 @@ public class PingPacket extends Packet {
 		return senderTime;
 	}
 
-	public void setSenderTime(long senderTime) {
-		this.senderTime = senderTime;
-	}
-
 	public long getReceiverTime() {
 		return receiverTime;
-	}
-
-	public void setReceiverTime(long receiverTime) {
-		this.receiverTime = receiverTime;
 	}
 
 	@Override

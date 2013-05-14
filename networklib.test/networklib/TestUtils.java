@@ -10,9 +10,11 @@ import java.net.Socket;
 import networklib.channel.AsyncChannel;
 import networklib.channel.Channel;
 
-public class TestUtils {
+public final class TestUtils {
+	private TestUtils() {
+	}
 
-	public Channel[] setUpLoopbackChannels() throws IOException {
+	public static Channel[] setUpLoopbackChannels() throws IOException {
 		final Channel[] channels = new Channel[2];
 
 		Socket[] sockets = setUpLoppbackSockets();
@@ -26,7 +28,7 @@ public class TestUtils {
 		return channels;
 	}
 
-	public AsyncChannel[] setUpAsyncLoopbackChannels() throws IOException {
+	public static AsyncChannel[] setUpAsyncLoopbackChannels() throws IOException {
 		final AsyncChannel[] channels = new AsyncChannel[2];
 
 		Socket[] sockets = setUpLoppbackSockets();

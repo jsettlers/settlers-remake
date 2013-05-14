@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import networklib.NetworkConstants;
 import networklib.channel.packet.Packet;
+import networklib.channel.ping.IRoundTripTimeSupplier;
 import networklib.channel.ping.PingPacket;
 import networklib.channel.ping.PingPacketListener;
 import networklib.channel.ping.RoundTripTime;
@@ -23,7 +24,7 @@ import networklib.channel.reject.RejectPacket;
  * @author Andreas Eberle
  * 
  */
-public class Channel implements Runnable {
+public class Channel implements Runnable, IRoundTripTimeSupplier {
 	private final Thread thread;
 
 	private final Socket socket;
@@ -132,8 +133,12 @@ public class Channel implements Runnable {
 				if (listener != null) {
 					try {
 						listener.receive(key, length, bufferIn);
+						if (bufferIn.available() > 0) {
+							System.err.println("WARNING: Deserialization did not read all bytes of input: " + key + " " + length + " "
+									+ bufferIn.available());
+						}
 					} catch (Exception e) { // ignore exceptions thrown in receive
-						System.err.println(e.getMessage());
+						e.printStackTrace();
 					}
 				} else {
 					System.err.println("WARNING: NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
@@ -202,6 +207,7 @@ public class Channel implements Runnable {
 	 * 
 	 * @return Returns the current round trip time of this {@link Channel}.
 	 */
+	@Override
 	public RoundTripTime getRoundTripTime() {
 		return pingListener.getRoundTripTime();
 	}

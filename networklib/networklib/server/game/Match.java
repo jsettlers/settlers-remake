@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import networklib.NetworkConstants;
 import networklib.channel.packet.Packet;
+import networklib.server.lockstep.TaskCollectingListener;
 import networklib.server.packets.MapInfoPacket;
 import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.MatchInfoUpdatePacket;
@@ -26,6 +27,7 @@ public class Match {
 	private final String name;
 
 	private EMatchState state = EMatchState.OPENED;
+	private TaskCollectingListener taskCollectingListener;
 
 	public Match(String name, byte maxPlayers, MapInfoPacket map) {
 		this.maxPlayers = maxPlayers;
@@ -111,9 +113,15 @@ public class Match {
 	}
 
 	public void sendMessage(int key, Packet packet) {
+		sendMessage(null, key, packet);
+	}
+
+	public void sendMessage(Player player, int key, Packet packet) {
 		synchronized (players) {
 			for (Player curr : players) {
-				curr.sendPacket(key, packet);
+				if (player == null || !curr.getId().equals(player.getId())) {
+					curr.sendPacket(key, packet);
+				}
 			}
 		}
 	}
@@ -123,6 +131,10 @@ public class Match {
 			players.add(player);
 
 			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_JOINED);
+
+			if (state == EMatchState.RUNNING) {
+				startMatchForPlayer(player);
+			}
 		}
 	}
 
@@ -141,14 +153,25 @@ public class Match {
 		}
 	}
 
-	public void startMatch() {
-		state = EMatchState.RUNNING;
-
-		for (Player player : players) {
-			player.matchStarted();
+	public synchronized void startMatch() {
+		if (state == EMatchState.RUNNING || state == EMatchState.FINISHED) {
+			return; // match already started
 		}
 
-		sendMessage(NetworkConstants.Keys.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
+		state = EMatchState.RUNNING;
+
+		this.taskCollectingListener = new TaskCollectingListener();
+
+		synchronized (players) {
+			for (Player player : players) {
+				startMatchForPlayer(player);
+			}
+		}
+	}
+
+	private void startMatchForPlayer(Player player) {
+		player.matchStarted(taskCollectingListener);
+		player.sendPacket(NetworkConstants.Keys.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
 	}
 
 }

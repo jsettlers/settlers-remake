@@ -39,4 +39,6 @@ public interface IDBFacade {
 	List<Match> getJoinableMatches();
 
 	List<Match> getJoinableRunningMatches(Player player);
+
+	Match getMatchById(String id);
 }

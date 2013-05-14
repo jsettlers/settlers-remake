@@ -29,8 +29,7 @@ public class TaskCollectingListenerTest {
 
 	@Before
 	public void setUp() throws IOException {
-		TestUtils util = new TestUtils();
-		Channel[] channels = util.setUpLoopbackChannels();
+		Channel[] channels = TestUtils.setUpLoopbackChannels();
 		c1 = channels[0];
 		c2 = channels[1];
 	}

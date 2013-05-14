@@ -2,7 +2,9 @@ package networklib.server;
 
 import networklib.server.game.Player;
 import networklib.server.packets.ChatMessagePacket;
+import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.OpenNewMatchPacket;
+import networklib.server.packets.TimeSyncPacket;
 
 public interface IServerManager {
 
@@ -39,4 +41,15 @@ public interface IServerManager {
 	void startMatch(Player player);
 
 	void forwardChatMessage(Player player, ChatMessagePacket packet);
+
+	/**
+	 * Sends the given {@link TimeSyncPacket} to the other players in the {@link Player}s match.
+	 * 
+	 * @param player
+	 *            The player that sent the {@link TimeSyncPacket}.
+	 * @param packet
+	 */
+	void distributeTimeSync(Player player, TimeSyncPacket packet);
+
+	void joinMatch(MatchInfoPacket packet, Player player);
 }

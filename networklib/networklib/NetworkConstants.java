@@ -27,6 +27,15 @@ public final class NetworkConstants {
 		public static final int BROADCAST_BUFFER_LENGTH = BROADCAST_MESSAGE.length();
 	}
 
+	public final static class Client {
+		private Client() {
+		}
+
+		public static final long TIME_SYNC_SEND_INTERVALL = 100;
+		public static final int TIME_SYNC_TOLERATED_DIFFERENCE = 50;
+		public static final float TIME_SYNC_APPROACH_FACTOR = 0.95f;
+	}
+
 	/**
 	 * This class contains constants used to represent messages used in networklib. These constants can be used for internationalization.
 	 * 
@@ -81,6 +90,8 @@ public final class NetworkConstants {
 		public static final int MATCH_INFO_UPDATE = -21;
 
 		public static final int CHAT_MESSAGE = -22;
+
+		public static final int TIME_SYNC = -23;
 
 	}
 }

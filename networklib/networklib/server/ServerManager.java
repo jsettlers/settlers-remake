@@ -11,7 +11,9 @@ import networklib.server.game.Match;
 import networklib.server.game.Player;
 import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.ServerChannelClosedListener;
+import networklib.server.listeners.TimeSyncForwardingListener;
 import networklib.server.listeners.identify.IdentifyUserListener;
+import networklib.server.listeners.matches.RequestJoinMatchListener;
 import networklib.server.listeners.matches.RequestLeaveMatchListener;
 import networklib.server.listeners.matches.RequestMatchesListener;
 import networklib.server.listeners.matches.RequestOpenNewMatchListener;
@@ -20,6 +22,7 @@ import networklib.server.packets.ArrayOfMatchInfosPacket;
 import networklib.server.packets.ChatMessagePacket;
 import networklib.server.packets.MatchInfoPacket;
 import networklib.server.packets.OpenNewMatchPacket;
+import networklib.server.packets.TimeSyncPacket;
 
 /**
  * 
@@ -51,7 +54,9 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new RequestOpenNewMatchListener(this, player));
 			channel.registerListener(new RequestLeaveMatchListener(this, player));
 			channel.registerListener(new RequestStartMatchListener(this, player));
+			channel.registerListener(new RequestJoinMatchListener(this, player));
 			channel.registerListener(new ChatMessageForwardingListener(this, player));
+			channel.registerListener(new TimeSyncForwardingListener(this, player));
 
 			return true;
 		} else {
@@ -144,4 +149,23 @@ public class ServerManager implements IServerManager {
 		}
 	}
 
+	@Override
+	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
+		try {
+			player.distributeTimeSync(packet);
+		} catch (InvalidStateException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void joinMatch(MatchInfoPacket packet, Player player) {
+		Match match = db.getMatchById(packet.getId());
+		try {
+			player.joinMatch(match);
+		} catch (InvalidStateException e) {
+			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_JOIN_MATCH));
+		}
+	}
 }

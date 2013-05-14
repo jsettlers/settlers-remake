@@ -4,8 +4,10 @@ import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.packet.Packet;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.server.lockstep.TaskCollectingListener;
 import networklib.server.packets.ChatMessagePacket;
 import networklib.server.packets.PlayerInfoPacket;
+import networklib.server.packets.TimeSyncPacket;
 
 /**
  * 
@@ -68,13 +70,21 @@ public class Player {
 		match.startMatch();
 	}
 
-	void matchStarted() {
+	void matchStarted(TaskCollectingListener taskListener) {
 		state = EPlayerState.IN_RUNNING_MATCH;
+
+		channel.registerListener(taskListener);
 	}
 
 	public void forwardChatMessage(ChatMessagePacket packet) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 
 		match.sendMessage(NetworkConstants.Keys.CHAT_MESSAGE, packet);
+	}
+
+	public void distributeTimeSync(TimeSyncPacket packet) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
+
+		match.sendMessage(this, NetworkConstants.Keys.TIME_SYNC, packet);
 	}
 }

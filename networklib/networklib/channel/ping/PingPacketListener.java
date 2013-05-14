@@ -11,7 +11,7 @@ import networklib.channel.listeners.PacketChannelListener;
  * @author Andreas Eberle
  * 
  */
-public class PingPacketListener extends PacketChannelListener<PingPacket> {
+public class PingPacketListener extends PacketChannelListener<PingPacket> implements IRoundTripTimeSupplier {
 
 	private final Channel channel;
 	private RoundTripTime currRtt;
