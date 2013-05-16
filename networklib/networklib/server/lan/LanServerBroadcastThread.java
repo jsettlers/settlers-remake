@@ -19,33 +19,28 @@ import networklib.NetworkConstants;
 public final class LanServerBroadcastThread extends Thread {
 
 	private boolean canceled = false;
+	private DatagramSocket socket;
 
 	public LanServerBroadcastThread() {
 		super("LanServerBroadcastThread");
 		super.setDaemon(true);
 	}
 
-	public void cancel() {
-		canceled = true;
-	}
-
 	@Override
 	public void run() {
-		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket();
 
 			while (!canceled) {
 				try {
+					Thread.sleep(500);
+
 					byte[] data = NetworkConstants.Server.BROADCAST_MESSAGE.getBytes();
 
 					broadcast(NetworkConstants.Server.BROADCAST_PORT, socket, data);
-
-					Thread.sleep(500);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
 			}
 		} catch (SocketException e) {
@@ -71,4 +66,9 @@ public final class LanServerBroadcastThread extends Thread {
 		}
 	}
 
+	public void shutdown() {
+		canceled = true;
+		socket.close();
+		this.interrupt();
+	}
 }

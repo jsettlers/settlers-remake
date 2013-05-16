@@ -22,6 +22,7 @@ public final class LanServerAddressBroadcastListener extends Thread {
 	private InetAddress serverAddress = null;
 
 	private boolean canceled;
+	private DatagramSocket socket;
 
 	public LanServerAddressBroadcastListener(ILanServerAddressListener listener) {
 		super("LanServerAddressListener");
@@ -35,7 +36,6 @@ public final class LanServerAddressBroadcastListener extends Thread {
 
 	@Override
 	public void run() {
-		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket(NetworkConstants.Server.BROADCAST_PORT);
 
@@ -46,7 +46,7 @@ public final class LanServerAddressBroadcastListener extends Thread {
 
 					socket.receive(packet);
 
-					String receivedMessage = new String(packet.getData(), 0, packet.getLength());
+					String receivedMessage = new String(packet.getData(), packet.getOffset(), packet.getLength());
 
 					System.out.println("sender: " + packet.getAddress() + " port: " + packet.getPort() + " length: " + packet.getData().length
 							+ " data: " + receivedMessage);
@@ -60,6 +60,7 @@ public final class LanServerAddressBroadcastListener extends Thread {
 							listener.foundServerAddress();
 						}
 					}
+				} catch (SocketException e) {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -67,8 +68,7 @@ public final class LanServerAddressBroadcastListener extends Thread {
 		} catch (SocketException e1) {
 			e1.printStackTrace();
 		} finally {
-			if (socket != null)
-				socket.close();
+			socket.close();
 		}
 	}
 
@@ -90,7 +90,8 @@ public final class LanServerAddressBroadcastListener extends Thread {
 		void foundServerAddress();
 	}
 
-	public void cancel() {
+	public void shutdown() {
 		canceled = true;
+		socket.close();
 	}
 }

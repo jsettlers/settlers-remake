@@ -3,6 +3,7 @@ package networklib.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
@@ -20,8 +21,10 @@ public class GameServerThread extends Thread {
 
 	private final ServerSocket serverSocket;
 	private final ServerManager manager;
+	private final LanServerBroadcastThread lanBroadcastThread;
 
 	private long counter = 0;
+	private boolean canceled = false;
 
 	public GameServerThread(boolean lan) throws IOException {
 		super("GameServer");
@@ -31,14 +34,17 @@ public class GameServerThread extends Thread {
 		this.setDaemon(true);
 
 		if (lan) {
-			new LanServerBroadcastThread().start();
+			lanBroadcastThread = new LanServerBroadcastThread();
+			lanBroadcastThread.start();
+		} else {
+			lanBroadcastThread = null;
 		}
 	}
 
 	@Override
 	public void run() {
 		Log.log("Server up and running!\n");
-		while (true) {
+		while (!canceled) {
 			try {
 				Socket clientSocket = serverSocket.accept();
 
@@ -47,6 +53,7 @@ public class GameServerThread extends Thread {
 				manager.identifyNewChannel(clientChannel);
 
 				Log.log("accepted new client (" + ++counter + "): " + clientSocket);
+			} catch (SocketException e) {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -63,23 +70,40 @@ public class GameServerThread extends Thread {
 	 */
 	public static String retrieveLanServerAddress(int seconds) {
 		LanServerAddressBroadcastListener serverAddressReceiver = new LanServerAddressBroadcastListener();
-		serverAddressReceiver.start();
+		try {
+			serverAddressReceiver.start();
 
-		for (int i = 0; i < 2 * seconds && !serverAddressReceiver.hasFoundServer(); i++) { // wait at max 5 sek
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			for (int i = 0; i < 2 * seconds && !serverAddressReceiver.hasFoundServer(); i++) { // wait at max 5 sek
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
+
+			if (serverAddressReceiver.hasFoundServer()) {
+				System.out.println("found server!");
+				return serverAddressReceiver.getServerAddress().getHostAddress();
+			} else {
+				return null;
+			}
+		} finally {
+			serverAddressReceiver.shutdown();
+		}
+	}
+
+	public void shutdown() {
+		canceled = true;
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
 		}
 
-		serverAddressReceiver.cancel();
+		if (lanBroadcastThread != null)
+			lanBroadcastThread.shutdown();
+	}
 
-		if (serverAddressReceiver.hasFoundServer()) {
-			System.out.println("found server!");
-			return serverAddressReceiver.getServerAddress().getHostAddress();
-		} else {
-			return null;
-		}
+	public boolean isLandBroadcasterAlive() {
+		return lanBroadcastThread != null ? lanBroadcastThread.isAlive() : false;
 	}
 }
