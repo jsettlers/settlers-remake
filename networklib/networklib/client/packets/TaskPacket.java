@@ -1,5 +1,6 @@
-package networklib.client.task;
+package networklib.client.packets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public abstract class TaskPacket extends Packet {
 		@Override
 		public TaskPacket deserialize(int key, DataInputStream dis) throws IOException {
 			try {
+				dis.readInt(); // read the length in bytes from the stream. We don't need it here, only the server needs it.
 				String className = dis.readUTF();
 				@SuppressWarnings("unchecked")
 				Class<? extends TaskPacket> taskClass = (Class<? extends TaskPacket>) Class.forName(className);
@@ -32,8 +34,15 @@ public abstract class TaskPacket extends Packet {
 
 	@Override
 	public final void serialize(DataOutputStream dos) throws IOException {
-		dos.writeUTF(this.getClass().getName());
-		serializeTask(dos);
+		ByteArrayOutputStream bufferOutStream = new ByteArrayOutputStream();
+		DataOutputStream bufferDataOutStream = new DataOutputStream(bufferOutStream);
+
+		bufferDataOutStream.writeUTF(this.getClass().getName());
+		serializeTask(bufferDataOutStream);
+		bufferDataOutStream.flush();
+
+		dos.writeInt(bufferOutStream.size());
+		bufferOutStream.writeTo(dos);
 	}
 
 	protected abstract void serializeTask(DataOutputStream dos) throws IOException;

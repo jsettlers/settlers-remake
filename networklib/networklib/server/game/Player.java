@@ -1,13 +1,15 @@
 package networklib.server.game;
 
+import java.util.Timer;
+
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.packet.Packet;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.common.packets.ChatMessagePacket;
+import networklib.common.packets.PlayerInfoPacket;
+import networklib.common.packets.TimeSyncPacket;
 import networklib.server.lockstep.TaskCollectingListener;
-import networklib.server.packets.ChatMessagePacket;
-import networklib.server.packets.PlayerInfoPacket;
-import networklib.server.packets.TimeSyncPacket;
 
 /**
  * 
@@ -42,6 +44,8 @@ public class Player {
 			match = null;
 		}
 		state = EPlayerState.LOGGED_IN;
+
+		channel.removeListener(NetworkConstants.Keys.SYNCHRONOUS_TASK);
 	}
 
 	public synchronized void joinMatch(Match match) throws InvalidStateException {
@@ -64,15 +68,14 @@ public class Player {
 		return state == EPlayerState.IN_MATCH || state == EPlayerState.IN_RUNNING_MATCH;
 	}
 
-	public void startMatch() throws InvalidStateException {
+	public void startMatch(Timer timer) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 
-		match.startMatch();
+		match.startMatch(timer);
 	}
 
 	void matchStarted(TaskCollectingListener taskListener) {
 		state = EPlayerState.IN_RUNNING_MATCH;
-
 		channel.registerListener(taskListener);
 	}
 
@@ -85,6 +88,6 @@ public class Player {
 	public void distributeTimeSync(TimeSyncPacket packet) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
 
-		match.sendMessage(this, NetworkConstants.Keys.TIME_SYNC, packet);
+		match.distributeTimeSync(this, packet);
 	}
 }

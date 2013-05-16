@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import networklib.client.packets.TaskPacket;
+
 /**
  * 
  * @author Andreas Eberle

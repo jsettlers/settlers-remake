@@ -1,16 +1,19 @@
 package networklib.server.game;
 
 import java.util.LinkedList;
+import java.util.Timer;
 import java.util.UUID;
 
 import networklib.NetworkConstants;
 import networklib.channel.packet.Packet;
+import networklib.common.packets.MapInfoPacket;
+import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.MatchInfoUpdatePacket;
+import networklib.common.packets.MatchStartPacket;
+import networklib.common.packets.PlayerInfoPacket;
+import networklib.common.packets.TimeSyncPacket;
 import networklib.server.lockstep.TaskCollectingListener;
-import networklib.server.packets.MapInfoPacket;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.MatchInfoUpdatePacket;
-import networklib.server.packets.MatchStartPacket;
-import networklib.server.packets.PlayerInfoPacket;
+import networklib.server.lockstep.TaskSendingTimerTask;
 
 /**
  * 
@@ -28,6 +31,7 @@ public class Match {
 
 	private EMatchState state = EMatchState.OPENED;
 	private TaskCollectingListener taskCollectingListener;
+	private TaskSendingTimerTask taskSendingTimerTask;
 
 	public Match(String name, byte maxPlayers, MapInfoPacket map) {
 		this.maxPlayers = maxPlayers;
@@ -153,7 +157,7 @@ public class Match {
 		}
 	}
 
-	public synchronized void startMatch() {
+	public synchronized void startMatch(Timer timer) {
 		if (state == EMatchState.RUNNING || state == EMatchState.FINISHED) {
 			return; // match already started
 		}
@@ -167,11 +171,19 @@ public class Match {
 				startMatchForPlayer(player);
 			}
 		}
+
+		this.taskSendingTimerTask = new TaskSendingTimerTask(taskCollectingListener, this);
+		timer.schedule(taskSendingTimerTask, 0, NetworkConstants.Client.LOCKSTEP_PERIOD);
 	}
 
 	private void startMatchForPlayer(Player player) {
 		player.matchStarted(taskCollectingListener);
 		player.sendPacket(NetworkConstants.Keys.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
+	}
+
+	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
+		sendMessage(player, NetworkConstants.Keys.TIME_SYNC, packet);
+		taskSendingTimerTask.receivedLockstepAcknowledge(packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
 	}
 
 }

@@ -5,9 +5,9 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
-import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.listeners.PacketChannelListener;
 import networklib.channel.packet.Packet;
+import networklib.server.packets.ServersideTaskPacket;
 
 /**
  * This listener collects {@link Packet}s for the {@link NetworkConstants}.Keys.SYNCHRONOUS_TASK key and adds them to a list. The elements can then be
@@ -16,25 +16,25 @@ import networklib.channel.packet.Packet;
  * @author Andreas Eberle
  * 
  */
-public class TaskCollectingListener extends PacketChannelListener<FeedthroughBufferPacket> {
-	private List<FeedthroughBufferPacket> currTasksList = new LinkedList<FeedthroughBufferPacket>();
+public class TaskCollectingListener extends PacketChannelListener<ServersideTaskPacket> {
+	private List<ServersideTaskPacket> currTasksList = new LinkedList<ServersideTaskPacket>();
 
 	public TaskCollectingListener() {
-		super(NetworkConstants.Keys.SYNCHRONOUS_TASK, new GenericDeserializer<FeedthroughBufferPacket>(FeedthroughBufferPacket.class));
+		super(NetworkConstants.Keys.SYNCHRONOUS_TASK, new GenericDeserializer<ServersideTaskPacket>(ServersideTaskPacket.class));
 	}
 
 	/**
 	 * 
 	 * @return
 	 */
-	public List<FeedthroughBufferPacket> getAndResetTasks() {
-		List<FeedthroughBufferPacket> temp = currTasksList;
-		currTasksList = new LinkedList<FeedthroughBufferPacket>();
+	public List<ServersideTaskPacket> getAndResetTasks() {
+		List<ServersideTaskPacket> temp = currTasksList;
+		currTasksList = new LinkedList<ServersideTaskPacket>();
 		return temp;
 	}
 
 	@Override
-	protected void receivePacket(int key, FeedthroughBufferPacket deserialized) {
+	protected void receivePacket(int key, ServersideTaskPacket deserialized) {
 		currTasksList.add(deserialized);
 	}
 }

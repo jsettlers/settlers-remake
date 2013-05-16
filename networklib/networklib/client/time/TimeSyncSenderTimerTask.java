@@ -4,7 +4,7 @@ import java.util.TimerTask;
 
 import networklib.NetworkConstants;
 import networklib.channel.AsyncChannel;
-import networklib.server.packets.TimeSyncPacket;
+import networklib.common.packets.TimeSyncPacket;
 
 /**
  * 

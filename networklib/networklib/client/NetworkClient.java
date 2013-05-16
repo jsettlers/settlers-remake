@@ -10,23 +10,23 @@ import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
 import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.client.packets.TaskPacket;
 import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.receiver.IPacketReceiver;
-import networklib.client.task.ITaskReceiver;
-import networklib.client.task.TaskPacket;
+import networklib.client.task.ITaskScheduler;
 import networklib.client.task.TaskPacketListener;
 import networklib.client.time.ISynchronizableClock;
 import networklib.client.time.TimeSyncSenderTimerTask;
 import networklib.client.time.TimeSynchronizationListener;
+import networklib.common.packets.ArrayOfMatchInfosPacket;
+import networklib.common.packets.ChatMessagePacket;
+import networklib.common.packets.MapInfoPacket;
+import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.MatchInfoUpdatePacket;
+import networklib.common.packets.MatchStartPacket;
+import networklib.common.packets.OpenNewMatchPacket;
+import networklib.common.packets.PlayerInfoPacket;
 import networklib.server.game.EPlayerState;
-import networklib.server.packets.ArrayOfMatchInfosPacket;
-import networklib.server.packets.ChatMessagePacket;
-import networklib.server.packets.MapInfoPacket;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.MatchInfoUpdatePacket;
-import networklib.server.packets.MatchStartPacket;
-import networklib.server.packets.OpenNewMatchPacket;
-import networklib.server.packets.PlayerInfoPacket;
 
 /**
  * The {@link NetworkClient} class offers an interface to the servers methods. All methods of the {@link NetworkClient} class will never block. All
@@ -99,15 +99,15 @@ public class NetworkClient {
 	 * @param matchInfoUpdatedListener
 	 *            This listener will receive all further updates on the match.
 	 * @param chatMessageReceiver
-	 * @param taskReceiver
+	 * @param taskScheduler
 	 * @throws InvalidStateException
 	 */
 	public void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver,
-			ITaskReceiver taskReceiver)
+			ITaskScheduler taskScheduler)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
-		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver, taskReceiver);
+		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver, taskScheduler);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
 	}
 
@@ -116,12 +116,12 @@ public class NetworkClient {
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 
-	public void reqeustJoinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
+	public void requestJoinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver,
-			ITaskReceiver taskReceiver)
+			ITaskScheduler taskScheduler)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
-		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver, taskReceiver);
+		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver, taskScheduler);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
 	}
 
@@ -154,11 +154,11 @@ public class NetworkClient {
 
 	private void registerMatchStartListeners(IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver,
-			ITaskReceiver taskReceiver) {
+			ITaskScheduler taskScheduler) {
 		channel.registerListener(new MatchInfoUpdatedListener(this, matchInfoUpdatedListener));
 		channel.registerListener(new MatchStartedListener(this, matchStartedListener));
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.CHAT_MESSAGE, ChatMessagePacket.class, chatMessageReceiver));
-		channel.registerListener(new TaskPacketListener(taskReceiver));
+		channel.registerListener(new TaskPacketListener(taskScheduler));
 	}
 
 	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {
@@ -224,6 +224,20 @@ public class NetworkClient {
 		}
 
 		matchInfo = matchInfoUpdate.getMatchInfo();
+	}
+
+	/**
+	 * @return the playerInfo
+	 */
+	public PlayerInfoPacket getPlayerInfo() {
+		return playerInfo;
+	}
+
+	/**
+	 * @return the matchInfo
+	 */
+	public MatchInfoPacket getMatchInfo() {
+		return matchInfo;
 	}
 
 }

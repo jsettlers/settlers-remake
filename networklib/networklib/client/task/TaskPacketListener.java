@@ -1,33 +1,29 @@
 package networklib.client.task;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import networklib.NetworkConstants;
+import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
+import networklib.client.packets.SyncTasksPacket;
 
 /**
  * 
  * @author Andreas Eberle
  * 
  */
-public class TaskPacketListener extends PacketChannelListener<TaskPacket> {
+public class TaskPacketListener extends PacketChannelListener<SyncTasksPacket> {
 
-	private final ITaskReceiver taskReceiver;
+	private final ITaskScheduler taskReceiver;
 
-	public TaskPacketListener(ITaskReceiver taskReceiver) {
-		super(NetworkConstants.Keys.SYNCHRONOUS_TASK, TaskPacket.DEFAULT_DESERIALIZER);
+	public TaskPacketListener(ITaskScheduler taskReceiver) {
+		super(NetworkConstants.Keys.SYNCHRONOUS_TASK, new GenericDeserializer<SyncTasksPacket>(SyncTasksPacket.class));
 		this.taskReceiver = taskReceiver;
 	}
 
 	@Override
-	protected void receivePacket(int key, TaskPacket packet) throws IOException {
-		try {
-			Method method = taskReceiver.getClass().getMethod("receiveTask", packet.getClass());
-			method.invoke(taskReceiver, packet);
-		} catch (Exception e) {
-			throw new IOException(e);
-		}
+	protected void receivePacket(int key, SyncTasksPacket packet) throws IOException {
+		taskReceiver.scheduleTasksAndUnlockStep(packet.getLockstepNumber(), packet.getTasks());
 	}
 
 }

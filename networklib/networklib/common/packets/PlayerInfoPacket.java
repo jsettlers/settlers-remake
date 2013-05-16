@@ -1,4 +1,4 @@
-package networklib.server.packets;
+package networklib.common.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

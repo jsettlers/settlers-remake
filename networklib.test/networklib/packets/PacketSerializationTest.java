@@ -12,21 +12,23 @@ import networklib.TestUtils;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.IDeserializingable;
-import networklib.channel.feedthrough.FeedthroughBufferPacket;
 import networklib.channel.listeners.BufferingPacketListener;
 import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
 import networklib.channel.reject.RejectPacket;
-import networklib.client.task.TaskPacket;
+import networklib.client.packets.SyncTasksPacket;
+import networklib.client.packets.TaskPacket;
 import networklib.client.task.TestTaskPacket;
-import networklib.server.packets.ArrayOfMatchInfosPacket;
-import networklib.server.packets.MapInfoPacket;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.MatchInfoUpdatePacket;
-import networklib.server.packets.MatchStartPacket;
-import networklib.server.packets.OpenNewMatchPacket;
-import networklib.server.packets.PlayerInfoPacket;
-import networklib.server.packets.TimeSyncPacket;
+import networklib.common.packets.ArrayOfMatchInfosPacket;
+import networklib.common.packets.MapInfoPacket;
+import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.MatchInfoUpdatePacket;
+import networklib.common.packets.MatchStartPacket;
+import networklib.common.packets.OpenNewMatchPacket;
+import networklib.common.packets.PlayerInfoPacket;
+import networklib.common.packets.TimeSyncPacket;
+import networklib.server.packets.ServersideSyncTasksPacket;
+import networklib.server.packets.ServersideTaskPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,11 +77,17 @@ public class PacketSerializationTest {
 						d(ArrayOfMatchInfosPacket.class) },
 				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName")), d(OpenNewMatchPacket.class) },
 				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
-				{ new FeedthroughBufferPacket("sdfsfsdf".getBytes()), d(FeedthroughBufferPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
 				{ new MatchInfoUpdatePacket(34, createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
+				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) },
+
+				{ new ServersideTaskPacket("sdfsfsdf".getBytes()), d(ServersideTaskPacket.class) },
+				{ new ServersideSyncTasksPacket(23, Arrays.asList(new ServersideTaskPacket("dsfjsfj".getBytes()),
+						new ServersideTaskPacket("ehgdhd".getBytes()))), d(ServersideSyncTasksPacket.class) },
+
 				{ new TestTaskPacket("tesdfköäl9/&%/%&\"\\u8u23jo", 23424, (byte) -2), TaskPacket.DEFAULT_DESERIALIZER },
-				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) }
+				{ new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
+						(TaskPacket) new TestTaskPacket("dsfsää#öüdsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) }
 		};
 		return Arrays.asList(data);
 	}

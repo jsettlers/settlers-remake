@@ -13,6 +13,14 @@ public class TestClock implements ISynchronizableClock {
 	private LinkedList<Integer> adjustmentEvents = new LinkedList<Integer>();
 	private int time;
 
+	public TestClock() {
+		this(0);
+	}
+
+	public TestClock(int time) {
+		this.time = time;
+	}
+
 	public void setTime(int time) {
 		this.time = time;
 	}

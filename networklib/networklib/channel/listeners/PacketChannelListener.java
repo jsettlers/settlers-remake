@@ -46,7 +46,8 @@ public abstract class PacketChannelListener<T extends Packet> implements IChanne
 		IDeserializingable<T> deserializer = deserializers.get(key);
 		assert deserializer != null;
 
-		receivePacket(key, deserializer.deserialize(key, stream));
+		T deserializedPacket = deserializer.deserialize(key, stream);
+		receivePacket(key, deserializedPacket);
 	}
 
 	protected abstract void receivePacket(int key, T packet) throws IOException;

@@ -1,4 +1,4 @@
-package networklib.channel.feedthrough;
+package networklib.server.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,24 +14,25 @@ import networklib.channel.packet.Packet;
  * @author Andreas Eberle
  * 
  */
-public final class FeedthroughBufferPacket extends Packet {
+public final class ServersideTaskPacket extends Packet {
 	private byte[] data;
 
-	public FeedthroughBufferPacket() {
+	public ServersideTaskPacket() {
 	}
 
-	public FeedthroughBufferPacket(byte[] data) {
+	public ServersideTaskPacket(byte[] data) {
 		this.data = data;
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
+		dos.writeInt(data.length);
 		dos.write(data);
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
-		final int length = dis.available();
+		final int length = dis.readInt();
 		this.data = new byte[length];
 
 		int alreadyRead = 0;
@@ -61,7 +62,7 @@ public final class FeedthroughBufferPacket extends Packet {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FeedthroughBufferPacket other = (FeedthroughBufferPacket) obj;
+		ServersideTaskPacket other = (ServersideTaskPacket) obj;
 		if (!Arrays.equals(data, other.data))
 			return false;
 		return true;

@@ -5,11 +5,11 @@ import java.io.IOException;
 import networklib.NetworkConstants;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
+import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.OpenNewMatchPacket;
 import networklib.server.IServerManager;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.OpenNewMatchPacket;
 
 /**
  * This listener is called when a client request to open up a new {@link Match}. After the match has successfully been created, the client will

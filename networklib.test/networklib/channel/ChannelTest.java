@@ -231,6 +231,7 @@ public class ChannelTest {
 
 		c2.registerListener(listener);
 
+		System.out.println("DON'T WORRY, AN EXCEPTION IS EXPECTED AFTER THIS:");
 		TestPacket testPacket = new TestPacket("dfsdufh", 4);
 		c1.sendPacket(TEST_KEY, testPacket);
 

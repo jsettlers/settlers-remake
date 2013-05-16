@@ -1,30 +1,32 @@
 package networklib.server;
 
 import java.util.List;
+import java.util.Timer;
 
 import networklib.NetworkConstants;
 import networklib.channel.Channel;
 import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.common.packets.ArrayOfMatchInfosPacket;
+import networklib.common.packets.ChatMessagePacket;
+import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.OpenNewMatchPacket;
+import networklib.common.packets.TimeSyncPacket;
 import networklib.server.db.IDBFacade;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
 import networklib.server.listeners.ChatMessageForwardingListener;
+import networklib.server.listeners.IdentifyUserListener;
 import networklib.server.listeners.ServerChannelClosedListener;
 import networklib.server.listeners.TimeSyncForwardingListener;
-import networklib.server.listeners.identify.IdentifyUserListener;
 import networklib.server.listeners.matches.RequestJoinMatchListener;
 import networklib.server.listeners.matches.RequestLeaveMatchListener;
 import networklib.server.listeners.matches.RequestMatchesListener;
 import networklib.server.listeners.matches.RequestOpenNewMatchListener;
 import networklib.server.listeners.matches.RequestStartMatchListener;
-import networklib.server.packets.ArrayOfMatchInfosPacket;
-import networklib.server.packets.ChatMessagePacket;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.OpenNewMatchPacket;
-import networklib.server.packets.TimeSyncPacket;
 
 /**
+ * This class is the central access point to the servers externally reachable functions.
  * 
  * @author Andreas Eberle
  * 
@@ -32,6 +34,7 @@ import networklib.server.packets.TimeSyncPacket;
 public class ServerManager implements IServerManager {
 
 	private final IDBFacade db;
+	private final Timer matchTimer = new Timer("MatchTimer", true);
 
 	public ServerManager(IDBFacade db) {
 		this.db = db;
@@ -132,7 +135,7 @@ public class ServerManager implements IServerManager {
 	@Override
 	public void startMatch(Player player) {
 		try {
-			player.startMatch();
+			player.startMatch(matchTimer);
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,

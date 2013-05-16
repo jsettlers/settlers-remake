@@ -7,7 +7,7 @@ import networklib.NetworkConstants.Client;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.PacketChannelListener;
 import networklib.channel.ping.IRoundTripTimeSupplier;
-import networklib.server.packets.TimeSyncPacket;
+import networklib.common.packets.TimeSyncPacket;
 
 /**
  * 

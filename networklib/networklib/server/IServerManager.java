@@ -1,10 +1,10 @@
 package networklib.server;
 
+import networklib.common.packets.ChatMessagePacket;
+import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.OpenNewMatchPacket;
+import networklib.common.packets.TimeSyncPacket;
 import networklib.server.game.Player;
-import networklib.server.packets.ChatMessagePacket;
-import networklib.server.packets.MatchInfoPacket;
-import networklib.server.packets.OpenNewMatchPacket;
-import networklib.server.packets.TimeSyncPacket;
 
 public interface IServerManager {
 

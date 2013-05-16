@@ -3,11 +3,14 @@ package networklib.client.task;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.Channel;
+import networklib.client.packets.SyncTasksPacket;
+import networklib.client.packets.TaskPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,15 +42,15 @@ public class TaskPacketListenerTest {
 
 	@Test
 	public void testSendAndReceive() throws InterruptedException {
-		TestTaskReceiver taskReceiver = new TestTaskReceiver();
+		TestTaskScheduler taskReceiver = new TestTaskScheduler();
 		TaskPacketListener listener = new TaskPacketListener(taskReceiver);
 		c1.registerListener(listener);
 
-		TestTaskPacket testPacket1 = new TestTaskPacket("tesdfköäl9u8u23jo", 23424, (byte) -2);
-		TestTaskPacket testPacket2 = new TestTaskPacket("?=?=O\"KÖ#'*'::Ö;;Ü", -2342342, (byte) -67);
+		TaskPacket testPacket1 = new TestTaskPacket("tesdfköäl9u8u23jo", 23424, (byte) -2);
+		TaskPacket testPacket2 = new TestTaskPacket("?=?=O\"KÖ#'*'::Ö;;Ü", -2342342, (byte) -67);
+		SyncTasksPacket syncTasksPacket = new SyncTasksPacket(23, Arrays.asList(testPacket1, testPacket2));
 
-		c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, testPacket1);
-		c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, testPacket2);
+		c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, syncTasksPacket);
 
 		Thread.sleep(10);
 		List<TaskPacket> packets = taskReceiver.popBufferedPackets();

@@ -34,6 +34,15 @@ public final class NetworkConstants {
 		public static final long TIME_SYNC_SEND_INTERVALL = 100;
 		public static final int TIME_SYNC_TOLERATED_DIFFERENCE = 50;
 		public static final float TIME_SYNC_APPROACH_FACTOR = 0.95f;
+
+		/**
+		 * The number of milliseconds between a lockstep event.
+		 */
+		public static final int LOCKSTEP_PERIOD = 100;
+		/**
+		 * The number of steps the server can run ahead of the clients.
+		 */
+		public static final int LOCKSTEP_DEFAULT_LEAD_STEPS = 5;
 	}
 
 	/**

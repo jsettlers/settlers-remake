@@ -1,4 +1,4 @@
-package networklib.server.packets;
+package networklib.common.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,34 +7,36 @@ import java.io.IOException;
 import networklib.channel.packet.Packet;
 
 /**
+ * This packet contains the data needed to start a network game.
  * 
  * @author Andreas Eberle
  * 
  */
-public class MatchInfoUpdatePacket extends Packet {
+public class MatchStartPacket extends Packet {
 
-	private int updateReason;
 	private MatchInfoPacket matchInfo;
+	private long seed;
 
-	public MatchInfoUpdatePacket() {
+	public MatchStartPacket() {
 	}
 
-	public MatchInfoUpdatePacket(int updateReason, MatchInfoPacket matchInfo) {
-		this.updateReason = updateReason;
+	public MatchStartPacket(MatchInfoPacket matchInfo, long seed) {
 		this.matchInfo = matchInfo;
+		this.seed = seed;
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
-		dos.writeInt(updateReason);
 		matchInfo.serialize(dos);
+		dos.writeLong(seed);
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
-		updateReason = dis.readInt();
-		matchInfo = new MatchInfoPacket();
-		matchInfo.deserialize(dis);
+		MatchInfoPacket match = new MatchInfoPacket();
+		match.deserialize(dis);
+		this.matchInfo = match;
+		seed = dis.readLong();
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class MatchInfoUpdatePacket extends Packet {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((matchInfo == null) ? 0 : matchInfo.hashCode());
-		result = prime * result + updateReason;
+		result = prime * result + (int) (seed ^ (seed >>> 32));
 		return result;
 	}
 
@@ -54,23 +56,28 @@ public class MatchInfoUpdatePacket extends Packet {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MatchInfoUpdatePacket other = (MatchInfoUpdatePacket) obj;
+		MatchStartPacket other = (MatchStartPacket) obj;
 		if (matchInfo == null) {
 			if (other.matchInfo != null)
 				return false;
 		} else if (!matchInfo.equals(other.matchInfo))
 			return false;
-		if (updateReason != other.updateReason)
+		if (seed != other.seed)
 			return false;
 		return true;
 	}
 
-	public int getUpdateReason() {
-		return updateReason;
-	}
-
+	/**
+	 * @return the match
+	 */
 	public MatchInfoPacket getMatchInfo() {
 		return matchInfo;
 	}
 
+	/**
+	 * @return the seed
+	 */
+	public long getSeed() {
+		return seed;
+	}
 }
