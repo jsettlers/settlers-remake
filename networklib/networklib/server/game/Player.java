@@ -9,6 +9,7 @@ import networklib.client.exceptions.InvalidStateException;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.lockstep.TaskCollectingListener;
 
 /**
@@ -68,9 +69,8 @@ public class Player {
 		return state == EPlayerState.IN_MATCH || state == EPlayerState.IN_RUNNING_MATCH;
 	}
 
-	public void startMatch(Timer timer) throws InvalidStateException {
+	public void startMatch(Timer timer) throws InvalidStateException, NotAllPlayersReadyException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
-
 		match.startMatch(timer);
 	}
 
@@ -81,13 +81,19 @@ public class Player {
 
 	public void forwardChatMessage(ChatMessagePacket packet) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
-
 		match.sendMessage(NetworkConstants.Keys.CHAT_MESSAGE, packet);
 	}
 
 	public void distributeTimeSync(TimeSyncPacket packet) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
-
 		match.distributeTimeSync(this, packet);
+	}
+
+	public void setReady(boolean ready) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+		if (playerInfo.isReady() != ready) { // only update if there is a real change
+			playerInfo.setReady(ready);
+			match.sendMatchInfoUpdate(NetworkConstants.Keys.READY_STATE_CHANGE);
+		}
 	}
 }

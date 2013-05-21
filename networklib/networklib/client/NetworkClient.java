@@ -11,7 +11,6 @@ import networklib.channel.packet.Packet;
 import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.packets.TaskPacket;
-import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.client.task.ITaskScheduler;
 import networklib.client.task.TaskPacketListener;
@@ -26,6 +25,7 @@ import networklib.common.packets.MatchInfoUpdatePacket;
 import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.PlayerInfoPacket;
+import networklib.common.packets.ReadyStatePacket;
 import networklib.server.game.EPlayerState;
 
 /**
@@ -70,7 +70,7 @@ public class NetworkClient {
 	public void logIn(String id, String name) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.CHANNEL_CONNECTED);
 
-		playerInfo = new PlayerInfoPacket(id, name);
+		playerInfo = new PlayerInfoPacket(id, name, false);
 
 		channel.registerListener(new IdentifiedUserListener(this));
 		channel.sendPacketAsync(NetworkConstants.Keys.IDENTIFY_USER, playerInfo);
@@ -130,17 +130,22 @@ public class NetworkClient {
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
+	public void setReadyState(boolean ready) throws InvalidStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+		channel.sendPacketAsync(NetworkConstants.Keys.READY_STATE_CHANGE, new ReadyStatePacket(ready));
+	}
+
 	public void sendChatMessage(String message) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
 	}
 
-	public void sendTask(TaskPacket task) throws InvalidStateException {
+	public void submitTask(TaskPacket task) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.SYNCHRONOUS_TASK, task);
 	}
 
-	public void registerRejectReceiver(BufferingPacketReceiver<RejectPacket> rejectListener) {
+	public void registerRejectReceiver(IPacketReceiver<RejectPacket> rejectListener) {
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.class, rejectListener));
 	}
 

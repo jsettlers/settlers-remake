@@ -1,4 +1,4 @@
-package networklib.packets;
+package networklib.common.packets;
 
 import static org.junit.Assert.assertEquals;
 

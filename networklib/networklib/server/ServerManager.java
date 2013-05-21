@@ -13,10 +13,12 @@ import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.server.db.IDBFacade;
+import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
 import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.IdentifyUserListener;
+import networklib.server.listeners.ReadyStatePacketListener;
 import networklib.server.listeners.ServerChannelClosedListener;
 import networklib.server.listeners.TimeSyncForwardingListener;
 import networklib.server.listeners.matches.RequestJoinMatchListener;
@@ -60,6 +62,7 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new RequestJoinMatchListener(this, player));
 			channel.registerListener(new ChatMessageForwardingListener(this, player));
 			channel.registerListener(new TimeSyncForwardingListener(this, player));
+			channel.registerListener(new ReadyStatePacketListener(this, player));
 
 			return true;
 		} else {
@@ -140,6 +143,9 @@ public class ServerManager implements IServerManager {
 			e.printStackTrace();
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_START_MATCH));
+		} catch (NotAllPlayersReadyException e) {
+			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.Messages.NOT_ALL_PLAYERS_READY, NetworkConstants.Keys.REQUEST_START_MATCH));
 		}
 	}
 
@@ -169,6 +175,16 @@ public class ServerManager implements IServerManager {
 		} catch (InvalidStateException e) {
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_JOIN_MATCH));
+		}
+	}
+
+	@Override
+	public void setReadyStateForPlayer(Player player, boolean ready) {
+		try {
+			player.setReady(ready);
+		} catch (InvalidStateException e) {
+			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.READY_STATE_CHANGE));
 		}
 	}
 }

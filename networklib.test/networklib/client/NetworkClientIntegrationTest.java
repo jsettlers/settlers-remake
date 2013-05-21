@@ -1,6 +1,7 @@
 package networklib.client;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import networklib.channel.AsyncChannel;
 import networklib.channel.Channel;
 import networklib.channel.TestPacket;
 import networklib.channel.TestPacketListener;
+import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.packets.TaskPacket;
 import networklib.client.receiver.BufferingPacketReceiver;
@@ -181,7 +183,7 @@ public class NetworkClientIntegrationTest {
 
 		MatchInfoPacket dbMatchInfo = new MatchInfoPacket(db.getJoinableMatches().get(0));
 		assertEquals(dbMatchInfo, client1.getMatchInfo());
-		assertEquals(client1.getMatchInfo().getPlayers().length, 1);
+		assertEquals(1, client1.getMatchInfo().getPlayers().length);
 
 		client2.requestJoinMatch(dbMatchInfo, null, null, null, new TestTaskScheduler());
 		Thread.sleep(50);
@@ -189,7 +191,16 @@ public class NetworkClientIntegrationTest {
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
 		dbMatchInfo = new MatchInfoPacket(db.getJoinableMatches().get(0));
 		assertEquals(dbMatchInfo, client1.getMatchInfo());
-		assertEquals(client1.getMatchInfo().getPlayers().length, 2);
+		assertEquals(2, client1.getMatchInfo().getPlayers().length);
+
+		client2.setReadyState(true);
+		Thread.sleep(50);
+
+		assertEquals(EPlayerState.IN_MATCH, client2.getState());
+		dbMatchInfo = new MatchInfoPacket(db.getJoinableMatches().get(0));
+		assertEquals(dbMatchInfo, client1.getMatchInfo());
+		assertEquals(2, client1.getMatchInfo().getPlayers().length);
+		assertTrue(client1.getMatchInfo().getPlayers()[1].isReady());
 
 		client1.requestStartMatch();
 		Thread.sleep(50);
@@ -255,6 +266,18 @@ public class NetworkClientIntegrationTest {
 		assertEquals(matchName, match.getMatchName());
 		assertEquals(maxPlayers, match.getMaxPlayers());
 		assertEquals(mapInfo, match.getMapInfo());
+		assertFalse(match.getPlayers()[0].isReady());
+
+		client.setReadyState(true);
+
+		Thread.sleep(150);
+		matches = matchUpdateListener.popBufferedPackets();
+		assertEquals(1, matches.size());
+		match = matches.get(0).getMatchInfo();
+		assertEquals(matchName, match.getMatchName());
+		assertEquals(maxPlayers, match.getMaxPlayers());
+		assertEquals(mapInfo, match.getMapInfo());
+		assertTrue(match.getPlayers()[0].isReady());
 	}
 
 	@Test
@@ -291,8 +314,13 @@ public class NetworkClientIntegrationTest {
 		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<ChatMessagePacket>();
 		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, chatReceiver, new TestTaskScheduler());
 
-		Thread.sleep(50);
+		Thread.sleep(80);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
+
+		testSendAndReceiveChatMessage(chatReceiver);
+
+		client1.setReadyState(true);
+		Thread.sleep(50);
 
 		testSendAndReceiveChatMessage(chatReceiver);
 
@@ -367,6 +395,9 @@ public class NetworkClientIntegrationTest {
 		Thread.sleep(50);
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
 
+		client1.setReadyState(true);
+		client2.setReadyState(true);
+		Thread.sleep(30);
 		client2.requestStartMatch();
 
 		Thread.sleep(30); // Ensure that both clients are in a running match.
@@ -390,7 +421,7 @@ public class NetworkClientIntegrationTest {
 
 		// Submit a task
 		TestTaskPacket testTask = new TestTaskPacket("dsfsdf", 2342, (byte) -23);
-		client2.sendTask(testTask);
+		client2.submitTask(testTask);
 
 		Thread.sleep(50);
 
@@ -413,5 +444,49 @@ public class NetworkClientIntegrationTest {
 		Thread.sleep(2 * NetworkConstants.Client.LOCKSTEP_PERIOD); // Wait two more lockstep periods and check the run away protection again
 		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, taskScheduler1.getUnlockedLockstepNumber());
 		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, taskScheduler2.getUnlockedLockstepNumber());
+	}
+
+	@Test
+	public void testStartMatchWithUnreadyPlayers() throws InvalidStateException, InterruptedException {
+		logIn(client1, "player1", "player1");
+		logIn(client2, "player2", "player2");
+
+		openMatch(client1); // open match and join client2
+		client2.requestJoinMatch(client1.getMatchInfo(), null, null, null, new TestTaskScheduler());
+
+		BufferingPacketReceiver<RejectPacket> rejectReceiver2 = new BufferingPacketReceiver<RejectPacket>();
+		client2.registerRejectReceiver(rejectReceiver2);
+
+		Thread.sleep(50);
+		assertEquals(0, rejectReceiver2.popBufferedPackets().size());
+
+		client2.requestStartMatch(); // try to start match with unready player2 => match must not start
+		Thread.sleep(50);
+
+		assertSingleRejectPacket(rejectReceiver2, NetworkConstants.Keys.REQUEST_START_MATCH, NetworkConstants.Messages.NOT_ALL_PLAYERS_READY);
+
+		client2.setReadyState(true); // set player2 ready and player1 unready => match must not start
+		Thread.sleep(20);
+		client1.setReadyState(false);
+		Thread.sleep(20);
+		client2.requestStartMatch();
+		Thread.sleep(50);
+
+		assertSingleRejectPacket(rejectReceiver2, NetworkConstants.Keys.REQUEST_START_MATCH, NetworkConstants.Messages.NOT_ALL_PLAYERS_READY);
+
+		client1.setReadyState(true); // set player1 ready => must must start
+		Thread.sleep(20);
+		client2.requestStartMatch();
+		Thread.sleep(50);
+
+		assertEquals(EPlayerState.IN_RUNNING_MATCH, client1.getState());
+		assertEquals(EPlayerState.IN_RUNNING_MATCH, client2.getState());
+	}
+
+	private void assertSingleRejectPacket(BufferingPacketReceiver<RejectPacket> rejectReceiver, int expectedRejectedKey, int expectedMessage) {
+		List<RejectPacket> rejectPackets = rejectReceiver.popBufferedPackets();
+		assertEquals(1, rejectPackets.size());
+		assertEquals(expectedRejectedKey, rejectPackets.get(0).getRejectedKey());
+		assertEquals(expectedMessage, rejectPackets.get(0).getErrorMessageId());
 	}
 }

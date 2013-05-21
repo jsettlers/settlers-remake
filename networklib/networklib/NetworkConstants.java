@@ -62,6 +62,7 @@ public final class NetworkConstants {
 		public static final int UNKNOWN_ERROR = -2;
 		public static final int INVALID_STATE_ERROR = -3;
 		public static final int NO_LISTENER_FOUND = -4;
+		public static final int NOT_ALL_PLAYERS_READY = -5;
 
 	}
 
@@ -95,6 +96,7 @@ public final class NetworkConstants {
 		public static final int REQUEST_LEAVE_MATCH = -17;
 		public static final int REQUEST_JOIN_MATCH = -18;
 		public static final int REQUEST_START_MATCH = -20;
+		public static final int READY_STATE_CHANGE = -24;
 
 		public static final int MATCH_INFO_UPDATE = -21;
 

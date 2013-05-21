@@ -1,4 +1,4 @@
-package networklib.packets;
+package networklib.common.packets;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,18 +15,11 @@ import networklib.channel.IDeserializingable;
 import networklib.channel.listeners.BufferingPacketListener;
 import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
+import networklib.channel.ping.PingPacket;
 import networklib.channel.reject.RejectPacket;
 import networklib.client.packets.SyncTasksPacket;
 import networklib.client.packets.TaskPacket;
 import networklib.client.task.TestTaskPacket;
-import networklib.common.packets.ArrayOfMatchInfosPacket;
-import networklib.common.packets.MapInfoPacket;
-import networklib.common.packets.MatchInfoPacket;
-import networklib.common.packets.MatchInfoUpdatePacket;
-import networklib.common.packets.MatchStartPacket;
-import networklib.common.packets.OpenNewMatchPacket;
-import networklib.common.packets.PlayerInfoPacket;
-import networklib.common.packets.TimeSyncPacket;
 import networklib.server.packets.ServersideSyncTasksPacket;
 import networklib.server.packets.ServersideTaskPacket;
 
@@ -69,7 +62,7 @@ public class PacketSerializationTest {
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
 				{ new EmptyPacket(), EmptyPacket.DEFAULT_DESERIALIZER },
-				{ new PlayerInfoPacket("IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/"), d(PlayerInfoPacket.class) },
+				{ new PlayerInfoPacket("IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/", true), d(PlayerInfoPacket.class) },
 				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(§\"(/!=°", "authorId8unsdkjfn8932", "authorName uHh89023u9h"), d(MapInfoPacket.class) },
 				{ createMatchInfoPacket(), d(MatchInfoPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
@@ -87,7 +80,12 @@ public class PacketSerializationTest {
 
 				{ new TestTaskPacket("tesdfköäl9/&%/%&\"\\u8u23jo", 23424, (byte) -2), TaskPacket.DEFAULT_DESERIALIZER },
 				{ new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
-						(TaskPacket) new TestTaskPacket("dsfsää#öüdsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) }
+						(TaskPacket) new TestTaskPacket("dsfsää#öüdsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) },
+
+				{ new ReadyStatePacket(true), d(ReadyStatePacket.class) },
+				{ new ChatMessagePacket("authorId(, message)U)(Z", "message'**Ü##\"\\ppoisudf08u("), d(ChatMessagePacket.class) },
+
+				{ new PingPacket(2324L, -2349879879787987234L), d(PingPacket.class) }
 		};
 		return Arrays.asList(data);
 	}
@@ -95,8 +93,8 @@ public class PacketSerializationTest {
 	private static MatchInfoPacket createMatchInfoPacket() {
 		MapInfoPacket mapInfo = new MapInfoPacket("sdjfij", "sdfsdflksjdlfk", "sdflnnp0928u30894", "sdlkfkjlÖ:Ö_Ö");
 		PlayerInfoPacket[] players = new PlayerInfoPacket[] {
-				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2"),
-				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2")
+				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2", true),
+				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2", false)
 		};
 		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players);
 	}
@@ -128,5 +126,6 @@ public class PacketSerializationTest {
 		List<? extends Packet> bufferedPackets = listener.popBufferedPackets();
 		assertEquals(1, bufferedPackets.size());
 		assertEquals(packet, bufferedPackets.get(0));
+		assertEquals(packet.hashCode(), bufferedPackets.get(0).hashCode());
 	}
 }

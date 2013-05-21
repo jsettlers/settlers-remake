@@ -52,4 +52,6 @@ public interface IServerManager {
 	void distributeTimeSync(Player player, TimeSyncPacket packet);
 
 	void joinMatch(MatchInfoPacket packet, Player player);
+
+	void setReadyStateForPlayer(Player player, boolean ready);
 }

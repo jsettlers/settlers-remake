@@ -14,16 +14,16 @@ import networklib.client.packets.SyncTasksPacket;
  */
 public class TaskPacketListener extends PacketChannelListener<SyncTasksPacket> {
 
-	private final ITaskScheduler taskReceiver;
+	private final ITaskScheduler taskScheduler;
 
-	public TaskPacketListener(ITaskScheduler taskReceiver) {
+	public TaskPacketListener(ITaskScheduler taskScheduler) {
 		super(NetworkConstants.Keys.SYNCHRONOUS_TASK, new GenericDeserializer<SyncTasksPacket>(SyncTasksPacket.class));
-		this.taskReceiver = taskReceiver;
+		this.taskScheduler = taskScheduler;
 	}
 
 	@Override
 	protected void receivePacket(int key, SyncTasksPacket packet) throws IOException {
-		taskReceiver.scheduleTasksAndUnlockStep(packet.getLockstepNumber(), packet.getTasks());
+		taskScheduler.scheduleTasksAndUnlockStep(packet.getLockstepNumber(), packet.getTasks());
 	}
 
 }

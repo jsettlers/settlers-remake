@@ -12,6 +12,7 @@ import networklib.common.packets.MatchInfoUpdatePacket;
 import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.lockstep.TaskCollectingListener;
 import networklib.server.lockstep.TaskSendingTimerTask;
 
@@ -108,7 +109,7 @@ public class Match {
 		}
 	}
 
-	private void sendMatchInfoUpdate(int updateReason) {
+	public void sendMatchInfoUpdate(int updateReason) {
 		sendMessage(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason));
 	}
 
@@ -157,9 +158,17 @@ public class Match {
 		}
 	}
 
-	public synchronized void startMatch(Timer timer) {
+	public synchronized void startMatch(Timer timer) throws NotAllPlayersReadyException {
 		if (state == EMatchState.RUNNING || state == EMatchState.FINISHED) {
 			return; // match already started
+		}
+
+		synchronized (players) {
+			for (Player player : players) {
+				if (!player.getPlayerInfo().isReady()) {
+					throw new NotAllPlayersReadyException();
+				}
+			}
 		}
 
 		state = EMatchState.RUNNING;
