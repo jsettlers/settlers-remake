@@ -17,9 +17,9 @@ import networklib.channel.packet.EmptyPacket;
 import networklib.channel.packet.Packet;
 import networklib.channel.ping.PingPacket;
 import networklib.channel.reject.RejectPacket;
-import networklib.client.packets.SyncTasksPacket;
-import networklib.client.packets.TaskPacket;
 import networklib.client.task.TestTaskPacket;
+import networklib.client.task.packets.SyncTasksPacket;
+import networklib.client.task.packets.TaskPacket;
 import networklib.server.packets.ServersideSyncTasksPacket;
 import networklib.server.packets.ServersideTaskPacket;
 

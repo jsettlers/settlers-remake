@@ -9,8 +9,8 @@ import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.Channel;
 import networklib.channel.listeners.BufferingPacketListener;
-import networklib.client.packets.TaskPacket;
 import networklib.client.task.TestTaskPacket;
+import networklib.client.task.packets.TaskPacket;
 import networklib.server.packets.ServersideTaskPacket;
 
 import org.junit.After;

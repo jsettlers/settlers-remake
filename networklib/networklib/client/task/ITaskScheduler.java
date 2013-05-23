@@ -1,8 +1,6 @@
 package networklib.client.task;
 
-import java.util.List;
-
-import networklib.client.packets.TaskPacket;
+import networklib.client.task.packets.SyncTasksPacket;
 
 /**
  * 
@@ -11,6 +9,6 @@ import networklib.client.packets.TaskPacket;
  */
 public interface ITaskScheduler {
 
-	void scheduleTasksAndUnlockStep(int lockstepNumber, List<TaskPacket> tasks);
+	void scheduleTasksAndUnlockStep(SyncTasksPacket tasksPacket);
 
 }

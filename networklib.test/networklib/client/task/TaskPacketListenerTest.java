@@ -9,8 +9,8 @@ import java.util.List;
 import networklib.NetworkConstants;
 import networklib.TestUtils;
 import networklib.channel.Channel;
-import networklib.client.packets.SyncTasksPacket;
-import networklib.client.packets.TaskPacket;
+import networklib.client.task.packets.SyncTasksPacket;
+import networklib.client.task.packets.TaskPacket;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,14 +48,18 @@ public class TaskPacketListenerTest {
 
 		TaskPacket testPacket1 = new TestTaskPacket("tesdfköäl9u8u23jo", 23424, (byte) -2);
 		TaskPacket testPacket2 = new TestTaskPacket("?=?=O\"KÖ#'*'::Ö;;Ü", -2342342, (byte) -67);
-		SyncTasksPacket syncTasksPacket = new SyncTasksPacket(23, Arrays.asList(testPacket1, testPacket2));
+		int lockstep = 23;
+		SyncTasksPacket syncTasksPacket = new SyncTasksPacket(lockstep, Arrays.asList(testPacket1, testPacket2));
 
 		c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, syncTasksPacket);
 
 		Thread.sleep(10);
-		List<TaskPacket> packets = taskReceiver.popBufferedPackets();
-		assertEquals(2, packets.size());
-		assertEquals(testPacket1, packets.get(0));
-		assertEquals(testPacket2, packets.get(1));
+		List<SyncTasksPacket> packets = taskReceiver.popBufferedPackets();
+		assertEquals(1, packets.size());
+		assertEquals(lockstep, packets.get(0).getLockstepNumber());
+		List<TaskPacket> tasks = packets.get(0).getTasks();
+		assertEquals(2, tasks.size());
+		assertEquals(testPacket1, tasks.get(0));
+		assertEquals(testPacket2, tasks.get(1));
 	}
 }

@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.client.packets.TaskPacket;
+import networklib.client.task.packets.TaskPacket;
 
 /**
  * 

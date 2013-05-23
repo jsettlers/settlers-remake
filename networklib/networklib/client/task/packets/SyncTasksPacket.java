@@ -1,4 +1,4 @@
-package networklib.client.packets;
+package networklib.client.task.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

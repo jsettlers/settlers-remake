@@ -15,10 +15,10 @@ import networklib.channel.TestPacket;
 import networklib.channel.TestPacketListener;
 import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
-import networklib.client.packets.TaskPacket;
 import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.task.TestTaskPacket;
 import networklib.client.task.TestTaskScheduler;
+import networklib.client.task.packets.SyncTasksPacket;
 import networklib.client.time.TestClock;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.ChatMessagePacket;
@@ -434,12 +434,14 @@ public class NetworkClientIntegrationTest {
 
 		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 30);
 
-		List<TaskPacket> packets1 = taskScheduler1.popBufferedPackets();
+		List<SyncTasksPacket> packets1 = taskScheduler1.popBufferedPackets();
 		assertEquals(1, packets1.size());
-		assertEquals(testTask, packets1.get(0));
-		List<TaskPacket> packets2 = taskScheduler2.popBufferedPackets();
+		assertEquals(1, packets1.get(0).getTasks().size());
+		assertEquals(testTask, packets1.get(0).getTasks().get(0));
+		List<SyncTasksPacket> packets2 = taskScheduler2.popBufferedPackets();
 		assertEquals(1, packets2.size());
-		assertEquals(testTask, packets2.get(0));
+		assertEquals(1, packets2.get(0).getTasks().size());
+		assertEquals(testTask, packets2.get(0).getTasks().get(0));
 
 		Thread.sleep(2 * NetworkConstants.Client.LOCKSTEP_PERIOD); // Wait two more lockstep periods and check the run away protection again
 		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, taskScheduler1.getUnlockedLockstepNumber());

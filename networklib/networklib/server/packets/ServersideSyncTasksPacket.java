@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import networklib.channel.packet.Packet;
-import networklib.client.packets.SyncTasksPacket;
-import networklib.client.packets.TaskPacket;
+import networklib.client.task.packets.SyncTasksPacket;
+import networklib.client.task.packets.TaskPacket;
 
 /**
  * This subclass of {@link Packet} is the server side representation of the client side {@link SyncTasksPacket}. The server side representation uses

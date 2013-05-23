@@ -11,9 +11,9 @@ import networklib.TestUtils;
 import networklib.channel.Channel;
 import networklib.channel.GenericDeserializer;
 import networklib.channel.listeners.BufferingPacketListener;
-import networklib.client.packets.SyncTasksPacket;
-import networklib.client.packets.TaskPacket;
 import networklib.client.task.TestTaskPacket;
+import networklib.client.task.packets.SyncTasksPacket;
+import networklib.client.task.packets.TaskPacket;
 import networklib.server.packets.ServersideSyncTasksPacket;
 import networklib.server.packets.ServersideTaskPacket;
 

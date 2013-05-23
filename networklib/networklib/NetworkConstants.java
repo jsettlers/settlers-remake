@@ -1,5 +1,7 @@
 package networklib;
 
+import networklib.synchronic.timer.NetworkTimer;
+
 /**
  * This class contains constants of networklib.
  * 
@@ -32,7 +34,11 @@ public final class NetworkConstants {
 		}
 
 		public static final long TIME_SYNC_SEND_INTERVALL = 100;
-		public static final int TIME_SYNC_TOLERATED_DIFFERENCE = 50;
+		/**
+		 * The tolerated time difference between two clients.<br>
+		 * NOTE: This must be higher than {@link NetworkTimer}.TIME_SLICE!
+		 */
+		public static final int TIME_SYNC_TOLERATED_DIFFERENCE = 70;
 		public static final float TIME_SYNC_APPROACH_FACTOR = 0.95f;
 
 		/**

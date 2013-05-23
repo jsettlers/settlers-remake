@@ -3,7 +3,7 @@ package networklib.client.task;
 import java.util.LinkedList;
 import java.util.List;
 
-import networklib.client.packets.TaskPacket;
+import networklib.client.task.packets.SyncTasksPacket;
 
 /**
  * 
@@ -11,26 +11,34 @@ import networklib.client.packets.TaskPacket;
  * 
  */
 public class TestTaskScheduler implements ITaskScheduler {
-	private LinkedList<TaskPacket> buffer;
-	private int lockstepNumber;
+	private LinkedList<SyncTasksPacket> buffer;
+	private int unlockedLockstep = 0;
 
 	public TestTaskScheduler() {
-		this.buffer = new LinkedList<TaskPacket>();
+		this.buffer = new LinkedList<SyncTasksPacket>();
 	}
 
-	public List<TaskPacket> popBufferedPackets() {
-		List<TaskPacket> temp = buffer;
-		buffer = new LinkedList<TaskPacket>();
+	/**
+	 * 
+	 * @return Returns all {@link SyncTasksPacket}s that were received and had at least one task packaged in them.
+	 */
+	public List<SyncTasksPacket> popBufferedPackets() {
+		List<SyncTasksPacket> temp = buffer;
+		buffer = new LinkedList<SyncTasksPacket>();
 		return temp;
 	}
 
 	@Override
-	public void scheduleTasksAndUnlockStep(int lockstepNumber, List<TaskPacket> tasks) {
-		this.lockstepNumber = lockstepNumber;
-		buffer.addAll(tasks);
+	public void scheduleTasksAndUnlockStep(SyncTasksPacket tasksPacket) {
+		unlockedLockstep = tasksPacket.getLockstepNumber();
+
+		if (!tasksPacket.getTasks().isEmpty()) {
+			buffer.add(tasksPacket);
+		}
 	}
 
 	public int getUnlockedLockstepNumber() {
-		return lockstepNumber;
+		return unlockedLockstep;
 	}
+
 }
