@@ -5,13 +5,13 @@ import java.util.Timer;
 import java.util.UUID;
 
 import networklib.NetworkConstants;
-import networklib.channel.packet.Packet;
 import networklib.common.packets.MapInfoPacket;
 import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.MatchInfoUpdatePacket;
 import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.infrastructure.channel.packet.Packet;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.lockstep.TaskCollectingListener;
 import networklib.server.lockstep.TaskSendingTimerTask;

@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
-import networklib.channel.Channel;
-import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.db.IDBFacade;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.game.Match;

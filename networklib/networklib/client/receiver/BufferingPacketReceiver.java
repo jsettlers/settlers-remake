@@ -3,7 +3,7 @@ package networklib.client.receiver;
 import java.util.LinkedList;
 import java.util.List;
 
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.packet.Packet;
 
 /**
  * This class implements the {@link IPacketReceiver} interface and buffers the received {@link Packet}s. This implementation is generic and can be

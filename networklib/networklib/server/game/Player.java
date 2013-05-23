@@ -3,12 +3,12 @@ package networklib.server.game;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
-import networklib.channel.Channel;
-import networklib.channel.packet.Packet;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.channel.packet.Packet;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.lockstep.TaskCollectingListener;
 

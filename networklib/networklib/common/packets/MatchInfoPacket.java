@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.packet.Packet;
 import networklib.server.game.Match;
 
 /**

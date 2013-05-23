@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.packet.Packet;
 
 /**
  * This packet contains the data needed to start a network game.

@@ -3,8 +3,8 @@ package networklib.client.time;
 import java.util.TimerTask;
 
 import networklib.NetworkConstants;
-import networklib.channel.AsyncChannel;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.infrastructure.channel.AsyncChannel;
 
 /**
  * 

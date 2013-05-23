@@ -7,10 +7,10 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.TestUtils;
-import networklib.channel.Channel;
-import networklib.channel.listeners.BufferingPacketListener;
 import networklib.client.task.TestTaskPacket;
 import networklib.client.task.packets.TaskPacket;
+import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.channel.listeners.BufferingPacketListener;
 import networklib.server.packets.ServersideTaskPacket;
 
 import org.junit.After;

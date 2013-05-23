@@ -3,9 +3,9 @@ package networklib.client.task;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.listeners.PacketChannelListener;
 import networklib.client.task.packets.SyncTasksPacket;
+import networklib.infrastructure.channel.GenericDeserializer;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
 
 /**
  * 

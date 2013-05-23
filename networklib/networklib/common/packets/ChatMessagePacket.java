@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.packet.Packet;
 
 /**
  * This subclass of {@link Packet} represents a chat message. It can be used to send the id of the author and the message to others.

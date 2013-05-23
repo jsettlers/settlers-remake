@@ -3,12 +3,6 @@ package networklib.client;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
-import networklib.channel.AsyncChannel;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.IChannelClosedListener;
-import networklib.channel.packet.EmptyPacket;
-import networklib.channel.packet.Packet;
-import networklib.channel.reject.RejectPacket;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.client.task.ITaskScheduler;
@@ -26,6 +20,12 @@ import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.ReadyStatePacket;
+import networklib.infrastructure.channel.AsyncChannel;
+import networklib.infrastructure.channel.GenericDeserializer;
+import networklib.infrastructure.channel.IChannelClosedListener;
+import networklib.infrastructure.channel.packet.EmptyPacket;
+import networklib.infrastructure.channel.packet.Packet;
+import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.game.EPlayerState;
 
 /**

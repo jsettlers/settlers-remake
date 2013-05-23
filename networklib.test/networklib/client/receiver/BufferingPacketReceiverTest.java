@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import networklib.channel.TestPacket;
+import networklib.infrastructure.channel.TestPacket;
 
 import org.junit.Test;
 

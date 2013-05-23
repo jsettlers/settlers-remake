@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import networklib.NetworkConstants;
 import networklib.NetworkConstants.Client;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.listeners.PacketChannelListener;
-import networklib.channel.ping.IRoundTripTimeSupplier;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.infrastructure.channel.GenericDeserializer;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.channel.ping.IRoundTripTimeSupplier;
 
 /**
  * 

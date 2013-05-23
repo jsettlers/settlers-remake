@@ -8,9 +8,9 @@ import java.util.List;
 
 import networklib.NetworkConstants;
 import networklib.TestUtils;
-import networklib.channel.Channel;
 import networklib.client.task.packets.SyncTasksPacket;
 import networklib.client.task.packets.TaskPacket;
+import networklib.infrastructure.channel.Channel;
 
 import org.junit.After;
 import org.junit.Before;

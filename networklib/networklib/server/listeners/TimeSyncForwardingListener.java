@@ -3,9 +3,9 @@ package networklib.server.listeners;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.listeners.PacketChannelListener;
 import networklib.common.packets.TimeSyncPacket;
+import networklib.infrastructure.channel.GenericDeserializer;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.server.IServerManager;
 import networklib.server.game.Player;
 

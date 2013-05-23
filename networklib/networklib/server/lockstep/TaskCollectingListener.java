@@ -4,9 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import networklib.NetworkConstants;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.listeners.PacketChannelListener;
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.GenericDeserializer;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.channel.packet.Packet;
 import networklib.server.packets.ServersideTaskPacket;
 
 /**

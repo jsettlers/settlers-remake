@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.packet.Packet;
 
 /**
  * This class extends the {@link Packet} class and does not really deserialize the data. It just stores the bytes to write them back on the stream

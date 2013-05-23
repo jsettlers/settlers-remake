@@ -1,6 +1,6 @@
 package networklib.server.listeners;
 
-import networklib.channel.IChannelClosedListener;
+import networklib.infrastructure.channel.IChannelClosedListener;
 import networklib.server.IServerManager;
 import networklib.server.game.Player;
 

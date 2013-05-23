@@ -1,0 +1,40 @@
+package networklib.infrastructure.channel.listeners;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import networklib.infrastructure.channel.IDeserializingable;
+import networklib.infrastructure.channel.packet.Packet;
+
+/**
+ * This implementation of a {@link PacketChannelListener} collects the received packets to buffer them.
+ * 
+ * @author Andreas Eberle
+ * 
+ * @param <T>
+ */
+public class BufferingPacketListener<T extends Packet> extends PacketChannelListener<T> {
+
+	private final Object lock = new Object();
+	private List<T> packets = new LinkedList<T>();
+
+	public BufferingPacketListener(int key, IDeserializingable<T> deserializer) {
+		super(key, deserializer);
+	}
+
+	@Override
+	protected void receivePacket(int key, T deserialized) throws IOException {
+		synchronized (lock) {
+			packets.add(deserialized);
+		}
+	}
+
+	public List<T> popBufferedPackets() {
+		synchronized (lock) {
+			List<T> temp = packets;
+			packets = new LinkedList<T>();
+			return temp;
+		}
+	}
+}

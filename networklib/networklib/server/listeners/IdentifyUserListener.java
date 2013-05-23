@@ -3,12 +3,12 @@ package networklib.server.listeners;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
-import networklib.channel.Channel;
-import networklib.channel.GenericDeserializer;
-import networklib.channel.listeners.PacketChannelListener;
-import networklib.channel.packet.EmptyPacket;
-import networklib.channel.reject.RejectPacket;
 import networklib.common.packets.PlayerInfoPacket;
+import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.channel.GenericDeserializer;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.channel.packet.EmptyPacket;
+import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.IServerManager;
 import networklib.server.game.Player;
 

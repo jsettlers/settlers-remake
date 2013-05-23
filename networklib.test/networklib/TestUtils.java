@@ -7,8 +7,8 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.Socket;
 
-import networklib.channel.AsyncChannel;
-import networklib.channel.Channel;
+import networklib.infrastructure.channel.AsyncChannel;
+import networklib.infrastructure.channel.Channel;
 
 public final class TestUtils {
 	private TestUtils() {

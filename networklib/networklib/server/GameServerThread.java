@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import networklib.NetworkConstants;
-import networklib.channel.Channel;
-import networklib.log.Log;
+import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.log.Log;
 import networklib.server.db.inMemory.InMemoryDB;
 import networklib.server.lan.LanServerAddressBroadcastListener;
 import networklib.server.lan.LanServerBroadcastThread;

@@ -2,10 +2,10 @@ package networklib.client;
 
 import java.io.IOException;
 
-import networklib.channel.IDeserializingable;
-import networklib.channel.listeners.PacketChannelListener;
-import networklib.channel.packet.Packet;
 import networklib.client.receiver.IPacketReceiver;
+import networklib.infrastructure.channel.IDeserializingable;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.channel.packet.Packet;
 
 /**
  * Default {@link PacketChannelListener} used by the {@link NetworkClient} to dispatch received {@link Packet}s to a {@link IPacketReceiver}.

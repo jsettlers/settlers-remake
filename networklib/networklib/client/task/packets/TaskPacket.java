@@ -5,8 +5,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import networklib.channel.IDeserializingable;
-import networklib.channel.packet.Packet;
+import networklib.infrastructure.channel.IDeserializingable;
+import networklib.infrastructure.channel.packet.Packet;
 
 /**
  * 

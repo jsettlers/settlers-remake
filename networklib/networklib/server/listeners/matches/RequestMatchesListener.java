@@ -3,9 +3,9 @@ package networklib.server.listeners.matches;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
-import networklib.channel.IDeserializingable;
-import networklib.channel.listeners.PacketChannelListener;
-import networklib.channel.packet.EmptyPacket;
+import networklib.infrastructure.channel.IDeserializingable;
+import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.server.IServerManager;
 import networklib.server.game.Player;
 
