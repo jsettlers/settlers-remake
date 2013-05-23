@@ -10,11 +10,11 @@ import networklib.client.task.packets.SyncTasksPacket;
  * @author Andreas Eberle
  * 
  */
-public class TestTaskScheduler implements ITaskScheduler {
+public class SyncTasksPacketSchedulerMock implements ISyncTasksPacketScheduler {
 	private LinkedList<SyncTasksPacket> buffer;
 	private int unlockedLockstep = 0;
 
-	public TestTaskScheduler() {
+	public SyncTasksPacketSchedulerMock() {
 		this.buffer = new LinkedList<SyncTasksPacket>();
 	}
 
@@ -29,7 +29,7 @@ public class TestTaskScheduler implements ITaskScheduler {
 	}
 
 	@Override
-	public void scheduleTasksAndUnlockStep(SyncTasksPacket tasksPacket) {
+	public void scheduleSyncTasksPacket(SyncTasksPacket tasksPacket) {
 		unlockedLockstep = tasksPacket.getLockstepNumber();
 
 		if (!tasksPacket.getTasks().isEmpty()) {
@@ -40,5 +40,4 @@ public class TestTaskScheduler implements ITaskScheduler {
 	public int getUnlockedLockstepNumber() {
 		return unlockedLockstep;
 	}
-
 }

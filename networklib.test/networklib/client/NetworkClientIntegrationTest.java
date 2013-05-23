@@ -12,9 +12,7 @@ import networklib.TestUtils;
 import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.task.TestTaskPacket;
-import networklib.client.task.TestTaskScheduler;
-import networklib.client.task.packets.SyncTasksPacket;
-import networklib.client.time.TestClock;
+import networklib.client.task.packets.TaskPacket;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.MapInfoPacket;
@@ -49,10 +47,12 @@ public class NetworkClientIntegrationTest {
 	private Channel server1Channel;
 	private AsyncChannel client1Channel;
 	private NetworkClient client1;
+	private NetworkClientClockMock clock1;
 
 	private Channel server2Channel;
 	private AsyncChannel client2Channel;
 	private NetworkClient client2;
+	private NetworkClientClockMock clock2;
 
 	@Before
 	public void setUp() throws IOException {
@@ -61,7 +61,10 @@ public class NetworkClientIntegrationTest {
 		client1Channel = channels[0];
 		server1Channel = channels[1];
 
-		client1 = new NetworkClient(client1Channel, null);
+		clock1 = new NetworkClientClockMock();
+		clock2 = new NetworkClientClockMock();
+
+		client1 = new NetworkClient(client1Channel, null, clock1);
 		manager.identifyNewChannel(server1Channel);
 
 		// set up second client
@@ -69,8 +72,9 @@ public class NetworkClientIntegrationTest {
 		client2Channel = channels[0];
 		server2Channel = channels[1];
 
-		client2 = new NetworkClient(client2Channel, null);
+		client2 = new NetworkClient(client2Channel, null, clock2);
 		manager.identifyNewChannel(server2Channel);
+
 	}
 
 	@After
@@ -130,19 +134,19 @@ public class NetworkClientIntegrationTest {
 
 	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateUnconnected() throws InvalidStateException {
-		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null, null);
+		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
 	}
 
 	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateInMatch() throws InvalidStateException, InterruptedException {
 		testOpenMatchWithLogin();
-		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null, null);
+		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
 	}
 
 	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateInRunningMatch() throws InvalidStateException, InterruptedException {
 		testOpenAndStartNewMatch();
-		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null, null);
+		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
 	}
 
 	@Test(expected = InvalidStateException.class)
@@ -185,7 +189,7 @@ public class NetworkClientIntegrationTest {
 		assertEquals(dbMatchInfo, client1.getMatchInfo());
 		assertEquals(1, client1.getMatchInfo().getPlayers().length);
 
-		client2.requestJoinMatch(dbMatchInfo, null, null, null, new TestTaskScheduler());
+		client2.requestJoinMatch(dbMatchInfo, null, null, null);
 		Thread.sleep(50);
 
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
@@ -256,7 +260,7 @@ public class NetworkClientIntegrationTest {
 		final String matchName = "TestMatch";
 		final byte maxPlayers = (byte) 5;
 		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName");
-		client.requestOpenNewMatch(matchName, maxPlayers, mapInfo, null, matchUpdateListener, null, new TestTaskScheduler());
+		client.requestOpenNewMatch(matchName, maxPlayers, mapInfo, null, matchUpdateListener, null);
 
 		Thread.sleep(100);
 
@@ -312,7 +316,7 @@ public class NetworkClientIntegrationTest {
 		testLogIn();
 
 		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<ChatMessagePacket>();
-		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, chatReceiver, new TestTaskScheduler());
+		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, chatReceiver);
 
 		Thread.sleep(80);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
@@ -350,11 +354,8 @@ public class NetworkClientIntegrationTest {
 	public void testTimeSynchronization() throws InvalidStateException, InterruptedException {
 		testOpenStartAndJoinNewMatch();
 
-		TestClock clock1 = new TestClock(200);
-		TestClock clock2 = new TestClock(210);
-
-		client1.startTimeSynchronization(clock1);
-		client2.startTimeSynchronization(clock2);
+		clock1.setTime(200);
+		clock2.setTime(210);
 
 		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 1 synchronizations
 		assertEquals(0, clock1.popAdjustmentEvents().size()); // no adjustments should have happened, because the clocks are almost sync
@@ -381,16 +382,14 @@ public class NetworkClientIntegrationTest {
 		logIn(client1, "player1", "player1");
 		logIn(client2, "player2", "player2");
 
-		TestTaskScheduler taskScheduler1 = new TestTaskScheduler();
-		TestTaskScheduler taskScheduler2 = new TestTaskScheduler();
-		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, null, taskScheduler1);
+		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, null);
 
 		Thread.sleep(70);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
 
 		MatchInfoPacket matchInfo = client1.getMatchInfo();
 
-		client2.requestJoinMatch(matchInfo, null, null, null, taskScheduler2);
+		client2.requestJoinMatch(matchInfo, null, null, null);
 
 		Thread.sleep(50);
 		assertEquals(EPlayerState.IN_MATCH, client2.getState());
@@ -404,48 +403,40 @@ public class NetworkClientIntegrationTest {
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client1.getState());
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client2.getState());
 
-		// Set up and start the clock synchronization
-		TestClock clock1 = new TestClock(0);
-		TestClock clock2 = new TestClock(0);
-		client1.startTimeSynchronization(clock1);
-		client2.startTimeSynchronization(clock2);
-
 		Thread.sleep(2 * NetworkConstants.Client.LOCKSTEP_PERIOD); // After two lockstep periods, there must be two locksteps.
-		assertEquals(2, taskScheduler1.getUnlockedLockstepNumber());
-		assertEquals(2, taskScheduler2.getUnlockedLockstepNumber());
+		assertEquals(2, clock1.getAllowedLockstep());
+		assertEquals(2, clock2.getAllowedLockstep());
 
 		// After more than LOCKSTEP_DEFAULT_LEAD_STEPS periods, the lockstep counter must wait, to prevent it from running away.
 		Thread.sleep((2 + NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS) * NetworkConstants.Client.LOCKSTEP_PERIOD);
-		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS, taskScheduler1.getUnlockedLockstepNumber());
-		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS, taskScheduler2.getUnlockedLockstepNumber());
+		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS, clock1.getAllowedLockstep());
+		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS, clock2.getAllowedLockstep());
 
 		// Submit a task
 		TestTaskPacket testTask = new TestTaskPacket("dsfsdf", 2342, (byte) -23);
-		client2.submitTask(testTask);
+		client2.scheduleTask(testTask);
 
 		Thread.sleep(50);
 
 		// The task may not be submitted to the clients yet, because the lockstep is blocked.
-		assertEquals(0, taskScheduler1.popBufferedPackets().size());
-		assertEquals(0, taskScheduler2.popBufferedPackets().size());
+		assertEquals(0, clock1.popBufferedTasks().size());
+		assertEquals(0, clock2.popBufferedTasks().size());
 
 		// Now let one clock continue one lockstep period.
 		clock1.setTime(NetworkConstants.Client.LOCKSTEP_PERIOD);
 
 		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 30);
 
-		List<SyncTasksPacket> packets1 = taskScheduler1.popBufferedPackets();
+		List<TaskPacket> packets1 = clock1.popBufferedTasks();
 		assertEquals(1, packets1.size());
-		assertEquals(1, packets1.get(0).getTasks().size());
-		assertEquals(testTask, packets1.get(0).getTasks().get(0));
-		List<SyncTasksPacket> packets2 = taskScheduler2.popBufferedPackets();
+		assertEquals(testTask, packets1.get(0));
+		List<TaskPacket> packets2 = clock2.popBufferedTasks();
 		assertEquals(1, packets2.size());
-		assertEquals(1, packets2.get(0).getTasks().size());
-		assertEquals(testTask, packets2.get(0).getTasks().get(0));
+		assertEquals(testTask, packets2.get(0));
 
 		Thread.sleep(2 * NetworkConstants.Client.LOCKSTEP_PERIOD); // Wait two more lockstep periods and check the run away protection again
-		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, taskScheduler1.getUnlockedLockstepNumber());
-		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, taskScheduler2.getUnlockedLockstepNumber());
+		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, clock1.getAllowedLockstep());
+		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS + 1, clock2.getAllowedLockstep());
 	}
 
 	@Test
@@ -454,7 +445,7 @@ public class NetworkClientIntegrationTest {
 		logIn(client2, "player2", "player2");
 
 		openMatch(client1); // open match and join client2
-		client2.requestJoinMatch(client1.getMatchInfo(), null, null, null, new TestTaskScheduler());
+		client2.requestJoinMatch(client1.getMatchInfo(), null, null, null);
 
 		BufferingPacketReceiver<RejectPacket> rejectReceiver2 = new BufferingPacketReceiver<RejectPacket>();
 		client2.registerRejectReceiver(rejectReceiver2);

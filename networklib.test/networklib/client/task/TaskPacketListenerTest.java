@@ -42,7 +42,7 @@ public class TaskPacketListenerTest {
 
 	@Test
 	public void testSendAndReceive() throws InterruptedException {
-		TestTaskScheduler taskReceiver = new TestTaskScheduler();
+		SyncTasksPacketSchedulerMock taskReceiver = new SyncTasksPacketSchedulerMock();
 		TaskPacketListener listener = new TaskPacketListener(taskReceiver);
 		c1.registerListener(listener);
 
