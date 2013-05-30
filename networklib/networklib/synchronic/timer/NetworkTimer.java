@@ -48,7 +48,16 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		this.timer = new Timer("NetworkTimer");
 	}
 
-	public synchronized void schedule() {
+	public NetworkTimer(boolean noLockstepWaiting) {
+		this();
+
+		if (noLockstepWaiting) {
+			maxAllowedLockstep = Integer.MAX_VALUE;
+		}
+	}
+
+	@Override
+	public synchronized void startExecution() {
 		if (!scheduled) {
 			scheduled = true;
 			timer.schedule(this, 0, TIME_SLICE);
@@ -233,7 +242,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 
 	@Override
 	public void scheduleSyncTasksPacket(SyncTasksPacket tasksPacket) {
-		assert maxAllowedLockstep + 1 == tasksPacket.getLockstepNumber() : "received unlock for wrong step! current max allowed: "
+		assert maxAllowedLockstep == Integer.MAX_VALUE || maxAllowedLockstep + 1 == tasksPacket.getLockstepNumber() : "received unlock for wrong step! current max allowed: "
 				+ maxAllowedLockstep + " new: " + tasksPacket.getLockstepNumber();
 
 		if (!tasksPacket.getTasks().isEmpty()) {
@@ -241,7 +250,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 				tasks.addLast(tasksPacket);
 			}
 		}
-		maxAllowedLockstep = tasksPacket.getLockstepNumber();
+		maxAllowedLockstep = Math.max(maxAllowedLockstep, tasksPacket.getLockstepNumber());
 
 		synchronized (lockstepLock) {
 			lockstepLock.notifyAll();

@@ -29,15 +29,17 @@ public class Match {
 	private final byte maxPlayers;
 	private final MapInfoPacket map;
 	private final String name;
+	private final long randomSeed;
 
 	private EMatchState state = EMatchState.OPENED;
 	private TaskCollectingListener taskCollectingListener;
 	private TaskSendingTimerTask taskSendingTimerTask;
 
-	public Match(String name, byte maxPlayers, MapInfoPacket map) {
+	public Match(String name, byte maxPlayers, MapInfoPacket map, long randomSeed) {
 		this.maxPlayers = maxPlayers;
 		this.map = map;
 		this.name = name;
+		this.randomSeed = randomSeed;
 	}
 
 	public EMatchState getState() {
@@ -138,7 +140,7 @@ public class Match {
 			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_JOINED);
 
 			if (state == EMatchState.RUNNING) {
-				startMatchForPlayer(player);
+				sendMatchStartPacketToPlayer(player);
 			}
 		}
 	}
@@ -177,7 +179,7 @@ public class Match {
 
 		synchronized (players) {
 			for (Player player : players) {
-				startMatchForPlayer(player);
+				sendMatchStartPacketToPlayer(player);
 			}
 		}
 
@@ -185,7 +187,7 @@ public class Match {
 		timer.schedule(taskSendingTimerTask, 0, NetworkConstants.Client.LOCKSTEP_PERIOD);
 	}
 
-	private void startMatchForPlayer(Player player) {
+	private void sendMatchStartPacketToPlayer(Player player) {
 		player.matchStarted(taskCollectingListener);
 		player.sendPacket(NetworkConstants.Keys.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
 	}
@@ -193,6 +195,10 @@ public class Match {
 	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
 		sendMessage(player, NetworkConstants.Keys.TIME_SYNC, packet);
 		taskSendingTimerTask.receivedLockstepAcknowledge(packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
+	}
+
+	public long getRandomSeed() {
+		return randomSeed;
 	}
 
 }

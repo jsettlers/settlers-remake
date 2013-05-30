@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import networklib.server.db.IDBFacade;
+import networklib.server.game.EPlayerState;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
 
@@ -26,12 +27,16 @@ public class InMemoryDB implements IDBFacade {
 
 	@Override
 	public void storePlayer(Player player) {
-		players.put(player.getId(), player);
+		synchronized (players) {
+			players.put(player.getId(), player);
+		}
 	}
 
 	@Override
 	public void removePlayer(Player player) {
-		players.remove(player.getId());
+		synchronized (players) {
+			players.remove(player.getId());
+		}
 	}
 
 	@Override
@@ -97,5 +102,18 @@ public class InMemoryDB implements IDBFacade {
 	@Override
 	public Match getMatchById(String id) {
 		return matches.get(id);
+	}
+
+	@Override
+	public List<Player> getPlayers(EPlayerState... allowedStates) {
+		synchronized (players) {
+			List<Player> result = new LinkedList<Player>();
+			for (Player curr : players.values()) {
+				if (EPlayerState.isOneOf(curr.getState(), allowedStates)) {
+					result.add(curr);
+				}
+			}
+			return result;
+		}
 	}
 }

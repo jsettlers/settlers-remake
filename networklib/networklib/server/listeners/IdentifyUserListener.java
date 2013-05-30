@@ -20,18 +20,20 @@ import networklib.server.game.Player;
 public class IdentifyUserListener extends PacketChannelListener<PlayerInfoPacket> {
 
 	private final Channel channel;
-	private final IServerManager userAcceptor;
+	private final IServerManager serverManager;
 
 	public IdentifyUserListener(Channel channel, IServerManager userAcceptor) {
 		super(NetworkConstants.Keys.IDENTIFY_USER, new GenericDeserializer<PlayerInfoPacket>(PlayerInfoPacket.class));
 		this.channel = channel;
-		this.userAcceptor = userAcceptor;
+		this.serverManager = userAcceptor;
 	}
 
 	@Override
 	protected void receivePacket(int key, PlayerInfoPacket playerInfo) throws IOException {
-		if (userAcceptor.acceptNewPlayer(new Player(playerInfo, channel))) {
+		Player player = new Player(playerInfo, channel);
+		if (serverManager.acceptNewPlayer(player)) {
 			channel.sendPacket(NetworkConstants.Keys.IDENTIFY_USER, new EmptyPacket());
+			serverManager.sendMatchesToPlayer(player);
 		} else {
 			channel.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED,
 					NetworkConstants.Keys.IDENTIFY_USER));

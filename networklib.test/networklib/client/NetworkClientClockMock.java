@@ -52,56 +52,47 @@ public class NetworkClientClockMock implements INetworkClientClock {
 
 	@Override
 	public void setTaskExecutor(ITaskExecutor taskExecutor) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void multiplyGameSpeed(float factor) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void setGameSpeed(float speedFactor) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public boolean isPausing() {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void invertPausing() {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void setPausing(boolean b) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void fastForward() {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void remove(INetworkTimerable timerable) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
 	public void schedule(INetworkTimerable timerable, short delay) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override
@@ -118,6 +109,11 @@ public class NetworkClientClockMock implements INetworkClientClock {
 		LinkedList<TaskPacket> temp = bufferedTasks;
 		bufferedTasks = new LinkedList<TaskPacket>();
 		return temp;
+	}
+
+	@Override
+	public void startExecution() {
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 }

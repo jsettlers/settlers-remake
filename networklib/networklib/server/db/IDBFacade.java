@@ -2,6 +2,7 @@ package networklib.server.db;
 
 import java.util.List;
 
+import networklib.server.game.EPlayerState;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
 
@@ -41,4 +42,6 @@ public interface IDBFacade {
 	List<Match> getJoinableRunningMatches(Player player);
 
 	Match getMatchById(String id);
+
+	List<Player> getPlayers(EPlayerState... allowedStates);
 }

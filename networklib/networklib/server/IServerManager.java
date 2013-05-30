@@ -22,15 +22,6 @@ public interface IServerManager {
 	 */
 	void createNewMatch(OpenNewMatchPacket matchInfo, Player player);
 
-	void sendJoinableMatches(Player player);
-
-	/**
-	 * 
-	 * @param player
-	 * @return Returns a list of running matches where the given player had already participated.
-	 */
-	void sendJoinableRunningMatches(Player player);
-
 	void channelClosed(Player player);
 
 	/**
@@ -54,4 +45,6 @@ public interface IServerManager {
 	void joinMatch(MatchInfoPacket packet, Player player);
 
 	void setReadyStateForPlayer(Player player, boolean ready);
+
+	void sendMatchesToPlayer(Player player);
 }

@@ -1,9 +1,13 @@
 package networklib.client;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.client.interfaces.INetworkClient;
+import networklib.client.interfaces.ITaskScheduler;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.client.task.TaskPacketListener;
 import networklib.client.task.packets.TaskPacket;
@@ -36,7 +40,7 @@ import networklib.synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class NetworkClient implements ITaskScheduler {
+public class NetworkClient implements ITaskScheduler, INetworkClient {
 
 	private final AsyncChannel channel;
 	private final Timer timer;
@@ -58,6 +62,10 @@ public class NetworkClient implements ITaskScheduler {
 		this(channel, channelClosedListener, new NetworkTimer());
 	}
 
+	public NetworkClient(String serverAddress, IChannelClosedListener channelClosedListener) throws UnknownHostException, IOException {
+		this(new AsyncChannel(serverAddress, NetworkConstants.Server.SERVER_PORT), channelClosedListener);
+	}
+
 	NetworkClient(AsyncChannel channel, final IChannelClosedListener channelClosedListener, INetworkClientClock gameClock) {
 		this.channel = channel;
 		channel.setChannelClosedListener(new IChannelClosedListener() {
@@ -74,27 +82,15 @@ public class NetworkClient implements ITaskScheduler {
 		this.clock = gameClock;
 	}
 
-	public void logIn(String id, String name) throws InvalidStateException {
+	@Override
+	public void logIn(String id, String name, IPacketReceiver<ArrayOfMatchInfosPacket> matchesReceiver) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.CHANNEL_CONNECTED);
 
 		playerInfo = new PlayerInfoPacket(id, name, false);
 
 		channel.registerListener(new IdentifiedUserListener(this));
+		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class, matchesReceiver));
 		channel.sendPacketAsync(NetworkConstants.Keys.IDENTIFY_USER, playerInfo);
-	}
-
-	public void requestMatches(IPacketReceiver<ArrayOfMatchInfosPacket> listener) throws InvalidStateException {
-		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
-
-		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class, listener));
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_MATCHES, new EmptyPacket());
-	}
-
-	public void requestPlayersRunningMatches(IPacketReceiver<ArrayOfMatchInfosPacket> listener) throws InvalidStateException {
-		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
-
-		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class, listener));
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_PLAYERS_RUNNING_MATCHES, new EmptyPacket());
 	}
 
 	/**
@@ -109,14 +105,17 @@ public class NetworkClient implements ITaskScheduler {
 	 * @param taskScheduler
 	 * @throws InvalidStateException
 	 */
-	public void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, IPacketReceiver<MatchStartPacket> matchStartedListener,
+	@Override
+	public void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, long randomSeed,
+			IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo));
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo, randomSeed));
 	}
 
+	@Override
 	public void requestJoinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException {
@@ -125,26 +124,31 @@ public class NetworkClient implements ITaskScheduler {
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
 	}
 
+	@Override
 	public void requestLeaveMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 
+	@Override
 	public void requestStartMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
+	@Override
 	public void setReadyState(boolean ready) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.READY_STATE_CHANGE, new ReadyStatePacket(ready));
 	}
 
+	@Override
 	public void sendChatMessage(String message) throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
 	}
 
+	@Override
 	public void registerRejectReceiver(IPacketReceiver<RejectPacket> rejectListener) {
 		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.class, rejectListener));
 	}
@@ -158,8 +162,7 @@ public class NetworkClient implements ITaskScheduler {
 	}
 
 	@Override
-	public void scheduleTask(TaskPacket task) throws InvalidStateException {
-		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
+	public void scheduleTask(TaskPacket task) {
 		channel.sendPacketAsync(NetworkConstants.Keys.SYNCHRONOUS_TASK, task);
 	}
 
@@ -167,10 +170,12 @@ public class NetworkClient implements ITaskScheduler {
 		return new DefaultClientPacketListener<T>(key, new GenericDeserializer<T>(classType), listener);
 	}
 
+	@Override
 	public EPlayerState getState() {
 		return state;
 	}
 
+	@Override
 	public void close() {
 		state = EPlayerState.DISCONNECTED;
 		timer.cancel();
@@ -239,6 +244,7 @@ public class NetworkClient implements ITaskScheduler {
 	/**
 	 * @return the playerInfo
 	 */
+	@Override
 	public PlayerInfoPacket getPlayerInfo() {
 		return playerInfo;
 	}
@@ -246,6 +252,7 @@ public class NetworkClient implements ITaskScheduler {
 	/**
 	 * @return the matchInfo
 	 */
+	@Override
 	public MatchInfoPacket getMatchInfo() {
 		return matchInfo;
 	}

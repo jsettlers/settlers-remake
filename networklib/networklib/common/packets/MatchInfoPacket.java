@@ -19,16 +19,18 @@ public class MatchInfoPacket extends Packet {
 	private byte maxPlayers;
 	private MapInfoPacket mapInfo;
 	private PlayerInfoPacket[] players;
+	private long randomSeed;
 
 	public MatchInfoPacket() {
 	}
 
-	public MatchInfoPacket(String id, String matchName, byte maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players) {
+	public MatchInfoPacket(String id, String matchName, byte maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players, long randomSeed) {
 		this.id = id;
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
 		this.players = players;
+		this.randomSeed = randomSeed;
 	}
 
 	public MatchInfoPacket(Match match) {
@@ -38,6 +40,7 @@ public class MatchInfoPacket extends Packet {
 		maxPlayers = match.getMaxPlayers();
 		mapInfo = match.getMap();
 		players = match.getPlayerInfos();
+		randomSeed = match.getRandomSeed();
 	}
 
 	@Override
@@ -52,6 +55,8 @@ public class MatchInfoPacket extends Packet {
 		for (PlayerInfoPacket curr : players) {
 			curr.serialize(dos);
 		}
+
+		dos.writeLong(randomSeed);
 	}
 
 	@Override
@@ -70,46 +75,32 @@ public class MatchInfoPacket extends Packet {
 			players[i] = curr;
 		}
 		this.players = players;
+
+		randomSeed = dis.readLong();
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getMatchName() {
 		return matchName;
-	}
-
-	public void setMatchName(String matchName) {
-		this.matchName = matchName;
 	}
 
 	public MapInfoPacket getMapInfo() {
 		return mapInfo;
 	}
 
-	public void setMapInfo(MapInfoPacket mapInfo) {
-		this.mapInfo = mapInfo;
-	}
-
 	public PlayerInfoPacket[] getPlayers() {
 		return players;
-	}
-
-	public void setPlayers(PlayerInfoPacket[] players) {
-		this.players = players;
 	}
 
 	public byte getMaxPlayers() {
 		return maxPlayers;
 	}
 
-	public void setMaxPlayers(byte maxPlayers) {
-		this.maxPlayers = maxPlayers;
+	public long getRandomSeed() {
+		return randomSeed;
 	}
 
 	@Override
@@ -121,6 +112,7 @@ public class MatchInfoPacket extends Packet {
 		result = prime * result + ((matchName == null) ? 0 : matchName.hashCode());
 		result = prime * result + maxPlayers;
 		result = prime * result + Arrays.hashCode(players);
+		result = prime * result + (int) (randomSeed ^ (randomSeed >>> 32));
 		return result;
 	}
 
@@ -152,6 +144,9 @@ public class MatchInfoPacket extends Packet {
 			return false;
 		if (!Arrays.equals(players, other.players))
 			return false;
+		if (randomSeed != other.randomSeed)
+			return false;
 		return true;
 	}
+
 }

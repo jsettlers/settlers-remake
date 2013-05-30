@@ -15,14 +15,16 @@ public class OpenNewMatchPacket extends Packet {
 	private String matchName;
 	private byte maxPlayers;
 	private MapInfoPacket mapInfo;
+	private long randomSeed;
 
 	public OpenNewMatchPacket() {
 	}
 
-	public OpenNewMatchPacket(String matchName, byte maxPlayers, MapInfoPacket mapInfo) {
+	public OpenNewMatchPacket(String matchName, byte maxPlayers, MapInfoPacket mapInfo, long randomSeed) {
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
+		this.randomSeed = randomSeed;
 	}
 
 	@Override
@@ -30,6 +32,7 @@ public class OpenNewMatchPacket extends Packet {
 		dos.writeUTF(matchName);
 		dos.writeByte(maxPlayers);
 		mapInfo.serialize(dos);
+		dos.writeLong(randomSeed);
 	}
 
 	@Override
@@ -38,6 +41,7 @@ public class OpenNewMatchPacket extends Packet {
 		maxPlayers = dis.readByte();
 		mapInfo = new MapInfoPacket();
 		mapInfo.deserialize(dis);
+		randomSeed = dis.readLong();
 	}
 
 	public String getMatchName() {
@@ -52,6 +56,10 @@ public class OpenNewMatchPacket extends Packet {
 		return maxPlayers;
 	}
 
+	public long getRandomSeed() {
+		return randomSeed;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -59,6 +67,7 @@ public class OpenNewMatchPacket extends Packet {
 		result = prime * result + ((mapInfo == null) ? 0 : mapInfo.hashCode());
 		result = prime * result + ((matchName == null) ? 0 : matchName.hashCode());
 		result = prime * result + maxPlayers;
+		result = prime * result + (int) (randomSeed ^ (randomSeed >>> 32));
 		return result;
 	}
 
@@ -82,6 +91,8 @@ public class OpenNewMatchPacket extends Packet {
 		} else if (!matchName.equals(other.matchName))
 			return false;
 		if (maxPlayers != other.maxPlayers)
+			return false;
+		if (randomSeed != other.randomSeed)
 			return false;
 		return true;
 	}

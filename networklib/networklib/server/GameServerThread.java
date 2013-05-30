@@ -92,7 +92,13 @@ public class GameServerThread extends Thread {
 		}
 	}
 
-	public void shutdown() {
+	@Override
+	public synchronized void start() {
+		super.start();
+		manager.start();
+	}
+
+	public synchronized void shutdown() {
 		canceled = true;
 		try {
 			serverSocket.close();
@@ -101,6 +107,8 @@ public class GameServerThread extends Thread {
 
 		if (lanBroadcastThread != null)
 			lanBroadcastThread.shutdown();
+
+		manager.shutdown();
 	}
 
 	public boolean isLandBroadcasterAlive() {

@@ -1,4 +1,4 @@
-package networklib.client;
+package networklib.client.interfaces;
 
 import networklib.client.task.packets.TaskPacket;
 import networklib.client.time.IGameClock;
@@ -20,7 +20,7 @@ public interface ITaskScheduler {
 	 * @throws Exception
 	 *             If anything goes wrong, an exception may be thrown.
 	 */
-	void scheduleTask(TaskPacket task) throws Exception;
+	void scheduleTask(TaskPacket task);
 
 	/**
 	 * 

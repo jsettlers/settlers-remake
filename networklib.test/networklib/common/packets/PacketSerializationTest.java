@@ -68,7 +68,8 @@ public class PacketSerializationTest {
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[] { createMatchInfoPacket(), createMatchInfoPacket() }),
 						d(ArrayOfMatchInfosPacket.class) },
-				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName")), d(OpenNewMatchPacket.class) },
+				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName"), -3453434534329434535L),
+						d(OpenNewMatchPacket.class) },
 				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
 				{ new MatchInfoUpdatePacket(34, createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
@@ -96,7 +97,7 @@ public class PacketSerializationTest {
 				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2", true),
 				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2", false)
 		};
-		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players);
+		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players, 4L);
 	}
 
 	private static <T extends Packet> Object d(Class<T> classType) {

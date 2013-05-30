@@ -27,6 +27,8 @@ public final class NetworkConstants {
 		public static final int BROADCAST_PORT = 10233;
 		public static final String BROADCAST_MESSAGE = "JSETTLERS-LAN-SERVER-BROADCAST-V1";
 		public static final int BROADCAST_BUFFER_LENGTH = BROADCAST_MESSAGE.length();
+
+		public static final long OPEN_MATCHES_SEND_INTERVAL_MS = 5 * 1000;
 	}
 
 	public final static class Client {
@@ -96,8 +98,6 @@ public final class NetworkConstants {
 
 		public static final int MATCH_STARTED = -19;
 
-		public static final int REQUEST_MATCHES = -14;
-		public static final int REQUEST_PLAYERS_RUNNING_MATCHES = -15;
 		public static final int REQUEST_OPEN_NEW_MATCH = -16;
 		public static final int REQUEST_LEAVE_MATCH = -17;
 		public static final int REQUEST_JOIN_MATCH = -18;

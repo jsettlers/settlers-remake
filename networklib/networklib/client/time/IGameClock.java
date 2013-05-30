@@ -9,7 +9,7 @@ import networklib.synchronic.timer.ITaskExecutor;
  * @author Andreas Eberle
  * 
  */
-public interface IGameClock {
+public interface IGameClock extends IPausingSupplier {
 
 	int getTime();
 
@@ -21,8 +21,6 @@ public interface IGameClock {
 
 	void setGameSpeed(float speedFactor);
 
-	boolean isPausing();
-
 	void invertPausing();
 
 	void setPausing(boolean b);
@@ -32,4 +30,6 @@ public interface IGameClock {
 	void remove(INetworkTimerable timerable);
 
 	void schedule(INetworkTimerable timerable, short delay);
+
+	void startExecution();
 }

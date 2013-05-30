@@ -1,11 +1,9 @@
 package networklib.server;
 
-import java.util.List;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
 import networklib.client.exceptions.InvalidStateException;
-import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.OpenNewMatchPacket;
@@ -15,6 +13,7 @@ import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.db.IDBFacade;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.game.Match;
+import networklib.server.game.MatchSendingTimerTask;
 import networklib.server.game.Player;
 import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.IdentifyUserListener;
@@ -23,7 +22,6 @@ import networklib.server.listeners.ServerChannelClosedListener;
 import networklib.server.listeners.TimeSyncForwardingListener;
 import networklib.server.listeners.matches.RequestJoinMatchListener;
 import networklib.server.listeners.matches.RequestLeaveMatchListener;
-import networklib.server.listeners.matches.RequestMatchesListener;
 import networklib.server.listeners.matches.RequestOpenNewMatchListener;
 import networklib.server.listeners.matches.RequestStartMatchListener;
 
@@ -36,10 +34,22 @@ import networklib.server.listeners.matches.RequestStartMatchListener;
 public class ServerManager implements IServerManager {
 
 	private final IDBFacade db;
-	private final Timer matchTimer = new Timer("MatchTimer", true);
+	private final Timer sendMatchListTimer = new Timer("SendMatchListTimer", true);
+	private final Timer matchesTaskDistributionTimer = new Timer("MatchesTaskDistributionTimer", true);
+	private final MatchSendingTimerTask matchSendingTask;
 
 	public ServerManager(IDBFacade db) {
 		this.db = db;
+		matchSendingTask = new MatchSendingTimerTask(db);
+	}
+
+	public synchronized void start() {
+		sendMatchListTimer.schedule(matchSendingTask, 0, NetworkConstants.Server.OPEN_MATCHES_SEND_INTERVAL_MS);
+	}
+
+	public synchronized void shutdown() {
+		sendMatchListTimer.cancel();
+		matchesTaskDistributionTimer.cancel();
 	}
 
 	public void identifyNewChannel(Channel channel) {
@@ -55,7 +65,6 @@ public class ServerManager implements IServerManager {
 			channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
 
 			channel.setChannelClosedListener(new ServerChannelClosedListener(this, player));
-			channel.registerListener(new RequestMatchesListener(this, player));
 			channel.registerListener(new RequestOpenNewMatchListener(this, player));
 			channel.registerListener(new RequestLeaveMatchListener(this, player));
 			channel.registerListener(new RequestStartMatchListener(this, player));
@@ -68,31 +77,6 @@ public class ServerManager implements IServerManager {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public void sendJoinableMatches(Player player) {
-		List<Match> matches = db.getJoinableMatches();
-
-		sendMatchesList(player, matches);
-	}
-
-	private void sendMatchesList(Player player, List<Match> matches) {
-		MatchInfoPacket[] matchInfoPackets = new MatchInfoPacket[matches.size()];
-		int i = 0;
-		for (Match curr : matches) {
-			matchInfoPackets[i] = new MatchInfoPacket(curr);
-			i++;
-		}
-
-		player.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, new ArrayOfMatchInfosPacket(matchInfoPackets));
-	}
-
-	@Override
-	public void sendJoinableRunningMatches(Player player) {
-		List<Match> matches = db.getJoinableRunningMatches(player);
-
-		sendMatchesList(player, matches);
 	}
 
 	@Override
@@ -110,7 +94,7 @@ public class ServerManager implements IServerManager {
 
 	@Override
 	public void createNewMatch(OpenNewMatchPacket matchInfo, Player player) {
-		Match match = new Match(matchInfo.getMatchName(), matchInfo.getMaxPlayers(), matchInfo.getMapInfo());
+		Match match = new Match(matchInfo.getMatchName(), matchInfo.getMaxPlayers(), matchInfo.getMapInfo(), matchInfo.getRandomSeed());
 		db.storeMatch(match);
 
 		joinMatch(match, player);
@@ -138,7 +122,7 @@ public class ServerManager implements IServerManager {
 	@Override
 	public void startMatch(Player player) {
 		try {
-			player.startMatch(matchTimer);
+			player.startMatch(matchesTaskDistributionTimer);
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
@@ -187,4 +171,10 @@ public class ServerManager implements IServerManager {
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.READY_STATE_CHANGE));
 		}
 	}
+
+	@Override
+	public void sendMatchesToPlayer(Player player) {
+		matchSendingTask.sendMatchesTo(player);
+	}
+
 }

@@ -17,17 +17,22 @@ public enum EPlayerState {
 	DISCONNECTED, ;
 
 	public static void assertState(EPlayerState state, EPlayerState... expectedStates) throws InvalidStateException {
-		boolean correctState = false;
-		for (EPlayerState curr : expectedStates) {
-			if (state.equals(curr)) {
-				correctState = true;
-				break;
-			}
-		}
+		boolean correctState = isOneOf(state, expectedStates);
 
 		if (!correctState) {
 			throw new InvalidStateException("Invalid client state: " + state + ". This action can only be done in one of the following states: "
 					+ Arrays.toString(expectedStates));
 		}
+	}
+
+	public static boolean isOneOf(EPlayerState state, EPlayerState... allowedStates) {
+		boolean correctState = false;
+		for (EPlayerState curr : allowedStates) {
+			if (state.equals(curr)) {
+				correctState = true;
+				break;
+			}
+		}
+		return correctState;
 	}
 }

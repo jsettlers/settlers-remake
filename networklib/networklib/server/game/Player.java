@@ -96,4 +96,8 @@ public class Player {
 			match.sendMatchInfoUpdate(NetworkConstants.Keys.READY_STATE_CHANGE);
 		}
 	}
+
+	public EPlayerState getState() {
+		return state;
+	}
 }

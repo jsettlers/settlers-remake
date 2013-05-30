@@ -56,6 +56,8 @@ public class NetworkClientIntegrationTest {
 
 	@Before
 	public void setUp() throws IOException {
+		manager.start();
+
 		// set up first client
 		AsyncChannel[] channels = TestUtils.setUpAsyncLoopbackChannels();
 		client1Channel = channels[0];
@@ -74,7 +76,6 @@ public class NetworkClientIntegrationTest {
 
 		client2 = new NetworkClient(client2Channel, null, clock2);
 		manager.identifyNewChannel(server2Channel);
-
 	}
 
 	@After
@@ -88,11 +89,11 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testConnection() throws InterruptedException {
-		TestPacketListener listener = new TestPacketListener(NetworkConstants.Keys.REQUEST_MATCHES);
+		TestPacketListener listener = new TestPacketListener(NetworkConstants.Keys.TEST_PACKET);
 		client1Channel.registerListener(listener);
 
 		TestPacket testPacket = new TestPacket("sdlfjsh", 2324);
-		server1Channel.sendPacket(NetworkConstants.Keys.REQUEST_MATCHES, testPacket);
+		server1Channel.sendPacket(NetworkConstants.Keys.TEST_PACKET, testPacket);
 
 		Thread.sleep(10);
 
@@ -110,11 +111,11 @@ public class NetworkClientIntegrationTest {
 	private void logIn(NetworkClient client, String playerId, String playerName) throws InvalidStateException, InterruptedException {
 		int currentNumberOfPlayers = db.getNumberOfPlayers();
 
-		client.logIn(playerId, playerName);
+		client.logIn(playerId, playerName, null);
 
 		Thread.sleep(40);
 
-		assertEquals(EPlayerState.LOGGED_IN, client1.getState());
+		assertEquals(EPlayerState.LOGGED_IN, client.getState());
 
 		assertEquals(currentNumberOfPlayers + 1, db.getNumberOfPlayers()); // ensure we have now one player more than before
 		Player p = db.getPlayer(playerId);
@@ -123,30 +124,20 @@ public class NetworkClientIntegrationTest {
 	}
 
 	@Test(expected = InvalidStateException.class)
-	public void testRequestMatchesInStateUnconnected() throws InvalidStateException {
-		client1.requestMatches(null);
-	}
-
-	@Test(expected = InvalidStateException.class)
-	public void testRequestPlayersRunningMatchesInStateUnconnected() throws InvalidStateException {
-		client1.requestPlayersRunningMatches(null);
-	}
-
-	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateUnconnected() throws InvalidStateException {
-		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
+		client1.requestOpenNewMatch(null, (byte) 0, null, 4711L, null, null, null);
 	}
 
 	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateInMatch() throws InvalidStateException, InterruptedException {
 		testOpenMatchWithLogin();
-		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
+		client1.requestOpenNewMatch(null, (byte) 0, null, 4711L, null, null, null);
 	}
 
 	@Test(expected = InvalidStateException.class)
 	public void testRequestOpenNewMatchInStateInRunningMatch() throws InvalidStateException, InterruptedException {
 		testOpenAndStartNewMatch();
-		client1.requestOpenNewMatch(null, (byte) 0, null, null, null, null);
+		client1.requestOpenNewMatch(null, (byte) 0, null, 4711L, null, null, null);
 	}
 
 	@Test(expected = InvalidStateException.class)
@@ -169,9 +160,7 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testOpenAndStartNewMatch() throws InvalidStateException, InterruptedException {
-		logIn(client1, "id1", "player1");
-
-		openMatch(client1);
+		openMatch("id1", "player1", client1);
 
 		client1.requestStartMatch();
 		Thread.sleep(50);
@@ -180,10 +169,9 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testOpenStartAndJoinNewMatch() throws InvalidStateException, InterruptedException {
-		logIn(client1, "id1", "player1");
 		logIn(client2, "id2", "player2");
 
-		openMatch(client1);
+		openMatch("id1", "player1", client1);
 
 		MatchInfoPacket dbMatchInfo = new MatchInfoPacket(db.getJoinableMatches().get(0));
 		assertEquals(dbMatchInfo, client1.getMatchInfo());
@@ -239,20 +227,18 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testOpenMatchWithLogin() throws InvalidStateException, InterruptedException {
-		testLogIn();
-
-		openMatch(client1);
+		openMatch("player1", "player1", client1);
 	}
 
-	private void openMatch(NetworkClient client) throws InvalidStateException, InterruptedException {
-		BufferingPacketReceiver<ArrayOfMatchInfosPacket> matchesListener = new BufferingPacketReceiver<ArrayOfMatchInfosPacket>();
-		assertEquals(0, matchesListener.popBufferedPackets().size());
+	private void openMatch(String id, String name, NetworkClient client) throws InvalidStateException, InterruptedException {
+		BufferingPacketReceiver<ArrayOfMatchInfosPacket> matchesReceiver = new BufferingPacketReceiver<ArrayOfMatchInfosPacket>();
+		assertEquals(0, matchesReceiver.popBufferedPackets().size());
 
-		client.requestMatches(matchesListener);
+		client.logIn(id, name, matchesReceiver);
 
 		Thread.sleep(50);
 
-		List<ArrayOfMatchInfosPacket> arrayOfMatches = matchesListener.popBufferedPackets();
+		List<ArrayOfMatchInfosPacket> arrayOfMatches = matchesReceiver.popBufferedPackets();
 		assertEquals(1, arrayOfMatches.size()); // check that we got one result for the request
 		assertEquals(0, arrayOfMatches.get(0).getMatches().length); // currently no matches should be in the result, because non should be open
 
@@ -260,7 +246,7 @@ public class NetworkClientIntegrationTest {
 		final String matchName = "TestMatch";
 		final byte maxPlayers = (byte) 5;
 		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName");
-		client.requestOpenNewMatch(matchName, maxPlayers, mapInfo, null, matchUpdateListener, null);
+		client.requestOpenNewMatch(matchName, maxPlayers, mapInfo, -4712L, null, matchUpdateListener, null);
 
 		Thread.sleep(100);
 
@@ -285,38 +271,11 @@ public class NetworkClientIntegrationTest {
 	}
 
 	@Test
-	public void testGetPlayersRunningMatches() throws InvalidStateException, InterruptedException {
-		testLogIn();
-
-		BufferingPacketReceiver<ArrayOfMatchInfosPacket> listener = new BufferingPacketReceiver<ArrayOfMatchInfosPacket>();
-		client1.requestPlayersRunningMatches(listener);
-
-		Thread.sleep(50);
-		List<ArrayOfMatchInfosPacket> packets = listener.popBufferedPackets();
-		assertEquals(1, packets.size());
-		assertEquals(0, packets.get(0).getMatches().length);
-
-		openMatch(client1); // open a new match.
-
-		client1.requestStartMatch();
-		client1.requestLeaveMatch();
-
-		Thread.sleep(50);
-
-		client1.requestPlayersRunningMatches(listener);
-
-		Thread.sleep(50);
-		packets = listener.popBufferedPackets();
-		assertEquals(1, packets.size());
-		assertEquals(1, packets.get(0).getMatches().length);
-	}
-
-	@Test
 	public void testChatMessaging() throws InvalidStateException, InterruptedException {
 		testLogIn();
 
 		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<ChatMessagePacket>();
-		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, chatReceiver);
+		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), 923409340394293842L, null, null, chatReceiver);
 
 		Thread.sleep(80);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
@@ -382,7 +341,7 @@ public class NetworkClientIntegrationTest {
 		logIn(client1, "player1", "player1");
 		logIn(client2, "player2", "player2");
 
-		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), null, null, null);
+		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), 34L, null, null, null);
 
 		Thread.sleep(70);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
@@ -425,7 +384,7 @@ public class NetworkClientIntegrationTest {
 		// Now let one clock continue one lockstep period.
 		clock1.setTime(NetworkConstants.Client.LOCKSTEP_PERIOD);
 
-		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 30);
+		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 40);
 
 		List<TaskPacket> packets1 = clock1.popBufferedTasks();
 		assertEquals(1, packets1.size());
@@ -441,10 +400,9 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testStartMatchWithUnreadyPlayers() throws InvalidStateException, InterruptedException {
-		logIn(client1, "player1", "player1");
-		logIn(client2, "player2", "player2");
+		logIn(client2, "id2", "player2");
 
-		openMatch(client1); // open match and join client2
+		openMatch("id1", "player1", client1); // open match and join client2
 		client2.requestJoinMatch(client1.getMatchInfo(), null, null, null);
 
 		BufferingPacketReceiver<RejectPacket> rejectReceiver2 = new BufferingPacketReceiver<RejectPacket>();
