@@ -3,7 +3,7 @@ package jsettlers.logic.algorithms.path.area;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * 

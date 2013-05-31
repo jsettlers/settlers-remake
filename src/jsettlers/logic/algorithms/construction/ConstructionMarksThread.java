@@ -5,7 +5,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.logic.algorithms.AlgorithmConstants;
-import synchronic.timer.NetworkTimer;
+import networklib.client.time.IPausingSupplier;
 
 /**
  * Thread to calculate the markings for the user if he want's to construct a new building.<br>
@@ -17,6 +17,7 @@ import synchronic.timer.NetworkTimer;
 public final class ConstructionMarksThread implements Runnable {
 
 	private final NewConstructionMarksAlgorithm algorithm;
+	private final IPausingSupplier pausingSupplier;
 	private final Thread thread;
 
 	private boolean canceled;
@@ -27,8 +28,9 @@ public final class ConstructionMarksThread implements Runnable {
 	private MapRectangle mapArea = null;
 	private EBuildingType buildingType = null;
 
-	public ConstructionMarksThread(AbstractConstructionMarkableMap map, byte player) {
-		algorithm = new NewConstructionMarksAlgorithm(map, player);
+	public ConstructionMarksThread(AbstractConstructionMarkableMap map, IPausingSupplier pausingSupplier, byte player) {
+		this.algorithm = new NewConstructionMarksAlgorithm(map, player);
+		this.pausingSupplier = pausingSupplier;
 
 		thread = new Thread(this, "ConstructionMarksThread");
 		thread.setDaemon(true);
@@ -46,7 +48,7 @@ public final class ConstructionMarksThread implements Runnable {
 				}
 
 				while (buildingType != null && !canceled) {
-					if (!NetworkTimer.isPausing()) {
+					if (!pausingSupplier.isPausing()) {
 						StopWatch watch = new MilliStopWatch();
 						watch.restart();
 

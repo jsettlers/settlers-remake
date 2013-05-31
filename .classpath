@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.networking"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/networklib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
