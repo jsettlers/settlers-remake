@@ -15,8 +15,13 @@ import jsettlers.logic.map.newGrid.MainGridDataAccessor;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class PartitionCalculatorAlgorithmSpeedTest {
 
 	static { // sets the native library path for the system dependent jogl libs
@@ -26,7 +31,7 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 	}
 
 	public static void main(String[] args) throws MapLoadException, InterruptedException {
-		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap.map")).getMainGrid();
+		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap.map")).getMainGrid((byte) 0);
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();
@@ -44,7 +49,8 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 
 		MilliStopWatch watch = new MilliStopWatch();
 
-		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockingSet, IBlockingProvider.DEFAULT_IMPLEMENTATION);
+		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockingSet,
+				IBlockingProvider.DEFAULT_IMPLEMENTATION);
 		partitioner.calculatePartitions();
 		System.out.println("\n\n\n\nnumber of partitions: " + partitioner.getNumberOfPartitions());
 

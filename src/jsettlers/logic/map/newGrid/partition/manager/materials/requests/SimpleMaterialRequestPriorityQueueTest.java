@@ -13,10 +13,9 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import networklib.synchronic.random.RandomSingleton;
 
 import org.junit.Test;
-
-import random.RandomSingleton;
 
 /**
  * This is a test for the {@link MaterialsForBuildingsRequestPrioQueue} data structure.

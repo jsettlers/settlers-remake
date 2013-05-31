@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapLoader;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 public final class TestUtils {
 	private TestUtils() {
@@ -19,7 +19,7 @@ public final class TestUtils {
 	public static MainGrid getMap() throws MapLoadException {
 		RandomSingleton.load(123456L);
 		MapLoader loader = new MapLoader(new File("../jsettlers.common/resources/maps/bigmap.map"));
-		return loader.getMainGrid();
+		return loader.getMainGrid((byte) 0);
 	}
 
 	public static <T> T serializeAndDeserialize(T object) throws IOException,
