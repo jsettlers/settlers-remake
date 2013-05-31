@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.android"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
