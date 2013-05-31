@@ -1,6 +1,5 @@
 package jsettlers.graphics.startscreen.interfaces;
 
-
 /**
  * This is a map that is startable for a new game.
  * <p>
@@ -8,20 +7,21 @@ package jsettlers.graphics.startscreen.interfaces;
  * map generator.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public interface IStartableMapDefinition extends IMapDefinition {
 	/**
 	 * Gets the minimum number of players that can play this map.
+	 * 
 	 * @return That number.
 	 */
 	int getMinPlayers();
 
 	/**
 	 * Gets the maximum number of players supported by this map.
+	 * 
 	 * @return The number of players supported by this map.
 	 */
 	int getMaxPlayers();
-	
-	/* XXX: getUUID() */
 
 }
