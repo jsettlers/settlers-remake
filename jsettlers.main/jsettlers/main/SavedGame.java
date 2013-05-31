@@ -41,15 +41,9 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 	}
 
 	@Override
-	public MainGrid getMainGrid() throws MapLoadException {
-		return loader.getMainGrid();
-	}
-
-	@Override
 	public MainGrid getMainGrid(byte player) throws MapLoadException {
 		return loader.getMainGrid(player);
 	}
-	
 
 	@Override
 	public UIState getUISettings(int player) throws MapLoadException {
@@ -57,12 +51,12 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 	}
 
 	@Override
-    public short[] getImage() {
+	public short[] getImage() {
 		try {
 			return loader.getFileHeader().getBgimage();
 		} catch (MapLoadException e) {
 			return new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE];
 		}
-    }
+	}
 
 }

@@ -7,22 +7,24 @@ import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.main.network.NetworkOpenMatchesRetriever;
+import jsettlers.main.network.NetworkConnector;
 
-class StartConnector implements IStartScreenConnector {
-	/**
-     * 
-     */
-	private final IGameStarter gamestarter;
+/**
+ * This class implements the {@link IStartScreenConnector} interface and offers the UI the methods and objects it needs.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public class StartConnector implements IStartScreenConnector {
+
+	private final ManagedJSettlers managedJSettlers;
 	private final MapList mapList;
-	private INetworkConnector networkConnector;
+	private final NetworkConnector networkConnector;
 
-	/**
-	 * @param managedJSettlers
-	 */
-	StartConnector(IGameStarter managedJSettlers) {
-		gamestarter = managedJSettlers;
-		mapList = MapList.getDefaultList();
+	public StartConnector(ManagedJSettlers managedJSettlers) {
+		this.managedJSettlers = managedJSettlers;
+		this.mapList = MapList.getDefaultList();
+		this.networkConnector = new NetworkConnector(managedJSettlers);
 	}
 
 	@Override
@@ -34,45 +36,40 @@ class StartConnector implements IStartScreenConnector {
 	public List<? extends ILoadableGame> getLoadableGames() {
 		return mapList.getSavedMaps();
 	}
-	
+
 	@Override
 	public void deleteLoadableGame(ILoadableGame game) {
-	    mapList.deleteLoadableGame(game);
+		mapList.deleteLoadableGame(game);
 	}
 
 	@Override
 	public void startNewGame(IGameSettings game) {
-		gamestarter.startGame(game);
+		managedJSettlers.startGame((IGameCreator) game.getMap());
 	}
 
 	@Override
 	public void loadGame(ILoadableGame load) {
-		gamestarter.loadGame(load);
+		managedJSettlers.startGame((IGameCreator) load);
 	}
 
 	@Override
 	public void exitGame() {
-		System.exit(0);
+		System.exit(0); // TODO check if there's a better way for this.
 	}
 
 	@Override
 	public INetworkConnector getNetworkConnector() {
-		if (networkConnector == null) {
-			networkConnector = new NetworkOpenMatchesRetriever();
-		}
-
 		return networkConnector;
 	}
 
 	@Override
-	public void startNetworkGame(IMatchSettings gameSettings) {
-		gamestarter.openNetworkGame(gameSettings);
+	public void openNewNetworkGame(IMatchSettings gameSettings) {
+		networkConnector.openNewNetworkGame(gameSettings);
 	}
 
 	@Override
-    public void joinNetworkGame(IMatch match) {
-		if (networkConnector != null) {
-			gamestarter.joinNetworkGame(networkConnector.getServerAddress(), match);
-		}
-    }
+	public void joinNetworkGame(IMatch match) {
+		networkConnector.joinNetworkGame(match);
+	}
+
 }

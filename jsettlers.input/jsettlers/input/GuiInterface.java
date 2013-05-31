@@ -27,23 +27,23 @@ import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.input.task.ConvertGuiTask;
-import jsettlers.input.task.DestroyBuildingGuiTask;
-import jsettlers.input.task.EGuiAction;
-import jsettlers.input.task.GeneralGuiTask;
-import jsettlers.input.task.MovableGuiTask;
-import jsettlers.input.task.MoveToGuiTask;
-import jsettlers.input.task.SetBuildingPriorityGuiTask;
-import jsettlers.input.task.SetMaterialDistributionSettingsGuiTask;
-import jsettlers.input.task.SetMaterialPrioritiesGuiTask;
-import jsettlers.input.task.SimpleGuiTask;
-import jsettlers.input.task.WorkAreaGuiTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.GeneralGuiTask;
+import jsettlers.input.tasks.MovableGuiTask;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
+import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SimpleGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
-import network.NetworkManager;
-import synchronic.timer.NetworkTimer;
+import networklib.client.interfaces.ITaskScheduler;
+import networklib.client.time.IGameClock;
 
 /**
  * class to handle the events provided by the user through jsettlers.graphics
@@ -54,10 +54,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private final MapInterfaceConnector connector;
 
-	private final ConstructionMarksThread constructionMarksCalculator;
-	private final NetworkManager manager;
+	private final IGameClock clock;
+	private final ITaskScheduler taskScheduler;
 	private final IGuiInputGrid grid;
 	private final byte player;
+	private final boolean multiplayer;
+	private final ConstructionMarksThread constructionMarksCalculator;
+
 	/**
 	 * The current active action that waits for the user to select a point.
 	 */
@@ -65,13 +68,18 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private EBuildingType previewBuilding;
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(MapInterfaceConnector connector, NetworkManager manager, IGuiInputGrid grid, byte player) {
+	public GuiInterface(MapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, byte player,
+			boolean multiplayer) {
 		this.connector = connector;
-		this.manager = manager;
+		this.clock = clock;
+		this.taskScheduler = taskScheduler;
 		this.grid = grid;
 		this.player = player;
-		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), player);
+		this.multiplayer = multiplayer;
+		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
 		connector.addListener(this);
+
+		clock.setTaskExecutor(new GuiTaskExecutor(grid, this));
 	}
 
 	@Override
@@ -100,46 +108,46 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SPEED_TOGGLE_PAUSE:
-			NetworkTimer.get().invertPausing();
+			clock.invertPausing();
 			break;
-			
+
 		case SPEED_SET_PAUSE:
-			NetworkTimer.get().setPausing(true);
+			clock.setPausing(true);
 			break;
-			
+
 		case SPEED_UNSET_PAUSE:
-			NetworkTimer.get().setPausing(false);
+			clock.setPausing(false);
 			break;
 
 		case SPEED_SLOW:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.setGameSpeed(0.5f);
+			if (!multiplayer) {
+				clock.setGameSpeed(0.5f);
 			}
 			break;
 		case SPEED_FAST:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.setGameSpeed(2.0f);
+			if (!multiplayer) {
+				clock.setGameSpeed(2.0f);
 			}
 			break;
 		case SPEED_FASTER:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.multiplyGameSpeed(1.2f);
+			if (!multiplayer) {
+				clock.multiplyGameSpeed(1.2f);
 			}
 			break;
 		case SPEED_SLOWER:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.multiplyGameSpeed(1 / 1.2f);
+			if (!multiplayer) {
+				clock.multiplyGameSpeed(1 / 1.2f);
 			}
 			break;
 		case SPEED_NORMAL:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.setGameSpeed(1.0f);
+			if (!multiplayer) {
+				clock.setGameSpeed(1.0f);
 			}
 			break;
 
 		case FAST_FORWARD:
-			if (!manager.isMultiplayer()) {
-				NetworkTimer.get().fastForward();
+			if (!multiplayer) {
+				clock.fastForward();
 			}
 			break;
 
@@ -201,7 +209,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SAVE:
-			manager.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
+			taskScheduler.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
 			break;
 
 		case CONVERT:
@@ -214,14 +222,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
-			manager.scheduleTask(new SetMaterialDistributionSettingsGuiTask(a.getManagerPosition(), a.getMaterialType(), a
+			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(a.getManagerPosition(), a.getMaterialType(), a
 					.getProbabilities()));
 			break;
 		}
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
-			manager.scheduleTask(new SetMaterialPrioritiesGuiTask(a.getManagerPosition(), a.getMaterialTypeForPriority()));
+			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(a.getManagerPosition(), a.getMaterialTypeForPriority()));
 			break;
 		}
 
@@ -230,10 +238,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
-	private void setBuildingWorkArea(ShortPoint2D position) {
+	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
 		ISelectable selected = currentSelection.iterator().next();
 		if (selected instanceof Building) {
-			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, position, ((Building) selected).getPos()));
+			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, workAreaPosition, ((Building) selected).getPos()));
 		}
 	}
 
@@ -274,7 +282,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		if (convertables.size() > 0) {
-			manager.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
+			taskScheduler.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
 		}
 	}
 
@@ -288,16 +296,16 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
 		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			manager.scheduleTask(new DestroyBuildingGuiTask(((Building) currentSelection.iterator().next()).getPos()));
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(((Building) currentSelection.iterator().next()).getPos()));
 		} else {
-			manager.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
+			taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
 		}
 		setSelection(new SelectionSet());
 	}
 
 	private void setBuildingPriority(EPriority newPriority) {
 		if (currentSelection != null && currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			manager.scheduleTask(new SetBuildingPriorityGuiTask(((Building) currentSelection.iterator().next()).getPos(), newPriority));
+			taskScheduler.scheduleTask(new SetBuildingPriorityGuiTask(((Building) currentSelection.iterator().next()).getPos(), newPriority));
 		}
 	}
 
@@ -325,7 +333,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 *            if false, they will start working
 	 */
 	private void stopOrStartWorkingAction(boolean stop) {
-		manager.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, getIDsOfSelected()));
+		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, getIDsOfSelected()));
 	}
 
 	private void moveTo(ShortPoint2D pos) {
@@ -406,7 +414,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private void scheduleTask(SimpleGuiTask guiTask) {
-		manager.scheduleTask(guiTask);
+		taskScheduler.scheduleTask(guiTask);
 	}
 
 	private void select(ShortPoint2D pos) {

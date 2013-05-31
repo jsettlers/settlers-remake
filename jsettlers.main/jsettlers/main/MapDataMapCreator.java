@@ -18,11 +18,6 @@ public class MapDataMapCreator implements IGameCreator {
 	}
 
 	@Override
-	public MainGrid getMainGrid() throws MapLoadException {
-		return getMainGrid((byte) 0);
-	}
-
-	@Override
 	public MainGrid getMainGrid(byte player) throws MapLoadException {
 		if (data == null) {
 			data = map.getData();

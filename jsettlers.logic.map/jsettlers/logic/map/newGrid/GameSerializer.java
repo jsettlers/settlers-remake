@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import jsettlers.common.map.MapLoadException;
-import synchronic.timer.NetworkTimer;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
@@ -81,7 +81,7 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				oos.writeInt(NetworkTimer.get().getGameTime());
+				oos.writeInt(MatchConstants.clock.getTime());
 				oos.writeObject(grid);
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -102,7 +102,7 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				NetworkTimer.get().setGameTime(ois.readInt());
+				MatchConstants.clock.setTime(ois.readInt());
 				grid = (MainGrid) ois.readObject();
 			} catch (Throwable t) {
 				t.printStackTrace();

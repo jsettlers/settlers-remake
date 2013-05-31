@@ -116,11 +116,6 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 	}
 
 	@Override
-	public MainGrid getMainGrid() throws MapLoadException {
-		return getMainGrid((byte) 0);
-	}
-
-	@Override
 	public MainGrid getMainGrid(byte player) throws MapLoadException {
 		try {
 			if (mainGrid == null) {

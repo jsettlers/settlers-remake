@@ -1,8 +1,8 @@
 package jsettlers.logic.timer;
 
 import jsettlers.common.SerializableLinkedList;
-import synchronic.timer.INetworkTimerable;
-import synchronic.timer.NetworkTimer;
+import jsettlers.logic.constants.MatchConstants;
+import networklib.synchronic.timer.INetworkTimerable;
 
 public abstract class AbstractTimer<T extends ITimerable> implements INetworkTimerable {
 	private static final SerializableLinkedList<AbstractTimer<? extends ITimerable>> timers = new SerializableLinkedList<AbstractTimer<? extends ITimerable>>();
@@ -15,7 +15,7 @@ public abstract class AbstractTimer<T extends ITimerable> implements INetworkTim
 
 	protected AbstractTimer(short interruptDelay) {
 		this.name = this.getClass().getName();
-		NetworkTimer.schedule(this, interruptDelay);
+		MatchConstants.clock.schedule(this, interruptDelay);
 
 		timers.add(this);
 	}

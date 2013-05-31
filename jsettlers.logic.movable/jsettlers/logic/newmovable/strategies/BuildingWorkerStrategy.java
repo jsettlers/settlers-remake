@@ -19,7 +19,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 public final class BuildingWorkerStrategy extends NewMovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;

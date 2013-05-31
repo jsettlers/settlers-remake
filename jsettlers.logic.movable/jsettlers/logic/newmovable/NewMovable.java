@@ -20,17 +20,17 @@ import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
-import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
-import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.MovableTimer;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * Central Movable class of JSettlers.

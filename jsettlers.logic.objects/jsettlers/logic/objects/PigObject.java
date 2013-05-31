@@ -1,8 +1,8 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
-import synchronic.timer.NetworkTimer;
 
 /**
  * A pig that can be placed on the map. it can be "cut" after some time (that means can be cut return true).
@@ -20,7 +20,7 @@ public class PigObject extends AbstractHexMapObject {
 	private final int starttime;
 
 	public PigObject() {
-		starttime = NetworkTimer.get().getGameTime();
+		starttime = MatchConstants.clock.getTime();
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class PigObject extends AbstractHexMapObject {
 
 	@Override
 	public boolean canBeCut() {
-		return (NetworkTimer.get().getGameTime() - starttime) > LIVE_TIME;
+		return (MatchConstants.clock.getTime() - starttime) > LIVE_TIME;
 	}
 
 }

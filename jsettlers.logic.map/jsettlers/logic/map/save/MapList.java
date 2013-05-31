@@ -30,7 +30,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * @author michael
  */
 public class MapList {
-	private static final String MAP_EXTENSION = ".map";
+	public static final String MAP_EXTENSION = ".map";
 	private final ArrayList<MapLoader> freshMaps = new ArrayList<MapLoader>();
 	private final ArrayList<MapLoader> savedMaps = new ArrayList<MapLoader>();
 	private final File dir;
@@ -51,7 +51,7 @@ public class MapList {
 		File[] files = dir.listFiles();
 		if (files == null) {
 			throw new IllegalArgumentException("map directory "
-			        + dir.getAbsolutePath() + " is not a directory.");
+					+ dir.getAbsolutePath() + " is not a directory.");
 		}
 
 		for (File file : files) {
@@ -75,7 +75,7 @@ public class MapList {
 			}
 		} catch (MapLoadException e) {
 			System.err.println("Cought exception while loading header for "
-			        + file.getAbsolutePath());
+					+ file.getAbsolutePath());
 			e.printStackTrace();
 		}
 	}
@@ -107,7 +107,7 @@ public class MapList {
 	 *             If any IO error occurred.
 	 */
 	public synchronized void saveMap(MapFileHeader header, IMapData data)
-	        throws IOException {
+			throws IOException {
 		OutputStream out = null;
 		try {
 			out = getOutputStream(header);
@@ -121,17 +121,15 @@ public class MapList {
 	}
 
 	/**
-	 * Gets an output stream that can be used to store the map. The stream is to
-	 * a file with a nice name and does not override any other file.
+	 * Gets an output stream that can be used to store the map. The stream is to a file with a nice name and does not override any other file.
 	 * 
 	 * @param header
-	 *            The header to create the file name from. It is not written to
-	 *            the stream.
+	 *            The header to create the file name from. It is not written to the stream.
 	 * @return A output stream to a fresh generated file.
 	 * @throws IOException
 	 */
 	private OutputStream getOutputStream(MapFileHeader header)
-	        throws IOException {
+			throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
 			name = "map";
@@ -140,7 +138,7 @@ public class MapList {
 		Date date = header.getDate();
 		if (date != null) {
 			SimpleDateFormat format =
-			        new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
+					new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
 			name += format.format(date);
 		}
 
@@ -158,15 +156,14 @@ public class MapList {
 	}
 
 	/**
-	 * Saves a map to disk. The map logic should be paused while calling this
-	 * method.
+	 * Saves a map to disk. The map logic should be paused while calling this method.
 	 * 
 	 * @param state
 	 * @param grid
 	 * @throws IOException
 	 */
 	public synchronized void saveMap(UIState state, MainGrid grid)
-	        throws IOException {
+			throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream out = getOutputStream(header);
 		header.writeTo(out);
@@ -187,7 +184,7 @@ public class MapList {
 	 * @throws IOException
 	 */
 	public synchronized void saveRandomMap(MapFileHeader header,
-	        String definition) throws IOException {
+			String definition) throws IOException {
 		OutputStream out = getOutputStream(header);
 		MapSaver.saveRandomMap(header, definition, out);
 		loadFileList();

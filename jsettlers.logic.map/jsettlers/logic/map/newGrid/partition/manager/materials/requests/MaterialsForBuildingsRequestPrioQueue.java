@@ -10,7 +10,7 @@ import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.collections.list.DoubleLinkedList;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * This class is an advanced priority queue for material requests. The requests are served according to the settings. The settings specify the

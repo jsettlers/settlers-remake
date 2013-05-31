@@ -1,9 +1,9 @@
 package jsettlers.logic.objects;
 
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
-import random.RandomSingleton;
-import synchronic.timer.NetworkTimer;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * 
@@ -22,7 +22,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 
 	@Override
 	public float getStateProgress() {
-		float progress = (NetworkTimer.get().getGameTime() - startTime) / ((float) duration);
+		float progress = (MatchConstants.clock.getTime() - startTime) / ((float) duration);
 		if (progress < 1) {
 			return progress;
 		} else {
@@ -40,7 +40,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 		// assert duration > 0 : "duration may never be less or equal to 0.0f"; TODO @Andreas Eberle enable this assertion again!
 
 		this.duration = (int) (duration * 1000);
-		this.startTime = NetworkTimer.get().getGameTime();
+		this.startTime = MatchConstants.clock.getTime();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public abstract class ProgressingObject extends AbstractObjectsManagerObject {
 	 */
 	protected final void setDurationWithVariation(float duration) {
 		this.duration = (int) (duration * 1000);
-		this.startTime = NetworkTimer.get().getGameTime() - RandomSingleton.getInt(0, (int) (duration * 100));
+		this.startTime = MatchConstants.clock.getTime() - RandomSingleton.getInt(0, (int) (duration * 100));
 	}
 
 	/**

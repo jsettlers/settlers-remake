@@ -16,6 +16,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.newmovable.interfaces.IInformable;
 import jsettlers.logic.objects.PigObject;
 import jsettlers.logic.objects.RessourceSignMapObject;
@@ -34,8 +35,7 @@ import jsettlers.logic.objects.tree.Tree;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
-import random.RandomSingleton;
-import synchronic.timer.NetworkTimer;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * This class manages the MapObjects on the grid. It handles timed events like growth interrupts of a tree or deletion of arrows.
@@ -61,7 +61,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 
 	@Override
 	public void timerEvent() {
-		int gameTime = NetworkTimer.get().getGameTime();
+		int gameTime = MatchConstants.clock.getTime();
 
 		TimeEvent curr = null;
 		curr = timingQueue.peek();
@@ -490,7 +490,7 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 		protected TimeEvent(AbstractObjectsManagerObject mapObject, float duration, boolean shouldRemove) {
 			this.mapObject = mapObject;
 			this.shouldRemove = shouldRemove;
-			this.eventTime = (int) (NetworkTimer.get().getGameTime() + duration * 1000);
+			this.eventTime = (int) (MatchConstants.clock.getTime() + duration * 1000);
 		}
 
 		public boolean isOutDated(int gameTime) {

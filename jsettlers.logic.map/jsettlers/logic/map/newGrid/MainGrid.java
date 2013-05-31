@@ -62,6 +62,7 @@ import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.flags.FlagsGrid;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.newGrid.movable.MovableGrid;
@@ -88,7 +89,6 @@ import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
-import synchronic.timer.NetworkTimer;
 
 /**
  * This is the main grid offering an interface for interacting with the grid.
@@ -1471,8 +1471,8 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final void save(UIState uiState) throws FileNotFoundException, IOException, InterruptedException {
-			boolean pausing = NetworkTimer.isPausing();
-			NetworkTimer.get().setPausing(true);
+			boolean savedPausingState = MatchConstants.clock.isPausing();
+			MatchConstants.clock.setPausing(true);
 			try {
 				Thread.sleep(100); // FIXME @Andreas serializer should wait until
 									// threads did their work!
@@ -1484,7 +1484,7 @@ public final class MainGrid implements Serializable {
 			// TODO @Andreas Eberle: pass on ui state.
 			list.saveMap(uiState, MainGrid.this);
 
-			NetworkTimer.get().setPausing(pausing);
+			MatchConstants.clock.setPausing(savedPausingState);
 		}
 
 		@Override

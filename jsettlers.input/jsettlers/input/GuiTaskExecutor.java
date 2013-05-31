@@ -7,21 +7,21 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.input.task.ConvertGuiTask;
-import jsettlers.input.task.DestroyBuildingGuiTask;
-import jsettlers.input.task.EGuiAction;
-import jsettlers.input.task.GeneralGuiTask;
-import jsettlers.input.task.MovableGuiTask;
-import jsettlers.input.task.MoveToGuiTask;
-import jsettlers.input.task.SetBuildingPriorityGuiTask;
-import jsettlers.input.task.SetMaterialDistributionSettingsGuiTask;
-import jsettlers.input.task.SetMaterialPrioritiesGuiTask;
-import jsettlers.input.task.SimpleGuiTask;
-import jsettlers.input.task.WorkAreaGuiTask;
+import jsettlers.input.tasks.ConvertGuiTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.GeneralGuiTask;
+import jsettlers.input.tasks.MovableGuiTask;
+import jsettlers.input.tasks.MoveToGuiTask;
+import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
+import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
+import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
+import jsettlers.input.tasks.SimpleGuiTask;
+import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.network.task.ITask;
-import network.ITaskExecutor;
+import networklib.client.task.packets.TaskPacket;
+import networklib.synchronic.timer.ITaskExecutor;
 
 public class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
@@ -43,7 +43,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	@Override
-	public void executeTask(ITask iTask) {
+	public void executeTask(TaskPacket iTask) {
 		if (!(iTask instanceof SimpleGuiTask)) {
 			return;
 		}

@@ -3,7 +3,7 @@ package jsettlers.logic.statistics;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
-import synchronic.timer.NetworkTimer;
+import networklib.client.time.IGameClock;
 
 /**
  * This class supplies the UI with statistics of the game.
@@ -13,15 +13,15 @@ import synchronic.timer.NetworkTimer;
  */
 public class GameStatistics implements IStatisticable {
 
-	private NetworkTimer gameTimer;
+	private IGameClock gameClock;
 
-	public GameStatistics(NetworkTimer gameTimer) {
-		this.gameTimer = gameTimer;
+	public GameStatistics(IGameClock gameTimer) {
+		this.gameClock = gameTimer;
 	}
 
 	@Override
 	public int getGameTime() {
-		return gameTimer.getGameTime();
+		return gameClock.getTime();
 	}
 
 	@Override

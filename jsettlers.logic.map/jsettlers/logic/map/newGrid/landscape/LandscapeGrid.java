@@ -11,7 +11,7 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * This grid stores the height and the {@link ELandscapeType} of every position.

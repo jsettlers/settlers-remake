@@ -1,8 +1,9 @@
 package jsettlers.logic.timer;
 
-import synchronic.timer.INetworkTimerable;
+import networklib.synchronic.timer.INetworkTimerable;
 
 public interface ITimerable extends INetworkTimerable {
+
 	@Override
 	public void timerEvent();
 

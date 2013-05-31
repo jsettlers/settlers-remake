@@ -8,10 +8,11 @@ import jsettlers.logic.map.newGrid.MainGrid;
  * Classes of this interface are capable of creating a game.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public interface IGameCreator {
-	@Deprecated
-	public MainGrid getMainGrid() throws MapLoadException;
+
 	public MainGrid getMainGrid(byte player) throws MapLoadException;
+
 	public UIState getUISettings(int player) throws MapLoadException;
 }

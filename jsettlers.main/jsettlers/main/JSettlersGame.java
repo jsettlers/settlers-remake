@@ -10,45 +10,55 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
-import jsettlers.input.GuiTaskExecutor;
 import jsettlers.input.UIState;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.MovableTimer;
 import jsettlers.logic.timer.PartitionManagerTimer;
 import jsettlers.logic.timer.Timer100Milli;
-import network.NetworkManager;
-import random.RandomSingleton;
-import synchronic.timer.NetworkTimer;
+import networklib.client.OfflineTaskScheduler;
+import networklib.client.interfaces.ITaskScheduler;
+import networklib.client.time.IGameClock;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * This is a running jsettlers game. It can be started and then stopped once.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public class JSettlersGame {
 
 	private final long randomSeed;
 
-	private boolean stopped = false;
 	private final Object stopMutex = new Object();
 	private final ISettlersGameDisplay content;
-	private IGameCreator mapcreator;
-	private final NetworkManager networkManager;
 	private final byte playerNumber;
+	private final ITaskScheduler taskScheduler;
+	private final boolean multiplayer;
 
-	private Listener listener;
+	private IGameCreator mapcreator;
+
+	private boolean stopped = false;
+	private GameEndedListener listener;
 	private MapInterfaceConnector gameConnector;
 	private boolean started = false;
 
-	public JSettlersGame(ISettlersGameDisplay content, IGameCreator mapCreator, long randomSeed, NetworkManager networkManager, byte playerNumber) {
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator mapCreator, long randomSeed, ITaskScheduler taskScheduler,
+			byte playerNumber, boolean multiplayer) {
 		this.content = content;
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
-		this.networkManager = networkManager;
+		this.taskScheduler = taskScheduler;
 		this.playerNumber = playerNumber;
+		this.multiplayer = multiplayer;
+	}
+
+	public JSettlersGame(ISettlersGameDisplay content, IGameCreator mapCreator, long randomSeed, byte playerNumber) {
+		this(content, mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false);
 	}
 
 	/**
@@ -66,10 +76,11 @@ public class JSettlersGame {
 
 		@Override
 		public void run() {
+			IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
+
 			ProgressConnector progress = content.showProgress();
 
-			NetworkTimer gameTimer = NetworkTimer.get();
-			gameTimer.setPausing(true);
+			gameClock.setPausing(true);
 			RandomSingleton.load(randomSeed);
 
 			progress.setProgressState(EProgressState.LOADING_MAP, 0.1f);
@@ -89,19 +100,19 @@ public class JSettlersGame {
 				return;
 			}
 
-			gameTimer.setPausing(false);
+			gameClock.setPausing(false);
 
 			// load images
 			progress.setProgressState(EProgressState.LOADING_IMAGES, 0.8f);
 
-			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), new GameStatistics(NetworkTimer.get()));
-			GuiInterface guiInterface = new GuiInterface(connector, networkManager, grid.getGuiInputGrid(), playerNumber);
+			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), new GameStatistics(gameClock));
+			GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, grid.getGuiInputGrid(), playerNumber, multiplayer);
 
 			connector.addListener(this);
 			connector.loadUIState(uiState.getUiStateData());
 
 			grid.startThreads();
-			networkManager.startGameTimer(new GuiTaskExecutor(grid.getGuiInputGrid(), guiInterface));
+			gameClock.startExecution();
 
 			gameConnector = connector;
 
@@ -114,7 +125,7 @@ public class JSettlersGame {
 				}
 			}
 
-			NetworkTimer.get().setPausing(true);
+			gameClock.setPausing(true);
 			connector.stop();
 			grid.stopThreads();
 			guiInterface.stop();
@@ -123,7 +134,6 @@ public class JSettlersGame {
 			PartitionManagerTimer.stop();
 			NewMovable.dropAllMovables();
 			Building.dropAllBuildings();
-			networkManager.stop();
 
 			listener.gameEnded();
 		}
@@ -147,18 +157,15 @@ public class JSettlersGame {
 	/**
 	 * Defines a listener for this game.
 	 * 
-	 * @param managedJSettlers
+	 * @param The
+	 *            listener that will be informed when the game ended.
 	 */
-	public void setListener(Listener listener) {
+	public void setGameEndedListener(GameEndedListener listener) {
 		this.listener = listener;
 	}
 
-	public interface Listener {
-		void gameEnded();
-	}
-
 	public boolean isPaused() {
-		return true; // TODO: how do we know that the game is paused
+		return taskScheduler.getGameClock().isPausing();
 	}
 
 	public void setPaused(boolean b) {
@@ -170,5 +177,9 @@ public class JSettlersGame {
 	public String save() {
 		gameConnector.fireAction(new Action(EActionType.SAVE));
 		return "savegame";
+	}
+
+	public static interface GameEndedListener {
+		void gameEnded();
 	}
 }

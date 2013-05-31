@@ -28,7 +28,7 @@ import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.player.Player;
-import random.RandomSingleton;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * This is a tower building that can request soldiers and let them defend the tower.
