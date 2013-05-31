@@ -1,5 +1,8 @@
 package jsettlers.main.android.fragments;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import jsettlers.common.network.IMatch;
 import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.main.android.R;
@@ -13,19 +16,25 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IMatch> {
 	@Override
 	protected MapListAdapter<IMatch> generateListAdapter() {
 		LayoutInflater inflater =
-		        (LayoutInflater) getActivity().getSystemService(
-		                Context.LAYOUT_INFLATER_SERVICE);
-		INetworkConnector networkConnector =
-		        getJsettlersActivity().getStartConnector()
-		                .getNetworkConnector();
-		networkConnector.setServerAddress(null);
+				(LayoutInflater) getActivity().getSystemService(
+						Context.LAYOUT_INFLATER_SERVICE);
+		INetworkConnector networkConnector = getJsettlersActivity()
+				.getStartConnector().getNetworkConnector();
+		try {
+			networkConnector.setServerAddress(null);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO @Michael: handle case of unreachable server.
+			e.printStackTrace();
+		}
 		return new JoinableMapListAdapter(inflater, networkConnector);
 	}
 
 	@Override
 	protected String getItemDescription(IMatch item) {
 		return String.format("map id: %s\nmatch id: %s", item.getMapID(),
-		        item.getMatchID());
+				item.getMatchID());
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class NewNetworkGameFragment extends MapSelectionFragment<IMapItem> {
 		String name = "Android network game";
 		IMatchSettings gameSettings =
 		        new NetworkGameSettings(game, name, game.getMaxPlayers(), null);
-		getJsettlersActivity().getStartConnector().startNetworkGame(
+		getJsettlersActivity().getStartConnector().openNewNetworkGame(
 		        gameSettings);
 	}
 
