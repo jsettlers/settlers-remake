@@ -245,7 +245,7 @@ public class NetworkClientIntegrationTest {
 		BufferingPacketReceiver<MatchInfoUpdatePacket> matchUpdateListener = new BufferingPacketReceiver<MatchInfoUpdatePacket>();
 		final String matchName = "TestMatch";
 		final byte maxPlayers = (byte) 5;
-		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName");
+		final MapInfoPacket mapInfo = new MapInfoPacket("mapid92329", "mapName", "authorId", "authorName", 5);
 		client.requestOpenNewMatch(matchName, maxPlayers, mapInfo, -4712L, null, matchUpdateListener, null);
 
 		Thread.sleep(100);
@@ -275,7 +275,7 @@ public class NetworkClientIntegrationTest {
 		testLogIn();
 
 		BufferingPacketReceiver<ChatMessagePacket> chatReceiver = new BufferingPacketReceiver<ChatMessagePacket>();
-		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), 923409340394293842L, null, null, chatReceiver);
+		client1.requestOpenNewMatch("TestMatch", 4, new MapInfoPacket("", "", "", "", 9), 923409340394293842L, null, null, chatReceiver);
 
 		Thread.sleep(80);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
@@ -341,7 +341,7 @@ public class NetworkClientIntegrationTest {
 		logIn(client1, "player1", "player1");
 		logIn(client2, "player2", "player2");
 
-		client1.requestOpenNewMatch("TestMatch", (byte) 4, new MapInfoPacket("", "", "", ""), 34L, null, null, null);
+		client1.requestOpenNewMatch("TestMatch", 4, new MapInfoPacket("", "", "", "", 4), 34L, null, null, null);
 
 		Thread.sleep(70);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());

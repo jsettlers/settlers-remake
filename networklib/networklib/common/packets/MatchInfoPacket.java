@@ -16,7 +16,7 @@ import networklib.server.game.Match;
 public class MatchInfoPacket extends Packet {
 	private String id;
 	private String matchName;
-	private byte maxPlayers;
+	private int maxPlayers;
 	private MapInfoPacket mapInfo;
 	private PlayerInfoPacket[] players;
 	private long randomSeed;
@@ -24,7 +24,7 @@ public class MatchInfoPacket extends Packet {
 	public MatchInfoPacket() {
 	}
 
-	public MatchInfoPacket(String id, String matchName, byte maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players, long randomSeed) {
+	public MatchInfoPacket(String id, String matchName, int maxPlayers, MapInfoPacket mapInfo, PlayerInfoPacket[] players, long randomSeed) {
 		this.id = id;
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
@@ -47,7 +47,7 @@ public class MatchInfoPacket extends Packet {
 	public void serialize(DataOutputStream dos) throws IOException {
 		dos.writeUTF(id);
 		dos.writeUTF(matchName);
-		dos.writeByte(maxPlayers);
+		dos.writeInt(maxPlayers);
 		mapInfo.serialize(dos);
 
 		PlayerInfoPacket[] players = this.players;
@@ -63,7 +63,7 @@ public class MatchInfoPacket extends Packet {
 	public void deserialize(DataInputStream dis) throws IOException {
 		id = dis.readUTF();
 		matchName = dis.readUTF();
-		maxPlayers = dis.readByte();
+		maxPlayers = dis.readInt();
 		mapInfo = new MapInfoPacket();
 		mapInfo.deserialize(dis);
 
@@ -95,7 +95,7 @@ public class MatchInfoPacket extends Packet {
 		return players;
 	}
 
-	public byte getMaxPlayers() {
+	public int getMaxPlayers() {
 		return maxPlayers;
 	}
 

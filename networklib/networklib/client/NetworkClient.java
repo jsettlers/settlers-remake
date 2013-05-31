@@ -106,7 +106,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	 * @throws InvalidStateException
 	 */
 	@Override
-	public void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, long randomSeed,
+	public void requestOpenNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
 			IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException {

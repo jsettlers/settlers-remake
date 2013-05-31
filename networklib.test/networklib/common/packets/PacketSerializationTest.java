@@ -63,12 +63,13 @@ public class PacketSerializationTest {
 		Object[][] data = new Object[][] {
 				{ new EmptyPacket(), EmptyPacket.DEFAULT_DESERIALIZER },
 				{ new PlayerInfoPacket("IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/", true), d(PlayerInfoPacket.class) },
-				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(§\"(/!=°", "authorId8unsdkjfn8932", "authorName uHh89023u9h"), d(MapInfoPacket.class) },
+				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(§\"(/!=°", "authorId8unsdkjfn8932", "authorName uHh89023u9h", 6),
+						d(MapInfoPacket.class) },
 				{ createMatchInfoPacket(), d(MatchInfoPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[] { createMatchInfoPacket(), createMatchInfoPacket() }),
 						d(ArrayOfMatchInfosPacket.class) },
-				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName"), -3453434534329434535L),
+				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName", 6), -3453434534329434535L),
 						d(OpenNewMatchPacket.class) },
 				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
@@ -92,7 +93,7 @@ public class PacketSerializationTest {
 	}
 
 	private static MatchInfoPacket createMatchInfoPacket() {
-		MapInfoPacket mapInfo = new MapInfoPacket("sdjfij", "sdfsdflksjdlfk", "sdflnnp0928u30894", "sdlkfkjlÖ:Ö_Ö");
+		MapInfoPacket mapInfo = new MapInfoPacket("sdjfij", "sdfsdflksjdlfk", "sdflnnp0928u30894", "sdlkfkjlÖ:Ö_Ö", 5);
 		PlayerInfoPacket[] players = new PlayerInfoPacket[] {
 				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2", true),
 				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2", false)

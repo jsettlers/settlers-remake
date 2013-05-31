@@ -43,7 +43,7 @@ public interface INetworkClient extends ITaskScheduler {
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException;
 
-	public abstract void requestOpenNewMatch(String matchName, byte maxPlayers, MapInfoPacket mapInfo, long randomSeed,
+	public abstract void requestOpenNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
 			IPacketReceiver<MatchStartPacket> matchStartedListener, IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener,
 			IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException;

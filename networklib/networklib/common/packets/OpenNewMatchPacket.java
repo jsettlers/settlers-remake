@@ -13,14 +13,14 @@ import networklib.infrastructure.channel.packet.Packet;
  */
 public class OpenNewMatchPacket extends Packet {
 	private String matchName;
-	private byte maxPlayers;
+	private int maxPlayers;
 	private MapInfoPacket mapInfo;
 	private long randomSeed;
 
 	public OpenNewMatchPacket() {
 	}
 
-	public OpenNewMatchPacket(String matchName, byte maxPlayers, MapInfoPacket mapInfo, long randomSeed) {
+	public OpenNewMatchPacket(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed) {
 		this.matchName = matchName;
 		this.maxPlayers = maxPlayers;
 		this.mapInfo = mapInfo;
@@ -30,7 +30,7 @@ public class OpenNewMatchPacket extends Packet {
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
 		dos.writeUTF(matchName);
-		dos.writeByte(maxPlayers);
+		dos.writeInt(maxPlayers);
 		mapInfo.serialize(dos);
 		dos.writeLong(randomSeed);
 	}
@@ -38,7 +38,7 @@ public class OpenNewMatchPacket extends Packet {
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
 		matchName = dis.readUTF();
-		maxPlayers = dis.readByte();
+		maxPlayers = dis.readInt();
 		mapInfo = new MapInfoPacket();
 		mapInfo.deserialize(dis);
 		randomSeed = dis.readLong();
@@ -52,7 +52,7 @@ public class OpenNewMatchPacket extends Packet {
 		return mapInfo;
 	}
 
-	public byte getMaxPlayers() {
+	public int getMaxPlayers() {
 		return maxPlayers;
 	}
 

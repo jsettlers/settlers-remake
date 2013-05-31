@@ -26,7 +26,7 @@ public class Match {
 	private final String id = UUID.randomUUID().toString();
 	private final LinkedList<Player> players = new LinkedList<Player>();
 	private final LinkedList<Player> leftPlayers = new LinkedList<Player>();
-	private final byte maxPlayers;
+	private final int maxPlayers;
 	private final MapInfoPacket map;
 	private final String name;
 	private final long randomSeed;
@@ -35,7 +35,7 @@ public class Match {
 	private TaskCollectingListener taskCollectingListener;
 	private TaskSendingTimerTask taskSendingTimerTask;
 
-	public Match(String name, byte maxPlayers, MapInfoPacket map, long randomSeed) {
+	public Match(String name, int maxPlayers, MapInfoPacket map, long randomSeed) {
 		this.maxPlayers = maxPlayers;
 		this.map = map;
 		this.name = name;
@@ -75,7 +75,7 @@ public class Match {
 		}
 	}
 
-	public byte getMaxPlayers() {
+	public int getMaxPlayers() {
 		return maxPlayers;
 	}
 
