@@ -1,5 +1,8 @@
 package jsettlers.graphics.startscreen;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import jsettlers.common.network.IMatch;
 
 /**
@@ -8,6 +11,7 @@ import jsettlers.common.network.IMatch;
  * It is used to display the list of active network games.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public interface INetworkConnector {
 	/**
@@ -16,8 +20,13 @@ public interface INetworkConnector {
 	 * 
 	 * @param address
 	 *            The address as String.
+	 * @throws UnknownHostException
+	 *             If the given server can not be found.
+	 * @throws IOException
+	 *             If the connection could not be established.
 	 */
-	public void setServerAddress(String address);
+	public void setServerAddress(String address) throws UnknownHostException,
+	        IOException;
 
 	/**
 	 * Gets the currently used server address. Should be the last address set.

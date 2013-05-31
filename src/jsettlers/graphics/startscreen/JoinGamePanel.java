@@ -2,6 +2,8 @@ package jsettlers.graphics.startscreen;
 
 import go.graphics.GLDrawContext;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import jsettlers.common.network.IMatch;
@@ -21,7 +23,14 @@ public class JoinGamePanel extends UIPanel implements INetworkListener {
 
 	public JoinGamePanel(INetworkConnector networkConnector) {
 		this.networkConnector = networkConnector;
-		 networkConnector.setServerAddress(null);
+		try {
+			networkConnector.setServerAddress(null);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO @Michael: handle case of unreachable server.
+			e.printStackTrace();
+		}
 
 		// start button
 		EActionType action = EActionType.JOIN_NETWORK;

@@ -27,7 +27,8 @@ import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.graphics.utils.UIPanel;
 
-public class StartScreen extends RedrawListenerHaver implements SettlersContent, INetworkListener {
+public class StartScreen extends RedrawListenerHaver implements
+        SettlersContent, INetworkListener {
 	private static final OriginalImageLink BACKGROUND = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
 
@@ -117,9 +118,10 @@ public class StartScreen extends RedrawListenerHaver implements SettlersContent,
 
 			case START_NETWORK:
 				if (newGamePanel != null) {
-					IMatchSettings gameSettings = newGamePanel.getNetworkGameSettings();
+					IMatchSettings gameSettings =
+					        newGamePanel.getNetworkGameSettings();
 					if (gameSettings != null) {
-						connector.startNetworkGame(gameSettings);
+						connector.openNewNetworkGame(gameSettings);
 					}
 				}
 				break;
@@ -132,7 +134,7 @@ public class StartScreen extends RedrawListenerHaver implements SettlersContent,
 					}
 				}
 				break;
-				
+
 			case JOIN_NETWORK:
 				if (joinGamePanel != null) {
 					IMatch match = joinGamePanel.getSelected();
@@ -159,9 +161,11 @@ public class StartScreen extends RedrawListenerHaver implements SettlersContent,
 			newGamePanel = new NewGamePanel(connector.getMaps(), true);
 			content.addChild(newGamePanel, 0, 0, 1, 1);
 		} else if (displayAction == EActionType.SHOW_JOIN_NETWORK) {
-			joinGamePanel = new JoinGamePanel(connector.getNetworkConnector());
+			INetworkConnector networkConnector =
+			        connector.getNetworkConnector();
+			joinGamePanel = new JoinGamePanel(networkConnector);
 			content.addChild(joinGamePanel, 0, 0, 1, 1);
-			connector.getNetworkConnector().setListener(this);
+			networkConnector.setListener(this);
 		}
 
 		for (UILabeledButton b : mainButtons) {
@@ -196,9 +200,9 @@ public class StartScreen extends RedrawListenerHaver implements SettlersContent,
 	}
 
 	@Override
-    public void matchListChanged(INetworkConnector connector) {
-	    joinGamePanel.matchListChanged(connector);
-	    requestRedraw();
-    }
+	public void matchListChanged(INetworkConnector connector) {
+		joinGamePanel.matchListChanged(connector);
+		requestRedraw();
+	}
 
 }

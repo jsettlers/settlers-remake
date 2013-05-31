@@ -97,7 +97,7 @@ public interface IStartScreenConnector {
 	 * @param gameSettings
 	 *            The settings to use for the game.
 	 */
-	void startNetworkGame(IMatchSettings gameSettings);
+	void openNewNetworkGame(IMatchSettings gameSettings);
 
 	/**
 	 * Requests to join a network game.
