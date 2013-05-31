@@ -1,5 +1,8 @@
 package jsettlers.graphics.startscreen.interfaces;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 /**
  * This is the main start screen interface. It is given to the start screen when
  * the screen is created.
@@ -28,31 +31,41 @@ public interface IStartScreen {
 
 	/**
 	 * Gets the maps for which a new multiplayer game can be started.
+	 * 
 	 * @return The list of maps.
 	 */
 	IChangingList<? extends IStartableMapDefinition> getMultiplayerMaps();
-	
-	/**
-	 * Gets a list of multiplayer games that can be joined.
-	 * @param onServer The name of the server we should search on.
-	 * @return
-	 */
-	IChangingList<? extends IJoinableGame> getJoinableMultiplayerGames(String onServer);
-	
+
 	/**
 	 * Gets a list of saved multiplayer games which we can restore.
+	 * 
 	 * @return
 	 */
 	IChangingList<? extends ILoadableMapDefinition> getRestorableMultiplayerGames();
-	
+
 	/**
 	 * TODO: Add map settings.
+	 * 
 	 * @param map
 	 * @param listener
 	 */
 	IStartingGame startSingleplayerGame(IStartableMapDefinition map);
-	
+
 	IStartingGame loadSingleplayerGame(ILoadableMapDefinition map);
-	
-	IJoiningGame joinMultiplayerGame(IJoinableGame game);
+
+	/**
+	 * Opens a new connection to the server at the given address.
+	 * 
+	 * @param serverAddr
+	 *            Address of the server.
+	 * @return A new instance of a {@link IMultiplayerConnector}.
+	 * @throws UnknownHostException
+	 *             This exception is thrown if the given server can not be
+	 *             found.
+	 * @throws IOException
+	 *             This exception might be thrown if there was an error during
+	 *             the establishing of the connection.
+	 */
+	IMultiplayerConnector getMultiplayerConnector(String serverAddr)
+	        throws UnknownHostException, IOException;
 }

@@ -9,6 +9,6 @@ import jsettlers.graphics.progress.EProgressState;
  */
 public interface IJoiningGameListener {
 	public void joinProgressChanged(EProgressState state, float progress);
-	
-	void gameJoined(IMultiplayerScreen screen);
+
+	void gameJoined(IJoinPhaseMultiplayerGameConnector connector);
 }

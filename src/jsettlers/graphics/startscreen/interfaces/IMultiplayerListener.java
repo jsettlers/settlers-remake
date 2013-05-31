@@ -1,5 +1,6 @@
 package jsettlers.graphics.startscreen.interfaces;
 
+
 /**
  * This is a listener to the multiplayer screen.
  * 

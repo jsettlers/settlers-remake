@@ -5,18 +5,19 @@ package jsettlers.graphics.startscreen.interfaces;
  * phase.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
-public interface IMultiplayerScreen {
+public interface IJoinPhaseMultiplayerGameConnector {
 	/**
-	 * Sets the multiplayer listener that listens to game state changes.. If the
+	 * Sets the multiplayer listener that listens to game state changes. If the
 	 * game has already started,
 	 * {@link IMultiplayerListener#gameStarted(IStartingGame)} is called
 	 * immediately by this method.
 	 * 
-	 * @param l
+	 * @param lîstener
 	 */
-	public void setMultiplayerListener(IMultiplayerListener l);
-	
+	public void setMultiplayerListener(IMultiplayerListener lîstener);
+
 	/* TODO: Add a method to access information about the base map */
 
 	/**
@@ -40,7 +41,8 @@ public interface IMultiplayerScreen {
 
 	/**
 	 * Called when the user exits the screen, to abort the multiplayer game.
-	 * This needs not call abort() on the listener.
+	 * This method does not need to call the abort() method of the
+	 * {@link IMultiplayerListener}.
 	 */
 	public void abort();
 }
