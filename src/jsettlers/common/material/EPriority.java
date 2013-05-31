@@ -16,11 +16,11 @@ public enum EPriority {
 	public static final EPriority[] values = EPriority.values();
 	public static final int NUMBER_OF_PRIORITIES = values.length;
 
-	public final int ordinal;
+	public final byte ordinal;
 	private final int priorityIndex;
 
 	private EPriority(int priorityIndex) {
-		this.ordinal = ordinal();
+		this.ordinal = (byte) ordinal();
 		this.priorityIndex = priorityIndex;
 	}
 
