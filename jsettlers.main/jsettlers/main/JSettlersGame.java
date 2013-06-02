@@ -20,8 +20,8 @@ import jsettlers.logic.timer.MovableTimer;
 import jsettlers.logic.timer.PartitionManagerTimer;
 import jsettlers.logic.timer.Timer100Milli;
 import networklib.client.OfflineTaskScheduler;
+import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.ITaskScheduler;
-import networklib.client.time.IGameClock;
 import networklib.synchronic.random.RandomSingleton;
 
 /**

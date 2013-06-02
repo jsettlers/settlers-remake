@@ -42,8 +42,8 @@ import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
+import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.ITaskScheduler;
-import networklib.client.time.IGameClock;
 
 /**
  * class to handle the events provided by the user through jsettlers.graphics

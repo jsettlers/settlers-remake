@@ -96,7 +96,7 @@ public class NetworkConnector implements INetworkConnector {
 
 	public void openNewNetworkGame(IMatchSettings matchSettings) {
 		try {
-			networkClient.requestOpenNewMatch(matchSettings.getMatchName(), matchSettings
+			networkClient.openNewMatch(matchSettings.getMatchName(), matchSettings
 					.getMaxPlayers(), createMapInfoPacket(matchSettings.getMap()), matchSettings.getRandomSeed(), generateMatchStartReceiver(),
 					generateMatchInfoUpdateReceiver(), generateChatMessageReceiver());
 		} catch (InvalidStateException e) {
@@ -106,7 +106,7 @@ public class NetworkConnector implements INetworkConnector {
 
 	public void joinNetworkGame(IMatch match) {
 		try {
-			networkClient.requestJoinMatch(((MatchInfoPacketAdapter) match).getMatchInfoPacket(), generateMatchStartReceiver(),
+			networkClient.joinMatch(((MatchInfoPacketAdapter) match).getMatchInfoPacket(), generateMatchStartReceiver(),
 					generateMatchInfoUpdateReceiver(), generateChatMessageReceiver());
 		} catch (InvalidStateException e) {
 			e.printStackTrace();
