@@ -5,7 +5,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.logic.algorithms.AlgorithmConstants;
-import networklib.client.time.IPausingSupplier;
+import networklib.client.interfaces.IPausingSupplier;
 
 /**
  * Thread to calculate the markings for the user if he want's to construct a new building.<br>
