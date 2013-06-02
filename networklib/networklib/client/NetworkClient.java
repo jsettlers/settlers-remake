@@ -6,12 +6,12 @@ import java.util.Timer;
 
 import networklib.NetworkConstants;
 import networklib.client.exceptions.InvalidStateException;
+import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.interfaces.ITaskScheduler;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.client.task.TaskPacketListener;
 import networklib.client.task.packets.TaskPacket;
-import networklib.client.time.IGameClock;
 import networklib.client.time.ISynchronizableClock;
 import networklib.client.time.TimeSyncSenderTimerTask;
 import networklib.client.time.TimeSynchronizationListener;
@@ -106,7 +106,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	 * @throws InvalidStateException
 	 */
 	@Override
-	public void requestOpenNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
+	public void openNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
 			IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException {
@@ -116,7 +116,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	}
 
 	@Override
-	public void requestJoinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
+	public void joinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
 			throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
@@ -125,13 +125,13 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	}
 
 	@Override
-	public void requestLeaveMatch() throws InvalidStateException {
+	public void leaveMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 
 	@Override
-	public void requestStartMatch() throws InvalidStateException {
+	public void startMatch() throws InvalidStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}

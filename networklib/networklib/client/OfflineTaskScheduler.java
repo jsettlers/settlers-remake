@@ -3,10 +3,10 @@ package networklib.client;
 import java.util.Arrays;
 
 import networklib.NetworkConstants;
+import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.ITaskScheduler;
 import networklib.client.task.packets.SyncTasksPacket;
 import networklib.client.task.packets.TaskPacket;
-import networklib.client.time.IGameClock;
 import networklib.synchronic.timer.NetworkTimer;
 
 /**

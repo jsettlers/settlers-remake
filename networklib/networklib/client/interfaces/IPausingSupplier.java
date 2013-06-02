@@ -1,4 +1,4 @@
-package networklib.client.time;
+package networklib.client.interfaces;
 
 /**
  * This interface supplies a method to check if the game is pausing.

@@ -1,7 +1,6 @@
 package networklib.client.interfaces;
 
 import networklib.client.task.packets.TaskPacket;
-import networklib.client.time.IGameClock;
 import networklib.synchronic.timer.INetworkTimerable;
 
 /**

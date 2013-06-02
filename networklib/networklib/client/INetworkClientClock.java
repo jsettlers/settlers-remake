@@ -1,7 +1,7 @@
 package networklib.client;
 
+import networklib.client.interfaces.IGameClock;
 import networklib.client.task.ISyncTasksPacketScheduler;
-import networklib.client.time.IGameClock;
 import networklib.client.time.ISynchronizableClock;
 
 /**

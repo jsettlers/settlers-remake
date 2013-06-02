@@ -1,4 +1,4 @@
-package networklib.client.time;
+package networklib.client.interfaces;
 
 import networklib.synchronic.timer.INetworkTimerable;
 import networklib.synchronic.timer.ITaskExecutor;
