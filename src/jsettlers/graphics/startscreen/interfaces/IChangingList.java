@@ -6,9 +6,9 @@ public interface IChangingList<T> {
 	/**
 	 * Sets a listener to notify when the list was changed.
 	 * 
-	 * @param l
+	 * @param listener
 	 */
-	public void setListener(IChangingListListener<T> l);
+	public void setListener(IChangingListListener<T> listener);
 
 	/**
 	 * Gets the current state of the list.
@@ -19,7 +19,7 @@ public interface IChangingList<T> {
 	public List<T> getItems();
 
 	/**
-	 * Called when the list is no more needed.
+	 * Called when the list is not needed any more.
 	 */
 	public void stop();
 }
