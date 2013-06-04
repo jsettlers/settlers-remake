@@ -1,6 +1,7 @@
 package jsettlers.main;
 
 import jsettlers.graphics.ISettlersGameDisplay;
+import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.main.JSettlersGame.GameEndedListener;
 import networklib.client.OfflineTaskScheduler;
 

@@ -20,7 +20,6 @@ import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
-import jsettlers.main.IGameCreator;
 
 /**
  * This is the main map loader.
@@ -28,6 +27,7 @@ import jsettlers.main.IGameCreator;
  * It loads a map file.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetworkableMap, Comparable<MapLoader> {
 	private final File file;
@@ -42,26 +42,26 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 	}
 
 	public MapFileHeader getFileHeader() throws MapLoadException {
-		loadHeader();
+		if (header == null) {
+			loadHeader();
+		}
 		return header;
 	}
 
 	private void loadHeader() throws MapLoadException {
-		if (header == null) {
-			InputStream stream = null;
+		InputStream stream = null;
+		try {
+			stream = new BufferedInputStream(new FileInputStream(file));
+			header = MapFileHeader.readFromStream(stream);
+		} catch (IOException e) {
+			// TODO: handle this exception, and do not try again.
+			throw new MapLoadException("Error during header request: ", e);
+		} finally {
 			try {
-				stream = new BufferedInputStream(new FileInputStream(file));
-				header = MapFileHeader.readFromStream(stream);
-			} catch (IOException e) {
-				// TODO: handle this exception, and do not try again.
-				throw new MapLoadException("Error during header request: ", e);
-			} finally {
-				try {
-					if (stream != null) {
-						stream.close();
-					}
-				} catch (IOException e) {
+				if (stream != null) {
+					stream.close();
 				}
+			} catch (IOException e) {
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import jsettlers.common.network.IMatch;
 import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.graphics.startscreen.IStartScreenConnector;
+import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.network.NetworkConnector;
 

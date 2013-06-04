@@ -1,4 +1,4 @@
-package jsettlers.main;
+package jsettlers.logic.map.save;
 
 import jsettlers.common.map.MapLoadException;
 import jsettlers.input.UIState;

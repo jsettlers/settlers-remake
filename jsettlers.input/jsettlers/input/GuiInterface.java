@@ -46,7 +46,7 @@ import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.ITaskScheduler;
 
 /**
- * class to handle the events provided by the user through jsettlers.graphics
+ * Class to handle the events provided by the user through jsettlers.graphics.
  * 
  * @author Andreas Eberle
  */
@@ -57,6 +57,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final IGameClock clock;
 	private final ITaskScheduler taskScheduler;
 	private final IGuiInputGrid grid;
+	private final IGameStoppable gameStoppable;
 	private final byte player;
 	private final boolean multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
@@ -68,18 +69,20 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private EBuildingType previewBuilding;
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(MapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid, byte player,
+	public GuiInterface(MapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
+			IGameStoppable gameStoppable, byte player,
 			boolean multiplayer) {
 		this.connector = connector;
 		this.clock = clock;
 		this.taskScheduler = taskScheduler;
 		this.grid = grid;
+		this.gameStoppable = gameStoppable;
 		this.player = player;
 		this.multiplayer = multiplayer;
 		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
-		connector.addListener(this);
 
 		clock.setTaskExecutor(new GuiTaskExecutor(grid, this));
+		connector.addListener(this);
 	}
 
 	@Override
@@ -232,6 +235,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(a.getManagerPosition(), a.getMaterialTypeForPriority()));
 			break;
 		}
+
+		case EXIT:
+			gameStoppable.stopGame();
+			break;
 
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");

@@ -4,16 +4,17 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.ISettlersGameDisplay;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
-import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.input.GuiInterface;
+import jsettlers.input.IGameStoppable;
 import jsettlers.input.UIState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.MovableTimer;
@@ -72,7 +73,7 @@ public class JSettlersGame {
 		}
 	}
 
-	private class GameRunner implements Runnable, IMapInterfaceListener {
+	private class GameRunner implements Runnable, IGameStoppable {
 
 		@Override
 		public void run() {
@@ -106,9 +107,8 @@ public class JSettlersGame {
 			progress.setProgressState(EProgressState.LOADING_IMAGES, 0.8f);
 
 			final MapInterfaceConnector connector = content.showGameMap(grid.getGraphicsGrid(), new GameStatistics(gameClock));
-			GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, grid.getGuiInputGrid(), playerNumber, multiplayer);
+			GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, grid.getGuiInputGrid(), this, playerNumber, multiplayer);
 
-			connector.addListener(this);
 			connector.loadUIState(uiState.getUiStateData());
 
 			grid.startThreads();
@@ -139,12 +139,9 @@ public class JSettlersGame {
 		}
 
 		@Override
-		public void action(Action action) {
-			if (action.getActionType() == EActionType.EXIT) {
-				stop();
-			}
+		public void stopGame() {
+			stop();
 		}
-
 	}
 
 	public void stop() {

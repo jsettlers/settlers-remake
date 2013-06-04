@@ -6,6 +6,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapLoader;
 

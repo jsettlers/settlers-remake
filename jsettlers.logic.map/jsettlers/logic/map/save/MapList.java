@@ -28,6 +28,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * TODO: load maps before they are needed, to increase startup time.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public class MapList {
 	public static final String MAP_EXTENSION = ".map";
@@ -94,6 +95,27 @@ public class MapList {
 			fileListLoaded = true;
 		}
 		return freshMaps;
+	}
+
+	/**
+	 * Gives the {@link MapLoader} for the map with the given id.
+	 * 
+	 * @param id
+	 *            The id of the map to be found.
+	 * @return Returns the corresponding {@link MapLoader}<br>
+	 *         or null if no map with the given id has been found.
+	 */
+	public MapLoader getMapById(String id) {
+		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
+		maps.addAll(getFreshMaps());
+		maps.addAll(getSavedMaps());
+
+		for (MapLoader curr : maps) {
+			if (curr.getUniqueID().equals(id)) {
+				return curr;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -214,4 +236,5 @@ public class MapList {
 		}
 		savedMaps.remove(game);
 	}
+
 }
