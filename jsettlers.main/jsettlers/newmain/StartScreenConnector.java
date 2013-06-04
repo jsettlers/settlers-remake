@@ -89,8 +89,7 @@ public class StartScreenConnector implements IStartScreen {
 
 	@Override
 	public IMultiplayerConnector getMultiplayerConnector(String serverAddr) throws UnknownHostException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return new MultiplayerConnector();
 	}
 
 }

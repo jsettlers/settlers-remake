@@ -98,22 +98,22 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
-				startingGameListener.startProgressChanged(EProgressState.LOADING, 0.1f);
+				informProgressListener(EProgressState.LOADING, 0.1f);
 
 				IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
 				RandomSingleton.load(randomSeed);
 
 				informProgressListener(EProgressState.LOADING_MAP, 0.3f);
-				ImageProvider.getInstance().startPreloading();
+				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
 				MainGrid grid = mapcreator.getMainGrid(playerNumber);
 				UIState uiState = mapcreator.getUISettings(playerNumber);
 
-				startingGameListener.startProgressChanged(EProgressState.LOADING_IMAGES, 0.7f);
+				informProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
 				statistics = new GameStatistics(gameClock);
 				grid.startThreads();
 
-				// TODO @Andreas Eberle: Wait for ImageProvider to finish loading the images
+				imagePreloader.join(); // Wait for ImageProvider to finish loading the images
 				// TODO @Andreas Eberle: Wait for startingGameListener to be set.
 
 				final MapInterfaceConnector connector = startingGameListener.startFinished(this);
