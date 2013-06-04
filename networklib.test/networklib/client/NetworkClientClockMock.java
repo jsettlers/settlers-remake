@@ -116,4 +116,10 @@ public class NetworkClientClockMock implements INetworkClientClock {
 		throw new UnsupportedOperationException("not mocked");
 	}
 
+	@Override
+	public void stopExecution() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

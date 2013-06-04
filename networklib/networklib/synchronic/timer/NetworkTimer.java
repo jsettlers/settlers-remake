@@ -65,6 +65,12 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	@Override
+	public void stopExecution() {
+		setPausing(true);
+		timer.cancel();
+	}
+
+	@Override
 	public void run() {
 		if (!isPausing) {
 			if (pauseTime <= 0) { // this is used for synchronizing the network clients
@@ -266,4 +272,5 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	public int getTime() {
 		return time;
 	}
+
 }

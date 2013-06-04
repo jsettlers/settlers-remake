@@ -32,4 +32,6 @@ public interface IGameClock extends IPausingSupplier {
 	void schedule(INetworkTimerable timerable, short delay);
 
 	void startExecution();
+
+	void stopExecution();
 }
