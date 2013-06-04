@@ -58,6 +58,8 @@ public interface IStartScreen {
 	 * 
 	 * @param serverAddr
 	 *            Address of the server.
+	 * @param player
+	 *            The player that want's to access the server.
 	 * @return A new instance of a {@link IMultiplayerConnector}.
 	 * @throws UnknownHostException
 	 *             This exception is thrown if the given server can not be
@@ -66,6 +68,6 @@ public interface IStartScreen {
 	 *             This exception might be thrown if there was an error during
 	 *             the establishing of the connection.
 	 */
-	IMultiplayerConnector getMultiplayerConnector(String serverAddr)
-	        throws UnknownHostException, IOException;
+	IMultiplayerConnector getMultiplayerConnector(String serverAddr,
+	        Player player) throws UnknownHostException, IOException;
 }
