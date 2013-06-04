@@ -12,6 +12,7 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.newmain.datatypes.ChangingList;
@@ -37,8 +38,7 @@ public class StartScreenConnector implements IStartScreen {
 		List<MapDefinition> result = new LinkedList<MapDefinition>();
 
 		for (MapLoader currMap : maps) {
-			MapDefinition mapDef = new MapDefinition(currMap.getUniqueID(), currMap.getName(), currMap.getDescription(), currMap.getImage(),
-					currMap.getMinPlayers(), currMap.getMaxPlayers());
+			MapDefinition mapDef = new MapDefinition(currMap);
 			result.add(mapDef);
 		}
 
@@ -52,7 +52,7 @@ public class StartScreenConnector implements IStartScreen {
 
 		for (MapLoader currMap : maps) {
 			// TODO @Andreas Eberle: supply saved player information
-			MapDefinition mapDef = new MapDefinition(currMap.getUniqueID(), currMap.getName(), currMap.getDescription(), currMap.getImage(), null);
+			MapDefinition mapDef = new MapDefinition(currMap);
 			result.add(mapDef);
 		}
 
@@ -88,8 +88,8 @@ public class StartScreenConnector implements IStartScreen {
 	}
 
 	@Override
-	public IMultiplayerConnector getMultiplayerConnector(String serverAddr) throws UnknownHostException, IOException {
-		return new MultiplayerConnector();
+	public IMultiplayerConnector getMultiplayerConnector(String serverAddr, Player player) throws UnknownHostException, IOException {
+		return new MultiplayerConnector(serverAddr, player.getId(), player.getName());
 	}
 
 }

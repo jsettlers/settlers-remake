@@ -5,6 +5,7 @@ import java.util.List;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
 import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
+import jsettlers.logic.map.save.MapLoader;
 
 /**
  * This class is an implementatiopn of the interfaces {@link IStartableMapDefinition} and {@link ILoadableMapDefinition}.
@@ -14,84 +15,45 @@ import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
  */
 public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefinition {
 
-	private final String id;
-	private final String name;
-	private final String description;
-	private final short[] image;
-	private final int minPlayers;
-	private final int maxPlayers;
-	private final List<ILoadableMapPlayer> players;
+	private MapLoader mapLoader;
 
-	private MapDefinition(String id, String name, String description, short[] image, int minPlayers, int maxPlayers, List<ILoadableMapPlayer> players) {
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.image = image;
-		this.minPlayers = minPlayers;
-		this.maxPlayers = maxPlayers;
-		this.players = players;
-	}
-
-	/**
-	 * Creates a new {@link MapDefinition} object fulfilling the {@link IStartableMapDefinition} interface.
-	 * 
-	 * @param id
-	 * @param name
-	 * @param description
-	 * @param image
-	 * @param minPlayers
-	 * @param maxPlayers
-	 */
-	public MapDefinition(String id, String name, String description, short[] image, int minPlayers, int maxPlayers) {
-		this(id, name, description, image, minPlayers, maxPlayers, null);
-	}
-
-	/**
-	 * Creates a new {@link MapDefinition} object fulfilling the {@link ILoadableMapDefinition} and the {@link IStartableMapDefinition} interface.
-	 * 
-	 * @param id
-	 * @param name
-	 * @param description
-	 * @param image
-	 * @param players
-	 */
-	public MapDefinition(String id, String name, String description, short[] image, List<ILoadableMapPlayer> players) {
-		this(id, name, description, image, players.size(), players.size(), players);
+	public MapDefinition(MapLoader mapLoader) {
+		this.mapLoader = mapLoader;
 	}
 
 	@Override
 	public String getId() {
-		return id;
+		return mapLoader.getUniqueID();
 	}
 
 	@Override
 	public String getName() {
-		return name;
+		return mapLoader.getName();
 	}
 
 	@Override
 	public String getDescription() {
-		return description;
+		return mapLoader.getDescription();
 	}
 
 	@Override
 	public short[] getImage() {
-		return image;
+		return mapLoader.getImage();
 	}
 
 	@Override
 	public int getMinPlayers() {
-		return minPlayers;
+		return mapLoader.getMinPlayers();
 	}
 
 	@Override
 	public int getMaxPlayers() {
-		return maxPlayers;
+		return mapLoader.getMaxPlayers();
 	}
 
 	@Override
-	public List<ILoadableMapPlayer> getPlayers() {
-		return players;
+	public List<ILoadableMapPlayer> getPlayers() { // TODO @Andreas Eberle: supply saved players information.
+		throw new UnsupportedOperationException("not implemented yet");
 	}
 
 }
