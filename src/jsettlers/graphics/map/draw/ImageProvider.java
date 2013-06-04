@@ -38,7 +38,7 @@ public final class ImageProvider {
 
 	private Queue<GLPreloadTask> tasks =
 	        new ConcurrentLinkedQueue<GLPreloadTask>();
-	
+
 	private ImageIndexFile indexFile = null;
 
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
@@ -218,10 +218,10 @@ public final class ImageProvider {
 		if (indexFile == null) {
 			indexFile = new ImageIndexFile();
 		}
-		
+
 		int index = TextureMap.getIndex(link.getName());
-	    return indexFile.getImage(index);
-    }
+		return indexFile.getImage(index);
+	}
 
 	/**
 	 * marks all loaded images as invalid. TODO: ensure that they get deleted
@@ -255,8 +255,10 @@ public final class ImageProvider {
 		}
 	}
 
-	public void startPreloading() {
-		new Thread(new ImagePreloadTask(), "image preloader").start();
+	public Thread startPreloading() {
+		Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
+		thread.start();
+		return thread;
 	}
 
 	/**
