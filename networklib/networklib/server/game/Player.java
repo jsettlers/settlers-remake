@@ -3,7 +3,6 @@ package networklib.server.game;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
-import networklib.client.exceptions.InvalidStateException;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
@@ -37,7 +36,7 @@ public class Player {
 		return playerInfo.getId();
 	}
 
-	public synchronized void leaveMatch() throws InvalidStateException {
+	public synchronized void leaveMatch() throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 
 		if (match != null) {
@@ -49,7 +48,7 @@ public class Player {
 		channel.removeListener(NetworkConstants.Keys.SYNCHRONOUS_TASK);
 	}
 
-	public synchronized void joinMatch(Match match) throws InvalidStateException {
+	public synchronized void joinMatch(Match match) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 
 		this.match = match;
@@ -69,7 +68,7 @@ public class Player {
 		return state == EPlayerState.IN_MATCH || state == EPlayerState.IN_RUNNING_MATCH;
 	}
 
-	public void startMatch(Timer timer) throws InvalidStateException, NotAllPlayersReadyException {
+	public void startMatch(Timer timer) throws IllegalStateException, NotAllPlayersReadyException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		match.startMatch(timer);
 	}
@@ -79,17 +78,17 @@ public class Player {
 		channel.registerListener(taskListener);
 	}
 
-	public void forwardChatMessage(ChatMessagePacket packet) throws InvalidStateException {
+	public void forwardChatMessage(ChatMessagePacket packet) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		match.sendMessage(NetworkConstants.Keys.CHAT_MESSAGE, packet);
 	}
 
-	public void distributeTimeSync(TimeSyncPacket packet) throws InvalidStateException {
+	public void distributeTimeSync(TimeSyncPacket packet) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
 		match.distributeTimeSync(this, packet);
 	}
 
-	public void setReady(boolean ready) throws InvalidStateException {
+	public void setReady(boolean ready) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		if (playerInfo.isReady() != ready) { // only update if there is a real change
 			playerInfo.setReady(ready);

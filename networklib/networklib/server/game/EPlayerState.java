@@ -2,8 +2,6 @@ package networklib.server.game;
 
 import java.util.Arrays;
 
-import networklib.client.exceptions.InvalidStateException;
-
 /**
  * 
  * @author Andreas Eberle
@@ -16,11 +14,11 @@ public enum EPlayerState {
 	IN_RUNNING_MATCH,
 	DISCONNECTED, ;
 
-	public static void assertState(EPlayerState state, EPlayerState... expectedStates) throws InvalidStateException {
+	public static void assertState(EPlayerState state, EPlayerState... expectedStates) throws IllegalStateException {
 		boolean correctState = isOneOf(state, expectedStates);
 
 		if (!correctState) {
-			throw new InvalidStateException("Invalid client state: " + state + ". This action can only be done in one of the following states: "
+			throw new IllegalStateException("Invalid client state: " + state + ". This action can only be done in one of the following states: "
 					+ Arrays.toString(expectedStates));
 		}
 	}

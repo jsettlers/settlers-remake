@@ -1,7 +1,6 @@
 package networklib.server;
 
 import networklib.common.packets.ChatMessagePacket;
-import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.server.game.Player;
@@ -42,7 +41,7 @@ public interface IServerManager {
 	 */
 	void distributeTimeSync(Player player, TimeSyncPacket packet);
 
-	void joinMatch(MatchInfoPacket packet, Player player);
+	void joinMatch(String matchId, Player player);
 
 	void setReadyStateForPlayer(Player player, boolean ready);
 

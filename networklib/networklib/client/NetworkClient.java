@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
-import networklib.client.exceptions.InvalidStateException;
 import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.interfaces.ITaskScheduler;
@@ -17,6 +16,7 @@ import networklib.client.time.TimeSyncSenderTimerTask;
 import networklib.client.time.TimeSynchronizationListener;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.ChatMessagePacket;
+import networklib.common.packets.IdPacket;
 import networklib.common.packets.MapInfoPacket;
 import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.MatchInfoUpdatePacket;
@@ -83,7 +83,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	}
 
 	@Override
-	public void logIn(String id, String name, IPacketReceiver<ArrayOfMatchInfosPacket> matchesReceiver) throws InvalidStateException {
+	public void logIn(String id, String name, IPacketReceiver<ArrayOfMatchInfosPacket> matchesReceiver) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.CHANNEL_CONNECTED);
 
 		playerInfo = new PlayerInfoPacket(id, name, false);
@@ -109,41 +109,41 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	public void openNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
 			IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-			throws InvalidStateException {
+			throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo, randomSeed));
 	}
 
 	@Override
-	public void joinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
+	public void joinMatch(String matchId, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-			throws InvalidStateException {
+			throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, match);
+		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, new IdPacket(matchId));
 	}
 
 	@Override
-	public void leaveMatch() throws InvalidStateException {
+	public void leaveMatch() throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 
 	@Override
-	public void startMatch() throws InvalidStateException {
+	public void startMatch() throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
 	@Override
-	public void setReadyState(boolean ready) throws InvalidStateException {
+	public void setReadyState(boolean ready) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.READY_STATE_CHANGE, new ReadyStatePacket(ready));
 	}
 
 	@Override
-	public void sendChatMessage(String message) throws InvalidStateException {
+	public void sendChatMessage(String message) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.Keys.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
 	}

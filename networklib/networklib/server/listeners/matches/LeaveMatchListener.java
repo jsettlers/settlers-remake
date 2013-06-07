@@ -13,12 +13,12 @@ import networklib.server.game.Player;
  * @author Andreas Eberle
  * 
  */
-public class RequestLeaveMatchListener extends PacketChannelListener<EmptyPacket> {
+public class LeaveMatchListener extends PacketChannelListener<EmptyPacket> {
 
 	private final IServerManager serverManager;
 	private final Player player;
 
-	public RequestLeaveMatchListener(IServerManager serverManager, Player player) {
+	public LeaveMatchListener(IServerManager serverManager, Player player) {
 		super(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, EmptyPacket.DEFAULT_DESERIALIZER);
 		this.serverManager = serverManager;
 		this.player = player;

@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import networklib.NetworkConstants;
 import networklib.common.packets.MatchInfoPacket;
+import networklib.common.packets.OpenNewMatchPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
-import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.server.IServerManager;
 import networklib.server.game.Match;
 import networklib.server.game.Player;
@@ -18,20 +18,20 @@ import networklib.server.game.Player;
  * @author Andreas Eberle
  * 
  */
-public class RequestStartMatchListener extends PacketChannelListener<EmptyPacket> {
+public class OpenNewMatchListener extends PacketChannelListener<OpenNewMatchPacket> {
 
 	private final IServerManager serverManager;
 	private final Player player;
 
-	public RequestStartMatchListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.Keys.REQUEST_START_MATCH, new GenericDeserializer<EmptyPacket>(EmptyPacket.class));
+	public OpenNewMatchListener(IServerManager serverManager, Player player) {
+		super(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new GenericDeserializer<OpenNewMatchPacket>(OpenNewMatchPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
-	protected void receivePacket(int key, EmptyPacket packet) throws IOException {
-		serverManager.startMatch(player);
+	protected void receivePacket(int key, OpenNewMatchPacket packet) throws IOException {
+		serverManager.createNewMatch(packet, player);
 	}
 
 }

@@ -3,9 +3,7 @@ package networklib.server;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
-import networklib.client.exceptions.InvalidStateException;
 import networklib.common.packets.ChatMessagePacket;
-import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.Channel;
@@ -20,10 +18,10 @@ import networklib.server.listeners.IdentifyUserListener;
 import networklib.server.listeners.ReadyStatePacketListener;
 import networklib.server.listeners.ServerChannelClosedListener;
 import networklib.server.listeners.TimeSyncForwardingListener;
-import networklib.server.listeners.matches.RequestJoinMatchListener;
-import networklib.server.listeners.matches.RequestLeaveMatchListener;
-import networklib.server.listeners.matches.RequestOpenNewMatchListener;
-import networklib.server.listeners.matches.RequestStartMatchListener;
+import networklib.server.listeners.matches.JoinMatchListener;
+import networklib.server.listeners.matches.LeaveMatchListener;
+import networklib.server.listeners.matches.OpenNewMatchListener;
+import networklib.server.listeners.matches.StartMatchListener;
 
 /**
  * This class is the central access point to the servers externally reachable functions.
@@ -65,10 +63,10 @@ public class ServerManager implements IServerManager {
 			channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
 
 			channel.setChannelClosedListener(new ServerChannelClosedListener(this, player));
-			channel.registerListener(new RequestOpenNewMatchListener(this, player));
-			channel.registerListener(new RequestLeaveMatchListener(this, player));
-			channel.registerListener(new RequestStartMatchListener(this, player));
-			channel.registerListener(new RequestJoinMatchListener(this, player));
+			channel.registerListener(new OpenNewMatchListener(this, player));
+			channel.registerListener(new LeaveMatchListener(this, player));
+			channel.registerListener(new StartMatchListener(this, player));
+			channel.registerListener(new JoinMatchListener(this, player));
 			channel.registerListener(new ChatMessageForwardingListener(this, player));
 			channel.registerListener(new TimeSyncForwardingListener(this, player));
 			channel.registerListener(new ReadyStatePacketListener(this, player));
@@ -86,7 +84,7 @@ public class ServerManager implements IServerManager {
 		if (player.isInMatch()) {
 			try {
 				player.leaveMatch();
-			} catch (InvalidStateException e) {
+			} catch (IllegalStateException e) {
 				assert false : "This may never happen here!";
 			}
 		}
@@ -103,7 +101,7 @@ public class ServerManager implements IServerManager {
 	private void joinMatch(Match match, Player player) {
 		try {
 			player.joinMatch(match);
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
@@ -114,7 +112,7 @@ public class ServerManager implements IServerManager {
 	public void leaveMatch(Player player) {
 		try {
 			player.leaveMatch();
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
@@ -123,7 +121,7 @@ public class ServerManager implements IServerManager {
 	public void startMatch(Player player) {
 		try {
 			player.startMatch(matchesTaskDistributionTimer);
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_START_MATCH));
@@ -137,7 +135,7 @@ public class ServerManager implements IServerManager {
 	public void forwardChatMessage(Player player, ChatMessagePacket packet) {
 		try {
 			player.forwardChatMessage(packet);
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
@@ -146,17 +144,17 @@ public class ServerManager implements IServerManager {
 	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
 		try {
 			player.distributeTimeSync(packet);
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void joinMatch(MatchInfoPacket packet, Player player) {
-		Match match = db.getMatchById(packet.getId());
+	public void joinMatch(String matchId, Player player) {
+		Match match = db.getMatchById(matchId);
 		try {
 			player.joinMatch(match);
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_JOIN_MATCH));
 		}
@@ -166,7 +164,7 @@ public class ServerManager implements IServerManager {
 	public void setReadyStateForPlayer(Player player, boolean ready) {
 		try {
 			player.setReady(ready);
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
 					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.READY_STATE_CHANGE));
 		}

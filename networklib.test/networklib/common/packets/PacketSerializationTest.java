@@ -87,7 +87,8 @@ public class PacketSerializationTest {
 				{ new ReadyStatePacket(true), d(ReadyStatePacket.class) },
 				{ new ChatMessagePacket("authorId(, message)U)(Z", "message'**Ü##\"\\ppoisudf08u("), d(ChatMessagePacket.class) },
 
-				{ new PingPacket(2324L, -2349879879787987234L), d(PingPacket.class) }
+				{ new PingPacket(2324L, -2349879879787987234L), d(PingPacket.class) },
+				{ new IdPacket("()Z(/§\\\"THKJNI+ü02i3ej"), d(IdPacket.class) }
 		};
 		return Arrays.asList(data);
 	}

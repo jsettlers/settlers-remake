@@ -1,6 +1,5 @@
 package networklib.client.interfaces;
 
-import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.ChatMessagePacket;
@@ -34,7 +33,7 @@ public interface INetworkClient extends ITaskScheduler {
 	 *             This exception might be thrown, if the {@link #logIn(String, String, IPacketReceiver)} operation is called when the
 	 *             {@link INetworkClient} is already logged in to the server.
 	 */
-	void logIn(String id, String name, IPacketReceiver<ArrayOfMatchInfosPacket> matchListReceiver) throws InvalidStateException;
+	void logIn(String id, String name, IPacketReceiver<ArrayOfMatchInfosPacket> matchListReceiver) throws IllegalStateException;
 
 	/**
 	 * Opens a new match on the server.
@@ -61,7 +60,7 @@ public interface INetworkClient extends ITaskScheduler {
 	void openNewMatch(String matchName, int maxPlayers, MapInfoPacket mapInfo, long randomSeed,
 			IPacketReceiver<MatchStartPacket> matchStartedListener, IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener,
 			IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-			throws InvalidStateException;
+			throws IllegalStateException;
 
 	/**
 	 * 
@@ -71,17 +70,17 @@ public interface INetworkClient extends ITaskScheduler {
 	 * @param chatMessageReceiver
 	 * @throws InvalidStateException
 	 */
-	void joinMatch(MatchInfoPacket match, IPacketReceiver<MatchStartPacket> matchStartedListener,
+	void joinMatch(String matchId, IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver)
-			throws InvalidStateException;
+			throws IllegalStateException;
 
-	void startMatch() throws InvalidStateException;
+	void startMatch() throws IllegalStateException;
 
-	void setReadyState(boolean ready) throws InvalidStateException;
+	void setReadyState(boolean ready) throws IllegalStateException;
 
-	void sendChatMessage(String message) throws InvalidStateException;
+	void sendChatMessage(String message) throws IllegalStateException;
 
-	void leaveMatch() throws InvalidStateException;
+	void leaveMatch() throws IllegalStateException;
 
 	void registerRejectReceiver(IPacketReceiver<RejectPacket> rejectListener);
 
