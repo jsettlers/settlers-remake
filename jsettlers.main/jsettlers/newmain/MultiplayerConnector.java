@@ -8,12 +8,12 @@ import java.util.List;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
+import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.newmain.datatypes.ChangingList;
 import jsettlers.newmain.datatypes.JoinableGame;
 import networklib.client.NetworkClient;
-import networklib.client.exceptions.InvalidStateException;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.MatchInfoPacket;
@@ -34,7 +34,7 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 		networkClient = new NetworkClient(serverAddress, null);
 		try {
 			networkClient.logIn(userId, userName, generateMatchesReceiver());
-		} catch (InvalidStateException e) { // this can never happen
+		} catch (IllegalStateException e) { // this can never happen
 			e.printStackTrace();
 		}
 	}
@@ -58,9 +58,8 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 	}
 
 	@Override
-	public IJoiningGame joinMultiplayerGame(IJoinableGame game) {
-		// TODO Auto-generated method stub
-		return null;
+	public IJoiningGame joinMultiplayerGame(IJoinableGame game) throws IllegalStateException {
+		return new JoiningGame();
 	}
 
 	@Override
@@ -69,4 +68,18 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 		return null;
 	}
 
+	class JoiningGame implements IJoiningGame {
+		@Override
+		public void setListener(IJoiningGameListener l) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void abort() {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
 }

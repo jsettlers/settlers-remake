@@ -11,7 +11,6 @@ import jsettlers.graphics.startscreen.INetworkConnector;
 import jsettlers.main.IErrorDisplayer;
 import networklib.NetworkConstants;
 import networklib.client.NetworkClient;
-import networklib.client.exceptions.InvalidStateException;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
@@ -66,7 +65,7 @@ public class NetworkConnector implements INetworkConnector {
 
 		try {// TODO @Andreas Eberle: get players name from UI and a good id
 			networkClient.logIn(UUID.randomUUID().toString(), "playerName", generateMatchListUpdatesReceiver());
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
@@ -99,16 +98,16 @@ public class NetworkConnector implements INetworkConnector {
 			networkClient.openNewMatch(matchSettings.getMatchName(), matchSettings
 					.getMaxPlayers(), createMapInfoPacket(matchSettings.getMap()), matchSettings.getRandomSeed(), generateMatchStartReceiver(),
 					generateMatchInfoUpdateReceiver(), generateChatMessageReceiver());
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void joinNetworkGame(IMatch match) {
 		try {
-			networkClient.joinMatch(((MatchInfoPacketAdapter) match).getMatchInfoPacket(), generateMatchStartReceiver(),
+			networkClient.joinMatch(((MatchInfoPacketAdapter) match).getMatchInfoPacket().getId(), generateMatchStartReceiver(),
 					generateMatchInfoUpdateReceiver(), generateChatMessageReceiver());
-		} catch (InvalidStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
