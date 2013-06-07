@@ -22,7 +22,8 @@ public interface IMultiplayerConnector {
 	 * @param game
 	 * @return
 	 */
-	IJoiningGame joinMultiplayerGame(IJoinableGame game);
+	IJoiningGame joinMultiplayerGame(IJoinableGame game)
+	        throws IllegalStateException;
 
 	/**
 	 * Creates a new multiplayer game on the server and joins this new game.
