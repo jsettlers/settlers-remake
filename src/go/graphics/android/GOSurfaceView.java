@@ -5,7 +5,7 @@ import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 import java.lang.reflect.Method;
@@ -26,7 +26,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
-        GOEventHandlerProvoder {
+        GOEventHandlerProvider {
 
 	private final Area area;
 
@@ -85,7 +85,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		private static final float ZOOMSTART = 2f;
 		private static final double ZOOM_MIN_POINTERDISTANCE = 150;
 
-		protected ActionAdapter(GOEventHandlerProvoder provider) {
+		protected ActionAdapter(GOEventHandlerProvider provider) {
 			super(provider);
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
 			        Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
