@@ -73,7 +73,7 @@ public class JSettlersGame {
 	 * 
 	 * @return
 	 */
-	public synchronized GameRunner start() {
+	public synchronized IStartingGame start() {
 		if (!started) {
 			started = true;
 			new Thread(null, gameRunner, "GameThread", 128 * 1024).start();

@@ -8,12 +8,12 @@ import java.util.List;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
-import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.newmain.datatypes.ChangingList;
 import jsettlers.newmain.datatypes.JoinableGame;
 import networklib.client.NetworkClient;
+import networklib.client.interfaces.INetworkClient;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
 import networklib.common.packets.MatchInfoPacket;
@@ -27,7 +27,7 @@ import networklib.common.packets.MatchInfoPacket;
  */
 public class MultiplayerConnector implements IMultiplayerConnector {
 
-	private final NetworkClient networkClient;
+	private final INetworkClient networkClient;
 	private final ChangingList<IJoinableGame> joinableGames = new ChangingList<IJoinableGame>();
 
 	public MultiplayerConnector(String serverAddress, String userId, String userName) throws UnknownHostException, IOException {
@@ -59,27 +59,13 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 
 	@Override
 	public IJoiningGame joinMultiplayerGame(IJoinableGame game) throws IllegalStateException {
-		return new JoiningGame();
+		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClient);
+		return multiplayerGame.join(game.getId());
 	}
 
 	@Override
 	public IJoiningGame openNewMultiplayerGame(IOpenMultiplayerGameInfo gameInfo) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	class JoiningGame implements IJoiningGame {
-		@Override
-		public void setListener(IJoiningGameListener l) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void abort() {
-			// TODO Auto-generated method stub
-
-		}
-
+		MultiplayerGame multiplayerGame = new MultiplayerGame(networkClient);
+		return multiplayerGame.openNewGame(gameInfo);
 	}
 }
