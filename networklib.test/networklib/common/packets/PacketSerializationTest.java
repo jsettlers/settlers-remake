@@ -99,7 +99,7 @@ public class PacketSerializationTest {
 				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2", true),
 				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2", false)
 		};
-		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players, 4L);
+		return new MatchInfoPacket("id28948298fedkj", "KHDHifuh(&/%T", (byte) 3, mapInfo, players);
 	}
 
 	private static <T extends Packet> Object d(Class<T> classType) {

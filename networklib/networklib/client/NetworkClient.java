@@ -125,8 +125,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	}
 
 	@Override
-	public void leaveMatch() throws IllegalStateException {
-		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
+	public void leaveMatch() {
 		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 

@@ -15,20 +15,20 @@ import networklib.infrastructure.channel.packet.Packet;
 public class MatchStartPacket extends Packet {
 
 	private MatchInfoPacket matchInfo;
-	private long seed;
+	private long randomSeed;
 
 	public MatchStartPacket() {
 	}
 
 	public MatchStartPacket(MatchInfoPacket matchInfo, long seed) {
 		this.matchInfo = matchInfo;
-		this.seed = seed;
+		this.randomSeed = seed;
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
 		matchInfo.serialize(dos);
-		dos.writeLong(seed);
+		dos.writeLong(randomSeed);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class MatchStartPacket extends Packet {
 		MatchInfoPacket match = new MatchInfoPacket();
 		match.deserialize(dis);
 		this.matchInfo = match;
-		seed = dis.readLong();
+		randomSeed = dis.readLong();
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class MatchStartPacket extends Packet {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((matchInfo == null) ? 0 : matchInfo.hashCode());
-		result = prime * result + (int) (seed ^ (seed >>> 32));
+		result = prime * result + (int) (randomSeed ^ (randomSeed >>> 32));
 		return result;
 	}
 
@@ -62,7 +62,7 @@ public class MatchStartPacket extends Packet {
 				return false;
 		} else if (!matchInfo.equals(other.matchInfo))
 			return false;
-		if (seed != other.seed)
+		if (randomSeed != other.randomSeed)
 			return false;
 		return true;
 	}
@@ -77,7 +77,7 @@ public class MatchStartPacket extends Packet {
 	/**
 	 * @return the seed
 	 */
-	public long getSeed() {
-		return seed;
+	public long getRandomSeed() {
+		return randomSeed;
 	}
 }

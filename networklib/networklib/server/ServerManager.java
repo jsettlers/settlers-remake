@@ -110,11 +110,7 @@ public class ServerManager implements IServerManager {
 
 	@Override
 	public void leaveMatch(Player player) {
-		try {
-			player.leaveMatch();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		}
+		player.leaveMatch();
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public interface INetworkClient extends ITaskScheduler {
 
 	void sendChatMessage(String message) throws IllegalStateException;
 
-	void leaveMatch() throws IllegalStateException;
+	void leaveMatch();
 
 	void registerRejectReceiver(IPacketReceiver<RejectPacket> rejectListener);
 

@@ -37,15 +37,13 @@ public class Player {
 	}
 
 	public synchronized void leaveMatch() throws IllegalStateException {
-		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
-
 		if (match != null) {
 			match.playerLeft(this);
 			match = null;
-		}
-		state = EPlayerState.LOGGED_IN;
 
-		channel.removeListener(NetworkConstants.Keys.SYNCHRONOUS_TASK);
+			state = EPlayerState.LOGGED_IN;
+			channel.removeListener(NetworkConstants.Keys.SYNCHRONOUS_TASK);
+		}
 	}
 
 	public synchronized void joinMatch(Match match) throws IllegalStateException {
