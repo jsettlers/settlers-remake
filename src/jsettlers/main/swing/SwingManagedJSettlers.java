@@ -61,7 +61,7 @@ public class SwingManagedJSettlers {
 	 * Creates a new SWING GUI for the game.
 	 * 
 	 * @param argsList
-	 * @param startScreen 
+	 * @param startScreen
 	 * @return
 	 */
 	public static JSettlersScreen startGui(List<String> argsList, IStartScreen startScreen) {
@@ -83,7 +83,7 @@ public class SwingManagedJSettlers {
 				startJogl(area);
 			}
 		}
-		
+
 		startRedrawTimer(content);
 		return content;
 	}
@@ -94,7 +94,7 @@ public class SwingManagedJSettlers {
 			public void run() {
 				content.getRegion().requestRedraw();
 			}
-		}, 100, 100);
+		}, 100, 25);
 	}
 
 	private static void startJogl(Area area) {
