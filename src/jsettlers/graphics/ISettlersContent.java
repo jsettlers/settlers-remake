@@ -4,7 +4,7 @@ import go.graphics.RedrawListener;
 import go.graphics.region.RegionContent;
 
 
-public interface SettlersContent extends RegionContent {
+public interface ISettlersContent extends RegionContent {
 
 	public void addRedrawListener(RedrawListener l);
 	

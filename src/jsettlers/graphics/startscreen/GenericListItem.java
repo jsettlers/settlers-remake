@@ -65,5 +65,13 @@ public class GenericListItem implements UIListItem {
 	public void setHighlighted(boolean highlight) {
 		this.highlight = highlight;
 	}
+	
+	@Override
+	public void onAttach() {
+	}
+	
+	@Override
+	public void onDetach() {
+	}
 
 }

@@ -1,11 +1,10 @@
 package jsettlers.graphics.map;
 
 import go.graphics.GLDrawContext;
-import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.command.GOCommandEvent;
@@ -13,6 +12,7 @@ import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.event.mouse.GOPanEvent;
 import go.graphics.event.mouse.GOZoomEvent;
+import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
@@ -31,7 +31,6 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.common.statistics.IStatisticable;
-import jsettlers.graphics.SettlersContent;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.ActionHandler;
@@ -51,6 +50,7 @@ import jsettlers.graphics.messages.Message;
 import jsettlers.graphics.messages.Messenger;
 import jsettlers.graphics.sound.BackgroundSound;
 import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 
 /**
  * This is the main map content class. It manages the map drawing on the screen
@@ -83,8 +83,8 @@ import jsettlers.graphics.sound.SoundManager;
  * 
  * @author michael
  */
-public final class MapContent implements SettlersContent,
-        GOEventHandlerProvoder, IMapInterfaceListener, ActionFireable,
+public final class MapContent implements RegionContent,
+        GOEventHandlerProvider, IMapInterfaceListener, ActionFireable,
         ActionThreadBlockingListener {
 	private boolean ENABLE_DEBUG = false;
 	private static final int SCREEN_PADDING = 50;
@@ -139,15 +139,15 @@ public final class MapContent implements SettlersContent,
 	 *            The map.
 	 * @param playerStatistics
 	 */
-	public MapContent(IGraphicsGrid map, IStatisticable playerStatistics,
+	public MapContent(IStartedGame game,
 	        SoundPlayer player) {
-		this(map, playerStatistics, player, null);
+		this(game, player, null);
 	}
 
-	public MapContent(IGraphicsGrid map, IStatisticable playerStatistics,
+	public MapContent(IStartedGame game,
 	        SoundPlayer player, IControls controls) {
-		this.map = map;
-		this.playerStatistics = playerStatistics;
+		this.map = game.getMap();
+		this.playerStatistics = game.getPlayerStatistics();
 		textDrawer = new ReplaceableTextDrawer();
 		this.context = new MapDrawContext(map, textDrawer);
 		this.soundmanager = new SoundManager(player);
@@ -796,17 +796,6 @@ public final class MapContent implements SettlersContent,
 			scrollMarker = point;
 			scrollMarkerTime = System.currentTimeMillis();
 		}
-	}
-
-	/**
-	 * We currently do not provide redraw requests
-	 */
-	@Override
-	public void addRedrawListener(RedrawListener l) {
-	}
-
-	@Override
-	public void removeRedrawListener(RedrawListener l) {
 	}
 
 	@Override

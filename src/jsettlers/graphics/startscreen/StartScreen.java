@@ -1,208 +1,94 @@
 package jsettlers.graphics.startscreen;
 
-import go.graphics.GLDrawContext;
-import go.graphics.RedrawListener;
-import go.graphics.UIPoint;
-import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandler;
-import go.graphics.event.command.GOCommandEvent;
 import go.graphics.text.EFontSize;
 
 import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.network.IMatch;
-import jsettlers.common.network.IMatchSettings;
-import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.SettlersContent;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
-import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.INetworkConnector.INetworkListener;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IGameSettings;
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
+import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.startlists.LoadGamePanel;
+import jsettlers.graphics.startscreen.startlists.NewGamePanel;
+import jsettlers.graphics.startscreen.startlists.NewMultiplayerGamePanel;
 import jsettlers.graphics.utils.UIPanel;
 
-public class StartScreen extends RedrawListenerHaver implements
-        SettlersContent, INetworkListener {
+public class StartScreen extends UIPanel {
 	private static final OriginalImageLink BACKGROUND = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
 
-	private final LinkedList<RedrawListener> redrawListeners =
-	        new LinkedList<RedrawListener>();
-	private final IStartScreenConnector connector;
-	private final UIPanel root;
 	private final LinkedList<UILabeledButton> mainButtons =
 	        new LinkedList<UILabeledButton>();
 	private final UIPanel content;
 
-	private NewGamePanel newGamePanel;
+	private final IStartScreen connector;
 
-	private GOEventHandler commandHandler = new GOEventHandler() {
-		@Override
-		public void phaseChanged(GOEvent event) {
-		}
+	private final IContentSetable contentSetable;
 
-		@Override
-		public void finished(GOEvent event) {
-			GOCommandEvent c = (GOCommandEvent) event;
-			UIPoint position = c.getCommandPosition();
-			performActionAt(position.getX(), position.getY());
-		}
-
-		@Override
-		public void aborted(GOEvent event) {
-		}
-	};
-
-	private LoadSavedGamePanel loadSavedGamePanel;
-
-	private JoinGamePanel joinGamePanel;
-
-	public StartScreen(IStartScreenConnector connector) {
+	public StartScreen(IStartScreen connector, IContentSetable contentSetable) {
 		this.connector = connector;
-		root = new UIPanel();
 		// root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
+		this.contentSetable = contentSetable;
 
-		addMainButton(EActionType.SHOW_START_NEW, .9f);
-		addMainButton(EActionType.SHOW_LOAD, .75f);
-		addMainButton(EActionType.SHOW_START_NETWORK, .6f);
-		addMainButton(EActionType.SHOW_JOIN_NETWORK, .45f);
-		addMainButton(EActionType.SHOW_RECOVER_NETWORK, .3f);
+		addButtons();
+		// addMainButton(EActionType.SHOW_LOAD, .75f);
+		// addMainButton(EActionType.SHOW_START_NETWORK, .6f);
+		// addMainButton(EActionType.SHOW_JOIN_NETWORK, .45f);
+		// addMainButton(EActionType.SHOW_RECOVER_NETWORK, .3f);
 
 		content = new UIPanel();
-		root.addChild(content, .55f, .05f, .95f, .95f);
-
-		displayContent(EActionType.SHOW_START_NEW);
+		addChild(content, .55f, .05f, .95f, .95f);
 	}
 
-	/**
-	 * Performs a action
-	 * 
-	 * @param x
-	 *            in screen space.
-	 * @param y
-	 */
-	protected void performActionAt(double x, double y) {
-		float realx = (float) x / root.getPosition().getWidth();
-		float realy = (float) y / root.getPosition().getHeight();
-		Action action = root.getAction(realx, realy);
-		if (action == null) {
-			return;
-		}
-		if (action instanceof ExecutableAction) {
-			((ExecutableAction) action).execute();
-		}
-
-		switch (action.getActionType()) {
-			case SHOW_JOIN_NETWORK:
-			case SHOW_LOAD:
-			case SHOW_RECOVER_NETWORK:
-			case SHOW_START_NETWORK:
-			case SHOW_START_NEW:
-				displayContent(action.getActionType());
-				break;
-
-			case START_NEW_GAME:
-				if (newGamePanel != null) {
-					IGameSettings gameSettings = newGamePanel.getGameSettings();
-					if (gameSettings != null) {
-						connector.startNewGame(gameSettings);
-					}
-				}
-				break;
-
-			case START_NETWORK:
-				if (newGamePanel != null) {
-					IMatchSettings gameSettings =
-					        newGamePanel.getNetworkGameSettings();
-					if (gameSettings != null) {
-						connector.openNewNetworkGame(gameSettings);
-					}
-				}
-				break;
-
-			case LOAD_GAME:
-				if (loadSavedGamePanel != null) {
-					ILoadableGame load = loadSavedGamePanel.getSelected();
-					if (load != null) {
-						connector.loadGame(load);
-					}
-				}
-				break;
-
-			case JOIN_NETWORK:
-				if (joinGamePanel != null) {
-					IMatch match = joinGamePanel.getSelected();
-					if (match != null) {
-						connector.joinNetworkGame(match);
-					}
-				}
-		}
-
-		requestRedraw();
+	private void addButtons() {
+		addMainButton("start-newgame", new NewGamePanel(connector,
+		        contentSetable), .9f);
+		addMainButton("start-loadgame", new LoadGamePanel(connector,
+		        contentSetable), .75f);
+		addMainButton("start-newmultiplayer", new NewMultiplayerGamePanel(
+		        connector, contentSetable), .6f);
+		// addMainButton("start-joinmultiplayer", new NewGamePanel(connector,
+		// contentSetable), .45f);
+		// addMainButton("start-restoremultiplayer", new NewGamePanel(connector,
+		// contentSetable), .3f);
 	}
 
-	private void displayContent(EActionType displayAction) {
+	void setContent(UIPanel panel) {
 		content.removeAll();
-
-		if (displayAction == EActionType.SHOW_START_NEW) {
-			newGamePanel = new NewGamePanel(connector.getMaps(), false);
-			content.addChild(newGamePanel, 0, 0, 1, 1);
-		} else if (displayAction == EActionType.SHOW_LOAD) {
-			loadSavedGamePanel =
-			        new LoadSavedGamePanel(connector.getLoadableGames());
-			content.addChild(loadSavedGamePanel, 0, 0, 1, 1);
-		} else if (displayAction == EActionType.SHOW_START_NETWORK) {
-			newGamePanel = new NewGamePanel(connector.getMaps(), true);
-			content.addChild(newGamePanel, 0, 0, 1, 1);
-		} else if (displayAction == EActionType.SHOW_JOIN_NETWORK) {
-			INetworkConnector networkConnector =
-			        connector.getNetworkConnector();
-			joinGamePanel = new JoinGamePanel(networkConnector);
-			content.addChild(joinGamePanel, 0, 0, 1, 1);
-			networkConnector.setListener(this);
-		}
-
-		for (UILabeledButton b : mainButtons) {
-			b.setActive(b.getAction(0, 0).getActionType() == displayAction);
-		}
-
-		requestRedraw();
+		content.addChild(panel, 0, 0, 1, 1);
 	}
 
-	private void addMainButton(EActionType type, float top) {
-		UILabeledButton child =
-		        new UILabeledButton(Labels.getName(type), new Action(type),
-		                EFontSize.HEADLINE);
-		root.addChild(child, .05f, top - .1f, .45f, top);
+	private class MainButton {
+		private final UILabeledButton button;
+
+		private MainButton(String labelId, final UIPanel panel, float top) {
+			ExecutableAction action = new ExecutableAction() {
+				@Override
+				public void execute() {
+					for (UILabeledButton b : mainButtons) {
+						b.setActive(false);
+					}
+					setContent(panel);
+					button.setActive(true);
+				}
+			};
+			button =
+			        new UILabeledButton(Labels.getString(labelId), action,
+			                EFontSize.HEADLINE);
+		}
+
+		private UILabeledButton getButton() {
+			return button;
+		}
+	}
+
+	private void addMainButton(String labelId, final UIPanel panel, float top) {
+		final UILabeledButton child =
+		        new MainButton(labelId, panel, top).getButton();
+		addChild(child, .05f, top - .1f, .45f, top);
 		mainButtons.add(child);
-	}
-
-	@Override
-	public void drawContent(GLDrawContext gl2, int width, int height) {
-		root.setPosition(new FloatRectangle(0, 0, width, height));
-		gl2.color(.6f, .6f, .6f, 1);
-		ImageProvider.getInstance().getImage(BACKGROUND)
-		        .drawImageAtRect(gl2, 0, 0, width, height);
-		root.drawAt(gl2);
-	}
-
-	@Override
-	public void handleEvent(GOEvent event) {
-		if (event instanceof GOCommandEvent) {
-			event.setHandler(commandHandler);
-		}
-	}
-
-	@Override
-	public void matchListChanged(INetworkConnector connector) {
-		joinGamePanel.matchListChanged(connector);
-		requestRedraw();
 	}
 
 }

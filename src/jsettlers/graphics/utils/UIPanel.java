@@ -22,11 +22,13 @@ import jsettlers.graphics.map.draw.ImageProvider;
 public class UIPanel implements UIElement {
 	private static final int DETAIL_IMAGES = 3;
 
-	private LinkedList<ChildLink> children =
+	private final LinkedList<ChildLink> children =
 	        new LinkedList<UIPanel.ChildLink>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
 	private ImageLink background;
+
+	private boolean attached = false;
 
 	public UIPanel() {
 	}
@@ -58,6 +60,7 @@ public class UIPanel implements UIElement {
 	public void addChild(UIElement child, float left, float bottom,
 	        float right, float top) {
 		this.children.add(new ChildLink(child, left, bottom, right, top));
+		child.onAttach();
 	}
 
 	/**
@@ -75,6 +78,7 @@ public class UIPanel implements UIElement {
 		        0.5f + height / 2);
 	}
 
+	@Override
 	public void drawAt(GLDrawContext gl) {
 		drawBackground(gl);
 
@@ -109,7 +113,7 @@ public class UIPanel implements UIElement {
 	 */
 	protected void drawAtRect(GLDrawContext gl, Image image,
 	        FloatRectangle position) {
-		gl.color(1,1,1,1);
+		gl.color(1, 1, 1, 1);
 		float minX = position.getMinX();
 		float minY = position.getMinY();
 		float maxX = position.getMaxX();
@@ -125,7 +129,8 @@ public class UIPanel implements UIElement {
 	 * For settler sequences, assumes the same for the next two sequence
 	 * members.
 	 */
-	protected Image getDetailedImage(OriginalImageLink link, float width, float height) {
+	protected Image getDetailedImage(OriginalImageLink link, float width,
+	        float height) {
 		Image image = ImageProvider.getInstance().getImage(link);
 		OriginalImageLink currentLink = link;
 
@@ -207,6 +212,11 @@ public class UIPanel implements UIElement {
 	}
 
 	public void removeAll() {
+		if (attached) {
+			for (ChildLink link : children) {
+				link.child.onDetach();
+			}
+		}
 		this.children.clear();
 	}
 
@@ -231,5 +241,29 @@ public class UIPanel implements UIElement {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void onAttach() {
+		if (!attached) {
+			for (ChildLink link : children) {
+				link.child.onAttach();
+			}
+		}
+		attached = true;
+	}
+
+	@Override
+	public void onDetach() {
+		if (attached) {
+			for (ChildLink link : children) {
+				link.child.onDetach();
+			}
+		}
+		attached = false;
+	}
+
+	protected boolean isAttached() {
+		return attached;
 	}
 }

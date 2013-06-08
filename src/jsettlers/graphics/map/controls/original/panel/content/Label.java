@@ -3,10 +3,9 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import jsettlers.graphics.utils.UIElement;
 import jsettlers.graphics.utils.UIPanel;
 
-public class Label extends UIPanel implements UIElement {
+public class Label extends UIPanel {
 
 	private final EFontSize size;
 	private final String[] words;
@@ -18,7 +17,6 @@ public class Label extends UIPanel implements UIElement {
 		this.size = size;
 
 		words = message.split(" ");
-
 	}
 
 	@Override

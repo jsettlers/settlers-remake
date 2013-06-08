@@ -1,0 +1,55 @@
+package jsettlers.graphics.startscreen.startlists;
+
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
+import jsettlers.graphics.startscreen.interfaces.IChangingList;
+import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
+import jsettlers.graphics.utils.UIList;
+import jsettlers.graphics.utils.UIList.ListItemGenerator;
+import jsettlers.graphics.utils.UIPanel;
+
+/**
+ * A side panel of the start screen. TODO: Do not reload the list each time it
+ * changes, and only use it if we are in foreground.
+ * 
+ * @author michael
+ */
+public abstract class StartListPanel<T> extends
+        UIPanel implements IChangingListListener<T>, ListItemGenerator<T> {
+
+	private final IChangingList<T> list;
+	private final UIList<T> uiList;
+
+	public StartListPanel(IChangingList<T> list) {
+		this.list = list;
+		uiList = new UIList<T>(list.getItems(), this, .1f);
+
+		this.addChild(uiList, 0, .15f, 1, 1);
+
+		// start button
+		UILabeledButton startbutton =
+		        new UILabeledButton("TODO: label", getSubmitAction());
+		this.addChild(startbutton, .3f, 0, 1, .1f);
+	}
+
+	protected abstract Action getSubmitAction();
+
+	protected T getActiveListItem() {
+		return uiList.getActiveItem();
+	}
+
+	@Override
+	public void listChanged(IChangingList<T> list) {
+		uiList.setItems(list.getItems());
+	}
+
+	@Override
+	public void onAttach() {
+		list.setListener(this);
+	}
+
+	@Override
+	public void onDetach() {
+		list.setListener(null);
+	};
+}

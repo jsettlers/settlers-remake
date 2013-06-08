@@ -9,11 +9,23 @@ public interface UIElement {
 
 	/**
 	 * Draws the element at the given position.
+	 * 
 	 * @param gl
 	 */
 	void drawAt(GLDrawContext gl);
-	
+
 	Action getAction(float relativex, float relativey);
 
 	String getDescription(float relativex, float relativey);
+
+	/**
+	 * Called once to indicate that this element is not attached to the gui and
+	 * could be visible.
+	 */
+	void onAttach();
+
+	/**
+	 * The opposite of {@link #onAttach()}.
+	 */
+	void onDetach();
 }

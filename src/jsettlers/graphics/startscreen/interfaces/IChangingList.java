@@ -16,7 +16,7 @@ public interface IChangingList<T> {
 	 * @return A list that is not modified after returning it and contains all
 	 *         current items of the list.
 	 */
-	public List<T> getItems();
+	public List<? extends T> getItems();
 
 	/**
 	 * Called when the list is not needed any more.
