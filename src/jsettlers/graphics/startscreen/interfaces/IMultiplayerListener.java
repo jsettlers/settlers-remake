@@ -12,7 +12,7 @@ public interface IMultiplayerListener {
 	 * 
 	 * @param game
 	 */
-	void gameStarted(IStartingGame game);
+	void gameIsStarting(IStartingGame game);
 
 	/**
 	 * Called when the game was aborted and the user is forced to exit the

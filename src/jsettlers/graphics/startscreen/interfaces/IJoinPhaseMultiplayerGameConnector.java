@@ -11,12 +11,14 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	/**
 	 * Sets the multiplayer listener that listens to game state changes. If the
 	 * game has already started,
-	 * {@link IMultiplayerListener#gameStarted(IStartingGame)} is called
+	 * {@link IMultiplayerListener#gameIsStarting(IStartingGame)} is called
 	 * immediately by this method.
 	 * 
 	 * @param listener
 	 */
 	public void setMultiplayerListener(IMultiplayerListener listener);
+
+	public void setChatListener(IChatMessageListener chatMessageListener);
 
 	/* TODO: Add a method to access information about the base map */
 
@@ -45,4 +47,5 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	 * {@link IMultiplayerListener}.
 	 */
 	public void abort();
+
 }
