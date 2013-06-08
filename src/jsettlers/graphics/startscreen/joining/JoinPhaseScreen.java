@@ -59,7 +59,7 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 	}
 
 	@Override
-	public void gameStarted(IStartingGame game) {
+	public void gameIsStarting(IStartingGame game) {
 		contentSetable.setContent(new StartingGamePanel(game, contentSetable));
 	}
 

@@ -34,4 +34,15 @@ public interface IMultiplayerConnector {
 	 * @return
 	 */
 	IJoiningGame openNewMultiplayerGame(IOpenMultiplayerGameInfo gameInfo);
+
+	/**
+	 * @return Returns the {@link EMultiplayerConnectorState} of this connector.
+	 */
+	EMultiplayerConnectorState getState();
+
+	/**
+	 * Shuts down the connection to the server and stops the threads this
+	 * multiplayer connector started.
+	 */
+	void shutdown();
 }

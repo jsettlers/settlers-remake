@@ -1,7 +1,5 @@
 package jsettlers.graphics.startscreen.interfaces;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 
 /**
  * This is the main start screen interface. It is given to the start screen when
@@ -61,13 +59,7 @@ public interface IStartScreen {
 	 * @param player
 	 *            The player that want's to access the server.
 	 * @return A new instance of a {@link IMultiplayerConnector}.
-	 * @throws UnknownHostException
-	 *             This exception is thrown if the given server can not be
-	 *             found.
-	 * @throws IOException
-	 *             This exception might be thrown if there was an error during
-	 *             the establishing of the connection.
 	 */
 	IMultiplayerConnector getMultiplayerConnector(String serverAddr,
-	        Player player) throws UnknownHostException, IOException;
+	        Player player);
 }

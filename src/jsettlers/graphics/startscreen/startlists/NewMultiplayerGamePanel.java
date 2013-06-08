@@ -1,7 +1,5 @@
 package jsettlers.graphics.startscreen.startlists;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.UUID;
 
 import jsettlers.graphics.action.Action;
@@ -57,19 +55,19 @@ public class NewMultiplayerGamePanel extends
 		return new ExecutableAction() {
 			@Override
 			public void execute() {
-				//TODO: Make player name changeable, UUID persistent.
-				IOpenMultiplayerGameInfo gameInfo = new OpenMultiplayerGameInfo(getActiveListItem());
+				// TODO: Make player name changeable, UUID persistent.
+				IOpenMultiplayerGameInfo gameInfo =
+				        new OpenMultiplayerGameInfo(getActiveListItem());
 				IJoiningGame joiningGame;
-                try {
-	                joiningGame = screen.getMultiplayerConnector("localhost", new Player(UUID.randomUUID().toString(), "testplayer")).openNewMultiplayerGame(gameInfo );
-					contentSetable.setContent(new JoiningGamePanel(joiningGame, contentSetable));
-                } catch (UnknownHostException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                } catch (IOException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                }
+
+				joiningGame =
+				        screen.getMultiplayerConnector(
+				                "localhost",
+				                new Player(UUID.randomUUID().toString(),
+				                        "testplayer")).openNewMultiplayerGame(
+				                gameInfo);
+				contentSetable.setContent(new JoiningGamePanel(joiningGame,
+				        contentSetable));
 			}
 		};
 	}
