@@ -14,7 +14,6 @@ import java.util.Date;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
@@ -230,9 +229,9 @@ public class MapList {
 		return new File(ResourceManager.getSaveDirectory(), "maps");
 	}
 
-	public void deleteLoadableGame(ILoadableGame game) {
+	public void deleteLoadableGame(MapLoader game) {
 		if (game instanceof MapLoader) {
-			((MapLoader) game).getFile().delete();
+			game.getFile().delete();
 		}
 		savedMaps.remove(game);
 	}

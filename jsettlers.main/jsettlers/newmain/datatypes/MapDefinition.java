@@ -1,5 +1,6 @@
 package jsettlers.newmain.datatypes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
@@ -15,7 +16,7 @@ import jsettlers.logic.map.save.MapLoader;
  */
 public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefinition {
 
-	private MapLoader mapLoader;
+	private final MapLoader mapLoader;
 
 	public MapDefinition(MapLoader mapLoader) {
 		this.mapLoader = mapLoader;
@@ -53,7 +54,7 @@ public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefin
 
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() { // TODO @Andreas Eberle: supply saved players information.
-		throw new UnsupportedOperationException("not implemented yet");
+		return new ArrayList<ILoadableMapPlayer>();
 	}
 
 }

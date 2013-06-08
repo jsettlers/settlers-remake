@@ -14,13 +14,13 @@ import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
  */
 public class ChangingList<T> implements IChangingList<T> {
 
-	private List<T> items;
+	private List<? extends T> items;
 	private IChangingListListener<T> listener;
 
 	public ChangingList() {
 	}
 
-	public ChangingList(List<T> items) {
+	public ChangingList(List<? extends T> items) {
 		this.items = items;
 	}
 
@@ -30,7 +30,7 @@ public class ChangingList<T> implements IChangingList<T> {
 	}
 
 	@Override
-	public List<T> getItems() {
+	public List<? extends T> getItems() {
 		return items;
 	}
 

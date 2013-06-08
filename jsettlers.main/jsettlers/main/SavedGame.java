@@ -3,7 +3,6 @@ package jsettlers.main;
 import java.util.Date;
 
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
 import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
@@ -15,7 +14,7 @@ import jsettlers.logic.map.save.MapLoader;
  * 
  * @author michael
  */
-public class SavedGame implements ILoadableGame, IGameCreator {
+public class SavedGame implements IGameCreator {
 
 	private final MapLoader loader;
 
@@ -23,7 +22,6 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 		this.loader = loader;
 	}
 
-	@Override
 	public String getName() {
 		try {
 			return loader.getFileHeader().getName();
@@ -32,7 +30,6 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 		}
 	}
 
-	@Override
 	public Date getSaveTime() {
 		try {
 			return loader.getFileHeader().getDate();
@@ -51,7 +48,6 @@ public class SavedGame implements ILoadableGame, IGameCreator {
 		return loader.getUISettings(player);
 	}
 
-	@Override
 	public short[] getImage() {
 		try {
 			return loader.getFileHeader().getBgimage();

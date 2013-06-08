@@ -12,8 +12,6 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.network.INetworkableMap;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
 import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
@@ -29,7 +27,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * @author michael
  * @author Andreas Eberle
  */
-public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetworkableMap, Comparable<MapLoader> {
+public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapLoader> {
 	private final File file;
 	private MapFileHeader header;
 	private MainGrid mainGrid;
@@ -160,7 +158,6 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 		}
 	}
 
-	@Override
 	public int getMinPlayers() {
 		try {
 			return getFileHeader().getMinPlayer();
@@ -178,7 +175,6 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 		}
 	}
 
-	@Override
 	public Date getSaveTime() {
 		try {
 			return getFileHeader().getDate();
@@ -226,12 +222,6 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 		return file;
 	}
 
-	@Override
-	public INetworkableMap getNetworkableMap() {
-		return this;
-	}
-
-	@Override
 	public String getDescription() {
 		try {
 			return getFileHeader().getDescription() + "\n" + getFileHeader().getWidth() + "x" + getFileHeader().getHeight();
@@ -240,7 +230,6 @@ public class MapLoader implements IGameCreator, ILoadableGame, IMapItem, INetwor
 		}
 	}
 
-	@Override
 	public short[] getImage() {
 		try {
 			return getFileHeader().getBgimage();

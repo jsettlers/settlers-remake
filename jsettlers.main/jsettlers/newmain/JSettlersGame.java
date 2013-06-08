@@ -28,7 +28,8 @@ import networklib.client.interfaces.ITaskScheduler;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
- * This class can start a Thread that loads and sets up a game and wait's for its termination.
+ * This class can start a Thread that loads and sets up a game and wait's for
+ * its termination.
  * 
  * @author Andreas Eberle
  */
@@ -47,7 +48,8 @@ public class JSettlersGame {
 	private boolean stopped = false;
 	private boolean started = false;
 
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, ITaskScheduler taskScheduler, byte playerNumber, boolean multiplayer) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
+			ITaskScheduler taskScheduler, byte playerNumber, boolean multiplayer) {
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.taskScheduler = taskScheduler;
@@ -58,14 +60,17 @@ public class JSettlersGame {
 	}
 
 	/**
-	 * Creates a new {@link JSettlersGame} object with an {@link OfflineTaskScheduler}.
+	 * Creates a new {@link JSettlersGame} object with an
+	 * {@link OfflineTaskScheduler}.
 	 * 
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param playerNumber
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerNumber) {
-		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false);
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
+			byte playerNumber) {
+		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber,
+				false);
 	}
 
 	/**
@@ -88,7 +93,8 @@ public class JSettlersGame {
 		}
 	}
 
-	private class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
+	private class GameRunner implements Runnable, IStartingGame, IStartedGame,
+			IGameStoppable {
 		private IStartingGameListener startingGameListener;
 		private MainGrid mainGrid;
 		private GameStatistics statistics;
@@ -100,27 +106,33 @@ public class JSettlersGame {
 			try {
 				informProgressListener(EProgressState.LOADING, 0.1f);
 
-				IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
+				IGameClock gameClock = MatchConstants.clock = taskScheduler
+						.getGameClock();
 				RandomSingleton.load(randomSeed);
 
 				informProgressListener(EProgressState.LOADING_MAP, 0.3f);
-				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
+				Thread imagePreloader = ImageProvider.getInstance()
+						.startPreloading();
 
-				MainGrid grid = mapcreator.getMainGrid(playerNumber);
+				mainGrid = mapcreator.getMainGrid(playerNumber);
 				UIState uiState = mapcreator.getUISettings(playerNumber);
 
 				informProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
 				statistics = new GameStatistics(gameClock);
-				grid.startThreads();
+				mainGrid.startThreads();
 
-				imagePreloader.join(); // Wait for ImageProvider to finish loading the images
-				// TODO @Andreas Eberle: Wait for startingGameListener to be set.
+				imagePreloader.join(); // Wait for ImageProvider to finish
+										// loading the images
+				// TODO @Andreas Eberle: Wait for startingGameListener to be
+				// set.
 
-				final MapInterfaceConnector connector = startingGameListener.startFinished(this);
+				final MapInterfaceConnector connector = startingGameListener
+						.startFinished(this);
 				connector.loadUIState(uiState.getUiStateData());
 
-				GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, grid.getGuiInputGrid(), this, playerNumber,
-						multiplayer);
+				GuiInterface guiInterface = new GuiInterface(connector,
+						gameClock, taskScheduler, mainGrid.getGuiInputGrid(),
+						this, playerNumber, multiplayer);
 				gameClock.startExecution();
 
 				synchronized (stopMutex) {
@@ -134,7 +146,7 @@ public class JSettlersGame {
 
 				gameClock.stopExecution();
 				connector.stop();
-				grid.stopThreads();
+				mainGrid.stopThreads();
 				guiInterface.stop();
 				Timer100Milli.stop();
 				MovableTimer.stop();
@@ -152,11 +164,13 @@ public class JSettlersGame {
 			}
 		}
 
-		private void informProgressListener(EProgressState progressState, float progress) {
+		private void informProgressListener(EProgressState progressState,
+				float progress) {
 			this.progressState = progressState;
 			this.progress = progress;
 			if (startingGameListener != null)
-				startingGameListener.startProgressChanged(progressState, progress);
+				startingGameListener.startProgressChanged(progressState,
+						progress);
 		}
 
 		private void reportFail(EGameError gameError, Exception e) {
@@ -164,12 +178,14 @@ public class JSettlersGame {
 				startingGameListener.startFailed(gameError, e);
 		}
 
-		// METHODS of IStartingGame ====================================================
+		// METHODS of IStartingGame
+		// ====================================================
 		@Override
 		public void setListener(IStartingGameListener startingGameListener) {
 			this.startingGameListener = startingGameListener;
 			if (startingGameListener != null)
-				startingGameListener.startProgressChanged(progressState, progress);
+				startingGameListener.startProgressChanged(progressState,
+						progress);
 		}
 
 		@Override
@@ -177,7 +193,8 @@ public class JSettlersGame {
 			stop();
 		}
 
-		// METHODS of IStartedGame ======================================================
+		// METHODS of IStartedGame
+		// ======================================================
 		@Override
 		public IGraphicsGrid getMap() {
 			return mainGrid.getGraphicsGrid();

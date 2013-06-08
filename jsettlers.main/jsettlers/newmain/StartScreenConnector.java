@@ -33,7 +33,7 @@ public class StartScreenConnector implements IStartScreen {
 	}
 
 	@Override
-	public IChangingList<? extends IStartableMapDefinition> getSingleplayerMaps() {
+	public IChangingList<IStartableMapDefinition> getSingleplayerMaps() {
 		ArrayList<MapLoader> maps = mapList.getFreshMaps();
 		List<MapDefinition> result = new LinkedList<MapDefinition>();
 
@@ -42,11 +42,11 @@ public class StartScreenConnector implements IStartScreen {
 			result.add(mapDef);
 		}
 
-		return new ChangingList<MapDefinition>(result);
+		return new ChangingList<IStartableMapDefinition>(result);
 	}
 
 	@Override
-	public IChangingList<? extends ILoadableMapDefinition> getStoredSingleplayerGames() {
+	public IChangingList<ILoadableMapDefinition> getStoredSingleplayerGames() {
 		ArrayList<MapLoader> maps = mapList.getSavedMaps();
 		List<MapDefinition> result = new LinkedList<MapDefinition>();
 
@@ -56,16 +56,16 @@ public class StartScreenConnector implements IStartScreen {
 			result.add(mapDef);
 		}
 
-		return new ChangingList<MapDefinition>(result);
+		return new ChangingList<ILoadableMapDefinition>(result);
 	}
 
 	@Override
-	public IChangingList<? extends IStartableMapDefinition> getMultiplayerMaps() {
+	public IChangingList<IStartableMapDefinition> getMultiplayerMaps() {
 		return getSingleplayerMaps();
 	}
 
 	@Override
-	public IChangingList<? extends ILoadableMapDefinition> getRestorableMultiplayerGames() {
+	public IChangingList<ILoadableMapDefinition> getRestorableMultiplayerGames() {
 		return getStoredSingleplayerGames();
 	}
 
