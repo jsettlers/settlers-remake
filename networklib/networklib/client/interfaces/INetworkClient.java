@@ -91,4 +91,6 @@ public interface INetworkClient extends ITaskScheduler {
 	PlayerInfoPacket getPlayerInfo();
 
 	void close();
+
+	int getRoundTripTimeInMs();
 }

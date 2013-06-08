@@ -261,4 +261,8 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		return clock;
 	}
 
+	public int getRoundTripTimeInMs() {
+		return channel.getRoundTripTime().getRtt();
+	}
+
 }
