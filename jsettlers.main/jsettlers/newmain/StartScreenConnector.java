@@ -1,7 +1,5 @@
 package jsettlers.newmain;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,7 +86,7 @@ public class StartScreenConnector implements IStartScreen {
 	}
 
 	@Override
-	public IMultiplayerConnector getMultiplayerConnector(String serverAddr, Player player) throws UnknownHostException, IOException {
+	public IMultiplayerConnector getMultiplayerConnector(String serverAddr, Player player) {
 		return new MultiplayerConnector(serverAddr, player.getId(), player.getName());
 	}
 
