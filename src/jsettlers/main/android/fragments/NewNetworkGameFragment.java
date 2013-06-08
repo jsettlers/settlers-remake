@@ -2,7 +2,7 @@ package jsettlers.main.android.fragments;
 
 import jsettlers.common.network.IMatchSettings;
 import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
-import jsettlers.graphics.startscreen.NetworkGameSettings;
+import jsettlers.graphics.startscreen.old.NetworkGameSettings;
 import jsettlers.main.android.R;
 import jsettlers.main.android.maplist.FreshMapListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
