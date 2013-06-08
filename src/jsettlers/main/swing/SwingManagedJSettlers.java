@@ -1,25 +1,28 @@
 package jsettlers.main.swing;
 
+import go.graphics.area.Area;
 import go.graphics.nativegl.NativeAreaWindow;
 import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.graphics.ISettlersGameDisplay;
+import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.swing.JOGLPanel;
+import jsettlers.graphics.startscreen.StartScreen;
+import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
-import jsettlers.main.ManagedJSettlers;
+import jsettlers.newmain.StartScreenConnector;
 
 public class SwingManagedJSettlers {
 
@@ -42,8 +45,7 @@ public class SwingManagedJSettlers {
 		loadDebugSettings(argsList);
 
 		ResourceManager.setProvider(new SwingResourceProvider());
-		ManagedJSettlers game = new ManagedJSettlers();
-		game.start(getGui(argsList));
+		startGui(argsList, new StartScreenConnector());
 
 		ImageProvider.getInstance().startPreloading();
 	}
@@ -59,30 +61,47 @@ public class SwingManagedJSettlers {
 	 * Creates a new SWING GUI for the game.
 	 * 
 	 * @param argsList
+	 * @param startScreen 
 	 * @return
 	 */
-	public static ISettlersGameDisplay getGui(List<String> argsList) {
-		JOGLPanel content = new JOGLPanel(new SwingSoundPlayer());
+	public static JSettlersScreen startGui(List<String> argsList, IStartScreen startScreen) {
+		// TODO: new SwingSoundPlayer();
+
+		Area area = new Area();
+		JSettlersScreen content = new JSettlersScreen();
+		area.add(content.getRegion());
+		content.setContent(new StartScreen(startScreen, content));
 
 		if (argsList.contains("--force-jogl")) {
-			startJogl(content);
+			startJogl(area);
 		} else if (argsList.contains("--force-native")) {
-			startNative(content);
+			startNative(area);
 		} else {
 			try {
-				startNative(content);
+				startNative(area);
 			} catch (Throwable t) {
-				startJogl(content);
+				startJogl(area);
 			}
 		}
+		
+		startRedrawTimer(content);
 		return content;
 	}
 
-	private static void startJogl(JOGLPanel content) {
+	private static void startRedrawTimer(final JSettlersScreen content) {
+		new Timer("opengl-redraw").schedule(new TimerTask() {
+			@Override
+			public void run() {
+				content.getRegion().requestRedraw();
+			}
+		}, 100, 100);
+	}
+
+	private static void startJogl(Area area) {
 		SwingResourceLoader.setupSwingPaths();
 
 		JFrame jsettlersWnd = new JFrame("jsettlers");
-		AreaContainer panel = new AreaContainer(content.getArea());
+		AreaContainer panel = new AreaContainer(area);
 		panel.setPreferredSize(new Dimension(640, 480));
 		jsettlersWnd.add(panel);
 		panel.requestFocusInWindow();
@@ -94,7 +113,7 @@ public class SwingManagedJSettlers {
 		jsettlersWnd.setLocationRelativeTo(null);
 	}
 
-	private static void startNative(JOGLPanel content) {
-		new NativeAreaWindow(content.getArea());
+	private static void startNative(Area area) {
+		new NativeAreaWindow(area);
 	}
 }
