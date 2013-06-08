@@ -1,7 +1,7 @@
 package go.graphics.nativegl;
 
 import go.graphics.UIPoint;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 public class NativeEventConverter extends AbstractEventConverter {
@@ -13,7 +13,7 @@ public class NativeEventConverter extends AbstractEventConverter {
 	private boolean requestStartHover;
 	private UIPoint currentMousePosition = new UIPoint(0, 0);
 
-	protected NativeEventConverter(GOEventHandlerProvoder provider) {
+	protected NativeEventConverter(GOEventHandlerProvider provider) {
 		super(provider);
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
 		        Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
