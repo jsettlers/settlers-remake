@@ -8,7 +8,7 @@ package go.graphics.event;
  * 
  * @author michael
  */
-public interface GOEventHandlerProvoder {
+public interface GOEventHandlerProvider {
 	/**
 	 * Asks for a handler to the event.
 	 * 

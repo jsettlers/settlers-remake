@@ -3,7 +3,7 @@ package go.graphics.region;
 import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,8 +51,8 @@ public class Region implements RedrawListener {
 
 	private RegionContent content = null;
 	
-	private LinkedList<GOEventHandlerProvoder> eventHandlers =
-	        new LinkedList<GOEventHandlerProvoder>();
+	private LinkedList<GOEventHandlerProvider> eventHandlers =
+	        new LinkedList<GOEventHandlerProvider>();
 
 	/**
 	 * Creates a new region with a dfault size.
@@ -176,7 +176,7 @@ public class Region implements RedrawListener {
 	 * Adds an provider that can seth handlers for the venets of this region.
 	 * @param p The handler.
 	 */
-	public void addEventHandler(GOEventHandlerProvoder p) {
+	public void addEventHandler(GOEventHandlerProvider p) {
 		synchronized (eventHandlers) {
 			eventHandlers.add(p);
 		}
@@ -188,10 +188,10 @@ public class Region implements RedrawListener {
 	 */
 	private void fireGoEvent(GOEvent event) {
 		synchronized (eventHandlers) {
-			if (content instanceof GOEventHandlerProvoder) {
-				((GOEventHandlerProvoder) content).handleEvent(event);
+			if (content instanceof GOEventHandlerProvider) {
+				((GOEventHandlerProvider) content).handleEvent(event);
 			}
-	        Iterator<GOEventHandlerProvoder> it = eventHandlers.iterator();
+	        Iterator<GOEventHandlerProvider> it = eventHandlers.iterator();
 	        while (it.hasNext()) {
 	        	it.next().handleEvent(event);
 	        }

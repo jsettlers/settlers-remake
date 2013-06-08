@@ -2,7 +2,7 @@ package go.graphics.event.interpreter;
 
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.SingleHandlerGoEvent;
 import go.graphics.event.command.GOCommandEvent;
@@ -16,7 +16,7 @@ import java.util.LinkedList;
  * @author michael
  */
 public class AbstractEventConverter {
-	private final GOEventHandlerProvoder provider;
+	private final GOEventHandlerProvider provider;
 
 	private GOKeyEvent ongoingKeyEvent = null;
 
@@ -33,7 +33,7 @@ public class AbstractEventConverter {
 
 	private ConvertedZoomEvent ongoingZoomEvent;
 
-	protected AbstractEventConverter(GOEventHandlerProvoder provider) {
+	protected AbstractEventConverter(GOEventHandlerProvider provider) {
 		this.provider = provider;
 	}
 

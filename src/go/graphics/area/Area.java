@@ -4,7 +4,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.RedrawListener;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.command.GOCommandEvent;
@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * 
  * @author michael
  */
-public class Area implements RedrawListener, GOEventHandlerProvoder {
+public class Area implements RedrawListener, GOEventHandlerProvider {
 	/**
 	 * How wide is a border of this area?
 	 */
