@@ -14,9 +14,9 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	 * {@link IMultiplayerListener#gameStarted(IStartingGame)} is called
 	 * immediately by this method.
 	 * 
-	 * @param lîstener
+	 * @param listener
 	 */
-	public void setMultiplayerListener(IMultiplayerListener lîstener);
+	public void setMultiplayerListener(IMultiplayerListener listener);
 
 	/* TODO: Add a method to access information about the base map */
 
