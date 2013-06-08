@@ -41,6 +41,11 @@ public interface IMultiplayerConnector {
 	EMultiplayerConnectorState getState();
 
 	/**
+	 * @return Returns the round trip time in milli seconds.
+	 */
+	int getRoundTripTimeInMs();
+
+	/**
 	 * Shuts down the connection to the server and stops the threads this
 	 * multiplayer connector started.
 	 */
