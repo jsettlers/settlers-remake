@@ -104,4 +104,9 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 	public void shutdown() {
 		networkClient.close();
 	}
+
+	@Override
+	public int getRoundTripTimeInMs() {
+		return networkClient.getRoundTripTimeInMs();
+	}
 }
