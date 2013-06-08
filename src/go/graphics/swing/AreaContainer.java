@@ -3,7 +3,7 @@ package go.graphics.swing;
 import go.graphics.RedrawListener;
 import go.graphics.area.Area;
 import go.graphics.event.GOEvent;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 import go.graphics.swing.opengl.JOGLDrawContext;
 
@@ -25,7 +25,7 @@ import javax.swing.JPanel;
  * 
  * @author michael
  */
-public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvoder {
+public class AreaContainer extends JPanel implements RedrawListener, GOEventHandlerProvider {
 
 	/**
 	 * 

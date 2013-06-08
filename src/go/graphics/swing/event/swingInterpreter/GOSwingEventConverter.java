@@ -3,7 +3,7 @@ package go.graphics.swing.event.swingInterpreter;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
-import go.graphics.event.GOEventHandlerProvoder;
+import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 import java.awt.Component;
@@ -39,7 +39,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	 * @param provider
 	 *            THe provider to which to send the events.
 	 */
-	public GOSwingEventConverter(Component component, GOEventHandlerProvoder provider) {
+	public GOSwingEventConverter(Component component, GOEventHandlerProvider provider) {
 		super(provider);
 
 		component.addKeyListener(this);
