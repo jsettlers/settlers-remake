@@ -80,6 +80,10 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 
 		this.timer = new Timer("NetworkClientTimer");
 		this.clock = gameClock;
+
+		if (!channel.isStarted()) {
+			channel.start();
+		}
 	}
 
 	@Override
@@ -261,6 +265,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		return clock;
 	}
 
+	@Override
 	public int getRoundTripTimeInMs() {
 		return channel.getRoundTripTime().getRtt();
 	}

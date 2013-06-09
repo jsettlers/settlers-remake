@@ -49,8 +49,8 @@ public class GameServerThread extends Thread {
 				Socket clientSocket = serverSocket.accept();
 
 				Channel clientChannel = new Channel(clientSocket);
-
 				manager.identifyNewChannel(clientChannel);
+				clientChannel.start();
 
 				Log.log("accepted new client (" + ++counter + "): " + clientSocket);
 			} catch (SocketException e) {

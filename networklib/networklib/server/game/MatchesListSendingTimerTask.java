@@ -14,10 +14,10 @@ import networklib.server.db.IDBFacade;
  * @author Andreas Eberle
  * 
  */
-public class MatchSendingTimerTask extends TimerTask {
+public class MatchesListSendingTimerTask extends TimerTask {
 	private final IDBFacade db;
 
-	public MatchSendingTimerTask(IDBFacade db) {
+	public MatchesListSendingTimerTask(IDBFacade db) {
 		this.db = db;
 	}
 

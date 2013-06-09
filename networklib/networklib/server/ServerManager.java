@@ -11,7 +11,7 @@ import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.db.IDBFacade;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.game.Match;
-import networklib.server.game.MatchSendingTimerTask;
+import networklib.server.game.MatchesListSendingTimerTask;
 import networklib.server.game.Player;
 import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.IdentifyUserListener;
@@ -32,21 +32,21 @@ import networklib.server.listeners.matches.StartMatchListener;
 public class ServerManager implements IServerManager {
 
 	private final IDBFacade db;
-	private final Timer sendMatchListTimer = new Timer("SendMatchListTimer", true);
+	private final Timer sendMatchesListTimer = new Timer("SendMatchesListTimer", true);
 	private final Timer matchesTaskDistributionTimer = new Timer("MatchesTaskDistributionTimer", true);
-	private final MatchSendingTimerTask matchSendingTask;
+	private final MatchesListSendingTimerTask matchSendingTask;
 
 	public ServerManager(IDBFacade db) {
 		this.db = db;
-		matchSendingTask = new MatchSendingTimerTask(db);
+		matchSendingTask = new MatchesListSendingTimerTask(db);
 	}
 
 	public synchronized void start() {
-		sendMatchListTimer.schedule(matchSendingTask, 0, NetworkConstants.Server.OPEN_MATCHES_SEND_INTERVAL_MS);
+		sendMatchesListTimer.schedule(matchSendingTask, 0, NetworkConstants.Server.OPEN_MATCHES_SEND_INTERVAL_MS);
 	}
 
 	public synchronized void shutdown() {
-		sendMatchListTimer.cancel();
+		sendMatchesListTimer.cancel();
 		matchesTaskDistributionTimer.cancel();
 	}
 

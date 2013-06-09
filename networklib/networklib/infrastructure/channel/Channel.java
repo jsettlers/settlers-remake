@@ -40,6 +40,8 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 
 	private IChannelClosedListener channelClosedListener;
 
+	private boolean started;
+
 	/**
 	 * Creates a new Channel with the given socket as the underlying communication method.
 	 * 
@@ -74,6 +76,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	 * @see <code>Thread.start()</code>
 	 */
 	public void start() {
+		started = true;
 		thread.start();
 	}
 
@@ -235,5 +238,9 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 
 	public boolean isClosed() {
 		return socket.isClosed();
+	}
+
+	public boolean isStarted() {
+		return started;
 	}
 }

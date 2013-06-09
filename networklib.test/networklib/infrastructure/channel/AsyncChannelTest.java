@@ -28,7 +28,7 @@ public class AsyncChannelTest {
 	private static final int TEST_KEY = NetworkConstants.Keys.TEST_PACKET;
 
 	private AsyncChannel c1;
-	private AsyncChannel c2;
+	private Channel c2;
 
 	@Before
 	public void setUp() throws IOException {
