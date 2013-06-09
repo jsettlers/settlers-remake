@@ -36,12 +36,8 @@ public interface IMultiplayerConnector {
 	IJoiningGame openNewMultiplayerGame(IOpenMultiplayerGameInfo gameInfo);
 
 	/**
-	 * @return Returns the {@link EMultiplayerConnectorState} of this connector.
-	 */
-	EMultiplayerConnectorState getState();
-
-	/**
-	 * @return Returns the round trip time in milli seconds.
+	 * @return Returns the round trip time in milliseconds<br>
+	 *         or {@link Integer#MAX_VALUE} if the client is not yet connected.
 	 */
 	int getRoundTripTimeInMs();
 
