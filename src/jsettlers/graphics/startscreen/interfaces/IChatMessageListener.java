@@ -17,4 +17,17 @@ public interface IChatMessageListener {
 	 */
 	void chatMessageReceived(String authorId, String message);
 
+	/**
+	 * This method is called when a predefined message has been issued by the
+	 * server.
+	 * 
+	 * @param playerId
+	 *            The id of the player connected to the message (for example the
+	 *            player that left).<br>
+	 *            Or null, if the message is player-independent.
+	 * @param message
+	 *            The predefined message that has been received.
+	 */
+	void systemMessageReceived(String playerId, ENetworkMessage message);
+
 }

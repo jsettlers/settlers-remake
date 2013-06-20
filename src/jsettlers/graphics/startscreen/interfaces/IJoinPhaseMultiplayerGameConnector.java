@@ -20,6 +20,8 @@ public interface IJoinPhaseMultiplayerGameConnector {
 
 	public void setChatListener(IChatMessageListener chatMessageListener);
 
+	public void sendChatMessage(String chatMessage);
+
 	/* TODO: Add a method to access information about the base map */
 
 	/**
