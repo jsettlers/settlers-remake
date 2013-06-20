@@ -45,7 +45,7 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 	}
 
 	@Override
-	public IChangingList<? extends IJoinableGame> getJoinableMultiplayerGames() {
+	public IChangingList<IJoinableGame> getJoinableMultiplayerGames() {
 		return joinableGames;
 	}
 
