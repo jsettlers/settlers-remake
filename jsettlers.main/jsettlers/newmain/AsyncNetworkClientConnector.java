@@ -49,6 +49,7 @@ public class AsyncNetworkClientConnector {
 						if (packet.getRejectedKey() == NetworkConstants.Keys.IDENTIFY_USER) {
 							setState(AsyncNetworkClientFactoryState.FAILED_CONNECTING);
 						}
+						System.out.println("Received reject packet: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
 					}
 				};
 			}

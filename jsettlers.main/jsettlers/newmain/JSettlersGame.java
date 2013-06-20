@@ -28,8 +28,7 @@ import networklib.client.interfaces.ITaskScheduler;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
- * This class can start a Thread that loads and sets up a game and wait's for
- * its termination.
+ * This class can start a Thread that loads and sets up a game and wait's for its termination.
  * 
  * @author Andreas Eberle
  */
@@ -60,8 +59,7 @@ public class JSettlersGame {
 	}
 
 	/**
-	 * Creates a new {@link JSettlersGame} object with an
-	 * {@link OfflineTaskScheduler}.
+	 * Creates a new {@link JSettlersGame} object with an {@link OfflineTaskScheduler}.
 	 * 
 	 * @param mapCreator
 	 * @param randomSeed
@@ -121,10 +119,9 @@ public class JSettlersGame {
 				statistics = new GameStatistics(gameClock);
 				mainGrid.startThreads();
 
-				imagePreloader.join(); // Wait for ImageProvider to finish
-										// loading the images
-				// TODO @Andreas Eberle: Wait for startingGameListener to be
-				// set.
+				// Wait for ImageProvider to finish loading the images
+				imagePreloader.join();
+				// TODO @Andreas Eberle: Wait for startingGameListener to be set.
 
 				final MapInterfaceConnector connector = startingGameListener
 						.startFinished(this);
@@ -153,8 +150,6 @@ public class JSettlersGame {
 				PartitionManagerTimer.stop();
 				NewMovable.dropAllMovables();
 				Building.dropAllBuildings();
-
-				MatchConstants.clock = null;
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);

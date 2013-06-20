@@ -20,6 +20,7 @@ public class MultiplayerPlayer implements IMultiplayerPlayer {
 		this.ready = playerInfoPacket.isReady();
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
@@ -34,4 +35,8 @@ public class MultiplayerPlayer implements IMultiplayerPlayer {
 		return ready;
 	}
 
+	@Override
+	public String toString() {
+		return "MultiplayerPlayer [id=" + id + ", name=" + name + ", ready=" + ready + "]";
+	}
 }
