@@ -1,6 +1,5 @@
 package jsettlers.graphics.startscreen.joining;
 
-import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.GenericListItem;
@@ -87,11 +86,4 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
     public void gameIsStarting(IStartingGame game) {
 		contentSetable.setContent(new StartingGamePanel(game, contentSetable));	    
     }
-
-	@Override
-	public Action getAction(float relativex, float relativey) {
-	    // TODO Auto-generated method stub
-	    return super.getAction(relativex, relativey);
-	}
-	
 }

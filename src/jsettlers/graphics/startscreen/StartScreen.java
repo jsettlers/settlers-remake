@@ -3,6 +3,7 @@ package jsettlers.graphics.startscreen;
 import go.graphics.text.EFontSize;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
@@ -10,6 +11,8 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.interfaces.Player;
+import jsettlers.graphics.startscreen.startlists.JoinableGamePanel;
 import jsettlers.graphics.startscreen.startlists.LoadGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewMultiplayerGamePanel;
@@ -46,8 +49,9 @@ public class StartScreen extends UIPanel {
 		        contentSetable), .75f);
 		addMainButton("start-newmultiplayer", new NewMultiplayerGamePanel(
 		        connector, contentSetable), .6f);
-		// addMainButton("start-joinmultiplayer", new NewGamePanel(connector,
-		// contentSetable), .45f);
+		addMainButton("start-joinmultiplayer", new JoinableGamePanel(connector,
+		contentSetable, connector.
+				getMultiplayerConnector("localhost",new Player(UUID.randomUUID().toString(), "joiner"))), .45f);
 		// addMainButton("start-restoremultiplayer", new NewGamePanel(connector,
 		// contentSetable), .3f);
 	}

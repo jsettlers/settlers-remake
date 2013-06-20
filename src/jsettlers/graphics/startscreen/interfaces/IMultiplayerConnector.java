@@ -14,7 +14,7 @@ public interface IMultiplayerConnector {
 	 *            The name of the server we should search on.
 	 * @return
 	 */
-	IChangingList<? extends IJoinableGame> getJoinableMultiplayerGames();
+	IChangingList<IJoinableGame> getJoinableMultiplayerGames();
 
 	/**
 	 * Joins the given multiplayer game.
