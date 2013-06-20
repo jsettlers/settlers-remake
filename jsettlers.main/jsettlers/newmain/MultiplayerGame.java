@@ -3,6 +3,7 @@ package jsettlers.newmain;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
@@ -16,6 +17,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.newmain.datatypes.ChangingList;
 import jsettlers.newmain.datatypes.MultiplayerPlayer;
+import networklib.NetworkConstants;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.ChatMessagePacket;
@@ -23,6 +25,7 @@ import networklib.common.packets.MapInfoPacket;
 import networklib.common.packets.MatchInfoUpdatePacket;
 import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.PlayerInfoPacket;
+import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.game.EPlayerState;
 
 /**
@@ -137,6 +140,7 @@ public class MultiplayerGame {
 				}
 
 				updatePlayersList(packet.getMatchInfo().getPlayers());
+				receiveSystemMessage(packet.getIdOfChangedPlayer(), getNetworkMessageById(packet.getUpdateReason()));
 			}
 
 		};
@@ -150,9 +154,42 @@ public class MultiplayerGame {
 		playersList.setList(players);
 	}
 
-	private IJoinPhaseMultiplayerGameConnector generateJoinPhaseGameConnector() {
-		return new IJoinPhaseMultiplayerGameConnector() {
+	private ENetworkMessage getNetworkMessageById(int errorMessageId) {
+		switch (errorMessageId) {
+		case NetworkConstants.Messages.INVALID_STATE_ERROR:
+			return ENetworkMessage.INVALID_STATE_ERROR;
+		case NetworkConstants.Messages.NO_LISTENER_FOUND:
+			return ENetworkMessage.UNKNOWN_ERROR;
+		case NetworkConstants.Messages.NOT_ALL_PLAYERS_READY:
+			return ENetworkMessage.NOT_ALL_PLAYERS_READY;
+		case NetworkConstants.Messages.PLAYER_JOINED:
+			return ENetworkMessage.PLAYER_JOINED;
+		case NetworkConstants.Messages.PLAYER_LEFT:
+			return ENetworkMessage.PLAYER_LEFT;
+		case NetworkConstants.Messages.UNAUTHORIZED:
+			return ENetworkMessage.UNAUTHORIZED;
+		case NetworkConstants.Messages.UNKNOWN_ERROR:
+		default:
+			return ENetworkMessage.UNKNOWN_ERROR;
+		}
+	}
 
+	void receiveSystemMessage(String authorId, ENetworkMessage networkMessage) {
+		if (chatMessageListener != null) {
+			chatMessageListener.systemMessageReceived(authorId, networkMessage);
+		}
+	}
+
+	private IJoinPhaseMultiplayerGameConnector generateJoinPhaseGameConnector() {
+		networkClient.registerRejectReceiver(new IPacketReceiver<RejectPacket>() {
+			@Override
+			public void receivePacket(RejectPacket packet) {
+				receiveSystemMessage(null, getNetworkMessageById(packet.getErrorMessageId()));
+				System.out.println("Received reject packet: rejectedKey: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
+			}
+		});
+
+		return new IJoinPhaseMultiplayerGameConnector() {
 			@Override
 			public void startGame() {
 				networkClient.startMatch();
@@ -181,6 +218,11 @@ public class MultiplayerGame {
 			@Override
 			public void setChatListener(IChatMessageListener chatMessageListener) {
 				MultiplayerGame.this.chatMessageListener = chatMessageListener;
+			}
+
+			@Override
+			public void sendChatMessage(String chatMessage) {
+				networkClient.sendChatMessage(chatMessage);
 			}
 		};
 	}
