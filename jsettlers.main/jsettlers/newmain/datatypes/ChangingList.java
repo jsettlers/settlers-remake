@@ -1,5 +1,6 @@
 package jsettlers.newmain.datatypes;
 
+import java.util.Collections;
 import java.util.List;
 
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
@@ -18,10 +19,11 @@ public class ChangingList<T> implements IChangingList<T> {
 	private IChangingListListener<T> listener;
 
 	public ChangingList() {
+		this(Collections.<T>emptyList());
 	}
 
 	public ChangingList(List<? extends T> items) {
-		this.items = items;
+		setList(items);
 	}
 
 	@Override
@@ -37,10 +39,13 @@ public class ChangingList<T> implements IChangingList<T> {
 	@Override
 	public void stop() {
 		listener = null;
-		items = null;
+		items = Collections.emptyList();
 	}
 
-	public void setList(List<T> items) {
+	public void setList(List<? extends T> items) {
+		if (items == null) {
+			throw new NullPointerException();
+		}
 		this.items = items;
 		informListener();
 	}
