@@ -16,7 +16,7 @@ import jsettlers.graphics.startscreen.startlists.NewMultiplayerGamePanel;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen extends UIPanel {
-	private static final OriginalImageLink BACKGROUND = new OriginalImageLink(
+	public static final OriginalImageLink BACKGROUND = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
 
 	private final LinkedList<UILabeledButton> mainButtons =
@@ -32,11 +32,8 @@ public class StartScreen extends UIPanel {
 		// root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
 		this.contentSetable = contentSetable;
 
+		setBackground(BACKGROUND);
 		addButtons();
-		// addMainButton(EActionType.SHOW_LOAD, .75f);
-		// addMainButton(EActionType.SHOW_START_NETWORK, .6f);
-		// addMainButton(EActionType.SHOW_JOIN_NETWORK, .45f);
-		// addMainButton(EActionType.SHOW_RECOVER_NETWORK, .3f);
 
 		content = new UIPanel();
 		addChild(content, .55f, .05f, .95f, .95f);

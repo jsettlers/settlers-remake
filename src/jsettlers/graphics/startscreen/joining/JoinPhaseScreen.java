@@ -1,9 +1,11 @@
 package jsettlers.graphics.startscreen.joining;
 
+import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.GenericListItem;
 import jsettlers.graphics.startscreen.IContentSetable;
+import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
@@ -27,6 +29,7 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 	        IContentSetable contentSetable) {
 		this.connector = connector;
 		this.contentSetable = contentSetable;
+		setBackground(StartScreen.BACKGROUND);
 
 		connector.setMultiplayerListener(this);
 
@@ -45,6 +48,7 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 				                        .toString());
 			                }
 		                }, .1f);
+		this.addChild(multiplayerList, .1f, .15f, .1f, .85f);
 	}
 
 	private void addStartButton() {
@@ -57,16 +61,11 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 		        });
 		this.addChild(startButton, .3f, 0, 1, .1f);
 	}
-
-	@Override
-	public void gameIsStarting(IStartingGame game) {
-		contentSetable.setContent(new StartingGamePanel(game, contentSetable));
-	}
-
+	
 	@Override
 	public void gameAborted() {
-		// TODO Auto-generated method stub
-
+		// TODO Error message, back to sart screen.
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -84,4 +83,15 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 		multiplayerList.setItems(list.getItems());
 	}
 
+	@Override
+    public void gameIsStarting(IStartingGame game) {
+		contentSetable.setContent(new StartingGamePanel(game, contentSetable));	    
+    }
+
+	@Override
+	public Action getAction(float relativex, float relativey) {
+	    // TODO Auto-generated method stub
+	    return super.getAction(relativex, relativey);
+	}
+	
 }

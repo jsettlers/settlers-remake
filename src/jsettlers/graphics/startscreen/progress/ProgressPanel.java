@@ -3,10 +3,9 @@ package jsettlers.graphics.startscreen.progress;
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.progress.EProgressState;
+import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -19,7 +18,7 @@ public class ProgressPanel extends UIPanel {
 	private EProgressState state = EProgressState.LOADING;
 
 	public ProgressPanel() {
-		setBackground(new OriginalImageLink(EImageLinkType.GUI, 2, 29, 0));
+		setBackground(StartScreen.BACKGROUND);
 	}
 
 	@Override
