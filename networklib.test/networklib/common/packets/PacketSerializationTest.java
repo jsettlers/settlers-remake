@@ -73,7 +73,7 @@ public class PacketSerializationTest {
 						d(OpenNewMatchPacket.class) },
 				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
-				{ new MatchInfoUpdatePacket(34, createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
+				{ new MatchInfoUpdatePacket(34, "idOfChangedPlayer", createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
 				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) },
 
 				{ new ServersideTaskPacket("sdfsfsdf".getBytes()), d(ServersideTaskPacket.class) },

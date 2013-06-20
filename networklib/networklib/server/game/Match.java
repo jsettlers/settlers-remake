@@ -111,12 +111,12 @@ public class Match {
 		}
 	}
 
-	public void sendMatchInfoUpdate(int updateReason) {
-		sendMessage(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason));
+	public void sendMatchInfoUpdate(int updateReason, String idOfChangedPlayer) {
+		sendMessage(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason, idOfChangedPlayer));
 	}
 
-	private MatchInfoUpdatePacket generateMatchInfoUpdate(int updateReason) {
-		return new MatchInfoUpdatePacket(updateReason, new MatchInfoPacket(this));
+	private MatchInfoUpdatePacket generateMatchInfoUpdate(int updateReason, String idOfChangedPlayer) {
+		return new MatchInfoUpdatePacket(updateReason, idOfChangedPlayer, new MatchInfoPacket(this));
 	}
 
 	public void sendMessage(int key, Packet packet) {
@@ -137,7 +137,7 @@ public class Match {
 		synchronized (players) {
 			players.add(player);
 
-			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_JOINED);
+			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_JOINED, player.getId());
 
 			if (state == EMatchState.RUNNING) {
 				sendMatchStartPacketToPlayer(player);
@@ -149,8 +149,8 @@ public class Match {
 		synchronized (players) {
 			players.remove(player);
 
-			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT);
-			player.sendPacket(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT));
+			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT, player.getId());
+			player.sendPacket(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT, player.getId()));
 
 			if (isRunning()) {
 				synchronized (leftPlayers) {
