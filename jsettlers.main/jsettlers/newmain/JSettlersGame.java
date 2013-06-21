@@ -47,7 +47,7 @@ public class JSettlersGame {
 	private boolean stopped = false;
 	private boolean started = false;
 
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
+	private JSettlersGame(IGameCreator mapCreator, long randomSeed,
 			ITaskScheduler taskScheduler, byte playerNumber, boolean multiplayer) {
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
@@ -56,6 +56,11 @@ public class JSettlersGame {
 		this.multiplayer = multiplayer;
 
 		this.gameRunner = new GameRunner();
+	}
+
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
+			ITaskScheduler taskScheduler, byte playerNumber) {
+		this(mapCreator, randomSeed, taskScheduler, playerNumber, true);
 	}
 
 	/**
@@ -67,8 +72,7 @@ public class JSettlersGame {
 	 */
 	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
 			byte playerNumber) {
-		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber,
-				false);
+		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false);
 	}
 
 	/**
