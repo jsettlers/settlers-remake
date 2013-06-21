@@ -39,7 +39,7 @@ public class NetworkClientClockMock implements INetworkClientClock {
 	}
 
 	@Override
-	public void stopClockFor(int timeDelta) {
+	public void pauseClockFor(int timeDelta) {
 		time -= timeDelta;
 		adjustmentEvents.add(timeDelta);
 	}

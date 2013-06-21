@@ -33,7 +33,7 @@ public class TimeSynchronizationListener extends PacketChannelListener<TimeSyncP
 		int deltaTime = localTime - expectedRemoteTime;
 
 		if (deltaTime > Client.TIME_SYNC_TOLERATED_DIFFERENCE) {
-			clock.stopClockFor((int) (deltaTime * Client.TIME_SYNC_APPROACH_FACTOR));
+			clock.pauseClockFor((int) (deltaTime * Client.TIME_SYNC_APPROACH_FACTOR));
 		}
 	}
 

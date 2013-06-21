@@ -19,6 +19,6 @@ public interface ISynchronizableClock {
 	 * @param pauseTime
 	 *            milliseconds to pause the game
 	 */
-	void stopClockFor(int timeDelta);
+	void pauseClockFor(int timeDelta);
 
 }

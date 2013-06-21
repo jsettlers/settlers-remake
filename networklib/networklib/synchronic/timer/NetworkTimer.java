@@ -32,7 +32,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	private final LinkedList<SyncTasksPacket> tasks = new LinkedList<SyncTasksPacket>();
 
 	private int time = 0;
-	private int maxAllowedLockstep = 0;
+	private int maxAllowedLockstep = -1;
 
 	private boolean isPausing;
 	private int pauseTime;
@@ -48,10 +48,10 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		this.timer = new Timer("NetworkTimer");
 	}
 
-	public NetworkTimer(boolean noLockstepWaiting) {
+	public NetworkTimer(boolean disableLockstepWaiting) {
 		this();
 
-		if (noLockstepWaiting) {
+		if (disableLockstepWaiting) {
 			maxAllowedLockstep = Integer.MAX_VALUE;
 		}
 	}
@@ -94,6 +94,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			// check if the lockstep is allowed
 			synchronized (lockstepLock) {
 				while (lockstep > maxAllowedLockstep) {
+					System.out.println("WAITING for lockstep!");
 					lockstepLock.wait();
 				}
 			}
@@ -226,7 +227,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	@Override
-	public void stopClockFor(int timeDelta) {
+	public void pauseClockFor(int timeDelta) {
 		this.pauseTime = timeDelta;
 		System.err.println("pausing for " + timeDelta + " ms");
 	}

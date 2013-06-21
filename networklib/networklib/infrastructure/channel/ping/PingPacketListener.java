@@ -14,7 +14,7 @@ import networklib.infrastructure.channel.listeners.PacketChannelListener;
 public class PingPacketListener extends PacketChannelListener<PingPacket> implements IRoundTripTimeSupplier {
 
 	private final Channel channel;
-	private RoundTripTime currRtt;
+	private RoundTripTime currRtt = new RoundTripTime(System.currentTimeMillis(), 0);
 
 	public PingPacketListener(Channel channel) {
 		super(NetworkConstants.Keys.PING, new GenericDeserializer<PingPacket>(PingPacket.class));
@@ -41,6 +41,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 	 * 
 	 * @return Returns the current {@link RoundTripTime}.
 	 */
+	@Override
 	public RoundTripTime getRoundTripTime() {
 		return currRtt;
 	}
