@@ -154,21 +154,23 @@ public class MultiplayerGame {
 		playersList.setList(players);
 	}
 
-	private ENetworkMessage getNetworkMessageById(int errorMessageId) {
+	private ENetworkMessage getNetworkMessageById(NetworkConstants.ENetworkMessage errorMessageId) {
 		switch (errorMessageId) {
-		case NetworkConstants.Messages.INVALID_STATE_ERROR:
+		case INVALID_STATE_ERROR:
 			return ENetworkMessage.INVALID_STATE_ERROR;
-		case NetworkConstants.Messages.NO_LISTENER_FOUND:
+		case NO_LISTENER_FOUND:
 			return ENetworkMessage.UNKNOWN_ERROR;
-		case NetworkConstants.Messages.NOT_ALL_PLAYERS_READY:
+		case NOT_ALL_PLAYERS_READY:
 			return ENetworkMessage.NOT_ALL_PLAYERS_READY;
-		case NetworkConstants.Messages.PLAYER_JOINED:
+		case PLAYER_JOINED:
 			return ENetworkMessage.PLAYER_JOINED;
-		case NetworkConstants.Messages.PLAYER_LEFT:
+		case PLAYER_LEFT:
 			return ENetworkMessage.PLAYER_LEFT;
-		case NetworkConstants.Messages.UNAUTHORIZED:
+		case UNAUTHORIZED:
 			return ENetworkMessage.UNAUTHORIZED;
-		case NetworkConstants.Messages.UNKNOWN_ERROR:
+		case READY_STATE_CHANGED:
+			return ENetworkMessage.READY_STATE_CHANGED;
+		case UNKNOWN_ERROR:
 		default:
 			return ENetworkMessage.UNKNOWN_ERROR;
 		}

@@ -3,7 +3,7 @@ package jsettlers.newmain;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.client.NetworkClient;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.receiver.IPacketReceiver;
@@ -46,7 +46,7 @@ public class AsyncNetworkClientConnector {
 				return new IPacketReceiver<RejectPacket>() {
 					@Override
 					public void receivePacket(RejectPacket packet) {
-						if (packet.getRejectedKey() == NetworkConstants.Keys.IDENTIFY_USER) {
+						if (packet.getRejectedKey() == ENetworkKey.IDENTIFY_USER) {
 							setState(AsyncNetworkClientFactoryState.FAILED_CONNECTING);
 						}
 						System.out.println("Received reject packet: " + packet.getRejectedKey() + " messageid: " + packet.getErrorMessageId());
