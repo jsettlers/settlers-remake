@@ -7,11 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.TestUtils;
-import networklib.infrastructure.channel.AsyncChannel;
-import networklib.infrastructure.channel.GenericDeserializer;
-import networklib.infrastructure.channel.IDeserializingable;
 import networklib.infrastructure.channel.listeners.BufferingPacketListener;
 
 import org.junit.After;
@@ -25,8 +22,6 @@ import org.junit.Test;
  * 
  */
 public class AsyncChannelTest {
-	private static final int TEST_KEY = NetworkConstants.Keys.TEST_PACKET;
-
 	private AsyncChannel c1;
 	private Channel c2;
 
@@ -45,14 +40,14 @@ public class AsyncChannelTest {
 
 	@Test
 	public void testAsyncSendTime() throws InterruptedException {
-		BufferingPacketListener<BlockingTestPacket> listener = new BufferingPacketListener<BlockingTestPacket>(TEST_KEY,
+		BufferingPacketListener<BlockingTestPacket> listener = new BufferingPacketListener<BlockingTestPacket>(ENetworkKey.TEST_PACKET,
 				BlockingTestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
 		BlockingTestPacket testPackage = new BlockingTestPacket("bla", -234234);
 
 		long start = System.currentTimeMillis();
-		c1.sendPacketAsync(TEST_KEY, testPackage);
+		c1.sendPacketAsync(ENetworkKey.TEST_PACKET, testPackage);
 		assertTrue(System.currentTimeMillis() - start < 5); // check that the sending is asynchronous
 
 		Thread.sleep(100);
@@ -67,14 +62,14 @@ public class AsyncChannelTest {
 	public void testAsyncReceiveTime() throws InterruptedException {
 		final int RUNS = 10;
 
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(TEST_KEY, TestPacket.DEFAULT_DESERIALIZER);
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET, TestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
 		TestPacket testPackage = new TestPacket("bla", -234234);
 
 		for (int i = 0; i < RUNS; i++) {
 			long start = System.currentTimeMillis();
-			c1.sendPacketAsync(TEST_KEY, testPackage);
+			c1.sendPacketAsync(ENetworkKey.TEST_PACKET, testPackage);
 			assertTrue(System.currentTimeMillis() - start < 5); // check that the sending is asynchronous
 		}
 

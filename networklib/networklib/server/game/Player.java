@@ -3,6 +3,7 @@ package networklib.server.game;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
@@ -42,7 +43,7 @@ public class Player {
 			match = null;
 
 			state = EPlayerState.LOGGED_IN;
-			channel.removeListener(NetworkConstants.Keys.SYNCHRONOUS_TASK);
+			channel.removeListener(ENetworkKey.SYNCHRONOUS_TASK);
 		}
 	}
 
@@ -58,7 +59,7 @@ public class Player {
 		return channel;
 	}
 
-	public void sendPacket(int key, Packet packet) {
+	public void sendPacket(ENetworkKey key, Packet packet) {
 		channel.sendPacket(key, packet);
 	}
 
@@ -78,7 +79,7 @@ public class Player {
 
 	public void forwardChatMessage(ChatMessagePacket packet) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
-		match.sendMessage(NetworkConstants.Keys.CHAT_MESSAGE, packet);
+		match.broadcastMessage(ENetworkKey.CHAT_MESSAGE, packet);
 	}
 
 	public void distributeTimeSync(TimeSyncPacket packet) throws IllegalStateException {
@@ -90,7 +91,7 @@ public class Player {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		if (playerInfo.isReady() != ready) { // only update if there is a real change
 			playerInfo.setReady(ready);
-			match.sendMatchInfoUpdate(NetworkConstants.Keys.READY_STATE_CHANGE, this.getId());
+			match.sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.READY_STATE_CHANGED, this.getId());
 		}
 	}
 

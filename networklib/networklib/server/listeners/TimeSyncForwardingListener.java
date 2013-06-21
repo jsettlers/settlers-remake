@@ -2,7 +2,7 @@ package networklib.server.listeners;
 
 import java.io.IOException;
 
-import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
@@ -20,13 +20,13 @@ public class TimeSyncForwardingListener extends PacketChannelListener<TimeSyncPa
 	private final Player player;
 
 	public TimeSyncForwardingListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.Keys.TIME_SYNC, new GenericDeserializer<TimeSyncPacket>(TimeSyncPacket.class));
+		super(ENetworkKey.TIME_SYNC, new GenericDeserializer<TimeSyncPacket>(TimeSyncPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
-	protected void receivePacket(int key, TimeSyncPacket packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, TimeSyncPacket packet) throws IOException {
 		serverManager.distributeTimeSync(player, packet);
 	}
 

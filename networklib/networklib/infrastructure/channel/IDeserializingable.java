@@ -3,6 +3,7 @@ package networklib.infrastructure.channel;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.packet.Packet;
 
 /**
@@ -24,5 +25,5 @@ public interface IDeserializingable<T extends Packet> {
 	 * @throws IOException
 	 *             If an I/O error occurs.
 	 */
-	T deserialize(int key, DataInputStream dis) throws IOException;
+	T deserialize(ENetworkKey key, DataInputStream dis) throws IOException;
 }

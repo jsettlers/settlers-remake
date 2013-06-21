@@ -10,11 +10,8 @@ import java.io.IOException;
 import java.util.List;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.TestUtils;
-import networklib.infrastructure.channel.Channel;
-import networklib.infrastructure.channel.GenericDeserializer;
-import networklib.infrastructure.channel.IChannelClosedListener;
-import networklib.infrastructure.channel.IDeserializingable;
 import networklib.infrastructure.channel.listeners.BufferingPacketListener;
 import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.infrastructure.channel.reject.RejectPacket;
@@ -30,8 +27,6 @@ import org.junit.Test;
  * 
  */
 public class ChannelTest {
-	private static final int TEST_KEY = NetworkConstants.Keys.TEST_PACKET;
-
 	private Channel c1;
 	private Channel c2;
 
@@ -50,13 +45,13 @@ public class ChannelTest {
 
 	@Test
 	public void testConnection() throws Exception {
-		TestPacketListener listener1 = new TestPacketListener(TEST_KEY);
-		TestPacketListener listener2 = new TestPacketListener(TEST_KEY);
+		TestPacketListener listener1 = new TestPacketListener(ENetworkKey.TEST_PACKET);
+		TestPacketListener listener2 = new TestPacketListener(ENetworkKey.TEST_PACKET);
 		c1.registerListener(listener1);
 		c2.registerListener(listener2);
 		TestPacket testPackage = new TestPacket("dlkfjs", -23423);
-		c1.sendPacket(TEST_KEY, testPackage);
-		c2.sendPacket(TEST_KEY, testPackage);
+		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
+		c2.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
 		Thread.sleep(30);
 
@@ -69,13 +64,13 @@ public class ChannelTest {
 
 	@Test
 	public void testMultiPackets() throws Exception {
-		TestPacketListener listener = new TestPacketListener(TEST_KEY);
+		TestPacketListener listener = new TestPacketListener(ENetworkKey.TEST_PACKET);
 		c2.registerListener(listener);
 
 		final int NUMBER_OF_PACKETS = 200;
 
 		for (int i = 0; i < NUMBER_OF_PACKETS; i++) {
-			c1.sendPacket(TEST_KEY, new TestPacket(i));
+			c1.sendPacket(ENetworkKey.TEST_PACKET, new TestPacket(i));
 		}
 
 		Thread.sleep(10);
@@ -163,14 +158,14 @@ public class ChannelTest {
 		c1.close();
 		c2.close();
 
-		c1.sendPacket(TEST_KEY, new TestPacket("sdfsdf", 1434));
-		c2.sendPacket(TEST_KEY, new TestPacket("dsfsw", 32423));
+		c1.sendPacket(ENetworkKey.TEST_PACKET, new TestPacket("sdfsdf", 1434));
+		c2.sendPacket(ENetworkKey.TEST_PACKET, new TestPacket("dsfsw", 32423));
 	}
 
 	@Test
 	public void testSendingMessageWithoutListener() throws Exception {
-		c1.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, new TestPacket("sdfsfäüö", -2342));
-		c2.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, new TestPacket("dsfs", 4234)); // test both channels
+		c1.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("sdfsfäüö", -2342));
+		c2.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("dsfs", 4234)); // test both channels
 
 		Thread.sleep(10);
 
@@ -179,11 +174,11 @@ public class ChannelTest {
 
 	@Test
 	public void testRemovingListener() throws Exception {
-		TestPacketListener listener = new TestPacketListener(TEST_KEY);
+		TestPacketListener listener = new TestPacketListener(ENetworkKey.TEST_PACKET);
 		c2.registerListener(listener);
 
 		TestPacket testPackage = new TestPacket("dsfs", 2332);
-		c1.sendPacket(TEST_KEY, testPackage);
+		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
 		Thread.sleep(10);
 
@@ -192,26 +187,27 @@ public class ChannelTest {
 
 		c2.removeListener(listener.getKeys()[0]);
 
-		c1.sendPacket(TEST_KEY, testPackage);
+		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 		Thread.sleep(30);
 		assertEquals(1, listener.packets.size());
 	}
 
 	@Test
 	public void testReadNotAllFromStream() throws Exception {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(TEST_KEY, new IDeserializingable<TestPacket>() {
-			@Override
-			public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
-				dis.readInt();
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
+				new IDeserializingable<TestPacket>() {
+					@Override
+					public TestPacket deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
+						dis.readInt();
 
-				return new TestPacket(key);
-			}
-		});
+						return new TestPacket();
+					}
+				});
 
 		c2.registerListener(listener);
 
 		TestPacket testPacket = new TestPacket("dfsdufh", 4);
-		c1.sendPacket(TEST_KEY, testPacket);
+		c1.sendPacket(ENetworkKey.TEST_PACKET, testPacket);
 
 		Thread.sleep(50);
 		assertEquals(1, listener.popBufferedPackets().size());
@@ -221,23 +217,24 @@ public class ChannelTest {
 
 	@Test
 	public void testReadMoreFromStream() throws Exception {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(TEST_KEY, new IDeserializingable<TestPacket>() {
-			@Override
-			public TestPacket deserialize(int key, DataInputStream dis) throws IOException {
-				TestPacket packet = new TestPacket(key);
-				packet.deserialize(dis);
-				dis.readInt(); // try to read some more bytes
-				dis.readUTF();
-				dis.readInt();
-				return packet;
-			}
-		});
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
+				new IDeserializingable<TestPacket>() {
+					@Override
+					public TestPacket deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
+						TestPacket packet = new TestPacket();
+						packet.deserialize(dis);
+						dis.readInt(); // try to read some more bytes
+						dis.readUTF();
+						dis.readInt();
+						return packet;
+					}
+				});
 
 		c2.registerListener(listener);
 
 		System.out.println("DON'T WORRY, AN EXCEPTION IS EXPECTED AFTER THIS:");
 		TestPacket testPacket = new TestPacket("dfsdufh", 4);
-		c1.sendPacket(TEST_KEY, testPacket);
+		c1.sendPacket(ENetworkKey.TEST_PACKET, testPacket);
 
 		Thread.sleep(100);
 
@@ -247,31 +244,31 @@ public class ChannelTest {
 	@Test
 	public void testRejectSendingForUnlistenedPackets() throws InterruptedException {
 		// construct and connect the listener for reject packets
-		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.Keys.REJECT_PACKET,
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.ENetworkKey.REJECT_PACKET,
 				new GenericDeserializer<RejectPacket>(RejectPacket.class));
 		c1.registerListener(c1RejectListener);
 
 		// send the packet for an unconnected key from the channel with a reject listener
-		c1.sendPacket(TEST_KEY, new EmptyPacket());
+		c1.sendPacket(ENetworkKey.TEST_PACKET, new EmptyPacket());
 		assertEquals(0, c1RejectListener.popBufferedPackets().size());
 
 		Thread.sleep(10);
 		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
 		assertEquals(1, rejects.size());
-		assertEquals(NetworkConstants.Messages.NO_LISTENER_FOUND, rejects.get(0).getErrorMessageId());
-		assertEquals(TEST_KEY, rejects.get(0).getRejectedKey());
+		assertEquals(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, rejects.get(0).getErrorMessageId());
+		assertEquals(ENetworkKey.TEST_PACKET, rejects.get(0).getRejectedKey());
 	}
 
 	@Test
 	public void testRejectSendingForUnlistenedPacketsLoopProtection() throws InterruptedException {
 		// construct and connect the listener for reject packets
-		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.Keys.REJECT_PACKET,
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.ENetworkKey.REJECT_PACKET,
 				new GenericDeserializer<RejectPacket>(RejectPacket.class));
 		c1.registerListener(c1RejectListener);
 
 		// send the packet for an unconnected key from the channel without a reject listener
 		// this provokes a reject packet being send back to c2 BUT this MUST NOT cause a reject packet send to c1.
-		c2.sendPacket(TEST_KEY, new EmptyPacket());
+		c2.sendPacket(ENetworkKey.TEST_PACKET, new EmptyPacket());
 		assertEquals(0, c1RejectListener.popBufferedPackets().size());
 
 		Thread.sleep(50);

@@ -2,6 +2,7 @@ package networklib.client;
 
 import java.io.IOException;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.infrastructure.channel.IDeserializingable;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
@@ -19,13 +20,13 @@ public class DefaultClientPacketListener<T extends Packet> extends PacketChannel
 
 	private IPacketReceiver<T> receiver;
 
-	public DefaultClientPacketListener(int key, IDeserializingable<T> deserializer, IPacketReceiver<T> receiver) {
+	public DefaultClientPacketListener(ENetworkKey key, IDeserializingable<T> deserializer, IPacketReceiver<T> receiver) {
 		super(key, deserializer);
 		this.receiver = receiver;
 	}
 
 	@Override
-	protected void receivePacket(int key, T packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, T packet) throws IOException {
 		if (receiver != null)
 			receiver.receivePacket(packet);
 	}

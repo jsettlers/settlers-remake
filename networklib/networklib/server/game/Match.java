@@ -5,6 +5,8 @@ import java.util.Timer;
 import java.util.UUID;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
+import networklib.NetworkConstants.ENetworkMessage;
 import networklib.common.packets.MapInfoPacket;
 import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.MatchInfoUpdatePacket;
@@ -79,6 +81,10 @@ public class Match {
 		return maxPlayers;
 	}
 
+	public long getRandomSeed() {
+		return randomSeed;
+	}
+
 	public boolean isRunning() {
 		return state == EMatchState.RUNNING;
 	}
@@ -111,22 +117,30 @@ public class Match {
 		}
 	}
 
-	public void sendMatchInfoUpdate(int updateReason, String idOfChangedPlayer) {
-		sendMessage(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason, idOfChangedPlayer));
+	public void sendMatchInfoUpdate(ENetworkMessage updateReason, String idOfChangedPlayer) {
+		broadcastMessage(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason, idOfChangedPlayer));
 	}
 
-	private MatchInfoUpdatePacket generateMatchInfoUpdate(int updateReason, String idOfChangedPlayer) {
+	private MatchInfoUpdatePacket generateMatchInfoUpdate(ENetworkMessage updateReason, String idOfChangedPlayer) {
 		return new MatchInfoUpdatePacket(updateReason, idOfChangedPlayer, new MatchInfoPacket(this));
 	}
 
-	public void sendMessage(int key, Packet packet) {
+	public void broadcastMessage(ENetworkKey key, Packet packet) {
 		sendMessage(null, key, packet);
 	}
 
-	public void sendMessage(Player player, int key, Packet packet) {
+	/**
+	 * 
+	 * @param sendingPlayer
+	 *            The sending player will not receive the message. If the message shall be send to all players in the match, <code>null</code> can be
+	 *            used as value for this.
+	 * @param key
+	 * @param packet
+	 */
+	public void sendMessage(Player sendingPlayer, ENetworkKey key, Packet packet) {
 		synchronized (players) {
 			for (Player curr : players) {
-				if (player == null || !curr.getId().equals(player.getId())) {
+				if (sendingPlayer == null || !curr.getId().equals(sendingPlayer.getId())) {
 					curr.sendPacket(key, packet);
 				}
 			}
@@ -137,7 +151,7 @@ public class Match {
 		synchronized (players) {
 			players.add(player);
 
-			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_JOINED, player.getId());
+			sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_JOINED, player.getId());
 
 			if (state == EMatchState.RUNNING) {
 				sendMatchStartPacketToPlayer(player);
@@ -149,8 +163,9 @@ public class Match {
 		synchronized (players) {
 			players.remove(player);
 
-			sendMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT, player.getId());
-			player.sendPacket(NetworkConstants.Keys.MATCH_INFO_UPDATE, generateMatchInfoUpdate(NetworkConstants.Messages.PLAYER_LEFT, player.getId()));
+			sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_LEFT, player.getId());
+			player.sendPacket(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE,
+					generateMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_LEFT, player.getId()));
 
 			if (isRunning()) {
 				synchronized (leftPlayers) {
@@ -168,7 +183,7 @@ public class Match {
 		synchronized (players) {
 			for (Player player : players) {
 				if (!player.getPlayerInfo().isReady()) {
-					throw new NotAllPlayersReadyException();
+					throw new NotAllPlayersReadyException(); // FIXME @Andreas Eberle this is only temporarily commented out!
 				}
 			}
 		}
@@ -176,29 +191,24 @@ public class Match {
 		state = EMatchState.RUNNING;
 
 		this.taskCollectingListener = new TaskCollectingListener();
+		this.taskSendingTimerTask = new TaskSendingTimerTask(taskCollectingListener, this);
+		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD);
 
 		synchronized (players) {
 			for (Player player : players) {
 				sendMatchStartPacketToPlayer(player);
 			}
 		}
-
-		this.taskSendingTimerTask = new TaskSendingTimerTask(taskCollectingListener, this);
-		timer.schedule(taskSendingTimerTask, 0, NetworkConstants.Client.LOCKSTEP_PERIOD);
 	}
 
 	private void sendMatchStartPacketToPlayer(Player player) {
 		player.matchStarted(taskCollectingListener);
-		player.sendPacket(NetworkConstants.Keys.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
+		player.sendPacket(NetworkConstants.ENetworkKey.MATCH_STARTED, new MatchStartPacket(new MatchInfoPacket(this), 0L));
 	}
 
 	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
-		sendMessage(player, NetworkConstants.Keys.TIME_SYNC, packet);
+		sendMessage(player, NetworkConstants.ENetworkKey.TIME_SYNC, packet);
 		taskSendingTimerTask.receivedLockstepAcknowledge(packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
-	}
-
-	public long getRandomSeed() {
-		return randomSeed;
 	}
 
 }

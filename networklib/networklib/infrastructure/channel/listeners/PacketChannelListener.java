@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.IChannelListener;
 import networklib.infrastructure.channel.IDeserializingable;
@@ -18,15 +19,15 @@ import networklib.infrastructure.channel.packet.Packet;
  */
 public abstract class PacketChannelListener<T extends Packet> implements IChannelListener {
 
-	private final int[] keys;
-	private final Hashtable<Integer, IDeserializingable<T>> deserializers = new Hashtable<Integer, IDeserializingable<T>>();
+	private final ENetworkKey[] keys;
+	private final Hashtable<ENetworkKey, IDeserializingable<T>> deserializers = new Hashtable<ENetworkKey, IDeserializingable<T>>();
 
-	public PacketChannelListener(int key, IDeserializingable<T> deserializer) {
-		this.keys = new int[] { key };
+	public PacketChannelListener(ENetworkKey key, IDeserializingable<T> deserializer) {
+		this.keys = new ENetworkKey[] { key };
 		this.deserializers.put(key, deserializer);
 	}
 
-	public PacketChannelListener(int[] keys, IDeserializingable<T>[] deserializers) {
+	public PacketChannelListener(ENetworkKey[] keys, IDeserializingable<T>[] deserializers) {
 		assert keys.length == deserializers.length;
 
 		this.keys = keys;
@@ -37,12 +38,12 @@ public abstract class PacketChannelListener<T extends Packet> implements IChanne
 	}
 
 	@Override
-	public int[] getKeys() {
+	public ENetworkKey[] getKeys() {
 		return keys;
 	}
 
 	@Override
-	public final void receive(int key, int length, DataInputStream stream) throws IOException, ClassNotFoundException {
+	public final void receive(ENetworkKey key, int length, DataInputStream stream) throws IOException, ClassNotFoundException {
 		IDeserializingable<T> deserializer = deserializers.get(key);
 		assert deserializer != null;
 
@@ -50,6 +51,6 @@ public abstract class PacketChannelListener<T extends Packet> implements IChanne
 		receivePacket(key, deserializedPacket);
 	}
 
-	protected abstract void receivePacket(int key, T packet) throws IOException;
+	protected abstract void receivePacket(ENetworkKey key, T packet) throws IOException;
 
 }

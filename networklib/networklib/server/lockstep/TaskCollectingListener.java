@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.infrastructure.channel.packet.Packet;
@@ -20,7 +21,7 @@ public class TaskCollectingListener extends PacketChannelListener<ServersideTask
 	private List<ServersideTaskPacket> currTasksList = new LinkedList<ServersideTaskPacket>();
 
 	public TaskCollectingListener() {
-		super(NetworkConstants.Keys.SYNCHRONOUS_TASK, new GenericDeserializer<ServersideTaskPacket>(ServersideTaskPacket.class));
+		super(ENetworkKey.SYNCHRONOUS_TASK, new GenericDeserializer<ServersideTaskPacket>(ServersideTaskPacket.class));
 	}
 
 	/**
@@ -34,7 +35,7 @@ public class TaskCollectingListener extends PacketChannelListener<ServersideTask
 	}
 
 	@Override
-	protected void receivePacket(int key, ServersideTaskPacket deserialized) {
+	protected void receivePacket(ENetworkKey key, ServersideTaskPacket deserialized) {
 		currTasksList.add(deserialized);
 	}
 }

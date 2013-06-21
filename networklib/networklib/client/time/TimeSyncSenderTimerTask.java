@@ -26,7 +26,7 @@ public class TimeSyncSenderTimerTask extends TimerTask {
 		int localTime = clock.getTime();
 		int expectedTimeAtServer = localTime + channel.getRoundTripTime().getRtt() / 2;
 
-		channel.sendPacketAsync(NetworkConstants.Keys.TIME_SYNC, new TimeSyncPacket(expectedTimeAtServer));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.TIME_SYNC, new TimeSyncPacket(expectedTimeAtServer));
 	}
 
 }

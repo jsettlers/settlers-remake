@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.packet.Packet;
 
 /**
@@ -69,7 +70,7 @@ public class AsyncChannel extends Channel {
 	 * @param packet
 	 *            Packet to be sent.
 	 */
-	public synchronized void sendPacketAsync(int key, Packet packet) {
+	public synchronized void sendPacketAsync(ENetworkKey key, Packet packet) {
 		sendBuffer.offer(new PacketWithKey(key, packet));
 	}
 
@@ -80,10 +81,10 @@ public class AsyncChannel extends Channel {
 	}
 
 	private class PacketWithKey {
-		final int key;
+		final ENetworkKey key;
 		final Packet packet;
 
-		PacketWithKey(int key, Packet packet) {
+		PacketWithKey(ENetworkKey key, Packet packet) {
 			this.key = key;
 			this.packet = packet;
 		}

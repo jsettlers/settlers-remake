@@ -60,7 +60,7 @@ public class ServerManager implements IServerManager {
 			db.storePlayer(player);
 
 			Channel channel = player.getChannel();
-			channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
+			channel.removeListener(NetworkConstants.ENetworkKey.IDENTIFY_USER);
 
 			channel.setChannelClosedListener(new ServerChannelClosedListener(this, player));
 			channel.registerListener(new OpenNewMatchListener(this, player));
@@ -103,8 +103,8 @@ public class ServerManager implements IServerManager {
 			player.joinMatch(match);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
-					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH));
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH));
 		}
 	}
 
@@ -119,11 +119,11 @@ public class ServerManager implements IServerManager {
 			player.startMatch(matchesTaskDistributionTimer);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
-			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
-					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_START_MATCH));
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.REQUEST_START_MATCH));
 		} catch (NotAllPlayersReadyException e) {
-			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
-					new RejectPacket(NetworkConstants.Messages.NOT_ALL_PLAYERS_READY, NetworkConstants.Keys.REQUEST_START_MATCH));
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.NOT_ALL_PLAYERS_READY, NetworkConstants.ENetworkKey.REQUEST_START_MATCH));
 		}
 	}
 
@@ -151,8 +151,8 @@ public class ServerManager implements IServerManager {
 		try {
 			player.joinMatch(match);
 		} catch (IllegalStateException e) {
-			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
-					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.REQUEST_JOIN_MATCH));
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.REQUEST_JOIN_MATCH));
 		}
 	}
 
@@ -161,8 +161,8 @@ public class ServerManager implements IServerManager {
 		try {
 			player.setReady(ready);
 		} catch (IllegalStateException e) {
-			player.sendPacket(NetworkConstants.Keys.REJECT_PACKET,
-					new RejectPacket(NetworkConstants.Messages.INVALID_STATE_ERROR, NetworkConstants.Keys.READY_STATE_CHANGE));
+			player.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+					new RejectPacket(NetworkConstants.ENetworkMessage.INVALID_STATE_ERROR, NetworkConstants.ENetworkKey.CHANGE_READY_STATE));
 		}
 	}
 

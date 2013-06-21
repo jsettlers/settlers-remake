@@ -43,7 +43,7 @@ public class SyncTasksPacket extends Packet {
 		tasks = new LinkedList<TaskPacket>();
 
 		for (int i = 0; i < numberOfTasks; i++) {
-			TaskPacket task = TaskPacket.DEFAULT_DESERIALIZER.deserialize(-1, dis);
+			TaskPacket task = TaskPacket.DEFAULT_DESERIALIZER.deserialize(null, dis);
 			tasks.add(task);
 		}
 	}

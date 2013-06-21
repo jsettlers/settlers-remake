@@ -1,5 +1,9 @@
 package networklib;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import networklib.synchronic.timer.NetworkTimer;
 
 /**
@@ -50,7 +54,7 @@ public final class NetworkConstants {
 		/**
 		 * The number of steps the server can run ahead of the clients.
 		 */
-		public static final int LOCKSTEP_DEFAULT_LEAD_STEPS = 5;
+		public static final int LOCKSTEP_DEFAULT_LEAD_STEPS = 2;
 	}
 
 	/**
@@ -59,19 +63,36 @@ public final class NetworkConstants {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	public final static class Messages {
-		private Messages() {
+	public static enum ENetworkMessage {
+
+		PLAYER_JOINED,
+		PLAYER_LEFT,
+		NO_LISTENER_FOUND,
+		NOT_ALL_PLAYERS_READY,
+		READY_STATE_CHANGED,
+
+		UNAUTHORIZED,
+		UNKNOWN_ERROR,
+		INVALID_STATE_ERROR;
+
+		private static final ENetworkMessage[] values = ENetworkMessage.values();
+		private final byte ordinal;
+
+		ENetworkMessage() {
+			this.ordinal = (byte) ordinal();
 		}
 
-		public static final int PLAYER_JOINED = 1;
-		public static final int PLAYER_LEFT = 2;
+		public void writeTo(DataOutputStream dos) throws IOException {
+			dos.writeByte(ordinal);
+		}
 
-		public static final int UNAUTHORIZED = -1;
-		public static final int UNKNOWN_ERROR = -2;
-		public static final int INVALID_STATE_ERROR = -3;
-		public static final int NO_LISTENER_FOUND = -4;
-		public static final int NOT_ALL_PLAYERS_READY = -5;
-
+		public static ENetworkMessage readFrom(DataInputStream dis) throws IOException {
+			try {
+				return values[dis.readByte()];
+			} catch (Exception ex) {
+				throw new IOException(ex);
+			}
+		}
 	}
 
 	/**
@@ -80,35 +101,44 @@ public final class NetworkConstants {
 	 * @author Andreas Eberle
 	 * 
 	 */
-	public final static class Keys {
-		private Keys() {
+	public static enum ENetworkKey {
+
+		PING,
+
+		SYNCHRONOUS_TASK,
+		IDENTIFY_USER,
+		REJECT_PACKET,
+		TEST_PACKET,
+		ARRAY_OF_MATCHES,
+		MATCH_STARTED,
+
+		REQUEST_OPEN_NEW_MATCH,
+		REQUEST_LEAVE_MATCH,
+		REQUEST_JOIN_MATCH,
+		REQUEST_START_MATCH,
+
+		CHANGE_READY_STATE,
+		MATCH_INFO_UPDATE,
+		CHAT_MESSAGE,
+		TIME_SYNC;
+
+		private static final ENetworkKey[] values = ENetworkKey.values();
+		private final byte ordinal;
+
+		ENetworkKey() {
+			this.ordinal = (byte) ordinal();
 		}
 
-		public static final int PING = -1;
+		public void writeTo(DataOutputStream dos) throws IOException {
+			dos.writeByte(ordinal);
+		}
 
-		public static final int SYNCHRONOUS_TASK = -2;
-
-		public static final int IDENTIFY_USER = -3;
-
-		public static final int REJECT_PACKET = -4;
-
-		public static final int TEST_PACKET = -7;
-
-		public static final int ARRAY_OF_MATCHES = -10;
-
-		public static final int MATCH_STARTED = -19;
-
-		public static final int REQUEST_OPEN_NEW_MATCH = -16;
-		public static final int REQUEST_LEAVE_MATCH = -17;
-		public static final int REQUEST_JOIN_MATCH = -18;
-		public static final int REQUEST_START_MATCH = -20;
-		public static final int READY_STATE_CHANGE = -24;
-
-		public static final int MATCH_INFO_UPDATE = -21;
-
-		public static final int CHAT_MESSAGE = -22;
-
-		public static final int TIME_SYNC = -23;
-
+		public static ENetworkKey readFrom(DataInputStream dis) throws IOException {
+			try {
+				return values[dis.readByte()];
+			} catch (Exception ex) {
+				throw new IOException(ex);
+			}
+		}
 	}
 }

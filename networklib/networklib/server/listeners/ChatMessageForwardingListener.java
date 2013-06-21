@@ -3,6 +3,7 @@ package networklib.server.listeners;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
@@ -20,13 +21,13 @@ public class ChatMessageForwardingListener extends PacketChannelListener<ChatMes
 	private final Player player;
 
 	public ChatMessageForwardingListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.Keys.CHAT_MESSAGE, new GenericDeserializer<ChatMessagePacket>(ChatMessagePacket.class));
+		super(NetworkConstants.ENetworkKey.CHAT_MESSAGE, new GenericDeserializer<ChatMessagePacket>(ChatMessagePacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
-	protected void receivePacket(int key, ChatMessagePacket packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, ChatMessagePacket packet) throws IOException {
 		serverManager.forwardChatMessage(player, packet);
 	}
 }

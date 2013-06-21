@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import networklib.NetworkConstants.ENetworkMessage;
 import networklib.infrastructure.channel.packet.Packet;
 
 /**
@@ -13,14 +14,14 @@ import networklib.infrastructure.channel.packet.Packet;
  */
 public class MatchInfoUpdatePacket extends Packet {
 
-	private int updateReason;
+	private ENetworkMessage updateReason;
 	private String idOfChangedPlayer;
 	private MatchInfoPacket matchInfo;
 
 	public MatchInfoUpdatePacket() {
 	}
 
-	public MatchInfoUpdatePacket(int updateReason, String idOfChangedPlayer, MatchInfoPacket matchInfo) {
+	public MatchInfoUpdatePacket(ENetworkMessage updateReason, String idOfChangedPlayer, MatchInfoPacket matchInfo) {
 		this.updateReason = updateReason;
 		this.idOfChangedPlayer = idOfChangedPlayer;
 		this.matchInfo = matchInfo;
@@ -28,17 +29,29 @@ public class MatchInfoUpdatePacket extends Packet {
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
-		dos.writeInt(updateReason);
+		updateReason.writeTo(dos);
 		dos.writeUTF(idOfChangedPlayer);
 		matchInfo.serialize(dos);
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
-		updateReason = dis.readInt();
+		updateReason = ENetworkMessage.readFrom(dis);
 		idOfChangedPlayer = dis.readUTF();
 		matchInfo = new MatchInfoPacket();
 		matchInfo.deserialize(dis);
+	}
+
+	public ENetworkMessage getUpdateReason() {
+		return updateReason;
+	}
+
+	public MatchInfoPacket getMatchInfo() {
+		return matchInfo;
+	}
+
+	public String getIdOfChangedPlayer() {
+		return idOfChangedPlayer;
 	}
 
 	@Override
@@ -47,7 +60,7 @@ public class MatchInfoUpdatePacket extends Packet {
 		int result = 1;
 		result = prime * result + ((idOfChangedPlayer == null) ? 0 : idOfChangedPlayer.hashCode());
 		result = prime * result + ((matchInfo == null) ? 0 : matchInfo.hashCode());
-		result = prime * result + updateReason;
+		result = prime * result + ((updateReason == null) ? 0 : updateReason.hashCode());
 		return result;
 	}
 
@@ -73,17 +86,5 @@ public class MatchInfoUpdatePacket extends Packet {
 		if (updateReason != other.updateReason)
 			return false;
 		return true;
-	}
-
-	public int getUpdateReason() {
-		return updateReason;
-	}
-
-	public MatchInfoPacket getMatchInfo() {
-		return matchInfo;
-	}
-
-	public String getIdOfChangedPlayer() {
-		return idOfChangedPlayer;
 	}
 }

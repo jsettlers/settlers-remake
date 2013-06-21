@@ -4,42 +4,45 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import networklib.NetworkConstants.ENetworkKey;
+import networklib.NetworkConstants.ENetworkMessage;
 import networklib.infrastructure.channel.packet.Packet;
 
 /**
+ * This packet is used to notify a communication partner, that there was a problem fulfilling one of it's requests.
  * 
  * @author Andreas Eberle
  * 
  */
 public class RejectPacket extends Packet {
-	private int errorMessageId;
-	private int rejectedKey;
+	private ENetworkMessage errorMessage;
+	private ENetworkKey rejectedKey;
 
 	public RejectPacket() {
 	}
 
-	public RejectPacket(int errorMessageId, int rejectedKey) {
-		this.errorMessageId = errorMessageId;
+	public RejectPacket(ENetworkMessage errorMessageId, ENetworkKey rejectedKey) {
+		this.errorMessage = errorMessageId;
 		this.rejectedKey = rejectedKey;
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
-		dos.writeInt(errorMessageId);
-		dos.writeInt(rejectedKey);
+		errorMessage.writeTo(dos);
+		rejectedKey.writeTo(dos);
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
-		errorMessageId = dis.readInt();
-		rejectedKey = dis.readInt();
+		errorMessage = ENetworkMessage.readFrom(dis);
+		rejectedKey = ENetworkKey.readFrom(dis);
 	}
 
-	public int getErrorMessageId() {
-		return errorMessageId;
+	public ENetworkMessage getErrorMessageId() {
+		return errorMessage;
 	}
 
-	public int getRejectedKey() {
+	public ENetworkKey getRejectedKey() {
 		return rejectedKey;
 	}
 
@@ -47,8 +50,8 @@ public class RejectPacket extends Packet {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + errorMessageId;
-		result = prime * result + rejectedKey;
+		result = prime * result + ((errorMessage == null) ? 0 : errorMessage.hashCode());
+		result = prime * result + ((rejectedKey == null) ? 0 : rejectedKey.hashCode());
 		return result;
 	}
 
@@ -61,7 +64,7 @@ public class RejectPacket extends Packet {
 		if (getClass() != obj.getClass())
 			return false;
 		RejectPacket other = (RejectPacket) obj;
-		if (errorMessageId != other.errorMessageId)
+		if (errorMessage != other.errorMessage)
 			return false;
 		if (rejectedKey != other.rejectedKey)
 			return false;

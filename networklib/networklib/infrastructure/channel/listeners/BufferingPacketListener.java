@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.IDeserializingable;
 import networklib.infrastructure.channel.packet.Packet;
 
@@ -19,12 +20,12 @@ public class BufferingPacketListener<T extends Packet> extends PacketChannelList
 	private final Object lock = new Object();
 	private List<T> packets = new LinkedList<T>();
 
-	public BufferingPacketListener(int key, IDeserializingable<T> deserializer) {
+	public BufferingPacketListener(ENetworkKey key, IDeserializingable<T> deserializer) {
 		super(key, deserializer);
 	}
 
 	@Override
-	protected void receivePacket(int key, T deserialized) throws IOException {
+	protected void receivePacket(ENetworkKey key, T deserialized) throws IOException {
 		synchronized (lock) {
 			packets.add(deserialized);
 		}

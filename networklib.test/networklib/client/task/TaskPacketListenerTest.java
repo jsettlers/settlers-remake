@@ -51,7 +51,7 @@ public class TaskPacketListenerTest {
 		int lockstep = 23;
 		SyncTasksPacket syncTasksPacket = new SyncTasksPacket(lockstep, Arrays.asList(testPacket1, testPacket2));
 
-		c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, syncTasksPacket);
+		c2.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, syncTasksPacket);
 
 		Thread.sleep(10);
 		List<SyncTasksPacket> packets = taskReceiver.popBufferedPackets();

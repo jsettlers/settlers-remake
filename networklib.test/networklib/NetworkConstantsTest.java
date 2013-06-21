@@ -1,10 +1,15 @@
 package networklib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import java.lang.reflect.Field;
-import java.util.HashSet;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
+import networklib.NetworkConstants.ENetworkKey;
+import networklib.NetworkConstants.ENetworkMessage;
 
 import org.junit.Test;
 
@@ -16,16 +21,38 @@ import org.junit.Test;
  */
 public class NetworkConstantsTest {
 
+	private final DataInputStream in;
+	private final DataOutputStream out;
+
+	public NetworkConstantsTest() throws IOException {
+		PipedInputStream in = new PipedInputStream();
+		PipedOutputStream out = new PipedOutputStream(in);
+
+		this.in = new DataInputStream(in);
+		this.out = new DataOutputStream(out);
+	}
+
 	@Test
-	public void testKeysUnique() throws IllegalArgumentException, IllegalAccessException {
-		HashSet<Integer> keys = new HashSet<Integer>();
+	public void testKeysSerialization() throws IOException {
+		for (ENetworkKey currKey : ENetworkKey.values()) {
+			currKey.writeTo(out);
+			ENetworkKey readKey = ENetworkKey.readFrom(in);
 
-		for (Field field : NetworkConstants.Keys.class.getFields()) {
-			assertEquals(int.class, field.getType());
-			int value = field.getInt(null);
-
-			assertFalse("The key " + value + " of field " + field + " is used at least twice!", keys.contains(value));
-			keys.add(value);
+			assertEquals(currKey, readKey);
 		}
+
+		assertEquals(0, in.available());
+	}
+
+	@Test
+	public void testMessagesSerialization() throws IOException {
+		for (ENetworkMessage currKey : ENetworkMessage.values()) {
+			currKey.writeTo(out);
+			ENetworkMessage readKey = ENetworkMessage.readFrom(in);
+
+			assertEquals(currKey, readKey);
+		}
+
+		assertEquals(0, in.available());
 	}
 }

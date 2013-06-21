@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.List;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
+import networklib.NetworkConstants.ENetworkMessage;
 import networklib.TestUtils;
 import networklib.client.receiver.BufferingPacketReceiver;
 import networklib.client.task.TestTaskPacket;
@@ -88,11 +90,11 @@ public class NetworkClientIntegrationTest {
 
 	@Test
 	public void testConnection() throws InterruptedException {
-		TestPacketListener listener = new TestPacketListener(NetworkConstants.Keys.TEST_PACKET);
+		TestPacketListener listener = new TestPacketListener(NetworkConstants.ENetworkKey.TEST_PACKET);
 		client1Channel.registerListener(listener);
 
 		TestPacket testPacket = new TestPacket("sdlfjsh", 2324);
-		server1Channel.sendPacket(NetworkConstants.Keys.TEST_PACKET, testPacket);
+		server1Channel.sendPacket(NetworkConstants.ENetworkKey.TEST_PACKET, testPacket);
 
 		Thread.sleep(10);
 
@@ -357,7 +359,7 @@ public class NetworkClientIntegrationTest {
 		Thread.sleep(30);
 		client2.startMatch();
 
-		Thread.sleep(30); // Ensure that both clients are in a running match.
+		Thread.sleep(30 + NetworkConstants.Client.LOCKSTEP_PERIOD); // Ensure that both clients are in a running match.
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client1.getState());
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client2.getState());
 
@@ -413,7 +415,7 @@ public class NetworkClientIntegrationTest {
 		client2.startMatch(); // try to start match with unready player2 => match must not start
 		Thread.sleep(50);
 
-		assertSingleRejectPacket(rejectReceiver2, NetworkConstants.Keys.REQUEST_START_MATCH, NetworkConstants.Messages.NOT_ALL_PLAYERS_READY);
+		assertSingleRejectPacket(rejectReceiver2, ENetworkKey.REQUEST_START_MATCH, ENetworkMessage.NOT_ALL_PLAYERS_READY);
 
 		client2.setReadyState(true); // set player2 ready and player1 unready => match must not start
 		Thread.sleep(20);
@@ -422,7 +424,7 @@ public class NetworkClientIntegrationTest {
 		client2.startMatch();
 		Thread.sleep(50);
 
-		assertSingleRejectPacket(rejectReceiver2, NetworkConstants.Keys.REQUEST_START_MATCH, NetworkConstants.Messages.NOT_ALL_PLAYERS_READY);
+		assertSingleRejectPacket(rejectReceiver2, ENetworkKey.REQUEST_START_MATCH, ENetworkMessage.NOT_ALL_PLAYERS_READY);
 
 		client1.setReadyState(true); // set player1 ready => must must start
 		Thread.sleep(20);
@@ -433,7 +435,8 @@ public class NetworkClientIntegrationTest {
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client2.getState());
 	}
 
-	private void assertSingleRejectPacket(BufferingPacketReceiver<RejectPacket> rejectReceiver, int expectedRejectedKey, int expectedMessage) {
+	private void assertSingleRejectPacket(BufferingPacketReceiver<RejectPacket> rejectReceiver, ENetworkKey expectedRejectedKey,
+			ENetworkMessage expectedMessage) {
 		List<RejectPacket> rejectPackets = rejectReceiver.popBufferedPackets();
 		assertEquals(1, rejectPackets.size());
 		assertEquals(expectedRejectedKey, rejectPackets.get(0).getRejectedKey());

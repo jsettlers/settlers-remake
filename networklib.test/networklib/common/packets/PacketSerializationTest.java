@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkMessage;
 import networklib.TestUtils;
 import networklib.client.task.TestTaskPacket;
 import networklib.client.task.packets.SyncTasksPacket;
@@ -71,9 +72,9 @@ public class PacketSerializationTest {
 						d(ArrayOfMatchInfosPacket.class) },
 				{ new OpenNewMatchPacket("dfjosj", (byte) 5, new MapInfoPacket("id", "name", "authorid", "authorName", 6), -3453434534329434535L),
 						d(OpenNewMatchPacket.class) },
-				{ new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED, NetworkConstants.Keys.IDENTIFY_USER), d(RejectPacket.class) },
+				{ new RejectPacket(NetworkConstants.ENetworkMessage.UNAUTHORIZED, NetworkConstants.ENetworkKey.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
-				{ new MatchInfoUpdatePacket(34, "idOfChangedPlayer", createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
+				{ new MatchInfoUpdatePacket(ENetworkMessage.NO_LISTENER_FOUND, "idOfChangedPlayer", createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
 				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) },
 
 				{ new ServersideTaskPacket("sdfsfsdf".getBytes()), d(ServersideTaskPacket.class) },
@@ -116,13 +117,13 @@ public class PacketSerializationTest {
 	 */
 	public <T extends Packet> PacketSerializationTest(T packet, IDeserializingable<T> deserializer) {
 		this.packet = packet;
-		this.listener = new BufferingPacketListener<T>(NetworkConstants.Keys.TEST_PACKET, deserializer);
+		this.listener = new BufferingPacketListener<T>(NetworkConstants.ENetworkKey.TEST_PACKET, deserializer);
 	}
 
 	@Test
 	public void testSerializationAndDeserialization() throws InterruptedException {
 		c2.registerListener(listener);
-		c1.sendPacket(NetworkConstants.Keys.TEST_PACKET, packet);
+		c1.sendPacket(NetworkConstants.ENetworkKey.TEST_PACKET, packet);
 
 		Thread.sleep(30);
 

@@ -32,7 +32,7 @@ public class MatchesListSendingTimerTask extends TimerTask {
 	}
 
 	private void sendMatchesPacketToPlayer(Player player, ArrayOfMatchInfosPacket arrayOfMatchesPacket) {
-		player.sendPacket(NetworkConstants.Keys.ARRAY_OF_MATCHES, arrayOfMatchesPacket);
+		player.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, arrayOfMatchesPacket);
 	}
 
 	private ArrayOfMatchInfosPacket getArrayOfMatchInfosPacket() {

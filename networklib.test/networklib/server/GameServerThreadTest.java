@@ -52,8 +52,11 @@ public class GameServerThreadTest {
 		while (interfaces.hasMoreElements()) {
 			NetworkInterface curr = interfaces.nextElement();
 			Enumeration<InetAddress> addresses = curr.getInetAddresses();
-			if (addresses.hasMoreElements() && addresses.nextElement().getHostAddress().equals(serverAddress)) {
-				found = true;
+
+			while (addresses.hasMoreElements()) {
+				if (addresses.nextElement().getHostAddress().equals(serverAddress)) {
+					found = true;
+				}
 			}
 		}
 		assertTrue(found);

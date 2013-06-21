@@ -3,6 +3,7 @@ package networklib.server.listeners.matches;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.server.IServerManager;
@@ -19,13 +20,13 @@ public class LeaveMatchListener extends PacketChannelListener<EmptyPacket> {
 	private final Player player;
 
 	public LeaveMatchListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, EmptyPacket.DEFAULT_DESERIALIZER);
+		super(NetworkConstants.ENetworkKey.REQUEST_LEAVE_MATCH, EmptyPacket.DEFAULT_DESERIALIZER);
 		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
-	protected void receivePacket(int key, EmptyPacket deserialized) throws IOException {
+	protected void receivePacket(ENetworkKey key, EmptyPacket deserialized) throws IOException {
 		serverManager.leaveMatch(player);
 	}
 

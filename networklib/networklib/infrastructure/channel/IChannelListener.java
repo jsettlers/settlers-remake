@@ -2,6 +2,8 @@ package networklib.infrastructure.channel;
 
 import java.io.DataInputStream;
 
+import networklib.NetworkConstants.ENetworkKey;
+
 /**
  * This interface defines a listener for the {@link Channel} class. Objects implementing this interface may receive incoming data from the
  * {@link Channel}.
@@ -15,7 +17,7 @@ public interface IChannelListener {
 	 * 
 	 * @return Returns an array of keys identifying message types this listener will receive.
 	 */
-	int[] getKeys();
+	ENetworkKey[] getKeys();
 
 	/**
 	 * This method is called when the {@link Channel} received a message of the given type and the given length. Access to the data is supplied by the
@@ -31,5 +33,5 @@ public interface IChannelListener {
 	 * @throws Exception
 	 *             If an I/O error occurs.
 	 */
-	void receive(int key, int length, DataInputStream stream) throws Exception;
+	void receive(ENetworkKey key, int length, DataInputStream stream) throws Exception;
 }

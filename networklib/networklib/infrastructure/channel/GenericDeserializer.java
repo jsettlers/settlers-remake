@@ -3,6 +3,7 @@ package networklib.infrastructure.channel;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.packet.Packet;
 
 /**
@@ -21,7 +22,7 @@ public class GenericDeserializer<T extends Packet> implements IDeserializingable
 	}
 
 	@Override
-	public T deserialize(int key, DataInputStream dis) throws IOException {
+	public T deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
 		try {
 			T packet = classType.newInstance();
 			packet.deserialize(dis);

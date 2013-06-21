@@ -2,7 +2,7 @@ package networklib.server.listeners;
 
 import java.io.IOException;
 
-import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.ReadyStatePacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
@@ -20,13 +20,13 @@ public class ReadyStatePacketListener extends PacketChannelListener<ReadyStatePa
 	private final Player player;
 
 	public ReadyStatePacketListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.Keys.READY_STATE_CHANGE, new GenericDeserializer<ReadyStatePacket>(ReadyStatePacket.class));
+		super(ENetworkKey.CHANGE_READY_STATE, new GenericDeserializer<ReadyStatePacket>(ReadyStatePacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
-	protected void receivePacket(int key, ReadyStatePacket packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, ReadyStatePacket packet) throws IOException {
 		serverManager.setReadyStateForPlayer(player, packet.isReady());
 	}
 

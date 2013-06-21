@@ -3,6 +3,7 @@ package networklib.server.listeners.matches;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.MatchInfoPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
@@ -24,13 +25,13 @@ public class OpenNewMatchListener extends PacketChannelListener<OpenNewMatchPack
 	private final Player player;
 
 	public OpenNewMatchListener(IServerManager serverManager, Player player) {
-		super(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new GenericDeserializer<OpenNewMatchPacket>(OpenNewMatchPacket.class));
+		super(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new GenericDeserializer<OpenNewMatchPacket>(OpenNewMatchPacket.class));
 		this.serverManager = serverManager;
 		this.player = player;
 	}
 
 	@Override
-	protected void receivePacket(int key, OpenNewMatchPacket packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, OpenNewMatchPacket packet) throws IOException {
 		serverManager.createNewMatch(packet, player);
 	}
 

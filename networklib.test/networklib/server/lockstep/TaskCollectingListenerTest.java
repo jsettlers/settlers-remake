@@ -47,16 +47,16 @@ public class TaskCollectingListenerTest {
 		// c2 is the channel of the server
 
 		BufferingPacketListener<TaskPacket> clientListener = new BufferingPacketListener<TaskPacket>(
-				NetworkConstants.Keys.SYNCHRONOUS_TASK, TaskPacket.DEFAULT_DESERIALIZER);
+				NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, TaskPacket.DEFAULT_DESERIALIZER);
 		c1.registerListener(clientListener);
 
 		TaskCollectingListener serverListener = new TaskCollectingListener();
 		c2.registerListener(serverListener);
 
 		TestTaskPacket testPacket1 = new TestTaskPacket("TestMessage42", 4711, (byte) -3);
-		c1.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, testPacket1); // send packet 1 to server
+		c1.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, testPacket1); // send packet 1 to server
 		TestTaskPacket testPacket2 = new TestTaskPacket("Bla Böb Bün0928ä38(/§/)\"=$(;:I\"H))!", -2342323, (byte) 4);
-		c1.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, testPacket2); // send packet 2 to server
+		c1.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, testPacket2); // send packet 2 to server
 
 		Thread.sleep(10);
 
@@ -67,7 +67,7 @@ public class TaskCollectingListenerTest {
 		assertEquals(0, serverListener.getAndResetTasks().size());
 
 		for (ServersideTaskPacket curr : serversideTaskPackets) { // send packets back to client
-			c2.sendPacket(NetworkConstants.Keys.SYNCHRONOUS_TASK, curr);
+			c2.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, curr);
 		}
 
 		Thread.sleep(10);

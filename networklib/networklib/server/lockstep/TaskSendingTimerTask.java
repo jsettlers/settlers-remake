@@ -34,7 +34,7 @@ public class TaskSendingTimerTask extends TimerTask {
 
 		List<ServersideTaskPacket> tasksList = taskCollectingListener.getAndResetTasks();
 		ServersideSyncTasksPacket syncTasksPacket = new ServersideSyncTasksPacket(lockstepCounter++, tasksList);
-		match.sendMessage(NetworkConstants.Keys.SYNCHRONOUS_TASK, syncTasksPacket);
+		match.broadcastMessage(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, syncTasksPacket);
 	}
 
 	public void receivedLockstepAcknowledge(int acknowledgedLockstep) {

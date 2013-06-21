@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.IDeserializingable;
 import networklib.infrastructure.channel.packet.Packet;
 
@@ -17,7 +18,7 @@ public abstract class TaskPacket extends Packet {
 	public static final IDeserializingable<TaskPacket> DEFAULT_DESERIALIZER = new IDeserializingable<TaskPacket>() {
 
 		@Override
-		public TaskPacket deserialize(int key, DataInputStream dis) throws IOException {
+		public TaskPacket deserialize(ENetworkKey key, DataInputStream dis) throws IOException {
 			try {
 				dis.readInt(); // read the length in bytes from the stream. We don't need it here, only the server needs it.
 				String className = dis.readUTF();

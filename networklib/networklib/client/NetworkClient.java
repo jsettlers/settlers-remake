@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.interfaces.ITaskScheduler;
@@ -93,8 +94,9 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		playerInfo = new PlayerInfoPacket(id, name, false);
 
 		channel.registerListener(new IdentifiedUserListener(this));
-		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class, matchesReceiver));
-		channel.sendPacketAsync(NetworkConstants.Keys.IDENTIFY_USER, playerInfo);
+		channel.registerListener(generateDefaultListener(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, ArrayOfMatchInfosPacket.class,
+				matchesReceiver));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.IDENTIFY_USER, playerInfo);
 	}
 
 	/**
@@ -116,7 +118,8 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 			throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo, randomSeed));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_OPEN_NEW_MATCH, new OpenNewMatchPacket(matchName, maxPlayers, mapInfo,
+				randomSeed));
 	}
 
 	@Override
@@ -125,51 +128,51 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 			throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.LOGGED_IN);
 		registerMatchStartListeners(matchStartedListener, matchInfoUpdatedListener, chatMessageReceiver);
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_JOIN_MATCH, new IdPacket(matchId));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_JOIN_MATCH, new IdPacket(matchId));
 	}
 
 	@Override
 	public void leaveMatch() {
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_LEAVE_MATCH, new EmptyPacket());
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_LEAVE_MATCH, new EmptyPacket());
 	}
 
 	@Override
 	public void startMatch() throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
-		channel.sendPacketAsync(NetworkConstants.Keys.REQUEST_START_MATCH, new EmptyPacket());
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.REQUEST_START_MATCH, new EmptyPacket());
 	}
 
 	@Override
 	public void setReadyState(boolean ready) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
-		channel.sendPacketAsync(NetworkConstants.Keys.READY_STATE_CHANGE, new ReadyStatePacket(ready));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_READY_STATE, new ReadyStatePacket(ready));
 	}
 
 	@Override
 	public void sendChatMessage(String message) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH, EPlayerState.IN_RUNNING_MATCH);
-		channel.sendPacketAsync(NetworkConstants.Keys.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHAT_MESSAGE, new ChatMessagePacket(playerInfo.getId(), message));
 	}
 
 	@Override
 	public void registerRejectReceiver(IPacketReceiver<RejectPacket> rejectListener) {
-		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.REJECT_PACKET, RejectPacket.class, rejectListener));
+		channel.registerListener(generateDefaultListener(NetworkConstants.ENetworkKey.REJECT_PACKET, RejectPacket.class, rejectListener));
 	}
 
 	private void registerMatchStartListeners(IPacketReceiver<MatchStartPacket> matchStartedListener,
 			IPacketReceiver<MatchInfoUpdatePacket> matchInfoUpdatedListener, IPacketReceiver<ChatMessagePacket> chatMessageReceiver) {
 		channel.registerListener(new MatchInfoUpdatedListener(this, matchInfoUpdatedListener));
 		channel.registerListener(new MatchStartedListener(this, matchStartedListener));
-		channel.registerListener(generateDefaultListener(NetworkConstants.Keys.CHAT_MESSAGE, ChatMessagePacket.class, chatMessageReceiver));
+		channel.registerListener(generateDefaultListener(ENetworkKey.CHAT_MESSAGE, ChatMessagePacket.class, chatMessageReceiver));
 		channel.registerListener(new TaskPacketListener(clock));
 	}
 
 	@Override
 	public void scheduleTask(TaskPacket task) {
-		channel.sendPacketAsync(NetworkConstants.Keys.SYNCHRONOUS_TASK, task);
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, task);
 	}
 
-	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(int key, Class<T> classType, IPacketReceiver<T> listener) {
+	private <T extends Packet> DefaultClientPacketListener<T> generateDefaultListener(ENetworkKey key, Class<T> classType, IPacketReceiver<T> listener) {
 		return new DefaultClientPacketListener<T>(key, new GenericDeserializer<T>(classType), listener);
 	}
 
@@ -187,7 +190,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 
 	void identifiedUserEvent() {
 		this.state = EPlayerState.LOGGED_IN;
-		channel.removeListener(NetworkConstants.Keys.IDENTIFY_USER);
+		channel.removeListener(NetworkConstants.ENetworkKey.IDENTIFY_USER);
 	}
 
 	private void playerJoinedEvent(MatchInfoPacket matchInfo) {
@@ -197,29 +200,24 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		}
 	}
 
-	private void playerLeftEvent(MatchInfoPacket matchInfo) {
-		assert matchInfo != null && matchInfo.getId().equals(matchInfo.getId()) : "received match info for wrong match! " + matchInfo.getId();
+	private void playerLeftEvent(MatchInfoUpdatePacket matchInfoUpdate) {
+		MatchInfoPacket updatedInfo = matchInfoUpdate.getMatchInfo();
+		assert updatedInfo != null && updatedInfo.getId().equals(updatedInfo.getId()) : "received match info for wrong match! " + updatedInfo.getId();
 
-		boolean stillInGame = false;
-		for (PlayerInfoPacket currPlayer : matchInfo.getPlayers()) {
-			if (currPlayer.getId().equals(playerInfo.getId())) {
-				stillInGame = true;
-				break;
-			}
-		}
-
-		if (!stillInGame) {
+		if (playerInfo.getId().equals(matchInfoUpdate.getIdOfChangedPlayer())) { // if this client left the game
 			state = EPlayerState.LOGGED_IN;
-			matchInfo = null;
+			this.matchInfo = null;
 
-			channel.removeListener(NetworkConstants.Keys.MATCH_INFO_UPDATE);
-			channel.removeListener(NetworkConstants.Keys.CHAT_MESSAGE);
+			channel.removeListener(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE);
+			channel.removeListener(NetworkConstants.ENetworkKey.CHAT_MESSAGE);
+		} else {
+			this.matchInfo = updatedInfo;
 		}
 	}
 
 	void matchStartedEvent() {
 		this.state = EPlayerState.IN_RUNNING_MATCH;
-		channel.removeListener(NetworkConstants.Keys.MATCH_STARTED);
+		channel.removeListener(NetworkConstants.ENetworkKey.MATCH_STARTED);
 
 		startTimeSynchronization(clock);
 	}
@@ -232,12 +230,15 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 
 	void matchInfoUpdated(MatchInfoUpdatePacket matchInfoUpdate) {
 		switch (matchInfoUpdate.getUpdateReason()) {
-		case NetworkConstants.Messages.PLAYER_LEFT:
-			playerLeftEvent(matchInfoUpdate.getMatchInfo());
-			return;
+		case PLAYER_LEFT:
+			playerLeftEvent(matchInfoUpdate);
+			return; // this prevents that the matchInfo is set
 
-		case NetworkConstants.Messages.PLAYER_JOINED:
+		case PLAYER_JOINED:
 			playerJoinedEvent(matchInfoUpdate.getMatchInfo());
+			break;
+
+		default:
 			break;
 		}
 

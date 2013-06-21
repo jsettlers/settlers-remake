@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.packet.Packet;
 import networklib.infrastructure.channel.ping.IRoundTripTimeSupplier;
 import networklib.infrastructure.channel.ping.PingPacket;
@@ -34,7 +35,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	private final ByteArrayOutputStream byteBufferOutStream = new ByteArrayOutputStream();
 	private final DataOutputStream bufferDataOutStream = new DataOutputStream(byteBufferOutStream);
 
-	private final HashMap<Integer, IChannelListener> listenerRegistry = new HashMap<Integer, IChannelListener>();
+	private final HashMap<ENetworkKey, IChannelListener> listenerRegistry = new HashMap<ENetworkKey, IChannelListener>();
 
 	private final PingPacketListener pingListener;
 
@@ -80,7 +81,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		thread.start();
 	}
 
-	public synchronized void sendPacket(int key, Packet packet) {
+	public synchronized void sendPacket(ENetworkKey key, Packet packet) {
 		if (socket.isClosed())
 			return;
 
@@ -90,7 +91,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		}
 	}
 
-	private void sendPacketData(int key, Packet packet) throws IOException {
+	private void sendPacketData(ENetworkKey key, Packet packet) throws IOException {
 		bufferDataOutStream.flush();
 		byteBufferOutStream.reset();
 
@@ -98,7 +99,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		bufferDataOutStream.flush();
 		final int length = byteBufferOutStream.size();
 
-		outStream.writeInt(key); // write key, length and the data
+		key.writeTo(outStream); // write key, length and the data
 		outStream.writeInt(length);
 		byteBufferOutStream.writeTo(outStream);
 
@@ -112,13 +113,13 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	 *            The listener that shall be registered.
 	 */
 	public void registerListener(IChannelListener listener) {
-		int[] keys = listener.getKeys();
+		ENetworkKey[] keys = listener.getKeys();
 		for (int i = 0; i < keys.length; i++) {
 			listenerRegistry.put(keys[i], listener);
 		}
 	}
 
-	public void removeListener(int key) {
+	public void removeListener(ENetworkKey key) {
 		listenerRegistry.remove(key);
 	}
 
@@ -126,7 +127,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	public void run() {
 		while (!socket.isClosed()) {
 			try {
-				int key = inStream.readInt();
+				ENetworkKey key = ENetworkKey.readFrom(inStream);
 				int length = inStream.readInt();
 
 				DataInputStream bufferIn = readBytesToBuffer(inStream, length);
@@ -146,8 +147,8 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 				} else {
 					System.err.println("WARNING: NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
 
-					if (key != NetworkConstants.Keys.REJECT_PACKET) { // prevent endless loop
-						sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Messages.NO_LISTENER_FOUND, key));
+					if (key != NetworkConstants.ENetworkKey.REJECT_PACKET) { // prevent endless loop
+						sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET, new RejectPacket(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, key));
 					}
 				}
 

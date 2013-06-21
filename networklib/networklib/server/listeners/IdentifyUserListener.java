@@ -3,6 +3,7 @@ package networklib.server.listeners;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.GenericDeserializer;
@@ -23,20 +24,20 @@ public class IdentifyUserListener extends PacketChannelListener<PlayerInfoPacket
 	private final IServerManager serverManager;
 
 	public IdentifyUserListener(Channel channel, IServerManager userAcceptor) {
-		super(NetworkConstants.Keys.IDENTIFY_USER, new GenericDeserializer<PlayerInfoPacket>(PlayerInfoPacket.class));
+		super(ENetworkKey.IDENTIFY_USER, new GenericDeserializer<PlayerInfoPacket>(PlayerInfoPacket.class));
 		this.channel = channel;
 		this.serverManager = userAcceptor;
 	}
 
 	@Override
-	protected void receivePacket(int key, PlayerInfoPacket playerInfo) throws IOException {
+	protected void receivePacket(ENetworkKey key, PlayerInfoPacket playerInfo) throws IOException {
 		Player player = new Player(playerInfo, channel);
 		if (serverManager.acceptNewPlayer(player)) {
-			channel.sendPacket(NetworkConstants.Keys.IDENTIFY_USER, new EmptyPacket());
+			channel.sendPacket(NetworkConstants.ENetworkKey.IDENTIFY_USER, new EmptyPacket());
 			serverManager.sendMatchesToPlayer(player);
 		} else {
-			channel.sendPacket(NetworkConstants.Keys.REJECT_PACKET, new RejectPacket(NetworkConstants.Messages.UNAUTHORIZED,
-					NetworkConstants.Keys.IDENTIFY_USER));
+			channel.sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET, new RejectPacket(NetworkConstants.ENetworkMessage.UNAUTHORIZED,
+					NetworkConstants.ENetworkKey.IDENTIFY_USER));
 		}
 	}
 }

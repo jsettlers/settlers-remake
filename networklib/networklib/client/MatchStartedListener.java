@@ -3,6 +3,7 @@ package networklib.client;
 import java.io.IOException;
 
 import networklib.NetworkConstants;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.MatchStartPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
@@ -19,13 +20,13 @@ public class MatchStartedListener extends PacketChannelListener<MatchStartPacket
 	private IPacketReceiver<MatchStartPacket> matchStartedListener;
 
 	public MatchStartedListener(NetworkClient networkClient, IPacketReceiver<MatchStartPacket> matchStartedListener) {
-		super(NetworkConstants.Keys.MATCH_STARTED, new GenericDeserializer<MatchStartPacket>(MatchStartPacket.class));
+		super(NetworkConstants.ENetworkKey.MATCH_STARTED, new GenericDeserializer<MatchStartPacket>(MatchStartPacket.class));
 		this.networkClient = networkClient;
 		this.matchStartedListener = matchStartedListener;
 	}
 
 	@Override
-	protected void receivePacket(int key, MatchStartPacket packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, MatchStartPacket packet) throws IOException {
 		networkClient.matchStartedEvent();
 
 		if (matchStartedListener != null)

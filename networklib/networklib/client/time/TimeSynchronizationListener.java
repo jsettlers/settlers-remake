@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import networklib.NetworkConstants;
 import networklib.NetworkConstants.Client;
+import networklib.NetworkConstants.ENetworkKey;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
@@ -20,13 +21,13 @@ public class TimeSynchronizationListener extends PacketChannelListener<TimeSyncP
 	private final ISynchronizableClock clock;
 
 	public TimeSynchronizationListener(IRoundTripTimeSupplier rttSupplier, ISynchronizableClock clock) {
-		super(NetworkConstants.Keys.TIME_SYNC, new GenericDeserializer<TimeSyncPacket>(TimeSyncPacket.class));
+		super(NetworkConstants.ENetworkKey.TIME_SYNC, new GenericDeserializer<TimeSyncPacket>(TimeSyncPacket.class));
 		this.rttSupplier = rttSupplier;
 		this.clock = clock;
 	}
 
 	@Override
-	protected void receivePacket(int key, TimeSyncPacket packet) throws IOException {
+	protected void receivePacket(ENetworkKey key, TimeSyncPacket packet) throws IOException {
 		int expectedRemoteTime = packet.getTime() + rttSupplier.getRoundTripTime().getRtt() / 2;
 		int localTime = clock.getTime();
 
