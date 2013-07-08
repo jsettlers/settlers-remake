@@ -39,22 +39,22 @@ public final class NetworkConstants {
 		private Client() {
 		}
 
-		public static final long TIME_SYNC_SEND_INTERVALL = 100;
+		public static long TIME_SYNC_SEND_INTERVALL = 100;
 		/**
 		 * The tolerated time difference between two clients.<br>
 		 * NOTE: This must be higher than {@link NetworkTimer}.TIME_SLICE!
 		 */
-		public static final int TIME_SYNC_TOLERATED_DIFFERENCE = 70;
-		public static final float TIME_SYNC_APPROACH_FACTOR = 0.95f;
+		public static int TIME_SYNC_TOLERATED_DIFFERENCE = 10;
+		public static float TIME_SYNC_APPROACH_FACTOR = 0.95f;
 
 		/**
 		 * The number of milliseconds between a lockstep event.
 		 */
-		public static final int LOCKSTEP_PERIOD = 100;
+		public static int LOCKSTEP_PERIOD = 100;
 		/**
 		 * The number of steps the server can run ahead of the clients.
 		 */
-		public static final int LOCKSTEP_DEFAULT_LEAD_STEPS = 2;
+		public static int LOCKSTEP_DEFAULT_LEAD_STEPS = 3;
 	}
 
 	/**

@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import networklib.infrastructure.channel.AsyncChannel;
 import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.channel.socket.ISocketFactory;
 
 public final class TestUtils {
 	private TestUtils() {
@@ -18,8 +19,8 @@ public final class TestUtils {
 		final Channel[] channels = new Channel[2];
 
 		Socket[] sockets = setUpLoppbackSockets();
-		channels[0] = new Channel(sockets[0]);
-		channels[1] = new Channel(sockets[1]);
+		channels[0] = new Channel(ISocketFactory.DEFAULT_FACTORY.generateSocket(sockets[0]));
+		channels[1] = new Channel(ISocketFactory.DEFAULT_FACTORY.generateSocket(sockets[1]));
 
 		channels[0].start();
 		channels[1].start();
@@ -32,8 +33,8 @@ public final class TestUtils {
 		final AsyncChannel[] channels = new AsyncChannel[2];
 
 		Socket[] sockets = setUpLoppbackSockets();
-		channels[0] = new AsyncChannel(sockets[0]);
-		channels[1] = new AsyncChannel(sockets[1]);
+		channels[0] = new AsyncChannel(ISocketFactory.DEFAULT_FACTORY.generateSocket(sockets[0]));
+		channels[1] = new AsyncChannel(ISocketFactory.DEFAULT_FACTORY.generateSocket(sockets[1]));
 
 		channels[0].start();
 		channels[1].start();

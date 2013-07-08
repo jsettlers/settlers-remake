@@ -29,6 +29,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 		long now = System.currentTimeMillis();
 		int rtt = (int) (now - receivedPing.getReceiverTime());
 		currRtt = new RoundTripTime(now, rtt);
+		System.out.println("Ping: " + rtt);
 
 		sendPing(receivedPing.getSenderTime());
 	}

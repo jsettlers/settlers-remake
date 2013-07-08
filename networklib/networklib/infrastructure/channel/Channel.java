@@ -17,6 +17,8 @@ import networklib.infrastructure.channel.ping.PingPacket;
 import networklib.infrastructure.channel.ping.PingPacketListener;
 import networklib.infrastructure.channel.ping.RoundTripTime;
 import networklib.infrastructure.channel.reject.RejectPacket;
+import networklib.infrastructure.channel.socket.ISocket;
+import networklib.infrastructure.channel.socket.ISocketFactory;
 
 /**
  * This class builds up a logical channel between to network partners. The class allows to send data of type {@link Packet} to the partner and to
@@ -28,7 +30,7 @@ import networklib.infrastructure.channel.reject.RejectPacket;
 public class Channel implements Runnable, IRoundTripTimeSupplier {
 	private final Thread thread;
 
-	private final Socket socket;
+	private final ISocket socket;
 	private final DataOutputStream outStream;
 	private final DataInputStream inStream;
 
@@ -51,7 +53,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	 * @throws IOException
 	 *             If an I/O error occurs when creating the channel or if the socket is not connected.
 	 */
-	public Channel(Socket socket) throws IOException {
+	public Channel(ISocket socket) throws IOException {
 		this.socket = socket;
 		outStream = new DataOutputStream(socket.getOutputStream());
 		inStream = new DataInputStream(socket.getInputStream());
@@ -63,7 +65,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	}
 
 	public Channel(String host, int port) throws UnknownHostException, IOException {
-		this(new Socket(host, port));
+		this(ISocketFactory.DEFAULT_FACTORY.generateSocket(host, port));
 	}
 
 	/**
@@ -148,7 +150,8 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 					System.err.println("WARNING: NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
 
 					if (key != NetworkConstants.ENetworkKey.REJECT_PACKET) { // prevent endless loop
-						sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET, new RejectPacket(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, key));
+						sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET, new RejectPacket(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND,
+								key));
 					}
 				}
 

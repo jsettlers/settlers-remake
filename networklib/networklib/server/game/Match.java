@@ -183,7 +183,7 @@ public class Match {
 		synchronized (players) {
 			for (Player player : players) {
 				if (!player.getPlayerInfo().isReady()) {
-					throw new NotAllPlayersReadyException(); // FIXME @Andreas Eberle this is only temporarily commented out!
+					// throw new NotAllPlayersReadyException(); // FIXME @Andreas Eberle this is only temporarily commented out!
 				}
 			}
 		}

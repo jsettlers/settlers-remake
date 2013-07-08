@@ -1,12 +1,12 @@
 package networklib.infrastructure.channel;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.packet.Packet;
+import networklib.infrastructure.channel.socket.ISocket;
 
 /**
  * This is a {@link Channel} implementation with asynchronous sending. The packets that shall be send, will be buffered and send by an extra thread.
@@ -15,7 +15,6 @@ import networklib.infrastructure.channel.packet.Packet;
  * 
  */
 public class AsyncChannel extends Channel {
-
 	private final LinkedBlockingQueue<PacketWithKey> sendBuffer = new LinkedBlockingQueue<PacketWithKey>();
 	private final Thread senderThread;
 
@@ -24,7 +23,7 @@ public class AsyncChannel extends Channel {
 		senderThread = createSenderThread(host + ":" + port);
 	}
 
-	public AsyncChannel(Socket socket) throws IOException {
+	public AsyncChannel(ISocket socket) throws IOException {
 		super(socket);
 		senderThread = createSenderThread(socket.toString());
 	}

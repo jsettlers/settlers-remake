@@ -7,6 +7,7 @@ import java.net.SocketException;
 
 import networklib.NetworkConstants;
 import networklib.infrastructure.channel.Channel;
+import networklib.infrastructure.channel.socket.ISocketFactory;
 import networklib.infrastructure.log.Log;
 import networklib.server.db.inMemory.InMemoryDB;
 import networklib.server.lan.LanServerAddressBroadcastListener;
@@ -48,7 +49,7 @@ public class GameServerThread extends Thread {
 			try {
 				Socket clientSocket = serverSocket.accept();
 
-				Channel clientChannel = new Channel(clientSocket);
+				Channel clientChannel = new Channel(ISocketFactory.DEFAULT_FACTORY.generateSocket(clientSocket));
 				manager.identifyNewChannel(clientChannel);
 				clientChannel.start();
 

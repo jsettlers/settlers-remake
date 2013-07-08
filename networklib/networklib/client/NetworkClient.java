@@ -220,6 +220,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		channel.removeListener(NetworkConstants.ENetworkKey.MATCH_STARTED);
 
 		startTimeSynchronization(clock);
+		channel.initPinging();
 	}
 
 	private void startTimeSynchronization(ISynchronizableClock clock) {
