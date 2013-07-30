@@ -44,7 +44,7 @@ public final class NetworkConstants {
 		 * The tolerated time difference between two clients.<br>
 		 * NOTE: This must be higher than {@link NetworkTimer}.TIME_SLICE!
 		 */
-		public static int TIME_SYNC_TOLERATED_DIFFERENCE = 10;
+		public static int TIME_SYNC_TOLERATED_DIFFERENCE = 50;
 		public static float TIME_SYNC_APPROACH_FACTOR = 0.95f;
 
 		/**

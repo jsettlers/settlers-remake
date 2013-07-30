@@ -2,7 +2,7 @@ package networklib.infrastructure.channel.socket;
 
 import java.net.Socket;
 
-import networklib.infrastructure.channel.socket.standard.JavaSocketFactory;
+import networklib.infrastructure.channel.socket.delayed.DelayedSocketFactory;
 
 /**
  * 
@@ -10,9 +10,9 @@ import networklib.infrastructure.channel.socket.standard.JavaSocketFactory;
  * 
  */
 public interface ISocketFactory {
-	public static ISocketFactory DEFAULT_FACTORY = new JavaSocketFactory();
+	// public static ISocketFactory DEFAULT_FACTORY = new JavaSocketFactory();
 
-	// public static ISocketFactory DEFAULT_FACTORY = new DelayedSocketFactory();
+	public static ISocketFactory DEFAULT_FACTORY = new DelayedSocketFactory();
 
 	ISocket generateSocket(String host, int port) throws SocketConnectException;
 

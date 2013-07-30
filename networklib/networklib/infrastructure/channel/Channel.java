@@ -12,6 +12,7 @@ import java.util.HashMap;
 import networklib.NetworkConstants;
 import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.packet.Packet;
+import networklib.infrastructure.channel.ping.IPingUpdateListener;
 import networklib.infrastructure.channel.ping.IRoundTripTimeSupplier;
 import networklib.infrastructure.channel.ping.PingPacket;
 import networklib.infrastructure.channel.ping.PingPacketListener;
@@ -39,7 +40,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 
 	private final HashMap<ENetworkKey, IChannelListener> listenerRegistry = new HashMap<ENetworkKey, IChannelListener>();
 
-	private final PingPacketListener pingListener;
+	private final PingPacketListener pingPacketListener;
 
 	private IChannelClosedListener channelClosedListener;
 
@@ -58,8 +59,8 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		outStream = new DataOutputStream(socket.getOutputStream());
 		inStream = new DataInputStream(socket.getInputStream());
 
-		pingListener = new PingPacketListener(this);
-		registerListener(pingListener);
+		pingPacketListener = new PingPacketListener(this);
+		registerListener(pingPacketListener);
 
 		thread = new Thread(this, "ChannelForSocket_" + socket);
 	}
@@ -216,14 +217,18 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	 */
 	@Override
 	public RoundTripTime getRoundTripTime() {
-		return pingListener.getRoundTripTime();
+		return pingPacketListener.getRoundTripTime();
 	}
 
 	/**
 	 * Initialize the pinging by sending a first {@link PingPacket}.
 	 */
 	public void initPinging() {
-		pingListener.initPinging();
+		pingPacketListener.initPinging();
+	}
+
+	public void setPingUpdateListener(IPingUpdateListener pingUpdateListener) {
+		pingPacketListener.setPingUpdateListener(pingUpdateListener);
 	}
 
 	/**

@@ -197,6 +197,7 @@ public class Match {
 		synchronized (players) {
 			for (Player player : players) {
 				sendMatchStartPacketToPlayer(player);
+				player.getChannel().setPingUpdateListener(taskSendingTimerTask); // needed so that the sending task can adapt to the ping
 			}
 		}
 	}

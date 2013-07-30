@@ -16,6 +16,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 
 	private final Channel channel;
 	private RoundTripTime currRtt = new RoundTripTime(System.currentTimeMillis(), 0);
+	private IPingUpdateListener pingUpdateListener = null;
 
 	public PingPacketListener(Channel channel) {
 		super(NetworkConstants.ENetworkKey.PING, new GenericDeserializer<PingPacket>(PingPacket.class));
@@ -32,6 +33,9 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 		System.out.println("Ping: " + rtt);
 
 		sendPing(receivedPing.getSenderTime());
+
+		if (pingUpdateListener != null)
+			pingUpdateListener.pingUpdated(currRtt);
 	}
 
 	private void sendPing(long receiverTime) {
@@ -53,5 +57,15 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 	 */
 	public void initPinging() {
 		sendPing(0);
+	}
+
+	/**
+	 * Sets the {@link IPingUpdateListener} that will be informed on ping updates. Set null to deregister a listener.<br>
+	 * Note: Only one listener at a time can be set!
+	 * 
+	 * @param pingUpdateListener
+	 */
+	public void setPingUpdateListener(IPingUpdateListener pingUpdateListener) {
+		this.pingUpdateListener = pingUpdateListener;
 	}
 }
