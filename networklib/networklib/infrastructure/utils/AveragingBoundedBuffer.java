@@ -24,7 +24,11 @@ public class AveragingBoundedBuffer {
 		index = (index + 1) % length;
 	}
 
-	public int getAvg() {
+	public int getAverage() {
 		return sum / length;
+	}
+
+	public int getLength() {
+		return length;
 	}
 }

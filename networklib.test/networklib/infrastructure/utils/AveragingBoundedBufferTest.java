@@ -22,7 +22,7 @@ public class AveragingBoundedBufferTest {
 		}
 
 		int expectedAvg = ((int) (BUFFER_LENGTH * 0.5f * (BUFFER_LENGTH + 1))) / BUFFER_LENGTH;
-		assertEquals(expectedAvg, buffer.getAvg());
+		assertEquals(expectedAvg, buffer.getAverage());
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class AveragingBoundedBufferTest {
 			int base = (int) ((i - BUFFER_LENGTH) > 0 ? ((i - BUFFER_LENGTH) * 0.5f * (i - BUFFER_LENGTH + 1)) : 0);
 			int expectedSum = (int) (i * 0.5f * (i + 1) - base);
 			int expectedAvg = expectedSum / BUFFER_LENGTH;
-			assertEquals("index: " + i, expectedAvg, buffer.getAvg());
+			assertEquals("index: " + i, expectedAvg, buffer.getAverage());
 		}
 	}
 }

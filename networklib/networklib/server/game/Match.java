@@ -195,9 +195,13 @@ public class Match {
 		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD);
 
 		synchronized (players) {
+			int i = 0;
 			for (Player player : players) {
 				sendMatchStartPacketToPlayer(player);
-				player.getChannel().setPingUpdateListener(taskSendingTimerTask); // needed so that the sending task can adapt to the ping
+
+				// needed so that the sending task can adapt to the ping
+				player.getChannel().setPingUpdateListener(taskSendingTimerTask.getPingListener(i));
+				i++;
 			}
 		}
 	}

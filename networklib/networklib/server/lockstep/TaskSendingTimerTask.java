@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import networklib.NetworkConstants;
 import networklib.infrastructure.channel.ping.IPingUpdateListener;
 import networklib.infrastructure.channel.ping.RoundTripTime;
+import networklib.infrastructure.utils.MaximumSlotBuffer;
 import networklib.server.game.Match;
 import networklib.server.packets.ServersideSyncTasksPacket;
 import networklib.server.packets.ServersideTaskPacket;
@@ -15,8 +16,8 @@ import networklib.server.packets.ServersideTaskPacket;
  * @author Andreas Eberle
  * 
  */
-public class TaskSendingTimerTask extends TimerTask implements IPingUpdateListener {
-	private static final int LEAD_TIME_DECREASE_STEPS = 10;
+public class TaskSendingTimerTask extends TimerTask {
+	private static final int LEAD_TIME_DECREASE_STEPS = 20;
 
 	private TaskCollectingListener taskCollectingListener;
 	private Match match;
@@ -43,19 +44,38 @@ public class TaskSendingTimerTask extends TimerTask implements IPingUpdateListen
 	}
 
 	public void receivedLockstepAcknowledge(int acknowledgedLockstep) {
-		int leadSteps = (currentLeadTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD);
+		int leadSteps = (int) Math.ceil(((float) currentLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
 		currentLockstepMax = Math.max(currentLockstepMax, acknowledgedLockstep + leadSteps);
 		// System.out.println("lead steps: " + leadSteps);
 	}
 
-	@Override
-	public void pingUpdated(RoundTripTime rtt) {
-		if (rtt.getRtt() > 5000) {
+	final void pingUpdated(int rtt, int jitter) {
+		if (rtt > 3000 || jitter > 2000) {
 			return; // this is exceptional, we can not adapt to this
 		}
 
-		currentLeadTimeMs = (int) Math.max(currentLeadTimeMs - LEAD_TIME_DECREASE_STEPS, rtt.getRtt() * 1.1f
-				+ NetworkConstants.Client.LOCKSTEP_PERIOD);
-		System.out.println("lead time: " + currentLeadTimeMs);
+		currentLeadTimeMs = Math.max(currentLeadTimeMs - LEAD_TIME_DECREASE_STEPS, (int) (rtt / 2f * 1.1f
+				+ NetworkConstants.Client.LOCKSTEP_PERIOD + jitter * 1.5f));
+		System.out.println("ping/2 " + rtt / 2 + "    lead time: " + currentLeadTimeMs + "   jitter:   " + jitter);
+	}
+
+	private MaximumSlotBuffer rttMaximum = new MaximumSlotBuffer(0);
+	private MaximumSlotBuffer jitterMaximum = new MaximumSlotBuffer(0);
+
+	public IPingUpdateListener getPingListener(final int index) {
+		if (rttMaximum.getLength() <= index) {
+			rttMaximum = new MaximumSlotBuffer(index + 1);
+			jitterMaximum = new MaximumSlotBuffer(index + 1);
+		}
+
+		return new IPingUpdateListener() {
+			@Override
+			public void pingUpdated(RoundTripTime rtt) {
+				rttMaximum.insert(index, rtt.getRtt());
+				jitterMaximum.insert(index, rtt.getAveragedJitter());
+
+				TaskSendingTimerTask.this.pingUpdated(rttMaximum.getMax(), jitterMaximum.getMax());
+			}
+		};
 	}
 }

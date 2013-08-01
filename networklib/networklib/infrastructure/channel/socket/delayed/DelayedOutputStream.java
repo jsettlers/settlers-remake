@@ -48,7 +48,7 @@ public class DelayedOutputStream extends OutputStream {
 	private final class DelayedOutStreamWriter extends Thread {
 		private static final int MIN_DELAY = 50;
 		private static final int MAX_DELAY = 500;
-		private static final int MAX_DELAY_STEP = 200;
+		private static final int MAX_DELAY_STEP = 100;
 
 		private DelayedOutStreamWriter() {
 			super("delayedOutStreamWriter");

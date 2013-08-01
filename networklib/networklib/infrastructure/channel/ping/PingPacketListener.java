@@ -5,6 +5,7 @@ import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.utils.AveragingBoundedBuffer;
 
 /**
  * {@link PacketChannelListener} to receive and send {@link PingPacket}s.
@@ -14,8 +15,12 @@ import networklib.infrastructure.channel.listeners.PacketChannelListener;
  */
 public class PingPacketListener extends PacketChannelListener<PingPacket> implements IRoundTripTimeSupplier {
 
+	private static final int JITTER_AVERAGING_BUFFER = 7;
+
 	private final Channel channel;
-	private RoundTripTime currRtt = new RoundTripTime(System.currentTimeMillis(), 0);
+	private final AveragingBoundedBuffer avgJitter = new AveragingBoundedBuffer(JITTER_AVERAGING_BUFFER);
+	private RoundTripTime currRtt = new RoundTripTime(System.currentTimeMillis(), 0, 0, 0);
+
 	private IPingUpdateListener pingUpdateListener = null;
 
 	public PingPacketListener(Channel channel) {
@@ -29,8 +34,11 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 	protected void receivePacket(ENetworkKey key, PingPacket receivedPing) {
 		long now = System.currentTimeMillis();
 		int rtt = (int) (now - receivedPing.getReceiverTime());
-		currRtt = new RoundTripTime(now, rtt);
-		System.out.println("Ping: " + rtt);
+		int jitter = Math.abs(currRtt.getRtt() - rtt);
+		avgJitter.insert(jitter);
+
+		currRtt = new RoundTripTime(now, rtt, jitter, avgJitter.getAverage());
+		System.out.println("Ping: " + rtt + "    jitter: " + jitter + "    avgJitter: " + avgJitter.getAverage());
 
 		sendPing(receivedPing.getSenderTime());
 
