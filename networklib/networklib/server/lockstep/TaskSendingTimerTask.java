@@ -55,7 +55,7 @@ public class TaskSendingTimerTask extends TimerTask {
 		}
 
 		currentLeadTimeMs = Math.max(currentLeadTimeMs - LEAD_TIME_DECREASE_STEPS, (int) (rtt / 2f * 1.1f
-				+ NetworkConstants.Client.LOCKSTEP_PERIOD + jitter * 1.5f));
+				+ NetworkConstants.Client.LOCKSTEP_PERIOD * 1.5f + jitter * 1.5f));
 		System.out.println("ping/2 " + rtt / 2 + "    lead time: " + currentLeadTimeMs + "   jitter:   " + jitter);
 	}
 

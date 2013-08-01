@@ -46,9 +46,9 @@ public class DelayedOutputStream extends OutputStream {
 	}
 
 	private final class DelayedOutStreamWriter extends Thread {
-		private static final int MIN_DELAY = 50;
-		private static final int MAX_DELAY = 500;
-		private static final int MAX_DELAY_STEP = 100;
+		private static final int MIN_DELAY = 200;
+		private static final int MAX_DELAY = 700;
+		private static final int MAX_DELAY_STEP = 200;
 
 		private DelayedOutStreamWriter() {
 			super("delayedOutStreamWriter");
@@ -62,7 +62,7 @@ public class DelayedOutputStream extends OutputStream {
 
 				int currDist = (BUFFER_LENGTH + currWriteSlot - currReadSlot) % BUFFER_LENGTH;
 				int targetDistance = Math.min(MAX_DELAY,
-						Math.max(MIN_DELAY, 50 + (int) (currDist + Math.random() * MAX_DELAY_STEP * 2 - MAX_DELAY_STEP)));
+						Math.max(MIN_DELAY, (int) (currDist + Math.random() * MAX_DELAY_STEP * 2 - MAX_DELAY_STEP)));
 
 				// System.out.println("ssdsf");
 				if (targetDistance >= currDist) {
