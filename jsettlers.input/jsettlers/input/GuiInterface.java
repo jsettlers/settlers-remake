@@ -40,6 +40,7 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
 import networklib.client.interfaces.IGameClock;
@@ -88,7 +89,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	@Override
 	public void action(Action action) {
 		if (action.getActionType() != EActionType.SCREEN_CHANGE) {
-			System.out.println("action(Action): " + action.getActionType());
+			System.out.println("action(Action): " + action.getActionType() + "   at game time: " + MatchConstants.clock.getTime());
 		}
 
 		switch (action.getActionType()) {
