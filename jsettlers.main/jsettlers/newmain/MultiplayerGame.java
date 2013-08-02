@@ -26,7 +26,7 @@ import networklib.common.packets.MatchInfoUpdatePacket;
 import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.infrastructure.channel.reject.RejectPacket;
-import networklib.server.game.EPlayerState;
+import networklib.server.match.EPlayerState;
 
 /**
  * 
