@@ -192,7 +192,7 @@ public class Match {
 
 		this.taskCollectingListener = new TaskCollectingListener();
 		this.taskSendingTimerTask = new TaskSendingTimerTask(taskCollectingListener, this);
-		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD - 2);
+		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD / 2 - 2);
 
 		synchronized (players) {
 			int i = 0;

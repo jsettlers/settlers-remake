@@ -50,12 +50,17 @@ public class TaskSendingTimerTask extends TimerTask {
 	}
 
 	final void pingUpdated(int rtt, int jitter) {
-		if (rtt > 3000 || jitter > 2000) {
-			return; // this is exceptional, we can not adapt to this
+		if (rtt > 10000 || jitter > 5000) {
+			return; // this is an exceptional high rtt, we can not adapt to this
 		}
 
-		minimumLeadTimeMs = Math.max(minimumLeadTimeMs - LEAD_TIME_DECREASE_STEPS, (int) (rtt / 2 * 1.1f
-				+ NetworkConstants.Client.LOCKSTEP_PERIOD * 1.5f + jitter * 2f));
+		int newLeadTime = (int) (rtt / 2 * 1.1f + jitter * 2f + NetworkConstants.Client.LOCKSTEP_PERIOD * 1.5f);
+		if (newLeadTime > minimumLeadTimeMs) {
+			minimumLeadTimeMs = newLeadTime;
+		} else {
+			minimumLeadTimeMs -= (minimumLeadTimeMs - newLeadTime) / 4;
+		}
+
 		leadSteps = (int) Math.ceil(((float) minimumLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
 
 		System.out.println(String.format("rtt/2: %5d   min lead time: %4d   lead steps: %2d", rtt / 2,
