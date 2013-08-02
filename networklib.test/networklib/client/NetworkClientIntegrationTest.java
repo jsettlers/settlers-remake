@@ -26,8 +26,8 @@ import networklib.infrastructure.channel.TestPacketListener;
 import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.ServerManager;
 import networklib.server.db.inMemory.InMemoryDB;
-import networklib.server.game.EPlayerState;
-import networklib.server.game.Player;
+import networklib.server.match.EPlayerState;
+import networklib.server.match.Player;
 
 import org.junit.After;
 import org.junit.Before;
