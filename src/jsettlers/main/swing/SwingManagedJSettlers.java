@@ -55,6 +55,9 @@ public class SwingManagedJSettlers {
 			CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
 			CommonConstants.ENABLE_ALL_PLAYER_SELECTION = true;
 		}
+		if (argsList.contains("-localhost")) {
+			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
+		}
 	}
 
 	/**
