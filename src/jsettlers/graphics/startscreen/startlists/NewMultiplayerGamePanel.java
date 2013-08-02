@@ -2,6 +2,7 @@ package jsettlers.graphics.startscreen.startlists;
 
 import java.util.UUID;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
@@ -62,7 +63,7 @@ public class NewMultiplayerGamePanel extends
 
 				joiningGame =
 				        screen.getMultiplayerConnector(
-				                "localhost",
+				                CommonConstants.DEFAULT_SERVER_ADDRESS,
 				                new Player(UUID.randomUUID().toString(),
 				                        "testplayer")).openNewMultiplayerGame(
 				                gameInfo);
