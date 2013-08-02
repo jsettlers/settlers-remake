@@ -1,4 +1,4 @@
-package networklib.server.game;
+package networklib.server.match;
 
 public enum EMatchState {
 	OPENED,

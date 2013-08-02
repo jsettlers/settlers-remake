@@ -38,7 +38,7 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 		avgJitter.insert(jitter);
 
 		currRtt = new RoundTripTime(now, rtt, jitter, avgJitter.getAverage());
-		System.out.println("Ping: " + rtt + "    jitter: " + jitter + "    avgJitter: " + avgJitter.getAverage());
+		System.out.println(String.format("rtt: %5d   jitter: %3d   avgJitter: %3d", rtt, jitter, avgJitter.getAverage()));
 
 		sendPing(receivedPing.getSenderTime());
 

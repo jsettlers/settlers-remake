@@ -3,7 +3,7 @@ package networklib.server;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.TimeSyncPacket;
-import networklib.server.game.Player;
+import networklib.server.match.Player;
 
 public interface IServerManager {
 

@@ -7,7 +7,7 @@ import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.server.IServerManager;
-import networklib.server.game.Player;
+import networklib.server.match.Player;
 
 /**
  * 

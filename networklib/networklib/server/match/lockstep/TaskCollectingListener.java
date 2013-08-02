@@ -1,4 +1,4 @@
-package networklib.server.lockstep;
+package networklib.server.match.lockstep;
 
 import java.util.LinkedList;
 import java.util.List;

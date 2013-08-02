@@ -16,6 +16,8 @@ public final class NetworkConstants {
 	private NetworkConstants() {
 	}
 
+	public static final boolean USE_DELAYED_SOCKETS = true;
+
 	/**
 	 * This class contains constants used by the Server part of networklib.
 	 * 

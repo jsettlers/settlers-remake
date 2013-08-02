@@ -31,7 +31,7 @@ import networklib.infrastructure.channel.IChannelClosedListener;
 import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.infrastructure.channel.packet.Packet;
 import networklib.infrastructure.channel.reject.RejectPacket;
-import networklib.server.game.EPlayerState;
+import networklib.server.match.EPlayerState;
 import networklib.synchronic.timer.NetworkTimer;
 
 /**

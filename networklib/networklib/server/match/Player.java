@@ -1,4 +1,4 @@
-package networklib.server.game;
+package networklib.server.match;
 
 import java.util.Timer;
 
@@ -10,7 +10,7 @@ import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.packet.Packet;
 import networklib.server.exceptions.NotAllPlayersReadyException;
-import networklib.server.lockstep.TaskCollectingListener;
+import networklib.server.match.lockstep.TaskCollectingListener;
 
 /**
  * 

@@ -11,7 +11,7 @@ import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.infrastructure.channel.packet.EmptyPacket;
 import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.IServerManager;
-import networklib.server.game.Player;
+import networklib.server.match.Player;
 
 /**
  * 

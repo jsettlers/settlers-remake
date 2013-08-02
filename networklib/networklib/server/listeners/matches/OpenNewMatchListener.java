@@ -9,8 +9,8 @@ import networklib.common.packets.OpenNewMatchPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.server.IServerManager;
-import networklib.server.game.Match;
-import networklib.server.game.Player;
+import networklib.server.match.Match;
+import networklib.server.match.Player;
 
 /**
  * This listener is called when a client request to open up a new {@link Match}. After the match has successfully been created, the client will

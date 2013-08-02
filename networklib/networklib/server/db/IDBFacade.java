@@ -2,9 +2,9 @@ package networklib.server.db;
 
 import java.util.List;
 
-import networklib.server.game.EPlayerState;
-import networklib.server.game.Match;
-import networklib.server.game.Player;
+import networklib.server.match.EPlayerState;
+import networklib.server.match.Match;
+import networklib.server.match.Player;
 
 /**
  * This interface defines the methods required by the server to use a database.

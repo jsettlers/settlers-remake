@@ -2,7 +2,7 @@ package networklib.server.listeners;
 
 import networklib.infrastructure.channel.IChannelClosedListener;
 import networklib.server.IServerManager;
-import networklib.server.game.Player;
+import networklib.server.match.Player;
 
 /**
  * 

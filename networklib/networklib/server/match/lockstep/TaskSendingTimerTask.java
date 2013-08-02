@@ -1,4 +1,4 @@
-package networklib.server.lockstep;
+package networklib.server.match.lockstep;
 
 import java.util.List;
 import java.util.TimerTask;
@@ -7,7 +7,7 @@ import networklib.NetworkConstants;
 import networklib.infrastructure.channel.ping.IPingUpdateListener;
 import networklib.infrastructure.channel.ping.RoundTripTime;
 import networklib.infrastructure.utils.MaximumSlotBuffer;
-import networklib.server.game.Match;
+import networklib.server.match.Match;
 import networklib.server.packets.ServersideSyncTasksPacket;
 import networklib.server.packets.ServersideTaskPacket;
 
@@ -25,7 +25,8 @@ public class TaskSendingTimerTask extends TimerTask {
 	private int lockstepCounter = 0;
 	private int currentLockstepMax = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS;
 
-	private int currentLeadTimeMs = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS * NetworkConstants.Client.LOCKSTEP_PERIOD;
+	private int minimumLeadTimeMs = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS * NetworkConstants.Client.LOCKSTEP_PERIOD;
+	private int leadSteps = minimumLeadTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD;
 
 	public TaskSendingTimerTask(TaskCollectingListener taskCollectingListener, Match match) {
 		this.taskCollectingListener = taskCollectingListener;
@@ -44,7 +45,6 @@ public class TaskSendingTimerTask extends TimerTask {
 	}
 
 	public void receivedLockstepAcknowledge(int acknowledgedLockstep) {
-		int leadSteps = (int) Math.ceil(((float) currentLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
 		currentLockstepMax = Math.max(currentLockstepMax, acknowledgedLockstep + leadSteps);
 		// System.out.println("lead steps: " + leadSteps);
 	}
@@ -54,9 +54,12 @@ public class TaskSendingTimerTask extends TimerTask {
 			return; // this is exceptional, we can not adapt to this
 		}
 
-		currentLeadTimeMs = Math.max(currentLeadTimeMs - LEAD_TIME_DECREASE_STEPS, (int) (rtt / 2f * 1.1f
-				+ NetworkConstants.Client.LOCKSTEP_PERIOD * 1.5f + jitter * 1.5f));
-		System.out.println("ping/2 " + rtt / 2 + "    lead time: " + currentLeadTimeMs + "   jitter:   " + jitter);
+		minimumLeadTimeMs = Math.max(minimumLeadTimeMs - LEAD_TIME_DECREASE_STEPS, (int) (rtt / 2 * 1.1f
+				+ NetworkConstants.Client.LOCKSTEP_PERIOD * 1.5f + jitter * 2f));
+		leadSteps = (int) Math.ceil(((float) minimumLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
+
+		System.out.println(String.format("rtt/2: %5d   min lead time: %4d   lead steps: %2d", rtt / 2,
+				minimumLeadTimeMs, leadSteps));
 	}
 
 	private MaximumSlotBuffer rttMaximum = new MaximumSlotBuffer(0);

@@ -10,9 +10,6 @@ import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.server.db.IDBFacade;
 import networklib.server.exceptions.NotAllPlayersReadyException;
-import networklib.server.game.Match;
-import networklib.server.game.MatchesListSendingTimerTask;
-import networklib.server.game.Player;
 import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.IdentifyUserListener;
 import networklib.server.listeners.ReadyStatePacketListener;
@@ -22,6 +19,9 @@ import networklib.server.listeners.matches.JoinMatchListener;
 import networklib.server.listeners.matches.LeaveMatchListener;
 import networklib.server.listeners.matches.OpenNewMatchListener;
 import networklib.server.listeners.matches.StartMatchListener;
+import networklib.server.match.Match;
+import networklib.server.match.MatchesListSendingTimerTask;
+import networklib.server.match.Player;
 
 /**
  * This class is the central access point to the servers externally reachable functions.

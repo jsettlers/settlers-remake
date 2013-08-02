@@ -1,4 +1,4 @@
-package networklib.server.game;
+package networklib.server.match;
 
 import java.util.LinkedList;
 import java.util.Timer;
@@ -15,8 +15,8 @@ import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.packet.Packet;
 import networklib.server.exceptions.NotAllPlayersReadyException;
-import networklib.server.lockstep.TaskCollectingListener;
-import networklib.server.lockstep.TaskSendingTimerTask;
+import networklib.server.match.lockstep.TaskCollectingListener;
+import networklib.server.match.lockstep.TaskSendingTimerTask;
 
 /**
  * 
@@ -192,7 +192,7 @@ public class Match {
 
 		this.taskCollectingListener = new TaskCollectingListener();
 		this.taskSendingTimerTask = new TaskSendingTimerTask(taskCollectingListener, this);
-		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD);
+		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD - 2);
 
 		synchronized (players) {
 			int i = 0;

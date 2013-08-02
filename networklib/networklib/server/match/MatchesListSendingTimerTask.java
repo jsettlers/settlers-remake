@@ -1,4 +1,4 @@
-package networklib.server.game;
+package networklib.server.match;
 
 import java.util.List;
 import java.util.TimerTask;

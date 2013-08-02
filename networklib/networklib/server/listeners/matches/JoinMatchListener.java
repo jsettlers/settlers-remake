@@ -8,7 +8,7 @@ import networklib.common.packets.IdPacket;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
 import networklib.server.IServerManager;
-import networklib.server.game.Player;
+import networklib.server.match.Player;
 
 /**
  * 

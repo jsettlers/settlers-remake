@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import networklib.server.db.IDBFacade;
-import networklib.server.game.EPlayerState;
-import networklib.server.game.Match;
-import networklib.server.game.Player;
+import networklib.server.match.EPlayerState;
+import networklib.server.match.Match;
+import networklib.server.match.Player;
 
 /**
  * This class implements an in memory database.
