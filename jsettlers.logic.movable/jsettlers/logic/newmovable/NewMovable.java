@@ -793,5 +793,4 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 		 */
 		DEBUG_STATE
 	}
-
 }

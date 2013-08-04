@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
@@ -150,37 +150,64 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	}
 
 	/**
-	 * move the selected movables to the given position.
+	 * Move the selected {@link NewMovable} to the given position.
 	 * 
-	 * @param pos
+	 * @param targetPosition
 	 *            position to move to
-	 * @param list
+	 * @param movableIds
+	 *            A list of the id's of the movables.
 	 */
-	private void moveSelectedTo(ShortPoint2D pos, List<Integer> list) {
-		if (list.size() == 1) {
-			NewMovable currMovable = NewMovable.getMovableByID(list.get(0));
+	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
+		if (movableIds.size() == 1) {
+			NewMovable currMovable = NewMovable.getMovableByID(movableIds.get(0));
 			if (currMovable != null)
-				currMovable.moveTo(pos);
-		} else if (!list.isEmpty()) {
-			float radius = (float) (Math.sqrt(list.size() / 3.14f)) * 2;
-			MapCircle mapCircle = new MapCircle(pos, radius);
-			NewMovable leader = null;
+				currMovable.moveTo(targetPosition);
+		} else if (!movableIds.isEmpty()) {
+			// float radius = (float) (Math.sqrt(movableIds.size() / 3.14f)) * 2;
+			// MapCircle mapCircle = new MapCircle(targetPosition, radius);
+			//
+			// Iterator<ShortPoint2D> circleIter = mapCircle.iterator();
+			// for (Integer currID : movableIds) {
+			// NewMovable currMovable = NewMovable.getMovableByID(currID);
+			//
+			// if (currMovable != null) {
+			// circleIter.next();
+			// currMovable.moveTo(circleIter.next());
+			// }
+			// }
 
-			Iterator<ShortPoint2D> circleIter = mapCircle.iterator();
-			int ctr = 0;
-			for (Integer currID : list) {
-				NewMovable currMovable = NewMovable.getMovableByID(currID);
-				if (leader == null || ctr % 30 == 0) {
-					leader = currMovable;
-				}
+			short radius = 1;
+			short ringsWithoutSuccessCtr = 0; // used to stop the loop
+			Iterator<ShortPoint2D> posIterator = new HexBorderArea(targetPosition, radius).iterator();
 
-				if (currMovable != null) {
-					circleIter.next();
-					currMovable.moveTo(circleIter.next());
-				}
-				ctr++;
+			for (Integer currMovableId : movableIds) {
+				NewMovable currMovable = NewMovable.getMovableByID(currMovableId);
+
+				ShortPoint2D currTargetPos;
+
+				do {
+					if (!posIterator.hasNext()) {
+						ringsWithoutSuccessCtr++;
+						if (ringsWithoutSuccessCtr > 5) {
+							return; // the rest of the movables can't be sent to the target.
+						}
+
+						radius++;
+						posIterator = new HexBorderArea(targetPosition, radius).iterator();
+					}
+
+					currTargetPos = posIterator.next();
+				} while (!canMoveTo(currMovable, currTargetPos));
+
+				ringsWithoutSuccessCtr = 0;
+				currMovable.moveTo(currTargetPos);
 			}
 		}
+	}
+
+	private boolean canMoveTo(NewMovable movable, ShortPoint2D potentialTargetPos) {
+		return grid.isInBounds(potentialTargetPos) && !grid.isBlocked(potentialTargetPos)
+				&& grid.getBlockedPartition(movable.getPos()) == grid.getBlockedPartition(potentialTargetPos);
 	}
 
 	private void setWorkArea(ShortPoint2D pos, short buildingX, short buildingY) {

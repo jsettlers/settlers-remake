@@ -1519,6 +1519,16 @@ public final class MainGrid implements Serializable {
 			if (isInBounds(managerPosition))
 				partitionsGrid.getSettingsForManagerAt(managerPosition.x, managerPosition.y).setMaterialTypesForPriorities(materialTypeForPriority);
 		}
+
+		@Override
+		public short getBlockedPartition(ShortPoint2D position) {
+			return landscapeGrid.getBlockedPartitionAt(position.x, position.y);
+		}
+
+		@Override
+		public boolean isBlocked(ShortPoint2D position) {
+			return flagsGrid.isBlocked(position.x, position.y);
+		}
 	}
 
 	/**

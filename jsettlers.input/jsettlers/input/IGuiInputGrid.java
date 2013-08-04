@@ -105,4 +105,8 @@ public interface IGuiInputGrid {
 	void setMaterialPrioritiesSetting(ShortPoint2D managerPosition,
 			EMaterialType[] materialTypeForPriority);
 
+	short getBlockedPartition(ShortPoint2D pos);
+
+	boolean isBlocked(ShortPoint2D potentialTargetPos);
+
 }
