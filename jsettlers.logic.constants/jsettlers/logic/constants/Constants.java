@@ -71,6 +71,11 @@ public final class Constants {
 	 * building.
 	 */
 	public static final float BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR = 0.5f;
+	/**
+	 * Defines the factor that is used to calculate the maximum allowed distance from a building to it's work area center. The maximum distance is
+	 * calculated as the work radius of the building multiplied by this factor.
+	 */
+	public static final short BUILDINGS_MAX_WORKRADIUS_FACTOR = 4;
 
 	/**
 	 * This constant is used as a scale factor for the construction mark value calculation.

@@ -6,6 +6,7 @@ import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.player.Player;
 
 /**
@@ -33,13 +34,17 @@ public abstract class WorkAreaBuilding extends Building {
 	}
 
 	@Override
-	public final void setWorkAreaCenter(ShortPoint2D workAreaCenter) {
-		drawWorkAreaCircle(false);
+	public final void setWorkAreaCenter(ShortPoint2D newWorkAreaCenter) {
+		int distance = super.getPos().getOnGridDistTo(newWorkAreaCenter);
 
-		this.workAreaCenter = workAreaCenter;
+		if (distance < Constants.BUILDINGS_MAX_WORKRADIUS_FACTOR * super.getBuildingType().getWorkradius()) {
+			drawWorkAreaCircle(false);
 
-		if (isSelected()) {
-			drawWorkAreaCircle(true);
+			this.workAreaCenter = newWorkAreaCenter;
+
+			if (isSelected()) {
+				drawWorkAreaCircle(true);
+			}
 		}
 	}
 
