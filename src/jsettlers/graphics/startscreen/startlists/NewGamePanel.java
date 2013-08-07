@@ -36,4 +36,8 @@ public class NewGamePanel extends StartListPanel<IStartableMapDefinition> {
 		return new StartableMapListItem(item);
 	}
 
+	@Override
+	protected String getSubmitTextId() {
+	    return "start-newgame-start";
+	}
 }

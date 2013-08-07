@@ -38,4 +38,9 @@ public class LoadGamePanel extends StartListPanel<ILoadableMapDefinition> {
 		return new LoadableMapListItem(item);
 	}
 
+	@Override
+	protected String getSubmitTextId() {
+	    return "start-loadgame-start";
+	}
+
 }

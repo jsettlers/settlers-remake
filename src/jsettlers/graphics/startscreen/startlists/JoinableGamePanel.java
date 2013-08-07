@@ -41,4 +41,9 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 			}
 		};
 	}
+
+	@Override
+	protected String getSubmitTextId() {
+	    return "start-joinmultiplayer-start";
+	}
 }

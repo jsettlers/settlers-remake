@@ -1,6 +1,7 @@
 package jsettlers.graphics.startscreen.startlists;
 
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
@@ -28,11 +29,13 @@ public abstract class StartListPanel<T> extends
 
 		// start button
 		UILabeledButton startbutton =
-		        new UILabeledButton("TODO: label", getSubmitAction());
+		        new UILabeledButton(Labels.getString(getSubmitTextId()), getSubmitAction());
 		this.addChild(startbutton, .3f, 0, 1, .1f);
 	}
 
 	protected abstract Action getSubmitAction();
+	
+	protected abstract String getSubmitTextId();
 
 	protected T getActiveListItem() {
 		return uiList.getActiveItem();

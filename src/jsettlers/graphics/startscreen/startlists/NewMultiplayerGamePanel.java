@@ -78,4 +78,9 @@ public class NewMultiplayerGamePanel extends
 		return new StartableMapListItem(item);
 	}
 
+	@Override
+	protected String getSubmitTextId() {
+	    return "start-newmultiplayer-start";
+	}
+
 }
