@@ -7,6 +7,7 @@ import go.graphics.event.GOEventHandler;
 import go.graphics.event.command.GOCommandEvent;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
+import go.graphics.sound.SoundPlayer;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
@@ -23,6 +24,12 @@ public class JSettlersScreen implements IContentSetable {
 
 	private final Region region = new Region(Region.POSITION_CENTER);
 	private UIPanel activePanel;
+	private final SoundPlayer soundPlayer;
+
+	public JSettlersScreen(SoundPlayer soundPlayer) {
+	    super();
+	    this.soundPlayer = soundPlayer;
+    }
 
 	private class PanelRegionContent implements RegionContent {
 		private final UIPanel root;
@@ -99,6 +106,11 @@ public class JSettlersScreen implements IContentSetable {
 		this.activePanel = null;
 		region.setContent(content);
 		region.requestRedraw();
+	}
+	
+	@Override
+	public SoundPlayer getSoundPlayer() {
+	    return soundPlayer;
 	}
 
 }

@@ -1,7 +1,5 @@
 package jsettlers.graphics.startscreen.progress;
 
-import go.graphics.sound.ISoundDataRetriever;
-import go.graphics.sound.SoundPlayer;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.progress.EProgressState;
@@ -29,20 +27,7 @@ public class StartingGamePanel extends ProgressPanel implements IStartingGameLis
 
 	@Override
     public MapInterfaceConnector startFinished(IStartedGame game) {
-		MapContent content = new MapContent(game, new SoundPlayer() {
-			
-			@Override
-			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void playSound(int soundStart, float lvolume, float rvolume) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		MapContent content = new MapContent(game, contentSetable.getSoundPlayer());
 		contentSetable.setContent(content);
 	    return content.getInterfaceConnector();
     }
