@@ -48,6 +48,7 @@ import javax.swing.tree.TreePath;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.map.object.MapDecorationObject;
 import jsettlers.common.map.object.MapStoneObject;
@@ -57,6 +58,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
@@ -64,6 +66,7 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.logic.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.logic.map.save.MapDataSerializer;
 import jsettlers.logic.map.save.MapFileHeader;
@@ -81,6 +84,7 @@ import jsettlers.mapcreator.main.action.StartDrawingAction;
 import jsettlers.mapcreator.main.error.IScrollToAble;
 import jsettlers.mapcreator.main.error.ShowErrorsButton;
 import jsettlers.mapcreator.main.map.MapEditorControls;
+import jsettlers.mapcreator.main.map.NullStatistics;
 import jsettlers.mapcreator.main.tools.PlaceStackToolbox;
 import jsettlers.mapcreator.main.tools.ShapePropertyEditor;
 import jsettlers.mapcreator.main.tools.ToolRenderer;
@@ -387,7 +391,22 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		window.setVisible(true);
 		window.setLocationRelativeTo(null);
 
-		MapContent content = new MapContent(map, new NullStats(), new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
+		MapContent content = new MapContent(new IStartedGame() {
+			@Override
+			public IStatisticable getPlayerStatistics() {
+				return new NullStatistics();
+			}
+			
+			@Override
+			public int getPlayer() {
+				return 0;
+			}
+			
+			@Override
+			public IGraphicsGrid getMap() {
+				return map;
+			}
+		}, new SwingSoundPlayer(), new MapEditorControls(new CombiningActionFirerer(this)));
 		connector = content.getInterfaceConnector();
 		region.setContent(content);
 

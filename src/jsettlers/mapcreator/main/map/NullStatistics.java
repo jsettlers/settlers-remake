@@ -4,7 +4,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
 
-final class NullStatistics implements IStatisticable {
+public final class NullStatistics implements IStatisticable {
 	@Override
 	public int getGameTime() {
 		return 0;
