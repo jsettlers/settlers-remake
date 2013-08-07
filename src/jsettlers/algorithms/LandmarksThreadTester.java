@@ -1,13 +1,6 @@
 package jsettlers.algorithms;
 
-import go.graphics.sound.ISoundDataRetriever;
-import go.graphics.sound.SoundPlayer;
-import go.graphics.swing.AreaContainer;
-
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-
+import jsettlers.TestWindow;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -17,50 +10,24 @@ import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.swing.JOGLPanel;
-import jsettlers.graphics.swing.SwingResourceLoader;
-import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 
 public class LandmarksThreadTester {
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-	}
-
 	protected static final int WIDTH = 20;
 	protected static final int HEIGHT = 20;
 	private static Map map;
 
 	public static void main(String args[]) {
-
-		JOGLPanel content = new JOGLPanel(new SoundPlayer() {
-
-			@Override
-			public void playSound(int sound, float lvolume, float rvolume) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-		ResourceManager.setProvider(new SwingResourceProvider());
-
 		map = new Map();
 
-		MapInterfaceConnector connector = content.showGameMap(map, null);
+		MapInterfaceConnector connector = TestWindow.openTestWindow(map);
 		connector.addListener(new IMapInterfaceListener() {
 
 			@Override
@@ -70,18 +37,6 @@ public class LandmarksThreadTester {
 				}
 			}
 		});
-
-		JFrame jsettlersWnd = new JFrame("landmarksthreadtester");
-		AreaContainer panel = new AreaContainer(content.getArea());
-		panel.setPreferredSize(new Dimension(640, 480));
-		jsettlersWnd.add(panel);
-		panel.requestFocusInWindow();
-
-		jsettlersWnd.pack();
-		jsettlersWnd.setSize(1200, 800);
-		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jsettlersWnd.setVisible(true);
-		jsettlersWnd.setLocationRelativeTo(null);
 
 		test1();
 		test2();
