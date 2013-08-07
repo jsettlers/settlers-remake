@@ -1,6 +1,7 @@
 package jsettlers.newmain.datatypes;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
@@ -55,6 +56,11 @@ public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefin
 	@Override
 	public List<ILoadableMapPlayer> getPlayers() { // TODO @Andreas Eberle: supply saved players information.
 		return new ArrayList<ILoadableMapPlayer>();
+	}
+
+	@Override
+	public Date getSaveTime() {
+		return mapLoader.getSaveTime();
 	}
 
 }
