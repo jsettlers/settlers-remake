@@ -26,8 +26,8 @@ public class LandmarksThreadTester {
 
 	public static void main(String args[]) {
 		map = new Map();
-
-		MapInterfaceConnector connector = TestWindow.openTestWindow(map);
+		
+		MapInterfaceConnector connector =TestWindow.openTestWindow(map);
 		connector.addListener(new IMapInterfaceListener() {
 
 			@Override
