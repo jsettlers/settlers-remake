@@ -3,6 +3,7 @@ package jsettlers.main.swing;
 import go.graphics.area.Area;
 import go.graphics.nativegl.NativeAreaWindow;
 import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
@@ -68,10 +69,8 @@ public class SwingManagedJSettlers {
 	 * @return
 	 */
 	public static JSettlersScreen startGui(List<String> argsList) {
-		// TODO: new SwingSoundPlayer();
-
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen();
+		JSettlersScreen content = new JSettlersScreen(new SwingSoundPlayer());
 		area.add(content.getRegion());
 
 		if (argsList.contains("--force-jogl")) {
