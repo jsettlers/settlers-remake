@@ -1,27 +1,26 @@
 package jsettlers.main.android.fragments;
 
-import jsettlers.graphics.startscreen.GameSettings;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
+import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.maplist.FreshMapListAdapter;
+import jsettlers.main.android.maplist.MapDefinitionListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
-public class NewLocalGameFragment extends MapSelectionFragment<IMapItem> {
+public class NewLocalGameFragment extends MapSelectionFragment<IStartableMapDefinition> {
 
 	@Override
-	protected MapListAdapter<IMapItem> generateListAdapter() {
+	protected MapListAdapter<IStartableMapDefinition> generateListAdapter() {
 		LayoutInflater inflater =
 		        (LayoutInflater) getActivity().getSystemService(
 		                Context.LAYOUT_INFLATER_SERVICE);
-		return new FreshMapListAdapter(inflater, getJsettlersActivity()
-		        .getStartConnector().getMaps());
+		return new MapDefinitionListAdapter(inflater, getJsettlersActivity()
+		        .getStartConnector().getSingleplayerMaps());
 	}
 
 	@Override
-	protected String getItemDescription(IMapItem item) {
+	protected String getItemDescription(IStartableMapDefinition item) {
 		return item.getDescription();
 	}
 
@@ -36,24 +35,23 @@ public class NewLocalGameFragment extends MapSelectionFragment<IMapItem> {
 	}
 
 	@Override
-	protected int getSuggestedPlayerCount(IMapItem game) {
+	protected int getSuggestedPlayerCount(IStartableMapDefinition game) {
 		return game.getMaxPlayers();
 	}
 
 	@Override
-	protected void deleteGame(IMapItem game) {
+	protected void deleteGame(IStartableMapDefinition game) {
 	}
 
 	@Override
-	protected void startGame(IMapItem game) {
+	protected void startGame(IStartableMapDefinition game) {
 		int players = getPlayerCount();
 		if (players < game.getMinPlayers()) {
 			showText(R.string.illegal_playercount_too_low);
 		} else if (players > game.getMaxPlayers()) {
 			showText(R.string.illegal_playercount_too_high);
 		} else {
-			getJsettlersActivity().getStartConnector().startNewGame(
-			        new GameSettings(game, 2));
+			getJsettlersActivity().getStartConnector().startSingleplayerGame(game);
 		}
 	}
 

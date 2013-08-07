@@ -8,12 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import jsettlers.common.resources.IResourceProvider;
-import jsettlers.graphics.progress.ProgressConnector;
 import android.content.Context;
 
 public class ResourceProvider implements IResourceProvider {
 	private final File[] dirs;
-	private ResourceUpdater updater;
+	private final ResourceUpdater updater;
 
 	public ResourceProvider(Context context, File[] dirs) {
 		this.dirs = dirs;
@@ -25,8 +24,8 @@ public class ResourceProvider implements IResourceProvider {
 		return updater.needsUpdate();
 	}
 
-	public void startUpdate(final UpdateListener listener, ProgressConnector c) {
-		updater.startUpdate(listener, c);
+	public void startUpdate(final UpdateListener listener) {
+		updater.startUpdate(listener);
 	}
 
 	@Override

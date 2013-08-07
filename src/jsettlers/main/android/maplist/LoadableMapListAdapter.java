@@ -1,52 +1,28 @@
 package jsettlers.main.android.maplist;
 
-import java.util.List;
-
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
+import jsettlers.graphics.startscreen.interfaces.IChangingList;
+import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import android.view.LayoutInflater;
 
-public class LoadableMapListAdapter extends MapListAdapter<ILoadableGame> {
-
-	private final List<? extends ILoadableGame> maps;
+public class LoadableMapListAdapter extends MapListAdapter<ILoadableMapDefinition> {
 
 	public LoadableMapListAdapter(LayoutInflater inflater,
-	        List<? extends ILoadableGame> maps) {
-		super(inflater);
-		this.maps = maps;
+			IChangingList<ILoadableMapDefinition> baseList) {
+		super(inflater, baseList);
 	}
 
 	@Override
-	public int getCount() {
-		return maps.size();
+	public String getTitle(ILoadableMapDefinition item) {
+		return item.getName();
 	}
 
 	@Override
-	public ILoadableGame getItem(int arg0) {
-		return maps.get(arg0);
+	protected short[] getImage(ILoadableMapDefinition item) {
+		return item.getImage();
 	}
 
 	@Override
-	public String getTitle(int arg0) {
-		ILoadableGame map = maps.get(arg0);
-		String title = map.getName();
-		return title;
+	protected String getDescriptionString(ILoadableMapDefinition item) {
+		return item.getSaveTime().toLocaleString();
 	}
-
-	@Override
-	protected short[] getImage(int arg0) {
-		ILoadableGame map = maps.get(arg0);
-		return map.getImage();
-	}
-
-	@Override
-	protected String getDescriptionString(int mapn) {
-		ILoadableGame map = maps.get(mapn);
-		return map.getSaveTime().toLocaleString();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return maps.isEmpty();
-	}
-
 }

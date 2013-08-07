@@ -19,9 +19,9 @@ public abstract class MapSelectionFragment<T> extends JsettlersFragment {
 	private final class ListItemClickListener implements OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int itemid,
-		        long arg3) {
+				long arg3) {
 			MapListAdapter<T> adapter = (MapListAdapter<T>) arg0.getAdapter();
-			mapSelected(adapter.getItem(itemid), adapter.getTitle(itemid));
+			mapSelected(adapter.getItem(itemid));
 		}
 	}
 
@@ -30,15 +30,15 @@ public abstract class MapSelectionFragment<T> extends JsettlersFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.maplist, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View mainView, Bundle savedInstanceState) {
 		super.onViewCreated(mainView, savedInstanceState);
-		TextView headline =
-		        (TextView) getView().findViewById(R.id.maplist_headline);
+		TextView headline = (TextView) getView().findViewById(
+				R.id.maplist_headline);
 		headline.setText(getHeadlineText());
 
 		ListView list = (ListView) mainView.findViewById(R.id.maplist);
@@ -46,8 +46,8 @@ public abstract class MapSelectionFragment<T> extends JsettlersFragment {
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new ListItemClickListener());
 
-		Button startButton =
-		        (Button) mainView.findViewById(R.id.maplist_startbutton);
+		Button startButton = (Button) mainView
+				.findViewById(R.id.maplist_startbutton);
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -59,14 +59,14 @@ public abstract class MapSelectionFragment<T> extends JsettlersFragment {
 		startButton.setEnabled(false);
 		startButton.setText(getStartButtonText());
 
-		Button deleteButton =
-		        (Button) mainView.findViewById(R.id.maplist_deletebutton);
+		Button deleteButton = (Button) mainView
+				.findViewById(R.id.maplist_deletebutton);
 		deleteButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (selectedItem != null) {
 					deleteGame(selectedItem);
-					mapSelected(null, "");
+					mapSelected(null);
 					adapter.notifyDataSetChanged();
 				}
 			}
@@ -112,21 +112,21 @@ public abstract class MapSelectionFragment<T> extends JsettlersFragment {
 		getPlayerCountField().setText(count + "");
 	}
 
-	private void mapSelected(T item, String title) {
+	private void mapSelected(T item) {
 		selectedItem = item;
 		TextView name = (TextView) getView().findViewById(R.id.maplist_name);
-		TextView description =
-		        (TextView) getView().findViewById(R.id.maplist_description);
-		name.setText(title);
+		TextView description = (TextView) getView().findViewById(
+				R.id.maplist_description);
+		name.setText(item == null ? "" : adapter.getTitle(item));
 		description.setText(item == null ? ""
-		        : getItemDescription(selectedItem));
+				: getItemDescription(selectedItem));
 
-		Button startButton =
-		        (Button) getView().findViewById(R.id.maplist_startbutton);
+		Button startButton = (Button) getView().findViewById(
+				R.id.maplist_startbutton);
 		startButton.setEnabled(item != null);
 
-		Button deleteButton =
-		        (Button) getView().findViewById(R.id.maplist_deletebutton);
+		Button deleteButton = (Button) getView().findViewById(
+				R.id.maplist_deletebutton);
 		deleteButton.setEnabled(item != null);
 
 		if (supportsPlayerCount()) {

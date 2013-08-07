@@ -1,27 +1,28 @@
 package jsettlers.main.android.fragments;
 
-import jsettlers.common.network.IMatchSettings;
-import jsettlers.graphics.startscreen.IStartScreenConnector.IMapItem;
-import jsettlers.graphics.startscreen.old.NetworkGameSettings;
+import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
+import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
+import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.main.android.R;
-import jsettlers.main.android.maplist.FreshMapListAdapter;
+import jsettlers.main.android.fragments.progress.JoinGameProgress;
+import jsettlers.main.android.maplist.MapDefinitionListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-public class NewNetworkGameFragment extends MapSelectionFragment<IMapItem> {
+public class NewNetworkGameFragment extends
+		MapSelectionFragment<IStartableMapDefinition> {
 
 	@Override
-	protected MapListAdapter<IMapItem> generateListAdapter() {
-		LayoutInflater inflater =
-		        (LayoutInflater) getActivity().getSystemService(
-		                Context.LAYOUT_INFLATER_SERVICE);
-		return new FreshMapListAdapter(inflater, getJsettlersActivity()
-		        .getStartConnector().getMaps());
+	protected MapListAdapter<IStartableMapDefinition> generateListAdapter() {
+		LayoutInflater inflater = (LayoutInflater) getActivity()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		return new MapDefinitionListAdapter(inflater, getJsettlersActivity()
+				.getStartConnector().getMultiplayerMaps());
 	}
 
 	@Override
-	protected String getItemDescription(IMapItem item) {
+	protected String getItemDescription(IStartableMapDefinition item) {
 		return item.getDescription();
 	}
 
@@ -31,17 +32,30 @@ public class NewNetworkGameFragment extends MapSelectionFragment<IMapItem> {
 	}
 
 	@Override
-	protected void deleteGame(IMapItem game) {
+	protected void deleteGame(IStartableMapDefinition game) {
 	}
 
 	@Override
-	protected void startGame(IMapItem game) {
+	protected void startGame(final IStartableMapDefinition game) {
 		// TODO: Allow user to select name in GUI.
-		String name = "Android network game";
-		IMatchSettings gameSettings =
-		        new NetworkGameSettings(game, name, game.getMaxPlayers(), null);
-		getJsettlersActivity().getStartConnector().openNewNetworkGame(
-		        gameSettings);
+		final String name = "Android network game";
+		IJoiningGame joining = getJsettlersActivity().getMultiplayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
+			@Override
+			public int getMaxPlayers() {
+				return game.getMaxPlayers();
+			}
+			
+			@Override
+			public String getMatchName() {
+				return name;
+			}
+			
+			@Override
+			public IStartableMapDefinition getMapDefinition() {
+				return game;
+			}
+		});
+		getJsettlersActivity().showFragment(new JoinGameProgress(joining));
 	}
 
 	@Override
@@ -50,7 +64,7 @@ public class NewNetworkGameFragment extends MapSelectionFragment<IMapItem> {
 	}
 
 	@Override
-	protected int getSuggestedPlayerCount(IMapItem game) {
+	protected int getSuggestedPlayerCount(IStartableMapDefinition game) {
 		return 0;
 	}
 

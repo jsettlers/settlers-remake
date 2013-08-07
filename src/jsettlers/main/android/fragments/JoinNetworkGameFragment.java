@@ -1,40 +1,29 @@
 package jsettlers.main.android.fragments;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-
-import jsettlers.common.network.IMatch;
-import jsettlers.graphics.startscreen.INetworkConnector;
+import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.main.android.R;
 import jsettlers.main.android.maplist.JoinableMapListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-public class JoinNetworkGameFragment extends MapSelectionFragment<IMatch> {
+public class JoinNetworkGameFragment extends MapSelectionFragment<IJoinableGame> {
 
 	@Override
-	protected MapListAdapter<IMatch> generateListAdapter() {
+	protected MapListAdapter<IJoinableGame> generateListAdapter() {
 		LayoutInflater inflater =
 				(LayoutInflater) getActivity().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-		INetworkConnector networkConnector = getJsettlersActivity()
-				.getStartConnector().getNetworkConnector();
-		try {
-			networkConnector.setServerAddress(null);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO @Michael: handle case of unreachable server.
-			e.printStackTrace();
-		}
-		return new JoinableMapListAdapter(inflater, networkConnector);
+		 IMultiplayerConnector connector = getJsettlersActivity()
+				.getMultiplayerConnector();
+		return new JoinableMapListAdapter(inflater, connector);
 	}
 
 	@Override
-	protected String getItemDescription(IMatch item) {
-		return String.format("map id: %s\nmatch id: %s", item.getMapID(),
-				item.getMatchID());
+	protected String getItemDescription(IJoinableGame item) {
+		return String.format("map id: %s\nmatch id: %s", item.getMap().getId(),
+				item.getId());
 	}
 
 	@Override
@@ -43,12 +32,12 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IMatch> {
 	}
 
 	@Override
-	protected void deleteGame(IMatch game) {
+	protected void deleteGame(IJoinableGame game) {
 	}
 
 	@Override
-	protected void startGame(IMatch game) {
-		getJsettlersActivity().getStartConnector().joinNetworkGame(game);
+	protected void startGame(IJoinableGame game) {
+		getJsettlersActivity().getMultiplayerConnector().joinMultiplayerGame(game);
 	}
 
 	@Override
@@ -57,7 +46,7 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IMatch> {
 	}
 
 	@Override
-	protected int getSuggestedPlayerCount(IMatch game) {
+	protected int getSuggestedPlayerCount(IJoinableGame game) {
 		return 0;
 	}
 

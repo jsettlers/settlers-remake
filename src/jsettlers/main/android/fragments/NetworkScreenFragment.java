@@ -1,10 +1,10 @@
 package jsettlers.main.android.fragments;
 
-import jsettlers.graphics.INetworkScreenAdapter;
-import jsettlers.graphics.INetworkScreenAdapter.INetworkScreenListener;
+import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.main.android.ChatAdapter;
 import jsettlers.main.android.PlayerList;
 import jsettlers.main.android.R;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +17,16 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class NetworkScreenFragment extends JsettlersFragment implements
-        INetworkScreenListener {
+@SuppressLint("ValidFragment")
+public class NetworkScreenFragment extends JsettlersFragment{
 
-	private INetworkScreenAdapter networkScreen;
 	private PlayerList playerList;
 	private ChatAdapter chatAdapter;
+	private final IJoinPhaseMultiplayerGameConnector connector;
 
-	public NetworkScreenFragment(INetworkScreenAdapter networkScreen) {
-		this.networkScreen = networkScreen;
+	@SuppressLint("ValidFragment")
+	public NetworkScreenFragment(IJoinPhaseMultiplayerGameConnector connector) {
+		this.connector = connector;
 	}
 
 	@Override
@@ -43,8 +44,6 @@ public class NetworkScreenFragment extends JsettlersFragment implements
 	public void onViewCreated(View root, Bundle savedInstanceState) {
 		super.onViewCreated(root, savedInstanceState);
 
-		networkScreen.setListener(this);
-
 		loadPlayerList(root);
 
 		loadChat(root);
@@ -55,7 +54,7 @@ public class NetworkScreenFragment extends JsettlersFragment implements
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 			        boolean isChecked) {
-				networkScreen.setReady(isChecked);
+				connector.setReady(isChecked);
 			}
 		});
 
@@ -64,13 +63,13 @@ public class NetworkScreenFragment extends JsettlersFragment implements
 
 			@Override
 			public void onClick(View v) {
-				networkScreen.startNetworkMatch();
+				connector.startGame();
 			}
 		});
 	}
 
 	private void loadChat(View root) {
-		chatAdapter = new ChatAdapter(getActivity());
+		chatAdapter = new ChatAdapter(getActivity().getLayoutInflater(), connector);
 		ListView chatListView = (ListView) root.findViewById(R.id.network_chat);
 		chatListView.setAdapter(chatAdapter);
 
@@ -86,7 +85,7 @@ public class NetworkScreenFragment extends JsettlersFragment implements
 	private void loadPlayerList(View root) {
 		ListView playerListView =
 		        (ListView) root.findViewById(R.id.network_playerlist);
-		playerList = new PlayerList(playerListView, networkScreen);
+		playerList = new PlayerList(getActivity(), connector.getPlayers());
 		playerListView.setAdapter(playerList);
 	}
 
@@ -95,24 +94,15 @@ public class NetworkScreenFragment extends JsettlersFragment implements
 		        (EditText) getView().findViewById(R.id.network_chatmessage);
 		String message = chatTextField.getText().toString();
 		if (!message.isEmpty()) {
-			networkScreen.sendChatMessage(message);
+			connector.sendChatMessage(message);
 
 			chatTextField.setText("");
 		}
 	}
 
 	@Override
-	public void playerListChanged() {
-		playerList.changed();
-	}
-
-	@Override
-	public void addChatMessage(String message) {
-		chatAdapter.addChatMessage(message);
-	}
-	
 	public boolean onBackButtonPressed() {
-		networkScreen.leaveGame();
+		connector.abort();
 		getJsettlersActivity().showStartScreen();
 		return true;
 	};

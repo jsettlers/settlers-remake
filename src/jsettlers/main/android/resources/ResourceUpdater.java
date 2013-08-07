@@ -21,7 +21,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 
 import jsettlers.graphics.progress.EProgressState;
-import jsettlers.graphics.progress.ProgressConnector;
 import jsettlers.main.android.R;
 import jsettlers.main.android.Revision;
 
@@ -42,8 +41,7 @@ import android.content.res.Resources;
 public class ResourceUpdater implements Runnable {
 
 	private static final String RESOURCE_PREFIX = "";
-	private static final String SERVER_ROOT =
-	        "https://michael2402.homeip.net/jsettlers/";
+	private static final String SERVER_ROOT = "https://michael2402.homeip.net/jsettlers/";
 	private static final String PREF_REVISION = "rev";
 	private static final String PREF_OUTDATED = "force";
 	private final Resources resources;
@@ -60,7 +58,7 @@ public class ResourceUpdater implements Runnable {
 		this.destdir = destdir;
 
 		if (prefs.getInt(PREF_REVISION, -1) != Revision.REVISION
-		        || prefs.getBoolean(PREF_OUTDATED, false)) {
+				|| prefs.getBoolean(PREF_OUTDATED, false)) {
 			needsUpdate = true;
 		}
 	}
@@ -77,8 +75,8 @@ public class ResourceUpdater implements Runnable {
 
 			serverrev = loadRevision(httpClient);
 
-			boolean serverrevIsNewer =
-			        serverrev != null && !serverrev.equals(myversion);
+			boolean serverrevIsNewer = serverrev != null
+					&& !serverrev.equals(myversion);
 			if (serverrevIsNewer) {
 				needsUpdate = true;
 				prefs.edit().putBoolean(PREF_OUTDATED, true).commit();
@@ -92,8 +90,7 @@ public class ResourceUpdater implements Runnable {
 		return new File(destdir, "version");
 	}
 
-	public void startUpdate(final UpdateListener listener,
-	        final ProgressConnector c) {
+	public void startUpdate(final UpdateListener listener) {
 		if (isUpdating()) {
 			// bad. really bad.
 			return;
@@ -105,11 +102,11 @@ public class ResourceUpdater implements Runnable {
 			@Override
 			public void run() {
 				try {
-					updateFiles(createClient(), c);
+					updateFiles(createClient(), listener);
 				} catch (Throwable t) {
 					setUpdating(false);
 				}
-				c.setProgressState(EProgressState.UPDATE, 1);
+				listener.setProgressState(EProgressState.UPDATE, 1);
 				if (listener != null) {
 					listener.resourceUpdateFinished();
 				}
@@ -118,8 +115,8 @@ public class ResourceUpdater implements Runnable {
 		}, "resource-update").start();
 	}
 
-	private void updateFiles(DefaultHttpClient httpClient, ProgressConnector c)
-	        throws IOException, ClientProtocolException {
+	private void updateFiles(DefaultHttpClient httpClient, UpdateListener c)
+			throws IOException, ClientProtocolException {
 		c.setProgressState(EProgressState.UPDATE, -1);
 
 		if (serverrev == null) {
@@ -129,8 +126,8 @@ public class ResourceUpdater implements Runnable {
 		final String url = SERVER_ROOT + "resources.zip";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
-		ZipInputStream inputStream =
-		        new ZipInputStream(response.getEntity().getContent());
+		ZipInputStream inputStream = new ZipInputStream(response.getEntity()
+				.getContent());
 
 		try {
 
@@ -144,12 +141,11 @@ public class ResourceUpdater implements Runnable {
 			while ((entry = inputStream.getNextEntry()) != null) {
 				String name = entry.getName();
 				c.setProgressState(EProgressState.UPDATE,
-				        (float) (size - inputStream.available()) / size);
+						(float) (size - inputStream.available()) / size);
 
 				if (name.startsWith(RESOURCE_PREFIX)) {
-					String outfilename =
-					        destdir.getAbsolutePath() + "/"
-					                + name.substring(RESOURCE_PREFIX.length());
+					String outfilename = destdir.getAbsolutePath() + "/"
+							+ name.substring(RESOURCE_PREFIX.length());
 					File outfile = new File(outfilename);
 					if (entry.isDirectory()) {
 						if (outfile.exists() && !outfile.isDirectory()) {
@@ -181,7 +177,7 @@ public class ResourceUpdater implements Runnable {
 
 			writeMyVersion(getVersionFile(), serverrev);
 			prefs.edit().putInt(PREF_REVISION, Revision.REVISION)
-			        .putBoolean(PREF_OUTDATED, false).commit();
+					.putBoolean(PREF_OUTDATED, false).commit();
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
@@ -190,21 +186,31 @@ public class ResourceUpdater implements Runnable {
 
 	private static String getMyVersion(File versionfile) throws IOException {
 		if (versionfile.exists()) {
-			return new DataInputStream(new FileInputStream(versionfile))
-			        .readUTF();
+			DataInputStream inputStream = new DataInputStream(
+					new FileInputStream(versionfile));
+			try {
+				return inputStream.readUTF();
+			} finally {
+				inputStream.close();
+			}
 		} else {
 			return "";
 		}
 	}
 
 	private static void writeMyVersion(File versionfile, String version)
-	        throws IOException {
-		new DataOutputStream(new FileOutputStream(versionfile))
-		        .writeUTF(version);
+			throws IOException {
+		DataOutputStream outputStream = new DataOutputStream(
+				new FileOutputStream(versionfile));
+		try {
+			outputStream.writeUTF(version);
+		} finally {
+			outputStream.close();
+		}
 	}
 
 	private static String loadRevision(DefaultHttpClient httpClient)
-	        throws IOException, ClientProtocolException {
+			throws IOException, ClientProtocolException {
 		final String url = SERVER_ROOT + "revision.txt";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
@@ -217,10 +223,9 @@ public class ResourceUpdater implements Runnable {
 	}
 
 	private DefaultHttpClient createClient() throws KeyStoreException,
-	        NoSuchAlgorithmException, CertificateException, IOException,
-	        KeyManagementException, UnrecoverableKeyException {
-		HostnameVerifier hostnameVerifier =
-		        SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+			NoSuchAlgorithmException, CertificateException, IOException,
+			KeyManagementException, UnrecoverableKeyException {
+		HostnameVerifier hostnameVerifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 
 		DefaultHttpClient client = new DefaultHttpClient();
 
@@ -233,12 +238,12 @@ public class ResourceUpdater implements Runnable {
 
 		SchemeRegistry registry = new SchemeRegistry();
 		socketFactory
-		        .setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+				.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
 		registry.register(new Scheme("https", socketFactory, 443));
-		SingleClientConnManager mgr =
-		        new SingleClientConnManager(client.getParams(), registry);
-		DefaultHttpClient httpClient =
-		        new DefaultHttpClient(mgr, client.getParams());
+		SingleClientConnManager mgr = new SingleClientConnManager(
+				client.getParams(), registry);
+		DefaultHttpClient httpClient = new DefaultHttpClient(mgr,
+				client.getParams());
 
 		// Set verifier
 		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
@@ -250,7 +255,7 @@ public class ResourceUpdater implements Runnable {
 	}
 
 	public synchronized void waitUntilUpdateFinished()
-	        throws InterruptedException {
+			throws InterruptedException {
 		while (isUpdating) {
 			this.wait();
 		}

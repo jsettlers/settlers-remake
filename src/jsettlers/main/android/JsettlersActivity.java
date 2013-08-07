@@ -16,16 +16,18 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.graphics.startscreen.IStartScreenConnector;
-import jsettlers.main.ManagedJSettlers;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
+import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.main.android.bg.BgControls;
 import jsettlers.main.android.bg.BgMap;
 import jsettlers.main.android.bg.BgStats;
 import jsettlers.main.android.fragments.GameCommandFragment;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
-import jsettlers.main.android.fragments.UpdateResourcesFragment;
+import jsettlers.main.android.fragments.progress.UpdateResourcesFragment;
 import jsettlers.main.android.resources.ResourceProvider;
+import jsettlers.newmain.StartScreenConnector;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -39,18 +41,20 @@ import android.widget.FrameLayout;
 public class JsettlersActivity extends Activity {
 
 	private static final int SOUND_THREADS = 6;
-	private ManagedJSettlers manager;
-	private IStartScreenConnector connector;
 	private GOSurfaceView goView;
 	private Region goRegion;
 	private AndroidSoundPlayer soundPlayer;
 	private ResourceProvider provider;
 	private MapContent activeBgMapContent;
+	private StartScreenConnector connector;
+	private AndroidPreferences prefs;
+	private IMultiplayerConnector multiplayerConnector;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		prefs = new AndroidPreferences(getSharedPreferences("prefs", 0));
 		keepScreenOn();
 		setContentView(R.layout.base);
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
@@ -64,7 +68,7 @@ public class JsettlersActivity extends Activity {
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 
 		if (provider.needsUpdate()) {
-			showFragment(new UpdateResourcesFragment(provider));
+			showFragment(new UpdateResourcesFragment());
 		} else {
 			showStartScreen();
 		}
@@ -107,8 +111,7 @@ public class JsettlersActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 
-		getManager().stop();
-		manager = null;
+		// TODO: Destroy current game.
 
 		goRegion = null;
 		goView = null;
@@ -119,10 +122,10 @@ public class JsettlersActivity extends Activity {
 	private void keepScreenOn() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		super.getWindow().addFlags(
-		        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	private void loadImageLookups() {
@@ -130,14 +133,10 @@ public class JsettlersActivity extends Activity {
 		File jsettlersdir = new File(storage, "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
 		File[] files = new File[] {
-		        getExternalFilesDir(null), // <- output dir, always writable
-		        jsettlersdir,
-		        storage,
-		        jsettlersdir,
-		        new File(jsettlersdir, "GFX"),
-		        michael,
-		        new File(michael, "GFX")
-		};
+				getExternalFilesDir(null), // <- output dir, always writable
+				jsettlersdir, storage, jsettlersdir,
+				new File(jsettlersdir, "GFX"), michael,
+				new File(michael, "GFX") };
 
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
@@ -147,32 +146,12 @@ public class JsettlersActivity extends Activity {
 		ResourceManager.setProvider(provider);
 	}
 
-	private ManagedJSettlers getManager() {
-		if (manager == null) {
-			manager = new ManagedJSettlers();
-		}
-
-		return manager;
-
-	}
-
 	/* - - - - - - - Fragment stuff - - - - - - */
 
 	public void showStartScreen() {
-		if (connector != null) {
-			showStartScreen(connector);
-		} else {
-			getManager().start(new JsettlersActivityDisplay(this));
+		if (connector == null) {
+			connector = new StartScreenConnector();
 		}
-	}
-
-	/**
-	 * Shows the start screen.
-	 * 
-	 * @param connector
-	 */
-	public void showStartScreen(IStartScreenConnector connector) {
-		this.connector = connector;
 		showFragment(new StartScreenFragment());
 	}
 
@@ -201,36 +180,54 @@ public class JsettlersActivity extends Activity {
 		super.onBackPressed();
 	}
 
-	public IStartScreenConnector getStartConnector() {
+	public StartScreenConnector getStartConnector() {
 		return connector;
 	}
 
-	public MapInterfaceConnector showGameMap(IGraphicsGrid map,
-	        IStatisticable playerStatistics) {
+	public MapInterfaceConnector showGameMap(IStartedGame game,
+			IStatisticable playerStatistics) {
 		stopBgMapThreads();
 		GameCommandFragment p = showMapFragment();
 
-		MapContent content =
-		        new MapContent(map, playerStatistics, soundPlayer,
-		                new MobileControls(p.getPutable(this)));
+		MapContent content = new MapContent(game, soundPlayer,
+				new MobileControls(p.getPutable(this)));
 		goRegion.setContent(content);
 		return content.getInterfaceConnector();
 	}
 
 	public void showBgMap() {
 		stopBgMapThreads();
-		activeBgMapContent = 
-		        new MapContent(new BgMap(), new BgStats(), soundPlayer,
-		                new BgControls());
+		IStartedGame game = new IStartedGame() {
+			private BgMap bgMap;
+
+			@Override
+			public IStatisticable getPlayerStatistics() {
+				return new BgStats();
+			}
+
+			@Override
+			public int getPlayer() {
+				return 0;
+			}
+
+			@Override
+			public IGraphicsGrid getMap() {
+				if (bgMap == null) {
+					bgMap = new BgMap();
+				}
+				return bgMap;
+			}
+		};
+		activeBgMapContent = new MapContent(game, soundPlayer, new BgControls());
 		goRegion.setContent(activeBgMapContent);
 	}
 
 	private void stopBgMapThreads() {
-	    if (activeBgMapContent != null) {
+		if (activeBgMapContent != null) {
 			activeBgMapContent.stop();
 			activeBgMapContent = null;
 		}
-    }
+	}
 
 	private GameCommandFragment showMapFragment() {
 		final GameCommandFragment cFragment = new GameCommandFragment();
@@ -245,6 +242,19 @@ public class JsettlersActivity extends Activity {
 
 	public void fireKey(String string) {
 		goView.fireKey(string);
+	}
+
+	public ResourceProvider getResourceProvider() {
+		return provider;
+	}
+
+	public IMultiplayerConnector getMultiplayerConnector() {
+		if (multiplayerConnector == null) {
+			multiplayerConnector = getStartConnector().getMultiplayerConnector(
+					prefs.getServer(),
+					new Player(prefs.getPlayerId(), prefs.getPlayerName()));
+		}
+		return multiplayerConnector;
 	}
 
 }

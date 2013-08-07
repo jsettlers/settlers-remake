@@ -1,25 +1,25 @@
 package jsettlers.main.android.fragments;
 
-import jsettlers.graphics.startscreen.IStartScreenConnector.ILoadableGame;
+import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.maplist.LoadableMapListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-public class LoadLocalGameFragment extends MapSelectionFragment<ILoadableGame> {
+public class LoadLocalGameFragment extends MapSelectionFragment<ILoadableMapDefinition> {
 
 	@Override
-	protected MapListAdapter<ILoadableGame> generateListAdapter() {
+	protected MapListAdapter<ILoadableMapDefinition> generateListAdapter() {
 		LayoutInflater inflater =
 		        (LayoutInflater) getActivity().getSystemService(
 		                Context.LAYOUT_INFLATER_SERVICE);
 		return new LoadableMapListAdapter(inflater, getJsettlersActivity()
-		        .getStartConnector().getLoadableGames());
+		        .getStartConnector().getStoredSingleplayerGames());
 	}
 
 	@Override
-	protected String getItemDescription(ILoadableGame item) {
+	protected String getItemDescription(ILoadableMapDefinition item) {
 		return item.getSaveTime().toLocaleString();
 	}
 
@@ -29,13 +29,14 @@ public class LoadLocalGameFragment extends MapSelectionFragment<ILoadableGame> {
 	}
 
 	@Override
-	protected void deleteGame(ILoadableGame game) {
-		getJsettlersActivity().getStartConnector().deleteLoadableGame(game);
+	protected void deleteGame(ILoadableMapDefinition game) {
+		//TODO RE-Enable delete for loadable games.
+		//getJsettlersActivity().getStartConnector().deleteLoadableGame(game);
 	}
 
 	@Override
-	protected void startGame(ILoadableGame game) {
-		getJsettlersActivity().getStartConnector().loadGame(game);
+	protected void startGame(ILoadableMapDefinition game) {
+		getJsettlersActivity().getStartConnector().loadSingleplayerGame(game);
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class LoadLocalGameFragment extends MapSelectionFragment<ILoadableGame> {
 	}
 
 	@Override
-	protected int getSuggestedPlayerCount(ILoadableGame game) {
+	protected int getSuggestedPlayerCount(ILoadableMapDefinition game) {
 		return 0;
 	}
 

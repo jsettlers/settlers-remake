@@ -1,7 +1,11 @@
 package jsettlers.main.android;
 
-import jsettlers.graphics.INetworkScreenAdapter;
-import jsettlers.graphics.INetworkScreenAdapter.INetworkPlayer;
+import java.util.List;
+
+import jsettlers.graphics.startscreen.interfaces.IChangingList;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
+import android.content.Context;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -9,58 +13,55 @@ import android.widget.TextView;
 
 public class PlayerList extends BaseAdapter {
 
-	private final INetworkScreenAdapter networkScreen;
-	private INetworkPlayer[] playerList;
-	private final ViewGroup view;
+	private final IChangingList<IMultiplayerPlayer> playerList;
+	private List<? extends IMultiplayerPlayer> currentList;
+	private final Handler handler;
+	private final Context context;
 
-	public PlayerList(ViewGroup listView, INetworkScreenAdapter networkScreen) {
-		this.view = listView;
-		this.networkScreen = networkScreen;
-		playerList = networkScreen.getPlayers();
+	public PlayerList(Context context,
+			IChangingList<IMultiplayerPlayer> playerList) {
+		this.context = context;
+		this.handler = new Handler(context.getMainLooper());
+		this.playerList = playerList;
+		currentList = playerList.getItems();
 	}
 
 	@Override
 	public int getCount() {
-		if (playerList != null) {
-			return playerList.length;
-		} else {
-			return 0;
-		}
+		return currentList.size();
 	}
 
 	@Override
-	public INetworkPlayer getItem(int idx) {
-		if (playerList != null) {
-			return playerList[idx];
-		} else {
-			return null;
-		}
+	public IMultiplayerPlayer getItem(int idx) {
+		return currentList.get(idx);
 	}
 
 	@Override
 	public long getItemId(int idx) {
-		// TODO
-		INetworkPlayer item = getItem(idx);
-		return item == null ? 0 : item.hashCode();
+		return 0;
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		return false;
 	}
 
 	@Override
 	public View getView(int idx, View arg1, ViewGroup arg2) {
-		TextView view = new TextView(this.view.getContext());
-		INetworkPlayer item = getItem(idx);
-		String name = item == null ? "" : item.getPlayerName();
+		TextView view = new TextView(context);
+		IMultiplayerPlayer item = getItem(idx);
+		String name = item == null ? "" : item.getName();
 		view.setText(name);
 		view.setTextColor(item != null && item.isReady() ? R.color.network_ready
-		        : R.color.network_not_ready);
+				: R.color.network_not_ready);
 		return view;
 	}
 
 	public void changed() {
-		final INetworkPlayer[] newList = networkScreen.getPlayers();
-		view.post(new Runnable() {
+		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				playerList = newList;
+				currentList = playerList.getItems();
 				notifyDataSetChanged();
 			}
 		});
