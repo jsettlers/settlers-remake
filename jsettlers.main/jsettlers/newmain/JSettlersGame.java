@@ -58,8 +58,7 @@ public class JSettlersGame {
 		this.gameRunner = new GameRunner();
 	}
 
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
-			ITaskScheduler taskScheduler, byte playerNumber) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, ITaskScheduler taskScheduler, byte playerNumber) {
 		this(mapCreator, randomSeed, taskScheduler, playerNumber, true);
 	}
 
@@ -95,8 +94,7 @@ public class JSettlersGame {
 		}
 	}
 
-	private class GameRunner implements Runnable, IStartingGame, IStartedGame,
-			IGameStoppable {
+	private class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
 		private IStartingGameListener startingGameListener;
 		private MainGrid mainGrid;
 		private GameStatistics statistics;
