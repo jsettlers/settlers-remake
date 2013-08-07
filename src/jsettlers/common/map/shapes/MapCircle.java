@@ -130,6 +130,10 @@ public final class MapCircle implements IMapArea {
 		return cx;
 	}
 
+	public ShortPoint2D getCenter() {
+		return new ShortPoint2D(cx, cy);
+	}
+
 	/**
 	 * Calculates the outer borders of this map circle. That means that all positions of this circle are inside the returned rectangle.
 	 * 
@@ -141,4 +145,5 @@ public final class MapCircle implements IMapArea {
 
 		return new SRectangle((short) (cx - halfLineWidth), (short) (cy - yRadius), (short) (cx + halfLineWidth), (short) (cy + yRadius));
 	}
+
 }

@@ -8,9 +8,14 @@ package jsettlers.common.material;
  */
 public enum ESearchType {
 	/**
-	 * Searches for foreign ground
+	 * Searches for foreign ground that is not protected by a tower. This search type is used by pioneers.
 	 */
-	FOREIGN_GROUND,
+	UNENFORCED_FOREIGN_GROUND,
+
+	/**
+	 * Searches for own ground (for movables that need to walk back to their ground).
+	 */
+	OWN_GROUND,
 
 	/**
 	 * Searches for a tree that can be cut by a forester.
@@ -45,6 +50,6 @@ public enum ESearchType {
 	/**
 	 * Search type for thiefs to find a material on enemy ground.
 	 */
-	FOREIGN_MATERIAL
+	FOREIGN_MATERIAL,
 
 }

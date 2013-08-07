@@ -10,10 +10,10 @@ import java.util.Iterator;
  * 
  * @param <T>
  */
-public final class IteratorFilter<T> implements Iterable<T> {
+public class IteratorFilter<T> implements Iterable<T> {
 
-	private final Iterable<T> iterable;
-	private final IPredicate<T> predicate;
+	protected final Iterable<T> iterable;
+	protected final IPredicate<T> predicate;
 
 	/**
 	 * Creates a new {@link IteratorFilter} that filters the given list by the given predicate. (Keeps the element if the predicate is true).
