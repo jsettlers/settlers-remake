@@ -45,7 +45,8 @@ public class SwingManagedJSettlers {
 		loadDebugSettings(argsList);
 
 		ResourceManager.setProvider(new SwingResourceProvider());
-		startGui(argsList, new StartScreenConnector());
+		JSettlersScreen content = startGui(argsList);
+		generateContent(new StartScreenConnector(), content);
 
 		ImageProvider.getInstance().startPreloading();
 	}
@@ -64,16 +65,14 @@ public class SwingManagedJSettlers {
 	 * Creates a new SWING GUI for the game.
 	 * 
 	 * @param argsList
-	 * @param startScreen
 	 * @return
 	 */
-	public static JSettlersScreen startGui(List<String> argsList, IStartScreen startScreen) {
+	public static JSettlersScreen startGui(List<String> argsList) {
 		// TODO: new SwingSoundPlayer();
 
 		Area area = new Area();
 		JSettlersScreen content = new JSettlersScreen();
 		area.add(content.getRegion());
-		content.setContent(new StartScreen(startScreen, content));
 
 		if (argsList.contains("--force-jogl")) {
 			startJogl(area);
@@ -89,6 +88,11 @@ public class SwingManagedJSettlers {
 
 		startRedrawTimer(content);
 		return content;
+	}
+
+	private static void generateContent(IStartScreen startScreen,
+			JSettlersScreen content) {
+		content.setContent(new StartScreen(startScreen, content));
 	}
 
 	private static void startRedrawTimer(final JSettlersScreen content) {
