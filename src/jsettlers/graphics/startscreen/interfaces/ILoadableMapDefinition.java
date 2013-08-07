@@ -1,5 +1,6 @@
 package jsettlers.graphics.startscreen.interfaces;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,4 +14,6 @@ public interface ILoadableMapDefinition extends IMapDefinition {
 	 * @return The players from that loadable game.
 	 */
 	public List<ILoadableMapPlayer> getPlayers();
+	
+	public Date getSaveTime();
 }

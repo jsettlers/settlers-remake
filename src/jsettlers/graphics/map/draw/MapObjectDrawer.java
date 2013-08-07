@@ -117,12 +117,12 @@ public class MapObjectDrawer {
 
 	int animationStep = 0;
 
-	private final ImageProvider imageProvider = ImageProvider.getInstance();
+	private ImageProvider imageProvider;
 	private final SoundManager sound;
 
 	private final MapDrawContext context;
 
-	private final SettlerImageMap imageMap = SettlerImageMap.getInstance();
+	private SettlerImageMap imageMap;
 	private float betweenTilesY;
 
 	public MapObjectDrawer(MapDrawContext context, SoundManager sound) {
@@ -143,6 +143,8 @@ public class MapObjectDrawer {
 	 *            The object (tree, ...) to draw.
 	 */
 	public void drawMapObject(IGraphicsGrid map, int x, int y, IMapObject object) {
+		forceSetup();
+		
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -350,6 +352,13 @@ public class MapObjectDrawer {
 		}
 	}
 
+	private void forceSetup() {
+	    if (imageProvider == null) {
+			imageProvider = ImageProvider.getInstance();
+			imageMap = SettlerImageMap.getInstance();
+		}
+    }
+
 	/**
 	 * Draws a movable
 	 * 
@@ -357,6 +366,8 @@ public class MapObjectDrawer {
 	 *            The movable.
 	 */
 	public void draw(IMovable movable) {
+		forceSetup();
+		
 		Image image = this.imageMap.getImageForSettler(movable);
 		drawImage(movable, image);
 
@@ -682,6 +693,8 @@ public class MapObjectDrawer {
 	 *            The player.
 	 */
 	public void drawPlayerBorderObject(int x, int y, byte player) {
+		forceSetup();
+		
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -718,6 +731,8 @@ public class MapObjectDrawer {
 	 *            The stack to draw.
 	 */
 	public void drawStack(int x, int y, IStackMapObject object, float color) {
+		forceSetup();
+		
 		byte elements = object.getSize();
 		if (elements > 0) {
 			drawStackAtScreen(x, y, object.getMaterialType(), elements, color);
@@ -982,6 +997,8 @@ public class MapObjectDrawer {
 	}
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
+		forceSetup();
+		
 		drawByProgress(moveToMarker.x, moveToMarker.y, MARKER_FILE,
 		        MOVE_TO_MARKER_SEQUENCE, progress, 1);
 	}
