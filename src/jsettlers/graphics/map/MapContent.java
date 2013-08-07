@@ -94,6 +94,7 @@ public final class MapContent implements RegionContent,
 	private static final int MESSAGE_OFFSET_Y = 30;
 	private static final int MESSAGE_LINEHIEGHT = 18;
 	private static final long GOTO_MARK_TIME = 1500;
+	private static final long DOUBLE_CLICK_TIME = 500;
 
 	private final IGraphicsGrid map;
 
@@ -726,6 +727,8 @@ public final class MapContent implements RegionContent,
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
+	private long lastSelectPointTime = 0;
+	private ShortPoint2D lastSelectPointPos = null;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
 	        UIPoint position) {
@@ -736,7 +739,7 @@ public final class MapContent implements RegionContent,
 		if (this.context.checkMapCoordinates(onMap.x, onMap.y)) {
 			Action action;
 			if (commandEvent.isSelecting()) {
-				action = new PointAction(EActionType.SELECT_POINT, onMap);
+				action = handleSelectCommand(onMap);
 			} else {
 				action = new PointAction(EActionType.MOVE_TO, onMap);
 			}
@@ -744,6 +747,20 @@ public final class MapContent implements RegionContent,
 		}
 		return null;
 	}
+
+	private Action handleSelectCommand(ShortPoint2D onMap) {
+	    Action action;
+	    long currentTime = System.currentTimeMillis();
+	    if (currentTime - lastSelectPointTime < DOUBLE_CLICK_TIME && onMap.equals(lastSelectPointPos)) {
+	    	lastSelectPointTime = 0;
+	    	action = new PointAction(EActionType.SELECT_POINT_TYPE, onMap);
+	    } else {
+	    	lastSelectPointTime = currentTime;
+	    	lastSelectPointPos = onMap;
+	    	action = new PointAction(EActionType.SELECT_POINT, onMap);
+	    }
+	    return action;
+    }
 
 	protected void abortSelectionArea() {
 		this.currentSelectionAreaStart = null;

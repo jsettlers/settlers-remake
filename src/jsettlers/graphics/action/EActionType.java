@@ -22,9 +22,16 @@ public enum EActionType {
 	/**
 	 * Select a point on the map.
 	 * 
-	 * @see SelectAction
+	 * @see PointAction
 	 */
 	SELECT_POINT,
+
+	/**
+	 * Select all units of the type on that point that are around that point.
+	 * 
+	 * @see PointAction
+	 */
+	SELECT_POINT_TYPE,
 
 	/**
 	 * Skip the next minute of gameplay.
