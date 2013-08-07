@@ -7,6 +7,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public final class PioneerStrategy extends NewMovableStrategy {
 	private static final long serialVersionUID = 1L;
 
@@ -58,7 +63,7 @@ public final class PioneerStrategy extends NewMovableStrategy {
 		centerPos = null;
 
 		ShortPoint2D pos = super.getPos();
-		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.FOREIGN_GROUND)) {
+		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.UNENFORCED_FOREIGN_GROUND)) {
 			super.followPresearchedPath();
 			this.state = EPioneerState.GOING_TO_POS;
 			return;
@@ -92,13 +97,18 @@ public final class PioneerStrategy extends NewMovableStrategy {
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
-		return super.fitsSearchType(pos, ESearchType.FOREIGN_GROUND);
+		return super.fitsSearchType(pos, ESearchType.UNENFORCED_FOREIGN_GROUND);
 	}
 
 	@Override
 	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 		this.state = EPioneerState.GOING_TO_POS;
 		centerPos = null;
+	}
+
+	@Override
+	protected boolean isMoveToAble() {
+		return true;
 	}
 
 	/**

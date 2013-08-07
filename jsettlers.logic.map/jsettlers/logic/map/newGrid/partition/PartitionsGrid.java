@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.map.shapes.FilteredMapArea;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -18,6 +19,7 @@ import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
+import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.algorithms.interfaces.IContainingProvider;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
@@ -166,11 +168,21 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 *            The area affected by the tower.
 	 */
 	public void addTowerAndOccupyArea(byte playerId, MapCircle influencingArea) {
+		IMapArea filteredArea = new FilteredMapArea(influencingArea, new ISerializablePredicate<ShortPoint2D>() {
+			private static final long serialVersionUID = -6460916149912865762L;
+
+			@Override
+			public boolean evaluate(ShortPoint2D pos) {
+				return 0 <= pos.x && pos.x < width && 0 <= pos.y && pos.y < height;
+			}
+		});
+
 		// occupy the area
-		occupyArea(playerId, influencingArea, influencingArea.getBorders());
+		occupyArea(playerId, filteredArea, influencingArea.getBorders());
 
 		// add the new tower object
-		occupyingTowers.add(new PartitionOccupyingTower(playerId, influencingArea));
+		occupyingTowers.add(new PartitionOccupyingTower(playerId, influencingArea.getCenter(), filteredArea, influencingArea.getBorders(),
+				(int) influencingArea.getRadius()));
 	}
 
 	/**
@@ -229,8 +241,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 
 		// occupy the area for the new player
-		occupyArea(newPlayerId, tower.area, tower.area.getBorders());
-		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower.area);
+		occupyArea(newPlayerId, tower.area, tower.areaBorders);
+		PartitionOccupyingTower newTower = new PartitionOccupyingTower(newPlayerId, tower);
 		occupyingTowers.add(newTower);
 
 		// recalculate the tower counter for the ground area
@@ -263,7 +275,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param playerId
 	 */
 	private void recalculateTowerCounter(PartitionOccupyingTower tower, IMapArea area) {
-		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, (int) tower.area.getRadius());
+		List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position, tower.radius);
 
 		for (ShortPoint2D curr : area) {
 			towers[curr.x + curr.y * width] = 0;
@@ -271,7 +283,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		for (Tuple<Integer, PartitionOccupyingTower> currTower : towersInRange) {
 			if (currTower.e2.playerId == tower.playerId) {
-				final MapCircle currArea = currTower.e2.area;
+				final IMapArea currArea = currTower.e2.area;
 
 				// define the positions that need to get their towers count increased.
 				IteratorFilter<ShortPoint2D> increasePositions = new IteratorFilter<ShortPoint2D>(area, new IPredicate<ShortPoint2D>() {
@@ -308,7 +320,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		// check if other towers occupy the area
 		if (!freedPositions.isEmpty()) { // if at least one position may change the player
 			List<Tuple<Integer, PartitionOccupyingTower>> towersInRange = occupyingTowers.getTowersInRange(tower.position,
-					(int) tower.area.getRadius());
+					tower.radius);
 			// sort the towers by their distance to the removed tower
 			Collections.sort(towersInRange, Tuple.<Integer, PartitionOccupyingTower> getE1Comparator());
 
@@ -319,7 +331,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 				PartitionOccupyingTower currTower = curr.e2;
 
-				final MapCircle currArea = currTower.area;
+				final IMapArea currArea = currTower.area;
 
 				IteratorFilter<ShortPoint2D> area = new IteratorFilter<ShortPoint2D>(freedPositions, new IPredicate<ShortPoint2D>() {
 					@Override
@@ -328,7 +340,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 					}
 				});
 
-				occupyArea(currTower.playerId, area, currArea.getBorders());
+				occupyArea(currTower.playerId, area, currTower.areaBorders);
 			}
 		}
 	}
@@ -337,7 +349,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * Occupies the given area for the given playerId.
 	 * 
 	 * @param playerId
-	 * @param influencingArea
+	 * @param filteredInfluencingArea
 	 * @param borders
 	 */
 	private void occupyArea(byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {

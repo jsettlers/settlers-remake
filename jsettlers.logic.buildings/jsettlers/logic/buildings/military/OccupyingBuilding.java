@@ -488,7 +488,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		@Override
 		public void receiveHit(float strength, ShortPoint2D attackerPos) {
-			if (getGrid().getMovable(attackerPos).getPlayer() == getPlayer()) {
+			NewMovable attacker = getGrid().getMovable(attackerPos);
+			if (attacker != null && attacker.getPlayer() == getPlayer()) {
 				return; // this can happen directly after the tower changed its player
 			}
 

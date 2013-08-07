@@ -79,4 +79,6 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 
 	public abstract ShortPoint2D calcDecentralizeVector(short x, short y);
 
+	public abstract Player getPlayerAt(ShortPoint2D position);
+
 }

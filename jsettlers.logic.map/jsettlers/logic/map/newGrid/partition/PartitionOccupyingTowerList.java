@@ -68,7 +68,7 @@ final class PartitionOccupyingTowerList extends LinkedList<PartitionOccupyingTow
 
 		for (PartitionOccupyingTower curr : this) {
 			int sqDist = (int) MapCircle.getDistanceSquared(center.x, center.y, curr.position.x, curr.position.y);
-			int maxDist = radius + (int) (curr.area.getRadius());
+			int maxDist = radius + curr.radius;
 
 			if (sqDist <= (maxDist * maxDist)) {
 				result.add(new Tuple<Integer, PartitionOccupyingTower>(sqDist, curr));

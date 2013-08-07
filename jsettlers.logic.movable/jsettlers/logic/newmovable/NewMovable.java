@@ -736,12 +736,10 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	 * @param movableType
 	 */
 	public final void convertTo(EMovableType movableType) {
-		if (this.movableType != movableType) {
-			this.movableType = movableType;
-			this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
-			this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-			setState(ENewMovableState.DOING_NOTHING);
-		}
+		this.movableType = movableType;
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
+		setState(ENewMovableState.DOING_NOTHING);
 	}
 
 	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
@@ -781,6 +779,23 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 		}
 	}
 
+	public void checkPlayerOfPosition(Player currentPlayer) {
+		if (currentPlayer != player && !strategy.isMoveToAble()) {
+			abortCurrentWork();
+
+			Path path = grid.searchDijkstra(this, position.x, position.y, Constants.MOVABLE_FLEE_BACK_TO_COUNTRY_RADIUS, ESearchType.OWN_GROUND);
+			if (path != null) {
+				followPath(path);
+			} else {
+				kill();
+			}
+		}
+	}
+
+	private void abortCurrentWork() {
+		convertTo(movableType); // destroy old strategy and create new one
+	}
+
 	private static enum ENewMovableState {
 		PLAYING_ACTION,
 		PATHING,
@@ -793,4 +808,5 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 		 */
 		DEBUG_STATE
 	}
+
 }

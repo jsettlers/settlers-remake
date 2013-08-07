@@ -327,8 +327,17 @@ public final class MainGrid implements Serializable {
 		landscapeGrid.setLandscapeTypeAt(x, y, newType);
 	}
 
-	final void checkForEnclosedBlockedArea(ShortPoint2D position) {
+	final void checkPositionThatChangedPlayer(ShortPoint2D position) {
+		if (!isInBounds(position.x, position.y)) {
+			return;
+		}
+
 		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, flagsGrid.getBlockedContainingProvider(), position);
+
+		NewMovable movable = movableGrid.getMovableAt(position.x, position.y);
+		if (movable != null) {
+			movable.checkPlayerOfPosition(partitionsGrid.getPlayerAt(position.x, position.y));
+		}
 	}
 
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -364,8 +373,11 @@ public final class MainGrid implements Serializable {
 		public final boolean fitsSearchType(int x, int y, ESearchType searchType, IPathCalculateable pathCalculable) {
 			switch (searchType) {
 
-			case FOREIGN_GROUND:
+			case UNENFORCED_FOREIGN_GROUND:
 				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
+
+			case OWN_GROUND:
+				return !flagsGrid.isBlocked(x, y) && hasSamePlayer(x, y, pathCalculable);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))
@@ -910,7 +922,7 @@ public final class MainGrid implements Serializable {
 			partitionsGrid.changePlayerAt(position, player.playerId);
 			bordersThread.checkPosition(position);
 
-			checkForEnclosedBlockedArea(position);
+			checkPositionThatChangedPlayer(position);
 		}
 
 		@Override
@@ -1189,6 +1201,11 @@ public final class MainGrid implements Serializable {
 
 			return new ShortPoint2D(dx, dy);
 		}
+
+		@Override
+		public Player getPlayerAt(ShortPoint2D position) {
+			return partitionsGrid.getPlayerAt(position.x, position.y);
+		}
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
@@ -1403,7 +1420,7 @@ public final class MainGrid implements Serializable {
 
 		private void checkAllPositionsForEnclosedBlockedAreas(Iterable<ShortPoint2D> area) {
 			for (ShortPoint2D curr : area) {
-				checkForEnclosedBlockedArea(curr);
+				checkPositionThatChangedPlayer(curr);
 			}
 		}
 
@@ -1474,14 +1491,12 @@ public final class MainGrid implements Serializable {
 			boolean savedPausingState = MatchConstants.clock.isPausing();
 			MatchConstants.clock.setPausing(true);
 			try {
-				Thread.sleep(100); // FIXME @Andreas serializer should wait until
-									// threads did their work!
+				Thread.sleep(100); // FIXME @Andreas serializer should wait until threads did their work!
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 
 			MapList list = MapList.getDefaultList();
-			// TODO @Andreas Eberle: pass on ui state.
 			list.saveMap(uiState, MainGrid.this);
 
 			MatchConstants.clock.setPausing(savedPausingState);

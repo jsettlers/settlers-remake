@@ -3,6 +3,11 @@ package jsettlers.logic.newmovable.strategies.specialists;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public final class DummySpecialistStrategy extends NewMovableStrategy {
 	private static final long serialVersionUID = -1359250497501671076L;
 
@@ -14,4 +19,8 @@ public final class DummySpecialistStrategy extends NewMovableStrategy {
 	protected void action() {
 	}
 
+	@Override
+	protected boolean isMoveToAble() {
+		return true;
+	}
 }

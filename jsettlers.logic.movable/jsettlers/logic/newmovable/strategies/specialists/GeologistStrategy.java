@@ -7,6 +7,11 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public final class GeologistStrategy extends NewMovableStrategy {
 	private static final long serialVersionUID = 1L;
 
@@ -104,6 +109,11 @@ public final class GeologistStrategy extends NewMovableStrategy {
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {
 		return super.fitsSearchType(pos, ESearchType.RESOURCE_SIGNABLE);
+	}
+
+	@Override
+	protected boolean isMoveToAble() {
+		return true;
 	}
 
 	private static enum EPioneerState {

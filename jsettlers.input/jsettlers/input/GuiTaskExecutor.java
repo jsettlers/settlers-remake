@@ -183,6 +183,10 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			for (Integer currMovableId : movableIds) {
 				NewMovable currMovable = NewMovable.getMovableByID(currMovableId);
 
+				if (currMovable == null) {
+					continue;
+				}
+
 				ShortPoint2D currTargetPos;
 
 				do {

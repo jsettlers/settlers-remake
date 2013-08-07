@@ -9,8 +9,8 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
 import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
 import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
@@ -249,7 +249,7 @@ public abstract class NewMovableStrategy implements Serializable {
 	}
 
 	protected boolean isMoveToAble() {
-		return true;
+		return false;
 	}
 
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {

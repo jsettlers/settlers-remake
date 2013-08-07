@@ -230,9 +230,7 @@ public class MapList {
 	}
 
 	public void deleteLoadableGame(MapLoader game) {
-		if (game instanceof MapLoader) {
-			game.getFile().delete();
-		}
+		game.getFile().delete();
 		savedMaps.remove(game);
 	}
 
