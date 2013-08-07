@@ -161,7 +161,7 @@ public class OriginalControls implements IControls {
 			if (selecting) {
 				return new PointAction(EActionType.PAN_TO, clickPosition);
 			} else {
-				return new PointAction(EActionType.SELECT_POINT, clickPosition);
+				return new PointAction(EActionType.MOVE_TO, clickPosition);
 			}
 		} else {
 			return null;
