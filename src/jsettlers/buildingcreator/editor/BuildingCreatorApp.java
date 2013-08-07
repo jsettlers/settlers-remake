@@ -1,10 +1,7 @@
 package jsettlers.buildingcreator.editor;
 
-import go.graphics.sound.ISoundDataRetriever;
-import go.graphics.sound.SoundPlayer;
-import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -13,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -31,20 +30,26 @@ import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.statistics.IStatisticable;
+import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
+import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.swing.JOGLPanel;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.swing.SwingResourceLoader;
+import jsettlers.main.swing.SwingManagedJSettlers;
 
 /**
  * This is the main building creator class.
@@ -57,14 +62,14 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 	}
 
 	private BuildingDefinition definition;
-	private JFrame window;
 	private final BuildingtestMap map;
 
 	private ToolType tool = ToolType.SET_BLOCKED;
 	private JPanel actionList;
 	private JLabel positionDisplayer;
+	private JFrame window;
 
-	private BuildingCreatorApp() {
+	private BuildingCreatorApp(List<String> argsList) {
 		ResourceManager.setProvider(new IResourceProvider() {
 			@Override
 			public InputStream getFile(String name) throws IOException {
@@ -101,37 +106,39 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 				reloadColor(new ShortPoint2D(x, y));
 			}
 		}
-		JOGLPanel mapPanel = new JOGLPanel(new SoundPlayer() {
-
-			@Override
-			public void playSound(int sound, float lvolume, float rvolume) {
-			}
-
-			@Override
-			public void setSoundDataRetriever(ISoundDataRetriever soundDataRetriever) {
-			}
-
-		});
-		MapInterfaceConnector connector = mapPanel.showGameMap(map, null);
+		
+		MapInterfaceConnector connector = startMapWindow(argsList);
 		connector.addListener(this);
 
+		JPanel menu = generateMenu();
+
+		window = new JFrame("Edit " + type.toString());
+		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		window.add(menu);
+		window.pack();
+		window.setVisible(true);
+
+		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
+	}
+
+	private JPanel generateMenu() {
 		JPanel menu = new JPanel();
 		menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
-		menu.setPreferredSize(new Dimension(200, 100));
-		actionList = new JPanel();
-		actionList.setLayout(new BoxLayout(actionList, BoxLayout.Y_AXIS));
-		menu.add(new JScrollPane(actionList));
+//		menu.setPreferredSize(new Dimension(200, 100));
+//		actionList = new JPanel();
+//		actionList.setLayout(new BoxLayout(actionList, BoxLayout.Y_AXIS));
+//		menu.add(new JScrollPane(actionList));
 
 		menu.add(createToolChangeBar());
 
-		JButton addButton = new JButton("add new action");
-		addButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				addNewAction();
-			}
-		});
-		menu.add(addButton);
+//		JButton addButton = new JButton("add new action");
+//		addButton.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				addNewAction();
+//			}
+//		});
+//		menu.add(addButton);
 
 		JButton xmlButton = new JButton("show xml data");
 		xmlButton.addActionListener(new ActionListener() {
@@ -143,20 +150,51 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		menu.add(xmlButton);
 		positionDisplayer = new JLabel();
 		menu.add(positionDisplayer);
+		return menu;
+	}
 
-		JPanel root = new JPanel();
-		root.setLayout(new BoxLayout(root, BoxLayout.X_AXIS));
-		root.add(new AreaContainer(mapPanel.getArea()));
-		root.add(menu);
-
-		window = new JFrame("Edit " + type.toString());
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.add(root);
-		window.pack();
-		window.setSize(600, 500);
-		window.setVisible(true);
-
-		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
+	private MapInterfaceConnector startMapWindow(List<String> argsList) {
+		JSettlersScreen gui = SwingManagedJSettlers.startGui(argsList);
+		MapContent content = new MapContent(new IStartedGame() {
+			
+			@Override
+			public IStatisticable getPlayerStatistics() {
+				return new IStatisticable() {
+					@Override
+					public int getNumberOf(EMovableType movableType) {
+						return 0;
+					}
+					
+					@Override
+					public int getNumberOf(EMaterialType materialType) {
+						return 0;
+					}
+					
+					@Override
+					public int getJoblessBearers() {
+						return 0;
+					}
+					
+					@Override
+					public int getGameTime() {
+						return 0;
+					}
+				};
+			}
+			
+			@Override
+			public int getPlayer() {
+				return 0;
+			}
+			
+			@Override
+			public IGraphicsGrid getMap() {
+				return map;
+			}
+		}, new SwingSoundPlayer());
+		gui.setContent(content);
+		MapInterfaceConnector connector = content.getInterfaceConnector();
+		return connector;
 	}
 
 	private JButton createToolChangeBar() {
@@ -205,7 +243,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
 		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
 
-		new BuildingCreatorApp();
+		new BuildingCreatorApp(Arrays.asList(args));
 	}
 
 	@Override

@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.swing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.main.swing"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
