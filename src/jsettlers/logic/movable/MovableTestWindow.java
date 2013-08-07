@@ -27,11 +27,11 @@ public class MovableTestWindow {
 
 	private MovableTestWindow() throws InterruptedException {
 
-		MatchConstants.clock = new NetworkTimer();
+		MatchConstants.clock = new NetworkTimer(true);
 		MatchConstants.clock.startExecution();
 		RandomSingleton.load(1000);
 
-		MovableTestsMap grid = new MovableTestsMap(100, 100);
+		MovableTestsMap grid = new MovableTestsMap(100, 100, PLAYER_0);
 		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
 
 		movable = new NewMovable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(49, 50), PLAYER_0);

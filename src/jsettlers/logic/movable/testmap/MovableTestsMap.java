@@ -36,15 +36,17 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	private final short width;
 	private final short height;
+	private final Player defaultPlayer;
 
 	private final NewMovable movableMap[][];
 	private final EMaterialType materialTypeMap[][];
 	private final byte materialAmmountMap[][];
 	private final HexAStar aStar;
 
-	public MovableTestsMap(int width, int height) {
+	public MovableTestsMap(int width, int height, Player defaultPlayer) {
 		this.width = (short) width;
 		this.height = (short) height;
+		this.defaultPlayer = defaultPlayer;
 
 		this.movableMap = new NewMovable[width][height];
 		this.materialTypeMap = new EMaterialType[width][height];
@@ -374,6 +376,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+		}
+
+		@Override
+		public Player getPlayerAt(ShortPoint2D position) {
+			return defaultPlayer;
 		}
 
 	};
