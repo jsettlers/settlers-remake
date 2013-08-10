@@ -352,11 +352,12 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param filteredInfluencingArea
 	 * @param borders
 	 */
-	private void occupyArea(byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {
+	private void occupyArea(final byte playerId, Iterable<ShortPoint2D> influencingArea, SRectangle borders) {
 		IPredicate<ShortPoint2D> predicate = new IPredicate<ShortPoint2D>() {
 			@Override
 			public boolean evaluate(ShortPoint2D pos) {
-				return towers[pos.x + pos.y * width] <= 0;
+				int index = pos.x + pos.y * width;
+				return towers[index] <= 0 && partitionObjects[partitions[index]].playerId != playerId;
 			}
 		};
 
