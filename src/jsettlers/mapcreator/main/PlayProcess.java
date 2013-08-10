@@ -3,7 +3,7 @@ package jsettlers.mapcreator.main;
 import java.io.File;
 
 import jsettlers.logic.map.save.MapLoader;
-import jsettlers.newmain.JSettlersGame;
+import jsettlers.main.JSettlersGame;
 
 public class PlayProcess {
 	public static void main(String[] args) {
