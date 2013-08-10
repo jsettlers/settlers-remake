@@ -23,7 +23,7 @@ import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
-import jsettlers.newmain.StartScreenConnector;
+import jsettlers.main.StartScreenConnector;
 
 public class SwingManagedJSettlers {
 
