@@ -1,4 +1,4 @@
-package jsettlers.newmain;
+package jsettlers.main;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,8 +8,8 @@ import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
-import jsettlers.newmain.datatypes.ChangingList;
-import jsettlers.newmain.datatypes.JoinableGame;
+import jsettlers.main.datatypes.ChangingList;
+import jsettlers.main.datatypes.JoinableGame;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.common.packets.ArrayOfMatchInfosPacket;

@@ -1,4 +1,4 @@
-package jsettlers.newmain.datatypes;
+package jsettlers.main.datatypes;
 
 import java.util.Collections;
 import java.util.List;

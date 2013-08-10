@@ -1,4 +1,4 @@
-package jsettlers.newmain;
+package jsettlers.main;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,8 +13,8 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
-import jsettlers.newmain.datatypes.ChangingList;
-import jsettlers.newmain.datatypes.MapDefinition;
+import jsettlers.main.datatypes.ChangingList;
+import jsettlers.main.datatypes.MapDefinition;
 
 /**
  * This class implements the {@link IStartScreen} interface and acts as connector between the start screen and the game logic.

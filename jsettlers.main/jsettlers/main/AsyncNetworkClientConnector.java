@@ -1,4 +1,4 @@
-package jsettlers.newmain;
+package jsettlers.main;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

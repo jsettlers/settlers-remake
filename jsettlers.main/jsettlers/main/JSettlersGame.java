@@ -1,4 +1,4 @@
-package jsettlers.newmain;
+package jsettlers.main;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;

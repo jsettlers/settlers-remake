@@ -1,4 +1,4 @@
-package jsettlers.newmain.datatypes;
+package jsettlers.main.datatypes;
 
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;

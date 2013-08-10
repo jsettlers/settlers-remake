@@ -1,4 +1,4 @@
-package jsettlers.newmain.datatypes;
+package jsettlers.main.datatypes;
 
 import java.util.ArrayList;
 import java.util.Date;

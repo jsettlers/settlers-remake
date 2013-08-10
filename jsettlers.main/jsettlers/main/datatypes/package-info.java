@@ -6,4 +6,4 @@
  * @author Andreas Eberle
  *
  */
-package jsettlers.newmain.datatypes;
+package jsettlers.main.datatypes;
