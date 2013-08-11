@@ -1,5 +1,8 @@
 package networklib.synchronic.timer;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,6 +45,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	private boolean scheduled = false;
 
 	private ITaskExecutor taskExecutor;
+	private DataOutputStream replayLogStream;
 
 	public NetworkTimer() {
 		super();
@@ -68,6 +72,8 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	public void stopExecution() {
 		setPausing(true);
 		timer.cancel();
+
+		closeReplayLogStreamIfNeeded();
 	}
 
 	@Override
@@ -255,12 +261,24 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		if (!tasksPacket.getTasks().isEmpty()) {
 			synchronized (tasks) {
 				tasks.addLast(tasksPacket);
+				saveReplayIfNeeded(tasksPacket);
 			}
 		}
 		maxAllowedLockstep = Math.max(maxAllowedLockstep, tasksPacket.getLockstepNumber());
 
 		synchronized (lockstepLock) {
 			lockstepLock.notifyAll();
+		}
+	}
+
+	private void saveReplayIfNeeded(SyncTasksPacket tasksPacket) {
+		if (replayLogStream != null) {
+			try {
+				tasksPacket.serialize(replayLogStream);
+				replayLogStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -272,6 +290,28 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	@Override
 	public int getTime() {
 		return time;
+	}
+
+	@Override
+	public void setReplayLogfile(OutputStream replayFileStream) {
+		if (replayFileStream != null) {
+			replayLogStream = new DataOutputStream(replayFileStream);
+		} else {
+			closeReplayLogStreamIfNeeded();
+		}
+	}
+
+	private void closeReplayLogStreamIfNeeded() {
+		if (replayLogStream != null) {
+			try {
+				replayLogStream.flush();
+				replayLogStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				replayLogStream = null;
+			}
+		}
 	}
 
 }
