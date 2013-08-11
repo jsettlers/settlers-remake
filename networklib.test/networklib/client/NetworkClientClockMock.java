@@ -1,5 +1,6 @@
 package networklib.client;
 
+import java.io.OutputStream;
 import java.util.LinkedList;
 
 import networklib.client.task.packets.SyncTasksPacket;
@@ -118,6 +119,12 @@ public class NetworkClientClockMock implements INetworkClientClock {
 
 	@Override
 	public void stopExecution() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setReplayLogfile(OutputStream replayFileStream) {
 		// TODO Auto-generated method stub
 
 	}
