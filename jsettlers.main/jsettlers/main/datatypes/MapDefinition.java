@@ -30,7 +30,7 @@ public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefin
 
 	@Override
 	public String getName() {
-		return mapLoader.getName();
+		return mapLoader.getMapName();
 	}
 
 	@Override

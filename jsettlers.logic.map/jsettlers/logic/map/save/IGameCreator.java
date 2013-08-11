@@ -15,4 +15,6 @@ public interface IGameCreator {
 	public MainGrid getMainGrid(byte player) throws MapLoadException;
 
 	public UIState getUISettings(int player) throws MapLoadException;
+
+	public String getMapName();
 }

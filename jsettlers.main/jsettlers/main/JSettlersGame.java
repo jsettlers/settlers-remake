@@ -1,7 +1,12 @@
 package jsettlers.main;
 
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -33,6 +38,7 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  */
 public class JSettlersGame {
+	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-mm-dd_HH-mm-ss");
 
 	private final Object stopMutex = new Object();
 
@@ -69,8 +75,7 @@ public class JSettlersGame {
 	 * @param randomSeed
 	 * @param playerNumber
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed,
-			byte playerNumber) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerNumber) {
 		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false);
 	}
 
@@ -104,34 +109,34 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
-				informProgressListener(EProgressState.LOADING, 0.1f);
+				updateProgressListener(EProgressState.LOADING, 0.1f);
 
-				IGameClock gameClock = MatchConstants.clock = taskScheduler
-						.getGameClock();
+				String replayFilename = "logs/" + logDateFormat.format(new Date()) + "_" + mapcreator.getMapName() + "/replay.log";
+				OutputStream replayFileStream = ResourceManager.writeFile(replayFilename);
+
+				IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
+				gameClock.setReplayLogfile(replayFileStream);
 				RandomSingleton.load(randomSeed);
 
-				informProgressListener(EProgressState.LOADING_MAP, 0.3f);
-				Thread imagePreloader = ImageProvider.getInstance()
-						.startPreloading();
+				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
+				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
 				mainGrid = mapcreator.getMainGrid(playerNumber);
 				UIState uiState = mapcreator.getUISettings(playerNumber);
 
-				informProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
+				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
 				statistics = new GameStatistics(gameClock);
 				mainGrid.startThreads();
 
-				// Wait for ImageProvider to finish loading the images
-				imagePreloader.join();
-				// TODO @Andreas Eberle: Wait for startingGameListener to be set.
+				imagePreloader.join(); // Wait for ImageProvider to finish loading the images
 
-				final MapInterfaceConnector connector = startingGameListener
-						.startFinished(this);
+				waitForStartingGameListener();
+
+				final MapInterfaceConnector connector = startingGameListener.startFinished(this);
 				connector.loadUIState(uiState.getUiStateData());
 
-				GuiInterface guiInterface = new GuiInterface(connector,
-						gameClock, taskScheduler, mainGrid.getGuiInputGrid(),
-						this, playerNumber, multiplayer);
+				GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, mainGrid.getGuiInputGrid(), this, playerNumber,
+						multiplayer);
 				gameClock.startExecution();
 
 				synchronized (stopMutex) {
@@ -161,13 +166,25 @@ public class JSettlersGame {
 			}
 		}
 
-		private void informProgressListener(EProgressState progressState,
+		/**
+		 * Waits until the {@link #startingGameListener} has been set.
+		 */
+		private void waitForStartingGameListener() {
+			while (startingGameListener == null) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+
+		private void updateProgressListener(EProgressState progressState,
 				float progress) {
 			this.progressState = progressState;
 			this.progress = progress;
+
 			if (startingGameListener != null)
-				startingGameListener.startProgressChanged(progressState,
-						progress);
+				startingGameListener.startProgressChanged(progressState, progress);
 		}
 
 		private void reportFail(EGameError gameError, Exception e) {
@@ -181,8 +198,7 @@ public class JSettlersGame {
 		public void setListener(IStartingGameListener startingGameListener) {
 			this.startingGameListener = startingGameListener;
 			if (startingGameListener != null)
-				startingGameListener.startProgressChanged(progressState,
-						progress);
+				startingGameListener.startProgressChanged(progressState, progress);
 		}
 
 		@Override

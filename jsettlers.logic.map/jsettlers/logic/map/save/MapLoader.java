@@ -150,7 +150,7 @@ public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapL
 	}
 
 	@Override
-	public String getName() {
+	public String getMapName() {
 		try {
 			return getFileHeader().getName();
 		} catch (MapLoadException e) {
