@@ -266,6 +266,11 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 *            Y coordinate of the position.
 	 */
 	public void activateUnflattening(short x, short y) {
+		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);
+		if (landscapeType == ELandscapeType.MOUNTAIN || landscapeType == ELandscapeType.DESERT) {
+			return; // do not unflatten mountain or desert.
+		}
+
 		this.temporaryFlatened[x + y * width] = (byte) (40 + RandomSingleton.nextF() * 80);
 		this.flattenedResetter.addPosition(x, y);
 	}
