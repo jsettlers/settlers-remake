@@ -19,7 +19,7 @@ public interface INetworkableMap {
 	 * 
 	 * @return name of the map that's visible to the user
 	 */
-	String getName();
+	String getMapName();
 
 	/**
 	 * 
