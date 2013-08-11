@@ -72,7 +72,7 @@ public class MapCreatorApp {
 				if (arg0 instanceof MapLoader && arg1 instanceof MapLoader) {
 					MapLoader mapLoader1 = (MapLoader) arg0;
 					MapLoader mapLoader2 = (MapLoader) arg1;
-					int nameComp = mapLoader1.getName().compareTo(mapLoader2.getName());
+					int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
 					if (nameComp != 0) {
 						return nameComp;
 					} else {
