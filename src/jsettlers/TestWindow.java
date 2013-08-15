@@ -3,6 +3,7 @@ package jsettlers;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.util.Collections;
+
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -29,7 +30,7 @@ public class TestWindow {
 
 	private TestWindow() {
 	}
-	
+
 	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {
 		IStartedGame game = new IStartedGame() {
 			@Override
@@ -39,29 +40,29 @@ public class TestWindow {
 					public int getNumberOf(EMovableType movableType) {
 						return 0;
 					}
-					
+
 					@Override
 					public int getNumberOf(EMaterialType materialType) {
 						return 0;
 					}
-					
+
 					@Override
 					public int getJoblessBearers() {
 						return 0;
 					}
-					
+
 					@Override
 					public int getGameTime() {
 						return 0;
 					}
 				};
 			}
-			
+
 			@Override
 			public int getPlayer() {
 				return 0;
 			}
-			
+
 			@Override
 			public IGraphicsGrid getMap() {
 				return map;
@@ -76,7 +77,7 @@ public class TestWindow {
 				.<String> emptyList());
 		MapContent mapContent = new MapContent(game, new SwingSoundPlayer());
 		content.setContent(mapContent);
-		//TODO: Add a better redraw method.
+		// TODO: Add a better redraw method.
 
 		mapContent.getInterfaceConnector().addListener(
 				new IMapInterfaceListener() {

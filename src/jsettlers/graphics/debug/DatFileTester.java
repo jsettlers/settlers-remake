@@ -29,13 +29,8 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
-import jsettlers.graphics.swing.JoglLibraryPathInitializer;
 
 public class DatFileTester {
-
-	static { // sets the native library path for the system dependent jogl libs
-		JoglLibraryPathInitializer.initLibraryPath();
-	}
 
 	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
 
