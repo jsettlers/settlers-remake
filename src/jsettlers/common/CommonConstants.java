@@ -23,7 +23,7 @@ public abstract class CommonConstants {
 	 * if false, no debug coloring is possible (but saves memory) <br>
 	 * if true, debug coloring is possible.
 	 */
-	public static boolean ENABLE_DEBUG_COLORS = false;
+	public static boolean ENABLE_DEBUG_COLORS = true;
 
 	public static String DEFAULT_SERVER_ADDRESS = "217.160.24.137";
 
