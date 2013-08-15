@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.logic"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.deploy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.swing"/>
