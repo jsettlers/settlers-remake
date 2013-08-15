@@ -10,46 +10,37 @@ import java.io.OutputStream;
 import jsettlers.common.resources.IResourceProvider;
 
 public class SwingResourceProvider implements IResourceProvider {
-	private final String path;
-	// we may want to use this in the future.
-	//private File userPath;
+	private final String resourcesFolder;
 
 	public SwingResourceProvider() {
-		this(new File("").getAbsoluteFile().getParent().replace(
-		        '\\', '/')+ "/jsettlers.common");
+		this(new File("").getAbsoluteFile().getParent().replace('\\', '/') + "/jsettlers.common/resources/");
 	}
-	
-	public SwingResourceProvider(String commonsProjectDirecotry) {
-		path = commonsProjectDirecotry + "/resources/";
-		//userPath = new File(System.getProperty("user.home"), ".jsettlers");
-		//userPath.mkdirs();
+
+	public SwingResourceProvider(String resourcesFolder) {
+		this.resourcesFolder = resourcesFolder;
 	}
 
 	@Override
 	public InputStream getFile(String name) throws IOException {
-//		File file = new File(userPath.getAbsolutePath() + "/" + name);
-//		if (!file.exists()) {
-			File file = new File(path + name);
-//		}
+		File file = new File(resourcesFolder + name);
+
 		return new FileInputStream(file);
 	}
 
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
-		//In the future: save to user path
-		File file = new File(path + name);
+		File file = new File(resourcesFolder + name);
 		file.getParentFile().mkdirs();
 		return new FileOutputStream(file);
 	}
 
 	@Override
 	public File getSaveDirectory() {
-		return new File(path);
+		return new File(resourcesFolder);
 	}
 
 	@Override
-    public File getTempDirectory() {
-	    return new File(path);
-    }
-
+	public File getTempDirectory() {
+		return new File(resourcesFolder);
+	}
 }
