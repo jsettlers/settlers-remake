@@ -6,6 +6,7 @@ import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,17 +20,13 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
-import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.main.StartScreenConnector;
 
 public class SwingManagedJSettlers {
-
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-	}
 
 	/**
 	 * @param args
@@ -39,17 +36,32 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException,
-			IOException, ClassNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		List<String> argsList = Arrays.asList(args);
 
 		loadDebugSettings(argsList);
 
-		ResourceManager.setProvider(new SwingResourceProvider());
+		setupResourceManagersByConfigFile();
+
 		JSettlersScreen content = startGui(argsList);
 		generateContent(new StartScreenConnector(), content);
 
 		ImageProvider.getInstance().startPreloading();
+	}
+
+	public static void setupResourceManagersByConfigFile() throws FileNotFoundException, IOException {
+		ConfigurationPropertiesFile configFile = new ConfigurationPropertiesFile(new File("config.prp"));
+
+		ImageProvider provider = ImageProvider.getInstance();
+		for (String gfxFolder : configFile.getGfxFolders()) {
+			provider.addLookupPath(new File(gfxFolder));
+		}
+
+		for (String sndFolder : configFile.getSndFolders()) {
+			SoundManager.addLookupPath(new File(sndFolder));
+		}
+
+		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesFolder()));
 	}
 
 	private static void loadDebugSettings(List<String> argsList) {
@@ -104,9 +116,7 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void startJogl(Area area) {
-		SwingResourceLoader.setupSwingPaths();
-
-		JFrame jsettlersWnd = new JFrame("jsettlers");
+		JFrame jsettlersWnd = new JFrame("JSettlers"); // TODO add revision to title
 		AreaContainer panel = new AreaContainer(area);
 		panel.setPreferredSize(new Dimension(640, 480));
 		jsettlersWnd.add(panel);
