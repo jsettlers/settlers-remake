@@ -2,5 +2,5 @@
 resources-folder=resources/
 
 #Folders of the graphics and the sound files. If you want to specify multiple possible folders, use a ";" character for separation.
-gfx-folder=D:/Games/Siedler3/GFX
-snd-folder=D:/Games/Siedler3/Snd
+gfx-folder=GFX
+snd-folder=Snd
