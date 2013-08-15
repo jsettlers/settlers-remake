@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics"/>
-	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/jsettlers.deploy/libs/jar/jogl-all.jar"/>
+	<classpathentry kind="lib" path="libs/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/jogl-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
