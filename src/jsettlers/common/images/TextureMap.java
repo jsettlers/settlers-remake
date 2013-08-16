@@ -15,12 +15,18 @@ public final class TextureMap {
 		"font.0",
 		"font.1",
 		"font_grid.0",
+		"joinphase.0",
 		"lagerhaus.0",
+		"ready.0",
+		"ready.1",
 	};
 	private static final int[] indexes = new int[] {
-		1,
 		2,
-		0,
 		3,
+		0,
+		5,
+		4,
+		1,
+		6,
 	};
 }
