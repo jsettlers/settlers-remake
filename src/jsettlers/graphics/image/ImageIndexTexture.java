@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 public final class ImageIndexTexture {
@@ -33,7 +34,7 @@ public final class ImageIndexTexture {
 			final int height = nextLowerPOT(Math.sqrt(i));
 			final int width = nextLowerPOT(i / height);
 
-			final ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2).asShortBuffer();
+			final ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
 			while (data.hasRemaining()) {
 				data.put(in.readShort());
 			}

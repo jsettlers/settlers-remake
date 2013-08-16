@@ -7,7 +7,7 @@ import jsettlers.graphics.map.draw.DrawBuffer;
 public class ImageIndexImage extends Image {
 	private final short width;
 	private final short height;
-	private float[] geometry;
+	private final float[] geometry;
 	private final ImageIndexTexture texture;
 	private final int offsetX;
 	private final int offsetY;
@@ -55,9 +55,9 @@ public class ImageIndexImage extends Image {
 	@Override
 	public void draw(GLDrawContext gl, Color color, float multiply) {
 		if (color == null) {
-			gl.color(1, 1, 1, 1);
+			gl.color(multiply, multiply, multiply, 1);
 		} else {
-			gl.color(color.getRed(), color.getGreen(), color.getBlue(),
+			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply,
 			        color.getAlpha());
 		}
 
@@ -121,12 +121,27 @@ public class ImageIndexImage extends Image {
 
 		};
 	}
+	
+	static private float[] tmpBuffer = new float[5 * 6];
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
 	        float maxX, float maxY) {
-		// TODO Auto-generated method stub
+		System.arraycopy(geometry, 0, tmpBuffer, 0, 4 * 5);
+		tmpBuffer[0] = minX + IMAGE_DRAW_OFFSET;
+		tmpBuffer[1] = maxY + IMAGE_DRAW_OFFSET;
+		tmpBuffer[5] = minX + IMAGE_DRAW_OFFSET;
+		tmpBuffer[6] = minY + IMAGE_DRAW_OFFSET;
+		tmpBuffer[10] = maxX + IMAGE_DRAW_OFFSET;
+		tmpBuffer[11] = minY + IMAGE_DRAW_OFFSET;
+		tmpBuffer[15] = maxX + IMAGE_DRAW_OFFSET;
+		tmpBuffer[16] = maxY + IMAGE_DRAW_OFFSET;
+		tmpBuffer[20] = minX + IMAGE_DRAW_OFFSET;
+		tmpBuffer[21] = maxY + IMAGE_DRAW_OFFSET;
+		tmpBuffer[25] = maxX + IMAGE_DRAW_OFFSET;
+		tmpBuffer[26] = minY + IMAGE_DRAW_OFFSET;
 
+		gl.drawQuadWithTexture(texture.getTextureIndex(gl), tmpBuffer);
 	}
 
 	@Override
