@@ -137,6 +137,7 @@ public class MultiplayerGame {
 			public void receivePacket(MatchInfoUpdatePacket packet) {
 				if (joiningGameListener != null) {
 					joiningGameListener.gameJoined(generateJoinPhaseGameConnector());
+					joiningGameListener = null;
 				}
 
 				updatePlayersList(packet.getMatchInfo().getPlayers());
