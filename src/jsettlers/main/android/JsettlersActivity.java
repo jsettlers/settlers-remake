@@ -67,7 +67,7 @@ public class JsettlersActivity extends Activity {
 		((FrameLayout) findViewById(R.id.base_gl)).addView(goView);
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 
-		if (provider.needsUpdate()) {
+		if (provider.needsUpdate() || true) {
 			showFragment(new UpdateResourcesFragment());
 		} else {
 			showStartScreen();
