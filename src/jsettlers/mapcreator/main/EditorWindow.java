@@ -66,10 +66,11 @@ import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.logic.algorithms.previewimage.PreviewImageCreator;
-import jsettlers.logic.map.save.MapDataSerializer;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
+import jsettlers.logic.map.save.MapSaver;
+import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
 import jsettlers.mapcreator.data.MapDataDelta;
 import jsettlers.mapcreator.localization.EditorLabels;
@@ -524,10 +525,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 	protected void save() {
 		try {
-			short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
-					data.getPreviewImageDataSupplier()).getPreviewImage();
-			MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getDescription(), header.getWidth(),
-					header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
+			MapFileHeader imagedHeader = generateMapHeader();
 			data.doPreSaveActions();
 			MapList.getDefaultList().saveMap(imagedHeader, data);
 		} catch (Throwable e) {
@@ -536,22 +534,35 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		}
 	}
 
+	private MapFileHeader generateMapHeader() {
+		short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
+				data.getPreviewImageDataSupplier()).getPreviewImage();
+		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getDescription(), header.getWidth(),
+				header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
+		return imagedHeader;
+	}
+
 	protected void play() {
 		try {
 			File temp = File.createTempFile("tmp_map", "");
-			MapDataSerializer.serialize(data, new FileOutputStream(temp));
-
-			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), "jsettlers.mapcreator.main.PlayProcess",
-					temp.getAbsolutePath(), };
+			data.doPreSaveActions();
+			MapSaver.saveMap(generateMapHeader(), data, new FileOutputStream(temp));
+			
+			String[] args = new String[] { "java", "-classpath",
+					System.getProperty("java.class.path"),
+					SwingManagedJSettlers.class.getName(),
+					"--mapfile=" + temp.getAbsolutePath(), };
 
 			System.out.println("Starting process:");
 			for (String arg : args) {
 				System.out.print(arg + " ");
 			}
 			System.out.println();
+			File working = new File("../jsettlers.main.swing").getAbsoluteFile();
+			System.out.println("Current working dir: " + working);
 
 			ProcessBuilder builder = new ProcessBuilder(args);
-			builder.directory(new File("").getAbsoluteFile());
+			builder.directory(working);
 			builder.redirectErrorStream(true);
 			final Process process = builder.start();
 
@@ -570,7 +581,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 						if (line == null) {
 							break;
 						}
-						System.out.println(line);
+						System.out.println("Running game: " + line);
 					}
 				}
 			}, "run game process");
