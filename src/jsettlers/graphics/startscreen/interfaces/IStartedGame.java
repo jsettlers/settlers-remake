@@ -30,4 +30,6 @@ public interface IStartedGame {
 	 * @return
 	 */
 	int getPlayer();
+
+	void setGameExitListener(IGameExitListener exitListener);
 }
