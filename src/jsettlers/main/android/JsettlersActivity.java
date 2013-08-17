@@ -47,7 +47,6 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 	private MapContent activeBgMapContent;
 	private StartScreenConnector connector;
 	private AndroidPreferences prefs;
-	private IMultiplayerConnector multiplayerConnector;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -227,13 +226,10 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		return provider;
 	}
 
-	public IMultiplayerConnector getMultiplayerConnector() {
-		if (multiplayerConnector == null) {
-			multiplayerConnector = getStartConnector().getMultiplayerConnector(
+	public IMultiplayerConnector generateMultiplayerConnector() {
+			return getStartConnector().getMultiplayerConnector(
 					prefs.getServer(),
 					new Player(prefs.getPlayerId(), prefs.getPlayerName()));
-		}
-		return multiplayerConnector;
 	}
 	
 	public AndroidPreferences getPrefs() {

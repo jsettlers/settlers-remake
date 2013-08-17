@@ -12,13 +12,15 @@ import android.view.LayoutInflater;
 
 public class JoinNetworkGameFragment extends MapSelectionFragment<IJoinableGame> {
 
+	private IMultiplayerConnector connector;
+
 	@Override
 	protected MapListAdapter<IJoinableGame> generateListAdapter() {
 		LayoutInflater inflater =
 				(LayoutInflater) getActivity().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-		 IMultiplayerConnector connector = getJsettlersActivity()
-				.getMultiplayerConnector();
+		 connector = getJsettlersActivity()
+				.generateMultiplayerConnector();
 		return new JoinableMapListAdapter(inflater, connector);
 	}
 
@@ -39,7 +41,7 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IJoinableGame>
 
 	@Override
 	protected void startGame(IJoinableGame game) {
-		IJoiningGame joining = getJsettlersActivity().getMultiplayerConnector().joinMultiplayerGame(game);
+		IJoiningGame joining = connector.joinMultiplayerGame(game);
 		getJsettlersActivity().showFragment(new JoinGameProgress(joining));
 	}
 

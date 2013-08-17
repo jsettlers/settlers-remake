@@ -39,7 +39,7 @@ public class NewNetworkGameFragment extends
 	protected void startGame(final IStartableMapDefinition game) {
 		// TODO: Allow user to select name in GUI.
 		final String name = "Android network game";
-		IJoiningGame joining = getJsettlersActivity().getMultiplayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
+		IJoiningGame joining = getJsettlersActivity().generateMultiplayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
 			@Override
 			public int getMaxPlayers() {
 				return game.getMaxPlayers();
