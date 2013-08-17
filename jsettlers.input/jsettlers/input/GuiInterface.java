@@ -209,7 +209,9 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case TOGGLE_FOG_OF_WAR:
-			grid.toggleFogOfWar();
+			if (CommonConstants.ENABLE_FOG_OF_WAR_DISABLING) {
+				grid.toggleFogOfWar();
+			}
 			break;
 
 		case SAVE:
