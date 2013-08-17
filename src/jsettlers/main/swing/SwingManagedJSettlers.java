@@ -21,11 +21,9 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
-import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.SwingResourceProvider;
-import jsettlers.graphics.utils.UIPanel;
 import jsettlers.logic.LogicRevision;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.JSettlersGame;
@@ -50,7 +48,7 @@ public class SwingManagedJSettlers {
 		setupResourceManagersByConfigFile();
 
 		JSettlersScreen content = startGui(argsList);
-
+		StartScreenConnector startScreen = new StartScreenConnector();
 		generateContent(argsList, content);
 
 		ImageProvider.getInstance().startPreloading();
@@ -93,7 +91,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static JSettlersScreen startGui(List<String> argsList) {
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new SwingSoundPlayer());
+		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer());
 		area.add(content.getRegion());
 
 		if (argsList.contains("--force-jogl")) {
@@ -118,22 +116,22 @@ public class SwingManagedJSettlers {
 		long randomSeed = 0;
 		for (String s : argsList) {
 			if (s.startsWith("--mapfile=")) {
-				mapfile = s.replaceFirst("--mapfile=", "");
+				mapfile  = s.replaceFirst("--mapfile=", "");
 			}
 			if (s.startsWith("--random=")) {
 				randomSeed = Long.parseLong(s.replaceFirst("--random=", ""));
 			}
 		}
-
-		UIPanel toDisplay;
+		
 		if (mapfile != null) {
 			MapLoader mapLoader = new MapLoader(new File(mapfile));
 			IStartingGame game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
-			toDisplay = new StartingGamePanel(game, content);
+			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
+			content.setContent(toDisplay);
 		} else {
-			toDisplay = new StartScreen(new StartScreenConnector(), content);
+			content.goToStartScreen("");
 		}
-		content.setContent(toDisplay);
+		
 	}
 
 	private static void startRedrawTimer(final JSettlersScreen content) {
