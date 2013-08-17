@@ -30,15 +30,12 @@ import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.RelativeStack;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.IResourceProvider;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -47,7 +44,7 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.startscreen.interfaces.IStartedGame;
+import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
@@ -155,43 +152,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 
 	private MapInterfaceConnector startMapWindow(List<String> argsList) {
 		JSettlersScreen gui = SwingManagedJSettlers.startGui(argsList);
-		MapContent content = new MapContent(new IStartedGame() {
-			
-			@Override
-			public IStatisticable getPlayerStatistics() {
-				return new IStatisticable() {
-					@Override
-					public int getNumberOf(EMovableType movableType) {
-						return 0;
-					}
-					
-					@Override
-					public int getNumberOf(EMaterialType materialType) {
-						return 0;
-					}
-					
-					@Override
-					public int getJoblessBearers() {
-						return 0;
-					}
-					
-					@Override
-					public int getGameTime() {
-						return 0;
-					}
-				};
-			}
-			
-			@Override
-			public int getPlayer() {
-				return 0;
-			}
-			
-			@Override
-			public IGraphicsGrid getMap() {
-				return map;
-			}
-		}, new SwingSoundPlayer());
+		MapContent content = new MapContent(new FakeMapGame(map), new SwingSoundPlayer());
 		gui.setContent(content);
 		MapInterfaceConnector connector = content.getInterfaceConnector();
 		return connector;
