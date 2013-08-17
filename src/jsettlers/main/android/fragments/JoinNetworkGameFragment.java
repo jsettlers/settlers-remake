@@ -1,8 +1,10 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
+import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.main.android.R;
+import jsettlers.main.android.fragments.progress.JoinGameProgress;
 import jsettlers.main.android.maplist.JoinableMapListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
@@ -37,7 +39,8 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IJoinableGame>
 
 	@Override
 	protected void startGame(IJoinableGame game) {
-		getJsettlersActivity().getMultiplayerConnector().joinMultiplayerGame(game);
+		IJoiningGame joining = getJsettlersActivity().getMultiplayerConnector().joinMultiplayerGame(game);
+		getJsettlersActivity().showFragment(new JoinGameProgress(joining));
 	}
 
 	@Override

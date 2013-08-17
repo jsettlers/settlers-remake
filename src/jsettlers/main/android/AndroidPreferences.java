@@ -2,6 +2,7 @@ package jsettlers.main.android;
 
 import java.util.UUID;
 
+import jsettlers.common.CommonConstants;
 import android.content.SharedPreferences;
 
 public class AndroidPreferences {
@@ -12,8 +13,8 @@ public class AndroidPreferences {
 		this.preferences = preferences;
 	}
 
-	public boolean hasMissingPreferences() {
-		return !getPlayerName().isEmpty();
+	public boolean hasMissingMultiplayerPreferences() {
+		return getPlayerName().isEmpty() || getServer().isEmpty();
 	}
 
 	public String getPlayerName() {
@@ -30,6 +31,14 @@ public class AndroidPreferences {
 	}
 
 	public String getServer() {
-		return "localhost";
+		return  preferences.getString("server", CommonConstants.DEFAULT_SERVER_ADDRESS);
+	}
+	
+	public void setPlayerName(String name) {
+		preferences.edit().putString("player-name", name).commit();
+	}
+	
+	public void setServer(String serverName) {
+		preferences.edit().putString("server", serverName).commit();
 	}
 }

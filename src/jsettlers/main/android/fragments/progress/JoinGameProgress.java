@@ -4,7 +4,7 @@ import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
-import jsettlers.main.android.fragments.NetworkScreenFragment;
+import jsettlers.main.android.fragments.JoinPhaseFragment;
 import android.annotation.SuppressLint;
 
 @SuppressLint("ValidFragment")
@@ -25,7 +25,7 @@ public class JoinGameProgress extends ProgressFragment implements IJoiningGameLi
 
 	@Override
 	public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
-		getJsettlersActivity().showFragment(new NetworkScreenFragment(connector));
+		getJsettlersActivity().showFragment(new JoinPhaseFragment(connector));
 	}
 
 }

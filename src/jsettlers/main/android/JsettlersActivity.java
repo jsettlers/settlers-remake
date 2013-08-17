@@ -66,7 +66,7 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		((FrameLayout) findViewById(R.id.base_gl)).addView(goView);
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 
-		if (provider.needsUpdate() || true) {
+		if (provider.needsUpdate()) {
 			showFragment(new UpdateResourcesFragment());
 		} else {
 			showStartScreen();
@@ -234,6 +234,10 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 					new Player(prefs.getPlayerId(), prefs.getPlayerName()));
 		}
 		return multiplayerConnector;
+	}
+	
+	public AndroidPreferences getPrefs() {
+		return prefs;
 	}
 
 	@Override

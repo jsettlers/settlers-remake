@@ -20,15 +20,15 @@ public class StartScreenFragment extends JsettlersFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.startscreen, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Button newLocal =
-		        (Button) view.findViewById(R.id.startscreen_local_new);
+		Button newLocal = (Button) view
+				.findViewById(R.id.startscreen_local_new);
 		newLocal.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -36,38 +36,47 @@ public class StartScreenFragment extends JsettlersFragment {
 			}
 		});
 
-		Button loadLocal =
-		        (Button) view.findViewById(R.id.startscreen_local_load);
+		Button loadLocal = (Button) view
+				.findViewById(R.id.startscreen_local_load);
 		loadLocal.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getJsettlersActivity()
-				        .showFragment(new LoadLocalGameFragment());
+				showNetworkFragment(new LoadLocalGameFragment());
 			}
 		});
 
-		Button newNetwork =
-		        (Button) view.findViewById(R.id.startscreen_network_new);
+		Button newNetwork = (Button) view
+				.findViewById(R.id.startscreen_network_new);
 		newNetwork.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getJsettlersActivity().showFragment(
-				        new NewNetworkGameFragment());
+				showNetworkFragment(
+						new NewNetworkGameFragment());
 			}
 		});
 
-		Button joinNetwork =
-		        (Button) view.findViewById(R.id.startscreen_network_join);
+		Button joinNetwork = (Button) view
+				.findViewById(R.id.startscreen_network_join);
 		joinNetwork.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getJsettlersActivity().showFragment(
-				        new JoinNetworkGameFragment());
+				showNetworkFragment(new JoinNetworkGameFragment());
 			}
 		});
 
 		TextView rev = (TextView) view.findViewById(R.id.startscreen_rev);
 		rev.setText("r" + Revision.REVISION + " / r" + LogicRevision.REVISION);
+	}
+
+	private void showNetworkFragment(JsettlersFragment joinFragement) {
+		if (getJsettlersActivity().getPrefs()
+				.hasMissingMultiplayerPreferences()) {
+			PreferencesFragment fragment = new PreferencesFragment();
+			fragment.setReturnTo(joinFragement);
+			getJsettlersActivity().showFragment(fragment);
+		} else {
+			getJsettlersActivity().showFragment(joinFragement);
+		}
 	}
 
 	@Override

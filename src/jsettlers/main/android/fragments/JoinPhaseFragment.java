@@ -1,9 +1,12 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.main.android.ChatAdapter;
 import jsettlers.main.android.PlayerList;
 import jsettlers.main.android.R;
+import jsettlers.main.android.fragments.progress.StartGameProgess;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,15 +21,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 @SuppressLint("ValidFragment")
-public class NetworkScreenFragment extends JsettlersFragment{
+public class JoinPhaseFragment extends JsettlersFragment implements
+		IMultiplayerListener {
 
 	private PlayerList playerList;
 	private ChatAdapter chatAdapter;
 	private final IJoinPhaseMultiplayerGameConnector connector;
 
 	@SuppressLint("ValidFragment")
-	public NetworkScreenFragment(IJoinPhaseMultiplayerGameConnector connector) {
+	public JoinPhaseFragment(IJoinPhaseMultiplayerGameConnector connector) {
 		this.connector = connector;
+		connector.setMultiplayerListener(this);
 	}
 
 	@Override
@@ -36,7 +41,7 @@ public class NetworkScreenFragment extends JsettlersFragment{
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.networkinit, container, false);
 	}
 
@@ -48,12 +53,12 @@ public class NetworkScreenFragment extends JsettlersFragment{
 
 		loadChat(root);
 
-		CheckBox acceptButton =
-		        (CheckBox) root.findViewById(R.id.network_allowstart);
+		CheckBox acceptButton = (CheckBox) root
+				.findViewById(R.id.network_allowstart);
 		acceptButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
-			        boolean isChecked) {
+					boolean isChecked) {
 				connector.setReady(isChecked);
 			}
 		});
@@ -69,7 +74,8 @@ public class NetworkScreenFragment extends JsettlersFragment{
 	}
 
 	private void loadChat(View root) {
-		chatAdapter = new ChatAdapter(getActivity().getLayoutInflater(), connector);
+		chatAdapter = new ChatAdapter(getActivity().getLayoutInflater(),
+				connector);
 		ListView chatListView = (ListView) root.findViewById(R.id.network_chat);
 		chatListView.setAdapter(chatAdapter);
 
@@ -83,15 +89,15 @@ public class NetworkScreenFragment extends JsettlersFragment{
 	}
 
 	private void loadPlayerList(View root) {
-		ListView playerListView =
-		        (ListView) root.findViewById(R.id.network_playerlist);
+		ListView playerListView = (ListView) root
+				.findViewById(R.id.network_playerlist);
 		playerList = new PlayerList(getActivity(), connector.getPlayers());
 		playerListView.setAdapter(playerList);
 	}
 
 	private void sendChatMessage() {
-		EditText chatTextField =
-		        (EditText) getView().findViewById(R.id.network_chatmessage);
+		EditText chatTextField = (EditText) getView().findViewById(
+				R.id.network_chatmessage);
 		String message = chatTextField.getText().toString();
 		if (!message.isEmpty()) {
 			connector.sendChatMessage(message);
@@ -105,5 +111,16 @@ public class NetworkScreenFragment extends JsettlersFragment{
 		connector.abort();
 		getJsettlersActivity().showStartScreen();
 		return true;
+	}
+
+	@Override
+	public void gameIsStarting(IStartingGame game) {
+		getJsettlersActivity().showFragment(new StartGameProgess(game));
+	}
+
+	@Override
+	public void gameAborted() {
+		// TODO Error message
+		getJsettlersActivity().showStartScreen();
 	};
 }

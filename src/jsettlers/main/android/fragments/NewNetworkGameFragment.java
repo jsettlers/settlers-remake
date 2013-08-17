@@ -17,7 +17,7 @@ public class NewNetworkGameFragment extends
 	protected MapListAdapter<IStartableMapDefinition> generateListAdapter() {
 		LayoutInflater inflater = (LayoutInflater) getActivity()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		return new MapDefinitionListAdapter(inflater, getJsettlersActivity()
+		return new MapDefinitionListAdapter<IStartableMapDefinition>(inflater, getJsettlersActivity()
 				.getStartConnector().getMultiplayerMaps());
 	}
 
