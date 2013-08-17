@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="jsettlers.logic"/>
-	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="jsettlers.logic.objects"/>
 	<classpathentry kind="src" path="jsettlers.logic.buildings"/>
 	<classpathentry kind="src" path="jsettlers.logic.movable"/>
@@ -10,6 +9,7 @@
 	<classpathentry kind="src" path="jsettlers.logic.constants"/>
 	<classpathentry kind="src" path="jsettlers.main"/>
 	<classpathentry kind="src" path="jsettlers.input"/>
+	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
