@@ -50,7 +50,7 @@ public class SwingManagedJSettlers {
 		setupResourceManagersByConfigFile();
 
 		JSettlersScreen content = startGui(argsList);
-		StartScreenConnector startScreen = new StartScreenConnector();
+
 		generateContent(argsList, content);
 
 		ImageProvider.getInstance().startPreloading();
@@ -118,13 +118,13 @@ public class SwingManagedJSettlers {
 		long randomSeed = 0;
 		for (String s : argsList) {
 			if (s.startsWith("--mapfile=")) {
-				mapfile  = s.replaceFirst("--mapfile=", "");
+				mapfile = s.replaceFirst("--mapfile=", "");
 			}
 			if (s.startsWith("--random=")) {
 				randomSeed = Long.parseLong(s.replaceFirst("--random=", ""));
 			}
 		}
-		
+
 		UIPanel toDisplay;
 		if (mapfile != null) {
 			MapLoader mapLoader = new MapLoader(new File(mapfile));
