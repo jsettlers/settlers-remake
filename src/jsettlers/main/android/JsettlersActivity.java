@@ -8,21 +8,20 @@ import go.graphics.region.Region;
 
 import java.io.File;
 
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
+import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
+import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.bg.BgControls;
 import jsettlers.main.android.bg.BgMap;
-import jsettlers.main.android.bg.BgStats;
 import jsettlers.main.android.fragments.GameCommandFragment;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
@@ -38,7 +37,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-public class JsettlersActivity extends Activity {
+public class JsettlersActivity extends Activity implements IGameExitListener {
 
 	private static final int SOUND_THREADS = 6;
 	private GOSurfaceView goView;
@@ -184,40 +183,20 @@ public class JsettlersActivity extends Activity {
 		return connector;
 	}
 
-	public MapInterfaceConnector showGameMap(IStartedGame game,
-			IStatisticable playerStatistics) {
+	public MapInterfaceConnector showGameMap(IStartedGame game) {
 		stopBgMapThreads();
 		GameCommandFragment p = showMapFragment();
 
 		MapContent content = new MapContent(game, soundPlayer,
 				new MobileControls(p.getPutable(this)));
 		goRegion.setContent(content);
+		game.setGameExitListener(this);
 		return content.getInterfaceConnector();
 	}
 
 	public void showBgMap() {
 		stopBgMapThreads();
-		IStartedGame game = new IStartedGame() {
-			private BgMap bgMap;
-
-			@Override
-			public IStatisticable getPlayerStatistics() {
-				return new BgStats();
-			}
-
-			@Override
-			public int getPlayer() {
-				return 0;
-			}
-
-			@Override
-			public IGraphicsGrid getMap() {
-				if (bgMap == null) {
-					bgMap = new BgMap();
-				}
-				return bgMap;
-			}
-		};
+		IStartedGame game = new FakeMapGame(new BgMap());
 		activeBgMapContent = new MapContent(game, soundPlayer, new BgControls());
 		goRegion.setContent(activeBgMapContent);
 	}
@@ -257,4 +236,8 @@ public class JsettlersActivity extends Activity {
 		return multiplayerConnector;
 	}
 
+	@Override
+	public void gameExited(IStartedGame game) {
+		showStartScreen();
+	}
 }

@@ -135,13 +135,14 @@ public class ResourceUpdater implements Runnable {
 
 			byte[] buffer = new byte[1024];
 
-			int size = inputStream.available();
+			long size = response.getEntity().getContentLength();
+			long read = 0;
 
 			ZipEntry entry;
 			while ((entry = inputStream.getNextEntry()) != null) {
 				String name = entry.getName();
 				c.setProgressState(EProgressState.UPDATE,
-						(float) (size - inputStream.available()) / size);
+						(float) read / size);
 
 				if (name.startsWith(RESOURCE_PREFIX)) {
 					String outfilename = destdir.getAbsolutePath() + "/"
@@ -165,6 +166,7 @@ public class ResourceUpdater implements Runnable {
 							if (len <= 0) {
 								break;
 							}
+							read += len;
 							out.write(buffer, 0, len);
 						}
 						out.close();

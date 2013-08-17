@@ -1,7 +1,9 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.main.android.R;
+import jsettlers.main.android.fragments.progress.StartGameProgess;
 import jsettlers.main.android.maplist.MapDefinitionListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
@@ -15,7 +17,7 @@ public class NewLocalGameFragment extends MapSelectionFragment<IStartableMapDefi
 		LayoutInflater inflater =
 		        (LayoutInflater) getActivity().getSystemService(
 		                Context.LAYOUT_INFLATER_SERVICE);
-		return new MapDefinitionListAdapter(inflater, getJsettlersActivity()
+		return new MapDefinitionListAdapter<IStartableMapDefinition>(inflater, getJsettlersActivity()
 		        .getStartConnector().getSingleplayerMaps());
 	}
 
@@ -51,7 +53,8 @@ public class NewLocalGameFragment extends MapSelectionFragment<IStartableMapDefi
 		} else if (players > game.getMaxPlayers()) {
 			showText(R.string.illegal_playercount_too_high);
 		} else {
-			getJsettlersActivity().getStartConnector().startSingleplayerGame(game);
+			IStartingGame started = getJsettlersActivity().getStartConnector().startSingleplayerGame(game);
+			getJsettlersActivity().showFragment(new StartGameProgess(started));
 		}
 	}
 

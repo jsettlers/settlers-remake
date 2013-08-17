@@ -36,6 +36,7 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 		this.baseList = baseList;
 		handler = new Handler();
 		baseList.setListener(this);
+		listChanged(baseList);
 	}
 
 	@Override

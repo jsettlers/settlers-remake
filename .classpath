@@ -12,6 +12,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.androidui"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/networklib"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/networklib"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
