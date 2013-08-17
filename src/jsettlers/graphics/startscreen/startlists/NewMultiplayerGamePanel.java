@@ -8,7 +8,7 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
-import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.interfaces.IStartScreenConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
@@ -41,10 +41,10 @@ public class NewMultiplayerGamePanel extends
 		}
 	}
 
-	private final IStartScreen screen;
+	private final IStartScreenConnector screen;
 	private final IContentSetable contentSetable;
 
-	public NewMultiplayerGamePanel(IStartScreen screen,
+	public NewMultiplayerGamePanel(IStartScreenConnector screen,
 	        IContentSetable contentSetable) {
 		super(screen.getMultiplayerMaps());
 		this.screen = screen;

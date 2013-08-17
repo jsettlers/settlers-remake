@@ -10,7 +10,7 @@ package jsettlers.graphics.startscreen.interfaces;
  * 
  * @author michael
  */
-public interface IStartScreen {
+public interface IStartScreenConnector {
 	/**
 	 * Gets a list of installed maps. The list may change after this call, e.g.
 	 * because it was not fully loaded. This only returns maps that can be

@@ -11,7 +11,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
-import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.interfaces.IStartScreenConnector;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.graphics.startscreen.startlists.JoinableGamePanel;
 import jsettlers.graphics.startscreen.startlists.LoadGamePanel;
@@ -27,11 +27,11 @@ public class StartScreen extends UIPanel {
 	        new LinkedList<UILabeledButton>();
 	private final UIPanel content;
 
-	private final IStartScreen connector;
+	private final IStartScreenConnector connector;
 
 	private final IContentSetable contentSetable;
 
-	public StartScreen(IStartScreen connector, IContentSetable contentSetable) {
+	public StartScreen(IStartScreenConnector connector, IContentSetable contentSetable) {
 		this.connector = connector;
 		// root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
 		this.contentSetable = contentSetable;
