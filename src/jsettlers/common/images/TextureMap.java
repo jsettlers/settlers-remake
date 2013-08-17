@@ -8,6 +8,9 @@ public final class TextureMap {
 
 	public static int getIndex(String name) {
 		int arrindex = Arrays.binarySearch(names, name);
+		if (arrindex < 0) {
+			throw new IllegalArgumentException("Could not find " + name + " in image map.");
+		}
 		return indexes[arrindex];
 	}
 
