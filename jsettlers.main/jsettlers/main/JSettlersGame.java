@@ -12,6 +12,7 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.interfaces.EGameError;
+import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
@@ -105,6 +106,7 @@ public class JSettlersGame {
 		private GameStatistics statistics;
 		private EProgressState progressState;
 		private float progress;
+		private IGameExitListener exitListener;
 
 		@Override
 		public void run() {
@@ -163,6 +165,9 @@ public class JSettlersGame {
 			} catch (Exception e) {
 				e.printStackTrace();
 				reportFail(EGameError.UNKNOWN_ERROR, e);
+			}
+			if (exitListener != null) {
+				exitListener.gameExited(this);
 			}
 		}
 
@@ -226,6 +231,11 @@ public class JSettlersGame {
 		@Override
 		public void stopGame() {
 			stop();
+		}
+
+		@Override
+		public void setGameExitListener(IGameExitListener exitListener) {
+			this.exitListener = exitListener;
 		}
 	}
 }
