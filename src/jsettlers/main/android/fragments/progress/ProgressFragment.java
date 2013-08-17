@@ -21,7 +21,7 @@ import android.widget.Toast;
  */
 public class ProgressFragment extends JsettlersFragment {
 
-	private EProgressState applyStateOnStart = EProgressState.LOADING;
+	private String applyStateOnStart = "";
 	private float applyProgressOnStart = -1;
 
 	@Override
@@ -49,23 +49,27 @@ public class ProgressFragment extends JsettlersFragment {
 	}
 	
 	public synchronized void setProgressState(final EProgressState state, final float progress) {
+		final String text = Labels.getProgress(state);
+		setProgressState(text, progress);
+	}
+
+	public void setProgressState(final String text, final float progress) {
 		Activity activity = getActivity();
 		if (activity != null) {
 			activity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					applyStateValues(state, progress);
+					applyStateValues(text, progress);
 				}
 			});
 		} else {
-			applyStateOnStart = state;
+			applyStateOnStart = text;
 			applyProgressOnStart = progress;
 		}
 	}
 
-	protected void applyStateValues(final EProgressState state,
+	protected void applyStateValues(final String text,
 	        float progress) {
-		String text = Labels.getProgress(state);
 		TextView textView =
 		        (TextView) getView().findViewById(R.id.progress_text);
 		if (textView != null) {

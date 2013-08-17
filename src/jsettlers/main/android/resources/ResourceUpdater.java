@@ -20,7 +20,7 @@ import java.util.zip.ZipInputStream;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 
-import jsettlers.graphics.progress.EProgressState;
+import jsettlers.logic.LogicRevision;
 import jsettlers.main.android.R;
 import jsettlers.main.android.Revision;
 
@@ -57,7 +57,8 @@ public class ResourceUpdater implements Runnable {
 		this.prefs = context.getSharedPreferences("resupdate", 0);
 		this.destdir = destdir;
 
-		if (prefs.getInt(PREF_REVISION, -1) != Revision.REVISION
+		int revHash = Revision.REVISION + LogicRevision.REVISION * 10000;
+		if (prefs.getInt(PREF_REVISION, -1) != revHash
 				|| prefs.getBoolean(PREF_OUTDATED, false)) {
 			needsUpdate = true;
 		}
@@ -106,7 +107,8 @@ public class ResourceUpdater implements Runnable {
 				} catch (Throwable t) {
 					setUpdating(false);
 				}
-				listener.setProgressState(EProgressState.UPDATE, 1);
+				//TODO: i18n
+				listener.setProgressState("Updating", 1);
 				if (listener != null) {
 					listener.resourceUpdateFinished();
 				}
@@ -117,7 +119,8 @@ public class ResourceUpdater implements Runnable {
 
 	private void updateFiles(DefaultHttpClient httpClient, UpdateListener c)
 			throws IOException, ClientProtocolException {
-		c.setProgressState(EProgressState.UPDATE, -1);
+		//TODO: i18n
+		c.setProgressState("Updating", -1);
 
 		if (serverrev == null) {
 			serverrev = loadRevision(httpClient);
@@ -141,7 +144,8 @@ public class ResourceUpdater implements Runnable {
 			ZipEntry entry;
 			while ((entry = inputStream.getNextEntry()) != null) {
 				String name = entry.getName();
-				c.setProgressState(EProgressState.UPDATE,
+				//TODO:  i18n
+				c.setProgressState("Updating",
 						(float) read / size);
 
 				if (name.startsWith(RESOURCE_PREFIX)) {
