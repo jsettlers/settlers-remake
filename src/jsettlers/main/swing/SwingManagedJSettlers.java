@@ -22,9 +22,13 @@ import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.StartScreen;
-import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
+import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.graphics.utils.UIPanel;
 import jsettlers.logic.LogicRevision;
+import jsettlers.logic.map.save.MapLoader;
+import jsettlers.main.JSettlersGame;
 import jsettlers.main.StartScreenConnector;
 
 public class SwingManagedJSettlers {
@@ -37,7 +41,8 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException,
+			IOException, ClassNotFoundException {
 		List<String> argsList = Arrays.asList(args);
 
 		loadDebugSettings(argsList);
@@ -45,13 +50,16 @@ public class SwingManagedJSettlers {
 		setupResourceManagersByConfigFile();
 
 		JSettlersScreen content = startGui(argsList);
-		generateContent(new StartScreenConnector(), content);
+		StartScreenConnector startScreen = new StartScreenConnector();
+		generateContent(argsList, content);
 
 		ImageProvider.getInstance().startPreloading();
 	}
 
-	public static void setupResourceManagersByConfigFile() throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = new ConfigurationPropertiesFile(new File("config.prp"));
+	public static void setupResourceManagersByConfigFile()
+			throws FileNotFoundException, IOException {
+		ConfigurationPropertiesFile configFile = new ConfigurationPropertiesFile(
+				new File("config.prp"));
 
 		ImageProvider provider = ImageProvider.getInstance();
 		for (String gfxFolder : configFile.getGfxFolders()) {
@@ -62,7 +70,8 @@ public class SwingManagedJSettlers {
 			SoundManager.addLookupPath(new File(sndFolder));
 		}
 
-		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesFolder()));
+		ResourceManager.setProvider(new SwingResourceProvider(configFile
+				.getResourcesFolder()));
 	}
 
 	private static void loadDebugSettings(List<String> argsList) {
@@ -103,9 +112,28 @@ public class SwingManagedJSettlers {
 		return content;
 	}
 
-	private static void generateContent(IStartScreen startScreen,
+	private static void generateContent(List<String> argsList,
 			JSettlersScreen content) {
-		content.setContent(new StartScreen(startScreen, content));
+		String mapfile = null;
+		long randomSeed = 0;
+		for (String s : argsList) {
+			if (s.startsWith("--mapfile=")) {
+				mapfile  = s.replaceFirst("--mapfile=", "");
+			}
+			if (s.startsWith("--random=")) {
+				randomSeed = Long.parseLong(s.replaceFirst("--random=", ""));
+			}
+		}
+		
+		UIPanel toDisplay;
+		if (mapfile != null) {
+			MapLoader mapLoader = new MapLoader(new File(mapfile));
+			IStartingGame game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
+			toDisplay = new StartingGamePanel(game, content);
+		} else {
+			toDisplay = new StartScreen(new StartScreenConnector(), content);
+		}
+		content.setContent(toDisplay);
 	}
 
 	private static void startRedrawTimer(final JSettlersScreen content) {
@@ -118,7 +146,8 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void startJogl(Area area) {
-		JFrame jsettlersWnd = new JFrame("JSettlers - Revision: " + Revision.REVISION + "/" + LogicRevision.REVISION);
+		JFrame jsettlersWnd = new JFrame("JSettlers - Revision: "
+				+ Revision.REVISION + "/" + LogicRevision.REVISION);
 		AreaContainer panel = new AreaContainer(area);
 		panel.setPreferredSize(new Dimension(640, 480));
 		jsettlersWnd.add(panel);
