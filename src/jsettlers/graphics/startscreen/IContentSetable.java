@@ -16,4 +16,6 @@ public interface IContentSetable {
 	void setContent(RegionContent panel);
 
 	SoundPlayer getSoundPlayer();
+	
+	void goToStartScreen(String message);
 }

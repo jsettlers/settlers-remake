@@ -1,27 +1,31 @@
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.UUID;
+
+import jsettlers.common.CommonConstants;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
+import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.IStartScreenConnector;
+import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
 import jsettlers.graphics.utils.UIListItem;
 
 public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 
-	private final IMultiplayerConnector connector;
-	private final IStartScreenConnector screen;
+	private final IStartScreen screen;
 	private final IContentSetable contentSetable;
+	private IMultiplayerConnector connector;
+	private boolean gameStarted;
 
-	public JoinableGamePanel(IStartScreenConnector screen,
-	        IContentSetable contentSetable, IMultiplayerConnector connector) {
-		super(connector.getJoinableMultiplayerGames());
+	public JoinableGamePanel(IStartScreen screen, IContentSetable contentSetable) {
+		super(null);
 		this.screen = screen;
 		this.contentSetable = contentSetable;
-		this.connector = connector;
 	}
 
 	@Override
@@ -36,6 +40,7 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 			public void execute() {
 				IJoiningGame joiningGame =
 				        connector.joinMultiplayerGame(getActiveListItem());
+				gameStarted = true;
 				contentSetable.setContent(new JoiningGamePanel(joiningGame,
 				        contentSetable));
 			}
@@ -43,7 +48,28 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	}
 
 	@Override
+	public void onAttach() {
+		connector = screen.getMultiplayerConnector(CommonConstants.DEFAULT_SERVER_ADDRESS,
+		        new Player(UUID.randomUUID().toString(), "Testplayer"));
+		super.onAttach();
+	}
+
+	@Override
+	protected IChangingList<IJoinableGame> getList() {
+		return connector.getJoinableMultiplayerGames();
+	}
+
+	@Override
+	public void onDetach() {
+	    super.onDetach();
+	    if (!gameStarted) {
+	    	connector.shutdown();
+	    }
+	    connector = null;
+	}
+	
+	@Override
 	protected String getSubmitTextId() {
-	    return "start-joinmultiplayer-start";
+		return "start-joinmultiplayer-start";
 	}
 }

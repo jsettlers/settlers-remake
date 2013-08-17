@@ -12,6 +12,8 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
+import jsettlers.graphics.startscreen.StartScreen;
+import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -25,9 +27,11 @@ public class JSettlersScreen implements IContentSetable {
 	private final Region region = new Region(Region.POSITION_CENTER);
 	private UIPanel activePanel;
 	private final SoundPlayer soundPlayer;
+	private final IStartScreen baseConnector;
 
-	public JSettlersScreen(SoundPlayer soundPlayer) {
+	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer) {
 	    super();
+		this.baseConnector = baseConnector;
 	    this.soundPlayer = soundPlayer;
     }
 
@@ -92,6 +96,11 @@ public class JSettlersScreen implements IContentSetable {
 		region.setContent(new PanelRegionContent(root));
 		root.onAttach();
 		region.requestRedraw();
+	}
+	
+	@Override
+	public void goToStartScreen(String message) {
+		setContent(new StartScreen(baseConnector, this));
 	}
 
 	public Region getRegion() {

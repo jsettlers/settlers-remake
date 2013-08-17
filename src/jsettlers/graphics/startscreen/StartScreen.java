@@ -3,16 +3,13 @@ package jsettlers.graphics.startscreen;
 import go.graphics.text.EFontSize;
 
 import java.util.LinkedList;
-import java.util.UUID;
 
-import jsettlers.common.CommonConstants;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
-import jsettlers.graphics.startscreen.interfaces.IStartScreenConnector;
-import jsettlers.graphics.startscreen.interfaces.Player;
+import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.startlists.JoinableGamePanel;
 import jsettlers.graphics.startscreen.startlists.LoadGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewGamePanel;
@@ -27,11 +24,11 @@ public class StartScreen extends UIPanel {
 	        new LinkedList<UILabeledButton>();
 	private final UIPanel content;
 
-	private final IStartScreenConnector connector;
+	private final IStartScreen connector;
 
 	private final IContentSetable contentSetable;
 
-	public StartScreen(IStartScreenConnector connector, IContentSetable contentSetable) {
+	public StartScreen(IStartScreen connector, IContentSetable contentSetable) {
 		this.connector = connector;
 		// root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
 		this.contentSetable = contentSetable;
@@ -52,10 +49,7 @@ public class StartScreen extends UIPanel {
 		        connector, contentSetable), .6f);
 		addMainButton(
 		        "start-joinmultiplayer",
-		        new JoinableGamePanel(connector, contentSetable, connector
-		                .getMultiplayerConnector(
-		                        CommonConstants.DEFAULT_SERVER_ADDRESS, new Player(UUID
-		                                .randomUUID().toString(), "joiner"))),
+		        new JoinableGamePanel(connector, contentSetable),
 		        .45f);
 		// addMainButton("start-restoremultiplayer", new NewGamePanel(connector,
 		// contentSetable), .3f);

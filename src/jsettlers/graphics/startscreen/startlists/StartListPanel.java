@@ -1,5 +1,7 @@
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.Collections;
+
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
@@ -23,8 +25,7 @@ public abstract class StartListPanel<T> extends
 
 	public StartListPanel(IChangingList<T> list) {
 		this.list = list;
-		uiList = new UIList<T>(list.getItems(), this, .1f);
-
+		uiList = new UIList<T>(Collections.<T>emptyList(), this, .1f);
 		this.addChild(uiList, 0, .15f, 1, 1);
 
 		// start button
@@ -45,14 +46,20 @@ public abstract class StartListPanel<T> extends
 	public void listChanged(IChangingList<T> list) {
 		uiList.setItems(list.getItems());
 	}
-
+	
+	protected IChangingList<T> getList() {
+		return list;
+	}
+	
 	@Override
 	public void onAttach() {
-		list.setListener(this);
+		IChangingList<T> list2 = getList();
+		listChanged(list2);
+		list2.setListener(this);
 	}
 
 	@Override
 	public void onDetach() {
-		list.setListener(null);
+		getList().setListener(null);
 	};
 }

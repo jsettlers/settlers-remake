@@ -5,6 +5,7 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.interfaces.EGameError;
+import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
@@ -29,6 +30,12 @@ public class StartingGamePanel extends ProgressPanel implements IStartingGameLis
     public MapInterfaceConnector startFinished(IStartedGame game) {
 		MapContent content = new MapContent(game, contentSetable.getSoundPlayer());
 		contentSetable.setContent(content);
+		game.setGameExitListener(new IGameExitListener() {
+			@Override
+			public void gameExited(IStartedGame game) {
+				contentSetable.goToStartScreen("");
+			}
+		});
 	    return content.getInterfaceConnector();
     }
 
