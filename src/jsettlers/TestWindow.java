@@ -5,10 +5,7 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 import java.util.Collections;
 
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -17,6 +14,7 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
@@ -32,42 +30,7 @@ public class TestWindow {
 	}
 
 	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {
-		IStartedGame game = new IStartedGame() {
-			@Override
-			public IStatisticable getPlayerStatistics() {
-				return new IStatisticable() {
-					@Override
-					public int getNumberOf(EMovableType movableType) {
-						return 0;
-					}
-
-					@Override
-					public int getNumberOf(EMaterialType materialType) {
-						return 0;
-					}
-
-					@Override
-					public int getJoblessBearers() {
-						return 0;
-					}
-
-					@Override
-					public int getGameTime() {
-						return 0;
-					}
-				};
-			}
-
-			@Override
-			public int getPlayer() {
-				return 0;
-			}
-
-			@Override
-			public IGraphicsGrid getMap() {
-				return map;
-			}
-		};
+		IStartedGame game = new FakeMapGame(map);
 		return openTestWindow(game);
 	}
 
