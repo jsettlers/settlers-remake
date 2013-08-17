@@ -7,7 +7,7 @@ import java.util.List;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
-import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.startscreen.interfaces.IStartScreenConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
@@ -17,12 +17,12 @@ import jsettlers.main.datatypes.ChangingList;
 import jsettlers.main.datatypes.MapDefinition;
 
 /**
- * This class implements the {@link IStartScreen} interface and acts as connector between the start screen and the game logic.
+ * This class implements the {@link IStartScreenConnector} interface and acts as connector between the start screen and the game logic.
  * 
  * @author Andreas Eberle
  * 
  */
-public class StartScreenConnector implements IStartScreen {
+public class StartScreenConnector implements IStartScreenConnector {
 
 	private final MapList mapList;
 
