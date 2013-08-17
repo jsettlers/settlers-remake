@@ -24,6 +24,7 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.logic.LogicRevision;
 import jsettlers.main.StartScreenConnector;
 
 public class SwingManagedJSettlers {
@@ -117,7 +118,7 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void startJogl(Area area) {
-		JFrame jsettlersWnd = new JFrame("JSettlers"); // TODO add revision to title
+		JFrame jsettlersWnd = new JFrame("JSettlers - Revision: " + Revision.REVISION + "/" + LogicRevision.REVISION);
 		AreaContainer panel = new AreaContainer(area);
 		panel.setPreferredSize(new Dimension(640, 480));
 		jsettlersWnd.add(panel);
