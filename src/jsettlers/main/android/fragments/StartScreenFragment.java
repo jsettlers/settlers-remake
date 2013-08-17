@@ -1,5 +1,6 @@
 package jsettlers.main.android.fragments;
 
+import jsettlers.logic.LogicRevision;
 import jsettlers.main.android.R;
 import jsettlers.main.android.Revision;
 import android.os.Bundle;
@@ -66,7 +67,7 @@ public class StartScreenFragment extends JsettlersFragment {
 		});
 
 		TextView rev = (TextView) view.findViewById(R.id.startscreen_rev);
-		rev.setText("r" + Revision.REVISION);
+		rev.setText("r" + Revision.REVISION + " / r" + LogicRevision.REVISION);
 	}
 
 	@Override

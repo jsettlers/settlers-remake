@@ -11,6 +11,8 @@
 	<description>
             Additional build stuff needed for andrid main project
     </description>
+	
+	<import file="../../jsettlers.logic/build/svn.ant"/>
 
 	<!-- ================================= 
           target: extract-rev             
@@ -33,61 +35,13 @@ public class Revision {
 		</echo>
 	</target>
 
-	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: revision          
-         = = = = = = = = = = = = = = = = = -->
-	<macrodef name="svnrevision">
-		<attribute name="dir" default="." />
-		<sequential>
-			<exec executable="svn" failonerror="true" logerror="true">
-				<arg value="info" />
-				<arg value="--xml" />
-				<arg path="@{dir}"/>
-				<redirector output="svninfo.xml"/>
-			</exec>
-			<sleep milliseconds="200"/>
-			<local name="svn.info.entry.commit.revision" />
-			<xmlproperty file="svninfo.xml" collapseattributes="true" prefix="svn" />
-			<property name="svn.revision" value="${svn.info.entry.commit.revision}" />
-			<echo message="SVN Revision for @{dir}: ${svn.revision}" />
-			<delete file="svninfo.xml" />
-		</sequential>
-	</macrodef>
-
-
-	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: svn.findrev.in          
-         = = = = = = = = = = = = = = = = = -->
-	<macrodef name="svn.findrev.in">
-		<attribute name="dir" />
-		<sequential>
-			<local name="svn.revision" />
-			<svnrevision dir="@{dir}" />
-			<script language="javascript">
-				<![CDATA[
-				var version = parseInt(project.getProperty('svn.revision'));
-				var currentBest = parseInt(project.getProperty('svn.findrev.max'));
-				project.setProperty('svn.findrev.max', Math.max(version, currentBest));
-				]]>
-			</script>
-		</sequential>
-	</macrodef>
-
-
 	<!-- - - - - - - - - - - - - - - - - - 
           target: find-rev                      
          - - - - - - - - - - - - - - - - - -->
 	<target name="svn.findrev">
 		<property name="svn.findrev.max" value="0" />
-		<svn.findrev.in dir=".." />
-		<svn.findrev.in dir="../../jsettlers.algorithms" />
-		<svn.findrev.in dir="../../jsettlers.common" />
-		<svn.findrev.in dir="../../jsettlers.graphics" />
 		<svn.findrev.in dir="../../jsettlers.graphics.androidui" />
-		<svn.findrev.in dir="../../jsettlers.logic" />
 		<svn.findrev.in dir="../../jsettlers.main.android" />
-		<svn.findrev.in dir="../../networklib" />
-		<svn.findrev.in dir="../../go.graphics" />
 		<svn.findrev.in dir="../../go.graphics.android" />
 		<echo message="SVN Revision for all dirs: ${svn.findrev.max}" />
 	</target>
