@@ -31,7 +31,7 @@ public class OfflineTaskScheduler implements ITaskScheduler {
 	}
 
 	@Override
-	public void shutdown() { // nothing to do here
+	public void shutdown() {
 		networkTimer.stopExecution();
 	}
 }
