@@ -150,6 +150,7 @@ public class JSettlersGame {
 					}
 				}
 
+				taskScheduler.shutdown();
 				gameClock.stopExecution();
 				connector.stop();
 				mainGrid.stopThreads();
