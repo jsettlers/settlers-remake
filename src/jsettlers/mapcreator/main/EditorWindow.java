@@ -259,8 +259,11 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 							new TemplateMovable(14, 16, EMovableType.DIGGER),
 							new TemplateMovable(15, 18, EMovableType.DIGGER),
 							new TemplateMovable(16, 16, EMovableType.DIGGER),
+							new TemplateMovable(17, 18, EMovableType.DIGGER),
+							new TemplateMovable(18, 16, EMovableType.DIGGER),
 
 							new TemplateMovable(18, 17, EMovableType.SMITH),
+							new TemplateMovable(18, 18, EMovableType.SMITH),
 							new TemplateMovable(20, 16, EMovableType.MELTER),
 
 							// soldiers
@@ -279,24 +282,53 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 							new TemplateMovable(-5, -14, EMovableType.BOWMAN_L1),
 
 							// bearer
-							new TemplateMovable(-2, -12, EMovableType.BEARER), new TemplateMovable(-2, -14, EMovableType.BEARER),
+							new TemplateMovable(-2, -12, EMovableType.BEARER),
+							new TemplateMovable(-2, -14, EMovableType.BEARER),
 							new TemplateMovable(-2, -16, EMovableType.BEARER),
 
-							new TemplateMovable(0, -10, EMovableType.BEARER), new TemplateMovable(0, -12, EMovableType.BEARER),
-							new TemplateMovable(0, -14, EMovableType.BEARER), new TemplateMovable(0, -16, EMovableType.BEARER),
+							new TemplateMovable(0, -10, EMovableType.BEARER),
+							new TemplateMovable(0, -12, EMovableType.BEARER),
+							new TemplateMovable(0, -14, EMovableType.BEARER),
+							new TemplateMovable(0, -16, EMovableType.BEARER),
 
-							new TemplateMovable(2, -10, EMovableType.BEARER), new TemplateMovable(2, -12, EMovableType.BEARER),
-							new TemplateMovable(2, -14, EMovableType.BEARER), new TemplateMovable(2, -16, EMovableType.BEARER),
+							new TemplateMovable(2, -10, EMovableType.BEARER),
+							new TemplateMovable(2, -12, EMovableType.BEARER),
+							new TemplateMovable(2, -14, EMovableType.BEARER),
+							new TemplateMovable(2, -16, EMovableType.BEARER),
 
-							new TemplateMovable(4, -10, EMovableType.BEARER), new TemplateMovable(4, -12, EMovableType.BEARER),
-							new TemplateMovable(4, -14, EMovableType.BEARER), }, this),
-					new PlaceTemplateTool("Holzarbeiter", new TemplateObject[] { new TemplateBuilding(0, 10, EBuildingType.LUMBERJACK),
-							new TemplateBuilding(0, 0, EBuildingType.FORESTER), new TemplateBuilding(3, -9, EBuildingType.LUMBERJACK),
+							new TemplateMovable(4, -10, EMovableType.BEARER),
+							new TemplateMovable(4, -12, EMovableType.BEARER),
+							new TemplateMovable(4, -14, EMovableType.BEARER),
 
-							new TemplateMovable(8, -8, EMovableType.LUMBERJACK), new TemplateMovable(7, 3, EMovableType.FORESTER),
+							new TemplateMovable(5, -12, EMovableType.BEARER),
+							new TemplateMovable(5, -14, EMovableType.BEARER),
+							new TemplateMovable(5, -16, EMovableType.BEARER),
+
+							new TemplateMovable(7, -10, EMovableType.BEARER),
+							new TemplateMovable(7, -12, EMovableType.BEARER),
+							new TemplateMovable(7, -14, EMovableType.BEARER),
+							new TemplateMovable(7, -16, EMovableType.BEARER),
+
+							new TemplateMovable(9, -10, EMovableType.BEARER),
+							new TemplateMovable(9, -12, EMovableType.BEARER),
+							new TemplateMovable(9, -14, EMovableType.BEARER),
+							new TemplateMovable(9, -16, EMovableType.BEARER),
+
+							new TemplateMovable(11, -10, EMovableType.BEARER),
+							new TemplateMovable(11, -12, EMovableType.BEARER),
+							new TemplateMovable(11, -14, EMovableType.BEARER),
+					}, this),
+					new PlaceTemplateTool("Holzarbeiter", new TemplateObject[] {
+							new TemplateBuilding(0, 10, EBuildingType.LUMBERJACK),
+							new TemplateBuilding(0, 0, EBuildingType.FORESTER),
+							new TemplateBuilding(3, -9, EBuildingType.LUMBERJACK),
+
+							new TemplateMovable(8, -8, EMovableType.LUMBERJACK),
+							new TemplateMovable(7, 3, EMovableType.FORESTER),
 							new TemplateMovable(7, 12, EMovableType.LUMBERJACK),
+					}, this), }),
 
-					}, this), }), new SetStartpointTool(this), new DeleteObjectTool(), });
+			new SetStartpointTool(this), new DeleteObjectTool(), });
 	// @formatter:on
 
 	private final MapData data;
@@ -547,7 +579,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			File temp = File.createTempFile("tmp_map", "");
 			data.doPreSaveActions();
 			MapSaver.saveMap(generateMapHeader(), data, new FileOutputStream(temp));
-			
+
 			String[] args = new String[] { "java", "-classpath",
 					System.getProperty("java.class.path"),
 					SwingManagedJSettlers.class.getName(),
