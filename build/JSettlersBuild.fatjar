@@ -1,10 +1,10 @@
 #Fat Jar Configuration File
-#Thu Aug 15 19:45:17 CEST 2013
+#Sun Aug 18 11:23:58 CEST 2013
 onejar.license.required=true
 manifest.classpath=libs/jogl-all.jar libs/gluegen-rt.jar
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=build\\JSettlers.jar
+jarname=target/JSettlers.jar
 manifest.mergeall=true
 manifest.mainclass=jsettlers.main.swing.SwingManagedJSettlers
 manifest.file=<createnew>
