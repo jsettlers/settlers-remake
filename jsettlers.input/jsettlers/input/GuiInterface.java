@@ -382,16 +382,20 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		for (ShortPoint2D curr : new MapShapeFilter(action.getArea(), grid.getWidth(), grid.getHeight())) {
 			IGuiMovable movable = grid.getMovable(curr.x, curr.y);
-			if (movable != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || movable.getPlayerId() == player)) {
+			if (movable != null && canSelectPlayer(movable.getPlayerId())) {
 				selectionSet.add(movable);
 			}
 			IBuilding building = grid.getBuildingAt(curr.x, curr.y);
-			if (building != null && (CommonConstants.ENABLE_ALL_PLAYER_SELECTION || building.getPlayerId() == player)) {
+			if (building != null && canSelectPlayer(building.getPlayerId())) {
 				selectionSet.add(building);
 			}
 		}
 
 		setSelection(selectionSet);
+	}
+
+	private boolean canSelectPlayer(byte playerIdOfSelected) {
+		return CommonConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == player;
 	}
 
 	private void handleSelectPointAction(PointAction action) {
@@ -437,20 +441,20 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
 			IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
 
-			if (m1 != null) {
+			if (m1 != null && canSelectPlayer(m1.getPlayerId())) {
 				setSelection(new SelectionSet(m1));
 				System.out.println("found movable at selection pos: " + pos);
-			} else if (m2 != null) {
+			} else if (m2 != null && canSelectPlayer(m2.getPlayerId())) {
 				setSelection(new SelectionSet(m2));
-			} else if (m3 != null) {
+			} else if (m3 != null && canSelectPlayer(m3.getPlayerId())) {
 				setSelection(new SelectionSet(m3));
-			} else if (m4 != null) {
+			} else if (m4 != null && canSelectPlayer(m4.getPlayerId())) {
 				setSelection(new SelectionSet(m4));
 
 			} else {
 				// search buildings
 				IBuilding building = getBuildingAround(pos);
-				if (building != null) {
+				if (building != null && canSelectPlayer(building.getPlayerId())) {
 					setSelection(new SelectionSet(building));
 				} else {
 					setSelection(new SelectionSet());
