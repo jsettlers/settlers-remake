@@ -186,6 +186,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		state = EPlayerState.DISCONNECTED;
 		timer.cancel();
 		channel.close();
+		clock.stopExecution();
 	}
 
 	void identifiedUserEvent() {
@@ -272,4 +273,8 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		return channel.getRoundTripTime().getRtt();
 	}
 
+	@Override
+	public void shutdown() {
+		close();
+	}
 }

@@ -26,4 +26,6 @@ public interface ITaskScheduler {
 	 * @return Returns the {@link IGameClock} that can be used to attach {@link INetworkTimerable}s for synchronous execution.
 	 */
 	IGameClock getGameClock();
+
+	void shutdown();
 }

@@ -29,4 +29,9 @@ public class OfflineTaskScheduler implements ITaskScheduler {
 	public IGameClock getGameClock() {
 		return networkTimer;
 	}
+
+	@Override
+	public void shutdown() { // nothing to do here
+		networkTimer.stopExecution();
+	}
 }
