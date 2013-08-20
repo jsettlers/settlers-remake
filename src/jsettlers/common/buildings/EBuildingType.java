@@ -64,10 +64,11 @@ public enum EBuildingType {
 	TEMPLE(31),
 	BIG_TEMPLE(32),
 
-	/**
-	 * Test building for own image files.
-	 */
-	LAGERHAUS(0);
+	// /**
+	// * Test building for own image files.
+	// */
+	// LAGERHAUS(0)
+	;
 
 	public static final EBuildingType[] values = EBuildingType.values();
 	public static final int NUMBER_OF_BUILDINGS = values.length;
