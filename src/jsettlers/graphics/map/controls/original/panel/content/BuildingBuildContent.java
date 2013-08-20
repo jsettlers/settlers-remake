@@ -47,15 +47,15 @@ public class BuildingBuildContent implements ContentFactory, IContextListener {
 	        EBuildingType.MEDIUM_LIVINGHOUSE,
 	        EBuildingType.BIG_LIVINGHOUSE,
 	        EBuildingType.STOCK,
-	        EBuildingType.LAGERHAUS,
 	};
 
 	private static final int ROWS = 6;
 	private static final int COLUMNS = 2;
 
 	private final UIPanel panel;
-	
-	private final ArrayList<BuildingButton> buttons = new ArrayList<BuildingButton>();
+
+	private final ArrayList<BuildingButton> buttons =
+	        new ArrayList<BuildingButton>();
 
 	private BuildingBuildContent(EBuildingType[] buildings) {
 		panel = new UIPanel();
@@ -72,10 +72,12 @@ public class BuildingBuildContent implements ContentFactory, IContextListener {
 			buttons.add(button);
 		}
 	}
-	
+
 	/**
 	 * Sets the active building the user wants to build.
-	 * @param type The type. May be <code>null</code>
+	 * 
+	 * @param type
+	 *            The type. May be <code>null</code>
 	 */
 	private void setActiveBuilding(EBuildingType type) {
 		for (BuildingButton button : buttons) {
@@ -105,12 +107,12 @@ public class BuildingBuildContent implements ContentFactory, IContextListener {
 	}
 
 	@Override
-    public IContextListener getContextListener() {
-	    return this;
-    }
+	public IContextListener getContextListener() {
+		return this;
+	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {
-	    setActiveBuilding(type);
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+		setActiveBuilding(type);
+	}
 }
