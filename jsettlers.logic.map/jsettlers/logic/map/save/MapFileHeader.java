@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * This is a map file header.
@@ -18,6 +19,8 @@ import java.util.Date;
  * <li>2 Byte (short): Header version. must be '1'.</li>
  * <li>String: Type of the map.</li>
  * <li>String: name</li>
+ * <li>String: mapId</li>
+ * <li>String: baseMapId</li>
  * <li>String: description</li>
  * <li>16 bit: width</li>
  * <li>16 bit: height</li>
@@ -28,32 +31,28 @@ import java.util.Date;
  * </ul>
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public class MapFileHeader {
-	private static final short ALLOWED_VERSION = 1;
+	private static final short MIN_VERSION = 1;
+	private static final short VERSION = 2;
 
 	private static final byte[] START_BYTES = new byte[] {
-	        'M', 'A', 'P', ' '
+			'M', 'A', 'P', ' '
 	};
 
 	public static final int PREVIEW_IMAGE_SIZE = 128;
 
 	private final String name;
-
+	private final String mapId;
+	private final String baseMapId;
 	private final String description;
-
 	private final MapType type;
-
 	private final short width;
-
 	private final short height;
-
 	private final short minPlayer;
-
 	private final short maxPlayer;
-
 	private final Date date;
-
 	private final short[] bgimage;
 
 	/**
@@ -62,17 +61,26 @@ public class MapFileHeader {
 	 * @author michael
 	 */
 	public static enum MapType {
-		RANDOM, NORMAL, SAVED_SINGLE,
+		RANDOM,
+		NORMAL,
+		SAVED_SINGLE,
 	}
 
-	public MapFileHeader(MapType type, String name, String description,
-	        short width, short height, short minplayer, short maxplayer,
-	        Date date, short[] bgimage) {
+	public MapFileHeader(MapType type, String name, String baseMapId, String description, short width, short height, short minplayer,
+			short maxplayer, Date date, short[] bgimage) {
+		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minplayer, maxplayer, date, bgimage);
+	}
+
+	public MapFileHeader(MapType type, String name, String mapId,
+			String baseMapId, String description, short width, short height, short minplayer, short maxplayer,
+			Date date, short[] bgimage) {
 		if (bgimage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
 			throw new IllegalArgumentException("bg image has wrong size.");
 		}
 		this.type = type;
 		this.name = name;
+		this.mapId = mapId;
+		this.baseMapId = baseMapId;
 		this.description = description;
 		this.width = width;
 		this.height = height;
@@ -89,10 +97,10 @@ public class MapFileHeader {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getDescription() {
-	    return description;
-    }
+		return description;
+	}
 
 	public Date getDate() {
 		return date;
@@ -115,15 +123,17 @@ public class MapFileHeader {
 	}
 
 	public short[] getBgimage() {
-	    return bgimage;
-    }
-	
+		return bgimage;
+	}
+
 	public void writeTo(OutputStream stream) throws IOException {
 		DataOutputStream out = new DataOutputStream(stream);
 		out.write(START_BYTES);
-		out.writeShort(ALLOWED_VERSION);
+		out.writeShort(VERSION);
 		out.writeUTF(type.toString());
 		out.writeUTF(name);
+		out.writeUTF(mapId);
+		out.writeUTF(baseMapId);
 		out.writeUTF(description);
 
 		out.writeShort(width);
@@ -132,9 +142,10 @@ public class MapFileHeader {
 		out.writeShort(maxPlayer);
 
 		for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
-			 out.writeShort(bgimage[i]);
-		};
-		
+			out.writeShort(bgimage[i]);
+		}
+		;
+
 		if (type == MapType.SAVED_SINGLE) {
 			out.writeLong(date.getTime());
 		}
@@ -148,7 +159,7 @@ public class MapFileHeader {
 	 * @return
 	 */
 	public static MapFileHeader readFromStream(InputStream stream)
-	        throws IOException {
+			throws IOException {
 		try {
 			DataInputStream in = new DataInputStream(stream);
 			for (byte b : START_BYTES) {
@@ -158,14 +169,17 @@ public class MapFileHeader {
 			}
 
 			int version = in.readShort();
-			if (version != ALLOWED_VERSION) {
+			if (version < MIN_VERSION) {
 				throw new IOException("Map header version is invalid.");
 			}
 
 			String typeStr = in.readUTF();
 			MapType type = MapType.valueOf(typeStr);
 
-			String name = in.readUTF();
+			String mapName = in.readUTF();
+
+			String mapId = (version == 2) ? in.readUTF() : mapName;
+			String baseMapId = (version == 2) ? in.readUTF() : null;
 
 			String description = in.readUTF();
 
@@ -177,7 +191,8 @@ public class MapFileHeader {
 			short[] bgimage = new short[PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE];
 			for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
 				bgimage[i] = in.readShort();
-			};
+			}
+			;
 
 			Date date = null;
 			if (type == MapType.SAVED_SINGLE) {
@@ -185,8 +200,8 @@ public class MapFileHeader {
 				date = new Date(datetime);
 			}
 
-			return new MapFileHeader(type, name, description, width, height,
-			        minplayer, maxplayer, date, bgimage);
+			return new MapFileHeader(type, mapName, mapId, baseMapId, description, width, height,
+					minplayer, maxplayer, date, bgimage);
 
 		} catch (Throwable t) {
 			if (t instanceof IOException) {
@@ -198,8 +213,10 @@ public class MapFileHeader {
 	}
 
 	public String getUniqueId() {
-		//TODO: compute this
-	    return getName();
-    }
+		return mapId;
+	}
 
+	public String getBaseMapId() {
+		return baseMapId;
+	}
 }

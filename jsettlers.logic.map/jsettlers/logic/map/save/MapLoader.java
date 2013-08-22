@@ -10,7 +10,6 @@ import java.util.Random;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.network.INetworkableMap;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.GameSerializer;
@@ -27,7 +26,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * @author michael
  * @author Andreas Eberle
  */
-public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapLoader> {
+public class MapLoader implements IGameCreator, Comparable<MapLoader> {
 	private final File file;
 	private MapFileHeader header;
 	private MainGrid mainGrid;
@@ -120,9 +119,8 @@ public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapL
 				loadAll();
 			}
 			if (mapData != null) {
-				mainGrid =
-						MainGrid.create(mapData,
-								(byte) mapData.getPlayerCount(), player);
+				mainGrid = new MainGrid(getMapID(), getMapName(), mapData, (byte) mapData.getPlayerCount(), player);
+
 				if (mainGrid == null) {
 					throw new MapLoadException("loaded map was null");
 				}
@@ -166,7 +164,6 @@ public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapL
 		}
 	}
 
-	@Override
 	public int getMaxPlayers() {
 		try {
 			return getFileHeader().getMaxPlayer();
@@ -204,12 +201,8 @@ public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapL
 		return file.getName();
 	}
 
-	public String getMapID() {
-		return getUniqueID();
-	}
-
 	@Override
-	public String getUniqueID() {
+	public String getMapID() {
 		try {
 			return getFileHeader().getUniqueId();
 		} catch (MapLoadException e) {
@@ -217,7 +210,6 @@ public class MapLoader implements IGameCreator, INetworkableMap, Comparable<MapL
 		}
 	}
 
-	@Override
 	public File getFile() {
 		return file;
 	}

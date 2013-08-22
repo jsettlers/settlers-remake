@@ -25,7 +25,7 @@ public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefin
 
 	@Override
 	public String getId() {
-		return mapLoader.getUniqueID();
+		return mapLoader.getMapID();
 	}
 
 	@Override

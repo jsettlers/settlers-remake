@@ -98,6 +98,9 @@ import jsettlers.logic.stack.IRequestsStackGrid;
 public final class MainGrid implements Serializable {
 	private static final long serialVersionUID = 3824511313693431423L;
 
+	final String mapId;
+	final String mapName;
+
 	final short width;
 	final short height;
 
@@ -118,7 +121,10 @@ public final class MainGrid implements Serializable {
 	transient IGuiInputGrid guiInputGrid;
 	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
-	public MainGrid(short width, short height, byte numberOfPlayers, byte fowPlayer) {
+	public MainGrid(String mapId, String mapName, short width, short height, byte numberOfPlayers, byte fowPlayer) {
+		this.mapId = mapId;
+		this.mapName = mapName;
+
 		this.width = width;
 		this.height = height;
 
@@ -164,12 +170,8 @@ public final class MainGrid implements Serializable {
 		partitionsGrid.cancelThreads();
 	}
 
-	public static MainGrid create(IMapData mapGrid, byte players, byte fowPlayer) {
-		return new MainGrid(mapGrid, players, fowPlayer);
-	}
-
-	private MainGrid(IMapData mapGrid, byte players, byte fowPlayer) {
-		this((short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players, fowPlayer);
+	public MainGrid(String mapId, String mapName, IMapData mapGrid, byte players, byte fowPlayer) {
+		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players, fowPlayer);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -254,7 +256,7 @@ public final class MainGrid implements Serializable {
 
 		short[] bgImage = previewImageCreator.getPreviewImage();
 
-		return new MapFileHeader(MapType.SAVED_SINGLE, "saved game", "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgImage);
+		return new MapFileHeader(MapType.SAVED_SINGLE, mapName, mapId, "TODO: description", width, height, (short) 1, (short) 1, new Date(), bgImage);
 	}
 
 	private void placeStack(ShortPoint2D pos, EMaterialType materialType, int count) {

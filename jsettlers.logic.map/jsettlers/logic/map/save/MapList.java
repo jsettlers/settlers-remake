@@ -110,7 +110,7 @@ public class MapList {
 		maps.addAll(getSavedMaps());
 
 		for (MapLoader curr : maps) {
-			if (curr.getUniqueID().equals(id)) {
+			if (curr.getMapID().equals(id)) {
 				return curr;
 			}
 		}
