@@ -244,10 +244,10 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 
 							new TemplateObject(17, 7, new StackObject(EMaterialType.SCYTHE, 2)),
 							// new TemplateObject(17, 10, new StackObject(EMaterialType., 2)),
-							new TemplateObject(17, 13, new StackObject(EMaterialType.AXE, 4)),
+							new TemplateObject(17, 13, new StackObject(EMaterialType.AXE, 6)),
 
-							new TemplateObject(20, 10, new StackObject(EMaterialType.PICK, 6)),
-							new TemplateObject(20, 13, new StackObject(EMaterialType.SAW, 2)),
+							new TemplateObject(20, 10, new StackObject(EMaterialType.PICK, 8)),
+							new TemplateObject(20, 13, new StackObject(EMaterialType.SAW, 3)),
 
 							// worker
 							new TemplateMovable(8, 16, EMovableType.BRICKLAYER),
