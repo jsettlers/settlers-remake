@@ -120,7 +120,6 @@
 
 	<!-- going home job -->
 	<job name="gohome" 		type="GO_TO" 		successjob="hide" 		failjob="hide" 	 dx="2" dy="0" />
-	<job name="waithome" 	type="WAIT" 		successjob="hide" 		failjob="hide" 	 time="1.0" />
 	<job name="hide" 		type="HIDE" 		successjob="reset"		failjob="reset" />
 	<job name="reset" 		type="SET_MATERIAL" successjob="wait" 		failjob="wait" 	 material="NO_MATERIAL" />
 
@@ -129,14 +128,15 @@
 	<job name="wait" 		type="WAIT" 		successjob="checkA1" 	failjob="checkA1" time="1.0" />
 	<job name="checkA1" 	type="AVAILABLE" 	successjob="checkA2" 	failjob="wait"   dx="-3" dy="2" material="COAL" />
 	<job name="checkA2" 	type="AVAILABLE" 	successjob="checkA3" 	failjob="wait"   dx="3" dy="3" material="IRONORE" />
-	<job name="checkA3" 	type="NOT_FULL" 	successjob="outofdoor" 	failjob="wait" 	 dx="3" dy="1" material="IRON" />
+	<job name="checkA3" 	type="NOT_FULL" 	successjob="leaveHouse" failjob="wait" 	 dx="3" dy="1" material="IRON" />
 
-	<!-- go to the iron ore stack -->
-	<job name="outofdoor" 	type="WALK" 		successjob="toore1" 	failjob="gohome" direction="SOUTH_EAST" />
+	<!-- leave the building -->
+	<job name="leaveHouse" 	type="SHOW" 		successjob="toore1" 	failjob="gohome" dx="2" dy="0" />
 
 	<!-- go to the ore stack -->
-	<job name="toore1" 		type="WALK" 		successjob="toore2" 	failjob="gohome" direction="SOUTH_WEST" />
-	<job name="toore2" 		type="WALK" 		successjob="takeore2" 	failjob="gohome" direction="SOUTH_WEST" />
+	<job name="toore1" 		type="WALK" 		successjob="toore2" 	failjob="gohome" direction="SOUTH_EAST" />
+	<job name="toore2" 		type="WALK" 		successjob="toore3" 	failjob="gohome" direction="SOUTH_WEST" />
+	<job name="toore3" 		type="WALK" 		successjob="takeore2" 	failjob="gohome" direction="SOUTH_WEST" />
 
 	<!-- take iron ore -->
 	<job name="takeore2" 	type="SET_MATERIAL" successjob="takeore3" 	failjob="gohome" material="IRONORE" />
@@ -193,8 +193,8 @@
 
 	<!-- do not disappear if there is still stuff left -->
 	<job name="checkB1" 	type="AVAILABLE" 	successjob="checkB2" 	failjob="gohome" dx="-3" dy="2" material="COAL" />
-	<job name="checkB2" 	type="AVAILABLE" 	successjob="checkB3" 	failjob="gohome" dx="3" dy="3" material="IRONORE" />
-	<job name="checkB3" 	type="NOT_FULL" 	successjob="toore1"		failjob="gohome" dx="3" dy="1" material="IRON" />
+	<job name="checkB2" 	type="AVAILABLE" 	successjob="checkB3" 	failjob="gohome" dx="3" dy="3"  material="IRONORE" />
+	<job name="checkB3" 	type="NOT_FULL" 	successjob="toore2"		failjob="gohome" dx="3" dy="1"  material="IRON" />
 
 
 </building>
