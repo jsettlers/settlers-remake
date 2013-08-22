@@ -31,27 +31,41 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  */
 public class MapList {
 	public static final String MAP_EXTENSION = ".map";
+	private final File mapsDir;
+	private final File saveDir;
+
 	private final ArrayList<MapLoader> freshMaps = new ArrayList<MapLoader>();
 	private final ArrayList<MapLoader> savedMaps = new ArrayList<MapLoader>();
-	private final File dir;
+
 	private boolean fileListLoaded = false;
 
 	public MapList(File dir) {
-		this.dir = dir;
-		if (!dir.exists()) {
+		this.mapsDir = new File(dir, "maps");
+		this.saveDir = new File(dir, "save");
+
+		if (!mapsDir.exists()) {
 			dir.mkdirs();
 		}
-
+		if (!saveDir.exists()) {
+			dir.mkdirs();
+		}
 	}
 
 	private void loadFileList() {
 		freshMaps.clear();
 		savedMaps.clear();
 
-		File[] files = dir.listFiles();
+		addFilesToLists(mapsDir);
+		addFilesToLists(saveDir);
+
+		Collections.sort(freshMaps);
+		Collections.sort(savedMaps);
+	}
+
+	private void addFilesToLists(File directory) {
+		File[] files = directory.listFiles();
 		if (files == null) {
-			throw new IllegalArgumentException("map directory "
-					+ dir.getAbsolutePath() + " is not a directory.");
+			throw new IllegalArgumentException("map directory " + directory.getAbsolutePath() + " is not a directory.");
 		}
 
 		for (File file : files) {
@@ -59,9 +73,6 @@ public class MapList {
 				addFileToList(file);
 			}
 		}
-
-		Collections.sort(freshMaps);
-		Collections.sort(savedMaps);
 	}
 
 	private synchronized void addFileToList(File file) {
@@ -117,6 +128,19 @@ public class MapList {
 		return null;
 	}
 
+	public MapLoader getMapByName(String mapName) {
+		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
+		maps.addAll(getFreshMaps());
+		maps.addAll(getSavedMaps());
+
+		for (MapLoader curr : maps) {
+			if (curr.getMapName().equals(mapName)) {
+				return curr;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * saves a static map to the given directory.
 	 * 
@@ -158,15 +182,14 @@ public class MapList {
 
 		Date date = header.getDate();
 		if (date != null) {
-			SimpleDateFormat format =
-					new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
+			SimpleDateFormat format = new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
 			name += format.format(date);
 		}
 
-		File file = new File(dir, name + MAP_EXTENSION);
+		File file = new File(saveDir, name + MAP_EXTENSION);
 		int i = 1;
 		while (file.exists()) {
-			file = new File(dir, name + "-" + i + MAP_EXTENSION);
+			file = new File(saveDir, name + "-" + i + MAP_EXTENSION);
 			i++;
 		}
 		try {
@@ -222,11 +245,7 @@ public class MapList {
 	 * @return
 	 */
 	public static MapList getDefaultList() {
-		return new MapList(getDefaultFolder());
-	}
-
-	public static File getDefaultFolder() {
-		return new File(ResourceManager.getSaveDirectory(), "maps");
+		return new MapList(ResourceManager.getSaveDirectory());
 	}
 
 	public void deleteLoadableGame(MapLoader game) {
