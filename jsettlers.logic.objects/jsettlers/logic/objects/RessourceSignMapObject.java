@@ -9,8 +9,8 @@ import networklib.synchronic.random.RandomSingleton;
 public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 	private static final long serialVersionUID = -7248748388147081545L;
 
-	private static final float MINIMUM_LIVETIME = 2 * 60;
-	private static final float MAX_RANDOM_LIVETIME = 3 * 60;
+	private static final float MINIMUM_LIVETIME = 4 * 60;
+	private static final float MAX_RANDOM_LIVETIME = 5 * 60;
 
 	private final float amount;
 	private final byte objectType;
