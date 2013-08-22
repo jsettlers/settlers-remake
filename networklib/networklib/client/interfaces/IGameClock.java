@@ -1,6 +1,6 @@
 package networklib.client.interfaces;
 
-import java.io.OutputStream;
+import java.io.DataOutputStream;
 
 import networklib.synchronic.timer.INetworkTimerable;
 import networklib.synchronic.timer.ITaskExecutor;
@@ -42,5 +42,5 @@ public interface IGameClock extends IPausingSupplier {
 	 * 
 	 * @param replayFileStream
 	 */
-	void setReplayLogfile(OutputStream replayFileStream);
+	void setReplayLogfile(DataOutputStream replayFileStream);
 }

@@ -2,7 +2,6 @@ package networklib.synchronic.timer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -293,9 +292,9 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	@Override
-	public void setReplayLogfile(OutputStream replayFileStream) {
+	public void setReplayLogfile(DataOutputStream replayFileStream) {
 		if (replayFileStream != null) {
-			replayLogStream = new DataOutputStream(replayFileStream);
+			replayLogStream = replayFileStream;
 		} else {
 			closeReplayLogStreamIfNeeded();
 		}
