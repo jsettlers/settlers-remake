@@ -569,8 +569,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	private MapFileHeader generateMapHeader() {
 		short[] image = new PreviewImageCreator(header.getWidth(), header.getHeight(), MapFileHeader.PREVIEW_IMAGE_SIZE,
 				data.getPreviewImageDataSupplier()).getPreviewImage();
-		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getDescription(), header.getWidth(),
-				header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
+		MapFileHeader imagedHeader = new MapFileHeader(header.getType(), header.getName(), header.getBaseMapId(), header.getDescription(),
+				header.getWidth(), header.getHeight(), header.getMinPlayer(), header.getMaxPlayer(), new Date(), image);
 		return imagedHeader;
 	}
 

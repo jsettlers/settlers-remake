@@ -48,15 +48,15 @@ public class MapHeaderEditor extends JPanel {
 		descriptionField.setMinimumSize(new Dimension(200, 50));
 
 		width =
-		        new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
-		                MAX_MAPSIZE, 1);
+				new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
+						MAX_MAPSIZE, 1);
 		height =
-		        new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
-		                MAX_MAPSIZE, 1);
+				new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
+						MAX_MAPSIZE, 1);
 		minPlayer =
-		        new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
+				new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
 		maxPlayer =
-		        new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
+				new SpinnerNumberModel(1, 1, CommonConstants.MAX_PLAYERS, 1);
 
 		JSpinner widthField = new JSpinner(width);
 		JSpinner heightField = new JSpinner(height);
@@ -89,42 +89,42 @@ public class MapHeaderEditor extends JPanel {
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		//@formatter:off
+		// @formatter:off
 		layout.setHorizontalGroup(layout.createSequentialGroup()
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(nameLabel)
-		        		.addComponent(descriptionLabel)
-		        		.addComponent(heightLabel)
-		        		.addComponent(widthLabel)
-		        		.addComponent(maxPlayerLabel)
-		        		.addComponent(minPlayerLabel))
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(nameField)
-		        		.addComponent(descriptionField)
-		        		.addComponent(heightField)
-		        		.addComponent(widthField)
-		        		.addComponent(maxPlayerField)
-		        		.addComponent(minPlayerField)));
-		layout.setVerticalGroup(layout.createSequentialGroup()
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(nameLabel)
-		        		.addComponent(nameField))
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(descriptionLabel)
-		        		.addComponent(descriptionField))
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(widthLabel)
-		        		.addComponent(widthField))
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(heightLabel)
-		        		.addComponent(heightField))
-		        .addGroup(layout.createParallelGroup()
-		        		.addComponent(minPlayerLabel)
-		        		.addComponent(minPlayerField))
 				.addGroup(layout.createParallelGroup()
-				        .addComponent(maxPlayerLabel)
-				        .addComponent(maxPlayerField)));
-		//@formatter:on
+						.addComponent(nameLabel)
+						.addComponent(descriptionLabel)
+						.addComponent(heightLabel)
+						.addComponent(widthLabel)
+						.addComponent(maxPlayerLabel)
+						.addComponent(minPlayerLabel))
+				.addGroup(layout.createParallelGroup()
+						.addComponent(nameField)
+						.addComponent(descriptionField)
+						.addComponent(heightField)
+						.addComponent(widthField)
+						.addComponent(maxPlayerField)
+						.addComponent(minPlayerField)));
+		layout.setVerticalGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup()
+						.addComponent(nameLabel)
+						.addComponent(nameField))
+				.addGroup(layout.createParallelGroup()
+						.addComponent(descriptionLabel)
+						.addComponent(descriptionField))
+				.addGroup(layout.createParallelGroup()
+						.addComponent(widthLabel)
+						.addComponent(widthField))
+				.addGroup(layout.createParallelGroup()
+						.addComponent(heightLabel)
+						.addComponent(heightField))
+				.addGroup(layout.createParallelGroup()
+						.addComponent(minPlayerLabel)
+						.addComponent(minPlayerField))
+				.addGroup(layout.createParallelGroup()
+						.addComponent(maxPlayerLabel)
+						.addComponent(maxPlayerField)));
+		// @formatter:on
 
 		if (!sizeChangable) {
 			widthField.setEnabled(false);
@@ -148,9 +148,7 @@ public class MapHeaderEditor extends JPanel {
 		short height = this.height.getNumber().shortValue();
 		short minPlayer = this.minPlayer.getNumber().shortValue();
 		short maxPlayer = this.maxPlayer.getNumber().shortValue();
-		return new MapFileHeader(MapType.NORMAL, name, description, width,
-		        height, minPlayer, maxPlayer, new Date(),
-		        new short[MapFileHeader.PREVIEW_IMAGE_SIZE
-		                * MapFileHeader.PREVIEW_IMAGE_SIZE]);
+		return new MapFileHeader(MapType.NORMAL, name, null, description, width, height, minPlayer, maxPlayer, new Date(),
+				new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 	}
 }

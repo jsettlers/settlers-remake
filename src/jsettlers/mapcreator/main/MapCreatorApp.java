@@ -30,7 +30,8 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
 
 public class MapCreatorApp {
-	private static final MapFileHeader DEFAULT = new MapFileHeader(MapType.NORMAL, "new map", "", (short) 300, (short) 300, (short) 1, (short) 10,
+	private static final MapFileHeader DEFAULT = new MapFileHeader(MapType.NORMAL, "new map", null, "", (short) 300, (short) 300, (short) 1,
+			(short) 10,
 			null, new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 	private static final String[] GROUND_TYPES = new String[] { ELandscapeType.WATER8.toString(), ELandscapeType.GRASS.toString(),
 			ELandscapeType.DRY_GRASS.toString(), ELandscapeType.SNOW.toString(), ELandscapeType.DESERT.toString(), };
