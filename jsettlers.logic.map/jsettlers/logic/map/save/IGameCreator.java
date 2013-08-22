@@ -17,4 +17,6 @@ public interface IGameCreator {
 	public UIState getUISettings(int player) throws MapLoadException;
 
 	public String getMapName();
+
+	public String getMapID();
 }

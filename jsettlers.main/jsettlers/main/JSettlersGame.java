@@ -1,6 +1,7 @@
 package jsettlers.main;
 
-import java.io.OutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,7 +40,7 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  */
 public class JSettlersGame {
-	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-mm-dd_HH-mm-ss");
+	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
 	private final Object stopMutex = new Object();
 
@@ -113,8 +114,7 @@ public class JSettlersGame {
 			try {
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
-				String replayFilename = "logs/" + logDateFormat.format(new Date()) + "_" + mapcreator.getMapName() + "/replay.log";
-				OutputStream replayFileStream = ResourceManager.writeFile(replayFilename);
+				DataOutputStream replayFileStream = createReplayFileStream();
 
 				IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
 				gameClock.setReplayLogfile(replayFileStream);
@@ -170,6 +170,18 @@ public class JSettlersGame {
 			if (exitListener != null) {
 				exitListener.gameExited(this);
 			}
+		}
+
+		private DataOutputStream createReplayFileStream() throws IOException {
+			final String dateAndMap = logDateFormat.format(new Date()) + "_" + mapcreator.getMapName();
+			final String replayFilename = "logs/" + dateAndMap + "/" + dateAndMap + "_replay.log";
+			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
+
+			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, playerNumber, mapcreator.getMapName(), mapcreator.getMapID());
+			replayInfo.serialize(replayFileStream);
+			replayFileStream.flush();
+
+			return replayFileStream;
 		}
 
 		/**
