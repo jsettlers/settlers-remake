@@ -2,7 +2,6 @@ package jsettlers.algorithms.partitions;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.util.BitSet;
 
 import jsettlers.common.map.MapLoadException;
@@ -11,12 +10,13 @@ import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.newGrid.MainGridDataAccessor;
 import jsettlers.logic.map.newGrid.landscape.LandscapeGrid;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.MapLoader;
 import networklib.synchronic.random.RandomSingleton;
+import networklib.synchronic.timer.NetworkTimer;
 
 import org.junit.Test;
 
@@ -35,7 +35,9 @@ public class PartitionCalculatorAlgorithmComparisionTest {
 
 	@Test
 	public void testCompareOldAndNew() throws MapLoadException {
-		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "bigmap.map")).getMainGrid((byte) 0);
+		MatchConstants.clock = new NetworkTimer(true);
+
+		MainGrid grid = MapList.getDefaultList().getMapByName("big map").getMainGrid((byte) 0);
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();

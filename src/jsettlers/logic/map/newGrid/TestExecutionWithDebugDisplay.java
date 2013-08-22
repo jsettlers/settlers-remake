@@ -1,7 +1,5 @@
 package jsettlers.logic.map.newGrid;
 
-import java.io.File;
-
 import jsettlers.GraphicsGridAdapter;
 import jsettlers.TestWindow;
 import jsettlers.common.Color;
@@ -9,10 +7,11 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.MapLoader;
 import networklib.synchronic.random.RandomSingleton;
+import networklib.synchronic.timer.NetworkTimer;
 
 public class TestExecutionWithDebugDisplay {
 	static { // sets the native library path for the system dependent jogl libs
@@ -22,7 +21,9 @@ public class TestExecutionWithDebugDisplay {
 	}
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException {
-		MainGrid grid = new MapLoader(new File(MapList.getDefaultFolder(), "soldierfightingtestmap.map")).getMainGrid((byte) 0);
+		MatchConstants.clock = new NetworkTimer(true);
+
+		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").getMainGrid((byte) 0);
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();
