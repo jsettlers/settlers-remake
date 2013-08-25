@@ -559,7 +559,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		try {
 			MapFileHeader imagedHeader = generateMapHeader();
 			data.doPreSaveActions();
-			MapList.getDefaultList().saveMap(imagedHeader, data);
+			MapList.getDefaultList().saveNewMap(imagedHeader, data);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(saveButton, e.getMessage());
