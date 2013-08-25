@@ -113,6 +113,8 @@ public class SwingManagedJSettlers {
 	private static void generateContent(List<String> argsList, JSettlersScreen content) {
 		String mapfile = null;
 		long randomSeed = 0;
+		File loadableReplayFile = null;
+
 		for (String s : argsList) {
 			if (s.startsWith("--mapfile=")) {
 				mapfile = s.replaceFirst("--mapfile=", "");
@@ -120,11 +122,21 @@ public class SwingManagedJSettlers {
 			if (s.startsWith("--random=")) {
 				randomSeed = Long.parseLong(s.replaceFirst("--random=", ""));
 			}
+			if (s.startsWith("--replayFile=")) {
+				String loadableReplayFileString = s.replaceFirst("--replayFile=", "");
+				File replayFile = new File(loadableReplayFileString);
+				if (replayFile.exists()) {
+					loadableReplayFile = replayFile;
+					System.out.println("Found loadable replay file and loading it: " + loadableReplayFile);
+				} else {
+					System.err.println("Found replayFile parameter, but file can not be found!");
+				}
+			}
 		}
 
 		if (mapfile != null) {
 			MapLoader mapLoader = new MapLoader(new File(mapfile));
-			IStartingGame game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
+			IStartingGame game = new JSettlersGame(mapLoader, randomSeed, (byte) 0, loadableReplayFile).start();
 			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
 			content.setContent(toDisplay);
 		} else {
