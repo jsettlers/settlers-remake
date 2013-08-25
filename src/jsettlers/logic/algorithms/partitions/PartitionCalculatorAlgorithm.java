@@ -192,7 +192,7 @@ public final class PartitionCalculatorAlgorithm {
 	 * Normalizes the partitions and compacts them.
 	 */
 	private void normalizePartitions() {
-		short[] compacted = new short[partitions.length + 1];
+		short[] compacted = new short[nextFreePartition];
 		compacted[NO_PARTITION] = NO_PARTITION;
 		compacted[BLOCKED_PARTITION] = BLOCKED_PARTITION;
 
@@ -207,8 +207,9 @@ public final class PartitionCalculatorAlgorithm {
 			}
 
 			if (compacted[representative] == 0) {
-				compacted[representative] = compactedCount++;
-				partitionBorderPositions[compactedCount] = partitionBorderPositions[representative];
+				short newPartitionId = compactedCount++;
+				compacted[representative] = newPartitionId;
+				partitionBorderPositions[newPartitionId] = partitionBorderPositions[representative];
 			}
 
 			partitions[i] = representative;
