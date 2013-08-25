@@ -251,6 +251,7 @@ public class MapList {
 	public void deleteLoadableGame(MapLoader game) {
 		game.getFile().delete();
 		savedMaps.remove(game);
+		loadFileList();
 	}
 
 }
