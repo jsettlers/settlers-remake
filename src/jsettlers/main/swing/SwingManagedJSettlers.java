@@ -110,7 +110,7 @@ public class SwingManagedJSettlers {
 		return content;
 	}
 
-	private static void generateContent(List<String> argsList, JSettlersScreen content) {
+	private static void generateContent(List<String> argsList, JSettlersScreen content) throws IOException {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
@@ -122,6 +122,7 @@ public class SwingManagedJSettlers {
 			if (s.startsWith("--random=")) {
 				randomSeed = Long.parseLong(s.replaceFirst("--random=", ""));
 			}
+
 			if (s.startsWith("--replayFile=")) {
 				String loadableReplayFileString = s.replaceFirst("--replayFile=", "");
 				File replayFile = new File(loadableReplayFileString);
@@ -134,9 +135,14 @@ public class SwingManagedJSettlers {
 			}
 		}
 
-		if (mapfile != null) {
-			MapLoader mapLoader = new MapLoader(new File(mapfile));
-			IStartingGame game = new JSettlersGame(mapLoader, randomSeed, (byte) 0, loadableReplayFile).start();
+		if (mapfile != null || loadableReplayFile != null) {
+			IStartingGame game;
+			if (loadableReplayFile == null) {
+				MapLoader mapLoader = new MapLoader(new File(mapfile));
+				game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
+			} else {
+				game = JSettlersGame.loadFromReplayFile(loadableReplayFile).start();
+			}
 			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
 			content.setContent(toDisplay);
 		} else {
