@@ -1,5 +1,6 @@
 package jsettlers.main;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -10,10 +11,13 @@ import java.io.IOException;
  */
 public class ReplayStartInformation {
 
-	private final long randomSeed;
-	private final byte playerNumber;
-	private final String mapName;
-	private final String mapId;
+	private long randomSeed;
+	private byte playerNumber;
+	private String mapName;
+	private String mapId;
+
+	public ReplayStartInformation() {
+	}
 
 	public ReplayStartInformation(long randomSeed, byte playerNumber, String mapName, String mapId) {
 		this.randomSeed = randomSeed;
@@ -43,5 +47,12 @@ public class ReplayStartInformation {
 		replayFileStream.writeByte(playerNumber);
 		replayFileStream.writeUTF(mapName);
 		replayFileStream.writeUTF(mapId);
+	}
+
+	public void deserialize(DataInputStream dis) throws IOException {
+		randomSeed = dis.readLong();
+		playerNumber = dis.readByte();
+		mapName = dis.readUTF();
+		mapId = dis.readUTF();
 	}
 }
