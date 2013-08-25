@@ -44,11 +44,14 @@ final class PartitionsListingBorderVisitor implements ITraversingVisitor {
 	}
 
 	public LinkedList<Tuple<Short, ShortPoint2D>> getPartitionsList() {
-		if (partitionsList.size() >= 2 && partitionsList.getFirst().e1.equals(partitionsList.getLast().e1)) {
-			partitionsList.removeFirst();
+		LinkedList<Tuple<Short, ShortPoint2D>> resultList = new LinkedList<Tuple<Short, ShortPoint2D>>();
+		resultList.addAll(partitionsList);
+
+		if (resultList.size() >= 2 && resultList.getFirst().e1.equals(resultList.getLast().e1)) {
+			resultList.removeFirst();
 		}
 
-		return partitionsList;
+		return resultList;
 	}
 
 }

@@ -1,6 +1,9 @@
 package jsettlers.main;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,11 +47,12 @@ public class JSettlersGame {
 
 	private final Object stopMutex = new Object();
 
+	private final IGameCreator mapcreator;
 	private final long randomSeed;
 	private final byte playerNumber;
 	private final ITaskScheduler taskScheduler;
 	private final boolean multiplayer;
-	private final IGameCreator mapcreator;
+	private final File loadableReplayFile;
 
 	private final GameRunner gameRunner;
 
@@ -56,18 +60,19 @@ public class JSettlersGame {
 	private boolean started = false;
 
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed,
-			ITaskScheduler taskScheduler, byte playerNumber, boolean multiplayer) {
+			ITaskScheduler taskScheduler, byte playerNumber, boolean multiplayer, File loadableReplayFile) {
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.taskScheduler = taskScheduler;
 		this.playerNumber = playerNumber;
 		this.multiplayer = multiplayer;
+		this.loadableReplayFile = loadableReplayFile;
 
 		this.gameRunner = new GameRunner();
 	}
 
 	public JSettlersGame(IGameCreator mapCreator, long randomSeed, ITaskScheduler taskScheduler, byte playerNumber) {
-		this(mapCreator, randomSeed, taskScheduler, playerNumber, true);
+		this(mapCreator, randomSeed, taskScheduler, playerNumber, true, null);
 	}
 
 	/**
@@ -78,7 +83,17 @@ public class JSettlersGame {
 	 * @param playerNumber
 	 */
 	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerNumber) {
-		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false);
+		this(mapCreator, randomSeed, playerNumber, null);
+	}
+
+	/**
+	 * 
+	 * @param mapCreator
+	 * @param randomSeed
+	 * @param playerNumber
+	 */
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerNumber, File loadableReplayFile) {
+		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false, loadableReplayFile);
 	}
 
 	/**
@@ -117,7 +132,7 @@ public class JSettlersGame {
 				DataOutputStream replayFileStream = createReplayFileStream();
 
 				IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
-				gameClock.setReplayLogfile(replayFileStream);
+				gameClock.setReplayLogStream(replayFileStream);
 				RandomSingleton.load(randomSeed);
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
@@ -139,6 +154,11 @@ public class JSettlersGame {
 
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, mainGrid.getGuiInputGrid(), this, playerNumber,
 						multiplayer);
+
+				if (loadableReplayFile != null) {
+					gameClock.loadReplayLogFromStream(new DataInputStream(new FileInputStream(loadableReplayFile.getAbsolutePath())));
+				}
+
 				gameClock.startExecution();
 
 				synchronized (stopMutex) {

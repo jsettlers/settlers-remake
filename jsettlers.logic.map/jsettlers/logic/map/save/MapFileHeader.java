@@ -133,7 +133,7 @@ public class MapFileHeader {
 		out.writeUTF(type.toString());
 		out.writeUTF(name);
 		out.writeUTF(mapId);
-		out.writeUTF(baseMapId);
+		out.writeUTF(baseMapId == null ? "" : baseMapId);
 		out.writeUTF(description);
 
 		out.writeShort(width);
@@ -192,7 +192,6 @@ public class MapFileHeader {
 			for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
 				bgimage[i] = in.readShort();
 			}
-			;
 
 			Date date = null;
 			if (type == MapType.SAVED_SINGLE) {

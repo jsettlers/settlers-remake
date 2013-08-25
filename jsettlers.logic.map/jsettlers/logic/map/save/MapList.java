@@ -151,11 +151,10 @@ public class MapList {
 	 * @throws IOException
 	 *             If any IO error occurred.
 	 */
-	public synchronized void saveMap(MapFileHeader header, IMapData data)
-			throws IOException {
+	public synchronized void saveNewMap(MapFileHeader header, IMapData data) throws IOException {
 		OutputStream out = null;
 		try {
-			out = getOutputStream(header);
+			out = getOutputStream(header, mapsDir);
 			MapSaver.saveMap(header, data, out);
 		} finally {
 			if (out != null) {
@@ -170,10 +169,12 @@ public class MapList {
 	 * 
 	 * @param header
 	 *            The header to create the file name from. It is not written to the stream.
+	 * @param baseDir
+	 *            The base directory where map should be saved.
 	 * @return A output stream to a fresh generated file.
 	 * @throws IOException
 	 */
-	private OutputStream getOutputStream(MapFileHeader header)
+	private OutputStream getOutputStream(MapFileHeader header, File baseDir)
 			throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
@@ -186,10 +187,10 @@ public class MapList {
 			name += format.format(date);
 		}
 
-		File file = new File(saveDir, name + MAP_EXTENSION);
+		File file = new File(baseDir, name + MAP_EXTENSION);
 		int i = 1;
 		while (file.exists()) {
-			file = new File(saveDir, name + "-" + i + MAP_EXTENSION);
+			file = new File(baseDir, name + "-" + i + MAP_EXTENSION);
 			i++;
 		}
 		try {
@@ -209,7 +210,7 @@ public class MapList {
 	public synchronized void saveMap(UIState state, MainGrid grid)
 			throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
-		OutputStream out = getOutputStream(header);
+		OutputStream out = getOutputStream(header, saveDir);
 		header.writeTo(out);
 		state.writeTo(out);
 		GameSerializer gameSerializer = new GameSerializer();
@@ -229,7 +230,7 @@ public class MapList {
 	 */
 	public synchronized void saveRandomMap(MapFileHeader header,
 			String definition) throws IOException {
-		OutputStream out = getOutputStream(header);
+		OutputStream out = getOutputStream(header, mapsDir);
 		MapSaver.saveRandomMap(header, definition, out);
 		loadFileList();
 	}
