@@ -1,8 +1,11 @@
 package networklib.synchronic.timer;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +26,12 @@ import networklib.client.task.packets.TaskPacket;
  */
 public final class NetworkTimer extends TimerTask implements INetworkClientClock {
 	public static final short TIME_SLICE = 50;
+	private Comparator<SyncTasksPacket> tasksByTimeComperator = new Comparator<SyncTasksPacket>() {
+		@Override
+		public int compare(SyncTasksPacket o1, SyncTasksPacket o2) {
+			return o1.getLockstepNumber() - o2.getLockstepNumber();
+		}
+	};
 
 	private final Timer timer;
 	private final Object lockstepLock = new Object();
@@ -260,6 +269,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		if (!tasksPacket.getTasks().isEmpty()) {
 			synchronized (tasks) {
 				tasks.addLast(tasksPacket);
+				Collections.sort(tasks, tasksByTimeComperator);
 				saveReplayIfNeeded(tasksPacket);
 			}
 		}
@@ -292,7 +302,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	@Override
-	public void setReplayLogfile(DataOutputStream replayFileStream) {
+	public void setReplayLogStream(DataOutputStream replayFileStream) {
 		if (replayFileStream != null) {
 			replayLogStream = replayFileStream;
 		} else {
@@ -313,4 +323,27 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		}
 	}
 
+	@Override
+	public void loadReplayLogFromStream(DataInputStream dataInputStream) {
+		try {
+			while (true) {
+				SyncTasksPacket currPacket = new SyncTasksPacket();
+				currPacket.deserialize(dataInputStream);
+				scheduleSyncTasksPacket(currPacket);
+			}
+		} catch (IOException e1) { // something went wrong, or the stream was empty
+			try {
+				if (dataInputStream.read() == -1) {
+					System.out.println("Successfully loaded replay file.");
+				} else {
+					System.out.println("Error loading replay file.");
+					e1.printStackTrace();
+				}
+			} catch (IOException e2) {
+				System.out.println("Error loading replay file.");
+				e1.printStackTrace();
+				e2.printStackTrace();
+			}
+		}
+	}
 }
