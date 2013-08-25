@@ -291,7 +291,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 				if (tool != EMaterialType.NO_MATERIAL) {
 
 					if (toolRequestingWorkerRequests.getSlotSize(tool) <= 3) {
-						MaterialOffer offer = this.materialOffers.removeOfferCloseTo(workerRequest.movableType.getTool(), workerRequest.position);
+						MaterialOffer offer = this.materialOffers.removeOfferCloseTo(tool, workerRequest.position);
 
 						if (offer != null) {
 							IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerRequest.position);
@@ -299,6 +299,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 								manageableBearer.becomeWorker(this, workerRequest.movableType, offer.getPos());
 							} else {
 								workerCreationRequests.pushLast(slotIdx, workerRequest);
+								materialOffers.addOffer(offer.getPos(), tool);
 							}
 
 						} else {

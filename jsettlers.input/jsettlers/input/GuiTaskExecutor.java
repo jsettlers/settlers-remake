@@ -23,6 +23,11 @@ import jsettlers.logic.newmovable.NewMovable;
 import networklib.client.task.packets.TaskPacket;
 import networklib.synchronic.timer.ITaskExecutor;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
 	private final IGuiInputGrid grid;
@@ -84,7 +89,10 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case DESTROY_BUILDING: {
 			ShortPoint2D buildingPos = ((DestroyBuildingGuiTask) guiTask).getPosition();
-			((Building) grid.getBuildingAt(buildingPos.x, buildingPos.y)).kill();
+			Building building = ((Building) grid.getBuildingAt(buildingPos.x, buildingPos.y));
+			if (building != null) {
+				building.kill();
+			}
 		}
 			break;
 
