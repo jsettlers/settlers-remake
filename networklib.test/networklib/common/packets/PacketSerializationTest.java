@@ -74,7 +74,8 @@ public class PacketSerializationTest {
 						d(OpenNewMatchPacket.class) },
 				{ new RejectPacket(NetworkConstants.ENetworkMessage.UNAUTHORIZED, NetworkConstants.ENetworkKey.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
-				{ new MatchInfoUpdatePacket(ENetworkMessage.NO_LISTENER_FOUND, "idOfChangedPlayer", createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
+				{ new MatchInfoUpdatePacket(ENetworkMessage.NO_LISTENER_FOUND, new PlayerInfoPacket("IDBLA82348-#ülü34r",
+						"NameBKUIH893428())/\"§/", true), createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
 				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) },
 
 				{ new ServersideTaskPacket("sdfsfsdf".getBytes()), d(ServersideTaskPacket.class) },
@@ -125,7 +126,7 @@ public class PacketSerializationTest {
 		c2.registerListener(listener);
 		c1.sendPacket(NetworkConstants.ENetworkKey.TEST_PACKET, packet);
 
-		Thread.sleep(30);
+		Thread.sleep(40);
 
 		List<? extends Packet> bufferedPackets = listener.popBufferedPackets();
 		assertEquals(1, bufferedPackets.size());
