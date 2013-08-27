@@ -24,7 +24,7 @@ public class StreamLogger extends Logger {
 	}
 
 	public StreamLogger(String loggerId, File logFile) throws FileNotFoundException {
-		this(loggerId, new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile))));
+		this(loggerId, new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile)), true));
 	}
 
 	private synchronized void println(String msg) {

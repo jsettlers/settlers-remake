@@ -22,6 +22,7 @@ public final class LoggerManager {
 			logger = new StreamLogger("rootLogger", new File(LOG_FOLDER, "server-" + Logger.DATE_FORMAT.format(new Date()) + ".log"));
 		} catch (FileNotFoundException e) {
 			logger = new ConsoleLogger("rootLogger");
+			logger.error(e);
 		}
 		ROOT_LOGGER = logger;
 	}
