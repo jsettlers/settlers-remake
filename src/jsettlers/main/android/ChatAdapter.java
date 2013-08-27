@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
+import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,7 @@ public class ChatAdapter extends BaseAdapter implements IChatMessageListener {
 		protected abstract View createView(LayoutInflater inflater, ViewGroup parent);
 
 		protected abstract void fillView(View convertView);
-}
+	}
 
 	private static final class UserChatMessage extends ChatMessage {
 		private final String authorId;
@@ -45,15 +46,15 @@ public class ChatAdapter extends BaseAdapter implements IChatMessageListener {
 		public int getViewType() {
 			return 0;
 		}
-		
+
 		@Override
 		protected View createView(LayoutInflater inflater, ViewGroup parent) {
 			return new TextView(inflater.getContext());
 		}
-		
+
 		@Override
 		protected void fillView(View view) {
-			((TextView) view).setText(authorId + ": " + message); 
+			((TextView) view).setText(authorId + ": " + message);
 		}
 	}
 
@@ -70,15 +71,15 @@ public class ChatAdapter extends BaseAdapter implements IChatMessageListener {
 		public int getViewType() {
 			return 1;
 		}
-		
+
 		@Override
 		protected View createView(LayoutInflater inflater, ViewGroup parent) {
 			return new TextView(inflater.getContext());
 		}
-		
+
 		@Override
 		protected void fillView(View view) {
-			((TextView) view).setText(authorId + ": " + message); 
+			((TextView) view).setText(authorId + ": " + message);
 		}
 	}
 
@@ -142,9 +143,8 @@ public class ChatAdapter extends BaseAdapter implements IChatMessageListener {
 	}
 
 	@Override
-	public void systemMessageReceived(String playerId, ENetworkMessage message) {
-		addChatMessage(new SystemChatMessage(playerId, message));
-
+	public void systemMessageReceived(IMultiplayerPlayer player, ENetworkMessage message) {
+		String playerName = player != null ? player.getName() : "";
+		addChatMessage(new SystemChatMessage(playerName, message));
 	}
-
 }
