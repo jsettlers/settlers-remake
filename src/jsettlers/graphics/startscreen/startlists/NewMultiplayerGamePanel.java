@@ -32,7 +32,7 @@ public class NewMultiplayerGamePanel extends
 
 		@Override
 		public String getMatchName() {
-			return "TODO: Matchname";
+			return "TODO Matchname";
 		}
 
 		@Override
@@ -80,7 +80,7 @@ public class NewMultiplayerGamePanel extends
 
 	@Override
 	protected String getSubmitTextId() {
-	    return "start-newmultiplayer-start";
+		return "start-newmultiplayer-start";
 	}
 
 }
