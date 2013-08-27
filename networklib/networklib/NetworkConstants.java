@@ -30,7 +30,8 @@ public final class NetworkConstants {
 		private Server() {
 		}
 
-		public static final int SERVER_PORT = 10213;
+		// public static final int SERVER_PORT = 10213; // VERSION 1
+		public static final int SERVER_PORT = 10214; // VERSION 2
 
 		public static final int BROADCAST_PORT = 10233;
 		public static final String BROADCAST_MESSAGE = "JSETTLERS-LAN-SERVER-BROADCAST-V1";
