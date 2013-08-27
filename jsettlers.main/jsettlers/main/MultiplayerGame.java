@@ -141,7 +141,7 @@ public class MultiplayerGame {
 				}
 
 				updatePlayersList(packet.getMatchInfo().getPlayers());
-				receiveSystemMessage(packet.getIdOfChangedPlayer(), getNetworkMessageById(packet.getUpdateReason()));
+				receiveSystemMessage(new MultiplayerPlayer(packet.getUpdatedPlayer()), getNetworkMessageById(packet.getUpdateReason()));
 			}
 
 		};
@@ -177,9 +177,9 @@ public class MultiplayerGame {
 		}
 	}
 
-	void receiveSystemMessage(String authorId, ENetworkMessage networkMessage) {
+	void receiveSystemMessage(IMultiplayerPlayer author, ENetworkMessage networkMessage) {
 		if (chatMessageListener != null) {
-			chatMessageListener.systemMessageReceived(authorId, networkMessage);
+			chatMessageListener.systemMessageReceived(author, networkMessage);
 		}
 	}
 
