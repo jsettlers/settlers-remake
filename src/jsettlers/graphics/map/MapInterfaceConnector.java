@@ -21,7 +21,7 @@ import jsettlers.graphics.messages.Message;
  * 
  * @author michael
  */
-public class MapInterfaceConnector implements ActionFireable {
+public class MapInterfaceConnector implements ActionFireable, IMessenger {
 
 	private final LinkedList<IMapInterfaceListener> listeners =
 	        new LinkedList<IMapInterfaceListener>();
@@ -117,12 +117,7 @@ public class MapInterfaceConnector implements ActionFireable {
 		content.setPreviewBuildingType(buildingType);
 	}
 
-	/**
-	 * Adds a text message to be displayed on the screen.
-	 * 
-	 * @param message
-	 *            The message to display.
-	 */
+	@Override
 	public void showMessage(Message message) {
 		content.addMessage(message);
 	}
