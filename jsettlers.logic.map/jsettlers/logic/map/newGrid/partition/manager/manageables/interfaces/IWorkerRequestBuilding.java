@@ -3,6 +3,7 @@ package jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.player.IPlayerable;
+import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 
@@ -12,7 +13,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWork
  * @author Andreas Eberle
  * 
  */
-public interface IWorkerRequestBuilding extends IPlayerable {
+public interface IWorkerRequestBuilding extends IPlayerable, ILocatable {
 
 	/**
 	 * 
@@ -40,4 +41,5 @@ public interface IWorkerRequestBuilding extends IPlayerable {
 	 *            The worker to be released from this building.
 	 */
 	void leaveBuilding(IManageableWorker worker);
+
 }

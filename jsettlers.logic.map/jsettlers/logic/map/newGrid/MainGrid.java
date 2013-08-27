@@ -1547,6 +1547,11 @@ public final class MainGrid implements Serializable {
 		public boolean isBlocked(ShortPoint2D position) {
 			return flagsGrid.isBlocked(position.x, position.y);
 		}
+
+		@Override
+		public Player getPlayer(byte playerId) {
+			return partitionsGrid.getPlayer(playerId);
+		}
 	}
 
 	/**

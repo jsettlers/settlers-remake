@@ -13,6 +13,8 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.messages.EMessageType;
+import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
@@ -33,6 +35,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private short delayCtr;
 
 	private EMaterialType poppedMaterial;
+	private int searchFailedCtr = 0;
 
 	public BuildingWorkerStrategy(NewMovable movable, EMovableType movableType) {
 		super(movable);
@@ -69,13 +72,6 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			buildingDestroyed();
 			return;
 		}
-
-		// if (movableType == EMovableType.PIG_FARMER) {
-		// System.err.println("Pigfarmer action() with jobType: " + currentJob.getType() + "  and name: " + currentJob.getName());
-		// if (currentJob.getType() == EBuildingJobType.DROP) {
-		// System.out.println();
-		// }
-		// }
 
 		switch (currentJob.getType()) {
 		case GO_TO:
@@ -308,10 +304,17 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 
 		boolean pathFound = super.preSearchPath(dijkstra, workAreaCenter.x, workAreaCenter.y, building.getBuildingType()
 				.getWorkradius(), currentJob.getSearchType());
+
 		if (pathFound) {
 			jobFinished();
+			searchFailedCtr = 0;
 		} else {
 			jobFailed();
+			searchFailedCtr++;
+
+			if (searchFailedCtr > 10) {
+				super.getPlayer().showMessage(new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, "", (byte) -1, building.getPos()));
+			}
 		}
 	}
 

@@ -8,6 +8,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.logic.player.Player;
 
 /**
  * This interface defines the methods needed by the GUI to interact with the grid.
@@ -109,4 +110,5 @@ public interface IGuiInputGrid {
 
 	boolean isBlocked(ShortPoint2D potentialTargetPos);
 
+	Player getPlayer(byte playerId);
 }

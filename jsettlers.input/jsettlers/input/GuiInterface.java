@@ -82,6 +82,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.multiplayer = multiplayer;
 		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
 
+		grid.getPlayer(player).setMessenger(connector);
 		clock.setTaskExecutor(new GuiTaskExecutor(grid, this));
 		connector.addListener(this);
 	}
