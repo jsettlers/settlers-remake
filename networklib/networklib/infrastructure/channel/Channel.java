@@ -20,6 +20,9 @@ import networklib.infrastructure.channel.ping.RoundTripTime;
 import networklib.infrastructure.channel.reject.RejectPacket;
 import networklib.infrastructure.channel.socket.ISocket;
 import networklib.infrastructure.channel.socket.ISocketFactory;
+import networklib.infrastructure.log.ConsoleLogger;
+import networklib.infrastructure.log.Logger;
+import networklib.infrastructure.log.SwitchableLogger;
 
 /**
  * This class builds up a logical channel between to network partners. The class allows to send data of type {@link Packet} to the partner and to
@@ -31,6 +34,7 @@ import networklib.infrastructure.channel.socket.ISocketFactory;
 public class Channel implements Runnable, IRoundTripTimeSupplier {
 	private final Thread thread;
 
+	private final SwitchableLogger logger;
 	private final ISocket socket;
 	private final DataOutputStream outStream;
 	private final DataInputStream inStream;
@@ -55,18 +59,23 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	 *             If an I/O error occurs when creating the channel or if the socket is not connected.
 	 */
 	public Channel(ISocket socket) throws IOException {
-		this.socket = socket;
-		outStream = new DataOutputStream(socket.getOutputStream());
-		inStream = new DataInputStream(socket.getInputStream());
-
-		pingPacketListener = new PingPacketListener(this);
-		registerListener(pingPacketListener);
-
-		thread = new Thread(this, "ChannelForSocket_" + socket);
+		this(new ConsoleLogger(socket.toString()), socket);
 	}
 
 	public Channel(String host, int port) throws UnknownHostException, IOException {
 		this(ISocketFactory.DEFAULT_FACTORY.generateSocket(host, port));
+	}
+
+	public Channel(Logger logger, ISocket socket) throws IOException {
+		this.logger = new SwitchableLogger(logger);
+		this.socket = socket;
+		outStream = new DataOutputStream(socket.getOutputStream());
+		inStream = new DataInputStream(socket.getInputStream());
+
+		pingPacketListener = new PingPacketListener(this.logger, this);
+		registerListener(pingPacketListener);
+
+		thread = new Thread(this, "ChannelForSocket_" + socket);
 	}
 
 	/**
@@ -141,18 +150,17 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 					try {
 						listener.receive(key, length, bufferIn);
 						if (bufferIn.available() > 0) {
-							System.err.println("WARNING: Deserialization did not read all bytes of input: " + key + " " + length + " "
-									+ bufferIn.available());
+							logger.warn("Deserialization did not read all bytes of input: " + key + " " + length + " " + bufferIn.available());
 						}
 					} catch (Exception e) { // ignore exceptions thrown in receive
 						e.printStackTrace();
 					}
 				} else {
-					System.err.println("WARNING: NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
+					logger.warn("NO LISTENER FOUND for key: " + key + "   (" + socket + ")");
 
 					if (key != NetworkConstants.ENetworkKey.REJECT_PACKET) { // prevent endless loop
-						sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET, new RejectPacket(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND,
-								key));
+						sendPacket(NetworkConstants.ENetworkKey.REJECT_PACKET,
+								new RejectPacket(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, key));
 					}
 				}
 
@@ -169,7 +177,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 		if (channelClosedListener != null) {
 			channelClosedListener.channelClosed();
 		}
-		System.out.println("Channel listener shut down: " + socket);
+		logger.info("Channel listener shut down: " + socket);
 	}
 
 	private DataInputStream readBytesToBuffer(DataInputStream inStream, int length) throws IOException {
@@ -251,5 +259,9 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 
 	public boolean isStarted() {
 		return started;
+	}
+
+	public void setLogger(Logger newLogger) {
+		this.logger.setLogger(newLogger);
 	}
 }

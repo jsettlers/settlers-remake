@@ -14,6 +14,8 @@ import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.packet.Packet;
+import networklib.infrastructure.log.Logger;
+import networklib.infrastructure.log.LoggerManager;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.match.lockstep.TaskCollectingListener;
 import networklib.server.match.lockstep.TaskSendingTimerTask;
@@ -25,9 +27,10 @@ import networklib.server.match.lockstep.TaskSendingTimerTask;
  */
 public class Match {
 
-	private final String id = UUID.randomUUID().toString();
-	private final LinkedList<Player> players = new LinkedList<Player>();
-	private final LinkedList<Player> leftPlayers = new LinkedList<Player>();
+	private final Logger logger;
+	private final String id;
+	private final LinkedList<Player> players;
+	private final LinkedList<Player> leftPlayers;
 	private final int maxPlayers;
 	private final MapInfoPacket map;
 	private final String name;
@@ -42,6 +45,10 @@ public class Match {
 		this.map = map;
 		this.name = name;
 		this.randomSeed = randomSeed;
+		this.id = UUID.randomUUID().toString();
+		this.players = new LinkedList<Player>();
+		this.leftPlayers = new LinkedList<Player>();
+		this.logger = LoggerManager.getMatchLogger(id, name);
 	}
 
 	public EMatchState getState() {
@@ -191,7 +198,7 @@ public class Match {
 		state = EMatchState.RUNNING;
 
 		this.taskCollectingListener = new TaskCollectingListener();
-		this.taskSendingTimerTask = new TaskSendingTimerTask(taskCollectingListener, this);
+		this.taskSendingTimerTask = new TaskSendingTimerTask(logger, taskCollectingListener, this);
 		timer.schedule(taskSendingTimerTask, NetworkConstants.Client.LOCKSTEP_PERIOD, NetworkConstants.Client.LOCKSTEP_PERIOD / 2 - 2);
 
 		synchronized (players) {
@@ -214,6 +221,10 @@ public class Match {
 	public void distributeTimeSync(Player player, TimeSyncPacket packet) {
 		sendMessage(player, NetworkConstants.ENetworkKey.TIME_SYNC, packet);
 		taskSendingTimerTask.receivedLockstepAcknowledge(packet.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD);
+	}
+
+	public Logger getMatchLogger() {
+		return logger;
 	}
 
 }

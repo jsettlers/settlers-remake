@@ -9,6 +9,7 @@ import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.packet.Packet;
+import networklib.infrastructure.log.LoggerManager;
 import networklib.server.exceptions.NotAllPlayersReadyException;
 import networklib.server.match.lockstep.TaskCollectingListener;
 
@@ -44,6 +45,7 @@ public class Player {
 
 			state = EPlayerState.LOGGED_IN;
 			channel.removeListener(ENetworkKey.SYNCHRONOUS_TASK);
+			channel.setLogger(LoggerManager.ROOT_LOGGER);
 		}
 	}
 
@@ -53,6 +55,7 @@ public class Player {
 		this.match = match;
 		match.join(this);
 		state = EPlayerState.IN_MATCH;
+		channel.setLogger(match.getMatchLogger());
 	}
 
 	public Channel getChannel() {

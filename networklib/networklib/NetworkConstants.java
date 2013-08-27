@@ -17,6 +17,8 @@ public final class NetworkConstants {
 	}
 
 	public static final boolean USE_DELAYED_SOCKETS = false;
+	public static final int RTT_LOGGING_THRESHOLD = 800;
+	public static final int JITTER_LOGGING_THRESHOLD = 200;
 
 	/**
 	 * This class contains constants used by the Server part of networklib.

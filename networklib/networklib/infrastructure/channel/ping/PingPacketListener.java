@@ -5,6 +5,7 @@ import networklib.NetworkConstants.ENetworkKey;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.listeners.PacketChannelListener;
+import networklib.infrastructure.log.Logger;
 import networklib.infrastructure.utils.AveragingBoundedBuffer;
 
 /**
@@ -17,14 +18,16 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 
 	private static final int JITTER_AVERAGING_BUFFER = 7;
 
+	private final Logger logger;
 	private final Channel channel;
 	private final AveragingBoundedBuffer avgJitter = new AveragingBoundedBuffer(JITTER_AVERAGING_BUFFER);
 	private RoundTripTime currRtt = new RoundTripTime(System.currentTimeMillis(), 0, 0, 0);
 
 	private IPingUpdateListener pingUpdateListener = null;
 
-	public PingPacketListener(Channel channel) {
+	public PingPacketListener(Logger logger, Channel channel) {
 		super(NetworkConstants.ENetworkKey.PING, new GenericDeserializer<PingPacket>(PingPacket.class));
+		this.logger = logger;
 
 		this.channel = channel;
 		channel.registerListener(this);
@@ -38,7 +41,10 @@ public class PingPacketListener extends PacketChannelListener<PingPacket> implem
 		avgJitter.insert(jitter);
 
 		currRtt = new RoundTripTime(now, rtt, jitter, avgJitter.getAverage());
-		System.out.println(String.format("rtt: %5d   jitter: %3d   avgJitter: %3d", rtt, jitter, avgJitter.getAverage()));
+
+		if (rtt > NetworkConstants.RTT_LOGGING_THRESHOLD || jitter > NetworkConstants.JITTER_LOGGING_THRESHOLD) {
+			logger.info(String.format("rtt: %5d   jitter: %3d   avgJitter: %3d", rtt, jitter, avgJitter.getAverage()));
+		}
 
 		sendPing(receivedPing.getSenderTime());
 

@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import networklib.NetworkConstants;
 import networklib.infrastructure.channel.ping.IPingUpdateListener;
 import networklib.infrastructure.channel.ping.RoundTripTime;
+import networklib.infrastructure.log.Logger;
 import networklib.infrastructure.utils.MaximumSlotBuffer;
 import networklib.server.match.Match;
 import networklib.server.packets.ServersideSyncTasksPacket;
@@ -17,8 +18,9 @@ import networklib.server.packets.ServersideTaskPacket;
  * 
  */
 public class TaskSendingTimerTask extends TimerTask {
-	private TaskCollectingListener taskCollectingListener;
-	private Match match;
+	private final Logger logger;
+	private final TaskCollectingListener taskCollectingListener;
+	private final Match match;
 
 	private int lockstepCounter = 0;
 	private int currentLockstepMax = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS;
@@ -26,7 +28,8 @@ public class TaskSendingTimerTask extends TimerTask {
 	private int minimumLeadTimeMs = NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS * NetworkConstants.Client.LOCKSTEP_PERIOD;
 	private int leadSteps = minimumLeadTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD;
 
-	public TaskSendingTimerTask(TaskCollectingListener taskCollectingListener, Match match) {
+	public TaskSendingTimerTask(Logger logger, TaskCollectingListener taskCollectingListener, Match match) {
+		this.logger = logger;
 		this.taskCollectingListener = taskCollectingListener;
 		this.match = match;
 	}
@@ -44,11 +47,11 @@ public class TaskSendingTimerTask extends TimerTask {
 
 	public void receivedLockstepAcknowledge(int acknowledgedLockstep) {
 		currentLockstepMax = Math.max(currentLockstepMax, acknowledgedLockstep + leadSteps);
-		// System.out.println("lead steps: " + leadSteps);
+		// logger.info("lead steps: " + leadSteps);
 	}
 
 	final void pingUpdated(int rtt, int jitter) {
-		if (rtt > 10000 || jitter > 5000) {
+		if (rtt < 0 || rtt > 10000 || jitter > 5000) {
 			return; // this is an exceptional high rtt, we can not adapt to this
 		}
 
@@ -61,8 +64,10 @@ public class TaskSendingTimerTask extends TimerTask {
 
 		leadSteps = (int) Math.ceil(((float) minimumLeadTimeMs) / NetworkConstants.Client.LOCKSTEP_PERIOD);
 
-		System.out.println(String.format("rtt/2: %5d   min lead time: %4d   lead steps: %2d", rtt / 2,
-				minimumLeadTimeMs, leadSteps));
+		if (rtt > NetworkConstants.RTT_LOGGING_THRESHOLD || jitter > NetworkConstants.JITTER_LOGGING_THRESHOLD) {
+			logger.info(String.format("rtt/2: %5d   jitter: %d   min lead time: %4d   lead steps: %2d",
+					rtt / 2, jitter, minimumLeadTimeMs, leadSteps));
+		}
 	}
 
 	private MaximumSlotBuffer rttMaximum = new MaximumSlotBuffer(0);

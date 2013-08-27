@@ -8,7 +8,8 @@ import java.net.SocketException;
 import networklib.NetworkConstants;
 import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.socket.ISocketFactory;
-import networklib.infrastructure.log.Log;
+import networklib.infrastructure.log.Logger;
+import networklib.infrastructure.log.LoggerManager;
 import networklib.server.db.inMemory.InMemoryDB;
 import networklib.server.lan.LanServerAddressBroadcastListener;
 import networklib.server.lan.LanServerBroadcastThread;
@@ -19,6 +20,8 @@ import networklib.server.lan.LanServerBroadcastThread;
  * 
  */
 public class GameServerThread extends Thread {
+
+	private static final Logger LOGGER = LoggerManager.ROOT_LOGGER;
 
 	private final ServerSocket serverSocket;
 	private final ServerManager manager;
@@ -44,16 +47,16 @@ public class GameServerThread extends Thread {
 
 	@Override
 	public void run() {
-		Log.log("Server up and running!\n");
+		LOGGER.log("Server up and running!\n");
 		while (!canceled) {
 			try {
 				Socket clientSocket = serverSocket.accept();
 
-				Channel clientChannel = new Channel(ISocketFactory.DEFAULT_FACTORY.generateSocket(clientSocket));
+				Channel clientChannel = new Channel(LOGGER, ISocketFactory.DEFAULT_FACTORY.generateSocket(clientSocket));
 				manager.identifyNewChannel(clientChannel);
 				clientChannel.start();
 
-				Log.log("accepted new client (" + ++counter + "): " + clientSocket);
+				LOGGER.log("accepted new client (" + ++counter + "): " + clientSocket);
 			} catch (SocketException e) {
 			} catch (IOException e) {
 				e.printStackTrace();
