@@ -1,14 +1,14 @@
 #Fat Jar Configuration File
-#Thu Aug 01 12:09:42 CEST 2013
+#Tue Aug 27 13:54:16 CEST 2013
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=build/DedicatedServer.jar
+jarname=target/DedicatedServer.jar
 manifest.mergeall=true
 manifest.mainclass=networklib.server.DedicatedServerApp
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<jar|junit.jar>;<jar|org.hamcrest.core_1.1.0.v20090501071000.jar>
+excludes=<po|networklib>~networklib/~client/
 includes=

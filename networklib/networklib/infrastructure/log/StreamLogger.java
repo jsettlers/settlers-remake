@@ -1,7 +1,9 @@
 package networklib.infrastructure.log;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Date;
 
@@ -22,7 +24,7 @@ public class StreamLogger extends Logger {
 	}
 
 	public StreamLogger(String loggerId, File logFile) throws FileNotFoundException {
-		this(loggerId, new PrintStream(logFile));
+		this(loggerId, new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile))));
 	}
 
 	private synchronized void println(String msg) {
