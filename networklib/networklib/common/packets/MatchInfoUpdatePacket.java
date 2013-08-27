@@ -15,29 +15,30 @@ import networklib.infrastructure.channel.packet.Packet;
 public class MatchInfoUpdatePacket extends Packet {
 
 	private ENetworkMessage updateReason;
-	private String idOfChangedPlayer;
+	private PlayerInfoPacket updatedPlayer;
 	private MatchInfoPacket matchInfo;
 
 	public MatchInfoUpdatePacket() {
 	}
 
-	public MatchInfoUpdatePacket(ENetworkMessage updateReason, String idOfChangedPlayer, MatchInfoPacket matchInfo) {
+	public MatchInfoUpdatePacket(ENetworkMessage updateReason, PlayerInfoPacket updatedPlayer, MatchInfoPacket matchInfo) {
 		this.updateReason = updateReason;
-		this.idOfChangedPlayer = idOfChangedPlayer;
+		this.updatedPlayer = updatedPlayer;
 		this.matchInfo = matchInfo;
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
 		updateReason.writeTo(dos);
-		dos.writeUTF(idOfChangedPlayer);
+		updatedPlayer.serialize(dos);
 		matchInfo.serialize(dos);
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
 		updateReason = ENetworkMessage.readFrom(dis);
-		idOfChangedPlayer = dis.readUTF();
+		updatedPlayer = new PlayerInfoPacket();
+		updatedPlayer.deserialize(dis);
 		matchInfo = new MatchInfoPacket();
 		matchInfo.deserialize(dis);
 	}
@@ -50,15 +51,15 @@ public class MatchInfoUpdatePacket extends Packet {
 		return matchInfo;
 	}
 
-	public String getIdOfChangedPlayer() {
-		return idOfChangedPlayer;
+	public PlayerInfoPacket getUpdatedPlayer() {
+		return updatedPlayer;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((idOfChangedPlayer == null) ? 0 : idOfChangedPlayer.hashCode());
+		result = prime * result + ((updatedPlayer == null) ? 0 : updatedPlayer.hashCode());
 		result = prime * result + ((matchInfo == null) ? 0 : matchInfo.hashCode());
 		result = prime * result + ((updateReason == null) ? 0 : updateReason.hashCode());
 		return result;
@@ -73,10 +74,10 @@ public class MatchInfoUpdatePacket extends Packet {
 		if (getClass() != obj.getClass())
 			return false;
 		MatchInfoUpdatePacket other = (MatchInfoUpdatePacket) obj;
-		if (idOfChangedPlayer == null) {
-			if (other.idOfChangedPlayer != null)
+		if (updatedPlayer == null) {
+			if (other.updatedPlayer != null)
 				return false;
-		} else if (!idOfChangedPlayer.equals(other.idOfChangedPlayer))
+		} else if (!updatedPlayer.equals(other.updatedPlayer))
 			return false;
 		if (matchInfo == null) {
 			if (other.matchInfo != null)

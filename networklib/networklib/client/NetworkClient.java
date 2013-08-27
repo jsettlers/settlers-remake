@@ -205,7 +205,7 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		MatchInfoPacket updatedInfo = matchInfoUpdate.getMatchInfo();
 		assert updatedInfo != null && updatedInfo.getId().equals(updatedInfo.getId()) : "received match info for wrong match! " + updatedInfo.getId();
 
-		if (playerInfo.getId().equals(matchInfoUpdate.getIdOfChangedPlayer())) { // if this client left the game
+		if (playerInfo.getId().equals(matchInfoUpdate.getUpdatedPlayer().getId())) { // if this client left the game
 			state = EPlayerState.LOGGED_IN;
 			this.matchInfo = null;
 

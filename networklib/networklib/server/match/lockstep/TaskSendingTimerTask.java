@@ -17,8 +17,6 @@ import networklib.server.packets.ServersideTaskPacket;
  * 
  */
 public class TaskSendingTimerTask extends TimerTask {
-	private static final int LEAD_TIME_DECREASE_STEPS = 20;
-
 	private TaskCollectingListener taskCollectingListener;
 	private Match match;
 

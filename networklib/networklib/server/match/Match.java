@@ -117,12 +117,12 @@ public class Match {
 		}
 	}
 
-	public void sendMatchInfoUpdate(ENetworkMessage updateReason, String idOfChangedPlayer) {
-		broadcastMessage(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason, idOfChangedPlayer));
+	public void sendMatchInfoUpdate(ENetworkMessage updateReason, PlayerInfoPacket updatedPlayer) {
+		broadcastMessage(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE, generateMatchInfoUpdate(updateReason, updatedPlayer));
 	}
 
-	private MatchInfoUpdatePacket generateMatchInfoUpdate(ENetworkMessage updateReason, String idOfChangedPlayer) {
-		return new MatchInfoUpdatePacket(updateReason, idOfChangedPlayer, new MatchInfoPacket(this));
+	private MatchInfoUpdatePacket generateMatchInfoUpdate(ENetworkMessage updateReason, PlayerInfoPacket updatedPlayer) {
+		return new MatchInfoUpdatePacket(updateReason, updatedPlayer, new MatchInfoPacket(this));
 	}
 
 	public void broadcastMessage(ENetworkKey key, Packet packet) {
@@ -151,7 +151,7 @@ public class Match {
 		synchronized (players) {
 			players.add(player);
 
-			sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_JOINED, player.getId());
+			sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_JOINED, player.getPlayerInfo());
 
 			if (state == EMatchState.RUNNING) {
 				sendMatchStartPacketToPlayer(player);
@@ -163,9 +163,9 @@ public class Match {
 		synchronized (players) {
 			players.remove(player);
 
-			sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_LEFT, player.getId());
+			sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_LEFT, player.getPlayerInfo());
 			player.sendPacket(NetworkConstants.ENetworkKey.MATCH_INFO_UPDATE,
-					generateMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_LEFT, player.getId()));
+					generateMatchInfoUpdate(NetworkConstants.ENetworkMessage.PLAYER_LEFT, player.getPlayerInfo()));
 
 			if (isRunning()) {
 				synchronized (leftPlayers) {
@@ -183,7 +183,7 @@ public class Match {
 		synchronized (players) {
 			for (Player player : players) {
 				if (!player.getPlayerInfo().isReady()) {
-					// throw new NotAllPlayersReadyException(); // FIXME @Andreas Eberle this is only temporarily commented out!
+					throw new NotAllPlayersReadyException();
 				}
 			}
 		}

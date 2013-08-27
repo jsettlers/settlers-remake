@@ -91,7 +91,7 @@ public class Player {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
 		if (playerInfo.isReady() != ready) { // only update if there is a real change
 			playerInfo.setReady(ready);
-			match.sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.READY_STATE_CHANGED, this.getId());
+			match.sendMatchInfoUpdate(NetworkConstants.ENetworkMessage.READY_STATE_CHANGED, this.getPlayerInfo());
 		}
 	}
 
