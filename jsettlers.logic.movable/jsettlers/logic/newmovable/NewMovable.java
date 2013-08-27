@@ -736,10 +736,13 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	 * @param movableType
 	 */
 	public final void convertTo(EMovableType movableType) {
-		this.movableType = movableType;
-		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
-		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-		setState(ENewMovableState.DOING_NOTHING);
+		if (movableType != EMovableType.BEARER || player.equals(grid.getPlayerAt(position))) {
+			this.movableType = movableType;
+			this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+			this.strategy = NewMovableStrategy.getStrategy(this, movableType);
+			setState(ENewMovableState.DOING_NOTHING);
+			progress = 0;
+		}
 	}
 
 	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
