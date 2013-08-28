@@ -75,10 +75,13 @@ public final class NetworkConstants {
 		NO_LISTENER_FOUND,
 		NOT_ALL_PLAYERS_READY,
 		READY_STATE_CHANGED,
+		START_FINISHED,
 
 		UNAUTHORIZED,
 		UNKNOWN_ERROR,
-		INVALID_STATE_ERROR;
+		INVALID_STATE_ERROR,
+
+		;
 
 		private static final ENetworkMessage[] values = ENetworkMessage.values();
 		private final byte ordinal;
@@ -125,7 +128,9 @@ public final class NetworkConstants {
 		CHANGE_READY_STATE,
 		MATCH_INFO_UPDATE,
 		CHAT_MESSAGE,
-		TIME_SYNC;
+		TIME_SYNC,
+
+		CHANGE_START_FINISHED;
 
 		private static final ENetworkKey[] values = ENetworkKey.values();
 		private final byte ordinal;

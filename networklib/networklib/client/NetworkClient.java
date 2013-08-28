@@ -16,6 +16,7 @@ import networklib.client.time.ISynchronizableClock;
 import networklib.client.time.TimeSyncSenderTimerTask;
 import networklib.client.time.TimeSynchronizationListener;
 import networklib.common.packets.ArrayOfMatchInfosPacket;
+import networklib.common.packets.BooleanMessagePacket;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.IdPacket;
 import networklib.common.packets.MapInfoPacket;
@@ -24,7 +25,6 @@ import networklib.common.packets.MatchInfoUpdatePacket;
 import networklib.common.packets.MatchStartPacket;
 import networklib.common.packets.OpenNewMatchPacket;
 import networklib.common.packets.PlayerInfoPacket;
-import networklib.common.packets.ReadyStatePacket;
 import networklib.infrastructure.channel.AsyncChannel;
 import networklib.infrastructure.channel.GenericDeserializer;
 import networklib.infrastructure.channel.IChannelClosedListener;
@@ -145,7 +145,12 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	@Override
 	public void setReadyState(boolean ready) throws IllegalStateException {
 		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
-		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_READY_STATE, new ReadyStatePacket(ready));
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_READY_STATE, new BooleanMessagePacket(ready));
+	}
+
+	public void setStartFinishedFlag(boolean startFinished) throws IllegalStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_START_FINISHED, new BooleanMessagePacket(startFinished));
 	}
 
 	@Override

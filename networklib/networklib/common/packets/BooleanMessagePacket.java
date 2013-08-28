@@ -11,32 +11,32 @@ import networklib.infrastructure.channel.packet.Packet;
  * @author Andreas Eberle
  * 
  */
-public class ReadyStatePacket extends Packet {
+public class BooleanMessagePacket extends Packet {
 
-	private boolean ready;
+	private boolean value;
 
-	public ReadyStatePacket() {
+	public BooleanMessagePacket() {
 	}
 
-	public ReadyStatePacket(boolean ready) {
-		this.ready = ready;
+	public BooleanMessagePacket(boolean value) {
+		this.value = value;
 	}
 
 	@Override
 	public void serialize(DataOutputStream dos) throws IOException {
-		dos.writeBoolean(ready);
+		dos.writeBoolean(value);
 	}
 
 	@Override
 	public void deserialize(DataInputStream dis) throws IOException {
-		ready = dis.readBoolean();
+		value = dis.readBoolean();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (ready ? 1231 : 1237);
+		result = prime * result + (value ? 1231 : 1237);
 		return result;
 	}
 
@@ -48,14 +48,14 @@ public class ReadyStatePacket extends Packet {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ReadyStatePacket other = (ReadyStatePacket) obj;
-		if (ready != other.ready)
+		BooleanMessagePacket other = (BooleanMessagePacket) obj;
+		if (value != other.value)
 			return false;
 		return true;
 	}
 
-	public boolean isReady() {
-		return ready;
+	public boolean getValue() {
+		return value;
 	}
 
 }

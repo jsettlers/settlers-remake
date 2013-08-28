@@ -14,6 +14,7 @@ import networklib.server.listeners.ChatMessageForwardingListener;
 import networklib.server.listeners.IdentifyUserListener;
 import networklib.server.listeners.ReadyStatePacketListener;
 import networklib.server.listeners.ServerChannelClosedListener;
+import networklib.server.listeners.StartFinishedSignalListener;
 import networklib.server.listeners.TimeSyncForwardingListener;
 import networklib.server.listeners.matches.JoinMatchListener;
 import networklib.server.listeners.matches.LeaveMatchListener;
@@ -70,6 +71,7 @@ public class ServerManager implements IServerManager {
 			channel.registerListener(new ChatMessageForwardingListener(this, player));
 			channel.registerListener(new TimeSyncForwardingListener(this, player));
 			channel.registerListener(new ReadyStatePacketListener(this, player));
+			channel.registerListener(new StartFinishedSignalListener(this, player));
 
 			return true;
 		} else {
@@ -171,4 +173,8 @@ public class ServerManager implements IServerManager {
 		matchSendingTask.sendMatchesTo(player);
 	}
 
+	@Override
+	public void setStartFinished(Player player, boolean startFinished) {
+		player.setStartFinished(startFinished);
+	}
 }

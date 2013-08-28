@@ -15,6 +15,7 @@ public class PlayerInfoPacket extends Packet {
 	private String id;
 	private String name;
 	private boolean ready;
+	private boolean startFinished;
 
 	public PlayerInfoPacket() {
 	}
@@ -30,6 +31,7 @@ public class PlayerInfoPacket extends Packet {
 		dos.writeUTF(id);
 		dos.writeUTF(name);
 		dos.writeBoolean(ready);
+		dos.writeBoolean(startFinished);
 	}
 
 	@Override
@@ -37,6 +39,7 @@ public class PlayerInfoPacket extends Packet {
 		id = dis.readUTF();
 		name = dis.readUTF();
 		ready = dis.readBoolean();
+		startFinished = dis.readBoolean();
 	}
 
 	public String getId() {
@@ -53,6 +56,14 @@ public class PlayerInfoPacket extends Packet {
 
 	public boolean isReady() {
 		return ready;
+	}
+
+	public boolean isStartFinished() {
+		return startFinished;
+	}
+
+	public void setStartFinished(boolean startFinished) {
+		this.startFinished = startFinished;
 	}
 
 	@Override

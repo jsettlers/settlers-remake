@@ -4,6 +4,7 @@ import java.util.Timer;
 
 import networklib.NetworkConstants;
 import networklib.NetworkConstants.ENetworkKey;
+import networklib.NetworkConstants.ENetworkMessage;
 import networklib.common.packets.ChatMessagePacket;
 import networklib.common.packets.PlayerInfoPacket;
 import networklib.common.packets.TimeSyncPacket;
@@ -100,5 +101,10 @@ public class Player {
 
 	public EPlayerState getState() {
 		return state;
+	}
+
+	public void setStartFinished(boolean value) {
+		playerInfo.setStartFinished(value);
+		match.sendMatchInfoUpdate(ENetworkMessage.START_FINISHED, this.getPlayerInfo());
 	}
 }
