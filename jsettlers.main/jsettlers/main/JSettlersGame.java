@@ -34,9 +34,9 @@ import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.MovableTimer;
 import jsettlers.logic.timer.PartitionManagerTimer;
 import jsettlers.logic.timer.Timer100Milli;
-import networklib.client.OfflineTaskScheduler;
+import networklib.client.OfflineNetworkConnector;
 import networklib.client.interfaces.IGameClock;
-import networklib.client.interfaces.ITaskScheduler;
+import networklib.client.interfaces.INetworkConnector;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
@@ -52,7 +52,7 @@ public class JSettlersGame {
 	private final IGameCreator mapcreator;
 	private final long randomSeed;
 	private final byte playerNumber;
-	private final ITaskScheduler taskScheduler;
+	private final INetworkConnector networkConnector;
 	private final boolean multiplayer;
 	private final DataInputStream replayFileInputStream;
 
@@ -61,11 +61,11 @@ public class JSettlersGame {
 	private boolean stopped = false;
 	private boolean started = false;
 
-	private JSettlersGame(IGameCreator mapCreator, long randomSeed,
-			ITaskScheduler taskScheduler, byte playerNumber, boolean multiplayer, DataInputStream replayFileInputStream) {
+	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerNumber, boolean multiplayer,
+			DataInputStream replayFileInputStream) {
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
-		this.taskScheduler = taskScheduler;
+		this.networkConnector = networkConnector;
 		this.playerNumber = playerNumber;
 		this.multiplayer = multiplayer;
 		this.replayFileInputStream = replayFileInputStream;
@@ -73,8 +73,8 @@ public class JSettlersGame {
 		this.gameRunner = new GameRunner();
 	}
 
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, ITaskScheduler taskScheduler, byte playerNumber) {
-		this(mapCreator, randomSeed, taskScheduler, playerNumber, true, null);
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerNumber) {
+		this(mapCreator, randomSeed, networkConnector, playerNumber, true, null);
 	}
 
 	/**
@@ -86,11 +86,11 @@ public class JSettlersGame {
 	 * @param replayFileInputStream
 	 */
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerNumber, DataInputStream replayFileInputStream) {
-		this(mapCreator, randomSeed, new OfflineTaskScheduler(), playerNumber, false, replayFileInputStream);
+		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerNumber, false, replayFileInputStream);
 	}
 
 	/**
-	 * Creates a new {@link JSettlersGame} object with an {@link OfflineTaskScheduler}.
+	 * Creates a new {@link JSettlersGame} object with an {@link OfflineNetworkConnector}.
 	 * 
 	 * @param mapCreator
 	 * @param randomSeed
@@ -144,7 +144,7 @@ public class JSettlersGame {
 
 				DataOutputStream replayFileStream = createReplayFileStream();
 
-				IGameClock gameClock = MatchConstants.clock = taskScheduler.getGameClock();
+				IGameClock gameClock = MatchConstants.clock = networkConnector.getGameClock();
 				gameClock.setReplayLogStream(replayFileStream);
 				RandomSingleton.load(randomSeed);
 
@@ -162,10 +162,16 @@ public class JSettlersGame {
 
 				waitForStartingGameListener();
 
+				updateProgressListener(EProgressState.WAITING_FOR_OTHER_PLAYERS, 0.98f);
+
+				networkConnector.setStartFinished(true);
+				waitForAllPlayersStartFinished(networkConnector);
+
 				final MapInterfaceConnector connector = startingGameListener.startFinished(this);
 				connector.loadUIState(uiState.getUiStateData());
 
-				GuiInterface guiInterface = new GuiInterface(connector, gameClock, taskScheduler, mainGrid.getGuiInputGrid(), this, playerNumber,
+				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
+						this, playerNumber,
 						multiplayer);
 
 				if (replayFileInputStream != null) {
@@ -183,7 +189,7 @@ public class JSettlersGame {
 					}
 				}
 
-				taskScheduler.shutdown();
+				networkConnector.shutdown();
 				gameClock.stopExecution();
 				connector.stop();
 				mainGrid.stopThreads();
@@ -222,6 +228,15 @@ public class JSettlersGame {
 		 */
 		private void waitForStartingGameListener() {
 			while (startingGameListener == null) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+
+		private void waitForAllPlayersStartFinished(INetworkConnector networkConnector) {
+			while (!networkConnector.haveAllPlayersStartFinished()) {
 				try {
 					Thread.sleep(5);
 				} catch (InterruptedException e) {

@@ -112,7 +112,7 @@ public class MultiplayerGame {
 				long randomSeed = packet.getRandomSeed();
 				byte myPlayerNumber = getMyPlayerNumber();
 
-				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient, myPlayerNumber);
+				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), myPlayerNumber);
 
 				multiplayerListener.gameIsStarting(game.start());
 			}
