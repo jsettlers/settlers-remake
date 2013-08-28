@@ -109,20 +109,29 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 		ImageProvider.getInstance().addPreloadTask(this);
 	}
 
+	/**
+	 * Forces the regeneration of the cache file.
+	 */
 	public synchronized void writeCache() {
 		FileOutputStream out = null;
 		try {
 			cacheFile.getParentFile().mkdirs();
 			cacheFile.delete();
-			out = new FileOutputStream(cacheFile);
-
-			byte[] line = new byte[this.width * 2];
-			byteBuffer.rewind();
-			while (byteBuffer.hasRemaining()) {
-				byteBuffer.get(line);
-				out.write(line);
+			File tempFile = new File(cacheFile.getParentFile(), cacheFile.getName() + ".tmp");
+			out = new FileOutputStream(tempFile);
+			
+			try {
+				byte[] line = new byte[this.width * 2];
+				byteBuffer.rewind();
+				while (byteBuffer.hasRemaining()) {
+					byteBuffer.get(line);
+					out.write(line);
+				}
+			} finally {
+				out.close();
 			}
-			out.close();
+			
+			tempFile.renameTo(cacheFile);
 
 			buffers = null;
 			byteBuffer = null;
@@ -212,14 +221,18 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	    if (buffers == null) {
 	    	allocateBuffers();
 	    	FileInputStream in = new FileInputStream(cacheFile);
-	    	byte[] line = new byte[this.width * 2];
-	    	while (in.available() > 0) {
-	    		if (in.read(line) <= 0) {
-	    			throw new IOException();
-	    		}
-	    		byteBuffer.put(line);
-	    	}
-	    	byteBuffer.rewind();
+			try {
+				byte[] line = new byte[this.width * 2];
+				while (in.available() > 0) {
+					if (in.read(line) <= 0) {
+						throw new IOException();
+					}
+					byteBuffer.put(line);
+				}
+				byteBuffer.rewind();
+			} finally {
+				in.close();
+			}
 	    }
 
 	    buffers.rewind();

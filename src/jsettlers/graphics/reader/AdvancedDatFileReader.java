@@ -216,13 +216,13 @@ public class AdvancedDatFileReader implements DatFileSet {
 	 * A list of loaded landscae images.
 	 */
 	private LandscapeImage[] landscapeimages = null;
-	private Sequence<LandscapeImage> landscapesequence =
+	private final Sequence<LandscapeImage> landscapesequence =
 	        new LandscapeImageSequence();
 	private int[] landscapestarts;
 
 	private GuiImage[] guiimages = null;
 	private int[] guistarts;
-	private Sequence<GuiImage> guisequence = new GuiImageSequence();
+	private final Sequence<GuiImage> guisequence = new GuiImageSequence();
 
 	private final SequenceList<Image> directSettlerList;
 
@@ -621,9 +621,9 @@ public class AdvancedDatFileReader implements DatFileSet {
 		initializeIfNeeded();
 
 		MultiImageMap map = new MultiImageMap(width, height, id);
-		// if (!map.hasCache()) {
-		map.addSequences(this, sequences, settlersequences);
-		map.writeCache();
-		// }
+		if (!map.hasCache()) {
+			map.addSequences(this, sequences, settlersequences);
+			map.writeCache();
+		}
 	}
 }

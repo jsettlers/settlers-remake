@@ -109,11 +109,14 @@ public final class DatBitmapReader<T extends Image> {
 		try {
 			readCompressedData(reader, translator, metadata.width,
 			        metadata.height, array);
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			System.err.println("Error while loading image starting at "
 			        + currentPos
 			        + ". There is an error/overflow somewhere around "
-			        + reader.getReadBytes());
+			        + reader.getReadBytes()
+			        + ". Error was: "
+			        + e.getMessage());
+			throw new IOException("Error uncompressing image", e);
 		}
 	}
 
