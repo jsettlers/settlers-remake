@@ -1,7 +1,6 @@
 package networklib.client.interfaces;
 
 import networklib.client.task.packets.TaskPacket;
-import networklib.synchronic.timer.INetworkTimerable;
 
 /**
  * This interface defines a method to schedule a {@link TaskPacket} for execution.
@@ -21,11 +20,4 @@ public interface ITaskScheduler {
 	 */
 	void scheduleTask(TaskPacket task);
 
-	/**
-	 * 
-	 * @return Returns the {@link IGameClock} that can be used to attach {@link INetworkTimerable}s for synchronous execution.
-	 */
-	IGameClock getGameClock();
-
-	void shutdown();
 }

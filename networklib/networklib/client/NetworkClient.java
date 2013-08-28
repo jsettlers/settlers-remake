@@ -8,6 +8,7 @@ import networklib.NetworkConstants;
 import networklib.NetworkConstants.ENetworkKey;
 import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.INetworkClient;
+import networklib.client.interfaces.INetworkConnector;
 import networklib.client.interfaces.ITaskScheduler;
 import networklib.client.receiver.IPacketReceiver;
 import networklib.client.task.TaskPacketListener;
@@ -41,7 +42,7 @@ import networklib.synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class NetworkClient implements ITaskScheduler, INetworkClient {
+public class NetworkClient implements ITaskScheduler, INetworkConnector, INetworkClient {
 
 	private final AsyncChannel channel;
 	private final Timer timer;
@@ -148,8 +149,9 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_READY_STATE, new BooleanMessagePacket(ready));
 	}
 
-	public void setStartFinishedFlag(boolean startFinished) throws IllegalStateException {
-		EPlayerState.assertState(state, EPlayerState.IN_MATCH);
+	@Override
+	public void setStartFinished(boolean startFinished) throws IllegalStateException {
+		EPlayerState.assertState(state, EPlayerState.IN_RUNNING_MATCH);
 		channel.sendPacketAsync(NetworkConstants.ENetworkKey.CHANGE_START_FINISHED, new BooleanMessagePacket(startFinished));
 	}
 
@@ -281,5 +283,24 @@ public class NetworkClient implements ITaskScheduler, INetworkClient {
 	@Override
 	public void shutdown() {
 		close();
+	}
+
+	@Override
+	public ITaskScheduler getTaskScheduler() {
+		return this;
+	}
+
+	@Override
+	public boolean haveAllPlayersStartFinished() {
+		boolean allStartFinished = true;
+		for (PlayerInfoPacket currPlayer : matchInfo.getPlayers()) {
+			allStartFinished = allStartFinished && currPlayer.isStartFinished();
+		}
+		return allStartFinished;
+	}
+
+	@Override
+	public INetworkConnector getNetworkConnector() {
+		return this;
 	}
 }

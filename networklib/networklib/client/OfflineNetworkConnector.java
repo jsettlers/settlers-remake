@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import networklib.NetworkConstants;
 import networklib.client.interfaces.IGameClock;
+import networklib.client.interfaces.INetworkConnector;
 import networklib.client.interfaces.ITaskScheduler;
 import networklib.client.task.packets.SyncTasksPacket;
 import networklib.client.task.packets.TaskPacket;
@@ -15,9 +16,10 @@ import networklib.synchronic.timer.NetworkTimer;
  * @author Andreas Eberle
  * 
  */
-public class OfflineTaskScheduler implements ITaskScheduler {
+public class OfflineNetworkConnector implements ITaskScheduler, INetworkConnector {
 
 	private final NetworkTimer networkTimer = new NetworkTimer(true);
+	private boolean startFinished;
 
 	@Override
 	public void scheduleTask(TaskPacket task) {
@@ -33,5 +35,20 @@ public class OfflineTaskScheduler implements ITaskScheduler {
 	@Override
 	public void shutdown() {
 		networkTimer.stopExecution();
+	}
+
+	@Override
+	public ITaskScheduler getTaskScheduler() {
+		return this;
+	}
+
+	@Override
+	public void setStartFinished(boolean startFinished) {
+		this.startFinished = startFinished;
+	}
+
+	@Override
+	public boolean haveAllPlayersStartFinished() {
+		return startFinished;
 	}
 }

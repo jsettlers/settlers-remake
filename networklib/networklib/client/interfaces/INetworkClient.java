@@ -17,7 +17,7 @@ import networklib.server.match.EPlayerState;
  * @author Andreas Eberle
  * 
  */
-public interface INetworkClient extends ITaskScheduler {
+public interface INetworkClient {
 
 	/**
 	 * Tries to authenticate the user at the server and registers the given {@link IPacketReceiver} to receive the list of joinable matches. The
@@ -93,4 +93,6 @@ public interface INetworkClient extends ITaskScheduler {
 	void close();
 
 	int getRoundTripTimeInMs();
+
+	INetworkConnector getNetworkConnector();
 }
