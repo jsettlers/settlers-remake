@@ -86,7 +86,7 @@ public class PacketSerializationTest {
 				{ new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
 						(TaskPacket) new TestTaskPacket("dsfsää#öüdsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) },
 
-				{ new ReadyStatePacket(true), d(ReadyStatePacket.class) },
+				{ new BooleanMessagePacket(true), d(BooleanMessagePacket.class) },
 				{ new ChatMessagePacket("authorId(, message)U)(Z", "message'**Ü##\"\\ppoisudf08u("), d(ChatMessagePacket.class) },
 
 				{ new PingPacket(2324L, -2349879879787987234L), d(PingPacket.class) },
