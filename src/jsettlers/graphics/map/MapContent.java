@@ -527,7 +527,8 @@ public final class MapContent implements RegionContent,
 	@Override
 	public void handleEvent(GOEvent event) {
 		if (event instanceof GOPanEvent) {
-			if (!controls.containsPoint(((GOPanEvent) event).getPanCenter())) {
+			UIPoint center = ((GOPanEvent) event).getPanCenter();
+			if (center == null || !controls.containsPoint(center)) {
 				event.setHandler(new PanHandler(this.context.getScreen()));
 			}
 		} else if (event instanceof GOCommandEvent) {
