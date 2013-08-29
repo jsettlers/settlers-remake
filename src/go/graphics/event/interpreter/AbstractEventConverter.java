@@ -26,9 +26,9 @@ public class AbstractEventConverter {
 
 	private ConvertedHoverEvent ongoingHoverEvent;
 
-	private int PAN_PER_KEYPRESS = 20;
+	private final int PAN_PER_KEYPRESS = 20;
 
-	private LinkedList<EventReplacementRule> replace =
+	private final LinkedList<EventReplacementRule> replace =
 	        new LinkedList<AbstractEventConverter.EventReplacementRule>();
 
 	private ConvertedZoomEvent ongoingZoomEvent;

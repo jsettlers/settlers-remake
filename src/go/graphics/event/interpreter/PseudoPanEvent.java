@@ -34,7 +34,7 @@ public class PseudoPanEvent extends SingleHandlerGoModalEvent implements
 
 	@Override
 	public synchronized UIPoint getPanCenter() {
-		return new UIPoint(0, 0);
+		return null;
 	}
 
 	@Override

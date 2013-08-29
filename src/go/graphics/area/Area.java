@@ -38,9 +38,9 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	private int width;
 	private int height;
 
-	private ArrayList<Region> regions = new ArrayList<Region>();
+	private final ArrayList<Region> regions = new ArrayList<Region>();
 
-	private LinkedList<RedrawListener> redrawListeners =
+	private final LinkedList<RedrawListener> redrawListeners =
 	        new LinkedList<RedrawListener>();
 
 	private ArrayList<PositionedRegion> regionPositions;
@@ -366,6 +366,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	 * @param event
 	 *            The event to handle.
 	 */
+	@Override
 	public void handleEvent(GOEvent event) {
 
 		if (event instanceof GOCommandEvent) {
@@ -388,18 +389,24 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	}
 
 	private void handlePanEvent(GOPanEvent event) {
-		PositionedRegion foundPosition = getRegionAt(event.getPanCenter());
+		if (event.getPanCenter() == null) {
+			if (!regionPositions.isEmpty()) {
+				PositionedRegion centerPosition = regionPositions
+						.get(regionPositions.size() - 1);
+				centerPosition.getRegion().handleEvent(event);
+			}
+		} else {
+			PositionedRegion foundPosition = getRegionAt(event.getPanCenter());
 
-		if (foundPosition == null) {
-			return;
+			if (foundPosition != null) {
+				UIPoint topLeft = new UIPoint(foundPosition.getLeft(),
+						foundPosition.getTop());
+
+				GOPanEventProxy displacedEvent = new GOPanEventProxy(event,
+						topLeft);
+				foundPosition.getRegion().handleEvent(displacedEvent);
+			}
 		}
-		
-		UIPoint topLeft =
-		        new UIPoint(foundPosition.getLeft(),
-		                foundPosition.getTop());
-
-		GOPanEventProxy displacedEvent = new GOPanEventProxy(event, topLeft);
-		foundPosition.getRegion().handleEvent(displacedEvent);
 	}
 
 	private PositionedRegion getRegionAt(UIPoint eventPosition) {
