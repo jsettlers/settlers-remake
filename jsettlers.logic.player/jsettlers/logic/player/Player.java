@@ -17,7 +17,7 @@ public class Player implements Serializable, IMessenger {
 	public final byte playerId;
 	private final Team team;
 
-	private IMessenger messenger;
+	private transient IMessenger messenger;
 
 	public Player(byte playerId, Team team) {
 		this.playerId = playerId;
