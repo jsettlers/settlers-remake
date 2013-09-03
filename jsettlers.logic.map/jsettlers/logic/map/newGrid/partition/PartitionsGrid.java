@@ -256,6 +256,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		if (towers[idx] <= 0) {
 			short newPartition = createNewPartition(playerId);
 			changePartitionUncheckedAt(position.x, position.y, newPartition);
+			notifyPlayerChangedListener(position.x, position.y, playerId);
 
 			PartitionsListingBorderVisitor borderVisitor = new PartitionsListingBorderVisitor(this, blockingProvider);
 			// visit the direct neighbors of the position
@@ -361,7 +362,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		};
 
-		IteratorFilter<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate);
+		Iterable<ShortPoint2D> filtered = new IteratorFilter<ShortPoint2D>(influencingArea, predicate).toList();
 
 		// create PartitionCalculator
 		PartitionCalculatorAlgorithm partitioner = new PartitionCalculatorAlgorithm(filtered, blockingProvider, borders.xMin, borders.yMin,
@@ -376,6 +377,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		// increase the tower counter
 		changeTowerCounter(playerId, influencingArea, +1);
+
+		for (ShortPoint2D curr : filtered) {
+			notifyPlayerChangedListener(curr.x, curr.y, playerId);
+		}
 	}
 
 	private void checkForMergesAndDivides(byte playerId, PartitionCalculatorAlgorithm partitioner, short[] newPartitionsMap) {
@@ -520,6 +525,13 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		Partition biggerPartitionObject = partitionObjects[biggerPartition];
 		Partition smallerPartitionObject = partitionObjects[smallerPartition];
 
+		if (biggerPartitionObject.playerId != smallerPartitionObject.playerId) {
+			System.err.println("ERROR: Merging partitions of different players!!!");
+		} else if (biggerPartition == blockedPartitionsForPlayers[biggerPartitionObject.playerId]
+				|| smallerPartition == blockedPartitionsForPlayers[smallerPartitionObject.playerId]) {
+			System.err.println("ERROR: Merging blocked partition!!!");
+		}
+
 		smallerPartitionObject.mergeInto(biggerPartitionObject);
 		smallerPartitionObject.stopManager();
 
@@ -611,8 +623,9 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 *            y coordinate of the position.
 	 * @param newPartition
 	 *            The new partition that will be set at the given partition.
+	 * @return the player id of the new partition.
 	 */
-	void changePartitionUncheckedAt(int x, int y, short newPartition) {
+	byte changePartitionUncheckedAt(int x, int y, short newPartition) {
 		int idx = x + y * width;
 		Partition oldPartitionObject = partitionObjects[partitions[idx]];
 		Partition newPartitionObject = partitionObjects[newPartition];
@@ -622,9 +635,11 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			partitions[idx] = newPartition;
 		}
 
-		if (oldPartitionObject.playerId != newPartitionObject.playerId) {
-			playerChangedListener.playerChangedAt(x, y, newPartitionObject.playerId);
-		}
+		return newPartitionObject.playerId;
+	}
+
+	private void notifyPlayerChangedListener(int x, int y, byte newPlayer) {
+		playerChangedListener.playerChangedAt(x, y, newPlayer);
 	}
 
 	short createNewPartition(byte player) { // package private for tests
@@ -664,7 +679,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 				System.out.println();
 			}
 
-			changePartitionUncheckedAt(x, y, newPartition);
+			byte playerId = changePartitionUncheckedAt(x, y, newPartition);
+			notifyPlayerChangedListener(x, y, playerId);
 		}
 	}
 

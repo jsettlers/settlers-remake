@@ -53,7 +53,7 @@ public final class Partition extends PartitionManager implements Serializable {
 
 	public void removePositionTo(final int x, final int y, final Partition newPartitionObject) {
 		if (this == newPartitionObject) {
-			System.out.println("ERROR: newManager can not be the same as this manager. At (" + x + "|" + y + ")");
+			System.err.println("ERROR: newManager can not be the same as this manager. At (" + x + "|" + y + ")");
 		}
 
 		this.decrement(x, y);

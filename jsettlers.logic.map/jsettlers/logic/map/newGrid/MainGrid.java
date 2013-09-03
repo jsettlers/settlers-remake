@@ -596,7 +596,7 @@ public final class MainGrid implements Serializable {
 		public final int getDebugColorAt(int x, int y) {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 
-			// int value = partitionsGrid.getPartitionIdAt(x, y);
+			int value = partitionsGrid.getPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
 
@@ -604,14 +604,14 @@ public final class MainGrid implements Serializable {
 
 			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
 
-			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-					: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+			// .getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+			// : (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
@@ -1522,7 +1522,8 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void postionClicked(short x, short y) {
 			System.out.println("clicked pos (" + x + "|" + y + "):  player: " + partitionsGrid.getPlayerIdAt(x, y) + "  partition: "
-					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y));
+					+ partitionsGrid.getPartitionIdAt(x, y) + "  real partition: " + partitionsGrid.getRealPartitionIdAt(x, y) + "  towerCount: "
+					+ partitionsGrid.getTowerCountAt(x, y));
 		}
 
 		@Override
