@@ -51,17 +51,13 @@ public class AndroidUiImageGenerator {
 		this.listOutputClass = listOutputClass;
 	}
 
-	public void execute() throws IOException{
+	public void execute() throws IOException {
 		if (destinationDirectory == null) {
 			throw new RuntimeException(
 			        "please use destinationDirectory=\"...\"");
 		}
 
-		ResourceManager.setProvider(new SwingResourceProvider(new File(
-		        new File("").getAbsolutePath()).getParentFile().getParent()
-		        .replace('\\', '/')
-		        + "/jsettlers.common"));
-		SwingResourceLoader.setupSwingPaths();
+		SwingResourceLoader.setupDefaultPaths();
 		
 		String listOutputPackage = listOutputClass.replaceAll("\\.\\w*$", "");
 		File listOutputDir =
