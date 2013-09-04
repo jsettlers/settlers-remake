@@ -73,7 +73,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static JSettlersScreen startGui(List<String> argsList) {
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer());
+		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), 	"r" + Revision.REVISION + " / r" + LogicRevision.REVISION);
 		area.add(content.getRegion());
 
 		if (argsList.contains("--force-jogl")) {
