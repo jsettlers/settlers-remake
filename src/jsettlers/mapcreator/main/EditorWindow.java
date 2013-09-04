@@ -126,6 +126,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		}
 	}
 
+	private static final int MAX_UNDO = 100;
+
 	private final LinkedList<ShapeType> lastUsed = new LinkedList<ShapeType>();
 
 	// @formatter:off
@@ -659,6 +661,9 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 	private void endUseStep() {
 		MapDataDelta delta = data.getUndoDelta();
 		data.resetUndoDelta();
+		if (undoDeltas.size() >= MAX_UNDO) {
+			undoDeltas.removeFirst();
+		}
 		undoDeltas.add(delta);
 		redoDeltas.clear();
 		undoButton.setEnabled(true);
