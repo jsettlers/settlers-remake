@@ -28,6 +28,9 @@ public class LandscapeFader {
 	                new FadableLandscapes(ELandscapeType.MOUNTAINBORDEROUTER,
 	                        ELandscapeType.GRASS),
 
+	                new FadableLandscapes(ELandscapeType.EARTH,
+							ELandscapeType.GRASS),
+
 	                new FadableLandscapes(ELandscapeType.MOOR,
 	                        ELandscapeType.MOORBORDER),
 	                new FadableLandscapes(ELandscapeType.GRASS,
@@ -95,7 +98,7 @@ public class LandscapeFader {
 	                        ELandscapeType.WATER7),
 	        };
 
-	private ELandscapeType[][][] fadeLandscapesBuffer =
+	private final ELandscapeType[][][] fadeLandscapesBuffer =
 	        new ELandscapeType[ELandscapeType.values().length][ELandscapeType
 	                .values().length][];
 
