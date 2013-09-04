@@ -28,11 +28,13 @@ public class JSettlersScreen implements IContentSetable {
 	private UIPanel activePanel;
 	private final SoundPlayer soundPlayer;
 	private final IStartScreen baseConnector;
+	private final String revision;
 
-	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer) {
+	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer, String revision) {
 	    super();
 		this.baseConnector = baseConnector;
 	    this.soundPlayer = soundPlayer;
+		this.revision = revision;
     }
 
 	private class PanelRegionContent implements RegionContent {
@@ -100,7 +102,7 @@ public class JSettlersScreen implements IContentSetable {
 	
 	@Override
 	public void goToStartScreen(String message) {
-		setContent(new StartScreen(baseConnector, this));
+		setContent(new StartScreen(baseConnector, this, revision));
 	}
 
 	public Region getRegion() {

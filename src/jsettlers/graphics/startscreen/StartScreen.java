@@ -1,6 +1,8 @@
 package jsettlers.graphics.startscreen;
 
+import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
+import go.graphics.text.TextDrawer;
 
 import java.util.LinkedList;
 
@@ -28,10 +30,12 @@ public class StartScreen extends UIPanel {
 
 	private final IContentSetable contentSetable;
 
-	public StartScreen(IStartScreen connector, IContentSetable contentSetable) {
+	private final String revision;
+
+	public StartScreen(IStartScreen connector, IContentSetable contentSetable, String revision) {
 		this.connector = connector;
-		// root.setBackground(new ImageLink(EImageLinkType.GUI, 2, 29, 0));
 		this.contentSetable = contentSetable;
+		this.revision = revision;
 
 		setBackground(BACKGROUND);
 		addButtons();
@@ -89,6 +93,16 @@ public class StartScreen extends UIPanel {
 		        new MainButton(labelId, panel, top).getButton();
 		addChild(child, .05f, top - .1f, .45f, top);
 		mainButtons.add(child);
+	}
+
+	@Override
+	protected void drawBackground(GLDrawContext gl) {
+		super.drawBackground(gl);
+
+		TextDrawer drawer = gl.getTextDrawer(EFontSize.SMALL);
+		float width = (float) drawer.getWidth(revision);
+		drawer.drawString(getPosition().getCenterX() - width / 2,
+		        getPosition().getMinY() + 5, revision);
 	}
 
 }
