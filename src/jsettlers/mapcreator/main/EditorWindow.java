@@ -750,8 +750,10 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		activeShape = shape;
 		// updateShapeButtons();
 		shapeSettings.removeAll();
-		for (ShapeProperty property : shape.getProperties()) {
-			shapeSettings.add(new ShapePropertyEditor(shape, property));
+		if (shape != null) {
+			for (ShapeProperty property : shape.getProperties()) {
+				shapeSettings.add(new ShapePropertyEditor(shape, property));
+			}
 		}
 		shapeSettings.revalidate();
 	}
