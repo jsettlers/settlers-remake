@@ -4,5 +4,4 @@
 resources-folder=../jsettlers.common/resources/
 
 #Folders of the graphics and the sound files. If you want to specify multiple possible folders, use a ";" character for separation.
-gfx-folder=/home/michael/.jsettlers/GFX;D:/Games/Siedler3/GFX;C:/Program Files/siedler 3/GFX
-snd-folder=/home/michael/.jsettlers/Snd;D:/Games/Siedler3/Snd;C:/Program Files/siedler 3/Snd
+settlers-folder=/home/michael/.jsettlers;D:/Games/Siedler3;C:/Program Files/siedler 3

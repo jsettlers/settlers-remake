@@ -17,13 +17,11 @@ import java.util.TimerTask;
 import javax.swing.JFrame;
 
 import jsettlers.common.CommonConstants;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
-import jsettlers.graphics.swing.SwingResourceProvider;
+import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.logic.LogicRevision;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.JSettlersGame;
@@ -48,30 +46,14 @@ public class SwingManagedJSettlers {
 
 		loadDebugSettings(argsList);
 
-		setupResourceManagersByConfigFile();
+		SwingResourceLoader.setupResourceManagersByConfigFile(new File("config.prp"));
 
 		JSettlersScreen content = startGui(argsList);
 		generateContent(argsList, content);
 
 		ImageProvider.getInstance().startPreloading();
 	}
-
-	public static void setupResourceManagersByConfigFile()
-			throws FileNotFoundException, IOException {
-		ConfigurationPropertiesFile configFile = new ConfigurationPropertiesFile(new File("config.prp"));
-
-		ImageProvider provider = ImageProvider.getInstance();
-		for (String gfxFolder : configFile.getGfxFolders()) {
-			provider.addLookupPath(new File(gfxFolder));
-		}
-
-		for (String sndFolder : configFile.getSndFolders()) {
-			SoundManager.addLookupPath(new File(sndFolder));
-		}
-
-		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesFolder()));
-	}
-
+	
 	private static void loadDebugSettings(List<String> argsList) {
 		if (argsList.contains("--control-all")) {
 			CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
