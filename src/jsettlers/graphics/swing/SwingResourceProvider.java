@@ -17,7 +17,7 @@ public class SwingResourceProvider implements IResourceProvider {
 	}
 
 	public SwingResourceProvider(String resourcesFolder) {
-		this.resourcesFolder = resourcesFolder;
+		this.resourcesFolder = resourcesFolder.replaceFirst("/?$", "/");
 	}
 
 	@Override
