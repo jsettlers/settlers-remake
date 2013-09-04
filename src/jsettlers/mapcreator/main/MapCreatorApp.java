@@ -21,9 +21,7 @@ import javax.swing.SpinnerListModel;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.swing.SwingResourceLoader;
-import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
@@ -39,7 +37,6 @@ public class MapCreatorApp {
 
 	static { // sets the native library path for the system dependent jogl libs
 		SwingResourceLoader.setupSwingPaths();
-		ResourceManager.setProvider(new SwingResourceProvider());
 	}
 
 	public static void main(String[] args) {
