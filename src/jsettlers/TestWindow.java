@@ -5,7 +5,6 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 import java.util.Collections;
 
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -17,13 +16,11 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.swing.SwingResourceLoader;
-import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class TestWindow {
 	static { // sets the native library path for the system dependent jogl libs
 		SwingResourceLoader.setupSwingPaths();
-		ResourceManager.setProvider(new SwingResourceProvider());
 	}
 
 	private TestWindow() {

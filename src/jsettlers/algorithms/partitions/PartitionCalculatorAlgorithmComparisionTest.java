@@ -5,9 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.BitSet;
 
 import jsettlers.common.map.MapLoadException;
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.swing.SwingResourceLoader;
-import jsettlers.graphics.swing.SwingResourceProvider;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.constants.MatchConstants;
@@ -29,7 +27,6 @@ public class PartitionCalculatorAlgorithmComparisionTest {
 
 	static { // sets the native library path for the system dependent jogl libs
 		SwingResourceLoader.setupSwingPaths();
-		ResourceManager.setProvider(new SwingResourceProvider());
 		RandomSingleton.load(0);
 	}
 
