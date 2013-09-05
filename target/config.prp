@@ -1,6 +1,7 @@
+#This properties are used for development
+
 #Specifies the folder where the resources can be found. NOTE: The path needs to end with a slash ( / )
 resources-folder=resources/
 
-#Folders of the graphics and the sound files. If you want to specify multiple possible folders, use a ";" character for separation.
-gfx-folder=GFX
-snd-folder=Snd
+#Folder containing the folders of the graphics and the sound files. If you want to specify multiple possible folders, use a ";" character for separation.
+settlers-folder=.
