@@ -186,7 +186,6 @@ public class OriginalControls implements IControls {
 
 	@Override
 	public void action(Action action) {
-
 	}
 
 	private ShortPoint2D startMapPosition;
@@ -240,7 +239,7 @@ public class OriginalControls implements IControls {
 		@Override
 		public void eventDataChanged(GOEvent event) {
 			Action action = getActionForDraw((GODrawEvent) event);
-			if (action.getActionType() == EActionType.PAN_TO) {
+			if (action != null && action.getActionType() == EActionType.PAN_TO) {
 				minimap.getContext().scrollTo(
 				        ((PointAction) action).getPosition());
 			}
@@ -294,7 +293,6 @@ public class OriginalControls implements IControls {
 	public void setDrawContext(ActionFireable actionFireable, MapDrawContext context) {
 		this.context = context;
 		this.minimap = new Minimap(context);
-
 	}
 
 	@Override
