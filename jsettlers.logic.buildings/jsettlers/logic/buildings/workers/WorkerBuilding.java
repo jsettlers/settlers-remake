@@ -19,7 +19,6 @@ import jsettlers.logic.stack.RequestStack;
 public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBuilding {
 	private static final long serialVersionUID = 7050284039312172046L;
 
-	private boolean isWorking = true;
 	private IManageableWorker worker;
 
 	public WorkerBuilding(EBuildingType type, Player player) {
@@ -29,11 +28,6 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	@Override
 	public final EMapObjectType getFlagType() {
 		return EMapObjectType.FLAG_ROOF;
-	}
-
-	@Override
-	public final void stopOrStartWorking(boolean stop) {
-		isWorking = !stop;
 	}
 
 	@Override
@@ -58,11 +52,6 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public final boolean isWorking() {
-		return isWorking;
 	}
 
 	@Override
@@ -98,5 +87,4 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	public final boolean isOccupied() {
 		return worker != null;
 	}
-
 }

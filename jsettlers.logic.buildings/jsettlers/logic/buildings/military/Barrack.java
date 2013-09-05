@@ -5,7 +5,6 @@ import java.util.List;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
@@ -24,15 +23,6 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 
 	public Barrack(Player player) {
 		super(EBuildingType.BARRACK, player);
-	}
-
-	@Override
-	public void stopOrStartWorking(boolean stop) {
-		EPriority priority = stop ? EPriority.STOPPED : EPriority.LOW;
-
-		for (RequestStack curr : super.getStacks()) {
-			curr.setPriority(priority);
-		}
 	}
 
 	@Override

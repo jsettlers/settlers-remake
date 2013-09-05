@@ -25,10 +25,6 @@ public final class DefaultBuilding extends Building {
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
-	}
-
-	@Override
 	protected void positionedEvent(ShortPoint2D pos) {
 	}
 

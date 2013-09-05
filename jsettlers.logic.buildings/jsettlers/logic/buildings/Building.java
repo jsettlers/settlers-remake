@@ -494,8 +494,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public boolean isWorking() {
-		return false;
+	public EPriority[] getSupportedPriorities() {
+		return EPriority.values;
 	}
 
 	@Override
@@ -622,8 +622,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (RequestStack curr : stacks) {
 			curr.setPriority(newPriority);
 		}
-
-		this.stopOrStartWorking(newPriority == EPriority.STOPPED);
+		//TODO @Andreas: Also stop the forester, ...
 	}
 
 	public final RelativePoint[] getFlattenTiles() {

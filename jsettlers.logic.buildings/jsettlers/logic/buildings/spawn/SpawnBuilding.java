@@ -58,10 +58,6 @@ public abstract class SpawnBuilding extends Building {
 	protected abstract byte getProduceLimit();
 
 	@Override
-	public final void stopOrStartWorking(boolean stop) {
-	}
-
-	@Override
 	protected void positionedEvent(ShortPoint2D pos) {
 	}
 

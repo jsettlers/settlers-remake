@@ -147,10 +147,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	public final void stopOrStartWorking(boolean stop) {
-	}
-
-	@Override
 	protected final void subTimerEvent() {
 		delayCtr++;
 		if (delayCtr > 5) {
