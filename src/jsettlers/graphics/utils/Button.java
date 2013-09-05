@@ -72,7 +72,7 @@ public class Button extends UIPanel implements UIButton {
 
 	@Override
 	public Action getAction(float relativex, float relativey) {
-		return action;
+		return getAction();
 	}
 
 	@Override

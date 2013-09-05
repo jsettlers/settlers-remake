@@ -1,8 +1,10 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
 public class MessageContent implements IContentProvider {
@@ -31,13 +33,16 @@ public class MessageContent implements IContentProvider {
 	}
 
 	@Override
-	public IContextListener getContextListener() {
+	public ESecondaryTabType getTabs() {
 		return null;
 	}
 
 	@Override
-	public ESecondaryTabType getTabs() {
-		return null;
-	}
+    public void displayBuildingBuild(EBuildingType type) {	    
+    }
+
+	@Override
+    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
+    }
 
 }

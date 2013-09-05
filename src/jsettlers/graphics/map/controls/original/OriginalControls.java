@@ -36,6 +36,10 @@ public class OriginalControls implements IControls {
 
 	private IOriginalConstants constants;
 
+	boolean lastSelectionWasNull = true;
+
+	private MapDrawContext context;
+	
 	public OriginalControls() {
 		constants = new SmallOriginalConstants();
 		uiBase = createInterface();
@@ -182,6 +186,9 @@ public class OriginalControls implements IControls {
 		if (minimap != null) {
 			minimap.setMapViewport(screenArea);
 		}
+		if (context != null) {
+			mainPanel.setMapViewport(screenArea, context.getMap());
+		}
 	}
 
 	@Override
@@ -251,10 +258,6 @@ public class OriginalControls implements IControls {
 	public void displayBuildingBuild(EBuildingType type) {
 		mainPanel.displayBuildingBuild(type);
 	}
-
-	boolean lastSelectionWasNull = true;
-
-	private MapDrawContext context;
 
 	@Override
 	public void displaySelection(ISelectionSet selection) {

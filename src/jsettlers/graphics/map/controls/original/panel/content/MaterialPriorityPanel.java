@@ -1,14 +1,21 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.GLDrawContext;
+
+import java.util.Arrays;
+
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.FloatRectangle;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.image.Image;
-import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
@@ -21,18 +28,47 @@ import jsettlers.graphics.utils.UIPanel;
  */
 public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 
+	private class SelectMaterialAction extends ExecutableAction {
+		private final EMaterialType eMaterialType;
+
+		public SelectMaterialAction(EMaterialType eMaterialType) {
+			this.eMaterialType = eMaterialType;
+		}
+
+		@Override
+		public void execute() {
+			selectMaterial(eMaterialType);
+		}
+
+	}
+	
+	private class ReorderButton extends Button {
+
+		private final int add;
+
+		public ReorderButton(int add, OriginalImageLink image,
+                OriginalImageLink active, String description) {
+	        super(null, image, active, description);
+			this.add = add;
+        }
+		
+		@Override
+		public Action getAction() {
+		    return createChangeorderAction(add);
+		}
+	}
+
 	private static final int COLUMNS = 6;
 	private static final float RELATIVE_BUTTONHEIGHT = .06f;
 
 	private static final float RELATIVE_BUTTONWIDTH = 1f / (COLUMNS + 2);
 
-
-	private static final OriginalImageLink ALL_UP_IMAGE = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 219, 0);
-	private static final OriginalImageLink ALL_DOWN_IMAGE = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 222, 0);
-	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(EImageLinkType.GUI,
-	        3, 225, 0);
+	private static final OriginalImageLink ALL_UP_IMAGE =
+	        new OriginalImageLink(EImageLinkType.GUI, 3, 219, 0);
+	private static final OriginalImageLink ALL_DOWN_IMAGE =
+	        new OriginalImageLink(EImageLinkType.GUI, 3, 222, 0);
+	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(
+	        EImageLinkType.GUI, 3, 225, 0);
 	private static final OriginalImageLink DOWN_IMAGE = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 228, 0);
 
@@ -43,62 +79,39 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	 * <p>
 	 * They are indexed by slot.
 	 */
-	private final float[] xpoints;
-	private final float[] ypoints;
+	private final float[] xpoints =
+	        new float[EMaterialType.NUMBER_OF_MATERIALS];
+	private final float[] ypoints =
+	        new float[EMaterialType.NUMBER_OF_MATERIALS];
 
-	/**
-	 * This is a mapping: {@link EMaterialType} -> order
-	 */
-	private final int[] order;
+	private EMaterialType[] order = new EMaterialType[0];
 
 	/**
 	 * This is a mapping: {@link EMaterialType} -> label position
 	 */
-	private final AnimateablePosition[] positions;
+	private final AnimateablePosition[] positions =
+	        new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
 
 	private EMaterialType selected = null;
+	private ShortPoint2D currentPos;
+	private IGraphicsGrid currentGrid;
 
-	@Deprecated
 	public MaterialPriorityPanel() {
-		this(new IStatistics() {
-			@Override
-			public int[] getMaterialPermutation() {
-				int[] a = new int[EMaterialType.values().length];
-				for (int i = 0; i < a.length; i++) {
-					a[i] = i;
-				}
-				return a;
-			}
-		});
-	}
-
-	public MaterialPriorityPanel(IStatistics statistics) {
-		int[] permutation = statistics.getMaterialPermutation();
-		order = permutation.clone();
-		xpoints = new float[order.length];
-		ypoints = new float[order.length];
-		positions = new AnimateablePosition[order.length];
-
 		addRowPositions(0, true);
 		addRowPositions(1, false);
 		addRowPositions(2, true);
 		addRowPositions(3, false);
 		addRowPositions(4, true);
 
-		for (int i = 0; i < order.length; i++) {
-			int slotIndex = order[i];
-			positions[i] =
-			        new AnimateablePosition(xpoints[slotIndex],
-			                ypoints[slotIndex]);
-		}
+		updateDisplayedData();
 
-		addChild(new Button(createChangeorderAction(-1000), ALL_UP_IMAGE,
+		addChild(new ReorderButton(-1000, ALL_UP_IMAGE,
 		        ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
-		addChild(new Button(createChangeorderAction(-1), UP_IMAGE, UP_IMAGE,
+		addChild(new ReorderButton((-1), UP_IMAGE, UP_IMAGE,
 		        "one up"), .6f, .1f, .75f, .18f);
-		addChild(new Button(createChangeorderAction(1), DOWN_IMAGE,
-		        DOWN_IMAGE, "one down"), .45f, .1f, .6f, .18f);
-		addChild(new Button(createChangeorderAction(1000), ALL_DOWN_IMAGE,
+		addChild(new ReorderButton((1), DOWN_IMAGE, DOWN_IMAGE,
+		        "one down"), .45f, .1f, .6f, .18f);
+		addChild(new ReorderButton((1000), ALL_DOWN_IMAGE,
 		        ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
 	}
 
@@ -109,79 +122,125 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 				xpoints[index] =
 				        (float) (descent ? (column + 1) : (COLUMNS - column))
 				                / (COLUMNS + 2);
-				ypoints[index] = .8f - rowIndex * ROWHEIGHT -
-				        (float) column / (COLUMNS - 1)
+				ypoints[index] =
+				        .8f - rowIndex * ROWHEIGHT - (float) column
+				                / (COLUMNS - 1)
 				                * (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
 			}
 		}
 	}
-
-	private Action createChangeorderAction(final int add) {
-		return new ChangeOrderAction(add);
+	@Override
+	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+		currentPos = pos;
+		this.currentGrid = grid;
+		IPartitionSettings data = grid.getPartitionSettings(pos.x, pos.y);
+		if (data != null) {
+			order =
+			        new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+			for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
+				order[i] = data.getMaterialTypeForPrio(i);
+			}
+			System.out.println("Using map pos: " + pos + " => " + Arrays.deepToString(order));
+		} else {
+			order = new EMaterialType[0];
+		}
+		//TODO: Only call if we left/entered partition.
+		updateDisplayedData();
 	}
 
-	private class ChangeOrderAction extends ExecutableAction {
-		private final int add;
-
-		public ChangeOrderAction(int add) {
-			this.add = add;
+	private void updateDisplayedData() {
+		Arrays.fill(positions, null);
+		for (int i = 0; i < order.length; i++) {
+			EMaterialType material = order[i];
+			positions[material.ordinal] =
+			        new AnimateablePosition(xpoints[i], ypoints[i]);
 		}
+	}
 
-		@Override
-		public void execute() {
-			if (selected != null) {
-				reorder(selected, order[selected.ordinal()] + add);
+	protected synchronized Action createChangeorderAction(final int add) {
+		EMaterialType[] types = reorderSelected(add);
+		if (types.length > 0 && currentPos != null) {
+			System.out.println("New order for " + currentPos + ": " + Arrays.deepToString(types));
+			return new SetMaterialPrioritiesAction(currentPos, types);
+		} else {
+			return null;
+		}
+	}
+
+	protected synchronized EMaterialType[] reorderSelected(int add) {
+        for (int i = 0; i < order.length; i++) {
+			if (order[i] == selected) {
+				return reorder(selected, i + add);
 			}
 		}
+        return order;
+    }
 
-	}
-
-	protected void reorder(EMaterialType type, int desiredNewPosition) {
-		int oldPos = order[type.ordinal()];
+	private EMaterialType[] reorder(EMaterialType type, int desiredNewPosition) {
+		int oldPos = -1;
+		for (int i = 0; i < order.length; i++) {
+			if (order[i] == type) {
+				oldPos = i;
+			}
+		}
+		if (oldPos < 0) {
+			return order;
+		}
+		EMaterialType[] newOrder = order.clone();
 		int newPos =
 		        Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
 
-		if (newPos == oldPos) {
-			return;
-		} else if (newPos > oldPos) {
-			for (int i = 0; i < order.length; i++) {
-				if (order[i] > oldPos && order[i] <= newPos) {
-					setToPosition(i, order[i] - 1);
-				}
+		if (newPos > oldPos) {
+			for (int i = oldPos; i < newPos; i++) {
+				newOrder[i] = newOrder[i + 1];
 			}
 		} else {
-			for (int i = 0; i < order.length; i++) {
-				if (order[i] < oldPos && order[i] >= newPos) {
-					setToPosition(i, order[i] + 1);
-				}
+			for (int i = oldPos; i > newPos; i--) {
+				newOrder[i] = newOrder[i - 1];
 			}
 		}
-
-		setToPosition(type.ordinal(), newPos);
+		newOrder[desiredNewPosition] = type;
+		return newOrder;
 	}
 
-	private void setToPosition(int typeOrdinal, int newindex) {
-		order[typeOrdinal] = newindex;
-		positions[typeOrdinal]
+	private void setToPosition(EMaterialType type, int newindex) {
+		positions[type.ordinal()]
 		        .setPosition(xpoints[newindex], ypoints[newindex]);
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl) {
+	public synchronized void drawAt(GLDrawContext gl) {
 		super.drawAt(gl);
 		gl.color(1, 1, 1, 1);
+		
+		updatePositions();
 
-		EMaterialType[] types = EMaterialType.values();
 		gl.glPushMatrix();
 		FloatRectangle position = getPosition();
 		gl.glTranslatef(position.getMinX(), position.getMinY(), 0);
 		gl.glScalef(position.getWidth(), position.getHeight(), 1);
 
-		for (int i = 0; i < positions.length; i++) {
-			drawButton(gl, positions[i].getX(), positions[i].getY(), types[i]);
+		for (EMaterialType mat : order) {
+			int i = mat.ordinal();
+			drawButton(gl, positions[i].getX(), positions[i].getY(), mat);
 		}
 		gl.glPopMatrix();
 	}
+
+	private void updatePositions() {
+		if (currentGrid != null) {
+			IPartitionSettings settings = currentGrid.getPartitionSettings(currentPos.x, currentPos.y);
+			if (settings != null) {
+				for (int i = 0; i < order.length; i++) {
+					EMaterialType should = settings.getMaterialTypeForPrio(i);
+					if (order[i] != should) {
+						setToPosition(should, i);
+						order[i] = should;
+					}
+				}
+			}
+		}
+    }
 
 	private void drawButton(GLDrawContext gl, float x, float y,
 	        EMaterialType materialType) {
@@ -190,7 +249,8 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		int file = materialType.getGuiFile();
 		Image iamgeLink =
 		        ImageProvider.getInstance().getImage(
-		                new OriginalImageLink(EImageLinkType.GUI, file, image, 0));
+		                new OriginalImageLink(EImageLinkType.GUI, file, image,
+		                        0));
 		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y
 		        + RELATIVE_BUTTONHEIGHT);
 
@@ -209,39 +269,23 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	}
 
 	@Override
-	public Action getAction(float relativex, float relativey) {
+	public synchronized Action getAction(float relativex, float relativey) {
 		Action action = super.getAction(relativex, relativey);
 		if (action == null) {
 			for (int i = 0; i < positions.length; i++) {
-				float x = positions[i].getX();
-				float y = positions[i].getY();
-				if (relativex >= x && relativex < x + RELATIVE_BUTTONWIDTH
-				        && relativey >= y
-				        && relativey < y + RELATIVE_BUTTONWIDTH) {
-					return new SelectMaterialAction(EMaterialType.values()[i]);
+				AnimateablePosition pos = positions[i];
+				if (pos != null) {
+					float x = pos.getX();
+					float y = pos.getY();
+					if (relativex >= x && relativex < x + RELATIVE_BUTTONWIDTH
+					        && relativey >= y
+					        && relativey < y + RELATIVE_BUTTONWIDTH) {
+						return new SelectMaterialAction(EMaterialType.values[i]);
+					}
 				}
 			}
 		}
 		return action;
-	}
-
-	private class SelectMaterialAction extends ExecutableAction {
-		private final EMaterialType eMaterialType;
-
-		public SelectMaterialAction(EMaterialType eMaterialType) {
-			this.eMaterialType = eMaterialType;
-		}
-
-		@Override
-		public void execute() {
-			selectMaterial(eMaterialType);
-		}
-
-	}
-
-	@Override
-	public IContextListener getContextListener() {
-		return null;
 	}
 
 	/**
@@ -249,13 +293,17 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	 * 
 	 * @param eMaterialType
 	 */
-	public void selectMaterial(EMaterialType eMaterialType) {
+	public synchronized void selectMaterial(EMaterialType eMaterialType) {
 		selected = eMaterialType;
 	}
 
 	@Override
 	public ESecondaryTabType getTabs() {
-		return null;
+		return ESecondaryTabType.GOODS;
 	}
+
+	@Override
+    public void displayBuildingBuild(EBuildingType type) {	    
+    }
 
 }

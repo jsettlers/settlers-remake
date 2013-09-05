@@ -3,10 +3,11 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import java.util.ArrayList;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.map.controls.original.panel.IContextListener;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.utils.UIPanel;
 
-public class BuildingBuildContent implements ContentFactory, IContextListener {
+public class BuildingBuildContent implements ContentFactory {
 	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
 	        EBuildingType.LUMBERJACK,
 	        EBuildingType.SAWMILL,
@@ -105,14 +106,13 @@ public class BuildingBuildContent implements ContentFactory, IContextListener {
 	public static BuildingBuildContent getSocial() {
 		return new BuildingBuildContent(socialBuildings);
 	}
-
-	@Override
-	public IContextListener getContextListener() {
-		return this;
-	}
-
+	
 	@Override
 	public void displayBuildingBuild(EBuildingType type) {
 		setActiveBuilding(type);
 	}
+
+	@Override
+    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
+    }
 }

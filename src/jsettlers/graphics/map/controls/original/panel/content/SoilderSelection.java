@@ -1,11 +1,13 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
 public class SoilderSelection implements IContentProvider {
@@ -64,15 +66,18 @@ public class SoilderSelection implements IContentProvider {
 	public UIPanel getPanel() {
 		return panel;
 	}
-
-	@Override
-	public IContextListener getContextListener() {
-		return null;
-	}
-
+	
 	@Override
 	public ESecondaryTabType getTabs() {
 		return null;
 	}
+
+	@Override
+    public void displayBuildingBuild(EBuildingType type) {	    
+    }
+
+	@Override
+    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
+    }
 
 }

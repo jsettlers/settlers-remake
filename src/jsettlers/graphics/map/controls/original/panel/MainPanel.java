@@ -1,6 +1,8 @@
 package jsettlers.graphics.map.controls.original.panel;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -18,7 +20,7 @@ import jsettlers.graphics.utils.UIPanel;
 
 /**
  * This class handles the contents of the main panel.
- *
+ * 
  * @author michael
  */
 public class MainPanel extends UIPanel {
@@ -80,6 +82,10 @@ public class MainPanel extends UIPanel {
 	 */
 	private EActionType selectAction;
 
+	private IGraphicsGrid grid;
+
+	private ShortPoint2D displayCenter;
+
 	public MainPanel() {
 		useConstants(new SmallOriginalConstants());
 		setContent(EContentType.BUILD_NORMAL);
@@ -125,11 +131,9 @@ public class MainPanel extends UIPanel {
 		contentContainer.addChild(type.getPanel(), 0, 0, 1, 1);
 		activeContent = type;
 
-		IContextListener listener = activeContent.getContextListener();
-		if (listener != null) {
-			listener.displayBuildingBuild(activeBuilding);
-		}
+		activeContent.displayBuildingBuild(activeBuilding);
 		selectAction = null;
+		sendMapPositionChange();
 	}
 
 	private void setButtonsActive(TabButton[] buttons, IContentProvider type) {
@@ -168,7 +172,7 @@ public class MainPanel extends UIPanel {
 
 	/**
 	 * Resize everything according to constants.
-	 *
+	 * 
 	 * @param constants
 	 */
 	public void useConstants(IOriginalConstants constants) {
@@ -182,10 +186,7 @@ public class MainPanel extends UIPanel {
 
 	public void displayBuildingBuild(EBuildingType type) {
 		activeBuilding = type;
-		IContextListener listener = activeContent.getContextListener();
-		if (listener != null) {
-			listener.displayBuildingBuild(type);
-		}
+		activeContent.displayBuildingBuild(type);
 	}
 
 	public Action catchAction(Action action) {
@@ -217,7 +218,7 @@ public class MainPanel extends UIPanel {
 		} else if (action.getActionType() == EActionType.EXECUTABLE) {
 			((ExecutableAction) action).execute();
 			return null;
-		}else {
+		} else {
 			return action;
 		}
 	}
@@ -230,4 +231,18 @@ public class MainPanel extends UIPanel {
 			setContent(EContentType.EMPTY);
 		}
 	}
+
+	public void setMapViewport(MapRectangle screenArea, IGraphicsGrid grid) {
+		this.grid = grid;
+		displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
+		        + screenArea.getLineLength() / 2, screenArea
+		        .getLineY(screenArea.getLines() / 2));
+		sendMapPositionChange();
+	}
+
+	private void sendMapPositionChange() {
+		if (displayCenter != null) {
+			activeContent.showMapPosition(displayCenter, grid);
+		}
+    }
 }

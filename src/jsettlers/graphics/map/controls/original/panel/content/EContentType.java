@@ -1,6 +1,8 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.graphics.map.controls.original.panel.IContextListener;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -38,6 +40,7 @@ public enum EContentType implements IContentProvider {
 
 	}
 
+	@Override
 	public UIPanel getPanel() {
 		if (factory == null) {
 			return new UIPanel();
@@ -45,16 +48,24 @@ public enum EContentType implements IContentProvider {
 			return factory.getPanel();
 		}
 	}
-	
-	public IContextListener getContextListener() {
-		if (factory != null) {
-			return factory.getContextListener();
-		}
-		return null;
-	}
 
+	@Override
 	public ESecondaryTabType getTabs() {
 		return tabs;
+	}
+
+	@Override
+	public void displayBuildingBuild(EBuildingType type) {
+		if (factory != null) {
+			factory.displayBuildingBuild(type);
+		}
+	}
+
+	@Override
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+		if (factory != null) {
+			factory.showMapPosition(pos, grid);
+		}
 	}
 
 }

@@ -1,17 +1,19 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.utils.UIPanel;
 
 public class BearerSelection implements IContentProvider {
-	private UIPanel panel;
-	private int count;
+	private final UIPanel panel;
+	private final int count;
 
 	public BearerSelection(ISelectionSet selection) {
 		panel = new UIPanel();
@@ -63,13 +65,16 @@ public class BearerSelection implements IContentProvider {
 	}
 
 	@Override
-	public IContextListener getContextListener() {
+	public ESecondaryTabType getTabs() {
 		return null;
 	}
 
 	@Override
-	public ESecondaryTabType getTabs() {
-		return null;
-	}
+    public void displayBuildingBuild(EBuildingType type) {	    
+    }
+
+	@Override
+    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
+    }
 
 }
