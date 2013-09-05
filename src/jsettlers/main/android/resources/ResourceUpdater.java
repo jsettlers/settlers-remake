@@ -1,9 +1,6 @@
 package jsettlers.main.android.resources;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,56 +36,79 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 
 public class ResourceUpdater implements Runnable {
+	
+	private static class ServerData {
+		private final String revision;
+		private final long size;
+		
+		public ServerData(String readData) throws IOException {
+			String[] entries = readData.split("\n");
+			if (entries.length < 2) {
+				throw new IOException("Server has not sent enogh data.");
+			}
+			if (!entries[1].matches("\\d+")) {
+				throw new IOException("Size is not a number.");
+			}
+			revision = entries[0];
+			size = Long.parseLong(entries[1]);
+		}
+	}
 
+	private static final int REVISION = Revision.REVISION + LogicRevision.REVISION * 10000;
 	private static final String RESOURCE_PREFIX = "";
 	private static final String SERVER_ROOT = "https://michael2402.homeip.net/jsettlers/";
+	/**
+	 * The current program revision to force an update on program update.
+	 */
 	private static final String PREF_REVISION = "rev";
+	/**
+	 * If an update needs to be forced on next start.
+	 */
 	private static final String PREF_OUTDATED = "force";
+	/**
+	 * The revision of the resources we got.
+	 */
+	private static final String PREF_RESOURCEVERSION = "resources";
 	private final Resources resources;
 	private final File destdir;
 
 	private boolean isUpdating;
-	private boolean needsUpdate = false;
-	private String serverrev = "";
+	private ServerData serverData = null;
 	private final SharedPreferences prefs;
+	private final Object updateMutex = new Object();
 
 	public ResourceUpdater(Context context, File destdir) {
 		this.resources = context.getResources();
 		this.prefs = context.getSharedPreferences("resupdate", 0);
 		this.destdir = destdir;
 
-		int revHash = Revision.REVISION + LogicRevision.REVISION * 10000;
-		if (prefs.getInt(PREF_REVISION, -1) != revHash
-				|| prefs.getBoolean(PREF_OUTDATED, false)) {
-			needsUpdate = true;
+		int revHash = REVISION;
+		if (prefs.getInt(PREF_REVISION, -1) != revHash) {
+			requireUpdate();
 		}
 	}
 
 	@Override
 	public void run() {
 		try {
-			DefaultHttpClient httpClient = createClient();
-			String myversion = getMyVersion(getVersionFile());
-
-			if (myversion.isEmpty()) {
-				needsUpdate = true;
-			}
-
-			serverrev = loadRevision(httpClient);
-
-			boolean serverrevIsNewer = serverrev != null
-					&& !serverrev.equals(myversion);
-			if (serverrevIsNewer) {
-				needsUpdate = true;
-				prefs.edit().putBoolean(PREF_OUTDATED, true).commit();
+			synchronized(updateMutex ) {
+				DefaultHttpClient httpClient = createClient();
+	
+				serverData = loadRevision(httpClient);
+	
+				String myversion = prefs.getString(PREF_RESOURCEVERSION, "");
+				boolean serverrevIsNewer = serverData != null
+						&& !serverData.revision.equals(myversion);
+				if (serverrevIsNewer) {
+				}
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
 
-	private File getVersionFile() {
-		return new File(destdir, "version");
+	private void requireUpdate() {
+		prefs.edit().putBoolean(PREF_OUTDATED, true).commit();
 	}
 
 	public void startUpdate(final UpdateListener listener) {
@@ -96,17 +116,19 @@ public class ResourceUpdater implements Runnable {
 			// bad. really bad.
 			return;
 		}
-		needsUpdate = false;
 
 		setUpdating(true);
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					updateFiles(createClient(), listener);
+					synchronized (updateMutex) {
+						updateFiles(createClient(), listener);
+					}
 				} catch (Throwable t) {
-					setUpdating(false);
+					t.printStackTrace();
 				}
+				setUpdating(false);
 				//TODO: i18n
 				listener.setProgressState("Updating", 1);
 				if (listener != null) {
@@ -122,15 +144,16 @@ public class ResourceUpdater implements Runnable {
 		//TODO: i18n
 		c.setProgressState("Updating", -1);
 
-		if (serverrev == null) {
-			serverrev = loadRevision(httpClient);
+		if (serverData == null) {
+			serverData = loadRevision(httpClient);
 		}
 
 		final String url = SERVER_ROOT + "resources.zip";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
-		ZipInputStream inputStream = new ZipInputStream(response.getEntity()
-				.getContent());
+		InputStream compressed = response.getEntity()
+				.getContent();
+		ZipInputStream inputStream = new ZipInputStream(compressed);
 
 		try {
 
@@ -138,7 +161,6 @@ public class ResourceUpdater implements Runnable {
 
 			byte[] buffer = new byte[1024];
 
-			long size = response.getEntity().getContentLength();
 			long read = 0;
 
 			ZipEntry entry;
@@ -146,7 +168,8 @@ public class ResourceUpdater implements Runnable {
 				String name = entry.getName();
 				//TODO:  i18n
 				c.setProgressState("Updating",
-						(float) read / size);
+						(float) read / serverData.size);
+				System.out.println("Size: " + read + " of " + serverData.size);
 
 				if (name.startsWith(RESOURCE_PREFIX)) {
 					String outfilename = destdir.getAbsolutePath() + "/"
@@ -181,47 +204,22 @@ public class ResourceUpdater implements Runnable {
 			}
 			System.out.println("Updated " + files + " files");
 
-			writeMyVersion(getVersionFile(), serverrev);
-			prefs.edit().putInt(PREF_REVISION, Revision.REVISION)
-					.putBoolean(PREF_OUTDATED, false).commit();
+			prefs.edit().putInt(PREF_REVISION, REVISION)
+					.putBoolean(PREF_OUTDATED, false)
+					.putString(PREF_RESOURCEVERSION, serverData.revision).commit();
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 		setUpdating(false);
 	}
 
-	private static String getMyVersion(File versionfile) throws IOException {
-		if (versionfile.exists()) {
-			DataInputStream inputStream = new DataInputStream(
-					new FileInputStream(versionfile));
-			try {
-				return inputStream.readUTF();
-			} finally {
-				inputStream.close();
-			}
-		} else {
-			return "";
-		}
-	}
-
-	private static void writeMyVersion(File versionfile, String version)
-			throws IOException {
-		DataOutputStream outputStream = new DataOutputStream(
-				new FileOutputStream(versionfile));
-		try {
-			outputStream.writeUTF(version);
-		} finally {
-			outputStream.close();
-		}
-	}
-
-	private static String loadRevision(DefaultHttpClient httpClient)
+	private static ServerData loadRevision(DefaultHttpClient httpClient)
 			throws IOException, ClientProtocolException {
 		final String url = SERVER_ROOT + "revision.txt";
 		HttpGet httpRequest = new HttpGet(url);
 		HttpResponse response = httpClient.execute(httpRequest);
 		InputStream inputStream = response.getEntity().getContent();
-		return getString(inputStream);
+		return new ServerData(getString(inputStream));
 	}
 
 	private static String getString(InputStream inputStream) {
@@ -273,6 +271,6 @@ public class ResourceUpdater implements Runnable {
 	}
 
 	public boolean needsUpdate() {
-		return needsUpdate;
+		return prefs.getBoolean(PREF_OUTDATED, true);
 	}
 }
