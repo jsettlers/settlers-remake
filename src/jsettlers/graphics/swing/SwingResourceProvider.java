@@ -12,12 +12,8 @@ import jsettlers.common.resources.IResourceProvider;
 public class SwingResourceProvider implements IResourceProvider {
 	private final String resourcesFolder;
 
-	public SwingResourceProvider() {
-		this(new File("").getAbsoluteFile().getParent().replace('\\', '/') + "/jsettlers.common/resources/");
-	}
-
-	public SwingResourceProvider(String resourcesFolder) {
-		this.resourcesFolder = resourcesFolder.replaceFirst("/?$", "/");
+	public SwingResourceProvider(File file) {
+		this.resourcesFolder = file.getPath() + "/";
 	}
 
 	@Override

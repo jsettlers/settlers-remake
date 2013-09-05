@@ -16,12 +16,21 @@ public class ConfigurationPropertiesFile {
 
 	private final Properties properties = new Properties();
 
+	private final File configFile;
+
 	public ConfigurationPropertiesFile(File file) throws FileNotFoundException, IOException {
+		this.configFile = file;
 		properties.load(new FileInputStream(file));
 	}
 
-	public String getResourcesFolder() {
-		return properties.getProperty("resources-folder");
+	public File getResourcesFolder() {
+		String property = properties.getProperty("resources-folder");
+		File dir = new File(property);
+		if (!dir.isAbsolute()) {
+			String parent = configFile.getParent();
+			dir = new File((parent == null ? "" : parent + File.separator) + property);
+		}
+		return dir.getAbsoluteFile();
 	}
 
 	public String[] getGfxFolders() {

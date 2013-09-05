@@ -39,7 +39,7 @@ public class SwingResourceLoader {
 
 	private static void testConfig(ConfigurationPropertiesFile cf)
 			throws IOException {
-		if (!isResourceDir(new File(cf.getResourcesFolder()))) {
+		if (!isResourceDir(cf.getResourcesFolder())) {
 			throw new IOException("Not a resources folder: " + cf.getResourcesFolder() + " in " + new File("").getAbsolutePath());
 		}
 
