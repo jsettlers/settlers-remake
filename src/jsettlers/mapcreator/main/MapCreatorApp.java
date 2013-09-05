@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -21,11 +24,12 @@ import javax.swing.SpinnerListModel;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.swing.SwingResourceLoader;
+import jsettlers.common.utils.MainUtils;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapLoader;
+import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class MapCreatorApp {
 	private static final MapFileHeader DEFAULT = new MapFileHeader(MapType.NORMAL, "new map", null, "", (short) 300, (short) 300, (short) 1,
@@ -35,11 +39,9 @@ public class MapCreatorApp {
 			ELandscapeType.DRY_GRASS.toString(), ELandscapeType.SNOW.toString(), ELandscapeType.DESERT.toString(), };
 	private final JFrame selectMapFrame;
 
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-	}
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		SwingManagedJSettlers.setupResourceManagers(MainUtils.createArgumentsMap(args), new File("config.prp"));
 
-	public static void main(String[] args) {
 		new MapCreatorApp();
 	}
 
