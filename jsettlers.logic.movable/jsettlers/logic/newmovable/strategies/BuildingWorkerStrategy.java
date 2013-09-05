@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -13,7 +14,6 @@ import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.messages.EMessageType;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.constants.Constants;
@@ -313,7 +313,8 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			searchFailedCtr++;
 
 			if (searchFailedCtr > 10) {
-				super.getPlayer().showMessage(new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, "", (byte) -1, building.getPos()));
+				//TODO @Andreas: Avoid this cast.
+				super.getPlayer().showMessage(SimpleMessage.cannotFindWork((IBuilding) building));
 			}
 		}
 	}
