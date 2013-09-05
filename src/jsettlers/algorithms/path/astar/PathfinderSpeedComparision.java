@@ -1,8 +1,8 @@
 package jsettlers.algorithms.path.astar;
 
+import java.io.File;
 import java.util.Random;
 
-import jsettlers.TestUtils;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
@@ -13,6 +13,8 @@ import jsettlers.logic.algorithms.path.astar.normal.AStarJPS;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.MapLoader;
+import networklib.synchronic.random.RandomSingleton;
 
 public class PathfinderSpeedComparision {
 	private static final int NUMBER_OF_PATHS = 200;
@@ -21,7 +23,7 @@ public class PathfinderSpeedComparision {
 	private static final int PATH_RANDOM_SEED = 1234;
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException {
-		MainGrid mainGrid = TestUtils.getMap();
+		MainGrid mainGrid = getMap();
 		short width = mainGrid.getGraphicsGrid().getWidth();
 		short height = mainGrid.getGraphicsGrid().getHeight();
 		IAStarPathMap map = mainGrid.getPathfinderGrid();
@@ -43,6 +45,12 @@ public class PathfinderSpeedComparision {
 		}
 
 		System.exit(0);
+	}
+
+	private static MainGrid getMap() throws MapLoadException {
+		RandomSingleton.load(123456L);
+		MapLoader loader = new MapLoader(new File("../jsettlers.common/resources/maps/bigmap.map"));
+		return loader.getMainGrid((byte) 0);
 	}
 
 	private static long testAStar(int randomSeed, AbstractAStar astar, IAStarPathMap map, int numberOfPaths, short width, short height)

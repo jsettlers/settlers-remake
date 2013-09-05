@@ -2,7 +2,7 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.util.BitSet;
 
-import jsettlers.TestWindow;
+import jsettlers.TestUtils;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -34,7 +34,7 @@ public class PartitionsGridTestingWnd {
 		PartitionsGridTestingWnd testWnd = new PartitionsGridTestingWnd();
 
 		// open the window
-		MapInterfaceConnector connector = TestWindow.openTestWindow(testWnd.getGraphicsGrid());
+		MapInterfaceConnector connector = TestUtils.openTestWindow(testWnd.getGraphicsGrid());
 		connector.scrollTo(new ShortPoint2D(200, 200), false);
 		connector.fireAction(new Action(EActionType.TOGGLE_DEBUG));
 		connector.fireAction(new Action(EActionType.ZOOM_OUT));

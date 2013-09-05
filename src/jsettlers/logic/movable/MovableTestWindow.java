@@ -1,6 +1,6 @@
 package jsettlers.logic.movable;
 
-import jsettlers.TestWindow;
+import jsettlers.TestUtils;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
@@ -32,7 +32,7 @@ public class MovableTestWindow {
 		RandomSingleton.load(1000);
 
 		MovableTestsMap grid = new MovableTestsMap(100, 100, PLAYER_0);
-		MapInterfaceConnector connector = TestWindow.openTestWindow(grid);
+		MapInterfaceConnector connector = TestUtils.openTestWindow(grid);
 
 		movable = new NewMovable(grid.getMovableGrid(), EMovableType.PIONEER, new ShortPoint2D(49, 50), PLAYER_0);
 		movable.setSelected(true);

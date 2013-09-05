@@ -1,10 +1,9 @@
 package jsettlers.logic.map.newGrid;
 
 import jsettlers.GraphicsGridAdapter;
-import jsettlers.TestWindow;
+import jsettlers.TestUtils;
 import jsettlers.common.Color;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.MapList;
@@ -12,12 +11,11 @@ import networklib.synchronic.random.RandomSingleton;
 import networklib.synchronic.timer.NetworkTimer;
 
 public class TestExecutionWithDebugDisplay {
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-		RandomSingleton.load(0);
-	}
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException {
+		TestUtils.setupResourceManagerIfNeeded();
+		RandomSingleton.load(0);
+
 		MatchConstants.clock = new NetworkTimer(true);
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").getMainGrid((byte) 0);
@@ -28,7 +26,7 @@ public class TestExecutionWithDebugDisplay {
 
 		final PartitionsGrid partitionsGrid = gridAccessor.getPartitionsGrid();
 
-		TestWindow.openTestWindow(new GraphicsGridAdapter(width, height) {
+		TestUtils.openTestWindow(new GraphicsGridAdapter(width, height) {
 			@Override
 			public int getDebugColorAt(int x, int y) {
 				int value = partitionsGrid.getRealPartitionIdAt(x, y);
@@ -42,6 +40,5 @@ public class TestExecutionWithDebugDisplay {
 
 		Thread.sleep(5000);
 		grid.startThreads();
-		// NetworkTimer.get().schedule();
 	}
 }

@@ -2,9 +2,9 @@ package jsettlers.algorithms.partitions;
 
 import java.util.BitSet;
 
+import jsettlers.TestUtils;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.constants.MatchConstants;
@@ -22,12 +22,10 @@ import networklib.synchronic.timer.NetworkTimer;
  */
 public class PartitionCalculatorAlgorithmSpeedTest {
 
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-		RandomSingleton.load(0);
-	}
-
 	public static void main(String[] args) throws MapLoadException, InterruptedException {
+		TestUtils.setupResourceManagerIfNeeded();
+		RandomSingleton.load(0);
+
 		MatchConstants.clock = new NetworkTimer(true);
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("big map").getMainGrid((byte) 0);

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.BitSet;
 
 import jsettlers.GraphicsGridAdapter;
-import jsettlers.TestWindow;
+import jsettlers.TestUtils;
 import jsettlers.common.Color;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
@@ -44,7 +44,7 @@ public class PartitionsCalculatorAlgorithmTest {
 
 	@SuppressWarnings("unused")
 	private void visualizeAlgoResult(final IBlockingProvider blockingProvider, final PartitionCalculatorAlgorithm algo) {
-		TestWindow.openTestWindow(new GraphicsGridAdapter(WIDTH, HEIGHT) {
+		TestUtils.openTestWindow(new GraphicsGridAdapter(WIDTH, HEIGHT) {
 			@Override
 			public int getDebugColorAt(int x, int y) {
 				int value;

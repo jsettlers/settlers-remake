@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
+import jsettlers.TestUtils;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.constants.MatchConstants;
@@ -25,13 +25,11 @@ import org.junit.Test;
  */
 public class PartitionCalculatorAlgorithmComparisionTest {
 
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-		RandomSingleton.load(0);
-	}
-
 	@Test
 	public void testCompareOldAndNew() throws MapLoadException {
+		TestUtils.setupResourceManagerIfNeeded();
+		RandomSingleton.load(0);
+
 		MatchConstants.clock = new NetworkTimer(true);
 
 		MainGrid grid = MapList.getDefaultList().getMapByName("big map").getMainGrid((byte) 0);

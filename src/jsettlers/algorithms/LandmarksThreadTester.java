@@ -1,6 +1,6 @@
 package jsettlers.algorithms;
 
-import jsettlers.TestWindow;
+import jsettlers.TestUtils;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -26,8 +26,8 @@ public class LandmarksThreadTester {
 
 	public static void main(String args[]) {
 		map = new Map();
-		
-		MapInterfaceConnector connector =TestWindow.openTestWindow(map);
+
+		MapInterfaceConnector connector = TestUtils.openTestWindow(map);
 		connector.addListener(new IMapInterfaceListener() {
 
 			@Override

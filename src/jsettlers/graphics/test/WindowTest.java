@@ -1,6 +1,6 @@
 package jsettlers.graphics.test;
 
-import jsettlers.TestWindow;
+import jsettlers.TestUtils;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.SelectionSet;
 
@@ -9,7 +9,7 @@ public class WindowTest {
 	private WindowTest() {
 		TestMap map = new TestMap();
 
-		MapInterfaceConnector connector = TestWindow.openTestWindow(map);
+		MapInterfaceConnector connector = TestUtils.openTestWindow(map);
 
 		connector.setSelection(new SelectionSet(map.getAllSettlers()));
 	}
