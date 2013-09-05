@@ -5,13 +5,10 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import jsettlers.buildingcreator.editor.jobeditor.PersonJobEditor;
 import jsettlers.buildingcreator.editor.map.BuildingtestMap;
 import jsettlers.buildingcreator.editor.map.PseudoTile;
 import jsettlers.common.Color;
@@ -34,8 +30,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.resources.IResourceProvider;
-import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -43,9 +38,7 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 /**
@@ -54,57 +47,27 @@ import jsettlers.main.swing.SwingManagedJSettlers;
  * @author michael
  */
 public class BuildingCreatorApp implements IMapInterfaceListener {
-	static { // sets the native library path for the system dependent jogl libs
-		SwingResourceLoader.setupSwingPaths();
-	}
-
 	private BuildingDefinition definition;
 	private final BuildingtestMap map;
 
 	private ToolType tool = ToolType.SET_BLOCKED;
-	private JPanel actionList;
 	private JLabel positionDisplayer;
 	private JFrame window;
 
-	private BuildingCreatorApp(List<String> argsList) {
-		ResourceManager.setProvider(new IResourceProvider() {
-			@Override
-			public InputStream getFile(String name) throws IOException {
-				String currentParentFolder = new File(new File("").getAbsolutePath()).getParent().replace('\\', '/');
-				String path = currentParentFolder + "/jsettlers.common/resources/";
-				System.out.println(path);
-				File file = new File(path + name);
-				return new FileInputStream(file);
-			}
-
-			@Override
-			public OutputStream writeFile(String name) throws IOException {
-				return null;
-			}
-
-			@Override
-			public File getSaveDirectory() {
-				return null;
-			}
-
-			@Override
-			public File getTempDirectory() {
-				return null;
-			}
-		});
+	private BuildingCreatorApp(HashMap<String, String> argsMap) throws FileNotFoundException, IOException {
+		SwingManagedJSettlers.setupResourceManagers(argsMap, new File("../jsettlers.main.swing/config.prp"));
 
 		EBuildingType type = askType();
 
 		definition = new BuildingDefinition(type);
-
 		map = new BuildingtestMap(definition);
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getHeight(); y++) {
 				reloadColor(new ShortPoint2D(x, y));
 			}
 		}
-		
-		MapInterfaceConnector connector = startMapWindow(argsList);
+
+		MapInterfaceConnector connector = startMapWindow(argsMap);
 		connector.addListener(this);
 
 		JPanel menu = generateMenu();
@@ -121,21 +84,21 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 	private JPanel generateMenu() {
 		JPanel menu = new JPanel();
 		menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
-//		menu.setPreferredSize(new Dimension(200, 100));
-//		actionList = new JPanel();
-//		actionList.setLayout(new BoxLayout(actionList, BoxLayout.Y_AXIS));
-//		menu.add(new JScrollPane(actionList));
+		// menu.setPreferredSize(new Dimension(200, 100));
+		// actionList = new JPanel();
+		// actionList.setLayout(new BoxLayout(actionList, BoxLayout.Y_AXIS));
+		// menu.add(new JScrollPane(actionList));
 
 		menu.add(createToolChangeBar());
 
-//		JButton addButton = new JButton("add new action");
-//		addButton.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				addNewAction();
-//			}
-//		});
-//		menu.add(addButton);
+		// JButton addButton = new JButton("add new action");
+		// addButton.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// addNewAction();
+		// }
+		// });
+		// menu.add(addButton);
 
 		JButton xmlButton = new JButton("show xml data");
 		xmlButton.addActionListener(new ActionListener() {
@@ -150,8 +113,8 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		return menu;
 	}
 
-	private MapInterfaceConnector startMapWindow(List<String> argsList) {
-		JSettlersScreen gui = SwingManagedJSettlers.startGui(argsList);
+	private MapInterfaceConnector startMapWindow(HashMap<String, String> argsMap) {
+		JSettlersScreen gui = SwingManagedJSettlers.startGui(argsMap);
 		MapContent content = new MapContent(new FakeMapGame(map), new SwingSoundPlayer());
 		gui.setContent(content);
 		MapInterfaceConnector connector = content.getInterfaceConnector();
@@ -177,34 +140,14 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		return button;
 	}
 
-	private void reloadActionList() {
-		actionList.removeAll();
-		for (String name : definition.getActionNames()) {
-			PersonJobEditor panel = new PersonJobEditor(name, definition.getActionByName(name));
-			actionList.add(panel);
-		}
-		actionList.revalidate();
-	}
-
-	private void addNewAction() {
-		String acitonName = JOptionPane.showInputDialog(window, "Select job name");
-		if (acitonName != null) {
-			definition.addAction(acitonName);
-			reloadActionList();
-		}
-	}
-
 	private EBuildingType askType() {
 		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
 				EBuildingType.values, null);
 	}
 
-	public static void main(String[] args) {
-		ImageProvider provider = ImageProvider.getInstance();
-		provider.addLookupPath(new File("/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX"));
-		provider.addLookupPath(new File("D:/Games/Siedler3/GFX"));
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 
-		new BuildingCreatorApp(Arrays.asList(args));
+		new BuildingCreatorApp(MainUtils.createArgumentsMap(args));
 	}
 
 	@Override
