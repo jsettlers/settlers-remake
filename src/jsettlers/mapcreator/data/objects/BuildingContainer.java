@@ -69,10 +69,6 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
-	}
-
-	@Override
 	public ShortPoint2D getPos() {
 		return pos;
 	}
@@ -80,11 +76,6 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	@Override
 	public EBuildingType getBuildingType() {
 		return object.getType();
-	}
-
-	@Override
-	public boolean isWorking() {
-		return false;
 	}
 
 	@Override
@@ -148,5 +139,10 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	@Override
 	public EPriority getPriority() {
 		return EPriority.LOW;
+	}
+
+	@Override
+	public EPriority[] getSupportedPriorities() {
+		return new EPriority[0];
 	}
 }
