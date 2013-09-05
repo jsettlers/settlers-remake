@@ -12,10 +12,12 @@ import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.IContextListener;
 import jsettlers.graphics.map.draw.ImageProvider;
@@ -27,15 +29,17 @@ public class BuildingSelectionPanel implements IContentProvider {
 	        EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
 	        EImageLinkType.GUI, 3, 48, 0);
-	private IBuilding building;
-	private UIPanel panel;
+	private final IBuilding building;
+	private final UIPanel panel;
 
 	private static OriginalImageLink SET_WORK_AREA = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 201, 0);
-	private static OriginalImageLink START_WORKING = new OriginalImageLink(EImageLinkType.GUI,
-	        3, 196, 0);
-	private static OriginalImageLink STOP_WORKING = new OriginalImageLink(EImageLinkType.GUI,
+	private static OriginalImageLink PRIORITY_STOPPED = new OriginalImageLink(EImageLinkType.GUI,
 	        3, 192, 0);
+	private static OriginalImageLink PRIORITY_LOW = new OriginalImageLink(EImageLinkType.GUI,
+	        3, 195, 0);
+	private static OriginalImageLink PRIORITY_HIGH = new OriginalImageLink(EImageLinkType.GUI,
+	        3, 378, 0);
 
 	private static OriginalImageLink DESTROY = new OriginalImageLink(EImageLinkType.GUI, 3,
 	        198, 0);
@@ -53,19 +57,7 @@ public class BuildingSelectionPanel implements IContentProvider {
 	}
 
 	private void addPanelContent() {
-		UIPanel changeWorking;
-		if (building.isWorking()) {
-			changeWorking =
-			        new Button(new Action(EActionType.STOP_WORKING),
-			                STOP_WORKING, STOP_WORKING,
-			                Labels.getName(EActionType.STOP_WORKING));
-		} else {
-			changeWorking =
-			        new Button(new Action(EActionType.START_WORKING),
-			                START_WORKING, START_WORKING,
-			                Labels.getName(EActionType.START_WORKING));
-		}
-		panel.addChild(changeWorking, 0, .9f, .2f, 1);
+		addPriorityButton();
 
 		if (building.getBuildingType().getWorkradius() > 0) {
 			Button setWorkcenter =
@@ -97,6 +89,40 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 		}
 	}
+
+	private void addPriorityButton() {
+		EPriority[] supported = building.getSupportedPriorities();
+		if (supported.length < 2) {
+			return;
+		}
+		
+		EPriority priority = building.getPriority();
+	    OriginalImageLink image;
+		switch (priority) {
+			case HIGH:
+				image = PRIORITY_HIGH;
+				break;
+			case LOW:
+				image = PRIORITY_LOW;
+				break;
+			case STOPPED:
+			default:
+				image = PRIORITY_STOPPED;
+				break;
+		}
+		
+		EPriority next = supported[0];
+		for (int i = 0; i < supported.length; i++) {
+			if (supported[i] == priority) {
+				next = supported[(i + 1) % supported.length];
+			}
+		}
+		
+		Button changeWorking = new Button(new SetBuildingPriorityAction(next),
+					image, image,
+			        Labels.getString("priority_" + next));
+		panel.addChild(changeWorking, 0, .9f, .2f, 1);
+    }
 
 	private void addOccupyerPlaces(List<? extends IBuildingOccupyer> occupyers) {
 		int bottomindex = 0;

@@ -801,7 +801,7 @@ public class MapObjectDrawer {
 			}
 		} else {
 			if (type == EBuildingType.MILL
-			        && ((IBuilding.IMill) building).isWorking()) {
+			        && ((IBuilding.IMill) building).isRotating()) {
 				Sequence<? extends Image> seq =
 				        this.imageProvider.getSettlerSequence(MILL_FILE,
 				                MILL_SEQ);

@@ -1,6 +1,9 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import java.util.Arrays;
+
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.material.EPriority;
 
 /**
  * This class saves the state parts of the building that is displayed by the
@@ -10,7 +13,8 @@ import jsettlers.common.buildings.IBuilding;
  */
 public class BuildingState {
 
-	private final boolean working;
+	private final EPriority priority;
+	private final EPriority[] supportedPriorities;
 
 	/**
 	 * Saves the current state of the building
@@ -19,7 +23,8 @@ public class BuildingState {
 	 *            the building
 	 */
 	public BuildingState(IBuilding building) {
-		working = building.isWorking();
+		priority = building.getPriority();
+		supportedPriorities = building.getSupportedPriorities();
 		if (building instanceof IBuilding.IOccupyed) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
 			// TODO: use this to store how many people are occupying the
@@ -28,7 +33,9 @@ public class BuildingState {
 	}
 
 	public boolean isStillInState(IBuilding building) {
-		return building.isWorking() == working;
+		return building.getPriority() == priority
+		        && Arrays.equals(supportedPriorities,
+		                building.getSupportedPriorities());
 	}
 
 }
