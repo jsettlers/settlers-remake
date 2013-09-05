@@ -431,18 +431,18 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		System.out.println("building killed");
 		Timer100Milli.remove(this);
 
-		placeReusableMaterials();
-		releaseRequestStacks();
-
 		this.state = STATE_DESTROYED;
 
 		grid.removeBuildingAt(pos);
-		grid.getMapObjectsManager().addSelfDeletingMapObject(pos, EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION,
-				player);
+		grid.getMapObjectsManager().addSelfDeletingMapObject(pos,
+				EMapObjectType.BUILDING_DECONSTRUCTION_SMOKE, BUILDING_DESTRUCTION_SMOKE_DURATION, player);
 		placeAdditionalMapObjects(grid, pos, false);
 		placeFlag(false);
 
 		allBuildings.remove(this);
+
+		placeReusableMaterials();
+		releaseRequestStacks();
 
 		killedEvent();
 	}
@@ -622,7 +622,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (RequestStack curr : stacks) {
 			curr.setPriority(newPriority);
 		}
-		//TODO @Andreas: Also stop the forester, ...
+		// TODO @Andreas: Also stop the forester, ...
 	}
 
 	public final RelativePoint[] getFlattenTiles() {
