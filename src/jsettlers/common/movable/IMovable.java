@@ -62,4 +62,13 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * @return
 	 */
 	boolean isRightstep();
+	
+	/**
+	 * Lets this movable stop or start its work.
+	 * 
+	 * @param stop
+	 *            if true this selectable should stop working<br>
+	 *            if false, it should stop working.
+	 */
+	void stopOrStartWorking(boolean stop);
 }

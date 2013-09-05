@@ -29,18 +29,16 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	EBuildingType getBuildingType();
 
 	/**
-	 * if the building is currently working
-	 * 
-	 * @return true if working is enabled (no matter if it really works)
-	 */
-	@Deprecated
-	boolean isWorking();
-
-	/**
 	 * 
 	 * @return Returns the priority of this Building in receiving materials.
 	 */
 	EPriority getPriority();
+
+	/**
+	 * Gets the priorities supported for this building. They may change over time.
+	 * Most buildings at least support "STOPPED" and "NORMAL"
+	 */
+	EPriority[] getSupportedPriorities();
 
 	/**
 	 * 
@@ -117,4 +115,5 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 */
 		int getCurrentlyCommingSoldiers(ESoldierType type);
 	}
+
 }
