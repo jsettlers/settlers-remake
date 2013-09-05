@@ -19,6 +19,7 @@ import go.graphics.text.TextDrawer;
 
 import java.text.DecimalFormat;
 
+import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
@@ -274,7 +275,7 @@ public final class MapContent implements RegionContent,
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
 				if (m.getSender() >= 0) {
 					String name = getPlayername(m.getSender()) + ":";
-					jsettlers.common.Color color =
+					Color color =
 					        context.getPlayerColor(m.getSender());
 					float width = (float) drawer.getWidth(name);
 					float bright =

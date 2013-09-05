@@ -1,5 +1,6 @@
 package jsettlers.graphics.messages;
 
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.localization.Labels;
@@ -58,5 +59,10 @@ public class SimpleMessage implements Message {
 	public static Message foundMinerals(EMaterialType type, ShortPoint2D pos) {
 		String message = Labels.getString("minerals_" + type.toString());
 		return new SimpleMessage(EMessageType.MINERALS, message, (byte) -1, pos);
+	}
+
+	public static Message cannotFindWork(IBuilding building) {
+		String message = Labels.getString("cannot_find_work_" + building.getBuildingType());
+		return new SimpleMessage(EMessageType.NOTHING_FOUND_IN_SEARCH_AREA, message, (byte) -1, building.getPos());
 	}
 }

@@ -9,6 +9,7 @@ import java.util.List;
  * @author michael
  */
 public class Messenger {
+	private static final int MAX_MESSAGES = 50;
 	LinkedList<Message> messages = new LinkedList<Message>();
 	
 	/**
@@ -25,5 +26,8 @@ public class Messenger {
 
 	public void addMessage(Message message) {
 		messages.addFirst(message);
+		if (messages.size() > MAX_MESSAGES) {
+			messages.removeLast();
+		}
 	}
 }
