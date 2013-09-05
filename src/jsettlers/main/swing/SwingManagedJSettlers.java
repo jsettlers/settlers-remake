@@ -9,14 +9,15 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
@@ -40,27 +41,47 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException,
-			IOException, ClassNotFoundException {
-		List<String> argsList = Arrays.asList(args);
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 
-		loadDebugSettings(argsList);
+		setupResourceManagers(argsMap, new File("config.prp"));
+		loadDebugSettings(argsMap);
 
-		SwingResourceLoader.setupResourceManagersByConfigFile(new File("config.prp"));
-
-		JSettlersScreen content = startGui(argsList);
-		generateContent(argsList, content);
+		JSettlersScreen content = startGui(argsMap);
+		generateContent(argsMap, content);
 
 		ImageProvider.getInstance().startPreloading();
 	}
-	
-	private static void loadDebugSettings(List<String> argsList) {
-		if (argsList.contains("--control-all")) {
+
+	/**
+	 * Sets up the {@link ResourceManager} by using a configuration file. <br>
+	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
+	 * file. <br>
+	 * If the parameter is not given, the defaultConfigFile is used.
+	 * 
+	 * @param argsMap
+	 * @param defaultConfigFile
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void setupResourceManagers(HashMap<String, String> argsMap, File defaultConfigFile) throws FileNotFoundException, IOException {
+		File configFile;
+		if (argsMap.containsKey("configFile")) {
+			configFile = new File(argsMap.get("configFile"));
+		} else {
+			configFile = defaultConfigFile;
+		}
+
+		SwingResourceLoader.setupResourceManagersByConfigFile(configFile);
+	}
+
+	private static void loadDebugSettings(HashMap<String, String> argsMap) {
+		if (argsMap.containsKey("control-all")) {
 			CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
 			CommonConstants.ENABLE_ALL_PLAYER_SELECTION = true;
 			CommonConstants.ENABLE_FOG_OF_WAR_DISABLING = true;
 		}
-		if (argsList.contains("-localhost") || argsList.contains("--localhost")) {
+		if (argsMap.containsKey("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
 		}
 	}
@@ -70,15 +91,18 @@ public class SwingManagedJSettlers {
 	 * 
 	 * @param argsList
 	 * @return
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
-	public static JSettlersScreen startGui(List<String> argsList) {
+	public static JSettlersScreen startGui(HashMap<String, String> argsMap) {
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), 	"r" + Revision.REVISION + " / r" + LogicRevision.REVISION);
+		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), "r" + Revision.REVISION + " / r"
+				+ LogicRevision.REVISION);
 		area.add(content.getRegion());
 
-		if (argsList.contains("--force-jogl")) {
+		if (argsMap.containsKey("force-jogl")) {
 			startJogl(area);
-		} else if (argsList.contains("--force-native")) {
+		} else if (argsMap.containsKey("force-native")) {
 			startNative(area);
 		} else {
 			try {
@@ -92,28 +116,25 @@ public class SwingManagedJSettlers {
 		return content;
 	}
 
-	private static void generateContent(List<String> argsList, JSettlersScreen content) throws IOException {
+	private static void generateContent(HashMap<String, String> argsMap, JSettlersScreen content) throws IOException {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
 
-		for (String s : argsList) {
-			if (s.startsWith("--mapfile=")) {
-				mapfile = s.replaceFirst("--mapfile=", "");
-			}
-			if (s.startsWith("--random=")) {
-				randomSeed = Long.parseLong(s.replaceFirst("--random=", ""));
-			}
-
-			if (s.startsWith("--replayFile=")) {
-				String loadableReplayFileString = s.replaceFirst("--replayFile=", "");
-				File replayFile = new File(loadableReplayFileString);
-				if (replayFile.exists()) {
-					loadableReplayFile = replayFile;
-					System.out.println("Found loadable replay file and loading it: " + loadableReplayFile);
-				} else {
-					System.err.println("Found replayFile parameter, but file can not be found!");
-				}
+		if (argsMap.containsKey("mapfile")) {
+			mapfile = argsMap.get("mapfile");
+		}
+		if (argsMap.containsKey("random")) {
+			randomSeed = Long.parseLong(argsMap.get("random"));
+		}
+		if (argsMap.containsKey("replayFile")) {
+			String loadableReplayFileString = argsMap.get("replayFile");
+			File replayFile = new File(loadableReplayFileString);
+			if (replayFile.exists()) {
+				loadableReplayFile = replayFile;
+				System.out.println("Found loadable replay file and loading it: " + loadableReplayFile);
+			} else {
+				System.err.println("Found replayFile parameter, but file can not be found!");
 			}
 		}
 
