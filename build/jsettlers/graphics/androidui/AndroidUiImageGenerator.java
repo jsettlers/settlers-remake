@@ -57,7 +57,7 @@ public class AndroidUiImageGenerator {
 			        "please use destinationDirectory=\"...\"");
 		}
 
-		SwingResourceLoader.setupDefaultPaths();
+		SwingResourceLoader.setupResourceManagersByConfigFile(new File("../../jsettlers.main.swing/config.prp"));
 		
 		String listOutputPackage = listOutputClass.replaceAll("\\.\\w*$", "");
 		File listOutputDir =
