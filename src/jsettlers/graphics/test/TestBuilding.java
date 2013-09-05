@@ -58,10 +58,6 @@ public class TestBuilding implements IBuilding {
 
 	}
 
-	@Override
-	public void stopOrStartWorking(boolean stop) {
-
-	}
 
 	@Override
 	public EMapObjectType getObjectType() {
@@ -71,11 +67,6 @@ public class TestBuilding implements IBuilding {
 	@Override
 	public IMapObject getNextObject() {
 		return null;
-	}
-
-	@Override
-	public boolean isWorking() {
-		return false;
 	}
 
 	@Override
@@ -96,5 +87,10 @@ public class TestBuilding implements IBuilding {
 	@Override
 	public EPriority getPriority() {
 		return EPriority.LOW;
+	}
+
+	@Override
+	public EPriority[] getSupportedPriorities() {
+		return EPriority.values;
 	}
 }
