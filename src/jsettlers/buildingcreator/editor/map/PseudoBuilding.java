@@ -52,11 +52,6 @@ public class PseudoBuilding implements IBuilding {
 	}
 
 	@Override
-	public void stopOrStartWorking(boolean stop) {
-
-	}
-
-	@Override
 	public EMapObjectType getObjectType() {
 		return EMapObjectType.BUILDING;
 	}
@@ -64,11 +59,6 @@ public class PseudoBuilding implements IBuilding {
 	@Override
 	public IMapObject getNextObject() {
 		return null;
-	}
-
-	@Override
-	public boolean isWorking() {
-		return false;
 	}
 
 	@Override
@@ -89,6 +79,11 @@ public class PseudoBuilding implements IBuilding {
 	@Override
 	public EPriority getPriority() {
 		return EPriority.LOW;
+	}
+
+	@Override
+	public EPriority[] getSupportedPriorities() {
+		return new EPriority[0];
 	}
 
 }
