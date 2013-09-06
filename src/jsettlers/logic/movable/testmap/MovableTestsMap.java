@@ -375,7 +375,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength) {
 		}
 
 		@Override
