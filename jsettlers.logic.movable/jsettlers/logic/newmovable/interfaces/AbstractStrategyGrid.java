@@ -192,10 +192,12 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *            Attacked position.
 	 * @param shooterPos
 	 *            Position of the shooter.
+	 * @param shooterPlayerId
+	 *            The id of the attacking player.
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	public abstract void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength);
+	public abstract void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength);
 
 	public abstract boolean hasNoMovableAt(short x, short y);
 

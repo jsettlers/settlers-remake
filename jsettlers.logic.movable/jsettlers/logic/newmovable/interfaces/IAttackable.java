@@ -19,7 +19,7 @@ public interface IAttackable extends ILocatable, IInformable {
 	 * @param attackerPos
 	 *            The position of the attacker.
 	 */
-	void receiveHit(float strength, ShortPoint2D attackerPos);
+	void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer);
 
 	/**
 	 * Get the health of this {@link IAttackable}.

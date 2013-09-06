@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
@@ -23,6 +22,11 @@ import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
 import networklib.synchronic.random.RandomSingleton;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public final class BuildingWorkerStrategy extends NewMovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;
 
@@ -313,8 +317,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			searchFailedCtr++;
 
 			if (searchFailedCtr > 10) {
-				//TODO @Andreas: Avoid this cast.
-				super.getPlayer().showMessage(SimpleMessage.cannotFindWork((IBuilding) building));
+				super.getPlayer().showMessage(SimpleMessage.cannotFindWork(building));
 			}
 		}
 	}

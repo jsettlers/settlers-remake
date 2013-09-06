@@ -1,5 +1,10 @@
 package jsettlers.logic.newmovable.interfaces;
 
+/**
+ * 
+ * @author Andreas Eberle
+ * 
+ */
 public interface IInformable {
 	/**
 	 * Informs this attackable of an attackable enemy.

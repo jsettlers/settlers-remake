@@ -18,6 +18,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
@@ -483,7 +484,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		}
 
 		@Override
-		public void receiveHit(float strength, ShortPoint2D attackerPos) {
+		public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
 			NewMovable attacker = getGrid().getMovable(attackerPos);
 			if (attacker != null && attacker.getPlayer() == getPlayer()) {
 				return; // this can happen directly after the tower changed its player
@@ -503,7 +504,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				}
 			} else if (currDefender != null) {
 				IAttackableMovable movable = currDefender.getSoldier().getMovable();
-				movable.receiveHit(strength, attackerPos);
+				movable.receiveHit(strength, attackerPos, attackingPlayer);
 
 				if (movable.getHealth() <= 0) {
 					if (occupiers.isEmpty()) {
@@ -517,6 +518,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					}
 				}
 			}
+
+			OccupyingBuilding.this.getPlayer().showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 		}
 
 		private void pollNewDefender() {

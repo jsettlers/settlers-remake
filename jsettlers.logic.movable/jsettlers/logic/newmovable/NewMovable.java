@@ -14,6 +14,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
+import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.input.IGuiMovable;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.path.IPathCalculateable;
@@ -775,11 +776,13 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	}
 
 	@Override
-	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos) {
+	public final void receiveHit(float hitStrength, ShortPoint2D attackerPos, byte attackingPlayer) {
 		this.health -= hitStrength;
 		if (health <= 0) {
 			this.kill();
 		}
+
+		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 	}
 
 	public void checkPlayerOfPosition(Player currentPlayer) {

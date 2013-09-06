@@ -247,8 +247,8 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 	 * @param hitStrength
 	 *            Strength of the hit.
 	 */
-	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
-		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, hitStrength);
+	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength) {
+		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, shooterPlayerId, hitStrength);
 		addMapObject(attackedPos, arrow);
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
 		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true));

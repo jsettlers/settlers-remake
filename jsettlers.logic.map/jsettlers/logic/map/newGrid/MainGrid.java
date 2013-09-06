@@ -729,7 +729,7 @@ public final class MainGrid implements Serializable {
 
 			NewMovable movable = movableGrid.getMovableAt(x, y);
 			if (movable != null) {
-				movable.receiveHit(arrow.getHitStrength(), arrow.getSourcePos());
+				movable.receiveHit(arrow.getHitStrength(), arrow.getSourcePos(), arrow.getShooterPlayerId());
 				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
 		}
@@ -1171,8 +1171,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, float hitStrength) {
-			mapObjectsManager.addArrowObject(attackedPos, shooterPos, hitStrength);
+		public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength) {
+			mapObjectsManager.addArrowObject(attackedPos, shooterPos, shooterPlayerId, hitStrength);
 		}
 
 		@Override
