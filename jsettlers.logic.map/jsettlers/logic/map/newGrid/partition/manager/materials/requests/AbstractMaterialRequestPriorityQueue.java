@@ -50,7 +50,6 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *         or null if none exists.
 	 */
 	public final MaterialRequestObject getHighestRequest() {
-
 		// Start with highest priority to lower ones. Skip the EPriority.STOPPED queue (index 0)
 		for (int prio = EPriority.NUMBER_OF_PRIORITIES - 1; prio >= 1; prio--) {
 			MaterialRequestObject request = getRequestForPrio(prio);

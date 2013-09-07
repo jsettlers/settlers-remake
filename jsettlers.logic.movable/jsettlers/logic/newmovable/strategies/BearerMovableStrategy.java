@@ -136,7 +136,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 				workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
 			}
 		case GOING_TO_REQUEST:
-			if (request != null && request.isActive()) {
+			if (request != null) {
 				request.deliveryAborted();
 			}
 			break;
