@@ -13,7 +13,7 @@ import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
  */
 public interface IBuildingOccupyableMovable {
 
-	void setOccupyableBuilding(IOccupyableBuilding building);
+	boolean setOccupyableBuilding(IOccupyableBuilding building);
 
 	EMovableType getMovableType();
 

@@ -10,8 +10,8 @@ import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.newmovable.NewMovableStrategy;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.newmovable.interfaces.IAttackable;
 
 public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
@@ -99,8 +99,13 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			break;
 
 		case INIT_GOTO_TOWER:
-			super.goToPos(building.getDoor());
-			changeStateTo(ESoldierState.GOING_TO_TOWER);
+			if (super.getPos().equals(building.getDoor()) || super.goToPos(building.getDoor())) {
+				changeStateTo(ESoldierState.GOING_TO_TOWER);
+			} else {
+				building.requestFailed(this.movableType);
+				building = null;
+				state = ESoldierState.AGGRESSIVE;
+			}
 			break;
 
 		case GOING_TO_TOWER:
@@ -178,11 +183,16 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	protected abstract boolean isEnemyAttackable(IAttackable enemy, boolean isInTower);
 
 	@Override
-	public void setOccupyableBuilding(IOccupyableBuilding building) {
-		this.building = building;
-		changeStateTo(ESoldierState.INIT_GOTO_TOWER);
-		super.abortPath();
-		this.oldPathTarget = null; // this prevents that the soldiers go to this position after he leaves the tower.
+	public boolean setOccupyableBuilding(IOccupyableBuilding building) {
+		if (state != ESoldierState.GOING_TO_TOWER && state != ESoldierState.INIT_GOTO_TOWER) {
+			this.building = building;
+			changeStateTo(ESoldierState.INIT_GOTO_TOWER);
+			super.abortPath();
+			this.oldPathTarget = null; // this prevents that the soldiers go to this position after he leaves the tower.
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

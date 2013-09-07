@@ -748,8 +748,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
 		if (canOccupyBuilding()) {
-			((SoldierStrategy) strategy).setOccupyableBuilding(building);
-			return true;
+			return ((SoldierStrategy) strategy).setOccupyableBuilding(building);
 		} else {
 			return false;
 		}
