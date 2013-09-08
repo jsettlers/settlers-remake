@@ -1,8 +1,5 @@
 package jsettlers.logic.map.newGrid.partition;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,20 +35,6 @@ final class PartitionOccupyingTowerList extends LinkedList<PartitionOccupyingTow
 			}
 		}
 		return null;
-	}
-
-	private void writeObject(ObjectOutputStream oos) throws IOException {
-		oos.writeInt(super.size());
-		for (PartitionOccupyingTower curr : this) {
-			oos.writeObject(curr);
-		}
-	}
-
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		int size = ois.readInt();
-		for (int i = 0; i < size; i++) {
-			this.add((PartitionOccupyingTower) ois.readObject());
-		}
 	}
 
 	/**

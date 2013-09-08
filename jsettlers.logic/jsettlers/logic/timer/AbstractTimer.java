@@ -1,15 +1,16 @@
 package jsettlers.logic.timer;
 
-import jsettlers.common.SerializableLinkedList;
+import java.util.LinkedList;
+
 import jsettlers.logic.constants.MatchConstants;
 import networklib.synchronic.timer.INetworkTimerable;
 
 public abstract class AbstractTimer<T extends ITimerable> implements INetworkTimerable {
-	private static final SerializableLinkedList<AbstractTimer<? extends ITimerable>> timers = new SerializableLinkedList<AbstractTimer<? extends ITimerable>>();
+	private static final LinkedList<AbstractTimer<? extends ITimerable>> timers = new LinkedList<AbstractTimer<? extends ITimerable>>();
 
-	protected final SerializableLinkedList<T> timerables = new SerializableLinkedList<T>();
-	private final SerializableLinkedList<T> newToList = new SerializableLinkedList<T>();
-	private final SerializableLinkedList<T> removeList = new SerializableLinkedList<T>();
+	protected final LinkedList<T> timerables = new LinkedList<T>();
+	private final LinkedList<T> newToList = new LinkedList<T>();
+	private final LinkedList<T> removeList = new LinkedList<T>();
 
 	private final String name;
 

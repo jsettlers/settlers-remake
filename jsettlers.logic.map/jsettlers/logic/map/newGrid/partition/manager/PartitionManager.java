@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import jsettlers.common.SerializableLinkedList;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -71,18 +70,18 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		}
 	}, materialOffers, settings);
 
-	private final SerializableLinkedList<WorkerRequest> workerRequests = new SerializableLinkedList<WorkerRequest>();
+	private final LinkedList<WorkerRequest> workerRequests = new LinkedList<WorkerRequest>();
 	private final PositionableList<IManageableWorker> joblessWorkers = new PositionableList<IManageableWorker>();
 
-	private final SerializableLinkedList<DiggerRequest> diggerRequests = new SerializableLinkedList<DiggerRequest>();
+	private final LinkedList<DiggerRequest> diggerRequests = new LinkedList<DiggerRequest>();
 	private final PositionableList<IManageableDigger> joblessDiggers = new PositionableList<IManageableDigger>();
 
-	private final SerializableLinkedList<BricklayerRequest> bricklayerRequests = new SerializableLinkedList<BricklayerRequest>();
+	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<BricklayerRequest>();
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
 
 	private final SimpleSlotQueue<EMovableType, WorkerCreationRequest> workerCreationRequests = new SimpleSlotQueue<EMovableType, WorkerCreationRequest>(
 			EMovableType.values);
-	private final SerializableLinkedList<SoilderCreationRequest> soilderCreationRequests = new SerializableLinkedList<SoilderCreationRequest>();
+	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<SoilderCreationRequest>();
 
 	private final SlotQueue<EMaterialType, ProductionRequest> toolProductionRequests = new SlotQueue<EMaterialType, ProductionRequest>(
 			new EMaterialType[] { EMaterialType.HAMMER, EMaterialType.BLADE, EMaterialType.AXE, EMaterialType.SAW, EMaterialType.PICK,
@@ -139,7 +138,6 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	public void addJobless(IManageableBearer bearer) {
-		// TODO @Andreas try to find him a new job first
 		this.joblessBearer.insert(bearer);
 	}
 
