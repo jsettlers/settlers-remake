@@ -28,7 +28,11 @@ class LineLoader implements Runnable {
 	@Override
 	public void run() {
 		while (!stopped) {
-			updateLine();
+			try {
+				updateLine();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 		}
 	};
 
