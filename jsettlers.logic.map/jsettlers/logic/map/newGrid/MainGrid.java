@@ -596,13 +596,13 @@ public final class MainGrid implements Serializable {
 		public final int getDebugColorAt(int x, int y) {
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 
-			// int value = partitionsGrid.getPartitionIdAt(x, y);
+			int value = partitionsGrid.getPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
 
-			int value = partitionsGrid.getTowerCountAt(x, y) + 1;
+			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
 
 			return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
 
