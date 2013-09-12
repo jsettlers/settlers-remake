@@ -27,6 +27,7 @@ import jsettlers.logic.LogicRevision;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.StartScreenConnector;
+import networklib.client.OfflineNetworkConnector;
 
 /**
  * 
@@ -144,7 +145,7 @@ public class SwingManagedJSettlers {
 				MapLoader mapLoader = new MapLoader(new File(mapfile));
 				game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
 			} else {
-				game = JSettlersGame.loadFromReplayFile(loadableReplayFile).start();
+				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector()).start();
 			}
 			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
 			content.setContent(toDisplay);
