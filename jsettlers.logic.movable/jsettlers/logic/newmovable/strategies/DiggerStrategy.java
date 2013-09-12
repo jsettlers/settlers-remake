@@ -60,10 +60,10 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	private void executeDigg() {
 		ShortPoint2D pos = super.getPos();
 		super.getStrategyGrid().changeHeightTowards(pos.x, pos.y, requester.getAverageHeight());
-		super.getStrategyGrid().setMarked(super.getPos(), false);
 	}
 
 	private void goToDiggablePosition() {
+		super.getStrategyGrid().setMarked(super.getPos(), false);
 		ShortPoint2D diggablePos = getDiggablePosition();
 		if (diggablePos != null) {
 			if (super.goToPos(diggablePos)) {
