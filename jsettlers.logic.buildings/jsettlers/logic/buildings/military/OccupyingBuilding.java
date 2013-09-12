@@ -500,31 +500,27 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					OccupyingBuilding.this.getGrid().getMapObjectsManager()
 							.addSelfDeletingMapObject(getPos(), EMapObjectType.GHOST, Constants.GHOST_PLAY_DURATION, getPlayer());
 
-					pollNewDefender();
+					pollNewDefender(attackerPos);
 				}
 			} else if (currDefender != null) {
 				IAttackableMovable movable = currDefender.getSoldier().getMovable();
 				movable.receiveHit(strength, attackerPos, attackingPlayer);
 
 				if (movable.getHealth() <= 0) {
-					if (occupiers.isEmpty()) {
-						currDefender = null;
-						changePlayerTo(attackerPos);
-					} else {
-						emptyPlaces.add(currDefender.place); // request a new soldier.
-						searchedSoldiers.add(getSearchType(currDefender.getSoldier().getMovableType()));
+					emptyPlaces.add(currDefender.place); // request a new soldier.
+					searchedSoldiers.add(getSearchType(currDefender.getSoldier().getMovableType()));
 
-						pollNewDefender();
-					}
+					pollNewDefender(attackerPos);
 				}
 			}
 
 			OccupyingBuilding.this.getPlayer().showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 		}
 
-		private void pollNewDefender() {
+		private void pollNewDefender(ShortPoint2D attackerPos) {
 			if (occupiers.isEmpty()) {
 				currDefender = null;
+				changePlayerTo(attackerPos);
 			} else {
 				currDefender = removeSoldier();
 				currDefender.getSoldier().setDefendingAt(getPos());
