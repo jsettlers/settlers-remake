@@ -223,6 +223,17 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		this.setPausing(false);
 	}
 
+	@Override
+	public synchronized void fastForwardTo(int targetGameTime) {
+		this.setPausing(true);
+
+		System.out.println("Playing game forward to game time: " + targetGameTime);
+
+		while (time < targetGameTime) {
+			executeRun();
+		}
+	}
+
 	// methods for pausing
 
 	@Override
@@ -303,11 +314,23 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 
 	@Override
 	public void setReplayLogStream(DataOutputStream replayFileStream) {
+		if (this.replayLogStream != null) {
+			throw new IllegalStateException("Replay log stream cannot be set twice!");
+		}
+
 		if (replayFileStream != null) {
 			replayLogStream = replayFileStream;
 		} else {
 			closeReplayLogStreamIfNeeded();
 		}
+	}
+
+	@Override
+	public synchronized void saveRemainingTasks(DataOutputStream dos) throws IOException {
+		for (SyncTasksPacket task : tasks) {
+			task.serialize(dos);
+		}
+		dos.flush();
 	}
 
 	private void closeReplayLogStreamIfNeeded() {
@@ -346,4 +369,5 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			}
 		}
 	}
+
 }

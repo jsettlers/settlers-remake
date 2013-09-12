@@ -23,8 +23,19 @@ public class OfflineNetworkConnector implements ITaskScheduler, INetworkConnecto
 
 	@Override
 	public void scheduleTask(TaskPacket task) {
-		networkTimer.scheduleSyncTasksPacket(new SyncTasksPacket(networkTimer.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD + 2,
-				Arrays.asList(task)));
+		scheduleTaskAt(networkTimer.getTime() / NetworkConstants.Client.LOCKSTEP_PERIOD + 2, task);
+	}
+
+	/**
+	 * Schedules the given task for execution in the given targetLockstep.
+	 * 
+	 * @param targetLockstep
+	 *            Time the task should be scheduled in milliseconds.
+	 * @param task
+	 *            Task to be scheduled.
+	 */
+	public void scheduleTaskAt(int targetLockstep, TaskPacket task) {
+		networkTimer.scheduleSyncTasksPacket(new SyncTasksPacket(targetLockstep, Arrays.asList(task)));
 	}
 
 	@Override
@@ -51,4 +62,5 @@ public class OfflineNetworkConnector implements ITaskScheduler, INetworkConnecto
 	public boolean haveAllPlayersStartFinished() {
 		return startFinished;
 	}
+
 }

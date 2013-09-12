@@ -2,6 +2,7 @@ package networklib.client.interfaces;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import networklib.synchronic.timer.INetworkTimerable;
 import networklib.synchronic.timer.ITaskExecutor;
@@ -45,5 +46,21 @@ public interface IGameClock extends IPausingSupplier {
 	 */
 	void setReplayLogStream(DataOutputStream replayFileStream);
 
+	/**
+	 * Saves the remaining tasks to the given stream.
+	 * 
+	 * @param dos
+	 */
+	void saveRemainingTasks(DataOutputStream dos) throws IOException;
+
 	void loadReplayLogFromStream(DataInputStream dataInputStream);
+
+	/**
+	 * Plays the game with maximum speed to the given game time and then pauses the game.
+	 * 
+	 * @param targetGameTime
+	 *            The desired game time in milliseconds.
+	 */
+	void fastForwardTo(int targetGameTime);
+
 }
