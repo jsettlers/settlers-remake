@@ -2,6 +2,7 @@ package networklib.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import networklib.client.task.packets.SyncTasksPacket;
@@ -134,6 +135,17 @@ public class NetworkClientClockMock implements INetworkClientClock {
 	public void loadReplayLogFromStream(DataInputStream dataInputStream) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void saveRemainingTasks(DataOutputStream dos) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void fastForwardTo(int targetGameTime) {
+		time = targetGameTime;
 	}
 
 }
