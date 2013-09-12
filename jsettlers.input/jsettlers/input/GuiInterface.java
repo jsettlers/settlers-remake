@@ -25,8 +25,8 @@ import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
@@ -53,7 +53,7 @@ import networklib.client.interfaces.ITaskScheduler;
  */
 public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInterface {
 
-	private final MapInterfaceConnector connector;
+	private final IMapInterfaceConnector connector;
 
 	private final IGameClock clock;
 	private final ITaskScheduler taskScheduler;
@@ -70,7 +70,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private EBuildingType previewBuilding;
 	private SelectionSet currentSelection = new SelectionSet();
 
-	public GuiInterface(MapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
+	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
 			IGameStoppable gameStoppable, byte player,
 			boolean multiplayer) {
 		this.connector = connector;
@@ -98,7 +98,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			this.setSelection(new SelectionSet());
 			EBuildingType buildingType = ((BuildAction) action).getBuilding();
 			System.out.println("build: " + buildingType);
-			this.previewBuilding = buildingType; // FIXME implement a way to give graphics grid the preview building
+			this.previewBuilding = buildingType;
 			connector.setPreviewBuildingType(buildingType);
 			constructionMarksCalculator.setBuildingType(buildingType);
 			setActiveAction(action);

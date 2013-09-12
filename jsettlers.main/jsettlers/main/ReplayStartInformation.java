@@ -12,14 +12,14 @@ import java.io.IOException;
 public class ReplayStartInformation {
 
 	private long randomSeed;
-	private byte playerNumber;
+	private int playerNumber;
 	private String mapName;
 	private String mapId;
 
 	public ReplayStartInformation() {
 	}
 
-	public ReplayStartInformation(long randomSeed, byte playerNumber, String mapName, String mapId) {
+	public ReplayStartInformation(long randomSeed, int playerNumber, String mapName, String mapId) {
 		this.randomSeed = randomSeed;
 		this.playerNumber = playerNumber;
 		this.mapName = mapName;
@@ -30,7 +30,7 @@ public class ReplayStartInformation {
 		return randomSeed;
 	}
 
-	public byte getPlayerNumber() {
+	public int getPlayerNumber() {
 		return playerNumber;
 	}
 

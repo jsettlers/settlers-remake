@@ -12,7 +12,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
-import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.interfaces.EGameError;
@@ -100,13 +100,14 @@ public class JSettlersGame {
 		this(mapCreator, randomSeed, playerNumber, null);
 	}
 
-	public static JSettlersGame loadFromReplayFile(File loadableReplayFile) throws IOException {
+	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector) throws IOException {
 		DataInputStream replayFileInputStream = new DataInputStream(new FileInputStream(loadableReplayFile));
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		replayStartInformation.deserialize(replayFileInputStream);
 
 		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
-		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), replayStartInformation.getPlayerNumber(), replayFileInputStream);
+		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
+				(byte) replayStartInformation.getPlayerNumber(), false, replayFileInputStream);
 	}
 
 	/**
@@ -167,12 +168,11 @@ public class JSettlersGame {
 				networkConnector.setStartFinished(true);
 				waitForAllPlayersStartFinished(networkConnector);
 
-				final MapInterfaceConnector connector = startingGameListener.startFinished(this);
+				final IMapInterfaceConnector connector = startingGameListener.startFinished(this);
 				connector.loadUIState(uiState.getUiStateData());
 
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-						this, playerNumber,
-						multiplayer);
+						this, playerNumber, multiplayer);
 
 				if (replayFileInputStream != null) {
 					gameClock.loadReplayLogFromStream(replayFileInputStream);
@@ -191,7 +191,7 @@ public class JSettlersGame {
 
 				networkConnector.shutdown();
 				gameClock.stopExecution();
-				connector.stop();
+				connector.shutdown();
 				mainGrid.stopThreads();
 				guiInterface.stop();
 				Timer100Milli.stop();
