@@ -122,7 +122,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 				changeStateTo(ESoldierState.AGGRESSIVE);
 				isInTower = true;
 			} else {
-				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES); // do a check of the surrounding to find possible enemies.
+				changeStateTo(ESoldierState.AGGRESSIVE); // do a check of the surrounding to find possible enemies.
+				building = null;
 			}
 			break;
 

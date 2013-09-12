@@ -121,6 +121,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		currentlyCommingSoldiers[ESoldierType.INFANTRY.ordinal()]++;
 
 		doorHealth = 0.1f;
+		inFight = false;
 
 		super.placeFlag(true);
 		setAttackableTowerObject(true);
@@ -171,7 +172,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 					if (soldier != null && soldier.setOccupyableBuilding(this)) {
 						ESearchType searchedSoldier = searchedSoldiers.pop();
 						currentlyCommingSoldiers[getSoldierType(searchedSoldier).ordinal()]++;
-					}// soldier wasn't at the position
+					}// soldier wasn't at the position or wasn't able to take the job to go to this building
 				}
 			}
 		}
