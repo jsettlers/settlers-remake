@@ -1,6 +1,6 @@
 package jsettlers.graphics.startscreen.interfaces;
 
-import jsettlers.graphics.map.MapInterfaceConnector;
+import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.progress.EProgressState;
 
 /**
@@ -23,10 +23,10 @@ public interface IStartingGameListener {
 	 * 
 	 * @param game
 	 *            The game that was just started.
-	 * @retrun A {@link MapInterfaceConnector} that can be used to access the
+	 * @retrun A {@link IMapInterfaceConnector} that can be used to access the
 	 *         game afterwards.
 	 */
-	MapInterfaceConnector startFinished(IStartedGame game);
+	IMapInterfaceConnector startFinished(IStartedGame game);
 
 	void startFailed(EGameError errorType, Exception exception);
 }

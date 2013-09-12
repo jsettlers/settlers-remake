@@ -21,7 +21,8 @@ import jsettlers.graphics.messages.Message;
  * 
  * @author michael
  */
-public class MapInterfaceConnector implements ActionFireable, IMessenger {
+public class MapInterfaceConnector implements ActionFireable,
+        IMapInterfaceConnector {
 
 	private final LinkedList<IMapInterfaceListener> listeners =
 	        new LinkedList<IMapInterfaceListener>();
@@ -126,7 +127,7 @@ public class MapInterfaceConnector implements ActionFireable, IMessenger {
 	 * Stops all threads related to the graphics display. You may experience
 	 * crazy results when trying to use the map view afterwards.
 	 */
-	public void stop() {
+	public void shutdown() {
 		actionFirerer.stop();
 		content.stop();
 	}
@@ -142,6 +143,7 @@ public class MapInterfaceConnector implements ActionFireable, IMessenger {
 		return content.getUIState();
 	}
 
+	@Override
 	public void loadUIState(UIStateData state) {
 		content.loadUIState(state);
 	}
