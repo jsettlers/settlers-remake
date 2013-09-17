@@ -269,7 +269,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case STATE_WAITING_FOR_MATERIAL:
 			if (waitedSecond()) {
-				if (isMaterialAvailable()) {
+				if (priority != EPriority.STOPPED && isMaterialAvailable()) {
 					requestBricklayers();
 					state = STATE_BRICKLAYERS_REQUESTED;
 				}
@@ -350,7 +350,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return true;
 		} else {
 			RequestStack stack = getStackWithMaterial();
-			if (stack != null) {
+			if (priority != EPriority.STOPPED && stack != null) {
 				stack.pop();
 				delayCtr = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
 				return true;
@@ -621,7 +621,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (RequestStack curr : stacks) {
 			curr.setPriority(newPriority);
 		}
-		// TODO @Andreas: Also stop the forester, ...
 	}
 
 	public final RelativePoint[] getFlattenTiles() {
