@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IJoblessSupplier;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IManagerBearer;
@@ -93,13 +92,13 @@ public final class MaterialsManager implements Serializable {
 	}
 
 	public void movePositionTo(ShortPoint2D position, MaterialsManager newManager) {
-		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			requestQueues[i].moveObjectsOfPositionTo(position, newManager.requestQueues[i]);
 		}
 	}
 
 	public void mergeInto(MaterialsManager newManager) {
-		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
+		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
 			requestQueues[i].mergeInto(newManager.requestQueues[i]);
 		}
 	}
