@@ -31,30 +31,30 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 		int numberOfElements = queue.size();
 
 		for (int handledElements = 0; handledElements < numberOfElements; handledElements++) {
-			MaterialRequestObject result = queue.getFront();
+			MaterialRequestObject request = queue.getFront();
 
-			int inDelivery = result.inDelivery;
-			int stillNeeded = result.getStillNeeded();
+			int inDelivery = request.inDelivery;
+			int stillNeeded = request.getStillNeeded();
 
 			// if the request is done
 			if (stillNeeded <= 0) {
-				result.requestQueue = null;
+				request.requestQueue = null;
 				queue.popFront(); // remove the request
 				numberOfElements--;
 			}
 
 			// if all needed are in delivery, or there can not be any more in delivery
-			else if (stillNeeded <= inDelivery || inDelivery >= result.getInDeliveryable()) {
+			else if (stillNeeded <= inDelivery || inDelivery >= request.getInDeliveryable()) {
 				queue.pushEnd(queue.popFront()); // move the request to the end.
 			}
 
 			// everything fine, take this request
 			else {
-				if (result.isRoundRobinRequest()) {
+				if (request.isRoundRobinRequest()) {
 					queue.pushEnd(queue.popFront()); // put the request to the end of the queue.
 				}
 
-				return result;
+				return request;
 			}
 		}
 

@@ -445,8 +445,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param pos2
 	 */
 	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
-		// System.out.println("Checking if partition " + partition + " needs to be divided at " + pos1 + " and " + pos2);
-		if (partition != NO_PLAYER_PARTITION_ID && !PartitionsDividedTester.isPartitionNotDivided(this, pos1, pos2, partition)) {
+		if (partition != NO_PLAYER_PARTITION_ID
+				&& PartitionsDividedTester.isPartitionDivided(partitionRepresentatives, partitions, width, pos1, pos2, partition)) {
 			dividePartition(partition, pos1, pos2);
 		}
 	}
@@ -573,7 +573,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 
 		Partition partitionObject = partitionObjects[oldPartition];
-		ShortPoint2D relabelStartPos = partitionObject.getPositionCloserToGravityCenter(pos1, pos2);
+		ShortPoint2D relabelStartPos = partitionObject.getPositionCloserToGravityCenter(pos1, pos2); // FIXME @Andreas Eberle: This must be far most
+																										// away!
 
 		System.out.println("Dividing " + pos1 + " and " + pos2 + " of partition " + oldPartition + " with relabelStartPos: " + relabelStartPos
 				+ " and " + partitionObject.getNumberOfElements() + " elements.");

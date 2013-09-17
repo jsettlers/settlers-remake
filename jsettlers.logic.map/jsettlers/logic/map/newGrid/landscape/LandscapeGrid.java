@@ -18,7 +18,7 @@ import networklib.synchronic.random.RandomSingleton;
  * 
  * @author Andreas Eberle
  */
-public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable {
+public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable {
 	private static final long serialVersionUID = -751261669662036483L;
 
 	private final byte[] heightGrid;
@@ -39,7 +39,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	public LandscapeGrid(short width, short height) {
 		this.width = width;
 		this.height = height;
-		int tiles = width * height;
+		final int tiles = width * height;
 		this.heightGrid = new byte[tiles];
 		this.landscapeGrid = new byte[tiles];
 		this.resourceAmount = new byte[tiles];
@@ -76,6 +76,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return ELandscapeType.values[landscapeGrid[x + y * width]];
 	}
 
+	@Override
 	public final void setDebugColor(int x, int y, int argb) {
 		if (CommonConstants.ENABLE_DEBUG_COLORS) {
 			debugColors[x + y * width] = argb;

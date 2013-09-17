@@ -22,6 +22,11 @@ final class PartitionsDividedTester {
 	/**
 	 * Tests if the given positions (that need to lie on the border of the given partition) are connected by the given partition.
 	 * 
+	 * @param debugColorSetable
+	 * 
+	 * @param partitionRepresentatives
+	 * @param partitions
+	 * @param width
 	 * @param pos1
 	 *            The first position.
 	 * @param pos2
@@ -31,15 +36,35 @@ final class PartitionsDividedTester {
 	 * @return true if both positions are connected by the given partition.<br>
 	 *         false if the positions are not connected.
 	 */
-	public static boolean isPartitionNotDivided(final PartitionsGrid grid, final ShortPoint2D pos1, final ShortPoint2D pos2, final short partition) {
-		final short width = grid.width;
+	public static boolean isPartitionDivided(final short[] partitionRepresentatives,
+			final short[] partitions, final short width,
+			final ShortPoint2D pos1, final ShortPoint2D pos2, final short partition) {
+
+		return posNotOnBorder(partitionRepresentatives, partitions, width, pos1, pos2, partition)
+				&& posNotOnBorder(partitionRepresentatives, partitions, width, pos2, pos1, partition);
+	}
+
+	/**
+	 * NOTE: The call to this method is different if the given positions are swaped!
+	 * 
+	 * @param debugColorSetable
+	 * @param partitionRepresentatives
+	 * @param partitions
+	 * @param width
+	 * @param pos1
+	 * @param pos2
+	 * @param partition
+	 * @return
+	 */
+	private static boolean posNotOnBorder(final short[] partitionRepresentatives,
+			final short[] partitions, final short width, final ShortPoint2D pos1, final ShortPoint2D pos2, final short partition) {
 		final short pos2X = pos2.x;
 		final short pos2Y = pos2.y;
 
 		boolean pos2NotOnBorder = BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return grid.partitionRepresentatives[grid.partitions[x + y * width]] == partition;
+				return partitionRepresentatives[partitions[x + y * width]] == partition;
 			}
 		}, pos1, new ITraversingVisitor() {
 			@Override
@@ -47,7 +72,6 @@ final class PartitionsDividedTester {
 				return pos2X != x || pos2Y != y;
 			}
 		}, false);
-
-		return !pos2NotOnBorder;
+		return pos2NotOnBorder;
 	}
 }

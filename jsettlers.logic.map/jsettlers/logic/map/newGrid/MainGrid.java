@@ -133,8 +133,8 @@ public final class MainGrid implements Serializable {
 		this.movablePathfinderGrid = new MovablePathfinderGrid();
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
-		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.objectsGrid = new ObjectsGrid(width, height);
+		this.landscapeGrid = new LandscapeGrid(width, height);
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 
 		this.buildingsGrid = new BuildingsGrid();
@@ -594,9 +594,11 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final int getDebugColorAt(int x, int y) {
+			final int SCALE = 4;
+
 			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
 
-			// int value = partitionsGrid.getPartitionIdAt(x, y);
+			int value = partitionsGrid.getPartitionIdAt(x, y);
 
 			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
 
@@ -604,14 +606,15 @@ public final class MainGrid implements Serializable {
 
 			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
 
-			// return Color.getABGR((value % 3) * 0.33f, ((value / 3) % 3) * 0.33f, ((value / 9) % 3) * 0.33f, 1);
+			return Color.getABGR(((float) (value % SCALE)) / SCALE, ((float) ((value / SCALE) % SCALE)) / SCALE,
+					((float) ((value / SCALE / SCALE) % SCALE)) / SCALE, 1);
 
 			// return landscapeGrid.getDebugColor(x, y);
 
-			return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-					: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-							.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-							: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+			// .getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+			// : (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
 
 			// return Color.BLACK.getARGB();
 
