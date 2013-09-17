@@ -129,12 +129,15 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 	private void loadImageLookups() {
 		File storage = Environment.getExternalStorageDirectory();
 		File jsettlersdir = new File(storage, "JSettlers");
+		File jsettlersSDdir = new File(new File("/storage/extSdCard/"), "JSettlers");
 		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
 		File[] files = new File[] {
 				getExternalFilesDir(null), // <- output dir, always writable
 				jsettlersdir, storage, jsettlersdir,
 				new File(jsettlersdir, "GFX"), michael,
-				new File(michael, "GFX") };
+				new File(michael, "GFX"),
+				jsettlersSDdir,
+				new File(jsettlersSDdir, "GFX") };
 
 		for (File file : files) {
 			ImageProvider.getInstance().addLookupPath(file);
@@ -227,11 +230,11 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 	}
 
 	public IMultiplayerConnector generateMultiplayerConnector() {
-			return getStartConnector().getMultiplayerConnector(
-					prefs.getServer(),
-					new Player(prefs.getPlayerId(), prefs.getPlayerName()));
+		return getStartConnector().getMultiplayerConnector(
+				prefs.getServer(),
+				new Player(prefs.getPlayerId(), prefs.getPlayerName()));
 	}
-	
+
 	public AndroidPreferences getPrefs() {
 		return prefs;
 	}
