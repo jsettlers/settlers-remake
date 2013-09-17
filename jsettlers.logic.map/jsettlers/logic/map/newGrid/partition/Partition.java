@@ -82,7 +82,7 @@ public final class Partition extends PartitionManager implements Serializable {
 	 * @param pos2
 	 * @return The position with the bigger distance to the gravity center of this partition.
 	 */
-	public ShortPoint2D getPositionCloserToGravityCenter(ShortPoint2D pos1, ShortPoint2D pos2) {
+	public ShortPoint2D getPositionFurthermostFromGravityCenter(ShortPoint2D pos1, ShortPoint2D pos2) {
 		int gravityY;
 		int gravityX;
 		if (counter > 0) {

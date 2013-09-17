@@ -573,8 +573,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 
 		Partition partitionObject = partitionObjects[oldPartition];
-		ShortPoint2D relabelStartPos = partitionObject.getPositionCloserToGravityCenter(pos1, pos2); // FIXME @Andreas Eberle: This must be far most
-																										// away!
+		ShortPoint2D relabelStartPos = partitionObject.getPositionFurthermostFromGravityCenter(pos1, pos2);
 
 		System.out.println("Dividing " + pos1 + " and " + pos2 + " of partition " + oldPartition + " with relabelStartPos: " + relabelStartPos
 				+ " and " + partitionObject.getNumberOfElements() + " elements.");
