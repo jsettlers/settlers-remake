@@ -8,6 +8,7 @@ import jsettlers.common.buildings.jobs.EBuildingJobType;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
@@ -100,6 +101,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		case SHOW:
+			if (building.getPriority() == EPriority.STOPPED) {
+				break;
+			}
+
 			ShortPoint2D pos = getCurrentJobPos();
 			super.setPosition(pos);
 			super.setVisible(true);
