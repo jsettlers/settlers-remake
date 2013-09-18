@@ -138,7 +138,7 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 
 	@Override
 	public EPriority getPriority() {
-		return EPriority.LOW;
+		return EPriority.DEFAULT;
 	}
 
 	@Override
