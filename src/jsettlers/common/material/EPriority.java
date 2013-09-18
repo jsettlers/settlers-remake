@@ -11,10 +11,11 @@ public enum EPriority {
 	STOPPED(0),
 
 	LOW(1),
-	HIGH(2);
+	HIGH(2), ;
 
 	public static final EPriority[] values = EPriority.values();
 	public static final int NUMBER_OF_PRIORITIES = values.length;
+	public static final EPriority DEFAULT = EPriority.LOW;
 
 	public final byte ordinal;
 	private final int priorityIndex;
