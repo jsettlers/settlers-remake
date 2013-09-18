@@ -16,7 +16,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 		IMaterialRequest {
 	private static final long serialVersionUID = -5941459671438965185L;
 
-	private EPriority priority = EPriority.LOW;
+	private EPriority priority = EPriority.DEFAULT;
 	AbstractMaterialRequestPriorityQueue requestQueue;
 	int inDelivery;
 

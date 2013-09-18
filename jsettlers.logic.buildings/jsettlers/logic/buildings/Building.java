@@ -63,7 +63,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private IBuildingsGrid grid;
 	private Player player;
 	private byte state = STATE_CREATED;
-	private EPriority priority = EPriority.LOW;
+	private EPriority priority = EPriority.DEFAULT;
 
 	transient private boolean selected;
 
@@ -385,6 +385,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	private void finishConstruction() {
 		constructionProgress = 1;
+		this.setPriority(EPriority.DEFAULT);
 
 		this.state = STATE_CONSTRUCTED;
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker

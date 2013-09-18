@@ -16,8 +16,6 @@ import jsettlers.common.utils.collections.list.DoubleLinkedList;
 public abstract class AbstractMaterialRequestPriorityQueue implements Serializable {
 	private static final long serialVersionUID = 4856036773080549412L;
 
-	private static final EPriority DEFAULT_INSERT_PRIORITY = EPriority.LOW;
-
 	/**
 	 * Updates the priority of the given queue item from the oldPriority to the newPriority.
 	 * <p />
@@ -40,7 +38,7 @@ public abstract class AbstractMaterialRequestPriorityQueue implements Serializab
 	 *            The {@link MaterialRequestObject} that shall be inserted.
 	 */
 	public final void insertRequest(MaterialRequestObject materialRequest) {
-		getQueue(DEFAULT_INSERT_PRIORITY, materialRequest.getBuildingType()).pushEnd(materialRequest);
+		getQueue(EPriority.DEFAULT, materialRequest.getBuildingType()).pushEnd(materialRequest);
 		materialRequest.requestQueue = this;
 	}
 
