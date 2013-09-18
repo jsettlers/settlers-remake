@@ -25,7 +25,7 @@ public class RelativeStack extends RelativePoint {
 		this.requiredForBuild = requiredForBuild;
 	}
 
-	public EMaterialType getType() {
+	public EMaterialType getMaterialType() {
 		return type;
 	}
 

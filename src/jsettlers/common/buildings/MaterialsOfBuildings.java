@@ -24,7 +24,7 @@ public final class MaterialsOfBuildings {
 		for (EBuildingType building : EBuildingType.values) {
 			for (RelativeStack stack : building.getRequestStacks()) {
 				if (stack.requiredForBuild() == 0) { // if it's not a stack used for constructing the building
-					buildingsForMaterials[stack.getType().ordinal].add(building);
+					buildingsForMaterials[stack.getMaterialType().ordinal].add(building);
 				}
 			}
 		}
