@@ -144,8 +144,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() > 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), type, currStack
-						.requiredForBuild()));
+				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getMaterialType(), type,
+						priority, currStack.requiredForBuild()));
 			}
 		}
 
@@ -154,16 +154,17 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	protected void createWorkStacks() {
 		RelativeStack[] requestStacks = type.getRequestStacks();
-		List<RequestStack> result = new LinkedList<RequestStack>();
+		List<RequestStack> newStacks = new LinkedList<RequestStack>();
 
 		for (int i = 0; i < requestStacks.length; i++) {
 			RelativeStack currStack = requestStacks[i];
 			if (currStack.requiredForBuild() == 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getType(), type));
+				newStacks.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getMaterialType(), type,
+						priority));
 			}
 		}
 
-		this.stacks = result;
+		this.stacks = newStacks;
 	}
 
 	protected void placeAdditionalMapObjects(IBuildingsGrid grid, ShortPoint2D pos, boolean place) {
@@ -458,7 +459,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 					posIdx += 2;
 					byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
 							Constants.STACK_SIZE);
-					grid.pushMaterialsTo(position, curr.getType(), paybackAmount);
+					grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
 				}
 			}
 		} else {
@@ -619,8 +620,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public void setPriority(EPriority newPriority) {
 		this.priority = newPriority;
-		for (RequestStack curr : stacks) {
-			curr.setPriority(newPriority);
+		if (stacks != null) {
+			for (RequestStack curr : stacks) {
+				curr.setPriority(newPriority);
+			}
 		}
 	}
 

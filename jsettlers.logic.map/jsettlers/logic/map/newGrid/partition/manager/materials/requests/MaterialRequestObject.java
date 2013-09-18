@@ -27,7 +27,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	 *            The new priority of this {@link MaterialRequestObject}.
 	 */
 	public final void updatePriority(EPriority newPriority) {
-		if (newPriority != priority) {
+		if (requestQueue != null && newPriority != priority) {
 			requestQueue.updatePriority(priority, newPriority, this);
 			this.priority = newPriority;
 		}

@@ -40,8 +40,8 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @param materialType
 	 *            The {@link EMaterialType} requested by this stack.
 	 */
-	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, EBuildingType buildingType) {
-		this(grid, position, materialType, buildingType, Short.MAX_VALUE);
+	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, EBuildingType buildingType, EPriority priority) {
+		this(grid, position, materialType, buildingType, priority, Short.MAX_VALUE);
 	}
 
 	/**
@@ -57,7 +57,8 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	 * @param requestedAmount
 	 *            The number of materials requested.
 	 */
-	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, EBuildingType buildingType, short requestedAmount) {
+	public RequestStack(IRequestsStackGrid grid, ShortPoint2D position, EMaterialType materialType, EBuildingType buildingType, EPriority priority,
+			short requestedAmount) {
 		this.grid = grid;
 		this.position = position;
 		this.materialType = materialType;
@@ -65,6 +66,7 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 		this.stillNeeded = requestedAmount;
 		grid.request(materialType, this);
+		super.updatePriority(priority);
 	}
 
 	public boolean hasMaterial() {
