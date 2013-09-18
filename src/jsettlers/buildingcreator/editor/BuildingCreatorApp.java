@@ -325,7 +325,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			builder.append("\" dy=\"");
 			builder.append(stack.getDy());
 			builder.append("\" material=\"");
-			builder.append(stack.getType().name());
+			builder.append(stack.getMaterialType().name());
 			builder.append("\" buildrequired=\"");
 			builder.append(stack.requiredForBuild());
 			builder.append("\" />\n");

@@ -32,7 +32,7 @@ public class MapStack implements IStackMapObject {
 
 	@Override
     public EMaterialType getMaterialType() {
-		return stack.getType();
+		return stack.getMaterialType();
     }
 
 	@Override
