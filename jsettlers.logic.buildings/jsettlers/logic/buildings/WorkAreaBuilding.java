@@ -5,6 +5,7 @@ import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.player.Player;
@@ -17,6 +18,9 @@ import jsettlers.logic.player.Player;
  */
 public abstract class WorkAreaBuilding extends Building {
 	private static final long serialVersionUID = -5176169656248971550L;
+
+	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_REQUESTERS = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
+	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_REQUESTERS = new EPriority[] { EPriority.LOW, EPriority.STOPPED };
 
 	private ShortPoint2D workAreaCenter;
 
@@ -101,5 +105,20 @@ public abstract class WorkAreaBuilding extends Building {
 		MapCircle baseCircle = new MapCircle(center, radius);
 		MapCircleBorder border = new MapCircleBorder(baseCircle);
 		return new MapShapeFilter(border, grid.getWidth(), grid.getHeight());
+	}
+
+	@Override
+	public EPriority[] getSupportedPriorities() {
+		EPriority[] priorities = super.getSupportedPriorities();
+
+		if (priorities.length == 0) {
+			if (super.getStacks().isEmpty()) { // has no request stacks
+				priorities = SUPPORTED_PRIORITIES_FOR_NON_REQUESTERS;
+			} else {
+				priorities = SUPPORTED_PRIORITIES_FOR_REQUESTERS;
+			}
+		}
+
+		return priorities;
 	}
 }

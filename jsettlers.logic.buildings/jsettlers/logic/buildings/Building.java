@@ -55,6 +55,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
 	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
 
+	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
+	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
+
 	private static final ConcurrentLinkedQueue<Building> allBuildings = new ConcurrentLinkedQueue<Building>();
 
 	private final EBuildingType type;
@@ -496,7 +499,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public EPriority[] getSupportedPriorities() {
-		return EPriority.values;
+		if (!isConstructionFinished()) {
+			return SUPPORTED_PRIORITIES_FOR_CONSTRUCTION;
+		} else {
+			return SUPPORTED_PRIORITIES_FOR_NON_WORKERS;
+		}
 	}
 
 	@Override
