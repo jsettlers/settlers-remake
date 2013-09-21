@@ -81,6 +81,8 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
+				grid.waitForThreadsToFinish();
+
 				oos.writeInt(MatchConstants.clock.getTime());
 				oos.writeObject(grid);
 			} catch (Throwable t) {

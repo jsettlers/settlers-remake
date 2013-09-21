@@ -170,6 +170,13 @@ public final class MainGrid implements Serializable {
 		partitionsGrid.cancelThreads();
 	}
 
+	public void waitForThreadsToFinish() {
+		try {
+			Thread.sleep(300); // TODO @Andreas Eberle: Wait for the threads to finish their work
+		} catch (InterruptedException e) {
+		}
+	}
+
 	public MainGrid(String mapId, String mapName, IMapData mapGrid, byte players, byte fowPlayer) {
 		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players, fowPlayer);
 
