@@ -75,7 +75,8 @@ public final class MaterialsManager implements Serializable {
 		if (offersList.isEmpty(materialType) || joblessSupplier.isEmpty()) // no offers? or no jobless? just return
 			return;
 
-		MaterialRequestObject request = requestQueues[materialType.ordinal].getHighestRequest();
+		AbstractMaterialRequestPriorityQueue requestQueue = requestQueues[materialType.ordinal];
+		MaterialRequestObject request = requestQueue.getHighestRequest();
 
 		if (request == null) // no request, return
 			return;
