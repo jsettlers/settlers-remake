@@ -183,9 +183,14 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		this.head.next.prev = newList.head.prev;
 		this.head.prev.next = newList.head;
 		newList.head.prev = this.head.prev;
+		newList.size += size;
 
-		this.head.next = this.head;
-		this.head.prev = this.head;
-		this.size = 0;
+		clear();
 	}
+
+	// public void simpleSanityCheck() {
+	// if (size == 0 && (head.next != head || head.prev != head)) {
+	// System.err.println("LIST IS FUCKED UP");
+	// }
+	// }
 }
