@@ -104,9 +104,8 @@ public class BordersThread implements Runnable {
 	}
 
 	public void start() {
-		bordersThread.setName("bordersThread");
+		bordersThread.setName("BordersThread");
 		bordersThread.setDaemon(true);
 		bordersThread.start();
 	}
-
 }
