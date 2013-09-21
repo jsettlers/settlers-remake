@@ -13,7 +13,7 @@ import jsettlers.logic.algorithms.path.astar.queues.bucket.DoubleLinkedIntListIt
 import org.junit.Test;
 
 /**
- * Test for the class {@link DoubleLinkedIntList}.
+ * Test for the class {@link DoubleLinkedList}.
  * 
  * @author Andreas Eberle
  * 
@@ -201,6 +201,7 @@ public class DoubleLinkedListTest {
 
 		list2.mergeInto(list);
 		assertEquals(0, list2.size());
+		assertEquals(TEST_NUMBERS * 2, list.size());
 		assertEquals(list2.head, ((DoubleLinkedListItem<DoubleLinkedIntListItem>) list2.head).next);
 		assertEquals(list2.head, ((DoubleLinkedListItem<DoubleLinkedIntListItem>) list2.head).prev);
 
