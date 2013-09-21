@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.timer.ITimerable;
 import jsettlers.logic.timer.Timer100Milli;
@@ -62,6 +63,15 @@ final class FlattenedResetter implements ITimerable, Serializable {
 		positions.add(new ShortPoint2D(x, y));
 	}
 
+	public void removeArea(FreeMapArea area) {
+		Iterator<ShortPoint2D> iter = positions.iterator();
+		while (iter.hasNext()) {
+			if (area.contains(iter.next())) {
+				iter.remove();
+			}
+		}
+	}
+
 	@Override
 	public void timerEvent() {
 		delayCtr++;
@@ -79,7 +89,6 @@ final class FlattenedResetter implements ITimerable, Serializable {
 
 	@Override
 	public void kill() {
-		// ignore here
+		// nothing to do here
 	}
-
 }

@@ -8,6 +8,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
+import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
@@ -285,5 +286,9 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 			}
 		}
 		return true;
+	}
+
+	public void stopUnflattening(FreeMapArea area) {
+		flattenedResetter.removeArea(area);
 	}
 }
