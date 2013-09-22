@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
+import networklib.synchronic.random.RandomSingleton;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.
@@ -84,6 +85,7 @@ public class GameSerializer {
 				grid.waitForThreadsToFinish();
 
 				oos.writeInt(MatchConstants.clock.getTime());
+				RandomSingleton.serialize(oos);
 				oos.writeObject(grid);
 			} catch (Throwable t) {
 				t.printStackTrace();
@@ -105,6 +107,7 @@ public class GameSerializer {
 		public void run() {
 			try {
 				MatchConstants.clock.setTime(ois.readInt());
+				RandomSingleton.deserialize(ois);
 				grid = (MainGrid) ois.readObject();
 			} catch (Throwable t) {
 				t.printStackTrace();

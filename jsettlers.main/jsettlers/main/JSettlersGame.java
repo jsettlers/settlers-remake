@@ -137,6 +137,7 @@ public class JSettlersGame {
 		private EProgressState progressState;
 		private float progress;
 		private IGameExitListener exitListener;
+		private boolean gameRunning;
 
 		@Override
 		public void run() {
@@ -179,6 +180,7 @@ public class JSettlersGame {
 				}
 
 				gameClock.startExecution();
+				gameRunning = true;
 
 				synchronized (stopMutex) {
 					while (!stopped) {
@@ -297,6 +299,11 @@ public class JSettlersGame {
 		@Override
 		public void setGameExitListener(IGameExitListener exitListener) {
 			this.exitListener = exitListener;
+		}
+
+		@Override
+		public boolean isStartupFinished() {
+			return gameRunning;
 		}
 	}
 }
