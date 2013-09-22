@@ -12,4 +12,6 @@ public interface IStartingGame {
 	 * Aborts the start. The listener does not need to be called afterwards.
 	 */
 	void abort();
+
+	boolean isStartupFinished();
 }
