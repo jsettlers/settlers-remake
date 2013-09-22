@@ -1,5 +1,8 @@
 package networklib.synchronic.random;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 
 /**
@@ -58,5 +61,13 @@ public final class RandomSingleton extends Random {
 	 */
 	public static int getInt(int n) {
 		return uniIns.nextInt(n);
+	}
+
+	public static void serialize(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(uniIns);
+	}
+
+	public static void deserialize(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		uniIns = (RandomSingleton) ois.readObject();
 	}
 }
