@@ -25,9 +25,9 @@ public class SwingResourceLoader {
 	public static void setupResourceManagersByConfigFile(ConfigurationPropertiesFile configFile) throws IOException {
 		testConfig(configFile);
 
-		ImageProvider provider = ImageProvider.getInstance();
+		ImageProvider imageProvider = ImageProvider.getInstance();
 		for (String gfxFolder : configFile.getGfxFolders()) {
-			provider.addLookupPath(new File(gfxFolder));
+			imageProvider.addLookupPath(new File(gfxFolder));
 		}
 
 		for (String sndFolder : configFile.getSndFolders()) {
@@ -35,6 +35,8 @@ public class SwingResourceLoader {
 		}
 
 		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesFolder()));
+
+		imageProvider.startPreloading();
 	}
 
 	private static void testConfig(ConfigurationPropertiesFile cf)
