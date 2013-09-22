@@ -19,11 +19,11 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
-import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.logic.LogicRevision;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.StartScreenConnector;
@@ -50,8 +50,6 @@ public class SwingManagedJSettlers {
 
 		JSettlersScreen content = startGui(argsMap);
 		generateContent(argsMap, content);
-
-		ImageProvider.getInstance().startPreloading();
 	}
 
 	/**
@@ -121,6 +119,7 @@ public class SwingManagedJSettlers {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
+		int targetGameTime = 0;
 
 		if (argsMap.containsKey("mapfile")) {
 			mapfile = argsMap.get("mapfile");
@@ -138,6 +137,9 @@ public class SwingManagedJSettlers {
 				System.err.println("Found replayFile parameter, but file can not be found!");
 			}
 		}
+		if (argsMap.containsKey("targetTime")) {
+			targetGameTime = Integer.valueOf(argsMap.get("targetTime")) * 60 * 1000;
+		}
 
 		if (mapfile != null || loadableReplayFile != null) {
 			IStartingGame game;
@@ -149,10 +151,19 @@ public class SwingManagedJSettlers {
 			}
 			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
 			content.setContent(toDisplay);
+
+			if (targetGameTime > 0) {
+				while (!game.isStartupFinished()) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+					}
+				}
+				MatchConstants.clock.fastForwardTo(targetGameTime);
+			}
 		} else {
 			content.goToStartScreen("");
 		}
-
 	}
 
 	private static void startRedrawTimer(final JSettlersScreen content) {
