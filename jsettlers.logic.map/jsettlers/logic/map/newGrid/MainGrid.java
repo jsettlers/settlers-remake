@@ -386,7 +386,7 @@ public final class MainGrid implements Serializable {
 				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
 			case OWN_GROUND:
-				return !flagsGrid.isBlocked(x, y) && hasSamePlayer(x, y, pathCalculable);
+				return !flagsGrid.isBlocked(x, y) && !flagsGrid.isMarked(x, y) && hasSamePlayer(x, y, pathCalculable);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))

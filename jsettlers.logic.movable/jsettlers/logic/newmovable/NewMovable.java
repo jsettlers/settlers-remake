@@ -234,6 +234,7 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 				setState(ENewMovableState.DOING_NOTHING);
 				movableAction = EAction.NO_ACTION;
 				path = null;
+				checkPlayerOfCurrentPosition();
 				return;
 			}
 
@@ -334,14 +335,14 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
 				if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
-				} else {
-					EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
+				} else { // exchange positions
+					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
-					goInDirection(pushedFromDir);
+					forceGoInDirection(directionToPushing);
 					return true;
 				}
 			} else {
-				return true;
+				return false;
 			}
 
 		case PATHING:
@@ -788,8 +789,8 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 	}
 
-	public void checkPlayerOfPosition(Player currentPlayer) {
-		if (currentPlayer != player && !strategy.isMoveToAble()) {
+	public void checkPlayerOfPosition(Player playerOfPosition) {
+		if (playerOfPosition != player && !strategy.isMoveToAble()) {
 			abortCurrentWork();
 
 			Path path = grid.searchDijkstra(this, position.x, position.y, Constants.MOVABLE_FLEE_BACK_TO_COUNTRY_RADIUS, ESearchType.OWN_GROUND);
@@ -799,6 +800,10 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 				kill();
 			}
 		}
+	}
+
+	private void checkPlayerOfCurrentPosition() {
+		checkPlayerOfPosition(grid.getPlayerAt(position));
 	}
 
 	private void abortCurrentWork() {
