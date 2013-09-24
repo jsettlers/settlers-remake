@@ -133,12 +133,18 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void setBuildingPriority(SetBuildingPriorityGuiTask guiTask) {
 		ShortPoint2D pos = guiTask.getBuildingPosition();
-		((Building) grid.getBuildingAt(pos.x, pos.y)).setPriority(guiTask.getNewPriority());
+		Building building = ((Building) grid.getBuildingAt(pos.x, pos.y));
+		if (building != null) {
+			building.setPriority(guiTask.getNewPriority());
+		}
 	}
 
 	private void convertMovables(ConvertGuiTask guiTask) {
 		for (Integer currID : guiTask.getSelection()) {
-			NewMovable.getMovableByID(currID).convertTo(guiTask.getTargetType());
+			NewMovable movable = NewMovable.getMovableByID(currID);
+			if (movable != null) {
+				movable.convertTo(guiTask.getTargetType());
+			}
 		}
 		guiInterface.refreshSelection();
 	}
