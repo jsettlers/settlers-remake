@@ -48,7 +48,7 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 			break;
 
 		case INIT_JOB:
-			if (super.goToPos(bricklayerTargetPos)) {
+			if (!constructionSite.isConstructionFinished() && super.goToPos(bricklayerTargetPos)) {
 				this.state = EBricklayerState.GOING_TO_POS;
 			} else {
 				makeJobless();
