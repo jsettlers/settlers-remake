@@ -14,9 +14,10 @@ import jsettlers.common.position.ShortPoint2D;
 public class BordersThread implements Runnable {
 
 	private final IBordersThreadGrid grid;
-	private boolean canceled = false;
 	private final LinkedBlockingQueue<ShortPoint2D> positionsQueue = new LinkedBlockingQueue<ShortPoint2D>();
-	private Thread bordersThread;
+	private final Thread bordersThread;
+
+	private boolean canceled = false;
 
 	/**
 	 * This constructor creates a new instance of {@link BordersThread} and automatically launches a thread for it called "bordersThread".
@@ -27,6 +28,8 @@ public class BordersThread implements Runnable {
 	public BordersThread(IBordersThreadGrid grid) {
 		this.grid = grid;
 		this.bordersThread = new Thread(this);
+		this.bordersThread.setName("BordersThread");
+		this.bordersThread.setDaemon(true);
 	}
 
 	@Override
@@ -104,8 +107,6 @@ public class BordersThread implements Runnable {
 	}
 
 	public void start() {
-		bordersThread.setName("BordersThread");
-		bordersThread.setDaemon(true);
 		bordersThread.start();
 	}
 }
