@@ -12,7 +12,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.MapLoader;
+import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.datatypes.ChangingList;
 import jsettlers.main.datatypes.MapDefinition;
 

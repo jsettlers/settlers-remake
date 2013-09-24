@@ -7,7 +7,7 @@ import java.util.List;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
 import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
-import jsettlers.logic.map.save.MapLoader;
+import jsettlers.logic.map.save.loader.MapLoader;
 
 /**
  * This class is an implementatiopn of the interfaces {@link IStartableMapDefinition} and {@link ILoadableMapDefinition}.

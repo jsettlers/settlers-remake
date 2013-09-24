@@ -12,11 +12,27 @@ import jsettlers.logic.map.newGrid.MainGrid;
  */
 public interface IGameCreator {
 
-	public MainGrid getMainGrid(byte player) throws MapLoadException;
-
-	public UIState getUISettings(int player) throws MapLoadException;
+	public MainGridWithUiSettings loadMainGrid(byte player) throws MapLoadException;
 
 	public String getMapName();
 
 	public String getMapID();
+
+	public class MainGridWithUiSettings {
+		private final MainGrid mainGrid;
+		private final UIState uiState;
+
+		public MainGridWithUiSettings(MainGrid mainGrid, UIState uiState) {
+			this.mainGrid = mainGrid;
+			this.uiState = uiState;
+		}
+
+		public MainGrid getMainGrid() {
+			return mainGrid;
+		}
+
+		public UIState getUiState() {
+			return uiState;
+		}
+	}
 }

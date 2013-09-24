@@ -27,8 +27,9 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
+import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.MapLoader;
+import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.MovableTimer;
@@ -153,8 +154,9 @@ public class JSettlersGame {
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
-				mainGrid = mapcreator.getMainGrid(playerNumber);
-				UIState uiState = mapcreator.getUISettings(playerNumber);
+				MainGridWithUiSettings gridWithUiState = mapcreator.loadMainGrid(playerNumber);
+				mainGrid = gridWithUiState.getMainGrid();
+				UIState uiState = gridWithUiState.getUiState();
 
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
 				statistics = new GameStatistics(gameClock);

@@ -18,6 +18,7 @@ import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.map.save.loader.MapLoader;
 
 /**
  * This is the main map list.
@@ -77,7 +78,7 @@ public class MapList {
 
 	private synchronized void addFileToList(File file) {
 		try {
-			MapLoader loader = new MapLoader(file);
+			MapLoader loader = MapLoader.getLoaderForFile(file);
 			MapType type = loader.getFileHeader().getType();
 			if (type == MapType.SAVED_SINGLE) {
 				savedMaps.add(loader);
