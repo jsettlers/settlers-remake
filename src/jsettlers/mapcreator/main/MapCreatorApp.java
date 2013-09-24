@@ -27,8 +27,8 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 public class MapCreatorApp {
