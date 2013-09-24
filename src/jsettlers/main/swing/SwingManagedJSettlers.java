@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import javax.swing.JFrame;
 
 import jsettlers.common.CommonConstants;
+import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
@@ -24,7 +25,7 @@ import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.SwingResourceLoader;
 import jsettlers.logic.LogicRevision;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.save.MapLoader;
+import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.StartScreenConnector;
 import networklib.client.OfflineNetworkConnector;
@@ -41,8 +42,9 @@ public class SwingManagedJSettlers {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws ClassNotFoundException
+	 * @throws MapLoadException
 	 */
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 
 		setupResourceManagers(argsMap, new File("config.prp"));
@@ -115,7 +117,7 @@ public class SwingManagedJSettlers {
 		return content;
 	}
 
-	private static void generateContent(HashMap<String, String> argsMap, JSettlersScreen content) throws IOException {
+	private static void generateContent(HashMap<String, String> argsMap, JSettlersScreen content) throws IOException, MapLoadException {
 		String mapfile = null;
 		long randomSeed = 0;
 		File loadableReplayFile = null;
@@ -144,7 +146,7 @@ public class SwingManagedJSettlers {
 		if (mapfile != null || loadableReplayFile != null) {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
-				MapLoader mapLoader = new MapLoader(new File(mapfile));
+				MapLoader mapLoader = MapLoader.getLoaderForFile(new File(mapfile));
 				game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector()).start();
