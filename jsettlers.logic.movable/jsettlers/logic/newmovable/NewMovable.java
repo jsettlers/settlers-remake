@@ -350,12 +350,12 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 			}
 
 			if (this.progress >= 1 && !this.path.isFinished()) {
-				if (pushingMovable.direction == this.direction.getInverseDirection()) { // two movables going in opposite direction against each other
+				ShortPoint2D nextPos = path.getNextPos();
+				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
 					this.goSinglePathStep();
 
 				} else {
-					ShortPoint2D nextPos = this.direction.getNextHexPoint(this.position);
 					if (grid.hasNoMovableAt(nextPos.x, nextPos.y)) {
 						// this movable isn't blocked, so just let it's pathingAction() handle this
 					} else if (pushedFrom == null) {
@@ -616,9 +616,13 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 	 */
 	@Override
 	public final void kill() {
+		if (health == -100) {
+			return; // this movable already died.
+		}
+
 		MovableTimer.remove(this);
 		grid.leavePosition(this.position, this);
-		this.health = 0;
+		this.health = -100;
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 
 		movablesByID.remove(this.getID());
