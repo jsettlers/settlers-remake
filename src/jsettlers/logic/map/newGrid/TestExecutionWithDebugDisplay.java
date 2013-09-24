@@ -18,7 +18,7 @@ public class TestExecutionWithDebugDisplay {
 
 		MatchConstants.clock = new NetworkTimer(true);
 
-		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").getMainGrid((byte) 0);
+		MainGrid grid = MapList.getDefaultList().getMapByName("SoldierFightingTestMap").loadMainGrid((byte) 0).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();
