@@ -63,7 +63,7 @@ public class PartitionsGridTestingWnd {
 			}
 
 			@Override
-			public void registerListener(IBlockingChangedListener listener) {
+			public void registerBlockingChangedListener(IBlockingChangedListener listener) {
 			}
 		});
 	}
