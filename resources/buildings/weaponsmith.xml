@@ -40,7 +40,7 @@
 	<blocked dx="2" dy="4" block="true" />
 	<blocked dx="0" dy="1" block="true" />
 	<blocked dx="0" dy="2" block="true" />
-	<blocked dx="0" dy="0" block="false" />
+	<blocked dx="0" dy="0" block="true" />
 	<blocked dx="-2" dy="2" block="false" />
 	<blocked dx="-3" dy="2" block="false" />
 	<blocked dx="-4" dy="1" block="false" />
@@ -74,16 +74,21 @@
 	<blocked dx="1" dy="4" block="false" />
 	<blocked dx="3" dy="4" block="false" />
 	<blocked dx="4" dy="4" block="false" />
+	
 	<door dx="3" dy="0" />
+	
 	<stack dx="0" dy="3" material="PLANK" buildrequired="5" />
 	<stack dx="3" dy="3" material="STONE" buildrequired="3" />
 	<stack dx="3" dy="3" material="IRON" buildrequired="0" />
 	<stack dx="-2" dy="2" material="COAL" buildrequired="0" />
+	
 	<bricklayer dx="-2" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="1" direction="NORTH_WEST" />
 	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
-	<flag dx="0" dy="0" />
+	
+	<flag dx="1" dy="-3" />
+	
 	<buildmark dx="-3" dy="1" />
 	<buildmark dx="3" dy="1" />
 	<buildmark dx="3" dy="-1" />
