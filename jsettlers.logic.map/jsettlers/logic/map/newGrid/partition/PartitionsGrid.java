@@ -70,7 +70,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.width = width;
 		this.height = height;
 		this.blockingProvider = blockingProvider;
-		blockingProvider.registerListener(this);
+		blockingProvider.registerBlockingChangedListener(this);
 
 		this.players = new Player[numberOfPlayers]; // create the players.
 		this.blockedPartitionsForPlayers = new short[numberOfPlayers];

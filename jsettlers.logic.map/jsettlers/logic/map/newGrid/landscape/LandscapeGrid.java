@@ -8,10 +8,11 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
-import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
+import jsettlers.logic.map.newGrid.flags.IProtectedProvider;
+import jsettlers.logic.map.newGrid.flags.IProtectedProvider.IProtectedChangedListener;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
@@ -19,7 +20,20 @@ import networklib.synchronic.random.RandomSingleton;
  * 
  * @author Andreas Eberle
  */
-public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable {
+public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener {
+	/**
+	 * This class is used as null object to get rid of a lot of null checks
+	 * 
+	 * @author Andreas Eberle
+	 */
+	private static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
+		private static final long serialVersionUID = -332117701485179252L;
+
+		@Override
+		public final void backgroundChangedAt(int x, int y) {
+		}
+	}
+
 	private static final long serialVersionUID = -751261669662036483L;
 
 	private final byte[] heightGrid;
@@ -32,14 +46,16 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private final short width;
 	private final short height;
 
+	private final IProtectedProvider protectedProvider;
 	private final FlattenedResetter flattenedResetter;
 
 	public transient int[] debugColors;
 	private transient IGraphicsBackgroundListener backgroundListener;
 
-	public LandscapeGrid(short width, short height) {
+	public LandscapeGrid(short width, short height, IProtectedProvider protectedProvider) {
 		this.width = width;
 		this.height = height;
+		this.protectedProvider = protectedProvider;
 		final int tiles = width * height;
 		this.heightGrid = new byte[tiles];
 		this.landscapeGrid = new byte[tiles];
@@ -52,6 +68,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 		this.flattenedResetter = new FlattenedResetter(this);
 		setBackgroundListener(null);
+
+		protectedProvider.setProtectedChangedListener(this);
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -160,19 +178,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		resourceAmount[x + y * width]--;
 	}
 
-	/**
-	 * This class is used as null object to get rid of a lot of null checks
-	 * 
-	 * @author Andreas Eberle
-	 */
-	private static final class NullBackgroundListener implements IGraphicsBackgroundListener, Serializable {
-		private static final long serialVersionUID = -332117701485179252L;
-
-		@Override
-		public final void backgroundChangedAt(int x, int y) {
-		}
-	}
-
 	@Override
 	public final void walkOn(int x, int y) {
 		int i = x + y * width;
@@ -217,6 +222,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	@Override
 	public boolean countFlattenedDown(short x, short y) {
+		if (protectedProvider.isProtected(x, y)) {
+			return true; // remove the position from the unflattener
+		}
+
 		final int index = x + y * width;
 
 		byte flattenedValue = temporaryFlatened[index];
@@ -267,9 +276,9 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 * @param y
 	 *            Y coordinate of the position.
 	 */
-	public void activateUnflattening(short x, short y) {
+	private void activateUnflattening(int x, int y) {
 		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);
-		if (landscapeType == ELandscapeType.MOUNTAIN || landscapeType == ELandscapeType.DESERT) {
+		if (landscapeType != ELandscapeType.FLATTENED && landscapeType != ELandscapeType.FLATTENED_DESERT) {
 			return; // do not unflatten mountain or desert.
 		}
 
@@ -288,7 +297,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return true;
 	}
 
-	public void stopUnflattening(FreeMapArea area) {
-		flattenedResetter.removeArea(area);
+	@Override
+	public void protectedChanged(int x, int y, boolean newProtectedState) {
+		if (!newProtectedState) {
+			activateUnflattening(x, y);
+		}
 	}
 }

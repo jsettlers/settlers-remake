@@ -134,7 +134,7 @@ public final class MainGrid implements Serializable {
 		this.mapObjectsManager = new MapObjectsManager(new MapObjectsManagerGrid());
 
 		this.objectsGrid = new ObjectsGrid(width, height);
-		this.landscapeGrid = new LandscapeGrid(width, height);
+		this.landscapeGrid = new LandscapeGrid(width, height, flagsGrid);
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 
 		this.buildingsGrid = new BuildingsGrid();
@@ -1268,7 +1268,6 @@ public final class MainGrid implements Serializable {
 					setProtectedState(protectedArea, true);
 					mapObjectsManager.addBuildingTo(position, newBuilding);
 					objectsGrid.setBuildingArea(new FreeMapArea(position, newBuilding.getBuildingType().getBlockedTiles()), newBuilding);
-					landscapeGrid.stopUnflattening(protectedArea);
 					return true;
 				} else {
 					return false;
@@ -1310,7 +1309,6 @@ public final class MainGrid implements Serializable {
 				short y = curr.y;
 				if (isInBounds(x, y)) {
 					flagsGrid.setBlockedAndProtected(x, y, false);
-					landscapeGrid.activateUnflattening(x, y);
 				}
 			}
 		}

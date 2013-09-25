@@ -13,7 +13,7 @@ import jsettlers.logic.map.newGrid.flags.IBlockingChangedListener;
 public interface IPartitionsGridBlockingProvider extends IBlockingProvider {
 	/**
 	 * This is a default implementation of the {@link IPartitionsGridBlockingProvider} interface. It's {@link #isBlocked(int, int)} method always
-	 * returns false and the {@link #registerListener(IBlockingChangedListener)} ignores every listener.
+	 * returns false and the {@link #registerBlockingChangedListener(IBlockingChangedListener)} ignores every listener.
 	 */
 	public static final IPartitionsGridBlockingProvider DEFAULT_IMPLEMENTATION = new IPartitionsGridBlockingProvider() {
 		@Override
@@ -22,7 +22,7 @@ public interface IPartitionsGridBlockingProvider extends IBlockingProvider {
 		}
 
 		@Override
-		public void registerListener(IBlockingChangedListener listener) {
+		public void registerBlockingChangedListener(IBlockingChangedListener listener) {
 		}
 	};
 
@@ -31,5 +31,5 @@ public interface IPartitionsGridBlockingProvider extends IBlockingProvider {
 	 * 
 	 * @param listener
 	 */
-	void registerListener(IBlockingChangedListener listener);
+	void registerBlockingChangedListener(IBlockingChangedListener listener);
 }

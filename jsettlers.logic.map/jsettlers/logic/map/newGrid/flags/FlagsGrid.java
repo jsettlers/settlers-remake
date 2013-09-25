@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.BitSet;
 
 import jsettlers.logic.algorithms.interfaces.IContainingProvider;
+import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.map.newGrid.partition.IPartitionsGridBlockingProvider;
 
 /**
@@ -14,7 +15,7 @@ import jsettlers.logic.map.newGrid.partition.IPartitionsGridBlockingProvider;
  * @author Andreas Eberle
  * 
  */
-public final class FlagsGrid implements Serializable, IPartitionsGridBlockingProvider {
+public final class FlagsGrid implements Serializable, IBlockingProvider, IPartitionsGridBlockingProvider, IProtectedProvider {
 	private static final long serialVersionUID = -413005884613149208L;
 
 	private final short width;
@@ -25,6 +26,7 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 	private final BitSet bordersGrid;
 
 	private IBlockingChangedListener blockingChangedListener = null;
+	private IProtectedChangedListener protectedChangedListener = null;
 
 	private transient IContainingProvider blockedContainingProvider;
 
@@ -77,6 +79,9 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 		if (blockingChangedListener != null) {
 			this.blockingChangedListener.blockingChanged(x, y, blocked);
 		}
+		if (protectedChangedListener != null) {
+			this.protectedChangedListener.protectedChanged(x, y, blocked);
+		}
 	}
 
 	public boolean isMarked(int x, int y) {
@@ -87,12 +92,17 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 		this.markedGrid.set(x + y * width, marked);
 	}
 
+	@Override
 	public boolean isProtected(int x, int y) {
 		return this.protectedGrid.get(x + y * width);
 	}
 
-	public void setProtected(int x, int y, boolean setProtected) {
-		this.protectedGrid.set(x + y * width, setProtected);
+	public void setProtected(int x, int y, boolean newProtected) {
+		this.protectedGrid.set(x + y * width, newProtected);
+
+		if (protectedChangedListener != null) {
+			this.protectedChangedListener.protectedChanged(x, y, newProtected);
+		}
 	}
 
 	public boolean isBorderAt(int x, int y) {
@@ -104,8 +114,13 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 	}
 
 	@Override
-	public void registerListener(IBlockingChangedListener listener) {
+	public void registerBlockingChangedListener(IBlockingChangedListener listener) {
 		this.blockingChangedListener = listener;
+	}
+
+	@Override
+	public void setProtectedChangedListener(IProtectedChangedListener protectedChangedListener) {
+		this.protectedChangedListener = protectedChangedListener;
 	}
 
 	/**
@@ -115,4 +130,5 @@ public final class FlagsGrid implements Serializable, IPartitionsGridBlockingPro
 	public IContainingProvider getBlockedContainingProvider() {
 		return blockedContainingProvider;
 	}
+
 }

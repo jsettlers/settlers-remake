@@ -15,8 +15,8 @@ public interface IFlattenedResettable {
 	 *            x coordinate
 	 * @param y
 	 *            y coordinate
-	 * @return true if the position was unflattened to grass again.<br>
-	 *         false if it stayed flattened.
+	 * @return true if the position should be removed from the unflattenener.<br>
+	 *         false if {@link #countFlattenedDown(short, short)} should be called again for this position.
 	 */
 	boolean countFlattenedDown(short x, short y);
 
