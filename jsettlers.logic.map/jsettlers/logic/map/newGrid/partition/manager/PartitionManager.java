@@ -369,7 +369,7 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			if (digger != null) {
 				digger.setDiggerJob(request.requester);
 				request.amount--;
-				request.creationRequested--;
+				request.creationRequested--; // FIXME only count down if >0
 			} else {
 				if (request.amount > request.creationRequested) {
 					request.creationRequested++;

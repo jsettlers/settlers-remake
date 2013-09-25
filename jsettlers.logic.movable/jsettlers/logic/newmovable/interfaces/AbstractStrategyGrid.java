@@ -8,7 +8,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
@@ -90,7 +90,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *            search type to be checked
 	 * @return true if the search type fits the given position.
 	 */
-	public abstract boolean fitsSearchType(IPathCalculateable pathCalculateable, ShortPoint2D pos, ESearchType searchType);
+	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D pos, ESearchType searchType);
 
 	public abstract EMaterialType popToolProductionRequest(ShortPoint2D pos);
 

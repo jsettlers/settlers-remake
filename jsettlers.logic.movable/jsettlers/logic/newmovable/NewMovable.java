@@ -17,7 +17,7 @@ import jsettlers.common.selectable.ESelectionType;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.input.IGuiMovable;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
@@ -39,7 +39,7 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements ITimerable, IPathCalculateable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
+public final class NewMovable implements ITimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
 		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
@@ -791,14 +791,18 @@ public final class NewMovable implements ITimerable, IPathCalculateable, IIDable
 
 	public void checkPlayerOfPosition(Player playerOfPosition) {
 		if (playerOfPosition != player && !strategy.isMoveToAble()) {
-			abortCurrentWork();
+			fleeToValidPosition();
+		}
+	}
 
-			Path path = grid.searchDijkstra(this, position.x, position.y, Constants.MOVABLE_FLEE_BACK_TO_COUNTRY_RADIUS, ESearchType.OWN_GROUND);
-			if (path != null) {
-				followPath(path);
-			} else {
-				kill();
-			}
+	private void fleeToValidPosition() {
+		abortCurrentWork();
+
+		Path path = grid.searchDijkstra(this, position.x, position.y, Constants.MOVABLE_FLEE_TO_VALID_POSITION_RADIUS, ESearchType.VALID_POSITION);
+		if (path != null) {
+			followPath(path);
+		} else {
+			kill();
 		}
 	}
 

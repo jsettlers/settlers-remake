@@ -47,7 +47,7 @@ import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
 import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.logic.algorithms.path.area.InAreaFinder;
@@ -349,11 +349,16 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
+	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
+		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
+				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
+	}
+
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
 		@Override
-		public boolean isBlocked(IPathCalculateable requester, int x, int y) {
+		public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 			return flagsGrid.isBlocked(x, y) || (requester.needsPlayersGround() && requester.getPlayerId() != partitionsGrid.getPlayerIdAt(x, y));
 		}
 
@@ -379,14 +384,14 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean fitsSearchType(int x, int y, ESearchType searchType, IPathCalculateable pathCalculable) {
+		public final boolean fitsSearchType(int x, int y, ESearchType searchType, IPathCalculatable pathCalculable) {
 			switch (searchType) {
 
 			case UNENFORCED_FOREIGN_GROUND:
 				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
-			case OWN_GROUND:
-				return !flagsGrid.isBlocked(x, y) && !flagsGrid.isMarked(x, y) && hasSamePlayer(x, y, pathCalculable);
+			case VALID_POSITION:
+				return isValidPosition(pathCalculable, x, y);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))
@@ -496,7 +501,7 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private final boolean hasSamePlayer(int x, int y, IPathCalculateable requester) {
+		private final boolean hasSamePlayer(int x, int y, IPathCalculatable requester) {
 			return partitionsGrid.getPlayerIdAt(x, y) == requester.getPlayerId();
 		}
 
@@ -938,13 +943,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D pos) {
-			short x = pos.x, y = pos.y;
-			return MainGrid.this.isInBounds(x, y) && !isBlocked(x, y)
-					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
-		}
-
-		@Override
 		public float getResourceAmountAround(short x, short y, EResourceType type) {
 			return landscapeGrid.getResourceAmountAround(x, y, type);
 		}
@@ -1102,17 +1100,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos) {
+		public Path calculatePathTo(IPathCalculatable pathRequester, ShortPoint2D targetPos) {
 			return aStar.findPath(pathRequester, targetPos);
 		}
 
 		@Override
-		public Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
+		public Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
 			return dijkstra.find(pathCalculateable, centerX, centerY, (short) 1, radius, searchType);
 		}
 
 		@Override
-		public Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
+		public Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
 			ShortPoint2D target = inAreaFinder.find(pathCalculateable, centerX, centerY, radius, searchType);
 			if (target != null) {
 				return calculatePathTo(pathCalculateable, target);
@@ -1137,7 +1135,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculateable pathCalculable, ShortPoint2D pos, ESearchType searchType) {
+		public boolean fitsSearchType(IPathCalculatable pathCalculable, ShortPoint2D pos, ESearchType searchType) {
 			return pathfinderGrid.fitsSearchType(pos.x, pos.y, searchType, pathCalculable);
 		}
 
@@ -1217,6 +1215,11 @@ public final class MainGrid implements Serializable {
 		@Override
 		public Player getPlayerAt(ShortPoint2D position) {
 			return partitionsGrid.getPlayerAt(position.x, position.y);
+		}
+
+		@Override
+		public boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position) {
+			return MainGrid.this.isValidPosition(pathCalculatable, position.x, position.y);
 		}
 	}
 

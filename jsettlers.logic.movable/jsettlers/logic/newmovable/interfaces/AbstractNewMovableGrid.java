@@ -3,7 +3,7 @@ package jsettlers.logic.newmovable.interfaces;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.player.Player;
@@ -45,11 +45,11 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 	 */
 	public abstract void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea);
 
-	public abstract Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos);
+	public abstract Path calculatePathTo(IPathCalculatable pathCalculatable, ShortPoint2D targetPos);
 
-	public abstract Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
-	public abstract Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
+	public abstract Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
 	public abstract NewMovable getMovableAt(short x, short y);
 
@@ -75,7 +75,7 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 
 	public abstract boolean isInBounds(short x, short y);
 
-	public abstract boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position);
+	public abstract boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position);
 
 	public abstract ShortPoint2D calcDecentralizeVector(short x, short y);
 

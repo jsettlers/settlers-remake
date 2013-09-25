@@ -19,7 +19,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
 import jsettlers.logic.buildings.Building;
@@ -37,7 +37,7 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculateable, IOccupyableBuilding, Serializable {
+public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculatable, IOccupyableBuilding, Serializable {
 	private static final long serialVersionUID = 5267249978497095473L;
 
 	private final LinkedList<TowerOccupier> occupiers;
