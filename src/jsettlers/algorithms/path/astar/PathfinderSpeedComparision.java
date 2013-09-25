@@ -6,7 +6,7 @@ import java.util.Random;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.astar.AbstractAStar;
 import jsettlers.logic.algorithms.path.astar.BucketQueueAStar;
 import jsettlers.logic.algorithms.path.astar.normal.AStarJPS;
@@ -57,7 +57,7 @@ public class PathfinderSpeedComparision {
 			throws InterruptedException {
 
 		Random random = new Random(randomSeed);
-		IPathCalculateable requester = new TestPathRequester();
+		IPathCalculatable requester = new TestPathRequester();
 		System.out.println("found path: ");
 
 		Thread.sleep(300);
@@ -82,7 +82,7 @@ public class PathfinderSpeedComparision {
 		return watch.getDiff();
 	}
 
-	public static ShortPoint2D getUnblocktRandomPosition(IPathCalculateable requester, Random random, IAStarPathMap map, int width, int height) {
+	public static ShortPoint2D getUnblocktRandomPosition(IPathCalculatable requester, Random random, IAStarPathMap map, int width, int height) {
 		short x, y;
 		do {
 			x = (short) random.nextInt(width);

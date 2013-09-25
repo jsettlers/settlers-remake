@@ -2,7 +2,7 @@ package jsettlers.algorithms.path.astar;
 
 import static org.junit.Assert.assertEquals;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.AbstractAStar;
 import jsettlers.logic.algorithms.path.astar.BucketQueueAStar;
@@ -58,8 +58,8 @@ public class BucketQueueAStarTest {
 		return aStar.findPath(getPathable(sx, sy), new ShortPoint2D(tx, ty));
 	}
 
-	private IPathCalculateable getPathable(final short x, final short y) {
-		return new IPathCalculateable() {
+	private IPathCalculatable getPathable(final short x, final short y) {
+		return new IPathCalculatable() {
 			@Override
 			public ShortPoint2D getPos() {
 				return new ShortPoint2D(x, y);

@@ -2,7 +2,7 @@ package jsettlers.algorithms;
 
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
@@ -16,7 +16,7 @@ public class SimpleDijkstraTester {
 	public static void main(String args[]) {
 		IDijkstraPathMap map = new IDijkstraPathMap() {
 			@Override
-			public boolean fitsSearchType(int x, int y, ESearchType type, IPathCalculateable requester) {
+			public boolean fitsSearchType(int x, int y, ESearchType type, IPathCalculatable requester) {
 				if (x == 120 && y == 100)
 					return true;
 				if (x == 110 && y == 110)
@@ -36,7 +36,7 @@ public class SimpleDijkstraTester {
 
 		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new HexAStar(aStarMap, WIDTH, HEIGHT), WIDTH, HEIGHT);
 
-		IPathCalculateable requester = new IPathCalculateable() {
+		IPathCalculatable requester = new IPathCalculatable() {
 
 			@Override
 			public ShortPoint2D getPos() {

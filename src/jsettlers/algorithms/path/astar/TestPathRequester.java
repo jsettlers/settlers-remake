@@ -1,9 +1,9 @@
 package jsettlers.algorithms.path.astar;
 
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 
-public final class TestPathRequester implements IPathCalculateable {
+public final class TestPathRequester implements IPathCalculatable {
 	@Override
 	public byte getPlayerId() {
 		return 0;

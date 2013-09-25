@@ -16,7 +16,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
@@ -152,7 +152,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Path calculatePathTo(IPathCalculateable pathRequester, ShortPoint2D targetPos) {
+		public Path calculatePathTo(IPathCalculatable pathRequester, ShortPoint2D targetPos) {
 			return aStar.findPath(pathRequester, targetPos);
 		}
 
@@ -291,12 +291,12 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public Path searchDijkstra(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
+		public Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
 			return null;
 		}
 
 		@Override
-		public Path searchInArea(IPathCalculateable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
+		public Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
 			return null;
 		}
 
@@ -309,7 +309,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isValidPosition(IPathCalculateable pathRequester, ShortPoint2D position) {
+		public boolean isValidPosition(IPathCalculatable pathRequester, ShortPoint2D position) {
 			short x = position.x, y = position.y;
 			return isInBounds(x, y) && !isBlocked(x, y)
 					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == getPlayerIdAt(x, y));
@@ -326,7 +326,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculateable pathCalculateable, ShortPoint2D pos, ESearchType searchType) {
+		public boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D pos, ESearchType searchType) {
 			return false;
 		}
 
@@ -392,7 +392,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	// ==================== IAStarPathMap ==============================================================
 
 	@Override
-	public boolean isBlocked(IPathCalculateable requester, int x, int y) {
+	public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 		return false;
 	}
 
