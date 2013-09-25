@@ -1,11 +1,11 @@
 package jsettlers.logic.algorithms.path.astar.normal;
 
 import jsettlers.common.Color;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 
 public interface IAStarPathMap {
 
-	boolean isBlocked(IPathCalculateable requester, int x, int y);
+	boolean isBlocked(IPathCalculatable requester, int x, int y);
 
 	float getCost(int sx, int sy, int tx, int ty);
 

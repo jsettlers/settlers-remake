@@ -1,7 +1,7 @@
 package jsettlers.logic.algorithms.path.test;
 
 import jsettlers.common.Color;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 
 /**
@@ -19,7 +19,7 @@ public class DummyEmptyAStarMap implements IAStarPathMap {
 	}
 
 	@Override
-	public boolean isBlocked(IPathCalculateable requester, int x, int y) {
+	public boolean isBlocked(IPathCalculatable requester, int x, int y) {
 		return blocked[x][y];
 	}
 

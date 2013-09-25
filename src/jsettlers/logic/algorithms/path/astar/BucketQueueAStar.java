@@ -4,7 +4,7 @@ import java.util.BitSet;
 
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
@@ -50,13 +50,13 @@ public final class BucketQueueAStar extends AbstractAStar {
 	}
 
 	@Override
-	public final Path findPath(IPathCalculateable requester, ShortPoint2D target) {
+	public final Path findPath(IPathCalculatable requester, ShortPoint2D target) {
 		ShortPoint2D pos = requester.getPos();
 		return findPath(requester, pos.x, pos.y, target.x, target.y);
 	}
 
 	@Override
-	public final Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
+	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty) {
 		final boolean blockedAtStart;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
@@ -174,7 +174,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 		openBitSet.set(flatIdx);
 	}
 
-	private final boolean isValidPosition(IPathCalculateable requester, int x, int y, boolean blockedAtStart) {
+	private final boolean isValidPosition(IPathCalculatable requester, int x, int y, boolean blockedAtStart) {
 		return isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
 	}
 
@@ -182,7 +182,7 @@ public final class BucketQueueAStar extends AbstractAStar {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	private final boolean isBlocked(IPathCalculateable requester, int x, int y) {
+	private final boolean isBlocked(IPathCalculatable requester, int x, int y) {
 		return map.isBlocked(requester, x, y);
 	}
 

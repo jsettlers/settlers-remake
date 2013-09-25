@@ -5,7 +5,7 @@ import java.util.BitSet;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.AlgorithmConstants;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.AbstractAStar;
@@ -50,13 +50,13 @@ public final class HexAStar extends AbstractAStar implements IAStarHeapable {
 	}
 
 	@Override
-	public final Path findPath(IPathCalculateable requester, ShortPoint2D target) {
+	public final Path findPath(IPathCalculatable requester, ShortPoint2D target) {
 		ShortPoint2D pos = requester.getPos();
 		return findPath(requester, pos.x, pos.y, target.x, target.y);
 	}
 
 	@Override
-	public final Path findPath(IPathCalculateable requester, final short sx, final short sy, final short tx, final short ty) {
+	public final Path findPath(IPathCalculatable requester, final short sx, final short sy, final short tx, final short ty) {
 		final boolean blockedAtStart;
 		if (!isInBounds(sx, sy)) {
 			throw new InvalidStartPositionException("Start position is out of bounds!", sx, sy);
@@ -186,7 +186,7 @@ public final class HexAStar extends AbstractAStar implements IAStarHeapable {
 		costsAndHeuristics[getHeuristicIdx(flatIdx)] = getHeuristicCost(sx, sy, tx, ty);
 	}
 
-	private final boolean isValidPosition(IPathCalculateable requester, short x, short y, boolean blockedAtStart) {
+	private final boolean isValidPosition(IPathCalculatable requester, short x, short y, boolean blockedAtStart) {
 		return isInBounds(x, y) && (!isBlocked(requester, x, y) || blockedAtStart);
 	}
 
@@ -194,7 +194,7 @@ public final class HexAStar extends AbstractAStar implements IAStarHeapable {
 		return 0 <= x && x < width && 0 <= y && y < height;
 	}
 
-	private final boolean isBlocked(IPathCalculateable requester, short x, short y) {
+	private final boolean isBlocked(IPathCalculatable requester, short x, short y) {
 		return map.isBlocked(requester, x, y);
 	}
 

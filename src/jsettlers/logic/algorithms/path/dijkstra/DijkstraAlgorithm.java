@@ -5,7 +5,7 @@ import java.io.Serializable;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculateable;
+import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.InvalidStartPositionException;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.astar.AbstractAStar;
@@ -32,7 +32,7 @@ public final class DijkstraAlgorithm {
 		this.height = height;
 	}
 
-	public final Path find(final IPathCalculateable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
+	public final Path find(final IPathCalculatable requester, final short cX, final short cY, final short minRadius, final short maxRadius,
 			final ESearchType type) {
 		if (!isInBounds(cX, cY)) {
 			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", cX, cY);
@@ -61,7 +61,7 @@ public final class DijkstraAlgorithm {
 		return null;
 	}
 
-	private final Path findPathTo(IPathCalculateable requester, short tx, short ty) {
+	private final Path findPathTo(IPathCalculatable requester, short tx, short ty) {
 		ShortPoint2D pos = requester.getPos();
 		return aStar.findPath(requester, pos.x, pos.y, tx, ty);
 	}
@@ -75,14 +75,14 @@ public final class DijkstraAlgorithm {
 
 		final short minRadius;
 		final short maxRadius;
-		final IPathCalculateable requester;
+		final IPathCalculatable requester;
 		final short cX;
 		final short cY;
 		ESearchType searchType;
 
 		short radius;
 
-		public DijkstraContinuableRequest(final IPathCalculateable requester, short cX, short cY, short minRadius, short maxRadius,
+		public DijkstraContinuableRequest(final IPathCalculatable requester, short cX, short cY, short minRadius, short maxRadius,
 				ESearchType searchType) {
 			this.requester = requester;
 			this.cX = cX;
@@ -94,7 +94,7 @@ public final class DijkstraAlgorithm {
 			this.radius = 0;
 		}
 
-		public DijkstraContinuableRequest(final IPathCalculateable requester, short cX, short cY, short minRadius, short maxRadius) {
+		public DijkstraContinuableRequest(final IPathCalculatable requester, short cX, short cY, short minRadius, short maxRadius) {
 			this(requester, cX, cY, minRadius, maxRadius, null);
 		}
 
