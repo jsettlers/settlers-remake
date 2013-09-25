@@ -363,22 +363,25 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	private void handleDiggerRequest() {
-		DiggerRequest request = diggerRequests.poll();
+		DiggerRequest request = diggerRequests.peek();
 		if (request != null && request.requester.isDiggerRequestActive()) {
 			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPos());
 			if (digger != null) {
 				digger.setDiggerJob(request.requester);
 				request.amount--;
-				request.creationRequested--; // FIXME only count down if >0
+				if (request.creationRequested > 0) {
+					request.creationRequested--;
+				}
 			} else {
 				if (request.amount > request.creationRequested) {
-					request.creationRequested++;
-					createNewToolUserIfLimitNotExceeded(EMovableType.DIGGER, request.getPos());
+					if (createNewToolUserIfLimitNotExceeded(EMovableType.DIGGER, request.getPos())) {
+						request.creationRequested++;
+					}
 				}
 			}
 
-			if (request.amount > 0) {
-				diggerRequests.addLast(request);
+			if (request.amount <= 0) {
+				diggerRequests.poll();
 			}
 		}
 	}
@@ -396,9 +399,21 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		}
 	}
 
-	private void createNewToolUserIfLimitNotExceeded(EMovableType movableType, ShortPoint2D position) {
-		if (workerCreationRequests.getSlotSize(movableType) <= BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS) {
+	/**
+	 * Creates a request to create a new tool user of the given type if there are not already at max
+	 * {@value #BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS} requests.
+	 * 
+	 * @param movableType
+	 * @param position
+	 * @return true if the request has been created<br>
+	 *         false if no request has been created due to the limit.
+	 */
+	private boolean createNewToolUserIfLimitNotExceeded(EMovableType movableType, ShortPoint2D position) {
+		if (workerCreationRequests.getSlotSize(movableType) < BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS) {
 			createNewTooluser(movableType, position);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
