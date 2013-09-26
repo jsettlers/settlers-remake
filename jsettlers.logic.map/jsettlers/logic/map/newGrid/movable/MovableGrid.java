@@ -66,11 +66,6 @@ public final class MovableGrid implements Serializable {
 			System.out.println("index < 0");
 		}
 
-		NewMovable oldMovable = this.movableGrid[idx];
-		if (oldMovable != null && oldMovable.getID() == -2147481896) {
-			System.out.println();
-		}
-
 		this.movableGrid[idx] = movable;
 		if (movable != null && movable.getMovableType() == EMovableType.BEARER) {
 			ground.walkOn(x, y);

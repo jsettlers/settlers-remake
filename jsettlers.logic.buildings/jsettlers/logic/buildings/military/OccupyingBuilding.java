@@ -49,7 +49,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 	private boolean occupiedArea;
 	private float doorHealth = 1.0f;
-	private boolean inFight;
+	private boolean inFight = false;
 	private AttackableTowerMapObject attackableTowerObject = null;
 
 	private final int[] maximumRequestedSoldiers = new int[ESoldierType.values().length];
