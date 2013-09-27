@@ -1145,27 +1145,27 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable searchingAttackable, short searchRadius) {
+		public IAttackable getEnemyInSearchArea(ShortPoint2D position, IAttackable searchingAttackable, short searchRadius, boolean includeTowers) {
 			boolean isBowman = EMovableType.isBowman(searchingAttackable.getMovableType());
 
 			IAttackable enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, (short) 1,
-					searchRadius), isBowman);
-			if (enemy == null && !isBowman) {
+					searchRadius), isBowman, includeTowers);
+			if (includeTowers && !isBowman && enemy == null) {
 				enemy = getEnemyInSearchArea(searchingAttackable.getPlayerId(), new HexGridArea(position.x, position.y, searchRadius,
-						Constants.TOWER_SEARCH_RADIUS), isBowman);
+						Constants.TOWER_SEARCH_RADIUS), isBowman, true);
 			}
 
 			return enemy;
 		}
 
-		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman) {
+		private IAttackable getEnemyInSearchArea(byte searchingPlayer, HexGridArea area, boolean isBowman, boolean includeTowers) {
 			for (ShortPoint2D curr : area) {
 				short x = curr.x;
 				short y = curr.y;
 
 				if (0 <= x && x < width && 0 <= y && y < height) {
 					IAttackable currAttackable = movableGrid.getMovableAt(x, y);
-					if (currAttackable == null && !isBowman) {
+					if (includeTowers && !isBowman && currAttackable == null) {
 						currAttackable = (IAttackable) objectsGrid.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER);
 					}
 

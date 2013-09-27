@@ -70,7 +70,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			}
 		case SEARCH_FOR_ENEMIES:
 			IAttackable oldEnemy = enemy;
-			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getSearchDistance(isInTower));
+			enemy = super.getStrategyGrid().getEnemyInSearchArea(getAttackPosition(), super.getMovable(), getSearchDistance(isInTower), !defending);
 
 			// check if we have a new enemy. If so, go in unsave mode again.
 			if (oldEnemy != null && oldEnemy != enemy) {
@@ -94,6 +94,8 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			} else if (!isInTower) {
 				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 				goToEnemy(enemy);
+			} else {
+				changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 			}
 
 			break;
@@ -255,6 +257,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			oldPathTarget = null; // reset the path target to be able to get the new one when we hijack the path
 			inSaveGotoMode = false;
 		}
+		changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES);
 	}
 
 	@Override
