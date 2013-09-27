@@ -356,7 +356,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public NewMovable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable attackable, short searchRadius) {
+		public NewMovable getEnemyInSearchArea(ShortPoint2D centerPos, IAttackable attackable, short searchRadius, boolean includeTowers) {
 			return null;
 		}
 
