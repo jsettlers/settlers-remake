@@ -658,7 +658,7 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 
 	@Override
 	public final void stopOrStartWorking(boolean stop) {
-		// TODO Auto-generated method stub
+		strategy.stopOrStartWorking(stop);
 	}
 
 	@Override

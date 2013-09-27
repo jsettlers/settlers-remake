@@ -1,5 +1,6 @@
 package jsettlers.logic.newmovable.strategies.specialists;
 
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
@@ -61,33 +62,31 @@ public final class PioneerStrategy extends NewMovableStrategy {
 			return;
 		}
 		centerPos = null;
+		System.out.println("Center reset");
 
 		ShortPoint2D pos = super.getPos();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.UNENFORCED_FOREIGN_GROUND)) {
 			super.followPresearchedPath();
 			this.state = EPioneerState.GOING_TO_POS;
-			return;
+		} else {
+			this.state = EPioneerState.JOBLESS;
 		}
-
-		this.state = EPioneerState.JOBLESS;
 	}
 
 	private final EDirection getCloseForeignTile() {
 		EDirection bestNeighbourDir = null;
 		double bestNeighbourDistance = Double.MAX_VALUE; // distance from start point
 
-		// TODO: look at more tiles (radius 3)
-		for (EDirection sateliteDir : EDirection.values) {
-			ShortPoint2D satelitePos = sateliteDir.getNextHexPoint(super.getPos());
+		ShortPoint2D position = super.getPos();
+		for (ShortPoint2D satelitePos : new HexGridArea(position.x, position.y, 1, 6)) {
 
 			if (super.isValidPosition(satelitePos) && canWorkOnPos(satelitePos)) {
 				double distance = Math.hypot(satelitePos.x - centerPos.x, satelitePos.y - centerPos.y);
 				if (distance < bestNeighbourDistance) {
 					bestNeighbourDistance = distance;
-					bestNeighbourDir = sateliteDir;
+					bestNeighbourDir = EDirection.getApproxDirection(position, satelitePos);
 				}
 			}
-
 		}
 		return bestNeighbourDir;
 	}
@@ -109,6 +108,15 @@ public final class PioneerStrategy extends NewMovableStrategy {
 	@Override
 	protected boolean isMoveToAble() {
 		return true;
+	}
+
+	@Override
+	protected void stopOrStartWorking(boolean stop) {
+		if (stop) {
+			state = EPioneerState.JOBLESS;
+		} else {
+			state = EPioneerState.GOING_TO_POS;
+		}
 	}
 
 	/**

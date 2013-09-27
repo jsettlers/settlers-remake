@@ -18,7 +18,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 	private static final float ACTION1_DURATION = 1.4f;
 	private static final float ACTION2_DURATION = 1.5f;
 
-	private EPioneerState state = EPioneerState.JOBLESS;
+	private EGeologistState state = EGeologistState.JOBLESS;
 	private ShortPoint2D centerPos;
 
 	public GeologistStrategy(NewMovable movable) {
@@ -42,7 +42,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 			if (canWorkOnPos(pos)) {
 				super.getStrategyGrid().setMarked(pos, true);
 				super.playAction(EAction.ACTION1, ACTION1_DURATION);
-				state = EPioneerState.PLAYING_ACTION_1;
+				state = EGeologistState.PLAYING_ACTION_1;
 			} else {
 				findWorkablePosition();
 			}
@@ -51,7 +51,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 
 		case PLAYING_ACTION_1:
 			super.playAction(EAction.ACTION2, ACTION2_DURATION);
-			state = EPioneerState.PLAYING_ACTION_2;
+			state = EGeologistState.PLAYING_ACTION_2;
 			break;
 
 		case PLAYING_ACTION_2: {
@@ -72,7 +72,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 
 		if (closeWorkablePos != null && super.goToPos(closeWorkablePos)) {
 			super.getStrategyGrid().setMarked(closeWorkablePos, true);
-			this.state = EPioneerState.GOING_TO_POS;
+			this.state = EGeologistState.GOING_TO_POS;
 			return;
 		}
 		centerPos = null;
@@ -80,11 +80,11 @@ public final class GeologistStrategy extends NewMovableStrategy {
 		ShortPoint2D pos = super.getPos();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.RESOURCE_SIGNABLE)) {
 			super.followPresearchedPath();
-			this.state = EPioneerState.GOING_TO_POS;
+			this.state = EGeologistState.GOING_TO_POS;
 			return;
 		}
 
-		this.state = EPioneerState.JOBLESS;
+		this.state = EGeologistState.JOBLESS;
 	}
 
 	private final ShortPoint2D getCloseWorkablePos() {
@@ -116,16 +116,9 @@ public final class GeologistStrategy extends NewMovableStrategy {
 		return true;
 	}
 
-	private static enum EPioneerState {
-		JOBLESS,
-		GOING_TO_POS,
-		PLAYING_ACTION_1,
-		PLAYING_ACTION_2
-	}
-
 	@Override
 	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
-		this.state = EPioneerState.GOING_TO_POS;
+		this.state = EGeologistState.GOING_TO_POS;
 		centerPos = null;
 
 		super.getStrategyGrid().setMarked(oldPosition, false);
@@ -133,5 +126,21 @@ public final class GeologistStrategy extends NewMovableStrategy {
 		if (oldTargetPos != null) {
 			super.getStrategyGrid().setMarked(oldTargetPos, false);
 		}
+	}
+
+	@Override
+	protected void stopOrStartWorking(boolean stop) {
+		if (stop) {
+			state = EGeologistState.JOBLESS;
+		} else {
+			state = EGeologistState.GOING_TO_POS;
+		}
+	}
+
+	private static enum EGeologistState {
+		JOBLESS,
+		GOING_TO_POS,
+		PLAYING_ACTION_1,
+		PLAYING_ACTION_2
 	}
 }

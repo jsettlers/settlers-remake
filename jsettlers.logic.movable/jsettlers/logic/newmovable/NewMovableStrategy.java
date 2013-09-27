@@ -298,4 +298,6 @@ public abstract class NewMovableStrategy implements Serializable {
 		return path;
 	}
 
+	protected void stopOrStartWorking(@SuppressWarnings("unused") boolean stop) {
+	}
 }
