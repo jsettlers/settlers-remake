@@ -53,6 +53,8 @@ import networklib.client.interfaces.ITaskScheduler;
  */
 public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInterface {
 
+	private static final float SELECT_BY_TYPE_RADIUS = 30;
+
 	private final IMapInterfaceConnector connector;
 
 	private final IGameClock clock;
@@ -162,6 +164,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SELECT_AREA:
 			selectArea((SelectAreaAction) action);
+			break;
+
+		case SELECT_POINT_TYPE:
+			selectPointType((PointAction) action);
 			break;
 
 		case MOVE_TO:
@@ -407,7 +413,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		// check what's to do
 		if (activeAction == null) {
-			select(pos);
+			ISelectable selected = getSelectableAt(pos);
+			if (selected != null) {
+				setSelection(new SelectionSet(selected));
+			} else {
+				setSelection(new SelectionSet());
+			}
+
 		} else {
 			switch (activeAction.getActionType()) {
 			case BUILD:
@@ -432,36 +444,67 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		taskScheduler.scheduleTask(guiTask);
 	}
 
-	private void select(ShortPoint2D pos) {
+	private ISelectable getSelectableAt(ShortPoint2D pos) {
 		if (grid.isInBounds(pos)) {
 			short x = pos.x;
 			short y = pos.y;
 
-			IGuiMovable m1 = grid.getMovable(x, y);
-			IGuiMovable m3 = grid.getMovable((short) (x + 1), (short) (y + 1));
-			IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
-			IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
-
-			if (m1 != null && canSelectPlayer(m1.getPlayerId())) {
-				setSelection(new SelectionSet(m1));
-				System.out.println("found movable at selection pos: " + pos);
-			} else if (m2 != null && canSelectPlayer(m2.getPlayerId())) {
-				setSelection(new SelectionSet(m2));
-			} else if (m3 != null && canSelectPlayer(m3.getPlayerId())) {
-				setSelection(new SelectionSet(m3));
-			} else if (m4 != null && canSelectPlayer(m4.getPlayerId())) {
-				setSelection(new SelectionSet(m4));
-
+			IGuiMovable selectableMovable = getSelectableMovable(x, y);
+			if (selectableMovable != null) {
+				return selectableMovable;
 			} else {
 				// search buildings
 				IBuilding building = getBuildingAround(pos);
 				if (building != null && canSelectPlayer(building.getPlayerId())) {
-					setSelection(new SelectionSet(building));
+					return building;
 				} else {
-					setSelection(new SelectionSet());
+					return null;
 				}
 			}
+		} else {
+			return null;
 		}
+	}
+
+	private IGuiMovable getSelectableMovable(short x, short y) {
+		IGuiMovable m1 = grid.getMovable(x, y);
+		IGuiMovable m3 = grid.getMovable((short) (x + 1), (short) (y + 1));
+		IGuiMovable m2 = grid.getMovable((x), (short) (y + 1));
+		IGuiMovable m4 = grid.getMovable((short) (x + 1), (short) (y + 2));
+
+		if (m1 != null && canSelectPlayer(m1.getPlayerId())) {
+			return m1;
+		} else if (m2 != null && canSelectPlayer(m2.getPlayerId())) {
+			return m2;
+		} else if (m3 != null && canSelectPlayer(m3.getPlayerId())) {
+			return m3;
+		} else if (m4 != null && canSelectPlayer(m4.getPlayerId())) {
+			return m4;
+		} else {
+			return null;
+		}
+	}
+
+	private void selectPointType(PointAction action) {
+		ShortPoint2D actionPosition = action.getPosition();
+		IGuiMovable centerSelectable = getSelectableMovable(actionPosition.x, actionPosition.y);
+
+		if (centerSelectable == null) { // nothing found at the location
+			setSelection(new SelectionSet());
+			return;
+		}
+
+		List<ISelectable> selected = new LinkedList<ISelectable>();
+		selected.add(centerSelectable);
+
+		for (ShortPoint2D pos : new MapCircle(actionPosition, SELECT_BY_TYPE_RADIUS)) {
+			IGuiMovable movable = grid.getMovable(pos.x, pos.y);
+			if (movable != null && movable.getMovableType() == centerSelectable.getMovableType() && canSelectPlayer(movable.getPlayerId())) {
+				selected.add(movable);
+			}
+		}
+
+		setSelection(new SelectionSet(selected));
 	}
 
 	private IBuilding getBuildingAround(ShortPoint2D pos) {
