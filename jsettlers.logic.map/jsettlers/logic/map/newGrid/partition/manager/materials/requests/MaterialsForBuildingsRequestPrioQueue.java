@@ -177,6 +177,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 					if (curr.getPos().equals(position)) {
 						iter.remove();
 						newQueue.queues[prioIdx][queueIdx].pushEnd(curr);
+						curr.requestQueue = newQueue;
 					}
 				}
 			}
@@ -192,7 +193,12 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 
 		for (int prioIdx = 0; prioIdx < queues.length; prioIdx++) {
 			for (int queueIdx = 0; queueIdx < numberOfBuildings; queueIdx++) {
-				queues[prioIdx][queueIdx].mergeInto(newQueue.queues[prioIdx][queueIdx]);
+				DoubleLinkedList<MaterialRequestObject> currList = queues[prioIdx][queueIdx];
+				DoubleLinkedList<MaterialRequestObject> newList = newQueue.queues[prioIdx][queueIdx];
+				for (MaterialRequestObject request : currList) {
+					request.requestQueue = newQueue;
+				}
+				currList.mergeInto(newList);
 			}
 		}
 	}

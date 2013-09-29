@@ -74,6 +74,7 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 				if (curr.getPos().equals(position)) {
 					iter.remove();
 					newQueue.queues[queueIdx].pushEnd(curr);
+					curr.requestQueue = newQueue;
 				}
 			}
 		}
@@ -86,7 +87,12 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 		SimpleMaterialRequestPriorityQueue newQueue = (SimpleMaterialRequestPriorityQueue) newAbstractQueue;
 
 		for (int queueIdx = 0; queueIdx < queues.length; queueIdx++) {
-			queues[queueIdx].mergeInto(newQueue.queues[queueIdx]);
+			DoubleLinkedList<MaterialRequestObject> currList = queues[queueIdx];
+			DoubleLinkedList<MaterialRequestObject> newList = newQueue.queues[queueIdx];
+			for (MaterialRequestObject request : currList) {
+				request.requestQueue = newQueue;
+			}
+			currList.mergeInto(newList);
 		}
 	}
 
