@@ -364,7 +364,11 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private void handleDiggerRequest() {
 		DiggerRequest request = diggerRequests.peek();
-		if (request != null && request.requester.isDiggerRequestActive()) {
+		if (request == null) {
+			return;
+		}
+
+		if (request.requester.isDiggerRequestActive()) {
 			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPos());
 			if (digger != null) {
 				digger.setDiggerJob(request.requester);
@@ -383,6 +387,8 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 			if (request.amount <= 0) {
 				diggerRequests.poll();
 			}
+		} else {
+			diggerRequests.poll();
 		}
 	}
 
