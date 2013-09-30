@@ -18,8 +18,8 @@ public class ConvertGuiTask extends MovableGuiTask {
 	public ConvertGuiTask() {
 	}
 
-	public ConvertGuiTask(List<Integer> selection, EMovableType targetType) {
-		super(EGuiAction.CONVERT, selection);
+	public ConvertGuiTask(byte playerId, List<Integer> selection, EMovableType targetType) {
+		super(EGuiAction.CONVERT, playerId, selection);
 		this.targetType = targetType;
 	}
 

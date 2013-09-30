@@ -22,9 +22,8 @@ public class SetMaterialDistributionSettingsGuiTask extends SimpleGuiTask {
 	public SetMaterialDistributionSettingsGuiTask() {
 	}
 
-	public SetMaterialDistributionSettingsGuiTask(ShortPoint2D managerPosition,
-			EMaterialType materialType, float[] probabilities) {
-		super(EGuiAction.SET_MATERIAL_DISTRIBUTION_SETTINGS);
+	public SetMaterialDistributionSettingsGuiTask(byte playerId, ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
+		super(EGuiAction.SET_MATERIAL_DISTRIBUTION_SETTINGS, playerId);
 		this.managerPosition = managerPosition;
 		this.materialType = materialType;
 		this.probabilities = fixProbabilities(probabilities);

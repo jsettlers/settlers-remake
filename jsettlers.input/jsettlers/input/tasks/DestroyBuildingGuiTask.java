@@ -17,8 +17,13 @@ public class DestroyBuildingGuiTask extends SimpleGuiTask {
 	public DestroyBuildingGuiTask() {
 	}
 
-	public DestroyBuildingGuiTask(ShortPoint2D position) {
-		super(EGuiAction.DESTROY_BUILDING);
+	/**
+	 * 
+	 * @param playerId
+	 * @param position
+	 */
+	public DestroyBuildingGuiTask(byte playerId, ShortPoint2D position) {
+		super(EGuiAction.DESTROY_BUILDING, playerId);
 		this.position = position;
 	}
 

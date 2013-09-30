@@ -20,8 +20,8 @@ public class GeneralGuiTask extends SimpleGuiTask {
 	public GeneralGuiTask() {
 	}
 
-	public GeneralGuiTask(EGuiAction guiAction, ShortPoint2D pos, EBuildingType type) {
-		super(guiAction);
+	public GeneralGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D pos, EBuildingType type) {
+		super(guiAction, playerId);
 		this.position = pos;
 		this.type = type;
 	}

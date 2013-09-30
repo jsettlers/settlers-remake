@@ -18,8 +18,8 @@ public class MoveToGuiTask extends MovableGuiTask {
 	public MoveToGuiTask() {
 	}
 
-	public MoveToGuiTask(ShortPoint2D pos, List<Integer> selection) {
-		super(EGuiAction.MOVE_TO, selection);
+	public MoveToGuiTask(byte playerId, ShortPoint2D pos, List<Integer> selection) {
+		super(EGuiAction.MOVE_TO, playerId, selection);
 		this.position = pos;
 	}
 

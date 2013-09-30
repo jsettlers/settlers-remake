@@ -18,8 +18,15 @@ public class WorkAreaGuiTask extends SimpleGuiTask {
 	public WorkAreaGuiTask() {
 	}
 
-	public WorkAreaGuiTask(EGuiAction guiAction, ShortPoint2D workAreaPosition, ShortPoint2D buildingPos) {
-		super(guiAction);
+	/**
+	 * 
+	 * @param guiAction
+	 * @param playerId
+	 * @param workAreaPosition
+	 * @param buildingPos
+	 */
+	public WorkAreaGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D workAreaPosition, ShortPoint2D buildingPos) {
+		super(guiAction, playerId);
 		this.workAreaPosition = workAreaPosition;
 		this.buildingPos = buildingPos;
 	}

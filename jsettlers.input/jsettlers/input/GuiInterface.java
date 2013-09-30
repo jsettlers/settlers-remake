@@ -61,7 +61,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final ITaskScheduler taskScheduler;
 	private final IGuiInputGrid grid;
 	private final IGameStoppable gameStoppable;
-	private final byte player;
+	private final byte playerId;
 	private final boolean multiplayer;
 	private final ConstructionMarksThread constructionMarksCalculator;
 
@@ -80,7 +80,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.taskScheduler = taskScheduler;
 		this.grid = grid;
 		this.gameStoppable = gameStoppable;
-		this.player = player;
+		this.playerId = player;
 		this.multiplayer = multiplayer;
 		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
 
@@ -222,7 +222,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case SAVE:
-			taskScheduler.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE));
+			taskScheduler.scheduleTask(new SimpleGuiTask(EGuiAction.QUICK_SAVE, playerId));
 			break;
 
 		case CONVERT:
@@ -235,14 +235,14 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SET_MATERIAL_DISTRIBUTION_SETTINGS: {
 			SetMaterialDistributionSettingsAction a = (SetMaterialDistributionSettingsAction) action;
-			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(a.getManagerPosition(), a.getMaterialType(), a
+			taskScheduler.scheduleTask(new SetMaterialDistributionSettingsGuiTask(playerId, a.getManagerPosition(), a.getMaterialType(), a
 					.getProbabilities()));
 			break;
 		}
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesAction a = (SetMaterialPrioritiesAction) action;
-			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(a.getManagerPosition(), a.getMaterialTypeForPriority()));
+			taskScheduler.scheduleTask(new SetMaterialPrioritiesGuiTask(playerId, a.getManagerPosition(), a.getMaterialTypeForPriority()));
 			break;
 		}
 
@@ -258,7 +258,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private void setBuildingWorkArea(ShortPoint2D workAreaPosition) {
 		ISelectable selected = currentSelection.iterator().next();
 		if (selected instanceof Building) {
-			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, workAreaPosition, ((Building) selected).getPos()));
+			scheduleTask(new WorkAreaGuiTask(EGuiAction.SET_WORK_AREA, playerId, workAreaPosition, ((Building) selected).getPos()));
 		}
 	}
 
@@ -299,7 +299,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		if (convertables.size() > 0) {
-			taskScheduler.scheduleTask(new ConvertGuiTask(getIDsOfIterable(convertables), action.getTargetType()));
+			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, getIDsOfIterable(convertables), action.getTargetType()));
 		}
 	}
 
@@ -313,16 +313,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
 		} else if (currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(((Building) currentSelection.iterator().next()).getPos()));
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPos()));
 		} else {
-			taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, getIDsOfSelected()));
+			taskScheduler.scheduleTask(new MovableGuiTask(EGuiAction.DESTROY_MOVABLES, playerId, getIDsOfSelected()));
 		}
 		setSelection(new SelectionSet());
 	}
 
 	private void setBuildingPriority(EPriority newPriority) {
 		if (currentSelection != null && currentSelection.getSize() == 1 && currentSelection.iterator().next() instanceof Building) {
-			taskScheduler.scheduleTask(new SetBuildingPriorityGuiTask(((Building) currentSelection.iterator().next()).getPos(), newPriority));
+			taskScheduler
+					.scheduleTask(new SetBuildingPriorityGuiTask(playerId, ((Building) currentSelection.iterator().next()).getPos(), newPriority));
 		}
 	}
 
@@ -350,12 +351,12 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	 *            if false, they will start working
 	 */
 	private void stopOrStartWorkingAction(boolean stop) {
-		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, getIDsOfSelected()));
+		taskScheduler.scheduleTask(new MovableGuiTask(stop ? EGuiAction.STOP_WORKING : EGuiAction.START_WORKING, playerId, getIDsOfSelected()));
 	}
 
 	private void moveTo(ShortPoint2D pos) {
 		List<Integer> selectedIds = getIDsOfSelected();
-		scheduleTask(new MoveToGuiTask(pos, selectedIds));
+		scheduleTask(new MoveToGuiTask(playerId, pos, selectedIds));
 	}
 
 	private final List<Integer> getIDsOfSelected() {
@@ -402,7 +403,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private boolean canSelectPlayer(byte playerIdOfSelected) {
-		return CommonConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == player;
+		return CommonConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
 	}
 
 	private void handleSelectPointAction(PointAction action) {
@@ -424,10 +425,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			switch (activeAction.getActionType()) {
 			case BUILD:
 				EBuildingType type = previewBuilding;
-				ShortPoint2D pos2 = grid.getConstructablePosition(pos, type, player, InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
+				ShortPoint2D pos2 = grid.getConstructablePosition(pos, type, playerId, InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
 				if (pos2 != null) {
 					cancelBuildingCreation();
-					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, pos2, type));
+					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, playerId, pos2, type));
 					break;
 				} else {
 					return; // prevent resetting the current action

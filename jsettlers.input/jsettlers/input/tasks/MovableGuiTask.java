@@ -17,8 +17,8 @@ public class MovableGuiTask extends SimpleGuiTask {
 	public MovableGuiTask() {
 	}
 
-	public MovableGuiTask(EGuiAction action, List<Integer> selection) {
-		super(action);
+	public MovableGuiTask(EGuiAction action, byte playerId, List<Integer> selection) {
+		super(action, playerId);
 		this.selection = selection;
 	}
 

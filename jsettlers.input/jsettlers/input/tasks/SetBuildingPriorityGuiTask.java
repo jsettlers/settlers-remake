@@ -20,8 +20,8 @@ public class SetBuildingPriorityGuiTask extends SimpleGuiTask {
 	public SetBuildingPriorityGuiTask() {
 	}
 
-	public SetBuildingPriorityGuiTask(ShortPoint2D buildingPosition, EPriority newPriority) {
-		super(EGuiAction.SET_BUILDING_PRIORITY);
+	public SetBuildingPriorityGuiTask(byte playerId, ShortPoint2D buildingPosition, EPriority newPriority) {
+		super(EGuiAction.SET_BUILDING_PRIORITY, playerId);
 		this.buildingPosition = buildingPosition;
 		this.newPriority = newPriority;
 	}

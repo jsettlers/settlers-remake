@@ -68,8 +68,9 @@ public interface IGuiInputGrid {
 	 *            NOTE: There will be no validation if this position is allowed! This must be done prior to this call.
 	 * @param type
 	 *            {@link EBuildingType} of the new building.
+	 * @param playerId TODO
 	 */
-	void constructBuildingAt(ShortPoint2D position, EBuildingType type);
+	void constructBuildingAt(ShortPoint2D position, EBuildingType type, byte playerId);
 
 	/**
 	 * This method can be used to print debug output when the given position is clicked by the user.

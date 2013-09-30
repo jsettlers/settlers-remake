@@ -805,13 +805,13 @@ public final class MainGrid implements Serializable {
 			return height;
 		}
 
-		final boolean canConstructAt(short x, short y, EBuildingType type, Player player) {
+		final boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			for (RelativePoint curr : type.getProtectedTiles()) {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstruction(currX, currY, landscapes, player.playerId)) {
+				if (!canUsePositionForConstruction(currX, currY, landscapes, playerId)) {
 					return false;
 				}
 			}
@@ -820,7 +820,10 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player) {
-			return isInBounds(x, y) && !flagsGrid.isProtected(x, y) && partitionsGrid.getPlayerIdAt(x, y) == player
+			return isInBounds(x, y)
+					&& !flagsGrid.isProtected(x, y)
+					&& ((CommonConstants.ENABLE_ALL_PLAYER_SELECTION && partitionsGrid.getPlayerIdAt(x, y) >= 0)
+					|| partitionsGrid.getPlayerIdAt(x, y) == player)
 					&& isAllowedLandscape(x, y, landscapeTypes);
 		}
 
@@ -1476,27 +1479,19 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final ShortPoint2D getConstructablePosition(ShortPoint2D pos, EBuildingType type, byte playerId, boolean useNeighbors) {
-			Player player;
-			if (CommonConstants.ENABLE_ALL_PLAYER_SELECTION) {
-				player = partitionsGrid.getPlayerAt(pos.x, pos.y);
-			} else {
-				player = partitionsGrid.getPlayer(playerId);
-			}
-
-			if (player != null) {
-				if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, player)) {
-					return pos;
-				} else if (useNeighbors) {
-					for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
-						if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, player)) {
-							return neighbour;
-						}
+			if (constructionMarksGrid.canConstructAt(pos.x, pos.y, type, playerId)) {
+				return pos;
+			} else if (useNeighbors) {
+				for (ShortPoint2D neighbour : new MapNeighboursArea(pos)) {
+					if (constructionMarksGrid.canConstructAt(neighbour.x, neighbour.y, type, playerId)) {
+						return neighbour;
 					}
-					return null;
 				}
-			}
+				return null;
 
-			return null;
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -1526,8 +1521,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void constructBuildingAt(ShortPoint2D position, EBuildingType type) {
-			MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
+		public void constructBuildingAt(ShortPoint2D position, EBuildingType type, byte playerId) {
+			if (constructionMarksGrid.canConstructAt(position.x, position.y, type, playerId)) {
+				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
+			} else {
+				System.err.println("WARNING: TRIED TO CONSTRUCT BUILDING OUTSIDE COUNTRY! Type: " + type + "  pos: " + position + "  playerId: "
+						+ playerId);
+			}
 		}
 
 		@Override

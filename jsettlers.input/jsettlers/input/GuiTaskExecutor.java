@@ -65,7 +65,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case BUILD: {
 			GeneralGuiTask task = (GeneralGuiTask) guiTask;
-			grid.constructBuildingAt(task.getPosition(), task.getType());
+			grid.constructBuildingAt(task.getPosition(), task.getType(), task.getPlayerId());
 		}
 			break;
 

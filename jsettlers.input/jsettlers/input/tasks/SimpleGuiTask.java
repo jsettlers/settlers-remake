@@ -14,26 +14,34 @@ import networklib.client.task.packets.TaskPacket;
  */
 public class SimpleGuiTask extends TaskPacket {
 	private EGuiAction guiAction;
+	private byte playerId;
 
 	public SimpleGuiTask() {
 	}
 
-	public SimpleGuiTask(EGuiAction guiAction) {
+	public SimpleGuiTask(EGuiAction guiAction, byte playerId) {
 		this.guiAction = guiAction;
+		this.playerId = playerId;
 	}
 
 	public EGuiAction getGuiAction() {
 		return guiAction;
 	}
 
+	public byte getPlayerId() {
+		return playerId;
+	}
+
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		dos.writeInt(guiAction.ordinal());
+		dos.writeByte(playerId);
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		guiAction = EGuiAction.values[dis.readInt()];
+		playerId = dis.readByte();
 	}
 
 	@Override
@@ -41,6 +49,7 @@ public class SimpleGuiTask extends TaskPacket {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((guiAction == null) ? 0 : guiAction.hashCode());
+		result = prime * result + playerId;
 		return result;
 	}
 
@@ -54,6 +63,8 @@ public class SimpleGuiTask extends TaskPacket {
 			return false;
 		SimpleGuiTask other = (SimpleGuiTask) obj;
 		if (guiAction != other.guiAction)
+			return false;
+		if (playerId != other.playerId)
 			return false;
 		return true;
 	}
