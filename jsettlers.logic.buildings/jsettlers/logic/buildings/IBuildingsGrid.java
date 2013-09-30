@@ -121,4 +121,15 @@ public interface IBuildingsGrid {
 	 */
 	boolean isAreaFlattenedAtHeight(ShortPoint2D position, RelativePoint[] positions, byte expectedHeight);
 
+	/**
+	 * 
+	 * @param buildingPosition
+	 * @param workAreaCenter
+	 * @param radius
+	 * @param draw
+	 *            If true, the work area circle is drawn,<br>
+	 *            if false, it is removed.
+	 */
+	void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw);
+
 }

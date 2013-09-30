@@ -27,7 +27,9 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
 import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.map.shapes.MapCircleBorder;
 import jsettlers.common.map.shapes.MapNeighboursArea;
+import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -1443,6 +1445,41 @@ public final class MainGrid implements Serializable {
 		@Override
 		public boolean isAreaFlattenedAtHeight(ShortPoint2D position, RelativePoint[] positions, byte expectedHeight) {
 			return landscapeGrid.isAreaFlattenedAtHeight(position, positions, expectedHeight);
+		}
+
+		@Override
+		public void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw) {
+			short buildingPartition = partitionsGrid.getPartitionIdAt(buildingPosition.x, buildingPosition.y);
+
+			for (ShortPoint2D pos : getCircle(workAreaCenter, radius)) {
+				addOrRemoveMarkObject(buildingPartition, draw, pos, 1.0f);
+			}
+			for (ShortPoint2D pos : getCircle(workAreaCenter, .75f * radius)) {
+				addOrRemoveMarkObject(buildingPartition, draw, pos, 0.66f);
+			}
+			for (ShortPoint2D pos : getCircle(workAreaCenter, .5f * radius)) {
+				addOrRemoveMarkObject(buildingPartition, draw, pos, 0.33f);
+			}
+			for (ShortPoint2D pos : getCircle(workAreaCenter, .25f * radius)) {
+				addOrRemoveMarkObject(buildingPartition, draw, pos, 0f);
+			}
+		}
+
+		private void addOrRemoveMarkObject(short buildingPartition, boolean draw, ShortPoint2D pos, float progress) {
+			if (draw) {
+				// Only place an object if the position is the same as the one of the building.
+				if (partitionsGrid.getPartitionIdAt(pos.x, pos.y) == buildingPartition) {
+					mapObjectsManager.addBuildingWorkAreaObject(pos, progress);
+				}
+			} else {
+				mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.WORKAREA_MARK);
+			}
+		}
+
+		private MapShapeFilter getCircle(ShortPoint2D center, float radius) {
+			MapCircle baseCircle = new MapCircle(center, radius);
+			MapCircleBorder border = new MapCircleBorder(baseCircle);
+			return new MapShapeFilter(border, width, height);
 		}
 	}
 
