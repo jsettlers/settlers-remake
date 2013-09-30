@@ -254,7 +254,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 		float random = RandomSingleton.nextF();
 		if (random < 0.5) {
 			poppedMaterial = EMaterialType.SWORD;
-		} else if (random < 0.8) {
+		} else if (random < 0.65) {
 			poppedMaterial = EMaterialType.SPEAR;
 		} else {
 			poppedMaterial = EMaterialType.BOW;
