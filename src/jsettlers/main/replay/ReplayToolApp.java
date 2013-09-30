@@ -47,7 +47,7 @@ public class ReplayToolApp {
 		replayTool.waitForGameStartup(startingGame);
 
 		// schedule the save task and run the game to the target game time
-		networkConnector.scheduleTaskAt(targetGameTime / NetworkConstants.Client.LOCKSTEP_PERIOD, new SimpleGuiTask(EGuiAction.QUICK_SAVE));
+		networkConnector.scheduleTaskAt(targetGameTime / NetworkConstants.Client.LOCKSTEP_PERIOD, new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
 		MatchConstants.clock.fastForwardTo(targetGameTime);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
