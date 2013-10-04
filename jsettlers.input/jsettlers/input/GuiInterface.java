@@ -427,12 +427,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				EBuildingType type = previewBuilding;
 				ShortPoint2D pos2 = grid.getConstructablePosition(pos, type, playerId, InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
 				if (pos2 != null) {
-					cancelBuildingCreation();
+					// cancelBuildingCreation();
 					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, playerId, pos2, type));
-					break;
-				} else {
-					return; // prevent resetting the current action
 				}
+				return; // prevent resetting the current action
 			default:
 				break;
 			}
