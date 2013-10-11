@@ -211,5 +211,4 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *         false otherwise.
 	 */
 	public abstract boolean isFreePosition(ShortPoint2D position);
-
 }

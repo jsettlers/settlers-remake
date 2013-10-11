@@ -38,7 +38,7 @@ public final class Constants {
 
 	public static final short MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS = 2;
 
-	public static final short MOVABLE_FLEE_TO_VALID_POSITION_RADIUS = 40;
+	public static final short MOVABLE_FLEE_TO_VALID_POSITION_RADIUS = 7;
 
 	public static final short SOLDIER_SEARCH_RADIUS = 30;
 	public static final short TOWER_SEARCH_RADIUS = 40;

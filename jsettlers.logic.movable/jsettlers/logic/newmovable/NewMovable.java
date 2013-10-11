@@ -27,6 +27,7 @@ import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.newmovable.interfaces.IIDable;
+import jsettlers.logic.newmovable.strategies.FleeStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.ITimerable;
@@ -73,11 +74,12 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	private boolean enableNothingToDo = true;
 	private NewMovable pushedFrom;
 
+	private boolean isRightstep = false;
+	private float doingNothingProbablity = 0.06f;
+	private int delayCtr = 0;
+
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
-	private boolean isRightstep = false;
-
-	private float doingNothingProbablity = 0.06f;
 
 	public NewMovable(AbstractNewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
@@ -257,8 +259,6 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 			progress += WALKING_PROGRESS_INCREASE;
 		}
 	}
-
-	private int delayCtr = 0;
 
 	private void goSinglePathStep() {
 		initGoingSingleStep(path.getNextPos());
@@ -585,11 +585,8 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	 * @param newState
 	 */
 	private void setState(ENewMovableState newState) {
-		this.formerState = this.state;
 		this.state = newState;
 	}
-
-	ENewMovableState formerState;
 
 	/**
 	 * Used for networking to identify movables over the network.
@@ -739,16 +736,22 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	/**
 	 * Converts this movable to a movable of the given {@link EMovableType}.
 	 * 
-	 * @param movableType
+	 * @param newMovableType
 	 */
-	public final void convertTo(EMovableType movableType) {
-		if (movableType != EMovableType.BEARER || player.equals(grid.getPlayerAt(position))) {
-			this.movableType = movableType;
-			this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
-			this.strategy = NewMovableStrategy.getStrategy(this, movableType);
-			setState(ENewMovableState.DOING_NOTHING);
-			progress = 0;
+	public final void convertTo(EMovableType newMovableType) {
+		if (newMovableType == EMovableType.BEARER && !player.equals(grid.getPlayerAt(position))) {
+			return; // can't convert to bearer if the ground does not belong to the player
 		}
+
+		this.movableType = newMovableType;
+		setStrategy(NewMovableStrategy.getStrategy(this, newMovableType));
+	}
+
+	private void setStrategy(NewMovableStrategy newStrategy) {
+		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
+		this.strategy = newStrategy;
+		setState(ENewMovableState.DOING_NOTHING);
+		this.progress = 0;
 	}
 
 	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
@@ -789,29 +792,14 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 		player.showMessage(SimpleMessage.attacked(attackingPlayer, attackerPos));
 	}
 
-	public void checkPlayerOfPosition(Player playerOfPosition) {
-		if (playerOfPosition != player && !strategy.isMoveToAble()) {
-			fleeToValidPosition();
-		}
-	}
-
-	private void fleeToValidPosition() {
-		abortCurrentWork();
-
-		Path path = grid.searchDijkstra(this, position.x, position.y, Constants.MOVABLE_FLEE_TO_VALID_POSITION_RADIUS, ESearchType.VALID_POSITION);
-		if (path != null) {
-			followPath(path);
-		} else {
-			kill();
-		}
-	}
-
 	private void checkPlayerOfCurrentPosition() {
 		checkPlayerOfPosition(grid.getPlayerAt(position));
 	}
 
-	private void abortCurrentWork() {
-		convertTo(movableType); // destroy old strategy and create new one
+	public void checkPlayerOfPosition(Player playerOfPosition) {
+		if (playerOfPosition != player && !strategy.isMoveToAble() && strategy.getClass() != FleeStrategy.class) {
+			setStrategy(new FleeStrategy(this));
+		}
 	}
 
 	private static enum ENewMovableState {

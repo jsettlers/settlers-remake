@@ -392,8 +392,8 @@ public final class MainGrid implements Serializable {
 			case UNENFORCED_FOREIGN_GROUND:
 				return !flagsGrid.isBlocked(x, y) && !hasSamePlayer(x, y, pathCalculable) && !partitionsGrid.isEnforcedByTower(x, y);
 
-			case VALID_POSITION:
-				return isValidPosition(pathCalculable, x, y);
+			case VALID_FREE_POSITION:
+				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
 
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))

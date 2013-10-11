@@ -75,10 +75,10 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 
 	public abstract boolean isInBounds(short x, short y);
 
-	public abstract boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position);
-
 	public abstract ShortPoint2D calcDecentralizeVector(short x, short y);
 
 	public abstract Player getPlayerAt(ShortPoint2D position);
+
+	public abstract boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position);
 
 }
