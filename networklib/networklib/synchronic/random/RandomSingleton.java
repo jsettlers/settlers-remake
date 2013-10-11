@@ -70,4 +70,5 @@ public final class RandomSingleton extends Random {
 	public static void deserialize(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		uniIns = (RandomSingleton) ois.readObject();
 	}
+
 }
