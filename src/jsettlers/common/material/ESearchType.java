@@ -15,7 +15,7 @@ public enum ESearchType {
 	/**
 	 * Searches for own ground (for movables that need to walk back to their ground).
 	 */
-	VALID_POSITION,
+	VALID_FREE_POSITION,
 
 	/**
 	 * Searches for a tree that can be cut by a forester.
