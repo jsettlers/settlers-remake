@@ -76,7 +76,7 @@ public class SwingManagedJSettlers {
 		SwingResourceLoader.setupResourceManagersByConfigFile(configFile);
 	}
 
-	private static void loadDebugSettings(HashMap<String, String> argsMap) {
+	public static void loadDebugSettings(HashMap<String, String> argsMap) {
 		if (argsMap.containsKey("control-all")) {
 			CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
 			CommonConstants.ENABLE_ALL_PLAYER_SELECTION = true;
