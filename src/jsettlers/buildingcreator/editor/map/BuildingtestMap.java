@@ -4,6 +4,7 @@ import jsettlers.buildingcreator.editor.BuildingDefinition;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionSettings;
@@ -66,7 +67,7 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public int getDebugColorAt(int x, int y) {
+	public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 		return tiles[x][y].getDebugColor();
 	}
 
