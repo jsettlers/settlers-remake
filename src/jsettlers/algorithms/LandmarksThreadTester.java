@@ -4,6 +4,7 @@ import jsettlers.TestUtils;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionSettings;
@@ -172,7 +173,7 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public int getDebugColorAt(int x, int y) {
+		public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 			return Color.getARGB(isBlocked((short) x, (short) y) ? 1 : 0, 0, getPartitionAt((short) x, (short) y) / 2f, 1);
 		}
 

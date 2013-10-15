@@ -7,6 +7,7 @@ import java.util.BitSet;
 import jsettlers.GraphicsGridAdapter;
 import jsettlers.TestUtils;
 import jsettlers.common.Color;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.logic.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 
@@ -46,7 +47,7 @@ public class PartitionsCalculatorAlgorithmTest {
 	private void visualizeAlgoResult(final IBlockingProvider blockingProvider, final PartitionCalculatorAlgorithm algo) {
 		TestUtils.openTestWindow(new GraphicsGridAdapter(WIDTH, HEIGHT) {
 			@Override
-			public int getDebugColorAt(int x, int y) {
+			public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 				int value;
 
 				value = algo.getPartitionAt(x, y) + 1;

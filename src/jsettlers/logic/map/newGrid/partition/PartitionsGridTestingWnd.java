@@ -8,6 +8,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.logging.MilliStopWatch;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionSettings;
@@ -205,7 +206,7 @@ public class PartitionsGridTestingWnd {
 			}
 
 			@Override
-			public int getDebugColorAt(int x, int y) {
+			public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 				// int value = grid.getRealPartitionIdAt(x, y);
 				// int value = grid.getPartitionIdAt(x, y);
 				int value = grid.getTowerCountAt(x, y);

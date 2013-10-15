@@ -3,6 +3,7 @@ package jsettlers.logic.map.newGrid;
 import jsettlers.GraphicsGridAdapter;
 import jsettlers.TestUtils;
 import jsettlers.common.Color;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
@@ -28,7 +29,7 @@ public class TestExecutionWithDebugDisplay {
 
 		TestUtils.openTestWindow(new GraphicsGridAdapter(width, height) {
 			@Override
-			public int getDebugColorAt(int x, int y) {
+			public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 				int value = partitionsGrid.getRealPartitionIdAt(x, y);
 				// int value = partitionsGrid.getPartitionIdAt(x, y);
 				// int value = partitionsGrid.getTowerCountAt(x, y);
