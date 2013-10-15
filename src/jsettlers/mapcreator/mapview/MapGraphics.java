@@ -3,6 +3,7 @@ package jsettlers.mapcreator.mapview;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionSettings;
@@ -65,7 +66,7 @@ public class MapGraphics implements IGraphicsGrid {
 	}
 
 	@Override
-	public int getDebugColorAt(int x, int y) {
+	public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 		return data.isFailpoint(x, y) ? Color.RED.getARGB() : -1;
 	}
 
