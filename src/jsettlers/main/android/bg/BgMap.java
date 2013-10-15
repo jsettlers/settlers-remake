@@ -2,6 +2,7 @@ package jsettlers.main.android.bg;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionSettings;
@@ -49,8 +50,8 @@ public class BgMap implements IGraphicsGrid {
 	@Override
 	public IMovable getMovableAt(int x, int y) {
 		if (x > MOVABLE_BORDER
-		        && getLandscapeTypeAt(x, y) == ELandscapeType.GRASS
-		        && getRand(x, y) > 1 - MOVABLE_PROBABILITY) {
+				&& getLandscapeTypeAt(x, y) == ELandscapeType.GRASS
+				&& getRand(x, y) > 1 - MOVABLE_PROBABILITY) {
 			return new BgMovable(new ShortPoint2D(x, y));
 		} else {
 			return null;
@@ -60,8 +61,8 @@ public class BgMap implements IGraphicsGrid {
 	@Override
 	public IMapObject getMapObjectsAt(int x, int y) {
 		if (x > TREE_BORDER && ((x + y) & 3) == 0 && ((x - y) & 3) == 0
-		        && getLandscapeTypeAt(x, y) == ELandscapeType.GRASS
-		        && getRand(x, y) < TREE_PROBABILITY) {
+				&& getLandscapeTypeAt(x, y) == ELandscapeType.GRASS
+				&& getRand(x, y) < TREE_PROBABILITY) {
 			return tree;
 		} else {
 			return null;
@@ -79,7 +80,7 @@ public class BgMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public int getDebugColorAt(int x, int y) {
+	public int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
 		return 0;
 	}
 
@@ -105,7 +106,7 @@ public class BgMap implements IGraphicsGrid {
 
 	@Override
 	public void setBackgroundListener(
-	        IGraphicsBackgroundListener backgroundListener) {
+			IGraphicsBackgroundListener backgroundListener) {
 	}
 
 	@Override
