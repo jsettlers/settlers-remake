@@ -13,6 +13,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.IMapData;
@@ -607,32 +608,35 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final int getDebugColorAt(int x, int y) {
+		public final int getDebugColorAt(int x, int y, EDebugColorModes debugColorMode) {
+			switch (debugColorMode) {
+			case BLOCKED_PARTITIONS:
+				return getScaledColor(landscapeGrid.getBlockedPartitionAt(x, y) + 1);
+			case PARTITION_ID:
+				return getScaledColor(partitionsGrid.getPartitionIdAt(x, y));
+			case REAL_PARTITION_ID:
+				return getScaledColor(partitionsGrid.getRealPartitionIdAt(x, y));
+			case PLAYER_ID:
+				return getScaledColor(partitionsGrid.getPlayerIdAt(x, y) + 1);
+			case TOWER_COUNT:
+				return getScaledColor(partitionsGrid.getTowerCountAt(x, y) + 1);
+			case DEBUG_COLOR:
+				return landscapeGrid.getDebugColor(x, y);
+			case MARKS_AND_OBJECTS:
+				return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
+						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
+								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
+								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			case NONE:
+			default:
+				return -1;
+			}
+		}
+
+		private int getScaledColor(int value) {
 			final int SCALE = 4;
-
-			// int value = landscapeGrid.getBlockedPartitionAt(x, y) + 1;
-
-			int value = partitionsGrid.getPartitionIdAt(x, y);
-
-			// int value = partitionsGrid.getRealPartitionIdAt(x, y);
-
-			// int value = partitionsGrid.getPlayerIdAt(x, y) + 1;
-
-			// int value = partitionsGrid.getTowerCountAt(x, y) + 1;
-
 			return Color.getABGR(((float) (value % SCALE)) / SCALE, ((float) ((value / SCALE) % SCALE)) / SCALE,
 					((float) ((value / SCALE / SCALE) % SCALE)) / SCALE, 1);
-
-			// return landscapeGrid.getDebugColor(x, y);
-
-			// return flagsGrid.isMarked(x, y) ? Color.ORANGE.getARGB()
-			// : (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
-			// .getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
-			// : (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
-
-			// return Color.BLACK.getARGB();
-
-			// return objectsGrid.getMapObjectAt( x, y, EMapObjectType.ARROW) != null ? Color.RED.getABGR() : 0;
 		}
 
 		@Override
