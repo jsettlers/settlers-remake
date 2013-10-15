@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
@@ -84,10 +85,8 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
  * 
  * @author michael
  */
-public final class MapContent implements RegionContent,
-        GOEventHandlerProvider, IMapInterfaceListener, ActionFireable,
-        ActionThreadBlockingListener {
-	private boolean ENABLE_DEBUG = false;
+public final class MapContent implements RegionContent, GOEventHandlerProvider,
+        IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final int MAX_MESSAGES = 10;
@@ -118,7 +117,6 @@ public final class MapContent implements RegionContent,
 	private final IControls controls;
 
 	private int windowWidth = 1;
-
 	private int windowHeight = 1;
 
 	private final Messenger messenger = new Messenger();
@@ -134,6 +132,8 @@ public final class MapContent implements RegionContent,
 	private final ReplaceableTextDrawer textDrawer;
 	private final IStatisticable playerStatistics;
 
+	private EDebugColorModes debugColorMode = EDebugColorModes.NONE;
+
 	/**
 	 * Creates a new map content for the given map.
 	 * 
@@ -141,13 +141,11 @@ public final class MapContent implements RegionContent,
 	 *            The map.
 	 * @param playerStatistics
 	 */
-	public MapContent(IStartedGame game,
-	        SoundPlayer player) {
+	public MapContent(IStartedGame game, SoundPlayer player) {
 		this(game, player, null);
 	}
 
-	public MapContent(IStartedGame game,
-	        SoundPlayer player, IControls controls) {
+	public MapContent(IStartedGame game, SoundPlayer player, IControls controls) {
 		this.map = game.getMap();
 		this.playerStatistics = game.getPlayerStatistics();
 		textDrawer = new ReplaceableTextDrawer();
@@ -275,8 +273,7 @@ public final class MapContent implements RegionContent,
 				int y = MESSAGE_OFFSET_Y + messageIndex * MESSAGE_LINEHIEGHT;
 				if (m.getSender() >= 0) {
 					String name = getPlayername(m.getSender()) + ":";
-					Color color =
-					        context.getPlayerColor(m.getSender());
+					Color color = context.getPlayerColor(m.getSender());
 					float width = (float) drawer.getWidth(name);
 					float bright =
 					        color.getRed() + color.getGreen() + color.getBlue();
@@ -349,7 +346,8 @@ public final class MapContent implements RegionContent,
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		double spacing = drawer.getWidth("_");
 		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
-		drawer.drawString(windowWidth - 9 * (float) spacing, y, "FPS: " + frames);
+		drawer.drawString(windowWidth - 9 * (float) spacing, y, "FPS: "
+		        + frames);
 		drawer.drawString(windowWidth - 23 * (float) spacing, y, "Time: "
 		        + timeString);
 	}
@@ -425,7 +423,7 @@ public final class MapContent implements RegionContent,
 		// }
 		// }
 
-		if (ENABLE_DEBUG) {
+		if (debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
 		}
 
@@ -502,7 +500,7 @@ public final class MapContent implements RegionContent,
 		for (ShortPoint2D pos : tiles) {
 			short x = pos.x;
 			short y = pos.y;
-			int argb = map.getDebugColorAt(x, y);
+			int argb = map.getDebugColorAt(x, y, debugColorMode);
 			if (argb != 0) {
 				this.context.beginTileContext(x, y);
 				gl.color(((argb >> 16) & 0xff) / 255f,
@@ -751,18 +749,19 @@ public final class MapContent implements RegionContent,
 	}
 
 	private Action handleSelectCommand(ShortPoint2D onMap) {
-	    Action action;
-	    long currentTime = System.currentTimeMillis();
-	    if (currentTime - lastSelectPointTime < DOUBLE_CLICK_TIME && onMap.equals(lastSelectPointPos)) {
-	    	lastSelectPointTime = 0;
-	    	action = new PointAction(EActionType.SELECT_POINT_TYPE, onMap);
-	    } else {
-	    	lastSelectPointTime = currentTime;
-	    	lastSelectPointPos = onMap;
-	    	action = new PointAction(EActionType.SELECT_POINT, onMap);
-	    }
-	    return action;
-    }
+		Action action;
+		long currentTime = System.currentTimeMillis();
+		if (currentTime - lastSelectPointTime < DOUBLE_CLICK_TIME
+		        && onMap.equals(lastSelectPointPos)) {
+			lastSelectPointTime = 0;
+			action = new PointAction(EActionType.SELECT_POINT_TYPE, onMap);
+		} else {
+			lastSelectPointTime = currentTime;
+			lastSelectPointPos = onMap;
+			action = new PointAction(EActionType.SELECT_POINT, onMap);
+		}
+		return action;
+	}
 
 	protected void abortSelectionArea() {
 		this.currentSelectionAreaStart = null;
@@ -821,7 +820,7 @@ public final class MapContent implements RegionContent,
 	public void action(Action action) {
 		controls.action(action);
 		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
-			ENABLE_DEBUG = !ENABLE_DEBUG;
+			debugColorMode = EDebugColorModes.getNextMode(debugColorMode);
 		} else if (action.getActionType() == EActionType.TOGGLE_ORIGINAL_GRAPHICS) {
 			context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
 		} else if (action.getActionType() == EActionType.PAN_TO) {
@@ -839,7 +838,6 @@ public final class MapContent implements RegionContent,
 				setZoom(context.getScreen().getZoom() / 2);
 			}
 		} else if (action.getActionType() == EActionType.MOVE_TO) {
-
 			moveToMarker = ((PointAction) action).getPosition();
 			moveToMarkerTime = System.currentTimeMillis();
 		}
