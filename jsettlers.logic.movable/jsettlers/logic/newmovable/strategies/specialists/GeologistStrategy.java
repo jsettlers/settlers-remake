@@ -137,6 +137,15 @@ public final class GeologistStrategy extends NewMovableStrategy {
 		}
 	}
 
+	@Override
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
+		if (pathTarget != null) {
+			super.getStrategyGrid().setMarked(pathTarget, false);
+		} else {
+			super.getStrategyGrid().setMarked(super.getPos(), false);
+		}
+	}
+
 	private static enum EGeologistState {
 		JOBLESS,
 		GOING_TO_POS,
