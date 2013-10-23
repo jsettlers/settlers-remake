@@ -811,13 +811,22 @@ public final class MainGrid implements Serializable {
 			return height;
 		}
 
-		final boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
+		boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
-			for (RelativePoint curr : type.getProtectedTiles()) {
+			RelativePoint[] protectedTiles = type.getProtectedTiles();
+
+			int firstPosX = protectedTiles[0].calculateX(x);
+			int firstPosY = protectedTiles[0].calculateY(y);
+			final short partitionId = getPartitionIdAt(firstPosX, firstPosY);
+			if (!canPlayerConstructOnPartition(playerId, partitionId)) {
+				return false;
+			}
+
+			for (RelativePoint curr : protectedTiles) {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstruction(currX, currY, landscapes, playerId)) {
+				if (!canUsePositionForConstruction(currX, currY, landscapes, partitionId)) {
 					return false;
 				}
 			}
@@ -825,15 +834,14 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player) {
+		public boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId) {
 			return isInBounds(x, y)
 					&& !flagsGrid.isProtected(x, y)
-					&& ((CommonConstants.ENABLE_ALL_PLAYER_SELECTION && partitionsGrid.getPlayerIdAt(x, y) >= 0)
-					|| partitionsGrid.getPlayerIdAt(x, y) == player)
+					&& partitionsGrid.getPartitionIdAt(x, y) == partitionId
 					&& isAllowedLandscape(x, y, landscapeTypes);
 		}
 
-		private final boolean isAllowedLandscape(int x, int y, ELandscapeType[] landscapes) {
+		private boolean isAllowedLandscape(int x, int y, ELandscapeType[] landscapes) {
 			ELandscapeType landscapeAt = landscapeGrid.getLandscapeTypeAt(x, y);
 			for (byte i = 0; i < landscapes.length; i++) {
 				if (landscapeAt == landscapes[i]) {
@@ -865,6 +873,17 @@ public final class MainGrid implements Serializable {
 			} else {
 				return -1;
 			}
+		}
+
+		@Override
+		public short getPartitionIdAt(int x, int y) {
+			return partitionsGrid.getPartitionIdAt(x, y);
+		}
+
+		@Override
+		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
+			return (CommonConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
+					|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
 		}
 	}
 

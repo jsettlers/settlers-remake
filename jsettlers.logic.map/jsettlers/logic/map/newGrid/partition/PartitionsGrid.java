@@ -108,6 +108,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.gridNormalizer.cancel();
 	}
 
+	public boolean isDefaultPartition(short partitionId) {
+		return partitionId == NO_PLAYER_PARTITION_ID;
+	}
+
 	public short getPartitionIdAt(int x, int y) {
 		return partitionRepresentatives[partitions[x + y * width]];
 	}
@@ -149,6 +153,10 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		} else {
 			return null;
 		}
+	}
+
+	public boolean ownsPlayerPartition(short partitionId, byte playerId) {
+		return partitionObjects[partitionId].playerId == playerId;
 	}
 
 	public byte getTowerCountAt(int x, int y) {
@@ -737,4 +745,5 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	public PartitionManagerSettings getSettingsForManagerAt(int x, int y) {
 		return getPartitionAt(x, y).getSettings();
 	}
+
 }
