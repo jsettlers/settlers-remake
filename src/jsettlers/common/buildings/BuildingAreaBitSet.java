@@ -12,6 +12,7 @@ import jsettlers.common.position.RelativePoint;
  */
 public final class BuildingAreaBitSet {
 	public final BitSet bitSet;
+	public final RelativePoint aPosition;
 	public final short width;
 	public final short height;
 	public final short minX;
@@ -35,6 +36,7 @@ public final class BuildingAreaBitSet {
 			maxY = max(maxY, protectedTiles[i].getDy());
 		}
 
+		this.aPosition = protectedTiles[0];
 		this.numberOfPositions = protectedTiles.length;
 
 		this.minX = minX;
