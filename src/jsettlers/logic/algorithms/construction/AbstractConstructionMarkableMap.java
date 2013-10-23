@@ -44,11 +44,14 @@ public abstract class AbstractConstructionMarkableMap {
 	 *            y coordinate of the target position
 	 * @param landscapeTypes
 	 *            allowed landscape types
-	 * @param player
+	 * @param partitionId
 	 *            player
 	 * @return true if a building can be positioned at the given position<br>
 	 *         false otherwise.
 	 */
-	public abstract boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player);
+	public abstract boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId);
 
+	public abstract short getPartitionIdAt(int x, int y);
+
+	public abstract boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
 }

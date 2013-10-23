@@ -18,13 +18,13 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public final class NewConstructionMarksAlgorithm {
 	private final AbstractConstructionMarkableMap map;
-	private final byte player;
+	private final byte playerId;
 
 	private MapRectangle lastArea = null;
 
 	public NewConstructionMarksAlgorithm(AbstractConstructionMarkableMap map, byte player) {
 		this.map = map;
-		this.player = player;
+		this.playerId = player;
 	}
 
 	public void calculateConstructMarks(final MapRectangle mapArea, final BuildingAreaBitSet buildingArea, final ELandscapeType[] landscapeTypes,
@@ -52,6 +52,18 @@ public final class NewConstructionMarksAlgorithm {
 
 			DX_LOOP: for (int dx = 0; dx < lineLength; dx++) {
 				final int x = xLineOffset + dx;
+				final short partitionId;
+
+				{ // get the partition and check if the player is allowed to use this partition
+					int firstPosX = buildingArea.aPosition.calculateX(x);
+					int firstPosY = buildingArea.aPosition.calculateY(y);
+
+					partitionId = map.getPartitionIdAt(firstPosX, firstPosY);
+
+					if (!map.canPlayerConstructOnPartition(playerId, partitionId)) {
+						continue DX_LOOP;
+					}
+				}
 
 				if (!mapArea.contains(x, y) || doneSet.get(dx + line * lineLength)) { // if this position has already been pruned.
 					continue;
@@ -65,7 +77,7 @@ public final class NewConstructionMarksAlgorithm {
 						// if the position must be free, but isn't
 						if (xJumps[index] != 0
 								&& !map.canUsePositionForConstruction(x + buildingDx + xOffsetForBuilding, y + buildingDy + yOffsetForBuilding,
-										landscapeTypes, player)) {
+										landscapeTypes, partitionId)) {
 
 							map.setConstructMarking(x, y, false, null);
 
