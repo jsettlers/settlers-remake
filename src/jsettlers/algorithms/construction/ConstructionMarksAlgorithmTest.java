@@ -153,7 +153,7 @@ public class ConstructionMarksAlgorithmTest {
 		}
 
 		@Override
-		public boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, byte player) {
+		public boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId) {
 			return isInBounds(x, y) && !blockedSet.get(x + y * width);
 		}
 
@@ -169,6 +169,16 @@ public class ConstructionMarksAlgorithmTest {
 			}
 
 			return buffer.toString();
+		}
+
+		@Override
+		public short getPartitionIdAt(int x, int y) {
+			return 0;
+		}
+
+		@Override
+		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
+			return true;
 		}
 	}
 }
