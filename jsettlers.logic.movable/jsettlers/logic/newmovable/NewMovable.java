@@ -763,7 +763,7 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	}
 
 	public final boolean canOccupyBuilding() {
-		return getMovableType().getSelectionType() == ESelectionType.SOLDIERS;
+		return movableType.getSelectionType() == ESelectionType.SOLDIERS;
 	}
 
 	@Override
@@ -797,7 +797,7 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	}
 
 	public void checkPlayerOfPosition(Player playerOfPosition) {
-		if (playerOfPosition != player && !strategy.isMoveToAble() && strategy.getClass() != FleeStrategy.class) {
+		if (playerOfPosition != player && movableType.needsPlayersGround() && strategy.getClass() != FleeStrategy.class) {
 			setStrategy(new FleeStrategy(this));
 		}
 	}

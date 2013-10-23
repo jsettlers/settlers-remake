@@ -104,9 +104,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			if (super.getPos().equals(building.getDoor()) || super.goToPos(building.getDoor())) {
 				changeStateTo(ESoldierState.GOING_TO_TOWER);
 			} else {
-				building.requestFailed(this.movableType);
-				building = null;
-				state = ESoldierState.AGGRESSIVE;
+				notifyTowerThatRequestFailed();
 			}
 			break;
 
@@ -129,6 +127,14 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			}
 			break;
 
+		}
+	}
+
+	private void notifyTowerThatRequestFailed() {
+		if (building.getPlayer() == super.getPlayer()) { // only notify, if the tower still belongs to this player
+			building.requestFailed(this.movableType);
+			building = null;
+			state = ESoldierState.AGGRESSIVE;
 		}
 	}
 
@@ -303,7 +309,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 			if (isInTower) {
 				building.removeSoldier(this);
 			} else {
-				building.requestFailed(movableType);
+				notifyTowerThatRequestFailed();
 			}
 		}
 	}

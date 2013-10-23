@@ -234,8 +234,8 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	public final OccupyerPlace addSoldier(IBuildingOccupyableMovable soldier) {
 		OccupyerPlace freePosition = findFreePositionFor(soldier.getSoldierType());
 
-		emptyPlaces.remove(freePosition);
 		currentlyCommingSoldiers[freePosition.getType().ordinal()]--;
+		emptyPlaces.remove(freePosition);
 
 		TowerOccupier towerOccupier = new TowerOccupier(freePosition, soldier);
 		occupiers.add(towerOccupier);
