@@ -360,11 +360,12 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 					if (grid.hasNoMovableAt(nextPos.x, nextPos.y)) {
 						// this movable isn't blocked, so just let it's pathingAction() handle this
 					} else if (pushedFrom == null) {
-						this.pushedFrom = pushingMovable;
-						boolean pushingSuccessfull = grid.getMovableAt(nextPos.x, nextPos.y).push(this);
-						this.pushedFrom = null;
-
-						return pushingSuccessfull;
+						try {
+							this.pushedFrom = pushingMovable;
+							return grid.getMovableAt(nextPos.x, nextPos.y).push(this);
+						} finally {
+							this.pushedFrom = null;
+						}
 					} else {
 						while (pushingMovable != this) {
 							pushingMovable.goSinglePathStep();
