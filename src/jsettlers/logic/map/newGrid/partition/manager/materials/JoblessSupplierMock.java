@@ -23,9 +23,10 @@ public class JoblessSupplierMock implements IJoblessSupplier {
 			}
 
 			@Override
-			public void deliver(EMaterialType materialType, ShortPoint2D offerPosition, IMaterialRequest request) {
+			public boolean deliver(EMaterialType materialType, ShortPoint2D offerPosition, IMaterialRequest request) {
 				request.deliveryAccepted();
 				request.deliveryFulfilled();
+				return true;
 			}
 		});
 	}
