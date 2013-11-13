@@ -191,13 +191,19 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	@Override
-	public void deliver(EMaterialType materialType, ShortPoint2D offer, IMaterialRequest request) {
-		this.offer = offer;
-		this.request = request;
-		this.materialType = materialType;
+	public boolean deliver(EMaterialType materialType, ShortPoint2D offer, IMaterialRequest request) {
+		if (state == EBearerState.JOBLESS) {
+			this.offer = offer;
+			this.request = request;
+			this.materialType = materialType;
 
-		this.state = EBearerState.INIT_CARRY_JOB;
-		request.deliveryAccepted();
+			this.state = EBearerState.INIT_CARRY_JOB;
+			request.deliveryAccepted();
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -232,6 +238,10 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 			handleJobFailed(false);
 		}
 		state = EBearerState.DEAD_OBJECT;
+	}
+
+	public boolean isDead() {
+		return state == EBearerState.DEAD_OBJECT;
 	}
 
 	/**

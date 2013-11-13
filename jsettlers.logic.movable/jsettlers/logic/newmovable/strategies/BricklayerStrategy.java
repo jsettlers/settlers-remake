@@ -23,14 +23,16 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 	}
 
 	@Override
-	public void setBricklayerJob(IConstructableBuilding constructionSite, ShortPoint2D bricklayerTargetPos, EDirection direction) {
-		assert constructionSite != null : "can't set a job with constructionSite == null";
-
-		this.constructionSite = constructionSite;
-		this.bricklayerTargetPos = bricklayerTargetPos;
-		this.lookDirection = direction;
-
-		this.state = EBricklayerState.INIT_JOB;
+	public boolean setBricklayerJob(IConstructableBuilding constructionSite, ShortPoint2D bricklayerTargetPos, EDirection direction) {
+		if (state == EBricklayerState.JOBLESS) {
+			this.constructionSite = constructionSite;
+			this.bricklayerTargetPos = bricklayerTargetPos;
+			this.lookDirection = direction;
+			this.state = EBricklayerState.INIT_JOB;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private void makeJobless() {
@@ -61,6 +63,9 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 		case BUILDING:
 			tryToBuild();
 			break;
+
+		case DEAD_OBJECT:
+			break;
 		}
 	}
 
@@ -87,6 +92,8 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 		if (state == EBricklayerState.JOBLESS) {
 			super.getStrategyGrid().removeJobless(this);
 		}
+
+		state = EBricklayerState.DEAD_OBJECT;
 	}
 
 	private static enum EBricklayerState {
@@ -94,6 +101,8 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 		INIT_JOB,
 		GOING_TO_POS,
 		BUILDING,
+
+		DEAD_OBJECT
 	}
 
 }

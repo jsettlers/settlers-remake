@@ -89,7 +89,9 @@ public final class MaterialsManager implements Serializable {
 
 		assert jobless != null : "The jobless can't be null here!";
 
-		jobless.deliver(materialType, offer.getPos(), request);
+		if (!jobless.deliver(materialType, offer.getPos(), request)) {
+			offersList.addOffer(offer.getPos(), materialType);
+		}
 	}
 
 	public void movePositionTo(ShortPoint2D position, MaterialsManager newManager) {

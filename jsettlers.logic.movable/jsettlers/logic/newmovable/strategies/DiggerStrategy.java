@@ -23,11 +23,14 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	@Override
-	public void setDiggerJob(IDiggerRequester requester) {
-		assert state == EDiggerState.JOBLESS : "can't set digger job on digger that is in state " + state;
-
-		this.requester = requester;
-		this.state = EDiggerState.INIT_JOB;
+	public boolean setDiggerJob(IDiggerRequester requester) {
+		if (state == EDiggerState.JOBLESS) {
+			this.requester = requester;
+			this.state = EDiggerState.INIT_JOB;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -53,6 +56,9 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 			} else {
 				goToDiggablePosition();
 			}
+			break;
+
+		case DEAD_OBJECT:
 			break;
 		}
 	}
@@ -133,6 +139,8 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 		if (state == EDiggerState.JOBLESS) {
 			super.getStrategyGrid().removeJobless(this);
 		}
+
+		state = EDiggerState.DEAD_OBJECT;
 	}
 
 	private static enum EDiggerState {
@@ -140,5 +148,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 		INIT_JOB,
 		GOING_TO_POS,
 		PLAYING_ACTION,
+
+		DEAD_OBJECT
 	}
 }

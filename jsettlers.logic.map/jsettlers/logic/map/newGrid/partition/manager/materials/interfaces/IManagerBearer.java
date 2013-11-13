@@ -21,7 +21,8 @@ public interface IManagerBearer extends ILocatable, Serializable {
 	 * @param materialType
 	 * @param offerPosition
 	 * @param request
+	 * @return true if the job can be handled, false if another bearer needs to be asked.
 	 */
-	void deliver(EMaterialType materialType, ShortPoint2D offerPosition, IMaterialRequest request);
+	boolean deliver(EMaterialType materialType, ShortPoint2D offerPosition, IMaterialRequest request);
 
 }

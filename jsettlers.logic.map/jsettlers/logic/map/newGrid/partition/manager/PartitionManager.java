@@ -371,10 +371,11 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		if (request.requester.isDiggerRequestActive()) {
 			IManageableDigger digger = joblessDiggers.removeObjectNextTo(request.getPos());
 			if (digger != null) {
-				digger.setDiggerJob(request.requester);
-				request.amount--;
-				if (request.creationRequested > 0) {
-					request.creationRequested--;
+				if (digger.setDiggerJob(request.requester)) {
+					request.amount--;
+					if (request.creationRequested > 0) {
+						request.creationRequested--;
+					}
 				}
 			} else {
 				if (request.amount > request.creationRequested) {
@@ -397,7 +398,9 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		if (bricklayerRequest != null && !bricklayerRequest.building.isConstructionFinished()) {
 			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPos());
 			if (bricklayer != null) {
-				bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction);
+				if (!bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction)) {
+					bricklayerRequests.add(bricklayerRequest);
+				}
 			} else {
 				createNewToolUserIfLimitNotExceeded(EMovableType.BRICKLAYER, bricklayerRequest.getPos());
 				bricklayerRequests.offerLast(bricklayerRequest);
