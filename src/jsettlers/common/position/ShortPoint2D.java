@@ -96,4 +96,8 @@ public class ShortPoint2D implements Serializable {
 			return absDx + absDy;
 		}
 	}
+
+	public boolean equals(int x, int y) {
+		return this.x == x && this.y == y;
+	}
 }
