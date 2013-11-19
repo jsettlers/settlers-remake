@@ -434,7 +434,7 @@ public class MapObjectDrawer {
 
 	private void drawMovableAt(IMovable movable, Image image, int x, int y) {
 		byte fogstatus = context.getVisibleStatus(x, y);
-		if (fogstatus == 0) {
+		if (fogstatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
 
@@ -696,7 +696,7 @@ public class MapObjectDrawer {
 		forceSetup();
 		
 		byte fogstatus = context.getVisibleStatus(x, y);
-		if (fogstatus == 0) {
+		if (fogstatus  <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
 		float base = getColor(fogstatus);
@@ -820,7 +820,8 @@ public class MapObjectDrawer {
 					draw(image, x, y, color);
 				}
 
-				if (building instanceof IBuilding.IOccupyed) {
+				if (building instanceof IBuilding.IOccupyed
+				        && context.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED) {
 					drawOccupiers(x, y, (IBuilding.IOccupyed) building, color);
 				}
 
