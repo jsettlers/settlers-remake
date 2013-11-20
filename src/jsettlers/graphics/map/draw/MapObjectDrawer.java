@@ -831,7 +831,7 @@ public class MapObjectDrawer {
 				}
 			}
 		}
-
+		
 		if (building.isSelected()) {
 			drawBuildingSelectMarker(x, y);
 		}

@@ -4,6 +4,7 @@ import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
+import go.graphics.event.GOKeyEvent;
 import go.graphics.event.command.GOCommandEvent;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
@@ -14,6 +15,8 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.utils.FocusAction;
+import jsettlers.graphics.utils.UIInput;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -29,13 +32,15 @@ public class JSettlersScreen implements IContentSetable {
 	private final SoundPlayer soundPlayer;
 	private final IStartScreen baseConnector;
 	private final String revision;
+	private UIInput focusedInput;
 
-	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer, String revision) {
-	    super();
+	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer,
+	        String revision) {
+		super();
 		this.baseConnector = baseConnector;
-	    this.soundPlayer = soundPlayer;
+		this.soundPlayer = soundPlayer;
 		this.revision = revision;
-    }
+	}
 
 	private class PanelRegionContent implements RegionContent {
 		private final UIPanel root;
@@ -71,6 +76,12 @@ public class JSettlersScreen implements IContentSetable {
 			if (action instanceof ExecutableAction) {
 				((ExecutableAction) action).execute();
 			}
+			
+			if (action instanceof FocusAction) {
+				focusedInput = ((FocusAction) action).getInput();
+			} else {
+				focusedInput = null;
+			}
 
 			region.requestRedraw();
 		}
@@ -79,6 +90,8 @@ public class JSettlersScreen implements IContentSetable {
 		public void handleEvent(GOEvent event) {
 			if (event instanceof GOCommandEvent) {
 				event.setHandler(commandHandler);
+			} else if (event instanceof GOKeyEvent && focusedInput != null) {
+		        focusedInput.handleEvent((GOKeyEvent) event);
 			}
 		}
 
@@ -91,6 +104,7 @@ public class JSettlersScreen implements IContentSetable {
 
 	@Override
 	public void setContent(UIPanel root) {
+		focusedInput = null;
 		if (activePanel != null) {
 			activePanel.onDetach();
 		}
@@ -99,7 +113,7 @@ public class JSettlersScreen implements IContentSetable {
 		root.onAttach();
 		region.requestRedraw();
 	}
-	
+
 	@Override
 	public void goToStartScreen(String message) {
 		setContent(new StartScreen(baseConnector, this, revision));
@@ -111,6 +125,7 @@ public class JSettlersScreen implements IContentSetable {
 
 	@Override
 	public void setContent(RegionContent content) {
+		focusedInput = null;
 		if (activePanel != null) {
 			activePanel.onDetach();
 		}
@@ -118,10 +133,10 @@ public class JSettlersScreen implements IContentSetable {
 		region.setContent(content);
 		region.requestRedraw();
 	}
-	
+
 	@Override
 	public SoundPlayer getSoundPlayer() {
-	    return soundPlayer;
+		return soundPlayer;
 	}
 
 }

@@ -16,11 +16,15 @@ import jsettlers.graphics.startscreen.startlists.JoinableGamePanel;
 import jsettlers.graphics.startscreen.startlists.LoadGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewMultiplayerGamePanel;
+import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen extends UIPanel {
 	public static final OriginalImageLink BACKGROUND = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
+
+	private static final OriginalImageLink SETTINGS = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 0);
+	private static final OriginalImageLink SETTINGS_ACTIVE = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 1);
 
 	private final LinkedList<UILabeledButton> mainButtons =
 	        new LinkedList<UILabeledButton>();
@@ -57,6 +61,13 @@ public class StartScreen extends UIPanel {
 		        .45f);
 		// addMainButton("start-restoremultiplayer", new NewGamePanel(connector,
 		// contentSetable), .3f);
+		
+		addChild(new Button(new ExecutableAction() {
+			@Override
+			public void execute() {
+				contentSetable.setContent(new SettingScreen(contentSetable));
+			}
+		}, SETTINGS, SETTINGS_ACTIVE, ""), 0.1f, 0.1f, 0.175f, 0.2f);
 	}
 
 	void setContent(UIPanel panel) {

@@ -234,5 +234,10 @@ public enum EActionType {
 	 * 
 	 * @see SetMaterialPrioritiesAction
 	 */
-	SET_MATERIAL_PRIORITIES
+	SET_MATERIAL_PRIORITIES, 
+	
+	/**
+	 * Focus a UI Input
+	 */
+	FOCUS
 }
