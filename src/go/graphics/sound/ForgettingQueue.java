@@ -54,10 +54,14 @@ public class ForgettingQueue<T> {
 		}
 
 		public float getBalance() {
-			if (lvolume2 > rvolume2) {
-				return 1 - rvolume2 / lvolume2;
+			if (rvolume2 < .001f) {
+				return -1;
+			} else if (lvolume2 < .001f) {
+				return 1;
+			} else 	if (lvolume2 > rvolume2) {
+				return -1 + rvolume2 / lvolume2;
 			} else {
-				return -1 + lvolume2 / rvolume2;
+				return 1 - lvolume2 / rvolume2;
 			}
 		}
 		
