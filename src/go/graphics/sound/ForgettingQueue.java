@@ -48,5 +48,18 @@ public class ForgettingQueue<T> {
 		public float getRvolume() {
 	        return rvolume2;
         }
+
+		public float getVolume() {
+			return Math.max(lvolume2, rvolume2);
+		}
+
+		public float getBalance() {
+			if (lvolume2 > rvolume2) {
+				return 1 - rvolume2 / lvolume2;
+			} else {
+				return -1 + lvolume2 / rvolume2;
+			}
+		}
+		
 	}
 }
