@@ -22,14 +22,16 @@ public final class TextureMap {
 		"lagerhaus.0",
 		"ready.0",
 		"ready.1",
+		"slider.0",
 	};
 	private static final int[] indexes = new int[] {
-		2,
-		3,
-		0,
-		5,
-		4,
 		1,
+		0,
+		2,
+		4,
+		7,
 		6,
+		3,
+		5,
 	};
 }
