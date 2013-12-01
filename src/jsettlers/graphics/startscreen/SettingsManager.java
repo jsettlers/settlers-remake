@@ -13,7 +13,7 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.startscreen.interfaces.Player;
 
 public class SettingsManager {
-	private static final String FILE = "jsettlers";
+	private static final String FILE = ".jsettlers";
 	public static final String SETTING_UUID = "gid";
 	public static final String SETTING_USERNAME = "name";
 	public static final String SETTING_SERVER = "server";
