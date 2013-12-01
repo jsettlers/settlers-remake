@@ -239,5 +239,5 @@ public enum EActionType {
 	/**
 	 * Focus a UI Input
 	 */
-	FOCUS
+	FOCUS, NEXT_OF_TYPE
 }

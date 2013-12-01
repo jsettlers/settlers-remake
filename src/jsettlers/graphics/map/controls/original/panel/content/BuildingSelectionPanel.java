@@ -45,6 +45,8 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 	private static OriginalImageLink DESTROY = new OriginalImageLink(EImageLinkType.GUI, 3,
 	        198, 0);
+	private static OriginalImageLink NEXT = new OriginalImageLink(EImageLinkType.GUI, 3,
+	        230, 0);
 
 	private BuildingState lastState = null;
 
@@ -73,6 +75,10 @@ public class BuildingSelectionPanel implements IContentProvider {
 		        new Button(new Action(EActionType.ASK_DESTROY), DESTROY,
 		                DESTROY, Labels.getName(EActionType.DESTROY));
 		panel.addChild(destroy, .8f, .9f, 1, 1);
+		Button next =
+		        new Button(new Action(EActionType.NEXT_OF_TYPE), NEXT,
+		        		NEXT, Labels.getName(EActionType.NEXT_OF_TYPE));
+		panel.addChild(next, .6f, .9f, .8f, 1);
 
 		UIPanel namePanel = new UIPanel() {
 			@Override

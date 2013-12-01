@@ -623,6 +623,8 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
+		} else if ("n".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.NEXT_OF_TYPE);
 		} else if ("F5".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.ZOOM_IN);
 		} else if ("F6".equalsIgnoreCase(keyCode)) {
