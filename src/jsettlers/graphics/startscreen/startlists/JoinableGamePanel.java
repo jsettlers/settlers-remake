@@ -1,17 +1,14 @@
 package jsettlers.graphics.startscreen.startlists;
 
-import java.util.UUID;
-
-import jsettlers.common.CommonConstants;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
+import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
-import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
 import jsettlers.graphics.utils.UIListItem;
 
@@ -49,8 +46,10 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 
 	@Override
 	public void onAttach() {
-		connector = screen.getMultiplayerConnector(CommonConstants.DEFAULT_SERVER_ADDRESS,
-		        new Player(UUID.randomUUID().toString(), "Testplayer"));
+		SettingsManager sm = SettingsManager.getInstance();
+		connector =
+		        screen.getMultiplayerConnector(
+		                sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
 		super.onAttach();
 	}
 
@@ -61,13 +60,13 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 
 	@Override
 	public void onDetach() {
-	    super.onDetach();
-	    if (!gameStarted) {
-	    	connector.shutdown();
-	    }
-	    connector = null;
+		super.onDetach();
+		if (!gameStarted) {
+			connector.shutdown();
+		}
+		connector = null;
 	}
-	
+
 	@Override
 	protected String getSubmitTextId() {
 		return "start-joinmultiplayer-start";

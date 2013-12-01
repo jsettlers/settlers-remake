@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import jsettlers.graphics.reader.bytereader.ByteReader;
+import jsettlers.graphics.startscreen.SettingsManager;
 
 /**
  * Some known sounds:
@@ -90,7 +91,8 @@ public class SoundManager {
 		player.setSoundDataRetriever(new SoundDataRetriever(reader));
 	}
 
-	protected static int[][] getSoundStarts(ByteReader reader) throws IOException {
+	protected static int[][] getSoundStarts(ByteReader reader)
+	        throws IOException {
 		int[] seqheaderstarts = new int[SEQUENCE_N];
 		for (int i = 0; i < SEQUENCE_N; i++) {
 			seqheaderstarts[i] = reader.read32();
@@ -158,19 +160,6 @@ public class SoundManager {
 		return sndfile;
 	}
 
-	// private static short[] loadSound(ByteReader reader, int length)
-	// throws IOException {
-	// if (length < 0) {
-	// return new short[0];
-	// }
-	// short[] data = new short[length];
-	// for (int i = 0; i < length; i++) {
-	// data[i] = (short) reader.read16signed();
-	// }
-	//
-	// return data;
-	// }
-
 	public void playSound(int soundid, float volume1, float volume2) {
 		initialize();
 
@@ -178,7 +167,9 @@ public class SoundManager {
 			int[] alternatives = soundStarts[soundid];
 			if (alternatives != null && alternatives.length > 0) {
 				int rand = random.nextInt(alternatives.length);
-				player.playSound(alternatives[rand], volume1, volume2);
+				float volume = SettingsManager.getInstance().getVolume();
+				player.playSound(alternatives[rand], volume1 * volume, volume2
+				        * volume);
 			}
 		}
 	}
@@ -223,8 +214,9 @@ public class SoundManager {
 			return SoundManager.getSoundData(reader, soundStart);
 		}
 	}
-	
-	protected static short[] getSoundData(ByteReader reader, int start) throws IOException {
+
+	protected static short[] getSoundData(ByteReader reader, int start)
+	        throws IOException {
 		reader.skipTo(start);
 
 		int length = reader.read32() / 2 - 16;
