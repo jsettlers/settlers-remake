@@ -79,7 +79,6 @@ public class SwingSoundPlayer implements SoundPlayer {
 						dataLine.start();
 
 						Sound<Integer> sound = queue.take();
-						System.out.println("Volume: " +sound.getVolume());
 
 						byte[] buffer;
 						if (dataLine
