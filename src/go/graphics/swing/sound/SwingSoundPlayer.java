@@ -87,9 +87,10 @@ public class SwingSoundPlayer implements SoundPlayer {
 										.isControlSupported(FloatControl.Type.BALANCE)) {
 							buffer = transformData(soundDataRetriever
 									.getSoundData(sound.getData()));
-							((FloatControl) dataLine
-									.getControl(FloatControl.Type.VOLUME))
-									.setValue(sound.getVolume());
+							FloatControl volumeControl = (FloatControl) dataLine
+									.getControl(FloatControl.Type.VOLUME);
+							volumeControl.setValue(sound.getVolume()
+									* volumeControl.getMaximum());
 							((FloatControl) dataLine
 									.getControl(FloatControl.Type.BALANCE))
 									.setValue(sound.getBalance());
