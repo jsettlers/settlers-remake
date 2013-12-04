@@ -23,15 +23,17 @@ public final class TextureMap {
 		"ready.0",
 		"ready.1",
 		"slider.0",
+		"startscreen.0",
 	};
 	private static final int[] indexes = new int[] {
 		1,
 		0,
 		2,
 		4,
-		7,
+		8,
 		6,
 		3,
 		5,
+		7,
 	};
 }
