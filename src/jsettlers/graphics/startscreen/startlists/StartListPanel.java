@@ -2,6 +2,8 @@ package jsettlers.graphics.startscreen.startlists;
 
 import java.util.Collections;
 
+import jsettlers.common.images.DirectImageLink;
+import jsettlers.common.images.ImageLink;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
@@ -17,25 +19,31 @@ import jsettlers.graphics.utils.UIPanel;
  * 
  * @author michael
  */
-public abstract class StartListPanel<T> extends
-        UIPanel implements IChangingListListener<T>, ListItemGenerator<T> {
+public abstract class StartListPanel<T> extends UIPanel implements
+        IChangingListListener<T>, ListItemGenerator<T> {
 
+	private static final ImageLink LIST_BACKGROUND = new DirectImageLink(
+	        "startscreen.0");
 	private final IChangingList<T> list;
 	private final UIList<T> uiList;
 
 	public StartListPanel(IChangingList<T> list) {
 		this.list = list;
-		uiList = new UIList<T>(Collections.<T>emptyList(), this, .1f);
-		this.addChild(uiList, 0, .15f, 1, 1);
+		uiList = new UIList<T>(Collections.<T> emptyList(), this, .1f);
+		UIPanel listBg = new UIPanel();
+		listBg.addChild(uiList, 1f / 345, 1f / 406, 1 - 4f / 345, 1 - 5f / 406);
+		listBg.setBackground(LIST_BACKGROUND);
+		this.addChild(listBg, 0, .15f, 1, 1);
 
 		// start button
 		UILabeledButton startbutton =
-		        new UILabeledButton(Labels.getString(getSubmitTextId()), getSubmitAction());
+		        new UILabeledButton(Labels.getString(getSubmitTextId()),
+		                getSubmitAction());
 		this.addChild(startbutton, .3f, 0, 1, .1f);
 	}
 
 	protected abstract Action getSubmitAction();
-	
+
 	protected abstract String getSubmitTextId();
 
 	protected T getActiveListItem() {
@@ -46,11 +54,11 @@ public abstract class StartListPanel<T> extends
 	public void listChanged(IChangingList<T> list) {
 		uiList.setItems(list.getItems());
 	}
-	
+
 	protected IChangingList<T> getList() {
 		return list;
 	}
-	
+
 	@Override
 	public void onAttach() {
 		IChangingList<T> list2 = getList();

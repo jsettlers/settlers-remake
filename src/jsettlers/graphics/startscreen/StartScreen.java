@@ -7,6 +7,7 @@ import go.graphics.text.TextDrawer;
 import java.util.LinkedList;
 
 import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
@@ -20,7 +21,7 @@ import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen extends UIPanel {
-	public static final OriginalImageLink BACKGROUND = new OriginalImageLink(
+	public static final ImageLink BACKGROUND = new OriginalImageLink(
 	        EImageLinkType.GUI, 2, 29, 0);
 
 	private static final OriginalImageLink SETTINGS = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 0);
