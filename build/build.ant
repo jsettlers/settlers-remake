@@ -40,9 +40,12 @@ public class Revision {
          - - - - - - - - - - - - - - - - - -->
 	<target name="svn.findrev">
 		<property name="svn.findrev.max" value="0" />
-		<svn.findrev.in dir="../../jsettlers.main.swing" />
+		<svn.findrev.in dir="../../go.graphics" />
 		<svn.findrev.in dir="../../go.graphics.swing" />
 		<svn.findrev.in dir="../../go.graphics.nativegl" />
+		<svn.findrev.in dir="../../jsettlers.graphics" />
+		<svn.findrev.in dir="../../jsettlers.graphics.swing" />
+		<svn.findrev.in dir="../../jsettlers.main.swing" />
 		<echo message="SVN Revision for all dirs: ${svn.findrev.max}" />
 	</target>
 
