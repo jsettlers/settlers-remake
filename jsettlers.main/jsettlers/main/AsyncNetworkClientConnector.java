@@ -18,7 +18,7 @@ import networklib.infrastructure.channel.reject.RejectPacket;
 public class AsyncNetworkClientConnector {
 
 	private final Object lock = new Object();
-	private INetworkClient networkClient;
+	private INetworkClient networkClient = null;
 	private AsyncNetworkClientFactoryState state = AsyncNetworkClientFactoryState.CONNECTING_TO_SERVER;
 
 	public AsyncNetworkClientConnector(final String serverAddress, final String userId, final String userName,
@@ -69,7 +69,7 @@ public class AsyncNetworkClientConnector {
 
 	private void setState(AsyncNetworkClientFactoryState state) {
 		if (this.state == AsyncNetworkClientFactoryState.CLOSED) {
-			networkClient.close();// if we should already be closed, try to close the client.
+			close();
 		} else {
 			this.state = state;
 		}
@@ -79,10 +79,10 @@ public class AsyncNetworkClientConnector {
 		}
 	}
 
-	public void close() {
-		setState(AsyncNetworkClientFactoryState.CLOSED);
-		if (state != AsyncNetworkClientFactoryState.CONNECTING_TO_SERVER) {
+	public synchronized void close() {
+		if (networkClient != null) {
 			networkClient.close();
+			networkClient = null;
 		}
 	}
 
