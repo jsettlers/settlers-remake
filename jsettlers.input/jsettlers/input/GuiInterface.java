@@ -246,12 +246,52 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 		}
 
+		case NEXT_OF_TYPE:
+			selectNextOfType();
+			break;
+
 		case EXIT:
 			gameStoppable.stopGame();
 			break;
 
 		default:
 			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+		}
+	}
+
+	private void selectNextOfType() {
+		if (currentSelection.getSize() != 1) {
+			return;
+		}
+
+		if (currentSelection.getSelectionType() == ESelectionType.BUILDING) {
+			Building building = (Building) currentSelection.get(0);
+			EBuildingType buildingType = building.getBuildingType();
+			Building first = null;
+			Building next = null;
+			boolean buildingFound = false;
+
+			for (Building currBuilding : Building.getAllBuildings()) {
+				if (currBuilding == building) {
+					buildingFound = true;
+				} else {
+					if (currBuilding.getBuildingType() == buildingType && currBuilding.getPlayerId() == playerId) {
+						if (first == null) {
+							first = currBuilding;
+						}
+						if (buildingFound) {
+							next = currBuilding;
+							break;
+						}
+					}
+				}
+			}
+
+			if (next != null) {
+				setSelection(new SelectionSet(next));
+			} else if (first != null) {
+				setSelection(new SelectionSet(first));
+			}
 		}
 	}
 

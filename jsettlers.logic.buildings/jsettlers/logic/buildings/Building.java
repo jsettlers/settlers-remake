@@ -591,7 +591,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return stacks;
 	}
 
-	public static ConcurrentLinkedQueue<? extends IViewDistancable> getAllBuildings() {
+	public static ConcurrentLinkedQueue<Building> getAllBuildings() {
 		return allBuildings;
 	}
 
