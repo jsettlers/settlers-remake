@@ -11,8 +11,8 @@
 	<description>
             Additional build stuff needed for andrid main project
     </description>
-	
-	<import file="../../jsettlers.logic/build/svn.ant"/>
+
+	<import file="../../jsettlers.logic/build/svn.ant" />
 
 	<!-- ================================= 
           target: extract-rev             
@@ -40,9 +40,12 @@ public class Revision {
          - - - - - - - - - - - - - - - - - -->
 	<target name="svn.findrev">
 		<property name="svn.findrev.max" value="0" />
+		<property name="svn.findrev.max" value="0" />
+		<svn.findrev.in dir="../../go.graphics" />
+		<svn.findrev.in dir="../../go.graphics.android" />
+		<svn.findrev.in dir="../../jsettlers.graphics" />
 		<svn.findrev.in dir="../../jsettlers.graphics.androidui" />
 		<svn.findrev.in dir="../../jsettlers.main.android" />
-		<svn.findrev.in dir="../../go.graphics.android" />
 		<echo message="SVN Revision for all dirs: ${svn.findrev.max}" />
 	</target>
 
