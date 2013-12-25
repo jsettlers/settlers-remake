@@ -42,10 +42,8 @@ public class LogicRevision {
 		<property name="svn.findrev.max" value="0" />
 		<svn.findrev.in dir="../../jsettlers.algorithms" />
 		<svn.findrev.in dir="../../jsettlers.common" />
-		<svn.findrev.in dir="../../jsettlers.graphics" />
 		<svn.findrev.in dir="../../jsettlers.logic" />
 		<svn.findrev.in dir="../../networklib" />
-		<svn.findrev.in dir="../../go.graphics" />
 		<echo message="SVN Revision for all dirs: ${svn.findrev.max}" />
 	</target>
 
