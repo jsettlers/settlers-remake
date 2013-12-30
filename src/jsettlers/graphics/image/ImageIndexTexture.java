@@ -34,6 +34,7 @@ public final class ImageIndexTexture {
 			final int height = nextLowerPOT(Math.sqrt(i));
 			final int width = nextLowerPOT(i / height);
 
+			//TODO: Use better buffering.
 			final ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
 			while (data.hasRemaining()) {
 				data.put(in.readShort());

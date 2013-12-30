@@ -36,8 +36,9 @@ public class SettingScreen extends UIPanel {
 			FloatRectangle p = getPosition();
 			float x = p.getMinX() + volume * (1 - BUTTON_WIDTH) * p.getWidth();
 			float x2 = x + BUTTON_WIDTH * p.getWidth();
-			ImageProvider.getInstance().getImage(BUTTON_IMAGE)
-			        .drawImageAtRect(gl, x, p.getMinY(), x2, p.getMaxY());
+//			ImageProvider.getInstance().getImage(BUTTON_IMAGE)
+//			        .drawImageAtRect(gl, x, p.getMinY(), x2, p.getMaxY());
+			ImageProvider.getInstance().getImage(BUTTON_IMAGE).drawAt(gl, x, p.getMaxY());
 			super.drawAt(gl);
 		}
 
