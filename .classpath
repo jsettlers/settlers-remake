@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="networklib.test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.logic"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>

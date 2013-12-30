@@ -1,5 +1,6 @@
 package jsettlers.graphics.generation;
 
+import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,7 +10,8 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
- * This is a texture file. It contains a short array and can write images to the file.
+ * This is a texture file. It contains a short array and can write images to the
+ * file.
  * 
  * @author michael
  */
@@ -21,8 +23,8 @@ public class TextureFile {
 	private int linetop = 0;
 	// first pixel that does not belong to the current line.
 	private int linebottom = 0;
-	private ByteBuffer buffer;
-	private ShortBuffer shortBuffer;
+	private final ByteBuffer buffer;
+	private final ShortBuffer shortBuffer;
 
 	private final int width;
 	private final int height;
@@ -55,20 +57,21 @@ public class TextureFile {
 		linebottom = Math.max(linebottom, linetop + height);
 
 		// draw!
+		short[] buffer = new short[width];
 		for (int y = 0; imageData.hasRemaining(); y++) {
 			shortBuffer.position((starty + y) * this.width + startx);
-			for (int x = 0; x < width && imageData.hasRemaining(); x++) {
-				short pixel = imageData.get();
-				shortBuffer.put(pixel);
-			}
+			imageData.get(buffer);
+			shortBuffer.put(buffer);
 		}
 
-		return new TexturePosition((float) startx / this.width, (float) starty / this.height, (float) (startx + width + 1) / this.width,
+		return new TexturePosition((float) startx / this.width, (float) starty
+				/ this.height, (float) (startx + width + 1) / this.width,
 				(float) (starty + height + 1) / this.height);
 	}
 
 	public void write() throws IOException {
-		DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
+		DataOutputStream out = new DataOutputStream(new BufferedOutputStream(
+				new FileOutputStream(file)));
 		shortBuffer.rewind();
 		while (shortBuffer.hasRemaining()) {
 			out.writeShort(shortBuffer.get());

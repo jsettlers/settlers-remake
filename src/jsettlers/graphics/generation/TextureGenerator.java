@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,84 +26,186 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
 public final class TextureGenerator {
 
 	private static final Pattern ORIGINAL_SETTLER = Pattern
-	        .compile("original_\\d+_SETTLER_\\d+_\\d+");
+			.compile("original_\\d+_SETTLER_\\d+_\\d+");
+
+	private static class ImageData {
+		ImageDataPrivider data = null;
+		ImageDataPrivider torso = null;
+		public String name;
+	}
+
+	private class LoadImage implements Runnable {
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					long start = System.currentTimeMillis();
+					String toLoad = imagesToLoad.take();
+					ImageData data = addIdToTexture(toLoad);
+					imagesToStore.put(data);
+					System.out.println("Time for loading " + data.name + ": "
+							+ (System.currentTimeMillis() - start));
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private class StoreImage implements Runnable {
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					long start = System.currentTimeMillis();
+					ImageData data = imagesToStore.take();
+					storeImageData(data);
+					System.out.println("Time for storing " + data.name + ": "
+							+ (System.currentTimeMillis() - start));
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private static final int QUEUE_LENGTH = 32;
+	private static final int THREADS = 8;
 	private final File rawDirectory;
 	private final File outDirectory;
 	private final TextureIndex textureIndex;
 
-	public TextureGenerator(
-	        TextureIndex textureIndex) {
+	private final ArrayBlockingQueue<ImageData> imagesToStore = new ArrayBlockingQueue<>(
+			QUEUE_LENGTH);
+	private final ArrayBlockingQueue<String> imagesToLoad = new ArrayBlockingQueue<>(
+			QUEUE_LENGTH);
+	private final Object pipelineMutex = new Object();
+	private int imagesInPipeline;
+
+	private Thread[] started;
+
+	public TextureGenerator(TextureIndex textureIndex) {
 		this.textureIndex = textureIndex;
 		rawDirectory = new File("../jsettlers.common/resources/textures_raw");
 		outDirectory = new File("../jsettlers.common/resources/images");
-
 	}
-	
-	public void addTexturesByName(List<String> list) {
-		for (String name : list) {
-			addIdToTexture(name);
+
+	/**
+	 * Start all threads. FIXME: Leaks threads.
+	 */
+	public void start() {
+		started = new Thread[THREADS * 2];
+		for (int i = 0; i < THREADS; i++) {
+			started[i] = new Thread(new LoadImage());
+			started[i].start();
+		}
+		for (int i = 0; i < THREADS; i++) {
+			started[i + THREADS] = new Thread(new StoreImage());
+			started[i + THREADS].start();
 		}
 	}
 
-	private void addIdToTexture(String name) {
+	/**
+	 * Wait for completion on all threads.
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void join() {
+		try {
+			synchronized (pipelineMutex) {
+				while (imagesInPipeline > 0) {
+					pipelineMutex.wait();
+				}
+			}
+			for (int i = 0; i < started.length; i++) {
+				started[i].interrupt();
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	/**
+	 * Start compiling a new file. Might block some time.
+	 * 
+	 * @param list
+	 */
+	public void addTexturesByName(List<String> list) {
+		for (String name : list) {
+			try {
+				imagesToLoad.put(name);
+				synchronized (pipelineMutex) {
+					imagesInPipeline++;
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private ImageData addIdToTexture(String name) {
 		Matcher matcher = ORIGINAL_SETTLER.matcher(name);
-		ImageDataPrivider data = null;
-		ImageDataPrivider torso = null;
+		ImageData imageData = new ImageData();
+		imageData.name = name;
+
+		// open original image files
 		if (matcher.matches()) {
 			File datfile = null; // TODO: Load dat file matcher.group(1)
 			AdvancedDatFileReader reader = new AdvancedDatFileReader(datfile);
-			Image image =
-			        reader.getSettlers()
-			                .get(Integer.parseInt(matcher.group(2)))
-			                .getImageSafe(Integer.parseInt(matcher.group(3)));
+			Image image = reader.getSettlers()
+					.get(Integer.parseInt(matcher.group(2)))
+					.getImageSafe(Integer.parseInt(matcher.group(3)));
 			if (image instanceof SingleImage) {
-				data = (SingleImage) image;
+				imageData.data = (SingleImage) image;
 			}
 			if (image instanceof SettlerImage) {
-				torso = (SingleImage) ((SettlerImage) image).getTorso();
+				imageData.torso = (SingleImage) ((SettlerImage) image)
+						.getTorso();
 			}
 		} else {
-			data = getImage(name);
-			torso = getImage(name + ".t");
+			imageData.data = getImage(name);
+			imageData.torso = getImage(name + ".t");
 		}
 
-		if (data == null) {
+		if (imageData.data == null) {
 			System.err.println("WATNING: loading image " + name
-			        + ": No image file found.");
+					+ ": No image file found.");
+		}
+		return imageData;
+	}
+
+	private void storeImageData(ImageData imageData) {
+		storeImage(imageData.name, imageData.data, imageData.torso != null);
+		if (imageData.torso != null) {
+			storeImage(imageData.name, imageData.torso, false);
 		}
 
+		synchronized (pipelineMutex) {
+			imagesInPipeline--;
+			pipelineMutex.notifyAll();
+		}
+	}
+
+	private void storeImage(String name, ImageDataPrivider data,
+			boolean hasTorso) {
 		try {
 			if (data != null) {
 				int texture = textureIndex.getNextTextureIndex();
 				TexturePosition position = addAsNewImage(data, texture);
 				textureIndex.registerTexture(name, texture, data.getOffsetX(),
-				        data.getOffsetY(), data.getWidth(), data.getHeight(), torso != null, position);
+						data.getOffsetY(), data.getWidth(), data.getHeight(),
+						hasTorso, position);
 			}
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem writing image " + name
-			        + ". Pronblem was: " + t.getMessage());
-		}
-		try {
-			if (torso != null) {
-				int texture = textureIndex.getNextTextureIndex();
-				TexturePosition position = addAsNewImage(torso, texture);
-				textureIndex.registerTexture(name, texture, torso.getOffsetX(),
-						torso.getOffsetY(), 0, 0, false, position);
-			}
-		} catch (Throwable t) {
-			System.err.println("WARNING: Problem writing image " + name
-			        + ". Pronblem was: " + t.getMessage());
+					+ ". Problem was: " + t.getMessage());
 		}
 	}
 
+	// This is slow.
 	private TexturePosition addAsNewImage(ImageDataPrivider data, int texture)
-	        throws IOException {
+			throws IOException {
 		int size = getNextPOT(Math.max(data.getWidth(), data.getHeight()));
-		TextureFile file =
-		        new TextureFile(new File(outDirectory, texture + ""), size,
-		                size);
-		TexturePosition position =
-		        file.addImage(data.getData(), data.getWidth());
+		TextureFile file = new TextureFile(
+				new File(outDirectory, texture + ""), size, size);
+		TexturePosition position = file.addImage(data.getData(),
+				data.getWidth());
 		file.write();
 		return position;
 	}
@@ -124,27 +227,26 @@ public final class TextureGenerator {
 			return new ProvidedImage(image, offsets);
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem reading image " + id
-			        + ". Pronblem was: " + t.getMessage());
+					+ ". Pronblem was: " + t.getMessage());
 			return null;
 		}
 	}
 
 	private int[] getOffsets(String id) {
-		try {
-			File offset = new File(rawDirectory, id + ".png.offset");
-			int[] offsets = new int[2];
-			Scanner in = new Scanner(offset);
+		int[] offsets = new int[2];
+		File offset = new File(rawDirectory, id + ".png.offset");
+		try (Scanner in = new Scanner(offset)) {
 			offsets[0] = in.nextInt();
 			in.skip("\\s+");
 			offsets[1] = in.nextInt();
+			in.close();
 			return offsets;
 
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem reading offsets for " + id
-			        + ", assuming (0,0). Pronblem was: " + t.getMessage());
-			return new int[] {
-			        0, 0
-			};
+					+ ", assuming (0,0). Pronblem was: " + t.getMessage());
+			return new int[] { 0, 0 };
 		}
 	}
+
 }

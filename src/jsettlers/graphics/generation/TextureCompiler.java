@@ -26,6 +26,9 @@ public class TextureCompiler implements Runnable, TextureIndex {
 
 	private final Hashtable<String, Integer> imageIndexes = new Hashtable<String, Integer>();
 
+	private final Object imageIndexMutex = new Object();
+	private final Object textureCounterMutex = new Object();
+
 	public static void main(String[] args) {
 		new TextureCompiler().run();
 	}
@@ -36,6 +39,7 @@ public class TextureCompiler implements Runnable, TextureIndex {
 			openTextureIndex();
 
 			TextureGenerator gen = new TextureGenerator(this);
+			gen.start();
 			String[] files = rawDirectory.list();
 			for (String file : files) {
 				if (file.matches(".*\\.png")) {
@@ -43,6 +47,7 @@ public class TextureCompiler implements Runnable, TextureIndex {
 					gen.addTexturesByName(Collections.singletonList(name));
 				}
 			}
+			gen.join();
 
 			closeTextureIndex();
 		} catch (IOException e) {
@@ -112,29 +117,33 @@ public class TextureCompiler implements Runnable, TextureIndex {
 	public void registerTexture(String name, int textureFile, int offsetx,
 			int offsety, int width, int height, boolean hasTorso,
 			TexturePosition position) throws IOException {
-		String safename = name.replaceAll("[^a-zA-Z0-9._]", "_");
-		// textureConstantsOut.println("	public static final int " + safename +
-		// " = " + imageIndexCounter + ";");
-		// textureConstantsOut.println();
+		synchronized (imageIndexMutex) {
+			String safename = name.replaceAll("[^a-zA-Z0-9._]", "_");
+			// textureConstantsOut.println("	public static final int " +
+			// safename +
+			// " = " + imageIndexCounter + ";");
+			// textureConstantsOut.println();
 
-		imageIndexes.put(safename, imageIndexCounter);
+			imageIndexes.put(safename, imageIndexCounter);
 
-		textureIndexOut.writeShort(offsetx);
-		textureIndexOut.writeShort(offsety);
-		textureIndexOut.writeShort(width);
-		textureIndexOut.writeShort(height);
-		textureIndexOut.writeShort(hasTorso ? textureFile | 0x8000
-				: textureFile);
+			textureIndexOut.writeShort(offsetx);
+			textureIndexOut.writeShort(offsety);
+			textureIndexOut.writeShort(width);
+			textureIndexOut.writeShort(height);
+			textureIndexOut.writeShort(hasTorso ? textureFile | 0x8000
+					: textureFile);
 
-		textureIndexOut.writeShort(toShort(position.getLeft()));
-		textureIndexOut.writeShort(toShort(position.getTop()));
-		textureIndexOut.writeShort(toShort(position.getRight()));
-		textureIndexOut.writeShort(toShort(position.getBottom()));
+			textureIndexOut.writeShort(toShort(position.getLeft()));
+			textureIndexOut.writeShort(toShort(position.getTop()));
+			textureIndexOut.writeShort(toShort(position.getRight()));
+			textureIndexOut.writeShort(toShort(position.getBottom()));
 
-		System.out.println("Added image " + imageIndexCounter + " to texture "
-				+ textureFile + " and added to constant index as " + safename);
+			System.out.println("Added image " + imageIndexCounter
+					+ " to texture " + textureFile
+					+ " and added to constant index as " + safename);
 
-		imageIndexCounter++;
+			imageIndexCounter++;
+		}
 	}
 
 	private static int toShort(float left) {
@@ -143,6 +152,8 @@ public class TextureCompiler implements Runnable, TextureIndex {
 
 	@Override
 	public int getNextTextureIndex() {
-		return textureCounter++;
+		synchronized (textureCounterMutex) {
+			return textureCounter++;
+		}
 	}
 }
