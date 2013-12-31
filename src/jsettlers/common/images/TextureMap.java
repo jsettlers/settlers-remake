@@ -26,14 +26,14 @@ public final class TextureMap {
 		"startscreen.0",
 	};
 	private static final int[] indexes = new int[] {
-		1,
 		0,
-		2,
-		4,
-		8,
+		1,
 		6,
-		3,
+		8,
 		5,
+		3,
+		4,
+		2,
 		7,
 	};
 }
