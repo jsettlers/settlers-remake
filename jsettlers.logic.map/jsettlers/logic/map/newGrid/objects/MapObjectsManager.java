@@ -33,8 +33,8 @@ import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.objects.tree.AdultTree;
 import jsettlers.logic.objects.tree.Tree;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.Timer100Milli;
+import jsettlers.logic.timer.IScheduledTimerable;
+import jsettlers.logic.timer.RescheduleTimer;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
@@ -43,24 +43,29 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class MapObjectsManager implements ITimerable, Serializable {
+public final class MapObjectsManager implements IScheduledTimerable, Serializable {
 	private static final long serialVersionUID = 1833055351956872224L;
 
 	private final IMapObjectsManagerGrid grid;
 	private final PriorityQueue<TimeEvent> timingQueue = new PriorityQueue<TimeEvent>();
 
+	private boolean killed = false;
+
 	public MapObjectsManager(IMapObjectsManagerGrid grid) {
 		this.grid = grid;
-		Timer100Milli.add(this);
+		RescheduleTimer.add(this, 100);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
-		Timer100Milli.add(this);
 	}
 
 	@Override
-	public void timerEvent() {
+	public int timerEvent() {
+		if (killed) {
+			return -1;
+		}
+
 		int gameTime = MatchConstants.clock.getTime();
 
 		TimeEvent curr = null;
@@ -76,11 +81,12 @@ public final class MapObjectsManager implements ITimerable, Serializable {
 			curr = timingQueue.peek();
 		}
 
+		return 100;
 	}
 
 	@Override
 	public void kill() {
-		Timer100Milli.remove(this);
+		killed = true;
 	}
 
 	public boolean executeSearchType(ShortPoint2D pos, ESearchType type) {

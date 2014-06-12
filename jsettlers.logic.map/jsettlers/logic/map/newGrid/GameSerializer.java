@@ -1,10 +1,8 @@
 package jsettlers.logic.map.newGrid;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
@@ -30,9 +28,7 @@ public class GameSerializer {
 	 *            The output file/stream for the game.
 	 * @throws IOException
 	 */
-	public void save(MainGrid grid, OutputStream out) throws IOException {
-		final ObjectOutputStream oos = new ObjectOutputStream(out);
-
+	public void save(MainGrid grid, final ObjectOutputStream oos) throws IOException {
 		GameSaveTask runnable = new GameSaveTask(grid, oos);
 		Thread t = new Thread(null, runnable, "SaveThread", SAVE_STACK_SIZE);
 		t.start();
@@ -47,13 +43,10 @@ public class GameSerializer {
 		}
 
 		oos.flush();
-		oos.close();
 	}
 
-	public MainGrid load(InputStream inStream) throws MapLoadException {
+	public MainGrid load(final ObjectInputStream ois) throws MapLoadException {
 		try {
-			final ObjectInputStream ois = new ObjectInputStream(inStream);
-
 			LoadRunnable runnable = new LoadRunnable(ois);
 			Thread t = new Thread(null, runnable, "LoadThread", LOAD_STACK_SIZE);
 			t.start();

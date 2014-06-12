@@ -2,7 +2,7 @@ package jsettlers.logic.map.save.loader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.ObjectInputStream;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
@@ -10,6 +10,7 @@ import jsettlers.input.UIState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * 
@@ -25,11 +26,14 @@ public class SavegameLoader extends MapLoader {
 	@Override
 	public MainGridWithUiSettings loadMainGrid(byte player) throws MapLoadException {
 		try {
-			InputStream inStream = super.getMapDataStream();
+			ObjectInputStream ois = new ObjectInputStream(super.getMapDataStream());
 
-			UIState uiState = UIState.readFrom(inStream);
+			UIState uiState = UIState.readFrom(ois);
 			GameSerializer gameSerializer = new GameSerializer();
-			MainGrid mainGrid = gameSerializer.load(inStream);
+			MainGrid mainGrid = gameSerializer.load(ois);
+			RescheduleTimer.loadFrom(ois);
+
+			ois.close();
 
 			return new MainGridWithUiSettings(mainGrid, uiState);
 		} catch (IOException ex) {

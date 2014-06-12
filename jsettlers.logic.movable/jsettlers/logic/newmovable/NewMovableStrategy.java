@@ -9,6 +9,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
 import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
@@ -90,7 +91,13 @@ public abstract class NewMovableStrategy implements Serializable {
 		}
 	}
 
-	protected abstract void action();
+	protected int action() {
+		actionStandardTiming();
+		return Constants.MOVABLE_INTERRUPT_DELAY;
+	}
+
+	protected void actionStandardTiming() {
+	}
 
 	protected final void convertTo(EMovableType movableType) {
 		movable.convertTo(movableType);

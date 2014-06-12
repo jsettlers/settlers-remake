@@ -17,7 +17,7 @@ import jsettlers.logic.player.Player;
 public abstract class SpawnBuilding extends Building {
 	private static final long serialVersionUID = 7584783336566602225L;
 
-	private byte delayCtr = 0;
+	private static final int PRODUCE_PERIOD = 2000;
 	private byte produced = 0;
 
 	protected SpawnBuilding(EBuildingType type, Player player) {
@@ -30,27 +30,31 @@ public abstract class SpawnBuilding extends Building {
 	}
 
 	@Override
-	protected void constructionFinishedEvent() {
+	protected int constructionFinishedEvent() {
+		return PRODUCE_PERIOD;
 	}
 
 	@Override
-	protected final void subTimerEvent() {
-		if (produced < getProduceLimit()) {
+	protected final int subTimerEvent() {
+		int rescheduleDelay;
+		NewMovable movableAtDoor = super.getGrid().getMovable(super.getDoor());
 
-			if (delayCtr > 20) {
-				NewMovable movableAtDoor = super.getGrid().getMovable(super.getDoor());
-				if (movableAtDoor == null) {
-					delayCtr = 0;
+		if (movableAtDoor == null) {
+			movableAtDoor = new NewMovable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
+			produced++;
 
-					movableAtDoor = new NewMovable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
-					produced++;
-				}
-
-				movableAtDoor.leavePosition();
+			if (produced < getProduceLimit()) {
+				rescheduleDelay = PRODUCE_PERIOD;
 			} else {
-				delayCtr++;
+				rescheduleDelay = -1; // remove from scheduling
 			}
+		} else {
+			rescheduleDelay = 100; // door position wasn't free, so check more often
 		}
+
+		movableAtDoor.leavePosition();
+
+		return rescheduleDelay;
 	}
 
 	protected abstract EMovableType getMovableType();

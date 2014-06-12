@@ -1,7 +1,5 @@
 package jsettlers.logic.map.newGrid.partition.manager;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,8 +35,8 @@ import jsettlers.logic.map.newGrid.partition.manager.objects.SoilderCreationRequ
 import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.map.newGrid.partition.manager.objects.WorkerRequest;
 import jsettlers.logic.map.newGrid.partition.manager.settings.PartitionManagerSettings;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.PartitionManagerTimer;
+import jsettlers.logic.timer.IScheduledTimerable;
+import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * This is a manager for a partition. It stores offers, requests and jobless to build up jobs and give them to the jobless.
@@ -46,7 +44,8 @@ import jsettlers.logic.timer.PartitionManagerTimer;
  * @author Andreas Eberle
  * 
  */
-public class PartitionManager implements ITimerable, Serializable, IWorkerRequester {
+public class PartitionManager implements IScheduledTimerable, Serializable, IWorkerRequester {
+	private static final int SCHEDULING_PERIOD = 25;
 	private static final long serialVersionUID = 1L;
 	private static final int BRICKLAYER_DIGGER_MAX_CONCURRENT_REQUESTS = 1;
 
@@ -97,12 +96,11 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	public void startManager() {
 		stopped = false;
-		PartitionManagerTimer.add(this);
+		RescheduleTimer.add(this, SCHEDULING_PERIOD);
 	}
 
 	public void stopManager() {
 		stopped = true;
-		PartitionManagerTimer.remove(this);
 	}
 
 	public boolean isStopped() {
@@ -242,7 +240,11 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 	}
 
 	@Override
-	public final void timerEvent() {
+	public final int timerEvent() {
+		if (stopped) {
+			return -1; // unschedule
+		}
+
 		materialsManager.distributeJobs();
 
 		handleWorkerCreationRequest();
@@ -252,6 +254,8 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 		handleBricklayerRequest();
 
 		handleWorkerRequest();
+
+		return SCHEDULING_PERIOD;
 	}
 
 	private void handleWorkerRequest() {
@@ -428,11 +432,6 @@ public class PartitionManager implements ITimerable, Serializable, IWorkerReques
 
 	private void createNewTooluser(EMovableType movableType, ShortPoint2D position) {
 		workerCreationRequests.pushLast(movableType, new WorkerCreationRequest(movableType, position));
-	}
-
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		startManager();
 	}
 
 	/**

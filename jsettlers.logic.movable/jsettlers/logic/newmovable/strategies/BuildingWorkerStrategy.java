@@ -37,7 +37,6 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private IWorkerRequestBuilding building;
 
 	private boolean done;
-	private short delayCtr;
 
 	private EMaterialType poppedMaterial;
 	private int searchFailedCtr = 0;
@@ -69,13 +68,13 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	@Override
-	protected void action() {
+	protected int action() {
 		if (isJobless())
-			return;
+			return Constants.MOVABLE_INTERRUPT_DELAY;
 
 		if (!building.isNotDestroyed()) { // check if building is still ok
 			buildingDestroyed();
-			return;
+			return Constants.MOVABLE_INTERRUPT_DELAY;
 		}
 
 		switch (currentJob.getType()) {
@@ -91,16 +90,18 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			}
 			break;
 
-		case WAIT:
-			waitSeconds();
-			break;
+		case WAIT: {
+			int waitTime = (int) (currentJob.getTime() * 1000);
+			jobFinished();
+			return waitTime;
+		}
 
 		case WALK:
 			super.forceGoInDirection(currentJob.getDirection());
 			jobFinished();
 			break;
 
-		case SHOW:
+		case SHOW: {
 			if (building.getPriority() == EPriority.STOPPED) {
 				break;
 			}
@@ -110,6 +111,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			super.setVisible(true);
 			jobFinished();
 			break;
+		}
 
 		case HIDE:
 			super.setVisible(false);
@@ -233,6 +235,8 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		}
+
+		return Constants.MOVABLE_INTERRUPT_DELAY;
 	}
 
 	private boolean isJobless() {
@@ -323,18 +327,6 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 
 			if (searchFailedCtr > 10) {
 				super.getPlayer().showMessage(SimpleMessage.cannotFindWork(building));
-			}
-		}
-	}
-
-	private void waitSeconds() {
-		if (!done) {
-			done = true;
-			delayCtr = (short) (currentJob.getTime() * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
-		} else {
-			delayCtr--;
-			if (delayCtr <= 0) {
-				jobFinished();
 			}
 		}
 	}

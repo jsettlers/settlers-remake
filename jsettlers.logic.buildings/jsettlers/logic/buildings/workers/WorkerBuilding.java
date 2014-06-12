@@ -31,8 +31,9 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	protected final void constructionFinishedEvent() {
+	protected final int constructionFinishedEvent() {
 		requestWorker();
+		return -1; // no scheduling required
 	}
 
 	private void requestWorker() {
@@ -40,7 +41,9 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	protected final void subTimerEvent() {
+	protected final int subTimerEvent() {
+		assert false : "This should never be called, as this building should not be scheduled.";
+		return -1;
 	}
 
 	@Override

@@ -16,7 +16,7 @@ public final class DummySpecialistStrategy extends NewMovableStrategy {
 	}
 
 	@Override
-	protected void action() {
+	protected void actionStandardTiming() {
 	}
 
 	@Override

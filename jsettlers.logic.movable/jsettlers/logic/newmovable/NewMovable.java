@@ -30,8 +30,8 @@ import jsettlers.logic.newmovable.interfaces.IIDable;
 import jsettlers.logic.newmovable.strategies.FleeStrategy;
 import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.MovableTimer;
+import jsettlers.logic.timer.IScheduledTimerable;
+import jsettlers.logic.timer.RescheduleTimer;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
@@ -40,7 +40,7 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements ITimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
+public final class NewMovable implements IScheduledTimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
 		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
 	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
@@ -90,7 +90,7 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
-		MovableTimer.add(this);
+		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_DELAY);
 
 		this.id = nextID++;
 		movablesByID.put(this.id, this);
@@ -111,7 +111,6 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 		movablesByID.put(this.id, this);
 		allMovables.add(this);
 		nextID = Math.max(nextID, this.id + 1);
-		MovableTimer.add(this);
 	}
 
 	/**
@@ -120,7 +119,7 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	 * @param targetPosition
 	 */
 	public final void moveTo(ShortPoint2D targetPosition) {
-		if (movableType.isMoveToAble() && state != ENewMovableState.SLEEPING && strategy.isMoveToAble()) {
+		if (movableType.isMoveToAble() && strategy.isMoveToAble()) {
 			this.moveToRequest = targetPosition;
 		}
 	}
@@ -145,40 +144,13 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 		}
 	}
 
-	/**
-	 * Positions this movable at the given position on the it's grid.<br>
-	 * If the movable is already located on the grid, it's removed from it's old position and then added to the new one.<br>
-	 * If the given position is null, the movable will only be removed from the grid and thus get invisible.
-	 * 
-	 * @param position
-	 * @return this movable
-	 */
-	protected final NewMovable positionAt(ShortPoint2D position) {
-		assert position == null || grid.hasNoMovableAt(position.x, position.y) : "given position not free for movable! " + position;
-
-		if (this.position != null) {
-			grid.leavePosition(this.position, this);
-			setState(ENewMovableState.SLEEPING);
-		}
-		this.position = position;
-
-		if (position != null) {
-			grid.enterPosition(this.position, this, true);
-			setState(ENewMovableState.DOING_NOTHING);
-		}
-
-		return this;
-	}
-
 	@Override
-	public void timerEvent() {
+	public int timerEvent() {
 		if (health <= 0) {
-			return;
+			return -1;
 		}
 
 		switch (state) {
-		case SLEEPING:
-			return;
 
 		case DOING_NOTHING:
 			if (visible && enableNothingToDo) {
@@ -225,7 +197,9 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 		}
 
 		if (state == ENewMovableState.DOING_NOTHING) {
-			strategy.action();
+			return strategy.action();
+		} else {
+			return Constants.MOVABLE_INTERRUPT_DELAY;
 		}
 	}
 
@@ -380,10 +354,6 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
 			return false; // we can't do anything
-
-		case SLEEPING:
-			assert false : "got pushed while sleeping: should not be possible!";
-			return false;
 
 		case DEBUG_STATE:
 			return false;
@@ -615,13 +585,12 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 	 */
 	@Override
 	public final void kill() {
-		if (health == -100) {
+		if (health <= -100) {
 			return; // this movable already died.
 		}
 
-		MovableTimer.remove(this);
 		grid.leavePosition(this.position, this);
-		this.health = -100;
+		this.health = -200;
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 
 		movablesByID.remove(this.getID());
@@ -807,7 +776,6 @@ public final class NewMovable implements ITimerable, IPathCalculatable, IIDable,
 		PLAYING_ACTION,
 		PATHING,
 		DOING_NOTHING,
-		SLEEPING,
 		GOING_SINGLE_STEP,
 
 		/**

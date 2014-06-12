@@ -40,12 +40,13 @@ import networklib.synchronic.random.RandomSingleton;
 public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, IPathCalculatable, IOccupyableBuilding, Serializable {
 	private static final long serialVersionUID = 5267249978497095473L;
 
+	private static final int TIMER_PERIOD = 500;
+
 	private final LinkedList<TowerOccupier> occupiers;
 	private final LinkedList<ESearchType> searchedSoldiers = new LinkedList<ESearchType>();
 	private final LinkedList<OccupyerPlace> emptyPlaces = new LinkedList<OccupyerPlace>();
 
 	private DijkstraContinuableRequest request;
-	private byte delayCtr;
 
 	private boolean occupiedArea;
 	private float doorHealth = 1.0f;
@@ -61,8 +62,6 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		this.occupiers = new LinkedList<TowerOccupier>(); // for testing purposes
 
 		initSoldierRequests();
-
-		delayCtr = (byte) RandomSingleton.getInt(0, 3);
 	}
 
 	private void initSoldierRequests() {
@@ -80,8 +79,9 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	protected final void constructionFinishedEvent() {
+	protected final int constructionFinishedEvent() {
 		setAttackableTowerObject(true);
+		return TIMER_PERIOD + RandomSingleton.getInt(0, 200); // adding random prevents simultaneous scan after map creation
 	}
 
 	private void setAttackableTowerObject(boolean set) {
@@ -149,33 +149,29 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	}
 
 	@Override
-	protected final void subTimerEvent() {
-		delayCtr++;
-		if (delayCtr > 5) {
-			delayCtr = 0;
+	protected final int subTimerEvent() {
+		if (doorHealth < 1 && !inFight) {
+			doorHealth = Math.min(1, doorHealth + Constants.TOWER_DOOR_REGENERATION);
+		}
 
-			if (doorHealth < 1 && !inFight) {
-				doorHealth = Math.min(1, doorHealth + Constants.TOWER_DOOR_REGENERATION);
+		if (!searchedSoldiers.isEmpty()) {
+			if (request == null) {
+				request = new DijkstraContinuableRequest(this, super.getPos().x, super.getPos().y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
 			}
+			request.setSearchType(searchedSoldiers.peek());
 
-			if (!searchedSoldiers.isEmpty()) {
-				if (request == null) {
-					request = new DijkstraContinuableRequest(this, super.getPos().x, super.getPos().y, (short) 1, Constants.TOWER_SEARCH_RADIUS);
-				}
-				request.setSearchType(searchedSoldiers.peek());
+			Path path = super.getGrid().getDijkstra().find(request);
+			if (path != null) {
+				System.out.println("soldier found");
 
-				Path path = super.getGrid().getDijkstra().find(request);
-				if (path != null) {
-					System.out.println("soldier found");
-
-					NewMovable soldier = super.getGrid().getMovable(path.getTargetPos());
-					if (soldier != null && soldier.setOccupyableBuilding(this)) {
-						ESearchType searchedSoldier = searchedSoldiers.pop();
-						currentlyCommingSoldiers[getSoldierType(searchedSoldier).ordinal()]++;
-					}// soldier wasn't at the position or wasn't able to take the job to go to this building
-				}
+				NewMovable soldier = super.getGrid().getMovable(path.getTargetPos());
+				if (soldier != null && soldier.setOccupyableBuilding(this)) {
+					ESearchType searchedSoldier = searchedSoldiers.pop();
+					currentlyCommingSoldiers[getSoldierType(searchedSoldier).ordinal()]++;
+				}// soldier wasn't at the position or wasn't able to take the job to go to this building
 			}
 		}
+		return TIMER_PERIOD;
 	}
 
 	private ESoldierType getSoldierType(ESearchType searchedSoldier) {

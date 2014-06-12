@@ -29,11 +29,13 @@ public final class StockBuilding extends Building {
 	}
 
 	@Override
-	protected void subTimerEvent() {
+	protected int subTimerEvent() {
+		return -1;
 	}
 
 	@Override
-	protected void constructionFinishedEvent() {
+	protected int constructionFinishedEvent() {
+		return -1;
 	}
 
 	@Override

@@ -9,8 +9,8 @@ import java.util.LinkedList;
 
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.Timer100Milli;
+import jsettlers.logic.timer.IScheduledTimerable;
+import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * Resets the positions flattened by movables to grass after a while.
@@ -18,22 +18,17 @@ import jsettlers.logic.timer.Timer100Milli;
  * @author Andreas Eberle
  * 
  */
-final class FlattenedResetter implements ITimerable, Serializable {
+final class FlattenedResetter implements IScheduledTimerable, Serializable {
 	private static final long serialVersionUID = -7786860099434140327L;
-
-	/**
-	 * number of ticks of the 100ms timer to be ignored before the next reset run will be done.
-	 */
-	private static final byte EXECUTION_DELAY = 15;
+	private static final int SCHEDULE_INTERVAL = 1500;
 
 	private transient LinkedList<ShortPoint2D> positions = new LinkedList<ShortPoint2D>();
-	private byte delayCtr = 0;
 	private final IFlattenedResettable grid;
 
 	FlattenedResetter(IFlattenedResettable grid) {
 		this.grid = grid;
 		positions = new LinkedList<ShortPoint2D>();
-		Timer100Milli.add(this);
+		RescheduleTimer.add(this, SCHEDULE_INTERVAL);
 	}
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -55,8 +50,6 @@ final class FlattenedResetter implements ITimerable, Serializable {
 			positions.add(curr);
 			curr = (ShortPoint2D) ois.readObject();
 		}
-
-		Timer100Milli.add(this);
 	}
 
 	public void addPosition(int x, int y) {
@@ -73,18 +66,15 @@ final class FlattenedResetter implements ITimerable, Serializable {
 	}
 
 	@Override
-	public void timerEvent() {
-		delayCtr++;
-		if (delayCtr >= EXECUTION_DELAY) {
-			delayCtr = 0;
-
-			for (Iterator<ShortPoint2D> iter = positions.iterator(); iter.hasNext();) {
-				ShortPoint2D currPos = iter.next();
-				if (grid.countFlattenedDown(currPos.x, currPos.y)) {
-					iter.remove();
-				}
+	public int timerEvent() {
+		for (Iterator<ShortPoint2D> iter = positions.iterator(); iter.hasNext();) {
+			ShortPoint2D currPos = iter.next();
+			if (grid.countFlattenedDown(currPos.x, currPos.y)) {
+				iter.remove();
 			}
 		}
+
+		return SCHEDULE_INTERVAL;
 	}
 
 	@Override

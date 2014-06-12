@@ -37,15 +37,16 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDig
 import jsettlers.logic.newmovable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
-import jsettlers.logic.timer.ITimerable;
-import jsettlers.logic.timer.Timer100Milli;
+import jsettlers.logic.timer.IScheduledTimerable;
+import jsettlers.logic.timer.RescheduleTimer;
 
-public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, ITimerable, IDebugable,
+public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, IScheduledTimerable,
+		IDebugable,
 		IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
 
 	private static final byte STATE_CREATED = 0;
-	private static final byte STATE_POSITIONED = 1;
+	private static final byte STATE_IN_FLATTERNING = 1;
 	private static final byte STATE_WAITING_FOR_MATERIAL = 2;
 	private static final byte STATE_CONSTRUCTED = 3;
 	private static final byte STATE_DESTROYED = 4;
@@ -54,6 +55,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private static final float BUILDING_DESTRUCTION_SMOKE_DURATION = 1.2f;
 	private static final short UNOCCUPIED_VIEW_DISTANCE = 5;
 	private static final short UNCONSTRUCTED_VIEW_DISTANCE = 0;
+
+	private static final int IS_FLATTENED_RECHECK_PERIOD = 1000;
+	private static final int WAITING_FOR_MATERIAL_PERIOD = 1000;
 
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_CONSTRUCTION = new EPriority[] { EPriority.LOW, EPriority.HIGH, EPriority.STOPPED };
 	private static final EPriority[] SUPPORTED_PRIORITIES_FOR_NON_WORKERS = new EPriority[0];
@@ -73,7 +77,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private float constructionProgress = 0.0f;
 	private byte heightAvg;
 
-	private short delayCtr = 0;
+	private short remainingMaterialActions = 0;
 	private List<RequestStack> stacks;
 
 	protected Building(EBuildingType type, Player player) {
@@ -86,7 +90,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		ois.defaultReadObject();
 		allBuildings.add(this);
-		Timer100Milli.add(this); // the building is added to the timer in positionAt(..)
 	}
 
 	@Override
@@ -118,7 +121,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 				placeAdditionalMapObjects(grid, pos, true);
 
-				this.state = STATE_POSITIONED;
+				this.state = STATE_IN_FLATTERNING;
+				RescheduleTimer.add(this, IS_FLATTENED_RECHECK_PERIOD);
 
 				requestDiggers();
 			}
@@ -193,8 +197,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			this.pos = pos;
 			this.grid = grid;
 
-			Timer100Milli.add(this);
-
 			if (getFlagType() == EMapObjectType.FLAG_DOOR) {
 				placeFlag(true);
 			}
@@ -256,47 +258,47 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	@Override
-	public void timerEvent() {
+	public int timerEvent() {
 		switch (state) {
 		case STATE_CREATED:
 			assert false : "this should never happen!";
-			break;
-		case STATE_POSITIONED:
-			if (waitedSecond()) {
-				if (isFlatened()) {
-					placeAdditionalMapObjects(grid, pos, false);
-					grid.setBlocked(getBuildingArea(), true);
-					this.state = STATE_WAITING_FOR_MATERIAL;
-				}
+			return -1;
+		case STATE_IN_FLATTERNING:
+			if (!isFlatened()) {
+				return IS_FLATTENED_RECHECK_PERIOD;
+			} else {
+				placeAdditionalMapObjects(grid, pos, false);
+				grid.setBlocked(getBuildingArea(), true);
+				this.state = STATE_WAITING_FOR_MATERIAL;
+				// directly go into the next case!
 			}
-			break;
 
 		case STATE_WAITING_FOR_MATERIAL:
-			if (waitedSecond()) {
-				if (priority != EPriority.STOPPED && isMaterialAvailable()) {
-					requestBricklayers();
-					state = STATE_BRICKLAYERS_REQUESTED;
-				}
+			if (priority != EPriority.STOPPED && isMaterialAvailable()) {
+				requestBricklayers();
+				state = STATE_BRICKLAYERS_REQUESTED;
+				return -1; // no new scheduling
+			} else {
+				return WAITING_FOR_MATERIAL_PERIOD;
 			}
-			break;
 
-		case STATE_BRICKLAYERS_REQUESTED:
-			// the state changes are handled by tryToTakeMaterial()
-			break;
+		case STATE_BRICKLAYERS_REQUESTED: // the state changes are handled by tryToTakeMaterial()
+			assert false : "Building.timerEvent() should not be called in state: " + state;
+			return -1;
 
 		case STATE_CONSTRUCTED:
-			subTimerEvent();
-			break;
+			return subTimerEvent();
 
 		case STATE_DESTROYED:
-			break;
+		default:
+			return -1;
 		}
 	}
 
 	/**
 	 * This method will be called every 100 ms when the building has finished construction and is not destroyed yet.
 	 */
-	protected abstract void subTimerEvent();
+	protected abstract int subTimerEvent();
 
 	private boolean isMaterialAvailable() {
 		if (stacks == null)
@@ -307,15 +309,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 				return true;
 		}
 
-		return false;
-	}
-
-	private boolean waitedSecond() {
-		delayCtr++;
-		if (delayCtr > 10) {
-			delayCtr = 0;
-			return true;
-		}
 		return false;
 	}
 
@@ -348,21 +341,22 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return false;
 		}
 
-		delayCtr--;
+		remainingMaterialActions--;
 		constructionProgress += 1f / (Constants.BRICKLAYER_ACTIONS_PER_MATERIAL * getBuildingType().getNumberOfConstructionMaterials());
-		if (delayCtr > 0) {
+		if (remainingMaterialActions > 0) {
 			return true;
 		} else {
 			RequestStack stack = getStackWithMaterial();
 			if (priority != EPriority.STOPPED && stack != null) {
 				stack.pop();
-				delayCtr = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
+				remainingMaterialActions = Constants.BRICKLAYER_ACTIONS_PER_MATERIAL;
 				return true;
 			} else {
 				if (areAllStacksFullfilled()) {
 					finishConstruction();
 				} else {
 					state = STATE_WAITING_FOR_MATERIAL;
+					RescheduleTimer.add(this, WAITING_FOR_MATERIAL_PERIOD);
 				}
 				return false;
 			}
@@ -395,10 +389,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
 			createWorkStacks();
 		}
-		constructionFinishedEvent();
+		int timerPeriod = constructionFinishedEvent();
+		RescheduleTimer.add(this, timerPeriod);
 	}
 
-	protected abstract void constructionFinishedEvent();
+	protected abstract int constructionFinishedEvent();
 
 	@Override
 	public float getStateProgress() {
@@ -434,7 +429,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public void kill() {
 		System.out.println("building killed");
-		Timer100Milli.remove(this);
 
 		grid.removeBuildingAt(pos);
 		grid.getMapObjectsManager().addSelfDeletingMapObject(pos,

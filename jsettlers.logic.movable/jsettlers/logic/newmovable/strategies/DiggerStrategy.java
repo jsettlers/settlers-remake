@@ -34,7 +34,7 @@ public final class DiggerStrategy extends NewMovableStrategy implements IManagea
 	}
 
 	@Override
-	protected void action() {
+	protected void actionStandardTiming() {
 		switch (state) {
 		case JOBLESS:
 			break;

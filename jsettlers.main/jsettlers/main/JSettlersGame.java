@@ -32,9 +32,7 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.newmovable.NewMovable;
 import jsettlers.logic.statistics.GameStatistics;
-import jsettlers.logic.timer.MovableTimer;
-import jsettlers.logic.timer.PartitionManagerTimer;
-import jsettlers.logic.timer.Timer100Milli;
+import jsettlers.logic.timer.RescheduleTimer;
 import networklib.client.OfflineNetworkConnector;
 import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.INetworkConnector;
@@ -158,6 +156,8 @@ public class JSettlersGame {
 				mainGrid = gridWithUiState.getMainGrid();
 				UIState uiState = gridWithUiState.getUiState();
 
+				RescheduleTimer.schedule(gameClock); // schedule timer
+
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
 				statistics = new GameStatistics(gameClock);
 				mainGrid.startThreads();
@@ -198,9 +198,7 @@ public class JSettlersGame {
 				connector.shutdown();
 				mainGrid.stopThreads();
 				guiInterface.stop();
-				Timer100Milli.stop();
-				MovableTimer.stop();
-				PartitionManagerTimer.stop();
+				RescheduleTimer.stop();
 				NewMovable.dropAllMovables();
 				Building.dropAllBuildings();
 			} catch (MapLoadException e) {

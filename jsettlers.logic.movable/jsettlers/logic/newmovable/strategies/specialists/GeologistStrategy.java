@@ -26,7 +26,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 	}
 
 	@Override
-	protected void action() {
+	protected void actionStandardTiming() {
 		switch (state) {
 		case JOBLESS:
 			return;

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.timer.RescheduleTimer;
 
 /**
  * This is the main map list.
@@ -211,11 +213,17 @@ public class MapList {
 	public synchronized void saveMap(UIState state, MainGrid grid)
 			throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
-		OutputStream out = getOutputStream(header, saveDir);
-		header.writeTo(out);
-		state.writeTo(out);
+		OutputStream outStream = getOutputStream(header, saveDir);
+
+		header.writeTo(outStream);
+
+		ObjectOutputStream oos = new ObjectOutputStream(outStream);
+		state.writeTo(oos);
 		GameSerializer gameSerializer = new GameSerializer();
-		gameSerializer.save(grid, out);
+		gameSerializer.save(grid, oos);
+		RescheduleTimer.saveTo(oos);
+
+		oos.close();
 
 		loadFileList();
 	}

@@ -23,7 +23,7 @@ public class FleeStrategy extends NewMovableStrategy {
 	}
 
 	@Override
-	protected void action() {
+	protected void actionStandardTiming() {
 		ShortPoint2D position = super.getPos();
 		if (!super.isValidPosition(position)) {
 			if (searchesCounter > 120) {

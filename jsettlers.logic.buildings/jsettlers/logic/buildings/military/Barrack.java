@@ -70,14 +70,17 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 	}
 
 	@Override
-	protected void constructionFinishedEvent() {
+	protected int constructionFinishedEvent() {
 		for (RequestStack curr : super.getStacks()) {
 			curr.setListener(this);
 		}
+		return -1;
 	}
 
 	@Override
-	protected void subTimerEvent() {
+	protected int subTimerEvent() {
+		assert false : "This should never be called.";
+		return -1;
 	}
 
 	@Override

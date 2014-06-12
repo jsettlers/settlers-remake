@@ -41,7 +41,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	}
 
 	@Override
-	protected void action() {
+	protected void actionStandardTiming() {
 		switch (state) {
 		case JOBLESS: // TODO @Andreas think about new state for NewMovable to turn of downcall for action when it's not needed
 			break;

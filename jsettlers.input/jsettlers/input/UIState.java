@@ -1,10 +1,8 @@
 package jsettlers.input;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 
 import jsettlers.common.position.ShortPoint2D;
@@ -29,14 +27,14 @@ public class UIState implements Serializable {
 
 	public UIState(ShortPoint2D startPoint) {
 		this.uiStateData = new UIStateData(startPoint);
-    }
+	}
 
 	public UIStateData getUiStateData() {
 		return uiStateData;
 	}
 
-	public void writeTo(OutputStream stream) throws IOException {
-		new ObjectOutputStream(stream).writeObject(this);
+	public void writeTo(ObjectOutputStream oos) throws IOException {
+		oos.writeObject(this);
 	}
 
 	/**
@@ -46,9 +44,9 @@ public class UIState implements Serializable {
 	 * @return
 	 * @throws IOException
 	 */
-	public static UIState readFrom(InputStream stream) throws IOException {
+	public static UIState readFrom(ObjectInputStream ois) throws IOException {
 		try {
-			return (UIState) new ObjectInputStream(stream).readObject();
+			return (UIState) ois.readObject();
 		} catch (ClassNotFoundException e) {
 			throw new IOException(e);
 		}
