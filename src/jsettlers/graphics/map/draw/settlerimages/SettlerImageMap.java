@@ -292,15 +292,12 @@ public final class SettlerImageMap {
 	 * @see SettlerImageMap#getImageForSettler(EMovableType, EAction,
 	 *      EMaterialType, EDirection, float)
 	 */
-	public Image getImageForSettler(IMovable movable) {
-		float progress;
+	public Image getImageForSettler(IMovable movable, float progress) {
 		if (movable.getAction() == EAction.WALKING) {
-			progress = movable.getMoveProgress() / 2;
+			progress = progress / 2;
 			if (movable.isRightstep()) {
 				progress += .5f;
 			}
-		} else {
-			progress = movable.getMoveProgress();
 		}
 		return getImageForSettler(movable.getMovableType(),
 		        movable.getAction(), movable.getMaterial(),

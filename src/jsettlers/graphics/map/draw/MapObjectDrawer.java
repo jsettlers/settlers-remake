@@ -68,7 +68,7 @@ public class MapObjectDrawer {
 	/**
 	 * Tree falling speed. bigger => faster.
 	 */
-	private static final float TREE_FALLING_SPEED = 1/0.001f;
+	private static final float TREE_FALLING_SPEED = 1 / 0.001f;
 	/**
 	 * 
 	 */
@@ -144,7 +144,7 @@ public class MapObjectDrawer {
 	 */
 	public void drawMapObject(IGraphicsGrid map, int x, int y, IMapObject object) {
 		forceSetup();
-		
+
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus == 0) {
 			return; // break
@@ -336,8 +336,7 @@ public class MapObjectDrawer {
 					IMovable movable =
 					        ((IAttackableTowerMapObject) object).getMovable();
 					if (movable != null) {
-						Image image = this.imageMap.getImageForSettler(movable);
-						drawMovableAt(movable, image, x, y);
+						drawMovableAt(movable, x, y);
 						playMovableSound(movable);
 					}
 				}
@@ -353,11 +352,11 @@ public class MapObjectDrawer {
 	}
 
 	private void forceSetup() {
-	    if (imageProvider == null) {
+		if (imageProvider == null) {
 			imageProvider = ImageProvider.getInstance();
 			imageMap = SettlerImageMap.getInstance();
 		}
-    }
+	}
 
 	/**
 	 * Draws a movable
@@ -367,9 +366,9 @@ public class MapObjectDrawer {
 	 */
 	public void draw(IMovable movable) {
 		forceSetup();
-		
-		Image image = this.imageMap.getImageForSettler(movable);
-		drawImage(movable, image);
+
+		final ShortPoint2D pos = movable.getPos();
+		drawMovableAt(movable, pos.x, pos.y);
 
 		playMovableSound(movable);
 	}
@@ -424,19 +423,15 @@ public class MapObjectDrawer {
 		// currently there is nobody who needs this.
 	}
 
-	private void drawImage(IMovable movable, Image image) {
-		ShortPoint2D pos = movable.getPos();
-		short x = pos.x;
-		short y = pos.y;
-
-		drawMovableAt(movable, image, x, y);
-	}
-
-	private void drawMovableAt(IMovable movable, Image image, int x, int y) {
+	private void drawMovableAt(IMovable movable, int x, int y) {
 		byte fogstatus = context.getVisibleStatus(x, y);
 		if (fogstatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
+
+		final float moveProgress = movable.getMoveProgress();
+		final Image image =
+		        this.imageMap.getImageForSettler(movable, moveProgress);
 
 		Color color = context.getPlayerColor(movable.getPlayerId());
 		float shade = MapObjectDrawer.getColor(fogstatus);
@@ -446,9 +441,7 @@ public class MapObjectDrawer {
 		if (movable.getAction() == EAction.WALKING) {
 			int originx = x - movable.getDirection().getGridDeltaX();
 			int originy = y - movable.getDirection().getGridDeltaY();
-			viewX =
-			        betweenTilesX(originx, originy, x, y,
-			                movable.getMoveProgress());
+			viewX = betweenTilesX(originx, originy, x, y, moveProgress);
 			viewY = betweenTilesY;
 		} else {
 			int height = context.getHeight(x, y);
@@ -694,9 +687,9 @@ public class MapObjectDrawer {
 	 */
 	public void drawPlayerBorderObject(int x, int y, byte player) {
 		forceSetup();
-		
+
 		byte fogstatus = context.getVisibleStatus(x, y);
-		if (fogstatus  <= CommonConstants.FOG_OF_WAR_EXPLORED) {
+		if (fogstatus <= CommonConstants.FOG_OF_WAR_EXPLORED) {
 			return; // break
 		}
 		float base = getColor(fogstatus);
@@ -732,7 +725,7 @@ public class MapObjectDrawer {
 	 */
 	public void drawStack(int x, int y, IStackMapObject object, float color) {
 		forceSetup();
-		
+
 		byte elements = object.getSize();
 		if (elements > 0) {
 			drawStackAtScreen(x, y, object.getMaterialType(), elements, color);
@@ -831,7 +824,7 @@ public class MapObjectDrawer {
 				}
 			}
 		}
-		
+
 		if (building.isSelected()) {
 			drawBuildingSelectMarker(x, y);
 		}
@@ -873,7 +866,9 @@ public class MapObjectDrawer {
 						break;
 					case BOWMAN:
 					default:
-						image = this.imageMap.getImageForSettler(movable);
+						image =
+						        this.imageMap.getImageForSettler(movable,
+						                movable.getMoveProgress());
 				}
 				float viewX = towerX + place.getOffsetX();
 				float viewY = towerY + place.getOffsetY();
@@ -999,7 +994,7 @@ public class MapObjectDrawer {
 
 	public void drawMoveToMarker(ShortPoint2D moveToMarker, float progress) {
 		forceSetup();
-		
+
 		drawByProgress(moveToMarker.x, moveToMarker.y, MARKER_FILE,
 		        MOVE_TO_MARKER_SEQUENCE, progress, 1);
 	}
