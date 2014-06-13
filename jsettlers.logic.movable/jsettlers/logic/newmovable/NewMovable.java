@@ -21,6 +21,7 @@ import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
 import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.newmovable.interfaces.IAttackable;
@@ -43,7 +44,6 @@ import networklib.synchronic.random.RandomSingleton;
 public final class NewMovable implements IScheduledTimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
 		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
-	private static final float WALKING_PROGRESS_INCREASE = 1.0f / (Constants.MOVABLE_STEP_DURATION * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
 	private static final HashMap<Integer, NewMovable> movablesByID = new HashMap<Integer, NewMovable>();
 	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
 	private static int nextID = Integer.MIN_VALUE;
@@ -61,8 +61,8 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	private EAction movableAction = EAction.NO_ACTION;
 	private EDirection direction;
 
-	private float progress;
-	private float progressIncrease;
+	private int animationStartTime;
+	private short animationDuration;
 
 	private ShortPoint2D position;
 
@@ -150,8 +150,45 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 			return -1;
 		}
 
-		switch (state) {
+		switch (state) { // ensure animation is finished, if not, reschedule
+		case GOING_SINGLE_STEP:
+		case PLAYING_ACTION:
+		case PATHING:
+			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock.getTime();
+			if (remainingAnimationTime > 0) {
+				return remainingAnimationTime;
+			}
+		default:
+			break;
+		}
 
+		if (moveToRequest != null) {
+			switch (state) {
+			case PATHING:
+				if (getMoveProgress() < 1)
+					assert getMoveProgress() >= 1 : "move progress should be >= 1";
+				// if we are pathing and finished a step, calculate new path
+				setState(ENewMovableState.DOING_NOTHING); // this line is needed for assertions
+
+			case DOING_NOTHING:
+				ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
+				ShortPoint2D oldPos = position;
+				boolean foundPath = goToPos(moveToRequest); // progress is reset in here
+				moveToRequest = null;
+
+				if (foundPath) {
+					this.strategy.moveToPathSet(oldPos, oldTargetPos, path.getTargetPos());
+					return animationDuration; // we already follow the path and initiated the walking
+				} else {
+					break;
+				}
+
+			default:
+				break;
+			}
+		}
+
+		switch (state) {
 		case DOING_NOTHING:
 			if (visible && enableNothingToDo) {
 				doingNothingAction();
@@ -160,7 +197,10 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			progressCurrentAction();
+			if (getMoveProgress() < 1)
+				assert getMoveProgress() >= 1 : "move progress should be finished";
+			setState(ENewMovableState.DOING_NOTHING);
+			this.movableAction = EAction.NO_ACTION;
 			break;
 
 		case PATHING:
@@ -171,66 +211,37 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 			break;
 		}
 
-		if (moveToRequest != null) {
-			switch (state) {
-			case PATHING:
-				if (progress < 1) {
-					break;
-				} // if we are pathing and finished a step, calculate new path
-				setState(ENewMovableState.DOING_NOTHING); // this line is needed for assertions
-
-			case DOING_NOTHING:
-				ShortPoint2D targetPos = path != null ? path.getTargetPos() : null;
-				ShortPoint2D oldPos = position;
-				boolean foundPath = goToPos(moveToRequest); // progress is reset in here
-				moveToRequest = null;
-
-				if (foundPath) {
-					this.strategy.moveToPathSet(oldPos, targetPos, path.getTargetPos());
-				}
-
-				break;
-
-			default:
-				break;
-			}
-		}
-
 		if (state == ENewMovableState.DOING_NOTHING) {
 			return strategy.action();
 		} else {
-			return Constants.MOVABLE_INTERRUPT_DELAY;
+			return animationDuration;
 		}
 	}
 
 	private void pathingAction() {
-		if (progress >= 1) {
-			if (path.isFinished() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
-				// if path is finished, or canceled by strategy return from here
-				setState(ENewMovableState.DOING_NOTHING);
-				movableAction = EAction.NO_ACTION;
-				path = null;
-				checkPlayerOfCurrentPosition();
-				return;
-			}
+		if (path.isFinished() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+			// if path is finished, or canceled by strategy return from here
+			setState(ENewMovableState.DOING_NOTHING);
+			movableAction = EAction.NO_ACTION;
+			path = null;
+			checkPlayerOfCurrentPosition();
+			return;
+		}
 
-			direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
+		direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
 
-			if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
-				goSinglePathStep();
-			} else { // step not possible, so try it next time
-				boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
-				if (!pushedSuccessful) {
-					delayCtr++;
-					if (delayCtr > 4) {
-						delayCtr = 0;
-						path = strategy.findWayAroundObstacle(direction, position, path);
-					}
+		if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
+			goSinglePathStep();
+		} else { // step not possible, so try it next time
+			movableAction = EAction.NO_ACTION;
+			boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
+			if (!pushedSuccessful) {
+				delayCtr++;
+				if (delayCtr > 4) {
+					delayCtr = 0;
+					path = strategy.findWayAroundObstacle(direction, position, path);
 				}
-				return;
 			}
-		} else {
-			progress += WALKING_PROGRESS_INCREASE;
 		}
 	}
 
@@ -241,19 +252,12 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 
 	private void initGoingSingleStep(ShortPoint2D position) {
 		movableAction = EAction.WALKING;
-		progress -= 1;
+		animationStartTime = MatchConstants.clock.getTime();
+		animationDuration = Constants.MOVABLE_STEP_DURATION;
 		grid.leavePosition(this.position, this);
 		grid.enterPosition(position, this, false);
 		this.position = position;
 		isRightstep = !isRightstep;
-	}
-
-	private void progressCurrentAction() {
-		progress += progressIncrease;
-		if (progress >= 1) {
-			setState(ENewMovableState.DOING_NOTHING);
-			this.movableAction = EAction.NO_ACTION;
-		}
 	}
 
 	private void doingNothingAction() {
@@ -324,7 +328,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
-			if (this.progress >= 1 && !this.path.isFinished()) {
+			if (animationStartTime + animationDuration <= MatchConstants.clock.getTime() && !this.path.isFinished()) {
 				ShortPoint2D nextPos = path.getNextPos();
 				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();
@@ -397,15 +401,15 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	 * @param movableAction
 	 *            action to be animated.
 	 * @param duration
-	 *            duration the animation should last (in seconds).
+	 *            duration the animation should last (in seconds). // TODO change to milliseconds
 	 */
 	final void playAction(EAction movableAction, float duration) {
 		assert state == ENewMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
 
 		this.movableAction = movableAction;
 		setState(ENewMovableState.PLAYING_ACTION);
-		this.progressIncrease = 1.0f / (duration * Constants.MOVABLE_INTERRUPTS_PER_SECOND);
-		this.progress = 0;
+		this.animationStartTime = MatchConstants.clock.getTime();
+		this.animationDuration = (short) (duration * 1000);
 		this.soundPlayed = false;
 	}
 
@@ -451,7 +455,6 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y)) {
 			initGoingSingleStep(pos);
 			this.direction = direction;
-			progressIncrease = WALKING_PROGRESS_INCREASE;
 			setState(ENewMovableState.GOING_SINGLE_STEP);
 			return true;
 		} else {
@@ -546,7 +549,6 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		this.path = path;
 		setState(ENewMovableState.PATHING);
 		this.movableAction = EAction.NO_ACTION;
-		progress = 1;
 		pathingAction();
 	}
 
@@ -660,7 +662,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 
 	@Override
 	public final float getMoveProgress() {
-		return progress;
+		return ((float) (MatchConstants.clock.getTime() - animationStartTime)) / animationDuration;
 	}
 
 	@Override
@@ -721,7 +723,6 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 		this.strategy = newStrategy;
 		setState(ENewMovableState.DOING_NOTHING);
-		this.progress = 0;
 	}
 
 	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
