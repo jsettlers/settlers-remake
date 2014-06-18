@@ -44,7 +44,7 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 	}
 
 	@Override
-	protected void actionStandardTiming() {
+	protected void action() {
 		switch (state) {
 		case JOBLESS:
 			break;

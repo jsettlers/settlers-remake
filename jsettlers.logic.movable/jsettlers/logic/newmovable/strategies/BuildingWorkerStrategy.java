@@ -68,13 +68,13 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	}
 
 	@Override
-	protected int action() {
+	protected void action() {
 		if (isJobless())
-			return Constants.MOVABLE_INTERRUPT_DELAY;
+			return;
 
 		if (!building.isNotDestroyed()) { // check if building is still ok
 			buildingDestroyed();
-			return Constants.MOVABLE_INTERRUPT_DELAY;
+			return;
 		}
 
 		switch (currentJob.getType()) {
@@ -91,9 +91,10 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		case WAIT: {
-			int waitTime = (int) (currentJob.getTime() * 1000);
+			short waitTime = (short) (currentJob.getTime() * 1000);
+			super.sleep(waitTime);
 			jobFinished();
-			return waitTime;
+			break;
 		}
 
 		case WALK:
@@ -235,8 +236,6 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 			break;
 
 		}
-
-		return Constants.MOVABLE_INTERRUPT_DELAY;
 	}
 
 	private boolean isJobless() {

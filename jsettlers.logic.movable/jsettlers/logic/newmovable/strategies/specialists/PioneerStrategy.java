@@ -26,7 +26,7 @@ public final class PioneerStrategy extends NewMovableStrategy {
 	}
 
 	@Override
-	protected void actionStandardTiming() {
+	protected void action() {
 		switch (state) {
 		case JOBLESS:
 			return;

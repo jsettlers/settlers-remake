@@ -90,7 +90,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
 
-		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_DELAY);
+		RescheduleTimer.add(this, Constants.MOVABLE_INTERRUPT_PERIOD);
 
 		this.id = nextID++;
 		movablesByID.put(this.id, this);
@@ -154,11 +154,22 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
 		case PATHING:
+		case WAITING:
 			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock.getTime();
 			if (remainingAnimationTime > 0) {
 				return remainingAnimationTime;
 			}
+			break;
 		default:
+			break;
+		}
+
+		switch (state) {
+		case WAITING:
+		case GOING_SINGLE_STEP:
+		case PLAYING_ACTION:
+			state = ENewMovableState.DOING_NOTHING; // the action is finished, as the time passed
+			movableAction = EAction.NO_ACTION;
 			break;
 		}
 
@@ -189,12 +200,6 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		}
 
 		switch (state) {
-		case DOING_NOTHING:
-			if (visible && enableNothingToDo) {
-				doingNothingAction();
-			}
-			break;
-
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
 			if (getMoveProgress() < 1)
@@ -211,11 +216,18 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 			break;
 		}
 
-		if (state == ENewMovableState.DOING_NOTHING) {
-			return strategy.action();
-		} else {
-			return animationDuration;
+		if (state == ENewMovableState.DOING_NOTHING) { // if movable is currently doing nothing
+			strategy.action(); // let the strategy work
+
+			if (state == ENewMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
+				if (visible && enableNothingToDo) {
+					doingNothingAction();
+				}
+				return Constants.MOVABLE_INTERRUPT_PERIOD;
+			}
 		}
+
+		return animationDuration;
 	}
 
 	private void pathingAction() {
@@ -357,6 +369,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
+		case WAITING:
 			return false; // we can't do anything
 
 		case DEBUG_STATE:
@@ -411,6 +424,20 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		this.animationStartTime = MatchConstants.clock.getTime();
 		this.animationDuration = (short) (duration * 1000);
 		this.soundPlayed = false;
+	}
+
+	/**
+	 * 
+	 * @param sleepTime
+	 *            time to sleep in milliseconds
+	 */
+	final void wait(short sleepTime) {
+		assert state == ENewMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
+
+		this.animationStartTime = MatchConstants.clock.getTime();
+		this.animationDuration = sleepTime;
+		this.movableAction = EAction.NO_ACTION;
+		this.state = ENewMovableState.WAITING;
 	}
 
 	/**
@@ -722,6 +749,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	private void setStrategy(NewMovableStrategy newStrategy) {
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 		this.strategy = newStrategy;
+		this.movableAction = EAction.NO_ACTION;
 		setState(ENewMovableState.DOING_NOTHING);
 	}
 
@@ -778,6 +806,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		PATHING,
 		DOING_NOTHING,
 		GOING_SINGLE_STEP,
+		WAITING,
 
 		/**
 		 * This state may only be used for debugging reasons!

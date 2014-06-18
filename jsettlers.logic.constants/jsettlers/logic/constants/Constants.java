@@ -25,7 +25,7 @@ public final class Constants {
 
 	public static final byte MOVABLE_INTERRUPTS_PER_SECOND = 17;
 
-	public static final short MOVABLE_INTERRUPT_DELAY = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
+	public static final short MOVABLE_INTERRUPT_PERIOD = 1000 / MOVABLE_INTERRUPTS_PER_SECOND;
 
 	/**
 	 * Step duration in ms

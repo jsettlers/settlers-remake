@@ -52,7 +52,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	protected void actionStandardTiming() {
+	protected void action() {
 		switch (state) {
 		case AGGRESSIVE:
 			break;
