@@ -75,7 +75,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	private NewMovable pushedFrom;
 
 	private boolean isRightstep = false;
-	private float doingNothingProbablity = 0.06f;
+	private int flockDelay = 700;
 	private int delayCtr = 0;
 
 	private transient boolean selected = false;
@@ -171,6 +171,8 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 			state = ENewMovableState.DOING_NOTHING; // the action is finished, as the time passed
 			movableAction = EAction.NO_ACTION;
 			break;
+		default:
+			break;
 		}
 
 		if (moveToRequest != null) {
@@ -221,9 +223,10 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 
 			if (state == ENewMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
 				if (visible && enableNothingToDo) {
-					doingNothingAction();
+					return doingNothingAction();
+				} else {
+					return 500;
 				}
-				return Constants.MOVABLE_INTERRUPT_PERIOD;
 			}
 		}
 
@@ -272,34 +275,47 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		isRightstep = !isRightstep;
 	}
 
-	private void doingNothingAction() {
+	private int doingNothingAction() {
 		if (grid.isBlocked(position.x, position.y)) {
 			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
 			if (newPath == null) {
 				kill();
+				return -1;
 			} else {
 				followPath(newPath);
+				return animationDuration;
 			}
 		} else {
-			float random = RandomSingleton.nextF();
-			if (random <= doingNothingProbablity) {
-				flockToDecentralize();
-			} else if (random >= 1 - Constants.MOVABLE_TURN_PROBABILITY) {
-				lookInDirection(direction.getNeighbor(2 * RandomSingleton.getInt(0, 1) - 1));
+			if (flockToDecentralize()) {
+				return animationDuration;
+			} else {
+				int turnDirection = RandomSingleton.getInt(-8, 8);
+				if (Math.abs(turnDirection) <= 1) {
+					lookInDirection(direction.getNeighbor(turnDirection));
+				}
 			}
+
+			return flockDelay;
 		}
 	}
 
-	private void flockToDecentralize() {
+	/**
+	 * Tries to walk the movable into a position where it has a minimum distance to others.
+	 * 
+	 * @return true if the movable moves to flock, false if no flocking is required.
+	 */
+	private boolean flockToDecentralize() {
 		ShortPoint2D decentVector = grid.calcDecentralizeVector(position.x, position.y);
 		int dx = direction.gridDeltaX + decentVector.x;
 		int dy = direction.gridDeltaY + decentVector.y;
 
 		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
 			this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy));
-			doingNothingProbablity = Math.min(doingNothingProbablity + 0.02f, 0.1f);
+			flockDelay = Math.max(flockDelay - 100, 500);
+			return true;
 		} else {
-			doingNothingProbablity = Math.max(doingNothingProbablity - 0.02f, 0.06f);
+			flockDelay = Math.min(flockDelay + 100, 1000);
+			return false;
 		}
 	}
 
