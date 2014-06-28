@@ -9,7 +9,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
+import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 import jsettlers.logic.player.Player;
 
 /**
@@ -118,5 +118,5 @@ public interface IGuiInputGrid {
 
 	byte getNumberOfPlayers();
 
-	NewFogOfWar getFogOfWar();
+	FogOfWar getFogOfWar();
 }

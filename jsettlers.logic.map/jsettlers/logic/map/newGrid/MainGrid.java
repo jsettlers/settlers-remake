@@ -47,7 +47,7 @@ import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
-import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
+import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.logic.algorithms.path.IPathCalculatable;
@@ -117,7 +117,7 @@ public final class MainGrid implements Serializable {
 	final MapObjectsManager mapObjectsManager;
 	final BuildingsGrid buildingsGrid;
 
-	transient NewFogOfWar fogOfWar;
+	transient FogOfWar fogOfWar;
 	transient IGraphicsGrid graphicsGrid;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
@@ -155,11 +155,11 @@ public final class MainGrid implements Serializable {
 		this.enclosedBlockedAreaFinderGrid = new EnclosedBlockedAreaFinderGrid();
 	}
 
-	public void initForPlayer(byte playerId, NewFogOfWar fogOfWar) {
+	public void initForPlayer(byte playerId, FogOfWar fogOfWar) {
 		if (fogOfWar != null) {
 			this.fogOfWar = fogOfWar;
 		} else {
-			this.fogOfWar = new NewFogOfWar(width, height, playerId, false);
+			this.fogOfWar = new FogOfWar(width, height, playerId, false);
 		}
 	}
 
@@ -1642,7 +1642,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public NewFogOfWar getFogOfWar() {
+		public FogOfWar getFogOfWar() {
 			return fogOfWar;
 		}
 	}

@@ -3,7 +3,7 @@ package jsettlers.input;
 import java.io.Serializable;
 
 import jsettlers.graphics.map.UIState;
-import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
+import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 
 /**
  * 
@@ -15,9 +15,9 @@ public class PlayerState implements Serializable {
 
 	private final byte playerId;
 	private final UIState uiState;
-	private final NewFogOfWar fogOfWar;
+	private final FogOfWar fogOfWar;
 
-	public PlayerState(byte playerId, UIState uiState, NewFogOfWar fogOfWar) {
+	public PlayerState(byte playerId, UIState uiState, FogOfWar fogOfWar) {
 		this.playerId = playerId;
 		this.uiState = uiState;
 		this.fogOfWar = fogOfWar;
@@ -35,7 +35,7 @@ public class PlayerState implements Serializable {
 		return uiState;
 	}
 
-	public NewFogOfWar getFogOfWar() {
+	public FogOfWar getFogOfWar() {
 		return fogOfWar;
 	}
 }
