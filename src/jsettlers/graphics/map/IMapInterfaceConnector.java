@@ -9,9 +9,9 @@ import jsettlers.common.selectable.ISelectionSet;
  */
 public interface IMapInterfaceConnector extends IMessenger {
 
-	UIStateData getUIState();
+	UIState getUIState();
 
-	void loadUIState(UIStateData uiStateData);
+	void loadUIState(UIState uiStateData);
 
 	void addListener(IMapInterfaceListener listener);
 

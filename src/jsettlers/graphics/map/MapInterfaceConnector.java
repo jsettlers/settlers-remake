@@ -137,14 +137,14 @@ public class MapInterfaceConnector implements ActionFireable,
 	 * 
 	 * @return The state of the UI so that it can be restored by setting it on
 	 *         {@link MapContent} creation.
-	 * @see #loadUIState(UIStateData)
+	 * @see #loadUIState(UIState)
 	 */
-	public UIStateData getUIState() {
+	public UIState getUIState() {
 		return content.getUIState();
 	}
 
 	@Override
-	public void loadUIState(UIStateData state) {
+	public void loadUIState(UIState state) {
 		content.loadUIState(state);
 	}
 }

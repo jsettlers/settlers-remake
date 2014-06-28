@@ -9,7 +9,7 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author michael
  */
-public class UIStateData implements Serializable {
+public class UIState implements Serializable {
 	private static final long serialVersionUID = 4163727213374601975L;
 
 	private final float screenCenterX;
@@ -17,13 +17,13 @@ public class UIStateData implements Serializable {
 	private final float zoom;
 	private ShortPoint2D startPoint = null;
 
-	public UIStateData(float screenCenterX, float screenCenterY, float zoom) {
+	public UIState(float screenCenterX, float screenCenterY, float zoom) {
 		this.screenCenterX = screenCenterX;
 		this.screenCenterY = screenCenterY;
 		this.zoom = zoom;
 	}
 
-	public UIStateData(ShortPoint2D startPoint) {
+	public UIState(ShortPoint2D startPoint) {
 		this(0, 0, 0);
 		this.startPoint = startPoint;
 	}

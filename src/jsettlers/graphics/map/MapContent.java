@@ -891,7 +891,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		controls.stop();
 	}
 
-	protected void loadUIState(UIStateData state) {
+	protected void loadUIState(UIState state) {
 		if (state.getStartPoint() != null) {
 			scrollTo(state.getStartPoint(), false);
 		} else {
@@ -901,9 +901,9 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		}
 	}
 
-	protected UIStateData getUIState() {
+	protected UIState getUIState() {
 		ScreenPosition screen = context.getScreen();
-		return new UIStateData(screen.getScreenCenterX(),
+		return new UIState(screen.getScreenCenterX(),
 		        screen.getScreenCenterY(), screen.getZoom());
 	}
 }
