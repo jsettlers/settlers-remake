@@ -5,15 +5,15 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
-import jsettlers.graphics.map.UIStateData;
+import jsettlers.graphics.map.UIState;
 import jsettlers.graphics.messages.Message;
 
 public class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 
-	private UIStateData uiState;
+	private UIState uiState;
 
 	public DummyMapInterfaceConnector() {
-		uiState = new UIStateData(new ShortPoint2D(0, 0));
+		uiState = new UIState(new ShortPoint2D(0, 0));
 	}
 
 	@Override
@@ -21,12 +21,12 @@ public class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 	}
 
 	@Override
-	public UIStateData getUIState() {
+	public UIState getUIState() {
 		return uiState;
 	}
 
 	@Override
-	public void loadUIState(UIStateData uiStateData) {
+	public void loadUIState(UIState uiStateData) {
 		this.uiState = uiStateData;
 	}
 
