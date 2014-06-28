@@ -1,5 +1,6 @@
 package jsettlers.input;
 
+import jsettlers.graphics.map.UIState;
 
 /**
  * Interface for TaskExecutor to give commands to the GuiInterface using the executor.

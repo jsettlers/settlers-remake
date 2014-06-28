@@ -41,7 +41,7 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.IGuiInputGrid;
-import jsettlers.input.UIState;
+import jsettlers.input.PlayerState;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
@@ -116,15 +116,15 @@ public final class MainGrid implements Serializable {
 	final MovablePathfinderGrid movablePathfinderGrid;
 	final MapObjectsManager mapObjectsManager;
 	final BuildingsGrid buildingsGrid;
-	final NewFogOfWar fogOfWar;
 
+	transient NewFogOfWar fogOfWar;
 	transient IGraphicsGrid graphicsGrid;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
 	private transient IEnclosedBlockedAreaFinderGrid enclosedBlockedAreaFinderGrid;
 
-	public MainGrid(String mapId, String mapName, short width, short height, byte numberOfPlayers, byte fowPlayer) {
+	public MainGrid(String mapId, String mapName, short width, short height, byte numberOfPlayers) {
 		this.mapId = mapId;
 		this.mapName = mapName;
 
@@ -141,7 +141,6 @@ public final class MainGrid implements Serializable {
 		this.movableGrid = new MovableGrid(width, height, landscapeGrid);
 
 		this.buildingsGrid = new BuildingsGrid();
-		this.fogOfWar = new NewFogOfWar(width, height, fowPlayer, false);
 
 		initAdditional();
 	}
@@ -156,6 +155,14 @@ public final class MainGrid implements Serializable {
 		this.enclosedBlockedAreaFinderGrid = new EnclosedBlockedAreaFinderGrid();
 	}
 
+	public void initForPlayer(byte playerId, NewFogOfWar fogOfWar) {
+		if (fogOfWar != null) {
+			this.fogOfWar = fogOfWar;
+		} else {
+			this.fogOfWar = new NewFogOfWar(width, height, playerId, false);
+		}
+	}
+
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		initAdditional();
@@ -163,14 +170,18 @@ public final class MainGrid implements Serializable {
 
 	public void startThreads() {
 		bordersThread.start();
-		fogOfWar.start(new FogOfWarGrid());
 		partitionsGrid.startThreads();
+		if (fogOfWar != null) {
+			fogOfWar.start(new FogOfWarGrid());
+		}
 	}
 
 	public void stopThreads() {
 		bordersThread.cancel();
-		fogOfWar.cancel();
 		partitionsGrid.cancelThreads();
+		if (fogOfWar != null) {
+			fogOfWar.cancel();
+		}
 	}
 
 	public void waitForThreadsToFinish() {
@@ -180,8 +191,8 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	public MainGrid(String mapId, String mapName, IMapData mapGrid, byte players, byte fowPlayer) {
-		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players, fowPlayer);
+	public MainGrid(String mapId, String mapName, IMapData mapGrid, byte players) {
+		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -1555,7 +1566,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final void save(UIState uiState) throws FileNotFoundException, IOException, InterruptedException {
+		public final void save(PlayerState[] playerStates) throws FileNotFoundException, IOException, InterruptedException {
 			boolean savedPausingState = MatchConstants.clock.isPausing();
 			MatchConstants.clock.setPausing(true);
 			try {
@@ -1565,7 +1576,7 @@ public final class MainGrid implements Serializable {
 			}
 
 			MapList list = MapList.getDefaultList();
-			list.saveMap(uiState, MainGrid.this);
+			list.saveMap(playerStates, MainGrid.this);
 
 			MatchConstants.clock.setPausing(savedPausingState);
 		}
@@ -1623,6 +1634,16 @@ public final class MainGrid implements Serializable {
 		@Override
 		public Player getPlayer(byte playerId) {
 			return partitionsGrid.getPlayer(playerId);
+		}
+
+		@Override
+		public byte getNumberOfPlayers() {
+			return partitionsGrid.getNumberOfPlayers();
+		}
+
+		@Override
+		public NewFogOfWar getFogOfWar() {
+			return fogOfWar;
 		}
 	}
 

@@ -24,11 +24,6 @@ public class RandomMapLoader extends MapLoader {
 	}
 
 	@Override
-	public MainGridWithUiSettings loadMainGrid(byte playerId) throws MapLoadException {
-		return super.loadMainGridFromMapData(playerId);
-	}
-
-	@Override
 	public IMapData getMapData() throws MapLoadException {
 		if (mapData != null) {
 			return mapData;

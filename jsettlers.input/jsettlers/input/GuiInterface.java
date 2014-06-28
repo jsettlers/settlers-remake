@@ -27,6 +27,7 @@ import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
+import jsettlers.graphics.map.UIState;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
@@ -85,7 +86,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		this.constructionMarksCalculator = new ConstructionMarksThread(grid.getConstructionMarksGrid(), clock, player);
 
 		grid.getPlayer(player).setMessenger(connector);
-		clock.setTaskExecutor(new GuiTaskExecutor(grid, this));
+		clock.setTaskExecutor(new GuiTaskExecutor(grid, this, playerId));
 		connector.addListener(this);
 	}
 
@@ -580,7 +581,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	@Override
 	public UIState getUIState() {
-		return new UIState(connector.getUIState());
+		return connector.getUIState();
 	}
 
 	/**

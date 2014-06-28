@@ -39,9 +39,4 @@ public class FreshMapLoader extends MapLoader {
 		}
 	}
 
-	@Override
-	public MainGridWithUiSettings loadMainGrid(byte playerId) throws MapLoadException {
-		return super.loadMainGridFromMapData(playerId);
-	}
-
 }

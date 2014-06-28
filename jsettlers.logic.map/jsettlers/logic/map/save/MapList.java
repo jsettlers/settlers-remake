@@ -15,7 +15,7 @@ import java.util.Date;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
-import jsettlers.input.UIState;
+import jsettlers.input.PlayerState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
@@ -210,7 +210,7 @@ public class MapList {
 	 * @param grid
 	 * @throws IOException
 	 */
-	public synchronized void saveMap(UIState state, MainGrid grid)
+	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid)
 			throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream outStream = getOutputStream(header, saveDir);
@@ -218,7 +218,7 @@ public class MapList {
 		header.writeTo(outStream);
 
 		ObjectOutputStream oos = new ObjectOutputStream(outStream);
-		state.writeTo(oos);
+		oos.writeObject(playerStates);
 		GameSerializer gameSerializer = new GameSerializer();
 		gameSerializer.save(grid, oos);
 		RescheduleTimer.saveTo(oos);

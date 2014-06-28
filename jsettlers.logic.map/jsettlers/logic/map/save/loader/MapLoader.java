@@ -9,7 +9,8 @@ import java.util.Date;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.input.UIState;
+import jsettlers.graphics.map.UIState;
+import jsettlers.input.PlayerState;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.MapFileHeader;
@@ -81,9 +82,6 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 	}
 
 	@Override
-	public abstract MainGridWithUiSettings loadMainGrid(byte playerId) throws MapLoadException;
-
-	@Override
 	public String getMapName() {
 		return header.getName();
 	}
@@ -140,12 +138,18 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		}
 	}
 
-	protected final MainGridWithUiSettings loadMainGridFromMapData(byte playerId) throws MapLoadException {
+	@Override
+	public MainGridWithUiSettings loadMainGrid() throws MapLoadException {
 		IMapData mapData = getMapData();
 
-		MainGrid mainGrid = new MainGrid(getMapID(), getMapName(), mapData, (byte) getMaxPlayers(), playerId);
-		UIState uiState = new UIState(mapData.getStartPoint(playerId));
+		byte numberOfPlayers = (byte) getMaxPlayers();
+		MainGrid mainGrid = new MainGrid(getMapID(), getMapName(), mapData, numberOfPlayers);
 
-		return new MainGridWithUiSettings(mainGrid, uiState);
+		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
+		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
+			playerStates[playerId] = new PlayerState(playerId, new UIState(mapData.getStartPoint(playerId)));
+		}
+
+		return new MainGridWithUiSettings(mainGrid, playerStates);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.map.UIState;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
@@ -19,6 +20,7 @@ import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.newmovable.NewMovable;
 import networklib.client.task.packets.TaskPacket;
 import networklib.synchronic.timer.ITaskExecutor;
@@ -32,19 +34,16 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	private static GuiTaskExecutor instance = null;
 	private final IGuiInputGrid grid;
 	private final ITaskExecutorGuiInterface guiInterface;
+	private final byte playerId;
 
-	public GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
+	public GuiTaskExecutor(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface, byte playerId) {
 		this.grid = grid;
 		this.guiInterface = guiInterface;
+		this.playerId = playerId;
 	}
 
 	public static GuiTaskExecutor get() {
 		return instance;
-	}
-
-	public static void init(IGuiInputGrid grid, ITaskExecutorGuiInterface guiInterface) {
-		if (instance == null)
-			instance = new GuiTaskExecutor(grid, guiInterface);
 	}
 
 	@Override
@@ -76,15 +75,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 
 		case QUICK_SAVE:
-			try {
-				grid.save(guiInterface.getUIState());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			save();
 			break;
 
 		case DESTROY_BUILDING: {
@@ -128,6 +119,33 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		default:
 			break;
 
+		}
+	}
+
+	private void save() {
+		try {
+			byte numberOfPlayers = grid.getNumberOfPlayers();
+			PlayerState[] playerStates = new PlayerState[numberOfPlayers];
+			for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
+				// find a tower of the player
+				UIState uiState = null;
+				for (Building building : Building.getAllBuildings()) {
+					if (building.getPlayer().playerId == playerId && building instanceof OccupyingBuilding) {
+						uiState = new UIState(building.getPos());
+						break;
+					}
+				}
+
+				playerStates[playerId] = new PlayerState(playerId, uiState);
+			}
+			playerStates[playerId] = new PlayerState(this.playerId, guiInterface.getUIState(), grid.getFogOfWar());
+			grid.save(playerStates);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 

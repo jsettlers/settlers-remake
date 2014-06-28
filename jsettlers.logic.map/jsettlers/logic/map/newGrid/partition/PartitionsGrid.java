@@ -746,4 +746,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return getPartitionAt(x, y).getSettings();
 	}
 
+	public byte getNumberOfPlayers() {
+		return (byte) players.length;
+	}
+
 }

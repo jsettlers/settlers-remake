@@ -1,7 +1,7 @@
 package jsettlers.logic.map.save;
 
 import jsettlers.common.map.MapLoadException;
-import jsettlers.input.UIState;
+import jsettlers.input.PlayerState;
 import jsettlers.logic.map.newGrid.MainGrid;
 
 /**
@@ -12,7 +12,7 @@ import jsettlers.logic.map.newGrid.MainGrid;
  */
 public interface IGameCreator {
 
-	public MainGridWithUiSettings loadMainGrid(byte player) throws MapLoadException;
+	public MainGridWithUiSettings loadMainGrid() throws MapLoadException;
 
 	public String getMapName();
 
@@ -20,19 +20,23 @@ public interface IGameCreator {
 
 	public class MainGridWithUiSettings {
 		private final MainGrid mainGrid;
-		private final UIState uiState;
+		private final PlayerState[] playerStates;
 
-		public MainGridWithUiSettings(MainGrid mainGrid, UIState uiState) {
+		public MainGridWithUiSettings(MainGrid mainGrid, PlayerState[] playerStates) {
 			this.mainGrid = mainGrid;
-			this.uiState = uiState;
+			this.playerStates = playerStates;
 		}
 
 		public MainGrid getMainGrid() {
 			return mainGrid;
 		}
 
-		public UIState getUiState() {
-			return uiState;
+		public PlayerState[] getPlayerStates() {
+			return playerStates;
+		}
+
+		public PlayerState getPlayerState(byte playerId) {
+			return playerStates[playerId];
 		}
 	}
 }

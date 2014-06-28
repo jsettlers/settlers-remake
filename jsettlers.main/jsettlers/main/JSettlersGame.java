@@ -22,7 +22,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import jsettlers.input.GuiInterface;
 import jsettlers.input.IGameStoppable;
-import jsettlers.input.UIState;
+import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.MainGrid;
@@ -50,7 +50,7 @@ public class JSettlersGame {
 
 	private final IGameCreator mapcreator;
 	private final long randomSeed;
-	private final byte playerNumber;
+	private final byte playerId;
 	private final INetworkConnector networkConnector;
 	private final boolean multiplayer;
 	private final DataInputStream replayFileInputStream;
@@ -65,7 +65,7 @@ public class JSettlersGame {
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkConnector = networkConnector;
-		this.playerNumber = playerNumber;
+		this.playerId = playerNumber;
 		this.multiplayer = multiplayer;
 		this.replayFileInputStream = replayFileInputStream;
 
@@ -152,14 +152,16 @@ public class JSettlersGame {
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
-				MainGridWithUiSettings gridWithUiState = mapcreator.loadMainGrid(playerNumber);
+				MainGridWithUiSettings gridWithUiState = mapcreator.loadMainGrid();
 				mainGrid = gridWithUiState.getMainGrid();
-				UIState uiState = gridWithUiState.getUiState();
+				PlayerState playerState = gridWithUiState.getPlayerState(playerId);
 
 				RescheduleTimer.schedule(gameClock); // schedule timer
 
 				updateProgressListener(EProgressState.LOADING_IMAGES, 0.7f);
 				statistics = new GameStatistics(gameClock);
+
+				mainGrid.initForPlayer(playerId, playerState.getFogOfWar());
 				mainGrid.startThreads();
 
 				imagePreloader.join(); // Wait for ImageProvider to finish loading the images
@@ -172,10 +174,10 @@ public class JSettlersGame {
 				waitForAllPlayersStartFinished(networkConnector);
 
 				final IMapInterfaceConnector connector = startingGameListener.startFinished(this);
-				connector.loadUIState(uiState.getUiStateData());
+				connector.loadUIState(playerState.getUiState());
 
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-						this, playerNumber, multiplayer);
+						this, playerId, multiplayer);
 
 				if (replayFileInputStream != null) {
 					gameClock.loadReplayLogFromStream(replayFileInputStream);
@@ -218,7 +220,7 @@ public class JSettlersGame {
 			final String replayFilename = "logs/" + dateAndMap + "/" + dateAndMap + "_replay.log";
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
-			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, playerNumber, mapcreator.getMapName(), mapcreator.getMapID());
+			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, playerId, mapcreator.getMapName(), mapcreator.getMapID());
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();
 
@@ -288,7 +290,7 @@ public class JSettlersGame {
 
 		@Override
 		public int getPlayer() {
-			return playerNumber;
+			return playerId;
 		}
 
 		@Override

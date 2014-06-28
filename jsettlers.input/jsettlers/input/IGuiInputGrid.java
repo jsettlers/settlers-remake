@@ -7,7 +7,9 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.map.UIState;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.logic.algorithms.fogofwar.NewFogOfWar;
 import jsettlers.logic.player.Player;
 
 /**
@@ -49,12 +51,12 @@ public interface IGuiInputGrid {
 	/**
 	 * Saves the map with the given {@link UIState}.
 	 * 
-	 * @param uiState
+	 * @param playerStates
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	void save(UIState uiState) throws FileNotFoundException, IOException, InterruptedException;
+	void save(PlayerState[] playerStates) throws FileNotFoundException, IOException, InterruptedException;
 
 	void toggleFogOfWar();
 
@@ -68,7 +70,8 @@ public interface IGuiInputGrid {
 	 *            NOTE: There will be no validation if this position is allowed! This must be done prior to this call.
 	 * @param type
 	 *            {@link EBuildingType} of the new building.
-	 * @param playerId TODO
+	 * @param playerId
+	 *            TODO
 	 */
 	void constructBuildingAt(ShortPoint2D position, EBuildingType type, byte playerId);
 
@@ -112,4 +115,8 @@ public interface IGuiInputGrid {
 	boolean isBlocked(ShortPoint2D potentialTargetPos);
 
 	Player getPlayer(byte playerId);
+
+	byte getNumberOfPlayers();
+
+	NewFogOfWar getFogOfWar();
 }
