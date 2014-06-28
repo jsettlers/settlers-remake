@@ -17,7 +17,7 @@ import jsettlers.logic.algorithms.fogofwar.CachedViewCircle.CachedViewCircleIter
  * 
  * @author Andreas Eberle
  */
-public final class NewFogOfWar implements Serializable {
+public final class FogOfWar implements Serializable {
 	private static final long serialVersionUID = 1877994785778678510L;
 	/**
 	 * Longest distance any unit may look
@@ -35,11 +35,11 @@ public final class NewFogOfWar implements Serializable {
 	transient private IFogOfWarGrid grid;
 	private transient boolean canceled;
 
-	public NewFogOfWar(short width, short height) {
+	public FogOfWar(short width, short height) {
 		this(width, height, (byte) 0, false);
 	}
 
-	public NewFogOfWar(final short width, final short height, final byte player, final boolean exploredOnStart) {
+	public FogOfWar(final short width, final short height, final byte player, final boolean exploredOnStart) {
 		this.width = width;
 		this.height = height;
 		this.player = player;

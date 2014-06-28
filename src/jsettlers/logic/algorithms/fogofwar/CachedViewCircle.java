@@ -18,8 +18,8 @@ public final class CachedViewCircle {
 	final int size;
 
 	public CachedViewCircle(int radius) {
-		radius -= NewFogOfWar.PADDING / 2;
-		MapCircle circle = new MapCircle(0, 0, radius + NewFogOfWar.PADDING);
+		radius -= FogOfWar.PADDING / 2;
+		MapCircle circle = new MapCircle(0, 0, radius + FogOfWar.PADDING);
 
 		size = countElements(circle);
 
@@ -42,7 +42,7 @@ public final class CachedViewCircle {
 			if (squaredDistance < squaredViewDistance) {
 				newSight = CommonConstants.FOG_OF_WAR_VISIBLE;
 			} else {
-				newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - radius) / NewFogOfWar.PADDING
+				newSight = (byte) (CommonConstants.FOG_OF_WAR_VISIBLE - (Math.sqrt(squaredDistance) - radius) / FogOfWar.PADDING
 						* CommonConstants.FOG_OF_WAR_VISIBLE);
 			}
 			sight[i] = newSight;
