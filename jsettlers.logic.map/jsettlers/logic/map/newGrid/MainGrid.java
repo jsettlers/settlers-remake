@@ -86,9 +86,9 @@ import jsettlers.logic.map.newGrid.partition.manager.materials.requests.Material
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
@@ -260,7 +260,7 @@ public final class MainGrid implements Serializable {
 			Building building = constructBuildingAt(pos, buildingObject.getType(), partitionsGrid.getPlayer(buildingObject.getPlayerId()), true);
 
 			if (building instanceof IOccupyableBuilding) {
-				NewMovable soldier = createNewMovableAt(building.getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
+				Movable soldier = createNewMovableAt(building.getDoor(), EMovableType.SWORDSMAN_L1, building.getPlayer());
 				soldier.setOccupyableBuilding((IOccupyableBuilding) building);
 			}
 		} else if (object instanceof MovableObject) {
@@ -307,8 +307,8 @@ public final class MainGrid implements Serializable {
 		return x >= 0 && x < width && y >= 0 && y < height;
 	}
 
-	public final NewMovable createNewMovableAt(ShortPoint2D pos, EMovableType type, Player player) {
-		return new NewMovable(movablePathfinderGrid, type, pos, player);
+	public final Movable createNewMovableAt(ShortPoint2D pos, EMovableType type, Player player) {
+		return new Movable(movablePathfinderGrid, type, pos, player);
 	}
 
 	/**
@@ -357,7 +357,7 @@ public final class MainGrid implements Serializable {
 
 		EnclosedBlockedAreaFinderAlgorithm.checkLandmark(enclosedBlockedAreaFinderGrid, flagsGrid.getBlockedContainingProvider(), position);
 
-		NewMovable movable = movableGrid.getMovableAt(position.x, position.y);
+		Movable movable = movableGrid.getMovableAt(position.x, position.y);
 		if (movable != null) {
 			movable.checkPlayerOfPosition(partitionsGrid.getPlayerAt(position.x, position.y));
 		}
@@ -470,7 +470,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
-			NewMovable movable = movableGrid.getMovableAt(x, y);
+			Movable movable = movableGrid.getMovableAt(x, y);
 			if (movable == null) {
 				return false;
 			} else {
@@ -759,7 +759,7 @@ public final class MainGrid implements Serializable {
 			short x = arrow.getTargetX();
 			short y = arrow.getTargetY();
 
-			NewMovable movable = movableGrid.getMovableAt(x, y);
+			Movable movable = movableGrid.getMovableAt(x, y);
 			if (movable != null) {
 				movable.receiveHit(arrow.getHitStrength(), arrow.getSourcePos(), arrow.getShooterPlayerId());
 				mapObjectsManager.removeMapObject(x, y, arrow);
@@ -1124,12 +1124,12 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public void leavePosition(ShortPoint2D position, NewMovable movable) {
+		public void leavePosition(ShortPoint2D position, Movable movable) {
 			movableGrid.movableLeft(position, movable);
 		}
 
 		@Override
-		public void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea) {
+		public void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea) {
 			movableGrid.movableEntered(position, movable);
 
 			if (movable.isAttackable()) {
@@ -1159,7 +1159,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public NewMovable getMovableAt(short x, short y) {
+		public Movable getMovableAt(short x, short y) {
 			return movableGrid.getMovableAt(x, y);
 		}
 
@@ -1374,7 +1374,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final NewMovable getMovable(ShortPoint2D position) {
+		public final Movable getMovable(ShortPoint2D position) {
 			return movableGrid.getMovableAt(position.x, position.y);
 		}
 
@@ -1519,7 +1519,7 @@ public final class MainGrid implements Serializable {
 
 	final class GUIInputGrid implements IGuiInputGrid {
 		@Override
-		public final NewMovable getMovable(short x, short y) {
+		public final Movable getMovable(short x, short y) {
 			return movableGrid.getMovableAt(x, y);
 		}
 
@@ -1681,7 +1681,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final ConcurrentLinkedQueue<? extends IViewDistancable> getMovableViewDistancables() {
-			return NewMovable.getAllMovables();
+			return Movable.getAllMovables();
 		}
 
 		@Override

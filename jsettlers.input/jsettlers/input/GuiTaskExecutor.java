@@ -21,7 +21,7 @@ import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
-import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.movable.Movable;
 import networklib.client.task.packets.TaskPacket;
 import networklib.synchronic.timer.ITaskExecutor;
 
@@ -159,7 +159,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void convertMovables(ConvertGuiTask guiTask) {
 		for (Integer currID : guiTask.getSelection()) {
-			NewMovable movable = NewMovable.getMovableByID(currID);
+			Movable movable = Movable.getMovableByID(currID);
 			if (movable != null) {
 				movable.convertTo(guiTask.getTargetType());
 			}
@@ -169,20 +169,20 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 	private void stopOrStartWorking(List<Integer> selectedMovables, boolean stop) {
 		for (Integer currID : selectedMovables) {
-			NewMovable.getMovableByID(currID).stopOrStartWorking(stop);
+			Movable.getMovableByID(currID).stopOrStartWorking(stop);
 		}
 	}
 
 	private void killSelectedMovables(List<Integer> selectedMovables) {
 		for (Integer currID : selectedMovables) {
-			NewMovable curr = NewMovable.getMovableByID(currID);
+			Movable curr = Movable.getMovableByID(currID);
 			if (curr != null)
 				curr.kill();
 		}
 	}
 
 	/**
-	 * Move the selected {@link NewMovable} to the given position.
+	 * Move the selected {@link Movable} to the given position.
 	 * 
 	 * @param targetPosition
 	 *            position to move to
@@ -191,7 +191,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 	 */
 	private void moveSelectedTo(ShortPoint2D targetPosition, List<Integer> movableIds) {
 		if (movableIds.size() == 1) {
-			NewMovable currMovable = NewMovable.getMovableByID(movableIds.get(0));
+			Movable currMovable = Movable.getMovableByID(movableIds.get(0));
 			if (currMovable != null)
 				currMovable.moveTo(targetPosition);
 		} else if (!movableIds.isEmpty()) {
@@ -213,7 +213,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			Iterator<ShortPoint2D> posIterator = new HexBorderArea(targetPosition, radius).iterator();
 
 			for (Integer currMovableId : movableIds) {
-				NewMovable currMovable = NewMovable.getMovableByID(currMovableId);
+				Movable currMovable = Movable.getMovableByID(currMovableId);
 
 				if (currMovable == null) {
 					continue;
@@ -241,7 +241,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 		}
 	}
 
-	private boolean canMoveTo(NewMovable movable, ShortPoint2D potentialTargetPos) {
+	private boolean canMoveTo(Movable movable, ShortPoint2D potentialTargetPos) {
 		return grid.isInBounds(potentialTargetPos) && !grid.isBlocked(potentialTargetPos)
 				&& grid.getBlockedPartition(movable.getPos()) == grid.getBlockedPartition(potentialTargetPos);
 	}

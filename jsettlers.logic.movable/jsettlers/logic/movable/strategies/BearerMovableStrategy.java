@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable.strategies;
+package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
@@ -8,8 +8,8 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 
 /**
  * Strategy for bearers.
@@ -17,7 +17,7 @@ import jsettlers.logic.newmovable.NewMovableStrategy;
  * @author Andreas Eberle
  * 
  */
-public final class BearerMovableStrategy extends NewMovableStrategy implements IManageableBearer {
+public final class BearerMovableStrategy extends MovableStrategy implements IManageableBearer {
 	private static final long serialVersionUID = -734268451796522451L;
 
 	private EBearerState state = EBearerState.JOBLESS;
@@ -31,7 +31,7 @@ public final class BearerMovableStrategy extends NewMovableStrategy implements I
 	private IBarrack barrack;
 	private IWorkerRequester workerRequester;
 
-	public BearerMovableStrategy(NewMovable movable) {
+	public BearerMovableStrategy(Movable movable) {
 		super(movable);
 		reportAsJobless();
 	}

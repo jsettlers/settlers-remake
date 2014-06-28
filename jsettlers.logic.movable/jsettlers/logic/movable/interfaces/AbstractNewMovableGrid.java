@@ -1,15 +1,15 @@
-package jsettlers.logic.newmovable.interfaces;
+package jsettlers.logic.movable.interfaces;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.IPathCalculatable;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
 /**
- * Defines all methods needed by a {@link NewMovable} to use the implementor as its grid.
+ * Defines all methods needed by a {@link Movable} to use the implementor as its grid.
  * 
  * @author Andreas Eberle
  * 
@@ -30,7 +30,7 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 	@Override
 	public abstract boolean hasNoMovableAt(short x, short y);
 
-	public abstract void leavePosition(ShortPoint2D position, NewMovable movable);
+	public abstract void leavePosition(ShortPoint2D position, Movable movable);
 
 	/**
 	 * Lets the given movable enter the given position.
@@ -43,7 +43,7 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
 	 *            If false, only a circle is informed if the given movable is attackable.
 	 */
-	public abstract void enterPosition(ShortPoint2D position, NewMovable movable, boolean informFullArea);
+	public abstract void enterPosition(ShortPoint2D position, Movable movable, boolean informFullArea);
 
 	public abstract Path calculatePathTo(IPathCalculatable pathCalculatable, ShortPoint2D targetPos);
 
@@ -51,7 +51,7 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 
 	public abstract Path searchInArea(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType);
 
-	public abstract NewMovable getMovableAt(short x, short y);
+	public abstract Movable getMovableAt(short x, short y);
 
 	public abstract boolean isBlocked(short x, short y);
 

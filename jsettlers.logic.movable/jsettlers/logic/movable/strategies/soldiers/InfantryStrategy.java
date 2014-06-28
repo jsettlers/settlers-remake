@@ -1,15 +1,15 @@
-package jsettlers.logic.newmovable.strategies.soldiers;
+package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.IAttackable;
 
 /**
- * Strategy for swordsman and pikeman {@link NewMovable}s.
+ * Strategy for swordsman and pikeman {@link Movable}s.
  * 
  * @author Andreas Eberle
  * 
@@ -18,7 +18,7 @@ public final class InfantryStrategy extends SoldierStrategy {
 	private static final long serialVersionUID = -2367165698305111060L;
 	private static final float INFANTRY_ATTACK_DURATION = 1;
 
-	public InfantryStrategy(NewMovable movable, EMovableType movableType) {
+	public InfantryStrategy(Movable movable, EMovableType movableType) {
 		super(movable, movableType);
 	}
 

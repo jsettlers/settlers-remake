@@ -3,7 +3,7 @@ package jsettlers.input;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.selectable.ISelectable;
-import jsettlers.logic.newmovable.interfaces.IIDable;
+import jsettlers.logic.movable.interfaces.IIDable;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable.strategies;
+package jsettlers.logic.movable.strategies;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,8 +19,8 @@ import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
@@ -28,7 +28,7 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class BuildingWorkerStrategy extends NewMovableStrategy implements IManageableWorker {
+public final class BuildingWorkerStrategy extends MovableStrategy implements IManageableWorker {
 	private static final long serialVersionUID = 5949318243804026519L;
 
 	private final EMovableType movableType;
@@ -41,7 +41,7 @@ public final class BuildingWorkerStrategy extends NewMovableStrategy implements 
 	private EMaterialType poppedMaterial;
 	private int searchFailedCtr = 0;
 
-	public BuildingWorkerStrategy(NewMovable movable, EMovableType movableType) {
+	public BuildingWorkerStrategy(Movable movable, EMovableType movableType) {
 		super(movable);
 		this.movableType = movableType;
 

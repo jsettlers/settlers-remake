@@ -10,8 +10,8 @@ import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.landscape.IWalkableGround;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.IAttackable;
 
 /**
  * This grid stores the position of the {@link IMovable}s.
@@ -21,7 +21,7 @@ import jsettlers.logic.newmovable.interfaces.IAttackable;
 public final class MovableGrid implements Serializable {
 	private static final long serialVersionUID = 7003522358013103962L;
 
-	private final NewMovable[] movableGrid;
+	private final Movable[] movableGrid;
 	private final IWalkableGround ground;
 	private final short width;
 
@@ -31,18 +31,18 @@ public final class MovableGrid implements Serializable {
 		this.width = width;
 		this.height = height;
 		this.ground = ground;
-		this.movableGrid = new NewMovable[width * height];
+		this.movableGrid = new Movable[width * height];
 	}
 
-	public final NewMovable getMovableAt(int x, int y) {
+	public final Movable getMovableAt(int x, int y) {
 		return this.movableGrid[x + y * width];
 	}
 
-	public final void setMovable(short x, short y, NewMovable movable) {
+	public final void setMovable(short x, short y, Movable movable) {
 		this.movableGrid[x + y * width] = movable;
 	}
 
-	public final void movableLeft(ShortPoint2D position, NewMovable movable) {
+	public final void movableLeft(ShortPoint2D position, Movable movable) {
 		int idx = position.x + position.y * width;
 		if (this.movableGrid[idx] == movable) {
 			this.movableGrid[idx] = null;
@@ -57,7 +57,7 @@ public final class MovableGrid implements Serializable {
 	 * @param movable
 	 *            Movable that enters the position.
 	 */
-	public final void movableEntered(ShortPoint2D position, NewMovable movable) {
+	public final void movableEntered(ShortPoint2D position, Movable movable) {
 		short x = position.x;
 		short y = position.y;
 
@@ -85,7 +85,7 @@ public final class MovableGrid implements Serializable {
 	 *            If true, the full soldier update area is informed if the given movable is attackable.<br>
 	 *            If false, only a circle is informed if the given movable is attackable.
 	 */
-	public void informMovables(NewMovable movable, short x, short y, boolean informFullArea) {
+	public void informMovables(Movable movable, short x, short y, boolean informFullArea) {
 		// inform all movables of the given movable
 		IMapArea area;
 		if (informFullArea) {
@@ -101,7 +101,7 @@ public final class MovableGrid implements Serializable {
 			short currX = curr.x;
 			short currY = curr.y;
 			if (0 <= currX && currX < width && 0 <= currY && currY < height) {
-				NewMovable currMovable = getMovableAt(currX, currY);
+				Movable currMovable = getMovableAt(currX, currY);
 				if (currMovable != null && isEnemy(movablePlayer, currMovable)) {
 					currMovable.informAboutAttackable(movable);
 

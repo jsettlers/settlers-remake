@@ -24,9 +24,9 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm.DijkstraContinuableRequest;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.IAttackableMovable;
 import jsettlers.logic.objects.StandardMapObject;
 import jsettlers.logic.player.Player;
 import networklib.synchronic.random.RandomSingleton;
@@ -97,7 +97,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 	void changePlayerTo(ShortPoint2D attackerPos) {
 		assert occupiers.isEmpty() : "there cannot be any occupiers in the tower when changing the player.";
 
-		NewMovable enemy = super.getGrid().getMovable(attackerPos);
+		Movable enemy = super.getGrid().getMovable(attackerPos);
 		Player newPlayer = enemy.getPlayer();
 
 		setAttackableTowerObject(false);
@@ -164,7 +164,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 			if (path != null) {
 				System.out.println("soldier found");
 
-				NewMovable soldier = super.getGrid().getMovable(path.getTargetPos());
+				Movable soldier = super.getGrid().getMovable(path.getTargetPos());
 				if (soldier != null && soldier.setOccupyableBuilding(this)) {
 					ESearchType searchedSoldier = searchedSoldiers.pop();
 					currentlyCommingSoldiers[getSoldierType(searchedSoldier).ordinal()]++;
@@ -482,7 +482,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 
 		@Override
 		public void receiveHit(float strength, ShortPoint2D attackerPos, byte attackingPlayer) {
-			NewMovable attacker = getGrid().getMovable(attackerPos);
+			Movable attacker = getGrid().getMovable(attackerPos);
 			if (attacker != null && attacker.getPlayer() == getPlayer()) {
 				return; // this can happen directly after the tower changed its player
 			}

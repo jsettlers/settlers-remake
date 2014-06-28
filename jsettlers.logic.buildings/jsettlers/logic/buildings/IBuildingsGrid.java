@@ -13,8 +13,8 @@ import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
@@ -59,7 +59,7 @@ public interface IBuildingsGrid {
 	 * @return the movable currently located at the given position<br>
 	 *         or null if no movable is located at the given position.
 	 */
-	NewMovable getMovable(ShortPoint2D position);
+	Movable getMovable(ShortPoint2D position);
 
 	MapObjectsManager getMapObjectsManager();
 

@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable.interfaces;
+package jsettlers.logic.movable.interfaces;
 
 /**
  * 

@@ -1,18 +1,18 @@
-package jsettlers.logic.newmovable.strategies.specialists;
+package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 
 /**
  * 
  * @author Andreas Eberle
  * 
  */
-public final class GeologistStrategy extends NewMovableStrategy {
+public final class GeologistStrategy extends MovableStrategy {
 	private static final long serialVersionUID = 1L;
 
 	private static final float ACTION1_DURATION = 1.4f;
@@ -21,7 +21,7 @@ public final class GeologistStrategy extends NewMovableStrategy {
 	private EGeologistState state = EGeologistState.JOBLESS;
 	private ShortPoint2D centerPos;
 
-	public GeologistStrategy(NewMovable movable) {
+	public GeologistStrategy(Movable movable) {
 		super(movable);
 	}
 

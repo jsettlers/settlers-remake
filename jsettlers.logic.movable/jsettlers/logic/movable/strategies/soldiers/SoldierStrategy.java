@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable.strategies.soldiers;
+package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
@@ -8,12 +8,12 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
-import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
+import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.movable.interfaces.IAttackable;
 
-public abstract class SoldierStrategy extends NewMovableStrategy implements IBuildingOccupyableMovable {
+public abstract class SoldierStrategy extends MovableStrategy implements IBuildingOccupyableMovable {
 	private static final long serialVersionUID = 5246120883607071865L;
 
 	/**
@@ -46,7 +46,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 
 	private boolean defending;
 
-	public SoldierStrategy(NewMovable movable, EMovableType movableType) {
+	public SoldierStrategy(Movable movable, EMovableType movableType) {
 		super(movable);
 		this.movableType = movableType;
 	}
@@ -210,7 +210,7 @@ public abstract class SoldierStrategy extends NewMovableStrategy implements IBui
 	}
 
 	@Override
-	public NewMovable getMovable() {
+	public Movable getMovable() {
 		return super.getMovable();
 	}
 

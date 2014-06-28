@@ -5,7 +5,7 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
-import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
 /**
@@ -37,10 +37,10 @@ public abstract class SpawnBuilding extends Building {
 	@Override
 	protected final int subTimerEvent() {
 		int rescheduleDelay;
-		NewMovable movableAtDoor = super.getGrid().getMovable(super.getDoor());
+		Movable movableAtDoor = super.getGrid().getMovable(super.getDoor());
 
 		if (movableAtDoor == null) {
-			movableAtDoor = new NewMovable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
+			movableAtDoor = new Movable(super.getGrid().getMovableGrid(), getMovableType(), getDoor(), super.getPlayer());
 			produced++;
 
 			if (produced < getProduceLimit()) {

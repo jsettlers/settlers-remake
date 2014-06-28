@@ -14,8 +14,8 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IInformable;
+import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.IInformable;
 
 /**
  * This grid stores the objects located at each position.

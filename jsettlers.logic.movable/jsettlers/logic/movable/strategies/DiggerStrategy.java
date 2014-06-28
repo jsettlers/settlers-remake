@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable.strategies;
+package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EAction;
@@ -6,17 +6,17 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 import networklib.synchronic.random.RandomSingleton;
 
-public final class DiggerStrategy extends NewMovableStrategy implements IManageableDigger {
+public final class DiggerStrategy extends MovableStrategy implements IManageableDigger {
 	private static final long serialVersionUID = 1581926355853324624L;
 
 	private IDiggerRequester requester;
 	private EDiggerState state = EDiggerState.JOBLESS;
 
-	public DiggerStrategy(NewMovable movable) {
+	public DiggerStrategy(Movable movable) {
 		super(movable);
 
 		reportAsJobless();

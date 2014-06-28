@@ -1,11 +1,11 @@
-package jsettlers.logic.newmovable.strategies;
+package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 import networklib.synchronic.random.RandomSingleton;
 
 /**
@@ -13,12 +13,12 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public class FleeStrategy extends NewMovableStrategy {
+public class FleeStrategy extends MovableStrategy {
 	private static final long serialVersionUID = -7693464085159449304L;
 	private int searchesCounter = 0;
 	private boolean turnNextTime;
 
-	public FleeStrategy(NewMovable movable) {
+	public FleeStrategy(Movable movable) {
 		super(movable);
 	}
 

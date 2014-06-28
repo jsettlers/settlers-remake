@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable.interfaces;
+package jsettlers.logic.movable.interfaces;
 
 import java.io.Serializable;
 
@@ -13,11 +13,11 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBear
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.logic.player.Player;
 
 /**
- * Defines methods needed by the {@link NewMovableStrategy}.
+ * Defines methods needed by the {@link MovableStrategy}.
  * 
  * @author Andreas Eberle
  * 

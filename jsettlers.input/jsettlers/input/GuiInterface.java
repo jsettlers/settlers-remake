@@ -42,8 +42,8 @@ import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.newmovable.interfaces.IDebugable;
-import jsettlers.logic.newmovable.interfaces.IIDable;
+import jsettlers.logic.movable.interfaces.IDebugable;
+import jsettlers.logic.movable.interfaces.IIDable;
 import networklib.client.interfaces.IGameClock;
 import networklib.client.interfaces.ITaskScheduler;
 

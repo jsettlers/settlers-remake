@@ -30,7 +30,7 @@ import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.logic.newmovable.NewMovable;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import networklib.client.OfflineNetworkConnector;
@@ -201,7 +201,7 @@ public class JSettlersGame {
 				mainGrid.stopThreads();
 				guiInterface.stop();
 				RescheduleTimer.stop();
-				NewMovable.dropAllMovables();
+				Movable.dropAllMovables();
 				Building.dropAllBuildings();
 			} catch (MapLoadException e) {
 				e.printStackTrace();

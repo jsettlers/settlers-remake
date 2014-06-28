@@ -1,19 +1,19 @@
-package jsettlers.logic.newmovable.strategies.specialists;
+package jsettlers.logic.movable.strategies.specialists;
 
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 
 /**
  * 
  * @author Andreas Eberle
  * 
  */
-public final class PioneerStrategy extends NewMovableStrategy {
+public final class PioneerStrategy extends MovableStrategy {
 	private static final long serialVersionUID = 1L;
 
 	private static final float ACTION1_DURATION = 1.2f;
@@ -21,7 +21,7 @@ public final class PioneerStrategy extends NewMovableStrategy {
 	private EPioneerState state = EPioneerState.JOBLESS;
 	private ShortPoint2D centerPos;
 
-	public PioneerStrategy(NewMovable movable) {
+	public PioneerStrategy(Movable movable) {
 		super(movable);
 	}
 

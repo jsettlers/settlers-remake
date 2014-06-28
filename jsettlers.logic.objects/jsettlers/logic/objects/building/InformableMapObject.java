@@ -2,8 +2,8 @@ package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IInformable;
+import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.IInformable;
 
 /**
  * This map object can be used to get informed if an attackable movable enters a given area.

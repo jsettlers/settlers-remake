@@ -1,14 +1,14 @@
-package jsettlers.logic.newmovable.strategies;
+package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.NewMovableStrategy;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.MovableStrategy;
 
-public class BricklayerStrategy extends NewMovableStrategy implements IManageableBricklayer {
+public class BricklayerStrategy extends MovableStrategy implements IManageableBricklayer {
 	private static final long serialVersionUID = 7032795807942301297L;
 	private static final float BRICKLAYER_ACTION_DURATION = 1f;
 
@@ -17,7 +17,7 @@ public class BricklayerStrategy extends NewMovableStrategy implements IManageabl
 	private ShortPoint2D bricklayerTargetPos;
 	private EDirection lookDirection;
 
-	public BricklayerStrategy(NewMovable movable) {
+	public BricklayerStrategy(Movable movable) {
 		super(movable);
 		makeJobless();
 	}

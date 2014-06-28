@@ -34,7 +34,7 @@ import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
-import jsettlers.logic.newmovable.interfaces.IDebugable;
+import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
 import jsettlers.logic.timer.IScheduledTimerable;

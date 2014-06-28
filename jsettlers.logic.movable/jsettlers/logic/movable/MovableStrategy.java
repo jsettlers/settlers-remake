@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable;
+package jsettlers.logic.movable;
 
 import java.io.Serializable;
 
@@ -9,17 +9,17 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.strategies.BearerMovableStrategy;
-import jsettlers.logic.newmovable.strategies.BricklayerStrategy;
-import jsettlers.logic.newmovable.strategies.BuildingWorkerStrategy;
-import jsettlers.logic.newmovable.strategies.DiggerStrategy;
-import jsettlers.logic.newmovable.strategies.soldiers.BowmanStrategy;
-import jsettlers.logic.newmovable.strategies.soldiers.InfantryStrategy;
-import jsettlers.logic.newmovable.strategies.specialists.DummySpecialistStrategy;
-import jsettlers.logic.newmovable.strategies.specialists.GeologistStrategy;
-import jsettlers.logic.newmovable.strategies.specialists.PioneerStrategy;
+import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.strategies.BearerMovableStrategy;
+import jsettlers.logic.movable.strategies.BricklayerStrategy;
+import jsettlers.logic.movable.strategies.BuildingWorkerStrategy;
+import jsettlers.logic.movable.strategies.DiggerStrategy;
+import jsettlers.logic.movable.strategies.soldiers.BowmanStrategy;
+import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
+import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
+import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
+import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
 import jsettlers.logic.player.Player;
 
 /**
@@ -28,16 +28,16 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public abstract class NewMovableStrategy implements Serializable {
+public abstract class MovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
 
-	private final NewMovable movable;
+	private final Movable movable;
 
-	protected NewMovableStrategy(NewMovable movable) {
+	protected MovableStrategy(Movable movable) {
 		this.movable = movable;
 	}
 
-	public static NewMovableStrategy getStrategy(NewMovable movable, EMovableType movableType) {
+	public static MovableStrategy getStrategy(Movable movable, EMovableType movableType) {
 		switch (movableType) {
 		case BEARER:
 			return new BearerMovableStrategy(movable);
@@ -194,7 +194,7 @@ public abstract class NewMovableStrategy implements Serializable {
 		return movable.getPlayer();
 	}
 
-	protected NewMovable getMovable() {
+	protected Movable getMovable() {
 		return movable;
 	}
 

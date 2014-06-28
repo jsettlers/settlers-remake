@@ -1,4 +1,4 @@
-package jsettlers.logic.newmovable;
+package jsettlers.logic.movable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,14 +22,14 @@ import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.newmovable.interfaces.AbstractNewMovableGrid;
-import jsettlers.logic.newmovable.interfaces.AbstractStrategyGrid;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
-import jsettlers.logic.newmovable.interfaces.IDebugable;
-import jsettlers.logic.newmovable.interfaces.IIDable;
-import jsettlers.logic.newmovable.strategies.FleeStrategy;
-import jsettlers.logic.newmovable.strategies.soldiers.SoldierStrategy;
+import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
+import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.IAttackableMovable;
+import jsettlers.logic.movable.interfaces.IDebugable;
+import jsettlers.logic.movable.interfaces.IIDable;
+import jsettlers.logic.movable.strategies.FleeStrategy;
+import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
@@ -41,11 +41,11 @@ import networklib.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class NewMovable implements IScheduledTimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
+public final class Movable implements IScheduledTimerable, IPathCalculatable, IIDable, IDebugable, Serializable, IViewDistancable, IGuiMovable,
 		IAttackableMovable {
 	private static final long serialVersionUID = 2472076796407425256L;
-	private static final HashMap<Integer, NewMovable> movablesByID = new HashMap<Integer, NewMovable>();
-	private static final ConcurrentLinkedQueue<NewMovable> allMovables = new ConcurrentLinkedQueue<NewMovable>();
+	private static final HashMap<Integer, Movable> movablesByID = new HashMap<Integer, Movable>();
+	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
 	private static int nextID = Integer.MIN_VALUE;
 
 	private final AbstractNewMovableGrid grid;
@@ -54,7 +54,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	private ENewMovableState state = ENewMovableState.DOING_NOTHING;
 
 	private EMovableType movableType;
-	private NewMovableStrategy strategy;
+	private MovableStrategy strategy;
 	private Player player;
 
 	private EMaterialType materialType = EMaterialType.NO_MATERIAL;
@@ -72,7 +72,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	private float health = 1.0f;
 	private boolean visible = true;
 	private boolean enableNothingToDo = true;
-	private NewMovable pushedFrom;
+	private Movable pushedFrom;
 
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
@@ -81,11 +81,11 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
 
-	public NewMovable(AbstractNewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+	public Movable(AbstractNewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
 		this.position = position;
 		this.player = player;
-		this.strategy = NewMovableStrategy.getStrategy(this, movableType);
+		this.strategy = MovableStrategy.getStrategy(this, movableType);
 		this.movableType = movableType;
 
 		this.direction = EDirection.values[RandomSingleton.getInt(0, 5)];
@@ -136,7 +136,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 			if (goInDirection(currDir)) {
 				break;
 			} else {
-				NewMovable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
+				Movable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
 				if (movableAtPos != null) {
 					movableAtPos.push(this);
 				}
@@ -327,7 +327,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	 * @return true if this movable will move out of it's way in the near future <br>
 	 *         false if this movable doesn't move.
 	 */
-	private boolean push(NewMovable pushingMovable) {
+	private boolean push(Movable pushingMovable) {
 		if (health <= 0) {
 			return false;
 		}
@@ -397,7 +397,7 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		}
 	}
 
-	private boolean goToRandomDirection(NewMovable pushingMovable) {
+	private boolean goToRandomDirection(Movable pushingMovable) {
 		int offset = RandomSingleton.getInt(0, EDirection.NUMBER_OF_DIRECTIONS - 1);
 		EDirection pushedFromDir = EDirection.getDirection(this.getPos(), pushingMovable.getPos());
 
@@ -612,11 +612,11 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 	 * @return returns the movable with the given ID<br>
 	 *         or null if the id can not be found
 	 */
-	public final static NewMovable getMovableByID(int id) {
+	public final static Movable getMovableByID(int id) {
 		return movablesByID.get(id);
 	}
 
-	public final static ConcurrentLinkedQueue<NewMovable> getAllMovables() {
+	public final static ConcurrentLinkedQueue<Movable> getAllMovables() {
 		return allMovables;
 	}
 
@@ -759,10 +759,10 @@ public final class NewMovable implements IScheduledTimerable, IPathCalculatable,
 		}
 
 		this.movableType = newMovableType;
-		setStrategy(NewMovableStrategy.getStrategy(this, newMovableType));
+		setStrategy(MovableStrategy.getStrategy(this, newMovableType));
 	}
 
-	private void setStrategy(NewMovableStrategy newStrategy) {
+	private void setStrategy(MovableStrategy newStrategy) {
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 		this.strategy = newStrategy;
 		this.movableAction = EAction.NO_ACTION;

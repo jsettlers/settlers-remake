@@ -1,12 +1,12 @@
-package jsettlers.logic.newmovable.strategies.soldiers;
+package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.newmovable.NewMovable;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
+import jsettlers.logic.movable.Movable;
+import jsettlers.logic.movable.interfaces.IAttackable;
 
 /**
  * Strategy of a bowman.
@@ -22,7 +22,7 @@ public final class BowmanStrategy extends SoldierStrategy {
 
 	// private static final int SQAURE_BOWMAN_MINIMUM_DISTANCE = Constants.BOWMAN_MIN_ATTACK_DISTANCE * Constants.BOWMAN_MIN_ATTACK_DISTANCE;
 
-	public BowmanStrategy(NewMovable movable, EMovableType movableType) {
+	public BowmanStrategy(Movable movable, EMovableType movableType) {
 		super(movable, movableType);
 	}
 

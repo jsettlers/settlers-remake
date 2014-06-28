@@ -3,8 +3,8 @@ package jsettlers.logic.buildings.military;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.newmovable.interfaces.IAttackable;
-import jsettlers.logic.newmovable.interfaces.IAttackableMovable;
+import jsettlers.logic.movable.interfaces.IAttackable;
+import jsettlers.logic.movable.interfaces.IAttackableMovable;
 
 /**
  * 
