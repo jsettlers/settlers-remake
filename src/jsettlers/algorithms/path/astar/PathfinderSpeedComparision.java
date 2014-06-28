@@ -50,7 +50,7 @@ public class PathfinderSpeedComparision {
 	private static MainGrid getMap() throws MapLoadException {
 		RandomSingleton.load(123456L);
 		MapLoader loader = MapLoader.getLoaderForFile(new File("../jsettlers.common/resources/maps/bigmap.map"));
-		return loader.loadMainGrid((byte) 0).getMainGrid();
+		return loader.loadMainGrid().getMainGrid();
 	}
 
 	private static long testAStar(int randomSeed, AbstractAStar astar, IAStarPathMap map, int numberOfPaths, short width, short height)
