@@ -38,6 +38,7 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
+import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.IGuiInputGrid;
@@ -45,9 +46,9 @@ import jsettlers.input.PlayerState;
 import jsettlers.logic.algorithms.borders.BordersThread;
 import jsettlers.logic.algorithms.borders.IBordersThreadGrid;
 import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 import jsettlers.logic.algorithms.fogofwar.IFogOfWarGrid;
 import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
-import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
 import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.logic.algorithms.path.IPathCalculatable;
@@ -191,8 +192,8 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	public MainGrid(String mapId, String mapName, IMapData mapGrid, byte players) {
-		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), players);
+	public MainGrid(String mapId, String mapName, IMapData mapGrid, boolean[] availablePlayers) {
+		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), (byte) availablePlayers.length);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -208,7 +209,7 @@ public final class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && isOccupyableBuilding(object)) {
+				if (object != null && isOccupyableBuilding(object) && isActivePlayer(object, availablePlayers)) {
 					addMapObject(x, y, object);
 				}
 				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
@@ -223,12 +224,16 @@ public final class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && !isOccupyableBuilding(object)) {
+				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, availablePlayers)) {
 					addMapObject(x, y, object);
 				}
 			}
 		}
 		System.out.println("grid filled");
+	}
+
+	private boolean isActivePlayer(MapObject object, boolean[] availablePlayers) {
+		return !(object instanceof IPlayerable) || availablePlayers[((IPlayerable) object).getPlayerId()];
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {

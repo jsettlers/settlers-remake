@@ -24,7 +24,7 @@ public class SavegameLoader extends MapLoader {
 	}
 
 	@Override
-	public MainGridWithUiSettings loadMainGrid() throws MapLoadException {
+	public MainGridWithUiSettings loadMainGrid(boolean[] availablePlayers) throws MapLoadException {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(super.getMapDataStream());
 

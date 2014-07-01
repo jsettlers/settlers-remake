@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
@@ -139,11 +140,19 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 	}
 
 	@Override
-	public MainGridWithUiSettings loadMainGrid() throws MapLoadException {
+	public MainGridWithUiSettings loadMainGrid(boolean[] availablePlayers) throws MapLoadException {
 		IMapData mapData = getMapData();
 
 		byte numberOfPlayers = (byte) getMaxPlayers();
-		MainGrid mainGrid = new MainGrid(getMapID(), getMapName(), mapData, numberOfPlayers);
+
+		if (availablePlayers == null || CommonConstants.ACTIVATE_ALL_PLAYERS) {
+			availablePlayers = new boolean[numberOfPlayers];
+			for (int i = 0; i < numberOfPlayers; i++) {
+				availablePlayers[i] = true;
+			}
+		}
+
+		MainGrid mainGrid = new MainGrid(getMapID(), getMapName(), mapData, availablePlayers);
 
 		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {

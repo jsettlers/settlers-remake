@@ -80,8 +80,11 @@ public class StartScreenConnector implements IStartScreen {
 	private IStartingGame startGame(String mapId) {
 		MapLoader mapLoader = mapList.getMapById(mapId);
 		long randomSeed = 4711L;
+		byte playerId = 0;
+		boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
+		availablePlayers[playerId] = true;
 
-		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, (byte) 0);
+		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers);
 		return game.start();
 	}
 

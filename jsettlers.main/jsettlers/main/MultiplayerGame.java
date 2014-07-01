@@ -110,25 +110,34 @@ public class MultiplayerGame {
 
 				MapLoader mapLoader = MapList.getDefaultList().getMapById(packet.getMatchInfo().getMapInfo().getId());
 				long randomSeed = packet.getRandomSeed();
-				byte myPlayerNumber = getMyPlayerNumber();
+				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
+				byte ownPlayerId = calculatePlayerInfos(availablePlayers);
 
-				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), myPlayerNumber);
+				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, availablePlayers);
 
 				multiplayerListener.gameIsStarting(game.start());
 			}
+
 		};
 	}
 
-	byte getMyPlayerNumber() {
+	byte calculatePlayerInfos(boolean[] availablePlayers) {
 		String myId = networkClient.getPlayerInfo().getId();
 		byte i = 0;
+		byte ownPlayerId = -1;
 		for (IMultiplayerPlayer currPlayer : playersList.getItems()) {
+			availablePlayers[i] = true;
 			if (currPlayer.getId().equals(myId)) {
-				return i;
+				ownPlayerId = i;
 			}
 			i++;
 		}
-		throw new RuntimeException("Wasn't able to find my id!");
+
+		if (ownPlayerId < 0) {
+			throw new RuntimeException("Wasn't able to find my id!");
+		} else {
+			return ownPlayerId;
+		}
 	}
 
 	private IPacketReceiver<MatchInfoUpdatePacket> generateMatchInfoUpdatedListener() {
