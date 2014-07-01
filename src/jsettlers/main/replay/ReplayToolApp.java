@@ -33,6 +33,8 @@ import networklib.client.interfaces.INetworkConnector;
  */
 public class ReplayToolApp {
 
+	private static ReplayStartInformation replayStartInformation;
+
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 		SwingManagedJSettlers.loadDebugSettings(argsMap);
@@ -103,7 +105,8 @@ public class ReplayToolApp {
 				File loadableReplayFile = replayFile;
 				System.out.println("Found loadable replay file and loading it: " + loadableReplayFile);
 
-				return JSettlersGame.loadFromReplayFile(loadableReplayFile, networkConnector);
+				replayStartInformation = new ReplayStartInformation();
+				return JSettlersGame.loadFromReplayFile(loadableReplayFile, networkConnector, replayStartInformation);
 			} else {
 				throw new FileNotFoundException("Found replayFile parameter, but file can not be found: " + replayFile);
 			}
@@ -115,7 +118,8 @@ public class ReplayToolApp {
 	private void createReplayOfRemainingTasks(MapLoader newSavegame) throws IOException {
 		System.out.println("Creating new replay file...");
 
-		ReplayStartInformation replayInfo = new ReplayStartInformation(0, startedGame.getPlayer(), newSavegame.getMapName(), newSavegame.getMapID());
+		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
+				newSavegame.getMapID(), replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers());
 
 		DataOutputStream dos = new DataOutputStream(new FileOutputStream("replayForSavegame.log"));
 		replayInfo.serialize(dos);

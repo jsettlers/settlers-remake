@@ -27,6 +27,7 @@ import jsettlers.logic.LogicRevision;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
+import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
 import networklib.client.OfflineNetworkConnector;
 
@@ -84,6 +85,9 @@ public class SwingManagedJSettlers {
 		}
 		if (argsMap.containsKey("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
+		}
+		if (argsMap.containsKey("activate-all-players")) {
+			CommonConstants.ACTIVATE_ALL_PLAYERS = true;
 		}
 	}
 
@@ -147,9 +151,12 @@ public class SwingManagedJSettlers {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
 				MapLoader mapLoader = MapLoader.getLoaderForFile(new File(mapfile));
-				game = new JSettlersGame(mapLoader, randomSeed, (byte) 0).start();
+				byte playerId = 0;
+				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
+				availablePlayers[playerId] = true;
+				game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers).start();
 			} else {
-				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector()).start();
+				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			}
 			StartingGamePanel toDisplay = new StartingGamePanel(game, content);
 			content.setContent(toDisplay);
