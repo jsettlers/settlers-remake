@@ -24,12 +24,5 @@ public interface IStartedGame {
 	 */
 	IStatisticable getPlayerStatistics();
 
-	/**
-	 * Gets the number of the player that is currently playing.
-	 * 
-	 * @return
-	 */
-	int getPlayer();
-
 	void setGameExitListener(IGameExitListener exitListener);
 }

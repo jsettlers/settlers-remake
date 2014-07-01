@@ -52,11 +52,6 @@ public class FakeMapGame implements IStartedGame {
 	}
 
 	@Override
-	public int getPlayer() {
-		return 0;
-	}
-
-	@Override
 	public void setGameExitListener(IGameExitListener exitListener) {
 	}
 
