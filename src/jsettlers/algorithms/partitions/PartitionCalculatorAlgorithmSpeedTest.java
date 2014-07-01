@@ -28,7 +28,7 @@ public class PartitionCalculatorAlgorithmSpeedTest {
 
 		MatchConstants.clock = new NetworkTimer(true);
 
-		MainGrid grid = MapList.getDefaultList().getMapByName("big map").loadMainGrid().getMainGrid();
+		MainGrid grid = MapList.getDefaultList().getMapByName("big map").loadMainGrid(null).getMainGrid();
 		MainGridDataAccessor gridAccessor = new MainGridDataAccessor(grid);
 
 		short width = gridAccessor.getWidth();
