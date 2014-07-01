@@ -16,6 +16,11 @@ public abstract class CommonConstants {
 	 */
 	public static boolean ENABLE_ALL_PLAYER_SELECTION = false;
 
+	/**
+	 * If true, all players of a map will always be positioned on startup.
+	 */
+	public static boolean ACTIVATE_ALL_PLAYERS = false;
+
 	public static final boolean ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT = false;
 
 	/**
