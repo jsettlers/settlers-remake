@@ -59,7 +59,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 */
 	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
 
-	public abstract float getResourceAmountAround(short x, short y, EResourceType type);
+	public abstract float getResourceAmountAround(short x, short y, EResourceType type, int radius);
 
 	/**
 	 * 

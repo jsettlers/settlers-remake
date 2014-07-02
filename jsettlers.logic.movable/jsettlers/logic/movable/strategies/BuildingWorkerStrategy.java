@@ -9,7 +9,6 @@ import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
-import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -333,27 +332,23 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private boolean isProductive() {
 		switch (building.getBuildingType()) {
 		case FISHER:
-			EDirection fishDirection = super.getStrategyGrid().getDirectionOfSearched(super.getPos(), ESearchType.FISHABLE);
-			if (fishDirection != null) {
-				return hasProductiveResources(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
-			} else {
-				return false;
-			}
+			EDirection fishDirection = super.getMovable().getDirection();
+			return hasProductiveResources(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 2);
 		case COALMINE:
-			return hasProductiveResources(building.getDoor(), EResourceType.COAL);
+			return hasProductiveResources(building.getDoor(), EResourceType.COAL, 1);
 		case IRONMINE:
-			return hasProductiveResources(building.getDoor(), EResourceType.IRON);
+			return hasProductiveResources(building.getDoor(), EResourceType.IRON, 1);
 		case GOLDMINE:
-			return hasProductiveResources(building.getDoor(), EResourceType.GOLD);
+			return hasProductiveResources(building.getDoor(), EResourceType.GOLD, 1);
 
 		default:
 			return false;
 		}
 	}
 
-	private boolean hasProductiveResources(ShortPoint2D pos, EResourceType type) {
-		float amount = super.getStrategyGrid().getResourceAmountAround(pos.x, pos.y, type);
-		return RandomSingleton.get().nextFloat() < amount;
+	private boolean hasProductiveResources(ShortPoint2D pos, EResourceType type, int radius) {
+		float amount = super.getStrategyGrid().getResourceAmountAround(pos.x, pos.y, type, radius);
+		return Math.pow(RandomSingleton.get().nextFloat(), 1.15f) < amount;
 	}
 
 	private void gotoAction() {

@@ -987,8 +987,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public float getResourceAmountAround(short x, short y, EResourceType type) {
-			return landscapeGrid.getResourceAmountAround(x, y, type);
+		public float getResourceAmountAround(short x, short y, EResourceType type, int radius) {
+			return landscapeGrid.getResourceAmountAround(x, y, type, radius);
 		}
 
 		@Override

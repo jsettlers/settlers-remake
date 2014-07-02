@@ -204,20 +204,22 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 	}
 
-	public float getResourceAmountAround(int x, int y, EResourceType type) {
-		int minx = Math.max(x - 1, 0);
-		int maxx = Math.max(x + 1, width - 1);
-		int miny = Math.max(y - 1, 0);
-		int maxy = Math.max(y + 1, height - 1);
-		int found = 0;
+	public float getResourceAmountAround(int x, int y, EResourceType type, int radius) {
+		int minx = Math.max(x - radius, 0);
+		int maxx = Math.min(x + radius, width - 1);
+		int miny = Math.max(y - radius, 0);
+		int maxy = Math.min(y + radius, height - 1);
+		int amount = 0;
+		int area = 0;
 		for (int currentx = minx; currentx <= maxx; currentx++) {
 			for (int currenty = miny; currenty <= maxy; currenty++) {
 				if (resourceType[currentx + currenty * width] == type.ordinal) {
-					found += resourceAmount[x + y * width];
+					amount += resourceAmount[x + y * width];
+					area++;
 				}
 			}
 		}
-		return (float) found / Byte.MAX_VALUE / 9;
+		return ((float) amount) / (Byte.MAX_VALUE * area);
 	}
 
 	@Override
