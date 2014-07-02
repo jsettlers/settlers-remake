@@ -14,7 +14,8 @@ public enum EDebugColorModes {
 	PLAYER_ID,
 	TOWER_COUNT,
 	DEBUG_COLOR,
-	MARKS_AND_OBJECTS;
+	MARKS_AND_OBJECTS,
+	RESOURCE_AMOUNTS;
 
 	/**
 	 * This array defines the available debug color modes. If you want to disable a mode, create a new array, that doesn't contain the mode.<br>

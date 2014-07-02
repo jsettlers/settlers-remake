@@ -132,11 +132,11 @@
 	<job name="walk6" 		type="WALK" 			successjob="walk7" 			failjob="hide" 		direction="NORTH_WEST"/>
 	<job name="walk7" 		type="WALK" 			successjob="saw1" 			failjob="hide" 		direction="NORTH_WEST"/>
 	
-	<job name="saw1" 		type="PLAY_ACTION1" 	successjob="saw2" 			failjob="gohome"	time="1.0"/>
-	<job name="saw2" 		type="PLAY_ACTION1" 	successjob="saw3" 			failjob="gohome"	time="1.0"/>
-	<job name="saw3" 		type="PLAY_ACTION1" 	successjob="saw4" 			failjob="gohome"	time="1.0"/>
-	<job name="saw4" 		type="PLAY_ACTION1" 	successjob="saw5" 			failjob="gohome"	time="1.0"/>
-	<job name="saw5" 		type="PLAY_ACTION1" 	successjob="changeMat2" 	failjob="gohome"	time="1.0"/>
+	<job name="saw1" 		type="PLAY_ACTION1" 	successjob="saw2" 			failjob="gohome"	time="0.9"/>
+	<job name="saw2" 		type="PLAY_ACTION1" 	successjob="saw3" 			failjob="gohome"	time="0.9"/>
+	<job name="saw3" 		type="PLAY_ACTION1" 	successjob="saw4" 			failjob="gohome"	time="0.9"/>
+	<job name="saw4" 		type="PLAY_ACTION1" 	successjob="saw5" 			failjob="gohome"	time="0.9"/>
+	<job name="saw5" 		type="PLAY_ACTION1" 	successjob="changeMat2" 	failjob="gohome"	time="0.9"/>
 	
 	<job name="changeMat2" 	type="SET_MATERIAL" 	successjob="walk10" 		failjob="hide" 		material="PLANK"/>
 	
