@@ -83,6 +83,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		case IS_PRODUCTIVE:
 			if (isProductive()) {
+				decreaseResourceAmount();
 				jobFinished();
 			} else {
 				jobFailed();
@@ -333,22 +334,46 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = super.getMovable().getDirection();
-			return hasProductiveResources(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 2);
+			return hasProductiveResource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 1);
 		case COALMINE:
-			return hasProductiveResources(building.getDoor(), EResourceType.COAL, 1);
+			return hasProductiveResource(building.getPos(), EResourceType.COAL, 1);
 		case IRONMINE:
-			return hasProductiveResources(building.getDoor(), EResourceType.IRON, 1);
+			return hasProductiveResource(building.getPos(), EResourceType.IRON, 1);
 		case GOLDMINE:
-			return hasProductiveResources(building.getDoor(), EResourceType.GOLD, 1);
+			return hasProductiveResource(building.getPos(), EResourceType.GOLD, 1);
 
 		default:
 			return false;
 		}
 	}
 
-	private boolean hasProductiveResources(ShortPoint2D pos, EResourceType type, int radius) {
-		float amount = super.getStrategyGrid().getResourceAmountAround(pos.x, pos.y, type, radius);
-		return Math.pow(RandomSingleton.get().nextFloat(), 1.15f) < amount;
+	private boolean hasProductiveResource(ShortPoint2D position, EResourceType type, int radius) {
+		float percentage = super.getStrategyGrid().getResourceProbabilityAround(position.x, position.y, type, radius);
+		return RandomSingleton.get().nextFloat() < percentage;
+	}
+
+	private void decreaseResourceAmount() {
+		switch (building.getBuildingType()) {
+		case FISHER:
+			EDirection fishDirection = super.getMovable().getDirection();
+			decreaseResourceAround(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 1);
+			break;
+		case COALMINE:
+			decreaseResourceAround(building.getPos(), EResourceType.COAL, 1);
+			break;
+		case IRONMINE:
+			decreaseResourceAround(building.getPos(), EResourceType.IRON, 1);
+			break;
+		case GOLDMINE:
+			decreaseResourceAround(building.getPos(), EResourceType.GOLD, 1);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void decreaseResourceAround(ShortPoint2D position, EResourceType resourceType, int radius) {
+		super.getStrategyGrid().decreaseResourceAround(position.x, position.y, resourceType, radius, 1);
 	}
 
 	private void gotoAction() {

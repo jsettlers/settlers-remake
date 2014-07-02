@@ -643,6 +643,9 @@ public final class MainGrid implements Serializable {
 						: (objectsGrid.getMapObjectAt(x, y, EMapObjectType.INFORMABLE_MAP_OBJECT) != null ? Color.GREEN.getARGB() : (objectsGrid
 								.getMapObjectAt(x, y, EMapObjectType.ATTACKABLE_TOWER) != null ? Color.RED.getARGB()
 								: (flagsGrid.isBlocked(x, y) ? Color.BLACK.getARGB() : (flagsGrid.isProtected(x, y) ? Color.BLUE.getARGB() : 0))));
+			case RESOURCE_AMOUNTS:
+				float resource = ((float) landscapeGrid.getResourceAmountAt(x, y)) / Byte.MAX_VALUE;
+				return Color.getARGB(1, .6f, 0, resource);
 			case NONE:
 			default:
 				return -1;
@@ -987,8 +990,13 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public float getResourceAmountAround(short x, short y, EResourceType type, int radius) {
-			return landscapeGrid.getResourceAmountAround(x, y, type, radius);
+		public float getResourceProbabilityAround(short x, short y, EResourceType type, int radius) {
+			return landscapeGrid.getResourceProbabilityAround(x, y, type, radius);
+		}
+
+		@Override
+		public void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount) {
+			landscapeGrid.decreaseResourceAround(x, y, resourceType, radius, amount);
 		}
 
 		@Override
@@ -1265,6 +1273,7 @@ public final class MainGrid implements Serializable {
 		public boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position) {
 			return MainGrid.this.isValidPosition(pathCalculatable, position.x, position.y);
 		}
+
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
