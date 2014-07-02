@@ -230,7 +230,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public float getResourceAmountAround(short x, short y, EResourceType type) {
+		public float getResourceAmountAround(short x, short y, EResourceType type, int radius) {
 			return 0;
 		}
 
