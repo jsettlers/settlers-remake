@@ -230,7 +230,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public float getResourceAmountAround(short x, short y, EResourceType type, int radius) {
+		public float getResourceProbabilityAround(short x, short y, EResourceType type, int radius) {
 			return 0;
 		}
 
@@ -382,6 +382,12 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		@Override
 		public Player getPlayerAt(ShortPoint2D position) {
 			return defaultPlayer;
+		}
+
+		@Override
+		public void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount) {
+			// TODO Auto-generated method stub
+
 		}
 
 	};
