@@ -89,6 +89,9 @@ public class SwingManagedJSettlers {
 		if (argsMap.containsKey("activate-all-players")) {
 			CommonConstants.ACTIVATE_ALL_PLAYERS = true;
 		}
+		if (argsMap.containsKey("console-output")) {
+			CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+		}
 	}
 
 	/**
