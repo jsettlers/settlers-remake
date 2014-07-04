@@ -54,19 +54,23 @@ public final class NewConstructionMarksAlgorithm {
 				final int x = xLineOffset + dx;
 				final short partitionId;
 
+				if (!mapArea.contains(x, y) || doneSet.get(dx + line * lineLength)) { // if this position has already been pruned.
+					continue;
+				}
+
 				{ // get the partition and check if the player is allowed to use this partition
 					int firstPosX = buildingArea.aPosition.calculateX(x);
 					int firstPosY = buildingArea.aPosition.calculateY(y);
+
+					if (!map.isInBounds(firstPosX, firstPosY)) {
+						continue;
+					}
 
 					partitionId = map.getPartitionIdAt(firstPosX, firstPosY);
 
 					if (!map.canPlayerConstructOnPartition(playerId, partitionId)) {
 						continue DX_LOOP;
 					}
-				}
-
-				if (!mapArea.contains(x, y) || doneSet.get(dx + line * lineLength)) { // if this position has already been pruned.
-					continue;
 				}
 
 				// go over all positions of the building and check if they are free

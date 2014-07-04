@@ -54,4 +54,6 @@ public abstract class AbstractConstructionMarkableMap {
 	public abstract short getPartitionIdAt(int x, int y);
 
 	public abstract boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
+
+	public abstract boolean isInBounds(int x, int y);
 }
