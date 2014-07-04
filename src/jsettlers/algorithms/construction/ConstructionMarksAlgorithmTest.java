@@ -138,7 +138,8 @@ public class ConstructionMarksAlgorithmTest {
 				marksSet[x + y * width] = set ? 1 : -1;
 		}
 
-		private boolean isInBounds(int x, int y) {
+		@Override
+		public boolean isInBounds(int x, int y) {
 			return 0 <= x && x < width && 0 <= y && y < height;
 		}
 
