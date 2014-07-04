@@ -904,6 +904,11 @@ public final class MainGrid implements Serializable {
 			return (CommonConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
 					|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
 		}
+
+		@Override
+		public boolean isInBounds(int x, int y) {
+			return MainGrid.this.isInBounds(x, y);
+		}
 	}
 
 	final class MovablePathfinderGrid extends AbstractNewMovableGrid {
