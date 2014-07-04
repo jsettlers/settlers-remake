@@ -5,9 +5,11 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
@@ -214,14 +216,23 @@ public class JSettlersGame {
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {
-			final String dateAndMap = logDateFormat.format(new Date()) + "_" + mapcreator.getMapName();
-			final String replayFilename = "logs/" + dateAndMap + "/" + dateAndMap + "_replay.log";
+			final String dateAndMap = logDateFormat.format(new Date()) + "_" + mapcreator.getMapName().replace(" ", "_");
+			final String logFolder = "logs/" + dateAndMap + "/";
+
+			final String replayFilename = logFolder + dateAndMap + "_replay.log";
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
 			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapcreator.getMapName(), mapcreator.getMapID(), playerId,
 					availablePlayers);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();
+
+			if (!CommonConstants.ENABLE_CONSOLE_LOGGING) {
+				final String logFile = logFolder + dateAndMap + "_out.log";
+				PrintStream outLogStream = new PrintStream(ResourceManager.writeFile(logFile));
+				System.setOut(outLogStream);
+				System.setErr(outLogStream);
+			}
 
 			return replayFileStream;
 		}
