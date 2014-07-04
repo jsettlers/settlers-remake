@@ -8,6 +8,9 @@ import jsettlers.common.position.FloatRectangle;
 
 public class ScreenPosition {
 
+	private static final float MINIMUM_ZOOM = .2f;
+	private static final float MAXIMUM_ZOOM = 3f;
+
 	private static final int TOPBORDER = 100;
 
 	private FloatRectangle screen = new FloatRectangle(0, 0, 1, 1);
@@ -76,10 +79,10 @@ public class ScreenPosition {
 	}
 
 	public void setZoom(float newzoom) {
-		if (newzoom < .3f) {
-			this.zoom = .3f;
-		} else if (newzoom > 3f) {
-			this.zoom = 3f;
+		if (newzoom < MINIMUM_ZOOM) {
+			this.zoom = MINIMUM_ZOOM;
+		} else if (newzoom > MAXIMUM_ZOOM) {
+			this.zoom = MAXIMUM_ZOOM;
 		} else {
 			this.zoom = newzoom;
 		}
@@ -108,7 +111,6 @@ public class ScreenPosition {
 	public float getScreenCenterX() {
 		return this.screen.getCenterX();
 	}
-
 
 	/**
 	 * Gets the current center of the screen
