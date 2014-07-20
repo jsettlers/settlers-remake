@@ -67,7 +67,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			}
 		}
 
-		MapInterfaceConnector connector = startMapWindow(argsMap);
+		MapInterfaceConnector connector = startMapWindow();
 		connector.addListener(this);
 
 		JPanel menu = generateMenu();
@@ -113,8 +113,8 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		return menu;
 	}
 
-	private MapInterfaceConnector startMapWindow(HashMap<String, String> argsMap) {
-		JSettlersScreen gui = SwingManagedJSettlers.startGui(argsMap);
+	private MapInterfaceConnector startMapWindow() {
+		JSettlersScreen gui = SwingManagedJSettlers.startGui();
 		MapContent content = new MapContent(new FakeMapGame(map), new SwingSoundPlayer());
 		gui.setContent(content);
 		MapInterfaceConnector connector = content.getInterfaceConnector();
