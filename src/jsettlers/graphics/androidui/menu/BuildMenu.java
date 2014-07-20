@@ -2,8 +2,7 @@ package jsettlers.graphics.androidui.menu;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.BuildAction;
-import jsettlers.graphics.androidui.Graphics;
-import jsettlers.graphics.androidui.R;
+import android.R;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,20 +22,20 @@ public class BuildMenu extends AndroidMenu {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.build, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		TableLayout list =
-		        (TableLayout) ((LinearLayout) view)
-		                .findViewById(R.id.build_list);
+				(TableLayout) ((LinearLayout) view)
+						.findViewById(R.id.build_list);
 
 		TableRow currentRow = null;
 		for (EBuildingType type : EBuildingType.values) {
 			if (currentRow == null
-			        || currentRow.getChildCount() >= ITEMS_PER_ROW) {
+					|| currentRow.getChildCount() >= ITEMS_PER_ROW) {
 				currentRow = new TableRow(view.getContext());
 				list.addView(currentRow);
 			}
@@ -46,7 +45,7 @@ public class BuildMenu extends AndroidMenu {
 				ImageButton b = new ImageButton(view.getContext());
 				b.setImageResource(resourceId);
 				b.setOnClickListener(generateActionListener(new BuildAction(
-				        type), true));
+						type), true));
 				currentRow.addView(b);
 			}
 		}
