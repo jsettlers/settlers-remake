@@ -1,8 +1,10 @@
 package jsettlers.graphics.startscreen.interfaces;
 
+import java.util.Date;
+import java.util.List;
+
 /**
- * This interface defines the methods supplying information about a map
- * definition
+ * This interface defines the methods supplying information about a map definition
  * 
  * @author michael
  * @author Andreas Eberle
@@ -10,8 +12,7 @@ package jsettlers.graphics.startscreen.interfaces;
 public interface IMapDefinition {
 
 	/**
-	 * Gets the id of the map. This id must be unique! The id must also differ
-	 * between maps in a different version.
+	 * Gets the id of the map. This id must be unique! The id must also differ between maps in a different version.
 	 * 
 	 * @return The unique identifier of the represented map.
 	 */
@@ -39,4 +40,26 @@ public interface IMapDefinition {
 	 */
 	short[] getImage();
 
+	/**
+	 * Gets the minimum number of players that can play this map.
+	 * 
+	 * @return That number.
+	 */
+	int getMinPlayers();
+
+	/**
+	 * Gets the maximum number of players supported by this map.
+	 * 
+	 * @return The number of players supported by this map.
+	 */
+	int getMaxPlayers();
+
+	/**
+	 * Gets a list of players that played on the map.
+	 * 
+	 * @return The players from that loadable game.
+	 */
+	public List<ILoadableMapPlayer> getPlayers();
+
+	public Date getCreationDate();
 }

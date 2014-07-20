@@ -4,30 +4,29 @@ import java.util.Collections;
 
 import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
-import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
 import jsettlers.graphics.utils.UIList;
 import jsettlers.graphics.utils.UIList.ListItemGenerator;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
- * A side panel of the start screen. TODO: Do not reload the list each time it
- * changes, and only use it if we are in foreground.
+ * A side panel of the start screen. TODO: Do not reload the list each time it changes, and only use it if we are in foreground.
  * 
  * @author michael
  */
 public abstract class StartListPanel<T> extends UIPanel implements
-        IChangingListListener<T>, ListItemGenerator<T> {
+		IChangingListListener<T>, ListItemGenerator<T> {
 
 	private static final ImageLink LIST_BACKGROUND = new DirectImageLink(
-	        "startscreen.0");
-	private final IChangingList<T> list;
+			"startscreen.0");
+	private final ChangingList<T> list;
 	private final UIList<T> uiList;
 
-	public StartListPanel(IChangingList<T> list) {
+	public StartListPanel(ChangingList<T> list) {
 		this.list = list;
 		uiList = new UIList<T>(Collections.<T> emptyList(), this, .1f);
 		UIPanel listBg = new UIPanel();
@@ -37,8 +36,8 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 		// start button
 		UILabeledButton startbutton =
-		        new UILabeledButton(Labels.getString(getSubmitTextId()),
-		                getSubmitAction());
+				new UILabeledButton(Labels.getString(getSubmitTextId()),
+						getSubmitAction());
 		this.addChild(startbutton, .3f, 0, 1, .1f);
 	}
 
@@ -51,17 +50,17 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	}
 
 	@Override
-	public void listChanged(IChangingList<T> list) {
+	public void listChanged(ChangingList<T> list) {
 		uiList.setItems(list.getItems());
 	}
 
-	protected IChangingList<T> getList() {
+	protected ChangingList<T> getList() {
 		return list;
 	}
 
 	@Override
 	public void onAttach() {
-		IChangingList<T> list2 = getList();
+		ChangingList<T> list2 = getList();
 		listChanged(list2);
 		list2.setListener(this);
 	}

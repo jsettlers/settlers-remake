@@ -1,18 +1,17 @@
 package jsettlers.graphics.startscreen.interfaces;
 
+import jsettlers.common.utils.collections.ChangingList;
+
 /**
- * This is the screen that is displayed when a multiplayer game is in the join
- * phase.
+ * This is the screen that is displayed when a multiplayer game is in the join phase.
  * 
  * @author michael
  * @author Andreas Eberle
  */
 public interface IJoinPhaseMultiplayerGameConnector {
 	/**
-	 * Sets the multiplayer listener that listens to game state changes. If the
-	 * game has already started,
-	 * {@link IMultiplayerListener#gameIsStarting(IStartingGame)} is called
-	 * immediately by this method.
+	 * Sets the multiplayer listener that listens to game state changes. If the game has already started,
+	 * {@link IMultiplayerListener#gameIsStarting(IStartingGame)} is called immediately by this method.
 	 * 
 	 * @param listener
 	 */
@@ -29,7 +28,7 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	 * 
 	 * @return
 	 */
-	public IChangingList<IMultiplayerPlayer> getPlayers();
+	public ChangingList<IMultiplayerPlayer> getPlayers();
 
 	/**
 	 * Sets the ready state of the current user.
@@ -44,8 +43,7 @@ public interface IJoinPhaseMultiplayerGameConnector {
 	void startGame();
 
 	/**
-	 * Called when the user exits the screen, to abort the multiplayer game.
-	 * This method does not need to call the abort() method of the
+	 * Called when the user exits the screen, to abort the multiplayer game. This method does not need to call the abort() method of the
 	 * {@link IMultiplayerListener}.
 	 */
 	public void abort();

@@ -5,19 +5,19 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
-import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
 import jsettlers.graphics.utils.UIListItem;
 
 public class NewMultiplayerGamePanel extends
-        StartListPanel<IStartableMapDefinition> {
+		StartListPanel<IMapDefinition> {
 	private final class OpenMultiplayerGameInfo implements
-	        IOpenMultiplayerGameInfo {
-		private final IStartableMapDefinition map;
+			IOpenMultiplayerGameInfo {
+		private final IMapDefinition map;
 
-		public OpenMultiplayerGameInfo(IStartableMapDefinition map) {
+		public OpenMultiplayerGameInfo(IMapDefinition map) {
 			this.map = map;
 		}
 
@@ -30,12 +30,12 @@ public class NewMultiplayerGamePanel extends
 		@Override
 		public String getMatchName() {
 			return "TODO Matchname ("
-			        + SettingsManager.getInstance().get(
-			                SettingsManager.SETTING_USERNAME) + ")";
+					+ SettingsManager.getInstance().get(
+							SettingsManager.SETTING_USERNAME) + ")";
 		}
 
 		@Override
-		public IStartableMapDefinition getMapDefinition() {
+		public IMapDefinition getMapDefinition() {
 			return map;
 		}
 	}
@@ -44,7 +44,7 @@ public class NewMultiplayerGamePanel extends
 	private final IContentSetable contentSetable;
 
 	public NewMultiplayerGamePanel(IStartScreen screen,
-	        IContentSetable contentSetable) {
+			IContentSetable contentSetable) {
 		super(screen.getMultiplayerMaps());
 		this.screen = screen;
 		this.contentSetable = contentSetable;
@@ -56,23 +56,23 @@ public class NewMultiplayerGamePanel extends
 			@Override
 			public void execute() {
 				IOpenMultiplayerGameInfo gameInfo =
-				        new OpenMultiplayerGameInfo(getActiveListItem());
+						new OpenMultiplayerGameInfo(getActiveListItem());
 				IJoiningGame joiningGame;
 
 				SettingsManager sm = SettingsManager.getInstance();
 				joiningGame =
-				        screen.getMultiplayerConnector(
-				                sm.get(SettingsManager.SETTING_SERVER),
-				                sm.getPlayer())
-				                .openNewMultiplayerGame(gameInfo);
+						screen.getMultiplayerConnector(
+								sm.get(SettingsManager.SETTING_SERVER),
+								sm.getPlayer())
+								.openNewMultiplayerGame(gameInfo);
 				contentSetable.setContent(new JoiningGamePanel(joiningGame,
-				        contentSetable));
+						contentSetable));
 			}
 		};
 	}
 
 	@Override
-	public UIListItem getItem(IStartableMapDefinition item) {
+	public UIListItem getItem(IMapDefinition item) {
 		return new StartableMapListItem(item);
 	}
 

@@ -1,10 +1,10 @@
 package jsettlers.graphics.startscreen.startlists;
 
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
@@ -36,10 +36,10 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 			@Override
 			public void execute() {
 				IJoiningGame joiningGame =
-				        connector.joinMultiplayerGame(getActiveListItem());
+						connector.joinMultiplayerGame(getActiveListItem());
 				gameStarted = true;
 				contentSetable.setContent(new JoiningGamePanel(joiningGame,
-				        contentSetable));
+						contentSetable));
 			}
 		};
 	}
@@ -48,13 +48,13 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	public void onAttach() {
 		SettingsManager sm = SettingsManager.getInstance();
 		connector =
-		        screen.getMultiplayerConnector(
-		                sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
+				screen.getMultiplayerConnector(
+						sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
 		super.onAttach();
 	}
 
 	@Override
-	protected IChangingList<IJoinableGame> getList() {
+	protected ChangingList<IJoinableGame> getList() {
 		return connector.getJoinableMultiplayerGames();
 	}
 

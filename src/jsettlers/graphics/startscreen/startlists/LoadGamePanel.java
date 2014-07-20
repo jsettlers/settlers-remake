@@ -3,13 +3,13 @@ package jsettlers.graphics.startscreen.startlists;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.utils.UIListItem;
 
-public class LoadGamePanel extends StartListPanel<ILoadableMapDefinition> {
+public class LoadGamePanel extends StartListPanel<IMapDefinition> {
 
 	private final IStartScreen screen;
 	private final IContentSetable contentSetable;
@@ -26,21 +26,21 @@ public class LoadGamePanel extends StartListPanel<ILoadableMapDefinition> {
 			@Override
 			public void execute() {
 				IStartingGame game =
-				        screen.loadSingleplayerGame(getActiveListItem());
+						screen.loadSingleplayerGame(getActiveListItem());
 				contentSetable.setContent(new StartingGamePanel(game,
-				        contentSetable));
+						contentSetable));
 			}
 		};
 	}
 
 	@Override
-	public UIListItem getItem(ILoadableMapDefinition item) {
+	public UIListItem getItem(IMapDefinition item) {
 		return new LoadableMapListItem(item);
 	}
 
 	@Override
 	protected String getSubmitTextId() {
-	    return "start-loadgame-start";
+		return "start-loadgame-start";
 	}
 
 }
