@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.graphics.JSettlersScreen;
@@ -21,7 +20,7 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
-import jsettlers.graphics.swing.SwingResourceLoader;
+import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
 /**
@@ -73,7 +72,7 @@ public final class TestUtils {
 		setupResourceManagerIfNeeded();
 
 		ImageProvider.getInstance().startPreloading();
-		JSettlersScreen content = SwingManagedJSettlers.startGui(new HashMap<String, String>());
+		JSettlersScreen content = SwingManagedJSettlers.startGui();
 		MapContent mapContent = new MapContent(game, new SwingSoundPlayer());
 		content.setContent(mapContent);
 		// TODO: Add a better redraw method.
