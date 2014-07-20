@@ -553,6 +553,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		box.add(okButton);
 
 		dialog.add(box);
+		dialog.setLocationRelativeTo(null);
 		dialog.pack();
 		dialog.setVisible(true);
 	}

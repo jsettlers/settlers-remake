@@ -46,6 +46,8 @@ public class MapHeaderEditor extends JPanel {
 		nameField = new JTextField();
 		descriptionField = new JTextArea();
 		descriptionField.setMinimumSize(new Dimension(200, 50));
+		descriptionField.setLineWrap(true);
+		descriptionField.setWrapStyleWord(true);
 
 		width =
 				new SpinnerNumberModel(DEFAULT_MAPSIZE, MIN_MAPSIZE,
@@ -148,6 +150,7 @@ public class MapHeaderEditor extends JPanel {
 		short height = this.height.getNumber().shortValue();
 		short minPlayer = this.minPlayer.getNumber().shortValue();
 		short maxPlayer = this.maxPlayer.getNumber().shortValue();
+
 		return new MapFileHeader(MapType.NORMAL, name, null, description, width, height, minPlayer, maxPlayer, new Date(),
 				new short[MapFileHeader.PREVIEW_IMAGE_SIZE * MapFileHeader.PREVIEW_IMAGE_SIZE]);
 	}
