@@ -1,13 +1,13 @@
 package jsettlers.main.android.maplist;
 
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
+import jsettlers.graphics.startscreen.interfaces.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import android.view.LayoutInflater;
 
 public class LoadableMapListAdapter extends MapListAdapter<ILoadableMapDefinition> {
 
 	public LoadableMapListAdapter(LayoutInflater inflater,
-			IChangingList<ILoadableMapDefinition> baseList) {
+			ChangingList<ILoadableMapDefinition> baseList) {
 		super(inflater, baseList);
 	}
 
@@ -23,6 +23,6 @@ public class LoadableMapListAdapter extends MapListAdapter<ILoadableMapDefinitio
 
 	@Override
 	protected String getDescriptionString(ILoadableMapDefinition item) {
-		return item.getSaveTime().toLocaleString();
+		return item.getCreationDate().toLocaleString();
 	}
 }

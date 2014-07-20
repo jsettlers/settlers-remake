@@ -2,9 +2,10 @@ package jsettlers.main.android;
 
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
-import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
+import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
+import android.R;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -18,13 +19,13 @@ import android.widget.TextView;
 public class PlayerList extends BaseAdapter implements
 		IChangingListListener<IMultiplayerPlayer> {
 
-	private final IChangingList<IMultiplayerPlayer> playerList;
+	private final ChangingList<IMultiplayerPlayer> playerList;
 	private List<? extends IMultiplayerPlayer> currentList;
 	private final Handler handler;
 	private final Context context;
 
 	public PlayerList(Context context,
-			IChangingList<IMultiplayerPlayer> playerList) {
+			ChangingList<IMultiplayerPlayer> playerList) {
 		this.context = context;
 		this.handler = new Handler(context.getMainLooper());
 		this.playerList = playerList;
@@ -73,7 +74,7 @@ public class PlayerList extends BaseAdapter implements
 	}
 
 	@Override
-	public void listChanged(IChangingList<IMultiplayerPlayer> list) {
+	public void listChanged(ChangingList<IMultiplayerPlayer> list) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {

@@ -20,7 +20,7 @@ public class LoadLocalGameFragment extends MapSelectionFragment<ILoadableMapDefi
 
 	@Override
 	protected String getItemDescription(ILoadableMapDefinition item) {
-		return item.getSaveTime().toLocaleString();
+		return item.getCreationDate().toLocaleString();
 	}
 
 	@Override

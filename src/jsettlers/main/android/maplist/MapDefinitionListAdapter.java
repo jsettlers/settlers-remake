@@ -2,7 +2,7 @@ package jsettlers.main.android.maplist;
 
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
+import jsettlers.graphics.startscreen.interfaces.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import android.view.LayoutInflater;
 
@@ -10,7 +10,7 @@ public class MapDefinitionListAdapter<T extends IMapDefinition> extends MapListA
 
 	private final List<? extends T> maps;
 
-	public MapDefinitionListAdapter(LayoutInflater inflater, IChangingList<T> changingList) {
+	public MapDefinitionListAdapter(LayoutInflater inflater, ChangingList<T> changingList) {
 		super(inflater, changingList);
 		this.maps = changingList.getItems();
 	}

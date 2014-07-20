@@ -3,8 +3,8 @@ package jsettlers.main.android.maplist;
 import java.util.Collections;
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
-import jsettlers.graphics.startscreen.interfaces.IChangingListListener;
+import jsettlers.common.utils.collections.IChangingListListener;
+import jsettlers.graphics.startscreen.interfaces.ChangingList;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import android.os.Handler;
@@ -28,10 +28,10 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 
 	private final LayoutInflater inflater;
 	private final Handler handler;
-	private final IChangingList<T> baseList;
+	private final ChangingList<T> baseList;
 	private List<? extends T> maps = Collections.emptyList();;
 
-	public MapListAdapter(LayoutInflater inflater, IChangingList<T> baseList) {
+	public MapListAdapter(LayoutInflater inflater, ChangingList<T> baseList) {
 		this.inflater = inflater;
 		this.baseList = baseList;
 		handler = new Handler();
@@ -100,7 +100,7 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 	protected abstract String getDescriptionString(T item);
 
 	@Override
-	public void listChanged(IChangingList<T> list) {
+	public void listChanged(ChangingList<T> list) {
 		final List<? extends T> newList = list.getItems();
 		handler.post(new Runnable() {
 			@Override
