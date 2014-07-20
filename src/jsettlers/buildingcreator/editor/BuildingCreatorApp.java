@@ -357,6 +357,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 
 		JDialog dialog = new JDialog(window, "xml");
 		dialog.add(new JScrollPane(new JTextArea(builder.toString())));
+		dialog.setLocationRelativeTo(null);
 		dialog.pack();
 		dialog.setVisible(true);
 	}
