@@ -1,7 +1,6 @@
 package jsettlers.main.swing;
 
 import go.graphics.area.Area;
-import go.graphics.nativegl.NativeAreaWindow;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
@@ -22,7 +21,7 @@ import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
-import jsettlers.graphics.swing.SwingResourceLoader;
+import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.LogicRevision;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.loader.MapLoader;
@@ -51,7 +50,7 @@ public class SwingManagedJSettlers {
 		setupResourceManagers(argsMap, new File("config.prp"));
 		loadDebugSettings(argsMap);
 
-		JSettlersScreen content = startGui(argsMap);
+		JSettlersScreen content = startGui();
 		generateContent(argsMap, content);
 	}
 
@@ -102,23 +101,13 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public static JSettlersScreen startGui(HashMap<String, String> argsMap) {
+	public static JSettlersScreen startGui() {
 		Area area = new Area();
 		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), "r" + Revision.REVISION + " / r"
 				+ LogicRevision.REVISION);
 		area.add(content.getRegion());
 
-		if (argsMap.containsKey("force-jogl")) {
-			startJogl(area);
-		} else if (argsMap.containsKey("force-native")) {
-			startNative(area);
-		} else {
-			try {
-				startNative(area);
-			} catch (Throwable t) {
-				startJogl(area);
-			}
-		}
+		startJogl(area);
 
 		startRedrawTimer(content);
 		return content;
@@ -189,6 +178,8 @@ public class SwingManagedJSettlers {
 
 	private static void startJogl(Area area) {
 		JFrame jsettlersWnd = new JFrame("JSettlers - Revision: " + Revision.REVISION + "/" + LogicRevision.REVISION);
+
+		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
 		panel.setPreferredSize(new Dimension(640, 480));
 		jsettlersWnd.add(panel);
@@ -199,9 +190,5 @@ public class SwingManagedJSettlers {
 		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jsettlersWnd.setVisible(true);
 		jsettlersWnd.setLocationRelativeTo(null);
-	}
-
-	private static void startNative(Area area) {
-		new NativeAreaWindow(area);
 	}
 }
