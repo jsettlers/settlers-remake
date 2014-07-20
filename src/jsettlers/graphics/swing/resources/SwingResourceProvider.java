@@ -1,4 +1,4 @@
-package jsettlers.graphics.swing;
+package jsettlers.graphics.swing.resources;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package jsettlers.graphics.swing;
+package jsettlers.graphics.swing.resources;
 
 import java.io.IOException;
 import java.util.Arrays;

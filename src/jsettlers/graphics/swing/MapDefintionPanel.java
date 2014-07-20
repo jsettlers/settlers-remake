@@ -1,0 +1,79 @@
+package jsettlers.graphics.swing;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+
+public class MapDefintionPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd HH:mm");
+
+	/**
+	 * Create the panel.
+	 */
+	public MapDefintionPanel() {
+		this("map name", "additional info", new Date(), true);
+	}
+
+	public MapDefintionPanel(String name, String additionalInfo, Date date, boolean border) {
+		if (border) {
+			setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
+		}
+
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		setLayout(gridBagLayout);
+
+		Component verticalStrut = Box.createVerticalStrut(5);
+		GridBagConstraints gbc_verticalStrut = new GridBagConstraints();
+		gbc_verticalStrut.insets = new Insets(0, 0, 5, 5);
+		gbc_verticalStrut.gridx = 1;
+		gbc_verticalStrut.gridy = 0;
+		add(verticalStrut, gbc_verticalStrut);
+
+		JLabel lblMapName = new JLabel(name);
+		GridBagConstraints gbc_lblMapName = new GridBagConstraints();
+		gbc_lblMapName.insets = new Insets(0, 0, 2, 5);
+		gbc_lblMapName.anchor = GridBagConstraints.WEST;
+		gbc_lblMapName.gridx = 0;
+		gbc_lblMapName.gridy = 1;
+		add(lblMapName, gbc_lblMapName);
+
+		JLabel lblDate = new JLabel(date != null ? dateFormat.format(date) : "");
+		GridBagConstraints gbc_lblDate = new GridBagConstraints();
+		gbc_lblDate.insets = new Insets(0, 0, 0, 5);
+		gbc_lblDate.gridheight = 2;
+		gbc_lblDate.gridx = 1;
+		gbc_lblDate.gridy = 1;
+		add(lblDate, gbc_lblDate);
+
+		JLabel lblAdditionalInfo = new JLabel(additionalInfo);
+		GridBagConstraints gbc_lblAdditionalInfo = new GridBagConstraints();
+		gbc_lblAdditionalInfo.insets = new Insets(0, 0, 0, 5);
+		gbc_lblAdditionalInfo.anchor = GridBagConstraints.WEST;
+		gbc_lblAdditionalInfo.gridx = 0;
+		gbc_lblAdditionalInfo.gridy = 2;
+		add(lblAdditionalInfo, gbc_lblAdditionalInfo);
+
+		Component verticalStrut_1 = Box.createVerticalStrut(5);
+		GridBagConstraints gbc_verticalStrut_1 = new GridBagConstraints();
+		gbc_verticalStrut_1.insets = new Insets(0, 0, 0, 5);
+		gbc_verticalStrut_1.gridx = 1;
+		gbc_verticalStrut_1.gridy = 3;
+		add(verticalStrut_1, gbc_verticalStrut_1);
+
+	}
+}
