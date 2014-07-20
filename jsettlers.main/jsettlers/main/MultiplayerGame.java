@@ -3,19 +3,18 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGameListener;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
-import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.datatypes.ChangingList;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import networklib.NetworkConstants;
 import networklib.client.interfaces.INetworkClient;
@@ -64,7 +63,7 @@ public class MultiplayerGame {
 			public void run() {
 				networkClient = networkClientFactory.getNetworkClient();
 
-				IStartableMapDefinition mapDefintion = gameInfo.getMapDefinition();
+				IMapDefinition mapDefintion = gameInfo.getMapDefinition();
 				MapInfoPacket mapInfo = new MapInfoPacket(mapDefintion.getId(), mapDefintion.getName(), "", "", mapDefintion.getMaxPlayers());
 
 				networkClient.openNewMatch(gameInfo.getMatchName(), gameInfo.getMaxPlayers(), mapInfo, 4711L, generateMatchStartedListener(),
@@ -218,7 +217,7 @@ public class MultiplayerGame {
 			}
 
 			@Override
-			public IChangingList<IMultiplayerPlayer> getPlayers() {
+			public ChangingList<IMultiplayerPlayer> getPlayers() {
 				return playersList;
 			}
 

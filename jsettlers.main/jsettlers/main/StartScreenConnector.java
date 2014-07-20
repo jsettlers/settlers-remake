@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
+import jsettlers.common.utils.collections.ChangingList;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
-import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.datatypes.ChangingList;
 import jsettlers.main.datatypes.MapDefinition;
 
 /**
@@ -31,7 +29,7 @@ public class StartScreenConnector implements IStartScreen {
 	}
 
 	@Override
-	public IChangingList<IStartableMapDefinition> getSingleplayerMaps() {
+	public ChangingList<IMapDefinition> getSingleplayerMaps() {
 		ArrayList<MapLoader> maps = mapList.getFreshMaps();
 		List<MapDefinition> result = new LinkedList<MapDefinition>();
 
@@ -40,11 +38,11 @@ public class StartScreenConnector implements IStartScreen {
 			result.add(mapDef);
 		}
 
-		return new ChangingList<IStartableMapDefinition>(result);
+		return new ChangingList<IMapDefinition>(result);
 	}
 
 	@Override
-	public IChangingList<ILoadableMapDefinition> getStoredSingleplayerGames() {
+	public ChangingList<IMapDefinition> getStoredSingleplayerGames() {
 		ArrayList<MapLoader> maps = mapList.getSavedMaps();
 		List<MapDefinition> result = new LinkedList<MapDefinition>();
 
@@ -54,26 +52,26 @@ public class StartScreenConnector implements IStartScreen {
 			result.add(mapDef);
 		}
 
-		return new ChangingList<ILoadableMapDefinition>(result);
+		return new ChangingList<IMapDefinition>(result);
 	}
 
 	@Override
-	public IChangingList<IStartableMapDefinition> getMultiplayerMaps() {
+	public ChangingList<IMapDefinition> getMultiplayerMaps() {
 		return getSingleplayerMaps();
 	}
 
 	@Override
-	public IChangingList<ILoadableMapDefinition> getRestorableMultiplayerGames() {
+	public ChangingList<IMapDefinition> getRestorableMultiplayerGames() {
 		return getStoredSingleplayerGames();
 	}
 
 	@Override
-	public IStartingGame startSingleplayerGame(IStartableMapDefinition map) {
+	public IStartingGame startSingleplayerGame(IMapDefinition map) {
 		return startGame(map.getId());
 	}
 
 	@Override
-	public IStartingGame loadSingleplayerGame(ILoadableMapDefinition map) {
+	public IStartingGame loadSingleplayerGame(IMapDefinition map) {
 		return startGame(map.getId());
 	}
 

@@ -35,7 +35,9 @@ import java.util.UUID;
  */
 public class MapFileHeader {
 	private static final short MIN_VERSION = 1;
-	private static final short VERSION = 2;
+	private static final short VERSION_MAP_ID_INTRODUCED = 2;
+	private static final short VERSION_DATE_ALWAYS_SAVED = 3;
+	private static final short VERSION = 3;
 
 	private static final byte[] START_BYTES = new byte[] {
 			'M', 'A', 'P', ' '
@@ -52,7 +54,7 @@ public class MapFileHeader {
 	private final short height;
 	private final short minPlayer;
 	private final short maxPlayer;
-	private final Date date;
+	private final Date creationDate;
 	private final short[] bgimage;
 
 	/**
@@ -71,7 +73,7 @@ public class MapFileHeader {
 		this(type, name, UUID.randomUUID().toString(), baseMapId, description, width, height, minplayer, maxplayer, date, bgimage);
 	}
 
-	public MapFileHeader(MapType type, String name, String mapId,
+	private MapFileHeader(MapType type, String name, String mapId,
 			String baseMapId, String description, short width, short height, short minplayer, short maxplayer,
 			Date date, short[] bgimage) {
 		if (bgimage.length != PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE) {
@@ -86,7 +88,7 @@ public class MapFileHeader {
 		this.height = height;
 		this.minPlayer = minplayer;
 		this.maxPlayer = maxplayer;
-		this.date = date;
+		this.creationDate = date;
 		this.bgimage = bgimage;
 	}
 
@@ -102,8 +104,8 @@ public class MapFileHeader {
 		return description;
 	}
 
-	public Date getDate() {
-		return date;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
 	public short getWidth() {
@@ -144,11 +146,8 @@ public class MapFileHeader {
 		for (int i = 0; i < PREVIEW_IMAGE_SIZE * PREVIEW_IMAGE_SIZE; i++) {
 			out.writeShort(bgimage[i]);
 		}
-		;
 
-		if (type == MapType.SAVED_SINGLE) {
-			out.writeLong(date.getTime());
-		}
+		out.writeLong(creationDate.getTime());
 	}
 
 	/**
@@ -178,8 +177,8 @@ public class MapFileHeader {
 
 			String mapName = in.readUTF();
 
-			String mapId = (version == 2) ? in.readUTF() : mapName;
-			String baseMapId = (version == 2) ? in.readUTF() : null;
+			String mapId = (version < VERSION_MAP_ID_INTRODUCED) ? mapName : in.readUTF();
+			String baseMapId = (version < VERSION_MAP_ID_INTRODUCED) ? null : in.readUTF();
 
 			String description = in.readUTF();
 
@@ -194,9 +193,12 @@ public class MapFileHeader {
 			}
 
 			Date date = null;
-			if (type == MapType.SAVED_SINGLE) {
-				long datetime = in.readLong();
-				date = new Date(datetime);
+			if (version < VERSION_DATE_ALWAYS_SAVED) {
+				if (type == MapType.SAVED_SINGLE) {
+					date = new Date(in.readLong());
+				}
+			} else {
+				date = new Date(in.readLong());
 			}
 
 			return new MapFileHeader(type, mapName, mapId, baseMapId, description, width, height,

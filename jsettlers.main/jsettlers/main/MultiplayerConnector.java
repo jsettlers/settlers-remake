@@ -3,12 +3,11 @@ package jsettlers.main;
 import java.util.LinkedList;
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.IChangingList;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
-import jsettlers.main.datatypes.ChangingList;
 import jsettlers.main.datatypes.JoinableGame;
 import networklib.client.interfaces.INetworkClient;
 import networklib.client.receiver.IPacketReceiver;
@@ -45,7 +44,7 @@ public class MultiplayerConnector implements IMultiplayerConnector {
 	}
 
 	@Override
-	public IChangingList<IJoinableGame> getJoinableMultiplayerGames() {
+	public ChangingList<IJoinableGame> getJoinableMultiplayerGames() {
 		return joinableGames;
 	}
 

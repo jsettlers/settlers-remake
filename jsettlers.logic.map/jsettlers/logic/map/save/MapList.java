@@ -184,7 +184,7 @@ public class MapList {
 			name = "map";
 		}
 
-		Date date = header.getDate();
+		Date date = header.getCreationDate();
 		if (date != null) {
 			SimpleDateFormat format = new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
 			name += format.format(date);

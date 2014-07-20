@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
-import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.logic.map.save.loader.MapLoader;
 
 /**
@@ -15,7 +14,7 @@ import jsettlers.logic.map.save.loader.MapLoader;
  * @author Andreas Eberle
  * 
  */
-public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefinition {
+public class MapDefinition implements IMapDefinition {
 
 	private final MapLoader mapLoader;
 
@@ -59,8 +58,8 @@ public class MapDefinition implements IStartableMapDefinition, ILoadableMapDefin
 	}
 
 	@Override
-	public Date getSaveTime() {
-		return mapLoader.getSaveTime();
+	public Date getCreationDate() {
+		return mapLoader.getCreationDate();
 	}
 
 }

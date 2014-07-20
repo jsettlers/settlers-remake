@@ -45,7 +45,7 @@ import jsettlers.logic.map.random.grid.MapGrid;
  * @see IMapData
  */
 public class MapDataSerializer {
-	private static final int VERSION = 1;
+	private static final int VERSION = 3;
 	private static final int VERSION_WITH_RESOURCES = 2;
 	private static final int VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS = 3;
 

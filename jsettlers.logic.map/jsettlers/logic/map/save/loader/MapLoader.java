@@ -95,8 +95,8 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		return header.getMaxPlayer();
 	}
 
-	public Date getSaveTime() {
-		return header.getDate();
+	public Date getCreationDate() {
+		return header.getCreationDate();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 	}
 
 	public String getDescription() {
-		return header.getDescription() + "\n" + header.getWidth() + "x" + header.getHeight();
+		return header.getDescription();
 	}
 
 	public short[] getImage() {
@@ -133,7 +133,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		MapFileHeader myHeader = header;
 		MapFileHeader otherHeader = o.header;
 		if (myHeader.getType() == MapType.SAVED_SINGLE) {
-			return -myHeader.getDate().compareTo(otherHeader.getDate()); // order by date descending
+			return -myHeader.getCreationDate().compareTo(otherHeader.getCreationDate()); // order by date descending
 		} else {
 			return myHeader.getName().compareTo(otherHeader.getName()); // order by name ascending
 		}
