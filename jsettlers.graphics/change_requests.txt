@@ -1,0 +1,14 @@
+--------------------------------
+ JSettlers CHANGE REQUESTS
+--------------------------------
+
+CR-001 [x]  rev 849   mz    --       ghosts have no color (they are just black.) => logic bug
+CR-002 [ ]                  --       images for bowman and swordsman in tower need to be switched.
+CR-003 [ ]                  --       synchronize the falling of the tree with the action of the lumberjack
+CR-004 [ ]                  --       arrows fired in a tower should fly from a given height.
+CR-005 [ ]                  --       the arrows that stick in the ground aren't drawn (bug is on Android and Swing)
+CR-006 [ ]                  --       
+CR-007 [ ]                  --       
+CR-008 [ ]                  --       
+CR-009 [ ]                  --       
+CR-010 [ ]                  --       
