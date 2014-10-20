@@ -1,0 +1,311 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<!DOCTYPE building SYSTEM "building.dtd">
+<building worker="PIG_FARMER" workradius="0">
+    <ground groundtype="GRASS" />
+    <ground groundtype="EARTH" />
+    <ground groundtype="FLATTENED" />	
+    <blocked dx="2" dy="5" block="true" />
+	<blocked dx="2" dy="4" block="true" />
+	<blocked dx="3" dy="5" block="true" />
+	<blocked dx="4" dy="5" block="true" />
+	<blocked dx="5" dy="3" block="true" />
+	<blocked dx="4" dy="4" block="true" />
+	<blocked dx="5" dy="2" block="true" />
+	<blocked dx="4" dy="3" block="true" />
+	<blocked dx="4" dy="2" block="true" />
+	<blocked dx="5" dy="1" block="true" />
+	<blocked dx="6" dy="2" block="true" />
+	<blocked dx="4" dy="1" block="true" />
+	<blocked dx="4" dy="0" block="true" />
+	<blocked dx="3" dy="-1" block="true" />
+	<blocked dx="2" dy="-2" block="true" />
+	<blocked dx="1" dy="-2" block="true" />
+	<blocked dx="1" dy="-3" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-3" block="true" />
+	<blocked dx="-1" dy="-4" block="true" />
+	<blocked dx="-2" dy="-5" block="true" />
+	<blocked dx="-2" dy="-4" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-3" dy="-3" block="true" />
+	<blocked dx="-3" dy="-4" block="true" />
+	<blocked dx="-3" dy="-2" block="true" />
+	<blocked dx="-3" dy="-1" block="true" />
+	<blocked dx="-3" dy="0" block="true" />
+	<blocked dx="-3" dy="1" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="0" dy="-4" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="-1" dy="2" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="2" dy="-1" block="true" />
+	<blocked dx="3" dy="0" block="true" />
+	<blocked dx="3" dy="4" block="true" />
+	<blocked dx="2" dy="0" block="true" />
+	<blocked dx="3" dy="1" block="true" />
+	<blocked dx="3" dy="2" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="3" dy="3" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="1" dy="4" block="true" />
+	<blocked dx="0" dy="3" block="true" />
+	<blocked dx="5" dy="5" block="false" />
+	<blocked dx="3" dy="6" block="false" />
+	<blocked dx="4" dy="6" block="false" />
+	<blocked dx="5" dy="6" block="false" />
+	<blocked dx="5" dy="4" block="false" />
+	<blocked dx="6" dy="6" block="false" />
+	<blocked dx="6" dy="5" block="false" />
+	<blocked dx="6" dy="4" block="false" />
+	<blocked dx="6" dy="3" block="false" />
+	<blocked dx="7" dy="4" block="false" />
+	<blocked dx="7" dy="3" block="false" />
+	<blocked dx="7" dy="2" block="false" />
+	<blocked dx="6" dy="1" block="false" />
+	<blocked dx="5" dy="0" block="false" />
+	<blocked dx="4" dy="-1" block="false" />
+	<blocked dx="3" dy="-2" block="false" />
+	<blocked dx="2" dy="-3" block="false" />
+	<blocked dx="1" dy="-4" block="false" />
+	<blocked dx="0" dy="-5" block="false" />
+	<blocked dx="-1" dy="-5" block="false" />
+	<blocked dx="-2" dy="-6" block="false" />
+	<blocked dx="-3" dy="-6" block="false" />
+	<blocked dx="-3" dy="-5" block="false" />
+	<blocked dx="-4" dy="-5" block="false" />
+	<blocked dx="-4" dy="-4" block="false" />
+	<blocked dx="-4" dy="-3" block="false" />
+	<blocked dx="-4" dy="-2" block="false" />
+	<blocked dx="-4" dy="-1" block="false" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-4" dy="1" block="false" />
+	<blocked dx="-3" dy="2" block="false" />
+	<blocked dx="0" dy="5" block="false" />
+	<blocked dx="1" dy="6" block="false" />
+	<blocked dx="2" dy="6" block="false" />
+	<blocked dx="2" dy="7" block="false" />
+	<blocked dx="3" dy="7" block="false" />
+	<blocked dx="4" dy="7" block="false" />
+	<blocked dx="5" dy="7" block="false" />
+	<blocked dx="6" dy="7" block="false" />
+	<blocked dx="-1" dy="4" block="false" />
+	<blocked dx="-1" dy="3" block="false" />
+	<blocked dx="-2" dy="2" block="false" />
+	<blocked dx="-2" dy="3" block="false" />
+	<blocked dx="0" dy="4" block="false" />
+	<blocked dx="1" dy="5" block="false" />
+    <!-- real door is at dx="1" dy="2", but blocked -->
+    <door dx="0" dy="4" />
+
+    <stack dx="5" dy="5" material="CROP" buildrequired="0" />
+    <!--<stack dx="-1" dy="4" material="PIG" buildrequired="0" /> -->
+    <stack dx="3" dy="6" material="WATER" buildrequired="0" />
+    <stack dx="1" dy="6" material="PLANK" buildrequired="1" />
+    <stack dx="3" dy="6" material="STONE" buildrequired="1" />
+
+    <bricklayer dx="-2" dy="3" direction="NORTH_EAST" />
+    <bricklayer dx="0" dy="5" direction="NORTH_EAST" />
+    <bricklayer dx="5" dy="6" direction="NORTH_WEST" />
+    <bricklayer dx="6" dy="5" direction="NORTH_WEST" />
+    <bricklayer dx="6" dy="3" direction="NORTH_WEST" />
+
+    <flag dx="-1" dy="-2" />
+    <buildmark dx="1" dy="5" />
+    <buildmark dx="4" dy="5" />
+    <buildmark dx="5" dy="1" />
+    <buildmark dx="0" dy="3" />
+    <buildmark dx="1" dy="-3" />
+    <buildmark dx="-2" dy="-5" />
+    <buildmark dx="-3" dy="0" />
+
+    <image file="14" type="GUI" for="GUI" image="0" sequence="66" />
+    <image file="13" type="SETTLER" for="FINAL" image="0" sequence="20"/>
+    <image file="13" type="SETTLER" for="BUILD" image="1" sequence="20"/>
+
+    <startjob name="gohome" />
+
+    <!-- going home job -->
+    <job name="gohome" type="GO_TO" successjob="gohome2" failjob="hide" dx="0" dy="4" />
+    <job name="gohome2" type="WALK" successjob="gohome3" failjob="hide" direction="EAST" />
+    <job name="gohome3" type="WALK" successjob="gohome4" failjob="hide" direction="NORTH_EAST" />
+    <job name="gohome4" type="WALK" successjob="gohome5" failjob="hide" direction="NORTH_EAST" />
+    <job name="gohome5" type="LOOK_AT" successjob="gohome6" failjob="hide" direction="NORTH_WEST" />
+    <job name="gohome6" type="WAIT" successjob="hide" failjob="hide" time=".2" />
+    <job name="hide" type="HIDE" successjob="PIG1_wait" failjob="PIG1_wait" />
+
+    <!-- PIG1 at 2, 2 -->
+    <!-- wait some time -->
+    <job name="PIG1_wait" type="WAIT" successjob="STACK_NOT_FULL" failjob="STACK_NOT_FULL" time="3" />
+    <job name="STACK_NOT_FULL" type="NOT_FULL" successjob="PIG1_isKillable" failjob="PIG1_isNPlaceable" dx="-1" dy="4" material="PIG" />
+
+    <job name="PIG1_isKillable" type="PIG_IS_ADULT" successjob="KILL1_start" failjob="PIG2_isKillable" dx="2" dy="2" />
+    <job name="PIG2_isKillable" type="PIG_IS_ADULT" successjob="KILL2_start" failjob="PIG3_isKillable" dx="2" dy="1" />
+    <job name="PIG3_isKillable" type="PIG_IS_ADULT" successjob="KILL3_start" failjob="PIG4_isKillable" dx="2" dy="0" />
+    <job name="PIG4_isKillable" type="PIG_IS_ADULT" successjob="KILL4_start" failjob="PIG1_checkwater" dx="3" dy="1" />
+    <job name="PIG1_checkcrop" type="AVAILABLE" successjob="PIG1_checkwater" failjob="PIG1_wait" dx="5" dy="5" material="CROP" />
+    <job name="PIG1_checkwater" type="AVAILABLE" successjob="PIG1_isNPlaceable" failjob="PIG1_wait" dx="3" dy="6" material="WATER" />
+    <job name="PIG1_isNPlaceable" type="PIG_IS_THERE" successjob="PIG2_isNPlaceable" failjob="A_start" dx="2" dy="2" />
+    <job name="PIG2_isNPlaceable" type="PIG_IS_THERE" successjob="PIG3_isNPlaceable" failjob="A_start" dx="2" dy="1" />
+    <job name="PIG3_isNPlaceable" type="PIG_IS_THERE" successjob="PIG4_isNPlaceable" failjob="A_start" dx="2" dy="0" />
+    <job name="PIG4_isNPlaceable" type="PIG_IS_THERE" successjob="PIG1_wait" failjob="A_start" dx="3" dy="1" />
+
+    <!-- go get crop -->
+    <job name="A_start" type="SET_MATERIAL" successjob="A_show" failjob="hide" material="NO_MATERIAL" />
+    <job name="A_show" type="SHOW" successjob="A_walkA1" failjob="hide" dx="0" dy="1" />
+    <job name="A_walkA1" type="WALK" successjob="A_walkA2" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="A_walkA2" type="WALK" successjob="A_walkA3" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="A_walkA3" type="WALK" successjob="A_walkA4" failjob="gohome" direction="WEST" />
+    <job name="A_walkA4" type="WALK" successjob="A_walkA5" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="A_walkA5" type="WALK" successjob="A_walkA6" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="A_walkA6" type="WALK" successjob="A_walkA7" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="A_walkA7" type="WALK" successjob="A_walkA8" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="A_walkA8" type="WALK" successjob="A_walkA9" failjob="gohome" direction="EAST" />
+    <job name="A_walkA9" type="WALK" successjob="A_walkA10" failjob="gohome" direction="EAST" />
+    <job name="A_walkA10" type="WALK" successjob="A_walkA11" failjob="gohome" direction="EAST" />
+    <job name="A_walkA11" type="WALK" successjob="A_walkA12" failjob="gohome" direction="NORTH_EAST" />
+    <job name="A_walkA12" type="WALK" successjob="A_take1" failjob="gohome" direction="NORTH_EAST" />
+    <job name="A_take1" type="DROP" successjob="A_take2" failjob="gohome" material="NO_MATERIAL" />
+    <job name="A_take2" type="SET_MATERIAL" successjob="A_take3" failjob="gohome" material="CROP" />
+    <job name="A_take3" type="TAKE" successjob="A_walkB1" failjob="gohome" material="CROP" />
+    <job name="A_walkB1" type="WALK" successjob="A_walkB2" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="A_walkB2" type="WALK" successjob="A_walkB3" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="A_walkB3" type="WALK" successjob="A_walkB4" failjob="gohome" direction="WEST" />
+    <job name="A_walkB4" type="WALK" successjob="A_walkB5" failjob="gohome" direction="WEST" />
+    <job name="A_walkB5" type="WALK" successjob="A_walkB6" failjob="gohome" direction="WEST" />
+    <job name="A_walkB6" type="WALK" successjob="A_walkB7" failjob="gohome" direction="NORTH_WEST" />
+    <job name="A_walkB7" type="WALK" successjob="A_walkB8" failjob="gohome" direction="NORTH_WEST" />
+    <job name="A_walkB8" type="WALK" successjob="A_walkB9" failjob="gohome" direction="NORTH_EAST" />
+    <job name="A_walkB9" type="WALK" successjob="A_walkB10" failjob="gohome" direction="NORTH_EAST" />
+    <job name="A_walkB10" type="WALK" successjob="A_walkB11" failjob="gohome" direction="EAST" />
+    <job name="A_walkB11" type="WALK" successjob="A_walkB12" failjob="gohome" direction="NORTH_EAST" />
+    <job name="A_walkB12" type="WALK" successjob="A_hide" failjob="gohome" direction="NORTH_WEST" />
+    <job name="A_hide" type="HIDE" successjob="B_wait" failjob="B_wait" />
+
+    <!-- go get water -->
+    <job name="B_wait" type="WAIT" successjob="B_start" failjob="B_start" time="3" />
+    <job name="B_start" type="SET_MATERIAL" successjob="B_show" failjob="hide" material="NO_MATERIAL" />
+    <job name="B_show" type="SHOW" successjob="B_walkA1" failjob="hide" dx="0" dy="1" />
+    <job name="B_walkA1" type="WALK" successjob="B_walkA2" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="B_walkA2" type="WALK" successjob="B_walkA3" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="B_walkA3" type="WALK" successjob="B_walkA4" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="B_walkA4" type="WALK" successjob="B_walkA5" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="B_walkA5" type="WALK" successjob="B_walkA6" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="B_walkA6" type="WALK" successjob="B_take1" failjob="gohome" direction="EAST" />
+    <job name="B_take1" type="DROP" successjob="B_take2" failjob="gohome" material="NO_MATERIAL" />
+    <job name="B_take2" type="SET_MATERIAL" successjob="B_take3" failjob="gohome" material="WATER" />
+    <job name="B_take3" type="TAKE" successjob="B_walkB1" failjob="gohome" material="WATER" />
+    <job name="B_walkB1" type="WALK" successjob="B_walkB2" failjob="gohome" direction="WEST" />
+    <job name="B_walkB2" type="WALK" successjob="B_walkB3" failjob="gohome" direction="NORTH_WEST" />
+    <job name="B_walkB3" type="WALK" successjob="B_walkB4" failjob="gohome" direction="NORTH_EAST" />
+    <job name="B_walkB4" type="WALK" successjob="B_walkB5" failjob="gohome" direction="NORTH_EAST" />
+    <job name="B_walkB5" type="WALK" successjob="B_walkB6" failjob="gohome" direction="NORTH_EAST" />
+    <job name="B_walkB6" type="WALK" successjob="B_hide" failjob="gohome" direction="NORTH_WEST" />
+    <job name="B_hide" type="HIDE" successjob="PIG1_tryplace" failjob="gohome" />
+
+    <!-- place pig -->
+    <job name="PIG1_tryplace" type="PIG_IS_THERE" successjob="PIG2_tryplace" failjob="PLACE1" dx="2" dy="2" />
+    <job name="PIG2_tryplace" type="PIG_IS_THERE" successjob="PIG3_tryplace" failjob="PLACE2" dx="2" dy="1" />
+    <job name="PIG3_tryplace" type="PIG_IS_THERE" successjob="PIG4_tryplace" failjob="PLACE3" dx="2" dy="0" />
+    <job name="PIG4_tryplace" type="PIG_IS_THERE" successjob="hide" failjob="PLACE4" dx="3" dy="1" />
+
+    <job name="PLACE1" type="PIG_PLACE" successjob="hide" failjob="hide" dx="2" dy="2" />
+    <job name="PLACE2" type="PIG_PLACE" successjob="hide" failjob="hide" dx="2" dy="1" />
+    <job name="PLACE3" type="PIG_PLACE" successjob="hide" failjob="hide" dx="2" dy="0" />
+    <job name="PLACE4" type="PIG_PLACE" successjob="hide" failjob="hide" dx="3" dy="1" />
+
+    <!-- kill pig1 at 2,2 -->
+    <job name="KILL1_start" type="SET_MATERIAL" successjob="KILL1_show" failjob="hide" material="NO_MATERIAL" />
+    <job name="KILL1_show" type="SHOW" successjob="KILL1_walkA1" failjob="hide" dx="0" dy="1" />
+    <job name="KILL1_walkA1" type="WALK" successjob="KILL1_walkA2" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="KILL1_walkA2" type="WALK" successjob="KILL1_kill1" failjob="gohome" direction="EAST" />
+    <job name="KILL1_kill1" type="DROP" successjob="KILL1_kill2" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL1_kill2" type="SET_MATERIAL" successjob="KILL1_kill3" failjob="gohome" material="PIG" />
+    <job name="KILL1_kill3" type="PIG_REMOVE" successjob="KILL1_kill4" failjob="gohome" dx="2" dy="2" />
+    <job name="KILL1_kill4" type="TAKE" successjob="KILL1_walkB1" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL1_walkB1" type="WALK" successjob="KILL_walkB1" failjob="gohome" direction="WEST" />
+    <!-- jump to common kill end -->
+
+    <!-- kill pig2 at 2, 1 -->
+    <job name="KILL2_start" type="SET_MATERIAL" successjob="KILL2_show" failjob="hide" material="NO_MATERIAL" />
+    <job name="KILL2_show" type="SHOW" successjob="KILL2_walkA1" failjob="hide" dx="0" dy="1" />
+    <job name="KILL2_walkA1" type="WALK" successjob="KILL2_walkA2" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="KILL2_walkA2" type="WALK" successjob="KILL2_walkA3" failjob="gohome" direction="EAST" />
+    <job name="KILL2_walkA3" type="WALK" successjob="KILL2_kill1" failjob="gohome" direction="NORTH_EAST" />
+    <job name="KILL2_kill1" type="DROP" successjob="KILL2_kill2" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL2_kill2" type="SET_MATERIAL" successjob="KILL2_kill3" failjob="gohome" material="PIG" />
+    <job name="KILL2_kill3" type="PIG_REMOVE" successjob="KILL2_kill4" failjob="gohome" dx="2" dy="1" />
+    <job name="KILL2_kill4" type="TAKE" successjob="KILL2_walkB1" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL2_walkB1" type="WALK" successjob="KILL2_walkB2" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="KILL2_walkB2" type="WALK" successjob="KILL_walkB1" failjob="gohome" direction="WEST" />
+    <!-- jump to common kill end -->
+
+    <!-- kill pig3 at 2,0 -->
+    <job name="KILL3_start" type="SET_MATERIAL" successjob="KILL3_show" failjob="hide" material="NO_MATERIAL" />
+    <job name="KILL3_show" type="SHOW" successjob="KILL3_walkA1" failjob="hide" dx="0" dy="1" />
+    <job name="KILL3_walkA1" type="WALK" successjob="KILL3_walkA2" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="KILL3_walkA2" type="WALK" successjob="KILL3_walkA3" failjob="gohome" direction="EAST" />
+    <job name="KILL3_walkA3" type="WALK" successjob="KILL3_walkA4" failjob="gohome" direction="NORTH_EAST" />
+    <job name="KILL3_walkA4" type="WALK" successjob="KILL3_kill1" failjob="gohome" direction="NORTH_EAST" />
+    <job name="KILL3_kill1" type="DROP" successjob="KILL3_kill2" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL3_kill2" type="SET_MATERIAL" successjob="KILL3_kill3" failjob="gohome" material="PIG" />
+    <job name="KILL3_kill3" type="PIG_REMOVE" successjob="KILL3_kill4" failjob="gohome" dx="2" dy="0" />
+    <job name="KILL3_kill4" type="TAKE" successjob="KILL3_walkB1" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL3_walkB1" type="WALK" successjob="KILL3_walkB2" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="KILL3_walkB2" type="WALK" successjob="KILL3_walkB3" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="KILL3_walkB3" type="WALK" successjob="KILL_walkB1" failjob="gohome" direction="WEST" />
+    <!-- jump to common kill end -->
+
+    <!-- kill pig4 at 3,1 -->
+    <job name="KILL4_start" type="SET_MATERIAL" successjob="KILL4_show" failjob="hide" material="NO_MATERIAL" />
+    <job name="KILL4_show" type="SHOW" successjob="KILL4_walkA1" failjob="hide" dx="0" dy="1" />
+    <job name="KILL4_walkA1" type="WALK" successjob="KILL4_walkA2" failjob="gohome" direction="SOUTH_EAST" />
+    <job name="KILL4_walkA2" type="WALK" successjob="KILL4_walkA3" failjob="gohome" direction="EAST" />
+    <job name="KILL4_walkA3" type="WALK" successjob="KILL4_walkA4" failjob="gohome" direction="EAST" />
+    <job name="KILL4_walkA4" type="WALK" successjob="KILL4_kill1" failjob="gohome" direction="NORTH_EAST" />
+    <job name="KILL4_kill1" type="DROP" successjob="KILL4_kill2" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL4_kill2" type="SET_MATERIAL" successjob="KILL4_kill3" failjob="gohome" material="PIG" />
+    <job name="KILL4_kill3" type="PIG_REMOVE" successjob="KILL4_kill4" failjob="gohome" dx="3" dy="1" />
+    <job name="KILL4_kill4" type="TAKE" successjob="KILL4_walkB1" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL4_walkB1" type="WALK" successjob="KILL4_walkB2" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="KILL4_walkB2" type="WALK" successjob="KILL4_walkB3" failjob="gohome" direction="WEST" />
+    <job name="KILL4_walkB3" type="WALK" successjob="KILL_walkB1" failjob="gohome" direction="WEST" />
+    <!-- jump to common kill end -->
+
+    <!-- Common to all kills: walk from 1, 2 -->
+    <job name="KILL_walkB1" type="WALK" successjob="KILL_walkB2" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="KILL_walkB2" type="WALK" successjob="KILL_walkB3" failjob="gohome" direction="SOUTH_WEST" />
+    <job name="KILL_walkB3" type="WALK" successjob="KILL_walkB4" failjob="gohome" direction="WEST" />
+    <job name="KILL_walkB4" type="WALK" successjob="KILL_drop1" failjob="gohome" direction="WEST" />
+
+    <job name="KILL_drop1" type="DROP" successjob="KILL_drop2" failjob="gohome" material="PIG" />
+    <job name="KILL_drop2" type="SET_MATERIAL" successjob="KILL_drop3" failjob="gohome" material="NO_MATERIAL" />
+    <job name="KILL_drop3" type="TAKE" successjob="KILL_walkC1" failjob="gohome" material="NO_MATERIAL" />
+
+    <job name="KILL_walkC1" type="WALK" successjob="KILL_walkC2" failjob="gohome" direction="EAST" />
+    <job name="KILL_walkC2" type="WALK" successjob="KILL_walkC3" failjob="gohome" direction="EAST" />
+    <job name="KILL_walkC3" type="WALK" successjob="KILL_walkC4" failjob="gohome" direction="NORTH_EAST" />
+    <job name="KILL_walkC4" type="WALK" successjob="KILL_walkC5" failjob="gohome" direction="NORTH_EAST" />
+    <job name="KILL_walkC5" type="WALK" successjob="hide" failjob="gohome" direction="NORTH_WEST" />
+
+    <!-- PIG2 at -->
+    <!-- PIG3 at 2, 0 -->
+    <!-- PIG4 at 3, 1 -->
+
+
+</building>

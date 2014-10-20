@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE building SYSTEM "building.dtd" >
+<building worker="BAKER">
+	<ground groundtype="GRASS" />
+	<ground groundtype="EARTH" />
+	<ground groundtype="FLATTENED" />
+	
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-1" dy="1" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+	<blocked dx="1" dy="3" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="2" dy="0" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="2" dy="2" block="true" />
+	<blocked dx="2" dy="3" block="true" />
+	<blocked dx="3" dy="3" block="true" />
+	<blocked dx="3" dy="1" block="true" />
+	<blocked dx="4" dy="1" block="false" />
+	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="4" dy="3" block="false" />
+	<blocked dx="4" dy="4" block="false" />
+	<blocked dx="2" dy="4" block="false" />
+	<blocked dx="1" dy="4" block="false" />
+	<blocked dx="0" dy="3" block="false" />
+	<blocked dx="-1" dy="2" block="false" />
+	<blocked dx="-2" dy="1" block="false" />
+	<blocked dx="-3" dy="-1" block="false" />
+	<blocked dx="-3" dy="-2" block="false" />
+	<blocked dx="-3" dy="-3" block="false" />
+	<blocked dx="-3" dy="-4" block="false" />
+	<blocked dx="-2" dy="-4" block="false" />
+	<blocked dx="-1" dy="-4" block="false" />
+	<blocked dx="0" dy="-3" block="false" />
+	<blocked dx="1" dy="-2" block="false" />
+	<blocked dx="2" dy="-1" block="false" />
+	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="2" dy="5" block="false" />
+	<blocked dx="3" dy="5" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="4" dy="5" block="false" />
+	<blocked dx="5" dy="5" block="false" />
+	<blocked dx="5" dy="4" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="5" dy="3" block="false" />
+	<door dx="3" dy="2" />
+	<stack dx="3" dy="5" material="PLANK" buildrequired="4" />
+	<stack dx="5" dy="5" material="STONE" buildrequired="5" />
+	<stack dx="3" dy="4" material="FLOUR" buildrequired="0" />
+	<stack dx="4" dy="2" material="WATER" buildrequired="0" />
+	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
+	<bricklayer dx="1" dy="4" direction="NORTH_EAST" />
+	<bricklayer dx="4" dy="4" direction="NORTH_WEST" />
+	<bricklayer dx="4" dy="2" direction="NORTH_WEST" />
+	<flag dx="1" dy="-2" />
+	<buildmark dx="3" dy="1" />
+	<buildmark dx="3" dy="3" />
+	<buildmark dx="1" dy="3" />
+	<buildmark dx="-2" dy="0" />
+	<buildmark dx="-2" dy="-3" />
+	
+	<image file="14" for="GUI" type="GUI" sequence="39" image="0"/>
+	<image file="13" for="FINAL" type="SETTLER" sequence="23" image="0"/>
+	<image file="13" for="BUILD" type="SETTLER" sequence="23" image="1"/>
+
+	<startjob name="gohome"/>
+	
+	<job name="gohome" type="GO_TO" successjob="hide" failjob="hide"/>
+	<job name="hide" type="HIDE" successjob="reset1" failjob="reset1"/>
+	<job name="reset1" type="SET_MATERIAL" successjob="A_wait" failjob="A_wait" material="NO_MATERIAL"/>
+	<job name="A_wait" type="WAIT" successjob="check1" failjob="A_wait" time="1"/>
+	<job name="check1" type="AVAILABLE" successjob="check2" failjob="A_wait" dx="3" dy="4" material="FLOUR"/>
+	<job name="check2" type="AVAILABLE" successjob="check3" failjob="A_wait" dx="4" dy="2" material="WATER"/>
+	<job name="check3" type="NOT_FULL" successjob="A_show" failjob="A_wait" material="BREAD" dx="-2" dy="1"/>
+	
+	<!-- go take flour -->
+	<job name="A_show"   type="SHOW"         successjob="A_walkA1" failjob="gohome" dx="3" dy="2" />
+	<job name="A_walkA1" type="WALK"         successjob="A_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="A_walkA2" type="WALK"         successjob="A_walkA3" failjob="gohome" direction="SOUTH_WEST"/>
+	<job name="A_walkA3" type="WALK"         successjob="A_take1"  failjob="gohome" direction="WEST"/>
+	<job name="A_take1"  type="DROP"         successjob="A_take2"  failjob="gohome" material="NO_MATERIAL"/>
+	<job name="A_take2"  type="SET_MATERIAL" successjob="A_take3"  failjob="gohome" material="FLOUR"/>
+	<job name="A_take3"  type="TAKE"         successjob="A_walkB1" failjob="gohome" material="FLOUR"/>
+	<job name="A_walkB1" type="WALK"         successjob="A_walkB2" failjob="gohome" direction="EAST"/>
+	<job name="A_walkB2" type="WALK"         successjob="A_walkB3" failjob="gohome" direction="NORTH_EAST"/>
+	<job name="A_walkB3" type="WALK"         successjob="A_hide"   failjob="gohome" direction="NORTH_WEST"/>
+	<job name="A_hide"   type="HIDE"         successjob="B_start"  failjob="gohome" />
+
+	<!-- go take water -->
+	<job name="B_start"  type="SET_MATERIAL" successjob="B_show"   failjob="gohome" material="NO_MATERIAL" />
+	<job name="B_show"   type="SHOW"         successjob="B_walkA1" failjob="gohome" dx="3" dy="2" />
+	<job name="B_walkA1" type="WALK"         successjob="B_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="B_walkA2" type="WALK"         successjob="B_take1"  failjob="gohome" direction="NORTH_EAST"/>
+	<job name="B_take1"  type="DROP"         successjob="B_take2"  failjob="gohome" material="NO_MATERIAL"/>
+	<job name="B_take2"  type="SET_MATERIAL" successjob="B_take3"  failjob="gohome" material="WATER"/>
+	<job name="B_take3"  type="TAKE"         successjob="B_walkB1" failjob="gohome" material="WATER"/>
+	<job name="B_walkB1" type="WALK"         successjob="B_walkB2" failjob="gohome" direction="SOUTH_WEST"/>
+	<job name="B_walkB2" type="WALK"         successjob="B_hide"   failjob="gohome" direction="NORTH_WEST"/>
+	<job name="B_hide"   type="HIDE"         successjob="C_start"  failjob="gohome" />
+	
+	<!-- make bread -->
+	<job name="C_start"  type="SET_MATERIAL" successjob="C_show"   failjob="gohome" material="WHITE_BREAD" />
+	<job name="C_show"   type="SHOW"         successjob="C_walkA1" failjob="gohome" dx="3" dy="2" />
+	<job name="C_walkA1" type="WALK"         successjob="C_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="C_walkA2" type="WALK"         successjob="C_walkA3" failjob="gohome" direction="SOUTH_WEST"/>
+	<job name="C_walkA3" type="WALK"         successjob="C_walkA4" failjob="gohome" direction="SOUTH_WEST"/>
+	<job name="C_walkA4" type="WALK"         successjob="C_walkA5" failjob="gohome" direction="WEST"/>
+	<job name="C_walkA5" type="WALK"         successjob="C_walkA6" failjob="gohome" direction="WEST"/>
+	<job name="C_walkA6" type="WALK"         successjob="C_walkA7" failjob="gohome" direction="NORTH_WEST"/>
+	<job name="C_walkA7" type="WALK"         successjob="C_work1"  failjob="gohome" direction="NORTH_WEST"/>
+	
+	<job name="C_work1" type="LOOK_AT"       successjob="C_work2" failjob="gohome" direction="NORTH_EAST"/>
+	<job name="C_work2" type="PLAY_ACTION1"  successjob="C_work3" failjob="gohome" time="1"/>
+	<job name="C_work3" type="SET_MATERIAL"  successjob="C_work4"  failjob="gohome" material="BREAD"/>
+	<job name="C_work4" type="SMOKE_ON"      successjob="C_work5" failjob="gohome" dx="-3" dy="-4"/>
+	<job name="C_work5" type="PLAY_ACTION2"  successjob="C_work6" failjob="gohome" time="4"/>
+	<job name="C_work6" type="SMOKE_OFF"     successjob="C_work7" failjob="gohome" dx="-3" dy="-4"/>
+	<job name="C_work7" type="PLAY_ACTION1"  successjob="C_walkB1" failjob="gohome" time="1"/>
+	
+	<job name="C_walkB1" type="WALK"         successjob="C_walkB2" failjob="gohome" direction="NORTH_WEST"/>
+	<job name="C_walkB2" type="WALK"         successjob="C_drop1" failjob="gohome" direction="NORTH_WEST"/>
+    
+	<job name="C_drop1"  type="DROP"         successjob="C_drop2"  failjob="gohome" material="BREAD"/>
+	<job name="C_drop2"  type="SET_MATERIAL" successjob="C_drop3"  failjob="gohome" material="BLADE"/>
+	<job name="C_drop3"  type="TAKE"         successjob="C_walkC0" failjob="gohome" material="NO_MATERIAL"/>
+
+	<job name="C_walkC0" type="WALK"         successjob="C_walkC1" failjob="gohome" direction="SOUTH_EAST"/>
+    <job name="C_walkC1" type="WALK"         successjob="C_walkC2" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="C_walkC2" type="WALK"         successjob="C_walkC3" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="C_walkC3" type="WALK"         successjob="C_walkC4" failjob="gohome" direction="SOUTH_EAST"/>
+	<job name="C_walkC4" type="WALK"         successjob="C_walkC5" failjob="gohome" direction="EAST"/>
+	<job name="C_walkC5" type="WALK"         successjob="C_walkC6" failjob="gohome" direction="EAST"/>
+	<job name="C_walkC6" type="WALK"         successjob="C_walkC7" failjob="gohome" direction="NORTH_EAST"/>
+	<job name="C_walkC7" type="WALK"         successjob="C_walkC8" failjob="gohome" direction="NORTH_EAST"/>
+	<job name="C_walkC8" type="WALK"         successjob="C_hide"   failjob="gohome" direction="NORTH_WEST"/>
+	<job name="C_hide"   type="HIDE"         successjob="reset1" failjob="reset1" />
+</building>
