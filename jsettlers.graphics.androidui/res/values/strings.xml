@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">jsettlers.graphics.androidui</string>
+    <string name="buildings_headline">All Buildings</string>
+    <string name="pause_text">Spiel pausiert</string>
+    <string name="pause_quit">Spiel verlassen</string>
+    <string name="pause_resume">Weiterspielen</string>
+    <string name="building_destroy_ok">Abreisen</string>
+    <string name="building_destroy_abort">Abbrechen</string>
+    <string name="building_destroy_text">Gebäude wirklich abreisen?</string>
+    <string name="pause_hint">Drücke erneut Zurück, um das Spiel zu verlassen.</string>
+</resources>
