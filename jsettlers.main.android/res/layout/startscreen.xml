@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:background="@color/bg"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:text="@string/game_title"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+        android:id="@+id/startmenu_outer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:baselineAligned="true"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/startscreenmargin"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/player_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/headlinemargin"
+                android:text="@string/local_game"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Button
+                android:id="@+id/startscreen_local_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/local_game_new" />
+
+            <Button
+                android:id="@+id/startscreen_local_load"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/local_game_load" />
+
+            <Button
+                android:id="@+id/startscreen_resume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/local_game_resume" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/startscreenmargin"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/player_details"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/headlinemargin"
+                android:layout_weight="1"
+                android:text="@string/network_game"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Button
+                android:id="@+id/startscreen_network_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/startscreen_network_new" />
+
+            <Button
+                android:id="@+id/startscreen_network_join"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/startscreen_network_join" />
+
+            <Button
+                android:id="@+id/startscreen_network_load"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/startscreen_network_load" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/startscreen_rev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>

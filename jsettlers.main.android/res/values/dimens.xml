@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="progressmargin">10sp</dimen>
+    <dimen name="headlinemargin">5sp</dimen>
+    <dimen name="startscreenmargin">8sp</dimen>
+</resources>

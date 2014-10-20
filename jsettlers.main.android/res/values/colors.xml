@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="bg">#9000</color>
+    <color name="network_not_ready">#fff</color>
+    <color name="network_ready">#06470c</color>
+
+</resources>
