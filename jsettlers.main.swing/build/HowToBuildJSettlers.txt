@@ -1,0 +1,10 @@
+To build JSettlers.jar and get an independent folder that can run the game do the follwowing:
+
+1. Build JSettlers.jar by executing the JSettlersBuild.fatjar via the context menu (NOTE: FatJar Eclipse Plugin must be installed)
+2. Copy config.prp and JSettlers.jar from the build folder to a new empty folder.
+3. Copy the complete resources folder from the jsettlers.common project to the target folder.
+4. Copy the complete libs folder from the go.graphics.swing project to the target folder.
+5. Configure the config.prp file to lead to the paths of the GFX and SND folders of the original The Settlers III game.
+
+
+Have fun. 

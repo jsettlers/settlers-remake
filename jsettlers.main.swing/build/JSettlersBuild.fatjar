@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sun Aug 18 11:23:58 CEST 2013
+onejar.license.required=true
+manifest.classpath=libs/jogl-all.jar libs/gluegen-rt.jar
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=target/jsettlers/JSettlers.jar
+manifest.mergeall=true
+manifest.mainclass=jsettlers.main.swing.SwingManagedJSettlers
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<jar|gluegen-rt.jar>;<jar|jogl-all.jar>
+includes=
