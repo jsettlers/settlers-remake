@@ -12,7 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.main.swing"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.nativegl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/networklib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

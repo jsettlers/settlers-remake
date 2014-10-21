@@ -22,7 +22,6 @@ import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
-import jsettlers.logic.LogicRevision;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
@@ -36,6 +35,8 @@ import networklib.client.OfflineNetworkConnector;
  * @author michael
  */
 public class SwingManagedJSettlers {
+
+	private static final String BUILD = "build - ???";
 
 	/**
 	 * @param args
@@ -103,8 +104,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static JSettlersScreen startGui() {
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), "r" + Revision.REVISION + " / r"
-				+ LogicRevision.REVISION);
+		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), BUILD);
 		area.add(content.getRegion());
 
 		startJogl(area);
@@ -177,7 +177,7 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void startJogl(Area area) {
-		JFrame jsettlersWnd = new JFrame("JSettlers - Revision: " + Revision.REVISION + "/" + LogicRevision.REVISION);
+		JFrame jsettlersWnd = new JFrame("JSettlers - " + BUILD);
 
 		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
