@@ -1,8 +1,8 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
-import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragments.progress.JoinGameProgress;
 import jsettlers.main.android.maplist.MapDefinitionListAdapter;
@@ -10,19 +10,18 @@ import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-public class NewNetworkGameFragment extends
-		MapSelectionFragment<IStartableMapDefinition> {
+public class NewNetworkGameFragment extends MapSelectionFragment<IMapDefinition> {
 
 	@Override
-	protected MapListAdapter<IStartableMapDefinition> generateListAdapter() {
+	protected MapListAdapter<IMapDefinition> generateListAdapter() {
 		LayoutInflater inflater = (LayoutInflater) getActivity()
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		return new MapDefinitionListAdapter<IStartableMapDefinition>(inflater, getJsettlersActivity()
+		return new MapDefinitionListAdapter<IMapDefinition>(inflater, getJsettlersActivity()
 				.getStartConnector().getMultiplayerMaps());
 	}
 
 	@Override
-	protected String getItemDescription(IStartableMapDefinition item) {
+	protected String getItemDescription(IMapDefinition item) {
 		return item.getDescription();
 	}
 
@@ -32,11 +31,11 @@ public class NewNetworkGameFragment extends
 	}
 
 	@Override
-	protected void deleteGame(IStartableMapDefinition game) {
+	protected void deleteGame(IMapDefinition game) {
 	}
 
 	@Override
-	protected void startGame(final IStartableMapDefinition game) {
+	protected void startGame(final IMapDefinition game) {
 		// TODO: Allow user to select name in GUI.
 		final String name = "Android network game";
 		IJoiningGame joining = getJsettlersActivity().generateMultiplayerConnector().openNewMultiplayerGame(new IOpenMultiplayerGameInfo() {
@@ -44,14 +43,14 @@ public class NewNetworkGameFragment extends
 			public int getMaxPlayers() {
 				return game.getMaxPlayers();
 			}
-			
+
 			@Override
 			public String getMatchName() {
 				return name;
 			}
-			
+
 			@Override
-			public IStartableMapDefinition getMapDefinition() {
+			public IMapDefinition getMapDefinition() {
 				return game;
 			}
 		});
@@ -64,7 +63,7 @@ public class NewNetworkGameFragment extends
 	}
 
 	@Override
-	protected int getSuggestedPlayerCount(IStartableMapDefinition game) {
+	protected int getSuggestedPlayerCount(IMapDefinition game) {
 		return 0;
 	}
 

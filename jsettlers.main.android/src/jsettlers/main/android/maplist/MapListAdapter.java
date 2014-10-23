@@ -3,8 +3,8 @@ package jsettlers.main.android.maplist;
 import java.util.Collections;
 import java.util.List;
 
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.graphics.startscreen.interfaces.ChangingList;
 import jsettlers.main.android.PreviewImageConverter;
 import jsettlers.main.android.R;
 import android.os.Handler;
@@ -16,8 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * This is the basic map list. It can be extended by setting the
- * name/description/image sources. It automatically listens to list changes.
+ * This is the basic map list. It can be extended by setting the name/description/image sources. It automatically listens to list changes.
  * 
  * @author michael
  * 
@@ -43,12 +42,12 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 	public long getItemId(int arg0) {
 		return arg0;
 	}
-	
+
 	@Override
 	public T getItem(int arg0) {
 		return maps.get(arg0);
 	}
-	
+
 	@Override
 	public int getCount() {
 		return maps.size();
@@ -58,7 +57,7 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 	public int getItemViewType(int arg0) {
 		return 0;
 	}
-	
+
 	@Override
 	public int getViewTypeCount() {
 		return 1;
@@ -77,7 +76,7 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 		} else {
 			view = inflater.inflate(R.layout.maplistitem, null);
 		}
-		
+
 		T item = getItem(arg0);
 
 		TextView name = (TextView) view.findViewById(R.id.mapitem_name);

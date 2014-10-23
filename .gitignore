@@ -1,3 +1,6 @@
 bin
 /.metadata
 .settings
+/jsettlers.graphics.androidui/build/.buildScripts
+/.recommenders
+/jsettlers.common/resources/cache

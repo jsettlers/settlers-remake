@@ -17,9 +17,7 @@ import java.util.zip.ZipInputStream;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 
-import jsettlers.logic.LogicRevision;
 import jsettlers.main.android.R;
-import jsettlers.main.android.Revision;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -36,11 +34,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 
 public class ResourceUpdater implements Runnable {
-	
+
 	private static class ServerData {
 		private final String revision;
 		private final long size;
-		
+
 		public ServerData(String readData) throws IOException {
 			String[] entries = readData.split("\n");
 			if (entries.length < 2) {
@@ -54,7 +52,7 @@ public class ResourceUpdater implements Runnable {
 		}
 	}
 
-	private static final int REVISION = Revision.REVISION + LogicRevision.REVISION * 10000;
+	private static final int REVISION = 1; // FIXME set a correct revision / build number
 	private static final String RESOURCE_PREFIX = "";
 	private static final String SERVER_ROOT = "https://michael2402.homeip.net/jsettlers/";
 	/**
@@ -91,11 +89,11 @@ public class ResourceUpdater implements Runnable {
 	@Override
 	public void run() {
 		try {
-			synchronized(updateMutex ) {
+			synchronized (updateMutex) {
 				DefaultHttpClient httpClient = createClient();
-	
+
 				serverData = loadRevision(httpClient);
-	
+
 				String myversion = prefs.getString(PREF_RESOURCEVERSION, "");
 				boolean serverrevIsNewer = serverData != null
 						&& !serverData.revision.equals(myversion);
@@ -129,7 +127,7 @@ public class ResourceUpdater implements Runnable {
 					t.printStackTrace();
 				}
 				setUpdating(false);
-				//TODO: i18n
+				// TODO: i18n
 				listener.setProgressState("Updating", 1);
 				if (listener != null) {
 					listener.resourceUpdateFinished();
@@ -141,7 +139,7 @@ public class ResourceUpdater implements Runnable {
 
 	private void updateFiles(DefaultHttpClient httpClient, UpdateListener c)
 			throws IOException, ClientProtocolException {
-		//TODO: i18n
+		// TODO: i18n
 		c.setProgressState("Updating", -1);
 
 		if (serverData == null) {
@@ -166,7 +164,7 @@ public class ResourceUpdater implements Runnable {
 			ZipEntry entry;
 			while ((entry = inputStream.getNextEntry()) != null) {
 				String name = entry.getName();
-				//TODO:  i18n
+				// TODO: i18n
 				c.setProgressState("Updating",
 						(float) read / serverData.size);
 				System.out.println("Size: " + read + " of " + serverData.size);

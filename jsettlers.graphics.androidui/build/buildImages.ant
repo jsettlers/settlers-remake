@@ -7,29 +7,28 @@
                    
      michael                                                                
      ====================================================================== -->
-<project name="jsettlers" default="default">
+<project name="jsettlers" default="default" basedir="../">
     <description>
             Builds the android image files needed for the menu
     </description>
 
-    <dirname file="${ant.file}" property="directory"/>
-    <property name="workspace" location="${directory}/../.."/>
+    <property name="workspace" location="../"/>
 
 
     <!-- ================================= 
           target: default              
          ================================= -->
     <target name="default" depends="loadLib" description="Builds the android image files needed for the menu">
-		<exportGraphics destinationDirectory="${directory}/../res/drawable-mdpi" listOutputDirectory="${directory}/../gen" listOutputClass="jsettlers.graphics.androidui.Graphics"/>
+		<exportGraphics destinationDirectory="./res/drawable-mdpi" listOutputDirectory="./gen" listOutputClass="jsettlers.graphics.androidui.Graphics" configFile="../jsettlers.main.swing/config.prp"/>
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - 
           target: loadLib                      
          - - - - - - - - - - - - - - - - - -->
     <target name="loadLib">
-        <mkdir dir=".buildScripts" />
-        <javac srcdir="${directory}:${workspace}/jsettlers.graphics.swing/src:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir=".buildScripts" />
-        <taskdef name="exportGraphics" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath=".buildScripts" />
+        <mkdir dir="./build/.buildScripts" />
+        <javac srcdir="./build:${workspace}/jsettlers.graphics.swing/src:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
+        <taskdef name="exportGraphics" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath="./build/.buildScripts/" />
     </target>
 
 </project>

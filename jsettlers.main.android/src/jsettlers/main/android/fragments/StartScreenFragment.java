@@ -1,8 +1,6 @@
 package jsettlers.main.android.fragments;
 
-import jsettlers.logic.LogicRevision;
 import jsettlers.main.android.R;
-import jsettlers.main.android.Revision;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +49,7 @@ public class StartScreenFragment extends JsettlersFragment {
 			@Override
 			public void onClick(View v) {
 				showNetworkFragment(
-						new NewNetworkGameFragment());
+				new NewNetworkGameFragment());
 			}
 		});
 
@@ -65,7 +63,7 @@ public class StartScreenFragment extends JsettlersFragment {
 		});
 
 		TextView rev = (TextView) view.findViewById(R.id.startscreen_rev);
-		rev.setText("r" + Revision.REVISION + " / r" + LogicRevision.REVISION);
+		rev.setText("build: ???"); // FIXME display build number
 	}
 
 	private void showNetworkFragment(JsettlersFragment joinFragement) {

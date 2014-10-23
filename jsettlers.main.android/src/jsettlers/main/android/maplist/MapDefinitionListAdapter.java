@@ -2,7 +2,7 @@ package jsettlers.main.android.maplist;
 
 import java.util.List;
 
-import jsettlers.graphics.startscreen.interfaces.ChangingList;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import android.view.LayoutInflater;
 
@@ -14,17 +14,17 @@ public class MapDefinitionListAdapter<T extends IMapDefinition> extends MapListA
 		super(inflater, changingList);
 		this.maps = changingList.getItems();
 	}
-	
+
 	@Override
-    public String getTitle(T map) {
+	public String getTitle(T map) {
 		String title = map.getName();
-	    return title;
-    }
+		return title;
+	}
 
 	@Override
 	protected short[] getImage(T map) {
-	    return map.getImage();
-    }
+		return map.getImage();
+	}
 
 	@Override
 	protected String getDescriptionString(T map) {

@@ -1,6 +1,6 @@
 package jsettlers.main.android.fragments;
 
-import jsettlers.graphics.startscreen.interfaces.IStartableMapDefinition;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.main.android.R;
 import jsettlers.main.android.fragments.progress.StartGameProgess;
@@ -10,19 +10,16 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
-public class NewLocalGameFragment extends MapSelectionFragment<IStartableMapDefinition> {
+public class NewLocalGameFragment extends MapSelectionFragment<IMapDefinition> {
 
 	@Override
-	protected MapListAdapter<IStartableMapDefinition> generateListAdapter() {
-		LayoutInflater inflater =
-		        (LayoutInflater) getActivity().getSystemService(
-		                Context.LAYOUT_INFLATER_SERVICE);
-		return new MapDefinitionListAdapter<IStartableMapDefinition>(inflater, getJsettlersActivity()
-		        .getStartConnector().getSingleplayerMaps());
+	protected MapListAdapter<IMapDefinition> generateListAdapter() {
+		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		return new MapDefinitionListAdapter<IMapDefinition>(inflater, getJsettlersActivity().getStartConnector().getSingleplayerMaps());
 	}
 
 	@Override
-	protected String getItemDescription(IStartableMapDefinition item) {
+	protected String getItemDescription(IMapDefinition item) {
 		return item.getDescription();
 	}
 
@@ -37,16 +34,16 @@ public class NewLocalGameFragment extends MapSelectionFragment<IStartableMapDefi
 	}
 
 	@Override
-	protected int getSuggestedPlayerCount(IStartableMapDefinition game) {
+	protected int getSuggestedPlayerCount(IMapDefinition game) {
 		return game.getMaxPlayers();
 	}
 
 	@Override
-	protected void deleteGame(IStartableMapDefinition game) {
+	protected void deleteGame(IMapDefinition game) {
 	}
 
 	@Override
-	protected void startGame(IStartableMapDefinition game) {
+	protected void startGame(IMapDefinition game) {
 		int players = getPlayerCount();
 		if (players < game.getMinPlayers()) {
 			showText(R.string.illegal_playercount_too_low);

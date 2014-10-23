@@ -2,7 +2,8 @@ package jsettlers.graphics.androidui.menu;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.BuildAction;
-import android.R;
+import jsettlers.graphics.androidui.Graphics;
+import jsettlers.graphics.androidui.R;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
