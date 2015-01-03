@@ -59,6 +59,7 @@ public class MapList {
 		savedMaps.clear();
 
 		addFilesToLists(mapsDir);
+		saveDir.mkdirs();
 		addFilesToLists(saveDir);
 
 		Collections.sort(freshMaps);
