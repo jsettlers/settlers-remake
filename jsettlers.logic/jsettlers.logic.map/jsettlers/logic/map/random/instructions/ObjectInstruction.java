@@ -71,7 +71,6 @@ public abstract class ObjectInstruction extends GenerationInstruction {
 		grid.reserveArea(x, y, getIntParameter("tight", random));
 	}
 
-	@SuppressWarnings("unused")
 	protected MapObject getObject(PlayerStart start, Random random) {
 		return PlaceholderObject.getInstance();
 	}

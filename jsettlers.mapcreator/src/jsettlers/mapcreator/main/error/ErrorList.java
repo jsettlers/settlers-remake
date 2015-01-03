@@ -6,14 +6,14 @@ import javax.swing.AbstractListModel;
 
 import jsettlers.common.position.ILocatable;
 
-public class ErrorList extends AbstractListModel {
+public class ErrorList extends AbstractListModel<ILocatable> {
 
 	/**
      *
      */
 	private static final long serialVersionUID = -6645362444519496534L;
 
-	private ArrayList<Error> errors = new ArrayList<Error>();
+	private ArrayList<Error> errors = new ArrayList<>();
 
 	public void setErrors(ArrayList<Error> errors) {
 		int max = Math.max(errors.size(), this.errors.size());

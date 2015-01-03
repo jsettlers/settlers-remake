@@ -61,7 +61,7 @@ public class BeachTree implements Beach {
 	 *            The middle point
 	 * @return The found separator, or <code>null</code> if it was the topmost line.
 	 */
-	public BeachSeparator findSeparatorAbove(@SuppressWarnings("unused") BeachLinePart middle) {
+	public BeachSeparator findSeparatorAbove(BeachLinePart middle) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -73,7 +73,7 @@ public class BeachTree implements Beach {
 	 *            The middle point
 	 * @return The found separator, or <code>null</code> if it was the topmost line.
 	 */
-	public BeachSeparator findSeparatorBelow(@SuppressWarnings("unused") BeachLinePart middle) {
+	public BeachSeparator findSeparatorBelow(BeachLinePart middle) {
 		// TODO Auto-generated method stub
 		return null;
 	}

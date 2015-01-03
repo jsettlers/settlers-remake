@@ -292,7 +292,6 @@ public class DatFileTester {
 			drawPoint(gl2, x, y + image.getHeight());
 		}
 
-		@SuppressWarnings("unused")
 		private void drawPoint(GLDrawContext gl2, int x, int y) {
 			// TODO Auto-generated method stub
 		}

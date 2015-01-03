@@ -68,7 +68,7 @@ public class PlaceTemplateTool implements Tool {
 		 *            The current player
 		 * @return
 		 */
-		public MapObject getObject(@SuppressWarnings("unused") byte player) {
+		public MapObject getObject(byte player) {
 			return object;
 		}
 	}

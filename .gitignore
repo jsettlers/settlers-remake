@@ -1,9 +1,10 @@
 bin
 /.metadata
 .settings
-/jsettlers.graphics.androidui/gen
+/jsettlers.graphics.androidui/gen/*
 /jsettlers.graphics.androidui/build/.buildScripts
 /.recommenders
 /jsettlers.common/resources/cache
-/jsettlers.main.android/gen/
+/jsettlers.main.android/gen/*
 /jsettlers.main.android/assets/*
+

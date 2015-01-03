@@ -23,7 +23,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  * <p>
  * It lists all available maps, and it can be used to add maps to the game.
  * <p>
- * TODO: load maps before they are needed, to increase startup time.
+ * TODO: load maps before they are needed, to decrease startup time.
  * 
  * @author michael
  * @author Andreas Eberle
