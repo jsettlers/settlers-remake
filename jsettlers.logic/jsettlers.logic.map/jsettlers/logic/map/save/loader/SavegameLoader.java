@@ -1,6 +1,5 @@
 package jsettlers.logic.map.save.loader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
@@ -9,6 +8,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.timer.RescheduleTimer;
 
@@ -19,7 +19,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  */
 public class SavegameLoader extends MapLoader {
 
-	public SavegameLoader(File file, MapFileHeader header) {
+	public SavegameLoader(IListedMap file, MapFileHeader header) {
 		super(file, header);
 	}
 

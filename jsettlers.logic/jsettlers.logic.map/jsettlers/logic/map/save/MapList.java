@@ -1,16 +1,11 @@
 package jsettlers.logic.map.save;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
@@ -18,6 +13,7 @@ import jsettlers.common.resources.ResourceManager;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.newGrid.GameSerializer;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.timer.RescheduleTimer;
@@ -32,10 +28,18 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author michael
  * @author Andreas Eberle
  */
-public class MapList {
+public class MapList implements IMapListerCallable {
+	private static class DefaultMapListFactory implements IMapListFactory {
+		@Override
+		public MapList getMapList() {
+			return new MapList(ResourceManager.getSaveDirectory());
+		}
+	}
+	
 	public static final String MAP_EXTENSION = ".map";
-	private final File mapsDir;
-	private final File saveDir;
+	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
+	private final IMapLister mapsDir;
+	private final IMapLister saveDir;
 
 	private final ArrayList<MapLoader> freshMaps = new ArrayList<MapLoader>();
 	private final ArrayList<MapLoader> savedMaps = new ArrayList<MapLoader>();
@@ -43,44 +47,30 @@ public class MapList {
 	private boolean fileListLoaded = false;
 
 	public MapList(File dir) {
-		this.mapsDir = new File(dir, "maps");
-		this.saveDir = new File(dir, "save");
+		this(new DirectoryMapLister(new File(dir, "maps"), false),
+				new DirectoryMapLister(new File(dir, "save"), true));
+	}
 
-		if (!mapsDir.exists()) {
-			dir.mkdirs();
-		}
-		if (!saveDir.exists()) {
-			dir.mkdirs();
-		}
+	public MapList(IMapLister mapsDir, IMapLister saveDir) {
+		this.mapsDir = mapsDir;
+		this.saveDir = saveDir;
 	}
 
 	private void loadFileList() {
 		freshMaps.clear();
 		savedMaps.clear();
 
-		addFilesToLists(mapsDir);
-		addFilesToLists(saveDir);
+		mapsDir.getMaps(this);
+		saveDir.getMaps(this);
 
 		Collections.sort(freshMaps);
 		Collections.sort(savedMaps);
 	}
-
-	private void addFilesToLists(File directory) {
-		File[] files = directory.listFiles();
-		if (files == null) {
-			throw new IllegalArgumentException("map directory " + directory.getAbsolutePath() + " is not a directory.");
-		}
-
-		for (File file : files) {
-			if (file.getName().endsWith(MAP_EXTENSION)) {
-				addFileToList(file);
-			}
-		}
-	}
-
-	private synchronized void addFileToList(File file) {
+	
+	@Override
+	public synchronized void foundMap(IListedMap map) {
 		try {
-			MapLoader loader = MapLoader.getLoaderForFile(file);
+			MapLoader loader = MapLoader.getLoaderForFile(map);
 			MapType type = loader.getFileHeader().getType();
 			if (type == MapType.SAVED_SINGLE) {
 				savedMaps.add(loader);
@@ -89,7 +79,7 @@ public class MapList {
 			}
 		} catch (MapLoadException e) {
 			System.err.println("Cought exception while loading header for "
-					+ file.getAbsolutePath());
+					+ map.getFileName());
 			e.printStackTrace();
 		}
 	}
@@ -157,7 +147,7 @@ public class MapList {
 	public synchronized void saveNewMap(MapFileHeader header, IMapData data) throws IOException {
 		OutputStream out = null;
 		try {
-			out = getOutputStream(header, mapsDir);
+			out = mapsDir.getOutputStream(header);
 			MapSaver.saveMap(header, data, out);
 		} finally {
 			if (out != null) {
@@ -165,42 +155,6 @@ public class MapList {
 			}
 		}
 		loadFileList();
-	}
-
-	/**
-	 * Gets an output stream that can be used to store the map. The stream is to a file with a nice name and does not override any other file.
-	 * 
-	 * @param header
-	 *            The header to create the file name from. It is not written to the stream.
-	 * @param baseDir
-	 *            The base directory where map should be saved.
-	 * @return A output stream to a fresh generated file.
-	 * @throws IOException
-	 */
-	private OutputStream getOutputStream(MapFileHeader header, File baseDir)
-			throws IOException {
-		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
-		if (name.isEmpty()) {
-			name = "map";
-		}
-
-		Date date = header.getCreationDate();
-		if (date != null) {
-			SimpleDateFormat format = new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
-			name += format.format(date);
-		}
-
-		File file = new File(baseDir, name + MAP_EXTENSION);
-		int i = 1;
-		while (file.exists()) {
-			file = new File(baseDir, name + "-" + i + MAP_EXTENSION);
-			i++;
-		}
-		try {
-			return new BufferedOutputStream(new FileOutputStream(file));
-		} catch (FileNotFoundException e) {
-			throw new IOException(e);
-		}
 	}
 
 	/**
@@ -213,7 +167,7 @@ public class MapList {
 	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid)
 			throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
-		OutputStream outStream = getOutputStream(header, saveDir);
+		OutputStream outStream = saveDir.getOutputStream(header);
 
 		header.writeTo(outStream);
 
@@ -239,7 +193,7 @@ public class MapList {
 	 */
 	public synchronized void saveRandomMap(MapFileHeader header,
 			String definition) throws IOException {
-		OutputStream out = getOutputStream(header, mapsDir);
+		OutputStream out = mapsDir.getOutputStream(header);
 		MapSaver.saveRandomMap(header, definition, out);
 		loadFileList();
 	}
@@ -255,13 +209,17 @@ public class MapList {
 	 * @return
 	 */
 	public static MapList getDefaultList() {
-		return new MapList(ResourceManager.getSaveDirectory());
+		return mapListFactory.getMapList();
 	}
 
 	public void deleteLoadableGame(MapLoader game) {
-		game.getFile().delete();
+		game.delete();
 		savedMaps.remove(game);
 		loadFileList();
+	}
+
+	public static void setDefaultList(IMapListFactory factory) {
+		mapListFactory = factory;
 	}
 
 }

@@ -19,13 +19,14 @@ import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
+import jsettlers.logic.map.save.MapList;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.bg.BgControls;
 import jsettlers.main.android.bg.BgMap;
 import jsettlers.main.android.fragments.GameCommandFragment;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
-import jsettlers.main.android.fragments.progress.UpdateResourcesFragment;
+import jsettlers.main.android.resources.AndroidMapListFactory;
 import jsettlers.main.android.resources.ResourceProvider;
 import android.app.Activity;
 import android.app.Fragment;
@@ -65,11 +66,7 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		((FrameLayout) findViewById(R.id.base_gl)).addView(goView);
 		soundPlayer = new AndroidSoundPlayer(SOUND_THREADS);
 
-		if (provider.needsUpdate()) {
-			showFragment(new UpdateResourcesFragment());
-		} else {
-			showStartScreen();
-		}
+		showStartScreen();
 
 		showBgMap();
 	}
@@ -143,7 +140,9 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 			ImageProvider.getInstance().addLookupPath(file);
 			SoundManager.addLookupPath(new File(file, "Snd"));
 		}
-		provider = new ResourceProvider(this, files);
+		MapList.setDefaultList(new AndroidMapListFactory(getAssets(), files[0]));
+		
+		provider = new ResourceProvider(this, files[0]);
 		ResourceManager.setProvider(provider);
 	}
 

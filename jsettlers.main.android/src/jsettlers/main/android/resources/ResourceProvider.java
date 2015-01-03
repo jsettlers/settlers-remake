@@ -9,43 +9,41 @@ import java.io.OutputStream;
 
 import jsettlers.common.resources.IResourceProvider;
 import android.content.Context;
+import android.content.res.AssetManager;
 
 public class ResourceProvider implements IResourceProvider {
-	private final File[] dirs;
-	private final ResourceUpdater updater;
+	private final File saveDir;
+	private final AssetManager manager;
 
-	public ResourceProvider(Context context, File[] dirs) {
-		this.dirs = dirs;
-		this.updater = new ResourceUpdater(context, dirs[0]);
-		new Thread(updater, "resource updater").start();
-	}
+	/**
+	 * Resource directories that the user cannot change files in.
+	 */
+	private static final String[] fixedResources = new String[] { "images",
+			"localization", "buildings" };
 
-	public boolean needsUpdate() {
-		return updater.needsUpdate();
-	}
-
-	public void startUpdate(final UpdateListener listener) {
-		updater.startUpdate(listener);
+	public ResourceProvider(Context context, File saveDir) {
+		this.saveDir = saveDir;
+		manager = context.getAssets();
 	}
 
 	@Override
 	public InputStream getFile(String name) throws IOException {
-		try {
-			this.updater.waitUntilUpdateFinished();
-		} catch (InterruptedException e) {
-		}
 		String[] parts = name.split("/");
-		for (File dir : dirs) {
-			File found = searchFileIn(dir, parts);
-			if (found != null) {
-				System.out.println("Found file in " + dir.getAbsolutePath());
-				return new FileInputStream(found);
+		boolean searchUserFile = true;
+		for (int i = 0; i < fixedResources.length; i++) {
+			if (fixedResources[i].equals(parts[0])) {
+				searchUserFile = false;
 			}
 		}
-		System.err.println("File " + name
-		        + " not found. Place it in JSettlers dir!");
-		throw new IOException("File " + name
-		        + " not found. Place it in JSettlers dir!");
+		File file = searchUserFile ? searchFileIn(saveDir, parts) : null;
+
+		if (searchUserFile) {
+			file = searchFileIn(saveDir, parts);
+			if (file != null) {
+				return new FileInputStream(file);
+			}
+		}
+		return manager.open(name);
 	}
 
 	private static File searchFileIn(File dir, String[] parts) {
@@ -64,21 +62,21 @@ public class ResourceProvider implements IResourceProvider {
 
 	@Override
 	public OutputStream writeFile(String name) throws IOException {
-		File outFile = new File(dirs[0].getAbsolutePath() + "/" + name);
+		File outFile = new File(saveDir.getAbsolutePath() + "/" + name);
 		System.err.println("--------------------------------"
-		        + outFile.getAbsolutePath());
+				+ outFile.getAbsolutePath());
 		outFile.getParentFile().mkdirs();
 		return new FileOutputStream(outFile);
 	}
 
 	@Override
 	public File getSaveDirectory() {
-		return dirs[0];
+		return saveDir;
 	}
 
 	@Override
 	public File getTempDirectory() {
-		return dirs[0];
+		return saveDir;
 	}
 
 }

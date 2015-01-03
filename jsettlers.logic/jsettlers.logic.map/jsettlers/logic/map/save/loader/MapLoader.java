@@ -14,6 +14,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
+import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 
@@ -26,15 +27,15 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * @author Andreas Eberle
  */
 public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
-	private final File file;
+	private final IListedMap file;
 	private final MapFileHeader header;
 
-	public MapLoader(File file, MapFileHeader header) {
+	public MapLoader(IListedMap file, MapFileHeader header) {
 		this.file = file;
 		this.header = header;
 	}
 
-	public static MapLoader getLoaderForFile(File file) throws MapLoadException {
+	public static MapLoader getLoaderForFile(IListedMap file) throws MapLoadException {
 		MapFileHeader header = loadHeader(file);
 
 		switch (header.getType()) {
@@ -54,10 +55,10 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		return header;
 	}
 
-	private static MapFileHeader loadHeader(File file) throws MapLoadException {
+	private static MapFileHeader loadHeader(IListedMap file) throws MapLoadException {
 		InputStream stream = null;
 		try {
-			stream = new BufferedInputStream(new FileInputStream(file));
+			stream = new BufferedInputStream(file.getInputStream());
 			return MapFileHeader.readFromStream(stream);
 		} catch (IOException e) {
 			throw new MapLoadException("Error during header request: ", e);
@@ -77,7 +78,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 	 * @throws IOException
 	 */
 	protected final InputStream getMapDataStream() throws IOException {
-		InputStream stream = new BufferedInputStream(new FileInputStream(file));
+		InputStream stream = new BufferedInputStream(file.getInputStream());
 		MapFileHeader.readFromStream(stream);
 		return stream;
 	}
@@ -108,16 +109,12 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 
 	@Override
 	public String toString() {
-		return file.getName();
+		return file.getFileName();
 	}
 
 	@Override
 	public String getMapID() {
 		return header.getUniqueId();
-	}
-
-	public File getFile() {
-		return file;
 	}
 
 	public String getDescription() {
@@ -160,5 +157,9 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		}
 
 		return new MainGridWithUiSettings(mainGrid, playerStates);
+	}
+
+	public void delete() {
+		file.delete();
 	}
 }

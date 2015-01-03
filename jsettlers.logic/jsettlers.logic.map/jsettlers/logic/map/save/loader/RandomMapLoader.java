@@ -8,6 +8,7 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.random.RandomMapEvaluator;
 import jsettlers.logic.map.random.RandomMapFile;
+import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
 
 /**
@@ -19,7 +20,7 @@ public class RandomMapLoader extends MapLoader {
 
 	private IMapData mapData = null;
 
-	public RandomMapLoader(File file, MapFileHeader header) {
+	public RandomMapLoader(IListedMap file, MapFileHeader header) {
 		super(file, header);
 	}
 

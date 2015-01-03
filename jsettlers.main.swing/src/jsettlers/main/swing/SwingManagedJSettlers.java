@@ -23,6 +23,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
+import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
@@ -142,7 +143,7 @@ public class SwingManagedJSettlers {
 		if (mapfile != null || loadableReplayFile != null) {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
-				MapLoader mapLoader = MapLoader.getLoaderForFile(new File(mapfile));
+				MapLoader mapLoader = MapLoader.getLoaderForFile(new DirectoryMapLister.ListedMapFile(new File(mapfile), false));
 				byte playerId = 0;
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				availablePlayers[playerId] = true;

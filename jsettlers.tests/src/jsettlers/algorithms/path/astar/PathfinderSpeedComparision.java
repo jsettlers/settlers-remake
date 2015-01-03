@@ -13,6 +13,7 @@ import jsettlers.logic.algorithms.path.astar.normal.AStarJPS;
 import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
 import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.loader.MapLoader;
 import networklib.synchronic.random.RandomSingleton;
 
@@ -49,7 +50,7 @@ public class PathfinderSpeedComparision {
 
 	private static MainGrid getMap() throws MapLoadException {
 		RandomSingleton.load(123456L);
-		MapLoader loader = MapLoader.getLoaderForFile(new File("../jsettlers.common/resources/maps/bigmap.map"));
+		MapLoader loader = MapLoader.getLoaderForFile(new DirectoryMapLister.ListedMapFile(new File("../jsettlers.common/resources/maps/bigmap.map"), false));
 		return loader.loadMainGrid(null).getMainGrid();
 	}
 
