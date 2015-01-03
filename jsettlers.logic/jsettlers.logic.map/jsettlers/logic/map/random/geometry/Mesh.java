@@ -4,7 +4,7 @@ import jsettlers.logic.map.random.voronoi.VoronoiVertex;
 
 public class Mesh {
 
-	public VoronoiVertex addVoronoiVertex(@SuppressWarnings("unused") Point2D center) {
+	public VoronoiVertex addVoronoiVertex(Point2D center) {
 		// TODO Auto-generated method stub
 		return null;
 	}

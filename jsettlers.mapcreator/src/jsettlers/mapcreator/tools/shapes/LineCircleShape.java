@@ -13,7 +13,7 @@ public class LineCircleShape extends ShapeType {
 
 	@Override
 	public void setAffectedStatus(byte[][] fields, ShortPoint2D start,
-	        ShortPoint2D end) {
+			ShortPoint2D end) {
 		CircleLine line = new CircleLine(start, end);
 
 		for (int x = 0; x < fields.length; x++) {
@@ -24,7 +24,6 @@ public class LineCircleShape extends ShapeType {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	protected byte getFieldRating(int x, int y, double distance) {
 		return (distance <= getProperty(RADIUS_PROPERTY) ? Byte.MAX_VALUE : 0);
 	}

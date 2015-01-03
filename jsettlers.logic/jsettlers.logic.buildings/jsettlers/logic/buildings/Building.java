@@ -483,7 +483,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		}
 	}
 
-	public void setWorkAreaCenter(@SuppressWarnings("unused") ShortPoint2D workAreaCenter) {
+	public void setWorkAreaCenter(ShortPoint2D workAreaCenter) {
 	}
 
 	@Override

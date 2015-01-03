@@ -4,3 +4,4 @@ bin
 /jsettlers.graphics.androidui/build/.buildScripts
 /.recommenders
 /jsettlers.common/resources/cache
+/jsettlers.main.android/gen/jsettlers/main/android/R.java

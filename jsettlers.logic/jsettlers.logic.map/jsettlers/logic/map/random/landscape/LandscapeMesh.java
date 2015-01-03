@@ -81,7 +81,7 @@ public class LandscapeMesh {
 		}
 	}
 
-	public static LandscapeMesh getRandomMesh(int width, int height, @SuppressWarnings("unused") Random random) {
+	public static LandscapeMesh getRandomMesh(int width, int height, Random random) {
 		int xsites = Math.max(width / 20, 1);
 		int ysites = Math.max(height / 20, 1);
 

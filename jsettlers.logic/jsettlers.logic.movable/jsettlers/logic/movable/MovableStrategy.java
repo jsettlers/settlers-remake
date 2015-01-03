@@ -213,7 +213,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * @return true if the path should be continued<br>
 	 *         false if it must be stopped.
 	 */
-	protected boolean checkPathStepPreconditions(@SuppressWarnings("unused") ShortPoint2D pathTarget, @SuppressWarnings("unused") int step) {
+	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
 		return true;
 	}
 
@@ -224,7 +224,7 @@ public abstract class MovableStrategy implements Serializable {
 	 *            if the movable is currently walking on a path, this is the target of the path<br>
 	 *            else it is null.
 	 */
-	protected void strategyKilledEvent(@SuppressWarnings("unused") ShortPoint2D pathTarget) { // used in overriding methods
+	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
 	}
 
 	/**
@@ -236,8 +236,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * @param targetPos
 	 *            The new target position.
 	 */
-	protected void moveToPathSet(@SuppressWarnings("unused") ShortPoint2D oldPosition, @SuppressWarnings("unused") ShortPoint2D oldTargetPos,
-			@SuppressWarnings("unused") ShortPoint2D targetPos) {
+	protected void moveToPathSet(ShortPoint2D oldPosition, ShortPoint2D oldTargetPos, ShortPoint2D targetPos) {
 	}
 
 	/**
@@ -246,7 +245,7 @@ public abstract class MovableStrategy implements Serializable {
 	 * @param other
 	 *            The other movable.
 	 */
-	protected void informAboutAttackable(@SuppressWarnings("unused") IAttackable other) {
+	protected void informAboutAttackable(IAttackable other) {
 	}
 
 	protected boolean isMoveToAble() {
@@ -299,7 +298,7 @@ public abstract class MovableStrategy implements Serializable {
 		return path;
 	}
 
-	protected void stopOrStartWorking(@SuppressWarnings("unused") boolean stop) {
+	protected void stopOrStartWorking(boolean stop) {
 	}
 
 	protected void sleep(short waitTime) {

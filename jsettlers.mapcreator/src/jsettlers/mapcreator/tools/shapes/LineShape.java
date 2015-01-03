@@ -21,7 +21,7 @@ public class LineShape extends ShapeType {
 		}
 	}
 
-	protected boolean shouldDrawAt(@SuppressWarnings("unused") ShortPoint2D current) {
+	protected boolean shouldDrawAt(ShortPoint2D current) {
 		return true;
 	}
 
