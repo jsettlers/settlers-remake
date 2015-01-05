@@ -28,8 +28,8 @@ import javax.swing.event.DocumentListener;
 public class ImageDisplay extends JFrame {
 
 	private static final String FILE =
-	// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.7c003e01f.dat";
-	       "/home/michael/Desktop/sounds/VL-212.DX4";
+			// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.7c003e01f.dat";
+			"/home/michael/Desktop/sounds/VL-212.DX4";
 	/**
      * 
      */
@@ -93,7 +93,7 @@ public class ImageDisplay extends JFrame {
 		getImage().setFocusable(true);
 		getRoot();
 		InputMap input =
-		        getRoot().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+				getRoot().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actions = getRoot().getActionMap();
 
 		input.put(KeyStroke.getKeyStroke("UP"), "up");
@@ -164,15 +164,15 @@ public class ImageDisplay extends JFrame {
 	private JSpinner getOffsetSpinner() {
 		if (this.offsetSpinner == null) {
 			this.offsetSpinner =
-			        new JSpinner(new SpinnerNumberModel(getImage().getOffset(),
-			                0, this.data.length, 1));
+					new JSpinner(new SpinnerNumberModel(getImage().getOffset(),
+							0, this.data.length, 1));
 			this.offsetSpinner.setBounds(new Rectangle(322, 4, 100, 20));
 			this.offsetSpinner.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					getImage().setOffset(
-					        (Integer) ImageDisplay.this.offsetSpinner
-					                .getValue());
+							(Integer) ImageDisplay.this.offsetSpinner
+									.getValue());
 				}
 			});
 		}
@@ -249,15 +249,15 @@ public class ImageDisplay extends JFrame {
 	private JSpinner getPixelLengthSpinner() {
 		if (this.pixelLengthSpinner == null) {
 			this.pixelLengthSpinner =
-			        new JSpinner(new SpinnerNumberModel(getImage()
-			                .getPixelLength(), 1, 100, 1));
+					new JSpinner(new SpinnerNumberModel(getImage()
+							.getPixelLength(), 1, 100, 1));
 			this.pixelLengthSpinner.setBounds(new Rectangle(323, 32, 100, 20));
 			this.pixelLengthSpinner.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					getImage().setPixelLength(
-					        (Integer) ImageDisplay.this.pixelLengthSpinner
-					                .getValue());
+							(Integer) ImageDisplay.this.pixelLengthSpinner
+									.getValue());
 					reloadLineLength();
 				}
 
@@ -268,7 +268,7 @@ public class ImageDisplay extends JFrame {
 
 	private void reloadLineLength() {
 		this.lineLength_bytes.setText(getImage().getPixelLength()
-		        * getImage().getImageWidth() + " Bytes");
+				* getImage().getImageWidth() + " Bytes");
 	}
 
 	/**
@@ -279,15 +279,15 @@ public class ImageDisplay extends JFrame {
 	private JSpinner getImageWidthSpinner() {
 		if (this.imageWidthSpinner == null) {
 			this.imageWidthSpinner =
-			        new JSpinner(new SpinnerNumberModel(getImage()
-			                .getImageWidth(), 1, 1000, 1));
+					new JSpinner(new SpinnerNumberModel(getImage()
+							.getImageWidth(), 1, 1000, 1));
 			this.imageWidthSpinner.setBounds(new Rectangle(325, 58, 100, 20));
 			this.imageWidthSpinner.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					getImage().setImageWidth(
-					        (Integer) ImageDisplay.this.imageWidthSpinner
-					                .getValue());
+							(Integer) ImageDisplay.this.imageWidthSpinner
+									.getValue());
 					reloadLineLength();
 				}
 			});
@@ -311,7 +311,7 @@ public class ImageDisplay extends JFrame {
 				@Override
 				public void stateChanged(ChangeEvent e) {
 					getImage().setLittleEndian(
-					        ImageDisplay.this.littleEndian.isSelected());
+							ImageDisplay.this.littleEndian.isSelected());
 				}
 			});
 		}
@@ -329,29 +329,29 @@ public class ImageDisplay extends JFrame {
 			this.redMask.setBounds(new Rectangle(248, 80, 69, 24));
 			this.redMask.setText("" + getImage().getRedMask());
 			this.redMask.getDocument().addDocumentListener(
-			        new DocumentListener() {
+					new DocumentListener() {
 
-				        private void changed() {
-					        getImage().setRedMask(
-					                loadMaskField(ImageDisplay.this.redMask));
-				        }
+						private void changed() {
+							getImage().setRedMask(
+									loadMaskField(ImageDisplay.this.redMask));
+						}
 
-				        @Override
-				        public void removeUpdate(DocumentEvent e) {
-					        changed();
-				        }
+						@Override
+						public void removeUpdate(DocumentEvent e) {
+							changed();
+						}
 
-				        @Override
-				        public void insertUpdate(DocumentEvent e) {
-					        changed();
-				        }
+						@Override
+						public void insertUpdate(DocumentEvent e) {
+							changed();
+						}
 
-				        @Override
-				        public void changedUpdate(DocumentEvent e) {
-					        changed();
+						@Override
+						public void changedUpdate(DocumentEvent e) {
+							changed();
 
-				        }
-			        });
+						}
+					});
 		}
 		return this.redMask;
 	}
@@ -396,29 +396,29 @@ public class ImageDisplay extends JFrame {
 			this.greenMask.setText("" + getImage().getGreenMask());
 
 			this.greenMask.getDocument().addDocumentListener(
-			        new DocumentListener() {
+					new DocumentListener() {
 
-				        private void changed() {
-					        getImage().setGreenMask(
-					                loadMaskField(ImageDisplay.this.greenMask));
-				        }
+						private void changed() {
+							getImage().setGreenMask(
+									loadMaskField(ImageDisplay.this.greenMask));
+						}
 
-				        @Override
-				        public void removeUpdate(DocumentEvent e) {
-					        changed();
-				        }
+						@Override
+						public void removeUpdate(DocumentEvent e) {
+							changed();
+						}
 
-				        @Override
-				        public void insertUpdate(DocumentEvent e) {
-					        changed();
-				        }
+						@Override
+						public void insertUpdate(DocumentEvent e) {
+							changed();
+						}
 
-				        @Override
-				        public void changedUpdate(DocumentEvent e) {
-					        changed();
+						@Override
+						public void changedUpdate(DocumentEvent e) {
+							changed();
 
-				        }
-			        });
+						}
+					});
 		}
 		return this.greenMask;
 	}
@@ -434,29 +434,29 @@ public class ImageDisplay extends JFrame {
 			this.blueMask.setBounds(new Rectangle(498, 77, 96, 28));
 			this.blueMask.setText("" + getImage().getBlueMask());
 			this.blueMask.getDocument().addDocumentListener(
-			        new DocumentListener() {
+					new DocumentListener() {
 
-				        private void changed() {
-					        getImage().setBlueMask(
-					                loadMaskField(ImageDisplay.this.blueMask));
-				        }
+						private void changed() {
+							getImage().setBlueMask(
+									loadMaskField(ImageDisplay.this.blueMask));
+						}
 
-				        @Override
-				        public void removeUpdate(DocumentEvent e) {
-					        changed();
-				        }
+						@Override
+						public void removeUpdate(DocumentEvent e) {
+							changed();
+						}
 
-				        @Override
-				        public void insertUpdate(DocumentEvent e) {
-					        changed();
-				        }
+						@Override
+						public void insertUpdate(DocumentEvent e) {
+							changed();
+						}
 
-				        @Override
-				        public void changedUpdate(DocumentEvent e) {
-					        changed();
+						@Override
+						public void changedUpdate(DocumentEvent e) {
+							changed();
 
-				        }
-			        });
+						}
+					});
 		}
 		return this.blueMask;
 	}

@@ -16,8 +16,8 @@ public class TestTree implements IMapObject {
 	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    return null;
-    }
+	public IMapObject getNextObject() {
+		return null;
+	}
 
 }

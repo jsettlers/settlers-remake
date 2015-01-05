@@ -21,7 +21,7 @@ public final class Color {
 
 	public Color(int argb) {
 		this(argb, ((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f,
-		        ((argb >> 0) & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
+				((argb >> 0) & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
 	}
 
 	private Color(float red, float green, float blue, float alpha) {
@@ -57,23 +57,23 @@ public final class Color {
 	public final int getARGB() {
 		return argb;
 	}
-	
+
 	public final int getABGR() {
 		return (argb & 0xff00ff00) | ((argb & 0xff) << 16) | ((argb >> 16) & 0xff);
 	}
 
 	public static final int getARGB(float red, float green, float blue,
-	        float alpha) {
+			float alpha) {
 		return ((int) (alpha * 255) & 0xff) << 24
-		        | ((int) (red * 255) & 0xff) << 16
-		        | ((int) (green * 255) & 0xff) << 8
-		        | ((int) (blue * 255) & 0xff);
+				| ((int) (red * 255) & 0xff) << 16
+				| ((int) (green * 255) & 0xff) << 8
+				| ((int) (blue * 255) & 0xff);
 	}
 
 	public static final int getABGR(float red, float green, float blue, float alpha) {
 		return ((int) (alpha * 255) & 0xff) << 24 | ((int) (red * 255) & 0xff)
-		        | ((int) (green * 255) & 0xff) << 8
-		        | ((int) (blue * 255) & 0xff) << 16;
+				| ((int) (green * 255) & 0xff) << 8
+				| ((int) (blue * 255) & 0xff) << 16;
 	}
 
 	public short toShortColor(float multiply) {
@@ -91,15 +91,15 @@ public final class Color {
 			return 0;
 		} else {
 			return (short) ((int) (Math.min(1, red * multiply) * 0x1f) << 11
-			        | (int) (Math.min(1, green * multiply) * 0x1f) << 6
-			        | (int) (Math.min(1, blue * multiply) * 0x1f) << 1 | 1);
+					| (int) (Math.min(1, green * multiply) * 0x1f) << 6
+					| (int) (Math.min(1, blue * multiply) * 0x1f) << 1 | 1);
 		}
 	}
 
 	public static Color fromShort(short s) {
 		return new Color((float) (s >> 11 & 0x1f) / 0x1f,
-		        (float) (s >> 6 & 0x1f) / 0x1f, (float) (s >> 1 & 0x1f) / 0x1f,
-		        s & 1);
+				(float) (s >> 6 & 0x1f) / 0x1f, (float) (s >> 1 & 0x1f) / 0x1f,
+				s & 1);
 	}
 
 }

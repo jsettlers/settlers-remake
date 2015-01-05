@@ -1,6 +1,5 @@
 package go.graphics.event.interpreter;
 
-
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GOHoverEvent;
 
@@ -10,7 +9,7 @@ import go.graphics.event.mouse.GOHoverEvent;
  * @author michael
  */
 public class ConvertedHoverEvent extends AbstractMouseEvent implements
-        GOHoverEvent {
+		GOHoverEvent {
 
 	public ConvertedHoverEvent(UIPoint start) {
 		position = start;

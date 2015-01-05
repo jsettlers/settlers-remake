@@ -75,7 +75,8 @@ public class ServerClientSideInteroperabilityTest {
 	public void testSnycTasksPackets() throws InterruptedException {
 		BufferingPacketListener<SyncTasksPacket> clientListener = new BufferingPacketListener<SyncTasksPacket>(ENetworkKey.TEST_PACKET,
 				new GenericDeserializer<SyncTasksPacket>(SyncTasksPacket.class));
-		BufferingPacketListener<ServersideSyncTasksPacket> serverListener = new BufferingPacketListener<ServersideSyncTasksPacket>(ENetworkKey.TEST_PACKET,
+		BufferingPacketListener<ServersideSyncTasksPacket> serverListener = new BufferingPacketListener<ServersideSyncTasksPacket>(
+				ENetworkKey.TEST_PACKET,
 				new GenericDeserializer<ServersideSyncTasksPacket>(ServersideSyncTasksPacket.class));
 
 		c1.registerListener(clientListener);

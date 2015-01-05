@@ -22,12 +22,12 @@ public class StartingGamePanel extends ProgressPanel implements IStartingGameLis
 	}
 
 	@Override
-    public void startProgressChanged(EProgressState state, float progress) {
-	    setProgressState(state, progress);
-    }
+	public void startProgressChanged(EProgressState state, float progress) {
+		setProgressState(state, progress);
+	}
 
 	@Override
-    public MapInterfaceConnector startFinished(IStartedGame game) {
+	public MapInterfaceConnector startFinished(IStartedGame game) {
 		MapContent content = new MapContent(game, contentSetable.getSoundPlayer());
 		contentSetable.setContent(content);
 		game.setGameExitListener(new IGameExitListener() {
@@ -36,13 +36,13 @@ public class StartingGamePanel extends ProgressPanel implements IStartingGameLis
 				contentSetable.goToStartScreen("");
 			}
 		});
-	    return content.getInterfaceConnector();
-    }
+		return content.getInterfaceConnector();
+	}
 
 	@Override
-    public void startFailed(EGameError errorType, Exception exception) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	public void startFailed(EGameError errorType, Exception exception) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

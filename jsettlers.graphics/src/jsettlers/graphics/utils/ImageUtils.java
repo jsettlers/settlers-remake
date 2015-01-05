@@ -20,7 +20,7 @@ public final class ImageUtils {
 	 * @param atop
 	 */
 	public static void drawAtRectAspect(GLDrawContext gl, Image image,
-	        float aleft, float abottom, float aright, float atop) {
+			float aleft, float abottom, float aright, float atop) {
 		float imageaspect = image.getWidth() / image.getHeight();
 		float left, right, top, bottom;
 		if ((aright - aleft) / (atop - abottom) > imageaspect) {

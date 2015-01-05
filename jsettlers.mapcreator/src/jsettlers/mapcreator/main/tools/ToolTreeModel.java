@@ -23,7 +23,7 @@ public class ToolTreeModel implements TreeModel {
 	}
 
 	private final LinkedList<TreeModelListener> listeners =
-	        new LinkedList<TreeModelListener>();
+			new LinkedList<TreeModelListener>();
 
 	@Override
 	public void addTreeModelListener(TreeModelListener l) {

@@ -61,7 +61,8 @@ public final class EnclosedBlockedAreaFinderAlgorithm {
 	 * @param blockedStartPos
 	 * @return
 	 */
-	private static boolean needsRelabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider, ShortPoint2D blockedStartPos,
+	private static boolean needsRelabel(final IEnclosedBlockedAreaFinderGrid grid, IContainingProvider containingProvider,
+			ShortPoint2D blockedStartPos,
 			final short partition) {
 		return BorderTraversingAlgorithm.traverseBorder(containingProvider, blockedStartPos, new ITraversingVisitor() {
 			@Override

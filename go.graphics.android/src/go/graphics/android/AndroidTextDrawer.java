@@ -18,7 +18,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private static final int TEXTURE_WIDTH = 256;
 
 	private static AndroidTextDrawer[] instances =
-	        new AndroidTextDrawer[EFontSize.values().length];
+			new AndroidTextDrawer[EFontSize.values().length];
 
 	private final EFontSize size;
 	private final AndroidContext context;
@@ -30,33 +30,33 @@ public class AndroidTextDrawer implements TextDrawer {
 	private int lastUsedCount = 0;
 
 	private float[] texturepos = {
-	        // top left
-	        0,
-	        0,
-	        0,
-	        0,
-	        0,
+			// top left
+			0,
+			0,
+			0,
+			0,
+			0,
 
-	        // bottom left
-	        0,
-	        0,
-	        0,
-	        0,
-	        0,
+			// bottom left
+			0,
+			0,
+			0,
+			0,
+			0,
 
-	        // bottom right
-	        TEXTURE_WIDTH,
-	        0,
-	        0,
-	        1,
-	        0,
+			// bottom right
+			TEXTURE_WIDTH,
+			0,
+			0,
+			1,
+			0,
 
-	        // top right
-	        TEXTURE_WIDTH,
-	        0,
-	        0,
-	        1,
-	        0,
+			// top right
+			TEXTURE_WIDTH,
+			0,
+			0,
+			1,
+			0,
 	};
 	private int[] lastused;
 	private TextView renderer;
@@ -70,7 +70,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	public void renderCentered(float cx, float cy, String text) {
 		// TODO: we may want to optimize this.
 		drawString(cx - (float) getWidth(text) / 2, cy
-		        - (float) getHeight(text) / 2, text);
+				- (float) getHeight(text) / 2, text);
 	}
 
 	@Override
@@ -116,8 +116,8 @@ public class AndroidTextDrawer implements TextDrawer {
 
 		// render the new text to that line.
 		Bitmap bitmap =
-		        Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
-		                Bitmap.Config.ALPHA_8);
+				Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
+						Bitmap.Config.ALPHA_8);
 		Canvas canvas = new Canvas(bitmap);
 		renderer = new TextView(context.getAndroidContext());
 		renderer.layout(0, 0, TEXTURE_WIDTH, lineheight);
@@ -132,7 +132,7 @@ public class AndroidTextDrawer implements TextDrawer {
 		dst.rewind();
 
 		context.updateTextureAlpha(texture, 0, unnededline * lineheight,
-		        TEXTURE_WIDTH, lineheight, dst);
+				TEXTURE_WIDTH, lineheight, dst);
 
 		lastused[unnededline] = lastUsedCount++;
 		linestrings[unnededline] = string;
@@ -142,7 +142,7 @@ public class AndroidTextDrawer implements TextDrawer {
 	private void initialize() {
 		if (texture == 0) {
 			texture =
-			        context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+					context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
 			lineheight = (int) (size.getSize() * 1.3);
 			lines = TEXTURE_HEIGHT / lineheight;
 			linestrings = new String[lines];

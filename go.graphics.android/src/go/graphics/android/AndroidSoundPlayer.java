@@ -74,6 +74,6 @@ public class AndroidSoundPlayer implements SoundPlayer {
 
 	public void setPaused(boolean paused) {
 		this.paused = paused;
-    }
+	}
 
 }

@@ -5,5 +5,5 @@ public interface CircleEventManager {
 	void remove(CircleEvent falseCircle);
 
 	void add(CircleEvent circle);
-	
+
 }

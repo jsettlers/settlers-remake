@@ -70,7 +70,7 @@ public class BgControls implements IControls {
 
 	@Override
 	public void setDrawContext(ActionFireable actionFireable,
-	        MapDrawContext context) {
+			MapDrawContext context) {
 		this.context = context;
 		this.startTime = System.currentTimeMillis();
 	}

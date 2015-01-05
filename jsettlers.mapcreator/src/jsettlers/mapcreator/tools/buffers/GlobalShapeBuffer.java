@@ -12,7 +12,7 @@ public class GlobalShapeBuffer {
 	}
 
 	public byte[][] getArray(int usedminx, int usedminy, int usedmaxx,
-	        int usedmaxy) {
+			int usedmaxy) {
 		if (usedminy < 0) {
 			usedminy = 0;
 		}

@@ -19,8 +19,7 @@ public class JoinGameProgress extends ProgressFragment implements IJoiningGameLi
 
 	@Override
 	public void joinProgressChanged(EProgressState state, float progress) {
-		setProgressState(state, progress)
-		;
+		setProgressState(state, progress);
 	}
 
 	@Override

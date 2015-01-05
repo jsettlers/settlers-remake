@@ -23,7 +23,7 @@ import jsettlers.logic.map.random.landscape.SiteLandscapeCriterium;
 public class PlayerBaseInstruction extends LandInstruction {
 
 	private static Hashtable<String, String> defaults =
-	        new Hashtable<String, String>();
+			new Hashtable<String, String>();
 
 	static {
 		defaults.put("dx", "0");
@@ -42,28 +42,28 @@ public class PlayerBaseInstruction extends LandInstruction {
 
 	@Override
 	public void execute(LandscapeMesh landscape, PlayerStart[] starts,
-	        Random random) {
+			Random random) {
 		MeshLandscapeType type =
-		        MeshLandscapeType.parse(getParameter("type", random));
+				MeshLandscapeType.parse(getParameter("type", random));
 		boolean fix = getParameter("fix", random).equals("true");
 		MeshLandscapeType onLandscape =
-		        MeshLandscapeType.parse(getParameter("on", random), null);
+				MeshLandscapeType.parse(getParameter("on", random), null);
 
 		for (PlayerStart start : starts) {
 			Point2D point = new Point2D(start.x, start.y);
 
 			SiteCriterium criterium =
-			        new SiteDistanceCriterium(point, getParameter("distance",
-			                random));
+					new SiteDistanceCriterium(point, getParameter("distance",
+							random));
 			if (onLandscape != null) {
 				criterium =
-				        new AndSiteCriterium(criterium,
-				                new SiteBorderCriterium(new SiteLandscapeCriterium(onLandscape)));
+						new AndSiteCriterium(criterium,
+								new SiteBorderCriterium(new SiteLandscapeCriterium(onLandscape)));
 			}
 
 			MeshSite[] sites =
-			        landscape.getSitesWithCriterium(criterium, random,
-			                getIntParameter("size", random));
+					landscape.getSitesWithCriterium(criterium, random,
+							getIntParameter("size", random));
 			for (MeshSite site : sites) {
 				site.setLandscape(type, HillPolicy.FLAT);
 				site.setFixed(fix);

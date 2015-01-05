@@ -14,7 +14,7 @@ public class PlaceStackTool extends PlaceMapObjectTool {
 		super(new StackObject(type, count));
 		this.type = type;
 		this.count = count;
-    }
+	}
 
 	@Override
 	public String getName() {

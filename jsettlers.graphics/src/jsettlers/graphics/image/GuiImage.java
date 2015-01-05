@@ -2,9 +2,9 @@ package jsettlers.graphics.image;
 
 import jsettlers.graphics.reader.ImageMetadata;
 
-
 /**
  * This isa gui image.
+ * 
  * @author michael
  *
  */
@@ -12,7 +12,9 @@ public class GuiImage extends SingleImage {
 
 	/**
 	 * Creates a new GUI image.
-	 * @param provider The provider.
+	 * 
+	 * @param provider
+	 *            The provider.
 	 */
 	public GuiImage(ImageMetadata metadata, short[] data) {
 		super(metadata, data);

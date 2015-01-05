@@ -10,10 +10,10 @@ public class FocusAction extends Action {
 	public FocusAction(UIInput input) {
 		super(EActionType.FOCUS);
 		this.input = input;
-    }
-	
+	}
+
 	public UIInput getInput() {
-	    return input;
-    }
+		return input;
+	}
 
 }

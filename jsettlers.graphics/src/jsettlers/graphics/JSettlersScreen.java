@@ -20,8 +20,7 @@ import jsettlers.graphics.utils.UIInput;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
- * This is the main jsettlers screen manager. It manages the content
- * {@link Region}. TODO: JOGLPanel had the right timers for redraw.
+ * This is the main jsettlers screen manager. It manages the content {@link Region}. TODO: JOGLPanel had the right timers for redraw.
  * 
  * @author michael
  */
@@ -35,7 +34,7 @@ public class JSettlersScreen implements IContentSetable {
 	private UIInput focusedInput;
 
 	public JSettlersScreen(IStartScreen baseConnector, SoundPlayer soundPlayer,
-	        String revision) {
+			String revision) {
 		super();
 		this.baseConnector = baseConnector;
 		this.soundPlayer = soundPlayer;
@@ -76,7 +75,7 @@ public class JSettlersScreen implements IContentSetable {
 			if (action instanceof ExecutableAction) {
 				((ExecutableAction) action).execute();
 			}
-			
+
 			if (action instanceof FocusAction) {
 				focusedInput = ((FocusAction) action).getInput();
 			} else {
@@ -91,7 +90,7 @@ public class JSettlersScreen implements IContentSetable {
 			if (event instanceof GOCommandEvent) {
 				event.setHandler(commandHandler);
 			} else if (event instanceof GOKeyEvent && focusedInput != null) {
-		        focusedInput.handleEvent((GOKeyEvent) event);
+				focusedInput.handleEvent((GOKeyEvent) event);
 			}
 		}
 

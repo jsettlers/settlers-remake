@@ -34,16 +34,16 @@ public class ImageIndexFile {
 
 	private void load() throws IOException {
 		final DataInputStream in =
-		        new DataInputStream(new BufferedInputStream(
-		                ResourceManager.getFile("images/texturemap")));
+				new DataInputStream(new BufferedInputStream(
+						ResourceManager.getFile("images/texturemap")));
 
 		ArrayList<ImageIndexTexture> textures =
-		        new ArrayList<ImageIndexTexture>();
+				new ArrayList<ImageIndexTexture>();
 
 		byte[] header = new byte[4];
 		in.read(header);
 		if (header[0] != 'T' || header[1] != 'E' || header[2] != 'X'
-		        || header[3] != '1') {
+				|| header[3] != '1') {
 			throw new IOException("Texture file has wrong version.");
 		}
 
@@ -64,14 +64,14 @@ public class ImageIndexFile {
 
 			while (textureFileNumber >= textures.size()) {
 				InputStream inputStream =
-				        ResourceManager.getFile("images/" + textures.size());
+						ResourceManager.getFile("images/" + textures.size());
 				textures.add(new ImageIndexTexture(inputStream));
 			}
 
 			images[i] =
-			        new ImageIndexImage(textures.get(textureFileNumber),
-			                offsetX, offsetY, width, height, umin, vmin, umax,
-			                vmax);
+					new ImageIndexImage(textures.get(textureFileNumber),
+							offsetX, offsetY, width, height, umin, vmin, umax,
+							vmax);
 		}
 	}
 }

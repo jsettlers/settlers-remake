@@ -20,12 +20,12 @@ public class ChatList extends UIList<String> implements IChatMessageListener {
 
 	public ChatList() {
 		super(Collections.<String> emptyList(),
-		        new ListItemGenerator<String>() {
-			        @Override
-			        public UIListItem getItem(String item) {
-				        return new StringItem(item);
-			        }
-		        }, .05f);
+				new ListItemGenerator<String>() {
+					@Override
+					public UIListItem getItem(String item) {
+						return new StringItem(item);
+					}
+				}, .05f);
 	}
 
 	private void addChatText(String text) {
@@ -40,7 +40,7 @@ public class ChatList extends UIList<String> implements IChatMessageListener {
 
 	@Override
 	public void systemMessageReceived(IMultiplayerPlayer player,
-	        ENetworkMessage message) {
+			ENetworkMessage message) {
 		String playerName = player != null ? player.getName() : "";
 		addChatText(playerName + ": " + message);
 	}

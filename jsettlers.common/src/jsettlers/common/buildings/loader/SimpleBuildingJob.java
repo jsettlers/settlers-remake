@@ -186,7 +186,7 @@ public class SimpleBuildingJob implements IBuildingJob {
 	}
 
 	@Override
-    public String getName() {
-	    return name;
-    }
+	public String getName() {
+		return name;
+	}
 }

@@ -18,8 +18,7 @@ public enum EBuildingJobType {
 	WAIT,
 
 	/**
-	 * Lets the settler walk in a given direction. The settler may wait. The
-	 * settler may walk on blocked tiles with this command.
+	 * Lets the settler walk in a given direction. The settler may wait. The settler may walk on blocked tiles with this command.
 	 * <p>
 	 * Parameter: direction
 	 * <p>
@@ -30,8 +29,7 @@ public enum EBuildingJobType {
 	WALK,
 
 	/**
-	 * Shows the settler at a given position. The settler just appears there.
-	 * The position may be blocked.
+	 * Shows the settler at a given position. The settler just appears there. The position may be blocked.
 	 * <p>
 	 * Parameter: dx, dy
 	 * <p>
@@ -64,8 +62,7 @@ public enum EBuildingJobType {
 	SET_MATERIAL,
 
 	/**
-	 * Picks up the specified material. Does not change the material property
-	 * of the settler
+	 * Picks up the specified material. Does not change the material property of the settler
 	 * <p>
 	 * Parameter: material
 	 * <p>
@@ -78,8 +75,8 @@ public enum EBuildingJobType {
 	/**
 	 * Lets the settler drop the given material to the stack at the position.
 	 * <p>
-	 * The given material that is dropped is independent from the material the
-	 * settler is having, and the material property is not changed by this call.
+	 * The given material that is dropped is independent from the material the settler is having, and the material property is not changed by this
+	 * call.
 	 * <p>
 	 * Parameter: material
 	 * <p>
@@ -90,8 +87,7 @@ public enum EBuildingJobType {
 	DROP,
 
 	/**
-	 * Searches a given search type. The search center is given by the working
-	 * center of the building.
+	 * Searches a given search type. The search center is given by the working center of the building.
 	 * <p>
 	 * Parameters: <br>
 	 * search (type to be searched @see {@link ESearchType}), <br>
@@ -103,8 +99,7 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Fail: If the searched thing was not found.
 	 * <p>
-	 * XXX: what if an error occurs during walking there? (e.g. land ownership
-	 * changed, object removed, ...)
+	 * XXX: what if an error occurs during walking there? (e.g. land ownership changed, object removed, ...)
 	 * 
 	 * @see ESearchType
 	 * @see EBuildingType#getWorkradius()
@@ -112,8 +107,7 @@ public enum EBuildingJobType {
 	PRE_SEARCH,
 
 	/**
-	 * Searches a given search type with the InAreaFinder. The search center is
-	 * given by the working center of the building.
+	 * Searches a given search type with the InAreaFinder. The search center is given by the working center of the building.
 	 * <p>
 	 * Parameters: <br>
 	 * search (type to be searched @see {@link ESearchType}), <br>
@@ -131,8 +125,7 @@ public enum EBuildingJobType {
 	PRE_SEARCH_IN_AREA,
 
 	/**
-	 * Follows the pre-calculated path that has been searched with
-	 * {@link #PRE_SEARCH} or {@link #PRE_SEARCH_IN_AREA}
+	 * Follows the pre-calculated path that has been searched with {@link #PRE_SEARCH} or {@link #PRE_SEARCH_IN_AREA}
 	 */
 	FOLLOW_SEARCHED,
 
@@ -201,20 +194,17 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Success: The material may be placed at the given position
 	 * <p>
-	 * Fail: There is a full stack at that position, a wrong stack or it is
-	 * blocked otherwise.
+	 * Fail: There is a full stack at that position, a wrong stack or it is blocked otherwise.
 	 */
 	NOT_FULL,
 
 	/**
-	 * Looks at the water that has been searched. TODO: make it work for other
-	 * stuff, like Stones.
+	 * Looks at the water that has been searched. TODO: make it work for other stuff, like Stones.
 	 */
 	LOOK_AT_SEARCHED,
 
 	/**
-	 * If the settler should be productive, this method succeds, it fails
-	 * otherwise.
+	 * If the settler should be productive, this method succeds, it fails otherwise.
 	 */
 	IS_PRODUCTIVE,
 
@@ -235,8 +225,8 @@ public enum EBuildingJobType {
 	/**
 	 * Building starts working, e.g. for a mill.
 	 */
-	START_WORKING, 
-	
+	START_WORKING,
+
 	/**
 	 * Building stops working, e.g. for a mill.
 	 */
@@ -282,8 +272,7 @@ public enum EBuildingJobType {
 	POP_WEAPON,
 
 	/**
-	 * Drops a tool/weapon that was requested with {@link #POP_TOOL} or
-	 * {@link #POP_WEAPON}
+	 * Drops a tool/weapon that was requested with {@link #POP_TOOL} or {@link #POP_WEAPON}
 	 */
 	DROP_POPPED,
 }

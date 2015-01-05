@@ -16,7 +16,7 @@ import jsettlers.graphics.reader.ImageMetadata;
  */
 public class NullImage extends SingleImage {
 	private static final short[] NULL_DATA = new short[] {
-		0
+			0
 	};
 	private static final int HALFSIZE = 3;
 	private static NullImage instance;
@@ -53,18 +53,18 @@ public class NullImage extends SingleImage {
 
 		gl.color(1, 0, 0, 1);
 		gl.drawLine(new float[] {
-		        -HALFSIZE,
-		        -HALFSIZE,
-		        0,
-		        +HALFSIZE,
-		        -HALFSIZE,
-		        0,
-		        +HALFSIZE,
-		        +HALFSIZE,
-		        0,
-		        -HALFSIZE,
-		        +HALFSIZE,
-		        0,
+				-HALFSIZE,
+				-HALFSIZE,
+				0,
+				+HALFSIZE,
+				-HALFSIZE,
+				0,
+				+HALFSIZE,
+				+HALFSIZE,
+				0,
+				-HALFSIZE,
+				+HALFSIZE,
+				0,
 		}, true);
 	}
 

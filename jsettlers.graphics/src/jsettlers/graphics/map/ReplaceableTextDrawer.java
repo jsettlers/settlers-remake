@@ -6,8 +6,7 @@ import go.graphics.text.TextDrawer;
 import jsettlers.graphics.font.ITextDrawerFactory;
 
 /**
- * This is a text drawer that uses the text drawer provided by opengl or the
- * provided text drawer if one is given.
+ * This is a text drawer that uses the text drawer provided by opengl or the provided text drawer if one is given.
  * 
  * @author michael
  */
@@ -35,5 +34,5 @@ public class ReplaceableTextDrawer implements ITextDrawerFactory {
 	public TextDrawer getTextDrawer(GLDrawContext gl, EFontSize size) {
 		return drawerFactory != null ? drawerFactory.getTextDrawer(gl, size) : gl.getTextDrawer(size);
 	}
-	
+
 }

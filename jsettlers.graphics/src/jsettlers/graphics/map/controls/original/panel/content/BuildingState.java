@@ -6,8 +6,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EPriority;
 
 /**
- * This class saves the state parts of the building that is displayed by the
- * gui, to detect changes
+ * This class saves the state parts of the building that is displayed by the gui, to detect changes
  * 
  * @author michael
  */
@@ -34,8 +33,8 @@ public class BuildingState {
 
 	public boolean isStillInState(IBuilding building) {
 		return building.getPriority() == priority
-		        && Arrays.equals(supportedPriorities,
-		                building.getSupportedPriorities());
+				&& Arrays.equals(supportedPriorities,
+						building.getSupportedPriorities());
 	}
 
 }

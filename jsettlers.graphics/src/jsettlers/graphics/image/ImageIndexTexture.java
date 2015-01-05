@@ -28,13 +28,13 @@ public final class ImageIndexTexture {
 	private void loadTexture(GLDrawContext gl) {
 		try {
 			final DataInputStream in =
-			        new DataInputStream(new BufferedInputStream(
-			                file));
+					new DataInputStream(new BufferedInputStream(
+							file));
 			int i = in.available() / 2;
 			final int height = nextLowerPOT(Math.sqrt(i));
 			final int width = nextLowerPOT(i / height);
 
-			//TODO: Use better buffering.
+			// TODO: Use better buffering.
 			final ShortBuffer data = ByteBuffer.allocateDirect(width * height * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
 			while (data.hasRemaining()) {
 				data.put(in.readShort());

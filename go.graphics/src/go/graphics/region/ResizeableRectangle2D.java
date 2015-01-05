@@ -5,7 +5,7 @@ public class ResizeableRectangle2D {
 	public double maxx;
 	public double miny;
 	public double maxy;
-	
+
 	public ResizeableRectangle2D(double minx, double maxx, double miny, double maxy) {
 		this.minx = minx;
 		this.maxx = maxx;
@@ -16,7 +16,7 @@ public class ResizeableRectangle2D {
 	public double getHeight() {
 		return maxy - miny;
 	}
-	
+
 	public double getWidth() {
 		return maxy - miny;
 	}

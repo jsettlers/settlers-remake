@@ -11,14 +11,12 @@ public class AndroidMapListFactory implements IMapListFactory {
 
 	private final AssetManager manager;
 	private final File writeableDir;
-	
 
 	public AndroidMapListFactory(AssetManager manager, File writeableDir) {
 		super();
 		this.manager = manager;
 		this.writeableDir = writeableDir;
 	}
-
 
 	@Override
 	public MapList getMapList() {

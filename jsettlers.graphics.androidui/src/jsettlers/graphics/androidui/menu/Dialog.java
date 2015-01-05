@@ -17,7 +17,7 @@ public abstract class Dialog extends AndroidMenu {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.dialog, container, false);
 	}
 

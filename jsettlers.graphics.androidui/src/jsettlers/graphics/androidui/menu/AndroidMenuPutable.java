@@ -36,8 +36,8 @@ public class AndroidMenuPutable implements ActionFireable {
 		this.context = context;
 		this.fragmentHandler = fragmentHandler;
 		this.layoutInflater =
-		        (LayoutInflater) context
-		                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				(LayoutInflater) context
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	public LayoutInflater getLayoutInflater() {
@@ -60,7 +60,7 @@ public class AndroidMenuPutable implements ActionFireable {
 	}
 
 	public void setContextActionListener(
-	        ContextActionListener contextActionListener) {
+			ContextActionListener contextActionListener) {
 		this.contextActionListener = contextActionListener;
 	}
 
@@ -106,7 +106,7 @@ public class AndroidMenuPutable implements ActionFireable {
 	public AndroidMenu getActiveMenu() {
 		synchronized (activeMenuMutex) {
 			return activeMenu.isEmpty() ? null : activeMenu.get(activeMenu
-			        .size() - 1);
+					.size() - 1);
 		}
 	}
 }

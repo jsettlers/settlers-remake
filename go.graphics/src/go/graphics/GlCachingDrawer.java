@@ -9,7 +9,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 	private static final int GL_BUFFER_TRIANGLES = 100;
 
 	private static final byte[] WHITE = new byte[] {
-	        (byte) 255, (byte) 255, (byte) 255, (byte) 255
+			(byte) 255, (byte) 255, (byte) 255, (byte) 255
 	};
 
 	private static final byte[] activeColor = WHITE;
@@ -27,7 +27,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 
 		protected GLBuffer() {
 			byteBuffer =
-			        ByteBuffer.allocateDirect(GL_BUFFER_TRIANGLES * TRIAMGLE_LENGTH);
+					ByteBuffer.allocateDirect(GL_BUFFER_TRIANGLES * TRIAMGLE_LENGTH);
 			byteBuffer.order(ByteOrder.nativeOrder());
 			reuseableBuffer = byteBuffer.asFloatBuffer();
 			reuseableBufferDuplicate = reuseableBuffer.duplicate();
@@ -74,7 +74,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 			reuseableBuffer.rewind();
 			reuseableBufferDuplicate.rewind();
 			drawTriangles(reuseableBuffer, reuseableBufferDuplicate,
-			        currentTriangles);
+					currentTriangles);
 			byteBuffer.rewind();
 			currentTriangles = 0;
 		}
@@ -127,7 +127,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 	}
 
 	protected abstract void drawTriangles(FloatBuffer buffer,
-	        FloatBuffer bufferDuplicate, int tris);
+			FloatBuffer bufferDuplicate, int tris);
 
 	protected abstract void setTexture(int index);
 

@@ -8,7 +8,7 @@ import go.graphics.UIPoint;
  * @author michael
  */
 public class GOHoverEventProxy extends GOEventProxy<GOHoverEvent> implements
-        GOHoverEvent {
+		GOHoverEvent {
 
 	private final UIPoint displacement;
 
@@ -27,6 +27,6 @@ public class GOHoverEventProxy extends GOEventProxy<GOHoverEvent> implements
 	public UIPoint getHoverPosition() {
 		UIPoint real = (this.baseEvent).getHoverPosition();
 		return new UIPoint(real.getX() - this.displacement.getX(), real.getY()
-		        - this.displacement.getY());
+				- this.displacement.getY());
 	}
 }

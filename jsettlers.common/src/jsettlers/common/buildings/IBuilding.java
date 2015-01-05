@@ -35,8 +35,7 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	EPriority getPriority();
 
 	/**
-	 * Gets the priorities supported for this building. They may change over time.
-	 * Most buildings at least support "STOPPED" and "NORMAL"
+	 * Gets the priorities supported for this building. They may change over time. Most buildings at least support "STOPPED" and "NORMAL"
 	 */
 	EPriority[] getSupportedPriorities();
 

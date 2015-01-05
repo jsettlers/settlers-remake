@@ -27,28 +27,34 @@ public final class ArraySequence<T extends Image> implements Iterable<T>, Sequen
 		this.images = images;
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.sequence.Sequence#length()
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.graphics.sequence.Sequence#length()
+	 */
 	@Override
-    public int length() {
+	public int length() {
 		return this.images.length;
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.sequence.Sequence#getImage(int)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.graphics.sequence.Sequence#getImage(int)
+	 */
 	@Override
-    public T getImage(int index) {
-			return this.images[index];
-		
+	public T getImage(int index) {
+		return this.images[index];
+
 	}
 
-	/* (non-Javadoc)
-     * @see jsettlers.graphics.sequence.Sequence#getImageSafe(int)
-     */
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jsettlers.graphics.sequence.Sequence#getImageSafe(int)
+	 */
 	@Override
-    public Image getImageSafe(int index) {
+	public Image getImageSafe(int index) {
 		if (index >= 0 && index < this.images.length) {
 			return this.images[index];
 		} else {

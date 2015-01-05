@@ -18,8 +18,7 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 
 /**
- * This class lets you generate a texture that can be understood by the graphics
- * module. It generates the .texture file.
+ * This class lets you generate a texture that can be understood by the graphics module. It generates the .texture file.
  * 
  * @author michael
  */

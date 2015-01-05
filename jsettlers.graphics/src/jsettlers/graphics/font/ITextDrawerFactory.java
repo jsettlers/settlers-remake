@@ -6,6 +6,7 @@ import go.graphics.text.TextDrawer;
 
 /**
  * Classes of this interface let you create a text drawer.
+ * 
  * @author michael
  *
  */

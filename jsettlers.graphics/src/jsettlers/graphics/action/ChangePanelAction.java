@@ -9,10 +9,10 @@ public class ChangePanelAction extends Action {
 	public ChangePanelAction(EContentType content) {
 		super(EActionType.CHANGE_PANEL);
 		this.content = content;
-    }
+	}
 
 	public EContentType getContent() {
-	    return content;
-    }
+		return content;
+	}
 
 }

@@ -9,7 +9,7 @@ import go.graphics.event.mouse.GOEventProxy;
  * @author michael
  */
 public class GOCommandEventProxy extends GOEventProxy<GOCommandEvent> implements
-        GOCommandEvent {
+		GOCommandEvent {
 
 	private final UIPoint displacement;
 

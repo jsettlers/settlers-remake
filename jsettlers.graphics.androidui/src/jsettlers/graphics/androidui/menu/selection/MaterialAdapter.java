@@ -44,7 +44,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 	}
 
 	private final OnSeekBarChangeListener changeListener =
-	        new MaterialChanged();
+			new MaterialChanged();
 
 	private final Context context;
 	private final IMaterialsDistributionSettings distributionSettings;
@@ -55,7 +55,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 	private final DistributionListener listener;
 
 	public MaterialAdapter(Context context,
-	        IMaterialsDistributionSettings distributionSettings, DistributionListener listener) {
+			IMaterialsDistributionSettings distributionSettings, DistributionListener listener) {
 		this.distributionSettings = distributionSettings;
 		this.context = context;
 		this.listener = listener;
@@ -91,21 +91,21 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 		View view;
 		if (arg1 == null) {
 			LayoutInflater inflater =
-			        (LayoutInflater) context
-			                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+					(LayoutInflater) context
+							.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 			view = inflater.inflate(R.layout.materialitem, arg2, false);
 		} else {
 			view = arg1;
 		}
 		ImageView image =
-		        ((ImageView) view.findViewById(R.id.materialitem_image));
+				((ImageView) view.findViewById(R.id.materialitem_image));
 		image.setImageResource(Graphics.BUILDING_IMAGE_MAP[type.ordinal()]);
 
 		SeekBar bar = (SeekBar) view.findViewById(R.id.materialitem_priority);
 		bar.setEnabled(getCount() > 1);
 
 		int setTo =
-		        (int) (distributionSettings.getProbablity(index) * scale * 100);
+				(int) (distributionSettings.getProbablity(index) * scale * 100);
 		bar.setProgress(setTo);
 		bar.setOnSeekBarChangeListener(changeListener);
 		for (int i = 0; i < bars.length; i++) {
@@ -123,7 +123,7 @@ public class MaterialAdapter extends BaseAdapter implements ListAdapter {
 		for (int index = 0; index < bars.length; index++) {
 			if (bars[index] == null) {
 				distribution[index] =
-				        distributionSettings.getProbablity(index) * scale;
+						distributionSettings.getProbablity(index) * scale;
 			} else {
 				distribution[index] = bars[index].getProgress() / 100f;
 			}

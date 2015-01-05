@@ -41,8 +41,7 @@ public class ResourceManager {
 	}
 
 	/**
-	 * Gets a directory where all the content that is being created should be
-	 * saved.
+	 * Gets a directory where all the content that is being created should be saved.
 	 * 
 	 * @return The directory.
 	 */
@@ -60,5 +59,5 @@ public class ResourceManager {
 		} else {
 			return new File("");
 		}
-    }
+	}
 }

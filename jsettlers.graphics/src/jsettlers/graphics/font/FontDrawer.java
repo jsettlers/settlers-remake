@@ -18,7 +18,7 @@ public class FontDrawer implements TextDrawer {
 	private final DrawBuffer drawBuffer;
 
 	private static final String chars =
-	        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.?,„“()+-%_ÄÖÜ ";
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!.?,„“()+-%_ÄÖÜ ";
 	private static final int CHARS_PER_ROW = 16;
 	private static final int CHARS_PER_COLUMN = 16;
 	private final GLDrawContext gl;
@@ -32,7 +32,7 @@ public class FontDrawer implements TextDrawer {
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
 		drawString(cx - (float) getWidth(text) / 2, cy
-		        - (float) getHeight(text) / 2, text);
+				- (float) getHeight(text) / 2, text);
 	}
 
 	private int getCharIndex(char c) {
@@ -51,25 +51,23 @@ public class FontDrawer implements TextDrawer {
 
 		for (int i = 0; i < string.length(); i++) {
 			int idx = getCharIndex(string.charAt(i));
-			/*float w = getWidth(idx);
-			float right = cursorX + w;
-			float umin = (float) (idx & (CHARS_PER_ROW - 1)) / CHARS_PER_ROW;
-			float umax = umin + (w / size.getSize() / CHARS_PER_ROW);
-			float vmin = (float) (idx / CHARS_PER_ROW) / CHARS_PER_COLUMN;
-			float vmax = vmin + (1.0f / CHARS_PER_COLUMN);
+			/*
+			 * float w = getWidth(idx); float right = cursorX + w; float umin = (float) (idx & (CHARS_PER_ROW - 1)) / CHARS_PER_ROW; float umax = umin
+			 * + (w / size.getSize() / CHARS_PER_ROW); float vmin = (float) (idx / CHARS_PER_ROW) / CHARS_PER_COLUMN; float vmax = vmin + (1.0f /
+			 * CHARS_PER_COLUMN);
+			 * 
+			 * drawBuffer.addImage(textureid, cursorX, y, right, top, umin, vmax, umax, vmin, 0xffffffff);
+			 */
 
-			drawBuffer.addImage(textureid, cursorX, y, right, top, umin, vmax,
-			        umax, vmin, 0xffffffff);*/
-			
-			//TODO: Chars, color
+			// TODO: Chars, color
 			DirectImageLink texture = new DirectImageLink("font.0");
-			Image image= ImageProvider.getInstance().getImage(texture);
-			
+			Image image = ImageProvider.getInstance().getImage(texture);
+
 			image.drawAt(gl, drawBuffer, cursorX, top, 0xffffffff);
 			image.drawAt(gl, drawBuffer, 0, 0, 0xffffffff);
-			cursorX+= image.getWidth();
+			cursorX += image.getWidth();
 		}
-		
+
 		drawBuffer.flush();
 		System.out.println("Drawed " + string + " chars");
 	}

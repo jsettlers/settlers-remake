@@ -24,8 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * This class represents an area. This is a rectangular part of the screen that
- * consists of multiple regions.
+ * This class represents an area. This is a rectangular part of the screen that consists of multiple regions.
  * 
  * @author michael
  */
@@ -41,7 +40,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	private final ArrayList<Region> regions = new ArrayList<Region>();
 
 	private final LinkedList<RedrawListener> redrawListeners =
-	        new LinkedList<RedrawListener>();
+			new LinkedList<RedrawListener>();
 
 	private ArrayList<PositionedRegion> regionPositions;
 
@@ -92,8 +91,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	/**
 	 * Draws the area at the given gl context.
 	 * <p>
-	 * it assumes that the transformation is set so that the lower left corner
-	 * is (0,0).
+	 * it assumes that the transformation is set so that the lower left corner is (0,0).
 	 * 
 	 * @param gl2
 	 */
@@ -118,7 +116,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 		gl2.glTranslatef(position.getLeft(), position.getBottom(), 0);
 
 		position.getRegion().drawRegion(gl2, position.getRight() - position.getLeft(),
-		        position.getTop() - position.getBottom());
+				position.getTop() - position.getBottom());
 
 		gl2.glPopMatrix();
 	}
@@ -144,83 +142,82 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 				int size = r.getSize() + BORDER_SIZE;
 				switch (r.getPosition()) {
-					case Region.POSITION_TOP:
-						if (top - bottom < size) {
-							size = top - bottom;
-						}
+				case Region.POSITION_TOP:
+					if (top - bottom < size) {
+						size = top - bottom;
+					}
 
-						position =
-						        new PositionedRegion(r, top, top - size, left,
-						                right);
+					position =
+							new PositionedRegion(r, top, top - size, left,
+									right);
 
-						top -= size;
-						break;
+					top -= size;
+					break;
 
-					case Region.POSITION_BOTTOM:
-						if (top - bottom < size) {
-							size = top - bottom;
-						}
+				case Region.POSITION_BOTTOM:
+					if (top - bottom < size) {
+						size = top - bottom;
+					}
 
-						position =
-						        new PositionedRegion(r, size, 0, left, right);
+					position =
+							new PositionedRegion(r, size, 0, left, right);
 
-						bottom += size;
-						break;
+					bottom += size;
+					break;
 
-					case Region.POSITION_LEFT:
-						if (right - left < size) {
-							size = right - left;
-						}
+				case Region.POSITION_LEFT:
+					if (right - left < size) {
+						size = right - left;
+					}
 
-						position =
-						        new PositionedRegion(r, top, bottom, 0, size);
+					position =
+							new PositionedRegion(r, top, bottom, 0, size);
 
-						left += size;
-						break;
+					left += size;
+					break;
 
-					case Region.POSITION_RIGHT:
-						if (right - left < size) {
-							size = right - left;
-						}
+				case Region.POSITION_RIGHT:
+					if (right - left < size) {
+						size = right - left;
+					}
 
-						position =
-						        new PositionedRegion(r, top, bottom, right
-						                - size, right);
+					position =
+							new PositionedRegion(r, top, bottom, right
+									- size, right);
 
-						left += size;
-						break;
+					left += size;
+					break;
 
-					case Region.POSITION_CENTER:
-					default:
-						position =
-						        new PositionedRegion(r, top, bottom, left,
-						                right);
-						top = bottom; // break;
-						break;
+				case Region.POSITION_CENTER:
+				default:
+					position =
+							new PositionedRegion(r, top, bottom, left,
+									right);
+					top = bottom; // break;
+					break;
 				}
 			}
 			regionPositions.add(position);
 		}
 	}
 
-//	/**
-//	 * Draws a border for a region.
-//	 * 
-//	 * @param gl2
-//	 *            The context to draw on.
-//	 * @param position
-//	 *            The position oft the region to draw the border for.
-//	 */
-//	private void drawBorder(GLDrawContext gl2, Rectangle position) {
-//		gl2.color(.5f, .5f, .5f, 1);
-//
-//		gl2.fillQuad(position.x, position.y, position.x + position.width,
-//		        position.y + position.height);
-//	}
+	// /**
+	// * Draws a border for a region.
+	// *
+	// * @param gl2
+	// * The context to draw on.
+	// * @param position
+	// * The position oft the region to draw the border for.
+	// */
+	// private void drawBorder(GLDrawContext gl2, Rectangle position) {
+	// gl2.color(.5f, .5f, .5f, 1);
+	//
+	// gl2.fillQuad(position.x, position.y, position.x + position.width,
+	// position.y + position.height);
+	// }
 
 	/**
-	 * Handles a mouse event somewhere in the area and passes it on to the
-	 * region.
+	 * Handles a mouse event somewhere in the area and passes it on to the region.
 	 * 
 	 * @param event
 	 *            The event.
@@ -235,8 +232,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			if (pos.contentContains(event.getDrawPosition())) {
 				setActiveRegion(regionPositions.get(i).getRegion());
 				GODrawEventProxy displacedEvent =
-				        new GODrawEventProxy(event, new UIPoint(pos.getLeft(),
-				                pos.getBottom()));
+						new GODrawEventProxy(event, new UIPoint(pos.getLeft(),
+								pos.getBottom()));
 				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
 				break;
 			}
@@ -313,7 +310,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	}
 
 	private class SimpleHoverEvent extends AbstractMouseEvent implements
-	        GOHoverEvent {
+			GOHoverEvent {
 		public void finish() {
 			this.setPhase(PHASE_FINISHED);
 		}
@@ -347,8 +344,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			PositionedRegion pos = regionPositions.get(i);
 			if (pos.contentContains(event.getCommandPosition())) {
 				GOCommandEventProxy displacedEvent =
-				        new GOCommandEventProxy(event,
-				                new UIPoint(pos.getLeft(), pos.getBottom()));
+						new GOCommandEventProxy(event,
+								new UIPoint(pos.getLeft(), pos.getBottom()));
 				setActiveRegion(regionPositions.get(i).getRegion());
 				regionPositions.get(i).getRegion().handleEvent(displacedEvent);
 				break;
@@ -415,7 +412,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 		while (it.hasNext() && foundPosition == null) {
 			PositionedRegion currentPos = it.next();
 			if (currentPos != null
-			        && currentPos.contentContains(eventPosition)) {
+					&& currentPos.contentContains(eventPosition)) {
 				foundPosition = currentPos;
 			}
 		}

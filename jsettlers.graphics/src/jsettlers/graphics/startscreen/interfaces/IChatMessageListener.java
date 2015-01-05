@@ -18,17 +18,15 @@ public interface IChatMessageListener {
 	void chatMessageReceived(String authorId, String message);
 
 	/**
-	 * This method is called when a predefined message has been issued by the
-	 * server.
+	 * This method is called when a predefined message has been issued by the server.
 	 * 
 	 * @param author
-	 *            The player connected to the message (for example the player
-	 *            that left).<br>
+	 *            The player connected to the message (for example the player that left).<br>
 	 *            Or null, if the message is player-independent.
 	 * @param message
 	 *            The predefined message that has been received.
 	 */
 	void systemMessageReceived(IMultiplayerPlayer author,
-	        ENetworkMessage message);
+			ENetworkMessage message);
 
 }

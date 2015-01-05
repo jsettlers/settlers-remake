@@ -22,16 +22,16 @@ import jsettlers.logic.map.random.instructions.MetaInstruction;
  */
 public class RandomMapFile {
 	private static final Pattern HEAD_LINE = Pattern
-	        .compile("\\[(\\w+)\\]\\s*");
+			.compile("\\[(\\w+)\\]\\s*");
 	private static final Pattern PARAM_LINE = Pattern
-	        .compile("\\s*(\\w+)\\s*=\\s*(.+)");
+			.compile("\\s*(\\w+)\\s*=\\s*(.+)");
 	private List<GenerationInstruction> instructions =
-	        new ArrayList<GenerationInstruction>();
+			new ArrayList<GenerationInstruction>();
 
 	private RandomMapFile(InputStream stream) throws MapLoadException {
 		try {
 			LineNumberReader reader =
-			        new LineNumberReader(new InputStreamReader(stream));
+					new LineNumberReader(new InputStreamReader(stream));
 			readNextSection(reader);
 		} catch (IOException e) {
 			throw new MapLoadException("Error during map creation", e);
@@ -60,7 +60,7 @@ public class RandomMapFile {
 				currentInstruction.setParameter(key, value);
 			} else {
 				System.err.println("Random map generation definition:\n"
-				        + "Syntax error in line " + reader.getLineNumber());
+						+ "Syntax error in line " + reader.getLineNumber());
 			}
 
 		}

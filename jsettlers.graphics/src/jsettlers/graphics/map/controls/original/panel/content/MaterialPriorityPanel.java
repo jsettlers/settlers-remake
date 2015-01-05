@@ -21,8 +21,7 @@ import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
- * This panel lets the user select the priorities in which the materials should
- * be transported by settlers.
+ * This panel lets the user select the priorities in which the materials should be transported by settlers.
  * 
  * @author michael
  */
@@ -41,20 +40,20 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		}
 
 	}
-	
+
 	private class ReorderButton extends Button {
 
 		private final int add;
 
 		public ReorderButton(int add, OriginalImageLink image,
-                OriginalImageLink active, String description) {
-	        super(null, image, active, description);
+				OriginalImageLink active, String description) {
+			super(null, image, active, description);
 			this.add = add;
-        }
-		
+		}
+
 		@Override
 		public Action getAction() {
-		    return createChangeorderAction(add);
+			return createChangeorderAction(add);
 		}
 	}
 
@@ -64,13 +63,13 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	private static final float RELATIVE_BUTTONWIDTH = 1f / (COLUMNS + 2);
 
 	private static final OriginalImageLink ALL_UP_IMAGE =
-	        new OriginalImageLink(EImageLinkType.GUI, 3, 219, 0);
+			new OriginalImageLink(EImageLinkType.GUI, 3, 219, 0);
 	private static final OriginalImageLink ALL_DOWN_IMAGE =
-	        new OriginalImageLink(EImageLinkType.GUI, 3, 222, 0);
+			new OriginalImageLink(EImageLinkType.GUI, 3, 222, 0);
 	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 225, 0);
+			EImageLinkType.GUI, 3, 225, 0);
 	private static final OriginalImageLink DOWN_IMAGE = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 228, 0);
+			EImageLinkType.GUI, 3, 228, 0);
 
 	private static final float ROWHEIGHT = .1f;
 
@@ -80,9 +79,9 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	 * They are indexed by slot.
 	 */
 	private final float[] xpoints =
-	        new float[EMaterialType.NUMBER_OF_MATERIALS];
+			new float[EMaterialType.NUMBER_OF_MATERIALS];
 	private final float[] ypoints =
-	        new float[EMaterialType.NUMBER_OF_MATERIALS];
+			new float[EMaterialType.NUMBER_OF_MATERIALS];
 
 	private EMaterialType[] order = new EMaterialType[0];
 
@@ -90,7 +89,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	 * This is a mapping: {@link EMaterialType} -> label position
 	 */
 	private final AnimateablePosition[] positions =
-	        new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
+			new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
 
 	private EMaterialType selected = null;
 	private ShortPoint2D currentPos;
@@ -106,13 +105,13 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		updateDisplayedData();
 
 		addChild(new ReorderButton(-1000, ALL_UP_IMAGE,
-		        ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
+				ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
 		addChild(new ReorderButton((-1), UP_IMAGE, UP_IMAGE,
-		        "one up"), .6f, .1f, .75f, .18f);
+				"one up"), .6f, .1f, .75f, .18f);
 		addChild(new ReorderButton((1), DOWN_IMAGE, DOWN_IMAGE,
-		        "one down"), .45f, .1f, .6f, .18f);
+				"one down"), .45f, .1f, .6f, .18f);
 		addChild(new ReorderButton((1000), ALL_DOWN_IMAGE,
-		        ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
+				ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
 	}
 
 	private void addRowPositions(int rowIndex, boolean descent) {
@@ -120,15 +119,16 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 			int index = rowIndex * COLUMNS + column;
 			if (index < xpoints.length) {
 				xpoints[index] =
-				        (float) (descent ? (column + 1) : (COLUMNS - column))
-				                / (COLUMNS + 2);
+						(float) (descent ? (column + 1) : (COLUMNS - column))
+								/ (COLUMNS + 2);
 				ypoints[index] =
-				        .8f - rowIndex * ROWHEIGHT - (float) column
-				                / (COLUMNS - 1)
-				                * (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
+						.8f - rowIndex * ROWHEIGHT - (float) column
+								/ (COLUMNS - 1)
+								* (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
 			}
 		}
 	}
+
 	@Override
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 		currentPos = pos;
@@ -136,7 +136,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		IPartitionSettings data = grid.getPartitionSettings(pos.x, pos.y);
 		if (data != null) {
 			order =
-			        new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+					new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 			for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
 				order[i] = data.getMaterialTypeForPrio(i);
 			}
@@ -144,7 +144,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		} else {
 			order = new EMaterialType[0];
 		}
-		//TODO: Only call if we left/entered partition.
+		// TODO: Only call if we left/entered partition.
 		updateDisplayedData();
 	}
 
@@ -153,7 +153,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		for (int i = 0; i < order.length; i++) {
 			EMaterialType material = order[i];
 			positions[material.ordinal] =
-			        new AnimateablePosition(xpoints[i], ypoints[i]);
+					new AnimateablePosition(xpoints[i], ypoints[i]);
 		}
 	}
 
@@ -168,13 +168,13 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	}
 
 	protected synchronized EMaterialType[] reorderSelected(int add) {
-        for (int i = 0; i < order.length; i++) {
+		for (int i = 0; i < order.length; i++) {
 			if (order[i] == selected) {
 				return reorder(selected, i + add);
 			}
 		}
-        return order;
-    }
+		return order;
+	}
 
 	private EMaterialType[] reorder(EMaterialType type, int desiredNewPosition) {
 		int oldPos = -1;
@@ -188,7 +188,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		}
 		EMaterialType[] newOrder = order.clone();
 		int newPos =
-		        Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
+				Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
 
 		if (newPos > oldPos) {
 			for (int i = oldPos; i < newPos; i++) {
@@ -205,14 +205,14 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 
 	private void setToPosition(EMaterialType type, int newindex) {
 		positions[type.ordinal()]
-		        .setPosition(xpoints[newindex], ypoints[newindex]);
+				.setPosition(xpoints[newindex], ypoints[newindex]);
 	}
 
 	@Override
 	public synchronized void drawAt(GLDrawContext gl) {
 		super.drawAt(gl);
 		gl.color(1, 1, 1, 1);
-		
+
 		updatePositions();
 
 		gl.glPushMatrix();
@@ -240,26 +240,26 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 				}
 			}
 		}
-    }
+	}
 
 	private void drawButton(GLDrawContext gl, float x, float y,
-	        EMaterialType materialType) {
+			EMaterialType materialType) {
 		// TODO: add 1 or 2 for bigger gui
 		int image = materialType.getGuiIconBase();
 		int file = materialType.getGuiFile();
 		Image iamgeLink =
-		        ImageProvider.getInstance().getImage(
-		                new OriginalImageLink(EImageLinkType.GUI, file, image,
-		                        0));
+				ImageProvider.getInstance().getImage(
+						new OriginalImageLink(EImageLinkType.GUI, file, image,
+								0));
 		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y
-		        + RELATIVE_BUTTONHEIGHT);
+				+ RELATIVE_BUTTONHEIGHT);
 
 		if (selected == materialType) {
 			ImageProvider
-			        .getInstance()
-			        .getGuiImage(3, 339)
-			        .drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH,
-			                y + RELATIVE_BUTTONHEIGHT);
+					.getInstance()
+					.getGuiImage(3, 339)
+					.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH,
+							y + RELATIVE_BUTTONHEIGHT);
 		}
 	}
 
@@ -278,8 +278,8 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 					float x = pos.getX();
 					float y = pos.getY();
 					if (relativex >= x && relativex < x + RELATIVE_BUTTONWIDTH
-					        && relativey >= y
-					        && relativey < y + RELATIVE_BUTTONWIDTH) {
+							&& relativey >= y
+							&& relativey < y + RELATIVE_BUTTONWIDTH) {
 						return new SelectMaterialAction(EMaterialType.values[i]);
 					}
 				}
@@ -303,7 +303,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {	    
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+	}
 
 }

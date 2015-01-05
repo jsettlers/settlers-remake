@@ -14,7 +14,7 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
 
 public class PlaceMapObjectTool implements Tool {
 	private static final ShapeType[] SHAPES = new ShapeType[] {
-	        new PointShape(), new GridCircleShape(),
+			new PointShape(), new GridCircleShape(),
 	};
 
 	private final MapObject object;
@@ -27,17 +27,17 @@ public class PlaceMapObjectTool implements Tool {
 	public String getName() {
 		if (object instanceof MapStoneObject) {
 			return String.format(EditorLabels.getLabel("stonedescr"),
-			        ((MapStoneObject) object).getCapacity());
+					((MapStoneObject) object).getCapacity());
 		} else if (object instanceof MapTreeObject) {
 			return EditorLabels.getLabel("treedescr");
 		} else if (object instanceof MapDecorationObject) {
 			return String.format(
-			        EditorLabels.getLabel("commondescr"),
-			        EditorLabels.getLabel("object_"
-			                + ((MapDecorationObject) object).getType()));
+					EditorLabels.getLabel("commondescr"),
+					EditorLabels.getLabel("object_"
+							+ ((MapDecorationObject) object).getType()));
 		} else {
 			return String.format(EditorLabels.getLabel("commondescr"), object
-			        .getClass().getSimpleName());
+					.getClass().getSimpleName());
 		}
 	}
 
@@ -48,7 +48,7 @@ public class PlaceMapObjectTool implements Tool {
 
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
-	        ShortPoint2D end, double uidx) {
+			ShortPoint2D end, double uidx) {
 
 		byte[][] placeAt = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(placeAt, start, end);

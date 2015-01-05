@@ -3,14 +3,11 @@ package jsettlers.graphics.action;
 /**
  * This is a action the user has requested.
  * <p>
- * Each Action has an active status, that indicates that it is currently
- * executed. When the execution of the action is begun, the flag should be set
- * so that the user interface enters a blocking mode, and goes back to normal
- * mode when the action is finished. It is not guaranteed that there is no other
- * action being sent during that time, e.g. an cancel-action.
+ * Each Action has an active status, that indicates that it is currently executed. When the execution of the action is begun, the flag should be set
+ * so that the user interface enters a blocking mode, and goes back to normal mode when the action is finished. It is not guaranteed that there is no
+ * other action being sent during that time, e.g. an cancel-action.
  * <p>
- * Actions may be reused and fired multiple times by the interface, but they are
- * always inactive when being fired.
+ * Actions may be reused and fired multiple times by the interface, but they are always inactive when being fired.
  * 
  * @author michael
  */

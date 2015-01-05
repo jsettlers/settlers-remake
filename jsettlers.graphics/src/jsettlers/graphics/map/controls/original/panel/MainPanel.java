@@ -30,39 +30,39 @@ public class MainPanel extends UIPanel {
 	private final UIPanel tabpanel = new UIPanel();
 
 	private final Button button_build = new TabButton(
-	        EContentType.BUILD_NORMAL, BUTTONS_FILE, 51, 60, "");
+			EContentType.BUILD_NORMAL, BUTTONS_FILE, 51, 60, "");
 	private final Button button_settlers = new TabButton(EContentType.STOCK,
-	        BUTTONS_FILE, 54, 63, "");
+			BUTTONS_FILE, 54, 63, "");
 	private final Button button_goods = new TabButton(
-	        EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 57, 66, "");
+			EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 57, 66, "");
 
 	private final TabButton[] buildButtons =
-	        new TabButton[] {
-	        new TabButton(EContentType.BUILD_NORMAL, BUTTONS_FILE, 69, 81, ""),
-	                new TabButton(EContentType.BUILD_FOOD, BUTTONS_FILE, 72,
-	                        84, ""),
-	                new TabButton(EContentType.BUILD_MILITARY, BUTTONS_FILE,
-	                        75, 87, ""),
-	                new TabButton(EContentType.BUILD_SOCIAL, BUTTONS_FILE, 78,
-	                        90, ""),
-	        };
+			new TabButton[] {
+					new TabButton(EContentType.BUILD_NORMAL, BUTTONS_FILE, 69, 81, ""),
+					new TabButton(EContentType.BUILD_FOOD, BUTTONS_FILE, 72,
+							84, ""),
+					new TabButton(EContentType.BUILD_MILITARY, BUTTONS_FILE,
+							75, 87, ""),
+					new TabButton(EContentType.BUILD_SOCIAL, BUTTONS_FILE, 78,
+							90, ""),
+			};
 
 	private final TabButton[] settlerButtons =
-	        new TabButton[] {
-	        new TabButton(EContentType.STOCK, BUTTONS_FILE, 234, 246, ""),
-	                new TabButton(EContentType.TOOLS, BUTTONS_FILE, 237, 249,
-	                        ""),
-	                new TabButton(EContentType.GOODS_SPREAD, BUTTONS_FILE, 240,
-	                        252, ""),
-	                new TabButton(EContentType.GOODS_TRANSPORT, BUTTONS_FILE,
-	                        243, 255, ""),
-	        };
+			new TabButton[] {
+					new TabButton(EContentType.STOCK, BUTTONS_FILE, 234, 246, ""),
+					new TabButton(EContentType.TOOLS, BUTTONS_FILE, 237, 249,
+							""),
+					new TabButton(EContentType.GOODS_SPREAD, BUTTONS_FILE, 240,
+							252, ""),
+					new TabButton(EContentType.GOODS_TRANSPORT, BUTTONS_FILE,
+							243, 255, ""),
+			};
 
 	private final TabButton[] goodsButtons = new TabButton[] {
-	new TabButton(EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 69, 81, ""),
-	        new TabButton(EContentType.PROFESSION, BUTTONS_FILE, 72, 84, ""),
-	        new TabButton(EContentType.WARRIORS, BUTTONS_FILE, 75, 87, ""),
-	        new TabButton(EContentType.PRODUCTION, BUTTONS_FILE, 78, 90, ""),
+			new TabButton(EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 69, 81, ""),
+			new TabButton(EContentType.PROFESSION, BUTTONS_FILE, 72, 84, ""),
+			new TabButton(EContentType.WARRIORS, BUTTONS_FILE, 75, 87, ""),
+			new TabButton(EContentType.PRODUCTION, BUTTONS_FILE, 78, 90, ""),
 	};
 
 	private final UIPanel contentContainer = new UIPanel();
@@ -93,24 +93,24 @@ public class MainPanel extends UIPanel {
 
 	private void initTabbar2() {
 		this.addChild(tabpanel, 0, constants.UI_TABS2_BOTTOM, 1,
-		        constants.UI_TABS2_TOP);
+				constants.UI_TABS2_TOP);
 	}
 
 	private void initTabbar1() {
 		int i = 0;
 		UIPanel tabbar1 = new UIPanel();
 		this.addChild(tabbar1, 0, constants.UI_TABS1_BOTTOM, 1,
-		        constants.UI_TABS1_TOP);
+				constants.UI_TABS1_TOP);
 		Button[] buttons = new Button[] {
-		        button_build, button_settlers, button_goods
+				button_build, button_settlers, button_goods
 		};
 		for (Button button : buttons) {
 			float left =
-			        constants.UI_TABS1_SIDEMARGIN
-			                + i
-			                * (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
+					constants.UI_TABS1_SIDEMARGIN
+							+ i
+							* (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
 			tabbar1.addChild(button, left, 0, left + constants.UI_TABS1_WIDTH,
-			        1);
+					1);
 			i++;
 		}
 
@@ -161,11 +161,11 @@ public class MainPanel extends UIPanel {
 		int i = 0;
 		for (Button button : buttons) {
 			float left =
-			        constants.UI_TABS2_SIDEMARGIN
-			                + i
-			                * (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
+					constants.UI_TABS2_SIDEMARGIN
+							+ i
+							* (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
 			tabpanel.addChild(button, left, 0, left + constants.UI_TABS2_WIDTH,
-			        1);
+					1);
 			i++;
 		}
 	}
@@ -180,8 +180,8 @@ public class MainPanel extends UIPanel {
 		initTabbar1();
 		initTabbar2();
 		this.addChild(contentContainer, constants.CONTENT_LEFT,
-		        constants.CONTENT_BOTTOM, constants.CONTENT_RIGHT,
-		        constants.CONTENT_TOP);
+				constants.CONTENT_BOTTOM, constants.CONTENT_RIGHT,
+				constants.CONTENT_TOP);
 	}
 
 	public void displayBuildingBuild(EBuildingType type) {
@@ -193,26 +193,26 @@ public class MainPanel extends UIPanel {
 		if (action.getActionType() == EActionType.ASK_SET_WORK_AREA) {
 			goBackContent = activeContent;
 			setContent(new MessageContent(
-			        Labels.getString("click_set_workcenter"), null, null,
-			        Labels.getString("abort"), new Action(EActionType.ABORT)));
+					Labels.getString("click_set_workcenter"), null, null,
+					Labels.getString("abort"), new Action(EActionType.ABORT)));
 			selectAction = EActionType.SET_WORK_AREA;
 			return null;
 		} else if (action.getActionType() == EActionType.ASK_DESTROY) {
 			goBackContent = activeContent;
 			setContent(new MessageContent(
-			        Labels.getString("really_destroy_building"),
-			        Labels.getName(EActionType.DESTROY), new Action(
-			                EActionType.DESTROY), Labels.getString("abort"),
-			        new Action(EActionType.ABORT)));
+					Labels.getString("really_destroy_building"),
+					Labels.getName(EActionType.DESTROY), new Action(
+							EActionType.DESTROY), Labels.getString("abort"),
+					new Action(EActionType.ABORT)));
 			return null;
 		} else if (action.getActionType() == EActionType.SELECT_POINT
-		        && selectAction != null) {
+				&& selectAction != null) {
 			ShortPoint2D position = ((PointAction) action).getPosition();
 			PointAction replaced = new PointAction(selectAction, position);
 			goBack();
 			return replaced;
 		} else if (action.getActionType() == EActionType.ABORT
-		        && goBackContent != null) {
+				&& goBackContent != null) {
 			goBack();
 			return null;
 		} else if (action.getActionType() == EActionType.EXECUTABLE) {
@@ -235,8 +235,8 @@ public class MainPanel extends UIPanel {
 	public void setMapViewport(MapRectangle screenArea, IGraphicsGrid grid) {
 		this.grid = grid;
 		displayCenter = new ShortPoint2D(screenArea.getLineStartX(screenArea.getLines() / 2)
-		        + screenArea.getLineLength() / 2, screenArea
-		        .getLineY(screenArea.getLines() / 2));
+				+ screenArea.getLineLength() / 2, screenArea
+				.getLineY(screenArea.getLines() / 2));
 		sendMapPositionChange();
 	}
 
@@ -244,5 +244,5 @@ public class MainPanel extends UIPanel {
 		if (displayCenter != null) {
 			activeContent.showMapPosition(displayCenter, grid);
 		}
-    }
+	}
 }

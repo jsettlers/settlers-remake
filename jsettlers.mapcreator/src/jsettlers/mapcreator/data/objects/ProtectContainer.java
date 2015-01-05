@@ -15,7 +15,7 @@ public class ProtectContainer implements ObjectContainer {
 	@Override
 	public RelativePoint[] getProtectedArea() {
 		return new RelativePoint[] {
-			new RelativePoint(0, 0)
+				new RelativePoint(0, 0)
 		};
 	}
 
@@ -23,7 +23,7 @@ public class ProtectContainer implements ObjectContainer {
 		if (instance == null) {
 			instance = new ProtectContainer();
 		}
-	    return instance;
-    }
+		return instance;
+	}
 
 }

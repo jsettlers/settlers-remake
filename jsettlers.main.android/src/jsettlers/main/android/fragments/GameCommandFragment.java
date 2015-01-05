@@ -18,13 +18,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 /**
- * This is an empty fragment that is used when a game is active. It forwards
- * button presses to the game and contains a context menu for testing.
+ * This is an empty fragment that is used when a game is active. It forwards button presses to the game and contains a context menu for testing.
  * 
  * @author michael
  */
 public class GameCommandFragment extends JsettlersFragment implements
-        IFragmentHandler {
+		IFragmentHandler {
 
 	private static final int MY_ID = 237263849;
 
@@ -39,7 +38,7 @@ public class GameCommandFragment extends JsettlersFragment implements
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		FrameLayout layout = new FrameLayout(inflater.getContext());
 		layout.setId(MY_ID);
 		return layout;
@@ -54,35 +53,35 @@ public class GameCommandFragment extends JsettlersFragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
 		switch (item.getItemId()) {
-			case R.id.f12btn:
-				getJsettlersActivity().fireKey("F12");
-				return true;
-			case R.id.savebtn:
-				getJsettlersActivity().fireKey("F2");
-				return true;
-				// case R.id.loadbtn:
-				// glView.fireKey("q");
-				// return true;
-				// case R.id.pausebtn:
-				// glView.fireKey("PAUSE");
-				// return true;
-			case R.id.speedup:
-				getJsettlersActivity().fireKey("+");
-				getJsettlersActivity().fireKey("+");
-				return true;
-			case R.id.slowdown:
-				getJsettlersActivity().fireKey("-");
-				getJsettlersActivity().fireKey("-");
-				return true;
-			case R.id.kill:
-				getJsettlersActivity().fireKey("DELETE");
-				return true;
-			case R.id.stop:
-				getJsettlersActivity().fireKey("STOP");
-				return true;
+		case R.id.f12btn:
+			getJsettlersActivity().fireKey("F12");
+			return true;
+		case R.id.savebtn:
+			getJsettlersActivity().fireKey("F2");
+			return true;
+			// case R.id.loadbtn:
+			// glView.fireKey("q");
+			// return true;
+			// case R.id.pausebtn:
+			// glView.fireKey("PAUSE");
+			// return true;
+		case R.id.speedup:
+			getJsettlersActivity().fireKey("+");
+			getJsettlersActivity().fireKey("+");
+			return true;
+		case R.id.slowdown:
+			getJsettlersActivity().fireKey("-");
+			getJsettlersActivity().fireKey("-");
+			return true;
+		case R.id.kill:
+			getJsettlersActivity().fireKey("DELETE");
+			return true;
+		case R.id.stop:
+			getJsettlersActivity().fireKey("STOP");
+			return true;
 
-			default:
-				return super.onOptionsItemSelected(item);
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -102,7 +101,7 @@ public class GameCommandFragment extends JsettlersFragment implements
 		Activity activity = getActivity();
 		if (activity != null) {
 			FragmentTransaction transaction =
-			        activity.getFragmentManager().beginTransaction();
+					activity.getFragmentManager().beginTransaction();
 			transaction.replace(MY_ID, fragment, "android-menu");
 			transaction.commit();
 		}
@@ -125,7 +124,7 @@ public class GameCommandFragment extends JsettlersFragment implements
 	@Override
 	public boolean onBackButtonPressed() {
 		getJsettlersActivity().fireKey("BACK");
-	    return true;
+		return true;
 	}
 
 }

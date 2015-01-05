@@ -59,29 +59,29 @@ public abstract class Image {
 	public abstract int getHeight();
 
 	public abstract void drawImageAtRect(GLDrawContext gl, float minX,
-	        float minY, float maxX, float maxY);
+			float minY, float maxX, float maxY);
 
 	public abstract void drawAt(GLDrawContext gl, DrawBuffer buffer,
-	        float viewX, float viewY, int iColor);
+			float viewX, float viewY, int iColor);
 
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, Color color, float multiply) {
+			float viewY, Color color, float multiply) {
 		int iColor = dimColor(color, multiply);
 		drawAt(gl, buffer, viewX, viewY, iColor);
 
 	}
 
 	public static int dimColor(Color color, float multiply) {
-	    int iColor;
+		int iColor;
 		if (multiply == 1) {
 			iColor = color.getABGR();
 		} else {
 			iColor =
-			        Color.getABGR(color.getRed() * multiply, color.getGreen()
-			                * multiply, color.getBlue() * multiply,
-			                color.getAlpha());
+					Color.getABGR(color.getRed() * multiply, color.getGreen()
+							* multiply, color.getBlue() * multiply,
+							color.getAlpha());
 		}
-	    return iColor;
-    }
+		return iColor;
+	}
 
 }

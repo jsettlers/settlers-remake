@@ -2,6 +2,7 @@ package jsettlers.logic.map.newGrid.landscape;
 
 /**
  * This interface defines a method that lets you walk on the given ground.
+ * 
  * @author michael
  *
  */

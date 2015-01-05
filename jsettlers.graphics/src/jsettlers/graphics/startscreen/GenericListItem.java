@@ -19,7 +19,7 @@ public class GenericListItem implements UIListItem {
 	private final String description;
 
 	private static final OriginalImageLink SELECT_MARKER = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 330, 0);
+			EImageLinkType.GUI, 3, 330, 0);
 
 	public GenericListItem(String title, String description) {
 		this.title = title;
@@ -39,9 +39,9 @@ public class GenericListItem implements UIListItem {
 		if (highlight) {
 			Image image = ImageProvider.getInstance().getImage(SELECT_MARKER);
 
-			gl.color(1,1,1,1);
+			gl.color(1, 1, 1, 1);
 			image.drawImageAtRect(gl, minX, minY,
-			        position.getMaxX(), position.getMaxY());
+					position.getMaxX(), position.getMaxY());
 		}
 		TextDrawer textdrawer = gl.getTextDrawer(EFontSize.NORMAL);
 
@@ -65,11 +65,11 @@ public class GenericListItem implements UIListItem {
 	public void setHighlighted(boolean highlight) {
 		this.highlight = highlight;
 	}
-	
+
 	@Override
 	public void onAttach() {
 	}
-	
+
 	@Override
 	public void onDetach() {
 	}

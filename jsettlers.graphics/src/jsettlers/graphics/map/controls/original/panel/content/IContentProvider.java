@@ -1,6 +1,5 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
-
 /**
  * Classes of this type provide content for the main panel.
  * 

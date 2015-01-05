@@ -35,7 +35,7 @@ public class PanHandler implements GOModalEventHandler {
 	@Override
 	public void finished(GOEvent event) {
 		this.context.finishPanProgress(this, ((GOPanEvent) event)
-		        .getPanDistance());
+				.getPanDistance());
 	}
 
 	@Override
@@ -46,6 +46,6 @@ public class PanHandler implements GOModalEventHandler {
 	@Override
 	public void eventDataChanged(GOEvent event) {
 		this.context
-		        .setPanProgress(this, ((GOPanEvent) event).getPanDistance());
+				.setPanProgress(this, ((GOPanEvent) event).getPanDistance());
 	}
 }

@@ -79,6 +79,6 @@ public interface IBuildingJob {
 	 * @return The thing the settler should search.
 	 */
 	ESearchType getSearchType();
-	
+
 	String getName();
 }

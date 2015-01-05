@@ -9,98 +9,98 @@ import jsettlers.common.landscape.ELandscapeType;
  */
 public class LandscapeFader {
 	private static final FadableLandscapes[] allowed =
-	        new FadableLandscapes[] {
-	        new FadableLandscapes(ELandscapeType.SAND, ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.DRY_GRASS,
-	                        ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.DESERT,
-	                        ELandscapeType.DRY_GRASS),
-	                new FadableLandscapes(ELandscapeType.FLATTENED,
-	                        ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.SAND,
-	                        ELandscapeType.WATER1),
-	                new FadableLandscapes(ELandscapeType.SNOW,
-	                        ELandscapeType.MOUNTAIN),
-	                new FadableLandscapes(ELandscapeType.MOUNTAIN,
-	                        ELandscapeType.MOUNTAINBORDER),
-	                new FadableLandscapes(ELandscapeType.MOUNTAINBORDER,
-	                        ELandscapeType.MOUNTAINBORDEROUTER),
-	                new FadableLandscapes(ELandscapeType.MOUNTAINBORDEROUTER,
-	                        ELandscapeType.GRASS),
-
-	                new FadableLandscapes(ELandscapeType.EARTH,
+			new FadableLandscapes[] {
+					new FadableLandscapes(ELandscapeType.SAND, ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.DRY_GRASS,
+							ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.DESERT,
+							ELandscapeType.DRY_GRASS),
+					new FadableLandscapes(ELandscapeType.FLATTENED,
+							ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.SAND,
+							ELandscapeType.WATER1),
+					new FadableLandscapes(ELandscapeType.SNOW,
+							ELandscapeType.MOUNTAIN),
+					new FadableLandscapes(ELandscapeType.MOUNTAIN,
+							ELandscapeType.MOUNTAINBORDER),
+					new FadableLandscapes(ELandscapeType.MOUNTAINBORDER,
+							ELandscapeType.MOUNTAINBORDEROUTER),
+					new FadableLandscapes(ELandscapeType.MOUNTAINBORDEROUTER,
 							ELandscapeType.GRASS),
 
-	                new FadableLandscapes(ELandscapeType.MOOR,
-	                        ELandscapeType.MOORBORDER),
-	                new FadableLandscapes(ELandscapeType.GRASS,
-	                        ELandscapeType.MOORBORDER),
+					new FadableLandscapes(ELandscapeType.EARTH,
+							ELandscapeType.GRASS),
 
-	                new FadableLandscapes(ELandscapeType.GRAVEL,
-	                        ELandscapeType.MOUNTAINBORDER),
+					new FadableLandscapes(ELandscapeType.MOOR,
+							ELandscapeType.MOORBORDER),
+					new FadableLandscapes(ELandscapeType.GRASS,
+							ELandscapeType.MOORBORDER),
 
-	                new FadableLandscapes(ELandscapeType.SHARP_FLATTENED_DESERT,
-	                        ELandscapeType.DESERT),
-	                new FadableLandscapes(ELandscapeType.FLATTENED_DESERT,
-	                        ELandscapeType.DESERT),
+					new FadableLandscapes(ELandscapeType.GRAVEL,
+							ELandscapeType.MOUNTAINBORDER),
 
-	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.RIVER2),
-	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.RIVER3),
-	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.RIVER4),
-	                new FadableLandscapes(ELandscapeType.RIVER2,
-	                        ELandscapeType.RIVER3),
-	                new FadableLandscapes(ELandscapeType.RIVER2,
-	                        ELandscapeType.RIVER4),
-	                new FadableLandscapes(ELandscapeType.RIVER3,
-	                        ELandscapeType.RIVER4),
+					new FadableLandscapes(ELandscapeType.SHARP_FLATTENED_DESERT,
+							ELandscapeType.DESERT),
+					new FadableLandscapes(ELandscapeType.FLATTENED_DESERT,
+							ELandscapeType.DESERT),
 
-	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.RIVER2,
-	                        ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.RIVER3,
-	                        ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.RIVER4,
-	                        ELandscapeType.GRASS),
-	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.SAND),
-	                new FadableLandscapes(ELandscapeType.RIVER2,
-	                        ELandscapeType.SAND),
-	                new FadableLandscapes(ELandscapeType.RIVER3,
-	                        ELandscapeType.SAND),
-	                new FadableLandscapes(ELandscapeType.RIVER4,
-	                        ELandscapeType.SAND),
-	                new FadableLandscapes(ELandscapeType.RIVER1,
-	                        ELandscapeType.WATER1),
-	                new FadableLandscapes(ELandscapeType.RIVER2,
-	                        ELandscapeType.WATER1),
-	                new FadableLandscapes(ELandscapeType.RIVER3,
-	                        ELandscapeType.WATER1),
-	                new FadableLandscapes(ELandscapeType.RIVER4,
-	                        ELandscapeType.WATER1),
+					new FadableLandscapes(ELandscapeType.RIVER1,
+							ELandscapeType.RIVER2),
+					new FadableLandscapes(ELandscapeType.RIVER1,
+							ELandscapeType.RIVER3),
+					new FadableLandscapes(ELandscapeType.RIVER1,
+							ELandscapeType.RIVER4),
+					new FadableLandscapes(ELandscapeType.RIVER2,
+							ELandscapeType.RIVER3),
+					new FadableLandscapes(ELandscapeType.RIVER2,
+							ELandscapeType.RIVER4),
+					new FadableLandscapes(ELandscapeType.RIVER3,
+							ELandscapeType.RIVER4),
 
-	                new FadableLandscapes(ELandscapeType.WATER2,
-	                        ELandscapeType.WATER1),
-	                new FadableLandscapes(ELandscapeType.WATER3,
-	                        ELandscapeType.WATER2),
-	                new FadableLandscapes(ELandscapeType.WATER4,
-	                        ELandscapeType.WATER3),
-	                new FadableLandscapes(ELandscapeType.WATER5,
-	                        ELandscapeType.WATER4),
-	                new FadableLandscapes(ELandscapeType.WATER6,
-	                        ELandscapeType.WATER5),
-	                new FadableLandscapes(ELandscapeType.WATER7,
-	                        ELandscapeType.WATER6),
-	                new FadableLandscapes(ELandscapeType.WATER8,
-	                        ELandscapeType.WATER7),
-	        };
+					new FadableLandscapes(ELandscapeType.RIVER1,
+							ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.RIVER2,
+							ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.RIVER3,
+							ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.RIVER4,
+							ELandscapeType.GRASS),
+					new FadableLandscapes(ELandscapeType.RIVER1,
+							ELandscapeType.SAND),
+					new FadableLandscapes(ELandscapeType.RIVER2,
+							ELandscapeType.SAND),
+					new FadableLandscapes(ELandscapeType.RIVER3,
+							ELandscapeType.SAND),
+					new FadableLandscapes(ELandscapeType.RIVER4,
+							ELandscapeType.SAND),
+					new FadableLandscapes(ELandscapeType.RIVER1,
+							ELandscapeType.WATER1),
+					new FadableLandscapes(ELandscapeType.RIVER2,
+							ELandscapeType.WATER1),
+					new FadableLandscapes(ELandscapeType.RIVER3,
+							ELandscapeType.WATER1),
+					new FadableLandscapes(ELandscapeType.RIVER4,
+							ELandscapeType.WATER1),
+
+					new FadableLandscapes(ELandscapeType.WATER2,
+							ELandscapeType.WATER1),
+					new FadableLandscapes(ELandscapeType.WATER3,
+							ELandscapeType.WATER2),
+					new FadableLandscapes(ELandscapeType.WATER4,
+							ELandscapeType.WATER3),
+					new FadableLandscapes(ELandscapeType.WATER5,
+							ELandscapeType.WATER4),
+					new FadableLandscapes(ELandscapeType.WATER6,
+							ELandscapeType.WATER5),
+					new FadableLandscapes(ELandscapeType.WATER7,
+							ELandscapeType.WATER6),
+					new FadableLandscapes(ELandscapeType.WATER8,
+							ELandscapeType.WATER7),
+			};
 
 	private final ELandscapeType[][][] fadeLandscapesBuffer =
-	        new ELandscapeType[ELandscapeType.values().length][ELandscapeType
-	                .values().length][];
+			new ELandscapeType[ELandscapeType.values().length][ELandscapeType
+					.values().length][];
 
 	public boolean canFadeTo(ELandscapeType l1, ELandscapeType l2) {
 		if (l1 == l2) {
@@ -117,9 +117,8 @@ public class LandscapeFader {
 	}
 
 	/**
-	 * Gets an array of landscapes that can be used to fade between one
-	 * landscape type and the other. Contains the first and last landscape (or
-	 * only one element if the landscape is the same.
+	 * Gets an array of landscapes that can be used to fade between one landscape type and the other. Contains the first and last landscape (or only
+	 * one element if the landscape is the same.
 	 * <p>
 	 * Returns null if there is no way the landscapes can be faded.
 	 * 
@@ -128,9 +127,9 @@ public class LandscapeFader {
 	 * @return
 	 */
 	public ELandscapeType[] getLandscapesBetween(ELandscapeType l1,
-	        ELandscapeType l2) {
+			ELandscapeType l2) {
 		ELandscapeType[] buffered =
-		        fadeLandscapesBuffer[l1.ordinal()][l2.ordinal()];
+				fadeLandscapesBuffer[l1.ordinal()][l2.ordinal()];
 		if (buffered == null) {
 			computeLandscapesFrom(l1);
 			buffered = fadeLandscapesBuffer[l1.ordinal()][l2.ordinal()];
@@ -149,7 +148,7 @@ public class LandscapeFader {
 		ELandscapeType[][] ways = fadeLandscapesBuffer[l1.ordinal()];
 
 		ways[l1.ordinal()] = new ELandscapeType[] {
-			l1
+				l1
 		};
 
 		boolean foundnew = true;
@@ -171,7 +170,7 @@ public class LandscapeFader {
 	}
 
 	private static ELandscapeType[] add(ELandscapeType[] types,
-	        ELandscapeType l1) {
+			ELandscapeType l1) {
 		int length = types.length;
 		ELandscapeType[] result = new ELandscapeType[length + 1];
 		System.arraycopy(types, 0, result, 0, length);
@@ -193,7 +192,7 @@ public class LandscapeFader {
 			if (obj instanceof FadableLandscapes) {
 				FadableLandscapes other = (FadableLandscapes) obj;
 				return (other.l1 == l1 && other.l2 == l2)
-				        || (other.l1 == l2 && other.l2 == l1);
+						|| (other.l1 == l2 && other.l2 == l1);
 			} else {
 				return false;
 			}

@@ -24,8 +24,7 @@ import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
- * This is an advanced dat file reader. It can read the file, but it only reads
- * needed sequences.
+ * This is an advanced dat file reader. It can read the file, but it only reads needed sequences.
  * <p>
  * The format of a dat file is (all numbers in little endian):
  * <table>
@@ -98,69 +97,69 @@ public class AdvancedDatFileReader implements DatFileSet {
 	 * Every dat file seems to have to start with this sequence.
 	 */
 	private static final byte[] FILE_START = {
-	        0x04,
-	        0x13,
-	        0x04,
-	        0x00,
-	        0x0c,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x54,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x20,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x40,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x10,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x7c,
-	        0x00,
-	        0x00,
-	        (byte) 0xe0,
-	        0x03,
-	        0x00,
-	        0x00,
-	        0x1f,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00
+			0x04,
+			0x13,
+			0x04,
+			0x00,
+			0x0c,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x54,
+			0x00,
+			0x00,
+			0x00,
+			0x20,
+			0x00,
+			0x00,
+			0x00,
+			0x40,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x10,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x7c,
+			0x00,
+			0x00,
+			(byte) 0xe0,
+			0x03,
+			0x00,
+			0x00,
+			0x1f,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00
 	};
 
 	private static final byte[] FILE_HEADER_END = {
-	        0x04,
-	        0x19,
-	        0x00,
-	        0x00,
-	        0x0c,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00,
-	        0x00
+			0x04,
+			0x19,
+			0x00,
+			0x00,
+			0x0c,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00,
+			0x00
 	};
 
 	static final int SEQUENCE_TYPE_COUNT = 6;
@@ -177,19 +176,19 @@ public class AdvancedDatFileReader implements DatFileSet {
 	static final int ID_GUIS = 0x11306;
 
 	public static final DatBitmapTranslator<SettlerImage> SETTLER_TRANSLATOR =
-	        new SettlerTranslator();
+			new SettlerTranslator();
 
 	public static final DatBitmapTranslator<Torso> TORSO_TRANSLATOR =
-	        new TorsoTranslator();
+			new TorsoTranslator();
 
 	public static final DatBitmapTranslator<LandscapeImage> LANDSCAPE_TRANSLATOR =
-	        new LandscapeTranslator();
+			new LandscapeTranslator();
 
 	static final DatBitmapTranslator<ShadowImage> SHADOW_TRANSLATOR =
-	        new ShadowTranslator();
+			new ShadowTranslator();
 
 	static final DatBitmapTranslator<GuiImage> GUI_TRANSLATOR =
-	        new GuiTranslator();
+			new GuiTranslator();
 
 	private ByteReader reader = null;
 	private final File file;
@@ -217,7 +216,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	 */
 	private LandscapeImage[] landscapeimages = null;
 	private final Sequence<LandscapeImage> landscapesequence =
-	        new LandscapeImageSequence();
+			new LandscapeImageSequence();
 	private int[] landscapestarts;
 
 	private GuiImage[] guiimages = null;
@@ -227,7 +226,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	private final SequenceList<Image> directSettlerList;
 
 	private static final byte[] START = new byte[] {
-	        0x02, 0x14, 0x00, 0x00, 0x08, 0x00, 0x00
+			0x02, 0x14, 0x00, 0x00, 0x08, 0x00, 0x00
 	};
 
 	public AdvancedDatFileReader(File file) {
@@ -289,29 +288,29 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	private void initFromReader(File file, ByteReader reader)
-	        throws IOException {
+			throws IOException {
 		int[] sequenceIndexStarts =
-		        readSequenceIndexStarts(file.length(), reader);
+				readSequenceIndexStarts(file.length(), reader);
 
 		for (int i = 0; i < SEQUENCE_TYPE_COUNT; i++) {
 			try {
 				readSequencesAt(reader, sequenceIndexStarts[i]);
 			} catch (IOException e) {
 				System.err.println("Error while loading sequence" + ": "
-				        + e.getMessage());
+						+ e.getMessage());
 				e.printStackTrace();
 			}
 		}
 	}
 
 	private static int[] readSequenceIndexStarts(long filelength,
-	        ByteReader reader) throws IOException {
+			ByteReader reader) throws IOException {
 		reader.assumeToRead(FILE_START);
 		int fileSize = reader.read32();
 
 		if (fileSize != filelength) {
 			throw new IOException(
-			        "The length stored in the dat file is not the file length.");
+					"The length stored in the dat file is not the file length.");
 		}
 
 		// ignore unknown bytes.
@@ -344,7 +343,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	 *             if an read error occurred.
 	 */
 	private void readSequencesAt(ByteReader reader, int sequenceIndexStart)
-	        throws IOException {
+			throws IOException {
 		// read data index 0
 		reader.skipTo(sequenceIndexStart);
 
@@ -355,8 +354,8 @@ public class AdvancedDatFileReader implements DatFileSet {
 
 		if (byteCount != pointerCount * 4 + 8) {
 			throw new IOException("Sequence index block length ("
-			        + pointerCount + ") and " + "bytecount (" + byteCount
-			        + ") are not consistent.");
+					+ pointerCount + ") and " + "bytecount (" + byteCount
+					+ ") are not consistent.");
 		}
 
 		int[] sequenceIndexPointers = new int[pointerCount];
@@ -410,7 +409,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	private static final Sequence<Image> NULL_SETTLER_SEQUENCE =
-	        new ArraySequence<Image>(new SettlerImage[0]);
+			new ArraySequence<Image>(new SettlerImage[0]);
 
 	private class DirectSettlerSequenceList implements SequenceList<Image> {
 
@@ -451,10 +450,10 @@ public class AdvancedDatFileReader implements DatFileSet {
 		if (torsoposition >= 0) {
 			long[] torsoPositions = readSequenceHeader(torsoposition);
 			for (int i = 0; i < torsoPositions.length
-			        && i < framePositions.length; i++) {
+					&& i < framePositions.length; i++) {
 				reader.skipTo(torsoPositions[i]);
 				Torso torso =
-				        DatBitmapReader.getImage(TORSO_TRANSLATOR, reader);
+						DatBitmapReader.getImage(TORSO_TRANSLATOR, reader);
 				images[i].setTorso(torso);
 			}
 		}
@@ -533,7 +532,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		try {
 			reader.skipTo(landscapestarts[index]);
 			LandscapeImage image =
-			        DatBitmapReader.getImage(LANDSCAPE_TRANSLATOR, reader);
+					DatBitmapReader.getImage(LANDSCAPE_TRANSLATOR, reader);
 			landscapeimages[index] = image;
 		} catch (IOException e) {
 			landscapeimages[index] = NullImage.getForLandscape();
@@ -617,7 +616,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	}
 
 	public void generateImageMap(int width, int height, int[] sequences,
-	        String id) throws IOException {
+			String id) throws IOException {
 		initializeIfNeeded();
 
 		MultiImageMap map = new MultiImageMap(width, height, id);

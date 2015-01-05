@@ -11,8 +11,7 @@ import jsettlers.graphics.reader.ImageMetadata;
 /**
  * This is the base for all images.
  * <p>
- * This class interprets the image data in 5-5-5-1-Format. To change the
- * interpretation, it is possible to subclass this class.
+ * This class interprets the image data in 5-5-5-1-Format. To change the interpretation, it is possible to subclass this class.
  * 
  * @author michael
  */
@@ -33,8 +32,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * Creates a new image by the given buffer.
 	 * 
 	 * @param data
-	 *            The data buffer for the image with an unspecified color
-	 *            format.
+	 *            The data buffer for the image with an unspecified color format.
 	 * @param width
 	 *            The width.
 	 * @param height
@@ -45,7 +43,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 *            The y offset of the image.
 	 */
 	protected SingleImage(ShortBuffer data, int width, int height, int offsetX,
-	        int offsetY) {
+			int offsetY) {
 		this.data = data;
 		this.width = width;
 		this.height = height;
@@ -54,8 +52,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	}
 
 	/**
-	 * Creates a new image by linking this images data to the data of the
-	 * provider.
+	 * Creates a new image by linking this images data to the data of the provider.
 	 * 
 	 * @param provider
 	 *            The provider.
@@ -104,13 +101,13 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			}
 			for (int x = width; x < textureWidth; x++) {
 				newData[y * textureWidth + x] =
-				        newData[y * textureWidth + width - 1];
+						newData[y * textureWidth + width - 1];
 			}
 		}
 		for (int y = height; y < textureHeight; y++) {
 			for (int x = 0; x < textureWidth; x++) {
 				newData[y * textureWidth + x] =
-				        newData[(height - 1) * textureWidth + x];
+						newData[(height - 1) * textureWidth + x];
 			}
 		}
 		data = ShortBuffer.wrap(newData);
@@ -132,18 +129,18 @@ public class SingleImage extends Image implements ImageDataPrivider {
 				data.position(0);
 			}
 			texture =
-			        gl.generateTexture(textureWidth, textureHeight, this.data);
+					gl.generateTexture(textureWidth, textureHeight, this.data);
 		}
 		return this.texture;
 	}
 
 	static private float[] tmpBuffer = new float[] {
-	        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
-	        float right, float top) {
+			float right, float top) {
 		int textureIndex = getTextureIndex(gl);
 
 		tmpBuffer[0] = left;
@@ -167,8 +164,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext,
-	 * float, float)
+	 * 
+	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float)
 	 */
 	@Override
 	public void drawAt(GLDrawContext gl, float x, float y) {
@@ -177,8 +174,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext,
-	 * float, float, go.graphics.Color)
+	 * 
+	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float, go.graphics.Color)
 	 */
 	@Override
 	public void drawAt(GLDrawContext gl, float x, float y, Color color) {
@@ -195,8 +192,8 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext,
-	 * go.graphics.Color)
+	 * 
+	 * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext, go.graphics.Color)
 	 */
 	@Override
 	public void draw(GLDrawContext gl, Color color) {
@@ -204,7 +201,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			gl.color(1, 1, 1, 1);
 		} else {
 			gl.color(color.getRed(), color.getGreen(), color.getBlue(),
-			        color.getAlpha());
+					color.getAlpha());
 		}
 
 		int textureIndex = getTextureIndex(gl);
@@ -218,7 +215,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 			gl.color(multiply, multiply, multiply, 1);
 		} else {
 			gl.color(color.getRed() * multiply, color.getGreen() * multiply,
-			        color.getBlue() * multiply, color.getAlpha());
+					color.getBlue() * multiply, color.getAlpha());
 		}
 
 		int textureIndex = getTextureIndex(gl);
@@ -230,43 +227,43 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		int left = getOffsetX();
 		int top = -getOffsetY();
 		return new float[] {
-		        // bottom right
-		        left + this.width,
-		        top,
-		        0,
-		        (float) width / textureWidth,
-		        0,
-		        // top left
-		        left,
-		        top,
-		        0,
-		        0,
-		        0,
-		        // top right
-		        left + this.width,
-		        top - this.height,
-		        0,
-		        (float) width / textureWidth,
-		        (float) height / textureHeight,
+				// bottom right
+				left + this.width,
+				top,
+				0,
+				(float) width / textureWidth,
+				0,
+				// top left
+				left,
+				top,
+				0,
+				0,
+				0,
+				// top right
+				left + this.width,
+				top - this.height,
+				0,
+				(float) width / textureWidth,
+				(float) height / textureHeight,
 
-		        // top right
-		        left + this.width,
-		        top - this.height,
-		        0,
-		        (float) width / textureWidth,
-		        (float) height / textureHeight,
-		        // bottom left
-		        left,
-		        top,
-		        0,
-		        0,
-		        0,
-		        // top left
-		        left,
-		        top - this.height,
-		        0,
-		        0,
-		        (float) height / textureHeight,
+				// top right
+				left + this.width,
+				top - this.height,
+				0,
+				(float) width / textureWidth,
+				(float) height / textureHeight,
+				// bottom left
+				left,
+				top,
+				0,
+				0,
+				0,
+				// top left
+				left,
+				top - this.height,
+				0,
+				0,
+				(float) height / textureHeight,
 		};
 	}
 
@@ -291,46 +288,50 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, int iColor) {
+			float viewY, int iColor) {
 		int textureIndex = getTextureIndex(gl);
 		buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
-		        - getOffsetY(), viewX + getOffsetX() + width, viewY
+				- getOffsetY(), viewX + getOffsetX() + width, viewY
 				- getOffsetY() - height, 0, 0, getTextureScaleX(),
-		        getTextureScaleY(), iColor);
+				getTextureScaleY(), iColor);
 	}
 
 	protected float convertU(float relativeU) {
 		return relativeU * getTextureScaleX();
 	}
-	
+
 	protected float convertV(float relativeV) {
 		return relativeV * getTextureScaleY();
 	}
-	
+
 	/**
 	 * Draws a triangle part of this image on the image buffer.
-	 * @param gl The context to use
-	 * @param buffer The buffer to draw on.
-	 * @param viewX Image center x coordinate
-	 * @param viewY Image center y coordinate
+	 * 
+	 * @param gl
+	 *            The context to use
+	 * @param buffer
+	 *            The buffer to draw on.
+	 * @param viewX
+	 *            Image center x coordinate
+	 * @param viewY
+	 *            Image center y coordinate
 	 * @param u1
 	 * @param v1
 	 * @param u2
 	 * @param v2
 	 * @param u3
 	 * @param v3
-	 * @param activeColor 
+	 * @param activeColor
 	 */
 	public void drawTriangle(GLDrawContext gl, DrawBuffer buffer, float viewX,
-            float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
-	    DrawBuffer.Buffer buffer2 = buffer.getBuffer( getTextureIndex(gl));
-	    float left = getOffsetX() + viewX;
-	    float top = -getOffsetY() + viewY;
-	    
-	    
+			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+		DrawBuffer.Buffer buffer2 = buffer.getBuffer(getTextureIndex(gl));
+		float left = getOffsetX() + viewX;
+		float top = -getOffsetY() + viewY;
+
 		buffer2.addTirangle(left + u1 * width, top - v1 * height, left + u2
-		        * width, top - v2 * height, left + u3 * width, top - v3
-		        * height, convertU(u1), convertV(v1), convertU(u2),
-		        convertV(v2), convertU(u3), convertV(v3), activeColor);
-    }
+				* width, top - v2 * height, left + u3 * width, top - v3
+				* height, convertU(u1), convertV(v1), convertU(u2),
+				convertV(v2), convertU(u3), convertV(v3), activeColor);
+	}
 }

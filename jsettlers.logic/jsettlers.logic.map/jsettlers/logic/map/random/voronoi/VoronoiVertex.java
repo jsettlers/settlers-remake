@@ -2,7 +2,6 @@ package jsettlers.logic.map.random.voronoi;
 
 import jsettlers.logic.map.random.geometry.Point2D;
 
-
 /**
  * This is a vertex in the votonoi graph
  * 

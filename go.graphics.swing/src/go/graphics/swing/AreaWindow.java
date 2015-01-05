@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 /**
  * This is a window that consists of exactly one area.
+ * 
  * @author michael
  *
  */
@@ -21,12 +22,12 @@ public class AreaWindow {
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	public void close() {
 		frame.setVisible(false);
 		frame.dispose();
 	}
-	
+
 	public Area getArea() {
 		return area;
 	}

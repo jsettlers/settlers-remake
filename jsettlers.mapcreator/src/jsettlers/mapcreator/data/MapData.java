@@ -720,7 +720,8 @@ public class MapData implements IMapData {
 			}
 		}
 
-		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockedSet, IBlockingProvider.DEFAULT_IMPLEMENTATION);
+		PartitionCalculatorAlgorithm partitionCalculator = new PartitionCalculatorAlgorithm(0, 0, width, height, notBlockedSet,
+				IBlockingProvider.DEFAULT_IMPLEMENTATION);
 		partitionCalculator.calculatePartitions();
 
 		for (short y = 0; y < height; y++) {

@@ -12,7 +12,7 @@ public class StatisticsWindow {
 		JTabbedPane root = new JTabbedPane();
 		JTable table = new JTable(new StatisticsTable(data));
 		root.add("Table", new JScrollPane(table));
-		
+
 		for (int i = 0; i < data.getPlayerCount(); i++) {
 			root.add("player " + i, new PlayerDiagram(data, i));
 		}

@@ -58,8 +58,8 @@ public class LandscapeVisualization extends JPanel {
 		g2d.setColor(Color.GRAY);
 		for (MeshEdge edge : mesh.getEdges()) {
 			g2d.drawLine((int) edge.getStart().getX(), (int) edge.getStart()
-			        .getY(), (int) edge.getEnd().getX(), (int) edge.getEnd()
-			        .getY());
+					.getY(), (int) edge.getEnd().getX(), (int) edge.getEnd()
+					.getY());
 		}
 	}
 
@@ -86,38 +86,38 @@ public class LandscapeVisualization extends JPanel {
 
 	public static Color landscapeColor(MeshLandscapeType landscape) {
 		switch (landscape) {
-			case GRASS:
-				return new Color(0.133f, 0.545f, 0.133f);
+		case GRASS:
+			return new Color(0.133f, 0.545f, 0.133f);
 
-			case MOUNTAIN:
-				return Color.DARK_GRAY;
+		case MOUNTAIN:
+			return Color.DARK_GRAY;
 
-			case SEA:
-				return Color.BLUE;
+		case SEA:
+			return Color.BLUE;
 
-			case SAND:
-				return Color.YELLOW;
+		case SAND:
+			return Color.YELLOW;
 
-			case DESERT:
-				return new Color(200, 255, 10);
+		case DESERT:
+			return new Color(200, 255, 10);
 
-			default:
-			case UNSPECIFIED:
-				return Color.LIGHT_GRAY;
+		default:
+		case UNSPECIFIED:
+			return Color.LIGHT_GRAY;
 		}
 	}
 
 	public static void main(String[] args) {
 		LandscapeMesh mesh =
-		        LandscapeMesh.getRandomMesh(1000, 1000, new Random());
+				LandscapeMesh.getRandomMesh(1000, 1000, new Random());
 
 		PlayerStart[] starts =
-		        new PlayerStart[] {
-		                new PlayerStart(100, 100, (byte) 1, (byte) 1),
-		                new PlayerStart(100, 900, (byte) 2, (byte) 1),
-		                new PlayerStart(900, 900, (byte) 3, (byte) 2),
-		                new PlayerStart(900, 100, (byte) 4, (byte) 2)
-		        };
+				new PlayerStart[] {
+						new PlayerStart(100, 100, (byte) 1, (byte) 1),
+						new PlayerStart(100, 900, (byte) 2, (byte) 1),
+						new PlayerStart(900, 900, (byte) 3, (byte) 2),
+						new PlayerStart(900, 100, (byte) 4, (byte) 2)
+				};
 		LandBaseInstruction base = new LandBaseInstruction();
 		base.setParameter("type", "sea");
 		base.execute(mesh, starts, new Random());

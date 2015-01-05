@@ -10,7 +10,7 @@ public abstract class IOriginalConstants {
 	float UI_CENTERX;
 
 	float UI_DECORATIONRIGHT;
-	
+
 	// relative to top minimap area. This is the whole area including the right half.
 	float MINIMAP_WIDTH = 126f / 201f;
 	float MINIMAP_TOPLEFT_X = 68f / 201f;

@@ -17,10 +17,14 @@ import java.io.IOException;
 public interface ImageArrayProvider {
 	/**
 	 * Starts a new image.
-	 * @param width May be 0!
-	 * @param height May be 0!
+	 * 
+	 * @param width
+	 *            May be 0!
+	 * @param height
+	 *            May be 0!
 	 * @throws IOException
 	 */
 	public void startImage(int width, int height) throws IOException;
+
 	public void writeLine(short[] data, int length) throws IOException;
 }

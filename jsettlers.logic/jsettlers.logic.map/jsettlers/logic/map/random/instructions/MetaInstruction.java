@@ -10,10 +10,10 @@ public class MetaInstruction extends GenerationInstruction {
 		defaults.put("height", "100");
 		defaults.put("name", "unnamed");
 	}
-	
+
 	@Override
-    protected Hashtable<String, String> getDefaultValues() {
+	protected Hashtable<String, String> getDefaultValues() {
 		return defaults;
-    }
-	
+	}
+
 }

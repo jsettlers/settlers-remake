@@ -47,10 +47,10 @@ public class MapMeshEdge {
 	}
 
 	public MapAreaPoint getPoint1() {
-	    return point1;
-    }
+		return point1;
+	}
 
 	public MapAreaPoint getPoint2() {
-	    return point2;
-    }
+		return point2;
+	}
 }

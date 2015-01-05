@@ -24,8 +24,8 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 	}
 
 	@Override
-    public GuiImage createImage(ImageMetadata metadata, short[] array) {
-	    return new GuiImage(metadata, array);
-    }
+	public GuiImage createImage(ImageMetadata metadata, short[] array) {
+		return new GuiImage(metadata, array);
+	}
 
 }

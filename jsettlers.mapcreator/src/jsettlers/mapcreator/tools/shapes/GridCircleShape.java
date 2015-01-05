@@ -2,8 +2,6 @@ package jsettlers.mapcreator.tools.shapes;
 
 import jsettlers.mapcreator.localization.EditorLabels;
 
-
-
 public class GridCircleShape extends LineCircleShape {
 
 	@Override
@@ -17,7 +15,7 @@ public class GridCircleShape extends LineCircleShape {
 
 	@Override
 	public String getName() {
-	    return EditorLabels.getLabel("grid_circle");
+		return EditorLabels.getLabel("grid_circle");
 	}
 
 }

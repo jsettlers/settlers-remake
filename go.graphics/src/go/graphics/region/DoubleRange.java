@@ -2,6 +2,7 @@ package go.graphics.region;
 
 /**
  * This class represents a interval in the space of double values.
+ * 
  * @author michael
  *
  */
@@ -10,8 +11,7 @@ public class DoubleRange {
 	private final double max;
 
 	/**
-	 * Creates a new range of doubles. if min is bigger than max, a intervall
-	 * with length 0 is created around the average of both.
+	 * Creates a new range of doubles. if min is bigger than max, a intervall with length 0 is created around the average of both.
 	 * 
 	 * @param min
 	 *            The min value
@@ -48,8 +48,7 @@ public class DoubleRange {
 	}
 
 	/**
-	 * Constraints a value so that it lies inside the current interval and is as
-	 * close to the given value as possible.
+	 * Constraints a value so that it lies inside the current interval and is as close to the given value as possible.
 	 * 
 	 * @param x
 	 *            The value to constraint.
@@ -66,8 +65,7 @@ public class DoubleRange {
 	}
 
 	/**
-	 * Gets a new Range with the given minimum as minimum, and the current
-	 * maximum as maximum. Inf the current maximum is to small, the new one is
+	 * Gets a new Range with the given minimum as minimum, and the current maximum as maximum. Inf the current maximum is to small, the new one is
 	 * increased so that a 0-length-interval is created.
 	 * 
 	 * @param d

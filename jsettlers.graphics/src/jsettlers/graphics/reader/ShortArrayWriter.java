@@ -7,7 +7,7 @@ public class ShortArrayWriter implements ImageArrayProvider {
 	private short[] array;
 	private int width;
 	private int line;
-	
+
 	@Override
 	public void startImage(int width, int height) throws IOException {
 		if (width == 0 && height == 0) {
@@ -18,7 +18,7 @@ public class ShortArrayWriter implements ImageArrayProvider {
 	}
 
 	@Override
-    public void writeLine(short[] data, int linelength) throws IOException {
+	public void writeLine(short[] data, int linelength) throws IOException {
 		int offset = line * width;
 		for (int i = 0; i < linelength; i++) {
 			array[offset + i] = data[i];
@@ -26,12 +26,12 @@ public class ShortArrayWriter implements ImageArrayProvider {
 		for (int i = linelength; i < width; i++) {
 			array[offset + i] = TRANSPARENT;
 		}
-		
+
 		line++;
 	}
-	
+
 	public short[] getArray() {
-	    return array;
-    }
+		return array;
+	}
 
 }

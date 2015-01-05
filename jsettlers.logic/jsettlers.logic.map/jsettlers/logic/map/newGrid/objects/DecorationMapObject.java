@@ -7,12 +7,12 @@ public class DecorationMapObject extends AbstractHexMapObject {
 	/**
      * 
      */
-    private static final long serialVersionUID = -8517316213839905509L;
+	private static final long serialVersionUID = -8517316213839905509L;
 	private final EMapObjectType type;
 
 	public DecorationMapObject(EMapObjectType type) {
 		this.type = type;
-    }
+	}
 
 	@Override
 	public EMapObjectType getObjectType() {

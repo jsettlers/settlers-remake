@@ -1,4 +1,5 @@
 package jsettlers.graphics.debug;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -12,16 +13,17 @@ import javax.swing.JPanel;
 
 /**
  * Debug class that displays a file as an image.
+ * 
  * @author michael
  *
  */
 public class DataImage extends JPanel implements MouseListener,
-        MouseMotionListener {
+		MouseMotionListener {
 
 	/**
      * 
      */
-    private static final long serialVersionUID = 6066076752384349596L;
+	private static final long serialVersionUID = 6066076752384349596L;
 
 	private final byte[] data;
 
@@ -46,7 +48,7 @@ public class DataImage extends JPanel implements MouseListener,
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 
-		for (int i = 64; i < 100000; i+=128) {
+		for (int i = 64; i < 100000; i += 128) {
 			System.out.println(getData(i, 1));
 		}
 	}
@@ -61,8 +63,8 @@ public class DataImage extends JPanel implements MouseListener,
 			long current = getData(pos, this.pixelLength);
 
 			Color c =
-			        new Color(getMasked(current, this.redMask), getMasked(current,
-			                this.greenMask), getMasked(current, this.blueMask));
+					new Color(getMasked(current, this.redMask), getMasked(current,
+							this.greenMask), getMasked(current, this.blueMask));
 			g2d.setColor(c);
 			Point screen = dataPosToScreen(pos);
 			g2d.fillRect(screen.x, screen.y, this.pixelSize, this.pixelSize);
@@ -112,7 +114,7 @@ public class DataImage extends JPanel implements MouseListener,
 		if (pos < 0 || pos + length >= this.data.length) {
 			return 0;
 		}
-		
+
 		long result = 0;
 		for (int i = 0; i < length && i < 8; i++) {
 			int resultByte;
@@ -123,28 +125,26 @@ public class DataImage extends JPanel implements MouseListener,
 			}
 			result |= (0xffl & this.data[pos + i]) << (resultByte * 8);
 		}
-		
-//		if ((pos & 0x04) != 0) {
-			result += pos;
-//		} else {
-//			result -= pos;
-//		}
+
+		// if ((pos & 0x04) != 0) {
+		result += pos;
+		// } else {
+		// result -= pos;
+		// }
 		result &= 0xff;
-		
+
 		if (pos % 128 < 64) {
 			result = 0xff - result;
 		}
-		
-		
-		
-		//result |= (pos & 0xffff) << 8;
-		
+
+		// result |= (pos & 0xffff) << 8;
+
 		if (result < 100 || result > 155) {
 			return 0;
 		} else {
 			return result;
 		}
-		//return result;
+		// return result;
 	}
 
 	@Override
@@ -214,14 +214,13 @@ public class DataImage extends JPanel implements MouseListener,
 		String str = "" + realCurrentMarked + ":";
 
 		/*
-		 * for (int i = 0; i < getPixelLength(); i++) { str += " " +
-		 * Integer.toHexString(0xff & data[i]); }
+		 * for (int i = 0; i < getPixelLength(); i++) { str += " " + Integer.toHexString(0xff & data[i]); }
 		 */
 		long pixel = getData(realCurrentMarked, getPixelLength());
 		str +=
-		        " 0x"
-		                + String.format("%0" + (getPixelLength() * 2) + "x",
-		                        pixel);
+				" 0x"
+						+ String.format("%0" + (getPixelLength() * 2) + "x",
+								pixel);
 
 		int fontHeight = g.getFontMetrics().getHeight() + 4;
 		g.setColor(Color.WHITE);
@@ -303,12 +302,13 @@ public class DataImage extends JPanel implements MouseListener,
 
 	/**
 	 * moves the marker
+	 * 
 	 * @param x
 	 * @param y
 	 */
 	public void moveMarked(int x, int y) {
-	    this.currentMarked += (x + y * getImageWidth()) * getPixelLength();
-	    repaint();
-    }
+		this.currentMarked += (x + y * getImageWidth()) * getPixelLength();
+		repaint();
+	}
 
 }

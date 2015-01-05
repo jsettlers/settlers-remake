@@ -92,7 +92,7 @@ public class SoundManager {
 	}
 
 	protected static int[][] getSoundStarts(ByteReader reader)
-	        throws IOException {
+			throws IOException {
 		int[] seqheaderstarts = new int[SEQUENCE_N];
 		for (int i = 0; i < SEQUENCE_N; i++) {
 			seqheaderstarts[i] = reader.read32();
@@ -113,7 +113,7 @@ public class SoundManager {
 	}
 
 	protected static ByteReader openSoundFile() throws IOException,
-	        FileNotFoundException {
+			FileNotFoundException {
 		File sndfile = getSoundFile();
 
 		if (sndfile == null) {
@@ -124,22 +124,22 @@ public class SoundManager {
 		ByteReader reader = new ByteReader(randomAccessFile);
 
 		reader.assumeToRead(new byte[] {
-		        0x44,
-		        0x15,
-		        0x01,
-		        0x00,
-		        0x02,
-		        0x00,
-		        0x00,
-		        0x00,
-		        0x00,
-		        0x00,
-		        0x00,
-		        0x00,
-		        0x1C,
-		        0x00,
-		        0x00,
-		        0x00
+				0x44,
+				0x15,
+				0x01,
+				0x00,
+				0x02,
+				0x00,
+				0x00,
+				0x00,
+				0x00,
+				0x00,
+				0x00,
+				0x00,
+				0x1C,
+				0x00,
+				0x00,
+				0x00
 		});
 
 		reader.skipTo(0x24);
@@ -169,7 +169,7 @@ public class SoundManager {
 				int rand = random.nextInt(alternatives.length);
 				float volume = SettingsManager.getInstance().getVolume();
 				player.playSound(alternatives[rand], volume1 * volume, volume2
-				        * volume);
+						* volume);
 			}
 		}
 	}
@@ -210,13 +210,13 @@ public class SoundManager {
 
 		@Override
 		public synchronized short[] getSoundData(int soundStart)
-		        throws IOException {
+				throws IOException {
 			return SoundManager.getSoundData(reader, soundStart);
 		}
 	}
 
 	protected static short[] getSoundData(ByteReader reader, int start)
-	        throws IOException {
+			throws IOException {
 		reader.skipTo(start);
 
 		int length = reader.read32() / 2 - 16;
@@ -229,7 +229,7 @@ public class SoundManager {
 	}
 
 	private static short[] loadSound(ByteReader reader, int length)
-	        throws IOException {
+			throws IOException {
 		if (length < 0) {
 			return new short[0];
 		}

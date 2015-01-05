@@ -22,7 +22,7 @@ public class BuildingButton extends Button {
 	private final ImageLink buildingImage;
 
 	private final static OriginalImageLink activeMark = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 123, 0);
+			EImageLinkType.GUI, 3, 123, 0);
 
 	public static int ITEM_WIDTH = 60;
 	public static int ITEM_HEIGHT = 36;
@@ -31,7 +31,7 @@ public class BuildingButton extends Button {
 
 	public BuildingButton(EBuildingType buildingType) {
 		super(new BuildAction(buildingType), null, null, Labels
-		        .getName(buildingType));
+				.getName(buildingType));
 		this.buildingType = buildingType;
 		buildingImage = buildingType.getGuiImage();
 	}
@@ -41,11 +41,11 @@ public class BuildingButton extends Button {
 		if (isActive()) {
 			gl.color(1, 1, 1, 1);
 			ImageProvider
-			        .getInstance()
-			        .getImage(activeMark)
-			        .drawImageAtRect(gl, getPosition().getMinX(),
-			                getPosition().getMinY(), getPosition().getMaxX(),
-			                getPosition().getMaxY());
+					.getInstance()
+					.getImage(activeMark)
+					.drawImageAtRect(gl, getPosition().getMinX(),
+							getPosition().getMinY(), getPosition().getMaxX(),
+							getPosition().getMaxY());
 		}
 
 		drawBackground(gl);
@@ -57,25 +57,25 @@ public class BuildingButton extends Button {
 		Image image;
 		if (buildingImage instanceof OriginalImageLink) {
 			image =
-			        getDetailedImage((OriginalImageLink) buildingImage,
-			                position.getWidth(), position.getHeight());
+					getDetailedImage((OriginalImageLink) buildingImage,
+							position.getWidth(), position.getHeight());
 		} else {
 			image = ImageProvider.getInstance().getImage(buildingImage);
 		}
 
 		float width =
-		        (float) image.getWidth() / ITEM_WIDTH
-		                * getPosition().getWidth();
+				(float) image.getWidth() / ITEM_WIDTH
+						* getPosition().getWidth();
 		float height =
-		        (float) image.getHeight() / ITEM_HEIGHT
-		                * getPosition().getHeight();
+				(float) image.getHeight() / ITEM_HEIGHT
+						* getPosition().getHeight();
 
 		float cx = getPosition().getCenterX();
 		float cy = getPosition().getCenterY();
 
 		gl.color(1, 1, 1, 1);
 		image.drawImageAtRect(gl, cx - width / 2, cy - height / 2, cx + width
-		        / 2, cy + height / 2);
+				/ 2, cy + height / 2);
 	}
 
 	public EBuildingType getBuildingType() {

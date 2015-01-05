@@ -1,6 +1,5 @@
 package jsettlers.logic.algorithms.partitions;
 
-
 /**
  * This interface defines a provider for blocking information. It can be used to find out if a position is blocking or not.
  * 

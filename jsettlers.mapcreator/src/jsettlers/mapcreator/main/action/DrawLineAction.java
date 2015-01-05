@@ -11,22 +11,22 @@ public class DrawLineAction extends Action {
 	private final double uidy;
 
 	public DrawLineAction(ShortPoint2D start, ShortPoint2D end, double uidy) {
-	    super(EActionType.UNSPECIFIED);
+		super(EActionType.UNSPECIFIED);
 		this.start = start;
 		this.end = end;
 		this.uidy = uidy;
-    }
-	
+	}
+
 	public ShortPoint2D getStart() {
-	    return start;
-    }
-	
+		return start;
+	}
+
 	public ShortPoint2D getEnd() {
-	    return end;
-    }
-	
+		return end;
+	}
+
 	public double getUidy() {
-	    return uidy;
-    }
+		return uidy;
+	}
 
 }

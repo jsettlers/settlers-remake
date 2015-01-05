@@ -9,10 +9,14 @@ public abstract class LandInstruction extends GenerationInstruction {
 
 	/**
 	 * Executes this instruction
-	 * @param landscape The landscape to work on
-	 * @param starts TODO: better param for connections, ...
-	 * @param rand A random generator to use
+	 * 
+	 * @param landscape
+	 *            The landscape to work on
+	 * @param starts
+	 *            TODO: better param for connections, ...
+	 * @param rand
+	 *            A random generator to use
 	 */
 	public abstract void execute(LandscapeMesh landscape, PlayerStart[] starts,
-	        Random rand);
+			Random rand);
 }

@@ -16,8 +16,8 @@ public class PlaceBuildingTool extends PlaceMapObjectTool {
 		super(null);
 		this.type = type;
 		this.player = player;
-    }
-	
+	}
+
 	@Override
 	public MapObject getObject() {
 		return new BuildingObject(type, player.getActivePlayer());

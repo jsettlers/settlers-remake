@@ -54,14 +54,13 @@ public class ActionMap {
 	 * 
 	 * @param pos
 	 *            The position.
-	 * @return The action, or<code>null</code> if there is no registered action
-	 *         for that point.
+	 * @return The action, or<code>null</code> if there is no registered action for that point.
 	 */
 	public Action getAction(UIPoint pos) {
 		for (PositionedAction action : this.actions) {
 			if (!action.getAction().isActive()
-			        && action.getPosition().contains((int) pos.getX(),
-			                (int) pos.getY())) {
+					&& action.getPosition().contains((int) pos.getX(),
+							(int) pos.getY())) {
 				return action.getAction();
 			}
 		}
@@ -104,7 +103,7 @@ public class ActionMap {
 	}
 
 	public void removeAll() {
-	    this.actions.clear();
-    }
+		this.actions.clear();
+	}
 
 }

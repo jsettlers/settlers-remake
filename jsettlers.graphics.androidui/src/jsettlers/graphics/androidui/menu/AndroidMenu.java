@@ -41,6 +41,7 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see jsettlers.graphics.androidui.menu.Hideable#requestHide()
 	 */
 	@Override
@@ -54,9 +55,9 @@ public abstract class AndroidMenu extends Fragment implements Hideable {
 	}
 
 	protected OnClickListener generateActionListener(Action action,
-	        boolean hideOnClick) {
+			boolean hideOnClick) {
 		return new ActionClickListener(putable, action, hideOnClick ? this
-		        : null);
+				: null);
 	};
 
 	protected void setActiveAction(ContextAction action) {

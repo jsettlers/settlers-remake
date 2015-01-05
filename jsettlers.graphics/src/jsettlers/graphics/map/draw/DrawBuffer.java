@@ -6,7 +6,7 @@ import java.nio.ByteOrder;
 import jsettlers.graphics.map.IGLProvider;
 
 public class DrawBuffer {
-	
+
 	private static final int BUFFERS = 5;
 	private final IGLProvider context;
 	private float z;
@@ -19,7 +19,6 @@ public class DrawBuffer {
 		private static final int TRIAMGLE_LENGTH = 3 * VERTEX_LENGTH;
 		private static final int BUFFER_TRIANGLES = 1000;
 
-
 		/**
 		 * The last texture we set.
 		 */
@@ -31,7 +30,7 @@ public class DrawBuffer {
 
 		protected Buffer() {
 			byteBuffer =
-			        ByteBuffer.allocateDirect(BUFFER_TRIANGLES * TRIAMGLE_LENGTH);
+					ByteBuffer.allocateDirect(BUFFER_TRIANGLES * TRIAMGLE_LENGTH);
 			byteBuffer.order(ByteOrder.nativeOrder());
 		}
 
@@ -51,8 +50,8 @@ public class DrawBuffer {
 			byteBuffer.rewind();
 			currentTriangles = 0;
 		}
-		
-		protected void addImage(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) { 
+
+		protected void addImage(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) {
 			if (currentTriangles >= BUFFER_TRIANGLES - 2) {
 				draw();
 			}
@@ -63,9 +62,10 @@ public class DrawBuffer {
 			addPointPrimitive(x1, y2, u1, v2, activeColor);
 			addPointPrimitive(x2, y2, u2, v2, activeColor);
 			currentTriangles += 2;
-        }
-		
-		public void addTirangle(float x1, float y1, float x2, float y2, float x3, float y3, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+		}
+
+		public void addTirangle(float x1, float y1, float x2, float y2, float x3, float y3, float u1, float v1, float u2, float v2, float u3,
+				float v3, int activeColor) {
 			if (currentTriangles >= BUFFER_TRIANGLES - 1) {
 				draw();
 			}
@@ -74,7 +74,7 @@ public class DrawBuffer {
 			addPointPrimitive(x3, y3, u3, v3, activeColor);
 			currentTriangles += 1;
 		}
-		
+
 		private void addPointPrimitive(float x1, float y1, float u, float v, int activeColor) {
 			byteBuffer.putFloat(x1);
 			byteBuffer.putFloat(y1);
@@ -94,8 +94,8 @@ public class DrawBuffer {
 		for (int i = 0; i < BUFFERS; i++) {
 			drawBuffers[i] = new Buffer();
 		}
-    }
-		
+	}
+
 	public void addImage(int texture, float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2, int activeColor) {
 		setZ(getZ() + .00001f);
 		getBuffer(texture).addImage(x1, y1, x2, y2, u1, v1, u2, v2, activeColor);
@@ -118,7 +118,6 @@ public class DrawBuffer {
 		return buffer;
 	}
 
-
 	public void flush() {
 		for (int i = 0; i < BUFFERS; i++) {
 			drawBuffers[i].draw();
@@ -127,10 +126,10 @@ public class DrawBuffer {
 	}
 
 	public float getZ() {
-	    return z;
-    }
+		return z;
+	}
 
 	public void setZ(float z) {
-	    this.z = z;
-    }
+		this.z = z;
+	}
 }

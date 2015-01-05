@@ -20,22 +20,18 @@ import jsettlers.graphics.map.draw.DrawConstants;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
- * This is the drawing context for a map. It is used to translate the visible
- * screen space to local coordinate space and holds the current gl context.
+ * This is the drawing context for a map. It is used to translate the visible screen space to local coordinate space and holds the current gl context.
  * <p>
- * This class uses 3 coordiante systems and provides conversion methods between
- * them.
+ * This class uses 3 coordiante systems and provides conversion methods between them.
  * <ul>
  * <li>The map space. It is the map coordinate system (x, y)
  * <li>The draw space (used by all draw stuff).
  * <li>The screen space (visible space on which is drawn).
  * <ul>
- * <h2>gl setup</h2> With {@link #begin(GLDrawContext)}, the gl state machine is
- * initialized for drawing the map. The draw coordinates can then be given in
- * draw space.
- * <h2>Draw buffer</h2> We hold a draw buffer everyone drawing with the map draw
- * context can use. The buffer should be flushed when drawing one component
- * finished. When the draw buffer is used after a call to end(), the buffer is invalid.
+ * <h2>gl setup</h2> With {@link #begin(GLDrawContext)}, the gl state machine is initialized for drawing the map. The draw coordinates can then be
+ * given in draw space.
+ * <h2>Draw buffer</h2> We hold a draw buffer everyone drawing with the map draw context can use. The buffer should be flushed when drawing one
+ * component finished. When the draw buffer is used after a call to end(), the buffer is invalid.
  * 
  * @author michael
  */
@@ -49,28 +45,28 @@ public final class MapDrawContext implements IGLProvider {
 
 	private final MapCoordinateConverter converter;
 	Color[] playerColors = new Color[] {
-	        // red
-	        new Color(0xffe50000),
-	        // blue
-	        new Color(0xff0343df),
-	        // green
-	        new Color(0xff15b01a),
-	        // yellow
-	        new Color(0xffffff14),
-	        // purple
-	        new Color(0xff7e1e9c),
-	        // teal
-	        new Color(0xff029386),
-	        // orange
-	        new Color(0xfff97306),
-	        // magenta
-	        new Color(0xffc20078),
-	        // grey
-	        new Color(0xff929591),
-	        // violet
-	        new Color(0xff9a0eea),
-	        // olive
-	        new Color(0xff6e750e),
+			// red
+			new Color(0xffe50000),
+			// blue
+			new Color(0xff0343df),
+			// green
+			new Color(0xff15b01a),
+			// yellow
+			new Color(0xffffff14),
+			// purple
+			new Color(0xff7e1e9c),
+			// teal
+			new Color(0xff029386),
+			// orange
+			new Color(0xfff97306),
+			// magenta
+			new Color(0xffc20078),
+			// grey
+			new Color(0xff929591),
+			// violet
+			new Color(0xff9a0eea),
+			// olive
+			new Color(0xff6e750e),
 	};
 
 	public boolean ENABLE_ORIGINAL = true;
@@ -94,15 +90,15 @@ public final class MapDrawContext implements IGLProvider {
 		this.map = map;
 		this.textDrawer = textDrawer;
 		float incline =
-		        DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
+				DrawConstants.DISTANCE_X / 2.0f / DrawConstants.DISTANCE_Y;
 		int mapHeight = map.getHeight() * DrawConstants.DISTANCE_Y;
 		int mapWidth = map.getWidth() * DrawConstants.DISTANCE_X;
 		this.screen = new ScreenPosition(mapWidth, mapHeight, incline);
 
 		this.converter =
-		        MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
-		                DrawConstants.DISTANCE_Y, map.getWidth(),
-		                map.getHeight());
+				MapCoordinateConverter.get(DrawConstants.DISTANCE_X,
+						DrawConstants.DISTANCE_Y, map.getWidth(),
+						map.getHeight());
 
 		buffer = new DrawBuffer(this);
 	}
@@ -132,8 +128,7 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * Begin a new draw session (=> draw a new image). Sets up the gl screen
-	 * assuming the current viewport is set to (0,0,width,height)
+	 * Begin a new draw session (=> draw a new image). Sets up the gl screen assuming the current viewport is set to (0,0,width,height)
 	 * 
 	 * @param gl2
 	 *            The gl context to use.
@@ -148,7 +143,7 @@ public final class MapDrawContext implements IGLProvider {
 		float zoom = screen.getZoom();
 		gl2.glScalef(zoom, zoom, 1);
 		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
-		        (int) -this.screen.getBottom() + .5f, 0);
+				(int) -this.screen.getBottom() + .5f, 0);
 	}
 
 	/**
@@ -160,13 +155,12 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * Gets the current gl context, of <code>null</code> if it is called outside
-	 * a gl drawing session.
+	 * Gets the current gl context, of <code>null</code> if it is called outside a gl drawing session.
 	 * 
 	 * @return The gl context that was given to {@link #begin(GLDrawContext)}
 	 */
 	@Override
-    public GLDrawContext getGl() {
+	public GLDrawContext getGl() {
 		return this.gl;
 	}
 
@@ -175,8 +169,7 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * Gets the text drawer for the draw context. Use this method instead of the
-	 * opengl one, because we might override it.
+	 * Gets the text drawer for the draw context. Use this method instead of the opengl one, because we might override it.
 	 * 
 	 * @param size
 	 * @return
@@ -186,8 +179,7 @@ public final class MapDrawContext implements IGLProvider {
 	}
 
 	/**
-	 * Gets the region of the draw space that is drawn on the screen and
-	 * therefore rendered.
+	 * Gets the region of the draw space that is drawn on the screen and therefore rendered.
 	 * 
 	 * @return The region displayed on the screen as Rectangle.
 	 */
@@ -207,8 +199,8 @@ public final class MapDrawContext implements IGLProvider {
 		UIPoint desiredOnScreen = new UIPoint(screenx, screeny);
 
 		UIPoint onscreen =
-		        converter.getView(currentPoint.x, currentPoint.y,
-		                getHeight(currentPoint.x, currentPoint.y));
+				converter.getView(currentPoint.x, currentPoint.y,
+						getHeight(currentPoint.x, currentPoint.y));
 		double currentbest = onscreen.distance(desiredOnScreen);
 
 		boolean couldBeImproved;
@@ -239,8 +231,8 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public ShortPoint2D getPositionOnScreen(float x, float y) {
 		return getPositionUnder(
-		        x / this.screen.getZoom() + this.screen.getLeft(), y
-		                / this.screen.getZoom() + this.screen.getBottom());
+				x / this.screen.getZoom() + this.screen.getLeft(), y
+						/ this.screen.getZoom() + this.screen.getBottom());
 	}
 
 	/**
@@ -254,7 +246,7 @@ public final class MapDrawContext implements IGLProvider {
 	 */
 	public boolean checkMapCoordinates(int x, int y) {
 		return x >= 0 && x < this.map.getWidth() && y >= 0
-		        && y < this.map.getHeight();
+				&& y < this.map.getHeight();
 	}
 
 	/**
@@ -291,12 +283,11 @@ public final class MapDrawContext implements IGLProvider {
 		this.gl.glPushMatrix();
 		int height = getHeight(x, y);
 		this.gl.glTranslatef(this.converter.getViewX(x, y, height),
-		        this.converter.getViewY(x, y, height), 0);
+				this.converter.getViewY(x, y, height), 0);
 	}
 
 	/**
-	 * Assumes that the user begun drawing a tile recently, and ends drawing the
-	 * tile. This also resets the view matrix to the one before starting to
+	 * Assumes that the user begun drawing a tile recently, and ends drawing the tile. This also resets the view matrix to the one before starting to
 	 * draw.
 	 */
 	public void endTileContext() {
@@ -314,22 +305,22 @@ public final class MapDrawContext implements IGLProvider {
 	 *            The progress between those two bytes.
 	 */
 	public void beginBetweenTileContext(int startx, int starty,
-	        int destinationx, int destinationy, float progress) {
+			int destinationx, int destinationy, float progress) {
 		this.gl.glPushMatrix();
 		float theight = getHeight(startx, starty);
 		float dheight = getHeight(destinationx, destinationy);
 		float x =
-		        (1 - progress)
-		                * this.converter.getViewX(startx, starty, theight)
-		                + progress
-		                * this.converter.getViewX(destinationx, destinationy,
-		                        dheight);
+				(1 - progress)
+						* this.converter.getViewX(startx, starty, theight)
+						+ progress
+						* this.converter.getViewX(destinationx, destinationy,
+								dheight);
 		float y =
-		        (1 - progress)
-		                * this.converter.getViewY(startx, starty, theight)
-		                + progress
-		                * this.converter.getViewY(destinationx, destinationy,
-		                        dheight);
+				(1 - progress)
+						* this.converter.getViewY(startx, starty, theight)
+						+ progress
+						* this.converter.getViewY(destinationx, destinationy,
+								dheight);
 		this.gl.glTranslatef(x, y, 0);
 	}
 
@@ -352,7 +343,7 @@ public final class MapDrawContext implements IGLProvider {
 		float drawy1 = y1 / this.screen.getZoom() + this.screen.getBottom();
 		float drawy2 = y2 / this.screen.getZoom() + this.screen.getBottom();
 		return new HeightedMapRectangle(new FloatRectangle(drawx1, drawy1,
-		        drawx2, drawy2));
+				drawx2, drawy2));
 	}
 
 	private class HeightedMapRectangle implements IMapArea {
@@ -368,8 +359,7 @@ public final class MapDrawContext implements IGLProvider {
 		private final FloatRectangle drawRect;
 
 		/**
-		 * Creates a new IMapArea that contains the points that are in the
-		 * rectangle on the screen.
+		 * Creates a new IMapArea that contains the points that are in the rectangle on the screen.
 		 * 
 		 * @param drawRect
 		 *            The rectangle in draw space
@@ -412,15 +402,15 @@ public final class MapDrawContext implements IGLProvider {
 			private ShortPoint2D searchNext() {
 				int startLine = currentLine;
 				while (startLine >= currentLine - 2
-				        || currentLine < MIN_SEARCH_LINES) {
+						|| currentLine < MIN_SEARCH_LINES) {
 					currentX++;
 					if (currentX > base.getLineEndX(currentLine)) {
 						currentLine++;
 						currentX = base.getLineStartX(currentLine);
 					}
 					ShortPoint2D point =
-					        new ShortPoint2D(currentX,
-					                base.getLineY(currentLine));
+							new ShortPoint2D(currentX,
+									base.getLineY(currentLine));
 					if (contains(point)) {
 						return point;
 					}

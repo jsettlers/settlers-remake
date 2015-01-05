@@ -35,7 +35,7 @@ public class AnimateablePosition {
 		float p = getProgress();
 		return (1 - p) * starty + p * desty;
 	}
-	
+
 	public void setPosition(float x, float y) {
 		this.startx = getX();
 		this.starty = getY();

@@ -2,6 +2,7 @@ package jsettlers.mapcreator.tools.shapes;
 
 /**
  * This is a property definition a shape can have.
+ * 
  * @author michael
  *
  */
@@ -18,18 +19,18 @@ public class ShapeProperty {
 		this.name = name;
 		this.min = min;
 		this.max = max;
-    }
+	}
 
 	public String getName() {
-	    return name;
-    }
-	
+		return name;
+	}
+
 	public int getMax() {
-	    return max;
-    }
-	
+		return max;
+	}
+
 	public int getMin() {
-	    return min;
-    }
+		return min;
+	}
 
 }

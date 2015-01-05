@@ -133,5 +133,5 @@ public interface GLDrawContext {
 	}
 
 	void drawTrianglesWithTextureColored(int currentTexture,
-            ByteBuffer byteBuffer, int currentTriangles);
+			ByteBuffer byteBuffer, int currentTriangles);
 }

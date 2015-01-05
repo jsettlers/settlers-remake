@@ -1,6 +1,5 @@
 package jsettlers.graphics.startscreen.interfaces;
 
-
 /**
  * This is a listener to the multiplayer screen.
  * 
@@ -15,8 +14,7 @@ public interface IMultiplayerListener {
 	void gameIsStarting(IStartingGame game);
 
 	/**
-	 * Called when the game was aborted and the user is forced to exit the
-	 * screen.
+	 * Called when the game was aborted and the user is forced to exit the screen.
 	 */
 	void gameAborted();
 }

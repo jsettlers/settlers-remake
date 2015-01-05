@@ -62,7 +62,8 @@ public class AsyncChannelTest {
 	public void testAsyncReceiveTime() throws InterruptedException {
 		final int RUNS = 10;
 
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET, TestPacket.DEFAULT_DESERIALIZER);
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
+				TestPacket.DEFAULT_DESERIALIZER);
 		c2.registerListener(listener);
 
 		TestPacket testPackage = new TestPacket("bla", -234234);

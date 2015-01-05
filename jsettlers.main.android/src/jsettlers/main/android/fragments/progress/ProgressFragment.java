@@ -14,8 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * This displays a progress bar on the screen. TODO: We should call some abort
- * method when the user presses back!
+ * This displays a progress bar on the screen. TODO: We should call some abort method when the user presses back!
  * 
  * @author michael
  */
@@ -31,7 +30,7 @@ public class ProgressFragment extends JsettlersFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.progress, container, false);
 	}
 
@@ -44,10 +43,10 @@ public class ProgressFragment extends JsettlersFragment {
 	@Override
 	public boolean onBackButtonPressed() {
 		Toast.makeText(getActivity(), "TODO: Back while in progress",
-		        Toast.LENGTH_LONG).show();
+				Toast.LENGTH_LONG).show();
 		return true;
 	}
-	
+
 	public synchronized void setProgressState(final EProgressState state, final float progress) {
 		final String text = Labels.getProgress(state);
 		setProgressState(text, progress);
@@ -69,16 +68,16 @@ public class ProgressFragment extends JsettlersFragment {
 	}
 
 	protected void applyStateValues(final String text,
-	        float progress) {
+			float progress) {
 		TextView textView =
-		        (TextView) getView().findViewById(R.id.progress_text);
+				(TextView) getView().findViewById(R.id.progress_text);
 		if (textView != null) {
 			textView.setText(text);
 		}
 
 		ProgressBar bar =
-		        (ProgressBar) getView()
-		                .findViewById(R.id.progress_progress);
+				(ProgressBar) getView()
+						.findViewById(R.id.progress_progress);
 		if (bar != null) {
 			bar.setIndeterminate(progress < 0);
 			if (progress >= 0) {
@@ -86,6 +85,5 @@ public class ProgressFragment extends JsettlersFragment {
 			}
 		}
 	}
-
 
 }

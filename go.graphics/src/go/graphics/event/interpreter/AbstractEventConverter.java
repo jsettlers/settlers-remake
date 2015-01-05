@@ -10,8 +10,7 @@ import go.graphics.event.command.GOCommandEvent;
 import java.util.LinkedList;
 
 /**
- * This class interprets events. It provides helper functions for e.g. Swing
- * converter to send the events.
+ * This class interprets events. It provides helper functions for e.g. Swing converter to send the events.
  * 
  * @author michael
  */
@@ -29,7 +28,7 @@ public class AbstractEventConverter {
 	private final int PAN_PER_KEYPRESS = 20;
 
 	private final LinkedList<EventReplacementRule> replace =
-	        new LinkedList<AbstractEventConverter.EventReplacementRule>();
+			new LinkedList<AbstractEventConverter.EventReplacementRule>();
 
 	private ConvertedZoomEvent ongoingZoomEvent;
 
@@ -75,8 +74,8 @@ public class AbstractEventConverter {
 	protected void endDraw(UIPoint position) {
 		if (ongoingDrawEvent != null) {
 			if (tryReplaceEvent(position, ReplacableEvent.DRAW,
-			        ongoingDrawEvent.getTime(),
-			        ongoingDrawEvent.getMouseMoved())) {
+					ongoingDrawEvent.getTime(),
+					ongoingDrawEvent.getMouseMoved())) {
 				abortDraw();
 			} else {
 				ongoingDrawEvent.released();
@@ -109,7 +108,7 @@ public class AbstractEventConverter {
 	protected void endPan(UIPoint position) {
 		if (ongoingPanEvent != null) {
 			if (tryReplaceEvent(position, ReplacableEvent.PAN,
-			        ongoingPanEvent.getTime(), ongoingPanEvent.getMouseMoved())) {
+					ongoingPanEvent.getTime(), ongoingPanEvent.getMouseMoved())) {
 				abortPan();
 			} else {
 				ongoingPanEvent.released();
@@ -117,7 +116,7 @@ public class AbstractEventConverter {
 			}
 		}
 	}
-	
+
 	protected void startZoom() {
 		if (ongoingZoomEvent == null) {
 			ongoingZoomEvent = new ConvertedZoomEvent();
@@ -125,7 +124,7 @@ public class AbstractEventConverter {
 			ongoingZoomEvent.initialized();
 		}
 	}
-	
+
 	protected void updateZoomFactor(float factor) {
 		if (ongoingZoomEvent != null) {
 			ongoingZoomEvent.setZoomFactor(factor);
@@ -164,8 +163,8 @@ public class AbstractEventConverter {
 	protected void endHover(UIPoint position) {
 		if (ongoingHoverEvent != null) {
 			if (tryReplaceEvent(position, ReplacableEvent.HOVER,
-			        ongoingHoverEvent.getTime(),
-			        ongoingHoverEvent.getMouseMoved())) {
+					ongoingHoverEvent.getTime(),
+					ongoingHoverEvent.getMouseMoved())) {
 				abortHover();
 			} else {
 				ongoingHoverEvent.released();
@@ -183,7 +182,7 @@ public class AbstractEventConverter {
 
 	protected boolean fireCommandEvent(UIPoint point, boolean isSelect) {
 		ConvertedCommandEvent commandEvent =
-		        new ConvertedCommandEvent(point, isSelect);
+				new ConvertedCommandEvent(point, isSelect);
 
 		handleEvent(commandEvent);
 
@@ -240,7 +239,7 @@ public class AbstractEventConverter {
 	}
 
 	private class ConvertedCommandEvent extends SingleHandlerGoEvent implements
-	        GOCommandEvent {
+			GOCommandEvent {
 
 		private final UIPoint position;
 		private final boolean selecting;
@@ -273,12 +272,12 @@ public class AbstractEventConverter {
 	}
 
 	private boolean tryReplaceEvent(UIPoint p, ReplacableEvent e, double time,
-	        double distance) {
+			double distance) {
 		for (EventReplacementRule r : replace) {
 			if (r.matches(e, time, distance)) {
 				boolean success =
-				        fireCommandEvent(p,
-				                r.replaced == Replacement.COMMAND_SELECT);
+						fireCommandEvent(p,
+								r.replaced == Replacement.COMMAND_SELECT);
 				if (success) {
 					return true;
 				}
@@ -286,18 +285,17 @@ public class AbstractEventConverter {
 		}
 		return false;
 	}
-	
+
 	protected boolean drawStarted() {
-	    return ongoingDrawEvent != null;
-    }
-	
+		return ongoingDrawEvent != null;
+	}
+
 	protected boolean panStarted() {
-	    return ongoingPanEvent != null;
-    }
+		return ongoingPanEvent != null;
+	}
 
 	/**
-	 * a rule on when to replace short draw, hover or pan events with other
-	 * stuff.
+	 * a rule on when to replace short draw, hover or pan events with other stuff.
 	 * 
 	 * @author michael
 	 */
@@ -317,7 +315,7 @@ public class AbstractEventConverter {
 		 *            Maximum distance the cursor moved. -1: ignore
 		 */
 		public EventReplacementRule(ReplacableEvent search,
-		        Replacement replaced, double maxTime, double maxDistance) {
+				Replacement replaced, double maxTime, double maxDistance) {
 			this.search = search;
 			this.replaced = replaced;
 			this.maxTime = maxTime;
@@ -326,15 +324,18 @@ public class AbstractEventConverter {
 
 		private boolean matches(ReplacableEvent e, double time, double distance) {
 			return e == search && (maxTime < 0 || time < maxTime)
-			        && (maxDistance < 0 || distance < maxDistance);
+					&& (maxDistance < 0 || distance < maxDistance);
 		}
 	}
 
 	public enum ReplacableEvent {
-		DRAW, PAN, HOVER;
+		DRAW,
+		PAN,
+		HOVER;
 	}
 
 	public enum Replacement {
-		COMMAND_SELECT, COMMAND_ACTION;
+		COMMAND_SELECT,
+		COMMAND_ACTION;
 	}
 }

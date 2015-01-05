@@ -12,7 +12,7 @@ public class ActionClickListener implements OnClickListener {
 	private Hideable hide;
 
 	public ActionClickListener(ActionFireable fireable, Action action,
-	        Hideable hide) {
+			Hideable hide) {
 		this.fireable = fireable;
 		this.action = action;
 		this.hide = hide;

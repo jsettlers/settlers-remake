@@ -10,7 +10,7 @@ public class ConvertedZoomEvent extends AbstractMouseEvent implements GOZoomEven
 	public float getZoomFactor() {
 		return zoom;
 	}
-	
+
 	public void setZoomFactor(float factor) {
 		zoom = factor;
 		fireModalDataRefreshed();

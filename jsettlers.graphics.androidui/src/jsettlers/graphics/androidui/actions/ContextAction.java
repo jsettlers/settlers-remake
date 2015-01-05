@@ -9,7 +9,7 @@ import jsettlers.graphics.action.Action;
  */
 public abstract class ContextAction {
 	public abstract String getDesciption();
-	
+
 	public Action replaceAction(Action action) {
 		return action;
 	}

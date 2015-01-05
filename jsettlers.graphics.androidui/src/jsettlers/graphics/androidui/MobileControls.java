@@ -62,8 +62,8 @@ public class MobileControls implements IControls, ContextActionListener {
 			setActiveMenu(buildMenu);
 		}
 	}, new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
-	        new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
-	        Labels.getString("show-build-menu"));
+			new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
+			Labels.getString("show-build-menu"));
 
 	Button showSelectionButton = new Button(new ExecutableAction() {
 		@Override
@@ -71,8 +71,8 @@ public class MobileControls implements IControls, ContextActionListener {
 			showSelectionMenu();
 		}
 	}, new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
-	        new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
-	        Labels.getString("show-build-menu"));
+			new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
+			Labels.getString("show-build-menu"));
 
 	private NavigationPoint naviPoint = new NavigationPoint(null);
 	private final PauseMenu pauseMenu;
@@ -96,7 +96,7 @@ public class MobileControls implements IControls, ContextActionListener {
 		synchronized (activeActionMutex) {
 			if (activeAction != null) {
 				gl.getTextDrawer(EFontSize.NORMAL).drawString(10, 10,
-				        activeAction.getDesciption());
+						activeAction.getDesciption());
 			}
 		}
 		if (androidMenuPutable.getActiveMenu() != null) {
@@ -106,12 +106,12 @@ public class MobileControls implements IControls, ContextActionListener {
 		}
 		// TODO: Reuse, less frequent
 		new Handler(androidMenuPutable.getContext().getMainLooper())
-		        .post(new Runnable() {
-			        @Override
-			        public void run() {
-				        pollActiveMenu();
-			        }
-		        });
+				.post(new Runnable() {
+					@Override
+					public void run() {
+						pollActiveMenu();
+					}
+				});
 	}
 
 	private void pollActiveMenu() {
@@ -136,11 +136,11 @@ public class MobileControls implements IControls, ContextActionListener {
 
 		float buttonsize = height * .125f;
 		showBuildButton.setPosition(new FloatRectangle(width - buttonsize,
-		        buttonsize * 2, width, buttonsize * 3));
+				buttonsize * 2, width, buttonsize * 3));
 		showSelectionButton.setPosition(new FloatRectangle(width - 3
-		        * buttonsize, 0, width - 2 * buttonsize, buttonsize));
+				* buttonsize, 0, width - 2 * buttonsize, buttonsize));
 		naviPoint.setPosition(width - 1.7f * buttonsize, 1.7f * buttonsize,
-		        buttonsize * 2.5f);
+				buttonsize * 2.5f);
 
 		// buildMenu.setPosition(new FloatRectangle(buttonsize / 2,
 		// buttonsize / 2, width - buttonsize * 3.5f, height - buttonsize
@@ -221,12 +221,12 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void action(Action action) {
 		if (action.getActionType() == EActionType.SPEED_SET_PAUSE) {
 			setActiveMenu(pauseMenu);
-		}  else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
-		        && androidMenuPutable.getActiveMenu() == pauseMenu) {
+		} else if (action.getActionType() == EActionType.SPEED_UNSET_PAUSE
+				&& androidMenuPutable.getActiveMenu() == pauseMenu) {
 			setActiveMenu(null);
 		} else if (action.getActionType() == EActionType.SET_WORK_AREA
-		        || action.getActionType() == EActionType.SELECT_POINT
-		        || action.getActionType() == EActionType.MOVE_TO) {
+				|| action.getActionType() == EActionType.SELECT_POINT
+				|| action.getActionType() == EActionType.MOVE_TO) {
 			setActiveAction(null);
 		}
 	}
@@ -266,8 +266,8 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void displaySelection(ISelectionSet selection) {
 		this.selection = selection;
 		if (selection != null
-		        && (selection.getSelectionType() == ESelectionType.SOLDIERS || selection
-		                .getSelectionType() == ESelectionType.SPECIALISTS)) {
+				&& (selection.getSelectionType() == ESelectionType.SOLDIERS || selection
+						.getSelectionType() == ESelectionType.SPECIALISTS)) {
 			setActiveAction(new MoveToOnClick());
 		}
 	}
@@ -275,13 +275,13 @@ public class MobileControls implements IControls, ContextActionListener {
 	protected void showSelectionMenu() {
 		if (selection != null) {
 			switch (selection.getSelectionType()) {
-				case BUILDING:
-					IBuilding building = (IBuilding) selection.get(0);
-					ShortPoint2D pos = building.getPos();
-					IPartitionSettings settings =
-					        context.getMap().getPartitionSettings(pos.x, pos.y);
-					setActiveMenu(new BuildingMenu(androidMenuPutable,
-					        building, settings));
+			case BUILDING:
+				IBuilding building = (IBuilding) selection.get(0);
+				ShortPoint2D pos = building.getPos();
+				IPartitionSettings settings =
+						context.getMap().getPartitionSettings(pos.x, pos.y);
+				setActiveMenu(new BuildingMenu(androidMenuPutable,
+						building, settings));
 			}
 		}
 		showSelectionButton.setActive(selection != null);
@@ -289,7 +289,7 @@ public class MobileControls implements IControls, ContextActionListener {
 
 	@Override
 	public void setDrawContext(ActionFireable actionFireable,
-	        MapDrawContext context) {
+			MapDrawContext context) {
 		this.context = context;
 		androidMenuPutable.setActionFireable(actionFireable);
 		naviPoint = new NavigationPoint(context);

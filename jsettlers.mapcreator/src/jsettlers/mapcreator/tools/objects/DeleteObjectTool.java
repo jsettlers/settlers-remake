@@ -11,9 +11,9 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
 public class DeleteObjectTool implements Tool {
 
 	private static final ShapeType[] SHAPE_TYPES = new ShapeType[] {
-    		new PointShape(),
-    		new LineCircleShape(),
-    };
+			new PointShape(),
+			new LineCircleShape(),
+	};
 
 	@Override
 	public String getName() {
@@ -27,13 +27,13 @@ public class DeleteObjectTool implements Tool {
 
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
-	        ShortPoint2D end, double uidx) {
+			ShortPoint2D end, double uidx) {
 		byte[][] influences = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(influences, start, end);
-		
+
 		for (int x = 0; x < map.getWidth(); x++) {
 			for (int y = 0; y < map.getWidth(); y++) {
-				if (influences[x][y]> 0) {
+				if (influences[x][y] > 0) {
 					map.deleteObject(x, y);
 				}
 			}

@@ -6,8 +6,8 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 
 /**
- * This class represents the statistics for a given player. It also contains the
- * possibility to access and change player settings taht affect the game.
+ * This class represents the statistics for a given player. It also contains the possibility to access and change player settings taht affect the
+ * game.
  * 
  * @author michael
  */
@@ -22,8 +22,7 @@ public interface IPlayerStatistics {
 	public List<IConsuming> getConsumers(EMaterialType type);
 
 	/**
-	 * Gets the number of materials that are available in the current partition.
-	 * This is just used for information purposes.
+	 * Gets the number of materials that are available in the current partition. This is just used for information purposes.
 	 * 
 	 * @return The number of materials.
 	 */
@@ -53,8 +52,7 @@ public interface IPlayerStatistics {
 	public IConversionRate getDiggerConverstionRate();
 
 	/**
-	 * Gets the minimum rate for all bearers. At least this part of the overall
-	 * population needs to be bearers.
+	 * Gets the minimum rate for all bearers. At least this part of the overall population needs to be bearers.
 	 * 
 	 * @return The rate from 0..1.
 	 */

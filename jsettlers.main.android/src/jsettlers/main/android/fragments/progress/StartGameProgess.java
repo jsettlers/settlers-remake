@@ -8,7 +8,6 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGameListener;
 import android.annotation.SuppressLint;
 
-
 @SuppressLint("ValidFragment")
 public class StartGameProgess extends ProgressFragment implements IStartingGameListener {
 

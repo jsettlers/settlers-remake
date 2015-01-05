@@ -244,7 +244,8 @@ public class ChannelTest {
 	@Test
 	public void testRejectSendingForUnlistenedPackets() throws InterruptedException {
 		// construct and connect the listener for reject packets
-		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.ENetworkKey.REJECT_PACKET,
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(
+				NetworkConstants.ENetworkKey.REJECT_PACKET,
 				new GenericDeserializer<RejectPacket>(RejectPacket.class));
 		c1.registerListener(c1RejectListener);
 
@@ -262,7 +263,8 @@ public class ChannelTest {
 	@Test
 	public void testRejectSendingForUnlistenedPacketsLoopProtection() throws InterruptedException {
 		// construct and connect the listener for reject packets
-		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(NetworkConstants.ENetworkKey.REJECT_PACKET,
+		BufferingPacketListener<RejectPacket> c1RejectListener = new BufferingPacketListener<RejectPacket>(
+				NetworkConstants.ENetworkKey.REJECT_PACKET,
 				new GenericDeserializer<RejectPacket>(RejectPacket.class));
 		c1.registerListener(c1RejectListener);
 

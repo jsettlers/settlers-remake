@@ -19,8 +19,7 @@ public final class DatBitmapReader<T extends Image> {
 	// private final short[] data;
 
 	/**
-	 * Creates a new reader that starts to read fom the given bytereader at its
-	 * current position and uses the translator to convert the image.
+	 * Creates a new reader that starts to read fom the given bytereader at its current position and uses the translator to convert the image.
 	 * 
 	 * @param translator
 	 *            The translator that translates the image data.
@@ -36,8 +35,7 @@ public final class DatBitmapReader<T extends Image> {
 	// }
 
 	/**
-	 * Assumes that there is an iamge starting at the beginning of reader, and
-	 * reads its contents and creates the image from the stream of compressed
+	 * Assumes that there is an iamge starting at the beginning of reader, and reads its contents and creates the image from the stream of compressed
 	 * data.
 	 * <p>
 	 * The data format is as follows:
@@ -49,40 +47,35 @@ public final class DatBitmapReader<T extends Image> {
 	 * The next (signed) short the x offset. <br>
 	 * The next (signed) short the y offset. <br>
 	 * <p>
-	 * If the alignment of the next short is uneven, then a 0-byte for padding
-	 * is inserted.
+	 * If the alignment of the next short is uneven, then a 0-byte for padding is inserted.
 	 * <p>
 	 * Then the image data starts with the first meta short. <br>
 	 * A meta short: <br>
-	 * The first bit states that after drawing the line that follows this short,
-	 * a linebreak should be inserted. <br>
-	 * The next 7 bit state the number of pixels that should be skipped before
-	 * drawing the line. <br>
+	 * The first bit states that after drawing the line that follows this short, a linebreak should be inserted. <br>
+	 * The next 7 bit state the number of pixels that should be skipped before drawing the line. <br>
 	 * The next 8 bit state the line length (l)
 	 * <p>
 	 * Then a sequence of l short follows, each of them in a 5-5-5-color format.
 	 * <p>
-	 * Then a new meta short comes, until the end of the image is reached (a
-	 * linebreak so that we get out of the image space)
+	 * Then a new meta short comes, until the end of the image is reached (a linebreak so that we get out of the image space)
 	 * <p>
 	 * This method initializes data, width, height and offset.
 	 * 
 	 * @param reader
 	 * @param translator
 	 * @param
-	 * @return The short array given, or null if the short array was not big
-	 *         enough.
+	 * @return The short array given, or null if the short array was not big enough.
 	 * @throws IOException
 	 */
 	public static <T extends Image> void uncompressImage(ByteReader reader,
-	        DatBitmapTranslator<T> translator, ImageMetadata metadata,
-	        ImageArrayProvider array) throws IOException {
+			DatBitmapTranslator<T> translator, ImageMetadata metadata,
+			ImageArrayProvider array) throws IOException {
 		long currentPos = reader.getReadBytes();
 		HeaderType headerType = translator.getHeaderType();
 
 		if (headerType == HeaderType.DISPLACED) {
 			reader.assumeToRead(new byte[] {
-			        0x0c, 0, 0, 0
+					0x0c, 0, 0, 0
 			});
 		}
 		metadata.width = reader.read16();
@@ -108,14 +101,14 @@ public final class DatBitmapReader<T extends Image> {
 
 		try {
 			readCompressedData(reader, translator, metadata.width,
-			        metadata.height, array);
+					metadata.height, array);
 		} catch (Throwable e) {
 			System.err.println("Error while loading image starting at "
-			        + currentPos
-			        + ". There is an error/overflow somewhere around "
-			        + reader.getReadBytes()
-			        + ". Error was: "
-			        + e.getMessage());
+					+ currentPos
+					+ ". There is an error/overflow somewhere around "
+					+ reader.getReadBytes()
+					+ ". Error was: "
+					+ e.getMessage());
 			throw new IOException("Error uncompressing image", e);
 		}
 	}
@@ -129,10 +122,10 @@ public final class DatBitmapReader<T extends Image> {
 	 * @throws IOException
 	 */
 	private static <T extends Image> void readCompressedData(
-	        ByteReader reader, DatBitmapTranslator<T> translator, int width,
-	        int lines, ImageArrayProvider array) throws IOException {
+			ByteReader reader, DatBitmapTranslator<T> translator, int width,
+			int lines, ImageArrayProvider array) throws IOException {
 		short transparent = translator.getTransparentColor();
-		//TODO: buffer the buffer but be thread safe!
+		// TODO: buffer the buffer but be thread safe!
 		short[] lineBuffer = new short[width];
 
 		for (int i = 0; i < lines; i++) {
@@ -158,7 +151,7 @@ public final class DatBitmapReader<T extends Image> {
 					x++;
 				}
 			}
-			
+
 			array.writeLine(lineBuffer, x);
 		}
 	}
@@ -202,30 +195,30 @@ public final class DatBitmapReader<T extends Image> {
 	// return x;
 	// }
 
-//	@Override
-//	public ShortBuffer getData() {
-//		return ShortBuffer.wrap(this.data);
-//	}
-//
-//	@Override
-//	public int getWidth() {
-//		return this.width;
-//	}
-//
-//	@Override
-//	public int getHeight() {
-//		return this.height;
-//	}
-//
-//	@Override
-//	public int getOffsetX() {
-//		return this.offsetX;
-//	}
-//
-//	@Override
-//	public int getOffsetY() {
-//		return this.offsetY;
-//	}
+	// @Override
+	// public ShortBuffer getData() {
+	// return ShortBuffer.wrap(this.data);
+	// }
+	//
+	// @Override
+	// public int getWidth() {
+	// return this.width;
+	// }
+	//
+	// @Override
+	// public int getHeight() {
+	// return this.height;
+	// }
+	//
+	// @Override
+	// public int getOffsetX() {
+	// return this.offsetX;
+	// }
+	//
+	// @Override
+	// public int getOffsetY() {
+	// return this.offsetY;
+	// }
 
 	/**
 	 * Gets an image form the reader.
@@ -241,8 +234,8 @@ public final class DatBitmapReader<T extends Image> {
 	 *             If an read error occurred.
 	 */
 	public static <T extends Image> T getImage(
-	        DatBitmapTranslator<T> translator, ByteReader reader)
-	        throws IOException {
+			DatBitmapTranslator<T> translator, ByteReader reader)
+			throws IOException {
 		ImageMetadata metadata = new ImageMetadata();
 		ShortArrayWriter array = new ShortArrayWriter();
 		uncompressImage(reader, translator, metadata, array);

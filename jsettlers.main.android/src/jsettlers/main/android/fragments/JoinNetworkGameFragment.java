@@ -19,7 +19,7 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IJoinableGame>
 		LayoutInflater inflater =
 				(LayoutInflater) getActivity().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-		 connector = getJsettlersActivity()
+		connector = getJsettlersActivity()
 				.generateMultiplayerConnector();
 		return new JoinableMapListAdapter(inflater, connector);
 	}

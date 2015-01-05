@@ -3,8 +3,7 @@ package jsettlers.graphics.androidui;
 /**
  * This class manages fading.
  * <p>
- * You can just make something fade to a given value, or you can force it to
- * values (e.g. for manual scrolling).
+ * You can just make something fade to a given value, or you can force it to values (e.g. for manual scrolling).
  * 
  * @author michael
  */
@@ -54,8 +53,8 @@ public class AnimatedFader {
 			return desired;
 		} else {
 			float a =
-			        (float) (Math.cos((double) progress / ANIMATION_TIME
-			                * Math.PI) / 2 + .5);
+					(float) (Math.cos((double) progress / ANIMATION_TIME
+							* Math.PI) / 2 + .5);
 			return startValue * a + desired * (1 - a);
 		}
 	}

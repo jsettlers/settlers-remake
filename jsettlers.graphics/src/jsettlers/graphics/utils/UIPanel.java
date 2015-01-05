@@ -23,7 +23,7 @@ public class UIPanel implements UIElement {
 	private static final int DETAIL_IMAGES = 3;
 
 	private final LinkedList<ChildLink> children =
-	        new LinkedList<UIPanel.ChildLink>();
+			new LinkedList<UIPanel.ChildLink>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
 	private ImageLink background;
@@ -58,7 +58,7 @@ public class UIPanel implements UIElement {
 	 *            relative top border (0..1).
 	 */
 	public void addChild(UIElement child, float left, float bottom,
-	        float right, float top) {
+			float right, float top) {
 		this.children.add(new ChildLink(child, left, bottom, right, top));
 		child.onAttach();
 	}
@@ -75,7 +75,7 @@ public class UIPanel implements UIElement {
 	 */
 	public void addChildCentered(UIElement child, float width, float height) {
 		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2,
-		        0.5f + height / 2);
+				0.5f + height / 2);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class UIPanel implements UIElement {
 	 *            The position to draw the image at
 	 */
 	protected void drawAtRect(GLDrawContext gl, Image image,
-	        FloatRectangle position) {
+			FloatRectangle position) {
 		gl.color(1, 1, 1, 1);
 		float minX = position.getMinX();
 		float minY = position.getMinY();
@@ -126,27 +126,26 @@ public class UIPanel implements UIElement {
 	 * <p>
 	 * For gui images, assumes that the next two images are mre detailed.
 	 * <p>
-	 * For settler sequences, assumes the same for the next two sequence
-	 * members.
+	 * For settler sequences, assumes the same for the next two sequence members.
 	 */
 	protected Image getDetailedImage(OriginalImageLink link, float width,
-	        float height) {
+			float height) {
 		Image image = ImageProvider.getInstance().getImage(link);
 		OriginalImageLink currentLink = link;
 
 		for (int i = 1; i < DETAIL_IMAGES
-		        && (image.getWidth() < width || image.getHeight() < height); i++) {
+				&& (image.getWidth() < width || image.getHeight() < height); i++) {
 			if (currentLink.getType() == EImageLinkType.SETTLER) {
 				image =
-				        ImageProvider
-				                .getInstance()
-				                .getSettlerSequence(link.getFile(),
-				                        link.getSequence())
-				                .getImageSafe(link.getImage() + i);
+						ImageProvider
+								.getInstance()
+								.getSettlerSequence(link.getFile(),
+										link.getSequence())
+								.getImageSafe(link.getImage() + i);
 			} else {
 				image =
-				        ImageProvider.getInstance().getGuiImage(link.getFile(),
-				                link.getSequence());
+						ImageProvider.getInstance().getGuiImage(link.getFile(),
+								link.getSequence());
 			}
 		}
 		return image;
@@ -165,7 +164,7 @@ public class UIPanel implements UIElement {
 		private final float bottom;
 
 		public ChildLink(UIElement child, float left, float bottom,
-		        float right, float top) {
+				float right, float top) {
 			this.child = child;
 			this.left = left;
 			this.right = right;
@@ -175,13 +174,13 @@ public class UIPanel implements UIElement {
 
 		public void drawAt(GLDrawContext gl, float width, float height) {
 			child.setPosition(new FloatRectangle((left * width),
-			        (bottom * height), (right * width), (top * height)));
+					(bottom * height), (right * width), (top * height)));
 			child.drawAt(gl);
 		}
 
 		public Action getActionRelative(float parentx, float parenty) {
 			if (left <= parentx && parentx <= right && bottom <= parenty
-			        && parenty <= top) {
+					&& parenty <= top) {
 				float relativex = (parentx - left) / (right - left);
 				float relativey = (parenty - bottom) / (top - bottom);
 				return child.getAction(relativex, relativey);
@@ -192,7 +191,7 @@ public class UIPanel implements UIElement {
 
 		public String getDesctiptionRelative(float parentx, float parenty) {
 			if (left <= parentx && parentx <= right && bottom <= parenty
-			        && parenty <= top) {
+					&& parenty <= top) {
 				float relativex = (parentx - left) / (right - left);
 				float relativey = (parenty - bottom) / (top - bottom);
 				return child.getDescription(relativex, relativey);
@@ -235,7 +234,7 @@ public class UIPanel implements UIElement {
 	public String getDescription(float relativex, float relativey) {
 		for (ChildLink link : children) {
 			String description =
-			        link.getDesctiptionRelative(relativex, relativey);
+					link.getDesctiptionRelative(relativex, relativey);
 			if (description != null) {
 				return description;
 			}

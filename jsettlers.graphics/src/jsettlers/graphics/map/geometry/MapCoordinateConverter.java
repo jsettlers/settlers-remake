@@ -13,8 +13,7 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * This class converts map coordinates to e.g. draw coordinates.
  * <p>
- * For the conversion formulas used and what the witdh/height parameters mean,
- * see:
+ * For the conversion formulas used and what the witdh/height parameters mean, see:
  * <p>
  * <img src="doc-files/MapCoordinateConverter.png">
  * 
@@ -62,7 +61,7 @@ public final class MapCoordinateConverter {
 	 *            The view height
 	 */
 	public MapCoordinateConverter(short mapwidth, short mapheight,
-	        float viewwidth, float viewheight) {
+			float viewwidth, float viewheight) {
 		if (mapwidth <= 1 || mapheight <= 1) {
 			throw new IllegalArgumentException("Map size too small");
 		}
@@ -85,7 +84,7 @@ public final class MapCoordinateConverter {
 		this.matrix[3 + 3 * 4] = 1;
 
 		System.arraycopy(this.matrix, 0, this.heightmatrix, 0,
-		        this.matrix.length);
+				this.matrix.length);
 		this.heightmatrix[M_HX] = HEIGHT_X_DISPLACEMENT;
 		this.heightmatrix[M_HY] = HEIGHT_Y_DISPLACEMENT;
 
@@ -112,7 +111,7 @@ public final class MapCoordinateConverter {
 	 */
 	public float getViewX(float x, float y, float height) {
 		return x * this.heightmatrix[M_00] + y * this.heightmatrix[M_01]
-		        + height * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
+				+ height * this.heightmatrix[M_HX] + this.heightmatrix[M_02];
 	}
 
 	/**
@@ -128,12 +127,12 @@ public final class MapCoordinateConverter {
 	 */
 	public float getViewY(float x, float y, float height) {
 		return x * this.heightmatrix[M_10] + y * this.heightmatrix[M_11]
-		        + height * this.heightmatrix[M_HY] + this.heightmatrix[M_12];
+				+ height * this.heightmatrix[M_HY] + this.heightmatrix[M_12];
 	}
 
 	private float getExactMapX(float x, float y) {
 		return x * this.inverse[M_00] + y * this.inverse[M_01]
-		        + this.inverse[M_02];
+				+ this.inverse[M_02];
 	}
 
 	/**
@@ -152,7 +151,7 @@ public final class MapCoordinateConverter {
 
 	private float getExactMapY(float x, float y) {
 		return x * this.inverse[M_10] + y * this.inverse[M_11]
-		        + this.inverse[M_12];
+				+ this.inverse[M_12];
 	}
 
 	/**
@@ -169,8 +168,7 @@ public final class MapCoordinateConverter {
 	}
 
 	/**
-	 * Gets the matrix for the conversion from map coordinates to screen
-	 * coordinates. The matrix must not be changed.
+	 * Gets the matrix for the conversion from map coordinates to screen coordinates. The matrix must not be changed.
 	 * 
 	 * @return The opengl-compatibel matrix.
 	 */
@@ -201,8 +199,8 @@ public final class MapCoordinateConverter {
 		float mapendy = mapy + .5f / this.yscale;
 
 		return new Parallelogram(roundUpShort(mapstartx),
-		        roundUpShort(mapstarty), roundUpShort(mapendx - 1),
-		        roundUpShort(mapendy - 1));
+				roundUpShort(mapstarty), roundUpShort(mapendx - 1),
+				roundUpShort(mapendy - 1));
 	}
 
 	/**
@@ -264,12 +262,11 @@ public final class MapCoordinateConverter {
 		float minx = getMapX(screen.getMinX(), screen.getMaxY());
 		float miny = getMapY(screen.getMinX(), screen.getMaxY());
 		return new MapRectangle((short) minx, (short) miny, (short) Math.max(
-		        Math.ceil(width), 0), (short) Math.max(Math.ceil(height + 10), 0));
+				Math.ceil(width), 0), (short) Math.max(Math.ceil(height + 10), 0));
 	}
 
 	/**
-	 * Gets a coordinate converter by the width and the height of the map, rathe
-	 * than by the final size of the draw space.
+	 * Gets a coordinate converter by the width and the height of the map, rathe than by the final size of the draw space.
 	 * 
 	 * @param xTileDistance
 	 *            The x distance between two tiles in the same row.
@@ -282,9 +279,9 @@ public final class MapCoordinateConverter {
 	 * @return The new created converter.
 	 */
 	public static MapCoordinateConverter get(int xTileDistance,
-	        int yTileDistance, short mapWidth, short mapHeight) {
+			int yTileDistance, short mapWidth, short mapHeight) {
 		return new MapCoordinateConverter(mapWidth, mapHeight, (mapWidth - 1)
-		        * xTileDistance, (mapHeight - 1) * yTileDistance);
+				* xTileDistance, (mapHeight - 1) * yTileDistance);
 	}
 
 	public float[] getMatrixWithHeight() {

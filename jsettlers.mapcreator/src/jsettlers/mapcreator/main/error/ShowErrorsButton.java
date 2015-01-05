@@ -46,15 +46,15 @@ public class ShowErrorsButton extends JButton implements ActionListener, ListDat
 	}
 
 	@Override
-    public void contentsChanged(ListDataEvent arg0) {
+	public void contentsChanged(ListDataEvent arg0) {
 		setText(String.format(EditorLabels.getLabel("errors_n"), list.getSize()));
-    }
+	}
 
 	@Override
-    public void intervalAdded(ListDataEvent arg0) {
-    }
+	public void intervalAdded(ListDataEvent arg0) {
+	}
 
 	@Override
-    public void intervalRemoved(ListDataEvent arg0) {
-    }
+	public void intervalRemoved(ListDataEvent arg0) {
+	}
 }

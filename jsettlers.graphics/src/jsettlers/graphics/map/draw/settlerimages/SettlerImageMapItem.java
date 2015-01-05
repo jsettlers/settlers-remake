@@ -2,6 +2,7 @@ package jsettlers.graphics.map.draw.settlerimages;
 
 /**
  * This is a map item of settler images.
+ * 
  * @author michael
  *
  */
@@ -15,7 +16,7 @@ public class SettlerImageMapItem {
 	private final int duration;
 
 	public SettlerImageMapItem(int file, int sequenceIndex, int start,
-	        int duration) {
+			int duration) {
 		this.file = file;
 		this.sequenceIndex = sequenceIndex;
 		this.start = start;

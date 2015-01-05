@@ -2,6 +2,7 @@ package go.graphics;
 
 /**
  * TOOD: what is this for?
+ * 
  * @author michael
  *
  */

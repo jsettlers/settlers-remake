@@ -11,10 +11,12 @@ public class Torso extends SingleImage {
 
 	/**
 	 * Creates a new torso.
-	 * @param data The data to use.
+	 * 
+	 * @param data
+	 *            The data to use.
 	 */
 	public Torso(ImageMetadata metadata, short[] data) {
-	    super(metadata, data);
-    }
+		super(metadata, data);
+	}
 
 }

@@ -13,31 +13,29 @@ import jsettlers.graphics.messages.Message;
 /**
  * This is the main interface connector.
  * <p>
- * It holds the current selection displayed in the interface (not on the map).
- * See {@link #setSelection(ISelectionSet)}.
+ * It holds the current selection displayed in the interface (not on the map). See {@link #setSelection(ISelectionSet)}.
  * <p>
- * It also propagates interface events, to get them you can add a interface
- * listener. See {@link IMapInterfaceListener}.
+ * It also propagates interface events, to get them you can add a interface listener. See {@link IMapInterfaceListener}.
  * 
  * @author michael
  */
 public class MapInterfaceConnector implements ActionFireable,
-        IMapInterfaceConnector {
+		IMapInterfaceConnector {
 
 	private final LinkedList<IMapInterfaceListener> listeners =
-	        new LinkedList<IMapInterfaceListener>();
+			new LinkedList<IMapInterfaceListener>();
 
 	private final ActionFirerer actionFirerer = new ActionFirerer(
-	        new ActionFireable() {
-		        @Override
-		        public void fireAction(Action action) {
-			        synchronized (listeners) {
-				        for (IMapInterfaceListener listener : listeners) {
-					        listener.action(action);
-				        }
-			        }
-		        }
-	        });
+			new ActionFireable() {
+				@Override
+				public void fireAction(Action action) {
+					synchronized (listeners) {
+						for (IMapInterfaceListener listener : listeners) {
+							listener.action(action);
+						}
+					}
+				}
+			});
 
 	private final MapContent content;
 
@@ -63,8 +61,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	}
 
 	/**
-	 * Scrolls a given point to the center of the view. It needn't be on the
-	 * map.
+	 * Scrolls a given point to the center of the view. It needn't be on the map.
 	 * 
 	 * @param point
 	 *            The point to show.
@@ -124,8 +121,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	}
 
 	/**
-	 * Stops all threads related to the graphics display. You may experience
-	 * crazy results when trying to use the map view afterwards.
+	 * Stops all threads related to the graphics display. You may experience crazy results when trying to use the map view afterwards.
 	 */
 	public void shutdown() {
 		actionFirerer.stop();
@@ -135,8 +131,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	/**
 	 * Gets the state of the content.
 	 * 
-	 * @return The state of the UI so that it can be restored by setting it on
-	 *         {@link MapContent} creation.
+	 * @return The state of the UI so that it can be restored by setting it on {@link MapContent} creation.
 	 * @see #loadUIState(UIState)
 	 */
 	public UIState getUIState() {

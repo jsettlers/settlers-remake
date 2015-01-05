@@ -45,14 +45,14 @@ public class Region implements RedrawListener {
 	private int size;
 
 	private LinkedList<RedrawListener> redrawListeners =
-	        new LinkedList<RedrawListener>();
+			new LinkedList<RedrawListener>();
 
 	private boolean collapsed = false;
 
 	private RegionContent content = null;
-	
+
 	private LinkedList<GOEventHandlerProvider> eventHandlers =
-	        new LinkedList<GOEventHandlerProvider>();
+			new LinkedList<GOEventHandlerProvider>();
 
 	/**
 	 * Creates a new region with a dfault size.
@@ -78,8 +78,7 @@ public class Region implements RedrawListener {
 	}
 
 	/**
-	 * Draws the region on the gl space, assuming it 0,0 is the bottom left
-	 * corner.
+	 * Draws the region on the gl space, assuming it 0,0 is the bottom left corner.
 	 * 
 	 * @param gl2
 	 *            The gl space
@@ -89,8 +88,8 @@ public class Region implements RedrawListener {
 	 *            The height of the region.
 	 */
 	public void drawRegion(GLDrawContext gl2, int width, int height) {
-		//gl2.color(.3f, .3f, .3f, 1);
-		//gl2.fillQuad(0,0, width, height);
+		// gl2.color(.3f, .3f, .3f, 1);
+		// gl2.fillQuad(0,0, width, height);
 
 		if (content != null) {
 			content.drawContent(gl2, width, height);
@@ -166,6 +165,7 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Adds a redraw listener to the region.
+	 * 
 	 * @param l
 	 */
 	public void addRedrawListener(RedrawListener l) {
@@ -174,7 +174,9 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Adds an provider that can seth handlers for the venets of this region.
-	 * @param p The handler.
+	 * 
+	 * @param p
+	 *            The handler.
 	 */
 	public void addEventHandler(GOEventHandlerProvider p) {
 		synchronized (eventHandlers) {
@@ -184,34 +186,38 @@ public class Region implements RedrawListener {
 
 	/**
 	 * Fires a go event, asks the handler providers to handle it.
-	 * @param event The event to fire.
+	 * 
+	 * @param event
+	 *            The event to fire.
 	 */
 	private void fireGoEvent(GOEvent event) {
 		synchronized (eventHandlers) {
 			if (content instanceof GOEventHandlerProvider) {
 				((GOEventHandlerProvider) content).handleEvent(event);
 			}
-	        Iterator<GOEventHandlerProvider> it = eventHandlers.iterator();
-	        while (it.hasNext()) {
-	        	it.next().handleEvent(event);
-	        }
-        }
+			Iterator<GOEventHandlerProvider> it = eventHandlers.iterator();
+			while (it.hasNext()) {
+				it.next().handleEvent(event);
+			}
+		}
 	}
-	
+
 	/**
 	 * Lets the region handle a event.
 	 * <p>
 	 * All listeners are asked to set themselves as handler for the event.
-	 * @param event The event.
+	 * 
+	 * @param event
+	 *            The event.
 	 */
 	public void handleEvent(GOEvent event) {
 		fireGoEvent(event);
 	}
 
 	@Override
-    public void requestRedraw() {
+	public void requestRedraw() {
 		for (RedrawListener listener : redrawListeners) {
 			listener.requestRedraw();
 		}
-    }
+	}
 }

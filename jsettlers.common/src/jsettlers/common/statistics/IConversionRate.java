@@ -9,8 +9,7 @@ public interface IConversionRate {
 	/**
 	 * How many bearers may be converted to this type at maximum
 	 * 
-	 * @return A value from 0..1, defining a relative ammount to the sum of all
-	 *         non-military people.
+	 * @return A value from 0..1, defining a relative ammount to the sum of all non-military people.
 	 */
 	public float getMaximumRate();
 

@@ -33,14 +33,14 @@ public class CombiningActionFirerer implements ActionFireable {
 				try {
 					action = toFire.take();
 					if (action instanceof DrawLineAction
-					        && toFire.peek() instanceof DrawLineAction) {
+							&& toFire.peek() instanceof DrawLineAction) {
 						ShortPoint2D start =
-						        ((DrawLineAction) action).getStart();
+								((DrawLineAction) action).getStart();
 						ShortPoint2D end = ((DrawLineAction) action).getEnd();
 						double uidy = ((DrawLineAction) action).getUidy();
 						while (toFire.peek() instanceof DrawLineAction) {
 							DrawLineAction next =
-							        (DrawLineAction) toFire.poll();
+									(DrawLineAction) toFire.poll();
 							end = next.getEnd();
 							uidy += next.getUidy();
 						}

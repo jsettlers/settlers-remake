@@ -44,7 +44,7 @@ public class JobElementWrapper implements BuildingJobData {
 	}
 
 	private static EBuildingJobType getType(Attributes attributes)
-	        throws IllegalAccessError {
+			throws IllegalAccessError {
 		String typeString = attributes.getValue(TYPE);
 		try {
 			return EBuildingJobType.valueOf(typeString);
@@ -164,8 +164,8 @@ public class JobElementWrapper implements BuildingJobData {
 	}
 
 	@Override
-    public String getName() {
-	    return name;
-    }
+	public String getName() {
+		return name;
+	}
 
 }

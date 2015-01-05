@@ -9,12 +9,12 @@ public class EndDrawingAction extends Action {
 	private final ShortPoint2D pos;
 
 	public EndDrawingAction(ShortPoint2D pos) {
-	    super(EActionType.UNSPECIFIED);
+		super(EActionType.UNSPECIFIED);
 		this.pos = pos;
-    }
-	
+	}
+
 	public ShortPoint2D getPos() {
-	    return pos;
-    }
+		return pos;
+	}
 
 }

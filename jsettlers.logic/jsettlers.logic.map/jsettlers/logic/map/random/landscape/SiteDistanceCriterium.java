@@ -2,8 +2,6 @@ package jsettlers.logic.map.random.landscape;
 
 import jsettlers.logic.map.random.geometry.Point2D;
 
-
-
 public class SiteDistanceCriterium implements SiteCriterium {
 	private final int minDistanceSquared;
 	private final int maxDistanceSquared;

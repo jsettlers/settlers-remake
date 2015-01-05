@@ -11,7 +11,7 @@ import jsettlers.logic.map.random.generation.PlayerStart;
 public class PlayerObjectInstruction extends ObjectInstruction {
 
 	private static Hashtable<String, String> defaults =
-	        new Hashtable<String, String>();
+			new Hashtable<String, String>();
 
 	static {
 		defaults.put("dx", "0");
@@ -26,17 +26,17 @@ public class PlayerObjectInstruction extends ObjectInstruction {
 
 	@Override
 	protected MapObject getObject(PlayerStart start, Random random) {
-	    MapObject object;
-	    String type = getParameter("type", random).toUpperCase();
+		MapObject object;
+		String type = getParameter("type", random).toUpperCase();
 		if ("TREE".equals(type)) {
-	    	object = MapTreeObject.getInstance();
-	    } else if ("STONE".equals(type)) {
-	    	object = MapStoneObject.getInstance(getIntParameter("capacity", random));
-	    } else {
-	    	throw new IllegalArgumentException("type " + type + " unknown");
-	    }
-	    return object;
-    }
+			object = MapTreeObject.getInstance();
+		} else if ("STONE".equals(type)) {
+			object = MapStoneObject.getInstance(getIntParameter("capacity", random));
+		} else {
+			throw new IllegalArgumentException("type " + type + " unknown");
+		}
+		return object;
+	}
 
 	@Override
 	protected Hashtable<String, String> getDefaultValues() {

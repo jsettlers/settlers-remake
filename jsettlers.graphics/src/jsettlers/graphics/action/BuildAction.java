@@ -4,6 +4,7 @@ import jsettlers.common.buildings.EBuildingType;
 
 /**
  * This is a build action.
+ * 
  * @author michael
  *
  */
@@ -23,8 +24,7 @@ public class BuildAction extends Action {
 	}
 
 	/**
-	 * gets the building that corresponds with this action, if the action is an
-	 * build action.
+	 * gets the building that corresponds with this action, if the action is an build action.
 	 * 
 	 * @return The building, <code>null</code> if it is not a build action.
 	 */

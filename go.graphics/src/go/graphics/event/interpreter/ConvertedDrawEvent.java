@@ -9,7 +9,7 @@ import go.graphics.event.mouse.GODrawEvent;
  * @author michael
  */
 public class ConvertedDrawEvent extends AbstractMouseEvent implements
-        GODrawEvent {
+		GODrawEvent {
 	/**
 	 * Creates a new mouse event.
 	 * 

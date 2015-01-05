@@ -4,6 +4,6 @@ import android.app.Fragment;
 
 public interface IFragmentHandler {
 	public void showMenuFragment(Fragment fragment);
-	
+
 	public void hideMenu();
 }

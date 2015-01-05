@@ -2,18 +2,14 @@ package jsettlers.graphics.image;
 
 import jsettlers.graphics.reader.ImageMetadata;
 
-
 /**
  * Class to draw triangles of landscape images.
  * <p>
  * There are 2 types of images: <br>
- * Some images are big and continuous, so they are just drawn and wrapped at the
- * end. <br>
- * Other images only consist of 6 triangles indicating a border between two
- * terrian types in all 6 directions.
+ * Some images are big and continuous, so they are just drawn and wrapped at the end. <br>
+ * Other images only consist of 6 triangles indicating a border between two terrian types in all 6 directions.
  * <p>
- * You have to do the drawing yourself, but there are helper functions that help
- * you:
+ * You have to do the drawing yourself, but there are helper functions that help you:
  * <p>
  * bind() activates drawing the texture.
  * 
@@ -35,8 +31,7 @@ public class LandscapeImage extends SingleImage {
 	}
 
 	/**
-	 * Checks whether the given image is a continous image, that means it can be
-	 * repeated when drawing.
+	 * Checks whether the given image is a continous image, that means it can be repeated when drawing.
 	 * 
 	 * @return If the image is continuous.
 	 */

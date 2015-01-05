@@ -8,14 +8,15 @@ public class UIPoint {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public double getX() {
-	    return x;
-    }
+		return x;
+	}
+
 	public double getY() {
-	    return y;
-    }
-	
+		return y;
+	}
+
 	public double distance(UIPoint other) {
 		return Math.hypot(x - other.x, y - other.y);
 	}

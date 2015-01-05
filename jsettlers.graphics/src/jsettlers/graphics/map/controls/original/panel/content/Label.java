@@ -58,6 +58,6 @@ public class Label extends UIPanel {
 
 	private void drawLine(TextDrawer drawer, String string, double y) {
 		drawer.renderCentered(getPosition().getCenterX(),
-		        (float) (getPosition().getMaxY() - y - lineHeight / 2), string);
+				(float) (getPosition().getMaxY() - y - lineHeight / 2), string);
 	}
 }

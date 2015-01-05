@@ -2,6 +2,7 @@ package go.graphics.text;
 
 /**
  * This enum describes the possible font sizes of a text.
+ * 
  * @author michael
  *
  */
@@ -23,9 +24,9 @@ public enum EFontSize {
 
 	private EFontSize(int size) {
 		this.size = size;
-    }
-	
+	}
+
 	public int getSize() {
-	    return size;
-    }
+		return size;
+	}
 }

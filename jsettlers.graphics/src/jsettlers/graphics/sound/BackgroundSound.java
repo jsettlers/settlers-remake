@@ -47,8 +47,8 @@ public class BackgroundSound implements Runnable {
 				int line = (int) (Math.random() * screen.getLines());
 
 				int x =
-				        screen.getLineStartX(line)
-				                + (int) (Math.random() * screen.getLineLength());
+						screen.getLineStartX(line)
+								+ (int) (Math.random() * screen.getLineLength());
 				int y = screen.getLineY(line);
 
 				if (hasTree(x, y)) {
@@ -84,20 +84,20 @@ public class BackgroundSound implements Runnable {
 
 	private boolean hasDesert(int x, int y) {
 		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
-		        && map.getLandscape(x, y) == ELandscapeType.DESERT;
+				&& map.getLandscape(x, y) == ELandscapeType.DESERT;
 	}
 
 	private boolean hasWater(int x, int y) {
 		return map.checkMapCoordinates(x, y) && map.getVisibleStatus(x, y) != 0
-		        && map.getLandscape(x, y) == ELandscapeType.WATER1;
+				&& map.getLandscape(x, y) == ELandscapeType.WATER1;
 	}
 
 	private boolean hasTree(int cx, int cy) {
 		for (int x = cx - 2; x <= cx + 2; x++) {
 			for (int y = cy - 2; y <= cy + 2; y++) {
 				if (map.checkMapCoordinates(x, y)
-				        && map.getVisibleStatus(x, y) != 0
-				        && hasTreeObject(x, y)) {
+						&& map.getVisibleStatus(x, y) != 0
+						&& hasTreeObject(x, y)) {
 					return true;
 				}
 			}
@@ -110,7 +110,7 @@ public class BackgroundSound implements Runnable {
 		while (o != null) {
 			EMapObjectType type = o.getObjectType();
 			if (type == EMapObjectType.TREE_ADULT
-			        || type == EMapObjectType.TREE_DEAD) {
+					|| type == EMapObjectType.TREE_DEAD) {
 				return true;
 			}
 			o = o.getNextObject();

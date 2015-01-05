@@ -58,7 +58,6 @@ public class TestBuilding implements IBuilding {
 
 	}
 
-
 	@Override
 	public EMapObjectType getObjectType() {
 		return EMapObjectType.BUILDING;

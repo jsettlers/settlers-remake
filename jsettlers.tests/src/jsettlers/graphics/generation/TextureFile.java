@@ -10,8 +10,7 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
- * This is a texture file. It contains a short array and can write images to the
- * file.
+ * This is a texture file. It contains a short array and can write images to the file.
  * 
  * @author michael
  */

@@ -34,7 +34,7 @@ public final class Labels {
 
 			try {
 				String filename =
-				        "localization/labels_" + currentLocale + ".properties";
+						"localization/labels_" + currentLocale + ".properties";
 				InputStream instream = ResourceManager.getFile(filename);
 				labels = new PropertyResourceBundle(instream);
 			} catch (IOException e) {
@@ -86,6 +86,7 @@ public final class Labels {
 	public static String getName(EResourceType type) {
 		return getString("resource_" + type);
 	}
+
 	/**
 	 * Gets the name of a building
 	 * 

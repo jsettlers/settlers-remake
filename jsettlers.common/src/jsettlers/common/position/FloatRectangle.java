@@ -1,8 +1,7 @@
 package jsettlers.common.position;
 
 /**
- * This is an int rectangle. It covers the area from (including) x1 to
- * (unincluding) x2.
+ * This is an int rectangle. It covers the area from (including) x1 to (unincluding) x2.
  * 
  * @author michael
  */
@@ -35,8 +34,7 @@ public class FloatRectangle {
 	}
 
 	/**
-	 * Gets the x coordinate for a point that is just outside of rect. Points
-	 * with a x coordinate smaller than this value are inside the rect.
+	 * Gets the x coordinate for a point that is just outside of rect. Points with a x coordinate smaller than this value are inside the rect.
 	 * 
 	 * @return The x coordinate.
 	 */
@@ -45,8 +43,7 @@ public class FloatRectangle {
 	}
 
 	/**
-	 * Gets the x coordinate for a point that is just outside of rect. Points
-	 * with a x coordinate smaller than this value are inside the rect.
+	 * Gets the x coordinate for a point that is just outside of rect. Points with a x coordinate smaller than this value are inside the rect.
 	 * 
 	 * @return The x coordinate.
 	 */
@@ -55,8 +52,7 @@ public class FloatRectangle {
 	}
 
 	/**
-	 * Gets the width of the rectangle. That states how many pixels are
-	 * contained in it in x direction.
+	 * Gets the width of the rectangle. That states how many pixels are contained in it in x direction.
 	 * 
 	 * @return The width
 	 */
@@ -65,8 +61,7 @@ public class FloatRectangle {
 	}
 
 	/**
-	 * Gets the height of the rectangle. That states how many pixels are
-	 * contained in it in y direction.
+	 * Gets the height of the rectangle. That states how many pixels are contained in it in y direction.
 	 * 
 	 * @return The height
 	 */
@@ -106,18 +101,16 @@ public class FloatRectangle {
 	}
 
 	/**
-	 * Shrinks the rectangle by the given amount. The center of the new
-	 * rectangle is the same as the one of the old one, but its size is in each
+	 * Shrinks the rectangle by the given amount. The center of the new rectangle is the same as the one of the old one, but its size is in each
 	 * direction 2*border bigger.
 	 * 
 	 * @param border
-	 *            the size to reduce the rectangle on each side. If it is
-	 *            negative, the rectangle is made smaller.
+	 *            the size to reduce the rectangle on each side. If it is negative, the rectangle is made smaller.
 	 * @return The bigger rectangle.
 	 */
 	public FloatRectangle bigger(float border) {
 		return new FloatRectangle(minx - border, miny - border, maxx + border,
-		        maxy + border);
+				maxy + border);
 	}
 
 	@Override
@@ -131,19 +124,19 @@ public class FloatRectangle {
 
 	private boolean equals(FloatRectangle rect) {
 		return rect.minx == minx && rect.miny == miny && rect.maxx == maxx
-		        && rect.maxy == maxy;
+				&& rect.maxy == maxy;
 	}
 
 	@Override
 	public String toString() {
 		return "rect[minx=" + minx + ",miny=" + miny + ",maxx=" + maxx
-		        + ",maxy=" + maxy + "]";
+				+ ",maxy=" + maxy + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		return Float.floatToIntBits(minx) * 104729 + Float.floatToIntBits(miny)
-		        * 4900099 + Float.floatToIntBits(maxx) * 135084239
-		        + Float.floatToIntBits(maxy);
+				* 4900099 + Float.floatToIntBits(maxx) * 135084239
+				+ Float.floatToIntBits(maxy);
 	}
 }

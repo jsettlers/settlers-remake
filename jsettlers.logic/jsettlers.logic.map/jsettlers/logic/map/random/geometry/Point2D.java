@@ -12,7 +12,7 @@ public class Point2D {
 
 	public Point2D interpolate(Point2D to, double percentage) {
 		return new Point2D(to.getX() * percentage + getX() * (1 - percentage),
-		        to.getY() * percentage + getY() * (1 - percentage));
+				to.getY() * percentage + getY() * (1 - percentage));
 	}
 
 	public double getY() {
@@ -30,9 +30,9 @@ public class Point2D {
 	}
 
 	public Point getIntPoint() {
-	    return new Point((int) Math.round(x), (int) Math.round(y));
-    }
-	
+		return new Point((int) Math.round(x), (int) Math.round(y));
+	}
+
 	public double getDirectionTo(Point2D point) {
 		return Math.atan2(y - point.y, x - point.x);
 	}

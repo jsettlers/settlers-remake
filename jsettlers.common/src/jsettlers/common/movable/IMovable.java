@@ -62,7 +62,7 @@ public interface IMovable extends IPlayerable, ISelectable, ILocatable, ISoundab
 	 * @return
 	 */
 	boolean isRightstep();
-	
+
 	/**
 	 * Lets this movable stop or start its work.
 	 * 

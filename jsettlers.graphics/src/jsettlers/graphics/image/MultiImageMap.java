@@ -22,8 +22,7 @@ import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
- * This is a map of multile images of one sequence. It always contains the
- * settler image and the torso
+ * This is a map of multile images of one sequence. It always contains the settler image and the torso
  * 
  * @author michael
  */
@@ -57,7 +56,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	}
 
 	public synchronized void addSequences(AdvancedDatFileReader dfr, int[] sequenceIndexes,
-	        Sequence<Image>[] addTo) throws IOException {
+			Sequence<Image>[] addTo) throws IOException {
 		allocateBuffers();
 
 		ImageMetadata settlermeta = new ImageMetadata();
@@ -74,8 +73,8 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 				ByteReader reader;
 				reader = dfr.getReaderForPointer(settlers[i]);
 				DatBitmapReader.uncompressImage(reader,
-				        AdvancedDatFileReader.SETTLER_TRANSLATOR, settlermeta,
-				        this);
+						AdvancedDatFileReader.SETTLER_TRANSLATOR, settlermeta,
+						this);
 				int settlerx = drawx - settlermeta.width;
 				int settlery = linetop;
 
@@ -85,8 +84,8 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 					reader = dfr.getReaderForPointer(torsos[i]);
 					if (reader != null) {
 						DatBitmapReader.uncompressImage(reader,
-						        AdvancedDatFileReader.TORSO_TRANSLATOR,
-						        torsometa, this);
+								AdvancedDatFileReader.TORSO_TRANSLATOR,
+								torsometa, this);
 						torsox = drawx - torsometa.width;
 						torsoy = linetop;
 					}
@@ -96,9 +95,9 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 				// ", h=" + settlermeta.height);
 
 				images[i] =
-				        new MultiImageImage(this, settlermeta, settlerx,
-				                settlery, torsos == null ? null : torsometa,
-				                torsox, torsoy);
+						new MultiImageImage(this, settlermeta, settlerx,
+								settlery, torsos == null ? null : torsometa,
+								torsox, torsoy);
 			}
 			addTo[seqindex] = new ArraySequence<Image>(images);
 		}
@@ -119,7 +118,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			cacheFile.delete();
 			File tempFile = new File(cacheFile.getParentFile(), cacheFile.getName() + ".tmp");
 			out = new FileOutputStream(tempFile);
-			
+
 			try {
 				byte[] line = new byte[this.width * 2];
 				byteBuffer.rewind();
@@ -130,7 +129,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			} finally {
 				out.close();
 			}
-			
+
 			tempFile.renameTo(cacheFile);
 
 			buffers = null;
@@ -145,7 +144,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public synchronized boolean hasCache() {
 		return cacheFile.isFile();
 	}
@@ -159,7 +158,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			} else {
 				drawEnabled = false;
 				System.err.println("Error adding image to texture: "
-				        + "there is no space to open a new row");
+						+ "there is no space to open a new row");
 				return;
 			}
 		}
@@ -172,7 +171,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			linebottom = Math.max(linebottom, linetop + height);
 		} else {
 			System.err.println("Error adding image to texture: "
-			        + "Line to low");
+					+ "Line to low");
 			drawEnabled = false;
 			return;
 		}
@@ -217,10 +216,10 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 	}
 
 	private synchronized void loadTexture(GLDrawContext gl) throws IOException,
-            IOException {
-	    if (buffers == null) {
-	    	allocateBuffers();
-	    	FileInputStream in = new FileInputStream(cacheFile);
+			IOException {
+		if (buffers == null) {
+			allocateBuffers();
+			FileInputStream in = new FileInputStream(cacheFile);
 			try {
 				byte[] line = new byte[this.width * 2];
 				while (in.available() > 0) {
@@ -233,18 +232,18 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 			} finally {
 				in.close();
 			}
-	    }
+		}
 
-	    buffers.rewind();
-	    textureIndex = gl.generateTexture(width, height, buffers);
-	    System.out.println("opengl Texture: " + textureIndex
-	            + ", thread: " + Thread.currentThread().toString());
-	    if (textureIndex > -1) {
-	    	textureValid = true;
-	    }
-	    buffers = null;
-	    byteBuffer = null;
-    }
+		buffers.rewind();
+		textureIndex = gl.generateTexture(width, height, buffers);
+		System.out.println("opengl Texture: " + textureIndex
+				+ ", thread: " + Thread.currentThread().toString());
+		if (textureIndex > -1) {
+			textureValid = true;
+		}
+		buffers = null;
+		byteBuffer = null;
+	}
 
 	@Override
 	public void run(GLDrawContext context) {

@@ -9,39 +9,39 @@ import jsettlers.common.position.RelativePoint;
 public class TreeObjectContainer implements ObjectContainer, IMapObject {
 
 	@Override
-    public MapObject getMapObject() {
-	    return MapTreeObject.getInstance();
-    }
-	
+	public MapObject getMapObject() {
+		return MapTreeObject.getInstance();
+	}
+
 	public static ObjectContainer getInstance() {
-	    return new TreeObjectContainer();
-    }
+		return new TreeObjectContainer();
+	}
 
 	@Override
-    public EMapObjectType getObjectType() {
-	    return EMapObjectType.TREE_ADULT;
-    }
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.TREE_ADULT;
+	}
 
 	@Override
-    public float getStateProgress() {
-	    return 0;
-    }
+	public float getStateProgress() {
+		return 0;
+	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    return null;
-    }
+	public IMapObject getNextObject() {
+		return null;
+	}
 
 	@Override
 	public RelativePoint[] getProtectedArea() {
 		return new RelativePoint[] {
-		        new RelativePoint(0, 0),
-		        new RelativePoint(1, 0),
-		        new RelativePoint(1, 1),
-		        new RelativePoint(0, 1),
-		        new RelativePoint(-1, 0),
-		        new RelativePoint(-1, -1),
-		        new RelativePoint(0, -1),
+				new RelativePoint(0, 0),
+				new RelativePoint(1, 0),
+				new RelativePoint(1, 1),
+				new RelativePoint(0, 1),
+				new RelativePoint(-1, 0),
+				new RelativePoint(-1, -1),
+				new RelativePoint(0, -1),
 		};
 	}
 

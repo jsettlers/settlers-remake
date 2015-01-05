@@ -25,9 +25,9 @@ public interface TextDrawer {
 	 *            The string to render
 	 */
 	void drawString(float x, float y, String string);
-	
+
 	double getWidth(String string);
-	
+
 	double getHeight(String string);
 
 	void setColor(float red, float green, float blue, float alpha);

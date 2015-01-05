@@ -11,9 +11,9 @@ public class FadeAnimatedFaderAction extends ExecutableAction {
 		this.fader = fader;
 		this.value = value;
 	}
-	
+
 	@Override
 	public void execute() {
-	    fader.fadeTo(value);
+		fader.fadeTo(value);
 	}
 }

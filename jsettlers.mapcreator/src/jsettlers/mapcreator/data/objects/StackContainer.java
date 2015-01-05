@@ -24,7 +24,7 @@ public class StackContainer implements ObjectContainer, IStackMapObject {
 	@Override
 	public RelativePoint[] getProtectedArea() {
 		return new RelativePoint[] {
-			new RelativePoint(0, 0)
+				new RelativePoint(0, 0)
 		};
 	}
 

@@ -54,7 +54,7 @@ public class BuildingMenu extends AndroidMenu {
 		private TextView count;
 
 		public MaterialTab(ImageButton button, TextView count,
-		        IBuildingMaterial mat) {
+				IBuildingMaterial mat) {
 			this.button = button;
 			this.count = count;
 			this.mat = mat;
@@ -71,7 +71,7 @@ public class BuildingMenu extends AndroidMenu {
 	}
 
 	public BuildingMenu(AndroidMenuPutable androidMenuPutable,
-	        IBuilding building, IPartitionSettings settings) {
+			IBuilding building, IPartitionSettings settings) {
 		super(androidMenuPutable);
 		this.building = building;
 		this.settings = settings;
@@ -89,15 +89,15 @@ public class BuildingMenu extends AndroidMenu {
 			DistributionListener listener = new DistributionListener() {
 				@Override
 				public void distributionChanged(EMaterialType material,
-				        float[] distribution) {
+						float[] distribution) {
 					getActionFireable().fireAction(
-					        new SetMaterialDistributionSettingsAction(building
-					                .getPos(), material, distribution));
+							new SetMaterialDistributionSettingsAction(building
+									.getPos(), material, distribution));
 				}
 			};
 			MaterialAdapter matAdapter =
-			        new MaterialAdapter(getContext(),
-			                settings.getDistributionSettings(mat), listener);
+					new MaterialAdapter(getContext(),
+							settings.getDistributionSettings(mat), listener);
 			list.setAdapter(matAdapter);
 			tabContent.addView(list);
 		}
@@ -105,7 +105,7 @@ public class BuildingMenu extends AndroidMenu {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.building, container, false);
 	}
 
@@ -113,13 +113,13 @@ public class BuildingMenu extends AndroidMenu {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		ImageView image = (ImageView) view.findViewById(R.id.building_image);
 		image.setImageResource(Graphics.BUILDING_IMAGE_MAP[building
-		        .getBuildingType().ordinal()]);
+				.getBuildingType().ordinal()]);
 
 		TextView title = (TextView) view.findViewById(R.id.building_name);
 		String name = Labels.getName(building.getBuildingType());
 		if (building.getStateProgress() < 1) {
 			title.setText(String.format(Labels.getString("under_construction"),
-			        name));
+					name));
 		} else {
 			title.setText(name);
 		}
@@ -134,39 +134,39 @@ public class BuildingMenu extends AndroidMenu {
 
 		if (building.getBuildingType().getWorkradius() > 0) {
 			ImageButton button =
-			        generateImageButtonTab(tabs,
-			                R.drawable.building_set_workarea);
+					generateImageButtonTab(tabs,
+							R.drawable.building_set_workarea);
 			button.setOnClickListener(generateActionListener(
-			        new ExecutableAction() {
-				        @Override
-				        public void execute() {
-					        setActiveAction(new SelectWorkareaAction());
-				        }
-			        }, true));
+					new ExecutableAction() {
+						@Override
+						public void execute() {
+							setActiveAction(new SelectWorkareaAction());
+						}
+					}, true));
 		}
 
 		{
 			workButton =
-			        generateImageButtonTab(tabs,
-			                R.drawable.building_start_working);
+					generateImageButtonTab(tabs,
+							R.drawable.building_start_working);
 			workButton.setOnClickListener(generateActionListener(
-			        new SetBuildingPriorityAction(EPriority.LOW), false));
+					new SetBuildingPriorityAction(EPriority.LOW), false));
 			pauseButton =
-			        generateImageButtonTab(tabs,
-			                R.drawable.building_stop_working);
+					generateImageButtonTab(tabs,
+							R.drawable.building_stop_working);
 			pauseButton.setOnClickListener(generateActionListener(
-			        new SetBuildingPriorityAction(EPriority.STOPPED), false));
+					new SetBuildingPriorityAction(EPriority.STOPPED), false));
 			// highPriorityButton = generateImageButtonTab(tabs,
 			// R.drawable.building_);
 			reloadWorkingButton(building.getPriority());
 
 			ImageButton destroyButton =
-			        generateImageButtonTab(tabs, R.drawable.building_destroy);
+					generateImageButtonTab(tabs, R.drawable.building_destroy);
 			destroyButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					getPutable().showMenuFragment(
-					        new DestroyBuildingDialog(getPutable()));
+							new DestroyBuildingDialog(getPutable()));
 				}
 			});
 		}
@@ -194,20 +194,20 @@ public class BuildingMenu extends AndroidMenu {
 	private void reloadWorkingButton(EPriority priority) {
 		if (workButton != null) {
 			workButton.setVisibility(priority != EPriority.LOW ? View.VISIBLE
-			        : View.INVISIBLE);
+					: View.INVISIBLE);
 		}
 		if (pauseButton != null) {
 			pauseButton
-			        .setVisibility(priority != EPriority.STOPPED ? View.VISIBLE
-			                : View.INVISIBLE);
+					.setVisibility(priority != EPriority.STOPPED ? View.VISIBLE
+							: View.INVISIBLE);
 		}
 		lastPriority = priority;
 	}
 
 	private void addMaterialTab(TableLayout tabs, IBuildingMaterial mat) {
 		ImageButton button =
-		        generateImageButtonTab(tabs, Graphics.MATERIAL_IMAGE_MAP[mat
-		                .getMaterialType().ordinal()]);
+				generateImageButtonTab(tabs, Graphics.MATERIAL_IMAGE_MAP[mat
+						.getMaterialType().ordinal()]);
 
 		TextView count = new TextView(getContext());
 		count.setText(mat.getMaterialCount() + "");

@@ -7,8 +7,7 @@ import go.graphics.event.GOModalEventHandler;
 /**
  * This method proxys a mouse event handler.
  * <p>
- * It is a normal event handler, that porxys all events that were recived to the
- * given event handler and just changes the vent target.
+ * It is a normal event handler, that porxys all events that were recived to the given event handler and just changes the vent target.
  * <p>
  * It supports unmodal and modal, events.
  * 
@@ -21,11 +20,13 @@ public class EventHandlerProxy implements GOModalEventHandler {
 	/**
 	 * Creates a new mouse event proxy.
 	 * 
-	 * @param eventToProxy The event that is forwarded.
-	 * @param handler The handler to send event changes to.
+	 * @param eventToProxy
+	 *            The event that is forwarded.
+	 * @param handler
+	 *            The handler to send event changes to.
 	 */
 	protected EventHandlerProxy(GOEvent eventToProxy,
-	        GOEventHandler handler) {
+			GOEventHandler handler) {
 		this.eventToProxy = eventToProxy;
 		this.handler = handler;
 	}
@@ -46,9 +47,9 @@ public class EventHandlerProxy implements GOModalEventHandler {
 	}
 
 	@Override
-    public void eventDataChanged(GOEvent event) {
-	    if (this.handler instanceof GOModalEventHandler) {
-	    	((GOModalEventHandler) this.handler).eventDataChanged(this.eventToProxy);
-	    }
-    }
+	public void eventDataChanged(GOEvent event) {
+		if (this.handler instanceof GOModalEventHandler) {
+			((GOModalEventHandler) this.handler).eventDataChanged(this.eventToProxy);
+		}
+	}
 }

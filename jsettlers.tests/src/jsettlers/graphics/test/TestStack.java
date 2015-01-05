@@ -12,29 +12,29 @@ public class TestStack implements IMapObject {
 	public TestStack(EMaterialType material, int count) {
 		this.material = material;
 		this.count = count;
-    }
+	}
 
-    public EMaterialType getMaterial() {
+	public EMaterialType getMaterial() {
 		return this.material;
-    }
+	}
 
-    public IMapObject getNextStack() {
-	    return null;
-    }
-
-	@Override
-    public EMapObjectType getObjectType() {
-	    return EMapObjectType.STACK_OBJECT;
-    }
+	public IMapObject getNextStack() {
+		return null;
+	}
 
 	@Override
-    public float getStateProgress() {
-	    return (byte) this.count;
-    }
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.STACK_OBJECT;
+	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    return null;
-    }
-	
+	public float getStateProgress() {
+		return (byte) this.count;
+	}
+
+	@Override
+	public IMapObject getNextObject() {
+		return null;
+	}
+
 }

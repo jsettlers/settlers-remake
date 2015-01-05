@@ -7,6 +7,7 @@ public enum EBuildingJobType {
 	 * Success: The time elapsed.
 	 * <p>
 	 * Fail: impossible.
+	 * 
 	 * @see BuildingJob#getTime();
 	 */
 	WAIT,
@@ -40,7 +41,7 @@ public enum EBuildingJobType {
 	 * Fail: impossible
 	 */
 	HIDE,
-	
+
 	/**
 	 * Sets the material property of the settler.
 	 * <p>
@@ -51,10 +52,9 @@ public enum EBuildingJobType {
 	 * Fail: There was no given material at that position.
 	 */
 	SET_MATERIAL,
-	
+
 	/**
-	 * Picks up the specified material. Does not change the material type
-	 * assigned to the settler
+	 * Picks up the specified material. Does not change the material type assigned to the settler
 	 * <p>
 	 * Parameter: material
 	 * <p>
@@ -80,8 +80,8 @@ public enum EBuildingJobType {
 	 * <p>
 	 * Success: The settler found the thing he should search and went to it.
 	 * <p>
-	 * Fail: If the searched thing was not found. The settler does not need to
-	 * go back.
+	 * Fail: If the searched thing was not found. The settler does not need to go back.
+	 * 
 	 * @see BuildingSearchType
 	 */
 	SEARCH,

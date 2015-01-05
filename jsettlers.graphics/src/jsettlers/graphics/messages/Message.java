@@ -30,9 +30,8 @@ public interface Message {
 	String getMessage();
 
 	/**
-	 * Gets the Player that send the message, as byte. If the message is a
-	 * status message for the current user, the sender is -1. For attack
-	 * messages, this is also used.
+	 * Gets the Player that send the message, as byte. If the message is a status message for the current user, the sender is -1. For attack messages,
+	 * this is also used.
 	 * 
 	 * @return The sender.
 	 */

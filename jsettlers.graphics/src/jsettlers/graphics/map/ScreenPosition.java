@@ -27,7 +27,7 @@ public class ScreenPosition {
 	private float screenCenterY;
 
 	private final Hashtable<Object, UIPoint> panProgresses =
-	        new Hashtable<Object, UIPoint>();
+			new Hashtable<Object, UIPoint>();
 
 	private final int mapWidth;
 
@@ -36,8 +36,7 @@ public class ScreenPosition {
 	private final float incline;
 
 	/**
-	 * Sets the map size, the max border, widthout the automatically added
-	 * additional border.
+	 * Sets the map size, the max border, widthout the automatically added additional border.
 	 * 
 	 * @param mapWidth
 	 * @param mapHeight
@@ -105,8 +104,7 @@ public class ScreenPosition {
 	/**
 	 * Gets the current center of the screen
 	 * 
-	 * @return The x coordinate of the center. This also includes any ongoing
-	 *         pan operations.
+	 * @return The x coordinate of the center. This also includes any ongoing pan operations.
 	 */
 	public float getScreenCenterX() {
 		return this.screen.getCenterX();
@@ -115,16 +113,14 @@ public class ScreenPosition {
 	/**
 	 * Gets the current center of the screen
 	 * 
-	 * @return The y coordinate of the center. This also includes any ongoing
-	 *         pan operations.
+	 * @return The y coordinate of the center. This also includes any ongoing pan operations.
 	 */
 	public float getScreenCenterY() {
 		return screenCenterY;
 	}
 
 	/**
-	 * Recalculates the x and y position of the screen by the current pan
-	 * values.
+	 * Recalculates the x and y position of the screen by the current pan values.
 	 */
 	private void recalculateScreen() {
 		float x = this.screenCenterX;
@@ -137,7 +133,7 @@ public class ScreenPosition {
 			yoffset += p.getY() / zoom;
 		}
 		setScreen(x - xoffset, y - yoffset, this.screen.getWidth(),
-		        this.screen.getHeight());
+				this.screen.getHeight());
 
 		this.screenCenterX = this.screen.getCenterX() + xoffset;
 		this.screenCenterY = this.screen.getCenterY() + yoffset;
@@ -152,7 +148,7 @@ public class ScreenPosition {
 	 * @param newHeight
 	 */
 	private void setScreen(float centerx, float centery, float newWidth,
-	        float newHeight) {
+			float newHeight) {
 		// clamp to top and bottom
 
 		// top = height in px.
@@ -160,7 +156,7 @@ public class ScreenPosition {
 		int bottom = 0;
 
 		float newCenterY =
-		        clamp(bottom + newHeight / 2, top - newHeight / 2, centery);
+				clamp(bottom + newHeight / 2, top - newHeight / 2, centery);
 		float miny = newCenterY - newHeight / 2;
 		float maxy = miny + newHeight;
 
@@ -169,7 +165,7 @@ public class ScreenPosition {
 		int right = (int) (this.incline * maxy) + this.mapWidth;
 
 		float newCenterX =
-		        clamp(left + newWidth / 2, right - newWidth / 2, centerx);
+				clamp(left + newWidth / 2, right - newWidth / 2, centerx);
 		float minx = newCenterX - newWidth / 2;
 		float maxx = minx + newWidth;
 
@@ -228,7 +224,7 @@ public class ScreenPosition {
 	public void finishPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.remove(key);
 		setScreenCenter((int) (this.screenCenterX - distance.getX() / zoom),
-		        (int) (this.screenCenterY - distance.getY() / zoom));
+				(int) (this.screenCenterY - distance.getY() / zoom));
 	}
 
 	public FloatRectangle getPosition() {

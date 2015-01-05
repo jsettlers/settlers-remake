@@ -37,7 +37,7 @@ public final class ImageProvider {
 	private static final String FILE_PREFIX = "siedler3_";
 
 	private Queue<GLPreloadTask> tasks =
-	        new ConcurrentLinkedQueue<GLPreloadTask>();
+			new ConcurrentLinkedQueue<GLPreloadTask>();
 
 	private ImageIndexFile indexFile = null;
 
@@ -71,7 +71,7 @@ public final class ImageProvider {
 	private static ImageProvider instance;
 
 	private Hashtable<Integer, AdvancedDatFileReader> readers =
-	        new Hashtable<Integer, AdvancedDatFileReader>();
+			new Hashtable<Integer, AdvancedDatFileReader>();
 
 	/**
 	 * The lookup paths for the dat files.
@@ -209,7 +209,7 @@ public final class ImageProvider {
 				return getLandscapeImage(olink.getFile(), olink.getSequence());
 			} else {
 				return getSettlerSequence(olink.getFile(), olink.getSequence())
-				        .getImageSafe(olink.getImage());
+						.getImageSafe(olink.getImage());
 			}
 		}
 	}
@@ -262,8 +262,7 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Adds a preload task that is executed on the OpenGl thread with a opengl
-	 * context.
+	 * Adds a preload task that is executed on the OpenGl thread with a opengl context.
 	 * <p>
 	 * The task may never be executed.
 	 */

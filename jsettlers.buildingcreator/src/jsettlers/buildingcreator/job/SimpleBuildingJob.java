@@ -35,7 +35,7 @@ public class SimpleBuildingJob implements BuildingJob {
 	}
 
 	private SimpleBuildingJob(EBuildingJobType type, int dx, int dy, int time,
-	        EMaterialType material, EDirection direction) {
+			EMaterialType material, EDirection direction) {
 		this.dx = dx;
 		this.dy = dy;
 		this.time = time;
@@ -80,8 +80,7 @@ public class SimpleBuildingJob implements BuildingJob {
 	}
 
 	/**
-	 * This method creates a new graph of linked jobs, starting with a start
-	 * job.
+	 * This method creates a new graph of linked jobs, starting with a start job.
 	 * <p>
 	 * The data of the provider is not checked for the type of the job.
 	 * 
@@ -94,12 +93,12 @@ public class SimpleBuildingJob implements BuildingJob {
 	 *             if the provider does provide wrog links.
 	 */
 	public static BuildingJob createLinkedJobs(
-	        BuildingJobDataProvider provider, String startJob) {
+			BuildingJobDataProvider provider, String startJob) {
 		if (startJob == null) {
 			throw new IllegalArgumentException("Start job is null.");
 		}
 		Hashtable<String, SimpleBuildingJob> converted =
-		        new Hashtable<String, SimpleBuildingJob>();
+				new Hashtable<String, SimpleBuildingJob>();
 
 		fillHashtableWithUnlinked(provider, startJob, converted);
 
@@ -109,7 +108,7 @@ public class SimpleBuildingJob implements BuildingJob {
 	}
 
 	private static void linkJobs(BuildingJobDataProvider provider,
-	        Hashtable<String, SimpleBuildingJob> converted) {
+			Hashtable<String, SimpleBuildingJob> converted) {
 		Set<Entry<String, SimpleBuildingJob>> items = converted.entrySet();
 		for (Entry<String, SimpleBuildingJob> item : items) {
 			String name = item.getKey();
@@ -125,16 +124,16 @@ public class SimpleBuildingJob implements BuildingJob {
 	}
 
 	private static void fillHashtableWithUnlinked(
-	        BuildingJobDataProvider provider, String startJob,
-	        Hashtable<String, SimpleBuildingJob> converted) {
+			BuildingJobDataProvider provider, String startJob,
+			Hashtable<String, SimpleBuildingJob> converted) {
 		ConcurrentLinkedQueue<String> toBuild =
-		        new ConcurrentLinkedQueue<String>();
+				new ConcurrentLinkedQueue<String>();
 		toBuild.offer(startJob);
 		while (!toBuild.isEmpty()) {
 			String currentName = toBuild.poll();
 			if (!converted.containsKey(currentName)) {
 				SimpleBuildingJob job =
-				        createUnlinkedJob(provider, toBuild, currentName);
+						createUnlinkedJob(provider, toBuild, currentName);
 
 				converted.put(currentName, job);
 			}
@@ -142,13 +141,13 @@ public class SimpleBuildingJob implements BuildingJob {
 	}
 
 	private static SimpleBuildingJob createUnlinkedJob(
-	        BuildingJobDataProvider provider,
-	        ConcurrentLinkedQueue<String> toBuild, String currentName) {
+			BuildingJobDataProvider provider,
+			ConcurrentLinkedQueue<String> toBuild, String currentName) {
 		BuildingJobData data = provider.getJobData(currentName);
 		if (data == null) {
 			throw new IllegalArgumentException(
-			        "Error on building job list conversion: job " + currentName
-			                + " not found.");
+					"Error on building job list conversion: job " + currentName
+							+ " not found.");
 		}
 		SimpleBuildingJob job = new SimpleBuildingJob(data);
 
@@ -169,11 +168,11 @@ public class SimpleBuildingJob implements BuildingJob {
 	 */
 	public static BuildingJob createFallback() {
 		SimpleBuildingJob wait =
-		        new SimpleBuildingJob(EBuildingJobType.WAIT, 0, 0, 1000, null,
-		                null);
+				new SimpleBuildingJob(EBuildingJobType.WAIT, 0, 0, 1000, null,
+						null);
 		SimpleBuildingJob hide =
-	        new SimpleBuildingJob(EBuildingJobType.HIDE, 0, 0, 0, null,
-	                null);
+				new SimpleBuildingJob(EBuildingJobType.HIDE, 0, 0, 0, null,
+						null);
 		wait.successJob = wait;
 		wait.failJob = wait;
 		hide.successJob = wait;

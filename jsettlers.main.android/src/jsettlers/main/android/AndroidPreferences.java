@@ -31,13 +31,13 @@ public class AndroidPreferences {
 	}
 
 	public String getServer() {
-		return  preferences.getString("server", CommonConstants.DEFAULT_SERVER_ADDRESS);
+		return preferences.getString("server", CommonConstants.DEFAULT_SERVER_ADDRESS);
 	}
-	
+
 	public void setPlayerName(String name) {
 		preferences.edit().putString("player-name", name).commit();
 	}
-	
+
 	public void setServer(String serverName) {
 		preferences.edit().putString("server", serverName).commit();
 	}

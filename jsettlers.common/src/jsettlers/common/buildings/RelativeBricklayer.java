@@ -18,10 +18,10 @@ public class RelativeBricklayer {
 	}
 
 	public EDirection getDirection() {
-	    return direction;
-    }
+		return direction;
+	}
 
 	public RelativePoint getPosition() {
-	    return position;
-    }
+		return position;
+	}
 }

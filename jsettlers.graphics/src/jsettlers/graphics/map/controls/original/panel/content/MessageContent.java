@@ -12,11 +12,11 @@ public class MessageContent implements IContentProvider {
 	private final UIPanel panel;
 
 	public MessageContent(String message, String okMessage, Action okAction,
-	        String abortMessage, Action abortAction) {
+			String abortMessage, Action abortAction) {
 		panel = new UIPanel();
-		
+
 		panel.addChild(new Label(message, EFontSize.NORMAL), .1f, .5f, .9f, .9f);
-		
+
 		if (abortMessage != null && abortAction != null) {
 			UILabeledButton okButton = new UILabeledButton(abortMessage, abortAction);
 			panel.addChild(okButton, .1f, .1f, .5f, .2f);
@@ -26,7 +26,7 @@ public class MessageContent implements IContentProvider {
 			panel.addChild(okButton, .5f, .1f, .9f, .2f);
 		}
 	}
-	
+
 	@Override
 	public UIPanel getPanel() {
 		return panel;
@@ -38,11 +38,11 @@ public class MessageContent implements IContentProvider {
 	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {	    
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+	}
 
 	@Override
-    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
-    }
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	}
 
 }

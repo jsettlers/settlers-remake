@@ -46,15 +46,14 @@ class LineLoader implements Runnable {
 	private short[][] buffer = new short[1][1];
 
 	/**
-	 * Updates a line by putting it to the update buffer. Next time the gl
-	 * context is available, it is updated.
+	 * Updates a line by putting it to the update buffer. Next time the gl context is available, it is updated.
 	 */
 	private void updateLine() {
 		minimap.blockUntilUpdateAllowedOrStopped();
 		for (int i = 0; i < LINES_PER_RUN; i++) {
 
 			if (buffer.length != minimap.getHeight()
-			        || buffer[currentline].length != minimap.getWidth()) {
+					|| buffer[currentline].length != minimap.getWidth()) {
 				buffer = new short[minimap.getHeight()][minimap.getWidth()];
 				for (int y = 0; y < minimap.getHeight(); y++) {
 					for (int x = 0; x < minimap.getWidth(); x++) {
@@ -92,10 +91,10 @@ class LineLoader implements Runnable {
 
 		// first map tile in line
 		int mapMaxY =
-		        (int) ((1 - (float) currentline / safeHeight) * mapHeight);
+				(int) ((1 - (float) currentline / safeHeight) * mapHeight);
 		// first map line not in line
 		int mapMinY =
-		        (int) ((1 - (float) (currentline + 1) / safeHeight) * mapHeight);
+				(int) ((1 - (float) (currentline + 1) / safeHeight) * mapHeight);
 		if (mapMinY == mapMaxY) {
 			if (mapMaxY == mapHeight) {
 				mapMinY = mapHeight - 1;
@@ -117,24 +116,24 @@ class LineLoader implements Runnable {
 			short color = TRANSPARENT;
 			if (map.getVisibleStatus(centerX, centerY) > CommonConstants.FOG_OF_WAR_EXPLORED) {
 				color =
-				        getSettlerForArea(map, context, mapMinX, mapMinY,
-				                mapMaxX, mapMaxY);
+						getSettlerForArea(map, context, mapMinX, mapMinY,
+								mapMaxX, mapMaxY);
 			}
 
 			if (color == TRANSPARENT) {
 				float basecolor =
-				        ((float) map.getVisibleStatus(centerX, centerY))
-				                / CommonConstants.FOG_OF_WAR_VISIBLE;
+						((float) map.getVisibleStatus(centerX, centerY))
+								/ CommonConstants.FOG_OF_WAR_VISIBLE;
 				int dheight =
-				        map.getHeightAt(centerX, mapMinY)
-				                - map.getHeightAt(centerX, Math.min(mapMinY
-				                        + mapLineHeight, mapHeight - 1));
+						map.getHeightAt(centerX, mapMinY)
+								- map.getHeightAt(centerX, Math.min(mapMinY
+										+ mapLineHeight, mapHeight - 1));
 				basecolor *= (1 + .15f * dheight);
 
 				if (basecolor >= 0) {
 					color =
-					        getLandscapeForArea(map, mapMinX, mapMinY, mapMaxX,
-					                mapMaxY, basecolor);
+							getLandscapeForArea(map, mapMinX, mapMinY, mapMaxX,
+									mapMaxY, basecolor);
 				}
 			}
 
@@ -150,7 +149,7 @@ class LineLoader implements Runnable {
 	}
 
 	private static short getLandscapeForArea(IGraphicsGrid map, int mapminx,
-	        int mapminy, int mapmaxx, int mapmaxy, float basecolor) {
+			int mapminy, int mapmaxx, int mapmaxy, float basecolor) {
 		int centerx = (mapmaxx + mapminx) / 2;
 		int centery = (mapmaxy + mapminy) / 2;
 
@@ -160,8 +159,8 @@ class LineLoader implements Runnable {
 	}
 
 	private static short getSettlerForArea(IGraphicsGrid map,
-	        MapDrawContext context, int mapminx, int mapminy, int mapmaxx,
-	        int mapmaxy) {
+			MapDrawContext context, int mapminx, int mapminy, int mapmaxx,
+			int mapmaxy) {
 		short color = TRANSPARENT;
 
 		for (int y = mapminy; y < mapmaxy && color == TRANSPARENT; y++) {
@@ -169,8 +168,8 @@ class LineLoader implements Runnable {
 				IMovable settler = map.getMovableAt(x, y);
 				if (settler != null) {
 					color =
-					        context.getPlayerColor(settler.getPlayerId())
-					                .toShortColor(1);
+							context.getPlayerColor(settler.getPlayerId())
+									.toShortColor(1);
 				} else if (map.isBorder(x, y)) {
 					byte player = map.getPlayerIdAt(x, y);
 					Color playerColor = context.getPlayerColor(player);

@@ -35,7 +35,7 @@ public class MapList implements IMapListerCallable {
 			return new MapList(ResourceManager.getSaveDirectory());
 		}
 	}
-	
+
 	public static final String MAP_EXTENSION = ".map";
 	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
 	private final IMapLister mapsDir;
@@ -66,7 +66,7 @@ public class MapList implements IMapListerCallable {
 		Collections.sort(freshMaps);
 		Collections.sort(savedMaps);
 	}
-	
+
 	@Override
 	public synchronized void foundMap(IListedMap map) {
 		try {

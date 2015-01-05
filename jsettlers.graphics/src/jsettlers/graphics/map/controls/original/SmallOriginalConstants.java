@@ -15,18 +15,18 @@ public class SmallOriginalConstants extends IOriginalConstants {
 		UI_DECORATIONRIGHT = (float) 8 / 209 + UI_CENTERX;
 
 		UI_BG_SEQ_MAIN =
-		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
-		                UI_BG_SEQINDEX_MAIN, 0);
+				new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+						UI_BG_SEQINDEX_MAIN, 0);
 		UI_BG_SEQ_MINIMAPR =
-		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
-		                UI_BG_SEQINDEX_MINIMAPR, 0);
+				new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+						UI_BG_SEQINDEX_MINIMAPR, 0);
 		UI_BG_SEQ_MINIMAPL =
-		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
-		                UI_BG_SEQINDEX_MINIMAPL, 0);
+				new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+						UI_BG_SEQINDEX_MINIMAPL, 0);
 		UI_BG_SEQ_RIGHT =
-		        new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
-		                UI_BG_SEQINDEX_RIGHT, 0);
- 
+				new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE,
+						UI_BG_SEQINDEX_RIGHT, 0);
+
 		UI_TABS1_TOP = 1 - (float) 13 / 338;
 		UI_TABS1_BOTTOM = 1 - (float) 46 / 338;
 		UI_TABS1_SIDEMARGIN = (float) 8 / 136;

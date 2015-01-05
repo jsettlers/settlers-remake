@@ -29,7 +29,7 @@ public class ProgressPanel extends UIPanel {
 
 		String text = Labels.getProgress(state);
 		drawer.renderCentered(getPosition().getCenterX(), getPosition()
-		        .getMinY() + 40, text);
+				.getMinY() + 40, text);
 	}
 
 	/**

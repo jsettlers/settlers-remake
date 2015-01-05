@@ -3,8 +3,7 @@ package jsettlers.graphics.action;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This action states that the user wants something to move to the given
- * position.
+ * This action states that the user wants something to move to the given position.
  *
  * @author michael
  */
@@ -33,8 +32,7 @@ public class PointAction extends Action {
 	}
 
 	/**
-	 * Defines it the units should start working when reaching their
-	 * destination.
+	 * Defines it the units should start working when reaching their destination.
 	 *
 	 * @return a boolean value.
 	 */

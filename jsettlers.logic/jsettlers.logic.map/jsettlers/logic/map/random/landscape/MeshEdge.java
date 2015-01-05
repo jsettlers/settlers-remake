@@ -2,6 +2,7 @@ package jsettlers.logic.map.random.landscape;
 
 /**
  * This is a edge between two landscape sites.
+ * 
  * @author michael
  *
  */
@@ -68,7 +69,7 @@ public class MeshEdge {
 			return start;
 		} else {
 			throw new IllegalArgumentException(
-			        "The site does not belong to this edge");
+					"The site does not belong to this edge");
 		}
 	}
 
@@ -79,7 +80,7 @@ public class MeshEdge {
 			return end;
 		} else {
 			throw new IllegalArgumentException(
-			        "The site does not belong to this edge");
+					"The site does not belong to this edge");
 		}
 	}
 
@@ -99,7 +100,7 @@ public class MeshEdge {
 			return right;
 		} else {
 			throw new IllegalArgumentException(
-			        "The vertex does not belong to this edge");
+					"The vertex does not belong to this edge");
 		}
 	}
 
@@ -114,10 +115,10 @@ public class MeshEdge {
 	}
 
 	public boolean isRiver() {
-	    return isRiver;
-    }
+		return isRiver;
+	}
 
 	public void setRiver(boolean isRiver) {
-	    this.isRiver = isRiver;
-    }
+		this.isRiver = isRiver;
+	}
 }

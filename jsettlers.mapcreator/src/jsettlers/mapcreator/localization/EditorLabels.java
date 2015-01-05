@@ -11,7 +11,7 @@ public class EditorLabels {
 		if (!load) {
 			try {
 				resource = new PropertyResourceBundle(
-				        EditorLabels.class.getResourceAsStream("labels_de.properties"));
+						EditorLabels.class.getResourceAsStream("labels_de.properties"));
 			} catch (IOException e) {
 			}
 			load = true;

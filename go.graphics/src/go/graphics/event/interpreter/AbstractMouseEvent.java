@@ -3,7 +3,6 @@ package go.graphics.event.interpreter;
 import go.graphics.UIPoint;
 import go.graphics.event.SingleHandlerGoModalEvent;
 
-
 public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 
 	protected UIPoint position;
@@ -16,8 +15,7 @@ public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 	}
 
 	/**
-	 * Stats that the event was initialized and should change to its modal
-	 * pahse.
+	 * Stats that the event was initialized and should change to its modal pahse.
 	 */
 	public void initialized() {
 		setPhase(PHASE_STARTED);
@@ -39,8 +37,7 @@ public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 	}
 
 	/**
-	 * Computes whether the mouse was moved (more than just a few pixels) during
-	 * the event.
+	 * Computes whether the mouse was moved (more than just a few pixels) during the event.
 	 * 
 	 * @return true if the mouse was moved while beeing pressed.
 	 */
@@ -61,8 +58,8 @@ public class AbstractMouseEvent extends SingleHandlerGoModalEvent {
 	protected void setMousePosition(final UIPoint current) {
 		if (this.position != null) {
 			mouseMoved +=
-			        Math.abs(current.getX() - this.position.getX())
-			                + Math.abs(current.getY() - this.position.getY());
+					Math.abs(current.getX() - this.position.getX())
+							+ Math.abs(current.getY() - this.position.getY());
 		}
 
 		this.position = current;

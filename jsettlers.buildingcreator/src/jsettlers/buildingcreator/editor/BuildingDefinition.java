@@ -14,8 +14,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
 
 /**
- * This represents the definition of a building and all the properties it can
- * have.
+ * This represents the definition of a building and all the properties it can have.
  * 
  * @author michael
  */
@@ -26,11 +25,11 @@ public class BuildingDefinition {
 	 * A table of known actions and their names.
 	 */
 	private Hashtable<String, BuildingPersonJobProperties> actions =
-	        new Hashtable<String, BuildingPersonJobProperties>();
+			new Hashtable<String, BuildingPersonJobProperties>();
 
 	private LinkedList<RelativeStack> stacks = new LinkedList<RelativeStack>();
 	private LinkedList<RelativeBricklayer> bricklayers =
-	        new LinkedList<RelativeBricklayer>();
+			new LinkedList<RelativeBricklayer>();
 
 	private LinkedList<RelativePoint> blocked = new LinkedList<RelativePoint>();
 	private LinkedList<RelativePoint> justProtected = new LinkedList<RelativePoint>();
@@ -88,7 +87,7 @@ public class BuildingDefinition {
 	}
 
 	public void setBlockedStatus(RelativePoint relative, boolean isProtected,
-	        boolean isBlocked) {
+			boolean isBlocked) {
 		if (isProtected) {
 			if (isBlocked) {
 				justProtected.remove(relative);
@@ -124,7 +123,7 @@ public class BuildingDefinition {
 			bricklayers.remove(bricklayer);
 		} else {
 			bricklayers.add(new RelativeBricklayer(relative.getDx(), relative
-			        .getDy(), direction));
+					.getDy(), direction));
 		}
 	}
 
@@ -162,10 +161,10 @@ public class BuildingDefinition {
 	}
 
 	public void setStack(RelativePoint relative, EMaterialType material,
-	        int required) {
+			int required) {
 		removeStack(relative);
 		stacks.add(new RelativeStack(relative.getDx(), relative.getDy(),
-		        material, (short) required));
+				material, (short) required));
 	}
 
 	public void removeStack(RelativePoint relative) {

@@ -14,7 +14,7 @@ public abstract class TileMatcher implements Iterable<ShortPoint2D> {
 	private final LandFilter filter;
 
 	public TileMatcher(IMapData grid, int startx, int starty, int distance,
-	        LandFilter filter, Random random) {
+			LandFilter filter, Random random) {
 		this.grid = grid;
 		this.startx = startx;
 		this.starty = starty;

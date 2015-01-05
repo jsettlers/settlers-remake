@@ -9,7 +9,7 @@ public interface UIButton {
 	public abstract FloatRectangle getPosition();
 
 	public abstract void drawAt(GLDrawContext gl);
-	
+
 	public Action getAction();
 
 }

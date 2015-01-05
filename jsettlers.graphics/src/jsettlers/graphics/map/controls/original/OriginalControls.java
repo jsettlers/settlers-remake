@@ -39,7 +39,7 @@ public class OriginalControls implements IControls {
 	boolean lastSelectionWasNull = true;
 
 	private MapDrawContext context;
-	
+
 	public OriginalControls() {
 		constants = new SmallOriginalConstants();
 		uiBase = createInterface();
@@ -52,21 +52,21 @@ public class OriginalControls implements IControls {
 		UIPanel minimapbg_left = new UIPanel();
 		minimapbg_left.setBackground(constants.UI_BG_SEQ_MINIMAPL);
 		panel.addChild(minimapbg_left, 0, constants.UI_CENTERY,
-		        constants.UI_CENTERX, 1);
+				constants.UI_CENTERX, 1);
 
 		UIPanel minimapbg_right = new UIPanel();
 		minimapbg_right.setBackground(constants.UI_BG_SEQ_MINIMAPR);
 		panel.addChild(minimapbg_right, constants.UI_CENTERX,
-		        constants.UI_CENTERY, 1, 1);
+				constants.UI_CENTERY, 1, 1);
 
 		mainPanel.setBackground(constants.UI_BG_SEQ_MAIN);
 		panel.addChild(mainPanel, 0, 0, constants.UI_CENTERX,
-		        constants.UI_CENTERY);
+				constants.UI_CENTERY);
 
 		UIPanel rightDecoration = new UIPanel();
 		rightDecoration.setBackground(constants.UI_BG_SEQ_RIGHT);
 		panel.addChild(rightDecoration, constants.UI_CENTERX, 0,
-		        constants.UI_DECORATIONRIGHT, constants.UI_CENTERY);
+				constants.UI_DECORATIONRIGHT, constants.UI_CENTERY);
 
 		return panel;
 	}
@@ -89,8 +89,8 @@ public class OriginalControls implements IControls {
 		this.uiBase.setPosition(new FloatRectangle(0, 0, width, newHeight));
 
 		minimap.setSize(
-		        (int) (constants.MINIMAP_WIDTH * width),
-		        (int) (constants.MINIMAP_HEIGHT * (1 - constants.UI_CENTERY) * newHeight));
+				(int) (constants.MINIMAP_WIDTH * width),
+				(int) (constants.MINIMAP_HEIGHT * (1 - constants.UI_CENTERY) * newHeight));
 	}
 
 	@Override
@@ -111,8 +111,8 @@ public class OriginalControls implements IControls {
 
 	private float getMinimapBottom() {
 		return (constants.UI_CENTERY + (1 - constants.UI_CENTERY)
-		        * constants.MINIMAP_BOTTOM_Y)
-		        * uiBase.getPosition().getHeight();
+				* constants.MINIMAP_BOTTOM_Y)
+				* uiBase.getPosition().getHeight();
 	}
 
 	@Override
@@ -121,19 +121,19 @@ public class OriginalControls implements IControls {
 		float height = uiBase.getPosition().getHeight();
 		float uicenter = width * constants.UI_CENTERX;
 		float m =
-		        1 / (1 - constants.UI_CENTERX) / width
-		                * (1 - constants.UI_CENTERY) * height;
+				1 / (1 - constants.UI_CENTERX) / width
+						* (1 - constants.UI_CENTERY) * height;
 		return position.getX() < uicenter
-		        || position.getY() > position.getX() * m + constants.UI_CENTERY
-		                * height - m * constants.UI_CENTERX * width;
+				|| position.getY() > position.getX() * m + constants.UI_CENTERY
+						* height - m * constants.UI_CENTERX * width;
 	}
 
 	@Override
 	public Action getActionFor(UIPoint position, boolean selecting) {
 		float relativex =
-		        (float) position.getX() / this.uiBase.getPosition().getWidth();
+				(float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey =
-		        (float) position.getY() / this.uiBase.getPosition().getHeight();
+				(float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
 		if (minimap != null && relativey > constants.UI_CENTERY) {
 			action = getForMinimap(relativex, relativey, selecting);
@@ -142,7 +142,7 @@ public class OriginalControls implements IControls {
 			action = uiBase.getAction(relativex, relativey);
 		}
 		if (action != null
-		        && action.getActionType() == EActionType.CHANGE_PANEL) {
+				&& action.getActionType() == EActionType.CHANGE_PANEL) {
 			mainPanel.setContent(((ChangePanelAction) action).getContent());
 			return null;
 		} else {
@@ -151,16 +151,16 @@ public class OriginalControls implements IControls {
 	}
 
 	private Action getForMinimap(float relativex, float relativey,
-	        boolean selecting) {
+			boolean selecting) {
 		float minimapx =
-		        (relativex - constants.MINIMAP_BOTTOMLEFT_X)
-		                / constants.MINIMAP_WIDTH;
+				(relativex - constants.MINIMAP_BOTTOMLEFT_X)
+						/ constants.MINIMAP_WIDTH;
 		float minimapy =
-		        ((relativey - constants.UI_CENTERY)
-		                / (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
-		                / constants.MINIMAP_HEIGHT;
+				((relativey - constants.UI_CENTERY)
+						/ (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
+						/ constants.MINIMAP_HEIGHT;
 		ShortPoint2D clickPosition =
-		        minimap.getClickPositionIfOnMap(minimapx, minimapy);
+				minimap.getClickPositionIfOnMap(minimapx, minimapy);
 		if (clickPosition != null) {
 			if (selecting) {
 				return new PointAction(EActionType.PAN_TO, clickPosition);
@@ -175,9 +175,9 @@ public class OriginalControls implements IControls {
 	@Override
 	public String getDescriptionFor(UIPoint position) {
 		float relativex =
-		        (float) position.getX() / this.uiBase.getPosition().getWidth();
+				(float) position.getX() / this.uiBase.getPosition().getWidth();
 		float relativey =
-		        (float) position.getY() / this.uiBase.getPosition().getHeight();
+				(float) position.getY() / this.uiBase.getPosition().getHeight();
 		return uiBase.getDescription(relativex, relativey);
 	}
 
@@ -248,7 +248,7 @@ public class OriginalControls implements IControls {
 			Action action = getActionForDraw((GODrawEvent) event);
 			if (action != null && action.getActionType() == EActionType.PAN_TO) {
 				minimap.getContext().scrollTo(
-				        ((PointAction) action).getPosition());
+						((PointAction) action).getPosition());
 			}
 		}
 
@@ -270,24 +270,24 @@ public class OriginalControls implements IControls {
 			lastSelectionWasNull = false;
 
 			switch (selection.getSelectionType()) {
-				case PEOPLE:
-					mainPanel.setContent(new BearerSelection(selection));
-					break;
-				case SOLDIERS:
-					mainPanel.setContent(new SoilderSelection(selection));
-					break;
-				case SPECIALISTS:
-					mainPanel.setContent(new SpecialistSelection(selection));
-					break;
+			case PEOPLE:
+				mainPanel.setContent(new BearerSelection(selection));
+				break;
+			case SOLDIERS:
+				mainPanel.setContent(new SoilderSelection(selection));
+				break;
+			case SPECIALISTS:
+				mainPanel.setContent(new SpecialistSelection(selection));
+				break;
 
-				case BUILDING:
-					mainPanel.setContent(new BuildingSelectionPanel(selection));
-					break;
-				default:
-					System.err
-					        .println("got Selection but couldn't handle it! SelectionType: "
-					                + selection.getSelectionType());
-					break;
+			case BUILDING:
+				mainPanel.setContent(new BuildingSelectionPanel(selection));
+				break;
+			default:
+				System.err
+						.println("got Selection but couldn't handle it! SelectionType: "
+								+ selection.getSelectionType());
+				break;
 			}
 		}
 	}

@@ -22,13 +22,13 @@ import jsettlers.graphics.utils.UIPanel;
 
 public class StartScreen extends UIPanel {
 	public static final ImageLink BACKGROUND = new OriginalImageLink(
-	        EImageLinkType.GUI, 2, 29, 0);
+			EImageLinkType.GUI, 2, 29, 0);
 
 	private static final OriginalImageLink SETTINGS = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 0);
 	private static final OriginalImageLink SETTINGS_ACTIVE = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 1);
 
 	private final LinkedList<UILabeledButton> mainButtons =
-	        new LinkedList<UILabeledButton>();
+			new LinkedList<UILabeledButton>();
 	private final UIPanel content;
 
 	private final IStartScreen connector;
@@ -51,18 +51,18 @@ public class StartScreen extends UIPanel {
 
 	private void addButtons() {
 		addMainButton("start-newgame", new NewGamePanel(connector,
-		        contentSetable), .9f);
+				contentSetable), .9f);
 		addMainButton("start-loadgame", new LoadGamePanel(connector,
-		        contentSetable), .75f);
+				contentSetable), .75f);
 		addMainButton("start-newmultiplayer", new NewMultiplayerGamePanel(
-		        connector, contentSetable), .6f);
+				connector, contentSetable), .6f);
 		addMainButton(
-		        "start-joinmultiplayer",
-		        new JoinableGamePanel(connector, contentSetable),
-		        .45f);
+				"start-joinmultiplayer",
+				new JoinableGamePanel(connector, contentSetable),
+				.45f);
 		// addMainButton("start-restoremultiplayer", new NewGamePanel(connector,
 		// contentSetable), .3f);
-		
+
 		addChild(new Button(new ExecutableAction() {
 			@Override
 			public void execute() {
@@ -91,8 +91,8 @@ public class StartScreen extends UIPanel {
 				}
 			};
 			button =
-			        new UILabeledButton(Labels.getString(labelId), action,
-			                EFontSize.HEADLINE);
+					new UILabeledButton(Labels.getString(labelId), action,
+							EFontSize.HEADLINE);
 		}
 
 		private UILabeledButton getButton() {
@@ -102,7 +102,7 @@ public class StartScreen extends UIPanel {
 
 	private void addMainButton(String labelId, final UIPanel panel, float top) {
 		final UILabeledButton child =
-		        new MainButton(labelId, panel, top).getButton();
+				new MainButton(labelId, panel, top).getButton();
 		addChild(child, .05f, top - .1f, .45f, top);
 		mainButtons.add(child);
 	}
@@ -114,7 +114,7 @@ public class StartScreen extends UIPanel {
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.SMALL);
 		float width = (float) drawer.getWidth(revision);
 		drawer.drawString(getPosition().getCenterX() - width / 2,
-		        getPosition().getMinY() + 5, revision);
+				getPosition().getMinY() + 5, revision);
 	}
 
 }

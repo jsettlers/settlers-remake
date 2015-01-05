@@ -45,12 +45,13 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 	public AreaContainer(Area area) {
 		this(area, false);
 	}
-		/**
-		 * creates a new area conaainer
-		 * 
-		 * @param area
-		 *            The area to display
-		 */
+
+	/**
+	 * creates a new area conaainer
+	 * 
+	 * @param area
+	 *            The area to display
+	 */
 	public AreaContainer(Area area, boolean forceLightweight) {
 		this.area = area;
 		this.setLayout(new BorderLayout());
@@ -58,7 +59,6 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 		GLProfile profile = GLProfile.getDefault();
 		GLCapabilities cap = new GLCapabilities(profile);
 		cap.setStencilBits(1);
-
 
 		GLEventListener glEventListener = new GLEventListener() {
 
@@ -81,7 +81,6 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 				draw(glDrawable.getGL().getGL2());
 			}
 		};
-		
 
 		if (forceLightweight) {
 			GLJPanel panel = new GLJPanel(cap);
@@ -92,7 +91,7 @@ public class AreaContainer extends JPanel implements RedrawListener, GOEventHand
 			glCanvas.addGLEventListener(glEventListener);
 			canvas = glCanvas;
 		}
-		
+
 		new GOSwingEventConverter(canvas, this);
 
 		area.addRedrawListener(this);

@@ -8,13 +8,14 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
  * This class translates settler images.
+ * 
  * @author michael
  *
  */
 public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	@Override
-    public SettlerImage createImage(ImageMetadata metadata, short[] array) {
+	public SettlerImage createImage(ImageMetadata metadata, short[] array) {
 		return new SettlerImage(metadata, array);
 	}
 
@@ -30,7 +31,7 @@ public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader)
-	        throws IOException {
+			throws IOException {
 		return (short) ((reader.read16() << 1) | 0x01);
 	}
 

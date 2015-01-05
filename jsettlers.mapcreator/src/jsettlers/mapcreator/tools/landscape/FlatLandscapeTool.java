@@ -32,10 +32,10 @@ public class FlatLandscapeTool implements Tool {
 
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
-	        ShortPoint2D end, double uidx) {
+			ShortPoint2D end, double uidx) {
 		byte[][] influences = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(influences, start, end);
-		
+
 		long heightsum = 0;
 		long heightweights = 0;
 		for (int x = 0; x < map.getWidth(); x++) {
@@ -53,10 +53,10 @@ public class FlatLandscapeTool implements Tool {
 					continue;
 				}
 				int oldheight = map.getLandscapeHeight(x, y);
-				double influence = influencefactor  * influences[x][y] / Byte.MAX_VALUE;
+				double influence = influencefactor * influences[x][y] / Byte.MAX_VALUE;
 				int newheight =
-				        (int) (influence * desired + (1 - influence)
-				                * old[x][y]);
+						(int) (influence * desired + (1 - influence)
+								* old[x][y]);
 				if (desired < old[x][y]) {
 					if (newheight < oldheight) {
 						map.setHeight(x, y, newheight);

@@ -16,7 +16,7 @@ public class UIInput extends UIPanel implements GOEventHandler {
 	public boolean handleEvent(GOKeyEvent event) {
 		String code = event.getKeyCode();
 		if (code.length() == 1 || code.equals("BACK_SPACE")
-		        || code.equals("LEFT") || code.equals("RIGHT")) {
+				|| code.equals("LEFT") || code.equals("RIGHT")) {
 			event.setHandler(this);
 			return true;
 		} else {
@@ -56,17 +56,17 @@ public class UIInput extends UIPanel implements GOEventHandler {
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
 
 		float textHeight =
-		        (float) drawer.getHeight(inputString.toString() + "X");
+				(float) drawer.getHeight(inputString.toString() + "X");
 		float y = getPosition().getCenterY() - textHeight / 2;
 		float x = getPosition().getMinX() + 2;
 		drawer.drawString(x, y, inputString.toString());
 
 		float carretX =
-		        (float) (x
-		                + drawer.getWidth(inputString.substring(0, carret)
-		                        + "X") - drawer.getWidth("X"));
+				(float) (x
+						+ drawer.getWidth(inputString.substring(0, carret)
+								+ "X") - drawer.getWidth("X"));
 		gl.drawLine(new float[] {
-		        carretX, y, 0, carretX, y + textHeight, 0
+				carretX, y, 0, carretX, y + textHeight, 0
 		}, false);
 	}
 

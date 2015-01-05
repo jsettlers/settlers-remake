@@ -5,6 +5,6 @@ import jsettlers.common.position.RelativePoint;
 
 public interface ObjectContainer {
 	public MapObject getMapObject();
-	
+
 	public RelativePoint[] getProtectedArea();
 }

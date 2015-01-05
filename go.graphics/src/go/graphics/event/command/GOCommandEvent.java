@@ -5,6 +5,6 @@ import go.graphics.event.GOEvent;
 
 public interface GOCommandEvent extends GOEvent {
 	UIPoint getCommandPosition();
-	
+
 	boolean isSelecting();
 }

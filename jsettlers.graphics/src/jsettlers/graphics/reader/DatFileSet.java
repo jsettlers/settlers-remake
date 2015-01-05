@@ -8,8 +8,7 @@ import jsettlers.graphics.sequence.Sequence;
 /**
  * This is a dat file set that holds the data of a dat file in converted form.
  * <p>
- * It allows access to the torsos, settler images and landscape tiles in the
- * file.
+ * It allows access to the torsos, settler images and landscape tiles in the file.
  * <p>
  * The lists should allow quick index access.
  * 

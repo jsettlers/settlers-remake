@@ -17,7 +17,7 @@ public class SimpleMessage implements Message {
 	private final EMessageType type;
 
 	public SimpleMessage(EMessageType type, String message, byte sender,
-	        ShortPoint2D pos) {
+			ShortPoint2D pos) {
 		this.type = type;
 		this.message = message;
 		this.sender = sender;
@@ -53,7 +53,7 @@ public class SimpleMessage implements Message {
 	public static Message attacked(byte otherplayer, ShortPoint2D pos) {
 		String message = Labels.getString("attacked");
 		return new SimpleMessage(EMessageType.ATTACKED, message, otherplayer,
-		        pos);
+				pos);
 	}
 
 	public static Message foundMinerals(EMaterialType type, ShortPoint2D pos) {

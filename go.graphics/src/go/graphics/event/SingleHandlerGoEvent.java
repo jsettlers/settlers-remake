@@ -1,8 +1,7 @@
 package go.graphics.event;
 
 /**
- * This class provides simple handling of events. It allows the addition of a
- * event handler and basic phase support with event fireing.
+ * This class provides simple handling of events. It allows the addition of a event handler and basic phase support with event fireing.
  * 
  * @author michael
  */
@@ -15,7 +14,7 @@ public class SingleHandlerGoEvent implements GOEvent {
 	public void setHandler(GOEventHandler handler) {
 		if (getPhase() != PHASE_INITIALIZING) {
 			throw new IllegalStateException(
-			        "Can only set event handler in initialization pahse.");
+					"Can only set event handler in initialization pahse.");
 		}
 		this.handler = handler;
 	}
@@ -26,8 +25,7 @@ public class SingleHandlerGoEvent implements GOEvent {
 	}
 
 	/**
-	 * Sets the phase of the current event. This should not be used by the event
-	 * handler.
+	 * Sets the phase of the current event. This should not be used by the event handler.
 	 * <p>
 	 * Fires a event phase chnage.
 	 * 
@@ -39,7 +37,7 @@ public class SingleHandlerGoEvent implements GOEvent {
 			throw new IllegalStateException("Cannot go backwards in states");
 		}
 		this.phase = phase;
-		
+
 		if (handler != null) {
 			handler.phaseChanged(this);
 
@@ -50,9 +48,9 @@ public class SingleHandlerGoEvent implements GOEvent {
 			}
 		}
 	}
-	
+
 	@Override
 	public int getPhase() {
-	    return phase;
-    }
+		return phase;
+	}
 }

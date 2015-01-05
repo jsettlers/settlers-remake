@@ -29,22 +29,20 @@ import jsettlers.logic.map.random.settings.PlayerSetting;
  * <ol>
  * <li>Set the base land type, map size, player positions (meta)</li>
  * <li>Set all the landmark types and areas, add rivers, set heights</li>
- * <li>Set all map objects: Trees, stones, players, ... the order they are
- * defined.</li>
- * <li>Final cleanup. This step cannot be influenced, it just converts the
- * temporary data, adds mountain and sea borders, ...</li>
+ * <li>Set all map objects: Trees, stones, players, ... the order they are defined.</li>
+ * <li>Final cleanup. This step cannot be influenced, it just converts the temporary data, adds mountain and sea borders, ...</li>
  * </ol>
  * 
  * @author michael
  */
 public class RandomMapEvaluator {
 	private List<LandInstruction> landInstructions =
-	        new ArrayList<LandInstruction>();
+			new ArrayList<LandInstruction>();
 
 	private GenerationInstruction metaInstruction = new MetaInstruction();
 
 	private List<ObjectInstruction> objectInstructions =
-	        new ArrayList<ObjectInstruction>();
+			new ArrayList<ObjectInstruction>();
 
 	private Random random;
 
@@ -59,7 +57,7 @@ public class RandomMapEvaluator {
 	private IMapData grid;
 
 	public RandomMapEvaluator(List<GenerationInstruction> instructions,
-	        int players) {
+			int players) {
 		this.settings = new MapSettings(players);
 		for (GenerationInstruction instruction : instructions) {
 			if (instruction instanceof LandInstruction) {
@@ -109,7 +107,7 @@ public class RandomMapEvaluator {
 			if (unsettled == null) {
 				break;
 			}
-			
+
 			unsettled.setHeight(0);
 			settled.add(unsettled);
 			settleAll(settled);
@@ -150,7 +148,7 @@ public class RandomMapEvaluator {
 
 	private LandscapeMesh createLandscapeMesh() {
 		return LandscapeMesh.getRandomMesh(width, height,
-		        new Random(random.nextLong()));
+				new Random(random.nextLong()));
 	}
 
 	private void createBase() {
@@ -171,9 +169,9 @@ public class RandomMapEvaluator {
 			double x = width / 2 + Math.sin(alpha) * width / 3;
 			double y = height / 2 + Math.cos(alpha) * height / 3;
 			playerStarts[i] =
-			        new PlayerStart((short) x, (short) y,
-			                playerSetting.getPlayerId(),
-			                playerSetting.getAlliance());
+					new PlayerStart((short) x, (short) y,
+							playerSetting.getPlayerId(),
+							playerSetting.getAlliance());
 			i++;
 		}
 	}
@@ -184,8 +182,8 @@ public class RandomMapEvaluator {
 			playerConnections = new PlayerConnection[players];
 			for (int j = 0; j < players; j++) {
 				playerConnections[j] =
-				        new PlayerConnection(playerStarts[j],
-				                playerStarts[(j + 1) % players]);
+						new PlayerConnection(playerStarts[j],
+								playerStarts[(j + 1) % players]);
 			}
 		} else {
 			playerConnections = new PlayerConnection[0];

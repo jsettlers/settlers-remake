@@ -1,6 +1,5 @@
 package jsettlers.logic.map.random.voronoi;
 
-
 public interface Beach {
 
 	/**
@@ -8,7 +7,7 @@ public interface Beach {
 	 * 
 	 * @param point
 	 */
-    public void add(VoronioSite point, CircleEventManager mgr);
+	public void add(VoronioSite point, CircleEventManager mgr);
 
 	/**
 	 * Gets the beach line part at the given position
@@ -21,14 +20,18 @@ public interface Beach {
 
 	/**
 	 * Gets the beach line one at the bottom of a given beachline
-	 * @param current may not be null
+	 * 
+	 * @param current
+	 *            may not be null
 	 * @return The one at the bottom
 	 */
 	BeachLinePart getBottom(BeachLinePart current);
 
 	/**
 	 * Gets the beach line one at the top of a given beachline
-	 * @param current may not be null
+	 * 
+	 * @param current
+	 *            may not be null
 	 * @return The one at the bottom
 	 */
 	BeachLinePart getTop(BeachLinePart current);

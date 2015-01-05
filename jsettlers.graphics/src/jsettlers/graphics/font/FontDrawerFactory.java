@@ -9,7 +9,7 @@ import jsettlers.graphics.map.draw.DrawBuffer;
 
 public class FontDrawerFactory implements ITextDrawerFactory, IGLProvider {
 	private static final DirectImageLink TEXTURE = new DirectImageLink("font.0");
-	
+
 	private GLDrawContext lastGl = null;
 	private FontDrawer[] cache;
 	private final DrawBuffer buffer = new DrawBuffer(this);
@@ -20,7 +20,7 @@ public class FontDrawerFactory implements ITextDrawerFactory, IGLProvider {
 			lastGl = gl;
 			cache = new FontDrawer[EFontSize.values().length];
 		}
-		
+
 		FontDrawer drawer = cache[size.ordinal()];
 		if (drawer == null) {
 			drawer = new FontDrawer(gl, buffer, size);
@@ -30,7 +30,7 @@ public class FontDrawerFactory implements ITextDrawerFactory, IGLProvider {
 	}
 
 	@Override
-    public GLDrawContext getGl() {
-	    return lastGl;
-    }
+	public GLDrawContext getGl() {
+		return lastGl;
+	}
 }

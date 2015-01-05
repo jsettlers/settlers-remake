@@ -221,16 +221,14 @@ public enum EActionType {
 	SET_BUILDING_PRIORITY,
 
 	/**
-	 * The user wants to change the settings for the distribution of a material
-	 * to the receiving buildings.
+	 * The user wants to change the settings for the distribution of a material to the receiving buildings.
 	 * 
 	 * @see SetMaterialDistributionSettingsAction
 	 */
 	SET_MATERIAL_DISTRIBUTION_SETTINGS,
 
 	/**
-	 * The user wants to change the order in which materials are served by
-	 * bearers.
+	 * The user wants to change the order in which materials are served by bearers.
 	 * 
 	 * @see SetMaterialPrioritiesAction
 	 */

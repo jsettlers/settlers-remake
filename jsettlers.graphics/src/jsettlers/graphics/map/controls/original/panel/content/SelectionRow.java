@@ -35,19 +35,19 @@ public class SelectionRow extends UIPanel {
 	public void drawAt(GLDrawContext gl) {
 		float width = getPosition().getWidth();
 		Image image =
-		        SettlerImageMap.getInstance().getImageForSettler(type,
-		                EAction.NO_ACTION, EMaterialType.NO_MATERIAL,
-		                EDirection.SOUTH_EAST, 0);
+				SettlerImageMap.getInstance().getImageForSettler(type,
+						EAction.NO_ACTION, EMaterialType.NO_MATERIAL,
+						EDirection.SOUTH_EAST, 0);
 
 		Color color = getColor();
 		float bottomy = getPosition()
-		        .getMinY() + getPosition().getHeight() / 4;
+				.getMinY() + getPosition().getHeight() / 4;
 		float left = getPosition().getMinX();
 		float imagex = left + width / 20;
 		image.drawAt(gl, imagex, bottomy, color);
-		
+
 		TextDrawer drawer = gl.getTextDrawer(EFontSize.NORMAL);
-		
+
 		drawer.drawString(left + width / 5, getPosition().getMinY() + getPosition().getHeight() * .75f, "" + count);
 		drawer.drawString(left + width / 5, bottomy, Labels.getName(type));
 

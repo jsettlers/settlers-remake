@@ -14,7 +14,7 @@ public class ProvidedImage implements ImageDataPrivider {
 	public ProvidedImage(BufferedImage image, int[] offsets) {
 		this.image = image;
 		this.offsets = offsets;
-    }
+	}
 
 	@Override
 	public ShortBuffer getData() {

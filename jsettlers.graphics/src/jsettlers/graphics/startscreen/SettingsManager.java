@@ -57,9 +57,9 @@ public class SettingsManager {
 	public synchronized void set(String key, String value) {
 		getSettingsFile().setProperty(key, value);
 		try {
-	        settings.store(ResourceManager.writeFile(FILE), new Date().toString());
-        } catch (IOException e) {
-        }
+			settings.store(ResourceManager.writeFile(FILE), new Date().toString());
+		} catch (IOException e) {
+		}
 	}
 
 	public static SettingsManager getInstance() {

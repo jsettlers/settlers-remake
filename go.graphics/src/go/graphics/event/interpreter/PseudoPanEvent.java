@@ -10,13 +10,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * This is a pan event that fire as long as the base event is active every 100ms
- * to scroll the given Distance.
+ * This is a pan event that fire as long as the base event is active every 100ms to scroll the given Distance.
  * 
  * @author michael
  */
 public class PseudoPanEvent extends SingleHandlerGoModalEvent implements
-        GOPanEvent, GOEventHandler {
+		GOPanEvent, GOEventHandler {
 
 	private static final long PAN_DELAY = 50;
 	private static Timer timer = null;
@@ -68,8 +67,8 @@ public class PseudoPanEvent extends SingleHandlerGoModalEvent implements
 	private synchronized void doPanStep() {
 		if (this.getPhase() == PHASE_MODAL) {
 			this.distance =
-			        new UIPoint(this.distance.getX() + dx, this.distance.getY()
-			                + dy);
+					new UIPoint(this.distance.getX() + dx, this.distance.getY()
+							+ dy);
 			fireModalDataRefreshed();
 		}
 	}

@@ -1,8 +1,7 @@
 package go.graphics.event;
 
 /**
- * This interface defines a handler that is capable of handling
- * {@link GOModalEvent}s.
+ * This interface defines a handler that is capable of handling {@link GOModalEvent}s.
  * 
  * @author michael
  */

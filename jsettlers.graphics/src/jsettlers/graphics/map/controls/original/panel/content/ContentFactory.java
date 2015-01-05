@@ -10,6 +10,6 @@ public interface ContentFactory {
 	UIPanel getPanel();
 
 	void displayBuildingBuild(EBuildingType type);
-	
+
 	void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid);
 }

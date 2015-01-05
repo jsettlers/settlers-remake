@@ -19,8 +19,7 @@ public interface UIElement {
 	String getDescription(float relativex, float relativey);
 
 	/**
-	 * Called once to indicate that this element is not attached to the gui and
-	 * could be visible.
+	 * Called once to indicate that this element is not attached to the gui and could be visible.
 	 */
 	void onAttach();
 

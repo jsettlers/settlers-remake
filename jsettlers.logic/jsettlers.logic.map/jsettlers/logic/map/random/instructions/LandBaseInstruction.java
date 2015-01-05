@@ -18,7 +18,7 @@ import jsettlers.logic.map.random.landscape.MeshSite;
  */
 public class LandBaseInstruction extends LandInstruction {
 	private static Hashtable<String, String> defaults =
-	        new Hashtable<String, String>();
+			new Hashtable<String, String>();
 
 	static {
 		defaults.put("type", "grass");
@@ -27,14 +27,14 @@ public class LandBaseInstruction extends LandInstruction {
 
 	@Override
 	public void execute(LandscapeMesh landscape, PlayerStart[] starts,
-	        Random random) {
+			Random random) {
 		MeshLandscapeType onLandscape =
-		        MeshLandscapeType.parse(getParameter("on", random), null);
+				MeshLandscapeType.parse(getParameter("on", random), null);
 		MeshLandscapeType type =
-		        getParameter("type", random, MeshLandscapeType.class);
+				getParameter("type", random, MeshLandscapeType.class);
 		for (MeshSite site : landscape.getSites()) {
 			if (!site.isFixed()
-			        && (onLandscape == null || site.getLandscape() == onLandscape)) {
+					&& (onLandscape == null || site.getLandscape() == onLandscape)) {
 				site.setLandscape(type, HillPolicy.HILLY);
 			}
 		}

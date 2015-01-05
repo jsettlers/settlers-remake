@@ -6,8 +6,7 @@ import jsettlers.graphics.map.draw.DrawBuffer;
 import jsettlers.graphics.reader.ImageMetadata;
 
 /**
- * This is the image of something that is displayed as an object on the map,
- * e.g. an settler.
+ * This is the image of something that is displayed as an object on the map, e.g. an settler.
  * <p>
  * It can have a torso, an overlay that is always drawn together with the image.
  * 
@@ -68,9 +67,9 @@ public class SettlerImage extends SingleImage {
 	protected int getGeometryIndex(GLDrawContext context) {
 		int index = super.getGeometryIndex(context);
 		if (torso != null && torso.getWidth() == getWidth()
-		        && torso.getHeight() == getHeight()
-		        && torso.getOffsetX() == getOffsetX()
-		        && torso.getOffsetY() == getOffsetY()) {
+				&& torso.getHeight() == getHeight()
+				&& torso.getOffsetX() == getOffsetX()
+				&& torso.getOffsetY() == getOffsetY()) {
 			torso.setGeometryIndex(index);
 		}
 		return index;
@@ -78,7 +77,7 @@ public class SettlerImage extends SingleImage {
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, int iColor) {
+			float viewY, int iColor) {
 		super.drawAt(gl, buffer, viewX, viewY, iColor);
 		if (this.torso != null) {
 			torso.drawAt(gl, buffer, viewX, viewY, iColor);
@@ -87,7 +86,7 @@ public class SettlerImage extends SingleImage {
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, Color color, float multiply) {
+			float viewY, Color color, float multiply) {
 		super.drawAt(gl, buffer, viewX, viewY, Color.WHITE, multiply);
 		if (this.torso != null) {
 			torso.drawAt(gl, buffer, viewX, viewY, dimColor(color, multiply));

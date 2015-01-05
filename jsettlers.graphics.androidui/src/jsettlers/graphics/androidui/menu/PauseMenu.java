@@ -18,7 +18,7 @@ public class PauseMenu extends AndroidMenu {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	        Bundle savedInstanceState) {
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.pause, container, false);
 	}
 
@@ -26,11 +26,11 @@ public class PauseMenu extends AndroidMenu {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		Button quit = (Button) view.findViewById(R.id.pause_quit);
 		quit.setOnClickListener(generateActionListener(new Action(
-		        EActionType.EXIT), true));
+				EActionType.EXIT), true));
 
 		Button resume = (Button) view.findViewById(R.id.pause_resume);
 		resume.setOnClickListener(generateActionListener(new Action(
-		        EActionType.SPEED_UNSET_PAUSE), false));
+				EActionType.SPEED_UNSET_PAUSE), false));
 	}
 
 	@Override

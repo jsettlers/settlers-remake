@@ -47,7 +47,7 @@ public class JoglTest {
 	private static class TestContent implements RegionContent {
 
 		private Hashtable<Object, ArrayList<UIPoint>> draw =
-		        new Hashtable<Object, ArrayList<UIPoint>>();
+				new Hashtable<Object, ArrayList<UIPoint>>();
 		private final Region region;
 
 		private TestContent(Region region) {
@@ -74,15 +74,15 @@ public class JoglTest {
 			public void eventDataChanged(GOEvent event) {
 				if (event instanceof GOHoverEvent) {
 					draw.get(event).add(
-					        ((GOHoverEvent) event).getHoverPosition());
+							((GOHoverEvent) event).getHoverPosition());
 				} else if (event instanceof GODrawEvent) {
 					draw.get(event)
-					        .add(((GODrawEvent) event).getDrawPosition());
+							.add(((GODrawEvent) event).getDrawPosition());
 				} else if (event instanceof GOPanEvent) {
 					draw.get(event).add(((GOPanEvent) event).getPanDistance());
 				} else if (event instanceof GOCommandEvent) {
 					draw.get(event).add(
-					        ((GOCommandEvent) event).getCommandPosition());
+							((GOCommandEvent) event).getCommandPosition());
 				}
 				region.requestRedraw();
 			}

@@ -121,15 +121,15 @@ public class MapEditorControls implements IControls {
 	public Action replaceAction(Action action) {
 		return action;
 	}
-	
+
 	@Override
 	public String getMapTooltip(ShortPoint2D point) {
 		return point.toString();
 	}
 
 	@Override
-    public void stop() {
-	    /* we ignore this. stop means exit... */
-    }
-	
+	public void stop() {
+		/* we ignore this. stop means exit... */
+	}
+
 }

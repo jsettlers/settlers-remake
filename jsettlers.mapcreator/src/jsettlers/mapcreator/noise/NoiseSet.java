@@ -25,7 +25,7 @@ public class NoiseSet {
 		float yfract = y - inty;
 
 		return interpolate(interpolate(v1, v2, yfract),
-		        interpolate(v3, v4, yfract), xfract);
+				interpolate(v3, v4, yfract), xfract);
 	}
 
 	private static float interpolate(float start, float end, float fractional) {
@@ -38,13 +38,13 @@ public class NoiseSet {
 	public float getSmoothNoise(int x, int y) {
 		// smooth corners:
 		float cornerSum =
-		        getNoise(x - 1, y - 1) + getNoise(x + 1, y - 1)
-		                + getNoise(x - 1, y + 1) + getNoise(x + 1, y + 1);
+				getNoise(x - 1, y - 1) + getNoise(x + 1, y - 1)
+						+ getNoise(x - 1, y + 1) + getNoise(x + 1, y + 1);
 		float edgeSum =
-		        getNoise(x, y - 1) + getNoise(x + 1, y)
-		                + getNoise(x, y + 1) + getNoise(x - 1, y);
+				getNoise(x, y - 1) + getNoise(x + 1, y)
+						+ getNoise(x, y + 1) + getNoise(x - 1, y);
 		return getNoise(x, y) * .25f + edgeSum / 4 * .5f + cornerSum / 4
-		        * .25f;
+				* .25f;
 	}
 
 	private float getNoise(int x, int y) {

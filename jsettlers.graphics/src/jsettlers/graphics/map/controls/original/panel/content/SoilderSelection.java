@@ -13,15 +13,15 @@ import jsettlers.graphics.utils.UIPanel;
 public class SoilderSelection implements IContentProvider {
 
 	private static final EMovableType[] soildertypes = new EMovableType[] {
-	        EMovableType.SWORDSMAN_L1,
-	        EMovableType.SWORDSMAN_L2,
-	        EMovableType.SWORDSMAN_L3,
-	        EMovableType.PIKEMAN_L1,
-	        EMovableType.PIKEMAN_L2,
-	        EMovableType.PIKEMAN_L3,
-	        EMovableType.BOWMAN_L1,
-	        EMovableType.BOWMAN_L2,
-	        EMovableType.BOWMAN_L3,
+			EMovableType.SWORDSMAN_L1,
+			EMovableType.SWORDSMAN_L2,
+			EMovableType.SWORDSMAN_L3,
+			EMovableType.PIKEMAN_L1,
+			EMovableType.PIKEMAN_L2,
+			EMovableType.PIKEMAN_L3,
+			EMovableType.BOWMAN_L1,
+			EMovableType.BOWMAN_L2,
+			EMovableType.BOWMAN_L3,
 	};
 
 	/**
@@ -44,7 +44,7 @@ public class SoilderSelection implements IContentProvider {
 	}
 
 	public static void addRowsToPanel(UIPanel panel, ISelectionSet selection,
-	        EMovableType[] types) {
+			EMovableType[] types) {
 		float rowHeight = 1f / ROWS;
 
 		int rowi = ROWS - 1; // from bottom
@@ -55,7 +55,7 @@ public class SoilderSelection implements IContentProvider {
 			if (count > 0) {
 				SelectionRow row = new SelectionRow(type, count);
 				panel.addChild(row, 0.1f, rowHeight * (rowi - 1), .9f,
-				        rowHeight * (rowi));
+						rowHeight * (rowi));
 				rowi--;
 			}
 		}
@@ -66,18 +66,18 @@ public class SoilderSelection implements IContentProvider {
 	public UIPanel getPanel() {
 		return panel;
 	}
-	
+
 	@Override
 	public ESecondaryTabType getTabs() {
 		return null;
 	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {	    
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+	}
 
 	@Override
-    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
-    }
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	}
 
 }

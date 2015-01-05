@@ -2,16 +2,18 @@ package go.graphics.swing.opengl;
 
 import javax.media.opengl.GL2;
 
-
 public final class TextureCalculator {
 	private TextureCalculator() {
-		
+
 	}
 
 	/**
 	 * Makes the size a power of two, if needed.
-	 * @param gl The gl context
-	 * @param width THe old size
+	 * 
+	 * @param gl
+	 *            The gl context
+	 * @param width
+	 *            THe old size
 	 * @return The good size.
 	 */
 	public static int supportedTextureSize(GL2 gl, int width) {
@@ -24,5 +26,5 @@ public final class TextureCalculator {
 			}
 			return real;
 		}
-    }
+	}
 }

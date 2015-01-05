@@ -15,7 +15,7 @@ public class BgMovable implements IMovable {
 	public BgMovable(ShortPoint2D point) {
 		this.point = point;
 	}
-	
+
 	@Override
 	public byte getPlayerId() {
 		return 0;

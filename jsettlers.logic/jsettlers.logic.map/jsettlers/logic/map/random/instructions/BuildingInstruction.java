@@ -23,12 +23,12 @@ public class BuildingInstruction extends ObjectInstruction {
 
 	@Override
 	protected void placeObject(MapGrid grid, PlayerStart start, int x, int y,
-	        Random random) {
+			Random random) {
 		EBuildingType type = getParameter("type", random, EBuildingType.class);
 
 		for (RelativePoint relative : type.getProtectedTiles()) {
 			grid.setMapObject(x + relative.getDx(), y + relative.getDy(),
-			        PlaceholderObject.getInstance());
+					PlaceholderObject.getInstance());
 		}
 
 		grid.setMapObject(x, y, new BuildingObject(type, start.getPlayerId()));

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * This is an action a person can do. Every action may have some properties.
- * , which are all enums.
+ * This is an action a person can do. Every action may have some properties. , which are all enums.
+ * 
  * @author michael
  */
 public class BuildingPersonJobProperties {
@@ -19,8 +19,7 @@ public class BuildingPersonJobProperties {
 	private Properties defaultProperties;
 
 	/**
-	 * action type id => key1, key2, ... The key "type" is not explicitly
-	 * mentined.
+	 * action type id => key1, key2, ... The key "type" is not explicitly mentined.
 	 */
 	private static Properties allowedKeyFile;
 
@@ -68,7 +67,7 @@ public class BuildingPersonJobProperties {
 		}
 
 		String myKeys =
-		        allowedKeyFile.getProperty(properties.getProperty("type"));
+				allowedKeyFile.getProperty(properties.getProperty("type"));
 		if (myKeys == null) {
 			myKeys = "";
 		}
@@ -93,7 +92,7 @@ public class BuildingPersonJobProperties {
 		if (allowedValueFile == null) {
 			allowedValueFile = new Properties();
 			InputStream in =
-			        getClass().getResourceAsStream("keyvalues.props");
+					getClass().getResourceAsStream("keyvalues.props");
 			try {
 				allowedValueFile.load(in);
 			} catch (IOException e) {

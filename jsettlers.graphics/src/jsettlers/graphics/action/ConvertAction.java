@@ -19,8 +19,7 @@ public class ConvertAction extends Action {
 	 *            target type to convert the movables to
 	 * @param amount
 	 *            number of movables that should be converted. <br>
-	 *            if amount == {@link Short}.MAX_VALUE all selected movables
-	 *            will be converted.
+	 *            if amount == {@link Short}.MAX_VALUE all selected movables will be converted.
 	 */
 	public ConvertAction(EMovableType toType, short amount) {
 		super(EActionType.CONVERT);
@@ -36,8 +35,7 @@ public class ConvertAction extends Action {
 	}
 
 	/**
-	 * @return number of movables to convert. If value == {@link Short}
-	 *         .MAX_VALUE all movables should be converted.
+	 * @return number of movables to convert. If value == {@link Short} .MAX_VALUE all movables should be converted.
 	 */
 	public short getAmount() {
 		return amount;

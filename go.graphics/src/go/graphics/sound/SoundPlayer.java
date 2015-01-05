@@ -1,6 +1,5 @@
 package go.graphics.sound;
 
-
 public interface SoundPlayer {
 	/**
 	 * Starts to play a sound.

@@ -2,6 +2,7 @@ package jsettlers.graphics.map.draw;
 
 /**
  * Some drawing constants for the background / grid sizes.
+ * 
  * @author michael
  *
  */

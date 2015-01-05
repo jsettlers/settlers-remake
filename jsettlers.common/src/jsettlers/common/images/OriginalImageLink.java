@@ -96,6 +96,7 @@ public final class OriginalImageLink extends ImageLink {
 
 	/**
 	 * Gets the length of this strip
+	 * 
 	 * @return The length as int
 	 */
 	public int getLength() {

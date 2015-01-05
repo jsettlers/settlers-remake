@@ -55,13 +55,10 @@ import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 
 /**
- * This is the main map content class. It manages the map drawing on the screen
- * region.
+ * This is the main map content class. It manages the map drawing on the screen region.
  * <p>
- * <h1>The drawing process</h1> The map is drawn in three steps. At first, the
- * background is drawn. After that, it is overlayed with the images for
- * settlers, and other map objects. Then the interface is drawn above everything
- * else.
+ * <h1>The drawing process</h1> The map is drawn in three steps. At first, the background is drawn. After that, it is overlayed with the images for
+ * settlers, and other map objects. Then the interface is drawn above everything else.
  * <p>
  * The objects and background are drawn with the map draw context.
  * <p>
@@ -86,7 +83,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
  * @author michael
  */
 public final class MapContent implements RegionContent, GOEventHandlerProvider,
-        IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
+		IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
 	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final int MAX_MESSAGES = 10;
@@ -199,8 +196,8 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			long start = System.currentTimeMillis();
 
 			FloatRectangle screen =
-			        this.context.getScreen().getPosition()
-			                .bigger(SCREEN_PADDING);
+					this.context.getScreen().getPosition()
+							.bigger(SCREEN_PADDING);
 			drawBackground(screen);
 			long bgtime = System.currentTimeMillis() - start;
 
@@ -232,7 +229,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 			if (CommonConstants.ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT) {
 				System.out.println("Background: " + bgtime + "ms, Foreground: "
-				        + foregroundtime + "ms, UI: " + uitime + "ms");
+						+ foregroundtime + "ms, UI: " + uitime + "ms");
 			}
 		} catch (Throwable t) {
 			System.err.println("Main draw handler cought throwable:");
@@ -247,8 +244,8 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		} else {
 			context.beginTileContext(scrollMarker.x, scrollMarker.y);
 			ImageProvider.getInstance().getSettlerSequence(3, 1)
-			        .getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1)
-			        .draw(context.getGl(), null, 1);
+					.getImageSafe(timediff < GOTO_MARK_TIME / 2 ? 0 : 1)
+					.draw(context.getGl(), null, 1);
 			context.endTileContext();
 		}
 	}
@@ -259,7 +256,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			moveToMarker = null;
 		} else {
 			objectDrawer.drawMoveToMarker(moveToMarker, timediff
-			        / GOTO_MARK_TIME);
+					/ GOTO_MARK_TIME);
 		}
 	}
 
@@ -276,7 +273,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 					Color color = context.getPlayerColor(m.getSender());
 					float width = (float) drawer.getWidth(name);
 					float bright =
-					        color.getRed() + color.getGreen() + color.getBlue();
+							color.getRed() + color.getGreen() + color.getBlue();
 					if (bright < .9f) {
 						// black
 						gl.color(1, 1, 1, .5f);
@@ -287,7 +284,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 						gl.fillQuad(x, y, x + width, y + MESSAGE_LINEHIEGHT);
 					}
 					drawer.setColor(color.getRed(), color.getGreen(),
-					        color.getBlue(), 1);
+							color.getBlue(), 1);
 					drawer.drawString(x, y, name);
 					x += width + 10;
 				}
@@ -312,14 +309,14 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		FloatRectangle newScreen = context.getScreen().getPosition();
 		if (!newScreen.equals(oldScreen)) {
 			getInterfaceConnector().fireAction(
-			        new ScreenChangeAction(context.getScreenArea()));
+					new ScreenChangeAction(context.getScreenArea()));
 		}
 		oldScreen = newScreen;
 	}
 
 	private void drawSelectionHint(GLDrawContext gl) {
 		if (this.currentSelectionAreaStart != null
-		        && this.currentSelectionAreaEnd != null) {
+				&& this.currentSelectionAreaEnd != null) {
 			float x1 = (float) this.currentSelectionAreaStart.getX();
 			float y1 = (float) this.currentSelectionAreaStart.getY();
 			float x2 = (float) this.currentSelectionAreaEnd.getX();
@@ -327,7 +324,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 			gl.color(1, 1, 1, 1);
 			gl.drawLine(new float[] {
-			        x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0
+					x1, y1, 0, x2, y1, 0, x2, y2, 0, x1, y2, 0
 			}, true);
 		}
 	}
@@ -340,23 +337,23 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		String frames = new DecimalFormat("###.#").format(framerate.getRate());
 		long gametime = playerStatistics.getGameTime() / 1000;
 		String timeString =
-		        String.format("%d:%02d:%02d", gametime / 60 / 60,
-		                (gametime / 60) % 60, (gametime) % 60);
+				String.format("%d:%02d:%02d", gametime / 60 / 60,
+						(gametime / 60) % 60, (gametime) % 60);
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		double spacing = drawer.getWidth("_");
 		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
 		drawer.drawString(windowWidth - 9 * (float) spacing, y, "FPS: "
-		        + frames);
+				+ frames);
 		drawer.drawString(windowWidth - 23 * (float) spacing, y, "Time: "
-		        + timeString);
+				+ timeString);
 	}
 
 	private void drawTooltip(GLDrawContext gl) {
 		if (!tooltipString.isEmpty()) {
 			TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 			drawer.drawString((int) mousePosition.getX(),
-			        (int) mousePosition.getY(), tooltipString);
+					(int) mousePosition.getY(), tooltipString);
 		}
 	}
 
@@ -369,8 +366,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	}
 
 	/**
-	 * Draws the main content (buildings, settlers, ...), assuming the context
-	 * is set up.
+	 * Draws the main content (buildings, settlers, ...), assuming the context is set up.
 	 */
 	private void drawMain(FloatRectangle screen) {
 		short height = map.getHeight();
@@ -396,8 +392,8 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 				drawTile(x, y);
 				if (!linePartuallyVisible) {
 					double drawspacey =
-					        this.context.getConverter().getViewY(x, y,
-					                this.context.getHeight(x, y));
+							this.context.getConverter().getViewY(x, y,
+									this.context.getHeight(x, y));
 					if (drawspacey > bottomdrawy) {
 						linePartuallyVisible = true;
 					}
@@ -449,53 +445,53 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	private void drawDebugColors() {
 		IMapArea tiles =
-		        new MapShapeFilter(context.getScreenArea(), map.getWidth(),
-		                map.getHeight());
+				new MapShapeFilter(context.getScreenArea(), map.getWidth(),
+						map.getHeight());
 		GLDrawContext gl = this.context.getGl();
 
 		float[] shape =
-		        new float[] {
-		                0,
-		                4,
-		                .5f,
-		                0,
-		                0,
-		                -3,
-		                2,
-		                .5f,
-		                0,
-		                0,
-		                -3,
-		                -2,
-		                .5f,
-		                0,
-		                0,
-		                0,
-		                -4,
-		                .5f,
-		                0,
-		                0,
-		                0,
-		                -4,
-		                .5f,
-		                0,
-		                0,
-		                3,
-		                -2,
-		                .5f,
-		                0,
-		                0,
-		                3,
-		                2,
-		                .5f,
-		                0,
-		                0,
-		                0,
-		                4,
-		                .5f,
-		                0,
-		                0,
-		        };
+				new float[] {
+						0,
+						4,
+						.5f,
+						0,
+						0,
+						-3,
+						2,
+						.5f,
+						0,
+						0,
+						-3,
+						-2,
+						.5f,
+						0,
+						0,
+						0,
+						-4,
+						.5f,
+						0,
+						0,
+						0,
+						-4,
+						.5f,
+						0,
+						0,
+						3,
+						-2,
+						.5f,
+						0,
+						0,
+						3,
+						2,
+						.5f,
+						0,
+						0,
+						0,
+						4,
+						.5f,
+						0,
+						0,
+				};
 
 		for (ShortPoint2D pos : tiles) {
 			short x = pos.x;
@@ -504,9 +500,9 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			if (argb != 0) {
 				this.context.beginTileContext(x, y);
 				gl.color(((argb >> 16) & 0xff) / 255f,
-				        ((argb >> 8) & 0xff) / 255f,
-				        ((argb >> 0) & 0xff) / 255f,
-				        ((argb >> 24) & 0xff) / 255f);
+						((argb >> 8) & 0xff) / 255f,
+						((argb >> 0) & 0xff) / 255f,
+						((argb >> 24) & 0xff) / 255f);
 				gl.drawQuadWithTexture(0, shape);
 				context.endTileContext();
 			}
@@ -537,7 +533,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			fireActionEvent(event, action);
 		} else if (event instanceof GOKeyEvent) {
 			Action actionForKeyboard =
-			        getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
+					getActionForKeyboard(((GOKeyEvent) event).getKeyCode());
 			if (actionForKeyboard != null) {
 				fireActionEvent(event, actionForKeyboard);
 			}
@@ -601,7 +597,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		if ("F12".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.FAST_FORWARD);
 		} else if ("P".equalsIgnoreCase(keyCode)
-		        || "PAUSE".equalsIgnoreCase(keyCode)) {
+				|| "PAUSE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.SPEED_TOGGLE_PAUSE);
 		} else if ("BACK".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.BACK);
@@ -702,30 +698,30 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	}
 
 	private final GOEventHandler drawSelectionHandler =
-	        new GOModalEventHandler() {
+			new GOModalEventHandler() {
 
-		        @Override
-		        public void phaseChanged(GOEvent event) {
-		        }
+				@Override
+				public void phaseChanged(GOEvent event) {
+				}
 
-		        @Override
-		        public void finished(GOEvent event) {
-			        updateSelectionArea(
-			                ((GODrawEvent) event).getDrawPosition(), true);
-		        }
+				@Override
+				public void finished(GOEvent event) {
+					updateSelectionArea(
+							((GODrawEvent) event).getDrawPosition(), true);
+				}
 
-		        @Override
-		        public void aborted(GOEvent event) {
-			        abortSelectionArea();
-		        }
+				@Override
+				public void aborted(GOEvent event) {
+					abortSelectionArea();
+				}
 
-		        @Override
-		        public void eventDataChanged(GOEvent event) {
-			        updateSelectionArea(
-			                ((GODrawEvent) event).getDrawPosition(), false);
-		        }
+				@Override
+				public void eventDataChanged(GOEvent event) {
+					updateSelectionArea(
+							((GODrawEvent) event).getDrawPosition(), false);
+				}
 
-	        };
+			};
 
 	private UIPoint currentSelectionAreaEnd;
 	private boolean actionThreadIsSlow;
@@ -733,7 +729,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	private ShortPoint2D lastSelectPointPos = null;
 
 	private Action handleCommandOnMap(GOCommandEvent commandEvent,
-	        UIPoint position) {
+			UIPoint position) {
 
 		float x = (float) position.getX();
 		float y = (float) position.getY();
@@ -754,7 +750,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		Action action;
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - lastSelectPointTime < DOUBLE_CLICK_TIME
-		        && onMap.equals(lastSelectPointPos)) {
+				&& onMap.equals(lastSelectPointPos)) {
 			lastSelectPointTime = 0;
 			action = new PointAction(EActionType.SELECT_POINT_TYPE, onMap);
 		} else {
@@ -859,12 +855,12 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			messenger.addMessage(message);
 		}
 		switch (message.getType()) {
-			case ATTACKED:
-				soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
-				break;
+		case ATTACKED:
+			soundmanager.playSound(SoundManager.NOTIFY_ATTACKED, 1, 1);
+			break;
 
-			default:
-				break;
+		default:
+			break;
 		}
 	}
 
@@ -897,13 +893,13 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		} else {
 			setZoom(state.getZoom());
 			context.getScreen().setScreenCenter(state.getScreenCenterX(),
-			        state.getScreenCenterY());
+					state.getScreenCenterY());
 		}
 	}
 
 	protected UIState getUIState() {
 		ScreenPosition screen = context.getScreen();
 		return new UIState(screen.getScreenCenterX(),
-		        screen.getScreenCenterY(), screen.getZoom());
+				screen.getScreenCenterY(), screen.getZoom());
 	}
 }

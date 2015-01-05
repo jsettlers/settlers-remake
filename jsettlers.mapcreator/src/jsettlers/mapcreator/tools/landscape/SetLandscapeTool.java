@@ -18,14 +18,14 @@ import jsettlers.mapcreator.tools.shapes.ShapeType;
 public class SetLandscapeTool implements Tool {
 
 	private static final ShapeType[] SHAPES = new ShapeType[] {
-	        new PointShape(),
-	        new LineShape(),
-	        new LineCircleShape(),
-	        new NoisyLineCircleShape(),
+			new PointShape(),
+			new LineShape(),
+			new LineCircleShape(),
+			new NoisyLineCircleShape(),
 	};
 
 	private static final ShapeType[] RIVERSHAPES = new ShapeType[] {
-	        new PointShape(), new LineShape(),
+			new PointShape(), new LineShape(),
 	};
 
 	private final ELandscapeType type;
@@ -41,7 +41,7 @@ public class SetLandscapeTool implements Tool {
 
 	@Override
 	public String getName() {
-		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape_"+type));
+		return String.format(EditorLabels.getLabel("landscapedescr"), EditorLabels.getLabel("landscape_" + type));
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class SetLandscapeTool implements Tool {
 
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
-	        ShortPoint2D end, double uidx) {
+			ShortPoint2D end, double uidx) {
 		if (buffer == null) {
 			buffer = new GlobalShapeBuffer(map.getWidth(), map.getHeight());
 		}
@@ -66,7 +66,7 @@ public class SetLandscapeTool implements Tool {
 		int usedmaxx = Math.max(startx, endx) + size + 3;
 		int usedmaxy = Math.max(starty, endy) + (int) (size / MapCircle.Y_SCALE) + 3;
 		byte[][] array =
-		        buffer.getArray(usedminx, usedminy, usedmaxx, usedmaxy);
+				buffer.getArray(usedminx, usedminy, usedmaxx, usedmaxy);
 
 		shape.setAffectedStatus(array, start, end);
 

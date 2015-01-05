@@ -11,7 +11,7 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 
 	protected byte getFieldRating(int x, int y, double distance) {
 		if (distance > (double) getRadius() * (Byte.MAX_VALUE + noiseSize)
-		        / Byte.MAX_VALUE) {
+				/ Byte.MAX_VALUE) {
 			return 0;
 		} else {
 			double sloped = getSlopedRating(distance);
@@ -19,9 +19,9 @@ public class NoisyLineCircleShape extends FuzzyLineCircleShape {
 			return toByte((int) (sloped + add));
 		}
 	};
-	
+
 	@Override
 	public String getName() {
-	    return EditorLabels.getLabel("noisy_circle_line");
+		return EditorLabels.getLabel("noisy_circle_line");
 	}
 }

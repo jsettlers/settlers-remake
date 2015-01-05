@@ -11,9 +11,8 @@ public class ConstructBuilding extends ContextAction {
 	}
 
 	@Override
-    public String getDesciption() {
+	public String getDesciption() {
 		return String.format(Labels.getString("select_to_build"), Labels.getName(type));
-    }
-	
-	
+	}
+
 }

@@ -10,14 +10,14 @@ public class StackObject implements MapObject {
 	public StackObject(EMaterialType type, int count) {
 		this.type = type;
 		this.count = count;
-    }
+	}
 
 	public EMaterialType getType() {
-	    return type;
-    }
+		return type;
+	}
 
 	public int getCount() {
-	    return count;
-    }
+		return count;
+	}
 
 }

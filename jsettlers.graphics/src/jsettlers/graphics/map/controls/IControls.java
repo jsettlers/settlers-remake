@@ -13,8 +13,7 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapDrawContext;
 
 /**
- * Classes that implement this are capable of displaying the full game controls
- * (minimap, ...) on the screen.
+ * Classes that implement this are capable of displaying the full game controls (minimap, ...) on the screen.
  *
  * @author michael
  */
@@ -48,8 +47,7 @@ public interface IControls extends IMapInterfaceListener {
 	boolean containsPoint(UIPoint position);
 
 	/**
-	 * Gets the description for a given point, e.g. for tooltipps. May be called
-	 * for any position.
+	 * Gets the description for a given point, e.g. for tooltipps. May be called for any position.
 	 *
 	 * @param position
 	 *            The position
@@ -66,8 +64,7 @@ public interface IControls extends IMapInterfaceListener {
 	void setMapViewport(MapRectangle screenArea);
 
 	/**
-	 * Gets the action for the given ui position, that should be executed if the
-	 * user clicked it.
+	 * Gets the action for the given ui position, that should be executed if the user clicked it.
 	 *
 	 * @param position
 	 *            The positon.
@@ -78,8 +75,7 @@ public interface IControls extends IMapInterfaceListener {
 	Action getActionFor(UIPoint position, boolean selecting);
 
 	/**
-	 * Handles a draw event. The event may be fired even if it is outside the
-	 * interface.
+	 * Handles a draw event. The event may be fired even if it is outside the interface.
 	 *
 	 * @param event
 	 *            The event to handle
@@ -107,8 +103,7 @@ public interface IControls extends IMapInterfaceListener {
 	 * Gives the ui access to the draw context that is used to draw the map.
 	 * 
 	 * @param actionFireable
-	 *            An object we can fire actions to when we want to initiate an
-	 *            action ourselves.
+	 *            An object we can fire actions to when we want to initiate an action ourselves.
 	 * @param context
 	 *            The map context used.
 	 */
@@ -130,8 +125,7 @@ public interface IControls extends IMapInterfaceListener {
 	 * 
 	 * @param point
 	 *            The x/y coordinate, may be outside map.
-	 * @return The tooltip text, or an empty String or <code>null</code> if
-	 *         nothing should be displayed.
+	 * @return The tooltip text, or an empty String or <code>null</code> if nothing should be displayed.
 	 */
 	String getMapTooltip(ShortPoint2D point);
 

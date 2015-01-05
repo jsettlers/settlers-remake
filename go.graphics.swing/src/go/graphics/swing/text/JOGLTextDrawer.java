@@ -27,7 +27,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 	 * 
 	 * @param size
 	 *            The size of the text.
-	 * @param drawContext 
+	 * @param drawContext
 	 */
 	public JOGLTextDrawer(EFontSize size, JOGLDrawContext drawContext) {
 		this.drawContext = drawContext;
@@ -37,8 +37,8 @@ public final class JOGLTextDrawer implements TextDrawer {
 
 	/*
 	 * (non-Javadoc)
-	 * @see go.graphics.swing.text.TextDrawer#renderCentered(int, int,
-	 * java.lang.String)
+	 * 
+	 * @see go.graphics.swing.text.TextDrawer#renderCentered(int, int, java.lang.String)
 	 */
 	@Override
 	public void renderCentered(float cx, float cy, String text) {
@@ -47,7 +47,7 @@ public final class JOGLTextDrawer implements TextDrawer {
 		int halfHeight = (int) (textBounds.getHeight() / 2);
 		drawString(cx - halfWidth, cy - halfHeight, text);
 	}
-	
+
 	/**
 	 * TODO: we should remove this.
 	 */
@@ -57,22 +57,21 @@ public final class JOGLTextDrawer implements TextDrawer {
 
 	/*
 	 * (non-Javadoc)
-	 * @see go.graphics.swing.text.TextDrawer#drawString(int, int,
-	 * java.lang.String)
+	 * 
+	 * @see go.graphics.swing.text.TextDrawer#drawString(int, int, java.lang.String)
 	 */
 	@Override
 	public void drawString(float x, float y, String string) {
 		try {
-		this.drawContext.prepareFontDrawing();
-		this.renderer.begin3DRendering();
-		this.renderer.draw3D(string, x, y, 0, 1);
-		this.renderer.end3DRendering();
-		this.renderer.flush();
+			this.drawContext.prepareFontDrawing();
+			this.renderer.begin3DRendering();
+			this.renderer.draw3D(string, x, y, 0, 1);
+			this.renderer.end3DRendering();
+			this.renderer.flush();
 		} catch (Throwable e) {
-			//bad
+			// bad
 		}
 	}
-
 
 	@Override
 	public double getWidth(String string) {

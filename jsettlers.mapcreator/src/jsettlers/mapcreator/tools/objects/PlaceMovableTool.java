@@ -25,6 +25,6 @@ public class PlaceMovableTool extends PlaceMapObjectTool {
 
 	@Override
 	public MapObject getObject() {
-	    return new MovableObject(type, player.getActivePlayer());
+		return new MovableObject(type, player.getActivePlayer());
 	}
 }

@@ -1,12 +1,9 @@
 package jsettlers.common.buildings.loader;
 
-
 /**
- * This interface specifies a method do access a name d building job which has a
- * named next and fail-job.
+ * This interface specifies a method do access a name d building job which has a named next and fail-job.
  * <p>
- * It is sort of an abstraction framework used by the job creator to generate
- * static list of jobs for a building.
+ * It is sort of an abstraction framework used by the job creator to generate static list of jobs for a building.
  * 
  * @author michael
  */

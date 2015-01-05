@@ -39,17 +39,17 @@ public class MultiImageImage extends Image {
 	private final Data torso;
 
 	public MultiImageImage(MultiImageMap map, ImageMetadata settlerMeta,
-	        int settlerx, int settlery, ImageMetadata torsoMeta, int torsox,
-	        int torsoy) {
+			int settlerx, int settlery, ImageMetadata torsoMeta, int torsox,
+			int torsoy) {
 		this.map = map;
 
 		settler = new Data();
 		settlerGeometry =
-		        createGeometry(map, settlerMeta, settlerx, settlery, settler);
+				createGeometry(map, settlerMeta, settlerx, settlery, settler);
 		if (torsoMeta != null) {
 			torso = new Data();
 			torsoGeometry =
-			        createGeometry(map, torsoMeta, torsox, torsoy, torso);
+					createGeometry(map, torsoMeta, torsox, torsoy, torso);
 		} else {
 			torso = null;
 			torsoGeometry = null;
@@ -59,7 +59,7 @@ public class MultiImageImage extends Image {
 	private static final float IMAGE_DRAW_OFFSET = 0.5f;
 
 	private static float[] createGeometry(MultiImageMap map,
-	        ImageMetadata settlerMeta, int settlerx, int settlery, Data data) {
+			ImageMetadata settlerMeta, int settlerx, int settlery, Data data) {
 		data.width = settlerMeta.width;
 		data.height = settlerMeta.height;
 		data.offsetX = settlerMeta.offsetX;
@@ -71,33 +71,33 @@ public class MultiImageImage extends Image {
 		data.vmin = (float) (settlery + settlerMeta.height) / map.getHeight();
 		data.vmax = (float) (settlery) / map.getHeight();
 		return new float[] {
-		        // top left
-		        settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
-		        -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
-		        0,
-		        data.umin,
-		        data.vmin,
+				// top left
+				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
+				-settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
+				0,
+				data.umin,
+				data.vmin,
 
-		        // bottom left
-		        settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
-		        -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
-		        0,
-		        data.umin,
-		        data.vmax,
+				// bottom left
+				settlerMeta.offsetX + IMAGE_DRAW_OFFSET,
+				-settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
+				0,
+				data.umin,
+				data.vmax,
 
-		        // bottom right
-		        settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
-		        -settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
-		        0,
-		        data.umax,
-		        data.vmax,
+				// bottom right
+				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
+				-settlerMeta.offsetY + IMAGE_DRAW_OFFSET,
+				0,
+				data.umax,
+				data.vmax,
 
-		        // top right
-		        settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
-		        -settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
-		        0,
-		        data.umax,
-		        data.vmin,
+				// top right
+				settlerMeta.offsetX + settlerMeta.width + IMAGE_DRAW_OFFSET,
+				-settlerMeta.offsetY - settlerMeta.height + IMAGE_DRAW_OFFSET,
+				0,
+				data.umax,
+				data.vmin,
 		};
 	}
 
@@ -127,8 +127,8 @@ public class MultiImageImage extends Image {
 		if (torsoGeometry != null) {
 			if (color != null) {
 				gl.color(color.getRed() * multiply,
-				        color.getGreen() * multiply,
-				        color.getBlue() * multiply, color.getAlpha());
+						color.getGreen() * multiply,
+						color.getBlue() * multiply, color.getAlpha());
 			}
 			gl.drawQuadWithTexture(texture, torsoGeometry);
 		}
@@ -138,7 +138,7 @@ public class MultiImageImage extends Image {
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float left, float bottom,
-	        float right, float top) {
+			float right, float top) {
 		gl.color(1, 1, 1, 1);
 
 		System.arraycopy(settlerGeometry, 0, tmpBuffer, 0, 4 * 5);
@@ -166,33 +166,33 @@ public class MultiImageImage extends Image {
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, int iColor) {
+			float viewY, int iColor) {
 		drawAt(gl, buffer, viewX, viewY, iColor, iColor);
 	}
 
 	private void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, int sColor, int tColor) {
+			float viewY, int sColor, int tColor) {
 		buffer.addImage(map.getTexture(gl), viewX + settler.offsetX
-		        + IMAGE_DRAW_OFFSET, viewY - settler.offsetY - settler.height
-		        + IMAGE_DRAW_OFFSET, viewX + settler.offsetX + settler.width
-		        + IMAGE_DRAW_OFFSET, viewY - settler.offsetY
-		        + IMAGE_DRAW_OFFSET, settler.umin, settler.vmin, settler.umax,
-		        settler.vmax, sColor);
+				+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY - settler.height
+				+ IMAGE_DRAW_OFFSET, viewX + settler.offsetX + settler.width
+				+ IMAGE_DRAW_OFFSET, viewY - settler.offsetY
+				+ IMAGE_DRAW_OFFSET, settler.umin, settler.vmin, settler.umax,
+				settler.vmax, sColor);
 		if (torso != null) {
 			buffer.addImage(map.getTexture(gl), viewX + torso.offsetX
-			        + IMAGE_DRAW_OFFSET, viewY - torso.offsetY - torso.height
-			        + IMAGE_DRAW_OFFSET, viewX + torso.offsetX + torso.width
-			        + IMAGE_DRAW_OFFSET, viewY - torso.offsetY
-			        + IMAGE_DRAW_OFFSET, torso.umin, torso.vmin, torso.umax,
-			        torso.vmax, tColor);
+					+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY - torso.height
+					+ IMAGE_DRAW_OFFSET, viewX + torso.offsetX + torso.width
+					+ IMAGE_DRAW_OFFSET, viewY - torso.offsetY
+					+ IMAGE_DRAW_OFFSET, torso.umin, torso.vmin, torso.umax,
+					torso.vmax, tColor);
 		}
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-	        float viewY, Color color, float multiply) {
+			float viewY, Color color, float multiply) {
 		drawAt(gl, buffer, viewX, viewY,
-		        Color.getABGR(multiply, multiply, multiply, 1),
-		        dimColor(color, multiply));
+				Color.getABGR(multiply, multiply, multiply, 1),
+				dimColor(color, multiply));
 	}
 }

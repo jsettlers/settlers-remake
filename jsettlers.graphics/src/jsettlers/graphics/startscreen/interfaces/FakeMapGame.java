@@ -6,8 +6,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
 
 /**
- * This is a simple implementation of {@link IStartedGame} that allows you to
- * supply a map as a game.
+ * This is a simple implementation of {@link IStartedGame} that allows you to supply a map as a game.
  * 
  * @author michael
  */

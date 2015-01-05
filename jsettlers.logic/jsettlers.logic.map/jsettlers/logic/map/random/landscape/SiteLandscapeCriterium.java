@@ -8,7 +8,7 @@ public class SiteLandscapeCriterium implements SiteCriterium {
 	}
 
 	@Override
-    public boolean matchesCriterium(MeshSite site) {
-	    return type.equals(site.getLandscape());
-    }
+	public boolean matchesCriterium(MeshSite site) {
+		return type.equals(site.getLandscape());
+	}
 }

@@ -23,11 +23,9 @@ public interface IBuildingMaterial {
 	public int getMaterialCount();
 
 	/**
-	 * If the current stack is offered, so that people can take material from
-	 * here.
+	 * If the current stack is offered, so that people can take material from here.
 	 * 
-	 * @return <code>true</code> if it is an offering stack, <code>false</code>
-	 *         if it is an request stack.
+	 * @return <code>true</code> if it is an offering stack, <code>false</code> if it is an request stack.
 	 */
 	public boolean isOffering();
 }

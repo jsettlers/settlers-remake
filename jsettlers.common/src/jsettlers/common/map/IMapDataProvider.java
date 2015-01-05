@@ -2,6 +2,7 @@ package jsettlers.common.map;
 
 /**
  * Provides a method to construct the map data.
+ * 
  * @author michael
  *
  */

@@ -11,10 +11,10 @@ import jsettlers.logic.map.random.geometry.Point2D;
  * 
  * @author michael
  */
-public class Vertex extends Point2D implements Comparable<Vertex>{
+public class Vertex extends Point2D implements Comparable<Vertex> {
 
 	private LinkedList<MeshEdge> edges = new LinkedList<MeshEdge>();
-	
+
 	private float height = Float.POSITIVE_INFINITY;
 
 	public Vertex(double x, double y) {
@@ -26,10 +26,10 @@ public class Vertex extends Point2D implements Comparable<Vertex>{
 			edges.add(edge);
 		}
 	}
-	
+
 	public LinkedList<MeshEdge> getEdges() {
-	    return edges;
-    }
+		return edges;
+	}
 
 	public List<MeshSite> getNeighbourSites() {
 		synchronized (edges) {
@@ -45,15 +45,15 @@ public class Vertex extends Point2D implements Comparable<Vertex>{
 	}
 
 	public float getHeight() {
-	    return height;
-    }
+		return height;
+	}
 
 	public void setHeight(float height) {
-	    this.height = height;
-    }
+		this.height = height;
+	}
 
 	@Override
-    public int compareTo(Vertex o) {
-	    return Float.compare(height, o.height);
-    }
+	public int compareTo(Vertex o) {
+		return Float.compare(height, o.height);
+	}
 }

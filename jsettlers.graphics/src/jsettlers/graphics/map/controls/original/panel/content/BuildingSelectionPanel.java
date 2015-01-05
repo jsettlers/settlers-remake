@@ -28,25 +28,25 @@ import jsettlers.graphics.utils.UIPanel;
 
 public class BuildingSelectionPanel implements IContentProvider {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 45, 0);
+			EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
-	        EImageLinkType.GUI, 3, 48, 0);
+			EImageLinkType.GUI, 3, 48, 0);
 	private final IBuilding building;
 	private final UIPanel panel;
 
 	private static OriginalImageLink SET_WORK_AREA = new OriginalImageLink(EImageLinkType.GUI,
-	        3, 201, 0);
+			3, 201, 0);
 	private static OriginalImageLink PRIORITY_STOPPED = new OriginalImageLink(EImageLinkType.GUI,
-	        3, 192, 0);
+			3, 192, 0);
 	private static OriginalImageLink PRIORITY_LOW = new OriginalImageLink(EImageLinkType.GUI,
-	        3, 195, 0);
+			3, 195, 0);
 	private static OriginalImageLink PRIORITY_HIGH = new OriginalImageLink(EImageLinkType.GUI,
-	        3, 378, 0);
+			3, 378, 0);
 
 	private static OriginalImageLink DESTROY = new OriginalImageLink(EImageLinkType.GUI, 3,
-	        198, 0);
+			198, 0);
 	private static OriginalImageLink NEXT = new OriginalImageLink(EImageLinkType.GUI, 3,
-	        230, 0);
+			230, 0);
 
 	private BuildingState lastState = null;
 
@@ -65,34 +65,34 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 		if (building.getBuildingType().getWorkradius() > 0) {
 			Button setWorkcenter =
-			        new Button(new Action(EActionType.ASK_SET_WORK_AREA),
-			                SET_WORK_AREA, SET_WORK_AREA,
-			                Labels.getName(EActionType.SET_WORK_AREA));
+					new Button(new Action(EActionType.ASK_SET_WORK_AREA),
+							SET_WORK_AREA, SET_WORK_AREA,
+							Labels.getName(EActionType.SET_WORK_AREA));
 			panel.addChild(setWorkcenter, .4f, .9f, .6f, 1);
 		}
 
 		Button destroy =
-		        new Button(new Action(EActionType.ASK_DESTROY), DESTROY,
-		                DESTROY, Labels.getName(EActionType.DESTROY));
+				new Button(new Action(EActionType.ASK_DESTROY), DESTROY,
+						DESTROY, Labels.getName(EActionType.DESTROY));
 		panel.addChild(destroy, .8f, .9f, 1, 1);
 		Button next =
-		        new Button(new Action(EActionType.NEXT_OF_TYPE), NEXT,
-		        		NEXT, Labels.getName(EActionType.NEXT_OF_TYPE));
+				new Button(new Action(EActionType.NEXT_OF_TYPE), NEXT,
+						NEXT, Labels.getName(EActionType.NEXT_OF_TYPE));
 		panel.addChild(next, .6f, .9f, .8f, 1);
 
 		UIPanel namePanel = new UIPanel() {
 			@Override
 			public void drawAt(GLDrawContext gl) {
 				gl.getTextDrawer(EFontSize.HEADLINE).renderCentered(
-				        getPosition().getCenterX(), getPosition().getCenterY(),
-				        Labels.getName(building.getBuildingType()));
+						getPosition().getCenterX(), getPosition().getCenterY(),
+						Labels.getName(building.getBuildingType()));
 			}
 		};
 		panel.addChild(namePanel, 0, .8f, 1, .9f);
 
 		if (building instanceof IBuilding.IOccupyed) {
 			List<? extends IBuildingOccupyer> occupyers =
-			        ((IBuilding.IOccupyed) building).getOccupyers();
+					((IBuilding.IOccupyed) building).getOccupyers();
 			addOccupyerPlaces(occupyers);
 
 		}
@@ -103,34 +103,34 @@ public class BuildingSelectionPanel implements IContentProvider {
 		if (supported.length < 2) {
 			return;
 		}
-		
+
 		EPriority priority = building.getPriority();
-	    OriginalImageLink image;
+		OriginalImageLink image;
 		switch (priority) {
-			case HIGH:
-				image = PRIORITY_HIGH;
-				break;
-			case LOW:
-				image = PRIORITY_LOW;
-				break;
-			case STOPPED:
-			default:
-				image = PRIORITY_STOPPED;
-				break;
+		case HIGH:
+			image = PRIORITY_HIGH;
+			break;
+		case LOW:
+			image = PRIORITY_LOW;
+			break;
+		case STOPPED:
+		default:
+			image = PRIORITY_STOPPED;
+			break;
 		}
-		
+
 		EPriority next = supported[0];
 		for (int i = 0; i < supported.length; i++) {
 			if (supported[i] == priority) {
 				next = supported[(i + 1) % supported.length];
 			}
 		}
-		
+
 		Button changeWorking = new Button(new SetBuildingPriorityAction(next),
-					image, image,
-			        Labels.getString("priority_" + next));
+				image, image,
+				Labels.getString("priority_" + next));
 		panel.addChild(changeWorking, 0, .9f, .2f, 1);
-    }
+	}
 
 	private void addOccupyerPlaces(List<? extends IBuildingOccupyer> occupyers) {
 		int bottomindex = 0;
@@ -164,29 +164,29 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 	private static OriginalImageLink getIconFor(IMovable movable) {
 		switch (movable.getMovableType()) {
-			case SWORDSMAN_L1:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
-			case SWORDSMAN_L2:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
-			case SWORDSMAN_L3:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
-			case PIKEMAN_L1:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
-			case PIKEMAN_L2:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 225, 0);
-			case PIKEMAN_L3:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 234, 0);
-			case BOWMAN_L1:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
-			case BOWMAN_L2:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 228, 0);
-			case BOWMAN_L3:
-				return new OriginalImageLink(EImageLinkType.GUI, 14, 237, 0);
+		case SWORDSMAN_L1:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 213, 0);
+		case SWORDSMAN_L2:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 222, 0);
+		case SWORDSMAN_L3:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 231, 0);
+		case PIKEMAN_L1:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 216, 0);
+		case PIKEMAN_L2:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 225, 0);
+		case PIKEMAN_L3:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 234, 0);
+		case BOWMAN_L1:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 219, 0);
+		case BOWMAN_L2:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 228, 0);
+		case BOWMAN_L3:
+			return new OriginalImageLink(EImageLinkType.GUI, 14, 237, 0);
 
-			default:
-				System.err.println("A unknown image was requested for gui. "
-				        + "Type=" + movable.getMovableType());
-				return new OriginalImageLink(EImageLinkType.GUI, 24, 213, 0);
+		default:
+			System.err.println("A unknown image was requested for gui. "
+					+ "Type=" + movable.getMovableType());
+			return new OriginalImageLink(EImageLinkType.GUI, 24, 213, 0);
 		}
 	}
 
@@ -227,17 +227,17 @@ public class BuildingSelectionPanel implements IContentProvider {
 			lastState = new BuildingState(building);
 		}
 	}
-	
+
 	@Override
 	public ESecondaryTabType getTabs() {
 		return null;
 	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {	    
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+	}
 
 	@Override
-    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
-    }
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	}
 }

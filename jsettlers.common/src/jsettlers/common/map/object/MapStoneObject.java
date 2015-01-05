@@ -1,6 +1,5 @@
 package jsettlers.common.map.object;
 
-
 public class MapStoneObject implements MapObject {
 
 	private final int capacity;

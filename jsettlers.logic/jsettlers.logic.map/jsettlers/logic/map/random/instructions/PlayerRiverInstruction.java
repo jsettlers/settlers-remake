@@ -20,7 +20,7 @@ import jsettlers.logic.map.random.landscape.Vertex;
 public class PlayerRiverInstruction extends LandInstruction {
 
 	private static Hashtable<String, String> defaults =
-	        new Hashtable<String, String>();
+			new Hashtable<String, String>();
 
 	static {
 		defaults.put("dx", "0");
@@ -37,7 +37,7 @@ public class PlayerRiverInstruction extends LandInstruction {
 
 	@Override
 	public void execute(LandscapeMesh landscape, PlayerStart[] starts,
-	        Random random) {
+			Random random) {
 		for (PlayerStart start : starts) {
 			int x = start.x + getIntParameter("dx", random);
 			int y = start.y + getIntParameter("dy", random);
@@ -59,7 +59,7 @@ public class PlayerRiverInstruction extends LandInstruction {
 	}
 
 	private boolean buildRiverWithLength(Vertex vertex, Random random,
-	        int length) {
+			int length) {
 		LinkedList<Vertex> trace = new LinkedList<Vertex>();
 		trace.add(vertex);
 		if (buildRiver(vertex, trace, random, length)) {
@@ -82,7 +82,7 @@ public class PlayerRiverInstruction extends LandInstruction {
 	}
 
 	private boolean buildRiver(Vertex vertex, LinkedList<Vertex> trace,
-	        Random random, double restlength) {
+			Random random, double restlength) {
 		for (MeshEdge e : vertex.getEdges()) {
 			Vertex opposite = e.getOppositePoint(vertex);
 			if (trace.contains(opposite)) {
@@ -93,7 +93,7 @@ public class PlayerRiverInstruction extends LandInstruction {
 
 			trace.add(opposite);
 			if (length > restlength
-			        || buildRiver(opposite, trace, random, restlength - length)) {
+					|| buildRiver(opposite, trace, random, restlength - length)) {
 				return true;
 			} else {
 				trace.removeLast();
@@ -145,21 +145,21 @@ public class PlayerRiverInstruction extends LandInstruction {
 	}
 
 	private MeshSite findSeaSite(int x, int y, LandscapeMesh landscape,
-	        Random random) {
+			Random random) {
 		Point2D point = new Point2D(x, y);
 		SiteCriterium criterium =
-		        new SiteDistanceCriterium(point, getParameter("distance",
-		                random));
+				new SiteDistanceCriterium(point, getParameter("distance",
+						random));
 		MeshLandscapeType onLandscape =
-		        MeshLandscapeType.parse(getParameter("on", random), null);
+				MeshLandscapeType.parse(getParameter("on", random), null);
 		if (onLandscape != null) {
 			criterium =
-			        new AndSiteCriterium(criterium, new SiteBorderCriterium(
-			                new SiteLandscapeCriterium(onLandscape)));
+					new AndSiteCriterium(criterium, new SiteBorderCriterium(
+							new SiteLandscapeCriterium(onLandscape)));
 		}
 
 		MeshSite[] sites =
-		        landscape.getSitesWithCriterium(criterium, random, 1);
+				landscape.getSitesWithCriterium(criterium, random, 1);
 
 		if (sites.length <= 0) {
 			return null;

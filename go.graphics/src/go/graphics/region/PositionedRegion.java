@@ -15,7 +15,7 @@ public class PositionedRegion {
 	private final Region region;
 
 	public PositionedRegion(Region region, int top, int bottom, int left,
-	        int right) {
+			int right) {
 		this.region = region;
 		this.top = top;
 		this.bottom = bottom;
@@ -46,6 +46,6 @@ public class PositionedRegion {
 
 	public boolean contentContains(UIPoint point) {
 		return getLeft() <= point.getX() && getRight() > point.getX()
-		        && getTop() > point.getY() && getBottom() <= point.getY();
+				&& getTop() > point.getY() && getBottom() <= point.getY();
 	}
 }

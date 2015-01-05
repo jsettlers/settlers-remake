@@ -10,16 +10,16 @@ public class Error implements ILocatable {
 	public Error(ShortPoint2D position, String description) {
 		this.position = position;
 		this.description = description;
-		
+
 	}
 
 	@Override
-    public ShortPoint2D getPos() {
-	    return position;
-    }
-	
+	public ShortPoint2D getPos() {
+		return position;
+	}
+
 	@Override
 	public String toString() {
-	    return description;
+		return description;
 	}
 }

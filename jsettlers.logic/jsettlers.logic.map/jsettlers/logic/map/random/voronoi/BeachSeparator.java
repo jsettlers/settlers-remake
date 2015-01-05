@@ -1,8 +1,7 @@
 package jsettlers.logic.map.random.voronoi;
 
 /**
- * This is a point on the beach line that separates the part of the beach line
- * in two areas. It is later converted into a voronoi separation line.
+ * This is a point on the beach line that separates the part of the beach line in two areas. It is later converted into a voronoi separation line.
  * <p>
  * It is used to construct the binary search tree.
  * 
@@ -35,14 +34,14 @@ public class BeachSeparator implements BeachTreeItem {
 			this.setRightChild(newCHild);
 		} else {
 			throw new IllegalArgumentException(
-			        "The node to be replaced is not a child of this node");
+					"The node to be replaced is not a child of this node");
 		}
 	}
 
 	private void setLeftChild(BeachTreeItem leftChild) {
 		if (leftChild.getParent() != null) {
 			throw new IllegalArgumentException(
-			        "tried to add an already added node to the tree.");
+					"tried to add an already added node to the tree.");
 		}
 		this.leftChild = leftChild;
 	}
@@ -50,7 +49,7 @@ public class BeachSeparator implements BeachTreeItem {
 	private void setRightChild(BeachTreeItem rightChild) {
 		if (rightChild.getParent() != null) {
 			throw new IllegalArgumentException(
-			        "tried to add an already added node to the tree.");
+					"tried to add an already added node to the tree.");
 		}
 		this.rightChild = rightChild;
 	}

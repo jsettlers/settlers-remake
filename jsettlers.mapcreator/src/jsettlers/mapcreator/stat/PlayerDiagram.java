@@ -42,7 +42,7 @@ public class PlayerDiagram extends JPanel {
 	}
 
 	private void addObjectOnPoint(MapData data, int startx, int starty, int x,
-	        int y) {
+			int y) {
 		int type = getType(data.getMapObject(x, y));
 		if (type >= 0) {
 			int distance = (int) MapCircle.getDistance(x, y, startx, starty);
@@ -61,7 +61,7 @@ public class PlayerDiagram extends JPanel {
 			is[distance - 2] += increase / 2;
 		}
 		if (distance - 1 >= 0) {
-			is[distance - 1] += increase * 2/ 3;
+			is[distance - 1] += increase * 2 / 3;
 		}
 		is[distance] = increase;
 		if (distance + 1 < is.length) {
@@ -87,18 +87,17 @@ public class PlayerDiagram extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		((Graphics2D) g).scale(1, -1);
 		((Graphics2D) g).translate(0, -IMAGE_HEIGHT);
-		
 
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, WATCHED_DISTANCE * 2, IMAGE_HEIGHT);
-		
+
 		g.setColor(Color.DARK_GRAY);
 		g.drawPolyline(polylinex, founds[1], WATCHED_DISTANCE);
 		g.drawString("Stones", WATCHED_DISTANCE * 2 - 100, IMAGE_HEIGHT - 20);
-		
+
 		g.setColor(Color.GREEN);
 		g.drawPolyline(polylinex, founds[0], WATCHED_DISTANCE);
 		g.drawString("Trees", WATCHED_DISTANCE * 2 - 100, IMAGE_HEIGHT - 30);

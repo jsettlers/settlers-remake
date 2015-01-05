@@ -8,6 +8,7 @@ import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
  * This class translates shadows.
+ * 
  * @author michael
  *
  */
@@ -16,19 +17,19 @@ public class ShadowTranslator implements DatBitmapTranslator<ShadowImage> {
 	public short readUntransparentColor(ByteReader reader) throws IOException {
 		return 0;
 	}
-	
+
 	@Override
-    public HeaderType getHeaderType() {
-        return HeaderType.DISPLACED;
-    }
-	
+	public HeaderType getHeaderType() {
+		return HeaderType.DISPLACED;
+	}
+
 	@Override
 	public short getTransparentColor() {
 		return 0x0001;
 	}
 
 	@Override
-    public ShadowImage createImage(ImageMetadata metadata, short[] array) {
-	    return new ShadowImage(metadata, array);
-    }
+	public ShadowImage createImage(ImageMetadata metadata, short[] array) {
+		return new ShadowImage(metadata, array);
+	}
 }

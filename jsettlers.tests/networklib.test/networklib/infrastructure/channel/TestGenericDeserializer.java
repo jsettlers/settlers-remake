@@ -32,8 +32,9 @@ public class TestGenericDeserializer {
 
 	@Test
 	public void testGenericPacket() throws InterruptedException {
-		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET, new GenericDeserializer<TestPacket>(
-				TestPacket.class));
+		BufferingPacketListener<TestPacket> listener = new BufferingPacketListener<TestPacket>(ENetworkKey.TEST_PACKET,
+				new GenericDeserializer<TestPacket>(
+						TestPacket.class));
 		c1.registerListener(listener);
 
 		TestPacket packet1 = new TestPacket("dsdfskf", 234);

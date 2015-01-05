@@ -21,7 +21,7 @@ public class ActionFirerer implements ActionFireable {
 	 * The actions that are queued to fire.
 	 */
 	private final LinkedBlockingQueue<FireringAction> toFire =
-	        new LinkedBlockingQueue<FireringAction>();
+			new LinkedBlockingQueue<FireringAction>();
 
 	private final Object toFireMutex = new Object();
 
@@ -36,8 +36,7 @@ public class ActionFirerer implements ActionFireable {
 	private ActionThreadBlockingListener blockingListener;
 
 	/**
-	 * A flag indicating if we notified the {@link #blockingListener} that we
-	 * are blocking.
+	 * A flag indicating if we notified the {@link #blockingListener} that we are blocking.
 	 */
 	private boolean isBlockingSent;
 

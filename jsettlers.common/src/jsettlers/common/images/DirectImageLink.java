@@ -6,9 +6,9 @@ public class DirectImageLink extends ImageLink {
 
 	public DirectImageLink(String name) {
 		this.name = name;
-    }
+	}
 
 	public String getName() {
-	    return name;
-    }
+		return name;
+	}
 }

@@ -1,8 +1,7 @@
 package jsettlers.logic.algorithms.heap;
 
 /**
- * This interface defines what an element, that may be stored in a heap, must
- * provide for the heap to work.
+ * This interface defines what an element, that may be stored in a heap, must provide for the heap to work.
  * 
  * @author andreas
  */
@@ -17,8 +16,7 @@ public interface MinHeapable {
 	float getRank();
 
 	/**
-	 * Gets the last value given to {@link #setHeapIdx(int)}. If the index was
-	 * not set, it must return -1.
+	 * Gets the last value given to {@link #setHeapIdx(int)}. If the index was not set, it must return -1.
 	 * 
 	 * @return The heap index.
 	 */

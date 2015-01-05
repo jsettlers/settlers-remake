@@ -67,7 +67,6 @@ public class MapDataDelta {
 		ObjectContainer obj;
 	}
 
-
 	public void addObject(int x, int y, ObjectContainer obj) {
 		if (obj != null) {
 			ObjectAdder adder = new ObjectAdder();
@@ -78,6 +77,7 @@ public class MapDataDelta {
 			addObjects = adder;
 		}
 	}
+
 	public static class ResourceChanger {
 		ResourceChanger next = null;
 		short x;
@@ -85,11 +85,12 @@ public class MapDataDelta {
 		EResourceType type;
 		byte amount;
 	}
+
 	public ObjectAdder getAddObjects() {
-	    return addObjects;
-    }
-	
-	public void changeResource(int x, int y, 
+		return addObjects;
+	}
+
+	public void changeResource(int x, int y,
 			EResourceType type,
 			byte amount) {
 		ResourceChanger c = new ResourceChanger();
@@ -100,11 +101,10 @@ public class MapDataDelta {
 		c.next = changeResources;
 		changeResources = c;
 	}
-	
+
 	public ResourceChanger getChangeResources() {
-	    return changeResources;
-    }
-	
+		return changeResources;
+	}
 
 	public static class ObjectRemover {
 		ObjectRemover next = null;
@@ -119,12 +119,12 @@ public class MapDataDelta {
 		remover.next = removeObjects;
 		removeObjects = remover;
 	}
-	
+
 	public ObjectRemover getRemoveObjects() {
-	    return removeObjects;
-    }
-	
-	//ignore start item!
+		return removeObjects;
+	}
+
+	// ignore start item!
 	private StartPointSetter startPoints = new StartPointSetter();
 
 	public static class StartPointSetter {
@@ -134,21 +134,21 @@ public class MapDataDelta {
 	}
 
 	public StartPointSetter getStartPoints() {
-	    return startPoints.next;
-    }
-	
+		return startPoints.next;
+	}
+
 	public void setStartPoint(byte player, ShortPoint2D pos) {
-	    StartPointSetter cur = startPoints;
-	    while (cur.next != null) {
-	    	if (cur.next.player == player) {
-	    		cur.next = cur.next.next;
-	    	}
-	    }
-	    StartPointSetter item = new StartPointSetter();
-	    item.player = player;
-	    item.pos = pos;
-	    item.next = startPoints.next;
-	    startPoints.next = item;
-    }
+		StartPointSetter cur = startPoints;
+		while (cur.next != null) {
+			if (cur.next.player == player) {
+				cur.next = cur.next.next;
+			}
+		}
+		StartPointSetter item = new StartPointSetter();
+		item.player = player;
+		item.pos = pos;
+		item.next = startPoints.next;
+		startPoints.next = item;
+	}
 
 }

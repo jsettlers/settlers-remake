@@ -18,7 +18,7 @@ public abstract class JsettlersFragment extends Fragment {
 	public boolean shouldAddToBackStack() {
 		return true;
 	}
-	
+
 	public boolean onBackButtonPressed() {
 		return false;
 	}

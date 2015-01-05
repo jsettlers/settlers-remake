@@ -12,32 +12,32 @@ public class MapStack implements IStackMapObject {
 
 	public MapStack(RelativeStack stack) {
 		this.stack = stack;
-    }
+	}
 
 	@Override
-    public EMapObjectType getObjectType() {
-	    return EMapObjectType.STACK_OBJECT;
-    }
+	public EMapObjectType getObjectType() {
+		return EMapObjectType.STACK_OBJECT;
+	}
 
 	@Override
-    public float getStateProgress() {
-	    return 0;
-    }
+	public float getStateProgress() {
+		return 0;
+	}
 
 	@Override
-    public IMapObject getNextObject() {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
+	public IMapObject getNextObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
-    public EMaterialType getMaterialType() {
+	public EMaterialType getMaterialType() {
 		return stack.getMaterialType();
-    }
+	}
 
 	@Override
-    public byte getSize() {
+	public byte getSize() {
 		return (byte) (stack.requiredForBuild() == 0 ? 8 : 3);
-    }
+	}
 
 }

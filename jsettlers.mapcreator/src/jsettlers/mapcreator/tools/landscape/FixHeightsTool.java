@@ -23,7 +23,7 @@ public class FixHeightsTool implements Tool {
 
 	@Override
 	public void apply(MapData map, ShapeType shape, ShortPoint2D start,
-	        ShortPoint2D end, double uidx) {
+			ShortPoint2D end, double uidx) {
 		byte[][] influences = new byte[map.getWidth()][map.getHeight()];
 		shape.setAffectedStatus(influences, start, end);
 
@@ -50,12 +50,12 @@ public class FixHeightsTool implements Tool {
 	}
 
 	private static void fixResources(MapData map, int x, int y) {
-	    if (map.getResourceAmount((short) x, (short) y) > 0) {
-	    	if (!DataTester.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short)  y))) {
-	    		map.decreaseResourceTo(x, y, (byte) 0);
-	    	}
-	    }
-    }
+		if (map.getResourceAmount((short) x, (short) y) > 0) {
+			if (!DataTester.mayHoldResource(map.getLandscape(x, y), map.getResourceType((short) x, (short) y))) {
+				map.decreaseResourceTo(x, y, (byte) 0);
+			}
+		}
+	}
 
 	private static void fix(MapData map, int x, int y, int x2, int y2) {
 		byte h1 = map.getLandscapeHeight(x, y);
@@ -67,12 +67,12 @@ public class FixHeightsTool implements Tool {
 
 		ObjectContainer container1 = map.getMapObjectContainer(x, y);
 		if (container1 instanceof LandscapeConstraint
-		        && ((LandscapeConstraint) container1).needsFlatGround()) {
+				&& ((LandscapeConstraint) container1).needsFlatGround()) {
 			maxHeightDiff = 0;
 		}
 		ObjectContainer container2 = map.getMapObjectContainer(x2, y2);
 		if (container2 instanceof LandscapeConstraint
-		        && ((LandscapeConstraint) container2).needsFlatGround()) {
+				&& ((LandscapeConstraint) container2).needsFlatGround()) {
 			maxHeightDiff = 0;
 		}
 

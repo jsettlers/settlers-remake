@@ -74,6 +74,7 @@ public interface BuildingJobData {
 
 	/**
 	 * Gets the name of the job
+	 * 
 	 * @return The name.
 	 */
 	String getName();

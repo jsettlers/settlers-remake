@@ -40,10 +40,10 @@ public class NavigationPoint {
 
 	public void drawAt(GLDrawContext gl) {
 		ImageProvider
-		        .getInstance()
-		        .getImage(
-		                new OriginalImageLink(EImageLinkType.SETTLER, 4, 8, 2))
-		        .drawAt(gl, panPosition.getX(), panPosition.getY());
+				.getInstance()
+				.getImage(
+						new OriginalImageLink(EImageLinkType.SETTLER, 4, 8, 2))
+				.drawAt(gl, panPosition.getX(), panPosition.getY());
 	}
 
 	public boolean centerContains(UIPoint drawPosition) {
@@ -81,7 +81,7 @@ public class NavigationPoint {
 					}
 				};
 				panTimer.schedule(panTimerTask, PAN_TIMER_PERIOD,
-				        PAN_TIMER_PERIOD);
+						PAN_TIMER_PERIOD);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ public class NavigationPoint {
 	protected void panTimerTick() {
 		synchronized (panTimerMutex) {
 			if (!panInProgress && panPosition.getX() == x
-			        && panPosition.getY() == y) {
+					&& panPosition.getY() == y) {
 				panTimerTask.cancel();
 				panTimerTask = null;
 			}
@@ -114,13 +114,13 @@ public class NavigationPoint {
 		panPosition.setPosition(x, y);
 		if (context != null) {
 			context.getScreen().finishPanProgress(this,
-			        new UIPoint(panDx, panDy));
+					new UIPoint(panDx, panDy));
 		}
 		panDx = 0;
 		panDy = 0;
 	}
 
 	public boolean isPanInProgress() {
-	    return panInProgress;
-    }
+		return panInProgress;
+	}
 }

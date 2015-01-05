@@ -9,7 +9,7 @@ public class AndSiteCriterium implements SiteCriterium {
 		this.a = a;
 		this.b = b;
 	}
-	
+
 	@Override
 	public boolean matchesCriterium(MeshSite site) {
 		return a.matchesCriterium(site) && b.matchesCriterium(site);

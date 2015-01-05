@@ -18,12 +18,12 @@ public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> 
 	}
 
 	@Override
-    public HeaderType getHeaderType() {
-        return HeaderType.LANDSCAPE;
-    }
+	public HeaderType getHeaderType() {
+		return HeaderType.LANDSCAPE;
+	}
 
 	@Override
-    public LandscapeImage createImage(ImageMetadata metadata, short[] array) {
-	    return new LandscapeImage(metadata, array);
-    }
+	public LandscapeImage createImage(ImageMetadata metadata, short[] array) {
+		return new LandscapeImage(metadata, array);
+	}
 }

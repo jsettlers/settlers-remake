@@ -17,7 +17,7 @@ public class FramerateComputer {
 		lastFrames[capturedFrames] = time;
 		capturedFrames++;
 		if ((time - lastRecompute > RECOMPUTE_INTERVALL || capturedFrames >= lastFrames.length)
-		        && capturedFrames > 1) {
+				&& capturedFrames > 1) {
 			recompute();
 			lastRecompute = time;
 		}

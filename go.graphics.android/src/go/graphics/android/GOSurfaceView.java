@@ -26,7 +26,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 
 public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
-        GOEventHandlerProvider {
+		GOEventHandlerProvider {
 
 	private final Area area;
 
@@ -52,8 +52,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		// super.setPreserveEGLContextOnPause(true);
 		try {
 			Method m =
-			        GLSurfaceView.class.getMethod(
-			                "setPreserveEGLContextOnPause", Boolean.TYPE);
+					GLSurfaceView.class.getMethod(
+							"setPreserveEGLContextOnPause", Boolean.TYPE);
 			m.invoke(this, true);
 		} catch (Throwable t) {
 			Log.d("gl", "Could not enable context preservation");
@@ -88,11 +88,11 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		protected ActionAdapter(GOEventHandlerProvider provider) {
 			super(provider);
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
-			        Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
-			        CLICK_MOVE_TRESHOLD));
+					Replacement.COMMAND_SELECT, CLICK_TIME_TRSHOLD,
+					CLICK_MOVE_TRESHOLD));
 			addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN,
-			        Replacement.COMMAND_ACTION, CLICK_TIME_TRSHOLD,
-			        CLICK_MOVE_TRESHOLD));
+					Replacement.COMMAND_ACTION, CLICK_TIME_TRSHOLD,
+					CLICK_MOVE_TRESHOLD));
 		}
 
 		private boolean doZoom = false;
@@ -101,7 +101,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		 * The points where pointers started. In Android space
 		 */
 		private Hashtable<Integer, UIPoint> panPointerStarts =
-		        new Hashtable<Integer, UIPoint>();
+				new Hashtable<Integer, UIPoint>();
 
 		private double endedPansX = 0;
 		private double endedPansY = 0;
@@ -121,9 +121,9 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 		public void onTouchEvent(MotionEvent e) {
 
 			boolean isPan =
-			        panStarted()
-			                || e.getPointerCount() > 1
-			                || (e.getSource() & InputDevice.SOURCE_CLASS_MASK) == InputDevice.SOURCE_CLASS_TRACKBALL;
+					panStarted()
+							|| e.getPointerCount() > 1
+							|| (e.getSource() & InputDevice.SOURCE_CLASS_MASK) == InputDevice.SOURCE_CLASS_TRACKBALL;
 
 			if (isPan) {
 				if (drawStarted()) {
@@ -150,11 +150,11 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 					UIPoint start = panPointerStarts.remove(id);
 					if (start != null) {
 						endedPansX +=
-						        (e.getX(index) - start.getX())
-						                / e.getPointerCount();
+								(e.getX(index) - start.getX())
+										/ e.getPointerCount();
 						endedPansY -=
-						        (e.getY(index) - start.getY())
-						                / e.getPointerCount();
+								(e.getY(index) - start.getY())
+										/ e.getPointerCount();
 					}
 
 				} else {
@@ -164,8 +164,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 						updatePanPosition(point);
 
 						if (e.getPointerCount() > 1
-						        && (factor < 1 / ZOOMSTART || factor > ZOOMSTART)
-						        && getPointerDistance(e) > ZOOM_MIN_POINTERDISTANCE) {
+								&& (factor < 1 / ZOOMSTART || factor > ZOOMSTART)
+								&& getPointerDistance(e) > ZOOM_MIN_POINTERDISTANCE) {
 							doZoom = true;
 							startZoom();
 						}
@@ -188,7 +188,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 					for (int i = 0; i < e.getPointerCount(); i++) {
 						Integer index = e.getPointerId(i);
 						panPointerStarts.put(index,
-						        new UIPoint(e.getX(i), e.getY(i)));
+								new UIPoint(e.getX(i), e.getY(i)));
 					}
 				} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
 					updateDrawPosition(convertToLocal(e, 0));
@@ -242,8 +242,8 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 			}
 
 			UIPoint point =
-			        new UIPoint(panStart.getX() + dx / e.getPointerCount(),
-			                panStart.getY() + dy / e.getPointerCount());
+					new UIPoint(panStart.getX() + dx / e.getPointerCount(),
+							panStart.getY() + dy / e.getPointerCount());
 			return point;
 		}
 
@@ -262,7 +262,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 				y += start.getY();
 			}
 			return new UIPoint(x / values.size(), getHeight() - y
-			        / values.size());
+					/ values.size());
 		}
 
 		private int getPointerIndex(MotionEvent e) {
@@ -315,10 +315,10 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 
 		@Override
 		public EGLContext createContext(EGL10 arg0, EGLDisplay display,
-		        EGLConfig config) {
-			int[] attributes = new int[] {EGL10.EGL_NONE};
+				EGLConfig config) {
+			int[] attributes = new int[] { EGL10.EGL_NONE };
 			return arg0.eglCreateContext(display, config, EGL10.EGL_NO_CONTEXT,
-			        attributes);
+					attributes);
 		}
 
 		@Override
@@ -354,7 +354,7 @@ public class GOSurfaceView extends GLSurfaceView implements RedrawListener,
 	}
 
 	public void setContextDestroyedListener(
-	        IContextDestroyedListener contextDestroyedListener) {
+			IContextDestroyedListener contextDestroyedListener) {
 		this.contextDestroyedListener = contextDestroyedListener;
 	}
 

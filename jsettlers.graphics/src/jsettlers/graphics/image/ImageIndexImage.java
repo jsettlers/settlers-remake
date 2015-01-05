@@ -17,8 +17,8 @@ public class ImageIndexImage extends Image {
 	private final float vmax;
 
 	protected ImageIndexImage(ImageIndexTexture texture, int offsetX,
-	        int offsetY, short width, short height, float umin, float vmin,
-	        float umax, float vmax) {
+			int offsetY, short width, short height, float umin, float vmin,
+			float umax, float vmax) {
 		this.texture = texture;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
@@ -28,10 +28,10 @@ public class ImageIndexImage extends Image {
 		this.vmin = vmin;
 		this.umax = umax;
 		this.vmax = vmax;
-		
+
 		geometry =
-		        createGeometry(offsetX, offsetY, width, height, umin, vmin,
-		                umax, vmax);
+				createGeometry(offsetX, offsetY, width, height, umin, vmin,
+						umax, vmax);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ImageIndexImage extends Image {
 			gl.color(multiply, multiply, multiply, 1);
 		} else {
 			gl.color(color.getRed() * multiply, color.getGreen() * multiply, color.getBlue() * multiply,
-			        color.getAlpha());
+					color.getAlpha());
 		}
 
 		gl.drawTrianglesWithTexture(texture.getTextureIndex(gl), geometry);
@@ -77,56 +77,56 @@ public class ImageIndexImage extends Image {
 	private static final float IMAGE_DRAW_OFFSET = .5f;
 
 	private static float[] createGeometry(int offsetX, int offsetY, int width,
-	        int height, float umin, float vmin, float umax, float vmax) {
+			int height, float umin, float vmin, float umax, float vmax) {
 		return new float[] {
-		        // top left
-		        -offsetX + IMAGE_DRAW_OFFSET,
-		        -offsetY + height + IMAGE_DRAW_OFFSET,
-		        0,
-		        umin,
-		        vmin,
+				// top left
+				-offsetX + IMAGE_DRAW_OFFSET,
+				-offsetY + height + IMAGE_DRAW_OFFSET,
+				0,
+				umin,
+				vmin,
 
-		        // bottom left
-		        -offsetX + IMAGE_DRAW_OFFSET,
-		        -offsetY + IMAGE_DRAW_OFFSET,
-		        0,
-		        umin,
-		        vmax,
+				// bottom left
+				-offsetX + IMAGE_DRAW_OFFSET,
+				-offsetY + IMAGE_DRAW_OFFSET,
+				0,
+				umin,
+				vmax,
 
-		        // bottom right
-		        -offsetX + width + IMAGE_DRAW_OFFSET,
-		        -offsetY + IMAGE_DRAW_OFFSET,
-		        0,
-		        umax,
-		        vmax,
+				// bottom right
+				-offsetX + width + IMAGE_DRAW_OFFSET,
+				-offsetY + IMAGE_DRAW_OFFSET,
+				0,
+				umax,
+				vmax,
 
-		        // top right
-		        -offsetX + width + IMAGE_DRAW_OFFSET,
-		        -offsetY + height + IMAGE_DRAW_OFFSET,
-		        0,
-		        umax,
-		        vmin,
-		        // top left
-		        -offsetX + IMAGE_DRAW_OFFSET,
-		        -offsetY + height + IMAGE_DRAW_OFFSET,
-		        0,
-		        umin,
-		        vmin,
-		        // bottom right
-		        -offsetX + width + IMAGE_DRAW_OFFSET,
-		        -offsetY + IMAGE_DRAW_OFFSET,
-		        0,
-		        umax,
-		        vmax,
+				// top right
+				-offsetX + width + IMAGE_DRAW_OFFSET,
+				-offsetY + height + IMAGE_DRAW_OFFSET,
+				0,
+				umax,
+				vmin,
+				// top left
+				-offsetX + IMAGE_DRAW_OFFSET,
+				-offsetY + height + IMAGE_DRAW_OFFSET,
+				0,
+				umin,
+				vmin,
+				// bottom right
+				-offsetX + width + IMAGE_DRAW_OFFSET,
+				-offsetY + IMAGE_DRAW_OFFSET,
+				0,
+				umax,
+				vmax,
 
 		};
 	}
-	
+
 	static private float[] tmpBuffer = new float[5 * 6];
 
 	@Override
 	public void drawImageAtRect(GLDrawContext gl, float minX, float minY,
-	        float maxX, float maxY) {
+			float maxX, float maxY) {
 		System.arraycopy(geometry, 0, tmpBuffer, 0, 4 * 5);
 		tmpBuffer[0] = minX + IMAGE_DRAW_OFFSET;
 		tmpBuffer[1] = maxY + IMAGE_DRAW_OFFSET;
@@ -146,7 +146,8 @@ public class ImageIndexImage extends Image {
 
 	@Override
 	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
-		buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin, umax, vmax, iColor);
+		buffer.addImage(texture.getTextureIndex(gl), viewX - offsetX, viewY - offsetY, viewX - offsetX + width, viewY - offsetY + height, umin, vmin,
+				umax, vmax, iColor);
 	}
 
 }

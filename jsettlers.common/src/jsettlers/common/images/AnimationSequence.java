@@ -39,8 +39,7 @@ public final class AnimationSequence {
 	}
 
 	/**
-	 * Gets the n-th image in this sequence, starting by 0. If the parameter is
-	 * bigger than the length of the sequence or less than 0, the result is
+	 * Gets the n-th image in this sequence, starting by 0. If the parameter is bigger than the length of the sequence or less than 0, the result is
 	 * undefined.
 	 * 
 	 * @param index

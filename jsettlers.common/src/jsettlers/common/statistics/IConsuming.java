@@ -9,9 +9,8 @@ import jsettlers.common.material.EMaterialType;
  */
 public interface IConsuming {
 	/**
-	 * Gets the thing the material is consumed for. If this method returns
-	 * {@link EConsumingType#WORKING_BUILDING}, you can safely cast this object
-	 * to {@link IConsumingBuildingType}
+	 * Gets the thing the material is consumed for. If this method returns {@link EConsumingType#WORKING_BUILDING}, you can safely cast this object to
+	 * {@link IConsumingBuildingType}
 	 * 
 	 * @return The type
 	 */
@@ -25,13 +24,11 @@ public interface IConsuming {
 	public EMaterialType getMaterialType();
 
 	/**
-	 * Sets the priority that should be used when deciding to which consumers
-	 * the material is brought. If the priority is out of range, it is clamped
+	 * Sets the priority that should be used when deciding to which consumers the material is brought. If the priority is out of range, it is clamped
 	 * silently.
 	 * 
 	 * @param priority
-	 *            The priority to use. 0 means no goods, 1 means highest
-	 *            priority.
+	 *            The priority to use. 0 means no goods, 1 means highest priority.
 	 */
 	public void setPriority(float priority);
 

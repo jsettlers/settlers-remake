@@ -13,21 +13,21 @@ public class GridLandscapeType {
 			return ELandscapeType.GRASS;
 		}
 		switch (landscape) {
-			case DESERT:
-				return ELandscapeType.DESERT;
+		case DESERT:
+			return ELandscapeType.DESERT;
 
-			case MOUNTAIN:
-				return ELandscapeType.MOUNTAIN;
+		case MOUNTAIN:
+			return ELandscapeType.MOUNTAIN;
 
-			case SAND:
-				return ELandscapeType.SAND;
-				
-			case SEA:
-				return ELandscapeType.WATER1;
+		case SAND:
+			return ELandscapeType.SAND;
 
-			case GRASS:
-			default:
-				return ELandscapeType.GRASS;
+		case SEA:
+			return ELandscapeType.WATER1;
+
+		case GRASS:
+		default:
+			return ELandscapeType.GRASS;
 		}
 	}
 
@@ -36,7 +36,7 @@ public class GridLandscapeType {
 			System.out.println("River found!");
 			return ELandscapeType.RIVER2;
 		}
-		
+
 		if (edge.getLeft() == null) {
 			return convert(edge.getRight().getLandscape());
 		} else if (edge.getRight() == null) {
@@ -47,11 +47,11 @@ public class GridLandscapeType {
 		if (left == right) {
 			return convert(left);
 		} else if ((left == MeshLandscapeType.GRASS && right == MeshLandscapeType.MOUNTAIN)
-		        || (right == MeshLandscapeType.GRASS && left == MeshLandscapeType.MOUNTAIN)) {
+				|| (right == MeshLandscapeType.GRASS && left == MeshLandscapeType.MOUNTAIN)) {
 			return ELandscapeType.MOUNTAINBORDER;
 
 		} else if ((left == MeshLandscapeType.SEA && right == MeshLandscapeType.GRASS)
-		        || (right == MeshLandscapeType.SEA && left == MeshLandscapeType.GRASS)) {
+				|| (right == MeshLandscapeType.SEA && left == MeshLandscapeType.GRASS)) {
 			return ELandscapeType.SAND;
 		} else {
 			return convert(left);

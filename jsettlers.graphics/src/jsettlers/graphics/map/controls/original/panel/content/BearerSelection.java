@@ -43,16 +43,16 @@ public class BearerSelection implements IContentProvider {
 	}
 
 	private void drawButtongroup(float bottom, OriginalImageLink imageLink,
-	        EMovableType type) {
+			EMovableType type) {
 		UIPanel icon = new UIPanel();
 		icon.setBackground(imageLink);
 
 		UILabeledButton convert1 =
-		        new UILabeledButton(Labels.getString("convert_1_to_" + type),
-		                new ConvertAction(type, (short) 1));
+				new UILabeledButton(Labels.getString("convert_1_to_" + type),
+						new ConvertAction(type, (short) 1));
 		UILabeledButton convertall =
-		        new UILabeledButton(Labels.getString("convert_all_to_" + type),
-		                new ConvertAction(type, Short.MAX_VALUE));
+				new UILabeledButton(Labels.getString("convert_all_to_" + type),
+						new ConvertAction(type, Short.MAX_VALUE));
 
 		panel.addChild(icon, .1f, bottom, .3f, bottom + .2f);
 		panel.addChild(convert1, .3f, bottom + .1f, .9f, bottom + .2f);
@@ -70,11 +70,11 @@ public class BearerSelection implements IContentProvider {
 	}
 
 	@Override
-    public void displayBuildingBuild(EBuildingType type) {	    
-    }
+	public void displayBuildingBuild(EBuildingType type) {
+	}
 
 	@Override
-    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
-    }
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	}
 
 }

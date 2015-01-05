@@ -1,8 +1,7 @@
 package jsettlers.graphics.startscreen.interfaces;
 
 /**
- * This enum defines predefined messages that can be received with the
- * {@link IChatMessageListener}.
+ * This enum defines predefined messages that can be received with the {@link IChatMessageListener}.
  * 
  * @author Andreas Eberle
  */

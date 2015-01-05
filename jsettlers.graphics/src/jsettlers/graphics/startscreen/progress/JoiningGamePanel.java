@@ -12,19 +12,19 @@ public class JoiningGamePanel extends ProgressPanel implements IJoiningGameListe
 	private final IContentSetable contentSetable;
 
 	public JoiningGamePanel(IJoiningGame joiningGame,
-            IContentSetable contentSetable) {
+			IContentSetable contentSetable) {
 		this.contentSetable = contentSetable;
 		joiningGame.setListener(this);
-    }
+	}
 
 	@Override
-    public void joinProgressChanged(EProgressState state, float progress) {
+	public void joinProgressChanged(EProgressState state, float progress) {
 		setProgressState(state, progress);
-    }
+	}
 
 	@Override
-    public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
+	public void gameJoined(IJoinPhaseMultiplayerGameConnector connector) {
 		contentSetable.setContent(new JoinPhaseScreen(connector, contentSetable));
-    }
+	}
 
 }

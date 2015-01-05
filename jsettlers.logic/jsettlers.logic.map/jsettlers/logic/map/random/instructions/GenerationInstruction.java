@@ -8,38 +8,28 @@ import java.util.Random;
  * <p>
  * <h1>positions</h1>
  * <p>
- * Each instruction contains informations on where to perform the given changes
- * to:
+ * Each instruction contains informations on where to perform the given changes to:
  * <p>
- * the distance parameter (a range, e.g. 10..20) tells how far the object is
- * away from the center.
+ * the distance parameter (a range, e.g. 10..20) tells how far the object is away from the center.
  * <p>
- * The x and y parameters, which default to 0, tell the displacement of the
- * center seen from the players starting position.
+ * The x and y parameters, which default to 0, tell the displacement of the center seen from the players starting position.
  * <p>
  * <h1>count and size</h1>
  * <p>
- * The tight-parameter (default 0, never less) tells how many free tiles there
- * may be between two objects that have been created by this instruction, and
- * also how much space the objects should leave to other previously generated
- * objects..
+ * The tight-parameter (default 0, never less) tells how many free tiles there may be between two objects that have been created by this instruction,
+ * and also how much space the objects should leave to other previously generated objects..
  * <p>
- * The count parameter tells how many objects should be generated because of
- * this instruction.
+ * The count parameter tells how many objects should be generated because of this instruction.
  * <h1>Generation types</h1>
  * <p>
- * The generation type states what should be generated (map objects, ..). There
- * always has to be a type given that tells what type should be generated (tree,
- * stone, buildingtype, settlertype).
+ * The generation type states what should be generated (map objects, ..). There always has to be a type given that tells what type should be generated
+ * (tree, stone, buildingtype, settlertype).
  * <p>
  * <h1>randomness</h1>
  * <p>
- * Randomness is caused by giving ranges and sets to the parameters. E.g. 10..20
- * is evaluated to a random value between 10 and 20, STONE|TREE is either a
- * Stone or a tree. To weight the random choice it is also possible to use a key
- * multiple times: STONE|TREE|TREE means 33% stone and the rest tree,
- * 10..20|13..17|15 is also possible. Some values may not distribute this evenly
- * along the whole range or may add own restrictions.
+ * Randomness is caused by giving ranges and sets to the parameters. E.g. 10..20 is evaluated to a random value between 10 and 20, STONE|TREE is
+ * either a Stone or a tree. To weight the random choice it is also possible to use a key multiple times: STONE|TREE|TREE means 33% stone and the rest
+ * tree, 10..20|13..17|15 is also possible. Some values may not distribute this evenly along the whole range or may add own restrictions.
  * 
  * @author michael
  */
@@ -99,14 +89,14 @@ public abstract class GenerationInstruction {
 	}
 
 	public <T extends Enum<T>> T getParameter(String name, Random random,
-	        Class<T> type) {
+			Class<T> type) {
 		try {
 			return Enum.valueOf(type, getParameter(name, random).toUpperCase());
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("The value "
-			        + getParameter(name, random) + " for parameter " + name
-			        + " is not compatible with the given enum type "
-			        + type.getName() + ".");
+					+ getParameter(name, random) + " for parameter " + name
+					+ " is not compatible with the given enum type "
+					+ type.getName() + ".");
 		}
 	}
 
@@ -134,7 +124,7 @@ public abstract class GenerationInstruction {
 			return new PlayerRiverInstruction();
 		} else {
 			throw new IllegalArgumentException(typeName
-			        + " is no valid instruction type");
+					+ " is no valid instruction type");
 		}
 	}
 }

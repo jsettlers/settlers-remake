@@ -43,10 +43,10 @@ public class CircleLine {
 	public double getDistanceOf(int x, int y) {
 		int dx = x - startx;
 		int dy = y - starty;
-		
+
 		double t = directionx * dx + directiony * dy;
 		if (t < 0) {
-			//check distance to start circle
+			// check distance to start circle
 			return MapCircle.getDistance(x, y, startx, starty);
 		} else if (t > length) {
 			// after end circle

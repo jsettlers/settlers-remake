@@ -9,45 +9,45 @@ import jsettlers.graphics.utils.UIPanel;
 
 public class BuildingBuildContent implements ContentFactory {
 	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
-	        EBuildingType.LUMBERJACK,
-	        EBuildingType.SAWMILL,
-	        EBuildingType.STONECUTTER,
-	        EBuildingType.FORESTER,
-	        EBuildingType.IRONMINE,
-	        EBuildingType.IRONMELT,
-	        EBuildingType.GOLDMINE,
-	        EBuildingType.GOLDMELT,
-	        EBuildingType.COALMINE,
-	        EBuildingType.TOOLSMITH,
-	        EBuildingType.CHARCOAL_BURNER
+			EBuildingType.LUMBERJACK,
+			EBuildingType.SAWMILL,
+			EBuildingType.STONECUTTER,
+			EBuildingType.FORESTER,
+			EBuildingType.IRONMINE,
+			EBuildingType.IRONMELT,
+			EBuildingType.GOLDMINE,
+			EBuildingType.GOLDMELT,
+			EBuildingType.COALMINE,
+			EBuildingType.TOOLSMITH,
+			EBuildingType.CHARCOAL_BURNER
 	};
 	public static final EBuildingType[] foodBuildings = new EBuildingType[] {
-	        EBuildingType.FISHER,
-	        EBuildingType.FARM,
-	        EBuildingType.PIG_FARM,
-	        EBuildingType.MILL,
-	        EBuildingType.SLAUGHTERHOUSE,
-	        EBuildingType.BAKER,
-	        EBuildingType.WATERWORKS,
-	        EBuildingType.DONKEY_FARM,
-	        EBuildingType.WINEGROWER
+			EBuildingType.FISHER,
+			EBuildingType.FARM,
+			EBuildingType.PIG_FARM,
+			EBuildingType.MILL,
+			EBuildingType.SLAUGHTERHOUSE,
+			EBuildingType.BAKER,
+			EBuildingType.WATERWORKS,
+			EBuildingType.DONKEY_FARM,
+			EBuildingType.WINEGROWER
 	};
 	public static final EBuildingType[] militaryBuildings =
-	        new EBuildingType[] {
-	                EBuildingType.TOWER,
-	                EBuildingType.BIG_TOWER,
-	                EBuildingType.CASTLE,
-	                EBuildingType.LOOKOUT_TOWER,
-	                EBuildingType.WEAPONSMITH,
-	                EBuildingType.BARRACK,
-	                EBuildingType.DOCKYARD,
-	                EBuildingType.HOSPITAL
-	        };
+			new EBuildingType[] {
+					EBuildingType.TOWER,
+					EBuildingType.BIG_TOWER,
+					EBuildingType.CASTLE,
+					EBuildingType.LOOKOUT_TOWER,
+					EBuildingType.WEAPONSMITH,
+					EBuildingType.BARRACK,
+					EBuildingType.DOCKYARD,
+					EBuildingType.HOSPITAL
+			};
 	public static final EBuildingType[] socialBuildings = new EBuildingType[] {
-	        EBuildingType.SMALL_LIVINGHOUSE,
-	        EBuildingType.MEDIUM_LIVINGHOUSE,
-	        EBuildingType.BIG_LIVINGHOUSE,
-	        EBuildingType.STOCK,
+			EBuildingType.SMALL_LIVINGHOUSE,
+			EBuildingType.MEDIUM_LIVINGHOUSE,
+			EBuildingType.BIG_LIVINGHOUSE,
+			EBuildingType.STOCK,
 	};
 
 	private static final int ROWS = 6;
@@ -56,7 +56,7 @@ public class BuildingBuildContent implements ContentFactory {
 	private final UIPanel panel;
 
 	private final ArrayList<BuildingButton> buttons =
-	        new ArrayList<BuildingButton>();
+			new ArrayList<BuildingButton>();
 
 	private BuildingBuildContent(EBuildingType[] buildings) {
 		panel = new UIPanel();
@@ -69,7 +69,7 @@ public class BuildingBuildContent implements ContentFactory {
 			int row = i / COLUMNS;
 			int col = i % COLUMNS;
 			panel.addChild(button, col * colWidth, 1 - (row + 1) * rowHeight,
-			        (col + 1) * colWidth, 1 - row * rowHeight);
+					(col + 1) * colWidth, 1 - row * rowHeight);
 			buttons.add(button);
 		}
 	}
@@ -106,13 +106,13 @@ public class BuildingBuildContent implements ContentFactory {
 	public static BuildingBuildContent getSocial() {
 		return new BuildingBuildContent(socialBuildings);
 	}
-	
+
 	@Override
 	public void displayBuildingBuild(EBuildingType type) {
 		setActiveBuilding(type);
 	}
 
 	@Override
-    public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {	    
-    }
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	}
 }

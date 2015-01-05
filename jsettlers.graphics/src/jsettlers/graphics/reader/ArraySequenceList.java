@@ -11,12 +11,12 @@ public class ArraySequenceList<T extends Image> implements SequenceList<T> {
 	}
 
 	@Override
-    public Sequence<T> get(int index) {
-        return images[index];
-    }
+	public Sequence<T> get(int index) {
+		return images[index];
+	}
 
 	@Override
-    public int size() {
-        return images.length;
-    }
+	public int size() {
+		return images.length;
+	}
 }
