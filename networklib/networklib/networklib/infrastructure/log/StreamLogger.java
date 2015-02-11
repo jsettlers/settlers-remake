@@ -24,7 +24,12 @@ public class StreamLogger extends Logger {
 	}
 
 	public StreamLogger(String loggerId, File logFile) throws FileNotFoundException {
-		this(loggerId, new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile)), true));
+		this(loggerId, createStream(logFile));
+	}
+
+	private static PrintStream createStream(File logFile) throws FileNotFoundException {
+		logFile.getParentFile().mkdirs();
+		return new PrintStream(new BufferedOutputStream(new FileOutputStream(logFile)), true);
 	}
 
 	private synchronized void println(String msg) {

@@ -117,5 +117,4 @@ public final class SimpleMaterialRequestPriorityQueue extends AbstractMaterialRe
 			return false;
 		return true;
 	}
-
 }

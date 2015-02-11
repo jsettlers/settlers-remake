@@ -131,43 +131,6 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-
-		@SuppressWarnings("unchecked")
-		DoubleLinkedList<T> other = (DoubleLinkedList<T>) obj;
-		if (size != other.size)
-			return false;
-
-		if (head == null) {
-			if (other.head != null)
-				return false;
-		} else if (!head.equals(other.head)) {
-			return false;
-		} else {
-			T thisCurr = head.next;
-			T otherCurr = other.head.next;
-			for (int i = 0; i < size; i++) {
-				if (thisCurr == null) {
-					if (otherCurr != null)
-						return false;
-				} else if (!thisCurr.equals(otherCurr))
-					return false;
-
-				thisCurr = thisCurr.next;
-				otherCurr = otherCurr.next;
-			}
-		}
-
-		return true;
-	}
-
-	@Override
 	public Iterator<T> iterator() {
 		return new DoubleLinkedListIterator<T>(this);
 	}
@@ -188,9 +151,32 @@ public final class DoubleLinkedList<T extends DoubleLinkedListItem<T>> implement
 		clear();
 	}
 
-	// public void simpleSanityCheck() {
-	// if (size == 0 && (head.next != head || head.prev != head)) {
-	// System.err.println("LIST IS FUCKED UP");
-	// }
-	// }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((head == null) ? 0 : head.hashCode());
+		result = prime * result + size;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DoubleLinkedList<?> other = (DoubleLinkedList<?>) obj;
+		if (head == null) {
+			if (other.head != null)
+				return false;
+		} else if (!head.equals(other.head))
+			return false;
+		if (size != other.size)
+			return false;
+		return true;
+	}
+
 }
