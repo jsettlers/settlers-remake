@@ -1,4 +1,4 @@
-package jsettlers.graphics.generation;
+package jsettlers.graphics.image.texturegeneration;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -24,8 +24,7 @@ import jsettlers.graphics.reader.AdvancedDatFileReader;
  */
 public final class TextureGenerator {
 
-	private static final Pattern ORIGINAL_SETTLER = Pattern
-			.compile("original_\\d+_SETTLER_\\d+_\\d+");
+	private static final Pattern ORIGINAL_SETTLER = Pattern.compile("original_\\d+_SETTLER_\\d+_\\d+");
 
 	private static class ImageData {
 		ImageDataPrivider data = null;
@@ -42,8 +41,7 @@ public final class TextureGenerator {
 					String toLoad = imagesToLoad.take();
 					ImageData data = addIdToTexture(toLoad);
 					imagesToStore.put(data);
-					System.out.println("Time for loading " + data.name + ": "
-							+ (System.currentTimeMillis() - start));
+					System.out.println("Time for loading " + data.name + ": " + (System.currentTimeMillis() - start));
 				}
 			} catch (InterruptedException e) {
 			}
@@ -58,8 +56,7 @@ public final class TextureGenerator {
 					long start = System.currentTimeMillis();
 					ImageData data = imagesToStore.take();
 					storeImageData(data);
-					System.out.println("Time for storing " + data.name + ": "
-							+ (System.currentTimeMillis() - start));
+					System.out.println("Time for storing " + data.name + ": " + (System.currentTimeMillis() - start));
 				}
 			} catch (InterruptedException e) {
 			}
@@ -201,8 +198,7 @@ public final class TextureGenerator {
 	private TexturePosition addAsNewImage(ImageDataPrivider data, int texture)
 			throws IOException {
 		int size = getNextPOT(Math.max(data.getWidth(), data.getHeight()));
-		TextureFile file = new TextureFile(
-				new File(outDirectory, texture + ""), size, size);
+		TextureFile file = new TextureFile(new File(outDirectory, texture + ""), size, size);
 		TexturePosition position = file.addImage(data.getData(),
 				data.getWidth());
 		file.write();

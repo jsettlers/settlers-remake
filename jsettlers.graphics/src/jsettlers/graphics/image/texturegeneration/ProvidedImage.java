@@ -1,4 +1,4 @@
-package jsettlers.graphics.generation;
+package jsettlers.graphics.image.texturegeneration;
 
 import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
