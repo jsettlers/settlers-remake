@@ -8,3 +8,4 @@ bin
 /jsettlers.main.android/gen/*
 /jsettlers.main.android/assets/*
 
+/jsettlers.common/resources/logs
