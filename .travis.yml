@@ -11,4 +11,4 @@ env:
 # - TARGET=runUnitTests
 # - TARGET=runAutosimTests
 
-script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.xml $TARGET
+script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET
