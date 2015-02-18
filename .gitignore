@@ -7,5 +7,5 @@ bin
 /jsettlers.common/resources/cache
 /jsettlers.main.android/gen/*
 /jsettlers.main.android/assets/*
-
 /jsettlers.common/resources/logs
+/jsettlers.main.swing/target/*
