@@ -7,7 +7,11 @@
 	<property name="targetResources" location="${target}/resources" />
 	<property name="targetLibFolderName" value="jsettlers_lib" />
 	<property name="targetLibs" location="${target}/${targetLibFolderName}" />
+		
+	<property name="targetZip" location="jsettlers.main.swing/target/jsettlers.zip" />
+	<property name="targetTar" location="jsettlers.main.swing/target/jsettlers.tar.bz2" />
 
+	
 	<property name="sourceResources" location="jsettlers.common/resources" />
 	<property name="sourceLibs" location="go.graphics.swing/libs" />
 
@@ -56,5 +60,18 @@
 		</copy>
 	</target>
 
-	<target name="buildSwing" depends="createSwingJar,copySwingResources" />
+	<target name="buildSwingBundles" depends="createSwingJar,copySwingResources">
+		<delete file="${targetZip}" />
+		<delete file="${targetTar}" />
+
+		<zip destfile="${targetZip}" basedir="${target}" />
+		<tar destfile="${targetTar}" longfile="gnu" compression="bzip2">
+			<tarfileset dir="${target}">
+				<include name="**" />
+			</tarfileset>
+		</tar>
+	</target>
+	
+	
+	<target name="buildSwing" depends="createSwingJar,copySwingResources,buildSwingBundles" />
 </project>
