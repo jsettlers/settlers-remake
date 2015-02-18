@@ -1,6 +1,5 @@
 package jsettlers.logic.map.save.loader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
