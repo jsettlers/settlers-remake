@@ -1,5 +1,6 @@
 package jsettlers.main.android.fragments;
 
+import jsettlers.common.CommitInfo;
 import jsettlers.main.android.R;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -63,7 +64,7 @@ public class StartScreenFragment extends JsettlersFragment {
 		});
 
 		TextView rev = (TextView) view.findViewById(R.id.startscreen_rev);
-		rev.setText("build: ???"); // FIXME display build number
+		rev.setText("build: " + CommitInfo.COMMIT_HASH_SHORT);
 	}
 
 	private void showNetworkFragment(JsettlersFragment joinFragement) {
