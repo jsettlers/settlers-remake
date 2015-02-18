@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="buildSwing" name="Build script of Swing Version of JSettlers"
+	basedir="../../">
+
+	<!-- set global properties for this build -->
+	<property name="target" location="jsettlers.main.swing/target/jsettlers" />
+	<property name="targetResources" location="${target}/resources" />
+	<property name="targetLibFolderName" value="jsettlers_lib" />
+	<property name="targetLibs" location="${target}/${targetLibFolderName}" />
+
+	<property name="sourceResources" location="jsettlers.common/resources" />
+	<property name="sourceLibs" location="go.graphics.swing/libs" />
+
+
+	<!--ANT 1.7 is required -->
+	<target name="createSwingJar">
+		<jar destfile="${target}/jsettlers.jar">
+			<manifest>
+				<attribute name="Main-Class"
+					value="jsettlers.main.swing.SwingManagedJSettlers" />
+				<attribute name="Class-Path"
+					value=". ${targetLibFolderName}/gluegen-rt.jar ${targetLibFolderName}/jogl-all.jar" />
+			</manifest>
+			<fileset dir="jsettlers.main.swing/bin" />
+			<fileset dir="go.graphics/bin" />
+			<fileset dir="jsettlers.common/bin" />
+			<fileset dir="jsettlers.logic/bin" />
+			<fileset dir="jsettlers.graphics/bin" />
+			<fileset dir="jsettlers.algorithms/bin" />
+			<fileset dir="networklib/bin" />
+			<fileset dir="jsettlers.graphics.swing/bin" />
+			<fileset dir="go.graphics.swing/bin" />
+		</jar>
+
+		<delete dir="${targetLibs}" />
+		<copy todir="${targetLibs}">
+			<fileset dir="${sourceLibs}" />
+		</copy>
+	</target>
+
+
+	<target name="copySwingResources">
+		<delete dir="${targetResources}" />
+
+		<copy todir="${targetResources}/buildings">
+			<fileset dir="${sourceResources}/buildings" />
+		</copy>
+		<copy todir="${targetResources}/images">
+			<fileset dir="${sourceResources}/images" />
+		</copy>
+		<copy todir="${targetResources}/localization">
+			<fileset dir="${sourceResources}/localization" />
+		</copy>
+		<copy todir="${targetResources}/maps">
+			<fileset dir="${sourceResources}/maps" />
+		</copy>
+	</target>
+
+	<target name="buildSwing" depends="createSwingJar,copySwingResources" />
+</project>

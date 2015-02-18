@@ -49,7 +49,12 @@ public class SwingManagedJSettlers {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 
-		setupResourceManagers(argsMap, new File("config.prp"));
+		String configFilePath = "config.prp";
+		if (argsMap.containsKey("config")) {
+			configFilePath = argsMap.get("config");
+		}
+
+		setupResourceManagers(argsMap, new File(configFilePath));
 		loadDebugSettings(argsMap);
 
 		JSettlersScreen content = startGui();
