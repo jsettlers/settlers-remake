@@ -9,3 +9,5 @@ bin
 /jsettlers.main.android/assets/*
 /jsettlers.common/resources/logs
 /jsettlers.main.swing/target/*
+/jsettlers.common/gen
+.externalToolBuilders

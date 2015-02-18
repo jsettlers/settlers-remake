@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="findCommit" default="createCommitInfo" basedir="../">
+
+	<!-- ================================= 
+          target: extract-rev             
+         ================================= -->
+	<target name="createCommitInfo" depends="git.findCommit">
+		<echo file="gen/jsettlers/common/CommitInfo.java"><![CDATA[ 
+package jsettlers.common;
+
+public final class CommitInfo {
+	/**
+	 * The current commit this was build with, as extracted from git.
+	 */
+	public static final String COMMIT_HASH_SHORT = "${repository.version.short}";
+
+	private CommitInfo() {
+	}
+}
+]]>
+		</echo>
+	</target>
+	
+	
+
+	<target name="git.findCommit" description="Stores short git commit hash in ${repository.version.short}">
+	    <exec executable="git" outputproperty="git.revision" failifexecutionfails="false" errorproperty="">
+	        <arg value="rev-parse"/>
+	        <arg value="--short"/>
+	        <arg value="HEAD"/>
+	    </exec>
+	    <condition property="repository.version.short" value="${git.revision}" else="unknown">
+	        <and>
+	            <isset property="git.revision"/>
+	            <length string="${git.revision}" trim="yes" length="0" when="greater"/>
+	        </and>
+	    </condition>
+	</target>
+	
+</project>

@@ -14,6 +14,7 @@ import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
+import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
@@ -37,7 +38,7 @@ import networklib.client.OfflineNetworkConnector;
  */
 public class SwingManagedJSettlers {
 
-	private static final String BUILD = "build - ???";
+	private static final String BUILD = "commit: " + CommitInfo.COMMIT_HASH_SHORT;
 
 	/**
 	 * @param args
