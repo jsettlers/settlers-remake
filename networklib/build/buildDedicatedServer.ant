@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="buildDedicatedServer" basedir="../../">
-	<import file="build.ant" as="compile" />
 
-	<target name="buildDedicatedServer" depends="compile.build">
-        <jar destfile="networklib/target/DedicatedJSettlersServer.jar">
-            <manifest>
-                <attribute name="Main-Class" value="networklib.server.DedicatedServerApp"/>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="networklib/bin"/>
-        </jar>
-    </target>
+	<target name="buildDedicatedServer">
+		<ant antfile="build/build.ant" dir="networklib" inheritAll="false" target="build" />
+
+		<jar destfile="networklib/target/DedicatedJSettlersServer.jar">
+			<manifest>
+				<attribute name="Main-Class" value="networklib.server.DedicatedServerApp" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="networklib/bin" />
+		</jar>
+	</target>
 </project>

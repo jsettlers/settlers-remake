@@ -15,6 +15,7 @@
     <property name="jsettlers.main.swing.location" value="../jsettlers.main.swing"/>
     <property name="jsettlers.mapcreator.location" value="../jsettlers.mapcreator"/>
     <property name="jsettlers.tests.location" value="../jsettlers.tests"/>
+    <property name="ECLIPSE_HOME" value="../../../luna64/"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
@@ -25,6 +26,7 @@
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
+                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -44,24 +46,77 @@
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
         <ant antfile="build/build.ant" dir="${go.graphics.android.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${go.graphics.android.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${go.graphics.android.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.graphics.androidui.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.graphics.androidui.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.graphics.androidui.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.main.android.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.main.android.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.main.android.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="build"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
     </target>
 </project>

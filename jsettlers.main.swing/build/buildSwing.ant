@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="buildSwing" name="Build script of Swing Version of JSettlers" basedir="../../">
 
-	<import file="build.ant" as="compile" />
-
-
 	<!-- set global properties for this build -->
 	<property name="targetLocation" location="jsettlers.main.swing/target/jsettlers" />
 	<property name="targetResources" location="${targetLocation}/resources" />
@@ -19,8 +16,10 @@
 
 
 	<!-- define targets -->
-	
-	<target name="createSwingJar" depends="compile.build">
+
+	<target name="createSwingJar">
+		<ant antfile="build/build.ant" dir="jsettlers.main.swing" inheritAll="false" target="build" />
+
 		<jar destfile="${targetLocation}/jsettlers.jar">
 			<manifest>
 				<attribute name="Main-Class" value="jsettlers.main.swing.SwingManagedJSettlers" />

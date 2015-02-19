@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="buildAll" name="Build script of of JSettlers">
+<project default="buildAll" name="Build script of of JSettlers" >
 
 	<import file="jsettlers.main.swing/build/buildSwing.ant" as="swing"/>
 	<import file="networklib/build/buildDedicatedServer.ant" as="server"/>
