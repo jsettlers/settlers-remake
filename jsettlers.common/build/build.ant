@@ -3,7 +3,11 @@
               Any modifications will be overwritten.
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="jsettlers.common">
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="jsettlers.common">
+	
+	<import file="findCommit.ant" as="findCommit" />
+	
     <property environment="env"/>
     <property name="jsettlers.algorithms.location" value="../jsettlers.algorithms"/>
     <property name="jsettlers.buildingcreator.location" value="../jsettlers.buildingcreator"/>
@@ -21,7 +25,7 @@
     <path id="jsettlers.common.classpath">
         <pathelement location="bin"/>
     </path>
-    <target name="init">
+    <target name="init" depends="findCommit.createCommitInfo">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
