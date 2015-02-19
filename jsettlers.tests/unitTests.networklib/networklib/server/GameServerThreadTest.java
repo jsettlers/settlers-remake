@@ -27,13 +27,13 @@ public class GameServerThreadTest {
 
 		Thread.sleep(100);
 		assertTrue(gameServer.isAlive());
-		assertTrue(gameServer.isLandBroadcasterAlive());
+		assertTrue(gameServer.isLanBroadcasterAlive());
 
 		gameServer.shutdown();
 
 		Thread.sleep(100);
 		assertFalse(gameServer.isAlive());
-		assertFalse(gameServer.isLandBroadcasterAlive());
+		assertFalse(gameServer.isLanBroadcasterAlive());
 	}
 
 	@Test

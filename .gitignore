@@ -11,3 +11,5 @@ bin
 /jsettlers.main.swing/target/*
 /jsettlers.common/gen
 .externalToolBuilders
+target
+/networklib/logs
