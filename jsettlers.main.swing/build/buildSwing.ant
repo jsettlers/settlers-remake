@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="buildSwing" name="Build script of Swing Version of JSettlers"
-	basedir="../../">
+<project default="buildSwing" name="Build script of Swing Version of JSettlers" basedir="../../">
+
+	<import file="build.ant" as="compile" />
+
 
 	<!-- set global properties for this build -->
-	<property name="target" location="jsettlers.main.swing/target/jsettlers" />
-	<property name="targetResources" location="${target}/resources" />
-	<property name="targetLibFolderName" value="jsettlers_lib" />
-	<property name="targetLibs" location="${target}/${targetLibFolderName}" />
-		
+	<property name="targetLocation" location="jsettlers.main.swing/target/jsettlers" />
+	<property name="targetResources" location="${targetLocation}/resources" />
+	<property name="targetLibFolderName" value="libs" />
+	<property name="targetLibs" location="${targetLocation}/${targetLibFolderName}" />
+
 	<property name="targetZip" location="jsettlers.main.swing/target/jsettlers.zip" />
 	<property name="targetTar" location="jsettlers.main.swing/target/jsettlers.tar.bz2" />
 
-	
+
 	<property name="sourceResources" location="jsettlers.common/resources" />
 	<property name="sourceLibs" location="go.graphics.swing/libs" />
 
 
-	<!--ANT 1.7 is required -->
-	<target name="createSwingJar">
-		<jar destfile="${target}/jsettlers.jar">
+	<!-- define targets -->
+	
+	<target name="createSwingJar" depends="compile.build">
+		<jar destfile="${targetLocation}/jsettlers.jar">
 			<manifest>
-				<attribute name="Main-Class"
-					value="jsettlers.main.swing.SwingManagedJSettlers" />
-				<attribute name="Class-Path"
-					value=". ${targetLibFolderName}/gluegen-rt.jar ${targetLibFolderName}/jogl-all.jar" />
+				<attribute name="Main-Class" value="jsettlers.main.swing.SwingManagedJSettlers" />
+				<attribute name="Class-Path" value=". ${targetLibFolderName}/gluegen-rt.jar ${targetLibFolderName}/jogl-all.jar" />
 			</manifest>
 			<fileset dir="jsettlers.main.swing/bin" />
 			<fileset dir="go.graphics/bin" />
@@ -64,14 +65,14 @@
 		<delete file="${targetZip}" />
 		<delete file="${targetTar}" />
 
-		<zip destfile="${targetZip}" basedir="${target}" />
+		<zip destfile="${targetZip}" basedir="${targetLocation}" />
 		<tar destfile="${targetTar}" longfile="gnu" compression="bzip2">
-			<tarfileset dir="${target}">
+			<tarfileset dir="${targetLocation}">
 				<include name="**" />
 			</tarfileset>
 		</tar>
 	</target>
-	
-	
+
+
 	<target name="buildSwing" depends="createSwingJar,copySwingResources,buildSwingBundles" />
 </project>

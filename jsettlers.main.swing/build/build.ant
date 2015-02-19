@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="../../" default="build" name="jsettlers.main.swing">
+	
+	<property name="jsettlers.buildingcreator.location" value="jsettlers.buildingcreator" />
+	<property name="jsettlers.mapcreator.location" value="jsettlers.mapcreator" />
+	<property name="jsettlers.tests.location" value="jsettlers.tests" />
+	<property name="go.graphics.location" location="go.graphics" />
+	<property name="go.graphics.swing.location" value="go.graphics.swing" />
+	<property name="jsettlers.common.location" value="jsettlers.common" />
+	<property name="jsettlers.graphics.location" value="jsettlers.graphics" />
+	<property name="jsettlers.graphics.swing.location" value="jsettlers.graphics.swing" />
+	<property name="jsettlers.main.swing" value="jsettlers.main.swing" />
+	<property name="src" value="${jsettlers.main.swing}/src" />
+	<property name="bin" value="${jsettlers.main.swing}/bin" />
+	<property name="networklib.location" value="networklib" />
+	<property name="jsettlers.algorithms.location" value="jsettlers.algorithms" />
+	<property name="jsettlers.logic.location" value="jsettlers.logic" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.7" />
+	<property name="source" value="1.7" />
+
+	<path id="go.graphics.classpath">
+		<pathelement location="${go.graphics.location}/bin" />
+	</path>
+	<path id="jsettlers.common.classpath">
+		<pathelement location="${jsettlers.common.location}/bin" />
+	</path>
+	<path id="jsettlers.graphics.classpath">
+		<pathelement location="${jsettlers.graphics.location}/bin" />
+		<path refid="jsettlers.common.classpath" />
+		<path refid="go.graphics.classpath" />
+	</path>
+	<path id="networklib.classpath">
+		<pathelement location="${networklib.location}/bin" />
+	</path>
+	<path id="jsettlers.algorithms.classpath">
+		<pathelement location="${jsettlers.algorithms.location}/bin" />
+		<path refid="jsettlers.common.classpath" />
+		<path refid="networklib.classpath" />
+	</path>
+	<path id="jsettlers.logic.classpath">
+		<pathelement location="${jsettlers.logic.location}/bin" />
+		<path refid="jsettlers.graphics.classpath" />
+		<path refid="jsettlers.common.classpath" />
+		<path refid="jsettlers.algorithms.classpath" />
+		<path refid="networklib.classpath" />
+	</path>
+	<path id="go.graphics.swing.classpath">
+		<pathelement location="${go.graphics.swing.location}/bin" />
+		<path refid="go.graphics.classpath" />
+		<pathelement location="${go.graphics.swing.location}/libs/gluegen-rt.jar" />
+		<pathelement location="${go.graphics.swing.location}/libs/jogl-all.jar" />
+	</path>
+	<path id="jsettlers.graphics.swing.classpath">
+		<pathelement location="${jsettlers.graphics.swing.location}/bin" />
+		<path refid="go.graphics.classpath" />
+		<path refid="go.graphics.swing.classpath" />
+		<path refid="jsettlers.common.classpath" />
+		<path refid="jsettlers.graphics.classpath" />
+	</path>
+	<path id="jsettlers.main.swing.classpath">
+		<pathelement location="${bin}" />
+		<path refid="go.graphics.classpath" />
+		<path refid="jsettlers.common.classpath" />
+		<path refid="jsettlers.logic.classpath" />
+		<path refid="jsettlers.graphics.classpath" />
+		<path refid="jsettlers.graphics.swing.classpath" />
+		<path refid="go.graphics.swing.classpath" />
+		<path refid="networklib.classpath" />
+	</path>
+	<target name="init">
+		<mkdir dir="${bin}" />
+		<copy includeemptydirs="false" todir="${bin}">
+			<fileset dir="${src}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="${bin}" />
+	</target>
+	<target depends="clean" name="cleanall">
+		<ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean" />
+	</target>
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects">
+		<ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${go.graphics.swing.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="build-project" />
+	</target>
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
+			<src path="${src}" />
+			<classpath refid="jsettlers.main.swing.classpath" />
+		</javac>
+	</target>
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+		<ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="build" />
+		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build" />
+		<ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="build" />
+	</target>
+</project>
