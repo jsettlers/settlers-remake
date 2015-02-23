@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="buildAll" name="Build script of of JSettlers" >
 
-	<target name="buildAll">
+	<target name="buildSwing">
 		<ant antfile="jsettlers.main.swing/build/buildSwing.ant" useNativeBasedir="true" inheritAll="false" target="cleanBuildSwing" />
+	</target>
+	
+	<target name="buildDedicatedServer">
 		<ant antfile="networklib/build/buildDedicatedServer.ant" useNativeBasedir="true" inheritAll="false" target="buildDedicatedServer" />
 	</target>
+
+	<target name="buildAll" depends="buildSwing,buildDedicatedServer" />
 </project>
