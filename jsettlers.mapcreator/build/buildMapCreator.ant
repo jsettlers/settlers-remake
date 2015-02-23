@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="createMapCreatorJar" name="Create runnable jar of the JSettlers MapCreator" basedir="../../">
+
+	<target name="createMapCreatorJar">
+		<ant antfile="jsettlers.mapcreator/build/build.ant" useNativeBasedir="true" inheritAll="false" target="build" />
+		
+		<jar destfile="target/swing/JSettlers/MapCreator.jar">
+			<manifest>
+				<attribute name="Main-Class" value="jsettlers.mapcreator.main.MapCreatorApp" />
+				<attribute name="Class-Path" value=". libs/gluegen-rt.jar libs/jogl-all.jar" />
+			</manifest>
+			<fileset dir="jsettlers.mapcreator/bin" />
+			<fileset dir="jsettlers.common/bin" />
+			<fileset dir="jsettlers.graphics/bin" />
+			<fileset dir="go.graphics/bin" />
+			<fileset dir="go.graphics.swing/bin" />
+			<fileset dir="jsettlers.main.swing/bin" />
+			<fileset dir="jsettlers.logic/bin" />
+			<fileset dir="jsettlers.algorithms/bin" />
+			<fileset dir="networklib/bin" />
+			<fileset dir="jsettlers.graphics.swing/bin" />
+		</jar>
+	</target>
+</project>

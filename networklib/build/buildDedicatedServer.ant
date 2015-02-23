@@ -2,9 +2,9 @@
 <project default="buildDedicatedServer" basedir="../../">
 
 	<target name="buildDedicatedServer">
-		<ant antfile="build/build.ant" dir="networklib" inheritAll="false" target="build" />
+		<ant antfile="networklib/build/build.ant" useNativeBasedir="true" inheritAll="false" target="build" />
 
-		<jar destfile="networklib/target/DedicatedJSettlersServer.jar">
+		<jar destfile="target/server/DedicatedJSettlersServer.jar">
 			<manifest>
 				<attribute name="Main-Class" value="networklib.server.DedicatedServerApp" />
 				<attribute name="Class-Path" value="." />

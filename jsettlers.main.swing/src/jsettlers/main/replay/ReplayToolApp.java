@@ -38,7 +38,7 @@ public class ReplayToolApp {
 	public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 		SwingManagedJSettlers.loadDebugSettings(argsMap);
-		SwingManagedJSettlers.setupResourceManagers(argsMap, new File("config.prp"));
+		SwingManagedJSettlers.setupResourceManagers(argsMap, "config.prp");
 
 		int targetGameTime = Integer.valueOf(argsMap.get("targetTime")) * 60 * 1000;
 
