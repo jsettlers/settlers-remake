@@ -63,8 +63,8 @@ public class PacketSerializationTest {
 	public static Collection<Object[]> data() {
 		Object[][] data = new Object[][] {
 				{ new EmptyPacket(), EmptyPacket.DEFAULT_DESERIALIZER },
-				{ new PlayerInfoPacket("IDBLA82348-#ülü34r", "NameBKUIH893428())/\"§/", true), d(PlayerInfoPacket.class) },
-				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(§\"(/!=°", "authorId8unsdkjfn8932", "authorName uHh89023u9h", 6),
+				{ new PlayerInfoPacket("IDBLA82348-#ï¿½lï¿½34r", "NameBKUIH893428())/\"ï¿½/", true), d(PlayerInfoPacket.class) },
+				{ new MapInfoPacket("id<30u9Hjdi w3", "Nameo8/(ï¿½\"(/!=ï¿½", "authorId8unsdkjfn8932", "authorName uHh89023u9h", 6),
 						d(MapInfoPacket.class) },
 				{ createMatchInfoPacket(), d(MatchInfoPacket.class) },
 				{ new ArrayOfMatchInfosPacket(new MatchInfoPacket[0]), d(ArrayOfMatchInfosPacket.class) },
@@ -74,29 +74,29 @@ public class PacketSerializationTest {
 						d(OpenNewMatchPacket.class) },
 				{ new RejectPacket(NetworkConstants.ENetworkMessage.UNAUTHORIZED, NetworkConstants.ENetworkKey.IDENTIFY_USER), d(RejectPacket.class) },
 				{ new MatchStartPacket(createMatchInfoPacket(), 23424L), d(MatchStartPacket.class) },
-				{ new MatchInfoUpdatePacket(ENetworkMessage.NO_LISTENER_FOUND, new PlayerInfoPacket("IDBLA82348-#ülü34r",
-						"NameBKUIH893428())/\"§/", true), createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
+				{ new MatchInfoUpdatePacket(ENetworkMessage.NO_LISTENER_FOUND, new PlayerInfoPacket("IDBLA82348-#ï¿½lï¿½34r",
+						"NameBKUIH893428())/\"ï¿½/", true), createMatchInfoPacket()), d(MatchInfoUpdatePacket.class) },
 				{ new TimeSyncPacket(23424), d(TimeSyncPacket.class) },
 
 				{ new ServersideTaskPacket("sdfsfsdf".getBytes()), d(ServersideTaskPacket.class) },
 				{ new ServersideSyncTasksPacket(23, Arrays.asList(new ServersideTaskPacket("dsfjsfj".getBytes()),
 						new ServersideTaskPacket("ehgdhd".getBytes()))), d(ServersideSyncTasksPacket.class) },
 
-				{ new TestTaskPacket("tesdfköäl9/&%/%&\"\\u8u23jo", 23424, (byte) -2), TaskPacket.DEFAULT_DESERIALIZER },
+				{ new TestTaskPacket("tesdfkï¿½ï¿½l9/&%/%&\"\\u8u23jo", 23424, (byte) -2), TaskPacket.DEFAULT_DESERIALIZER },
 				{ new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
-						(TaskPacket) new TestTaskPacket("dsfsää#öüdsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) },
+						(TaskPacket) new TestTaskPacket("dsfsï¿½ï¿½#ï¿½ï¿½dsdf", 4345, (byte) 5))), d(SyncTasksPacket.class) },
 
 				{ new BooleanMessagePacket(true), d(BooleanMessagePacket.class) },
-				{ new ChatMessagePacket("authorId(, message)U)(Z", "message'**Ü##\"\\ppoisudf08u("), d(ChatMessagePacket.class) },
+				{ new ChatMessagePacket("authorId(, message)U)(Z", "message'**ï¿½##\"\\ppoisudf08u("), d(ChatMessagePacket.class) },
 
 				{ new PingPacket(2324L, -2349879879787987234L), d(PingPacket.class) },
-				{ new IdPacket("()Z(/§\\\"THKJNI+ü02i3ej"), d(IdPacket.class) }
+				{ new IdPacket("()Z(/ï¿½\\\"THKJNI+ï¿½02i3ej"), d(IdPacket.class) }
 		};
 		return Arrays.asList(data);
 	}
 
 	private static MatchInfoPacket createMatchInfoPacket() {
-		MapInfoPacket mapInfo = new MapInfoPacket("sdjfij", "sdfsdflksjdlfk", "sdflnnp0928u30894", "sdlkfkjlÖ:Ö_Ö", 5);
+		MapInfoPacket mapInfo = new MapInfoPacket("sdjfij", "sdfsdflksjdlfk", "sdflnnp0928u30894", "sdlkfkjlï¿½:ï¿½_ï¿½", 5);
 		PlayerInfoPacket[] players = new PlayerInfoPacket[] {
 				new PlayerInfoPacket("1dddsfsfd", "787(/(hdsfjhk2", true),
 				new PlayerInfoPacket("2lkkjsdofij", "0sdfsddfsfgw32dsfjhk2", false)

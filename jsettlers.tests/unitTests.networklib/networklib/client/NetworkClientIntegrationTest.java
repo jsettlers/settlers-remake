@@ -298,7 +298,7 @@ public class NetworkClientIntegrationTest {
 
 	private void testSendAndReceiveChatMessage(BufferingPacketReceiver<ChatMessagePacket> chatReceiver) throws IllegalStateException,
 			InterruptedException {
-		final String testMessage = "TestChatMessageäöülLÜÜÖLP?=))(=)(§\"\\`!)§$";
+		final String testMessage = "TestChatMessageï¿½ï¿½ï¿½lLï¿½ï¿½ï¿½LP?=))(=)(ï¿½\"\\`!)ï¿½$";
 		client1.sendChatMessage(testMessage);
 
 		assertEquals(0, chatReceiver.popBufferedPackets().size());

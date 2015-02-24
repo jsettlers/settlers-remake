@@ -164,7 +164,7 @@ public class ChannelTest {
 
 	@Test
 	public void testSendingMessageWithoutListener() throws Exception {
-		c1.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("sdfsfäüö", -2342));
+		c1.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("sdfsfï¿½ï¿½ï¿½", -2342));
 		c2.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("dsfs", 4234)); // test both channels
 
 		Thread.sleep(10);

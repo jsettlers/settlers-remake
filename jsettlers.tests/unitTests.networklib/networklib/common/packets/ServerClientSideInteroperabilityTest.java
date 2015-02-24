@@ -83,7 +83,7 @@ public class ServerClientSideInteroperabilityTest {
 		c2.registerListener(serverListener);
 
 		SyncTasksPacket clientTestTask = new SyncTasksPacket(234, Arrays.asList((TaskPacket) new TestTaskPacket("dsfdsdf", 23, (byte) -3),
-				(TaskPacket) new TestTaskPacket("iuz)(Z(/TZ§OJÖJdf", 987875, (byte) -5)));
+				(TaskPacket) new TestTaskPacket("iuz)(Z(/TZï¿½OJï¿½Jdf", 987875, (byte) -5)));
 		c1.sendPacket(ENetworkKey.TEST_PACKET, clientTestTask);
 
 		Thread.sleep(10);

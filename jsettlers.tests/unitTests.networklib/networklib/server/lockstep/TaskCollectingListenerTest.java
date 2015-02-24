@@ -56,7 +56,7 @@ public class TaskCollectingListenerTest {
 
 		TestTaskPacket testPacket1 = new TestTaskPacket("TestMessage42", 4711, (byte) -3);
 		c1.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, testPacket1); // send packet 1 to server
-		TestTaskPacket testPacket2 = new TestTaskPacket("Bla Böb Bün0928ä38(/§/)\"=$(;:I\"H))!", -2342323, (byte) 4);
+		TestTaskPacket testPacket2 = new TestTaskPacket("Bla Bï¿½b Bï¿½n0928ï¿½38(/ï¿½/)\"=$(;:I\"H))!", -2342323, (byte) 4);
 		c1.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, testPacket2); // send packet 2 to server
 
 		Thread.sleep(10);

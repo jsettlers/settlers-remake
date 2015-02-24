@@ -40,7 +40,7 @@ public class TestGenericDeserializer {
 		TestPacket packet1 = new TestPacket("dsdfskf", 234);
 		c2.sendPacket(ENetworkKey.TEST_PACKET, packet1);
 
-		TestPacket packet2 = new TestPacket("sdfsUHUHIhdsjfno09ü23#23l4poi09987)(/)(/§&(/&\"$'_ülü2", -345234);
+		TestPacket packet2 = new TestPacket("sdfsUHUHIhdsjfno09ï¿½23#23l4poi09987)(/)(/ï¿½&(/&\"$'_ï¿½lï¿½2", -345234);
 		c2.sendPacket(ENetworkKey.TEST_PACKET, packet2);
 
 		Thread.sleep(10);
