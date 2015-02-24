@@ -139,7 +139,7 @@
 		</javac>
 	</target>
 
-	<target name="unitTests">
+	<target name="unitTests" depends="build">
 		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
