@@ -55,7 +55,9 @@ public final class TestUtils {
 	public static synchronized void setupResourceManagerIfNeeded() {
 		if (!resourceManagerSetUp) {
 			try {
-				SwingResourceLoader.setupResourceManagersByConfigFile(new File("../jsettlers.main.swing/config.prp"));
+				File configFile = new File("../jsettlers.main.swing/config.prp");
+				System.out.println("configFile: " + configFile.getAbsolutePath());
+				SwingResourceLoader.setupResourceManagersByConfigFile(configFile);
 			} catch (IOException e) {
 				throw new RuntimeException("Config file not found!", e);
 			}

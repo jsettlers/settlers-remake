@@ -12,8 +12,7 @@
 	<property name="jsettlers.logic.location" value="../jsettlers.logic" />
 	<property name="jsettlers.main.swing.location" value="../jsettlers.main.swing" />
 	<property name="debuglevel" value="source,lines,vars" />
-	<property name="target" value="1.7" />
-	<property name="source" value="1.7" />
+
 	<path id="jsettlers.common.classpath">
 		<pathelement location="${jsettlers.common.location}/bin" />
 	</path>
@@ -165,7 +164,7 @@
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin"
-			includeantruntime="false" source="${source}" target="${target}">
+			includeantruntime="false">
 			<src path="src" />
 			<classpath refid="jsettlers.mapcreator.classpath" />
 		</javac>

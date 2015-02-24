@@ -9,7 +9,6 @@
     <property name="jsettlers.buildingcreator.location" value="../jsettlers.buildingcreator"/>
     <property name="jsettlers.mapcreator.location" value="../jsettlers.mapcreator"/>
     <property name="jsettlers.tests.location" value="../jsettlers.tests"/>
-    <property name="ECLIPSE_HOME" value="../../../luna64/"/>
     <property name="go.graphics.location" value="../go.graphics"/>
     <property name="go.graphics.swing.location" value="../go.graphics.swing"/>
     <property name="jsettlers.common.location" value="../jsettlers.common"/>
@@ -161,30 +160,5 @@
                 <propertyref name="build.compiler"/>
             </propertyset>
         </ant>
-    </target>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
-    </target>
-    <target name="SwingManagedJSettlers --mapfile newmap.map">
-        <java classname="jsettlers.main.swing.SwingManagedJSettlers" failonerror="true" fork="yes">
-            <arg line="--localhost --control-all --console-output --activate-all-players --mapfile=../jsettlers.common/resources/maps/newmap.map"/>
-            <classpath refid="jsettlers.main.swing.classpath"/>
-        </java>
-    </target>
-    <target name="SwingManagedJSettlers">
-        <java classname="jsettlers.main.swing.SwingManagedJSettlers" failonerror="true" fork="yes">
-            <arg line="--localhost --control-all --console-output --activate-all-players"/>
-            <classpath refid="jsettlers.main.swing.classpath"/>
-        </java>
     </target>
 </project>

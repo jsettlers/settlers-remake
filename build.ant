@@ -9,5 +9,9 @@
 		<ant antfile="networklib/build/buildDedicatedServer.ant" useNativeBasedir="true" inheritAll="false" target="buildDedicatedServer" />
 	</target>
 
-	<target name="buildAll" depends="buildSwing,buildDedicatedServer" />
+	<target name="runUnitTests">
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests" />
+	</target>
+	
+	<target name="buildAll" depends="runUnitTests,buildSwing,buildDedicatedServer" />
 </project>
