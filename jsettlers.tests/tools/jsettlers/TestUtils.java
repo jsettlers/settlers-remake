@@ -52,17 +52,31 @@ public final class TestUtils {
 
 	private static boolean resourceManagerSetUp = false;
 
-	public static synchronized void setupResourceManagerIfNeeded() {
+	public static synchronized void setupSwingResources() {
 		if (!resourceManagerSetUp) {
 			try {
-				File configFile = new File("../jsettlers.main.swing/config.prp");
-				System.out.println("configFile: " + configFile.getAbsolutePath());
-				SwingResourceLoader.setupResourceManagersByConfigFile(configFile);
+				SwingResourceLoader.setupSwingResourcesByConfigFile(getDefaultConfigFile());
 			} catch (IOException e) {
 				throw new RuntimeException("Config file not found!", e);
 			}
 			resourceManagerSetUp = true;
 		}
+	}
+
+	public static synchronized void setupResourcesManager() {
+		try {
+			SwingResourceLoader.setupResourcesManagerByConfigFile(getDefaultConfigFile());
+		} catch (IOException e) {
+			throw new RuntimeException("Config file not found!", e);
+		}
+	}
+
+	private static File getDefaultConfigFile() throws IOException {
+		File configFile = new File("../jsettlers.main.swing/config.prp");
+		if (!configFile.exists()) {
+			throw new IOException("Default config file not found at " + configFile.getAbsolutePath());
+		}
+		return configFile;
 	}
 
 	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {
@@ -71,28 +85,22 @@ public final class TestUtils {
 	}
 
 	public static MapInterfaceConnector openTestWindow(IStartedGame game) {
-		setupResourceManagerIfNeeded();
+		setupSwingResources();
 
 		ImageProvider.getInstance().startPreloading();
 		JSettlersScreen content = SwingManagedJSettlers.startGui();
 		MapContent mapContent = new MapContent(game, new SwingSoundPlayer());
 		content.setContent(mapContent);
-		// TODO: Add a better redraw method.
 
 		mapContent.getInterfaceConnector().addListener(
 				new IMapInterfaceListener() {
-
 					@Override
 					public void action(Action action) {
 						if (action.getActionType() == EActionType.SELECT_POINT) {
 							PointAction selectAction = (PointAction) action;
-
-							System.out.println("Action preformed: "
-									+ action.getActionType() + " at: "
-									+ selectAction.getPosition());
+							System.out.println("Action preformed: " + action.getActionType() + " at: " + selectAction.getPosition());
 						} else {
-							System.out.println("Action preformed: "
-									+ action.getActionType());
+							System.out.println("Action preformed: " + action.getActionType());
 						}
 					}
 				});

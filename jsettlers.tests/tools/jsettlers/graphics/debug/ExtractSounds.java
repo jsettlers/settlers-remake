@@ -17,7 +17,7 @@ public class ExtractSounds extends SoundManager {
 	}
 
 	public static void main(String[] args) throws IOException {
-		TestUtils.setupResourceManagerIfNeeded();
+		TestUtils.setupSwingResources();
 
 		ByteReader file = openSoundFile();
 		int[][] starts = getSoundStarts(file);

@@ -73,7 +73,7 @@ public class SwingManagedJSettlers {
 		if (argsMap.containsKey("config")) {
 			configFile = argsMap.get("config");
 		}
-		SwingResourceLoader.setupResourceManagersByConfigFile(new File(configFile));
+		SwingResourceLoader.setupSwingResourcesByConfigFile(new File(configFile));
 	}
 
 	public static void loadDebugSettings(HashMap<String, String> argsMap) {

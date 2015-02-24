@@ -14,7 +14,7 @@ import networklib.synchronic.timer.NetworkTimer;
 public class TestExecutionWithDebugDisplay {
 
 	public static void main(String args[]) throws MapLoadException, InterruptedException {
-		TestUtils.setupResourceManagerIfNeeded();
+		TestUtils.setupResourcesManager();
 		RandomSingleton.load(0);
 
 		MatchConstants.clock = new NetworkTimer(true);

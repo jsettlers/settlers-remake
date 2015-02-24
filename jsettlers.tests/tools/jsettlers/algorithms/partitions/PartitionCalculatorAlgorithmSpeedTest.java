@@ -23,7 +23,7 @@ import networklib.synchronic.timer.NetworkTimer;
 public class PartitionCalculatorAlgorithmSpeedTest {
 
 	public static void main(String[] args) throws MapLoadException, InterruptedException {
-		TestUtils.setupResourceManagerIfNeeded();
+		TestUtils.setupSwingResources();
 		RandomSingleton.load(0);
 
 		MatchConstants.clock = new NetworkTimer(true);

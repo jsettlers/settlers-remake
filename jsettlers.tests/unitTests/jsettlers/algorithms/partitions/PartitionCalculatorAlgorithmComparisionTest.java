@@ -27,7 +27,7 @@ public class PartitionCalculatorAlgorithmComparisionTest {
 
 	@Test
 	public void testCompareOldAndNew() throws MapLoadException {
-		TestUtils.setupResourceManagerIfNeeded();
+		TestUtils.setupResourcesManager();
 		RandomSingleton.load(0);
 
 		MatchConstants.clock = new NetworkTimer(true);
