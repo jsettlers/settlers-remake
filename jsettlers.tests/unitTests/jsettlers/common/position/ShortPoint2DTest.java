@@ -15,7 +15,6 @@ public class ShortPoint2DTest {
 			HexBorderArea border = new HexBorderArea(center, i);
 
 			for (ShortPoint2D pos : border) {
-				System.out.println(pos);
 				assertEquals(i, pos.getOnGridDistTo(center));
 				assertEquals(pos.getOnGridDistTo(center), i);
 			}
@@ -27,7 +26,7 @@ public class ShortPoint2DTest {
 		ShortPoint2D center = new ShortPoint2D(100, 100);
 		ShortPoint2D pos = new ShortPoint2D(98, 99);
 
-		System.out.println(center + "->" + pos + ": " + center.getOnGridDistTo(pos));
-		System.out.println(pos + "->" + center + ": " + pos.getOnGridDistTo(center));
+		assertEquals(2, center.getOnGridDistTo(pos));
+		assertEquals(2, pos.getOnGridDistTo(center));
 	}
 }

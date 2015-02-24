@@ -22,9 +22,6 @@ import org.junit.Test;
  */
 public class ConstructionMarksAlgorithmTest {
 
-	private final TestMap map = new TestMap();
-	private final NewConstructionMarksAlgorithm algo = new NewConstructionMarksAlgorithm(map, (byte) 0);
-
 	@Test
 	public void test() {
 		boolean[][] blocked = {
@@ -49,12 +46,26 @@ public class ConstructionMarksAlgorithmTest {
 
 		BuildingAreaBitSet buildingSet = new BuildingAreaBitSet(BuildingAreaBitSetTest.createRelativePoints(buildingMask));
 
-		map.initMap(blocked);
-		algo.calculateConstructMarks(mapArea, buildingSet, null, null);
+		TestMap map = new TestMap(blocked);
+		NewConstructionMarksAlgorithm algorithm = new NewConstructionMarksAlgorithm(map, (byte) 0);
+		algorithm.calculateConstructMarks(mapArea, buildingSet, null, null);
+
+		// print(map, blocked, buildingSet);
 
 		for (int y = 0; y < map.height; y++) {
 			for (int x = 0; x < map.width; x++) {
-				printBool(blocked[y][x]);
+				assertEquals(x + "|" + y, canCostructAt(map, x, y, buildingSet), map.marksSet[x + y * map.width] > 0);
+			}
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private void print(TestMap map, boolean[][] blocked, BuildingAreaBitSet buildingSet) {
+		System.out.println("blocked | marksSet | canConstruct");
+
+		for (int y = 0; y < map.height; y++) {
+			for (int x = 0; x < map.width; x++) {
+				print(blocked[y][x]);
 			}
 			System.out.print("        ");
 
@@ -64,15 +75,9 @@ public class ConstructionMarksAlgorithmTest {
 			System.out.print("        ");
 
 			for (int x = 0; x < map.width; x++) {
-				printBool(canCostructAt(x, y, buildingSet));
+				print(canCostructAt(map, x, y, buildingSet));
 			}
 			System.out.println();
-		}
-
-		for (int y = 0; y < map.height; y++) {
-			for (int x = 0; x < map.width; x++) {
-				assertEquals(x + "|" + y, canCostructAt(x, y, buildingSet), map.marksSet[x + y * map.width] > 0);
-			}
 		}
 	}
 
@@ -88,7 +93,7 @@ public class ConstructionMarksAlgorithmTest {
 		}
 	}
 
-	private void printBool(boolean bool) {
+	private void print(boolean bool) {
 		if (bool) {
 			System.out.print(" x ");
 		} else {
@@ -96,7 +101,7 @@ public class ConstructionMarksAlgorithmTest {
 		}
 	}
 
-	private boolean canCostructAt(int x, int y, BuildingAreaBitSet buildingSet) {
+	private boolean canCostructAt(TestMap map, int x, int y, BuildingAreaBitSet buildingSet) {
 		for (int dx = 0; dx < buildingSet.width; dx++) {
 			for (int dy = 0; dy < buildingSet.height; dy++) {
 				int currX = dx + x + buildingSet.minX;
@@ -118,7 +123,7 @@ public class ConstructionMarksAlgorithmTest {
 		int[] marksSet;
 		BitSet blockedSet;
 
-		public void initMap(boolean[][] blocked) {
+		public TestMap(boolean[][] blocked) {
 			height = (short) blocked.length;
 			width = (short) blocked[0].length;
 
@@ -162,9 +167,9 @@ public class ConstructionMarksAlgorithmTest {
 		public String toString() {
 			StringBuffer buffer = new StringBuffer();
 
-			for (int y = 0; y < map.height; y++) {
-				for (int x = 0; x < map.width; x++) {
-					buffer.append(map.marksSet[x + y * map.width]);
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					buffer.append(marksSet[x + y * width]);
 				}
 				buffer.append("\n");
 			}
