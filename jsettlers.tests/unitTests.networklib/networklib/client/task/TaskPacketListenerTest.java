@@ -46,8 +46,8 @@ public class TaskPacketListenerTest {
 		TaskPacketListener listener = new TaskPacketListener(taskReceiver);
 		c1.registerListener(listener);
 
-		TaskPacket testPacket1 = new TestTaskPacket("tesdfköäl9u8u23jo", 23424, (byte) -2);
-		TaskPacket testPacket2 = new TestTaskPacket("?=?=O\"KÖ#'*'::Ö;;Ü", -2342342, (byte) -67);
+		TaskPacket testPacket1 = new TestTaskPacket("tesdfkï¿½ï¿½l9u8u23jo", 23424, (byte) -2);
+		TaskPacket testPacket2 = new TestTaskPacket("?=?=O\"Kï¿½#'*'::ï¿½;;ï¿½", -2342342, (byte) -67);
 		int lockstep = 23;
 		SyncTasksPacket syncTasksPacket = new SyncTasksPacket(lockstep, Arrays.asList(testPacket1, testPacket2));
 
