@@ -39,7 +39,7 @@ import org.junit.Test;
  * @author Andreas Eberle
  * 
  */
-public class NetworkClientIntegrationTest {
+public class NetworkClientIT {
 	private static final String TEST_PLAYER_ID = "id-testPlayer";
 
 	private InMemoryDB db = new InMemoryDB();
@@ -323,16 +323,17 @@ public class NetworkClientIntegrationTest {
 
 		clock1.setTime(2056); // put clock1 forward
 
-		Thread.sleep(2 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 2 synchronizations
-		assertTrue(clock1.getTime() - clock2.getTime() < NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE);
+		Thread.sleep(3 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 3 synchronizations
+		int diff = Math.abs(clock1.getTime() - clock2.getTime());
+		assertTrue("diff is to high: " + diff, diff < NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE);
 		assertTrue(clock1.popAdjustmentEvents().size() > 0);
 		assertEquals(0, clock2.popAdjustmentEvents().size());
 
-		clock2.setTime(23423423); // put clock2 forward
+		clock2.setTime(423423); // put clock2 forward
 
 		Thread.sleep(6 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 20); // wait for 6 synchronizations
-		assertTrue("diff is to high: " + (clock2.getTime() - clock1.getTime()),
-				clock2.getTime() - clock1.getTime() < NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE);
+		diff = Math.abs(clock2.getTime() - clock1.getTime());
+		assertTrue("diff is to high: " + diff, diff < NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE);
 		assertTrue(clock2.popAdjustmentEvents().size() > 0);
 		assertEquals(0, clock1.popAdjustmentEvents().size());
 	}
@@ -344,7 +345,7 @@ public class NetworkClientIntegrationTest {
 
 		client1.openNewMatch("TestMatch", 4, new MapInfoPacket("", "", "", "", 4), 34L, null, null, null);
 
-		Thread.sleep(70);
+		Thread.sleep(150);
 		assertEquals(EPlayerState.IN_MATCH, client1.getState());
 
 		MatchInfoPacket matchInfo = client1.getMatchInfo();
@@ -364,8 +365,8 @@ public class NetworkClientIntegrationTest {
 		assertEquals(EPlayerState.IN_RUNNING_MATCH, client2.getState());
 
 		Thread.sleep(2 * NetworkConstants.Client.LOCKSTEP_PERIOD); // After two lockstep periods, there must be two locksteps.
-		assertEquals(2, clock1.getAllowedLockstep());
-		assertEquals(2, clock2.getAllowedLockstep());
+		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS, clock1.getAllowedLockstep());
+		assertEquals(NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS, clock2.getAllowedLockstep());
 
 		// After more than LOCKSTEP_DEFAULT_LEAD_STEPS periods, the lockstep counter must wait, to prevent it from running away.
 		Thread.sleep((2 + NetworkConstants.Client.LOCKSTEP_DEFAULT_LEAD_STEPS) * NetworkConstants.Client.LOCKSTEP_PERIOD);
@@ -376,14 +377,14 @@ public class NetworkClientIntegrationTest {
 		TestTaskPacket testTask = new TestTaskPacket("dsfsdf", 2342, (byte) -23);
 		client2.scheduleTask(testTask);
 
-		Thread.sleep(50);
+		Thread.sleep(2 * NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL);
 
-		// The task may not be submitted to the clients yet, because the lockstep is blocked.
+		// The task must not have been submitted to the clients yet, because the lockstep is blocked.
 		assertEquals(0, clock1.popBufferedTasks().size());
 		assertEquals(0, clock2.popBufferedTasks().size());
 
 		// Now let one clock continue one lockstep period.
-		clock1.setTime(NetworkConstants.Client.LOCKSTEP_PERIOD);
+		clock1.setTime(NetworkConstants.Client.LOCKSTEP_PERIOD + NetworkConstants.Client.TIME_SYNC_TOLERATED_DIFFERENCE + 10);
 
 		Thread.sleep(NetworkConstants.Client.TIME_SYNC_SEND_INTERVALL + 40);
 

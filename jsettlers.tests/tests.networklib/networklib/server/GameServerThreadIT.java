@@ -18,7 +18,7 @@ import org.junit.Test;
  * @author Andreas Eberle
  * 
  */
-public class GameServerThreadTest {
+public class GameServerThreadIT {
 
 	@Test
 	public void testStartAndShutdownGameServer() throws IOException, InterruptedException {
@@ -41,7 +41,7 @@ public class GameServerThreadTest {
 		GameServerThread gameServer = new GameServerThread(true);
 		gameServer.start();
 
-		Thread.sleep(10);
+		Thread.sleep(100);
 
 		String serverAddress = GameServerThread.retrieveLanServerAddress(1);
 
@@ -72,6 +72,6 @@ public class GameServerThreadTest {
 
 		long diff = System.currentTimeMillis() - start;
 
-		assertTrue(diff < 1050);
+		assertTrue(diff < 1100);
 	}
 }

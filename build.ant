@@ -11,6 +11,7 @@
 
 	<target name="runUnitTests">
 		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests" />
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests.networklib" />
 	</target>
 	
 	<target name="buildAll" depends="runUnitTests,buildSwing,buildDedicatedServer" />

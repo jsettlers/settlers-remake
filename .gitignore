@@ -12,3 +12,4 @@ bin
 /jsettlers.main.android/assets/*
 /networklib/logs
 target
+logs

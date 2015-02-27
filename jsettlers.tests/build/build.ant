@@ -91,13 +91,13 @@
 			</fileset>
 		</copy>
 		<copy includeemptydirs="false" todir="bin">
-			<fileset dir="unitTests.networklib">
+			<fileset dir="tests.networklib">
 				<exclude name="**/*.launch" />
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
 		<copy includeemptydirs="false" todir="bin">
-			<fileset dir="unitTests">
+			<fileset dir="tests">
 				<exclude name="**/*.launch" />
 				<exclude name="**/*.java" />
 			</fileset>
@@ -133,8 +133,8 @@
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false">
 			<src path="tools" />
-			<src path="unitTests.networklib" />
-			<src path="unitTests" />
+			<src path="tests.networklib" />
+			<src path="tests" />
 			<classpath refid="jsettlers.tests.classpath" />
 		</javac>
 	</target>
@@ -145,28 +145,19 @@
 			<classpath refid="jsettlers.tests.classpath" />
 
 			<batchtest>
-				<fileset dir="unitTests" includes="**/*Test.java" />
+				<fileset dir="tests" includes="**/*Test.java" />
 			</batchtest>
 		</junit>
 	</target>
-	<target name="unitTests.networklib">
-		<mkdir dir="${junit.output.dir}" />
-		<junit fork="yes" printsummary="withOutAndErr">
-			<formatter type="xml" />
-			<test name="networklib.NetworkConstantsTest" todir="${junit.output.dir}" />
-			<test name="networklib.client.NetworkClientIntegrationTest" todir="${junit.output.dir}" />
-			<test name="networklib.client.receiver.BufferingPacketReceiverTest" todir="${junit.output.dir}" />
-			<test name="networklib.client.task.TaskPacketListenerTest" todir="${junit.output.dir}" />
-			<test name="networklib.common.packets.PacketSerializationTest" todir="${junit.output.dir}" />
-			<test name="networklib.common.packets.ServerClientSideInteroperabilityTest" todir="${junit.output.dir}" />
-			<test name="networklib.infrastructure.channel.AsyncChannelTest" todir="${junit.output.dir}" />
-			<test name="networklib.infrastructure.channel.ChannelTest" todir="${junit.output.dir}" />
-			<test name="networklib.infrastructure.channel.TestGenericDeserializer" todir="${junit.output.dir}" />
-			<test name="networklib.infrastructure.utils.AveragingBoundedBufferTest" todir="${junit.output.dir}" />
-			<test name="networklib.infrastructure.watchdog.WatchdogTimerTest" todir="${junit.output.dir}" />
-			<test name="networklib.server.GameServerThreadTest" todir="${junit.output.dir}" />
-			<test name="networklib.server.lockstep.TaskCollectingListenerTest" todir="${junit.output.dir}" />
+
+	<target name="unitTests.networklib" depends="build">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
+
+			<batchtest>
+				<fileset dir="tests.networklib" includes="**/*Test.java" />
+			</batchtest>
 		</junit>
 	</target>
 
