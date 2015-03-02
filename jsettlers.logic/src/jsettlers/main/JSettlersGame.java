@@ -64,8 +64,7 @@ public class JSettlersGame {
 	private boolean started = false;
 
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
-			boolean multiplayer,
-			DataInputStream replayFileInputStream) {
+			boolean multiplayer, DataInputStream replayFileInputStream) {
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkConnector = networkConnector;
@@ -75,6 +74,8 @@ public class JSettlersGame {
 		this.replayFileInputStream = replayFileInputStream;
 
 		this.gameRunner = new GameRunner();
+
+		configureLogging(mapCreator);
 	}
 
 	/**
@@ -216,23 +217,13 @@ public class JSettlersGame {
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {
-			final String dateAndMap = logDateFormat.format(new Date()) + "_" + mapcreator.getMapName().replace(" ", "_");
-			final String logFolder = "logs/" + dateAndMap + "/";
-
-			final String replayFilename = logFolder + dateAndMap + "_replay.log";
+			final String replayFilename = getLogFile(mapcreator, "_replay.log");
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
 			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapcreator.getMapName(), mapcreator.getMapID(), playerId,
 					availablePlayers);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();
-
-			if (!CommonConstants.ENABLE_CONSOLE_LOGGING) {
-				final String logFile = logFolder + dateAndMap + "_out.log";
-				PrintStream outLogStream = new PrintStream(ResourceManager.writeFile(logFile));
-				System.setOut(outLogStream);
-				System.setErr(outLogStream);
-			}
 
 			return replayFileStream;
 		}
@@ -312,5 +303,25 @@ public class JSettlersGame {
 		public boolean isStartupFinished() {
 			return gameRunning;
 		}
+	}
+
+	private static void configureLogging(final IGameCreator mapcreator) {
+		try {
+			if (!CommonConstants.ENABLE_CONSOLE_LOGGING) {
+				PrintStream outLogStream = new PrintStream(ResourceManager.writeFile(getLogFile(mapcreator, "_out.log")));
+				System.setOut(outLogStream);
+				System.setErr(outLogStream);
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException("Error setting up logging.", ex);
+		}
+	}
+
+	private static String getLogFile(IGameCreator mapcreator, String suffix) {
+		final String dateAndMap = logDateFormat.format(new Date()) + "_" + mapcreator.getMapName().replace(" ", "_");
+		final String logFolder = "logs/" + dateAndMap + "/";
+
+		final String replayFilename = logFolder + dateAndMap + suffix;
+		return replayFilename;
 	}
 }

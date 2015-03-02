@@ -64,16 +64,22 @@ public class SwingManagedJSettlers {
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 * 
 	 * @param argsMap
-	 * @param defaultConfigFile
+	 * @param defaultConfigFileName
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFile) throws FileNotFoundException, IOException {
-		String configFile = defaultConfigFile;
+	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
+		File configFil = getConfigFile(argsMap, defaultConfigFileName);
+		SwingResourceLoader.setupSwingResourcesByConfigFile(configFil);
+	}
+
+	public static File getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) {
+		String configFileName = defaultConfigFileName;
 		if (argsMap.containsKey("config")) {
-			configFile = argsMap.get("config");
+			configFileName = argsMap.get("config");
 		}
-		SwingResourceLoader.setupSwingResourcesByConfigFile(new File(configFile));
+		File configFil = new File(configFileName);
+		return configFil;
 	}
 
 	public static void loadDebugSettings(HashMap<String, String> argsMap) {
