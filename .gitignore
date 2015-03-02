@@ -13,3 +13,5 @@ bin
 /networklib/logs
 target
 logs
+/jsettlers.common/resources/save
+/jsettlers.main.swing/*.log
