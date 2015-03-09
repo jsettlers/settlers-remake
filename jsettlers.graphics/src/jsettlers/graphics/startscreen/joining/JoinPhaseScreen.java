@@ -1,7 +1,9 @@
 package jsettlers.graphics.startscreen.joining;
 
 import jsettlers.common.images.DirectImageLink;
+import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.action.ExecutableAction;
@@ -21,8 +23,11 @@ import jsettlers.graphics.utils.UIPanel;
 
 public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 		IChangingListListener<IMultiplayerPlayer> {
-	public static final ImageLink BACKGROUND = new DirectImageLink(
-			"joinphase.0");
+
+	public static final ImageLink BACKGROUND = new OriginalImageLink(
+			EImageLinkType.GUI, 2, 29, 0);
+//	public static final ImageLink BACKGROUND = new DirectImageLink(
+//			"joinphase.0");
 
 	private final IContentSetable contentSetable;
 	private final IJoinPhaseMultiplayerGameConnector connector;

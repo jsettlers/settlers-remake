@@ -21,7 +21,8 @@ import jsettlers.graphics.utils.UIPanel;
 public abstract class StartListPanel<T> extends UIPanel implements
 		IChangingListListener<T>, ListItemGenerator<T> {
 
-	private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
+	//private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
+	private static final ImageLink LIST_BACKGROUND = null;
 	private final ChangingList<T> list;
 	private final UIList<T> uiList;
 
