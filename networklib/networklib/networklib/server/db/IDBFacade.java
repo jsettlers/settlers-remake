@@ -44,4 +44,6 @@ public interface IDBFacade {
 	Match getMatchById(String id);
 
 	List<Player> getPlayers(EPlayerState... allowedStates);
+
+	List<Match> getMatches();
 }

@@ -4,7 +4,6 @@ import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 	private JFrame window;
 
 	private BuildingCreatorApp(HashMap<String, String> argsMap) throws FileNotFoundException, IOException {
-		SwingManagedJSettlers.setupResourceManagers(argsMap, new File("../jsettlers.main.swing/config.prp"));
+		SwingManagedJSettlers.setupResourceManagers(argsMap, "../jsettlers.main.swing/config.prp");
 
 		EBuildingType type = askType();
 

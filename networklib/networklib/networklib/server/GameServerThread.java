@@ -10,6 +10,7 @@ import networklib.infrastructure.channel.Channel;
 import networklib.infrastructure.channel.socket.ISocketFactory;
 import networklib.infrastructure.log.Logger;
 import networklib.infrastructure.log.LoggerManager;
+import networklib.server.db.IDBFacade;
 import networklib.server.db.inMemory.InMemoryDB;
 import networklib.server.lan.LanServerAddressBroadcastListener;
 import networklib.server.lan.LanServerBroadcastThread;
@@ -48,6 +49,7 @@ public class GameServerThread extends Thread {
 	@Override
 	public void run() {
 		LOGGER.log("Server up and running!\n");
+		System.out.println("Server up and running!");
 		while (!canceled) {
 			try {
 				Socket clientSocket = serverSocket.accept();
@@ -115,7 +117,11 @@ public class GameServerThread extends Thread {
 		manager.shutdown();
 	}
 
-	public boolean isLandBroadcasterAlive() {
+	public boolean isLanBroadcasterAlive() {
 		return lanBroadcastThread != null ? lanBroadcastThread.isAlive() : false;
+	}
+
+	public IDBFacade getDatabase() {
+		return manager.getDatabase();
 	}
 }
