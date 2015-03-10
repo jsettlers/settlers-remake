@@ -1,4 +1,4 @@
-package jsettlers.graphics.image.texturegeneration;
+package jsettlers.common.texturegeneration;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;

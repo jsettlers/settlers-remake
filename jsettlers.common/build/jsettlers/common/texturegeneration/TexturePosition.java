@@ -1,4 +1,4 @@
-package jsettlers.graphics.image.texturegeneration;
+package jsettlers.common.texturegeneration;
 
 public class TexturePosition {
 

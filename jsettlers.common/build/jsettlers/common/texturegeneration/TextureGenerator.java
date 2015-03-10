@@ -1,4 +1,4 @@
-package jsettlers.graphics.image.texturegeneration;
+package jsettlers.common.texturegeneration;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -78,10 +78,10 @@ public final class TextureGenerator {
 
 	private Thread[] started;
 
-	public TextureGenerator(TextureIndex textureIndex) {
+	public TextureGenerator(TextureIndex textureIndex, File rawDirectory, File outDirectory) {
 		this.textureIndex = textureIndex;
-		rawDirectory = new File("../jsettlers.common/resources/textures_raw");
-		outDirectory = new File("../jsettlers.common/resources/images");
+		this.rawDirectory = rawDirectory;
+		this.outDirectory = outDirectory;
 	}
 
 	/**

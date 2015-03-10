@@ -28,17 +28,21 @@ public class SettingScreen extends UIPanel {
 	private static final class VolumeInput extends UIPanel {
 		private float volume = 0;
 		private static final float BUTTON_WIDTH = .1f;
-		private static final ImageLink BUTTON_IMAGE = new DirectImageLink(
-				"slider.0");
+		private static final ImageLink BUTTON_IMAGE = null;
+
+		// private static final ImageLink BUTTON_IMAGE = new DirectImageLink(
+		// "slider.0");
 
 		@Override
 		public void drawAt(GLDrawContext gl) {
 			FloatRectangle p = getPosition();
 			float x = p.getMinX() + volume * (1 - BUTTON_WIDTH) * p.getWidth();
-			float x2 = x + BUTTON_WIDTH * p.getWidth();
-			// ImageProvider.getInstance().getImage(BUTTON_IMAGE)
-			// .drawImageAtRect(gl, x, p.getMinY(), x2, p.getMaxY());
-			ImageProvider.getInstance().getImage(BUTTON_IMAGE).drawAt(gl, x, p.getMaxY());
+			if (BUTTON_IMAGE != null) {
+				float x2 = x + BUTTON_WIDTH * p.getWidth();
+				// ImageProvider.getInstance().getImage(BUTTON_IMAGE)
+				// .drawImageAtRect(gl, x, p.getMinY(), x2, p.getMaxY());
+				ImageProvider.getInstance().getImage(BUTTON_IMAGE).drawAt(gl, x, p.getMaxY());
+			}
 			super.drawAt(gl);
 		}
 

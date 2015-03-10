@@ -56,7 +56,8 @@ public class AndroidUiImageGenerator {
 	public void execute() throws IOException {
 		if (destinationDirectory == null) {
 			throw new RuntimeException("please use destinationDirectory=\"...\"");
-		}if (configFile == null) {
+		}
+		if (configFile == null) {
 			throw new RuntimeException("please use configFile=\"...\"");
 		}
 

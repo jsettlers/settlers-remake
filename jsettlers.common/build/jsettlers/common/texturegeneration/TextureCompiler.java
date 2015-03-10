@@ -1,4 +1,4 @@
-package jsettlers.graphics.image.texturegeneration;
+package jsettlers.common.texturegeneration;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -26,31 +26,68 @@ public class TextureCompiler implements Runnable, TextureIndex {
 
 	private final Object imageIndexMutex = new Object();
 	private final Object textureCounterMutex = new Object();
+	private File resourceDirectory;
+	private File genDirectory;
 
-	public static void main(String[] args) {
-		new TextureCompiler().run();
+	public TextureCompiler() {
+		this(null, null);
+	}
+	public TextureCompiler(File resourceDirectory, File genDirectory) {
+		this.setResourceDirectory(resourceDirectory);
+		this.setGenDirectory(genDirectory);
 	}
 
+	public static void main(String[] args) {
+		if (args.length < 3) {
+			throw new IllegalArgumentException("Usage: compiler <intput dir> <gen dir>");
+		}
+		
+		new TextureCompiler(new File(args[1]), new File(args[2])).run();
+	}
+
+	// For ant
+	public void execute() throws IOException {
+		if (genDirectory == null) {
+			throw new RuntimeException("please use genDirectory=\"...\"");
+		}
+		if (resourceDirectory == null) {
+			throw new RuntimeException("please use resourceDirectory=\"...\"");
+		}
+		
+		openTextureIndex();
+
+		File rawDirectory = new File(getResourceDirectory(), "textures_raw");
+		File outDirectory = new File(getResourceDirectory(), "images");
+		TextureGenerator gen = new TextureGenerator(this, rawDirectory, outDirectory);
+		gen.start();
+		String[] files = rawDirectory.list();
+		for (String file : files) {
+			if (file.matches(".*\\.png")) {
+				String name = file.replaceAll("\\.png", "");
+				gen.addTexturesByName(Collections.singletonList(name));
+			}
+		}
+		gen.join();
+
+		closeTextureIndex();
+	}
 	@Override
 	public void run() {
 		try {
-			openTextureIndex();
-
-			TextureGenerator gen = new TextureGenerator(this);
-			gen.start();
-			gen.join();
-
-			closeTextureIndex();
+			execute();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void openTextureIndex() throws IOException {
-		textureIndexOut = new DataOutputStream(new FileOutputStream(new File("../jsettlers.common/resources/images/texturemap")));
+		File imagesOut = new File(getResourceDirectory(), "images");
+		textureIndexOut = new DataOutputStream(new FileOutputStream(new File(imagesOut, "texturemap")));
 		textureIndexOut.write(new byte[] { 'T', 'E', 'X', '1' });
 
-		textureConstantsOut = new PrintWriter(new File("../jsettlers.common/src/jsettlers/common/images/TextureMap.java"));
+		File packageDir = new File(new File(new File(getGenDirectory(), "jsettlers"), "common"), "images");
+		packageDir.mkdirs();
+		textureConstantsOut = new PrintWriter(new File(packageDir, "TextureMap.java"));
 		textureConstantsOut.println("package jsettlers.common.images;");
 		textureConstantsOut.println("import java.util.Arrays;");
 		textureConstantsOut.println();
@@ -129,5 +166,21 @@ public class TextureCompiler implements Runnable, TextureIndex {
 		synchronized (textureCounterMutex) {
 			return textureCounter++;
 		}
+	}
+
+	public File getResourceDirectory() {
+		return resourceDirectory;
+	}
+
+	public void setResourceDirectory(File resourceDirectory) {
+		this.resourceDirectory = resourceDirectory;
+	}
+
+	public File getGenDirectory() {
+		return genDirectory;
+	}
+
+	public void setGenDirectory(File genDirectory) {
+		this.genDirectory = genDirectory;
 	}
 }

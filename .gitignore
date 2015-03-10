@@ -11,3 +11,7 @@ bin
 /jsettlers.main.swing/target/*
 /jsettlers.common/gen
 
+/jsettlers.common/resources/images/*
+!/jsettlers.common/resources/images/movables.txt
+/jsettlers.common/build/.buildScripts
+
