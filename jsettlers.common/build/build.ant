@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="jsettlers.common">
+	<property environment="env" />
+	<property name="jsettlers.algorithms.location" value="../jsettlers.algorithms" />
+	<property name="jsettlers.buildingcreator.location" value="../jsettlers.buildingcreator" />
+	<property name="jsettlers.graphics.location" value="../jsettlers.graphics" />
+	<property name="jsettlers.graphics.androidui.location" value="../jsettlers.graphics.androidui" />
+	<property name="jsettlers.graphics.swing.location" value="../jsettlers.graphics.swing" />
+	<property name="jsettlers.logic.location" value="../jsettlers.logic" />
+	<property name="jsettlers.main.android.location" value="../jsettlers.main.android" />
+	<property name="jsettlers.main.swing.location" value="../jsettlers.main.swing" />
+	<property name="jsettlers.mapcreator.location" value="../jsettlers.mapcreator" />
+	<property name="jsettlers.tests.location" value="../jsettlers.tests" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.7" />
+	<property name="source" value="1.7" />
+	<path id="jsettlers.common.classpath">
+		<pathelement location="bin" />
+	</path>
+	<target name="init">
+		<ant antfile="build/findCommit.ant" inheritAll="false" target="createCommitInfo" />
+
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="resources">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="gen">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall" />
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects" />
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src" />
+			<src path="resources" />
+			<src path="gen" />
+			<classpath refid="jsettlers.common.classpath" />
+		</javac>
+	</target>
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+		<ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.androidui.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.androidui.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.main.android.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.main.android.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.mapcreator.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.tests.location}" inheritAll="false" target="build">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+	</target>
+</project>

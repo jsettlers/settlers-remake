@@ -50,12 +50,7 @@ public class SwingManagedJSettlers {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 
-		String configFilePath = "config.prp";
-		if (argsMap.containsKey("config")) {
-			configFilePath = argsMap.get("config");
-		}
-
-		setupResourceManagers(argsMap, new File(configFilePath));
+		setupResourceManagers(argsMap, "config.prp");
 		loadDebugSettings(argsMap);
 
 		JSettlersScreen content = startGui();
@@ -69,19 +64,22 @@ public class SwingManagedJSettlers {
 	 * If the parameter is not given, the defaultConfigFile is used.
 	 * 
 	 * @param argsMap
-	 * @param defaultConfigFile
+	 * @param defaultConfigFileName
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(HashMap<String, String> argsMap, File defaultConfigFile) throws FileNotFoundException, IOException {
-		File configFile;
-		if (argsMap.containsKey("configFile")) {
-			configFile = new File(argsMap.get("configFile"));
-		} else {
-			configFile = defaultConfigFile;
-		}
+	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
+		File configFil = getConfigFile(argsMap, defaultConfigFileName);
+		SwingResourceLoader.setupSwingResourcesByConfigFile(configFil);
+	}
 
-		SwingResourceLoader.setupResourceManagersByConfigFile(configFile);
+	public static File getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) {
+		String configFileName = defaultConfigFileName;
+		if (argsMap.containsKey("config")) {
+			configFileName = argsMap.get("config");
+		}
+		File configFil = new File(configFileName);
+		return configFil;
 	}
 
 	public static void loadDebugSettings(HashMap<String, String> argsMap) {

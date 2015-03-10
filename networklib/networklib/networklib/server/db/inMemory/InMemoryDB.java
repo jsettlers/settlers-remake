@@ -1,8 +1,10 @@
 package networklib.server.db.inMemory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import networklib.server.db.IDBFacade;
 import networklib.server.match.EPlayerState;
@@ -115,5 +117,16 @@ public class InMemoryDB implements IDBFacade {
 			}
 			return result;
 		}
+	}
+
+	@Override
+	public List<Match> getMatches() {
+		List<Match> matchesList = new ArrayList<Match>();
+		synchronized (matches) {
+			for (Entry<String, Match> matchEntry : matches.entrySet()) {
+				matchesList.add(matchEntry.getValue());
+			}
+		}
+		return matchesList;
 	}
 }

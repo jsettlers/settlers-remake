@@ -1,10 +1,13 @@
 bin
 /.metadata
+/.recommenders
+.externalToolBuilders
 .settings
 /jsettlers.graphics.androidui/gen/*
 /jsettlers.graphics.androidui/build/.buildScripts
-/.recommenders
+/jsettlers.common/gen
 /jsettlers.common/resources/cache
+/jsettlers.common/resources/logs
 /jsettlers.main.android/gen/*
 /jsettlers.main.android/assets/*
 /jsettlers.common/resources/logs
@@ -14,4 +17,10 @@ bin
 /jsettlers.common/resources/images/*
 !/jsettlers.common/resources/images/movables.txt
 /jsettlers.common/build/.buildScripts
+
+/networklib/logs
+target
+logs
+/jsettlers.common/resources/save
+/jsettlers.main.swing/*.log
 

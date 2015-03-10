@@ -32,13 +32,13 @@ import networklib.server.match.Player;
  */
 public class ServerManager implements IServerManager {
 
-	private final IDBFacade db;
+	private final IDBFacade database;
 	private final Timer sendMatchesListTimer = new Timer("SendMatchesListTimer", true);
 	private final Timer matchesTaskDistributionTimer = new Timer("MatchesTaskDistributionTimer", true);
 	private final MatchesListSendingTimerTask matchSendingTask;
 
 	public ServerManager(IDBFacade db) {
-		this.db = db;
+		this.database = db;
 		matchSendingTask = new MatchesListSendingTimerTask(db);
 	}
 
@@ -57,8 +57,8 @@ public class ServerManager implements IServerManager {
 
 	@Override
 	public boolean acceptNewPlayer(Player player) {
-		if (db.isAcceptedPlayer(player.getId())) {
-			db.storePlayer(player);
+		if (database.isAcceptedPlayer(player.getId())) {
+			database.storePlayer(player);
 
 			Channel channel = player.getChannel();
 			channel.removeListener(NetworkConstants.ENetworkKey.IDENTIFY_USER);
@@ -81,7 +81,7 @@ public class ServerManager implements IServerManager {
 
 	@Override
 	public void channelClosed(Player player) {
-		db.removePlayer(player);
+		database.removePlayer(player);
 
 		if (player.isInMatch()) {
 			try {
@@ -95,7 +95,7 @@ public class ServerManager implements IServerManager {
 	@Override
 	public void createNewMatch(OpenNewMatchPacket matchInfo, Player player) {
 		Match match = new Match(matchInfo.getMatchName(), matchInfo.getMaxPlayers(), matchInfo.getMapInfo(), matchInfo.getRandomSeed());
-		db.storeMatch(match);
+		database.storeMatch(match);
 
 		joinMatch(match, player);
 	}
@@ -149,7 +149,7 @@ public class ServerManager implements IServerManager {
 
 	@Override
 	public void joinMatch(String matchId, Player player) {
-		Match match = db.getMatchById(matchId);
+		Match match = database.getMatchById(matchId);
 		try {
 			player.joinMatch(match);
 		} catch (IllegalStateException e) {
@@ -176,5 +176,9 @@ public class ServerManager implements IServerManager {
 	@Override
 	public void setStartFinished(Player player, boolean startFinished) {
 		player.setStartFinished(startFinished);
+	}
+
+	public IDBFacade getDatabase() {
+		return database;
 	}
 }
