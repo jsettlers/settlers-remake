@@ -52,7 +52,10 @@
 			<fileset dir="${sourceResources}/localization" />
 		</copy>
 		<copy todir="${targetResources}/maps">
-			<fileset dir="${sourceResources}/maps" />
+			<fileset dir="${sourceResources}/maps">
+				<exclude name="/testmaps/**" />
+				<exclude name="testmaps" />
+			</fileset>
 		</copy>
 	</target>
 
@@ -83,13 +86,13 @@
 
 
 	<target name="cleanBuildSwing" depends="buildSwingBundles" />
-	
+
 	<target name="clean">
 		<delete includeemptydirs="true">
-		    <fileset dir="${swingTarget}">
-		        <include name="**"/>
-		        <exclude name="**/config.prp"/>
-		    </fileset>
+			<fileset dir="${swingTarget}">
+				<include name="**" />
+				<exclude name="**/config.prp" />
+			</fileset>
 		</delete>
 	</target>
 </project>

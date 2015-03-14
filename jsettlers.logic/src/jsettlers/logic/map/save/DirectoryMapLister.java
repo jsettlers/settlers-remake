@@ -8,6 +8,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -60,19 +66,31 @@ public class DirectoryMapLister implements IMapLister {
 	}
 
 	@Override
-	public void getMaps(IMapListerCallable callable) {
+	public void getMaps(final IMapListerCallable callable) {
+
 		File[] files = directory.listFiles();
 		if (files == null) {
 			throw new IllegalArgumentException("map directory "
 					+ directory.getAbsolutePath() + " is not a directory.");
 		}
-		for (File file : files) {
-			if (file.getName().endsWith(MapList.MAP_EXTENSION)) {
-				callable.foundMap(new ListedMapFile(file, writeable));
-			}
+
+		try {
+			// traverse all folders
+			Files.walkFileTree(Paths.get(directory.toURI()), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					if (file.getFileName().toString().endsWith(MapList.MAP_EXTENSION)) {
+						callable.foundMap(new ListedMapFile(file.toFile(), writeable));
+					}
+					return super.visitFile(file, attrs);
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
+	@Override
 	public OutputStream getOutputStream(MapFileHeader header)
 			throws IOException {
 		if (!writeable) {
