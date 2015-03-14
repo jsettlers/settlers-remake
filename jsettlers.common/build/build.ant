@@ -24,6 +24,7 @@
 	</path>
 	<target name="init">
 		<ant antfile="build/findCommit.ant" inheritAll="false" target="createCommitInfo" />
+		<ant antfile="build/createTextures.ant" inheritAll="false" target="createTextures" />
 
 		<mkdir dir="bin" />
 		<copy includeemptydirs="false" todir="bin">

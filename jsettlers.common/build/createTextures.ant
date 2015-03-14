@@ -7,7 +7,7 @@
                    
      michael                                                                
      ====================================================================== -->
-<project name="createTextures" default="createTextures">
+<project name="createTextures" basedir=".." default="createTextures">
     <description>
             Converts the png files to usable textures.
     </description>
