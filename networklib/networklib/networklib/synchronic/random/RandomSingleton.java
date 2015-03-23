@@ -22,7 +22,7 @@ public final class RandomSingleton extends Random {
 	}
 
 	/**
-	 * loads the list of double random numbers in file {@value #RANDOM_FILE}.
+	 * loads the list of double random numbers with the given seed.
 	 */
 	public static void load(long seed) {
 		uniIns = new RandomSingleton(seed);
