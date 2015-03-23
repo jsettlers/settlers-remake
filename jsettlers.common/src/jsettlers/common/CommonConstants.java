@@ -36,6 +36,6 @@ public abstract class CommonConstants {
 	public static boolean ENABLE_DEBUG_COLORS = true;
 	public static boolean ENABLE_FOG_OF_WAR_DISABLING = false;
 
-	public static String DEFAULT_SERVER_ADDRESS = "217.160.24.137";
+	public static String DEFAULT_SERVER_ADDRESS = "87.106.88.80";
 
 }
