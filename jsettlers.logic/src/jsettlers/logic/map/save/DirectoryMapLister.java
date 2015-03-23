@@ -8,14 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import jsettlers.common.utils.FileUtils;
+import jsettlers.common.utils.FileUtils.IFileVisitor;
 
 /**
  * Lists all maps in a directory.
@@ -76,13 +73,12 @@ public class DirectoryMapLister implements IMapLister {
 
 		try {
 			// traverse all folders
-			Files.walkFileTree(Paths.get(directory.toURI()), new SimpleFileVisitor<Path>() {
+			FileUtils.walkFileTree(directory, new IFileVisitor() {
 				@Override
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					if (file.getFileName().toString().endsWith(MapList.MAP_EXTENSION)) {
-						callable.foundMap(new ListedMapFile(file.toFile(), writeable));
+				public void visitFile(File file) throws IOException {
+					if (file.getName().endsWith(MapList.MAP_EXTENSION)) {
+						callable.foundMap(new ListedMapFile(file, writeable));
 					}
-					return super.visitFile(file, attrs);
 				}
 			});
 		} catch (IOException e) {
