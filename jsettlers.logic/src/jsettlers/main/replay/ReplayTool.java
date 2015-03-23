@@ -32,7 +32,7 @@ import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
-	public static void replayAndCreateSavegame(File replayFile, int targetGameTime) throws IOException {
+	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMs, String newReplayFile) throws IOException {
 		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
@@ -40,12 +40,13 @@ public class ReplayTool {
 		waitForGameStartup(startingGame);
 
 		// schedule the save task and run the game to the target game time
-		networkConnector.scheduleTaskAt(targetGameTime / NetworkConstants.Client.LOCKSTEP_PERIOD, new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
-		MatchConstants.clock.fastForwardTo(targetGameTime);
+		networkConnector.scheduleTaskAt(targetGameTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD,
+				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
+		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
 		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
-		createReplayOfRemainingTasks(newSavegame, replayStartInformation, "replayForSavegame.log");
+		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
 	}
 
 	private static void waitForGameStartup(IStartingGame game) {
@@ -65,6 +66,7 @@ public class ReplayTool {
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)
 			throws IOException {
 		System.out.println("Creating new replay file (" + newReplayFile + ")...");
+		new File(newReplayFile).getParentFile().mkdirs();
 
 		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
 				newSavegame.getMapID(), replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers());
