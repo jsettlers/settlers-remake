@@ -70,7 +70,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
 		File configFile = getConfigFile(argsMap, defaultConfigFileName);
-		SwingResourceLoader.setupResourcesManagerByConfigFile(configFile);
+		SwingResourceLoader.setupSwingResourcesByConfigFile(configFile);
 	}
 
 	public static File getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) {
