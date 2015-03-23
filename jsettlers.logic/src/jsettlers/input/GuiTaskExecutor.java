@@ -11,7 +11,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.GeneralGuiTask;
+import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
@@ -63,7 +63,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 
 		case BUILD: {
-			GeneralGuiTask task = (GeneralGuiTask) guiTask;
+			ConstructBuildingTask task = (ConstructBuildingTask) guiTask;
 			grid.constructBuildingAt(task.getPosition(), task.getType(), task.getPlayerId());
 		}
 			break;

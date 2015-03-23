@@ -12,15 +12,15 @@ import jsettlers.common.position.ShortPoint2D;
  * @author Andreas Eberle
  * 
  */
-public class GeneralGuiTask extends SimpleGuiTask {
+public class ConstructBuildingTask extends SimpleGuiTask {
 
 	private ShortPoint2D position;
 	private EBuildingType type;
 
-	public GeneralGuiTask() {
+	public ConstructBuildingTask() {
 	}
 
-	public GeneralGuiTask(EGuiAction guiAction, byte playerId, ShortPoint2D pos, EBuildingType type) {
+	public ConstructBuildingTask(EGuiAction guiAction, byte playerId, ShortPoint2D pos, EBuildingType type) {
 		super(guiAction, playerId);
 		this.position = pos;
 		this.type = type;
@@ -65,7 +65,7 @@ public class GeneralGuiTask extends SimpleGuiTask {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneralGuiTask other = (GeneralGuiTask) obj;
+		ConstructBuildingTask other = (ConstructBuildingTask) obj;
 		if (position == null) {
 			if (other.position != null)
 				return false;

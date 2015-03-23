@@ -31,7 +31,7 @@ import jsettlers.graphics.map.UIState;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.GeneralGuiTask;
+import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
@@ -469,7 +469,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				ShortPoint2D pos2 = grid.getConstructablePosition(pos, type, playerId, InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
 				if (pos2 != null) {
 					// cancelBuildingCreation();
-					scheduleTask(new GeneralGuiTask(EGuiAction.BUILD, playerId, pos2, type));
+					scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, pos2, type));
 				}
 				return; // prevent resetting the current action
 			default:
