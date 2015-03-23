@@ -63,6 +63,15 @@ public class StartScreenFragment extends JsettlersFragment {
 			}
 		});
 
+		Button preferencesButton = (Button) view
+				.findViewById(R.id.startscreen_preferences_button);
+		preferencesButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showNetworkFragment(new PreferencesFragment());
+			}
+		});
+
 		TextView rev = (TextView) view.findViewById(R.id.startscreen_rev);
 		rev.setText("build: " + CommitInfo.COMMIT_HASH_SHORT);
 	}

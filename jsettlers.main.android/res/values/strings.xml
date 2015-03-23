@@ -17,6 +17,7 @@
     <string name="local_game_load">Spielstand laden</string>
     <string name="local_game_resume">Weiterspielen</string>
     <string name="local_game_resume_error">Es trat ein Fehler beim Laden des Spielstandes auf.</string>
+    <string name="preferences">Einstellungen</string>
     <string name="network_game">Netzwerkspiel</string>
     <string name="startscreen_network_new">Einleiten</string>
     <string name="startscreen_network_join">Beitreten</string>
@@ -46,5 +47,6 @@
     <string name="preferences_server">Netzwerkserver</string>
     <string name="preferences_ok">Übernehmen</string>
     <string name="network_chat">Chat...</string>
+    <string name="preferences_label">Einstellungen</string>
 
 </resources>

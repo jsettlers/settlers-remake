@@ -56,6 +56,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/local_game_resume" />
+
+            <Button
+                android:id="@+id/startscreen_preferences_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/preferences_label" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -92,6 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/startscreen_network_load" />
+
         </LinearLayout>
     </LinearLayout>
 
