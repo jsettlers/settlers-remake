@@ -8,10 +8,10 @@ import java.util.List;
 import jsettlers.common.map.shapes.HexBorderArea;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
+import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
@@ -195,19 +195,6 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			if (currMovable != null)
 				currMovable.moveTo(targetPosition);
 		} else if (!movableIds.isEmpty()) {
-			// float radius = (float) (Math.sqrt(movableIds.size() / 3.14f)) * 2;
-			// MapCircle mapCircle = new MapCircle(targetPosition, radius);
-			//
-			// Iterator<ShortPoint2D> circleIter = mapCircle.iterator();
-			// for (Integer currID : movableIds) {
-			// NewMovable currMovable = NewMovable.getMovableByID(currID);
-			//
-			// if (currMovable != null) {
-			// circleIter.next();
-			// currMovable.moveTo(circleIter.next());
-			// }
-			// }
-
 			short radius = 1;
 			short ringsWithoutSuccessCtr = 0; // used to stop the loop
 			Iterator<ShortPoint2D> posIterator = new HexBorderArea(targetPosition, radius).iterator();
