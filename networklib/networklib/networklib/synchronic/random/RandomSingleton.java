@@ -26,6 +26,7 @@ public final class RandomSingleton extends Random {
 	 */
 	public static void load(long seed) {
 		uniIns = new RandomSingleton(seed);
+		System.out.println("First random numbers: " + nextD() + " " + nextD() + " " + nextD() + " " + nextD());
 	}
 
 	/**

@@ -620,9 +620,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		return allMovables;
 	}
 
-	public static void dropAllMovables() {
+	public static void resetState() {
 		allMovables.clear();
 		movablesByID.clear();
+		nextID = Integer.MIN_VALUE;
 	}
 
 	/**
@@ -815,6 +816,12 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		if (playerOfPosition != player && movableType.needsPlayersGround() && strategy.getClass() != FleeStrategy.class) {
 			setStrategy(new FleeStrategy(this));
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Movable: " + id + " position: " + position + " player: " + player.playerId + " movableType: " + movableType
+				+ " direction: " + direction;
 	}
 
 	private static enum ENewMovableState {

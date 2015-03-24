@@ -107,7 +107,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 
 	@Override
 	public String toString() {
-		return file.getFileName();
+		return "MapLoader: mapName: " + file.getFileName() + " mapId: " + getMapID();
 	}
 
 	@Override

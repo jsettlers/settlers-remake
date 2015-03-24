@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import jsettlers.common.CommonConstants;
@@ -65,6 +66,10 @@ public class JSettlersGame {
 
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
 			boolean multiplayer, DataInputStream replayFileInputStream) {
+		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
+				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator + " replayStream: "
+				+ replayFileInputStream);
+
 		this.mapcreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkConnector = networkConnector;
@@ -149,6 +154,7 @@ public class JSettlersGame {
 				IGameClock gameClock = MatchConstants.clock = networkConnector.getGameClock();
 				gameClock.setReplayLogStream(replayFileStream);
 				RandomSingleton.load(randomSeed);
+				Movable.resetState();
 
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
@@ -202,7 +208,7 @@ public class JSettlersGame {
 				mainGrid.stopThreads();
 				guiInterface.stop();
 				RescheduleTimer.stop();
-				Movable.dropAllMovables();
+				Movable.resetState();
 				Building.dropAllBuildings();
 			} catch (MapLoadException e) {
 				e.printStackTrace();
