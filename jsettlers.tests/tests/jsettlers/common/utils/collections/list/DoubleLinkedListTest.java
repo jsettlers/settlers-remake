@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import jsettlers.TestUtils;
-import jsettlers.logic.algorithms.path.astar.queues.bucket.DoubleLinkedIntListItem;
+import jsettlers.algorithms.path.astar.queues.bucket.DoubleLinkedIntListItem;
 
 import org.junit.Test;
 

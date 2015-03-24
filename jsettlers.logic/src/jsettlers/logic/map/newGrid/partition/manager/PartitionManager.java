@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import jsettlers.algorithms.queue.SlotQueue;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.queue.SlotQueue;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.partition.manager.datastructures.PositionableList;

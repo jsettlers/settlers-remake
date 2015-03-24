@@ -2,8 +2,8 @@ package jsettlers.input;
 
 import java.io.Serializable;
 
+import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.graphics.map.UIState;
-import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 
 /**
  * 

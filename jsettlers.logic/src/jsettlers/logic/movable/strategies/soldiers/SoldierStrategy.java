@@ -1,11 +1,11 @@
 package jsettlers.logic.movable.strategies.soldiers;
 
+import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.movable.Movable;

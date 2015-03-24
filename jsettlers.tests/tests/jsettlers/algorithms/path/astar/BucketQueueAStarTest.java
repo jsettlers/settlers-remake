@@ -1,12 +1,12 @@
 package jsettlers.algorithms.path.astar;
 
 import static org.junit.Assert.assertEquals;
+import jsettlers.algorithms.path.IPathCalculatable;
+import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.AbstractAStar;
+import jsettlers.algorithms.path.astar.BucketQueueAStar;
+import jsettlers.algorithms.path.test.DummyEmptyAStarMap;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculatable;
-import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.AbstractAStar;
-import jsettlers.logic.algorithms.path.astar.BucketQueueAStar;
-import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 
 import org.junit.Test;
 

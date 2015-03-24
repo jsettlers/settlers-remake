@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir=".." default="build" name="networklib">
     <property environment="env"/>
-    <property name="jsettlers.algorithms.location" value="../jsettlers.algorithms"/>
     <property name="jsettlers.logic.location" value="../jsettlers.logic"/>
     <property name="jsettlers.main.android.location" value="../jsettlers.main.android"/>
     <property name="jsettlers.main.swing.location" value="../jsettlers.main.swing"/>
@@ -36,12 +35,6 @@
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
-        <ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="build">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
         <ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="build">
             <propertyset>

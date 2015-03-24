@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import jsettlers.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.logic.map.newGrid.flags.IProtectedProvider;
 import jsettlers.logic.map.newGrid.flags.IProtectedProvider.IProtectedChangedListener;
 import networklib.synchronic.random.RandomSingleton;

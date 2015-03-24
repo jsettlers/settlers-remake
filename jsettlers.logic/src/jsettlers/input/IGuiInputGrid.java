@@ -3,13 +3,13 @@ package jsettlers.input;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.algorithms.fogofwar.FogOfWar;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
-import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.logic.algorithms.fogofwar.FogOfWar;
 import jsettlers.logic.player.Player;
 
 /**

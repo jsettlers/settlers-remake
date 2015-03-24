@@ -1,13 +1,13 @@
 package jsettlers.algorithms;
 
+import jsettlers.algorithms.path.IPathCalculatable;
+import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.normal.HexAStar;
+import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
+import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
+import jsettlers.algorithms.path.test.DummyEmptyAStarMap;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculatable;
-import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
-import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
-import jsettlers.logic.algorithms.path.dijkstra.IDijkstraPathMap;
-import jsettlers.logic.algorithms.path.test.DummyEmptyAStarMap;
 
 public class SimpleDijkstraTester {
 	private static final short WIDTH = (short) 200;

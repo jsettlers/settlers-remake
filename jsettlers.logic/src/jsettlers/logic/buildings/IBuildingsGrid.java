@@ -1,5 +1,6 @@
 package jsettlers.logic.buildings;
 
+import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -8,7 +9,6 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;

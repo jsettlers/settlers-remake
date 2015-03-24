@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.algorithms.construction.NewConstructionMarksAlgorithm;
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.BuildingAreaBitSetTest;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.RelativePoint;
-import jsettlers.logic.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.logic.algorithms.construction.NewConstructionMarksAlgorithm;
 
 import org.junit.Test;
 

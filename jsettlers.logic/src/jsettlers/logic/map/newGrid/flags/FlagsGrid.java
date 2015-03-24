@@ -5,8 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import jsettlers.logic.algorithms.interfaces.IContainingProvider;
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
+import jsettlers.algorithms.interfaces.IContainingProvider;
+import jsettlers.algorithms.partitions.IBlockingProvider;
 import jsettlers.logic.map.newGrid.partition.IPartitionsGridBlockingProvider;
 
 /**

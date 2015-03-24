@@ -2,6 +2,10 @@ package jsettlers.logic.movable.testmap;
 
 import java.util.LinkedList;
 
+import jsettlers.algorithms.path.IPathCalculatable;
+import jsettlers.algorithms.path.Path;
+import jsettlers.algorithms.path.astar.normal.HexAStar;
+import jsettlers.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -17,10 +21,6 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.IPathCalculatable;
-import jsettlers.logic.algorithms.path.Path;
-import jsettlers.logic.algorithms.path.astar.normal.HexAStar;
-import jsettlers.logic.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;

@@ -16,7 +16,6 @@
 			<fileset dir="go.graphics.swing/bin" />
 			<fileset dir="jsettlers.main.swing/bin" />
 			<fileset dir="jsettlers.logic/bin" />
-			<fileset dir="jsettlers.algorithms/bin" />
 			<fileset dir="networklib/bin" />
 			<fileset dir="jsettlers.graphics.swing/bin" />
 		</jar>

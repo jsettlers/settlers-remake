@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import jsettlers.algorithms.queue.ITypeAcceptor;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
-import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>

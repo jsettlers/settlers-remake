@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.common"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.algorithms"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/networklib"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

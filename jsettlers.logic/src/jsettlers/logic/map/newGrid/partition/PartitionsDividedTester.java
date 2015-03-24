@@ -1,9 +1,9 @@
 package jsettlers.logic.map.newGrid.partition;
 
+import jsettlers.algorithms.interfaces.IContainingProvider;
+import jsettlers.algorithms.traversing.ITraversingVisitor;
+import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.interfaces.IContainingProvider;
-import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
-import jsettlers.logic.algorithms.traversing.borders.BorderTraversingAlgorithm;
 
 /**
  * This class implements an algorithm used by the {@link PartitionsGrid} to check if two positions of a partition are divided.

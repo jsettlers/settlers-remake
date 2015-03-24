@@ -2,13 +2,13 @@ package jsettlers.logic.movable;
 
 import java.io.Serializable;
 
+import jsettlers.algorithms.path.Path;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.Path;
 import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;

@@ -2,8 +2,8 @@ package jsettlers.logic.map.newGrid.partition.manager.objects;
 
 import java.io.Serializable;
 
+import jsettlers.algorithms.queue.ITypeAcceptor;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 
 public final class MovableTypeAcceptor implements ITypeAcceptor<IManageableWorker>, Serializable {

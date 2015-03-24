@@ -1,7 +1,7 @@
 package jsettlers.algorithms.path.astar.arrays;
 
 import static org.junit.Assert.assertEquals;
-import jsettlers.logic.algorithms.path.arrays.IntArrayStack;
+import jsettlers.algorithms.path.arrays.IntArrayStack;
 
 import org.junit.Test;
 

@@ -3,10 +3,10 @@ package jsettlers.algorithms.partitions;
 import java.util.BitSet;
 
 import jsettlers.TestUtils;
+import jsettlers.algorithms.partitions.IBlockingProvider;
+import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.MapLoadException;
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
-import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.newGrid.MainGridDataAccessor;

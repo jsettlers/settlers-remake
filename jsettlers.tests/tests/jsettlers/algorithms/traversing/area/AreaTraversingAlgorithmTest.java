@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.BitSet;
 import java.util.LinkedList;
 
+import jsettlers.algorithms.interfaces.IContainingProvider;
+import jsettlers.algorithms.traversing.ITraversingVisitor;
+import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.interfaces.IContainingProvider;
-import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
-import jsettlers.logic.algorithms.traversing.area.AreaTraversingAlgorithm;
 
 import org.junit.Test;
 

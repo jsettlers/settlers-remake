@@ -6,7 +6,6 @@
               as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="jsettlers.common">
 	<property environment="env" />
-	<property name="jsettlers.algorithms.location" value="../jsettlers.algorithms" />
 	<property name="jsettlers.buildingcreator.location" value="../jsettlers.buildingcreator" />
 	<property name="jsettlers.graphics.location" value="../jsettlers.graphics" />
 	<property name="jsettlers.graphics.androidui.location" value="../jsettlers.graphics.androidui" />
@@ -62,12 +61,6 @@
 		</javac>
 	</target>
 	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
-		<ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="clean" />
-		<ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="build">
-			<propertyset>
-				<propertyref name="build.compiler" />
-			</propertyset>
-		</ant>
 		<ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.buildingcreator.location}" inheritAll="false" target="build">
 			<propertyset>

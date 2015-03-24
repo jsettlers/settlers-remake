@@ -45,6 +45,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
@@ -65,7 +66,6 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
-import jsettlers.logic.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.MapSaver;

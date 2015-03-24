@@ -5,9 +5,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import jsettlers.algorithms.queue.ITypeAcceptor;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.MathUtils;
-import jsettlers.logic.algorithms.queue.ITypeAcceptor;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>

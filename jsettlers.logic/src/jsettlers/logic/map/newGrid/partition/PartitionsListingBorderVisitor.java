@@ -2,10 +2,10 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.util.LinkedList;
 
+import jsettlers.algorithms.partitions.IBlockingProvider;
+import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.utils.Tuple;
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
-import jsettlers.logic.algorithms.traversing.ITraversingVisitor;
 
 /**
  * This class implements the {@link ITraversingVisitor} and is used to detect all the partitions that are on the traversed positions.<br>

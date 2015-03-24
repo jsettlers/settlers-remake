@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import jsettlers.algorithms.fogofwar.IViewDistancable;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
@@ -19,7 +20,6 @@ import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
-import jsettlers.logic.algorithms.fogofwar.IViewDistancable;
 import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;

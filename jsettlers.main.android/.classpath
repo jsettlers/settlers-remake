@@ -7,7 +7,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.logic"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.common"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/go.graphics.android"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.algorithms"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.androidui"/>

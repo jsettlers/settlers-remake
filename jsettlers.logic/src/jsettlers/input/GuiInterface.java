@@ -3,6 +3,7 @@ package jsettlers.input;
 import java.util.LinkedList;
 import java.util.List;
 
+import jsettlers.algorithms.construction.ConstructionMarksThread;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -39,7 +40,6 @@ import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
 import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
 import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.input.tasks.WorkAreaGuiTask;
-import jsettlers.logic.algorithms.construction.ConstructionMarksThread;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.interfaces.IDebugable;

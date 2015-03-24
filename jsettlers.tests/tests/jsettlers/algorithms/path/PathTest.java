@@ -1,8 +1,8 @@
 package jsettlers.algorithms.path;
 
 import static org.junit.Assert.assertEquals;
+import jsettlers.algorithms.path.Path;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.algorithms.path.Path;
 
 import org.junit.Test;
 

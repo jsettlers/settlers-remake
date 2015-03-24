@@ -6,10 +6,10 @@ import java.util.BitSet;
 
 import jsettlers.GraphicsGridAdapter;
 import jsettlers.TestUtils;
+import jsettlers.algorithms.partitions.IBlockingProvider;
+import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.common.Color;
 import jsettlers.common.map.EDebugColorModes;
-import jsettlers.logic.algorithms.partitions.IBlockingProvider;
-import jsettlers.logic.algorithms.partitions.PartitionCalculatorAlgorithm;
 
 import org.junit.Test;
 

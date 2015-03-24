@@ -1,6 +1,9 @@
 package jsettlers.algorithms;
 
 import jsettlers.TestUtils;
+import jsettlers.algorithms.interfaces.IContainingProvider;
+import jsettlers.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
+import jsettlers.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -16,9 +19,6 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
-import jsettlers.logic.algorithms.interfaces.IContainingProvider;
-import jsettlers.logic.algorithms.landmarks.EnclosedBlockedAreaFinderAlgorithm;
-import jsettlers.logic.algorithms.landmarks.IEnclosedBlockedAreaFinderGrid;
 
 public class LandmarksThreadTester {
 	protected static final int WIDTH = 20;

@@ -15,7 +15,6 @@
     <property name="jsettlers.graphics.location" value="../jsettlers.graphics"/>
     <property name="jsettlers.graphics.swing.location" value="../jsettlers.graphics.swing"/>
     <property name="networklib.location" value="../networklib"/>
-    <property name="jsettlers.algorithms.location" value="../jsettlers.algorithms"/>
     <property name="jsettlers.logic.location" value="../jsettlers.logic"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
@@ -34,16 +33,10 @@
     <path id="networklib.classpath">
         <pathelement location="${networklib.location}/bin"/>
     </path>
-    <path id="jsettlers.algorithms.classpath">
-        <pathelement location="${jsettlers.algorithms.location}/bin"/>
-        <path refid="jsettlers.common.classpath"/>
-        <path refid="networklib.classpath"/>
-    </path>
     <path id="jsettlers.logic.classpath">
         <pathelement location="${jsettlers.logic.location}/bin"/>
         <path refid="jsettlers.graphics.classpath"/>
         <path refid="jsettlers.common.classpath"/>
-        <path refid="jsettlers.algorithms.classpath"/>
         <path refid="networklib.classpath"/>
     </path>
     <path id="go.graphics.swing.classpath">
@@ -88,7 +81,6 @@
         <ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean"/>
     </target>
     <target depends="build-subprojects,build-project" name="build"/>
@@ -119,11 +111,6 @@
             </propertyset>
         </ant>
         <ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="build-project">
-            <propertyset>
-                <propertyref name="build.compiler"/>
-            </propertyset>
-        </ant>
-        <ant antfile="build/build.ant" dir="${jsettlers.algorithms.location}" inheritAll="false" target="build-project">
             <propertyset>
                 <propertyref name="build.compiler"/>
             </propertyset>
