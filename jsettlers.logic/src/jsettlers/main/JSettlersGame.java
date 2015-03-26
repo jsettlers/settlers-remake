@@ -36,10 +36,10 @@ import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
-import networklib.client.OfflineNetworkConnector;
-import networklib.client.interfaces.IGameClock;
-import networklib.client.interfaces.INetworkConnector;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.client.OfflineNetworkConnector;
+import jsettlers.network.client.interfaces.IGameClock;
+import jsettlers.network.client.interfaces.INetworkConnector;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class can start a Thread that loads and sets up a game and wait's for its termination.

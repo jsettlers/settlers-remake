@@ -16,16 +16,16 @@ import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.datatypes.MultiplayerPlayer;
-import networklib.NetworkConstants;
-import networklib.client.interfaces.INetworkClient;
-import networklib.client.receiver.IPacketReceiver;
-import networklib.common.packets.ChatMessagePacket;
-import networklib.common.packets.MapInfoPacket;
-import networklib.common.packets.MatchInfoUpdatePacket;
-import networklib.common.packets.MatchStartPacket;
-import networklib.common.packets.PlayerInfoPacket;
-import networklib.infrastructure.channel.reject.RejectPacket;
-import networklib.server.match.EPlayerState;
+import jsettlers.network.NetworkConstants;
+import jsettlers.network.client.interfaces.INetworkClient;
+import jsettlers.network.client.receiver.IPacketReceiver;
+import jsettlers.network.common.packets.ChatMessagePacket;
+import jsettlers.network.common.packets.MapInfoPacket;
+import jsettlers.network.common.packets.MatchInfoUpdatePacket;
+import jsettlers.network.common.packets.MatchStartPacket;
+import jsettlers.network.common.packets.PlayerInfoPacket;
+import jsettlers.network.infrastructure.channel.reject.RejectPacket;
+import jsettlers.network.server.match.EPlayerState;
 
 /**
  * 

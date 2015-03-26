@@ -1,6 +1,6 @@
 package jsettlers.logic.constants;
 
-import networklib.client.interfaces.IGameClock;
+import jsettlers.network.client.interfaces.IGameClock;
 
 /**
  * 

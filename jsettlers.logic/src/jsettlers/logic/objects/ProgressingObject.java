@@ -3,7 +3,7 @@ package jsettlers.logic.objects;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * 

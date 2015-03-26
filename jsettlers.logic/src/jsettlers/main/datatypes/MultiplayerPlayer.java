@@ -1,7 +1,7 @@
 package jsettlers.main.datatypes;
 
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
-import networklib.common.packets.PlayerInfoPacket;
+import jsettlers.network.common.packets.PlayerInfoPacket;
 
 /**
  * 

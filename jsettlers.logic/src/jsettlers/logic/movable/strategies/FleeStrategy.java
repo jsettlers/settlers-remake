@@ -6,7 +6,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * 

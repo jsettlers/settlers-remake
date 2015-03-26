@@ -12,7 +12,7 @@
 	<property name="jsettlers.common.location" value="../jsettlers.common" />
 	<property name="jsettlers.graphics.location" value="../jsettlers.graphics" />
 	<property name="jsettlers.graphics.swing.location" value="../jsettlers.graphics.swing" />
-	<property name="networklib.location" value="../networklib" />
+	<property name="jsettlers.network.location" value="../jsettlers.network" />
 	<property name="jsettlers.logic.location" value="../jsettlers.logic" />
 	<property name="jsettlers.main.swing.location" value="../jsettlers.main.swing" />
 	<property name="jsettlers.tests.location" value="../jsettlers.tests" />
@@ -29,14 +29,14 @@
 		<path refid="jsettlers.common.classpath" />
 		<path refid="go.graphics.classpath" />
 	</path>
-	<path id="networklib.classpath">
-		<pathelement location="${networklib.location}/bin" />
+	<path id="jsettlers.network.classpath">
+		<pathelement location="${jsettlers.network.location}/bin" />
 	</path>
 	<path id="jsettlers.logic.classpath">
 		<pathelement location="${jsettlers.logic.location}/bin" />
 		<path refid="jsettlers.graphics.classpath" />
 		<path refid="jsettlers.common.classpath" />
-		<path refid="networklib.classpath" />
+		<path refid="jsettlers.network.classpath" />
 	</path>
 	<path id="go.graphics.swing.classpath">
 		<pathelement location="${go.graphics.swing.location}/bin" />
@@ -59,7 +59,7 @@
 		<path refid="jsettlers.graphics.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
 		<path refid="go.graphics.swing.classpath" />
-		<path refid="networklib.classpath" />
+		<path refid="jsettlers.network.classpath" />
 	</path>
 	<path id="jsettlers.tests.classpath">
 		<pathelement location="bin" />
@@ -70,7 +70,7 @@
 		<path refid="go.graphics.swing.classpath" />
 		<path refid="jsettlers.main.swing.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
-		<path refid="networklib.classpath" />
+		<path refid="jsettlers.network.classpath" />
 		<pathelement location="${jsettlers.tests.location}/libs/junit-4.11.jar" />
 		<pathelement location="${jsettlers.tests.location}/libs/hamcrest-core-1.3.jar" />
 	</path>
@@ -83,7 +83,7 @@
 			</fileset>
 		</copy>
 		<copy includeemptydirs="false" todir="bin">
-			<fileset dir="tests.networklib">
+			<fileset dir="tests.network">
 				<exclude name="**/*.launch" />
 				<exclude name="**/*.java" />
 			</fileset>
@@ -104,7 +104,7 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="clean" />
-		<ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="clean" />
+		<ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="clean" />
 	</target>
@@ -115,7 +115,7 @@
 		<ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}" inheritAll="false" target="build-project" />
-		<ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="build-project" />
+		<ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}" inheritAll="false" target="build-project" />
 		<ant antfile="build/build.ant" dir="${jsettlers.main.swing.location}" inheritAll="false" target="build-project" />
 	</target>
@@ -123,7 +123,7 @@
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false">
 			<src path="tools" />
-			<src path="tests.networklib" />
+			<src path="tests.network" />
 			<src path="tests" />
 			<classpath refid="jsettlers.tests.classpath" />
 		</javac>
@@ -140,13 +140,13 @@
 		</junit>
 	</target>
 
-	<target name="unitTests.networklib" depends="build">
+	<target name="unitTests.network" depends="build">
 		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
 			<formatter type="brief" usefile="false" />
 			<classpath refid="jsettlers.tests.classpath" />
 
 			<batchtest>
-				<fileset dir="tests.networklib" includes="**/*Test.java" />
+				<fileset dir="tests.network" includes="**/*Test.java" />
 			</batchtest>
 		</junit>
 	</target>

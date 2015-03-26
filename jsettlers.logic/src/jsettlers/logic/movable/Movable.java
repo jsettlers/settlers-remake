@@ -33,7 +33,7 @@ import jsettlers.logic.movable.strategies.soldiers.SoldierStrategy;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * Central Movable class of JSettlers.

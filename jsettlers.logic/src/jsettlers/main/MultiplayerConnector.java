@@ -9,10 +9,10 @@ import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.main.datatypes.JoinableGame;
-import networklib.client.interfaces.INetworkClient;
-import networklib.client.receiver.IPacketReceiver;
-import networklib.common.packets.ArrayOfMatchInfosPacket;
-import networklib.common.packets.MatchInfoPacket;
+import jsettlers.network.client.interfaces.INetworkClient;
+import jsettlers.network.client.receiver.IPacketReceiver;
+import jsettlers.network.common.packets.ArrayOfMatchInfosPacket;
+import jsettlers.network.common.packets.MatchInfoPacket;
 
 /**
  * This class implements the {@link IMultiplayerConnector} interface and supports the UI with the list of available multiplayer games and allows to

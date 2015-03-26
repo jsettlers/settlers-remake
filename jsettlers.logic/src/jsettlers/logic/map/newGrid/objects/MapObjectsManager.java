@@ -35,7 +35,7 @@ import jsettlers.logic.objects.tree.Tree;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class manages the MapObjects on the grid. It handles timed events like growth interrupts of a tree or deletion of arrows.

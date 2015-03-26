@@ -8,8 +8,8 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.newGrid.partition.PartitionsGrid;
 import jsettlers.logic.map.save.MapList;
-import networklib.synchronic.random.RandomSingleton;
-import networklib.synchronic.timer.NetworkTimer;
+import jsettlers.network.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class TestExecutionWithDebugDisplay {
 

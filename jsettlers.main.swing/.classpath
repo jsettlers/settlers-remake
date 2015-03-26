@@ -8,6 +8,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/jsettlers.graphics"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.graphics.swing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/go.graphics.swing"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/networklib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jsettlers.network"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

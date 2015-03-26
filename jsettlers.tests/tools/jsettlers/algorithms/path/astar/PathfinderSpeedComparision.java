@@ -15,7 +15,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.MainGrid;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.loader.MapLoader;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 public class PathfinderSpeedComparision {
 	private static final int NUMBER_OF_PATHS = 200;

@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class serializes and deserializes the {@link MainGrid} and therefore the complete game state.

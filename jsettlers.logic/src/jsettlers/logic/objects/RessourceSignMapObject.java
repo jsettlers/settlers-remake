@@ -4,7 +4,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 	private static final long serialVersionUID = -7248748388147081545L;

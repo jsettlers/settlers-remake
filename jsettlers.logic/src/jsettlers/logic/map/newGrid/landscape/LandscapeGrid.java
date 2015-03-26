@@ -13,7 +13,7 @@ import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.flags.IProtectedProvider;
 import jsettlers.logic.map.newGrid.flags.IProtectedProvider.IProtectedChangedListener;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This grid stores the height and the {@link ELandscapeType} of every position.

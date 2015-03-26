@@ -13,9 +13,9 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
-import networklib.NetworkConstants;
-import networklib.client.OfflineNetworkConnector;
-import networklib.client.interfaces.INetworkConnector;
+import jsettlers.network.NetworkConstants;
+import jsettlers.network.client.OfflineNetworkConnector;
+import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
 	public static void replayAndCreateSavegame(File replayFile, int targetGameTime) throws IOException {

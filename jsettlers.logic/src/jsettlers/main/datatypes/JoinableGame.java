@@ -3,7 +3,7 @@ package jsettlers.main.datatypes;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.logic.map.save.MapList;
-import networklib.common.packets.MatchInfoPacket;
+import jsettlers.network.common.packets.MatchInfoPacket;
 
 /**
  * This is a simple POJO implementing the {@link IJoinableGame} interface.

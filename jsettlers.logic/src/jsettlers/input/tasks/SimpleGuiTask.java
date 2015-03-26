@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import jsettlers.common.position.ShortPoint2D;
-import networklib.client.task.packets.TaskPacket;
+import jsettlers.network.client.task.packets.TaskPacket;
 
 /**
  * 

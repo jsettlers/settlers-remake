@@ -8,7 +8,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 public final class DiggerStrategy extends MovableStrategy implements IManageableDigger {
 	private static final long serialVersionUID = 1581926355853324624L;

@@ -22,8 +22,8 @@ import jsettlers.input.tasks.WorkAreaGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.movable.Movable;
-import networklib.client.task.packets.TaskPacket;
-import networklib.synchronic.timer.ITaskExecutor;
+import jsettlers.network.client.task.packets.TaskPacket;
+import jsettlers.network.synchronic.timer.ITaskExecutor;
 
 /**
  * 

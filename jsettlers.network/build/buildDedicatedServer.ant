@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="buildDedicatedServer" basedir="../../">
+
+	<target name="buildDedicatedServer">
+		<ant antfile="jsettlers.network/build/build.ant" useNativeBasedir="true" inheritAll="false" target="build" />
+
+		<jar destfile="target/server/DedicatedJSettlersServer.jar">
+			<manifest>
+				<attribute name="Main-Class" value="jsettlers.network.server.DedicatedServerApp" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="jsettlers.network/bin" />
+		</jar>
+	</target>
+</project>

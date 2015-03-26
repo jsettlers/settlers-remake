@@ -31,7 +31,7 @@ import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
-import networklib.synchronic.random.RandomSingleton;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 

@@ -7,7 +7,7 @@
 	<property name="jsettlers.common.location" value="../jsettlers.common" />
 	<property name="jsettlers.graphics.location" value="../jsettlers.graphics" />
 	<property name="jsettlers.graphics.swing.location" value="../jsettlers.graphics.swing" />
-	<property name="networklib.location" value="../networklib" />
+	<property name="jsettlers.network.location" value="../jsettlers.network" />
 	<property name="jsettlers.logic.location" value="../jsettlers.logic" />
 	<property name="jsettlers.main.swing.location" value="../jsettlers.main.swing" />
 	<property name="debuglevel" value="source,lines,vars" />
@@ -29,14 +29,14 @@
 		<pathelement location="${go.graphics.swing.location}/libs/gluegen-rt.jar" />
 		<pathelement location="${go.graphics.swing.location}/libs/jogl-all.jar" />
 	</path>
-	<path id="networklib.classpath">
-		<pathelement location="${networklib.location}/bin" />
+	<path id="jsettlers.network.classpath">
+		<pathelement location="${jsettlers.network.location}/bin" />
 	</path>
 	<path id="jsettlers.logic.classpath">
 		<pathelement location="${jsettlers.logic.location}/bin" />
 		<path refid="jsettlers.graphics.classpath" />
 		<path refid="jsettlers.common.classpath" />
-		<path refid="networklib.classpath" />
+		<path refid="jsettlers.network.classpath" />
 	</path>
 	<path id="jsettlers.graphics.swing.classpath">
 		<pathelement location="${jsettlers.graphics.swing.location}/bin" />
@@ -53,7 +53,7 @@
 		<path refid="jsettlers.graphics.classpath" />
 		<path refid="jsettlers.graphics.swing.classpath" />
 		<path refid="go.graphics.swing.classpath" />
-		<path refid="networklib.classpath" />
+		<path refid="jsettlers.network.classpath" />
 	</path>
 	<path id="jsettlers.mapcreator.classpath">
 		<pathelement location="bin" />
@@ -87,7 +87,7 @@
 			inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.graphics.swing.location}"
 			inheritAll="false" target="clean" />
-		<ant antfile="build/build.ant" dir="${networklib.location}"
+		<ant antfile="build/build.ant" dir="${jsettlers.network.location}"
 			inheritAll="false" target="clean" />
 		<ant antfile="build/build.ant" dir="${jsettlers.logic.location}"
 			inheritAll="false" target="clean" />
@@ -126,7 +126,7 @@
 				<propertyref name="build.compiler" />
 			</propertyset>
 		</ant>
-		<ant antfile="build/build.ant" dir="${networklib.location}"
+		<ant antfile="build/build.ant" dir="${jsettlers.network.location}"
 			inheritAll="false" target="build-project">
 			<propertyset>
 				<propertyref name="build.compiler" />

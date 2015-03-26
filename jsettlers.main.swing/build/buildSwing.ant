@@ -31,7 +31,7 @@
 			<fileset dir="jsettlers.common/bin" />
 			<fileset dir="jsettlers.logic/bin" />
 			<fileset dir="jsettlers.graphics/bin" />
-			<fileset dir="networklib/bin" />
+			<fileset dir="jsettlers.network/bin" />
 			<fileset dir="jsettlers.graphics.swing/bin" />
 			<fileset dir="go.graphics.swing/bin" />
 		</jar>

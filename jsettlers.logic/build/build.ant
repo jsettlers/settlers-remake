@@ -12,7 +12,7 @@
     <property name="go.graphics.location" value="../go.graphics"/>
     <property name="jsettlers.common.location" value="../jsettlers.common"/>
     <property name="jsettlers.graphics.location" value="../jsettlers.graphics"/>
-    <property name="networklib.location" value="../networklib"/>
+    <property name="jsettlers.network.location" value="../jsettlers.network"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
@@ -27,14 +27,14 @@
         <path refid="jsettlers.common.classpath"/>
         <path refid="go.graphics.classpath"/>
     </path>
-    <path id="networklib.classpath">
-        <pathelement location="${networklib.location}/bin"/>
+    <path id="jsettlers.network.classpath">
+        <pathelement location="${jsettlers.network.location}/bin"/>
     </path>
     <path id="jsettlers.logic.classpath">
         <pathelement location="bin"/>
         <path refid="jsettlers.graphics.classpath"/>
         <path refid="jsettlers.common.classpath"/>
-        <path refid="networklib.classpath"/>
+        <path refid="jsettlers.network.classpath"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -52,7 +52,7 @@
         <ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.common.location}" inheritAll="false" target="clean"/>
         <ant antfile="build/build.ant" dir="${jsettlers.graphics.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="clean"/>
     </target>
     <target depends="build-subprojects,build-project" name="build"/>
     <target name="build-subprojects">
@@ -71,7 +71,7 @@
                 <propertyref name="build.compiler"/>
             </propertyset>
         </ant>
-        <ant antfile="build/build.ant" dir="${networklib.location}" inheritAll="false" target="build-project">
+        <ant antfile="build/build.ant" dir="${jsettlers.network.location}" inheritAll="false" target="build-project">
             <propertyset>
                 <propertyref name="build.compiler"/>
             </propertyset>

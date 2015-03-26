@@ -6,12 +6,12 @@
 	</target>
 	
 	<target name="buildDedicatedServer">
-		<ant antfile="networklib/build/buildDedicatedServer.ant" useNativeBasedir="true" inheritAll="false" target="buildDedicatedServer" />
+		<ant antfile="jsettlers.network/build/buildDedicatedServer.ant" useNativeBasedir="true" inheritAll="false" target="buildDedicatedServer" />
 	</target>
 
 	<target name="runUnitTests">
 		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests" />
-		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests.networklib" />
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests.network" />
 	</target>
 	
 	<target name="buildAll" depends="runUnitTests,buildSwing,buildDedicatedServer" />

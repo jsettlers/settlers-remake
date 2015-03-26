@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.constants.MatchConstants;
-import networklib.client.interfaces.IGameClock;
-import networklib.synchronic.timer.INetworkTimerable;
+import jsettlers.network.client.interfaces.IGameClock;
+import jsettlers.network.synchronic.timer.INetworkTimerable;
 
 public final class RescheduleTimer implements INetworkTimerable, Serializable {
 	private static final long serialVersionUID = -1962430988827211391L;

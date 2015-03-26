@@ -3,12 +3,12 @@ package jsettlers.main;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import networklib.NetworkConstants.ENetworkKey;
-import networklib.client.NetworkClient;
-import networklib.client.interfaces.INetworkClient;
-import networklib.client.receiver.IPacketReceiver;
-import networklib.common.packets.ArrayOfMatchInfosPacket;
-import networklib.infrastructure.channel.reject.RejectPacket;
+import jsettlers.network.NetworkConstants.ENetworkKey;
+import jsettlers.network.client.NetworkClient;
+import jsettlers.network.client.interfaces.INetworkClient;
+import jsettlers.network.client.receiver.IPacketReceiver;
+import jsettlers.network.common.packets.ArrayOfMatchInfosPacket;
+import jsettlers.network.infrastructure.channel.reject.RejectPacket;
 
 /**
  * 

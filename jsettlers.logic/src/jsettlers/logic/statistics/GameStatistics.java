@@ -3,7 +3,7 @@ package jsettlers.logic.statistics;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.statistics.IStatisticable;
-import networklib.client.interfaces.IGameClock;
+import jsettlers.network.client.interfaces.IGameClock;
 
 /**
  * This class supplies the UI with statistics of the game.

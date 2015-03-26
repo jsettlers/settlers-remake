@@ -29,7 +29,7 @@ import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
-import networklib.client.OfflineNetworkConnector;
+import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
  * 
