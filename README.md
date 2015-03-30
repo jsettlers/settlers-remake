@@ -59,6 +59,7 @@ Moreover, if you have any questions or additions to this guide, feel free to wri
 
 ### Development Process
 In order to assist development, follow these steps:
+
 1. Fork this repository.
 2. Clone the forked repository to your local machine.
 3. Import all projects in the cloned repository into your Eclipse Workspace (via "File" -> "Import" -> "Existing Projects into Workspace"). As this repository contains multiple Eclipse Projects, we recommend creating a new workspace for it.
@@ -93,6 +94,7 @@ The following tips can help you getting started with developing on this project.
 
 #### Recommended Run Configurations
 To ease development, JSettlers supports several command line parameters. Amongst others, we find the following combinations helpful.
+
 - `jsettlers.main.swing.SwingManagedJSettlers --control-all --console-output --activate-all-players`
   - `--control-all` allows you to control and see the settlers of all players, instead of only your own ones.
   - `--console-output` prints the console / logging outputs to the console, instead of writing them to a file.
@@ -110,7 +112,9 @@ To ease development, JSettlers supports several command line parameters. Amongst
   - `--targetTime=<X>` specifies the game time of the savegame. This time is specified in minutes.
   - `--replayFile=<PATH TO FILE>` gives the path to the replay file used as source.
 
-
+#### Known Issues
+*  The project "jsettlers.main.android" displays a classpath error (red exclamation mark on the project symbol)
+  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be build. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
 
 #### Project Structure Overview
 The JSettlers code is divided into multiple projects. In the following, there main purposes will be described.
