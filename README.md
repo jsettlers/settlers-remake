@@ -41,7 +41,7 @@ After that, follow the detailed installation instructions for you platform.
 
    where ```<SETTLERS-3-INSTALLATION-PATH>``` is the path to your original "The Settlers 3" installation. (Meaning a folder containing the original's "GFX" and "SND" folders.) **Important:** Use slashes as path delimiters. 
 5. Run the "JSettlers.jar" file and enjoy the game.
-6. Please have a look at the [manual](/wiki/JSettlers-Manual). The current state of the game still lacks many controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
+6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game still lacks many controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
 
 ### Android
 1. Enable installation of Apps from "Unknown Sources".
