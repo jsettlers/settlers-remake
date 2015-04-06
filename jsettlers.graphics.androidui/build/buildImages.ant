@@ -27,7 +27,7 @@
          - - - - - - - - - - - - - - - - - -->
     <target name="loadLib">
         <mkdir dir="./build/.buildScripts" />
-        <javac srcdir="./build:${workspace}/jsettlers.graphics.swing/src:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
+        <javac srcdir="./build:${workspace}/jsettlers.graphics.swing/src:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/jsettlers.common/gen:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
         <taskdef name="exportGraphics" classname="jsettlers.graphics.androidui.AndroidUiImageGenerator" classpath="./build/.buildScripts/" />
     </target>
 
