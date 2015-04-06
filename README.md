@@ -29,7 +29,7 @@ After that, follow the detailed installation instructions for you platform.
 
 ### Windows, Linux, Mac OS
 1. Install "The Settlers III" or a demo version of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files.
-2. Download the newest stable release of JSettlers*.zip / JSettlers*.tar.bz2 (this also includes the MapEditor).
+2. Download the newest stable [release of JSettlers*.zip / JSettlers*.tar.bz2](https://github.com/jsettlers/settlers-remake/releases) (this also includes the MapEditor).
 3. Unpack the downloaded archive to wherever you want JSettlers' installation to be.
 4. Open the unpacked file named "config.prp" with a text editor. Update the line starting with 
 
@@ -68,7 +68,7 @@ In order to assist development, follow these steps:
   - Make sure the project jsettlers.common has a source folder called "gen". If not, refresh the project. If it still isn't there, try to explicitly build the project (right click on the project -> "Build Project").
   - After that, rebuild all projects (without a clean!). You can do this with "CTRL + B".
   - If there is still a project refusing to build, try to explicitly build that one via right click on the project -> "Build Project". 
-  - If you know how to fix this trouble, I'm looking forward to your hints and proposed changes ;).
+  - If you know how to fix this trouble, I'm looking forward to your hints and code changes ;).
 4. When developing changes, create a new branch off of the project's master and give it a speaking name. 
 5. Regularly commit your changes and push them to the new branch in your forked repository. 
 6. If you have questions, need help, or want to see the test results of your code, create a [Pull Request](https://help.github.com/articles/using-pull-requests/) to this repository.
