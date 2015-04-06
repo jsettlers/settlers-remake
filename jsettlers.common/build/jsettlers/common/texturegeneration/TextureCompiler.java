@@ -54,6 +54,8 @@ public class TextureCompiler implements Runnable, TextureIndex {
 			throw new RuntimeException("please use resourceDirectory=\"...\"");
 		}
 		
+		genDirectory.mkdirs();
+		
 		openTextureIndex();
 
 		File rawDirectory = new File(getResourceDirectory(), "textures_raw");
