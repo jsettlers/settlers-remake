@@ -63,7 +63,12 @@ In order to assist development, follow these steps:
 
 1. Fork this repository.
 2. Clone the forked repository to your local machine.
-3. Import all projects in the cloned repository into your Eclipse Workspace (via "File" -> "Import" -> "Existing Projects into Workspace"). As this repository contains multiple Eclipse Projects, we recommend creating a new workspace for it.
+3. Import all projects in the cloned repository into your Eclipse Workspace (via "File" -> "Import" -> "Existing Projects into Workspace"). As this repository contains multiple Eclipse Projects, we recommend creating a new workspace for it. If you have trouble building the projects, the following steps might help:
+  - Clean and build all the projects.
+  - Make sure the project jsettlers.common has a source folder called "gen". If not, refresh the project. If it still isn't there, try to explicitly build the project (right click on the project -> "Build Project").
+  - After that, rebuild all projects (without a clean!). You can do this with "CTRL + B".
+  - If there is still a project refusing to build, try to explicitly build that one via right click on the project -> "Build Project". 
+  - If you know how to fix this trouble, I'm looking forward to your hints and proposed changes ;).
 4. When developing changes, create a new branch off of the project's master and give it a speaking name. 
 5. Regularly commit your changes and push them to the new branch in your forked repository. 
 6. If you have questions, need help, or want to see the test results of your code, create a [Pull Request](https://help.github.com/articles/using-pull-requests/) to this repository.
