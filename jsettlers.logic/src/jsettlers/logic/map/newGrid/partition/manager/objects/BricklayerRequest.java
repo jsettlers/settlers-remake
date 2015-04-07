@@ -13,6 +13,7 @@ public final class BricklayerRequest implements ILocatable, Serializable {
 	public final Building building;
 	public final ShortPoint2D bricklayerTargetPos;
 	public final EDirection direction;
+	private boolean creationRequested;
 
 	public BricklayerRequest(Building building, ShortPoint2D bricklayerTargetPos, EDirection direction) {
 		this.building = building;
@@ -23,5 +24,13 @@ public final class BricklayerRequest implements ILocatable, Serializable {
 	@Override
 	public final ShortPoint2D getPos() {
 		return building.getPos();
+	}
+
+	public boolean isCreationRequested() {
+		return creationRequested;
+	}
+
+	public void creationRequested() {
+		creationRequested = true;
 	}
 }

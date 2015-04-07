@@ -44,10 +44,10 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 	 * @param delay
 	 */
 	public static void add(IScheduledTimerable t, int delay) {
-		get().add_(t, delay);
+		get().addTimerable(t, delay);
 	}
 
-	private void add_(IScheduledTimerable t, int delay) {
+	private void addTimerable(IScheduledTimerable t, int delay) {
 		if (delay <= 0) {
 			return; // don't schedule if requested delay is negative or zero
 		}
@@ -74,7 +74,7 @@ public final class RescheduleTimer implements INetworkTimerable, Serializable {
 		for (IScheduledTimerable curr : queue) {
 			try {
 				int delay = curr.timerEvent();
-				add_(curr, delay);
+				addTimerable(curr, delay);
 			} catch (Throwable t) {
 				System.err.println("RescheduleTimer catched: ");
 				t.printStackTrace();

@@ -310,9 +310,12 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		int dy = direction.gridDeltaY + decentVector.y;
 
 		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
-			this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy));
 			flockDelay = Math.max(flockDelay - 100, 500);
-			return true;
+			if (this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy))) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			flockDelay = Math.min(flockDelay + 100, 1000);
 			return false;
@@ -338,7 +341,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				return false;
 			}
 
-			if (!goToRandomDirection(pushingMovable)) { // try to find free direction
+			if (goToRandomDirection(pushingMovable)) { // try to find free direction
+				return true; // if we found a free direction, go there and tell the pushing one we'll move
+
+			} else { // if we didn't find a direction, check if it's possible to exchange positions
 				if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 				} else { // exchange positions
@@ -347,8 +353,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 					forceGoInDirection(directionToPushing);
 					return true;
 				}
-			} else {
-				return false;
 			}
 
 		case PATHING:
