@@ -405,8 +405,13 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				if (!bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction)) {
 					bricklayerRequests.add(bricklayerRequest);
 				}
-			} else {
+
+			} else if (!bricklayerRequest.isCreationRequested()) { // if the creation hasn't been requested yet => request it.
 				createNewToolUserIfLimitNotExceeded(EMovableType.BRICKLAYER, bricklayerRequest.getPos());
+				bricklayerRequest.creationRequested();
+				bricklayerRequests.offerLast(bricklayerRequest);
+
+			} else { // no bricklayer available and creation already requested => nothing to do.
 				bricklayerRequests.offerLast(bricklayerRequest);
 			}
 		}
