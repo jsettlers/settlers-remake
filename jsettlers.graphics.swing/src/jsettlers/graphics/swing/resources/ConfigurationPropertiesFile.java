@@ -46,6 +46,6 @@ public class ConfigurationPropertiesFile {
 	}
 
 	public String[] getSndFolders() {
-		return getFolders("Snd");
+		return getFolders("SND");
 	}
 }
