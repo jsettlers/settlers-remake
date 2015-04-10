@@ -62,7 +62,6 @@ public final class PioneerStrategy extends MovableStrategy {
 			return;
 		}
 		centerPos = null;
-		System.out.println("Center reset");
 
 		ShortPoint2D pos = super.getPos();
 		if (super.preSearchPath(true, pos.x, pos.y, (short) 30, ESearchType.UNENFORCED_FOREIGN_GROUND)) {
