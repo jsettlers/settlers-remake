@@ -105,7 +105,7 @@ To ease development, JSettlers supports several command line parameters. Amongst
   - `--control-all` allows you to control and see the settlers of all players, instead of only your own ones.
   - `--console-output` prints the console / logging outputs to the console, instead of writing them to a file.
   - `--activate-all-players` ensures that all players on a map are positioned at start. This is especially useful when testing development with the single player mode, as otherwise you would only have one player on the map.
-- `jsettlers.main.swing.SwingManagedJSettlers --control-all --console-output --activate-all-players --targetTime=10 --replayFile="2015-02-27_13-23-03_new_map_replay.log`
+- `jsettlers.main.swing.SwingManagedJSettlers --control-all --console-output --targetTime=10 --replayFile="2015-02-27_13-23-03_new_map_replay.log`
   - This combination of parameters is very helpful for analysing bugs experienced during a game. With the `--replayFile` parameter, it is possible to specify a replay file that is then used to rerun the exact same game (by using the same map, random seed, and user inputs). 
   - `--targetTime=<X>` specifies the game time of the savegame. This time is specified in minutes.
   - `--replayFile=<PATH TO FILE>` gives the path to the replay file used as source.
