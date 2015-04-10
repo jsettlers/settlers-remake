@@ -171,7 +171,8 @@ public class JSettlersGame {
 				mainGrid.initForPlayer(playerId, playerState.getFogOfWar());
 				mainGrid.startThreads();
 
-				imagePreloader.join(); // Wait for ImageProvider to finish loading the images
+				if (imagePreloader != null)
+					imagePreloader.join(); // Wait for ImageProvider to finish loading the images
 
 				waitForStartingGameListener();
 
