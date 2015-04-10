@@ -565,7 +565,6 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			}
 
 			private void eventDataChanged(float zoomFactor) {
-				System.out.println("Zooming by " + zoomFactor);
 				float newZoom = startzoom * zoomFactor;
 				setZoom(newZoom);
 			}
