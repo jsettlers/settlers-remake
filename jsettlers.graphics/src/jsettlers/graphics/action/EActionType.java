@@ -188,7 +188,7 @@ public enum EActionType {
 	ASK_SET_WORK_AREA,
 
 	/**
-	 * Aborts the current user action.
+	 * Aborts the current user action, attempts to reset the GUI state to the default state.
 	 */
 	ABORT,
 	/**

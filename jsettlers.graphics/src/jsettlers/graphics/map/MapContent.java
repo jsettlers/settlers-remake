@@ -628,6 +628,8 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			return new Action(EActionType.SAVE);
 		} else if ("DELETE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DESTROY);
+		} else if ("ESCAPE".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.ABORT);
 		} else {
 			return null;
 		}

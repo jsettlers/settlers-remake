@@ -172,10 +172,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case MOVE_TO:
-			if (previewBuilding != null) { // cancel building creation
-				cancelBuildingCreation();
-				setActiveAction(null);
-			} else {
+			if (!cancelActiveAction()) {
 				PointAction moveToAction = (PointAction) action;
 
 				if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
@@ -249,6 +246,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case NEXT_OF_TYPE:
 			selectNextOfType();
+			break;
+
+		case ABORT:
+			cancelActiveAction();
 			break;
 
 		case EXIT:
@@ -342,6 +343,15 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		if (convertables.size() > 0) {
 			taskScheduler.scheduleTask(new ConvertGuiTask(playerId, getIDsOfIterable(convertables), action.getTargetType()));
 		}
+	}
+
+	private boolean cancelActiveAction() {
+		if (previewBuilding != null) { // cancel building creation
+			cancelBuildingCreation();
+			setActiveAction(null);
+			return true;
+		}
+		return false;
 	}
 
 	private void cancelBuildingCreation() {

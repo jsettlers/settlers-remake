@@ -211,10 +211,9 @@ public class MainPanel extends UIPanel {
 			PointAction replaced = new PointAction(selectAction, position);
 			goBack();
 			return replaced;
-		} else if (action.getActionType() == EActionType.ABORT
-				&& goBackContent != null) {
+		} else if (action.getActionType() == EActionType.ABORT) {
 			goBack();
-			return null;
+			return action;
 		} else if (action.getActionType() == EActionType.EXECUTABLE) {
 			((ExecutableAction) action).execute();
 			return null;
@@ -224,6 +223,7 @@ public class MainPanel extends UIPanel {
 	}
 
 	private void goBack() {
+		selectAction = null;
 		if (goBackContent != null) {
 			setContent(goBackContent);
 			goBackContent = null;
