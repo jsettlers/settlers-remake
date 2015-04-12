@@ -1,7 +1,7 @@
 package jsettlers.graphics.localization;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -21,28 +21,37 @@ import jsettlers.graphics.progress.EProgressState;
  */
 public final class Labels {
 
-	private static final String GERMAN = "de";
-
 	private Labels() {
 	}
 
 	private static ResourceBundle labels;
+	private static boolean labelsLoaded;
 
-	private static ResourceBundle getLabels() {
-		if (labels == null) {
-			String currentLocale = GERMAN;
-
-			try {
-				String filename =
-						"localization/labels_" + currentLocale + ".properties";
-				InputStream instream = ResourceManager.getFile(filename);
-				labels = new PropertyResourceBundle(instream);
-			} catch (IOException e) {
-				System.err.println("Could not load locale");
-				e.printStackTrace();
-			}
+	private static synchronized ResourceBundle getLabels() {
+		if (!labelsLoaded) {
+			loadLabels();
+			labelsLoaded = true;
 		}
 		return labels;
+	}
+
+	private static void loadLabels() {
+		Locale currentLocale = Locale.getDefault();
+		String[] locales = new String[] {
+				"_" + currentLocale.getLanguage() + "_" + currentLocale.getCountry(),
+				"_" + currentLocale.getLanguage(),
+				"_en_US",
+		};
+
+		for (String locale : locales) {
+			String filename = "localization/labels" + locale + ".properties";
+			try {
+				labels = new PropertyResourceBundle(ResourceManager.getFile(filename));
+				break;
+			} catch (IOException e) {
+				System.err.println("Warning: Could not find labels" + locale + ".properties. Falling back to next file.");
+			}
+		}
 	}
 
 	/**
