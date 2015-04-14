@@ -258,7 +258,8 @@ public final class MapCoordinateConverter {
 	 */
 	public MapRectangle getMapForScreen(FloatRectangle screen) {
 		float width = screen.getWidth() * this.inverse[M_00];
-		float height = -screen.getHeight() * this.inverse[M_11];
+		float maxMountainHeight = HEIGHT_Y_DISPLACEMENT * Byte.MAX_VALUE;
+		float height = -(screen.getHeight() + maxMountainHeight) * this.inverse[M_11];
 		float minx = getMapX(screen.getMinX(), screen.getMaxY());
 		float miny = getMapY(screen.getMinX(), screen.getMaxY());
 		return new MapRectangle((short) minx, (short) miny, (short) Math.max(
