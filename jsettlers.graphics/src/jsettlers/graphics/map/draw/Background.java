@@ -834,7 +834,7 @@ public class Background implements IGraphicsBackgroundListener {
 	// private static final int COLOR_OFFSET = 5 * FLOAT_SIZE;
 
 	private byte[] fogOfWarStatus = new byte[1];
-	private MapRectangle oldBufferPosition = null;
+	private MapRectangle oldBufferPosition = new MapRectangle(0, 0, 0, 0);
 	private int bufferwidth = 1;; // in map points.
 	private int bufferheight = 1; // in map points.
 
@@ -1298,7 +1298,6 @@ public class Background implements IGraphicsBackgroundListener {
 				|| screenArea.getLineLength() + 1 != bufferwidth
 				|| screenArea.getLines() != bufferheight) {
 			regenerateGeometry(gl, screenArea);
-			oldBufferPosition = null;
 		}
 
 		GLBuffer boundbuffer = gl.startWriteGeometry(geometryindex);
@@ -1353,12 +1352,9 @@ public class Background implements IGraphicsBackgroundListener {
 
 		int width = context.getMap().getWidth();
 		int height = context.getMap().getHeight();
-		int oldbuffertop = 0;
-		int oldbufferbottom = 0;
-		if (oldBufferPosition != null) {
-			oldbuffertop = oldBufferPosition.getLineY(0);
-			oldbufferbottom = oldbuffertop + bufferheight; // excluding
-		}
+		int oldbuffertop = oldBufferPosition.getLineY(0);
+		int oldbufferbottom = oldbuffertop + bufferheight; // excluding
+
 		for (int line = 0; line < bufferheight; line++) {
 
 			int y = area.getLineY(line);
