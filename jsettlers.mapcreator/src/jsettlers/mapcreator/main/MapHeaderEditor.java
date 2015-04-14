@@ -14,6 +14,7 @@ import javax.swing.SpinnerNumberModel;
 import jsettlers.common.CommonConstants;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
+import jsettlers.mapcreator.localization.EditorLabels;
 
 /**
  * This dialog edits the map header.
@@ -65,12 +66,12 @@ public class MapHeaderEditor extends JPanel {
 		JSpinner minPlayerField = new JSpinner(minPlayer);
 		JSpinner maxPlayerField = new JSpinner(maxPlayer);
 
-		JLabel nameLabel = new JLabel("Name");
-		JLabel descriptionLabel = new JLabel("Description");
-		JLabel widthLabel = new JLabel("Width");
-		JLabel heightLabel = new JLabel("height");
-		JLabel minPlayerLabel = new JLabel("minimum player number");
-		JLabel maxPlayerLabel = new JLabel("maximum player number");
+		JLabel nameLabel = new JLabel(EditorLabels.getLabel("map-name"));
+		JLabel descriptionLabel = new JLabel(EditorLabels.getLabel("map-description"));
+		JLabel widthLabel = new JLabel(EditorLabels.getLabel("max-width"));
+		JLabel heightLabel = new JLabel(EditorLabels.getLabel("max-height"));
+		JLabel minPlayerLabel = new JLabel(EditorLabels.getLabel("map-min-player"));
+		JLabel maxPlayerLabel = new JLabel(EditorLabels.getLabel("map-max-player"));
 
 		add(nameField);
 		add(descriptionField);
