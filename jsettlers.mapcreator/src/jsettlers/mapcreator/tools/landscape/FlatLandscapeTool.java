@@ -22,7 +22,7 @@ public class FlatLandscapeTool implements Tool {
 
 	@Override
 	public String getName() {
-		return EditorLabels.getLabel("flaten");
+		return EditorLabels.getLabel("flatten");
 	}
 
 	@Override

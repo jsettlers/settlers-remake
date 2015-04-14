@@ -37,12 +37,7 @@ public final class Labels {
 	}
 
 	private static void loadLabels() {
-		Locale currentLocale = Locale.getDefault();
-		String[] locales = new String[] {
-				"_" + currentLocale.getLanguage() + "_" + currentLocale.getCountry(),
-				"_" + currentLocale.getLanguage(),
-				"_en_US",
-		};
+		String[] locales = getLocaleSuffixes();
 
 		for (String locale : locales) {
 			String filename = "localization/labels" + locale + ".properties";
@@ -53,6 +48,16 @@ public final class Labels {
 				System.err.println("Warning: Could not find labels" + locale + ".properties. Falling back to next file.");
 			}
 		}
+	}
+
+	public static String[] getLocaleSuffixes() {
+		Locale currentLocale = Locale.getDefault();
+		String[] locales = new String[] {
+				"_" + currentLocale.getLanguage() + "_" + currentLocale.getCountry(),
+				"_" + currentLocale.getLanguage(),
+				"_en_US",
+		};
+		return locales;
 	}
 
 	/**
