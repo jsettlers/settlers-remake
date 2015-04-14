@@ -404,7 +404,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	private final void removeStackObject(short x, short y, StackMapObject stackObject) {
 		removeMapObject(x, y, stackObject);
-		if (grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT) == null) {
+		if (!grid.isBuildingAreaAt(x, y) && grid.getMapObject(x, y, EMapObjectType.STACK_OBJECT) == null) {
 			grid.setProtected(x, y, false); // no other stack, so remove protected
 		}
 	}

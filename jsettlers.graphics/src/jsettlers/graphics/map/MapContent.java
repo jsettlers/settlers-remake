@@ -565,7 +565,6 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			}
 
 			private void eventDataChanged(float zoomFactor) {
-				System.out.println("Zooming by " + zoomFactor);
 				float newZoom = startzoom * zoomFactor;
 				setZoom(newZoom);
 			}
@@ -629,6 +628,8 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			return new Action(EActionType.SAVE);
 		} else if ("DELETE".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.DESTROY);
+		} else if ("ESCAPE".equalsIgnoreCase(keyCode)) {
+			return new Action(EActionType.ABORT);
 		} else {
 			return null;
 		}

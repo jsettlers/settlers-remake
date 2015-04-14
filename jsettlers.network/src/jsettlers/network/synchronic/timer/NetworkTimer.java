@@ -121,7 +121,13 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			while (tasksPacket != null && tasksPacket.getLockstepNumber() <= lockstep) {
 				assert tasksPacket.getLockstepNumber() == lockstep : "FOUND TasksPacket FOR older lockstep!";
 
-				System.out.println("Executing task in lockstep: " + lockstep + " at game time: " + time);
+				int hours = time / (1000 * 60 * 60);
+				int minutes = (time / (1000 * 60)) % 60;
+				int seconds = (time / 1000) % 60;
+				int millis = time % 1000;
+				System.out.printf("Executing task in lockstep: %d at game time: %dms (%02d:%02d:%02d:%03d)\n",
+						lockstep, time, hours, minutes, seconds, millis);
+
 				try {
 					executeTasksPacket(tasksPacket);
 				} catch (Throwable t) {

@@ -34,4 +34,6 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 
 	byte getRessourceAmountAt(int x, int y);
 
+	boolean isBuildingAreaAt(short x, short y);
+
 }

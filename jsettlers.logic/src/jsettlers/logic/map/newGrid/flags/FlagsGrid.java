@@ -61,7 +61,7 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	}
 
 	/**
-	 * sets this position blocked and protected.
+	 * Sets this position's blocked and protected.
 	 * 
 	 * @param x
 	 *            x coordinate
@@ -71,16 +71,32 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	 *            the position will be set to blocked and protected if blocked == true<br>
 	 *            otherwise it will be set to unblocked and unprotected.
 	 */
-	public void setBlockedAndProtected(int x, int y, boolean blocked) {
+	public void setBlockedAndProtected(int x, int y, boolean blockedAndProtected) {
+		setBlockedAndProtected(x, y, blockedAndProtected, blockedAndProtected);
+	}
+
+	/**
+	 * Sets this position's blocked and protected.
+	 * 
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
+	 * @param blocked
+	 *            new blocked value of this position
+	 * @param newProtected
+	 *            new protected value of this position
+	 */
+	public void setBlockedAndProtected(int x, int y, boolean blocked, boolean newProtected) {
 		final int idx = x + y * width;
 		this.blockedGrid.set(idx, blocked);
-		this.protectedGrid.set(idx, blocked);
+		this.protectedGrid.set(idx, newProtected);
 
 		if (blockingChangedListener != null) {
 			this.blockingChangedListener.blockingChanged(x, y, blocked);
 		}
 		if (protectedChangedListener != null) {
-			this.protectedChangedListener.protectedChanged(x, y, blocked);
+			this.protectedChangedListener.protectedChanged(x, y, newProtected);
 		}
 	}
 

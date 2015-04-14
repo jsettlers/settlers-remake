@@ -184,7 +184,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		if (temporaryFlatened[i] < 100) {
 			temporaryFlatened[i] += 3;
 			if (temporaryFlatened[i] > 20) {
-				flaten(x, y);
+				flatten(x, y);
 			}
 		}
 	}
@@ -195,7 +195,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 * @param x
 	 * @param y
 	 */
-	private void flaten(int x, int y) {
+	private void flatten(int x, int y) {
 		if (getLandscapeTypeAt((short) x, (short) y).isGrass() && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
 				&& getLandscapeTypeAt((short) (x - 1), (short) (y - 1)).isGrass() && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
 				&& getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass() && getLandscapeTypeAt((short) (x + 1), (short) (y + 1)).isGrass()

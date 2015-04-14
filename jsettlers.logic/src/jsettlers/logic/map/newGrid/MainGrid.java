@@ -91,6 +91,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.arrow.ArrowObject;
+import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
@@ -773,6 +774,11 @@ public final class MainGrid implements Serializable {
 				mapObjectsManager.removeMapObject(x, y, arrow);
 			}
 		}
+
+		@Override
+		public boolean isBuildingAreaAt(short x, short y) {
+			return objectsGrid.isBuildingAreaAt(x, y);
+		}
 	}
 
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
@@ -1328,7 +1334,7 @@ public final class MainGrid implements Serializable {
 				if (canConstructAt(protectedArea)) {
 					setProtectedState(protectedArea, true);
 					mapObjectsManager.addBuildingTo(position, newBuilding);
-					objectsGrid.setBuildingArea(new FreeMapArea(position, newBuilding.getBuildingType().getBlockedTiles()), newBuilding);
+					objectsGrid.setBuildingArea(protectedArea, newBuilding);
 					return true;
 				} else {
 					return false;
@@ -1362,14 +1368,15 @@ public final class MainGrid implements Serializable {
 			mapObjectsManager.removeMapObjectType(pos.x, pos.y, EMapObjectType.BUILDING);
 
 			FreeMapArea area = new FreeMapArea(pos, building.getBuildingType().getProtectedTiles());
-
 			objectsGrid.setBuildingArea(area, null);
 
 			for (ShortPoint2D curr : area) {
 				short x = curr.x;
 				short y = curr.y;
 				if (isInBounds(x, y)) {
-					flagsGrid.setBlockedAndProtected(x, y, false);
+					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
+					// if there is a stack, the position must stay protected
+					flagsGrid.setBlockedAndProtected(x, y, false, stack != null);
 				}
 			}
 		}

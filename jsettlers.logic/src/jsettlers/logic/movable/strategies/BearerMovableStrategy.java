@@ -181,8 +181,9 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	private void reoffer() {
-		super.getStrategyGrid().takeMaterial(offer, materialType);
-		super.getStrategyGrid().dropMaterial(offer, materialType, true);
+		if (super.getStrategyGrid().takeMaterial(offer, materialType)) {
+			super.getStrategyGrid().dropMaterial(offer, materialType, true);
+		}
 	}
 
 	@Override

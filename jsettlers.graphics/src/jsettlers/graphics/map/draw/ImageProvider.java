@@ -255,10 +255,19 @@ public final class ImageProvider {
 		}
 	}
 
+	/**
+	 * Starts preloading the images, if lookup paths have been set.
+	 * 
+	 * @return
+	 */
 	public Thread startPreloading() {
-		Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
-		thread.start();
-		return thread;
+		if (!lookupPaths.isEmpty()) {
+			Thread thread = new Thread(new ImagePreloadTask(), "image preloader");
+			thread.start();
+			return thread;
+		} else {
+			return null;
+		}
 	}
 
 	/**
