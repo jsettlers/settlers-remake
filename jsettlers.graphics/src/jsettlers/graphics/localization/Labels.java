@@ -1,6 +1,7 @@
 package jsettlers.graphics.localization;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
@@ -46,7 +47,7 @@ public final class Labels {
 		for (String locale : locales) {
 			String filename = "localization/labels" + locale + ".properties";
 			try {
-				labels = new PropertyResourceBundle(ResourceManager.getFile(filename));
+				labels = new PropertyResourceBundle(new InputStreamReader(ResourceManager.getFile(filename), "UTF-8"));
 				break;
 			} catch (IOException e) {
 				System.err.println("Warning: Could not find labels" + locale + ".properties. Falling back to next file.");
