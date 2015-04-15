@@ -34,18 +34,23 @@ public class ConfigurationPropertiesFile {
 	}
 
 	public String[] getGfxFolders() {
-		return getFolders("GFX");
+		return getFolders("GFX", "gfx", "Gfx");
 	}
 
-	private String[] getFolders(String string) {
-		String[] result = properties.getProperty("settlers-folder").split(SPLIT_CHARACTER);
-		for (int i = 0; i < result.length; i++) {
-			result[i] = result[i].replaceFirst("/?$", "/" + string);
+	private String[] getFolders(String... subfolders) {
+		String[] settlersFolder = properties.getProperty("settlers-folder").split(SPLIT_CHARACTER);
+		String[] result = new String[settlersFolder.length * subfolders.length];
+
+		int resultIdx = 0;
+		for (int subfolderIdx = 0; subfolderIdx < subfolders.length; subfolderIdx++) {
+			for (int folderIdx = 0; folderIdx < settlersFolder.length; folderIdx++) {
+				result[resultIdx++] = settlersFolder[folderIdx].replaceFirst("/?$", "/" + subfolders[subfolderIdx]);
+			}
 		}
 		return result;
 	}
 
 	public String[] getSndFolders() {
-		return getFolders("SND");
+		return getFolders("SND", "snd", "Snd");
 	}
 }
