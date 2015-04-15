@@ -1,4 +1,4 @@
-# JSettlers
+# JSettlers   [![Build Status](https://travis-ci.org/jsettlers/settlers-remake.svg?branch=master)](https://travis-ci.org/jsettlers/settlers-remake)
 
 This project intends to create a remake of the famous strategy game "The Settlers 3" published by Blue Byte in 1998. The project is developed in Java and runs on PC (Windows/Linux), Mac and Android. More information can be found on the project's website at [www.settlers-android-clone.com](http://www.settlers-android-clone.com)
 
