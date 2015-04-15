@@ -204,8 +204,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		switch (state) {
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			if (getMoveProgress() < 1)
-				assert getMoveProgress() >= 1 : "move progress should be finished";
 			setState(ENewMovableState.DOING_NOTHING);
 			this.movableAction = EAction.NO_ACTION;
 			break;
