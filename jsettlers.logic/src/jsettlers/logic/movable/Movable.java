@@ -178,10 +178,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		if (moveToRequest != null) {
 			switch (state) {
 			case PATHING:
-				if (getMoveProgress() < 1)
-					assert getMoveProgress() >= 1 : "move progress should be >= 1";
-				// if we are pathing and finished a step, calculate new path
-				setState(ENewMovableState.DOING_NOTHING); // this line is needed for assertions
+				// if we're currently pathing, stop former pathing and calculate a new path
+				setState(ENewMovableState.DOING_NOTHING);
+				this.movableAction = EAction.NO_ACTION;
+				this.path = null;
 
 			case DOING_NOTHING:
 				ShortPoint2D oldTargetPos = path != null ? path.getTargetPos() : null;
