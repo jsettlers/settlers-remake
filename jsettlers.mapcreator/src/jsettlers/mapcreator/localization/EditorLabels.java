@@ -1,7 +1,11 @@
 package jsettlers.mapcreator.localization;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.PropertyResourceBundle;
+
+import jsettlers.graphics.localization.Labels;
 
 public class EditorLabels {
 	private static boolean load;
@@ -9,10 +13,20 @@ public class EditorLabels {
 
 	public synchronized static String getLabel(String name) {
 		if (!load) {
-			try {
-				resource = new PropertyResourceBundle(
-						EditorLabels.class.getResourceAsStream("labels_de.properties"));
-			} catch (IOException e) {
+			String[] locales = Labels.getLocaleSuffixes();
+
+			for (String locale : locales) {
+				String filename = "labels" + locale + ".properties";
+				try {
+					InputStream stream = EditorLabels.class.getResourceAsStream(filename);
+					if (stream == null) {
+						continue;
+					}
+					resource = new PropertyResourceBundle(new InputStreamReader(
+							stream, "UTF-8"));
+					break;
+				} catch (IOException e) {
+				}
 			}
 			load = true;
 		}
