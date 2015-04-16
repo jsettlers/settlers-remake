@@ -28,7 +28,7 @@ In order to play the game, you need to have the "GFX" and "SND" folders of the o
 After that, follow the detailed installation instructions for you platform.
 
 ### Windows, Linux, Mac OS
-1. Install "The Settlers III" or a demo version of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files.
+1. Install "The Settlers III" or a demo version ([Settlers III Amazons Demo](http://www.siedler-maps.de/downloads.php?action=download&downloadid=41)) of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files.
 2. Download the newest stable [release of JSettlers*.zip / JSettlers*.tar.bz2](https://github.com/jsettlers/settlers-remake/releases) (this also includes the MapEditor).
 3. Unpack the downloaded archive to wherever you want JSettlers' installation to be.
 4. Open the unpacked file named "config.prp" with a text editor. Update the line starting with 
