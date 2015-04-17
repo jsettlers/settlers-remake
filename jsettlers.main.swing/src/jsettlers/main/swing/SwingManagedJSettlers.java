@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileFilter;
 
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
@@ -22,6 +24,7 @@ import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
+import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
@@ -70,7 +73,37 @@ public class SwingManagedJSettlers {
 	 */
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
 		File configFile = getConfigFile(argsMap, defaultConfigFileName);
-		SwingResourceLoader.setupSwingResourcesByConfigFile(configFile);
+		ConfigurationPropertiesFile config = new ConfigurationPropertiesFile(configFile);
+
+		if (!config.isSettlersFolderSet()) {
+			JFileChooser fileDialog = new JFileChooser();
+			fileDialog.setAcceptAllFileFilterUsed(false);
+			fileDialog.setFileFilter(new FileFilter() {
+				@Override
+				public String getDescription() {
+					return null;
+				}
+
+				@Override
+				public boolean accept(File f) {
+					return f.isDirectory();
+				}
+			});
+			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			fileDialog.setMultiSelectionEnabled(false);
+			fileDialog.showOpenDialog(null);
+
+			File selectedFolder = fileDialog.getSelectedFile();
+			System.out.println(selectedFolder);
+			try {
+				config.setSettlersFolder(selectedFolder);
+			} catch (IOException ex) {
+				System.err.println("Wasn't able to save settings.");
+				ex.printStackTrace();
+			}
+		}
+		SwingResourceLoader.setupSwingResources(config);
 	}
 
 	public static File getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) {
