@@ -329,9 +329,35 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		float left = getOffsetX() + viewX;
 		float top = -getOffsetY() + viewY;
 
-		buffer2.addTirangle(left + u1 * width, top - v1 * height, left + u2
-				* width, top - v2 * height, left + u3 * width, top - v3
-				* height, convertU(u1), convertV(v1), convertU(u2),
-				convertV(v2), convertU(u3), convertV(v3), activeColor);
+		buffer2.addTriangle(
+			alignCoord( left + u1 * width ),
+			alignCoord( top - v1 * height ),
+			alignCoord( left + u2 * width ),
+			alignCoord( top - v2 * height ),
+			alignCoord( left + u3 * width ),
+			alignCoord( top - v3 * height ),
+			convertU(u1),
+			convertV(v1),
+			convertU(u2),
+			convertV(v2),
+			convertU(u3),
+			convertV(v3),
+			activeColor
+		);
+	}
+
+	/**
+	 * In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
+	 * growing image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more
+	 * predictable and controlled manner.
+	 * @param value the coordinate to be aligned.
+	 * @return an aligned coordinate value.
+	 */
+	private float alignCoord( float value )
+	{
+		//At larger scales the issue is still present to some degree which zoomFactor helps to minimize.
+		//TODO need to find the factor based on the zoom level.
+		float zoomFactor = 1.06f;
+		return (float)((Math.floor( value * zoomFactor )) / zoomFactor);
 	}
 }

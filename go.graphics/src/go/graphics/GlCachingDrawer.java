@@ -40,7 +40,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 
 		private int currentTriangles = 0;
 
-		protected void addTirangles(float[] triangles) {
+		protected void addTriangles(float[] triangles) {
 			for (int i = 0; i < triangles.length; i += 5 * 3) {
 				addTexturedTriangle(triangles, i);
 			}
@@ -151,7 +151,7 @@ public abstract class GlCachingDrawer implements GLDrawContext {
 	@Override
 	public void drawTrianglesWithTexture(int textureid, float[] geometry) {
 		GLBuffer buffer = getBuffer(textureid);
-		buffer.addTirangles(geometry);
+		buffer.addTriangles(geometry);
 	}
 
 	@Override

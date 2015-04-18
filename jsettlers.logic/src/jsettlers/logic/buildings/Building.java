@@ -206,6 +206,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		return couldBePlaced;
 	}
 
+	/**
+	 * Used to set or clear the small red flag atop a building to indicate it is occupied.
+	 * @param place specifies whether the flag should appear or not.
+	 */
 	protected void placeFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
 
