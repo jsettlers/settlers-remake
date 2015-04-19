@@ -33,12 +33,9 @@ import jsettlers.graphics.sequence.Sequence;
  */
 public final class ImageProvider {
 	private static final String FILE_SUFFIX = ".7c003e01f.dat";
-
 	private static final String FILE_PREFIX = "siedler3_";
-
-	private Queue<GLPreloadTask> tasks =
-			new ConcurrentLinkedQueue<GLPreloadTask>();
-
+	private static final int DETAIL_IMAGES = 3;
+	private Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
 	private ImageIndexFile indexFile = null;
 
 	private static final DatFileSet EMPTY_SET = new DatFileSet() {
@@ -171,6 +168,36 @@ public final class ImageProvider {
 	}
 
 	/**
+	 * Gets a detailed GUI image.
+	 * <p>
+	 * For gui images, assumes that the next two images are mre detailed.
+	 * <p>
+	 * For settler sequences, assumes the same for the next two sequence members.
+	 */
+	private Image getDetailedImage( OriginalImageLink link, float width, float height )
+	{
+		int seq = 0;
+		Image higherResImg = getImage(link);
+		Image image = higherResImg;
+		if( link.getFile() != 3 &&
+			link.getFile() != 14){ //Currently only gets higher res images for these this files only.
+			return image;
+		}
+		while( higherResImg.getWidth() < width && higherResImg.getHeight() < height ){
+			image = higherResImg;
+			if( ++seq == DETAIL_IMAGES ){
+				break;
+			}
+			if (link.getType() == EImageLinkType.SETTLER) {
+				higherResImg = getSettlerSequence( link.getFile(), link.getSequence() ).getImageSafe( link.getImage() + seq );
+			} else {
+				higherResImg = getGuiImage( link.getFile(), link.getSequence() + seq );
+			}
+		}
+		return image;
+	}
+
+	/**
 	 * Gets a given gui image.
 	 * 
 	 * @param file
@@ -186,6 +213,30 @@ public final class ImageProvider {
 			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
 		} else {
 			return NullImage.getInstance();
+		}
+	}
+
+	/**
+	 * Gets the highest resolution image that fits the given size.
+	 *
+	 * @param link
+	 *            The link that describes the image
+	 * @return The image or a null image.
+	 */
+	public Image getImage( ImageLink link, float width, float height ) {
+		if (link == null) {
+			return NullImage.getInstance();
+		} else if (link instanceof DirectImageLink) {
+			return getDirectImage((DirectImageLink) link);
+		} else {
+			OriginalImageLink olink = (OriginalImageLink) link;
+			if (olink.getType() == EImageLinkType.GUI) {
+				return getDetailedImage( olink, width, height );
+			} else if (olink.getType() == EImageLinkType.LANDSCAPE) {
+				return getLandscapeImage(olink.getFile(), olink.getSequence());
+			} else {
+				return getDetailedImage( olink, width, height );
+			}
 		}
 	}
 
