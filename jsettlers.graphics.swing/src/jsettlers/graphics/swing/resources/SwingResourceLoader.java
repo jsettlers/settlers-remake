@@ -1,7 +1,6 @@
 package jsettlers.graphics.swing.resources;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import jsettlers.common.resources.ResourceManager;
@@ -17,11 +16,7 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public class SwingResourceLoader {
 
-	public static void setupSwingResourcesByConfigFile(File file) throws FileNotFoundException, IOException {
-		setupSwingResources(new ConfigurationPropertiesFile(file));
-	}
-
-	public static void setupSwingResources(ConfigurationPropertiesFile configFile) throws IOException {
+	public static void setupGraphicsAndSounResources(ConfigurationPropertiesFile configFile) throws IOException {
 		testConfig(configFile);
 
 		ImageProvider imageProvider = ImageProvider.getInstance();
@@ -33,16 +28,10 @@ public class SwingResourceLoader {
 			SoundManager.addLookupPath(new File(sndFolder));
 		}
 
-		setupResourcesManager(configFile);
-
 		imageProvider.startPreloading();
 	}
 
-	public static void setupResourcesManagerByConfigFile(File file) throws FileNotFoundException, IOException {
-		setupResourcesManager(new ConfigurationPropertiesFile(file));
-	}
-
-	private static void setupResourcesManager(ConfigurationPropertiesFile configFile) {
+	public static void setupResourcesManager(ConfigurationPropertiesFile configFile) {
 		ResourceManager.setProvider(new SwingResourceProvider(configFile.getResourcesFolder()));
 	}
 

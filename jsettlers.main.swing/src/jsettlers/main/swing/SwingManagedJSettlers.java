@@ -72,10 +72,10 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 */
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
-		File configFile = getConfigFile(argsMap, defaultConfigFileName);
-		ConfigurationPropertiesFile config = new ConfigurationPropertiesFile(configFile);
+		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
+		SwingResourceLoader.setupResourcesManager(configFile);
 
-		if (!config.isSettlersFolderSet()) {
+		if (!configFile.isSettlersFolderSet()) {
 			JFileChooser fileDialog = new JFileChooser();
 			fileDialog.setAcceptAllFileFilterUsed(false);
 			fileDialog.setFileFilter(new FileFilter() {
@@ -92,27 +92,27 @@ public class SwingManagedJSettlers {
 			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
 			fileDialog.setMultiSelectionEnabled(false);
+			fileDialog.setDialogTitle("Select the folder of your original Settlers III installation.");
 			fileDialog.showOpenDialog(null);
 
 			File selectedFolder = fileDialog.getSelectedFile();
 			System.out.println(selectedFolder);
 			try {
-				config.setSettlersFolder(selectedFolder);
+				configFile.setSettlersFolder(selectedFolder);
 			} catch (IOException ex) {
 				System.err.println("Wasn't able to save settings.");
 				ex.printStackTrace();
 			}
 		}
-		SwingResourceLoader.setupSwingResources(config);
+		SwingResourceLoader.setupGraphicsAndSounResources(configFile);
 	}
 
-	public static File getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) {
+	public static ConfigurationPropertiesFile getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) throws IOException {
 		String configFileName = defaultConfigFileName;
 		if (argsMap.containsKey("config")) {
 			configFileName = argsMap.get("config");
 		}
-		File configFil = new File(configFileName);
-		return configFil;
+		return new ConfigurationPropertiesFile(new File(configFileName));
 	}
 
 	public static void loadDebugSettings(HashMap<String, String> argsMap) {
