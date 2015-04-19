@@ -96,6 +96,12 @@ public class SwingManagedJSettlers {
 			fileDialog.showOpenDialog(null);
 
 			File selectedFolder = fileDialog.getSelectedFile();
+			if (selectedFolder == null) {
+				// TODO display an alert, that the game can't start without the graphics files.
+				System.err.println("No orignal Settlers III installation selected. Can't start without graphics files.");
+				System.exit(1);
+			}
+
 			System.out.println(selectedFolder);
 			try {
 				configFile.setSettlersFolder(selectedFolder);
