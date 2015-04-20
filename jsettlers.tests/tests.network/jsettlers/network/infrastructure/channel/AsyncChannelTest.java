@@ -7,12 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import jsettlers.network.TestUtils;
 import jsettlers.network.NetworkConstants.ENetworkKey;
-import jsettlers.network.infrastructure.channel.AsyncChannel;
-import jsettlers.network.infrastructure.channel.Channel;
-import jsettlers.network.infrastructure.channel.GenericDeserializer;
-import jsettlers.network.infrastructure.channel.IDeserializingable;
+import jsettlers.network.TestUtils;
 import jsettlers.network.infrastructure.channel.listeners.BufferingPacketListener;
 
 import org.junit.After;
@@ -78,7 +74,7 @@ public class AsyncChannelTest {
 			assertTrue(System.currentTimeMillis() - start < 5); // check that the sending is asynchronous
 		}
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 
 		List<TestPacket> packets = listener.popBufferedPackets();
 
