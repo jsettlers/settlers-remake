@@ -1385,12 +1385,9 @@ public class Background implements IGraphicsBackgroundListener {
 					redrawPoint(boundbuffer, context, x, y, false,
 							bufferPosition);
 				} else if (lineIsInMap && x >= 0 && x < width) {
-					if (hasInvalidFields) {
-						boolean invalid = getAndResetInvalid(bufferPosition);
-						if (invalid) {
-							redrawPoint(boundbuffer, context, x, y, true,
-									bufferPosition);
-						}
+					if (hasInvalidFields && getAndResetInvalid(bufferPosition)) {
+						redrawPoint(boundbuffer, context, x, y, true,
+								bufferPosition);
 					} else if (context.getVisibleStatus(x, y) != fogOfWarStatus[bufferPosition * 4]) {
 						redrawPoint(boundbuffer, context, x, y, true,
 								bufferPosition);
