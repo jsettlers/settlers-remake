@@ -14,6 +14,7 @@ import java.util.TimerTask;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import jsettlers.common.CommitInfo;
@@ -22,6 +23,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
@@ -92,13 +94,14 @@ public class SwingManagedJSettlers {
 			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
 			fileDialog.setMultiSelectionEnabled(false);
-			fileDialog.setDialogTitle("Select the folder of your original Settlers III installation.");
+			fileDialog.setDialogTitle(Labels.getString("select-settlers-3-folder"));
 			fileDialog.showOpenDialog(null);
 
 			File selectedFolder = fileDialog.getSelectedFile();
 			if (selectedFolder == null) {
-				// TODO display an alert, that the game can't start without the graphics files.
-				System.err.println("No orignal Settlers III installation selected. Can't start without graphics files.");
+				String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
+				JOptionPane.showMessageDialog(null, noFolderSelctedMessage);
+				System.err.println(noFolderSelctedMessage);
 				System.exit(1);
 			}
 
@@ -106,7 +109,9 @@ public class SwingManagedJSettlers {
 			try {
 				configFile.setSettlersFolder(selectedFolder);
 			} catch (IOException ex) {
-				System.err.println("Wasn't able to save settings.");
+				String errorSavingSettingsMessage = Labels.getString("error-settings-not-saveable");
+				System.err.println(errorSavingSettingsMessage);
+				JOptionPane.showMessageDialog(null, errorSavingSettingsMessage);
 				ex.printStackTrace();
 			}
 		}
