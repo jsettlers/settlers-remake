@@ -848,6 +848,8 @@ public class Background implements IGraphicsBackgroundListener {
 
 	private BitSet geometryInvalid = new BitSet();
 
+	private boolean mapViewResized;
+
 	private static Object preloadMutex = new Object();
 
 	private static short[] preloadedTexture = null;
@@ -1296,9 +1298,10 @@ public class Background implements IGraphicsBackgroundListener {
 		GLDrawContext gl = context.getGl();
 		MapRectangle screenArea =
 				context.getConverter().getMapForScreen(screen);
-		if (!gl.isGeometryValid(geometryindex)
+		mapViewResized = !gl.isGeometryValid(geometryindex)
 				|| screenArea.getLineLength() + 1 != bufferwidth
-				|| screenArea.getLines() != bufferheight) {
+				|| screenArea.getLines() != bufferheight;
+		if (mapViewResized) {
 			regenerateGeometry(gl, screenArea);
 		}
 
@@ -1356,7 +1359,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void reloadGeometry(GLBuffer boundbuffer, MapRectangle area,
 			MapDrawContext context) {
-		boolean hasInvalidFields = !geometryInvalid.isEmpty();
+		boolean hasInvalidFields = hasInvalidFields();
 
 		int width = context.getMap().getWidth();
 		int height = context.getMap().getHeight();
@@ -1378,16 +1381,12 @@ public class Background implements IGraphicsBackgroundListener {
 
 			for (int x = minx; x < maxx; x++) {
 				int bufferPosition = getBufferPosition(y, x);
-				if (oldminx > x || oldmaxx <= x) {
+				if (mapViewResized || oldminx > x || oldmaxx <= x) {
 					redrawPoint(boundbuffer, context, x, y, false,
 							bufferPosition);
 				} else if (lineIsInMap && x >= 0 && x < width) {
 					if (hasInvalidFields) {
-						boolean invalid = false;
-						synchronized (this) {
-							invalid = geometryInvalid.get(bufferPosition);
-							geometryInvalid.clear(bufferPosition);
-						}
+						boolean invalid = getAndResetInvalid(bufferPosition);
 						if (invalid) {
 							redrawPoint(boundbuffer, context, x, y, true,
 									bufferPosition);
@@ -1404,6 +1403,16 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 
 		oldBufferPosition = area;
+	}
+
+	private synchronized boolean getAndResetInvalid(int bufferPosition) {
+		boolean invalid = geometryInvalid.get(bufferPosition);
+		geometryInvalid.clear(bufferPosition);
+		return invalid;
+	}
+
+	private synchronized boolean hasInvalidFields() {
+		return !geometryInvalid.isEmpty();
 	}
 
 	/**
