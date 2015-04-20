@@ -168,30 +168,24 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Gets a detailed GUI image.
+	 * Gets a detailed GUI/settler image.
 	 * <p>
-	 * For gui images, assumes that the next two images are mre detailed.
+	 * For gui images, assumes that the next two images are more detailed.
 	 * <p>
 	 * For settler sequences, assumes the same for the next two sequence members.
 	 */
-	private Image getDetailedImage( OriginalImageLink link, float width, float height )
-	{
-		int seq = 0;
-		Image higherResImg = getImage(link);
-		Image image = higherResImg;
-		if( link.getFile() != 3 &&
-			link.getFile() != 14){ //Currently only gets higher res images for these this files only.
-			return image;
-		}
-		while( higherResImg.getWidth() < width && higherResImg.getHeight() < height ){
-			image = higherResImg;
-			if( ++seq == DETAIL_IMAGES ){
-				break;
-			}
+	private Image getDetailedImage(OriginalImageLink link, float width, float height) {
+		int sequenceLength = (link.getFile() == 3 || link.getFile() == 14) ? DETAIL_IMAGES : 1;
+		Image image = null;
+		for (int seq = 0; seq < sequenceLength; seq++) {
 			if (link.getType() == EImageLinkType.SETTLER) {
-				higherResImg = getSettlerSequence( link.getFile(), link.getSequence() ).getImageSafe( link.getImage() + seq );
+				image = getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + seq);
 			} else {
-				higherResImg = getGuiImage( link.getFile(), link.getSequence() + seq );
+				image = getGuiImage(link.getFile(), link.getSequence() + seq);
+			}
+
+			if (image.getWidth() >= width && image.getHeight() >= height) {
+				break;
 			}
 		}
 		return image;
@@ -221,21 +215,23 @@ public final class ImageProvider {
 	 *
 	 * @param link
 	 *            The link that describes the image
+	 * @param width
+	 *            The width the image should have (at least).
+	 * @param height
+	 *            The height the image should have (at least).
 	 * @return The image or a null image.
 	 */
-	public Image getImage( ImageLink link, float width, float height ) {
+	public Image getImage(ImageLink link, float width, float height) {
 		if (link == null) {
 			return NullImage.getInstance();
 		} else if (link instanceof DirectImageLink) {
 			return getDirectImage((DirectImageLink) link);
 		} else {
 			OriginalImageLink olink = (OriginalImageLink) link;
-			if (olink.getType() == EImageLinkType.GUI) {
-				return getDetailedImage( olink, width, height );
-			} else if (olink.getType() == EImageLinkType.LANDSCAPE) {
+			if (olink.getType() == EImageLinkType.LANDSCAPE) {
 				return getLandscapeImage(olink.getFile(), olink.getSequence());
 			} else {
-				return getDetailedImage( olink, width, height );
+				return getDetailedImage(olink, width, height);
 			}
 		}
 	}
@@ -248,21 +244,7 @@ public final class ImageProvider {
 	 * @return The image or a null image.
 	 */
 	public Image getImage(ImageLink link) {
-		if (link == null) {
-			return NullImage.getInstance();
-		} else if (link instanceof DirectImageLink) {
-			return getDirectImage((DirectImageLink) link);
-		} else {
-			OriginalImageLink olink = (OriginalImageLink) link;
-			if (olink.getType() == EImageLinkType.GUI) {
-				return getGuiImage(olink.getFile(), olink.getSequence());
-			} else if (olink.getType() == EImageLinkType.LANDSCAPE) {
-				return getLandscapeImage(olink.getFile(), olink.getSequence());
-			} else {
-				return getSettlerSequence(olink.getFile(), olink.getSequence())
-						.getImageSafe(olink.getImage());
-			}
-		}
+		return getImage(link, -1, -1);
 	}
 
 	private Image getDirectImage(DirectImageLink link) {
