@@ -14,17 +14,22 @@ import java.util.Properties;
  */
 public class ConfigurationPropertiesFile {
 	private static final String SETTLERS_FOLDER = "settlers-folder";
-
 	private static final String SPLIT_CHARACTER = ";";
 
-	private final Properties properties = new Properties();
-
 	private final File configFile;
+	private final Properties properties;
 
 	public ConfigurationPropertiesFile(File file) throws FileNotFoundException,
 			IOException {
 		this.configFile = file;
-		properties.load(new FileInputStream(file));
+
+		Properties defaultProperties = new Properties();
+		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
+		this.properties = new Properties(defaultProperties);
+
+		if (file.exists()) {
+			this.properties.load(new FileInputStream(file));
+		}
 	}
 
 	public File getResourcesFolder() {
@@ -74,6 +79,10 @@ public class ConfigurationPropertiesFile {
 
 	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {
 		properties.setProperty(SETTLERS_FOLDER, newSettlersFolder.getAbsolutePath());
-		properties.store(new FileOutputStream(configFile), "Updated settlers-folder with dialog.");
+		saveConfigFile("Updated settlers-folder with dialog.");
+	}
+
+	private void saveConfigFile(String updateMessage) throws IOException, FileNotFoundException {
+		properties.store(new FileOutputStream(configFile), updateMessage);
 	}
 }
