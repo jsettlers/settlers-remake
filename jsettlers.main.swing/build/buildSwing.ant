@@ -87,11 +87,6 @@
 	<target name="cleanBuildSwing" depends="buildSwingBundles" />
 
 	<target name="clean">
-		<delete includeemptydirs="true">
-			<fileset dir="${swingTarget}">
-				<include name="**" />
-				<exclude name="**/config.prp" />
-			</fileset>
-		</delete>
+		<delete dir="${swingTarget}" />
 	</target>
 </project>
