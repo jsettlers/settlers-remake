@@ -816,6 +816,8 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
+	private final BitSet fowDimmed = new BitSet();
+
 	private static final short FLOAT_SIZE = 4;
 	/**
 	 * How many bytes are needed per vertex
@@ -1312,6 +1314,12 @@ public class Background implements IGraphicsBackgroundListener {
 				geometryindex, geometrytirs);
 
 		gl.glPopMatrix();
+
+		resetFOWDimStatus();
+	}
+
+	private void resetFOWDimStatus() {
+		fowDimmed.clear();
 	}
 
 	private void regenerateGeometry(GLDrawContext gl, MapRectangle screenArea) {
@@ -1459,8 +1467,11 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x,
 			int y) {
-		byte newFog = context.getVisibleStatus(x, y);
-		fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+		if (!fowDimmed.get(offset)) {
+			byte newFog = context.getVisibleStatus(x, y);
+			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+			fowDimmed.set(offset);
+		}
 	}
 
 	private static byte dim(byte value, byte dimTo) {
