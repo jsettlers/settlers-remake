@@ -54,7 +54,7 @@ public final class TestUtils {
 	public static synchronized void setupSwingResources() {
 		try {
 			setupResourcesManager();
-			SwingResourceLoader.setupGraphicsAndSounResources(getDefaultConfigFile());
+			SwingResourceLoader.setupGraphicsAndSoundResources(getDefaultConfigFile());
 		} catch (IOException e) {
 			throw new RuntimeException("Config file not found!", e);
 		}

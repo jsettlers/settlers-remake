@@ -115,7 +115,7 @@ public class SwingManagedJSettlers {
 				ex.printStackTrace();
 			}
 		}
-		SwingResourceLoader.setupGraphicsAndSounResources(configFile);
+		SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
 	}
 
 	public static ConfigurationPropertiesFile getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) throws IOException {
