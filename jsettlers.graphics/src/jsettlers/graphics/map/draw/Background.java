@@ -816,6 +816,8 @@ public class Background implements IGraphicsBackgroundListener {
 			// ...
 	};
 
+	private final BitSet fowDimmed = new BitSet();
+
 	private static final short FLOAT_SIZE = 4;
 	/**
 	 * How many bytes are needed per vertex
@@ -845,6 +847,8 @@ public class Background implements IGraphicsBackgroundListener {
 	private int geometrytirs;
 
 	private BitSet geometryInvalid = new BitSet();
+
+	private boolean mapViewResized;
 
 	private static Object preloadMutex = new Object();
 
@@ -1294,9 +1298,10 @@ public class Background implements IGraphicsBackgroundListener {
 		GLDrawContext gl = context.getGl();
 		MapRectangle screenArea =
 				context.getConverter().getMapForScreen(screen);
-		if (!gl.isGeometryValid(geometryindex)
+		mapViewResized = !gl.isGeometryValid(geometryindex)
 				|| screenArea.getLineLength() + 1 != bufferwidth
-				|| screenArea.getLines() != bufferheight) {
+				|| screenArea.getLines() != bufferheight;
+		if (mapViewResized) {
 			regenerateGeometry(gl, screenArea);
 		}
 
@@ -1312,6 +1317,12 @@ public class Background implements IGraphicsBackgroundListener {
 				geometryindex, geometrytirs);
 
 		gl.glPopMatrix();
+
+		resetFOWDimStatus();
+	}
+
+	private void resetFOWDimStatus() {
+		fowDimmed.clear();
 	}
 
 	private void regenerateGeometry(GLDrawContext gl, MapRectangle screenArea) {
@@ -1348,7 +1359,7 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void reloadGeometry(GLBuffer boundbuffer, MapRectangle area,
 			MapDrawContext context) {
-		boolean hasInvalidFields = !geometryInvalid.isEmpty();
+		boolean hasInvalidFields = hasInvalidFields();
 
 		int width = context.getMap().getWidth();
 		int height = context.getMap().getHeight();
@@ -1370,20 +1381,13 @@ public class Background implements IGraphicsBackgroundListener {
 
 			for (int x = minx; x < maxx; x++) {
 				int bufferPosition = getBufferPosition(y, x);
-				if (oldminx > x || oldmaxx <= x) {
+				if (mapViewResized || oldminx > x || oldmaxx <= x) {
 					redrawPoint(boundbuffer, context, x, y, false,
 							bufferPosition);
 				} else if (lineIsInMap && x >= 0 && x < width) {
-					if (hasInvalidFields) {
-						boolean invalid = false;
-						synchronized (this) {
-							invalid = geometryInvalid.get(bufferPosition);
-							geometryInvalid.clear(bufferPosition);
-						}
-						if (invalid) {
-							redrawPoint(boundbuffer, context, x, y, true,
-									bufferPosition);
-						}
+					if (hasInvalidFields && getAndResetInvalid(bufferPosition)) {
+						redrawPoint(boundbuffer, context, x, y, true,
+								bufferPosition);
 					} else if (context.getVisibleStatus(x, y) != fogOfWarStatus[bufferPosition * 4]) {
 						redrawPoint(boundbuffer, context, x, y, true,
 								bufferPosition);
@@ -1396,6 +1400,16 @@ public class Background implements IGraphicsBackgroundListener {
 		}
 
 		oldBufferPosition = area;
+	}
+
+	private synchronized boolean getAndResetInvalid(int bufferPosition) {
+		boolean invalid = geometryInvalid.get(bufferPosition);
+		geometryInvalid.clear(bufferPosition);
+		return invalid;
+	}
+
+	private synchronized boolean hasInvalidFields() {
+		return !geometryInvalid.isEmpty();
 	}
 
 	/**
@@ -1459,8 +1473,11 @@ public class Background implements IGraphicsBackgroundListener {
 	 */
 	private void dimFogOfWarBuffer(MapDrawContext context, int offset, int x,
 			int y) {
-		byte newFog = context.getVisibleStatus(x, y);
-		fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+		if (!fowDimmed.get(offset)) {
+			byte newFog = context.getVisibleStatus(x, y);
+			fogOfWarStatus[offset] = dim(fogOfWarStatus[offset], newFog);
+			fowDimmed.set(offset);
+		}
 	}
 
 	private static byte dim(byte value, byte dimTo) {

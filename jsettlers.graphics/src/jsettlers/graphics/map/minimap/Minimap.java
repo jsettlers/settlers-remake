@@ -67,14 +67,14 @@ public final class Minimap {
 	public void draw(GLDrawContext context) {
 		synchronized (update_syncobj) {
 			if (!imageIsValid) {
-				if (imageIndex < 0) {
+				if (imageIndex > 0) {
 					context.deleteTexture(imageIndex);
 				}
 				ShortBuffer data =
 						ByteBuffer.allocateDirect(width * height * 2)
 								.order(ByteOrder.nativeOrder()).asShortBuffer();
 				for (int i = 0; i < width * height; i++) {
-					data.put((short) 0x0001);
+					data.put(LineLoader.BLACK);
 				}
 				data.position(0);
 				imageIndex = context.generateTexture(width, height, data);
