@@ -222,7 +222,7 @@ public final class TextureGenerator {
 			return new ProvidedImage(image, offsets);
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem reading image " + id
-					+ ". Pronblem was: " + t.getMessage());
+					+ ". Problem was: " + t.getMessage());
 			return null;
 		}
 	}
@@ -239,7 +239,7 @@ public final class TextureGenerator {
 
 		} catch (Throwable t) {
 			System.err.println("WARNING: Problem reading offsets for " + id
-					+ ", assuming (0,0). Pronblem was: " + t.getMessage());
+					+ ", assuming (0,0). Problem was: " + t.getMessage());
 			return new int[] { 0, 0 };
 		}
 	}
