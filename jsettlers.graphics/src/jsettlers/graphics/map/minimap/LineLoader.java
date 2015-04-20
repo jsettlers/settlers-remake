@@ -61,6 +61,7 @@ class LineLoader implements Runnable {
 					}
 				}
 				minimap.setBufferArray(buffer);
+				currentline = 0;
 			}
 
 			calculateLineData(currentline);
