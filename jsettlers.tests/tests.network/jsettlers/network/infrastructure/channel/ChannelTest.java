@@ -180,7 +180,7 @@ public class ChannelTest {
 		TestPacket testPackage = new TestPacket("dsfs", 2332);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 
 		assertEquals(1, listener.packets.size());
 		assertEquals(testPackage, listener.packets.get(0));
@@ -253,7 +253,7 @@ public class ChannelTest {
 		c1.sendPacket(ENetworkKey.TEST_PACKET, new EmptyPacket());
 		assertEquals(0, c1RejectListener.popBufferedPackets().size());
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
 		assertEquals(1, rejects.size());
 		assertEquals(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, rejects.get(0).getErrorMessageId());
