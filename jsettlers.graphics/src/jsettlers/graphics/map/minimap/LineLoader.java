@@ -110,10 +110,9 @@ class LineLoader implements Runnable {
 
 		int myXOffset = (currXOffset + currentline * 3) % X_STEP_WIDTH;
 
-		int mapMaxX = (int) ((float) myXOffset / safeWidth * mapWidth);
 		for (int x = myXOffset; x < safeWidth; x += X_STEP_WIDTH) {
-			int mapMinX = mapMaxX;
-			mapMaxX = (int) ((float) (x + 1) / safeWidth * mapWidth);
+			int mapMinX = (int) ((float) x / safeWidth * mapWidth);
+			int mapMaxX = (int) ((float) (x + 1) / safeWidth * mapWidth);
 
 			if (mapMinX != 0 && mapMaxX == mapMinX) {
 				mapMinX = mapMaxX - 1;
