@@ -20,6 +20,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
@@ -37,8 +38,6 @@ import jsettlers.network.client.OfflineNetworkConnector;
  * @author michael
  */
 public class SwingManagedJSettlers {
-
-	private static final String BUILD = "commit: " + CommitInfo.COMMIT_HASH_SHORT;
 
 	/**
 	 * @param args
@@ -109,7 +108,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static JSettlersScreen startGui() {
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), BUILD);
+		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), getBuild());
 		area.add(content.getRegion());
 
 		startJogl(area);
@@ -182,7 +181,7 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void startJogl(Area area) {
-		JFrame jsettlersWnd = new JFrame("JSettlers - " + BUILD);
+		JFrame jsettlersWnd = new JFrame("JSettlers - " + getBuild());
 
 		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
@@ -195,5 +194,9 @@ public class SwingManagedJSettlers {
 		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jsettlersWnd.setVisible(true);
 		jsettlersWnd.setLocationRelativeTo(null);
+	}
+
+	private static String getBuild() {
+		return Labels.getString("version-build", CommitInfo.COMMIT_HASH_SHORT);
 	}
 }

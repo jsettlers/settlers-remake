@@ -22,11 +22,39 @@ import jsettlers.graphics.progress.EProgressState;
  */
 public final class Labels {
 
+	public static class LocaleSuffix {
+		private Locale locale;
+		private boolean useCountry;
+
+		public LocaleSuffix(Locale locale, boolean useCountry) {
+			this.locale = locale;
+			this.useCountry = useCountry;
+		}
+
+		public Locale getLocale() {
+			return locale;
+		}
+
+		public String getFileName(String prefix, String suffix) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(prefix);
+			stringBuilder.append("_");
+			stringBuilder.append(locale.getLanguage());
+			if (useCountry) {
+				stringBuilder.append("_");
+				stringBuilder.append(locale.getCountry());
+			}
+			stringBuilder.append(suffix);
+			return stringBuilder.toString();
+		}
+	}
+
 	private Labels() {
 	}
 
 	private static ResourceBundle labels;
 	private static boolean labelsLoaded;
+	private static Locale usedLocale = Locale.getDefault();
 
 	private static synchronized ResourceBundle getLabels() {
 		if (!labelsLoaded) {
@@ -37,25 +65,26 @@ public final class Labels {
 	}
 
 	private static void loadLabels() {
-		String[] locales = getLocaleSuffixes();
+		LocaleSuffix[] locales = getLocaleSuffixes();
 
-		for (String locale : locales) {
-			String filename = "localization/labels" + locale + ".properties";
+		for (LocaleSuffix locale : locales) {
+			String filename = locale.getFileName("localization/labels", ".properties");
 			try {
 				labels = new PropertyResourceBundle(new InputStreamReader(ResourceManager.getFile(filename), "UTF-8"));
+				usedLocale = locale.getLocale();
 				break;
 			} catch (IOException e) {
-				System.err.println("Warning: Could not find labels" + locale + ".properties. Falling back to next file.");
+				System.err.println("Warning: Could not find " + filename + ". Falling back to next file.");
 			}
 		}
 	}
 
-	public static String[] getLocaleSuffixes() {
+	public static LocaleSuffix[] getLocaleSuffixes() {
 		Locale currentLocale = Locale.getDefault();
-		String[] locales = new String[] {
-				"_" + currentLocale.getLanguage() + "_" + currentLocale.getCountry(),
-				"_" + currentLocale.getLanguage(),
-				"_en_US",
+		LocaleSuffix[] locales = new LocaleSuffix[] {
+				new LocaleSuffix(currentLocale, true),
+				new LocaleSuffix(currentLocale, false),
+				new LocaleSuffix(new Locale("en", "US"), true),
 		};
 		return locales;
 	}
@@ -78,6 +107,11 @@ public final class Labels {
 				return key;
 			}
 		}
+	}
+
+	public static String getString(String string, Object... args) {
+		String parsedString = getString(string);
+		return String.format(usedLocale, parsedString, args);
 	}
 
 	/**
