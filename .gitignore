@@ -17,3 +17,11 @@ logs
 
 /jsettlers.main.swing/*.log
 
+#IDE Files
+*.iml
+*.ipr
+*.iws
+.idea
+#.project
+#.classpath
+#.settings

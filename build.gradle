@@ -1,0 +1,207 @@
+
+ext {
+  gradleVersion = '2.3'
+  jogampVer   = '2.2.1'
+}
+
+subprojects { subproject ->
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+
+  sourceSets.main.java.srcDirs = ["src/"]
+  sourceSets.main.resources.srcDirs = ["resources/"]
+  sourceSets.test.java.srcDirs = ["test/"]
+
+  dependencies {
+
+//    testCompile "junit:junit:4.11"
+//    testCompile "hamcrest:hamcrest:1.3"
+  }
+
+  compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  }
+
+  compileTestJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  }
+
+  repositories {
+    jcenter()
+    flatDir(dirs: "${rootProject.projectDir}/jogamp")
+  }
+}
+
+project('jsettlers.main.swing') {
+  apply plugin: 'application'
+
+  dependencies {
+    compile project(":jsettlers.logic")
+    compile project(":jsettlers.graphics.swing")
+
+  }
+
+  jar {
+    baseName = project.name
+    manifest { attributes "Main-Class": "jsettlers.main.swing.SwingManagedJSettlers" }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  }
+  task classpath << {
+    println configurations.runtime.files.join(':')
+  }
+
+  project.mainClassName="jsettlers.main.swing.SwingManagedJSettlers"
+}
+
+project('jsettlers.network') {
+  apply plugin: 'application'
+
+  jar {
+    baseName = project.name
+    manifest { attributes "Main-Class": "jsettlers.network.server.DedicatedServerApp" }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  }
+
+  project.mainClassName="jsettlers.network.server.DedicatedServerApp"
+}
+
+project('jsettlers.mapcreator') {
+  dependencies {
+    compile project(":jsettlers.graphics.swing")
+    compile project(":jsettlers.main.swing")
+  }
+}
+
+project('jsettlers.common') {
+  sourceSets.main.java.srcDirs = ["src","gen"]
+}
+
+project('jsettlers.graphics') {
+  dependencies {
+    compile project(":jsettlers.common")
+    compile project(":go.graphics.swing")
+  }
+}
+
+project('jsettlers.graphics.swing') {
+  dependencies {
+    compile project(":jsettlers.common")
+    compile project(":jsettlers.graphics")
+    compile project(":go.graphics.swing")
+  }
+}
+
+project('jsettlers.logic') {
+  dependencies {
+    compile project(":jsettlers.common")
+    compile project(":jsettlers.network")
+    compile project(":jsettlers.graphics")
+  }
+}
+
+project('jsettlers.buildingcreator') {
+  dependencies {
+    compile project(":jsettlers.graphics.swing")
+    compile project(":jsettlers.main.swing")
+  }
+}
+
+project('go.graphics.nativegl') {
+  configurations {
+    natives
+  }
+
+  sourceSets {
+    main {
+      compileClasspath += configurations.natives
+    }
+    test {
+      compileClasspath += configurations.natives
+    }
+  }
+
+//TODO,
+// complete the pulling in of the native libs somehow.
+// build the JNI/ C stuff and include
+
+  dependencies {
+    compile project(":go.graphics")
+
+
+
+//    compile fileTree(dir: 'libs', include: '*.jar')
+//    runtime fileTree(dir: 'libs', include: '*.jar')
+//    compile ":jogl-all:$jogampVer"
+//    compile ":gluegen-rt:$jogampVer"
+//    runtime ":jogl-all:$jogampVer:natives-linux-i586", ":jogl-all:$jogampVer:natives-linux-amd64",
+//        ":jogl-all:$jogampVer:natives-windows-i586", ":jogl-all:$jogampVer:natives-windows-amd64",
+//        ":jogl-all:$jogampVer:natives-macosx-universal"
+//    runtime ":gluegen-rt:$jogampVer:natives-linux-i586", ":gluegen-rt:$jogampVer:natives-linux-amd64",
+//        ":gluegen-rt:$jogampVer:natives-windows-i586", ":gluegen-rt:$jogampVer:natives-windows-amd64",
+//        ":gluegen-rt:$jogampVer:natives-macosx-universal"
+//
+//    compile ":gluegen-rt:$jogampVer:natives-linux-i586", ":gluegen-rt:$jogampVer:natives-linux-amd64",
+//        ":gluegen-rt:$jogampVer:natives-windows-i586", ":gluegen-rt:$jogampVer:natives-windows-amd64",
+//        ":gluegen-rt:$jogampVer:natives-macosx-universal"
+
+  }
+
+//  task classpath << {
+//    println configurations.runtime.files.join(':')
+//  }
+//
+//  task copyJogamp(type: Sync) {
+//    println "CPYING [${configurations.natives}] to [${project.projectDir}]"
+//    from { configurations.natives }
+//    into { "${project.projectDir}/jogamp" }
+//  }
+
+}
+
+project('go.graphics.swing') {
+  dependencies {
+    compile project(":go.graphics")
+
+    compile fileTree(dir: 'libs', include: '*.jar')
+    runtime fileTree(dir: 'libs', include: '*.jar')
+  }
+}
+
+//TODO, have a full fat gradle build file in the anddroid app that
+//is compatible with the new IDEA based Android Studio
+//must have this project as a parent.
+
+//project('jsettlers.graphics.androidui') {
+//  dependencies {
+//    compile project(":jsettlers.common")
+//    compile project(":jsettlers.graphics")
+//    compile project(":go.graphics.android")
+//  }
+//}
+//project('jsettlers.main.android') {
+//  dependencies {
+//    compile project(":jsettlers.logic")
+//    compile project(":jsettlers.graphics.androidui")
+//  }
+//}
+//project('go.graphics.android') {
+//  dependencies {
+//    compile project(":go.graphics")
+//  }
+//}
+
+project('jsettlers.tests') {
+  sourceSets.test.java.srcDirs = ["tests","tools", "tests.network/"]
+  dependencies {
+    compile project(":jsettlers.main.swing")
+    compile project(":jsettlers.network")
+    testCompile fileTree(dir: 'libs', include: '*.jar')
+  }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}

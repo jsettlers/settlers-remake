@@ -1,0 +1,17 @@
+rootProject.name = "jsettlers"
+
+include 'go.graphics',          //complete
+//  'go.graphics.android',        //TODO, android
+  'go.graphics.nativegl',       //complete, need deps, JNI compilation
+  'go.graphics.swing',          //complete (deps needed)
+  'jsettlers.buildingcreator',  //complete
+  'jsettlers.common',           //complete
+  'jsettlers.graphics',         //completye
+//  'jsettlers.graphics.androidui',
+  'jsettlers.graphics.swing', //complete
+  'jsettlers.logic',          //complete
+//  'jsettlers.main.android',
+  'jsettlers.main.swing',     //complete
+  'jsettlers.mapcreator',     //complete
+  'jsettlers.network',        //complete
+  'jsettlers.tests'
