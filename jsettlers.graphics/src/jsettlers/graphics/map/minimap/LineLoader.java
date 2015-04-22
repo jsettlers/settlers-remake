@@ -10,7 +10,7 @@ import jsettlers.graphics.map.MapDrawContext;
 class LineLoader implements Runnable {
 	private static final short TRANSPARENT = 0;
 
-	private static final short BLACK = 0x01;
+	protected static final short BLACK = 0x0001;
 
 	/**
      *
@@ -61,6 +61,7 @@ class LineLoader implements Runnable {
 					}
 				}
 				minimap.setBufferArray(buffer);
+				currentline = 0;
 			}
 
 			calculateLineData(currentline);
@@ -69,7 +70,11 @@ class LineLoader implements Runnable {
 			currentline += Y_STEP_HEIGHT;
 			if (currentline >= minimap.getHeight()) {
 				currYOffset++;
-				currYOffset %= Y_STEP_HEIGHT;
+				if (currYOffset > Y_STEP_HEIGHT) {
+					currYOffset = 0;
+					currXOffset += 3;
+					currXOffset %= X_STEP_WIDTH;
+				}
 
 				currentline = currYOffset;
 			}
@@ -103,7 +108,9 @@ class LineLoader implements Runnable {
 			}
 		}
 
-		for (int x = currXOffset; x < safeWidth; x += 5) {
+		int myXOffset = (currXOffset + currentline * 3) % X_STEP_WIDTH;
+
+		for (int x = myXOffset; x < safeWidth; x += X_STEP_WIDTH) {
 			int mapMinX = (int) ((float) x / safeWidth * mapWidth);
 			int mapMaxX = (int) ((float) (x + 1) / safeWidth * mapWidth);
 
@@ -144,8 +151,6 @@ class LineLoader implements Runnable {
 			buffer[currentline][x] = color;
 		}
 
-		currXOffset += 3;
-		currXOffset %= X_STEP_WIDTH;
 	}
 
 	private static short getLandscapeForArea(IGraphicsGrid map, int mapminx,

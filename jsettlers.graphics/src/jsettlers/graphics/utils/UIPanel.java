@@ -4,9 +4,7 @@ import go.graphics.GLDrawContext;
 
 import java.util.LinkedList;
 
-import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.image.Image;
@@ -20,8 +18,6 @@ import jsettlers.graphics.map.draw.ImageProvider;
  * @author michael
  */
 public class UIPanel implements UIElement {
-	private static final int DETAIL_IMAGES = 3;
-
 	private final LinkedList<ChildLink> children =
 			new LinkedList<UIPanel.ChildLink>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
@@ -96,7 +92,7 @@ public class UIPanel implements UIElement {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
 			FloatRectangle position = getPosition();
-			Image image = ImageProvider.getInstance().getImage(link);
+			Image image = ImageProvider.getInstance().getImage( link, position.getWidth(), position.getHeight() );
 			drawAtRect(gl, image, position);
 		}
 	}
@@ -119,36 +115,6 @@ public class UIPanel implements UIElement {
 		float maxX = position.getMaxX();
 		float maxY = position.getMaxY();
 		image.drawImageAtRect(gl, minX, minY, maxX, maxY);
-	}
-
-	/**
-	 * Gets a detailed GUI image.
-	 * <p>
-	 * For gui images, assumes that the next two images are mre detailed.
-	 * <p>
-	 * For settler sequences, assumes the same for the next two sequence members.
-	 */
-	protected Image getDetailedImage(OriginalImageLink link, float width,
-			float height) {
-		Image image = ImageProvider.getInstance().getImage(link);
-		OriginalImageLink currentLink = link;
-
-		for (int i = 1; i < DETAIL_IMAGES
-				&& (image.getWidth() < width || image.getHeight() < height); i++) {
-			if (currentLink.getType() == EImageLinkType.SETTLER) {
-				image =
-						ImageProvider
-								.getInstance()
-								.getSettlerSequence(link.getFile(),
-										link.getSequence())
-								.getImageSafe(link.getImage() + i);
-			} else {
-				image =
-						ImageProvider.getInstance().getGuiImage(link.getFile(),
-								link.getSequence());
-			}
-		}
-		return image;
 	}
 
 	protected ImageLink getBackgroundImage() {

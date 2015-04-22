@@ -20,6 +20,7 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
+import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 
@@ -50,33 +51,29 @@ public final class TestUtils {
 		return readList;
 	}
 
-	private static boolean resourceManagerSetUp = false;
-
 	public static synchronized void setupSwingResources() {
-		if (!resourceManagerSetUp) {
-			try {
-				SwingResourceLoader.setupSwingResourcesByConfigFile(getDefaultConfigFile());
-			} catch (IOException e) {
-				throw new RuntimeException("Config file not found!", e);
-			}
-			resourceManagerSetUp = true;
-		}
-	}
-
-	public static synchronized void setupResourcesManager() {
 		try {
-			SwingResourceLoader.setupResourcesManagerByConfigFile(getDefaultConfigFile());
+			setupResourcesManager();
+			SwingResourceLoader.setupGraphicsAndSoundResources(getDefaultConfigFile());
 		} catch (IOException e) {
 			throw new RuntimeException("Config file not found!", e);
 		}
 	}
 
-	private static File getDefaultConfigFile() throws IOException {
+	public static synchronized void setupResourcesManager() {
+		try {
+			SwingResourceLoader.setupResourcesManager(getDefaultConfigFile());
+		} catch (IOException e) {
+			throw new RuntimeException("Config file not found!", e);
+		}
+	}
+
+	private static ConfigurationPropertiesFile getDefaultConfigFile() throws IOException {
 		File configFile = new File("../jsettlers.main.swing/config.prp");
 		if (!configFile.exists()) {
 			throw new IOException("Default config file not found at " + configFile.getAbsolutePath());
 		}
-		return configFile;
+		return new ConfigurationPropertiesFile(configFile);
 	}
 
 	public static MapInterfaceConnector openTestWindow(final IGraphicsGrid map) {

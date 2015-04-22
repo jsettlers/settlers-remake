@@ -16,9 +16,6 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-
-import java.text.DecimalFormat;
-
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -334,19 +331,17 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	private void drawFramerate(GLDrawContext gl) {
 		framerate.nextFrame();
-		String frames = new DecimalFormat("###.#").format(framerate.getRate());
+		String fps = Labels.getString("map-fps", framerate.getRate());
 		long gametime = playerStatistics.getGameTime() / 1000;
 		String timeString =
-				String.format("%d:%02d:%02d", gametime / 60 / 60,
+				Labels.getString("map-time", gametime / 60 / 60,
 						(gametime / 60) % 60, (gametime) % 60);
 
 		TextDrawer drawer = textDrawer.getTextDrawer(gl, EFontSize.NORMAL);
 		double spacing = drawer.getWidth("_");
 		float y = windowHeight - 1.5f * (float) drawer.getHeight("X");
-		drawer.drawString(windowWidth - 9 * (float) spacing, y, "FPS: "
-				+ frames);
-		drawer.drawString(windowWidth - 23 * (float) spacing, y, "Time: "
-				+ timeString);
+		drawer.drawString(windowWidth - 9 * (float) spacing, y, fps);
+		drawer.drawString(windowWidth - 23 * (float) spacing, y, timeString);
 	}
 
 	private void drawTooltip(GLDrawContext gl) {

@@ -22,7 +22,7 @@ public class ReplayToolApp {
 
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 		SwingManagedJSettlers.loadDebugSettings(argsMap);
-		SwingResourceLoader.setupResourcesManagerByConfigFile(SwingManagedJSettlers.getConfigFile(argsMap, "config.prp"));
+		SwingResourceLoader.setupResourcesManager(SwingManagedJSettlers.getConfigFile(argsMap, "config.prp"));
 
 		int targetGameTime = Integer.valueOf(argsMap.get("targetTime")) * 60 * 1000;
 
