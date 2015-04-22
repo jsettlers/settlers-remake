@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,8 +44,6 @@ import jsettlers.network.client.OfflineNetworkConnector;
  */
 public class SwingManagedJSettlers {
 
-	private static final String BUILD = "commit: " + CommitInfo.COMMIT_HASH_SHORT;
-
 	/**
 	 * @param args
 	 * @throws FileNotFoundException
@@ -55,8 +54,8 @@ public class SwingManagedJSettlers {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, MapLoadException {
 		HashMap<String, String> argsMap = MainUtils.createArgumentsMap(args);
 
-		setupResourceManagers(argsMap, "config.prp");
 		loadDebugSettings(argsMap);
+		setupResourceManagers(argsMap, "config.prp");
 
 		JSettlersScreen content = startGui();
 		generateContent(argsMap, content);
@@ -141,6 +140,15 @@ public class SwingManagedJSettlers {
 		if (argsMap.containsKey("console-output")) {
 			CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		}
+		if (argsMap.containsKey("locale")) {
+			String localeString = argsMap.get("locale");
+			String[] localeParts = localeString.split("_");
+			if (localeParts.length == 2) {
+				Labels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
+			} else {
+				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
+			}
+		}
 	}
 
 	/**
@@ -153,7 +161,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static JSettlersScreen startGui() {
 		Area area = new Area();
-		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), BUILD);
+		JSettlersScreen content = new JSettlersScreen(new StartScreenConnector(), new SwingSoundPlayer(), getBuild());
 		area.add(content.getRegion());
 
 		startJogl(area);
@@ -226,7 +234,7 @@ public class SwingManagedJSettlers {
 	}
 
 	private static void startJogl(Area area) {
-		JFrame jsettlersWnd = new JFrame("JSettlers - " + BUILD);
+		JFrame jsettlersWnd = new JFrame("JSettlers - " + getBuild());
 
 		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
@@ -239,5 +247,9 @@ public class SwingManagedJSettlers {
 		jsettlersWnd.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jsettlersWnd.setVisible(true);
 		jsettlersWnd.setLocationRelativeTo(null);
+	}
+
+	private static String getBuild() {
+		return Labels.getString("version-build", CommitInfo.COMMIT_HASH_SHORT);
 	}
 }

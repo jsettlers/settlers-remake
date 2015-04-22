@@ -2,11 +2,11 @@
 <project default="cleanBuildSwing" name="Build script of Swing Version of JSettlers" basedir="../../">
 
 	<!-- set global properties for this build -->
-	<property name="swingTarget" location="target/swing" />
-	<property name="targetLocation" location="${swingTarget}/JSettlers" />
-	<property name="targetResources" location="${targetLocation}/resources" />
+	<property name="swingTarget" location="target" />
+	<property name="targetLocation" location="${swingTarget}/swing" />
+	<property name="targetResources" location="${targetLocation}/JSettlers/resources" />
 	<property name="targetLibFolderName" value="libs" />
-	<property name="targetLibs" location="${targetLocation}/${targetLibFolderName}" />
+	<property name="targetLibs" location="${targetLocation}/JSettlers/${targetLibFolderName}" />
 
 	<property name="targetZip" location="${swingTarget}/JSettlers.zip" />
 	<property name="targetTar" location="${swingTarget}/JSettlers.tar.bz2" />
@@ -21,7 +21,7 @@
 	<target name="createSwingJar" depends="clean,copyLibs">
 		<ant antfile="jsettlers.main.swing/build/build.ant" useNativeBasedir="true" inheritAll="false" target="build" />
 
-		<jar destfile="${targetLocation}/JSettlers.jar">
+		<jar destfile="${targetLocation}/JSettlers/JSettlers.jar">
 			<manifest>
 				<attribute name="Main-Class" value="jsettlers.main.swing.SwingManagedJSettlers" />
 				<attribute name="Class-Path" value=". ${targetLibFolderName}/gluegen-rt.jar ${targetLibFolderName}/jogl-all.jar" />
