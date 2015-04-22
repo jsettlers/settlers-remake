@@ -23,6 +23,7 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MutableInt;
 import jsettlers.common.utils.Tuple;
 import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.ISerializablePredicate;
@@ -453,9 +454,16 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param pos2
 	 */
 	private void checkIfDividePartition(Short partition, ShortPoint2D pos1, ShortPoint2D pos2) {
+		MutableInt partition1Size = new MutableInt();
+		MutableInt partition2Size = new MutableInt();
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionRepresentatives, partitions, width, pos1, pos2, partition)) {
-			dividePartition(partition, pos1, pos2);
+				&& PartitionsDividedTester.isPartitionDivided(partitionRepresentatives, partitions, width, pos1, partition1Size, pos2,
+						partition2Size, partition)) {
+			if (partition1Size.value < partition2Size.value) {
+				dividePartition(partition, pos1, pos2);
+			} else {
+				dividePartition(partition, pos2, pos1);
+			}
 		}
 	}
 
@@ -570,25 +578,23 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * 
 	 * @param oldPartition
 	 *            The original partition that now needs to be divided.
-	 * @param pos1
-	 *            A position on one of the separated parts of the partition.
-	 * @param pos2
-	 *            A position on the other separated part of the partition.
+	 * @param relabelStartPosition
+	 *            A position in the part of the divided partition that will be relabeled.
+	 * @param otherPosition
+	 *            A position in the part of the divided partition that will keep the old partition id.
 	 */
-	void dividePartition(final short oldPartition, ShortPoint2D pos1, ShortPoint2D pos2) {
+	void dividePartition(final short oldPartition, ShortPoint2D relabelStartPosition, ShortPoint2D otherPosition) {
 		if (oldPartition == NO_PLAYER_PARTITION_ID) {
 			return; // don't divide the no player partition
 		}
 
 		Partition partitionObject = partitionObjects[oldPartition];
-		ShortPoint2D relabelStartPos = partitionObject.getPositionFurthermostFromGravityCenter(pos1, pos2);
 
-		System.out.println("Dividing " + pos1 + " and " + pos2 + " of partition " + oldPartition + " with relabelStartPos: " + relabelStartPos
-				+ " and " + partitionObject.getNumberOfElements() + " elements.");
+		System.out.println("Dividing partition " + oldPartition + " with relabelStartPos: "				+ relabelStartPosition + " and " + partitionObject.getNumberOfElements() + " elements. " + otherPosition				+ " will keep the old partition id.");
 
 		short newPartition = createNewPartition(partitionObject.playerId);
 
-		relabelArea(oldPartition, relabelStartPos, newPartition);
+		relabelArea(oldPartition, relabelStartPosition, newPartition);
 	}
 
 	/**

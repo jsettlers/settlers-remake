@@ -4,6 +4,7 @@ import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.common.utils.MutableInt;
 
 /**
  * 
@@ -32,11 +33,13 @@ public final class BorderTraversingAlgorithm {
 	 * @param visitOutside
 	 *            If true the positions on the outside will be visited.<br>
 	 *            If false the inside positions will be visited.
+	 * @param traversedPositions
+	 *            This object will contain the number of traversed positions after the call.
 	 * @return true if the whole border has been traversed.<br>
 	 *         false if the traversing has been canceled by the {@link ITraversingVisitor}'s visit() method.
 	 */
 	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos, final ITraversingVisitor visitor,
-			boolean visitOutside) {
+			boolean visitOutside, MutableInt traversedPositions) {
 		final int startInsideX = startPos.x;
 		final int startInsideY = startPos.y;
 
@@ -66,11 +69,16 @@ public final class BorderTraversingAlgorithm {
 		final int startOutsideX = outsideX;
 		final int startOutsideY = outsideY;
 
+		int traversedPositionsCounter = 1;
+
 		if (!visitor.visit(startOutsideX, startOutsideY)) {
+			traversedPositions.value = traversedPositionsCounter;
 			return false;
 		}
 
 		do {
+			traversedPositionsCounter++;
+
 			EDirection outInDir = EDirection.getDirection(insideX - outsideX, insideY - outsideY);
 			EDirection neighborDir = outInDir.getNeighbor(-1);
 
@@ -82,6 +90,7 @@ public final class BorderTraversingAlgorithm {
 				insideY = neighborY;
 
 				if (!visitOutside && !visitor.visit(insideX, insideY)) {
+					traversedPositions.value = traversedPositionsCounter;
 					return false;
 				}
 			} else {
@@ -89,12 +98,18 @@ public final class BorderTraversingAlgorithm {
 				outsideY = neighborY;
 
 				if (visitOutside && !visitor.visit(outsideX, outsideY)) {
+					traversedPositions.value = traversedPositionsCounter;
 					return false;
 				}
 			}
 		} while (insideX != startInsideX || insideY != startInsideY || outsideX != startOutsideX || outsideY != startOutsideY);
 
+		traversedPositions.value = traversedPositionsCounter;
 		return true;
 	}
 
+	public static boolean traverseBorder(final IContainingProvider containingProvider, final ShortPoint2D startPos, final ITraversingVisitor visitor,
+			boolean visitOutside) {
+		return traverseBorder(containingProvider, startPos, visitor, visitOutside, new MutableInt());
+	}
 }
