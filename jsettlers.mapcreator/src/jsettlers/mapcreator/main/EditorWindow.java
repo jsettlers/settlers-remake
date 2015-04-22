@@ -593,11 +593,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 				System.out.print(arg + " ");
 			}
 			System.out.println();
-			File working = new File("../jsettlers.main.swing").getAbsoluteFile();
-			System.out.println("Current working dir: " + working);
 
 			ProcessBuilder builder = new ProcessBuilder(args);
-			builder.directory(working);
 			builder.redirectErrorStream(true);
 			final Process process = builder.start();
 
