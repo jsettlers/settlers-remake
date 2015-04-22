@@ -62,7 +62,8 @@ public class AndroidUiImageGenerator {
 			throw new RuntimeException("please use configFile=\"...\"");
 		}
 
-		SwingResourceLoader.setupGraphicsAndSoundResources(new ConfigurationPropertiesFile(configFile));
+		System.out.println("ConfigFile: "+configFile);
+		SwingResourceLoader.setupResourcesByConfigFile(new ConfigurationPropertiesFile(configFile));
 
 		String listOutputPackage = listOutputClass.replaceAll("\\.\\w*$", "");
 		File listOutputDir =

@@ -16,6 +16,11 @@ import jsettlers.graphics.sound.SoundManager;
  */
 public class SwingResourceLoader {
 
+	public static void setupResourcesByConfigFile(ConfigurationPropertiesFile configFile) throws IOException {
+		setupGraphicsAndSoundResources(configFile);
+		setupResourcesManager(configFile);
+	}
+
 	public static void setupGraphicsAndSoundResources(ConfigurationPropertiesFile configFile) throws IOException {
 		testConfig(configFile);
 
