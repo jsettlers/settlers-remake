@@ -8,7 +8,6 @@ import java.util.List;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.TestUtils;
-import jsettlers.network.client.task.TaskPacketListener;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.infrastructure.channel.Channel;
@@ -54,7 +53,7 @@ public class TaskPacketListenerTest {
 
 		c2.sendPacket(NetworkConstants.ENetworkKey.SYNCHRONOUS_TASK, syncTasksPacket);
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 		List<SyncTasksPacket> packets = taskReceiver.popBufferedPackets();
 		assertEquals(1, packets.size());
 		assertEquals(lockstep, packets.get(0).getLockstepNumber());

@@ -10,12 +10,8 @@ import java.io.IOException;
 import java.util.List;
 
 import jsettlers.network.NetworkConstants;
-import jsettlers.network.TestUtils;
 import jsettlers.network.NetworkConstants.ENetworkKey;
-import jsettlers.network.infrastructure.channel.Channel;
-import jsettlers.network.infrastructure.channel.GenericDeserializer;
-import jsettlers.network.infrastructure.channel.IChannelClosedListener;
-import jsettlers.network.infrastructure.channel.IDeserializingable;
+import jsettlers.network.TestUtils;
 import jsettlers.network.infrastructure.channel.listeners.BufferingPacketListener;
 import jsettlers.network.infrastructure.channel.packet.EmptyPacket;
 import jsettlers.network.infrastructure.channel.reject.RejectPacket;
@@ -122,7 +118,7 @@ public class ChannelTest {
 		c2.close();
 		assertTrue(c2.isClosed());
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 		assertTrue(c1.isClosed());
 	}
 
@@ -140,10 +136,10 @@ public class ChannelTest {
 		assertEquals(0, closed[0]);
 		c1.close();
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 		assertEquals(1, closed[0]);
 
-		Thread.sleep(100);
+		Thread.sleep(150);
 		assertEquals(1, closed[0]);
 	}
 
@@ -184,7 +180,7 @@ public class ChannelTest {
 		TestPacket testPackage = new TestPacket("dsfs", 2332);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 
 		assertEquals(1, listener.packets.size());
 		assertEquals(testPackage, listener.packets.get(0));
@@ -257,7 +253,7 @@ public class ChannelTest {
 		c1.sendPacket(ENetworkKey.TEST_PACKET, new EmptyPacket());
 		assertEquals(0, c1RejectListener.popBufferedPackets().size());
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 		List<RejectPacket> rejects = c1RejectListener.popBufferedPackets();
 		assertEquals(1, rejects.size());
 		assertEquals(NetworkConstants.ENetworkMessage.NO_LISTENER_FOUND, rejects.get(0).getErrorMessageId());

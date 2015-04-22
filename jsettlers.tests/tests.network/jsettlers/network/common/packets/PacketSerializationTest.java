@@ -8,22 +8,11 @@ import java.util.Collection;
 import java.util.List;
 
 import jsettlers.network.NetworkConstants;
-import jsettlers.network.TestUtils;
 import jsettlers.network.NetworkConstants.ENetworkMessage;
+import jsettlers.network.TestUtils;
 import jsettlers.network.client.task.TestTaskPacket;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
-import jsettlers.network.common.packets.ArrayOfMatchInfosPacket;
-import jsettlers.network.common.packets.BooleanMessagePacket;
-import jsettlers.network.common.packets.ChatMessagePacket;
-import jsettlers.network.common.packets.IdPacket;
-import jsettlers.network.common.packets.MapInfoPacket;
-import jsettlers.network.common.packets.MatchInfoPacket;
-import jsettlers.network.common.packets.MatchInfoUpdatePacket;
-import jsettlers.network.common.packets.MatchStartPacket;
-import jsettlers.network.common.packets.OpenNewMatchPacket;
-import jsettlers.network.common.packets.PlayerInfoPacket;
-import jsettlers.network.common.packets.TimeSyncPacket;
 import jsettlers.network.infrastructure.channel.Channel;
 import jsettlers.network.infrastructure.channel.GenericDeserializer;
 import jsettlers.network.infrastructure.channel.IDeserializingable;
@@ -137,7 +126,7 @@ public class PacketSerializationTest {
 		c2.registerListener(listener);
 		c1.sendPacket(NetworkConstants.ENetworkKey.TEST_PACKET, packet);
 
-		Thread.sleep(40);
+		Thread.sleep(80);
 
 		List<? extends Packet> bufferedPackets = listener.popBufferedPackets();
 		assertEquals(1, bufferedPackets.size());
