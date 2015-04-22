@@ -19,6 +19,7 @@ import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.swing.resources.SwingResourceProvider;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
+import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 
 /**
  * This is an ant task to copy over the android images.
@@ -61,7 +62,8 @@ public class AndroidUiImageGenerator {
 			throw new RuntimeException("please use configFile=\"...\"");
 		}
 
-		SwingResourceLoader.setupSwingResourcesByConfigFile(configFile);
+		System.out.println("ConfigFile: "+configFile);
+		SwingResourceLoader.setupResourcesByConfigFile(new ConfigurationPropertiesFile(configFile));
 
 		String listOutputPackage = listOutputClass.replaceAll("\\.\\w*$", "");
 		File listOutputDir =

@@ -13,7 +13,10 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
@@ -24,6 +27,7 @@ import jsettlers.graphics.JSettlersScreen;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
+import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
@@ -69,17 +73,56 @@ public class SwingManagedJSettlers {
 	 * @throws IOException
 	 */
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
-		File configFile = getConfigFile(argsMap, defaultConfigFileName);
-		SwingResourceLoader.setupSwingResourcesByConfigFile(configFile);
+		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
+		SwingResourceLoader.setupResourcesManager(configFile);
+
+		if (!configFile.isSettlersFolderSet()) {
+			JFileChooser fileDialog = new JFileChooser();
+			fileDialog.setAcceptAllFileFilterUsed(false);
+			fileDialog.setFileFilter(new FileFilter() {
+				@Override
+				public String getDescription() {
+					return null;
+				}
+
+				@Override
+				public boolean accept(File f) {
+					return f.isDirectory();
+				}
+			});
+			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			fileDialog.setMultiSelectionEnabled(false);
+			fileDialog.setDialogTitle(Labels.getString("select-settlers-3-folder"));
+			fileDialog.showOpenDialog(null);
+
+			File selectedFolder = fileDialog.getSelectedFile();
+			if (selectedFolder == null) {
+				String noFolderSelctedMessage = Labels.getString("error-no-settlers-3-folder-selected");
+				JOptionPane.showMessageDialog(null, noFolderSelctedMessage);
+				System.err.println(noFolderSelctedMessage);
+				System.exit(1);
+			}
+
+			System.out.println(selectedFolder);
+			try {
+				configFile.setSettlersFolder(selectedFolder);
+			} catch (IOException ex) {
+				String errorSavingSettingsMessage = Labels.getString("error-settings-not-saveable");
+				System.err.println(errorSavingSettingsMessage);
+				JOptionPane.showMessageDialog(null, errorSavingSettingsMessage);
+				ex.printStackTrace();
+			}
+		}
+		SwingResourceLoader.setupGraphicsAndSoundResources(configFile);
 	}
 
-	public static File getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) {
+	public static ConfigurationPropertiesFile getConfigFile(HashMap<String, String> argsMap, String defaultConfigFileName) throws IOException {
 		String configFileName = defaultConfigFileName;
 		if (argsMap.containsKey("config")) {
 			configFileName = argsMap.get("config");
 		}
-		File configFil = new File(configFileName);
-		return configFil;
+		return new ConfigurationPropertiesFile(new File(configFileName));
 	}
 
 	public static void loadDebugSettings(HashMap<String, String> argsMap) {

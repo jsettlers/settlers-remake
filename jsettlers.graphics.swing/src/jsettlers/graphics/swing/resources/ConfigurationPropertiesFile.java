@@ -3,6 +3,7 @@ package jsettlers.graphics.swing.resources;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -12,15 +13,23 @@ import java.util.Properties;
  * 
  */
 public class ConfigurationPropertiesFile {
+	private static final String SETTLERS_FOLDER = "settlers-folder";
 	private static final String SPLIT_CHARACTER = ";";
 
-	private final Properties properties = new Properties();
-
 	private final File configFile;
+	private final Properties properties;
 
-	public ConfigurationPropertiesFile(File file) throws FileNotFoundException, IOException {
+	public ConfigurationPropertiesFile(File file) throws FileNotFoundException,
+			IOException {
 		this.configFile = file;
-		properties.load(new FileInputStream(file));
+
+		Properties defaultProperties = new Properties();
+		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
+		this.properties = new Properties(defaultProperties);
+
+		if (file.exists()) {
+			this.properties.load(new FileInputStream(file));
+		}
 	}
 
 	public File getResourcesFolder() {
@@ -28,7 +37,8 @@ public class ConfigurationPropertiesFile {
 		File dir = new File(property);
 		if (!dir.isAbsolute()) {
 			String parent = configFile.getParent();
-			dir = new File((parent == null ? "" : parent + File.separator) + property);
+			dir = new File((parent == null ? "" : parent + File.separator)
+					+ property);
 		}
 		return dir.getAbsoluteFile();
 	}
@@ -50,7 +60,34 @@ public class ConfigurationPropertiesFile {
 		return result;
 	}
 
+	private String getSettlersFolderValue() {
+		return properties.getProperty(SETTLERS_FOLDER);
+	}
+
 	public String[] getSndFolders() {
 		return getFolders("SND", "snd", "Snd");
+	}
+
+	public boolean isSettlersFolderSet() {
+		String settlersFolder = getSettlersFolderValue();
+		return settlersFolder != null && settlersFolder.length() > 0 && oneExists(getGfxFolders()) && oneExists(getSndFolders());
+	}
+
+	private boolean oneExists(String[] gfxFolders) {
+		for (String folder : gfxFolders) {
+			if (new File(folder).exists()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setSettlersFolder(File newSettlersFolder) throws FileNotFoundException, IOException {
+		properties.setProperty(SETTLERS_FOLDER, newSettlersFolder.getAbsolutePath());
+		saveConfigFile("Updated settlers-folder with dialog.");
+	}
+
+	private void saveConfigFile(String updateMessage) throws IOException, FileNotFoundException {
+		properties.store(new FileOutputStream(configFile), updateMessage);
 	}
 }

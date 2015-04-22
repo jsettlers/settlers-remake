@@ -19,6 +19,8 @@
 		<copy todir="./assets" failonerror="true">
 			<fileset dir="../jsettlers.common/resources">
 				<exclude name="cache/**"/>
+				<exclude name="logs/**"/>
+				<exclude name="save/**"/>
 			</fileset>
 		</copy>
 	</target>
