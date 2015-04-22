@@ -54,7 +54,8 @@ public final class Labels {
 
 	private static ResourceBundle labels;
 	private static boolean labelsLoaded;
-	private static Locale usedLocale = Locale.getDefault();
+	private static Locale usedLocale;
+	public static Locale preferredLocale = Locale.getDefault();
 
 	private static synchronized ResourceBundle getLabels() {
 		if (!labelsLoaded) {
@@ -80,10 +81,9 @@ public final class Labels {
 	}
 
 	public static LocaleSuffix[] getLocaleSuffixes() {
-		Locale currentLocale = Locale.getDefault();
 		LocaleSuffix[] locales = new LocaleSuffix[] {
-				new LocaleSuffix(currentLocale, true),
-				new LocaleSuffix(currentLocale, false),
+				new LocaleSuffix(preferredLocale, true),
+				new LocaleSuffix(preferredLocale, false),
 				new LocaleSuffix(new Locale("en", "US"), true),
 		};
 		return locales;
