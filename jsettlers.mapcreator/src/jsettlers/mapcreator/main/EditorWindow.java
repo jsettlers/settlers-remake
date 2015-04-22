@@ -583,10 +583,8 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			data.doPreSaveActions();
 			MapSaver.saveMap(generateMapHeader(), data, new FileOutputStream(temp));
 
-			String[] args = new String[] { "java", "-classpath",
-					System.getProperty("java.class.path"),
-					SwingManagedJSettlers.class.getName(),
-					"--mapfile=" + temp.getAbsolutePath(), };
+			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), SwingManagedJSettlers.class.getName(),
+					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };
 
 			System.out.println("Starting process:");
 			for (String arg : args) {
