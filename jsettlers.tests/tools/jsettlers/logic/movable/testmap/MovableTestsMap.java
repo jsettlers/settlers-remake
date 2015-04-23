@@ -310,10 +310,10 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean isValidPosition(IPathCalculatable pathRequester, ShortPoint2D position) {
+		public boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position) {
 			short x = position.x, y = position.y;
 			return isInBounds(x, y) && !isBlocked(x, y)
-					&& (!pathRequester.needsPlayersGround() || pathRequester.getPlayerId() == getPlayerIdAt(x, y));
+					&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == getPlayerIdAt(x, y));
 		}
 
 		@Override
@@ -388,6 +388,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		public void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount) {
 			// TODO Auto-generated method stub
 
+		}
+
+		@Override
+		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
+			return isValidPosition(pathCalculatable, nextPos);
 		}
 
 	};
