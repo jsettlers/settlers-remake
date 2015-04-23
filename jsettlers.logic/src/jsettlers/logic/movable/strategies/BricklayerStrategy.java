@@ -19,7 +19,7 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 
 	public BricklayerStrategy(Movable movable) {
 		super(movable);
-		makeJobless();
+		jobFinished();
 	}
 
 	@Override
@@ -35,11 +35,15 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 		}
 	}
 
-	private void makeJobless() {
+	private void jobFinished() {
 		this.state = EBricklayerState.JOBLESS;
 		this.bricklayerTargetPos = null;
 		this.constructionSite = null;
 		this.lookDirection = null;
+		reportJobless();
+	}
+
+	private void reportJobless() {
 		super.getStrategyGrid().addJobless(this);
 	}
 
@@ -50,10 +54,10 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 			break;
 
 		case INIT_JOB:
-			if (!constructionSite.isConstructionFinished() && super.goToPos(bricklayerTargetPos)) {
+			if (constructionSite.isBricklayerRequestActive() && super.goToPos(bricklayerTargetPos)) {
 				this.state = EBricklayerState.GOING_TO_POS;
 			} else {
-				makeJobless();
+				jobFinished();
 			}
 			break;
 
@@ -73,16 +77,16 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 		if (constructionSite.tryToTakeMaterial()) {
 			super.playAction(EAction.ACTION1, BRICKLAYER_ACTION_DURATION);
 		} else {
-			makeJobless();
+			jobFinished();
 		}
 	}
 
 	@Override
 	protected boolean checkPathStepPreconditions(ShortPoint2D pathTarget, int step) {
-		if (constructionSite == null || !constructionSite.isConstructionFinished()) {
+		if (constructionSite == null || constructionSite.isBricklayerRequestActive()) {
 			return true;
 		} else {
-			makeJobless();
+			jobFinished();
 			return false;
 		}
 	}
@@ -91,9 +95,23 @@ public class BricklayerStrategy extends MovableStrategy implements IManageableBr
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) {
 		if (state == EBricklayerState.JOBLESS) {
 			super.getStrategyGrid().removeJobless(this);
+		} else {
+			abortJob();
 		}
 
 		state = EBricklayerState.DEAD_OBJECT;
+	}
+
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		if (constructionSite != null) {
+			abortJob();
+			jobFinished(); // this job is done for us
+		}
+	}
+
+	private void abortJob() {
+		constructionSite.bricklayerRequestFailed(bricklayerTargetPos, lookDirection);
 	}
 
 	private static enum EBricklayerState {

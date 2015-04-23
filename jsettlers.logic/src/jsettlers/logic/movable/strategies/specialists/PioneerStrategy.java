@@ -118,6 +118,11 @@ public final class PioneerStrategy extends MovableStrategy {
 		}
 	}
 
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		state = EPioneerState.JOBLESS;
+	}
+
 	/**
 	 * Internal state of a {@link PioneerStrategy}.
 	 * 

@@ -300,4 +300,7 @@ public abstract class MovableStrategy implements Serializable {
 	protected void sleep(short waitTime) {
 		movable.wait(waitTime);
 	}
+
+	protected void pathAborted(ShortPoint2D pathTarget) {
+	}
 }

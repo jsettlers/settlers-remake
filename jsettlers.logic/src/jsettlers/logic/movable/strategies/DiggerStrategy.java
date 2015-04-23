@@ -19,7 +19,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 	public DiggerStrategy(Movable movable) {
 		super(movable);
 
-		reportAsJobless();
+		reportJobless();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		case PLAYING_ACTION:
 			executeDigg();
 			if (!requester.isDiggerRequestActive()) {
-				reportAsJobless();
+				reportJobless();
 				break;
 			}
 		case GOING_TO_POS:
@@ -76,10 +76,10 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 				state = EDiggerState.GOING_TO_POS;
 				super.getStrategyGrid().setMarked(diggablePos, true);
 			} else {
-				reportAsJobless();
+				reportJobless();
 			}
 		} else {
-			reportAsJobless();
+			reportJobless();
 		}
 	}
 
@@ -109,7 +109,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		return super.getStrategyGrid().getHeightAt(pos) != requester.getAverageHeight();
 	}
 
-	private void reportAsJobless() {
+	private void reportJobless() {
 		this.state = EDiggerState.JOBLESS;
 		this.requester = null;
 		super.getStrategyGrid().addJobless(this);
@@ -121,7 +121,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 			return true;
 		} else {
 			if (state != EDiggerState.JOBLESS) {
-				reportAsJobless();
+				reportJobless();
 			}
 
 			if (pathTarget != null) {
@@ -139,8 +139,24 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		if (state == EDiggerState.JOBLESS) {
 			super.getStrategyGrid().removeJobless(this);
 		}
+		if (requester != null) {
+			abortJob();
+		}
 
 		state = EDiggerState.DEAD_OBJECT;
+	}
+
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		if (requester != null) {
+			super.getStrategyGrid().setMarked(pathTarget, false);
+			abortJob();
+			reportJobless();
+		}
+	}
+
+	private void abortJob() {
+		requester.diggerRequestFailed();
 	}
 
 	private static enum EDiggerState {

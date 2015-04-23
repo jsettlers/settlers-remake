@@ -29,4 +29,6 @@ public interface IDiggerRequester extends ILocatable {
 	 * @return Gets the average height the buildings should be. The diggers need to flat the area to fit this height.
 	 */
 	byte getAverageHeight();
+
+	void diggerRequestFailed();
 }

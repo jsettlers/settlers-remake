@@ -313,4 +313,9 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			}
 		}
 	}
+
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		state = ESoldierState.AGGRESSIVE;
+	}
 }

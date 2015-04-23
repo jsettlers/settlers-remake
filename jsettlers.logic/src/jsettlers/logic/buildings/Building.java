@@ -16,6 +16,7 @@ import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EPriority;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
@@ -41,8 +42,7 @@ import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 
 public abstract class Building extends AbstractHexMapObject implements IConstructableBuilding, IPlayerable, IBuilding, IScheduledTimerable,
-		IDebugable,
-		IDiggerRequester, IViewDistancable {
+		IDebugable, IDiggerRequester, IViewDistancable {
 	private static final long serialVersionUID = 4379555028512391595L;
 
 	private static final byte STATE_CREATED = 0;
@@ -275,8 +275,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case STATE_WAITING_FOR_MATERIAL:
 			if (priority != EPriority.STOPPED && isMaterialAvailable()) {
-				requestBricklayers();
 				state = STATE_BRICKLAYERS_REQUESTED;
+				requestBricklayers();
 				return -1; // no new scheduling
 			} else {
 				return WAITING_FOR_MATERIAL_PERIOD;
@@ -415,8 +415,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.selected = selected;
 	}
 
-	@Override
-	public final boolean isConstructionFinished() {
+	private final boolean isConstructionFinished() {
 		return state == STATE_CONSTRUCTED || state == STATE_DESTROYED;
 	}
 
@@ -507,7 +506,26 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	@Override
 	public boolean isDiggerRequestActive() {
-		return !isConstructionFinished();
+		return state == STATE_IN_FLATTERNING;
+	}
+
+	@Override
+	public void diggerRequestFailed() {
+		if (isDiggerRequestActive()) {
+			grid.requestDiggers(this, (byte) 1);
+		}
+	}
+
+	@Override
+	public boolean isBricklayerRequestActive() {
+		return state == STATE_BRICKLAYERS_REQUESTED;
+	}
+
+	@Override
+	public void bricklayerRequestFailed(ShortPoint2D bricklayerTargetPos, EDirection lookDirection) {
+		if (isBricklayerRequestActive()) {
+			grid.requestBricklayer(this, bricklayerTargetPos, lookDirection);
+		}
 	}
 
 	protected FreeMapArea getBuildingArea() {

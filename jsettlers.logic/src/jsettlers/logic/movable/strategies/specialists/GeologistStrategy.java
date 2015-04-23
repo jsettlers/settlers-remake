@@ -146,6 +146,11 @@ public final class GeologistStrategy extends MovableStrategy {
 		}
 	}
 
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		state = EGeologistState.JOBLESS;
+	}
+
 	private static enum EGeologistState {
 		JOBLESS,
 		GOING_TO_POS,

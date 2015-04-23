@@ -1285,6 +1285,11 @@ public final class MainGrid implements Serializable {
 			return MainGrid.this.isValidPosition(pathCalculatable, position.x, position.y);
 		}
 
+		@Override
+		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
+			return isValidPosition(pathCalculatable, nextPos) && (!pathCalculatable.needsPlayersGround()
+					|| partitionsGrid.getPartitionAt(pathCalculatable) == partitionsGrid.getPartitionAt(targetPos.x, targetPos.y));
+		}
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {

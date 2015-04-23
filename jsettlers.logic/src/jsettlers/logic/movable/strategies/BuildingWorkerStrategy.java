@@ -431,10 +431,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		reportAsJobless();
 
-		dropCurrMaterial();
+		dropCurrentMaterial();
 	}
 
-	private void dropCurrMaterial() {
+	private void dropCurrentMaterial() {
 		EMaterialType material = super.getMaterial();
 		if (material.isDroppable()) {
 			super.getStrategyGrid().dropMaterial(super.getPos(), material, true);
@@ -451,7 +451,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	protected void strategyKilledEvent(ShortPoint2D pathTarget) { // used in overriding methods
-		dropCurrMaterial();
+		dropCurrentMaterial();
 
 		if (building != null) {
 			building.leaveBuilding(this);
@@ -460,5 +460,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		if (isJobless()) {
 			super.getStrategyGrid().removeJobless(this);
 		}
+	}
+
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		jobFailed();
 	}
 }

@@ -81,4 +81,6 @@ public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
 
 	public abstract boolean isValidPosition(IPathCalculatable pathCalculatable, ShortPoint2D position);
 
+	public abstract boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos);
+
 }

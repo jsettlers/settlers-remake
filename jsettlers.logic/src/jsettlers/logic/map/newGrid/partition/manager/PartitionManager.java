@@ -399,7 +399,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private void handleBricklayerRequest() {
 		BricklayerRequest bricklayerRequest = bricklayerRequests.poll();
-		if (bricklayerRequest != null && !bricklayerRequest.building.isConstructionFinished()) {
+		if (bricklayerRequest != null && bricklayerRequest.building.isBricklayerRequestActive()) {
 			IManageableBricklayer bricklayer = joblessBricklayers.removeObjectNextTo(bricklayerRequest.getPos());
 			if (bricklayer != null) {
 				if (!bricklayer.setBricklayerJob(bricklayerRequest.building, bricklayerRequest.bricklayerTargetPos, bricklayerRequest.direction)) {

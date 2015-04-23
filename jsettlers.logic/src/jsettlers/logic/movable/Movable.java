@@ -237,13 +237,26 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			setState(ENewMovableState.DOING_NOTHING);
 			movableAction = EAction.NO_ACTION;
 			path = null;
-			checkPlayerOfCurrentPosition();
+			checkPlayerOfCurrentPosition(); // TODO: this should be in timerEvent
 			return;
 		}
 
 		direction = EDirection.getDirection(position.x, position.y, path.nextX(), path.nextY());
 
 		if (grid.hasNoMovableAt(path.nextX(), path.nextY())) { // if we can go on to the next step
+			if (!grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is invalid
+				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
+				if (newPath == null) { // no path found
+					setState(ENewMovableState.DOING_NOTHING);
+					movableAction = EAction.NO_ACTION;
+					strategy.pathAborted(path.getTargetPos()); // inform strategy
+					path = null;
+					return;
+				} else {
+					this.path = newPath; // continue with new path
+				}
+			}
+
 			goSinglePathStep();
 		} else { // step not possible, so try it next time
 			movableAction = EAction.NO_ACTION;

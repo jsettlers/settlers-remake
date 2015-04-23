@@ -245,6 +245,13 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		return state == EBearerState.DEAD_OBJECT;
 	}
 
+	@Override
+	protected void pathAborted(ShortPoint2D pathTarget) {
+		if (state != EBearerState.JOBLESS) {
+			handleJobFailed(true);
+		}
+	}
+
 	/**
 	 * This enum defines the internal states of a bearer.
 	 * 
