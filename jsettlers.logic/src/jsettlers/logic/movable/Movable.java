@@ -361,7 +361,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				} else { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
 					pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
-					forceGoInDirection(directionToPushing);
+					goInDirection(directionToPushing);
 					return true;
 				}
 			}
@@ -518,19 +518,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Forces the movable to go a step in the given direction (if it is not blocked).
-	 * 
-	 * @param direction
-	 *            direction to go
-	 */
-	final void forceGoInDirection(EDirection direction) {
-		ShortPoint2D targetPos = direction.getNextHexPoint(position);
-		this.direction = direction;
-		this.followPath(new Path(targetPos));
-		setState(ENewMovableState.PATHING);
 	}
 
 	/**

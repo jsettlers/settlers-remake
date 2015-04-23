@@ -46,7 +46,7 @@ public class FleeStrategy extends MovableStrategy {
 				ShortPoint2D newPos = newDirection.getNextHexPoint(position);
 
 				if (super.getStrategyGrid().isFreePosition(newPos)) {
-					super.forceGoInDirection(newDirection);
+					super.goInDirection(newDirection);
 				} else {
 					super.lookInDirection(newDirection);
 					turnNextTime = true;

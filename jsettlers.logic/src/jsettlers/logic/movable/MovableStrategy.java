@@ -129,16 +129,6 @@ public abstract class MovableStrategy implements Serializable {
 		return movable.goInDirection(direction);
 	}
 
-	/**
-	 * Forces the movable to go a step in the given direction (if it is not blocked).
-	 * 
-	 * @param direction
-	 *            direction to go
-	 */
-	protected final void forceGoInDirection(EDirection direction) {
-		movable.forceGoInDirection(direction);
-	}
-
 	public final void setPosition(ShortPoint2D pos) {
 		movable.setPos(pos);
 	}

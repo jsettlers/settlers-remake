@@ -98,8 +98,11 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		}
 
 		case WALK:
-			super.forceGoInDirection(currentJob.getDirection());
-			jobFinished();
+			if (super.goInDirection(currentJob.getDirection())) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
 			break;
 
 		case SHOW: {

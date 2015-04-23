@@ -157,7 +157,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 			ShortPoint2D nextPos = dir.getNextHexPoint(pos);
 			if (super.isValidPosition(nextPos)) {
-				super.forceGoInDirection(dir);
+				super.goInDirection(dir);
 				return;
 			} else {
 				goToSavely(enemy);
