@@ -51,7 +51,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private final AbstractNewMovableGrid grid;
 	private final int id;
 
-	private ENewMovableState state = ENewMovableState.DOING_NOTHING;
+	private EMovableState state = EMovableState.DOING_NOTHING;
 
 	private EMovableType movableType;
 	private MovableStrategy strategy;
@@ -167,7 +167,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		case WAITING:
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			state = ENewMovableState.DOING_NOTHING; // the action is finished, as the time passed
+			state = EMovableState.DOING_NOTHING; // the action is finished, as the time passed
 			movableAction = EAction.NO_ACTION;
 			break;
 		default:
@@ -178,7 +178,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			switch (state) {
 			case PATHING:
 				// if we're currently pathing, stop former pathing and calculate a new path
-				setState(ENewMovableState.DOING_NOTHING);
+				setState(EMovableState.DOING_NOTHING);
 				this.movableAction = EAction.NO_ACTION;
 				this.path = null;
 
@@ -203,7 +203,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		switch (state) {
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
-			setState(ENewMovableState.DOING_NOTHING);
+			setState(EMovableState.DOING_NOTHING);
 			this.movableAction = EAction.NO_ACTION;
 			break;
 
@@ -215,10 +215,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			break;
 		}
 
-		if (state == ENewMovableState.DOING_NOTHING) { // if movable is currently doing nothing
+		if (state == EMovableState.DOING_NOTHING) { // if movable is currently doing nothing
 			strategy.action(); // let the strategy work
 
-			if (state == ENewMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
+			if (state == EMovableState.DOING_NOTHING) { // if movable is still doing nothing after strategy, consider doingNothingAction()
 				if (visible && enableNothingToDo) {
 					return doingNothingAction();
 				} else {
@@ -233,7 +233,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private void pathingAction() {
 		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
-			setState(ENewMovableState.DOING_NOTHING);
+			setState(EMovableState.DOING_NOTHING);
 			movableAction = EAction.NO_ACTION;
 			path = null;
 			checkPlayerOfCurrentPosition(); // TODO: this should be in timerEvent
@@ -246,7 +246,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			if (!grid.isValidNextPathPosition(this, path.getNextPos(), path.getTargetPos())) { // next position is invalid
 				Path newPath = grid.calculatePathTo(this, path.getTargetPos()); // try to find a new path
 				if (newPath == null) { // no path found
-					setState(ENewMovableState.DOING_NOTHING);
+					setState(EMovableState.DOING_NOTHING);
 					movableAction = EAction.NO_ACTION;
 					strategy.pathAborted(path.getTargetPos()); // inform strategy
 					path = null;
@@ -443,10 +443,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 *            duration the animation should last (in seconds). // TODO change to milliseconds
 	 */
 	final void playAction(EAction movableAction, float duration) {
-		assert state == ENewMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
+		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
 
 		this.movableAction = movableAction;
-		setState(ENewMovableState.PLAYING_ACTION);
+		setState(EMovableState.PLAYING_ACTION);
 		this.animationStartTime = MatchConstants.clock.getTime();
 		this.animationDuration = (short) (duration * 1000);
 		this.soundPlayed = false;
@@ -458,12 +458,12 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 *            time to sleep in milliseconds
 	 */
 	final void wait(short sleepTime) {
-		assert state == ENewMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
+		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
 
 		this.animationStartTime = MatchConstants.clock.getTime();
 		this.animationDuration = sleepTime;
 		this.movableAction = EAction.NO_ACTION;
-		this.state = ENewMovableState.WAITING;
+		this.state = EMovableState.WAITING;
 	}
 
 	/**
@@ -484,7 +484,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 *         false if it wasn't possible to get a path.
 	 */
 	final boolean goToPos(ShortPoint2D targetPos) {
-		assert state == ENewMovableState.DOING_NOTHING : "can't do goToPos() if state isn't DOING_NOTHING. curr state: " + state;
+		assert state == EMovableState.DOING_NOTHING : "can't do goToPos() if state isn't DOING_NOTHING. curr state: " + state;
 
 		Path path = grid.calculatePathTo(this, targetPos);
 		if (path == null) {
@@ -508,7 +508,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y)) {
 			initGoingSingleStep(pos);
 			this.direction = direction;
-			setState(ENewMovableState.GOING_SINGLE_STEP);
+			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
 		} else {
 			return false;
@@ -555,7 +555,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * @return
 	 */
 	final boolean preSearchPath(boolean dikjstra, short centerX, short centerY, short radius, ESearchType searchType) {
-		assert state == ENewMovableState.DOING_NOTHING : "this method can only be invoked in state DOING_NOTHING";
+		assert state == EMovableState.DOING_NOTHING : "this method can only be invoked in state DOING_NOTHING";
 
 		if (dikjstra) {
 			this.path = grid.searchDijkstra(this, centerX, centerY, radius, searchType);
@@ -580,14 +580,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	void abortPath() {
-		setState(ENewMovableState.DOING_NOTHING);
+		setState(EMovableState.DOING_NOTHING);
 		movableAction = EAction.NO_ACTION;
 		path = null;
 	}
 
 	private void followPath(Path path) {
 		this.path = path;
-		setState(ENewMovableState.PATHING);
+		setState(EMovableState.PATHING);
 		this.movableAction = EAction.NO_ACTION;
 		pathingAction();
 	}
@@ -597,7 +597,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * 
 	 * @param newState
 	 */
-	private void setState(ENewMovableState newState) {
+	private void setState(EMovableState newState) {
 		this.state = newState;
 	}
 
@@ -764,7 +764,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.strategy.strategyKilledEvent(path != null ? path.getTargetPos() : null);
 		this.strategy = newStrategy;
 		this.movableAction = EAction.NO_ACTION;
-		setState(ENewMovableState.DOING_NOTHING);
+		setState(EMovableState.DOING_NOTHING);
 	}
 
 	public final boolean setOccupyableBuilding(IOccupyableBuilding building) {
@@ -821,7 +821,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				+ " direction: " + direction;
 	}
 
-	private static enum ENewMovableState {
+	private static enum EMovableState {
 		PLAYING_ACTION,
 		PATHING,
 		DOING_NOTHING,
