@@ -467,6 +467,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 	@Override
 	protected void pathAborted(ShortPoint2D pathTarget) {
-		jobFailed();
+		if (currentJob != null) {
+			jobFailed();
+		}
 	}
 }

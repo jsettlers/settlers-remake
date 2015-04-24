@@ -76,7 +76,6 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
-	private int delayCtr = 0;
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
@@ -232,7 +231,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private void pathingAction() {
-		if (path.isFinished() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
+		if (!path.hasNextStep() || !strategy.checkPathStepPreconditions(path.getTargetPos(), path.getStep())) {
 			// if path is finished, or canceled by strategy return from here
 			setState(ENewMovableState.DOING_NOTHING);
 			movableAction = EAction.NO_ACTION;
@@ -262,11 +261,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			movableAction = EAction.NO_ACTION;
 			boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
 			if (!pushedSuccessful) {
-				delayCtr++;
-				if (delayCtr > 4) {
-					delayCtr = 0;
-					path = strategy.findWayAroundObstacle(direction, position, path);
-				}
+				path = strategy.findWayAroundObstacle(direction, position, path);
 			}
 		}
 	}
@@ -356,7 +351,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				return true; // if we found a free direction, go there and tell the pushing one we'll move
 
 			} else { // if we didn't find a direction, check if it's possible to exchange positions
-				if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
+				if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 				} else { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
@@ -367,11 +362,11 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			}
 
 		case PATHING:
-			if (pushingMovable.path == null || pushingMovable.path.isFinished()) {
+			if (pushingMovable.path == null || !pushingMovable.path.hasNextStep()) {
 				return false; // the other movable just pushed to get space, so we can't do anything for it in this state.
 			}
 
-			if (animationStartTime + animationDuration <= MatchConstants.clock.getTime() && !this.path.isFinished()) {
+			if (animationStartTime + animationDuration <= MatchConstants.clock.getTime() && this.path.hasNextStep()) {
 				ShortPoint2D nextPos = path.getNextPos();
 				if (pushingMovable.position == nextPos) { // two movables going in opposite direction and wanting to exchange positions
 					pushingMovable.goSinglePathStep();

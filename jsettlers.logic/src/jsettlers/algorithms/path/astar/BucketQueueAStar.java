@@ -143,8 +143,6 @@ public final class BucketQueueAStar extends AbstractAStar {
 				parentFlatIdx = depthParentHeap[getParentIdx(parentFlatIdx)];
 			}
 
-			path.initPath();
-
 			return path;
 		}
 

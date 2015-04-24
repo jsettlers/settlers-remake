@@ -243,7 +243,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	protected Path findWayAroundObstacle(EDirection direction, ShortPoint2D position, Path path) {
-		if (!(path.getStep() < path.getLength() - 1)) { // if path has no position left
+		if (!path.hasOverNextStep()) { // if path has no position left
 			return path;
 		}
 

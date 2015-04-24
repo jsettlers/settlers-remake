@@ -117,7 +117,6 @@ public final class AStarJPS extends AbstractAStar implements IAStarHeapable {
 				path.insertAt(idx, getX(parentFlatIdx), getY(parentFlatIdx));
 				parentFlatIdx = parent[parentFlatIdx];
 			}
-			path.initPath();
 			return path;
 		}
 

@@ -143,8 +143,6 @@ public final class HexAStar extends AbstractAStar implements IAStarHeapable {
 				parentFlatIdx = depthParentHeap[getParentIdx(parentFlatIdx)];
 			}
 
-			path.initPath();
-
 			return path;
 		}
 

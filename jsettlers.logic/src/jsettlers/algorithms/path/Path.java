@@ -2,7 +2,6 @@ package jsettlers.algorithms.path;
 
 import java.io.Serializable;
 
-import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -17,15 +16,7 @@ public class Path implements Serializable {
 	private final short[] pathX;
 	private final short[] pathY;
 
-	private short currX;
-	private short currY;
-
-	private EDirection dir;
-	private int idx = 1;
-
-	private boolean finished;
-
-	private ShortPoint2D targetPos;
+	private int idx = -1;
 
 	public Path(int length) {
 		pathX = new short[length];
@@ -41,7 +32,7 @@ public class Path implements Serializable {
 	 *            The path prefix. NOTE: The prefix must start with the current position of the movable!
 	 */
 	public Path(Path oldPath, ShortPoint2D... pathPrefix) {
-		int length = oldPath.getLength() - oldPath.getStep() + pathPrefix.length + 2; // FIXME @Andreas Eberle length of paths is incorrect!!
+		int length = (oldPath.getLength() - (oldPath.idx + 1)) + pathPrefix.length;
 		pathX = new short[length];
 		pathY = new short[length];
 
@@ -54,8 +45,6 @@ public class Path implements Serializable {
 			insertAt(i, oldPath.nextX(), oldPath.nextY());
 			oldPath.goToNextStep();
 		}
-
-		initPath();
 	}
 
 	/**
@@ -67,7 +56,6 @@ public class Path implements Serializable {
 	public Path(ShortPoint2D position) {
 		this(1);
 		insertAt(0, position.x, position.y);
-		initPath();
 	}
 
 	/**
@@ -85,36 +73,24 @@ public class Path implements Serializable {
 		pathY[idx] = y;
 	}
 
-	/**
-	 * returns the next x
-	 * 
-	 * @return -1 if {@link #isFinished()} returns true<br>
-	 *         otherwise the next x coordinate
-	 */
-	public final short nextX() {
-		if (isFinished()) {
-			return -1;
-		} else {
-			return currX;
-		}
+	public boolean hasNextStep() {
+		return idx + 1 < pathX.length;
 	}
 
-	/**
-	 * returns the next y
-	 * 
-	 * @return -1 if {@link #isFinished()} returns true<br>
-	 *         otherwise the next y coordinate
-	 */
+	public final short nextX() {
+		return pathX[idx + 1];
+	}
+
 	public final short nextY() {
-		if (isFinished()) {
-			return -1;
-		} else {
-			return currY;
-		}
+		return pathY[idx + 1];
+	}
+
+	public final ShortPoint2D getNextPos() {
+		return new ShortPoint2D(nextX(), nextY());
 	}
 
 	public final boolean isFinished() {
-		return finished;
+		return idx >= pathX.length;
 	}
 
 	@Override
@@ -143,41 +119,14 @@ public class Path implements Serializable {
 	}
 
 	public final int getLength() {
-		return pathX.length - 1;
+		return pathX.length;
 	}
 
 	/**
 	 * increases the path counter
 	 */
 	public final void goToNextStep() {
-		if (idx >= pathX.length) {
-			finished = true;
-			return;
-		}
-
-		currX = dir.getNextTileX(currX);
-		currY = dir.getNextTileY(currY);
-
-		if (currX == pathX[idx] && currY == pathY[idx]) {
-			idx++;
-			if (idx < pathX.length) {
-				dir = EDirection.getDirectionOfMultipleSteps(pathX[idx] - pathX[idx - 1], pathY[idx] - pathY[idx - 1]);
-			}
-		}
-
-	}
-
-	public final void initPath() {
-		currX = getFirstX();
-		currY = getFirstY();
-
-		if (pathX.length > 1) {
-			dir = EDirection.getDirectionOfMultipleSteps(pathX[1] - pathX[0], pathY[1] - pathY[0]);
-		}
-	}
-
-	public final ShortPoint2D getNextPos() {
-		return new ShortPoint2D(nextX(), nextY());
+		idx++;
 	}
 
 	public final ShortPoint2D getFirstPos() {
@@ -185,25 +134,19 @@ public class Path implements Serializable {
 	}
 
 	public final ShortPoint2D getTargetPos() {
-		if (targetPos == null) {
-			final int length = getLength();
-			targetPos = new ShortPoint2D(pathX[length], pathY[length]);
-		}
-		return targetPos;
+		int lastIdx = pathX.length - 1;
+		return new ShortPoint2D(pathX[lastIdx], pathY[lastIdx]);
 	}
 
 	public int getStep() {
 		return idx;
 	}
 
-	public ShortPoint2D getOverNextPos() {
-		if (!isFinished()) {
-			short x = dir.getNextTileX(currX);
-			short y = dir.getNextTileY(currY);
+	public boolean hasOverNextStep() {
+		return idx + 2 < pathX.length;
+	}
 
-			return new ShortPoint2D(x, y);
-		} else {
-			return null;
-		}
+	public ShortPoint2D getOverNextPos() {
+		return new ShortPoint2D(pathX[idx + 2], pathY[idx + 2]);
 	}
 }
