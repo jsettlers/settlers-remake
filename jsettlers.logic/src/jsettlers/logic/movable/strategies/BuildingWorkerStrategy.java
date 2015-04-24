@@ -98,10 +98,10 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		}
 
 		case WALK:
-			if (super.goInDirection(currentJob.getDirection())) {
+			IBuildingJob job = currentJob;
+			super.forceGoInDirection(currentJob.getDirection());
+			if (currentJob == job) { // the path could fail and call abortPath().
 				jobFinished();
-			} else {
-				jobFailed();
 			}
 			break;
 
@@ -111,6 +111,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			}
 
 			ShortPoint2D pos = getCurrentJobPos();
+			if (currentJob.getDirection() != null) {
+				super.lookInDirection(currentJob.getDirection());
+			}
 			super.setPosition(pos);
 			super.setVisible(true);
 			jobFinished();

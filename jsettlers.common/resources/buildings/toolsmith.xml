@@ -5,87 +5,92 @@
     <ground groundtype="EARTH" />
     <ground groundtype="FLATTENED" />
     <blocked dx="2" dy="2" block="true" />
-    <blocked dx="1" dy="1" block="true" />
-    <blocked dx="0" dy="0" block="true" />
-    <blocked dx="1" dy="2" block="true" />
-    <blocked dx="0" dy="1" block="true" />
-    <blocked dx="-1" dy="0" block="true" />
-    <blocked dx="-3" dy="-1" block="true" />
-    <blocked dx="-2" dy="-1" block="true" />
-    <blocked dx="-2" dy="0" block="true" />
-    <blocked dx="-2" dy="1" block="true" />
-    <blocked dx="-3" dy="0" block="true" />
-    <blocked dx="-4" dy="-1" block="true" />
-    <blocked dx="-3" dy="-2" block="true" />
-    <blocked dx="-2" dy="-2" block="true" />
-    <blocked dx="-1" dy="-1" block="true" />
-    <blocked dx="1" dy="0" block="true" />
-    <blocked dx="2" dy="1" block="true" />
-    <blocked dx="3" dy="0" block="true" />
-    <blocked dx="2" dy="-1" block="true" />
-    <blocked dx="1" dy="-1" block="true" />
-    <blocked dx="1" dy="-2" block="true" />
-    <blocked dx="0" dy="-2" block="true" />
-    <blocked dx="0" dy="-1" block="true" />
-    <blocked dx="-1" dy="-2" block="true" />
-    <blocked dx="-3" dy="-3" block="true" />
-    <blocked dx="-2" dy="-3" block="true" />
-    <blocked dx="-1" dy="-3" block="true" />
-    <blocked dx="0" dy="-3" block="true" />
-    <blocked dx="-2" dy="-4" block="true" />
-    <blocked dx="-3" dy="-4" block="true" />
-    <blocked dx="-1" dy="-4" block="true" />
-    <blocked dx="-3" dy="-5" block="true" />
-    <blocked dx="-4" dy="-2" block="true" />
-    <blocked dx="-4" dy="-3" block="true" />
-    <blocked dx="-1" dy="2" block="true" />
-    <blocked dx="-1" dy="1" block="true" />
-    <blocked dx="3" dy="-1" block="false" />
-    <blocked dx="2" dy="-2" block="false" />
-    <blocked dx="1" dy="-3" block="false" />
-    <blocked dx="0" dy="-4" block="false" />
-    <blocked dx="-1" dy="-5" block="false" />
-    <blocked dx="-2" dy="-5" block="false" />
-    <blocked dx="-3" dy="-6" block="false" />
-    <blocked dx="-4" dy="-6" block="false" />
-    <blocked dx="-4" dy="-5" block="false" />
-    <blocked dx="-4" dy="-4" block="false" />
-    <blocked dx="-5" dy="-2" block="false" />
-    <blocked dx="-5" dy="-1" block="false" />
-    <blocked dx="-4" dy="0" block="false" />
-    <blocked dx="-5" dy="-3" block="false" />
-    <blocked dx="-3" dy="1" block="false" />
-    <blocked dx="-2" dy="2" block="false" />
-    <blocked dx="-1" dy="3" block="false" />
-    <blocked dx="0" dy="2" block="false" />
-    <blocked dx="0" dy="3" block="false" />
-    <blocked dx="1" dy="3" block="false" />
-    <blocked dx="2" dy="3" block="false" />
-    <blocked dx="3" dy="3" block="false" />
-    <blocked dx="3" dy="2" block="false" />
-    <blocked dx="3" dy="1" block="false" />
-    <blocked dx="4" dy="0" block="false" />
-    <blocked dx="4" dy="1" block="false" />
-    <blocked dx="4" dy="2" block="false" />
-    <blocked dx="2" dy="0" block="false" />
-    <blocked dx="-5" dy="-4" block="false" />
-    <blocked dx="0" dy="4" block="false" />
-    <blocked dx="1" dy="4" block="false" />
-    <blocked dx="2" dy="4" block="false" />
-    <blocked dx="3" dy="4" block="false" />
-    <blocked dx="4" dy="3" block="false" />
-    <blocked dx="4" dy="4" block="false" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-3" dy="-1" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-2" dy="1" block="true" />
+	<blocked dx="-3" dy="0" block="true" />
+	<blocked dx="-4" dy="-1" block="true" />
+	<blocked dx="-3" dy="-2" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="3" dy="0" block="true" />
+	<blocked dx="2" dy="-1" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="1" dy="-2" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-3" dy="-3" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="0" dy="-3" block="true" />
+	<blocked dx="-2" dy="-4" block="true" />
+	<blocked dx="-3" dy="-4" block="true" />
+	<blocked dx="-1" dy="-4" block="true" />
+	<blocked dx="-3" dy="-5" block="true" />
+	<blocked dx="-4" dy="-2" block="true" />
+	<blocked dx="-4" dy="-3" block="true" />
+	<blocked dx="3" dy="-1" block="false" />
+	<blocked dx="2" dy="-2" block="false" />
+	<blocked dx="1" dy="-3" block="false" />
+	<blocked dx="0" dy="-4" block="false" />
+	<blocked dx="-1" dy="-5" block="false" />
+	<blocked dx="-2" dy="-5" block="false" />
+	<blocked dx="-3" dy="-6" block="false" />
+	<blocked dx="-4" dy="-6" block="false" />
+	<blocked dx="-4" dy="-5" block="false" />
+	<blocked dx="-4" dy="-4" block="false" />
+	<blocked dx="-5" dy="-2" block="false" />
+	<blocked dx="-5" dy="-1" block="false" />
+	<blocked dx="-4" dy="0" block="false" />
+	<blocked dx="-5" dy="-3" block="false" />
+	<blocked dx="-3" dy="1" block="false" />
+	<blocked dx="-2" dy="2" block="false" />
+	<blocked dx="-1" dy="3" block="false" />
+	<blocked dx="0" dy="2" block="false" />
+	<blocked dx="0" dy="3" block="false" />
+	<blocked dx="1" dy="3" block="false" />
+	<blocked dx="2" dy="3" block="false" />
+	<blocked dx="3" dy="3" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="3" dy="1" block="false" />
+	<blocked dx="4" dy="0" block="false" />
+	<blocked dx="4" dy="1" block="false" />
+	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="2" dy="0" block="false" />
+	<blocked dx="-5" dy="-4" block="false" />
+	<blocked dx="0" dy="4" block="false" />
+	<blocked dx="1" dy="4" block="false" />
+	<blocked dx="2" dy="4" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="4" dy="3" block="false" />
+	<blocked dx="4" dy="4" block="false" />
+	<blocked dx="-1" dy="2" block="false" />
+	<blocked dx="-1" dy="1" block="false" />
+	
     <door dx="2" dy="0" />
+    
     <stack dx="1" dy="4" material="PLANK" buildrequired="3" />
     <stack dx="3" dy="4" material="STONE" buildrequired="3" />
     <stack dx="4" dy="0" material="IRON" buildrequired="0" />
-    <stack dx="-3" dy="1" material="COAL" buildrequired="0" />
+    <stack dx="-4" dy="0" material="COAL" buildrequired="0" />
+    
     <bricklayer dx="-4" dy="0" direction="NORTH_EAST" />
     <bricklayer dx="-2" dy="2" direction="NORTH_EAST" />
     <bricklayer dx="0" dy="2" direction="NORTH_EAST" />
     <bricklayer dx="4" dy="1" direction="NORTH_WEST" />
     <bricklayer dx="3" dy="2" direction="NORTH_WEST" />
+    
     <flag dx="-1" dy="-4" />
+    
     <buildmark dx="2" dy="2" />
     <buildmark dx="3" dy="0" />
     <buildmark dx="-3" dy="-5" />
@@ -104,15 +109,14 @@
     <job name="hide" type="HIDE" successjob="waithome" failjob="hide" />
     <job name="waithome" type="WAIT" time="1" successjob="checkhome1" failjob="checkhome1" />
     <job name="checkhome1" type="AVAILABLE" material="IRON" dx="4" dy="0" successjob="checkhome2" failjob="waithome" />
-    <job name="checkhome2" type="AVAILABLE" material="COAL" dx="-3" dy="1" successjob="checkhome3" failjob="waithome" />
-    
-	<job name="checkhome3" type="NOT_FULL" dx="3" dy="3" successjob="checkhome4" failjob="waithome" />
+    <job name="checkhome2" type="AVAILABLE" material="COAL" dx="-4" dy="0" successjob="checkhome3" failjob="waithome" />
+	<job name="checkhome3" type="NOT_FULL" dx="3" dy="4" successjob="checkhome4" failjob="waithome" />
 
     <!-- Pop the tool we want to produce. -->
     <job name="checkhome4" type="POP_TOOL" successjob="go_to_coal1" failjob="waithome" />
 
     <!-- go to the coal stack -->
-    <job name="go_to_coal1" type="SHOW" dx="2" dy="0" successjob="go_to_coal2" failjob="waithome" />
+    <job name="go_to_coal1" type="SHOW" direction="SOUTH_EAST" dx="2" dy="0" successjob="go_to_coal2" failjob="waithome" />
     <job name="go_to_coal2" type="WALK" direction="SOUTH_EAST" successjob="go_to_coal3" failjob="go_to_door" />
     <job name="go_to_coal3" type="WALK" direction="SOUTH_WEST" successjob="go_to_coal4" failjob="go_to_door" />
     <job name="go_to_coal4" type="WALK" direction="SOUTH_WEST" successjob="go_to_coal5" failjob="go_to_door" />
@@ -122,32 +126,31 @@
     <job name="go_to_coal8" type="WALK" direction="WEST" successjob="go_to_coal9" failjob="go_to_door" />
     <job name="go_to_coal9" type="WALK" direction="NORTH_WEST" successjob="go_to_coal10" failjob="go_to_door" />
     <job name="go_to_coal10" type="WALK" direction="NORTH_WEST" successjob="go_to_coal11" failjob="go_to_door" />
-    <job name="go_to_coal11" type="WALK" direction="NORTH_WEST" successjob="take_coal1" failjob="go_to_door" />
+    <job name="go_to_coal11" type="WALK" direction="NORTH_WEST" successjob="go_to_coal12" failjob="go_to_door" />
+    <job name="go_to_coal12" type="WALK" direction="NORTH_WEST" successjob="take_coal1" failjob="go_to_door" />
 
-    <job name="take_coal1" type="DROP" material="NO_MATERIAL" successjob="take_coal2" failjob="go_to_door" />
-    <!-- coal is invisible, so no set mat. -->
-    <job name="take_coal2" type="TAKE" material="COAL" successjob="drop_coal1" failjob="drop_coal1" />
+    <job name="take_coal1" type="TAKE" material="COAL" successjob="take_coal2" failjob="drop_coal1" />
+    <job name="take_coal2" type="SET_MATERIAL" material="COAL" successjob="drop_coal0" failjob="go_to_door" />
 
-    <job name="drop_coal1" type="WALK" direction="NORTH_EAST" successjob="drop_coal2" failjob="go_to_door" />
-    <job name="drop_coal2" type="DROP" material="NO_MATERIAL" successjob="drop_coal3" failjob="go_to_door" />
-    <job name="drop_coal3" type="TAKE" material="COAL" successjob="drop_coal4" failjob="go_to_door" />
-    <job name="drop_coal4" type="WALK" direction="SOUTH_WEST" successjob="go_to_iron1" failjob="go_to_door" />
+    <job name="drop_coal0" type="WALK" direction="SOUTH_EAST" successjob="drop_coal1" failjob="go_to_door" />
+    <job name="drop_coal1" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_coal2" failjob="go_to_door" />
+    <job name="drop_coal2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="drop_coal3" failjob="go_to_door" />
+    <job name="drop_coal3" type="DROP" material="NO_MATERIAL" successjob="go_to_iron0" failjob="go_to_door" />
 
+    <job name="go_to_iron0" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron1" failjob="go_to_door" />
     <job name="go_to_iron1" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron2" failjob="go_to_door" />
     <job name="go_to_iron2" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron3" failjob="go_to_door" />
-    <job name="go_to_iron3" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron4" failjob="go_to_door" />
+    <job name="go_to_iron3" type="WALK" direction="EAST" successjob="go_to_iron4" failjob="go_to_door" />
     <job name="go_to_iron4" type="WALK" direction="EAST" successjob="go_to_iron5" failjob="go_to_door" />
     <job name="go_to_iron5" type="WALK" direction="EAST" successjob="go_to_iron6" failjob="go_to_door" />
-    <job name="go_to_iron6" type="WALK" direction="EAST" successjob="go_to_iron7" failjob="go_to_door" />
-    <job name="go_to_iron7" type="WALK" direction="EAST" successjob="go_to_iron8" failjob="go_to_door" />
+    <job name="go_to_iron6" type="WALK" direction="EAST" successjob="go_to_iron8" failjob="go_to_door" />
     <job name="go_to_iron8" type="WALK" direction="NORTH_EAST" successjob="go_to_iron9" failjob="go_to_door" />
     <job name="go_to_iron9" type="WALK" direction="NORTH_EAST" successjob="go_to_iron10" failjob="go_to_door" />
     <job name="go_to_iron10" type="WALK" direction="NORTH_EAST" successjob="go_to_iron11" failjob="go_to_door" />
     <job name="go_to_iron11" type="WALK" direction="NORTH_EAST" successjob="take_iron1" failjob="go_to_door" />
 
-    <job name="take_iron1" type="DROP" material="NO_MATERIAL" successjob="take_iron2" failjob="go_to_door" />
-    <job name="take_iron2" type="SET_MATERIAL" material="IRON" successjob="take_iron3" failjob="go_to_door" />
-    <job name="take_iron3" type="TAKE" material="IRON" successjob="go_to_melt1" failjob="go_to_door" />
+    <job name="take_iron1" type="TAKE" material="IRON" successjob="take_iron2" failjob="go_to_door" />
+    <job name="take_iron2" type="SET_MATERIAL" material="IRON" successjob="go_to_melt1" failjob="go_to_door" />
 
     <job name="go_to_melt1" type="WALK" direction="SOUTH_WEST" successjob="go_to_melt2" failjob="go_to_door" />
     <job name="go_to_melt2" type="WALK" direction="SOUTH_WEST" successjob="go_to_melt3" failjob="go_to_door" />
@@ -159,20 +162,19 @@
     <job name="go_to_melt8" type="WALK" direction="WEST" successjob="go_to_melt9" failjob="go_to_door" />
     <job name="go_to_melt9" type="WALK" direction="NORTH_WEST" successjob="go_to_melt10" failjob="go_to_door" />
     <job name="go_to_melt10" type="WALK" direction="NORTH_WEST" successjob="go_to_melt11" failjob="go_to_door" />
-    <job name="go_to_melt11" type="WALK" direction="NORTH_EAST" successjob="drop_iron1" failjob="go_to_door" />
+    <job name="go_to_melt11" type="WALK" direction="NORTH_WEST" successjob="go_to_melt12" failjob="go_to_door" />
+    <job name="go_to_melt12" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_iron1" failjob="go_to_door" />
 
     <job name="drop_iron1" type="DROP" material="NO_MATERIAL" successjob="drop_iron2" failjob="go_to_door" />
-    <job name="drop_iron2" type="SET_MATERIAL" material="HAMMER" successjob="drop_iron3" failjob="go_to_door" />
-    <job name="drop_iron3" type="TAKE" material="NO_MATERIAL" successjob="drop_iron4" failjob="go_to_door" />
+    <job name="drop_iron2" type="SET_MATERIAL" material="HAMMER" successjob="drop_iron4" failjob="go_to_door" />
     <job name="drop_iron4" type="SMOKE_ON" dx="-3" dy="-1" successjob="drop_iron5" failjob="go_to_door" />
-    <job name="drop_iron5" type="WAIT" time="5" successjob="drop_iron6" failjob="go_to_door" />
-    <job name="drop_iron6" type="DROP" material="NO_MATERIAL" successjob="drop_iron7" failjob="go_to_door" />
+    <job name="drop_iron5" type="WAIT" time="4" successjob="drop_iron7" failjob="go_to_door" />
     <job name="drop_iron7" type="SMOKE_OFF" dx="-3" dy="-1" successjob="drop_iron8" failjob="go_to_door" />
     <job name="drop_iron8" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" />
 
-    <job name="go_to_hammer1" type="WALK" direction="SOUTH_WEST" successjob="go_to_hammer2" failjob="go_to_door" />
+    <job name="go_to_hammer1" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer2" failjob="go_to_door" />
     <job name="go_to_hammer2" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer3" failjob="go_to_door" />
-    <job name="go_to_hammer3" type="WALK" direction="EAST" successjob="go_to_hammer4" failjob="go_to_door" />
+    <job name="go_to_hammer3" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer4" failjob="go_to_door" />
     <job name="go_to_hammer4" type="LOOK_AT" direction="NORTH_WEST" successjob="hammer1" failjob="go_to_door" />
 
     <job name="hammer1" type="PLAY_ACTION1" time=".7" successjob="hammer2" failjob="go_to_door" />
@@ -182,16 +184,15 @@
     <job name="hammer5" type="PLAY_ACTION1" time=".7" successjob="go_to_drop1" failjob="go_to_door" />
 
 
-    <job name="go_to_drop1" type="WALK" direction="SOUTH_EAST" successjob="go_to_drop2" failjob="go_to_door" />
-    <job name="go_to_drop2" type="WALK" direction="SOUTH_EAST" successjob="go_to_drop3" failjob="go_to_door" />
-    <job name="go_to_drop3" type="WALK" direction="EAST" successjob="go_to_drop4" failjob="go_to_door" />
-    <job name="go_to_drop4" type="WALK" direction="NORTH_EAST" successjob="go_to_drop5" failjob="go_to_door" />
-    <job name="go_to_drop5" type="WALK" direction="NORTH_EAST" successjob="drop1" failjob="go_to_door" />
+    <job name="go_to_drop1" type="WALK" direction="EAST" successjob="go_to_drop2" failjob="go_to_door" />
+    <job name="go_to_drop2" type="WALK" direction="EAST" successjob="go_to_drop3" failjob="go_to_door" />
+    <job name="go_to_drop3" type="WALK" direction="EAST" successjob="drop1" failjob="go_to_door" />
 
     <job name="drop1" type="DROP_POPPED" successjob="drop2" failjob="go_to_door" />
-    <job name="drop2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="drop3" failjob="go_to_door" />
-    <job name="drop3" type="TAKE" material="NO_MATERIAL" successjob="go_inside1" failjob="go_to_door" />
+    <job name="drop2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="go_inside1" failjob="go_to_door" />
 
     <job name="go_inside1" type="WALK" direction="NORTH_EAST" successjob="go_inside2" failjob="go_to_door" />
-    <job name="go_inside2" type="WALK" direction="NORTH_WEST" successjob="hide" failjob="hide" />
+    <job name="go_inside2" type="WALK" direction="NORTH_EAST" successjob="go_inside3" failjob="hide" />
+    <job name="go_inside3" type="WALK" direction="NORTH_EAST" successjob="go_inside4" failjob="hide" />
+    <job name="go_inside4" type="WALK" direction="NORTH_WEST" successjob="hide" failjob="hide" />
 </building>

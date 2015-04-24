@@ -516,6 +516,19 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	/**
+	 * Forces the movable to go a step in the given direction (if it is not blocked).
+	 * 
+	 * @param direction
+	 *            direction to go
+	 */
+	final void forceGoInDirection(EDirection direction) {
+		ShortPoint2D targetPos = direction.getNextHexPoint(position);
+		this.direction = direction;
+		setState(EMovableState.PATHING);
+		this.followPath(new Path(targetPos));
+	}
+
+	/**
 	 * 
 	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
 	 */
