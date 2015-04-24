@@ -53,7 +53,7 @@ public class ChannelTest {
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 		c2.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
-		Thread.sleep(30);
+		Thread.sleep(80);
 
 		assertEquals(1, listener1.packets.size());
 		assertEquals(testPackage, listener1.packets.get(0));
@@ -73,7 +73,7 @@ public class ChannelTest {
 			c1.sendPacket(ENetworkKey.TEST_PACKET, new TestPacket(i));
 		}
 
-		Thread.sleep(10);
+		Thread.sleep(30);
 
 		assertEquals(NUMBER_OF_PACKETS, listener.packets.size());
 
