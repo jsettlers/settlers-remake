@@ -262,6 +262,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
 			if (!pushedSuccessful) {
 				path = strategy.findWayAroundObstacle(direction, position, path);
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD;
 			}
 		}
 	}
@@ -751,7 +752,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 	@Override
 	public final void debug() {
-		System.out.println("debug");
+		System.out.println("debug: " + this);
 	}
 
 	@Override
