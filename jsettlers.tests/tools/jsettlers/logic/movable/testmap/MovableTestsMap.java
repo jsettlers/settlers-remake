@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
-import jsettlers.algorithms.path.astar.normal.HexAStar;
-import jsettlers.algorithms.path.astar.normal.IAStarPathMap;
+import jsettlers.algorithms.path.astar.BucketQueueAStar;
+import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
@@ -42,7 +42,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	private final Movable movableMap[][];
 	private final EMaterialType materialTypeMap[][];
 	private final byte materialAmmountMap[][];
-	private final HexAStar aStar;
+	private final BucketQueueAStar aStar;
 
 	public MovableTestsMap(int width, int height, Player defaultPlayer) {
 		this.width = (short) width;
@@ -53,7 +53,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		this.materialTypeMap = new EMaterialType[width][height];
 		this.materialAmmountMap = new byte[width][height];
 
-		aStar = new HexAStar(this, this.width, this.height);
+		aStar = new BucketQueueAStar(this, this.width, this.height);
 	}
 
 	@Override

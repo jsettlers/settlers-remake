@@ -3,9 +3,6 @@ package jsettlers.algorithms.path.astar;
 import static org.junit.Assert.assertEquals;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
-import jsettlers.algorithms.path.astar.AbstractAStar;
-import jsettlers.algorithms.path.astar.BucketQueueAStar;
-import jsettlers.algorithms.path.test.DummyEmptyAStarMap;
 import jsettlers.common.position.ShortPoint2D;
 
 import org.junit.Test;
@@ -26,7 +23,7 @@ public class BucketQueueAStarTest {
 
 		Path path = findPath(sx, sy, tx, ty);
 
-		assertEquals(ShortPoint2D.getOnGridDist(tx - sx, ty - sy) - 1, path.getLength());
+		assertEquals(ShortPoint2D.getOnGridDist(tx - sx, ty - sy), path.getLength());
 	}
 
 	@Test
@@ -39,7 +36,7 @@ public class BucketQueueAStarTest {
 							continue;
 						}
 
-						assertEquals(ShortPoint2D.getOnGridDist(tx - sx, ty - sy) - 1, findPath(sx, sy, tx, ty).getLength());
+						assertEquals(ShortPoint2D.getOnGridDist(tx - sx, ty - sy), findPath(sx, sy, tx, ty).getLength());
 					}
 				}
 			}

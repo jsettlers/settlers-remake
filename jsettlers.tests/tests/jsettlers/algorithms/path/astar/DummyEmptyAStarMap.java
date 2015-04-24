@@ -1,7 +1,7 @@
-package jsettlers.algorithms.path.test;
+package jsettlers.algorithms.path.astar;
 
 import jsettlers.algorithms.path.IPathCalculatable;
-import jsettlers.algorithms.path.astar.normal.IAStarPathMap;
+import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.common.Color;
 
 /**

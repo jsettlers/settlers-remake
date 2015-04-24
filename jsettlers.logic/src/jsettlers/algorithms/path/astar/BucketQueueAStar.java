@@ -5,7 +5,6 @@ import java.util.BitSet;
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.InvalidStartPositionException;
 import jsettlers.algorithms.path.Path;
-import jsettlers.algorithms.path.astar.normal.IAStarPathMap;
 import jsettlers.algorithms.path.astar.queues.bucket.AbstractBucketQueue;
 import jsettlers.algorithms.path.astar.queues.bucket.ListMinBucketQueue;
 import jsettlers.common.movable.EDirection;

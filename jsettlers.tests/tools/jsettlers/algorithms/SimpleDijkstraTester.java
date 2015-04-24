@@ -2,10 +2,10 @@ package jsettlers.algorithms;
 
 import jsettlers.algorithms.path.IPathCalculatable;
 import jsettlers.algorithms.path.Path;
-import jsettlers.algorithms.path.astar.normal.HexAStar;
+import jsettlers.algorithms.path.astar.BucketQueueAStar;
+import jsettlers.algorithms.path.astar.DummyEmptyAStarMap;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
-import jsettlers.algorithms.path.test.DummyEmptyAStarMap;
 import jsettlers.common.material.ESearchType;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -34,7 +34,7 @@ public class SimpleDijkstraTester {
 		DummyEmptyAStarMap aStarMap = new DummyEmptyAStarMap(WIDTH, HEIGHT);
 		aStarMap.setBlocked(120, 100, true);
 
-		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new HexAStar(aStarMap, WIDTH, HEIGHT), WIDTH, HEIGHT);
+		DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(map, new BucketQueueAStar(aStarMap, WIDTH, HEIGHT), WIDTH, HEIGHT);
 
 		IPathCalculatable requester = new IPathCalculatable() {
 

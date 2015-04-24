@@ -21,7 +21,7 @@ import jsettlers.algorithms.path.area.IInAreaFinderMap;
 import jsettlers.algorithms.path.area.InAreaFinder;
 import jsettlers.algorithms.path.astar.AbstractAStar;
 import jsettlers.algorithms.path.astar.BucketQueueAStar;
-import jsettlers.algorithms.path.astar.normal.IAStarPathMap;
+import jsettlers.algorithms.path.astar.IAStarPathMap;
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
