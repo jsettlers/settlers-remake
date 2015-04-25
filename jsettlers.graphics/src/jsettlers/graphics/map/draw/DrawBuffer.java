@@ -64,8 +64,8 @@ public class DrawBuffer {
 			currentTriangles += 2;
 		}
 
-		public void addTirangle(float x1, float y1, float x2, float y2, float x3, float y3, float u1, float v1, float u2, float v2, float u3,
-				float v3, int activeColor) {
+		public void addTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
+									float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
 			if (currentTriangles >= BUFFER_TRIANGLES - 1) {
 				draw();
 			}
