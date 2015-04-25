@@ -148,7 +148,7 @@
 	<job name="gohome" type="GO_TO" dx="0" dy="1" successjob="hide" failjob="hide" />
 	<job name="hide" type="HIDE" successjob="wait" failjob="wait" />
 
-	<job name="wait" type="WAIT" time="1" successjob="stackNotFull" failjob="stackNotFull" />
+	<job name="wait" type="WAIT" time="3" successjob="stackNotFull" failjob="stackNotFull" />
 	<job name="stackNotFull" type="NOT_FULL" dx="-1" dy="4" material="PIG" successjob="PIG1_isKillable" failjob="checkcrop" />
 
 	<job name="PIG1_isKillable" type="PIG_IS_ADULT" dx="2" dy="2" successjob="killPig1Show1" failjob="PIG2_isKillable" />
@@ -170,8 +170,10 @@
 	<job name="feedCropTake2" type="SET_MATERIAL" material="CROP" successjob="feedCropGoHome1" failjob="gohome" />
 
 	<job name="feedCropGoHome1" type="GO_TO" dx="0" dy="1" successjob="feedCropGoHome2" failjob="gohome" />
-	<job name="feedCropGoHome2" type="HIDE" successjob="feedWaterShow1" failjob="wait" />
-
+	<job name="feedCropGoHome2" type="HIDE" successjob="feedWait" failjob="wait" />
+	
+	<job name="feedWait" type="WAIT" time="1" successjob="feedWaterShow1" failjob="wait" />
+	
 	<!-- get water from stack to home -->
 	<job name="feedWaterShow1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="feedWaterShow2" failjob="wait" />
 	<job name="feedWaterShow2" type="LOOK_AT" direction="SOUTH_EAST" successjob="feedWaterShow3" failjob="wait" />
