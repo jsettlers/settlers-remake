@@ -15,7 +15,7 @@ public class PigObject extends AbstractHexMapObject {
 	/**
 	 * Time a pig lives in ms
 	 */
-	private static final int LIVE_TIME = 30000;
+	private static final int LIVE_TIME = 60000;
 
 	private final int starttime;
 
