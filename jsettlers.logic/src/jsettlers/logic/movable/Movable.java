@@ -222,7 +222,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 				if (visible && enableNothingToDo) {
 					return doingNothingAction();
 				} else {
-					return 500;
+					return Constants.MOVABLE_INTERRUPT_PERIOD;
 				}
 			}
 		}
