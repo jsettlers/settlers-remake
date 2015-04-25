@@ -283,7 +283,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private int doingNothingAction() {
-		if (grid.isBlocked(position.x, position.y)) {
+		if (grid.isBlockedOrProtected(position.x, position.y)) {
 			Path newPath = grid.searchDijkstra(this, position.x, position.y, (short) 50, ESearchType.NON_BLOCKED_OR_PROTECTED);
 			if (newPath == null) {
 				kill();
