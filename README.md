@@ -31,16 +31,9 @@ After that, follow the detailed installation instructions for you platform.
 1. Install "The Settlers III" or a demo version ([Settlers III Amazons Demo](http://www.siedler-maps.de/downloads.php?action=download&downloadid=41)) of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files.
 2. Download the newest stable [release of JSettlers*.zip / JSettlers*.tar.bz2](https://github.com/jsettlers/settlers-remake/releases) (this also includes the MapEditor).
 3. Unpack the downloaded archive to wherever you want JSettlers' installation to be.
-4. Open the unpacked file named "config.prp" with a text editor. Update the line starting with 
-
-   ```settlers-folder=. ``` 
-
-   to 
-
-   `settlers-folder=<SETTLERS-3-INSTALLATION-PATH>` 
-
-   where ```<SETTLERS-3-INSTALLATION-PATH>``` is the path to your original "The Settlers 3" installation. (Meaning a folder containing the original's "GFX" and "SND" folders.) **Important:** Use slashes as path delimiters. 
-5. Run the "JSettlers.jar" file and enjoy the game.
+5. Run the "JSettlers.jar" file.
+  1. On the first start, the game will ask you for the folder where you've installed the original Settlers III. Please select the respective folder and continue.
+  2. Have fun and enjoy the game!
 6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game still lacks many controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
 
 ### Android
