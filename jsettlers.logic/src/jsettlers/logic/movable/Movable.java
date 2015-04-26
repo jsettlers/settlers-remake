@@ -313,8 +313,10 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 */
 	private boolean flockToDecentralize() {
 		ShortPoint2D decentVector = grid.calcDecentralizeVector(position.x, position.y);
-		int dx = direction.gridDeltaX + decentVector.x;
-		int dy = direction.gridDeltaY + decentVector.y;
+
+		EDirection randomDirection = direction.getNeighbor(RandomSingleton.getInt(-1, 1));
+		int dx = randomDirection.gridDeltaX + decentVector.x;
+		int dy = randomDirection.gridDeltaY + decentVector.y;
 
 		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
 			flockDelay = Math.max(flockDelay - 100, 500);
