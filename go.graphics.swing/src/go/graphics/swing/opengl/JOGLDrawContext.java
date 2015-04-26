@@ -11,10 +11,9 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 public class JOGLDrawContext implements GLDrawContext {
 
@@ -230,6 +229,7 @@ public class JOGLDrawContext implements GLDrawContext {
 				/ FLOATS_PER_COLORED_TRI_VERTEX);
 	}
 
+	@Override
 	public void drawTrianglesWithTextureColored(int textureid,
 			ByteBuffer buffer, int triangles) {
 		gl2.glBindTexture(GL.GL_TEXTURE_2D, textureid);
