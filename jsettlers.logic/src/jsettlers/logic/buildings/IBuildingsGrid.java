@@ -14,7 +14,7 @@ import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
@@ -63,7 +63,7 @@ public interface IBuildingsGrid {
 
 	MapObjectsManager getMapObjectsManager();
 
-	AbstractNewMovableGrid getMovableGrid();
+	AbstractMovableGrid getMovableGrid();
 
 	void requestDiggers(IDiggerRequester requester, byte amount);
 

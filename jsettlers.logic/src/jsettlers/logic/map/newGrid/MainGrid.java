@@ -88,7 +88,7 @@ import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
@@ -917,7 +917,7 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class MovablePathfinderGrid extends AbstractNewMovableGrid {
+	final class MovablePathfinderGrid extends AbstractMovableGrid {
 		private static final long serialVersionUID = 4006228724969442801L;
 
 		private transient PathfinderGrid pathfinderGrid;
@@ -1415,7 +1415,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final AbstractNewMovableGrid getMovableGrid() {
+		public final AbstractMovableGrid getMovableGrid() {
 			return movablePathfinderGrid;
 		}
 

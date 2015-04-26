@@ -22,7 +22,7 @@ import jsettlers.input.IGuiMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
@@ -48,7 +48,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private static final ConcurrentLinkedQueue<Movable> allMovables = new ConcurrentLinkedQueue<Movable>();
 	private static int nextID = Integer.MIN_VALUE;
 
-	private final AbstractNewMovableGrid grid;
+	private final AbstractMovableGrid grid;
 	private final int id;
 
 	private EMovableState state = EMovableState.DOING_NOTHING;
@@ -80,7 +80,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
 
-	public Movable(AbstractNewMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
+	public Movable(AbstractMovableGrid grid, EMovableType movableType, ShortPoint2D position, Player player) {
 		this.grid = grid;
 		this.position = position;
 		this.player = player;

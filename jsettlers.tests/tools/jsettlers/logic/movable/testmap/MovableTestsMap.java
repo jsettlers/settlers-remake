@@ -27,7 +27,7 @@ import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigg
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.movable.interfaces.AbstractNewMovableGrid;
+import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
@@ -124,7 +124,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 
-	private final AbstractNewMovableGrid movableGrid = new AbstractNewMovableGrid() {
+	private final AbstractMovableGrid movableGrid = new AbstractMovableGrid() {
 		private static final long serialVersionUID = 610513829074598238L;
 
 		@Override
@@ -397,7 +397,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 	};
 
-	public AbstractNewMovableGrid getMovableGrid() {
+	public AbstractMovableGrid getMovableGrid() {
 		return movableGrid;
 	}
 

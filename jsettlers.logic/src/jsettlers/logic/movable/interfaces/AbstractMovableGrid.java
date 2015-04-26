@@ -14,7 +14,7 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public abstract class AbstractNewMovableGrid extends AbstractStrategyGrid {
+public abstract class AbstractMovableGrid extends AbstractStrategyGrid {
 	private static final long serialVersionUID = -236805842467532505L;
 
 	/**
