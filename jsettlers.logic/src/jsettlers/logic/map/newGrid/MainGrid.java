@@ -26,7 +26,6 @@ import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.Color;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
@@ -907,7 +906,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
-			return (CommonConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
+			return (MatchConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
 					|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
 		}
 

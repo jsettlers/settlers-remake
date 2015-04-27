@@ -80,7 +80,9 @@ public class StartScreenConnector implements IStartScreen {
 		long randomSeed = 4711L;
 		byte playerId = 0;
 		boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
-		availablePlayers[playerId] = true;
+		for (int i = 0; i < availablePlayers.length; i++) {
+			availablePlayers[i] = true;
+		}
 
 		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers);
 		return game.start();

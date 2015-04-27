@@ -11,6 +11,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.logging.StopWatch;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.MatchConstants;
 
 /**
  * This class holds the fog of war for a given map and player.
@@ -85,7 +86,7 @@ public final class FogOfWar implements Serializable {
 	}
 
 	private final boolean isPlayerOK(IPlayerable playerable) {
-		return (CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayerId() == player));
+		return (MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayerId() == player));
 	}
 
 	public final boolean isVisible(int centerx, int centery) {

@@ -126,20 +126,14 @@ public class SwingManagedJSettlers {
 	}
 
 	public static void loadDebugSettings(HashMap<String, String> argsMap) {
-		if (argsMap.containsKey("control-all")) {
-			CommonConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR = true;
-			CommonConstants.ENABLE_ALL_PLAYER_SELECTION = true;
-			CommonConstants.ENABLE_FOG_OF_WAR_DISABLING = true;
-		}
+		CommonConstants.CONTROL_ALL = argsMap.containsKey("control-all");
+		CommonConstants.ACTIVATE_ALL_PLAYERS = argsMap.containsKey("activate-all-players");
+		CommonConstants.ENABLE_CONSOLE_LOGGING = argsMap.containsKey("console-output");
+
 		if (argsMap.containsKey("localhost")) {
 			CommonConstants.DEFAULT_SERVER_ADDRESS = "localhost";
 		}
-		if (argsMap.containsKey("activate-all-players")) {
-			CommonConstants.ACTIVATE_ALL_PLAYERS = true;
-		}
-		if (argsMap.containsKey("console-output")) {
-			CommonConstants.ENABLE_CONSOLE_LOGGING = true;
-		}
+
 		if (argsMap.containsKey("locale")) {
 			String localeString = argsMap.get("locale");
 			String[] localeParts = localeString.split("_");

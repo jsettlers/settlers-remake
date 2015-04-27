@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.algorithms.construction.ConstructionMarksThread;
-import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.MapCircle;
@@ -29,10 +28,10 @@ import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.UIState;
+import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.ConvertGuiTask;
 import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.MovableGuiTask;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
@@ -214,7 +213,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case TOGGLE_FOG_OF_WAR:
-			if (CommonConstants.ENABLE_FOG_OF_WAR_DISABLING) {
+			if (MatchConstants.ENABLE_FOG_OF_WAR_DISABLING) {
 				grid.toggleFogOfWar();
 			}
 			break;
@@ -454,7 +453,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	}
 
 	private boolean canSelectPlayer(byte playerIdOfSelected) {
-		return CommonConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
+		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
 	}
 
 	private void handleSelectPointAction(PointAction action) {
