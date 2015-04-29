@@ -4,7 +4,7 @@
 	<ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
-	
+
 	<blocked dx="-2" dy="-3" block="true" />
 	<blocked dx="-2" dy="-2" block="true" />
 	<blocked dx="-2" dy="-1" block="true" />
@@ -72,13 +72,13 @@
 	<buildmark dx="1" dy="3" />
 	<buildmark dx="-2" dy="0" />
 	<buildmark dx="-2" dy="-3" />
-	
+
 	<image file="14" for="GUI" type="GUI" sequence="39" image="0"/>
 	<image file="13" for="FINAL" type="SETTLER" sequence="23" image="0"/>
 	<image file="13" for="BUILD" type="SETTLER" sequence="23" image="1"/>
 
 	<startjob name="gohome"/>
-	
+
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="hide"/>
 	<job name="hide" type="HIDE" successjob="reset1" failjob="reset1"/>
 	<job name="reset1" type="SET_MATERIAL" successjob="A_wait" failjob="A_wait" material="NO_MATERIAL"/>
@@ -86,7 +86,7 @@
 	<job name="check1" type="AVAILABLE" successjob="check2" failjob="A_wait" dx="3" dy="4" material="FLOUR"/>
 	<job name="check2" type="AVAILABLE" successjob="check3" failjob="A_wait" dx="4" dy="2" material="WATER"/>
 	<job name="check3" type="NOT_FULL" successjob="A_show" failjob="A_wait" material="BREAD" dx="-2" dy="1"/>
-	
+
 	<!-- go take flour -->
 	<job name="A_show"   type="SHOW"         successjob="A_walkA1" failjob="gohome" dx="3" dy="2" />
 	<job name="A_walkA1" type="WALK"         successjob="A_walkA2" failjob="gohome" direction="SOUTH_EAST"/>
@@ -111,7 +111,7 @@
 	<job name="B_walkB1" type="WALK"         successjob="B_walkB2" failjob="gohome" direction="SOUTH_WEST"/>
 	<job name="B_walkB2" type="WALK"         successjob="B_hide"   failjob="gohome" direction="NORTH_WEST"/>
 	<job name="B_hide"   type="HIDE"         successjob="C_start"  failjob="gohome" />
-	
+
 	<!-- make bread -->
 	<job name="C_start"  type="SET_MATERIAL" successjob="C_show"   failjob="gohome" material="WHITE_BREAD" />
 	<job name="C_show"   type="SHOW"         successjob="C_walkA1" failjob="gohome" dx="3" dy="2" />
@@ -122,7 +122,7 @@
 	<job name="C_walkA5" type="WALK"         successjob="C_walkA6" failjob="gohome" direction="WEST"/>
 	<job name="C_walkA6" type="WALK"         successjob="C_walkA7" failjob="gohome" direction="NORTH_WEST"/>
 	<job name="C_walkA7" type="WALK"         successjob="C_work1"  failjob="gohome" direction="NORTH_WEST"/>
-	
+
 	<job name="C_work1" type="LOOK_AT"       successjob="C_work2" failjob="gohome" direction="NORTH_EAST"/>
 	<job name="C_work2" type="PLAY_ACTION1"  successjob="C_work3" failjob="gohome" time="1"/>
 	<job name="C_work3" type="SET_MATERIAL"  successjob="C_work4"  failjob="gohome" material="BREAD"/>
@@ -130,10 +130,10 @@
 	<job name="C_work5" type="PLAY_ACTION2"  successjob="C_work6" failjob="gohome" time="4"/>
 	<job name="C_work6" type="SMOKE_OFF"     successjob="C_work7" failjob="gohome" dx="-3" dy="-4"/>
 	<job name="C_work7" type="PLAY_ACTION1"  successjob="C_walkB1" failjob="gohome" time="1"/>
-	
+
 	<job name="C_walkB1" type="WALK"         successjob="C_walkB2" failjob="gohome" direction="NORTH_WEST"/>
 	<job name="C_walkB2" type="WALK"         successjob="C_drop1" failjob="gohome" direction="NORTH_WEST"/>
-    
+
 	<job name="C_drop1"  type="DROP"         successjob="C_drop2"  failjob="gohome" material="BREAD"/>
 	<job name="C_drop2"  type="SET_MATERIAL" successjob="C_drop3"  failjob="gohome" material="BLADE"/>
 	<job name="C_drop3"  type="TAKE"         successjob="C_walkC0" failjob="gohome" material="NO_MATERIAL"/>

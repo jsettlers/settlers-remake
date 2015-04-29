@@ -88,41 +88,41 @@
 	<blocked dx="3" dy="5" block="false" />
 	<blocked dx="2" dy="4" block="false" />
 	<blocked dx="6" dy="2" block="false" />
-	
+
 	<door dx="5" dy="4" />
-	
+
 	<stack dx="2" dy="6" material="TRUNK" buildrequired="0" />
 	<stack dx="3" dy="6" material="PLANK" buildrequired="4" />
 	<stack dx="5" dy="6" material="STONE" buildrequired="3" />
-	
+
 	<bricklayer dx="5" dy="4"  direction="NORTH_EAST" />
 	<bricklayer dx="1" dy="4"  direction="NORTH_EAST" />
 	<bricklayer dx="-1" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="5"  direction="NORTH_WEST" />
 	<bricklayer dx="5" dy="5"  direction="NORTH_WEST" />
 	<bricklayer dx="6" dy="4"  direction="NORTH_WEST" />
-	
+
 	<flag dx="2" dy="-1" />
-	
+
 	<buildmark dx="-2" dy="0" />
 	<buildmark dx="-2" dy="-4" />
 	<buildmark dx="3" dy="4" />
 	<buildmark dx="5" dy="3" />
-	
+
 	<image file="14" type="GUI" for="GUI" image="0" sequence="6" />
     <image file="13" type="SETTLER" for="FINAL" image="0" sequence="1"/>
     <image file="13" type="SETTLER" for="BUILD" image="1" sequence="1"/>
-    
+
 	<startjob name="gohome"/>
-	
+
 	<!-- going home job -->
 	<job name="gohome" 		type="GO_TO" 			successjob="hide" 			failjob="hide" 		dx="5" dy="4"/>
 	<job name="hide" 		type="HIDE" 			successjob="start" 			failjob="start"		/>
 	<job name="start" 		type="WAIT" 			successjob="check1" 		failjob="hide" 		time="1"/>
-		
+
 	<job name="check1" 		type="AVAILABLE" 		successjob="check2" 		failjob="hide" 		dx="2" dy="6" material="TRUNK"/>
 	<job name="check2" 		type="NOT_FULL" 		successjob="show" 			failjob="hide" 		dx="6" dy="2" material="PLANK"/>
-	
+
 	<job name="show" 		type="SHOW" 			successjob="walk0" 			failjob="hide" 		dx="5" dy="4"/>
 	<job name="walk0" 		type="WALK" 			successjob="walk1" 			failjob="hide" 		direction="SOUTH_EAST"/>
 	<job name="walk1" 		type="WALK" 			successjob="walk2" 			failjob="hide" 		direction="SOUTH_WEST"/>
@@ -130,22 +130,22 @@
 	<job name="walk3" 		type="WALK" 			successjob="walk4" 			failjob="hide" 		direction="WEST"/>
 	<job name="walk4" 		type="WALK" 			successjob="walk5" 			failjob="hide" 		direction="WEST"/>
 	<job name="walk5" 		type="WALK" 			successjob="look1" 			failjob="hide" 		direction="WEST"/>
-	
+
 	<job name="look1" 		type="LOOK_AT" 			successjob="take1" 			failjob="hide" 		direction="NORTH_EAST"/>
 	<job name="take1" 		type="TAKE" 			successjob="changeMat1" 	failjob="hide" 		material="TRUNK"/>
 	<job name="changeMat1" 	type="SET_MATERIAL" 	successjob="walk6" 			failjob="hide" 		material="TRUNK"/>
-	
+
 	<job name="walk6" 		type="WALK" 			successjob="walk7" 			failjob="hide" 		direction="NORTH_WEST"/>
 	<job name="walk7" 		type="WALK" 			successjob="saw1" 			failjob="hide" 		direction="NORTH_WEST"/>
-	
+
 	<job name="saw1" 		type="PLAY_ACTION1" 	successjob="saw2" 			failjob="gohome"	time="0.9"/>
 	<job name="saw2" 		type="PLAY_ACTION1" 	successjob="saw3" 			failjob="gohome"	time="0.9"/>
 	<job name="saw3" 		type="PLAY_ACTION1" 	successjob="saw4" 			failjob="gohome"	time="0.9"/>
 	<job name="saw4" 		type="PLAY_ACTION1" 	successjob="saw5" 			failjob="gohome"	time="0.9"/>
 	<job name="saw5" 		type="PLAY_ACTION1" 	successjob="changeMat2" 	failjob="gohome"	time="0.9"/>
-	
+
 	<job name="changeMat2" 	type="SET_MATERIAL" 	successjob="walk10" 		failjob="hide" 		material="PLANK"/>
-	
+
 	<job name="walk10" 		type="WALK" 			successjob="walk11" 		failjob="hide" 		direction="SOUTH_EAST"/>
 	<job name="walk11" 		type="WALK" 			successjob="walk12" 		failjob="hide" 		direction="SOUTH_EAST"/>
 	<job name="walk12" 		type="WALK" 			successjob="walk13" 		failjob="hide" 		direction="EAST"/>
@@ -159,9 +159,9 @@
 
 	<job name="drop1" 		type="DROP" 			successjob="changeMat3" 	failjob="hide" 		material="PLANK"/>
 	<job name="changeMat3" 	type="SET_MATERIAL" 	successjob="walk20"			failjob="hide" 		material="NO_MATERIAL"/>
-	
+
 	<job name="walk20" 		type="WALK" 			successjob="walk21" 		failjob="hide" 		direction="SOUTH_WEST"/>
 	<job name="walk21" 		type="WALK" 			successjob="walk22" 		failjob="hide" 		direction="SOUTH_WEST"/>
 	<job name="walk22" 		type="WALK" 			successjob="hide" 			failjob="hide" 		direction="WEST"/>
-	
+
 </building>
