@@ -153,8 +153,8 @@
 	<job name="start" 		type="WAIT" 			successjob="check" 			failjob="check" 		time="8.0"/>
     <job name="check"		type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="6" material="CROP"/>
     
-	<job name="presearch1" 	type="PRE_SEARCH" 		successjob="show1" 			failjob="presearch2" 	search="CUTTABLE_CORN" dx="-1" dy="4"/>
-	<job name="presearch2" 	type="PRE_SEARCH" 		successjob="show2" 			failjob="start" 		search="PLANTABLE_CORN" dx="-1" dy="4"/>
+	<job name="presearch1" 	type="PRE_SEARCH" 		successjob="show1" 			failjob="presearch2" 	search="CUTTABLE_CORN"/>
+	<job name="presearch2" 	type="PRE_SEARCH" 		successjob="show2" 			failjob="start" 		search="PLANTABLE_CORN"/>
         
     <!-- 1: cut some corn -->
     <job name="show1"		type="SHOW"				successjob="with_scythe"	failjob="start"			dx="-1" dy="4"/>
