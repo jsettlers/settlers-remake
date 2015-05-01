@@ -319,6 +319,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			}
 		} else {
 			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
+			super.setMaterial(EMaterialType.NO_MATERIAL);
 			jobFinished();
 		}
 	}
