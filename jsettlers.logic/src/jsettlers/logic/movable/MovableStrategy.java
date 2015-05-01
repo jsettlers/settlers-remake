@@ -83,6 +83,7 @@ public abstract class MovableStrategy implements Serializable {
 		case SMITH:
 		case STONECUTTER:
 		case WATERWORKER:
+		case WINEGROWER:
 			return new BuildingWorkerStrategy(movable, movableType);
 
 		case DIGGER:
