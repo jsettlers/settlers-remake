@@ -61,8 +61,8 @@
 	<door dx="-1" dy="2" />
 	
     <!-- materials checked with original -->
-	<stack dx="-1" dy="1" material="PLANK" buildrequired="4" />
-	<stack dx="1" dy="1" material="STONE" buildrequired="3" />
+	<stack dx="0" dy="4" material="PLANK" buildrequired="4" />
+	<stack dx="2" dy="4" material="STONE" buildrequired="4" />
 	
 	<bricklayer dx="2" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="3" dy="2" direction="NORTH_EAST" />
