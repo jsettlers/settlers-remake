@@ -98,7 +98,7 @@ public final class Labels {
 		LocaleSuffix[] locales = new LocaleSuffix[] {
 				new LocaleSuffix(preferredLocale, true),
 				new LocaleSuffix(preferredLocale, false),
-				new LocaleSuffix(new Locale("en", "US"), true),
+				new LocaleSuffix(new Locale("en"), false),
 		};
 		return locales;
 	}
