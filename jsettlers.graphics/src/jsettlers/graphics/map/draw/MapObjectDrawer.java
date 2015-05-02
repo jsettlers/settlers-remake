@@ -193,14 +193,17 @@ public class MapObjectDrawer {
 				break;
 
 			case CORN_GROWING:
+			case WINE_GROWING: // TODO: add drawing of growing wine
 				drawGrowingCorn(x, y, object, color);
 				break;
 
 			case CORN_ADULT:
+			case WINE_HARVESTABLE: // TODO: add drawing of harvestable wine
 				drawCorn(x, y, color);
 				break;
 
 			case CORN_DEAD:
+			case WINE_DEAD: // TODO: add drawing of dead wine
 				drawDeadCorn(x, y, color);
 				break;
 

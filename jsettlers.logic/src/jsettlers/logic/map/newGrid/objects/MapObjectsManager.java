@@ -42,6 +42,7 @@ import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
 import jsettlers.logic.objects.building.InformableMapObject;
 import jsettlers.logic.objects.growing.Corn;
+import jsettlers.logic.objects.growing.Wine;
 import jsettlers.logic.objects.growing.tree.AdultTree;
 import jsettlers.logic.objects.growing.tree.Tree;
 import jsettlers.logic.objects.stack.StackMapObject;
@@ -105,6 +106,8 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	public boolean executeSearchType(ShortPoint2D pos, ESearchType type) {
 		switch (type) {
+		case PLANTABLE_TREE:
+			return plantTree(new ShortPoint2D(pos.x, pos.y + 1));
 		case CUTTABLE_TREE:
 			return cutTree(pos);
 
@@ -112,14 +115,15 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			cutStone(pos);
 			return true;
 
-		case PLANTABLE_TREE:
-			return plantTree(new ShortPoint2D(pos.x, pos.y + 1));
-
+		case PLANTABLE_CORN:
+			return plantCorn(pos);
 		case CUTTABLE_CORN:
 			return cutCorn(pos);
 
-		case PLANTABLE_CORN:
-			return plantCorn(pos);
+		case PLANTABLE_WINE:
+			return plantWine(pos);
+		case HARVESTABLE_WINE:
+			return harvestWine(pos);
 
 		case RESOURCE_SIGNABLE:
 			return addRessourceSign(pos);
@@ -163,6 +167,19 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return true;
 	}
 
+	private boolean cutTree(ShortPoint2D pos) {
+		short x = (short) (pos.x - 1);
+		short y = (short) (pos.y - 1);
+		if (grid.isInBounds(x, y)) {
+			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.TREE_ADULT);
+			if (tree != null && tree.cutOff()) {
+				timingQueue.offer(new TimeEvent(tree, Tree.DECOMPOSE_DURATION, true));
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private boolean plantCorn(ShortPoint2D pos) {
 		grid.setLandscape(pos.x, pos.y, ELandscapeType.EARTH);
 		for (ShortPoint2D curr : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
@@ -189,13 +206,23 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		return false;
 	}
 
-	private boolean cutTree(ShortPoint2D pos) {
-		short x = (short) (pos.x - 1);
-		short y = (short) (pos.y - 1);
+	private boolean plantWine(ShortPoint2D pos) {
+		grid.setLandscape(pos.x, pos.y, ELandscapeType.EARTH);
+		Wine corn = new Wine(pos);
+		addMapObject(pos, corn);
+		timingQueue.offer(new TimeEvent(corn, Wine.GROWTH_DURATION, false));
+		timingQueue.offer(new TimeEvent(corn, Wine.GROWTH_DURATION + Wine.DECOMPOSE_DURATION, false));
+		timingQueue.offer(new TimeEvent(corn, Wine.GROWTH_DURATION + Wine.DECOMPOSE_DURATION + Wine.REMOVE_DURATION, true));
+		return true;
+	}
+
+	private boolean harvestWine(ShortPoint2D pos) {
+		short x = pos.x;
+		short y = pos.y;
 		if (grid.isInBounds(x, y)) {
-			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.TREE_ADULT);
-			if (tree != null && tree.cutOff()) {
-				timingQueue.offer(new TimeEvent(tree, Tree.DECOMPOSE_DURATION, true));
+			AbstractObjectsManagerObject wine = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.WINE_HARVESTABLE);
+			if (wine != null && wine.cutOff()) {
+				timingQueue.offer(new TimeEvent(wine, Corn.REMOVE_DURATION, true));
 				return true;
 			}
 		}

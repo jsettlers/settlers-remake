@@ -426,20 +426,23 @@ public final class MainGrid implements Serializable {
 			case VALID_FREE_POSITION:
 				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
 
+			case PLANTABLE_TREE:
+				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
+						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
 			case CUTTABLE_TREE:
 				return isInBounds((short) (x - 1), (short) (y - 1))
 						&& objectsGrid.hasCuttableObject((short) (x - 1), (short) (y - 1), EMapObjectType.TREE_ADULT)
 						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculable) && !isMarked(x, y);
 
-			case PLANTABLE_TREE:
-				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
-						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
-
 			case PLANTABLE_CORN:
-				return !isMarked(x, y) && !flagsGrid.isProtected(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
-
+				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
 			case CUTTABLE_CORN:
-				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+				return isMapObjectCuttable(x, y, EMapObjectType.CORN_ADULT) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+
+			case PLANTABLE_WINE:
+				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isWinePlantable(x, y);
+			case HARVESTABLE_WINE:
+				return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case CUTTABLE_STONE:
 				return y + 1 < height && x - 1 < width && objectsGrid.hasCuttableObject((short) (x - 1), (short) (y + 1), EMapObjectType.STONE)
@@ -570,6 +573,19 @@ public final class MainGrid implements Serializable {
 					&& areAllNeighborsOneOf(x, y, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
+		private final boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
+			return objectsGrid.hasCuttableObject(x, y, type);
+		}
+
+		private boolean isWinePlantable(int x, int y) {
+			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
+			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_HARVESTABLE)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_DEAD)
+					&& areAllNeighborsOneOf(x, y, 1, ELandscapeType.GRASS, ELandscapeType.EARTH);
+		}
+
 		private boolean areAllNeighborsOneOf(int x, int y, int radius, ELandscapeType... types) {
 			for (ShortPoint2D currPos : new HexGridArea(x, y, 1, radius)) {
 				boolean found = false;
@@ -588,10 +604,6 @@ public final class MainGrid implements Serializable {
 			}
 
 			return true;
-		}
-
-		private final boolean isCornCuttable(int x, int y) {
-			return objectsGrid.hasCuttableObject(x, y, EMapObjectType.CORN_ADULT);
 		}
 
 		@Override
