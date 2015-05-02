@@ -18,6 +18,7 @@ import go.graphics.GLDrawContext;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Queue;
@@ -48,7 +49,9 @@ import jsettlers.graphics.sequence.Sequence;
 public final class ImageProvider {
 	private static final String FILE_SUFFIX = ".7c003e01f.dat";
 	private static final String FILE_PREFIX = "siedler3_";
-	private static final int DETAIL_IMAGES = 3;
+	private static final int LAST_SEQUENCE_NUMBER = 2;
+	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
+
 	private Queue<GLPreloadTask> tasks = new ConcurrentLinkedQueue<GLPreloadTask>();
 	private ImageIndexFile indexFile = null;
 
@@ -115,24 +118,6 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Gets an settler sequence.
-	 * 
-	 * @param file
-	 *            The file of the sequence.
-	 * @param seqnumber
-	 *            The number of the sequence in the file.
-	 * @return The settler sequence.
-	 */
-	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
-		DatFileSet set = getFileSet(file);
-		if (set != null && set.getSettlers().size() > seqnumber) {
-			return set.getSettlers().get(seqnumber);
-		} else {
-			return ArraySequence.getNullSequence();
-		}
-	}
-
-	/**
 	 * Tries to get a file content.
 	 * 
 	 * @param file
@@ -161,67 +146,14 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Gets a landscape texture.
-	 * 
-	 * @param file
-	 *            The file number it is in.
-	 * @param seqnumber
-	 *            It's sequence number.
-	 * @return The image, or an empty image.
+	 * Gets an image by a link.
+	 *
+	 * @param link
+	 *            The link that describes the image
+	 * @return The image or a null image.
 	 */
-	public SingleImage getLandscapeImage(int file, int seqnumber) {
-		DatFileSet set = getFileSet(file);
-
-		if (set != null) {
-			Sequence<LandscapeImage> landscapes = set.getLandscapes();
-			if (seqnumber < landscapes.length()) {
-				return (SingleImage) landscapes.getImageSafe(seqnumber);
-			}
-		}
-		return NullImage.getInstance();
-	}
-
-	/**
-	 * Gets a detailed GUI/settler image.
-	 * <p>
-	 * For gui images, assumes that the next two images are more detailed.
-	 * <p>
-	 * For settler sequences, assumes the same for the next two sequence members.
-	 */
-	private Image getDetailedImage(OriginalImageLink link, float width, float height) {
-		int sequenceLength = (link.getFile() == 3 || link.getFile() == 14) ? DETAIL_IMAGES : 1;
-		Image image = null;
-		for (int seq = 0; seq < sequenceLength; seq++) {
-			if (link.getType() == EImageLinkType.SETTLER) {
-				image = getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + seq);
-			} else {
-				image = getGuiImage(link.getFile(), link.getSequence() + seq);
-			}
-
-			if (image.getWidth() >= width && image.getHeight() >= height) {
-				break;
-			}
-		}
-		return image;
-	}
-
-	/**
-	 * Gets a given gui image.
-	 * 
-	 * @param file
-	 *            The file the image is in.
-	 * @param seqnumber
-	 *            The image number.
-	 * @return The image.
-	 */
-	public SingleImage getGuiImage(int file, int seqnumber) {
-		DatFileSet set = getFileSet(file);
-
-		if (set != null) {
-			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
-		} else {
-			return NullImage.getInstance();
-		}
+	public Image getImage(ImageLink link) {
+		return getImage(link, -1, -1);
 	}
 
 	/**
@@ -251,14 +183,42 @@ public final class ImageProvider {
 	}
 
 	/**
-	 * Gets an image by a link.
-	 * 
-	 * @param link
-	 *            The link that describes the image
-	 * @return The image or a null image.
+	 * Returns a GUI or SETTLER type image and if available a higher resolution version. This is also based on whether the image's dimensions in
+	 * pixels will fit into both the specified width and height. This is so that an image is always scaled up as downsizing an image can introduce
+	 * artifacts and it would be wasteful to be calculating the translation of excess pixels from a large image to a smaller one. However should the
+	 * smallest image be oversized it will still be returned.
 	 */
-	public Image getImage(ImageLink link) {
-		return getImage(link, -1, -1);
+	private Image getDetailedImage(OriginalImageLink link, float width, float height) {
+		Image image = getSequencedImage(link, 0);
+		if (!HIGHRES_IMAGE_FILE_NUMBERS.contains(link.getFile())) { // Higher resolution images are only available in some files.
+			return image;
+		}
+		int sequenceNumber = 0;
+		Image higherResImg = image;
+		while (higherResImg.getWidth() < width && higherResImg.getHeight() < height) {
+			image = higherResImg;
+			if (++sequenceNumber > LAST_SEQUENCE_NUMBER) {
+				break;
+			}
+			higherResImg = getSequencedImage(link, sequenceNumber);
+		}
+		return image;
+	}
+
+	/**
+	 * Expects a valid sequence number.
+	 *
+	 * @param link
+	 * @param sequenceNumber
+	 *            must be an integer from 0 to 2.
+	 * @return the image matching the specified indexes.
+	 */
+	private Image getSequencedImage(OriginalImageLink link, int sequenceNumber) {
+		if (link.getType() == EImageLinkType.SETTLER) {
+			return getSettlerSequence(link.getFile(), link.getSequence()).getImageSafe(link.getImage() + sequenceNumber);
+		} else {
+			return getGuiImage(link.getFile(), link.getSequence() + sequenceNumber);
+		}
 	}
 
 	private Image getDirectImage(DirectImageLink link) {
@@ -268,6 +228,64 @@ public final class ImageProvider {
 
 		int index = TextureMap.getIndex(link.getName());
 		return indexFile.getImage(index);
+	}
+
+	/**
+	 * Gets a landscape texture.
+	 *
+	 * @param file
+	 *            The file number it is in.
+	 * @param seqnumber
+	 *            It's sequence number.
+	 * @return The image, or an empty image.
+	 */
+	private SingleImage getLandscapeImage(int file, int seqnumber) {
+		DatFileSet set = getFileSet(file);
+
+		if (set != null) {
+			Sequence<LandscapeImage> landscapes = set.getLandscapes();
+			if (seqnumber < landscapes.length()) {
+				return (SingleImage) landscapes.getImageSafe(seqnumber);
+			}
+		}
+		return NullImage.getInstance();
+	}
+
+	/**
+	 * Gets a given gui image.
+	 *
+	 * @param file
+	 *            The file the image is in.
+	 * @param seqnumber
+	 *            The image number.
+	 * @return The image.
+	 */
+	private SingleImage getGuiImage(int file, int seqnumber) {
+		DatFileSet set = getFileSet(file);
+
+		if (set != null) {
+			return (SingleImage) set.getGuis().getImageSafe(seqnumber);
+		} else {
+			return NullImage.getInstance();
+		}
+	}
+
+	/**
+	 * Gets an settler sequence.
+	 *
+	 * @param file
+	 *            The file of the sequence.
+	 * @param seqnumber
+	 *            The number of the sequence in the file.
+	 * @return The settler sequence.
+	 */
+	public Sequence<? extends Image> getSettlerSequence(int file, int seqnumber) {
+		DatFileSet set = getFileSet(file);
+		if (set != null && set.getSettlers().size() > seqnumber) {
+			return set.getSettlers().get(seqnumber);
+		} else {
+			return ArraySequence.getNullSequence();
+		}
 	}
 
 	/**

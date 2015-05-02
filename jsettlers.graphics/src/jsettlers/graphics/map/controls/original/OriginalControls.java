@@ -32,100 +32,128 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
+import jsettlers.graphics.map.controls.original.panel.TabButton;
 import jsettlers.graphics.map.controls.original.panel.content.BearerSelection;
 import jsettlers.graphics.map.controls.original.panel.content.BuildingSelectionPanel;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
 import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
 import jsettlers.graphics.map.minimap.Minimap;
+import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 public class OriginalControls implements IControls {
-
 	private UIPanel uiBase;
 
 	private Minimap minimap;
+	private final Button btnABC = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 318, 321, "");
+	private final Button btnScroll = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 342, 348, ""); // 345 - image for 3rd setting.
+	private final Button btnSettlers = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 351, 354, ""); // 357 - image for 3rd setting (show soldiers?).
+	private final Button btnBuildings = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 360, 367, "");
 
 	private final MainPanel mainPanel = new MainPanel();
 
-	private IOriginalConstants constants;
+	private ControlPanelLayoutProperties layoutProperties;
 
 	boolean lastSelectionWasNull = true;
 
 	private MapDrawContext context;
 
 	public OriginalControls() {
-		constants = new SmallOriginalConstants();
+		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(480);
 		uiBase = createInterface();
-		mainPanel.useConstants(constants);
+		mainPanel.layoutPanel(layoutProperties);
 	}
 
 	private UIPanel createInterface() {
 		UIPanel panel = new UIPanel();
 
-		UIPanel minimapbg_left = new UIPanel();
-		minimapbg_left.setBackground(constants.UI_BG_SEQ_MINIMAPL);
-		panel.addChild(minimapbg_left, 0, constants.UI_CENTERY,
-				constants.UI_CENTERX, 1);
+		addMiniMap(panel);
 
-		UIPanel minimapbg_right = new UIPanel();
-		minimapbg_right.setBackground(constants.UI_BG_SEQ_MINIMAPR);
-		panel.addChild(minimapbg_right, constants.UI_CENTERX,
-				constants.UI_CENTERY, 1, 1);
-
-		mainPanel.setBackground(constants.UI_BG_SEQ_MAIN);
-		panel.addChild(mainPanel, 0, 0, constants.UI_CENTERX,
-				constants.UI_CENTERY);
+		mainPanel.setBackground(layoutProperties.UI_BG_SEQ_MAIN);
+		panel.addChild(mainPanel, 0, 0, layoutProperties.UI_CENTER_X, layoutProperties.UI_CENTER_Y);
 
 		UIPanel rightDecoration = new UIPanel();
-		rightDecoration.setBackground(constants.UI_BG_SEQ_RIGHT);
-		panel.addChild(rightDecoration, constants.UI_CENTERX, 0,
-				constants.UI_DECORATIONRIGHT, constants.UI_CENTERY);
+		rightDecoration.setBackground(layoutProperties.UI_BG_SEQ_RIGHT);
+		panel.addChild(rightDecoration, layoutProperties.UI_CENTER_X, 0, layoutProperties.UI_DECORATIONRIGHT, layoutProperties.UI_CENTER_Y);
 
 		return panel;
 	}
 
+	private void addMiniMap(UIPanel panel)
+	{
+		UIPanel minimapbg_left = new UIPanel();
+		minimapbg_left.setBackground(layoutProperties.UI_BG_SEQ_MINIMAPL);
+		minimapbg_left.addChild(
+				btnABC,
+				layoutProperties.MINIMAP_BUTTON_ABC_LEFT,
+				layoutProperties.MINIMAP_BUTTON_ABC_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
+				layoutProperties.MINIMAP_BUTTON_ABC_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
+				layoutProperties.MINIMAP_BUTTON_ABC_TOP
+				);
+		minimapbg_left.addChild(
+				btnScroll,
+				layoutProperties.MINIMAP_BUTTON_SCROLL_LEFT,
+				layoutProperties.MINIMAP_BUTTON_SCROLL_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
+				layoutProperties.MINIMAP_BUTTON_SCROLL_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
+				layoutProperties.MINIMAP_BUTTON_SCROLL_TOP
+				);
+		minimapbg_left.addChild(
+				btnSettlers,
+				layoutProperties.MINIMAP_BUTTON_SETTLERS_LEFT,
+				layoutProperties.MINIMAP_BUTTON_SETTLERS_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
+				layoutProperties.MINIMAP_BUTTON_SETTLERS_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
+				layoutProperties.MINIMAP_BUTTON_SETTLERS_TOP
+				);
+		minimapbg_left.addChild(
+				btnBuildings,
+				layoutProperties.MINIMAP_BUTTON_BUILDINGS_LEFT,
+				layoutProperties.MINIMAP_BUTTON_BUILDINGS_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
+				layoutProperties.MINIMAP_BUTTON_BUILDINGS_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
+				layoutProperties.MINIMAP_BUTTON_BUILDINGS_TOP
+				);
+
+		UIPanel minimapbg_right = new UIPanel();
+		minimapbg_right.setBackground(layoutProperties.UI_BG_SEQ_MINIMAPR);
+
+		panel.addChild(minimapbg_left, 0, layoutProperties.UI_CENTER_Y, layoutProperties.UI_CENTER_X, 1);
+		panel.addChild(minimapbg_right, layoutProperties.UI_CENTER_X, layoutProperties.UI_CENTER_Y, layoutProperties.UI_MINIMAP_DECORATORRIGHT, 1);
+	}
+
 	@Override
 	public void resizeTo(float newWidth, float newHeight) {
-		IOriginalConstants newConstants;
-		if (newHeight <= 480) {
-			newConstants = new SmallOriginalConstants();
-		} else {
-			// TODO: higher resolution for controls.
-			newConstants = new SmallOriginalConstants();
-		}
-		if (!newConstants.equals(constants)) {
-			constants = newConstants;
+		ControlPanelLayoutProperties newConstants = ControlPanelLayoutProperties.getLayoutPropertiesFor(newHeight);
+		if (!newConstants.equals(layoutProperties)) {
+			layoutProperties = newConstants;
+
 			uiBase = createInterface();
-			mainPanel.useConstants(constants);
+			mainPanel.layoutPanel(layoutProperties);
 		}
-		int width = (int) (newHeight / constants.UI_RATIO);
+		int width = (int) (newHeight / layoutProperties.UI_RATIO);
 		this.uiBase.setPosition(new FloatRectangle(0, 0, width, newHeight));
 
 		minimap.setSize(
-				(int) (constants.MINIMAP_WIDTH * width),
-				(int) (constants.MINIMAP_HEIGHT * (1 - constants.UI_CENTERY) * newHeight));
+				(int) (layoutProperties.MINIMAP_WIDTH * width),
+				(int) (layoutProperties.MINIMAP_HEIGHT * (1 - layoutProperties.UI_CENTER_Y) * newHeight));
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
-		uiBase.drawAt(gl);
-
 		if (minimap != null) {
 			gl.glPushMatrix();
 			gl.glTranslatef(getMinimapLeft(), getMinimapBottom(), 0);
 			minimap.draw(gl);
 			gl.glPopMatrix();
 		}
+		uiBase.drawAt(gl); // Frame decoration should be drawn after and over the edges of the minimap.
 	}
 
 	private float getMinimapLeft() {
-		return constants.MINIMAP_BOTTOMLEFT_X * uiBase.getPosition().getWidth();
+		return layoutProperties.MINIMAP_BOTTOMLEFT_X * uiBase.getPosition().getWidth();
 	}
 
 	private float getMinimapBottom() {
-		return (constants.UI_CENTERY + (1 - constants.UI_CENTERY)
-				* constants.MINIMAP_BOTTOM_Y)
+		return (layoutProperties.UI_CENTER_Y + (1 - layoutProperties.UI_CENTER_Y) * layoutProperties.MINIMAP_BOTTOM_Y)
 				* uiBase.getPosition().getHeight();
 	}
 
@@ -133,13 +161,13 @@ public class OriginalControls implements IControls {
 	public boolean containsPoint(UIPoint position) {
 		float width = uiBase.getPosition().getWidth();
 		float height = uiBase.getPosition().getHeight();
-		float uicenter = width * constants.UI_CENTERX;
+		float uicenter = width * layoutProperties.UI_CENTER_X;
 		float m =
-				1 / (1 - constants.UI_CENTERX) / width
-						* (1 - constants.UI_CENTERY) * height;
+				1 / (1 - layoutProperties.UI_CENTER_X) / width
+						* (1 - layoutProperties.UI_CENTER_Y) * height;
 		return position.getX() < uicenter
-				|| position.getY() > position.getX() * m + constants.UI_CENTERY
-						* height - m * constants.UI_CENTERX * width;
+				|| position.getY() > position.getX() * m + layoutProperties.UI_CENTER_Y
+						* height - m * layoutProperties.UI_CENTER_X * width;
 	}
 
 	@Override
@@ -149,7 +177,7 @@ public class OriginalControls implements IControls {
 		float relativey =
 				(float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
-		if (minimap != null && relativey > constants.UI_CENTERY) {
+		if (minimap != null && relativey > layoutProperties.UI_CENTER_Y) {
 			action = getForMinimap(relativex, relativey, selecting);
 			startMapPosition = null; // to prevent it from jumping back.
 		} else {
@@ -167,12 +195,12 @@ public class OriginalControls implements IControls {
 	private Action getForMinimap(float relativex, float relativey,
 			boolean selecting) {
 		float minimapx =
-				(relativex - constants.MINIMAP_BOTTOMLEFT_X)
-						/ constants.MINIMAP_WIDTH;
+				(relativex - layoutProperties.MINIMAP_BOTTOMLEFT_X)
+						/ layoutProperties.MINIMAP_WIDTH;
 		float minimapy =
-				((relativey - constants.UI_CENTERY)
-						/ (1 - constants.UI_CENTERY) - constants.MINIMAP_BOTTOM_Y)
-						/ constants.MINIMAP_HEIGHT;
+				((relativey - layoutProperties.UI_CENTER_Y)
+						/ (1 - layoutProperties.UI_CENTER_Y) - layoutProperties.MINIMAP_BOTTOM_Y)
+						/ layoutProperties.MINIMAP_HEIGHT;
 		ShortPoint2D clickPosition =
 				minimap.getClickPositionIfOnMap(minimapx, minimapy);
 		if (clickPosition != null) {

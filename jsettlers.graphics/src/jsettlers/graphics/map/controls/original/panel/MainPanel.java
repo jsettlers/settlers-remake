@@ -23,8 +23,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.IOriginalConstants;
-import jsettlers.graphics.map.controls.original.SmallOriginalConstants;
+import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
@@ -38,52 +37,56 @@ import jsettlers.graphics.utils.UIPanel;
  * @author michael
  */
 public class MainPanel extends UIPanel {
-
-	private static final int BUTTONS_FILE = 3;
+	public static final int BUTTONS_FILE = 3;
 
 	private final UIPanel tabpanel = new UIPanel();
 
-	private final Button button_build = new TabButton(
-			EContentType.BUILD_NORMAL, BUTTONS_FILE, 51, 60, "");
-	private final Button button_settlers = new TabButton(EContentType.STOCK,
-			BUTTONS_FILE, 54, 63, "");
-	private final Button button_goods = new TabButton(
-			EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 57, 66, "");
+	private final Button button_build = new TabButton(EContentType.BUILD_NORMAL, BUTTONS_FILE, 51, 60, "");
+	private final Button button_goods = new TabButton(EContentType.STOCK, BUTTONS_FILE, 54, 63, "");
+	private final Button button_settlers = new TabButton(EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 57, 66, "");
 
-	private final TabButton[] buildButtons =
-			new TabButton[] {
-					new TabButton(EContentType.BUILD_NORMAL, BUTTONS_FILE, 69, 81, ""),
-					new TabButton(EContentType.BUILD_FOOD, BUTTONS_FILE, 72,
-							84, ""),
-					new TabButton(EContentType.BUILD_MILITARY, BUTTONS_FILE,
-							75, 87, ""),
-					new TabButton(EContentType.BUILD_SOCIAL, BUTTONS_FILE, 78,
-							90, ""),
-			};
-
-	private final TabButton[] settlerButtons =
-			new TabButton[] {
-					new TabButton(EContentType.STOCK, BUTTONS_FILE, 234, 246, ""),
-					new TabButton(EContentType.TOOLS, BUTTONS_FILE, 237, 249,
-							""),
-					new TabButton(EContentType.GOODS_SPREAD, BUTTONS_FILE, 240,
-							252, ""),
-					new TabButton(EContentType.GOODS_TRANSPORT, BUTTONS_FILE,
-							243, 255, ""),
-			};
+	private final TabButton[] buildButtons = new TabButton[] {
+			new TabButton(EContentType.BUILD_NORMAL, BUTTONS_FILE, 69, 81, ""),
+			new TabButton(EContentType.BUILD_FOOD, BUTTONS_FILE, 72, 84, ""),
+			new TabButton(EContentType.BUILD_MILITARY, BUTTONS_FILE, 75, 87, ""),
+			new TabButton(EContentType.BUILD_SOCIAL, BUTTONS_FILE, 78, 90, ""),
+	};
 
 	private final TabButton[] goodsButtons = new TabButton[] {
-			new TabButton(EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 69, 81, ""),
-			new TabButton(EContentType.PROFESSION, BUTTONS_FILE, 72, 84, ""),
-			new TabButton(EContentType.WARRIORS, BUTTONS_FILE, 75, 87, ""),
-			new TabButton(EContentType.PRODUCTION, BUTTONS_FILE, 78, 90, ""),
+			new TabButton(EContentType.STOCK, BUTTONS_FILE, 258, 270, ""),
+			new TabButton(EContentType.TOOLS, BUTTONS_FILE, 261, 273, ""),
+			new TabButton(EContentType.GOODS_SPREAD, BUTTONS_FILE, 264, 276, ""),
+			new TabButton(EContentType.GOODS_TRANSPORT, BUTTONS_FILE, 267, 279, ""),
 	};
+
+	private final TabButton[] settlerButtons = new TabButton[] {
+			new TabButton(EContentType.SETTLERSTATISTIC, BUTTONS_FILE, 234, 246, ""),
+			new TabButton(EContentType.PROFESSION, BUTTONS_FILE, 237, 249, ""),
+			new TabButton(EContentType.WARRIORS, BUTTONS_FILE, 240, 252, ""),
+			new TabButton(EContentType.PRODUCTION, BUTTONS_FILE, 243, 255, ""),
+	};
+
+	private final Button btnSystem = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 93, 96, "");
+	{
+		btnSystem.setActive(true); // Show as inactive until the functionality has been implemented
+	}
+
+	private final Button btnScroll = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
+	private final Button btnSwords = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 114, 102, "");
+	private final Button btnSignPost = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 117, 105, "");
+	private final Button btnPots = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 120, 108, "");
+	{
+		btnScroll.setActive(true);
+		btnSwords.setActive(true);
+		btnSignPost.setActive(true);
+		btnPots.setActive(true);
+	}
 
 	private final UIPanel contentContainer = new UIPanel();
 
-	private IOriginalConstants constants;
+	private ControlPanelLayoutProperties constants;
 
-	private IContentProvider activeContent;
+	private IContentProvider activeContent = EContentType.BUILD_NORMAL;
 
 	private EBuildingType activeBuilding;
 
@@ -101,44 +104,63 @@ public class MainPanel extends UIPanel {
 	private ShortPoint2D displayCenter;
 
 	public MainPanel() {
-		useConstants(new SmallOriginalConstants());
-		setContent(EContentType.BUILD_NORMAL);
-	}
-
-	private void initTabbar2() {
-		this.addChild(tabpanel, 0, constants.UI_TABS2_BOTTOM, 1,
-				constants.UI_TABS2_TOP);
+		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}
 
 	private void initTabbar1() {
 		int i = 0;
 		UIPanel tabbar1 = new UIPanel();
-		this.addChild(tabbar1, 0, constants.UI_TABS1_BOTTOM, 1,
-				constants.UI_TABS1_TOP);
-		Button[] buttons = new Button[] {
-				button_build, button_settlers, button_goods
-		};
+		this.addChild(tabbar1, 0, constants.UI_TABS1_BOTTOM, 1, constants.UI_TABS1_TOP);
+		Button[] buttons = new Button[] { button_build, button_goods, button_settlers };
 		for (Button button : buttons) {
-			float left =
-					constants.UI_TABS1_SIDEMARGIN
-							+ i
-							* (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
-			tabbar1.addChild(button, left, 0, left + constants.UI_TABS1_WIDTH,
-					1);
+			float left = constants.UI_TABS1_SIDEMARGIN + i * (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
+			tabbar1.addChild(button, left, 0, left + constants.UI_TABS1_WIDTH, 1);
 			i++;
 		}
+	}
 
+	private void initTabbar2() {
+		this.addChild(tabpanel, 0, constants.UI_TABS2_BOTTOM, 1, constants.UI_TABS2_TOP);
+	}
+
+	private void addSystemButton() {
+		this.addChild(
+				btnSystem,
+				constants.SYSTEM_BUTTON_LEFT,
+				constants.SYSTEM_BUTTON_BOTTOM,
+				constants.SYSTEM_BUTTON_RIGHT,
+				constants.SYSTEM_BUTTON_TOP
+				);
+	}
+
+	private void addLowerTabBar()
+	{
+		UIPanel lowerTabBar = new UIPanel();
+		Button[] buttons = new Button[] { btnScroll, btnSwords, btnSignPost, btnPots };
+		int i = 0;
+		for (Button button : buttons) {
+			float left = constants.LOWER_TABS_LEFT + (i++ * constants.LOWER_TABS_WIDTH);
+			lowerTabBar.addChild(button, left, 0, left + constants.LOWER_TABS_WIDTH, 1);
+		}
+		this.addChild(lowerTabBar, 0, constants.LOWER_TABS_BOTTOM, 1, constants.LOWER_TABS_TOP);
 	}
 
 	public void setContent(IContentProvider type) {
 		showSecondaryTabs(type.getTabs());
 
-		if (type.getTabs() == ESecondaryTabType.BUILD) {
+		switch (type.getTabs()) {
+		case BUILD:
 			setButtonsActive(buildButtons, type);
-		} else if (type.getTabs() == ESecondaryTabType.SETTLERS) {
-			setButtonsActive(settlerButtons, type);
-		} else if (type.getTabs() == ESecondaryTabType.GOODS) {
+			break;
+		case GOODS:
 			setButtonsActive(goodsButtons, type);
+			break;
+		case SETTLERS:
+			setButtonsActive(settlerButtons, type);
+			break;
+		case NONE:
+		default:
+			break;
 		}
 
 		contentContainer.removeAll();
@@ -158,44 +180,50 @@ public class MainPanel extends UIPanel {
 
 	private void showSecondaryTabs(ESecondaryTabType tabs) {
 		tabpanel.removeAll();
-		if (tabs == ESecondaryTabType.BUILD) {
+		switch (tabs) {
+		case BUILD:
 			addTabpanelButtons(buildButtons);
-		} else if (tabs == ESecondaryTabType.SETTLERS) {
-			addTabpanelButtons(settlerButtons);
-		} else if (tabs == ESecondaryTabType.GOODS) {
+			break;
+		case GOODS:
 			addTabpanelButtons(goodsButtons);
+			break;
+		case SETTLERS:
+			addTabpanelButtons(settlerButtons);
+			break;
+		case NONE:
+		default:
+			break;
 		}
 
 		button_build.setActive(tabs == ESecondaryTabType.BUILD);
-		button_settlers.setActive(tabs == ESecondaryTabType.SETTLERS);
 		button_goods.setActive(tabs == ESecondaryTabType.GOODS);
+		button_settlers.setActive(tabs == ESecondaryTabType.SETTLERS);
 	}
 
 	private void addTabpanelButtons(Button[] buttons) {
 		int i = 0;
 		for (Button button : buttons) {
-			float left =
-					constants.UI_TABS2_SIDEMARGIN
-							+ i
-							* (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
-			tabpanel.addChild(button, left, 0, left + constants.UI_TABS2_WIDTH,
-					1);
+			float left = constants.UI_TABS2_SIDEMARGIN + i * (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
+			tabpanel.addChild(button, left, 0, left + constants.UI_TABS2_WIDTH, 1);
 			i++;
 		}
 	}
 
 	/**
-	 * Resize everything according to constants.
-	 * 
-	 * @param constants
+	 * Position the graphical components of this panel using the specified layout properties.
+	 *
+	 * @param layoutProperties
 	 */
-	public void useConstants(IOriginalConstants constants) {
-		this.constants = constants;
+	public void layoutPanel(ControlPanelLayoutProperties layoutProperties) {
+		this.constants = layoutProperties;
+		this.removeAll();
 		initTabbar1();
 		initTabbar2();
-		this.addChild(contentContainer, constants.CONTENT_LEFT,
-				constants.CONTENT_BOTTOM, constants.CONTENT_RIGHT,
-				constants.CONTENT_TOP);
+		addSystemButton();
+		addLowerTabBar();
+		this.addChild(contentContainer, layoutProperties.CONTENT_LEFT, layoutProperties.CONTENT_BOTTOM, layoutProperties.CONTENT_RIGHT,
+				layoutProperties.CONTENT_TOP);
+		setContent(activeContent);
 	}
 
 	public void displayBuildingBuild(EBuildingType type) {

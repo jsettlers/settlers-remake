@@ -22,6 +22,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.image.Image;
+import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.Button;
@@ -35,8 +36,9 @@ public class BuildingButton extends Button {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 
-	private final ImageLink buildingImage;
+	private final ImageLink buildingImageLink;
 	private final EBuildingType buildingType;
+	private Image buildingImage = NullImage.getInstance();
 
 	private float lastButtonHeight;
 	private float lastButtonWidth;
@@ -50,7 +52,7 @@ public class BuildingButton extends Button {
 	public BuildingButton(EBuildingType buildingType) {
 		super(new BuildAction(buildingType), null, null, Labels.getName(buildingType));
 		this.buildingType = buildingType;
-		buildingImage = buildingType.getGuiImage();
+		buildingImageLink = buildingType.getGuiImage();
 	}
 
 	@Override
@@ -67,24 +69,22 @@ public class BuildingButton extends Button {
 	@Override
 	protected void drawBackground(GLDrawContext gl) {
 		FloatRectangle position = getPosition();
-		Image image; // TODO keep reference to image and only refetch & re-calcCoords if the button has resized?
-		if (buildingImage instanceof OriginalImageLink) {
-			image = ImageProvider.getInstance().getImage(buildingImage, position.getWidth(), position.getHeight());
-		} else {
-			image = ImageProvider.getInstance().getImage(buildingImage);
-		}
-
 		float buttonHeight = position.getHeight();
 		float buttonWidth = position.getWidth();
-		float imageHeight = image.getHeight();
-		float imageWidth = image.getWidth();
+		float imageHeight = buildingImage.getHeight();
+		float imageWidth = buildingImage.getWidth();
 		if (buttonHeight != lastButtonHeight || buttonWidth != lastButtonWidth ||
 				imageHeight != lastImageHeight || imageWidth != lastImageWidth) {
+			if (buildingImageLink instanceof OriginalImageLink) {
+				buildingImage = ImageProvider.getInstance().getImage(buildingImageLink, position.getWidth(), position.getHeight());
+			} else {
+				buildingImage = ImageProvider.getInstance().getImage(buildingImageLink);
+			}
 			calculateIconCoords(buttonHeight, buttonWidth, position.getCenterX(), position.getCenterY(), imageHeight, imageWidth);
 		}
 
 		gl.color(1, 1, 1, 1);
-		image.drawImageAtRect(gl, iconLeft, iconTop, iconRight, iconBottom);
+		buildingImage.drawImageAtRect(gl, iconLeft, iconTop, iconRight, iconBottom);
 	}
 
 	private void calculateIconCoords(float buttonHeight, float buttonWidth, float btnXMid, float btnYMid,
