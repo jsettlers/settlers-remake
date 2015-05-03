@@ -74,7 +74,7 @@
     <buildmark dx="-1" dy="-4" />
     <buildmark dx="1" dy="0" />
 
-    <image file="14" for="GUI" type="GUI" sequence="90" image="0" />
+    <image file="14" for="GUI" type="GUI" sequence="84" image="0" />
     <image file="13" type="SETTLER" for="FINAL" image="0" sequence="45" />
     <image file="13" type="SETTLER" for="BUILD" image="1" sequence="45" />
 
