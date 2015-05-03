@@ -171,9 +171,9 @@
 
 	<job name="feedCropGoHome1" type="GO_TO" dx="0" dy="1" successjob="feedCropGoHome2" failjob="gohome" />
 	<job name="feedCropGoHome2" type="HIDE" successjob="feedWait" failjob="wait" />
-	
+
 	<job name="feedWait" type="WAIT" time="1" successjob="feedWaterShow1" failjob="wait" />
-	
+
 	<!-- get water from stack to home -->
 	<job name="feedWaterShow1" type="SET_MATERIAL" material="NO_MATERIAL" successjob="feedWaterShow2" failjob="wait" />
 	<job name="feedWaterShow2" type="LOOK_AT" direction="SOUTH_EAST" successjob="feedWaterShow3" failjob="wait" />
