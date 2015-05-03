@@ -3,8 +3,8 @@
 
   	<ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
-	<ground groundtype="FLATTENED" />	
-	
+	<ground groundtype="FLATTENED" />
+
 <blocked dx="2" dy="0" block="true" />
 	<blocked dx="1" dy="0" block="true" />
 	<blocked dx="1" dy="1" block="true" />
@@ -79,22 +79,22 @@
 	<blocked dx="4" dy="0" block="false" />
 	<blocked dx="4" dy="1" block="false" />
 	<blocked dx="4" dy="2" block="false" />
-	
+
 	<door dx="2" dy="1" />
-	
+
 	<stack dx="-3" dy="2" material="COAL" buildrequired="0" />
 	<stack dx="3" dy="3" material="GOLDORE" buildrequired="0" />
 	<stack dx="1" dy="5" material="PLANK" buildrequired="5" />
 	<stack dx="3" dy="5" material="STONE" buildrequired="4" />
-	
+
 	<bricklayer dx="-2" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="0" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
 	<bricklayer dx="2" dy="1" direction="NORTH_WEST" />
 	<bricklayer dx="3" dy="0" direction="NORTH_WEST" />
-	
+
 	<flag dx="0" dy="-3" />
-	
+
 	<buildmark dx="-3" dy="1" />
 	<buildmark dx="-3" dy="-5" />
 	<buildmark dx="-2" dy="-5" />
@@ -120,7 +120,7 @@
 
 	<!-- leave the building -->
 	<job name="leaveHouse" 	type="SHOW" 		successjob="toOre1" 	failjob="gohome" 	direction="SOUTH_EAST" dx="2" dy="1" />
-	
+
 	<!-- go to the gold ore stack -->
 	<job name="toOre1" 		type="WALK" 		successjob="toOre2" 	failjob="gohome" 	direction="SOUTH_EAST" />
 	<job name="toOre2" 		type="WALK" 		successjob="takeore1" 	failjob="gohome" 	direction="SOUTH_WEST" />
@@ -136,7 +136,7 @@
 	<job name="goputore4" 	type="WALK" 		successjob="goputore5" 	failjob="gohome" 	direction="WEST" />
 	<job name="goputore5" 	type="WALK" 		successjob="goputore6" 	failjob="gohome" 	direction="NORTH_WEST" />
     <job name="goputore6" 	type="WALK" 		successjob="dropOre1" 	failjob="gohome" 	direction="NORTH_WEST" />
-	
+
 	<!-- drop iron ore into melt -->
 	<job name="dropOre1" 	type="LOOK_AT" 		successjob="dropOre2" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="dropOre2" 	type="DROP" 		successjob="dropOre3" 	failjob="gohome" 	material="NO_MATERIAL" />
@@ -144,14 +144,14 @@
 
 	<!-- go to coal stack -->
 	<job name="goToCoal1" 	type="WALK" 		successjob="takeCoal1" 	failjob="gohome" 	direction="WEST" />
-	
+
 	<!-- take coal -->
 	<job name="takeCoal1" 	type="TAKE" 		successjob="takeCoal2" 	failjob="gohome" 	material="COAL" />
 	<job name="takeCoal2" 	type="SET_MATERIAL" successjob="delivCoal1" failjob="gohome"	material="COAL" />
-	
+
 	<!-- go to the melting pot -->
 	<job name="delivCoal1" 	type="WALK" 		successjob="dropCoal1" 	failjob="gohome" 	direction="EAST" />
-	
+
 	<!-- put coal into the melting pot -->
 	<job name="dropCoal1" 	type="LOOK_AT" 		successjob="dropCoal2" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="dropCoal2" 	type="DROP" 		successjob="dropCoal3" 	failjob="gohome" 	material="NO_MATERIAL" />
@@ -162,14 +162,14 @@
 	<job name="gopot2" 		type="WALK" 		successjob="gopot3" 	failjob="gohome" 	direction="SOUTH_EAST" />
 	<job name="gopot3" 		type="WALK" 		successjob="gopot4" 	failjob="gohome" 	direction="SOUTH_EAST" />
 	<job name="gopot4" 		type="WALK" 		successjob="gopot5"		failjob="gohome" 	direction="EAST" />
-	
+
 	<job name="gopot5" 		type="LOOK_AT" 		successjob="gopot6" 	failjob="gohome" 	direction="NORTH_WEST" />
 	<job name="gopot6" 		type="WAIT" 		successjob="takegold1" 	failjob="gohome" 	time="3.5" />
 
 	<!-- take the gold -->
 	<job name="takegold1" 	type="TAKE" 		successjob="takegold2"	failjob="gohome" 	material="NO_MATERIAL" />
 	<job name="takegold2" 	type="SET_MATERIAL" successjob="goToGold1" 	failjob="gohome" 	material="GOLD" />
-	
+
 	<!-- walk to the stack for the gold -->
 	<job name="goToGold1" 	type="WALK" 		successjob="goToGold2" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="goToGold2" 	type="WALK" 		successjob="goToGold3" 	failjob="gohome" 	direction="EAST" />
@@ -177,7 +177,7 @@
 	<job name="goToGold4" 	type="WALK" 		successjob="goToGold6" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="goToGold6" 	type="WALK" 		successjob="goToGold7" 	failjob="gohome" 	direction="NORTH_EAST" />
 	<job name="goToGold7" 	type="WALK" 		successjob="dropGold1" 	failjob="gohome" 	direction="EAST" />
-	
+
 	<!-- drop the gold -->
 	<job name="dropGold1" 	type="DROP" 		successjob="dropGold2" failjob="gohome" 	material="GOLD" />
 	<job name="dropGold2" 	type="SET_MATERIAL" successjob="gohome" 	failjob="gohome" 	material="NO_MATERIAL" />
