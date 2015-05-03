@@ -146,21 +146,24 @@ public class MainPanel extends UIPanel {
 	}
 
 	public void setContent(IContentProvider type) {
-		showSecondaryTabs(type.getTabs());
+		ESecondaryTabType tabs = type.getTabs();
+		showSecondaryTabs(tabs);
 
-		switch (type.getTabs()) {
-		case BUILD:
-			setButtonsActive(buildButtons, type);
-			break;
-		case GOODS:
-			setButtonsActive(goodsButtons, type);
-			break;
-		case SETTLERS:
-			setButtonsActive(settlerButtons, type);
-			break;
-		case NONE:
-		default:
-			break;
+		if (tabs != null) {
+			switch (tabs) {
+			case BUILD:
+				setButtonsActive(buildButtons, type);
+				break;
+			case GOODS:
+				setButtonsActive(goodsButtons, type);
+				break;
+			case SETTLERS:
+				setButtonsActive(settlerButtons, type);
+				break;
+			case NONE:
+			default:
+				break;
+			}
 		}
 
 		contentContainer.removeAll();
@@ -180,19 +183,21 @@ public class MainPanel extends UIPanel {
 
 	private void showSecondaryTabs(ESecondaryTabType tabs) {
 		tabpanel.removeAll();
-		switch (tabs) {
-		case BUILD:
-			addTabpanelButtons(buildButtons);
-			break;
-		case GOODS:
-			addTabpanelButtons(goodsButtons);
-			break;
-		case SETTLERS:
-			addTabpanelButtons(settlerButtons);
-			break;
-		case NONE:
-		default:
-			break;
+		if (tabs != null) {
+			switch (tabs) {
+			case BUILD:
+				addTabpanelButtons(buildButtons);
+				break;
+			case GOODS:
+				addTabpanelButtons(goodsButtons);
+				break;
+			case SETTLERS:
+				addTabpanelButtons(settlerButtons);
+				break;
+			case NONE:
+			default:
+				break;
+			}
 		}
 
 		button_build.setActive(tabs == ESecondaryTabType.BUILD);
