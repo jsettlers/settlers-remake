@@ -128,4 +128,9 @@ public final class SelectionSet implements ISelectionSet {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final int maxLen = 10;
+		return "SelectionSet [set=" + (set != null ? set.subList(0, Math.min(set.size(), maxLen)) : null) + ", selectionType=" + selectionType + "]";
+	}
 }

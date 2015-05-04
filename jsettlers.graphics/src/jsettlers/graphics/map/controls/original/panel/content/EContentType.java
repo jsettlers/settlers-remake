@@ -28,22 +28,19 @@ public enum EContentType implements IContentProvider {
 	EMPTY(ESecondaryTabType.NONE, null),
 
 	BUILD_NORMAL(ESecondaryTabType.BUILD, BuildingBuildContent.getNormal()),
-
 	BUILD_SOCIAL(ESecondaryTabType.BUILD, BuildingBuildContent.getSocial()),
-
 	BUILD_MILITARY(ESecondaryTabType.BUILD, BuildingBuildContent.getMilitary()),
-
 	BUILD_FOOD(ESecondaryTabType.BUILD, BuildingBuildContent.getFood()),
 
-	STOCK(ESecondaryTabType.SETTLERS, null),
-	TOOLS(ESecondaryTabType.SETTLERS, null),
-	GOODS_SPREAD(ESecondaryTabType.SETTLERS, null),
-	GOODS_TRANSPORT(ESecondaryTabType.SETTLERS, new MaterialPriorityPanel()),
+	STOCK(ESecondaryTabType.GOODS, null),
+	TOOLS(ESecondaryTabType.GOODS, null),
+	GOODS_SPREAD(ESecondaryTabType.GOODS, null),
+	GOODS_TRANSPORT(ESecondaryTabType.GOODS, new MaterialPriorityPanel()),
 
-	SETTLERSTATISTIC(ESecondaryTabType.GOODS, null),
-	PROFESSION(ESecondaryTabType.GOODS, null),
-	WARRIORS(ESecondaryTabType.GOODS, null),
-	PRODUCTION(ESecondaryTabType.GOODS, null);
+	SETTLERSTATISTIC(ESecondaryTabType.SETTLERS, null),
+	PROFESSION(ESecondaryTabType.SETTLERS, null),
+	WARRIORS(ESecondaryTabType.SETTLERS, null),
+	PRODUCTION(ESecondaryTabType.SETTLERS, null);
 
 	private final ESecondaryTabType tabs;
 	private final ContentFactory factory;

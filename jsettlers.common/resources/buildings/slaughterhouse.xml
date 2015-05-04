@@ -4,7 +4,7 @@
 	<ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
-	
+
 	<blocked dx="-3" dy="0" block="true" />
 	<blocked dx="-3" dy="-1" block="true" />
 	<blocked dx="-3" dy="-2" block="true" />
@@ -107,21 +107,21 @@
 	<buildmark dx="-2" dy="-4" />
 	<buildmark dx="7" dy="6" />
 	<buildmark dx="5" dy="2" />
-	
+
 	<image file="14" for="GUI" type="GUI" sequence="12" image="0"/>
 	<image file="13" for="FINAL" type="SETTLER" sequence="13" image="0"/>
 	<image file="13" for="BUILD" type="SETTLER" sequence="13" image="1"/>
 
 	<!-- drop stack for meat: 1, 4 -->
 	<startjob name="gohome"/>
-	
+
 	<!-- reset -->
 	<job name="gohome" type="GO_TO" successjob="hide" failjob="hide" dx="-1" dy="2"/>
 	<job name="hide" type="HIDE" successjob="wait" failjob="wait"/>
 	<job name="wait" type="WAIT" successjob="check1" failjob="wait" time="3"/>
 	<job name="check1" type="AVAILABLE" successjob="check2" failjob="wait" dx="-3" dy="2" material="PIG"/>
 	<job name="check2" type="NOT_FULL" successjob="A_wait" failjob="wait" dx="1" dy="4" material="MEAT"/>
-	
+
 	<!-- take a pig -->
     <job name="A_wait"   type="WAIT"         successjob="A_show"  failjob="gohome" time="1" />
 	<job name="A_show"   type="SHOW"         successjob="A_walkA1" failjob="gohome" dx="-1" dy="2" />
@@ -135,7 +135,7 @@
 	<job name="A_walkB2" type="WALK"         successjob="A_walkB3" failjob="gohome" direction="EAST"/>
 	<job name="A_walkB3" type="WALK"         successjob="A_hide" failjob="gohome" direction="NORTH_EAST"/>
 	<job name="A_hide"   type="HIDE"         successjob="B_wait"  failjob="gohome" />
-	
+
     <job name="B_wait"   type="WAIT"         successjob="B_start"  failjob="gohome" time="5.7" />
 	<job name="B_start"  type="SET_MATERIAL" successjob="B_show"   failjob="gohome" material="MEAT" />
 	<job name="B_show"   type="SHOW"         successjob="B_walkA1" failjob="gohome" dx="-1" dy="2" />
@@ -150,4 +150,4 @@
 	<job name="B_walkB3" type="WALK"         successjob="hide"   failjob="gohome" direction="NORTH_EAST"/>
 
 </building>
-	
+

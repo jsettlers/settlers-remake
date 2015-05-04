@@ -123,7 +123,7 @@
 	<!-- work cycle, starts at iron stack (3, 3) -->
 	<job name="pickiron1" type="TAKE" material="IRON" successjob="pickiron2" failjob="go_to_door" />
 	<job name="pickiron2" type="SET_MATERIAL" material="IRON" successjob="go_drop_iron1" failjob="go_to_door" />
-	
+
 	<job name="go_drop_iron1" type="WALK" direction="WEST" successjob="go_drop_iron2" failjob="go_to_door" />
 	<job name="go_drop_iron2" type="WALK" direction="WEST" successjob="go_drop_iron3" failjob="go_to_door" />
 	<job name="go_drop_iron3" type="WALK" direction="NORTH_WEST" successjob="go_drop_iron4" failjob="go_to_door" />
@@ -132,13 +132,13 @@
 	<job name="dropiron0" type="LOOK_AT" direction="NORTH_WEST" successjob="dropiron1" failjob="go_to_door" />
 	<job name="dropiron1" type="DROP" material="NO_MATERIAL" successjob="dropiron2" failjob="go_to_door" />
 	<job name="dropiron2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="go_to_coal1" failjob="go_to_door" />
-	
+
 	<job name="go_to_coal1" type="WALK" direction="SOUTH_WEST" successjob="go_to_coal2" failjob="go_to_door" />
 	<job name="go_to_coal2" type="WALK" direction="WEST" successjob="pickcoal1" failjob="go_to_door" />
 
 	<job name="pickcoal1" type="TAKE" material="COAL" successjob="pickcoal2" failjob="go_to_door" />
 	<job name="pickcoal2" type="SET_MATERIAL" material="COAL" successjob="go_drop_coal1" failjob="go_to_door" />
-	
+
 	<job name="go_drop_coal1" type="WALK" direction="EAST" successjob="go_drop_coal2" failjob="go_to_door" />
 	<job name="go_drop_coal2" type="WALK" direction="NORTH_EAST" successjob="dropcoal0" failjob="go_to_door" />
 
@@ -158,7 +158,7 @@
 	<job name="go_to_hammer3" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer4" failjob="go_to_door" />
 	<job name="go_to_hammer4" type="WALK" direction="EAST" successjob="go_to_hammer5" failjob="go_to_door" />
     <job name="go_to_hammer5" type="LOOK_AT" direction="NORTH_WEST" successjob="hammer0" failjob="go_to_door" />
-	
+
 	<job name="hammer0" type="SET_MATERIAL" material="HAMMER" successjob="hammer1" failjob="go_to_door" />
 	<job name="hammer1" type="PLAY_ACTION1" time=".7" successjob="hammer2" failjob="go_to_door" />
     <job name="hammer2" type="PLAY_ACTION1" time=".7" successjob="hammer3" failjob="go_to_door" />
@@ -166,7 +166,7 @@
     <job name="hammer4" type="PLAY_ACTION1" time=".7" successjob="hammer5" failjob="go_to_door" />
     <job name="hammer5" type="PLAY_ACTION1" time=".7" successjob="hammer6" failjob="go_to_door" />
 	<job name="hammer6" type="SET_MATERIAL" material="SWORD" successjob="go_drop_sword0" failjob="go_to_door" />
-	
+
 	<job name="go_drop_sword0" type="WALK" direction="EAST" successjob="go_drop_sword1" failjob="go_to_door" />
 	<job name="go_drop_sword1" type="WALK" direction="EAST" successjob="go_drop_sword2" failjob="go_to_door" />
 	<job name="go_drop_sword2" type="WALK" direction="NORTH_EAST" successjob="go_drop_sword3" failjob="go_to_door" />

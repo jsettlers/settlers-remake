@@ -84,35 +84,35 @@
 	<blocked dx="5" dy="4" block="false" />
 	<blocked dx="6" dy="4" block="false" />
 	<blocked dx="6" dy="3" block="false" />
-	
+
 	<door dx="-1" dy="1" />
-	
+
 	<stack dx="0" dy="3" material="STONE" buildrequired="4" />
 	<stack dx="3" dy="3" material="PLANK" buildrequired="5" />
 	<stack dx="6" dy="1" material="SWORD" buildrequired="0" />
 	<stack dx="5" dy="2" material="SPEAR" buildrequired="0" />
 	<stack dx="3" dy="2" material="BOW" buildrequired="0" />
-	
+
 	<bricklayer dx="-2" dy="0" direction="NORTH_EAST" />
 	<bricklayer dx="0" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="1" direction="NORTH_WEST" />
 	<bricklayer dx="6" dy="2" direction="NORTH_WEST" />
 	<bricklayer dx="5" dy="3" direction="NORTH_WEST" />
-	
+
 	<flag dx="-1" dy="3" />
-	
+
 	<buildmark dx="-2" dy="-1" />
 	<buildmark dx="0" dy="1" />
 	<buildmark dx="2" dy="-2" />
 	<buildmark dx="-1" dy="-5" />
 	<buildmark dx="5" dy="0" />
 	<buildmark dx="4" dy="2" />
-	
-	
+
+
 	<workcenter dx="-1" dy="3"/>
-	
+
 	<image file="14" type="GUI" for="GUI" image="0" sequence="57"/>
     <image file="13" type="SETTLER" for="FINAL" image="0" sequence="34"/>
     <image file="13" type="SETTLER" for="BUILD" image="1" sequence="34"/>
-    
+
 </building>

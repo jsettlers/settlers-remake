@@ -157,10 +157,10 @@
    offsetX CDATA #IMPLIED
    offsetY CDATA #IMPLIED
    type (INFANTRY|BOWMAN) #REQUIRED
-   
+
    soldierX CDATA #REQUIRED
    soldierY CDATA #REQUIRED
-   looksRight (true|false) "true" 
+   looksRight (true|false) "true"
 >
 
 <!ELEMENT startjob EMPTY>

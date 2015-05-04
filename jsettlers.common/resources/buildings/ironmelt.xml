@@ -1,10 +1,10 @@
 <?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
 <building worker="MELTER" workradius="0">
-    
+
 	<ground groundtype="GRASS" />
 	<ground groundtype="EARTH" />
 	<ground groundtype="FLATTENED" />
-	
+
 	<blocked dx="-3" dy="1" block="true" />
 	<blocked dx="-2" dy="2" block="true" />
 	<blocked dx="-1" dy="3" block="true" />
@@ -89,22 +89,22 @@
 	<blocked dx="-4" dy="-3" block="false" />
 	<blocked dx="-4" dy="-4" block="false" />
 	<blocked dx="-4" dy="-5" block="false" />
-	
+
 	<door dx="2" dy="0" />
-	
+
 	<stack dx="-3" dy="2" material="COAL" buildrequired="0" />
 	<stack dx="3" dy="3" material="IRONORE" buildrequired="0" />
 	<stack dx="3" dy="5" material="PLANK" buildrequired="7" />
 	<stack dx="0" dy="5" material="STONE" buildrequired="4" />
-	
+
 	<bricklayer dx="-1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="-3" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="3" dy="0" direction="NORTH_WEST" />
 	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
 	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
-	
+
 	<flag dx="0" dy="-3" />
-	
+
 	<buildmark dx="-3" dy="1" />
 	<buildmark dx="-1" dy="2" />
 	<buildmark dx="1" dy="1" />
@@ -151,22 +151,22 @@
 	<job name="goputore5" 	type="WALK" 		successjob="goputore6" 	failjob="gohome" direction="NORTH_WEST" />
 	<job name="goputore6" 	type="WALK" 		successjob="goputore7" 	failjob="gohome" direction="NORTH_WEST" />
 	<job name="goputore7" 	type="LOOK_AT" 		successjob="goputore8" 	failjob="gohome" direction="NORTH_EAST" />
-	
+
 	<!-- drop the iron ore into the melting pot -->
 	<job name="goputore8" 	type="DROP" 		successjob="goputore9" 	failjob="gohome" material="NO_MATERIAL" />
 	<job name="goputore9" 	type="SET_MATERIAL" successjob="goToCoal" 	failjob="gohome" material="NO_MATERIAL" />
 
 	<!-- go to the coal stack -->
 	<job name="goToCoal" 	type="WALK" 		successjob="takeCoal1" 	failjob="gohome" direction="NORTH_WEST" />
-	
+
 	<!-- take the coal -->
 	<job name="takeCoal1" 	type="LOOK_AT"		successjob="takeCoal2" 	failjob="gohome" direction="NORTH_WEST" />
 	<job name="takeCoal2" 	type="SET_MATERIAL" successjob="takeCoal3" 	failjob="gohome" material="COAL" />
 	<job name="takeCoal3" 	type="TAKE" 		successjob="goPutCoal" 	failjob="gohome" material="COAL" />
-	
+
 	<!-- go to the melting pot -->
 	<job name="goPutCoal" 	type="WALK" 		successjob="putCoal1" 	failjob="gohome" direction="SOUTH_EAST" />
-	
+
 	<!-- put the coal into the melting pot -->
 	<job name="putCoal1" 	type="LOOK_AT" 		successjob="putCoal2" 	failjob="gohome" direction="NORTH_EAST" />
 	<job name="putCoal2" 	type="DROP" 		successjob="putCoal3" 	failjob="gohome" material="NO_MATERIAL" />

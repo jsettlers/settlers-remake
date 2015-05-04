@@ -271,7 +271,7 @@ public class MaterialPriorityPanel extends UIPanel implements IContentProvider {
 		if (selected == materialType) {
 			ImageProvider
 					.getInstance()
-					.getGuiImage(3, 339)
+					.getImage(new OriginalImageLink(EImageLinkType.GUI, 3, 339, 0))
 					.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH,
 							y + RELATIVE_BUTTONHEIGHT);
 		}
