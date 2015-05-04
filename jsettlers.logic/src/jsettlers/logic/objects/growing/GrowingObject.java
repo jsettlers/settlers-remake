@@ -12,71 +12,70 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.objects.tree;
+package jsettlers.logic.objects.growing;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.common.position.RelativePoint;
-import jsettlers.common.sound.ISoundable;
-import jsettlers.logic.objects.GrowingObject;
+import jsettlers.logic.objects.ProgressingObject;
 
 /**
- * This is a tree on the map.
+ * This is an abstract class used for growing objects.
  * 
  * @author Andreas Eberle
  * 
  */
-public class Tree extends GrowingObject implements ISoundable {
-	private static final long serialVersionUID = 8241068714975746824L;
+public abstract class GrowingObject extends ProgressingObject {
+	private static final long serialVersionUID = -5886720986614326428L;
 
-	public static final float GROWTH_DURATION = 7 * 60;
-	public static final float DECOMPOSE_DURATION = 2 * 60;
+	private EMapObjectType state;
 
-	private static final RelativePoint[] BLOCKED = new RelativePoint[] { new RelativePoint(0, 0) };
+	protected GrowingObject(ShortPoint2D pos, EMapObjectType growing) {
+		super(pos);
 
-	private boolean soundPlayed;
+		this.state = growing;
+		super.setDuration(getGrowthDuration());
+	}
 
-	/**
-	 * Creates a new Tree.
-	 * 
-	 * @param grid
-	 */
-	public Tree(ShortPoint2D pos) {
-		super(pos, EMapObjectType.TREE_GROWING);
+	protected abstract float getGrowthDuration();
+
+	public boolean isDead() {
+		return this.state == getDeadState();
+	}
+
+	protected abstract EMapObjectType getDeadState();
+
+	public boolean isAdult() {
+		return this.state == getAdultState();
+	}
+
+	protected abstract EMapObjectType getAdultState();
+
+	@Override
+	public boolean canBeCut() {
+		return isAdult();
 	}
 
 	@Override
-	public RelativePoint[] getBlockedTiles() {
-		return BLOCKED;
+	public boolean cutOff() {
+		super.setDuration(getDecomposeDuration());
+		this.state = getDeadState();
+		return true;
+	}
+
+	protected abstract float getDecomposeDuration();
+
+	@Override
+	public EMapObjectType getObjectType() {
+		return this.state;
 	}
 
 	@Override
-	protected float getGrowthDuration() {
-		return GROWTH_DURATION;
-	}
-
-	@Override
-	protected float getDecomposeDuration() {
-		return DECOMPOSE_DURATION;
-	}
-
-	@Override
-	public void setSoundPlayed() {
-		soundPlayed = true;
-	}
-
-	@Override
-	public boolean isSoundPlayed() {
-		return soundPlayed;
-	}
-
-	@Override
-	protected EMapObjectType getDeadState() {
-		return EMapObjectType.TREE_DEAD;
-	}
-
-	@Override
-	protected EMapObjectType getAdultState() {
-		return EMapObjectType.TREE_ADULT;
+	protected void changeState() {
+		if (state == getAdultState()) {
+			state = getDeadState();
+		} else if (state == getDeadState()) {
+		} else {
+			state = getAdultState();
+		}
 	}
 }

@@ -114,6 +114,7 @@
 	<blocked dx="-4" dy="0" block="false" />
 	<blocked dx="-4" dy="1" block="false" />
 	<blocked dx="0" dy="5" block="false" />
+	
 	<door dx="-1" dy="4" />
 
     <!-- materials checked with original -->
@@ -146,51 +147,51 @@
 	<startjob name="gohome"/>
 
 	<!-- going home job -->
-	<job name="gohome" 		type="GO_TO" 			successjob="hide" 			failjob="waithome" 		dx="-1" dy="4"/>
-	<job name="waithome" 	type="WAIT" 			successjob="gohome" 		failjob="waithome" 		time="1.0"/>
-	<job name="hide" 		type="HIDE" 			successjob="start" 			failjob="start"			/>
+	<job name="gohome" 			type="GO_TO" 			successjob="hide" 			failjob="waithome" 		dx="-1" dy="4"/>
+	<job name="waithome" 		type="WAIT" 			successjob="gohome" 		failjob="waithome" 		time="1.0"/>
+	<job name="hide" 			type="HIDE" 			successjob="start" 			failjob="start"			/>
 
-	<job name="start" 		type="WAIT" 			successjob="check" 			failjob="check" 		time="8.0"/>
-    <job name="check"		type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="6" material="CROP"/>
+	<job name="start" 			type="WAIT" 			successjob="check" 			failjob="check" 		time="8.0"/>
+    <job name="check"			type="NOT_FULL"			successjob="presearch1"		failjob="presearch2"	dx="3" dy="6" material="CROP"/>
 
-	<job name="presearch1" 	type="PRE_SEARCH" 		successjob="show1" 			failjob="presearch2" 	search="CUTTABLE_CORN" dx="-1" dy="4"/>
-	<job name="presearch2" 	type="PRE_SEARCH" 		successjob="show2" 			failjob="start" 		search="PLANTABLE_CORN" dx="-1" dy="4"/>
+	<job name="presearch1" 		type="PRE_SEARCH" 		successjob="show1" 			failjob="presearch2" 	dx="-1" dy="4" search="CUTTABLE_CORN"/>
+	<job name="presearch2" 		type="PRE_SEARCH" 		successjob="show2" 			failjob="start" 		dx="-1" dy="4" search="PLANTABLE_CORN"/>
 
     <!-- 1: cut some corn -->
-    <job name="show1"		type="SHOW"				successjob="with_scythe"	failjob="start"			dx="-1" dy="4"/>
-    <job name="with_scythe"	type="SET_MATERIAL"		successjob="search1"		failjob="gohome"		material="SCYTHE"/>
-    <job name="search1"  	type="FOLLOW_SEARCHED"	successjob="cutlook_at_NE"	failjob="hide"			/>
+    <job name="show1"			type="SHOW"				successjob="with_scythe"	failjob="start"			dx="-1" dy="4"/>
+    <job name="with_scythe"		type="SET_MATERIAL"		successjob="search1"		failjob="gohome"		material="SCYTHE"/>
+    <job name="search1"  		type="FOLLOW_SEARCHED"	successjob="cutlook_at_NE"	failjob="hide"			/>
 
     <job name="cutlook_at_NE"	type="LOOK_AT"			successjob="cut1"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="cut1"		type="PLAY_ACTION1"		successjob="cutlook_at_SW"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_SW" type="LOOK_AT"			successjob="cut2"			failjob="gohome"		direction="SOUTH_WEST"/>
-    <job name="cut2"		type="PLAY_ACTION1"		successjob="cutlook_at_W"		failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_W" type="LOOK_AT"			successjob="cut3"			failjob="gohome"		direction="WEST"/>
-    <job name="cut3"		type="PLAY_ACTION1"		successjob="cutlook_at_NW"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_NW" type="LOOK_AT"			successjob="cut4"			failjob="gohome"		direction="NORTH_WEST"/>
-    <job name="cut4"		type="PLAY_ACTION1"		successjob="execute1"		failjob="gohome"		time="1.0"/>
+    <job name="cut1"			type="PLAY_ACTION1"		successjob="cutlook_at_SW"	failjob="gohome"		time="1.0"/>
+    <job name="cutlook_at_SW" 	type="LOOK_AT"			successjob="cut2"			failjob="gohome"		direction="SOUTH_WEST"/>
+    <job name="cut2"			type="PLAY_ACTION1"		successjob="cutlook_at_W"	failjob="gohome"		time="1.0"/>
+    <job name="cutlook_at_W" 	type="LOOK_AT"			successjob="cut3"			failjob="gohome"		direction="WEST"/>
+    <job name="cut3"			type="PLAY_ACTION1"		successjob="cutlook_at_NW"	failjob="gohome"		time="1.0"/>
+    <job name="cutlook_at_NW" 	type="LOOK_AT"			successjob="cut4"			failjob="gohome"		direction="NORTH_WEST"/>
+    <job name="cut4"			type="PLAY_ACTION1"		successjob="execute1"		failjob="gohome"		time="1.0"/>
 
-    <job name="execute1"	type="EXECUTE"			successjob="look_at"		failjob="gohome"		search="CUTTABLE_CORN"/>
-    <job name="look_at"		type="LOOK_AT"			successjob="take"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="take" 		type="TAKE" 			successjob="changeMat2" 	failjob="gohome"		material="CROP"/>
-	<job name="changeMat2" 	type="SET_MATERIAL" 	successjob="goback" 		failjob="gohome" 		material="CROP"/>
-	<job name="goback" 		type="GO_TO" 			successjob="look" 			failjob="hide" 			dx="3" dy="6"/>
-	<job name="look"		type="LOOK_AT"			successjob="drop"			failjob="hide"			direction="NORTH_EAST"/>
-	<job name="drop" 		type="DROP" 			successjob="changeMat" 		failjob="hide" 			material="CROP"/>
-	<job name="changeMat" 	type="SET_MATERIAL"		successjob="gohome" 		failjob="hide" 			material="NO_MATERIAL"/>
+    <job name="execute1"		type="EXECUTE"			successjob="look_at"		failjob="gohome"		search="CUTTABLE_CORN"/>
+    <job name="look_at"			type="LOOK_AT"			successjob="changeMat2"		failjob="gohome"		direction="NORTH_EAST"/>
+	<job name="changeMat2" 		type="SET_MATERIAL" 	successjob="take" 			failjob="gohome" 		material="CROP"/>
+    <job name="take" 			type="TAKE" 			successjob="goback" 		failjob="gohome"		material="CROP"/>
+	<job name="goback" 			type="GO_TO" 			successjob="look" 			failjob="hide" 			dx="3" dy="6"/>
+	<job name="look"			type="LOOK_AT"			successjob="drop"			failjob="hide"			direction="NORTH_EAST"/>
+	<job name="drop" 			type="DROP" 			successjob="changeMat" 		failjob="hide" 			material="CROP"/>
+	<job name="changeMat" 		type="SET_MATERIAL"		successjob="gohome" 		failjob="hide" 			material="NO_MATERIAL"/>
 
      <!-- 2: plant a new corn -->
-    <job name="show2"		type="SHOW"				successjob="with_plant"		failjob="start"			dx="-1" dy="4"/>
-    <job name="with_plant"	type="SET_MATERIAL"		successjob="search2"		failjob="gohome"		material="PLANT"/>
-    <job name="search2"		type="FOLLOW_SEARCHED"	successjob="seedlook_at_NE"	failjob="gohome"		/>
+    <job name="show2"			type="SHOW"				successjob="with_plant"		failjob="start"			dx="-1" dy="4"/>
+    <job name="with_plant"		type="SET_MATERIAL"		successjob="search2"		failjob="gohome"		material="PLANT"/>
+    <job name="search2"			type="FOLLOW_SEARCHED"	successjob="seedlook_at_NE"	failjob="gohome"		/>
     <job name="seedlook_at_NE"	type="LOOK_AT"			successjob="seed1"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="seed1"		type="PLAY_ACTION2"		successjob="seedlook_at_SE"	failjob="gohome"		time="1.4"/>
+    <job name="seed1"			type="PLAY_ACTION2"		successjob="seedlook_at_SE"	failjob="gohome"		time="1.4"/>
 	<job name="seedlook_at_SE"	type="LOOK_AT"			successjob="seed2"			failjob="gohome"		direction="SOUTH_EAST"/>
-    <job name="seed2"		type="PLAY_ACTION2"		successjob="seedlook_at_SW"		failjob="gohome"	time="1.4"/>
+    <job name="seed2"			type="PLAY_ACTION2"		successjob="seedlook_at_SW"	failjob="gohome"		time="1.4"/>
 	<job name="seedlook_at_SW"	type="LOOK_AT"			successjob="seed3"			failjob="gohome"		direction="SOUTH_WEST"/>
-    <job name="seed3"		type="PLAY_ACTION2"		successjob="seedlook_at_NW"	failjob="gohome"		time="1.4"/>
+    <job name="seed3"			type="PLAY_ACTION2"		successjob="seedlook_at_NW"	failjob="gohome"		time="1.4"/>
 	<job name="seedlook_at_NW"	type="LOOK_AT"			successjob="seed4"			failjob="gohome"		direction="NORTH_WEST"/>
-    <job name="seed4"		type="PLAY_ACTION2"		successjob="execute2"		failjob="gohome"		time="1.4"/>
-	<job name="execute2"	type="EXECUTE"			successjob="no_mat2"		failjob="gohome"		search="PLANTABLE_CORN"/>
- 	<job name="no_mat2" 	type="SET_MATERIAL"		successjob="gohome" 		failjob="hide" 			material="NO_MATERIAL"/>
+    <job name="seed4"			type="PLAY_ACTION2"		successjob="execute2"		failjob="gohome"		time="1.4"/>
+	<job name="execute2"		type="EXECUTE"			successjob="no_mat2"		failjob="gohome"		search="PLANTABLE_CORN"/>
+ 	<job name="no_mat2" 		type="SET_MATERIAL"		successjob="gohome" 		failjob="hide" 			material="NO_MATERIAL"/>
  </building>

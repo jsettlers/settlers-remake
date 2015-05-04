@@ -52,6 +52,16 @@ public final class DijkstraAlgorithm {
 			throw new InvalidStartPositionException("dijkstra center position is not in bounds!", cX, cY);
 		}
 
+		// check center position (special case for minRadius <= 0
+		if (minRadius <= 0) {
+			map.setDijkstraSearched(cX, cY);
+			if (map.fitsSearchType(cX, cY, type, requester)) {
+				Path path = findPathTo(requester, cX, cY);
+				if (path != null)
+					return path;
+			}
+		}
+
 		for (short radius = minRadius; radius < maxRadius; radius++) {
 			short x = cX, y = (short) (cY - radius);
 			for (byte direction = 0; direction < 6; direction++) {

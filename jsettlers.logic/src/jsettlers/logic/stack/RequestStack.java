@@ -30,7 +30,7 @@ import jsettlers.logic.map.newGrid.partition.manager.materials.requests.Material
  * @author Andreas Eberle
  * 
  */
-public class RequestStack extends MaterialRequestObject implements Serializable, IBuildingMaterial {
+public class RequestStack extends MaterialRequestObject implements Serializable, IBuildingMaterial, IStackSizeSupplier {
 	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ShortPoint2D position;

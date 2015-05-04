@@ -40,6 +40,7 @@ public enum EMovableType {
 	SLAUGHTERER(EMaterialType.AXE, ESelectionType.PEOPLE, true),
 	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	WINEGROWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 
 	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
 	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true),

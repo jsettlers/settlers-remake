@@ -63,7 +63,8 @@ public class MapObjectDrawer {
 	private static final OriginalImageLink INSIDE_BUILDING_LEFT =
 			new OriginalImageLink(EImageLinkType.SETTLER, 12, 28, 0);
 
-	private static final int FILE = 1;
+	private static final int OBJECTS_FILE = 1;
+	private static final int BUILDINGS_FILE = 13;
 
 	private static final int TREE_TYPES = 7;
 
@@ -101,10 +102,15 @@ public class MapObjectDrawer {
 	private static final int SMALL_GROWING_TREE = 22;
 
 	private static final int CORN = 23;
-
 	private static final int CORN_GROW_STEPS = 7;
-
 	private static final int CORN_DEAD_STEP = 8;
+
+	private static final int WINE = 25;
+	private static final int WINE_GROW_STEPS = 3;
+	private static final int WINE_DEAD_STEP = 0;
+
+	private static final int WINE_BOWL_SEQUENCE = 46;
+	private static final int WINE_BOWL_IMAGES = 9;
 
 	private static final int WAVES = 26;
 
@@ -195,13 +201,25 @@ public class MapObjectDrawer {
 			case CORN_GROWING:
 				drawGrowingCorn(x, y, object, color);
 				break;
-
 			case CORN_ADULT:
 				drawCorn(x, y, color);
 				break;
-
 			case CORN_DEAD:
 				drawDeadCorn(x, y, color);
+				break;
+
+			case WINE_GROWING:
+				drawGrowingWine(x, y, object, color);
+				break;
+			case WINE_HARVESTABLE:
+				drawHarvestableWine(x, y, color);
+				break;
+			case WINE_DEAD:
+				drawDeadWine(x, y, color);
+				break;
+
+			case WINE_BOWL:
+				drawWineBowl(x, y, object, color);
 				break;
 
 			case WAVES:
@@ -224,47 +242,47 @@ public class MapObjectDrawer {
 				break;
 
 			case FOUND_COAL:
-				drawByProgress(x, y, FILE, 94, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 94, object.getStateProgress(),
 						color);
 				break;
 
 			case FOUND_GEMSTONE:
-				drawByProgress(x, y, FILE, 95, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 95, object.getStateProgress(),
 						color);
 				break;
 
 			case FOUND_GOLD:
-				drawByProgress(x, y, FILE, 96, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 96, object.getStateProgress(),
 						color);
 				break;
 
 			case FOUND_IRON:
-				drawByProgress(x, y, FILE, 97, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 97, object.getStateProgress(),
 						color);
 				break;
 
 			case FOUND_BRIMSTONE:
-				drawByProgress(x, y, FILE, 98, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 98, object.getStateProgress(),
 						color);
 				break;
 
 			case FOUND_NOTHING:
-				drawByProgress(x, y, FILE, 99, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 99, object.getStateProgress(),
 						color);
 				break;
 
 			case BUILDINGSITE_SIGN:
-				drawByProgress(x, y, FILE, 93, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 93, object.getStateProgress(),
 						color);
 				break;
 
 			case BUILDINGSITE_POST:
-				drawByProgress(x, y, FILE, 92, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 92, object.getStateProgress(),
 						color);
 				break;
 
 			case WORKAREA_MARK:
-				drawByProgress(x, y, FILE, 91, object.getStateProgress(),
+				drawByProgress(x, y, OBJECTS_FILE, 91, object.getStateProgress(),
 						color);
 				break;
 
@@ -568,7 +586,7 @@ public class MapObjectDrawer {
 			iColor &= 0x7fffffff;
 		}
 		Image image =
-				this.imageProvider.getSettlerSequence(FILE, sequence)
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, sequence)
 						.getImageSafe(index);
 		image.drawAt(context.getGl(), context.getDrawBuffer(), x, betweenTilesY
 				+ 20 * progress * (1 - progress) + 20, iColor);
@@ -579,14 +597,14 @@ public class MapObjectDrawer {
 
 	private void drawStones(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE, STONE);
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, STONE);
 		int stones = (int) (seq.length() - object.getStateProgress() - 1);
 		draw(seq.getImageSafe(stones), x, y, color);
 	}
 
 	private void drawWaves(int x, int y, float color) {
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE, WAVES);
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, WAVES);
 		int len = seq.length();
 		int step = (animationStep / 2 + x / 2 + y / 2) % len;
 		if (step < len) {
@@ -594,23 +612,46 @@ public class MapObjectDrawer {
 		}
 	}
 
-	private void drawDeadCorn(int x, int y, float color) {
-		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE, CORN);
-		draw(seq.getImageSafe(CORN_DEAD_STEP), x, y, color);
-	}
-
 	private void drawGrowingCorn(int x, int y, IMapObject object, float color) {
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE, CORN);
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, CORN);
 		int step = (int) (object.getStateProgress() * CORN_GROW_STEPS);
 		draw(seq.getImageSafe(step), x, y, color);
 	}
 
 	private void drawCorn(int x, int y, float color) {
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE, CORN);
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, CORN);
 		int step = CORN_GROW_STEPS;
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawDeadCorn(int x, int y, float color) {
+		Sequence<? extends Image> seq =
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, CORN);
+		draw(seq.getImageSafe(CORN_DEAD_STEP), x, y, color);
+	}
+
+	private void drawGrowingWine(int x, int y, IMapObject object, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WINE);
+		int step = (int) (object.getStateProgress() * WINE_GROW_STEPS);
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawHarvestableWine(int x, int y, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WINE);
+		int step = WINE_GROW_STEPS;
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawDeadWine(int x, int y, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(OBJECTS_FILE, WINE);
+		draw(seq.getImageSafe(WINE_DEAD_STEP), x, y, color);
+	}
+
+	private void drawWineBowl(int x, int y, IMapObject object, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(BUILDINGS_FILE, WINE_BOWL_SEQUENCE);
+		int step = (int) (object.getStateProgress() * (WINE_BOWL_IMAGES - 1));
 		draw(seq.getImageSafe(step), x, y, color);
 	}
 
@@ -618,13 +659,13 @@ public class MapObjectDrawer {
 		Image image;
 		if (progress < 0.33) {
 			Sequence<? extends Image> seq =
-					this.imageProvider.getSettlerSequence(FILE,
+					this.imageProvider.getSettlerSequence(OBJECTS_FILE,
 							SMALL_GROWING_TREE);
 			image = seq.getImageSafe(0);
 		} else {
 			int treeType = getTreeType(x, y);
 			Sequence<? extends Image> seq =
-					this.imageProvider.getSettlerSequence(FILE,
+					this.imageProvider.getSettlerSequence(OBJECTS_FILE,
 							TREE_CHANGING_SEQUENCES[treeType]);
 			if (progress < 0.66) {
 				image = seq.getImageSafe(TREE_SMALL);
@@ -662,7 +703,7 @@ public class MapObjectDrawer {
 		}
 
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE,
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE,
 						TREE_CHANGING_SEQUENCES[treeType]);
 		draw(seq.getImageSafe(imageStep), x, y, color);
 	}
@@ -670,7 +711,7 @@ public class MapObjectDrawer {
 	private void drawTree(int x, int y, float color) {
 		int treeType = getTreeType(x, y);
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE,
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE,
 						TREE_SEQUENCES[treeType]);
 
 		int step = getAnimationStep(x, y) % seq.length();
@@ -761,7 +802,7 @@ public class MapObjectDrawer {
 		int stackIndex = material.getStackIndex();
 
 		Sequence<? extends Image> seq =
-				this.imageProvider.getSettlerSequence(FILE, stackIndex);
+				this.imageProvider.getSettlerSequence(OBJECTS_FILE, stackIndex);
 		draw(seq.getImageSafe(count - 1), x, y, color);
 	}
 

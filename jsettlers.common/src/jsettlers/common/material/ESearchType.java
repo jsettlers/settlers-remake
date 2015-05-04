@@ -44,6 +44,9 @@ public enum ESearchType {
 
 	CUTTABLE_CORN,
 
+	PLANTABLE_WINE,
+	HARVESTABLE_WINE,
+
 	FISHABLE,
 
 	/**
