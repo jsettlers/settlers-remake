@@ -106,7 +106,7 @@ public class MapObjectDrawer {
 	private static final int CORN_DEAD_STEP = 8;
 
 	private static final int WINE = 25;
-	private static final int WINE_GROW_STEPS = 4;
+	private static final int WINE_GROW_STEPS = 3;
 	private static final int WINE_DEAD_STEP = 0;
 
 	private static final int WINE_BOWL_SEQUENCE = 46;

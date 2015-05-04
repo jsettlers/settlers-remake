@@ -99,44 +99,30 @@
     <!-- 1: harvest some wine -->
     <job name="goHarvesting1"	type="SET_MATERIAL"		successjob="goHarvesting2"	failjob="gohome"		material="BASKET"/>
     <job name="goHarvesting2"	type="SHOW"				successjob="search1"		failjob="start"			dx="-1" dy="2" direction="SOUTH_WEST"/>
-    <job name="search1"  		type="FOLLOW_SEARCHED"	successjob="cutlook_at_NE"	failjob="hide"			/>
+    <job name="search1"  		type="FOLLOW_SEARCHED"	successjob="look_at"		failjob="hide"			/>
    
-    <job name="cutlook_at_NE"	type="LOOK_AT"			successjob="cut1"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="cut1"			type="PLAY_ACTION1"		successjob="cutlook_at_SW"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_SW"	type="LOOK_AT"			successjob="cut2"			failjob="gohome"		direction="SOUTH_WEST"/>
-    <job name="cut2"			type="PLAY_ACTION1"		successjob="cutlook_at_W"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_W" 	type="LOOK_AT"			successjob="cut3"			failjob="gohome"		direction="WEST"/>
-    <job name="cut3"			type="PLAY_ACTION1"		successjob="cutlook_at_NW"	failjob="gohome"		time="1.0"/>
-    <job name="cutlook_at_NW" 	type="LOOK_AT"			successjob="cut4"			failjob="gohome"		direction="NORTH_WEST"/>
-    <job name="cut4"			type="PLAY_ACTION1"		successjob="execute1"		failjob="gohome"		time="1.0"/>
-    
-    <job name="execute1"		type="EXECUTE"			successjob="look_at"		failjob="gohome"		search="HARVESTABLE_WINE"/>
-    <job name="look_at"			type="LOOK_AT"			successjob="take"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="take" 			type="TAKE" 			successjob="changeMat2" 	failjob="gohome"		material="WINE"/>
-	<job name="changeMat2"	 	type="SET_MATERIAL" 	successjob="goback" 		failjob="gohome" 		material="WINE"/>
+ 
+    <job name="look_at"			type="LOOK_AT"			successjob="take"			failjob="gohome"		direction="NORTH_WEST"/>
+    <job name="take" 			type="TAKE" 			successjob="execute1"	 	failjob="gohome"		material="NO_MATERIAL"/>
+    <job name="execute1"		type="EXECUTE"			successjob="goback"			failjob="gohome"		search="HARVESTABLE_WINE"/>
 	<job name="goback" 			type="GO_TO" 			successjob="produceWine1" 	failjob="gohome"		dx="-1" dy="2"/>
 	
 	<job name="produceWine1"	type="HIDE" 			successjob="produceWine2" 	failjob="hide" 			/>
 	<job name="produceWine2"	type="WAIT" 			successjob="produceWine3" 	failjob="gohome" 		time="3.0"/>
-	<job name="produceWine3"	type="SHOW" 			successjob="goToDrop"		failjob="gohome" 		dx="-1" dy="2" direction="SOUTH_WEST"/>
+	<job name="produceWine3" 	type="SET_MATERIAL"		successjob="produceWine4"	failjob="gohome" 		material="WINE"/>
+	<job name="produceWine4"	type="SHOW" 			successjob="goToDrop"		failjob="gohome" 		dx="-1" dy="2" direction="SOUTH_WEST"/>
 	
 	<job name="goToDrop"		type="GO_TO" 			successjob="look"			failjob="gohome" 		dx="3" dy="4"/>
 	<job name="look"			type="LOOK_AT"			successjob="drop"			failjob="gohome"		direction="NORTH_EAST"/>
 	<job name="drop" 			type="DROP" 			successjob="changeMat" 		failjob="gohome" 		material="WINE"/>
 	<job name="changeMat" 		type="SET_MATERIAL"		successjob="gohome" 		failjob="gohome" 		material="NO_MATERIAL"/>
 	
-     <!-- 2: plant a new corn -->
+     <!-- 2: plant a new vine -->
     <job name="goPlanting1"		type="SET_MATERIAL"		successjob="goPlantingShow"	failjob="gohome"		material="PLANT"/>
     <job name="goPlantingShow"	type="SHOW"				successjob="search2"		failjob="hide"			dx="-1" dy="2" direction="SOUTH_WEST"/>
-    <job name="search2"			type="FOLLOW_SEARCHED"	successjob="seedlook_at_NE"	failjob="gohome"		/>
-    <job name="seedlook_at_NE"	type="LOOK_AT"			successjob="seed1"			failjob="gohome"		direction="NORTH_EAST"/>
-    <job name="seed1"			type="PLAY_ACTION2"		successjob="seedlook_at_SE"	failjob="gohome"		time="1.4"/>
-	<job name="seedlook_at_SE"	type="LOOK_AT"			successjob="seed2"			failjob="gohome"		direction="SOUTH_EAST"/>
-    <job name="seed2"			type="PLAY_ACTION2"		successjob="seedlook_at_SW"	failjob="gohome"		time="1.4"/>
-	<job name="seedlook_at_SW"	type="LOOK_AT"			successjob="seed3"			failjob="gohome"		direction="SOUTH_WEST"/>
-    <job name="seed3"			type="PLAY_ACTION2"		successjob="seedlook_at_NW"	failjob="gohome"		time="1.4"/>
-	<job name="seedlook_at_NW"	type="LOOK_AT"			successjob="seed4"			failjob="gohome"		direction="NORTH_WEST"/>
-    <job name="seed4"			type="PLAY_ACTION2"		successjob="execute2"		failjob="gohome"		time="1.4"/>
+    <job name="search2"			type="FOLLOW_SEARCHED"	successjob="seedlook_at_SW"	failjob="gohome"		/>
+    <job name="seedlook_at_SW"	type="LOOK_AT"			successjob="seed1"			failjob="gohome"		direction="SOUTH_WEST"/>
+    <job name="seed1"			type="PLAY_ACTION1"		successjob="execute2"		failjob="gohome"		time="4"/>
 	<job name="execute2"		type="EXECUTE"			successjob="no_mat2"		failjob="gohome"		search="PLANTABLE_WINE"/>
  	<job name="no_mat2" 		type="SET_MATERIAL"		successjob="gohome" 		failjob="gohome" 		material="NO_MATERIAL"/>
  	
