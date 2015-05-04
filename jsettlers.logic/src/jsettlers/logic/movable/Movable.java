@@ -287,9 +287,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private void initGoingSingleStep(ShortPoint2D position) {
-		movableAction = EAction.WALKING;
-		animationStartTime = MatchConstants.clock.getTime();
-		animationDuration = Constants.MOVABLE_STEP_DURATION;
+		playAnimation(EAction.WALKING, Constants.MOVABLE_STEP_DURATION);
 		grid.leavePosition(this.position, this);
 		grid.enterPosition(position, this, false);
 		this.position = position;
@@ -462,11 +460,15 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	final void playAction(EAction movableAction, float duration) {
 		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
 
-		this.movableAction = movableAction;
+		playAnimation(movableAction, (short) (duration * 1000));
 		setState(EMovableState.PLAYING_ACTION);
-		this.animationStartTime = MatchConstants.clock.getTime();
-		this.animationDuration = (short) (duration * 1000);
 		this.soundPlayed = false;
+	}
+
+	private void playAnimation(EAction movableAction, short duration) {
+		this.animationStartTime = MatchConstants.clock.getTime();
+		this.animationDuration = duration;
+		this.movableAction = movableAction;
 	}
 
 	/**
@@ -477,10 +479,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	final void wait(short sleepTime) {
 		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
 
-		this.animationStartTime = MatchConstants.clock.getTime();
-		this.animationDuration = sleepTime;
-		this.movableAction = EAction.NO_ACTION;
-		this.state = EMovableState.WAITING;
+		playAnimation(EAction.NO_ACTION, sleepTime);
+		setState(EMovableState.WAITING);
 	}
 
 	/**
@@ -857,6 +857,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		DOING_NOTHING,
 		GOING_SINGLE_STEP,
 		WAITING,
+
+		TAKE,
+		DROP,
 
 		/**
 		 * This state may only be used for debugging reasons!
