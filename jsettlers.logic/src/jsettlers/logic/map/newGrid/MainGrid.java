@@ -573,7 +573,18 @@ public final class MainGrid implements Serializable {
 		private boolean isWinePlantable(int x, int y) {
 			return !flagsGrid.isProtected(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
-					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH);
+					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)
+					&& hasMinimumHeightDifferenceOf(x, y, 2);
+		}
+
+		private boolean hasMinimumHeightDifferenceOf(int x, int y, int minimumHeightDifference) {
+			byte height = landscapeGrid.getHeightAt(x, y);
+			for (ShortPoint2D pos : new MapNeighboursArea((short) x, (short) y)) {
+				if (Math.abs(height - landscapeGrid.getHeightAt(pos.x, pos.y)) >= minimumHeightDifference) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
