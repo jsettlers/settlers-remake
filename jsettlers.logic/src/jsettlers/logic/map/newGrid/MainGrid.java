@@ -526,9 +526,7 @@ public final class MainGrid implements Serializable {
 
 		private final boolean hasNeighbourLandscape(int x, int y, ELandscapeType landscape) {
 			for (ShortPoint2D pos : new MapNeighboursArea(new ShortPoint2D(x, y))) {
-				short currX = pos.x;
-				short currY = pos.y;
-				if (isInBounds(currX, currY) && landscapeGrid.getLandscapeTypeAt(currX, currY) == landscape) {
+				if (isInBounds(pos.x, pos.y) && landscapeGrid.getLandscapeTypeAt(pos.x, pos.y) == landscape) {
 					return true;
 				}
 			}
@@ -561,12 +559,11 @@ public final class MainGrid implements Serializable {
 		}
 
 		private final boolean isCornPlantable(int x, int y) {
-			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
+			return !flagsGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
 					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_GROWING)
-					&& areAllNeighborsOneOf(x, y, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
 		private final boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
@@ -574,30 +571,9 @@ public final class MainGrid implements Serializable {
 		}
 
 		private boolean isWinePlantable(int x, int y) {
-			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
+			return !flagsGrid.isProtected(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
-					&& areAllNeighborsOneOf(x, y, 1, ELandscapeType.GRASS, ELandscapeType.EARTH);
-		}
-
-		private boolean areAllNeighborsOneOf(int x, int y, int radius, ELandscapeType... types) {
-			for (ShortPoint2D currPos : new HexGridArea(x, y, 1, radius)) {
-				boolean found = false;
-
-				ELandscapeType neighborType = landscapeGrid.getLandscapeTypeAt(currPos.x, currPos.y);
-				for (ELandscapeType currType : types) {
-					if (neighborType == currType) {
-						found = true;
-						break;
-					}
-				}
-
-				if (!found) {
-					return false;
-				}
-			}
-
-			return true;
+					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
 		@Override
