@@ -331,11 +331,20 @@ BEARER, NO_ACTION, WINE, EAST       = 10, 54, 48, 1
 BEARER, NO_ACTION, WINE, SOUTH_EAST = 10, 54, 60, 1
 
 BEARER, TAKE, *, SOUTH_WEST = 10, 48, 0, 9
-BEARER, TAKE, *, WEST       = 10, 48, 0, 9
-BEARER, TAKE, *, NORTH_WEST = 10, 48, 0, 9
-BEARER, TAKE, *, NORTH_EAST = 10, 48, 0, 9
-BEARER, TAKE, *, EAST       = 10, 48, 0, 9
-BEARER, TAKE, *, SOUTH_EAST = 10, 48, 0, 9
+BEARER, TAKE, *, WEST       = 10, 49, 0, 9
+BEARER, TAKE, *, NORTH_WEST = 10, 50, 0, 9
+BEARER, TAKE, *, NORTH_EAST = 10, 51, 0, 9
+BEARER, TAKE, *, EAST       = 10, 52, 0, 9
+BEARER, TAKE, *, SOUTH_EAST = 10, 53, 0, 9
+
+# animation is available if the bears something in his hands (in the front)
+# throw with a sweep to the right of the settler (may be ore into the furnace...)
+BEARER, THROW_TO_RIGHT, *, SOUTH_WEST = 10, 48, 9, 9
+BEARER, THROW_TO_RIGHT, *, WEST       = 10, 49, 9, 9
+BEARER, THROW_TO_RIGHT, *, NORTH_WEST = 10, 50, 9, 9
+BEARER, THROW_TO_RIGHT, *, NORTH_EAST = 10, 51, 9, 9
+BEARER, THROW_TO_RIGHT, *, EAST       = 10, 52, 9, 9
+BEARER, THROW_TO_RIGHT, *, SOUTH_EAST = 10, 53, 9, 9
 
 BEARER, DROP, *, SOUTH_WEST = 10, 25, 0, 4
 BEARER, DROP, *, WEST       = 10, 25, 4, 4
