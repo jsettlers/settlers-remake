@@ -4,3 +4,14 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
+
+
+env:
+  - TARGET=check
+  - TARGET=buildDedicatedServer
+  - TARGET=:jsettlers.main.swing:assembleMainDist
+  - TARGET=:jsettlers.mapcreator:assembleMainDist
+  - TARGET=:jsettlers.network:assembleMainDist
+# - TARGET=runAutosimTests
+
+script: ./gradlew $TARGET
