@@ -2,6 +2,7 @@ bin
 gen
 target
 logs
+.gradle
 
 /.metadata
 /.recommenders
