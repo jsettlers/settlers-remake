@@ -22,6 +22,6 @@ logs
 *.ipr
 *.iws
 .idea
-#.project
-#.classpath
-#.settings
+.project
+.classpath
+.settings

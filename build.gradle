@@ -1,7 +1,42 @@
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.stehno:gradle-natives:0.2.3"
+  }
+}
+
 
 ext {
   gradleVersion = '2.3'
   jogampVer   = '2.2.1'
+  joglJars = [
+      "jogl-all-${jogampVer}-natives-linux-i586",
+      "jogl-all-${jogampVer}-natives-linux-amd64",
+      "gluegen-rt-${jogampVer}-natives-android-armv6.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-amd64.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-armv6.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-armv6hf.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-i586.jar",
+      "gluegen-rt-${jogampVer}-natives-macosx-universal.jar",
+      "gluegen-rt-${jogampVer}-natives-solaris-amd64.jar",
+      "gluegen-rt-${jogampVer}-natives-solaris-i586.jar",
+      "gluegen-rt-${jogampVer}-natives-windows-amd64.jar",
+      "gluegen-rt-${jogampVer}-natives-windows-i586.jar",
+      "jogl-all-${jogampVer}-natives-android-armv6.jar",
+      "jogl-all-${jogampVer}-natives-linux-amd64.jar",
+      "jogl-all-${jogampVer}-natives-linux-armv6.jar",
+      "jogl-all-${jogampVer}-natives-linux-armv6hf.jar",
+      "jogl-all-${jogampVer}-natives-linux-i586.jar",
+      "jogl-all-${jogampVer}-natives-macosx-universal.jar",
+      "jogl-all-${jogampVer}-natives-solaris-amd64.jar",
+      "jogl-all-${jogampVer}-natives-solaris-i586.jar",
+      "jogl-all-${jogampVer}-natives-windows-amd64.jar",
+      "jogl-all-${jogampVer}-natives-windows-i586.jar",
+  ]
 }
 
 subprojects { subproject ->
@@ -14,9 +49,8 @@ subprojects { subproject ->
   sourceSets.test.java.srcDirs = ["test/"]
 
   dependencies {
-
-//    testCompile "junit:junit:4.11"
-//    testCompile "hamcrest:hamcrest:1.3"
+    testCompile "junit:junit:4.11"
+    testCompile "hamcrest:hamcrest:1.3"
   }
 
   compileJava {
@@ -31,17 +65,21 @@ subprojects { subproject ->
 
   repositories {
     jcenter()
-    flatDir(dirs: "${rootProject.projectDir}/jogamp")
+//    flatDir(dirs: "${rootProject.projectDir}/jogamp")
   }
 }
 
 project('jsettlers.main.swing') {
   apply plugin: 'application'
+  apply plugin: "com.stehno.natives"
+
+  natives {
+    jars = joglJars
+  }
 
   dependencies {
     compile project(":jsettlers.logic")
     compile project(":jsettlers.graphics.swing")
-
   }
 
   jar {
@@ -110,43 +148,16 @@ project('jsettlers.buildingcreator') {
 }
 
 project('go.graphics.nativegl') {
-  configurations {
-    natives
-  }
+  apply plugin: "com.stehno.natives"
 
-  sourceSets {
-    main {
-      compileClasspath += configurations.natives
-    }
-    test {
-      compileClasspath += configurations.natives
-    }
+  natives {
+    jars = joglJars
   }
-
-//TODO,
-// complete the pulling in of the native libs somehow.
-// build the JNI/ C stuff and include
 
   dependencies {
     compile project(":go.graphics")
-
-
-
-//    compile fileTree(dir: 'libs', include: '*.jar')
-//    runtime fileTree(dir: 'libs', include: '*.jar')
-//    compile ":jogl-all:$jogampVer"
-//    compile ":gluegen-rt:$jogampVer"
-//    runtime ":jogl-all:$jogampVer:natives-linux-i586", ":jogl-all:$jogampVer:natives-linux-amd64",
-//        ":jogl-all:$jogampVer:natives-windows-i586", ":jogl-all:$jogampVer:natives-windows-amd64",
-//        ":jogl-all:$jogampVer:natives-macosx-universal"
-//    runtime ":gluegen-rt:$jogampVer:natives-linux-i586", ":gluegen-rt:$jogampVer:natives-linux-amd64",
-//        ":gluegen-rt:$jogampVer:natives-windows-i586", ":gluegen-rt:$jogampVer:natives-windows-amd64",
-//        ":gluegen-rt:$jogampVer:natives-macosx-universal"
-//
-//    compile ":gluegen-rt:$jogampVer:natives-linux-i586", ":gluegen-rt:$jogampVer:natives-linux-amd64",
-//        ":gluegen-rt:$jogampVer:natives-windows-i586", ":gluegen-rt:$jogampVer:natives-windows-amd64",
-//        ":gluegen-rt:$jogampVer:natives-macosx-universal"
-
+    compile "org.jogamp.gluegen:gluegen-rt-main:${jogampVer}"
+    compile "org.jogamp.jogl:jogl-all-main:${jogampVer}"
   }
 
 //  task classpath << {
@@ -163,7 +174,7 @@ project('go.graphics.nativegl') {
 
 project('go.graphics.swing') {
   dependencies {
-    compile project(":go.graphics")
+    compile project(":go.graphics.nativegl")
 
     compile fileTree(dir: 'libs', include: '*.jar')
     runtime fileTree(dir: 'libs', include: '*.jar')
@@ -203,5 +214,5 @@ project('jsettlers.tests') {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.4-rc-1'
 }
