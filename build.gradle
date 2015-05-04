@@ -108,10 +108,11 @@ project('jsettlers.mapcreator') {
 }
 
 project('jsettlers.common') {
-  sourceSets.main.java.srcDirs = ["src","gen","texture"]
+  sourceSets.main.java.srcDirs = ["src","gen"]
 }
 
 project('jsettlers.graphics') {
+  sourceSets.main.java.srcDirs = ["src","texture"]
   dependencies {
     compile project(":jsettlers.common")
     compile project(":go.graphics.swing")
