@@ -101,10 +101,12 @@ public class MapObjectDrawer {
 	private static final int SMALL_GROWING_TREE = 22;
 
 	private static final int CORN = 23;
-
 	private static final int CORN_GROW_STEPS = 7;
-
 	private static final int CORN_DEAD_STEP = 8;
+
+	private static final int WINE = 25;
+	private static final int WINE_GROW_STEPS = 4;
+	private static final int WINE_DEAD_STEP = 0;
 
 	private static final int WAVES = 26;
 
@@ -193,18 +195,23 @@ public class MapObjectDrawer {
 				break;
 
 			case CORN_GROWING:
-			case WINE_GROWING: // TODO: add drawing of growing wine
 				drawGrowingCorn(x, y, object, color);
 				break;
-
 			case CORN_ADULT:
-			case WINE_HARVESTABLE: // TODO: add drawing of harvestable wine
 				drawCorn(x, y, color);
 				break;
-
 			case CORN_DEAD:
-			case WINE_DEAD: // TODO: add drawing of dead wine
 				drawDeadCorn(x, y, color);
+				break;
+
+			case WINE_GROWING:
+				drawGrowingWine(x, y, object, color);
+				break;
+			case WINE_HARVESTABLE:
+				drawHarvestableWine(x, y, color);
+				break;
+			case WINE_DEAD:
+				drawDeadWine(x, y, color);
 				break;
 
 			case WAVES:
@@ -614,6 +621,23 @@ public class MapObjectDrawer {
 		Sequence<? extends Image> seq =
 				this.imageProvider.getSettlerSequence(FILE, CORN);
 		int step = CORN_GROW_STEPS;
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawDeadWine(int x, int y, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(FILE, WINE);
+		draw(seq.getImageSafe(WINE_DEAD_STEP), x, y, color);
+	}
+
+	private void drawGrowingWine(int x, int y, IMapObject object, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(FILE, WINE);
+		int step = (int) (object.getStateProgress() * WINE_GROW_STEPS);
+		draw(seq.getImageSafe(step), x, y, color);
+	}
+
+	private void drawHarvestableWine(int x, int y, float color) {
+		Sequence<? extends Image> seq = this.imageProvider.getSettlerSequence(FILE, WINE);
+		int step = WINE_GROW_STEPS;
 		draw(seq.getImageSafe(step), x, y, color);
 	}
 
