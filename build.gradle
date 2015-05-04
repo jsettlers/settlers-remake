@@ -52,6 +52,10 @@ subprojects { subproject ->
     testCompile "junit:junit:4.11"
   }
 
+  repositories {
+    jcenter()
+  }
+
   compileJava {
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
