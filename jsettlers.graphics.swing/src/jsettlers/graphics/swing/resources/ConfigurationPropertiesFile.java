@@ -38,7 +38,7 @@ public class ConfigurationPropertiesFile {
 		this.configFile = file;
 
 		Properties defaultProperties = new Properties();
-		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
+		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("/defaultConfig.prp"));
 		this.properties = new Properties(defaultProperties);
 
 		if (file.exists()) {
