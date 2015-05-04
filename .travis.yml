@@ -8,7 +8,6 @@ jdk:
 
 env:
   - TARGET=check
-  - TARGET=buildDedicatedServer
   - TARGET=:jsettlers.main.swing:assembleMainDist
   - TARGET=:jsettlers.mapcreator:assembleMainDist
   - TARGET=:jsettlers.network:assembleMainDist
