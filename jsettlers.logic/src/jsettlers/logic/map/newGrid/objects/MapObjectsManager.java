@@ -37,6 +37,7 @@ import jsettlers.logic.objects.RessourceSignMapObject;
 import jsettlers.logic.objects.SelfDeletingMapObject;
 import jsettlers.logic.objects.SoundableSelfDeletingObject;
 import jsettlers.logic.objects.StandardMapObject;
+import jsettlers.logic.objects.WineBowlMapObject;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.building.BuildingWorkAreaMarkObject;
 import jsettlers.logic.objects.building.ConstructionMarkObject;
@@ -48,6 +49,7 @@ import jsettlers.logic.objects.growing.tree.Tree;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.objects.stone.Stone;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.stack.IStackSizeSupplier;
 import jsettlers.logic.timer.IScheduledTimerable;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -307,6 +309,10 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	public void addBuildingWorkAreaObject(ShortPoint2D pos, float radius) {
 		addMapObject(pos, new BuildingWorkAreaMarkObject(radius));
+	}
+
+	public void addWineBowl(ShortPoint2D pos, IStackSizeSupplier wineStack) {
+		addMapObject(pos, new WineBowlMapObject(wineStack));
 	}
 
 	public void addSelfDeletingMapObject(ShortPoint2D pos, EMapObjectType mapObjectType, float duration, Player player) {

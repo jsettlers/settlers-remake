@@ -83,7 +83,8 @@
 	<blocked dx="-2" dy="4" block="false" />
 	<blocked dx="-3" dy="3" block="false" />
 	
-	<door dx="0" dy="0" />
+	<!-- door position is used as position for the wine bowl map object -->
+	<door dx="3" dy="2" />
 	
 	<stack dx="1" dy="6" material="PLANK" buildrequired="5" />
 	<stack dx="3" dy="7" material="STONE" buildrequired="8" />

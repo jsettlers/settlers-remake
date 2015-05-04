@@ -33,8 +33,8 @@ import jsettlers.logic.stack.RequestStack;
 public final class TempleBuilding extends Building {
 	private static final long serialVersionUID = 1L;
 
-	private static final int CHECK_DELAY = 500;
-	private static final int CONSUME_DELAY = 10000;
+	private static final int CHECK_DELAY = 1500;
+	private static final int CONSUME_DELAY = 30000;
 
 	public TempleBuilding(Player player) {
 		super(EBuildingType.TEMPLE, player);
@@ -51,11 +51,7 @@ public final class TempleBuilding extends Building {
 
 	@Override
 	protected int subTimerEvent() {
-		List<RequestStack> stacks = super.getStacks();
-		assert stacks.size() == 1;
-
-		RequestStack wineStack = stacks.get(0);
-		assert wineStack.getMaterialType() == EMaterialType.WINE;
+		RequestStack wineStack = getWineStack();
 
 		if (wineStack.hasMaterial()) {
 			wineStack.pop();
@@ -65,8 +61,18 @@ public final class TempleBuilding extends Building {
 		}
 	}
 
+	private RequestStack getWineStack() {
+		List<RequestStack> stacks = super.getStacks();
+		assert stacks.size() == 1;
+
+		RequestStack wineStack = stacks.get(0);
+		assert wineStack.getMaterialType() == EMaterialType.WINE;
+		return wineStack;
+	}
+
 	@Override
 	protected int constructionFinishedEvent() {
+		super.getGrid().getMapObjectsManager().addWineBowl(super.getDoor(), getWineStack());
 		return CHECK_DELAY;
 	}
 
@@ -75,4 +81,9 @@ public final class TempleBuilding extends Building {
 		return EMapObjectType.FLAG_DOOR;
 	}
 
+	@Override
+	protected void killedEvent() {
+		ShortPoint2D door = super.getDoor();
+		super.getGrid().getMapObjectsManager().removeMapObjectType(door.x, door.y, EMapObjectType.WINE_BOWL);
+	}
 }
