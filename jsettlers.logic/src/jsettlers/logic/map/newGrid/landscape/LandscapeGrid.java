@@ -23,6 +23,7 @@ import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IGraphicsBackgroundListener;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.newGrid.flags.IProtectedProvider;
@@ -107,6 +108,25 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final ELandscapeType getLandscapeTypeAt(int x, int y) {
 		return ELandscapeType.values[landscapeGrid[x + y * width]];
+	}
+
+	public boolean isLandscapeOf(int x, int y, ELandscapeType... landscapeTypes) {
+		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);
+		for (ELandscapeType curr : landscapeTypes) {
+			if (landscapeType == curr) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean areAllNeighborsOf(int x, int y, int minRadius, int maxRadius, ELandscapeType... landscapeTypes) {
+		for (ShortPoint2D currPos : new HexGridArea(x, y, minRadius, maxRadius)) {
+			if (!isLandscapeOf(currPos.x, currPos.y, landscapeTypes)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -210,10 +230,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	 * @param y
 	 */
 	private void flatten(int x, int y) {
-		if (getLandscapeTypeAt((short) x, (short) y).isGrass() && getLandscapeTypeAt((short) x, (short) (y - 1)).isGrass()
-				&& getLandscapeTypeAt((short) (x - 1), (short) (y - 1)).isGrass() && getLandscapeTypeAt((short) (x - 1), (short) y).isGrass()
-				&& getLandscapeTypeAt((short) x, (short) (y + 1)).isGrass() && getLandscapeTypeAt((short) (x + 1), (short) (y + 1)).isGrass()
-				&& getLandscapeTypeAt((short) (x + 1), (short) y).isGrass()) {
+		if (areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.FLATTENED)) {
 			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
 		}
 	}

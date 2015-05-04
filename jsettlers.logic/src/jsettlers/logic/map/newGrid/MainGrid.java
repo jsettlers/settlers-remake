@@ -426,23 +426,26 @@ public final class MainGrid implements Serializable {
 			case VALID_FREE_POSITION:
 				return isValidPosition(pathCalculable, x, y) && movableGrid.hasNoMovableAt(x, y);
 
-			case CUTTABLE_TREE:
-				return isInBounds((short) (x - 1), (short) (y - 1))
-						&& objectsGrid.hasCuttableObject((short) (x - 1), (short) (y - 1), EMapObjectType.TREE_ADULT)
-						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculable) && !isMarked(x, y);
-
 			case PLANTABLE_TREE:
 				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
-						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
+						&& hasSamePlayer(x, y + 1, pathCalculable) && !isMarked(x, y);
+			case CUTTABLE_TREE:
+				return isInBounds(x - 1, y - 1)
+						&& isMapObjectCuttable(x - 1, y - 1, EMapObjectType.TREE_ADULT)
+						&& hasSamePlayer(x - 1, y - 1, pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_CORN:
-				return !isMarked(x, y) && !flagsGrid.isProtected(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
-
+				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
 			case CUTTABLE_CORN:
-				return isCornCuttable(x, y) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+				return isMapObjectCuttable(x, y, EMapObjectType.CORN_ADULT) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
+
+			case PLANTABLE_WINE:
+				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isWinePlantable(x, y);
+			case HARVESTABLE_WINE:
+				return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case CUTTABLE_STONE:
-				return y + 1 < height && x - 1 < width && objectsGrid.hasCuttableObject((short) (x - 1), (short) (y + 1), EMapObjectType.STONE)
+				return y + 1 < height && x - 1 < width && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
 						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case ENEMY: {
@@ -483,9 +486,7 @@ public final class MainGrid implements Serializable {
 			return x % 2 == 0
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
-					&& !(objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_COAL)
-							|| objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_IRON) || objectsGrid.hasMapObjectType(x, y,
-							EMapObjectType.FOUND_GOLD));
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_COAL, EMapObjectType.FOUND_IRON, EMapObjectType.FOUND_GOLD);
 		}
 
 		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
@@ -525,9 +526,7 @@ public final class MainGrid implements Serializable {
 
 		private final boolean hasNeighbourLandscape(int x, int y, ELandscapeType landscape) {
 			for (ShortPoint2D pos : new MapNeighboursArea(new ShortPoint2D(x, y))) {
-				short currX = pos.x;
-				short currY = pos.y;
-				if (isInBounds(currX, currY) && landscapeGrid.getLandscapeTypeAt(currX, currY) == landscape) {
+				if (isInBounds(pos.x, pos.y) && landscapeGrid.getLandscapeTypeAt(pos.x, pos.y) == landscape) {
 					return true;
 				}
 			}
@@ -560,38 +559,44 @@ public final class MainGrid implements Serializable {
 		}
 
 		private final boolean isCornPlantable(int x, int y) {
-			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
-			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
+			return !flagsGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_ADULT)
-					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT)
-					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING)
-					&& areAllNeighborsOneOf(x, y, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
+					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_GROWING)
+					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
-		private boolean areAllNeighborsOneOf(int x, int y, int radius, ELandscapeType... types) {
-			for (ShortPoint2D currPos : new HexGridArea(x, y, 1, radius)) {
-				boolean found = false;
+		private final boolean isMapObjectCuttable(int x, int y, EMapObjectType type) {
+			return objectsGrid.hasCuttableObject(x, y, type);
+		}
 
-				ELandscapeType neighborType = landscapeGrid.getLandscapeTypeAt(currPos.x, currPos.y);
-				for (ELandscapeType currType : types) {
-					if (neighborType == currType) {
-						found = true;
-						break;
-					}
-				}
+		private boolean isWinePlantable(int x, int y) {
+			if (!flagsGrid.isProtected(x, y)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
+					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)) {
 
-				if (!found) {
-					return false;
+				EDirection direction = getDirectionOfMaximumHeightDifference(x, y, 2);
+				if (direction != null) { // if minimum height difference has been found
+					ShortPoint2D inDirPos = direction.getNextHexPoint(x, y);
+					ShortPoint2D invDirPos = direction.getInverseDirection().getNextHexPoint(x, y);
+
+					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
+							EMapObjectType.WINE_DEAD)
+							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
+									EMapObjectType.WINE_DEAD);
 				}
 			}
-
-			return true;
+			return false;
 		}
 
-		private final boolean isCornCuttable(int x, int y) {
-			return objectsGrid.hasCuttableObject(x, y, EMapObjectType.CORN_ADULT);
+		private EDirection getDirectionOfMaximumHeightDifference(int x, int y, int minimumHeightDifference) {
+			byte height = landscapeGrid.getHeightAt(x, y);
+			for (ShortPoint2D pos : new MapNeighboursArea((short) x, (short) y)) {
+				if (Math.abs(height - landscapeGrid.getHeightAt(pos.x, pos.y)) >= minimumHeightDifference) {
+					return EDirection.getDirection((short) x, (short) y, pos.x, pos.y);
+				}
+			}
+			return null;
 		}
 
 		@Override
@@ -1182,7 +1187,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public Path searchDijkstra(IPathCalculatable pathCalculateable, short centerX, short centerY, short radius, ESearchType searchType) {
-			return dijkstra.find(pathCalculateable, centerX, centerY, (short) 1, radius, searchType);
+			return dijkstra.find(pathCalculateable, centerX, centerY, (short) 0, radius, searchType);
 		}
 
 		@Override

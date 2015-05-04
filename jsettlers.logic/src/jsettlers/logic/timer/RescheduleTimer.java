@@ -28,9 +28,9 @@ import jsettlers.network.synchronic.timer.INetworkTimerable;
 public final class RescheduleTimer implements INetworkTimerable, Serializable {
 	private static final long serialVersionUID = -1962430988827211391L;
 
-	private static final short FUTURE_TIME = 11000;
+	private static final int FUTURE_TIME = 32000;
 	private static final short TIME_SLICE = 25; // ms
-	private static final short TIME_SLOTS = FUTURE_TIME / TIME_SLICE;
+	private static final int TIME_SLOTS = FUTURE_TIME / TIME_SLICE;
 
 	private static RescheduleTimer uniIns;
 

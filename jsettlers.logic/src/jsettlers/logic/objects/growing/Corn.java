@@ -12,69 +12,51 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.objects;
+package jsettlers.logic.objects.growing;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This is an abstract class used for growing objects.
+ * This is a Corn on the map.
  * 
  * @author Andreas Eberle
  * 
  */
-public abstract class GrowingObject extends ProgressingObject {
-	private static final long serialVersionUID = -5886720986614326428L;
+public final class Corn extends GrowingObject {
+	private static final long serialVersionUID = -7535441306083940418L;
 
-	private EMapObjectType state;
+	public static final float GROWTH_DURATION = 7 * 60;
+	public static final float DECOMPOSE_DURATION = 3 * 60;
+	public static final float REMOVE_DURATION = 2 * 60;
 
-	protected GrowingObject(ShortPoint2D pos, EMapObjectType growing) {
-		super(pos);
-
-		this.state = growing;
-		super.setDuration(getGrowthDuration());
-	}
-
-	protected abstract float getGrowthDuration();
-
-	public boolean isDead() {
-		return this.state == getDeadState();
-	}
-
-	protected abstract EMapObjectType getDeadState();
-
-	public boolean isAdult() {
-		return this.state == getAdultState();
-	}
-
-	protected abstract EMapObjectType getAdultState();
-
-	@Override
-	public boolean canBeCut() {
-		return isAdult();
+	/**
+	 * Creates a new Corn.
+	 * 
+	 * @param grid
+	 */
+	public Corn(ShortPoint2D pos) {
+		super(pos, EMapObjectType.CORN_GROWING);
 	}
 
 	@Override
-	public boolean cutOff() {
-		super.setDuration(getDecomposeDuration());
-		this.state = getDeadState();
-		return true;
-	}
-
-	protected abstract float getDecomposeDuration();
-
-	@Override
-	public EMapObjectType getObjectType() {
-		return this.state;
+	protected float getGrowthDuration() {
+		return GROWTH_DURATION;
 	}
 
 	@Override
-	protected void changeState() {
-		if (state == getAdultState()) {
-			state = getDeadState();
-		} else if (state == getDeadState()) {
-		} else {
-			state = getAdultState();
-		}
+	protected float getDecomposeDuration() {
+		return DECOMPOSE_DURATION;
 	}
+
+	@Override
+	protected EMapObjectType getDeadState() {
+		return EMapObjectType.CORN_DEAD;
+	}
+
+	@Override
+	protected EMapObjectType getAdultState() {
+		return EMapObjectType.CORN_ADULT;
+	}
+
 }

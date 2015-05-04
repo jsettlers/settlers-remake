@@ -46,22 +46,22 @@ public class BuildingBuildContent implements ContentFactory {
 			EBuildingType.DONKEY_FARM,
 			EBuildingType.WINEGROWER
 	};
-	public static final EBuildingType[] militaryBuildings =
-			new EBuildingType[] {
-					EBuildingType.TOWER,
-					EBuildingType.BIG_TOWER,
-					EBuildingType.CASTLE,
-					EBuildingType.LOOKOUT_TOWER,
-					EBuildingType.WEAPONSMITH,
-					EBuildingType.BARRACK,
-					EBuildingType.DOCKYARD,
-					EBuildingType.HOSPITAL
-			};
+	public static final EBuildingType[] militaryBuildings = new EBuildingType[] {
+			EBuildingType.TOWER,
+			EBuildingType.BIG_TOWER,
+			EBuildingType.CASTLE,
+			EBuildingType.LOOKOUT_TOWER,
+			EBuildingType.WEAPONSMITH,
+			EBuildingType.BARRACK,
+			EBuildingType.DOCKYARD,
+			EBuildingType.HOSPITAL
+	};
 	public static final EBuildingType[] socialBuildings = new EBuildingType[] {
 			EBuildingType.SMALL_LIVINGHOUSE,
 			EBuildingType.MEDIUM_LIVINGHOUSE,
 			EBuildingType.BIG_LIVINGHOUSE,
 			EBuildingType.STOCK,
+			EBuildingType.TEMPLE
 	};
 
 	private static final int ROWS = 6;

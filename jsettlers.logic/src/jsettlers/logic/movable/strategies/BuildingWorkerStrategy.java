@@ -334,8 +334,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		ShortPoint2D workAreaCenter = building.getWorkAreaCenter();
 
-		boolean pathFound = super.preSearchPath(dijkstra, workAreaCenter.x, workAreaCenter.y, building.getBuildingType()
-				.getWorkradius(), currentJob.getSearchType());
+		boolean pathFound = super.preSearchPath(dijkstra, workAreaCenter.x, workAreaCenter.y, building.getBuildingType().getWorkradius(),
+				currentJob.getSearchType());
 
 		if (pathFound) {
 			jobFinished();

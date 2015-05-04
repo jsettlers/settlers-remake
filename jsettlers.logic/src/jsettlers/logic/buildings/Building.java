@@ -39,6 +39,7 @@ import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
+import jsettlers.logic.buildings.others.TempleBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
@@ -222,7 +223,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	/**
 	 * Used to set or clear the small red flag atop a building to indicate it is occupied.
-	 * @param place specifies whether the flag should appear or not.
+	 * 
+	 * @param place
+	 *            specifies whether the flag should appear or not.
 	 */
 	protected void placeFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
@@ -314,7 +317,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	/**
-	 * This method will be called every 100 ms when the building has finished construction and is not destroyed yet.
+	 * This method will be called when the building has finished construction and is not destroyed yet.
+	 * 
+	 * @return Gives the number of milliseconds when this method should be called again. Return -1 to unschedule the building.
 	 */
 	protected abstract int subTimerEvent();
 
@@ -603,6 +608,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 		case STOCK:
 			return new StockBuilding(player);
+
+		case TEMPLE:
+			return new TempleBuilding(player);
 
 		case LOOKOUT_TOWER:
 			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
