@@ -127,8 +127,14 @@ public abstract class AbstractHexMapObject implements IMapObject, Serializable {
 	 *            type to be looked for
 	 * @return true if at least one of the map objects fits the given EMapObjectType
 	 */
-	public boolean hasMapObjectType(EMapObjectType mapObjectType) {
-		return this.getObjectType() == mapObjectType || this.next != null && this.next.hasMapObjectType(mapObjectType);
+	public boolean hasMapObjectTypes(EMapObjectType... mapObjectTypes) {
+		EMapObjectType mapObjectType = this.getObjectType();
+		for (EMapObjectType curr : mapObjectTypes) {
+			if (curr == mapObjectType) {
+				return true;
+			}
+		}
+		return this.next != null && this.next.hasMapObjectTypes(mapObjectTypes);
 	}
 
 	public AbstractHexMapObject getMapObject(EMapObjectType type) {

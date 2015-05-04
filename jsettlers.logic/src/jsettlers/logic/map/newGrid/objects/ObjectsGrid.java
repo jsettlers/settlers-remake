@@ -149,18 +149,18 @@ public final class ObjectsGrid implements Serializable {
 		return mapObjectHead != null && mapObjectHead.hasCuttableObject(mapObjectType);
 	}
 
-	public final boolean hasMapObjectType(int x, int y, EMapObjectType mapObjectType) {
+	public final boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes) {
 		AbstractHexMapObject mapObjectHead = objectsGrid[x + y * width];
 
-		return mapObjectHead != null && mapObjectHead.hasMapObjectType(mapObjectType);
+		return mapObjectHead != null && mapObjectHead.hasMapObjectTypes(mapObjectTypes);
 	}
 
-	public final boolean hasNeighborObjectType(int x, int y, EMapObjectType mapObjectType) {
+	public final boolean hasNeighborObjectType(int x, int y, EMapObjectType... mapObjectTypes) {
 		EDirection[] directions = EDirection.values;
 
 		for (EDirection currDir : directions) {
 			ShortPoint2D currPos = currDir.getNextHexPoint(x, y);
-			if (hasMapObjectType(currPos.x, currPos.y, mapObjectType)) {
+			if (hasMapObjectType(currPos.x, currPos.y, mapObjectTypes)) {
 				return true;
 			}
 		}

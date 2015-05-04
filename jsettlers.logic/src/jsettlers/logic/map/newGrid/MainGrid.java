@@ -486,9 +486,7 @@ public final class MainGrid implements Serializable {
 			return x % 2 == 0
 					&& y % 2 == 0
 					&& landscapeGrid.getLandscapeTypeAt(x, y) == ELandscapeType.MOUNTAIN
-					&& !(objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_COAL)
-							|| objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_IRON) || objectsGrid.hasMapObjectType(x, y,
-							EMapObjectType.FOUND_GOLD));
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.FOUND_COAL, EMapObjectType.FOUND_IRON, EMapObjectType.FOUND_GOLD);
 		}
 
 		private final boolean isSoldierAt(int x, int y, ESearchType searchType, byte player) {
@@ -566,10 +564,8 @@ public final class MainGrid implements Serializable {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
 			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
 					&& !hasProtectedNeighbor(x, y)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_ADULT)
-					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT)
-					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_GROWING)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT)
+					&& !objectsGrid.hasNeighborObjectType(x, y, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_GROWING)
 					&& areAllNeighborsOneOf(x, y, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
@@ -580,9 +576,7 @@ public final class MainGrid implements Serializable {
 		private boolean isWinePlantable(int x, int y) {
 			ELandscapeType landscapeType = landscapeGrid.getLandscapeTypeAt(x, y);
 			return (landscapeType == ELandscapeType.GRASS || landscapeType == ELandscapeType.EARTH) && !flagsGrid.isProtected(x, y)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_HARVESTABLE)
-					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_DEAD)
+					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
 					&& areAllNeighborsOneOf(x, y, 1, ELandscapeType.GRASS, ELandscapeType.EARTH);
 		}
 
