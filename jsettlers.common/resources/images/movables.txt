@@ -893,8 +893,13 @@ SMITH, NO_ACTION, NO_MATERIAL, SOUTH_EAST = 11, 40, 60, 1
 
 # probably take or drop something (coal or iron ore into the furnace e.g.) need more reserch in original game =)
 SMITH, DROP, *, NORTH_WEST = 11, 41, 0, 4
+# This needs to be uncommented as soon as #71 is implemented
+#SMITH, TAKE, *, NORTH_WEST = 11, 41, 3, -4
+
 # probably take or drop something (coal or iron ore into the furnace e.g.) need more reserch in original game =)
 SMITH, DROP, *, NORTH_EAST = 11, 42, 0, 4
+# This needs to be uncommented as soon as #71 is implemented
+#SMITH, TAKE, *, NORTH_EAST = 11, 42, 3, -4
 
 SMITH, WALKING, IRON, SOUTH_WEST = 11, 43, 0, 12
 SMITH, WALKING, IRON, WEST       = 11, 43, 12, 12
@@ -909,15 +914,17 @@ SMITH, NO_ACTION, IRON, NORTH_EAST = 11, 43, 36, 1
 SMITH, NO_ACTION, IRON, EAST       = 11, 43, 48, 1
 SMITH, NO_ACTION, IRON, SOUTH_EAST = 11, 43, 60, 1
 
-# 1x1 copy of 41 sequence index
-SMITH, DROP, *, NORTH_WEST = 11, 44, 0, 4
-# 1x1 copy of 42 sequence index
-SMITH, DROP, *, NORTH_EAST = 11, 45, 0, 4
+# probably examines, ready or not (need more reserch in original game)
+SMITH, ACTION3, *, NORTH_WEST = 11, 44, 0, 8
+# probably after this return to ACTION1
+# This needs to be uncommented as soon as #71 is implemented
+#SMITH, ACTION4, *, NORTH_WEST = 11, 44, 7, -8
 
-# probably take blank or cools ready weapons (after or before work on the anvil) need more reserch in original game =)
-SMITH, TAKE, *, NORTH_WEST = 11, 44, 4, 4
-# probably take blank or cools ready weapons (after or before work on the anvil) need more reserch in original game =)
-SMITH, TAKE, *, NORTH_EAST = 11, 45, 4, 4
+# probably cools ready weapons (after complate it on the anvil) need more reserch in original game
+SMITH, ACTION5, *, NORTH_EAST = 11, 45, 0, 8
+# probably after this go and DROP ready weapon to the ground
+# This needs to be uncommented as soon as #71 is implemented
+#SMITH, ACTION6, *, NORTH_EAST = 11, 45, 7, -8
 
 SMITH, WALKING, SWORD, SOUTH_WEST = 11, 46, 0, 12
 SMITH, WALKING, SWORD, WEST       = 11, 46, 12, 12
