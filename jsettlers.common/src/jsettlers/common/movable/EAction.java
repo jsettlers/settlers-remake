@@ -81,4 +81,12 @@ public enum EAction {
 	 */
 	ACTION2,
 
+	/**
+	 * The settler bends down
+	 */
+	BEND_DOWN,
+	/**
+	 * The settler raises up
+	 */
+	RAISE_UP,
 }
