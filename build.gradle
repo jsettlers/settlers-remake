@@ -105,10 +105,20 @@ project('jsettlers.network') {
 }
 
 project('jsettlers.mapcreator') {
+  apply plugin: 'application'
+
   dependencies {
     compile project(":jsettlers.graphics.swing")
     compile project(":jsettlers.main.swing")
   }
+
+  jar {
+    baseName = project.name
+    manifest { attributes "Main-Class": "jsettlers.mapcreator.main.MapCreatorApp" }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  }
+
+  project.mainClassName="jsettlers.mapcreator.main.MapCreatorApp"
 }
 
 project('jsettlers.common') {
