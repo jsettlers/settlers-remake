@@ -428,11 +428,11 @@ public final class MainGrid implements Serializable {
 
 			case PLANTABLE_TREE:
 				return y < height - 1 && isTreePlantable(x, y + 1) && !hasProtectedNeighbor(x, y + 1)
-						&& hasSamePlayer(x, (short) (y + 1), pathCalculable) && !isMarked(x, y);
+						&& hasSamePlayer(x, y + 1, pathCalculable) && !isMarked(x, y);
 			case CUTTABLE_TREE:
-				return isInBounds((short) (x - 1), (short) (y - 1))
-						&& objectsGrid.hasCuttableObject((short) (x - 1), (short) (y - 1), EMapObjectType.TREE_ADULT)
-						&& hasSamePlayer((short) (x - 1), (short) (y - 1), pathCalculable) && !isMarked(x, y);
+				return isInBounds(x - 1, y - 1)
+						&& isMapObjectCuttable(x - 1, y - 1, EMapObjectType.TREE_ADULT)
+						&& hasSamePlayer(x - 1, y - 1, pathCalculable) && !isMarked(x, y);
 
 			case PLANTABLE_CORN:
 				return !isMarked(x, y) && hasSamePlayer(x, y, pathCalculable) && isCornPlantable(x, y);
@@ -445,7 +445,7 @@ public final class MainGrid implements Serializable {
 				return isMapObjectCuttable(x, y, EMapObjectType.WINE_HARVESTABLE) && hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case CUTTABLE_STONE:
-				return y + 1 < height && x - 1 < width && objectsGrid.hasCuttableObject((short) (x - 1), (short) (y + 1), EMapObjectType.STONE)
+				return y + 1 < height && x - 1 < width && isMapObjectCuttable(x - 1, y + 1, EMapObjectType.STONE)
 						&& hasSamePlayer(x, y, pathCalculable) && !isMarked(x, y);
 
 			case ENEMY: {
