@@ -50,7 +50,6 @@ subprojects { subproject ->
 
   dependencies {
     testCompile "junit:junit:4.11"
-    testCompile "hamcrest:hamcrest:1.3"
   }
 
   compileJava {
@@ -61,11 +60,6 @@ subprojects { subproject ->
   compileTestJava {
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
-  }
-
-  repositories {
-    jcenter()
-//    flatDir(dirs: "${rootProject.projectDir}/jogamp")
   }
 }
 
@@ -114,7 +108,7 @@ project('jsettlers.mapcreator') {
 }
 
 project('jsettlers.common') {
-  sourceSets.main.java.srcDirs = ["src","gen"]
+  sourceSets.main.java.srcDirs = ["src","gen","texture"]
 }
 
 project('jsettlers.graphics') {
@@ -148,36 +142,19 @@ project('jsettlers.buildingcreator') {
 }
 
 project('go.graphics.nativegl') {
-  apply plugin: "com.stehno.natives"
-
-  natives {
-    jars = joglJars
-  }
-
   dependencies {
     compile project(":go.graphics")
     compile "org.jogamp.gluegen:gluegen-rt-main:${jogampVer}"
     compile "org.jogamp.jogl:jogl-all-main:${jogampVer}"
   }
-
-//  task classpath << {
-//    println configurations.runtime.files.join(':')
-//  }
-//
-//  task copyJogamp(type: Sync) {
-//    println "CPYING [${configurations.natives}] to [${project.projectDir}]"
-//    from { configurations.natives }
-//    into { "${project.projectDir}/jogamp" }
-//  }
-
 }
 
 project('go.graphics.swing') {
   dependencies {
     compile project(":go.graphics.nativegl")
+    compile "org.jogamp.gluegen:gluegen-rt-main:${jogampVer}"
+    compile "org.jogamp.jogl:jogl-all-main:${jogampVer}"
 
-    compile fileTree(dir: 'libs', include: '*.jar')
-    runtime fileTree(dir: 'libs', include: '*.jar')
   }
 }
 
