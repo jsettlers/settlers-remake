@@ -571,20 +571,32 @@ public final class MainGrid implements Serializable {
 		}
 
 		private boolean isWinePlantable(int x, int y) {
-			return !flagsGrid.isProtected(x, y)
+			if (!flagsGrid.isProtected(x, y)
 					&& !objectsGrid.hasMapObjectType(x, y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE, EMapObjectType.WINE_DEAD)
-					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)
-					&& hasMinimumHeightDifferenceOf(x, y, 2);
-		}
+					&& landscapeGrid.areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.EARTH)) {
 
-		private boolean hasMinimumHeightDifferenceOf(int x, int y, int minimumHeightDifference) {
-			byte height = landscapeGrid.getHeightAt(x, y);
-			for (ShortPoint2D pos : new MapNeighboursArea((short) x, (short) y)) {
-				if (Math.abs(height - landscapeGrid.getHeightAt(pos.x, pos.y)) >= minimumHeightDifference) {
-					return true;
+				EDirection direction = getDirectionOfMaximumHeightDifference(x, y, 2);
+				if (direction != null) { // if minimum height difference has been found
+					ShortPoint2D inDirPos = direction.getNextHexPoint(x, y);
+					ShortPoint2D invDirPos = direction.getInverseDirection().getNextHexPoint(x, y);
+
+					return !objectsGrid.hasMapObjectType(inDirPos.x, inDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
+							EMapObjectType.WINE_DEAD)
+							&& !objectsGrid.hasMapObjectType(invDirPos.x, invDirPos.y, EMapObjectType.WINE_GROWING, EMapObjectType.WINE_HARVESTABLE,
+									EMapObjectType.WINE_DEAD);
 				}
 			}
 			return false;
+		}
+
+		private EDirection getDirectionOfMaximumHeightDifference(int x, int y, int minimumHeightDifference) {
+			byte height = landscapeGrid.getHeightAt(x, y);
+			for (ShortPoint2D pos : new MapNeighboursArea((short) x, (short) y)) {
+				if (Math.abs(height - landscapeGrid.getHeightAt(pos.x, pos.y)) >= minimumHeightDifference) {
+					return EDirection.getDirection((short) x, (short) y, pos.x, pos.y);
+				}
+			}
+			return null;
 		}
 
 		@Override
