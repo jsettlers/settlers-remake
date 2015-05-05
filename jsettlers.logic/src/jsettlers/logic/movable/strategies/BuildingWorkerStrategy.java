@@ -29,7 +29,6 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.Movable;
@@ -196,7 +195,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case AVAILABLE:
-			if (super.getStrategyGrid().canPop(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (super.getStrategyGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -304,23 +303,16 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void takeAction() {
-		super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-		this.building.popMaterial(super.getPos(), currentJob.getMaterial());
-		jobFinished();
+		if (super.take(currentJob.getMaterial(), currentJob.isTakeMaterialFromMap())) {
+			jobFinished();
+		} else {
+			jobFailed();
+		}
 	}
 
 	private void dropAction(EMaterialType materialType) {
-		if (!done) {
-			super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
-			if (materialType == EMaterialType.NO_MATERIAL) { // if materialType == NO_MATERIAL then, don't drop anything, just play the animation
-				jobFinished();
-			} else {
-				done = true;
-			}
-		} else {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
-			jobFinished();
-		}
+		super.drop(materialType);
+		jobFinished();
 	}
 
 	/**

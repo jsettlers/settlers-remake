@@ -65,14 +65,6 @@ public enum EAction {
 	 */
 	WALKING,
 	/**
-	 * The settler picks up something
-	 */
-	TAKE,
-	/**
-	 * The settler drops something
-	 */
-	DROP,
-	/**
 	 * A costume action, see above.
 	 */
 	ACTION1,
@@ -81,4 +73,12 @@ public enum EAction {
 	 */
 	ACTION2,
 
+	/**
+	 * The settler bends down
+	 */
+	BEND_DOWN,
+	/**
+	 * The settler raises up
+	 */
+	RAISE_UP,
 }
