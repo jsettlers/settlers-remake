@@ -103,7 +103,7 @@
    
  
     <job name="look_at"			type="LOOK_AT"			successjob="take"			failjob="gohome"		direction="NORTH_WEST"/>
-    <job name="take" 			type="TAKE" 			successjob="execute1"	 	failjob="gohome"		material="NO_MATERIAL"/>
+    <job name="take" 			type="TAKE" 			successjob="execute1"	 	failjob="gohome"		material="BASKET"	takeMaterialFromMap="false"/>
     <job name="execute1"		type="EXECUTE"			successjob="goback"			failjob="gohome"		search="HARVESTABLE_WINE"/>
 	<job name="goback" 			type="GO_TO" 			successjob="produceWine1" 	failjob="gohome"		dx="-1" dy="2"/>
 	
@@ -114,8 +114,7 @@
 	
 	<job name="goToDrop"		type="GO_TO" 			successjob="look"			failjob="gohome" 		dx="3" dy="4"/>
 	<job name="look"			type="LOOK_AT"			successjob="drop"			failjob="gohome"		direction="NORTH_EAST"/>
-	<job name="drop" 			type="DROP" 			successjob="changeMat" 		failjob="gohome" 		material="WINE"/>
-	<job name="changeMat" 		type="SET_MATERIAL"		successjob="gohome" 		failjob="gohome" 		material="NO_MATERIAL"/>
+	<job name="drop" 			type="DROP" 			successjob="gohome" 		failjob="gohome" 		material="WINE"/>
 	
      <!-- 2: plant a new vine -->
     <job name="goPlanting1"		type="SET_MATERIAL"		successjob="goPlantingShow"	failjob="gohome"		material="PLANT"/>

@@ -122,9 +122,7 @@
     <job name="successful1" type="WALK" successjob="successful2" failjob="gohome" direction="SOUTH_WEST" />
     <job name="successful2" type="WALK" successjob="successful3" failjob="gohome" direction="SOUTH_WEST" />
     <job name="successful3" type="LOOK_AT" successjob="successful4" failjob="gohome" direction="SOUTH_WEST" />
-    <job name="successful4" type="DROP" successjob="successful5" failjob="gohome" material="GOLDORE" />
-    <job name="successful5" type="SET_MATERIAL" successjob="successful6" failjob="gohome" material="NO_MATERIAL" />
-    <job name="successful6" type="TAKE" successjob="successful7" failjob="gohome" material="NO_MATERIAL" />
+    <job name="successful4" type="DROP" successjob="successful7" failjob="gohome" material="GOLDORE" />
     <job name="successful7" type="WALK" successjob="successful8" failjob="gohome" direction="NORTH_EAST" />
     <job name="successful8" type="WALK" successjob="hide" failjob="hide" direction="NORTH_EAST" />
 

@@ -45,6 +45,8 @@ public class SimpleBuildingJob implements IBuildingJob {
 
 	private final String name;
 
+	private final boolean takeMaterialFromMap;
+
 	/**
 	 * Creates a new simple building job with the given data.
 	 * 
@@ -60,6 +62,7 @@ public class SimpleBuildingJob implements IBuildingJob {
 		direction = data.getDirection();
 		search = data.getSearchType();
 		name = data.getName();
+		takeMaterialFromMap = data.isTakeMaterialFromMap();
 	}
 
 	private SimpleBuildingJob(EBuildingJobType type, int time) {
@@ -70,7 +73,9 @@ public class SimpleBuildingJob implements IBuildingJob {
 		this.material = null;
 		this.direction = null;
 		this.search = null;
-		name = "";
+		this.name = "";
+		this.takeMaterialFromMap = true;
+
 	}
 
 	@Override
@@ -202,5 +207,9 @@ public class SimpleBuildingJob implements IBuildingJob {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	public boolean isTakeMaterialFromMap() {
+		return takeMaterialFromMap;
 	}
 }

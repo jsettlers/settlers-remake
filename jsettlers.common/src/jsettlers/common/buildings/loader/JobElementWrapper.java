@@ -32,17 +32,19 @@ public class JobElementWrapper implements BuildingJobData {
 	private static final String ATTR_TIME = "time";
 	private static final String SEARCH = "search";
 	private static final String NAME = "name";
+	private static final String TAKE_MATERIAL_FROM_MAP = "takeMaterialFromMap";
 
 	private final EBuildingJobType type;
-	private short dx;
-	private short dy;
-	private EMaterialType material;
-	private ESearchType searchType;
-	private String successjob;
-	private String failjob;
-	private float time;
-	private EDirection direction;
-	private String name;
+	private final short dx;
+	private final short dy;
+	private final EMaterialType material;
+	private final ESearchType searchType;
+	private final String successjob;
+	private final String failjob;
+	private final float time;
+	private final EDirection direction;
+	private final String name;
+	private final boolean takeMaterialFromMap;
 
 	JobElementWrapper(Attributes attributes) {
 		type = getType(attributes);
@@ -55,6 +57,7 @@ public class JobElementWrapper implements BuildingJobData {
 		failjob = attributes.getValue(FAILJOB);
 		time = getAttributeAsFloat(attributes, ATTR_TIME);
 		direction = getDirection(attributes);
+		takeMaterialFromMap = isTakeMaterialFromMap(attributes);
 	}
 
 	private static EBuildingJobType getType(Attributes attributes)
@@ -81,6 +84,19 @@ public class JobElementWrapper implements BuildingJobData {
 				return EDirection.valueOf(string);
 			} catch (IllegalArgumentException e) {
 				return null;
+			}
+		}
+	}
+
+	private boolean isTakeMaterialFromMap(Attributes attributes) {
+		String string = attributes.getValue(TAKE_MATERIAL_FROM_MAP);
+		if (string == null) {
+			return true;
+		} else {
+			try {
+				return Boolean.valueOf(string);
+			} catch (IllegalArgumentException e) {
+				return true;
 			}
 		}
 	}
@@ -180,6 +196,11 @@ public class JobElementWrapper implements BuildingJobData {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public boolean isTakeMaterialFromMap() {
+		return takeMaterialFromMap;
 	}
 
 }
