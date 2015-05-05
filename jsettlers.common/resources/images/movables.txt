@@ -914,14 +914,14 @@ SMITH, NO_ACTION, IRON, NORTH_EAST = 11, 43, 36, 1
 SMITH, NO_ACTION, IRON, EAST       = 11, 43, 48, 1
 SMITH, NO_ACTION, IRON, SOUTH_EAST = 11, 43, 60, 1
 
-# probably examines, ready or not (need more reserch in original game)
-SMITH, ACTION3, *, NORTH_WEST = 11, 44, 0, 8
+# need more reserch in original game (maybe additional animation is implemented through the building)
+# probably examines, ready or not
+#SMITH, ACTION3, *, NORTH_WEST = 11, 44, 0, 8
 # probably after this return to ACTION1
 # This needs to be uncommented as soon as #71 is implemented
 #SMITH, ACTION4, *, NORTH_WEST = 11, 44, 7, -8
-
-# probably cools ready weapons (after complate it on the anvil) need more reserch in original game
-SMITH, ACTION5, *, NORTH_EAST = 11, 45, 0, 8
+# probably cools ready weapons (after complate it on the anvil)
+#SMITH, ACTION5, *, NORTH_EAST = 11, 45, 0, 8
 # probably after this go and DROP ready weapon to the ground
 # This needs to be uncommented as soon as #71 is implemented
 #SMITH, ACTION6, *, NORTH_EAST = 11, 45, 7, -8
