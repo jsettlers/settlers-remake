@@ -70,7 +70,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case GOING_TO_OFFER:
 			if (super.getPos().equals(offer)) {
 				state = EBearerState.TAKING;
-				if (!super.take(materialType)) {
+				if (!super.take(materialType, true)) {
 					handleJobFailed(true);
 				}
 			} else {
@@ -80,6 +80,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case TAKING:
 			if (request == null) { // we handle a convert with tool job
 				state = EBearerState.DEAD_OBJECT;
+				super.setMaterial(EMaterialType.NO_MATERIAL);
 				super.convertTo(targetMovableType);
 			} else {
 				offer = null;

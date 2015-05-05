@@ -91,7 +91,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
 
-	private EMaterialType nextMaterial;
+	private EMaterialType takeDropMaterial;
 
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
@@ -236,12 +236,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			break;
 
 		case TAKE:
-			grid.takeMaterial(position, nextMaterial);
-			setMaterial(nextMaterial);
+			grid.takeMaterial(position, takeDropMaterial);
+			setMaterial(takeDropMaterial);
 			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
 		case DROP:
-			grid.dropMaterial(position, nextMaterial, strategy.offerDroppedMaterial());
+			if (takeDropMaterial != null && takeDropMaterial != EMaterialType.NO_MATERIAL) {
+				grid.dropMaterial(position, takeDropMaterial, strategy.offerDroppedMaterial());
+			}
 			setMaterial(EMaterialType.NO_MATERIAL);
 			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
@@ -494,9 +496,14 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.movableAction = movableAction;
 	}
 
-	final boolean take(EMaterialType materialToTake) {
-		if (grid.canTakeMaterial(position, materialToTake)) {
-			this.nextMaterial = materialToTake;
+	/**
+	 * 
+	 * @param materialToTake
+	 * @return true if the animation will be executed.
+	 */
+	final boolean take(EMaterialType materialToTake, boolean takeFromMap) {
+		if (!takeFromMap || grid.canTakeMaterial(position, materialToTake)) {
+			this.takeDropMaterial = materialToTake;
 
 			playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
 			setState(EMovableState.TAKE);
@@ -507,7 +514,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	final void drop(EMaterialType materialToDrop) {
-		this.nextMaterial = materialToDrop;
+		this.takeDropMaterial = materialToDrop;
 
 		playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
 		setState(EMovableState.DROP);
@@ -890,7 +897,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	@Override
 	public String toString() {
 		return "Movable: " + id + " position: " + position + " player: " + player.playerId + " movableType: " + movableType
-				+ " direction: " + direction;
+				+ " direction: " + direction + " material: " + materialType;
 	}
 
 	private static enum EMovableState {

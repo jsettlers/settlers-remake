@@ -132,8 +132,7 @@
 	<job name="walk5" 		type="WALK" 			successjob="look1" 			failjob="hide" 		direction="WEST"/>
 
 	<job name="look1" 		type="LOOK_AT" 			successjob="take1" 			failjob="hide" 		direction="NORTH_EAST"/>
-	<job name="take1" 		type="TAKE" 			successjob="changeMat1" 	failjob="hide" 		material="TRUNK"/>
-	<job name="changeMat1" 	type="SET_MATERIAL" 	successjob="walk6" 			failjob="hide" 		material="TRUNK"/>
+	<job name="take1" 		type="TAKE" 			successjob="walk6" 			failjob="hide" 		material="TRUNK"/>
 
 	<job name="walk6" 		type="WALK" 			successjob="walk7" 			failjob="hide" 		direction="NORTH_WEST"/>
 	<job name="walk7" 		type="WALK" 			successjob="saw1" 			failjob="hide" 		direction="NORTH_WEST"/>
@@ -157,8 +156,7 @@
 	<job name="walk18" 		type="WALK" 			successjob="walk19" 		failjob="hide" 		direction="NORTH_EAST"/>
 	<job name="walk19" 		type="WALK" 			successjob="drop1" 			failjob="hide" 		direction="NORTH_EAST"/>
 
-	<job name="drop1" 		type="DROP" 			successjob="changeMat3" 	failjob="hide" 		material="PLANK"/>
-	<job name="changeMat3" 	type="SET_MATERIAL" 	successjob="walk20"			failjob="hide" 		material="NO_MATERIAL"/>
+	<job name="drop1" 		type="DROP" 			successjob="walk20" 		failjob="hide" 		material="PLANK"/>
 
 	<job name="walk20" 		type="WALK" 			successjob="walk21" 		failjob="hide" 		direction="SOUTH_WEST"/>
 	<job name="walk21" 		type="WALK" 			successjob="walk22" 		failjob="hide" 		direction="SOUTH_WEST"/>

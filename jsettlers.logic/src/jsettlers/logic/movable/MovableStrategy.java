@@ -323,11 +323,11 @@ public abstract class MovableStrategy implements Serializable {
 		return true;
 	}
 
-	public boolean take(EMaterialType materialToTake) {
-		return movable.take(materialToTake);
+	protected boolean take(EMaterialType materialToTake, boolean takeFromMap) {
+		return movable.take(materialToTake, takeFromMap);
 	}
 
-	public void drop(EMaterialType materialToDrop) {
+	protected void drop(EMaterialType materialToDrop) {
 		movable.drop(materialToDrop);
 	}
 }

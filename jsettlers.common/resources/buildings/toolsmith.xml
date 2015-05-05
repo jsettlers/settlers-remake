@@ -129,12 +129,10 @@
     <job name="go_to_coal11" type="WALK" direction="NORTH_WEST" successjob="go_to_coal12" failjob="go_to_door" />
     <job name="go_to_coal12" type="WALK" direction="NORTH_WEST" successjob="take_coal1" failjob="go_to_door" />
 
-    <job name="take_coal1" type="TAKE" material="COAL" successjob="take_coal2" failjob="drop_coal1" />
-    <job name="take_coal2" type="SET_MATERIAL" material="COAL" successjob="drop_coal0" failjob="go_to_door" />
+    <job name="take_coal1" type="TAKE" material="COAL" successjob="drop_coal0" failjob="drop_coal1" />
 
     <job name="drop_coal0" type="WALK" direction="SOUTH_EAST" successjob="drop_coal1" failjob="go_to_door" />
-    <job name="drop_coal1" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_coal2" failjob="go_to_door" />
-    <job name="drop_coal2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="drop_coal3" failjob="go_to_door" />
+    <job name="drop_coal1" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_coal3" failjob="go_to_door" />
     <job name="drop_coal3" type="DROP" material="NO_MATERIAL" successjob="go_to_iron0" failjob="go_to_door" />
 
     <job name="go_to_iron0" type="WALK" direction="SOUTH_EAST" successjob="go_to_iron1" failjob="go_to_door" />
@@ -149,8 +147,7 @@
     <job name="go_to_iron10" type="WALK" direction="NORTH_EAST" successjob="go_to_iron11" failjob="go_to_door" />
     <job name="go_to_iron11" type="WALK" direction="NORTH_EAST" successjob="take_iron1" failjob="go_to_door" />
 
-    <job name="take_iron1" type="TAKE" material="IRON" successjob="take_iron2" failjob="go_to_door" />
-    <job name="take_iron2" type="SET_MATERIAL" material="IRON" successjob="go_to_melt1" failjob="go_to_door" />
+    <job name="take_iron1" type="TAKE" material="IRON" successjob="go_to_melt1" failjob="go_to_door" />
 
     <job name="go_to_melt1" type="WALK" direction="SOUTH_WEST" successjob="go_to_melt2" failjob="go_to_door" />
     <job name="go_to_melt2" type="WALK" direction="SOUTH_WEST" successjob="go_to_melt3" failjob="go_to_door" />
@@ -165,12 +162,11 @@
     <job name="go_to_melt11" type="WALK" direction="NORTH_WEST" successjob="go_to_melt12" failjob="go_to_door" />
     <job name="go_to_melt12" type="LOOK_AT" direction="NORTH_EAST" successjob="drop_iron1" failjob="go_to_door" />
 
-    <job name="drop_iron1" type="DROP" material="NO_MATERIAL" successjob="drop_iron2" failjob="go_to_door" />
-    <job name="drop_iron2" type="SET_MATERIAL" material="HAMMER" successjob="drop_iron4" failjob="go_to_door" />
+    <job name="drop_iron1" type="DROP" material="NO_MATERIAL" successjob="drop_iron4" failjob="go_to_door" />
     <job name="drop_iron4" type="SMOKE_ON" dx="-3" dy="-1" successjob="drop_iron5" failjob="go_to_door" />
     <job name="drop_iron5" type="WAIT" time="4" successjob="drop_iron7" failjob="go_to_door" />
     <job name="drop_iron7" type="SMOKE_OFF" dx="-3" dy="-1" successjob="drop_iron8" failjob="go_to_door" />
-    <job name="drop_iron8" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" />
+    <job name="drop_iron8" type="TAKE" material="NO_MATERIAL" successjob="go_to_hammer1" failjob="go_to_door" takeMaterialFromMap="false" />
 
     <job name="go_to_hammer1" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer2" failjob="go_to_door" />
     <job name="go_to_hammer2" type="WALK" direction="SOUTH_EAST" successjob="go_to_hammer3" failjob="go_to_door" />
@@ -188,8 +184,7 @@
     <job name="go_to_drop2" type="WALK" direction="EAST" successjob="go_to_drop3" failjob="go_to_door" />
     <job name="go_to_drop3" type="WALK" direction="EAST" successjob="drop1" failjob="go_to_door" />
 
-    <job name="drop1" type="DROP_POPPED" successjob="drop2" failjob="go_to_door" />
-    <job name="drop2" type="SET_MATERIAL" material="NO_MATERIAL" successjob="go_inside1" failjob="go_to_door" />
+    <job name="drop1" type="DROP_POPPED" successjob="go_inside1" failjob="go_to_door" />
 
     <job name="go_inside1" type="WALK" direction="NORTH_EAST" successjob="go_inside2" failjob="go_to_door" />
     <job name="go_inside2" type="WALK" direction="NORTH_EAST" successjob="go_inside3" failjob="hide" />
