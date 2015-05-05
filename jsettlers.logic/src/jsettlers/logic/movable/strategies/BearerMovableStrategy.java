@@ -15,10 +15,8 @@
 package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
@@ -71,40 +69,36 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			}
 		case GOING_TO_OFFER:
 			if (super.getPos().equals(offer)) {
-				super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.TAKING;
-			} else {
-				handleJobFailed(true);
-			}
-			break;
-		case TAKING:
-			if (super.getStrategyGrid().takeMaterial(super.getPos(), materialType)) {
-				if (request == null) { // we handle a convert with tool job
-					state = EBearerState.DEAD_OBJECT;
-					super.convertTo(targetMovableType);
-				} else {
-					super.setMaterial(materialType);
-					offer = null;
-					state = EBearerState.GOING_TO_REQUEST;
-					if (!super.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
-						handleJobFailed(true);
-					}
+				if (!super.take(materialType)) {
+					handleJobFailed(true);
 				}
 			} else {
 				handleJobFailed(true);
 			}
 			break;
+		case TAKING:
+			if (request == null) { // we handle a convert with tool job
+				state = EBearerState.DEAD_OBJECT;
+				super.convertTo(targetMovableType);
+			} else {
+				offer = null;
+				state = EBearerState.GOING_TO_REQUEST;
+				if (!super.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
+					handleJobFailed(true);
+				}
+			}
+
+			break;
 		case GOING_TO_REQUEST:
 			if (super.getPos().equals(request.getPos())) {
-				super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.DROPPING;
+				super.drop(materialType);
 			} else {
 				handleJobFailed(true);
 			}
 			break;
 		case DROPPING:
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, !request.isActive()); // if request is inactive, offer the material
-			super.setMaterial(EMaterialType.NO_MATERIAL);
 			request.deliveryFulfilled();
 			request = null;
 			materialType = null;
@@ -138,6 +132,11 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case DEAD_OBJECT:
 			assert false : "we should never get here!";
 		}
+	}
+
+	@Override
+	public boolean offerDroppedMaterial() {
+		return request == null || !request.isActive();
 	}
 
 	private void handleJobFailed(boolean reportAsJobless) {

@@ -91,6 +91,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
 
+	private EMaterialType nextMaterial;
+
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
 
@@ -166,6 +168,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		switch (state) { // ensure animation is finished, if not, reschedule
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
+		case TAKE:
+		case DROP:
 		case PATHING:
 		case WAITING:
 			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock.getTime();
@@ -178,6 +182,12 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		}
 
 		switch (state) {
+		case TAKE:
+		case DROP:
+			if (this.movableAction != EAction.RAISE_UP) {
+				break;
+			}// TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
+
 		case WAITING:
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
@@ -223,6 +233,17 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		case PATHING:
 			pathingAction();
+			break;
+
+		case TAKE:
+			grid.takeMaterial(position, nextMaterial);
+			setMaterial(nextMaterial);
+			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+			break;
+		case DROP:
+			grid.dropMaterial(position, nextMaterial, strategy.offerDroppedMaterial());
+			setMaterial(EMaterialType.NO_MATERIAL);
+			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
 
 		default:
@@ -410,6 +431,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
+		case TAKE:
+		case DROP:
 		case WAITING:
 			return false; // we can't do anything
 
@@ -469,6 +492,25 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		this.animationStartTime = MatchConstants.clock.getTime();
 		this.animationDuration = duration;
 		this.movableAction = movableAction;
+	}
+
+	final boolean take(EMaterialType materialToTake) {
+		if (grid.canTakeMaterial(position, materialToTake)) {
+			this.nextMaterial = materialToTake;
+
+			playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+			setState(EMovableState.TAKE);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	final void drop(EMaterialType materialToDrop) {
+		this.nextMaterial = materialToDrop;
+
+		playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+		setState(EMovableState.DROP);
 	}
 
 	/**

@@ -153,7 +153,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 * @param material
 	 * @return
 	 */
-	public abstract boolean canPop(ShortPoint2D position, EMaterialType material);
+	public abstract boolean canTakeMaterial(ShortPoint2D position, EMaterialType material);
 
 	public abstract byte getHeightAt(ShortPoint2D position);
 

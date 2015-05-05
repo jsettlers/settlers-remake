@@ -287,7 +287,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean canPop(ShortPoint2D position, EMaterialType material) {
+		public boolean canTakeMaterial(ShortPoint2D position, EMaterialType material) {
 			return false;
 		}
 

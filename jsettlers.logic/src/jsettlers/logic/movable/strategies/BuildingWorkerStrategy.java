@@ -196,7 +196,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case AVAILABLE:
-			if (super.getStrategyGrid().canPop(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (super.getStrategyGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
