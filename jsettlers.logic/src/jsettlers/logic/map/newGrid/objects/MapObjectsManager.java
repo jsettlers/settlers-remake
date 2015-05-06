@@ -165,7 +165,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	private boolean plantTree(ShortPoint2D pos) {
 		Tree tree = new Tree(pos);
 		addMapObject(pos, tree);
-		timingQueue.offer(new TimeEvent(tree, Tree.GROWTH_DURATION, false));
+		schedule(tree, Tree.GROWTH_DURATION, false);
 		return true;
 	}
 
@@ -175,7 +175,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject tree = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.TREE_ADULT);
 			if (tree != null && tree.cutOff()) {
-				timingQueue.offer(new TimeEvent(tree, Tree.DECOMPOSE_DURATION, true));
+				schedule(tree, Tree.DECOMPOSE_DURATION, true);
 				return true;
 			}
 		}
@@ -189,9 +189,9 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		}
 		Corn corn = new Corn(pos);
 		addMapObject(pos, corn);
-		timingQueue.offer(new TimeEvent(corn, Corn.GROWTH_DURATION, false));
-		timingQueue.offer(new TimeEvent(corn, Corn.GROWTH_DURATION + Corn.DECOMPOSE_DURATION, false));
-		timingQueue.offer(new TimeEvent(corn, Corn.GROWTH_DURATION + Corn.DECOMPOSE_DURATION + Corn.REMOVE_DURATION, true));
+		schedule(corn, Corn.GROWTH_DURATION, false);
+		schedule(corn, Corn.GROWTH_DURATION + Corn.DECOMPOSE_DURATION, false);
+		schedule(corn, Corn.GROWTH_DURATION + Corn.DECOMPOSE_DURATION + Corn.REMOVE_DURATION, true);
 		return true;
 	}
 
@@ -201,7 +201,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject corn = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.CORN_ADULT);
 			if (corn != null && corn.cutOff()) {
-				timingQueue.offer(new TimeEvent(corn, Corn.REMOVE_DURATION, true));
+				schedule(corn, Corn.REMOVE_DURATION, true);
 				return true;
 			}
 		}
@@ -210,11 +210,11 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 
 	private boolean plantWine(ShortPoint2D pos) {
 		grid.setLandscape(pos.x, pos.y, ELandscapeType.EARTH);
-		Wine corn = new Wine(pos);
-		addMapObject(pos, corn);
-		timingQueue.offer(new TimeEvent(corn, Wine.GROWTH_DURATION, false));
-		timingQueue.offer(new TimeEvent(corn, Wine.GROWTH_DURATION + Wine.DECOMPOSE_DURATION, false));
-		timingQueue.offer(new TimeEvent(corn, Wine.GROWTH_DURATION + Wine.DECOMPOSE_DURATION + Wine.REMOVE_DURATION, true));
+		Wine wine = new Wine(pos);
+		addMapObject(pos, wine);
+		schedule(wine, Wine.GROWTH_DURATION, false);
+		schedule(wine, Wine.GROWTH_DURATION + Wine.DECOMPOSE_DURATION, false);
+		schedule(wine, Wine.GROWTH_DURATION + Wine.DECOMPOSE_DURATION + Wine.REMOVE_DURATION, true);
 		return true;
 	}
 
@@ -224,7 +224,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		if (grid.isInBounds(x, y)) {
 			AbstractObjectsManagerObject wine = (AbstractObjectsManagerObject) grid.getMapObject(x, y, EMapObjectType.WINE_HARVESTABLE);
 			if (wine != null && wine.cutOff()) {
-				timingQueue.offer(new TimeEvent(wine, Corn.REMOVE_DURATION, true));
+				schedule(wine, Wine.REMOVE_DURATION, true);
 				return true;
 			}
 		}
@@ -299,8 +299,8 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	public void addArrowObject(ShortPoint2D attackedPos, ShortPoint2D shooterPos, byte shooterPlayerId, float hitStrength) {
 		ArrowObject arrow = new ArrowObject(grid, attackedPos, shooterPos, shooterPlayerId, hitStrength);
 		addMapObject(attackedPos, arrow);
-		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime(), false));
-		timingQueue.offer(new TimeEvent(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true));
+		schedule(arrow, arrow.getEndTime(), false);
+		schedule(arrow, arrow.getEndTime() + ArrowObject.MIN_DECOMPOSE_DELAY * (1 + RandomSingleton.nextF()), true);
 	}
 
 	public void addSimpleMapObject(ShortPoint2D pos, EMapObjectType objectType, boolean blocking, Player player) {
@@ -562,6 +562,10 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		public int compareTo(TimeEvent o) {
 			return this.eventTime - o.eventTime;
 		}
+	}
+
+	private boolean schedule(AbstractObjectsManagerObject object, float duration, boolean remove) {
+		return timingQueue.offer(new TimeEvent(object, duration, remove));
 	}
 
 	/**
