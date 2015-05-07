@@ -19,10 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.PriorityQueue;
 
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.map.shapes.MapNeighboursArea;
-import jsettlers.common.map.shapes.MapShapeFilter;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IAttackableTowerMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -183,10 +180,6 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	private boolean plantCorn(ShortPoint2D pos) {
-		grid.setLandscape(pos.x, pos.y, ELandscapeType.EARTH);
-		for (ShortPoint2D curr : new MapShapeFilter(new MapNeighboursArea(pos), grid.getWidth(), grid.getHeight())) {
-			grid.setLandscape(curr.x, curr.y, ELandscapeType.EARTH);
-		}
 		Corn corn = new Corn(pos);
 		addMapObject(pos, corn);
 		schedule(corn, Corn.GROWTH_DURATION, false);
@@ -209,7 +202,6 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 	}
 
 	private boolean plantWine(ShortPoint2D pos) {
-		grid.setLandscape(pos.x, pos.y, ELandscapeType.EARTH);
 		Wine wine = new Wine(pos);
 		addMapObject(pos, wine);
 		schedule(wine, Wine.GROWTH_DURATION, false);
@@ -245,34 +237,19 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		}
 
 		grid.addMapObject(x, y, mapObject);
-
-		setBlockedForObject(x, y, mapObject, true);
+		mapObject.handlePlacement(x, y, this, grid);
 		return true;
 	}
 
 	public void removeMapObjectType(int x, int y, EMapObjectType mapObjectType) {
-		AbstractHexMapObject removed = grid.removeMapObjectType(x, y, mapObjectType);
-
-		if (removed != null) {
-			setBlockedForObject(x, y, removed, false);
-		}
+		removeMapObject(x, y, grid.getMapObject(x, y, mapObjectType));
 	}
 
-	public void removeMapObject(short x, short y, AbstractHexMapObject mapObject) {
+	public void removeMapObject(int x, int y, AbstractHexMapObject mapObject) {
 		boolean removed = grid.removeMapObject(x, y, mapObject);
 
 		if (removed) {
-			setBlockedForObject(x, y, mapObject, false);
-		}
-	}
-
-	private void setBlockedForObject(int oldX, int oldY, AbstractHexMapObject mapObject, boolean blocked) {
-		for (RelativePoint point : mapObject.getBlockedTiles()) {
-			int newX = point.calculateX(oldX);
-			int newY = point.calculateY(oldY);
-			if (grid.isInBounds(newX, newY)) {
-				grid.setBlocked(newX, newY, blocked);
-			}
+			mapObject.handleRemove(x, y, this, grid);
 		}
 	}
 

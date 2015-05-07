@@ -14,8 +14,12 @@
  *******************************************************************************/
 package jsettlers.logic.objects.growing;
 
+import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
+import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 
 /**
  * This is a Corn on the map.
@@ -57,6 +61,39 @@ public final class Corn extends GrowingObject {
 	@Override
 	protected EMapObjectType getAdultState() {
 		return EMapObjectType.CORN_ADULT;
+	}
+
+	@Override
+	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		super.handlePlacement(x, y, mapObjectsManager, grid);
+
+		for (ShortPoint2D curr : getEarthArea(x, y)) {
+			grid.setLandscape(curr.x, curr.y, ELandscapeType.EARTH);
+		}
+	}
+
+	@Override
+	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		super.handleRemove(x, y, mapObjectsManager, grid);
+
+		for (ShortPoint2D curr : getEarthArea(x, y)) {
+			makePositionGrassIfPossible(curr.x, curr.y, mapObjectsManager, grid);
+		}
+	}
+
+	private void makePositionGrassIfPossible(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		for (ShortPoint2D pos : getEarthArea(x, y)) {
+			if (grid.hasMapObjectType(pos.x, pos.y, EMapObjectType.CORN_GROWING, EMapObjectType.CORN_ADULT, EMapObjectType.CORN_DEAD)) {
+				return; // return if there is a map object in the area holding this position earth
+			}
+		}
+
+		// no other corn keeps this position as earth => make it grass
+		grid.setLandscape(x, y, ELandscapeType.GRASS);
+	}
+
+	private static HexGridArea getEarthArea(int x, int y) {
+		return new HexGridArea(x, y, 0, 1);
 	}
 
 }

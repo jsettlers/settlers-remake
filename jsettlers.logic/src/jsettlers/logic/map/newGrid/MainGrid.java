@@ -797,6 +797,11 @@ public final class MainGrid implements Serializable {
 		public boolean isBuildingAreaAt(short x, short y) {
 			return objectsGrid.isBuildingAreaAt(x, y);
 		}
+
+		@Override
+		public boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes) {
+			return objectsGrid.hasMapObjectType(x, y, mapObjectTypes);
+		}
 	}
 
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {

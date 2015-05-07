@@ -14,8 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.objects.growing;
 
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
+import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
 
 /**
  * This is a Corn on the map.
@@ -59,4 +62,17 @@ public final class Wine extends GrowingObject {
 		return EMapObjectType.WINE_HARVESTABLE;
 	}
 
+	@Override
+	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		super.handlePlacement(x, y, mapObjectsManager, grid);
+
+		grid.setLandscape(x, y, ELandscapeType.EARTH);
+	}
+
+	@Override
+	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		super.handleRemove(x, y, mapObjectsManager, grid);
+
+		grid.setLandscape(x, y, ELandscapeType.GRASS);
+	}
 }

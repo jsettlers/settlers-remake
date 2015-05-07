@@ -50,4 +50,5 @@ public interface IMapObjectsManagerGrid extends Serializable, IArrowAttackableGr
 
 	boolean isBuildingAreaAt(short x, short y);
 
+	boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes);
 }
