@@ -144,4 +144,23 @@ public abstract class AbstractHexMapObject implements IMapObject, Serializable {
 			return this.next != null ? this.next.getMapObject(type) : null;
 		}
 	}
+
+	protected void handleRemove(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		setBlockedForObject(x, y, grid, false);
+	}
+
+	protected void handlePlacement(int x, int y, MapObjectsManager mapObjectsManager, IMapObjectsManagerGrid grid) {
+		setBlockedForObject(x, y, grid, true);
+	}
+
+	private void setBlockedForObject(int oldX, int oldY, IMapObjectsManagerGrid grid, boolean blocked) {
+		for (RelativePoint point : this.getBlockedTiles()) {
+			int newX = point.calculateX(oldX);
+			int newY = point.calculateY(oldY);
+			if (grid.isInBounds(newX, newY)) {
+				grid.setBlocked(newX, newY, blocked);
+			}
+		}
+	}
+
 }
