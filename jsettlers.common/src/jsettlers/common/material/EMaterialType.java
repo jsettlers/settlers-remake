@@ -53,7 +53,14 @@ public enum EMaterialType {
 	RICE((short) 78, (short) 34, (short) 129, true, 28, false),
 	KEG((short) 70, (short) 34, (short) 132, true, 29, false),
 
-	AMMO((short) 82, (short) 0, (short) 0, true, -1, false),
+	BOX((short) 82, (short) 0, (short) 0, true, -1, false),
+
+	// ammo for cannon (6 frames instead of 8)
+	CANNON_AMMO((short) 86, (short) 0, (short) 0, false, -1, false),
+	// ammo for ballista (6 frames instead of 8)
+	BALLISTA_AMMO((short) 87, (short) 0, (short) 0, false, -1, false),
+	// ammo for catapult (6 frames instead of 8)
+	CATAPULT_AMMO((short) 88, (short) 0, (short) 0, false, -1, false),
 
 	WHITE_BREAD((short) 0, (short) 0, (short) 0, false, -1, false),
 	BASKET((short) 0, (short) 0, (short) 0, false, -1, false),
