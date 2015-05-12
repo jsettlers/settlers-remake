@@ -51,6 +51,9 @@ public enum EMaterialType {
 	GEMS((short) 79, (short) 24, (short) 120, true, 26, false),
 	SULFUR((short) 80, (short) 34, (short) 126, true, 27, false),
 	RICE((short) 78, (short) 34, (short) 129, true, 28, false),
+	KEG((short) 70, (short) 34, (short) 132, true, 29, false),
+
+	AMMO((short) 82, (short) 0, (short) 0, true, -1, false),
 
 	WHITE_BREAD((short) 0, (short) 0, (short) 0, false, -1, false),
 	BASKET((short) 0, (short) 0, (short) 0, false, -1, false),
