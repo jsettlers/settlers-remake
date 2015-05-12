@@ -16,7 +16,7 @@ package jsettlers.common.material;
 
 /**
  * Enum to define all material types.
- * 
+ *
  * @author Andreas Eberle
  */
 public enum EMaterialType {
@@ -48,6 +48,9 @@ public enum EMaterialType {
 	TRUNK((short) 41, (short) 3, (short) 171, true, 2, false),
 	WATER((short) 77, (short) 3, (short) 156, true, 12, false),
 	WINE((short) 69, (short) 14, (short) 123, true, 25, false),
+	GEMS((short) 79, (short) 24, (short) 120, true, 26, false),
+	SULFUR((short) 80, (short) 34, (short) 126, true, 27, false),
+	RICE((short) 78, (short) 34, (short) 129, true, 28, false),
 
 	WHITE_BREAD((short) 0, (short) 0, (short) 0, false, -1, false),
 	BASKET((short) 0, (short) 0, (short) 0, false, -1, false),
@@ -102,7 +105,7 @@ public enum EMaterialType {
 	/**
 	 * gets the index of the material for stacks. <br>
 	 * used for jsettlers.graphics
-	 * 
+	 *
 	 * @return
 	 */
 	public short getStackIndex() {
@@ -111,7 +114,7 @@ public enum EMaterialType {
 
 	/**
 	 * Gets the gui icon base. That is the index of the small image for this material in the gui file 2.
-	 * 
+	 *
 	 * @return The index.
 	 */
 	public int getGuiIconBase() {
@@ -123,7 +126,7 @@ public enum EMaterialType {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Returns true if this material can be dropped.
 	 */
 	public boolean isDroppable() {
