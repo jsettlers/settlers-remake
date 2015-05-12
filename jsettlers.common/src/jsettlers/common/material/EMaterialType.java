@@ -48,12 +48,13 @@ public enum EMaterialType {
 	TRUNK((short) 41, (short) 3, (short) 171, true, 2, false),
 	WATER((short) 77, (short) 3, (short) 156, true, 12, false),
 	WINE((short) 69, (short) 14, (short) 123, true, 25, false),
-	GEMS((short) 79, (short) 24, (short) 120, true, 26, false),
-	SULFUR((short) 80, (short) 34, (short) 126, true, 27, false),
-	RICE((short) 78, (short) 34, (short) 129, true, 28, false),
-	KEG((short) 70, (short) 34, (short) 132, true, 29, false),
 
-	BOX((short) 82, (short) 0, (short) 0, true, -1, false),
+	GEMS((short) 79, (short) 24, (short) 120, false, -1, false),
+	SULFUR((short) 80, (short) 34, (short) 126, false, -1, false),
+	RICE((short) 78, (short) 34, (short) 129, false, -1, false),
+	KEG((short) 70, (short) 34, (short) 132, false, -1, false),
+
+	BOX((short) 82, (short) 0, (short) 0, false, -1, false),
 
 	// ammo for cannon (6 frames instead of 8)
 	CANNON_AMMO((short) 86, (short) 0, (short) 0, false, -1, false),
