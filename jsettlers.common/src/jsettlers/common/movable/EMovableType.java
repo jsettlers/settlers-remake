@@ -50,6 +50,8 @@ public enum EMovableType {
 	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 
+	MAGE(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
+
 	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
 	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
 	SWORDSMAN_L3(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
