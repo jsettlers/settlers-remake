@@ -1964,35 +1964,6 @@ THIEF, ACTION1, *, SOUTH_EAST = 11, 238,  0, 12
 
 
 ###
-# PIG movables start
-###
-PIG, WALKING, *, SOUTH_WEST = 6, 0,  0, 12
-PIG, WALKING, *, WEST       = 6, 0, 12, 12
-PIG, WALKING, *, NORTH_WEST = 6, 0, 24, 12
-PIG, WALKING, *, NORTH_EAST = 6, 0, 36, 12
-PIG, WALKING, *, EAST       = 6, 0, 48, 12
-PIG, WALKING, *, SOUTH_EAST = 6, 0, 60, 12
-PIG, NO_ACTION, *, SOUTH_WEST = 6, 0,  0, 1
-PIG, NO_ACTION, *, WEST       = 6, 0, 12, 1
-PIG, NO_ACTION, *, NORTH_WEST = 6, 0, 24, 1
-PIG, NO_ACTION, *, NORTH_EAST = 6, 0, 36, 1
-PIG, NO_ACTION, *, EAST       = 6, 0, 48, 1
-PIG, NO_ACTION, *, SOUTH_EAST = 6, 0, 60, 1
-
-# look around
-PIG, ACTION1, *, SOUTH_WEST = 6, 1,  0, 8
-PIG, ACTION1, *, WEST       = 6, 2,  0, 8
-PIG, ACTION1, *, NORTH_WEST = 6, 3,  0, 8
-PIG, ACTION1, *, NORTH_EAST = 6, 4,  0, 8
-PIG, ACTION1, *, EAST       = 6, 5,  0, 8
-PIG, ACTION1, *, SOUTH_EAST = 6, 6,  0, 8
-###
-# PIG movables end
-###
-
-
-
-###
 # DONKEY movables start
 ###
 DONKEY, WALKING, *, SOUTH_WEST = 6, 15,  0, 12
