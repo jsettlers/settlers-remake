@@ -1023,6 +1023,10 @@ MINER, NO_ACTION, BASKET, SOUTH_EAST = 11, 56, 60, 1
 
 # SOUTH_WEST animation only
 MINER, ACTION1, BASKET, * = 11, 57, 0, 32
+
+# washing his face in the river (if there is a river)
+MINER, ACTION2, NO_MATERIAL, NORTH_WEST = 11, 202, 0, 24
+MINER, ACTION2, NO_MATERIAL, NORTH_EAST = 11, 203, 0, 24
 ###
 # MINER movables end
 ###
