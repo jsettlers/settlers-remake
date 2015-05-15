@@ -49,12 +49,12 @@ public enum EMaterialType {
 	WATER((short) 77, (short) 3, (short) 156, true, 12, false),
 	WINE((short) 69, (short) 14, (short) 123, true, 25, false),
 
-	GEMS((short) 79, (short) 24, (short) 120, true, 26, false),
-	SULFUR((short) 80, (short) 34, (short) 126, true, 27, false),
-	RICE((short) 78, (short) 34, (short) 129, true, 28, false),
-	KEG((short) 70, (short) 34, (short) 132, true, 29, false),
+	GEMS((short) 79, (short) 24, (short) 120, true, -1, false),
+	SULFUR((short) 80, (short) 34, (short) 126, true, -1, false),
+	RICE((short) 78, (short) 34, (short) 129, true, -1, false),
+	KEG((short) 70, (short) 34, (short) 132, true, -1, false),
 
-	BOX((short) 82, (short) 0, (short) 0, true, 30, false),
+	BOX((short) 82, (short) 0, (short) 0, true, -1, false),
 
 	// ammo for cannon (6 frames instead of 8)
 	CANNON_AMMO((short) 86, (short) 0, (short) 0, false, -1, false),
@@ -78,17 +78,17 @@ public enum EMaterialType {
 
 	static {
 		// calculate the number of droppable materials and build up an array in
-		// the default priority order.
+		// the default priority order. (not all materials have priority index but may be dropped)
 		int numberOfDroppable = 0;
 		for (int i = 0; i < NUMBER_OF_MATERIALS; i++) {
-			if (values[i].droppable) {
+			if (values[i].droppable && values[i].defaultPrioIdx >= 0) {
 				numberOfDroppable++;
 			}
 		}
 		NUMBER_OF_DROPPABLE_MATERIALS = numberOfDroppable;
 		DROPPABLE_MATERIALS = new EMaterialType[numberOfDroppable];
 		for (int i = 0; i < NUMBER_OF_MATERIALS; i++) {
-			if (values[i].droppable) {
+			if (values[i].droppable && values[i].defaultPrioIdx >= 0) {
 				DROPPABLE_MATERIALS[values[i].defaultPrioIdx] = values[i];
 			}
 		}
