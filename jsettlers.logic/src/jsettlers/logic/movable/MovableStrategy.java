@@ -98,6 +98,7 @@ public abstract class MovableStrategy implements Serializable {
 		case GEOLOGIST:
 			return new GeologistStrategy(movable);
 		case THIEF:
+		case MAGE:
 			return new DummySpecialistStrategy(movable);
 
 		default:
