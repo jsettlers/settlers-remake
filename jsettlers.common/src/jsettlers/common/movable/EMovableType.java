@@ -64,7 +64,6 @@ public enum EMovableType {
 	BOWMAN_L2(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
 	BOWMAN_L3(EMaterialType.BOW, ESelectionType.SOLDIERS, false),
 
-	PIG(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
 	WHITEFLAGGED_DONKEY(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false);
 
