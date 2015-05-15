@@ -1865,7 +1865,7 @@ MAGE, NO_ACTION, *, NORTH_EAST = 11, 195, 36, 1
 MAGE, NO_ACTION, *, EAST       = 11, 195, 48, 1
 MAGE, NO_ACTION, *, SOUTH_EAST = 11, 195, 60, 1
 
-# healing soldiers
+# casts a spell
 MAGE, ACTION1, *, SOUTH_WEST = 11, 196, 0, 30
 MAGE, ACTION1, *, WEST       = 11, 197, 0, 30
 MAGE, ACTION1, *, NORTH_WEST = 11, 198, 0, 30
