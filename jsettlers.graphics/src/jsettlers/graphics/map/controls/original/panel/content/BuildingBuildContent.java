@@ -17,11 +17,16 @@ package jsettlers.graphics.map.controls.original.panel.content;
 import java.util.ArrayList;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.utils.UIPanel;
 
-public class BuildingBuildContent implements ContentFactory {
+public class BuildingBuildContent extends AbstractContentProvider {
 	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
 			EBuildingType.LUMBERJACK,
 			EBuildingType.SAWMILL,
@@ -71,6 +76,7 @@ public class BuildingBuildContent implements ContentFactory {
 
 	private final ArrayList<BuildingButton> buttons =
 			new ArrayList<BuildingButton>();
+	private EBuildingType activeBuilding;
 
 	private BuildingBuildContent(EBuildingType[] buildings) {
 		panel = new UIPanel();
@@ -95,8 +101,13 @@ public class BuildingBuildContent implements ContentFactory {
 	 *            The type. May be <code>null</code>
 	 */
 	private void setActiveBuilding(EBuildingType type) {
+		activeBuilding = null;
 		for (BuildingButton button : buttons) {
-			button.setActive(button.getBuildingType() == type);
+			boolean isActive = button.getBuildingType() == type;
+			button.setActive(isActive);
+			if (isActive) {
+				activeBuilding = type;
+			}
 		}
 	}
 
@@ -122,11 +133,26 @@ public class BuildingBuildContent implements ContentFactory {
 	}
 
 	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-		setActiveBuilding(type);
+	public Action catchAction(Action action) {
+		if (action.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
+			setActiveBuilding(((ShowConstructionMarksAction) action).getBuildingType());
+		}
+		return super.catchAction(action);
 	}
 
 	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	public PointAction getSelectAction(ShortPoint2D position) {
+		if (activeBuilding != null) {
+			return new BuildAction(activeBuilding, position);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void contentHiding(ActionFireable actionFireable) {
+		if (activeBuilding != null) {
+			actionFireable.fireAction(new ShowConstructionMarksAction(null));
+		}
 	}
 }

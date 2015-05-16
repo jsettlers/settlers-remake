@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
@@ -88,22 +88,19 @@ public class MainPanel extends UIPanel {
 
 	private IContentProvider activeContent = EContentType.BUILD_NORMAL;
 
-	private EBuildingType activeBuilding;
-
 	private IContentProvider goBackContent;
-
-	/**
-	 * The action type the next simple select action should be replaced with.
-	 * <p>
-	 * This field is reset on every content change.
-	 */
-	private EActionType selectAction;
 
 	private IGraphicsGrid grid;
 
 	private ShortPoint2D displayCenter;
 
-	public MainPanel() {
+	/**
+	 * Somewhere to fire actions to.
+	 */
+	private ActionFireable actionFireable;
+
+	public MainPanel(ActionFireable actionFireable) {
+		this.actionFireable = actionFireable;
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}
 
@@ -146,6 +143,8 @@ public class MainPanel extends UIPanel {
 	}
 
 	public void setContent(IContentProvider type) {
+		activeContent.contentHiding(actionFireable);
+
 		ESecondaryTabType tabs = type.getTabs();
 		showSecondaryTabs(tabs);
 
@@ -170,9 +169,9 @@ public class MainPanel extends UIPanel {
 		contentContainer.addChild(type.getPanel(), 0, 0, 1, 1);
 		activeContent = type;
 
-		activeContent.displayBuildingBuild(activeBuilding);
-		selectAction = null;
 		sendMapPositionChange();
+
+		activeContent.contentShowing(actionFireable);
 	}
 
 	private void setButtonsActive(TabButton[] buttons, IContentProvider type) {
@@ -231,18 +230,18 @@ public class MainPanel extends UIPanel {
 		setContent(activeContent);
 	}
 
-	public void displayBuildingBuild(EBuildingType type) {
-		activeBuilding = type;
-		activeContent.displayBuildingBuild(type);
-	}
-
 	public Action catchAction(Action action) {
+		// TODO: Abort on MOVE_TO-action.
 		if (action.getActionType() == EActionType.ASK_SET_WORK_AREA) {
 			goBackContent = activeContent;
 			setContent(new MessageContent(
 					Labels.getString("click_set_workcenter"), null, null,
-					Labels.getString("abort"), new Action(EActionType.ABORT)));
-			selectAction = EActionType.SET_WORK_AREA;
+					Labels.getString("abort"), new Action(EActionType.ABORT)) {
+				@Override
+				public PointAction getSelectAction(ShortPoint2D position) {
+					return new PointAction(EActionType.SET_WORK_AREA, position);
+				}
+			});
 			return null;
 		} else if (action.getActionType() == EActionType.ASK_DESTROY) {
 			goBackContent = activeContent;
@@ -252,12 +251,6 @@ public class MainPanel extends UIPanel {
 							EActionType.DESTROY), Labels.getString("abort"),
 					new Action(EActionType.ABORT)));
 			return null;
-		} else if (action.getActionType() == EActionType.SELECT_POINT
-				&& selectAction != null) {
-			ShortPoint2D position = ((PointAction) action).getPosition();
-			PointAction replaced = new PointAction(selectAction, position);
-			goBack();
-			return replaced;
 		} else if (action.getActionType() == EActionType.ABORT) {
 			goBack();
 			return action;
@@ -265,12 +258,12 @@ public class MainPanel extends UIPanel {
 			((ExecutableAction) action).execute();
 			return null;
 		} else {
-			return action;
+			return activeContent.catchAction(action);
+
 		}
 	}
 
 	private void goBack() {
-		selectAction = null;
 		if (goBackContent != null) {
 			setContent(goBackContent);
 			goBackContent = null;

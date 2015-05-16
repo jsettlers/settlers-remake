@@ -20,7 +20,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
@@ -50,7 +50,7 @@ public class BuildingButton extends Button {
 	private float iconBottom;
 
 	public BuildingButton(EBuildingType buildingType) {
-		super(new BuildAction(buildingType), null, null, Labels.getName(buildingType));
+		super(new ShowConstructionMarksAction(buildingType), null, null, Labels.getName(buildingType));
 		this.buildingType = buildingType;
 		buildingImageLink = buildingType.getGuiImage();
 	}

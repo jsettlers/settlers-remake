@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ConvertAction;
@@ -30,7 +27,7 @@ import jsettlers.graphics.utils.UIPanel;
  * 
  * @author michael
  */
-public class SpecialistSelection implements IContentProvider {
+public class SpecialistSelection extends AbstractContentProvider {
 
 	private static final EMovableType[] specialists = new EMovableType[] {
 			EMovableType.PIONEER, EMovableType.THIEF, EMovableType.GEOLOGIST,
@@ -70,19 +67,6 @@ public class SpecialistSelection implements IContentProvider {
 	@Override
 	public UIPanel getPanel() {
 		return panel;
-	}
-
-	@Override
-	public ESecondaryTabType getTabs() {
-		return null;
-	}
-
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-	}
-
-	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 	}
 
 }

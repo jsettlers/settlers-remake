@@ -14,18 +14,15 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.utils.UIPanel;
 
-public class BearerSelection implements IContentProvider {
+public class BearerSelection extends AbstractContentProvider {
 	private final UIPanel panel;
 	private final int count;
 
@@ -76,19 +73,6 @@ public class BearerSelection implements IContentProvider {
 	@Override
 	public UIPanel getPanel() {
 		return panel;
-	}
-
-	@Override
-	public ESecondaryTabType getTabs() {
-		return null;
-	}
-
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-	}
-
-	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 	}
 
 }

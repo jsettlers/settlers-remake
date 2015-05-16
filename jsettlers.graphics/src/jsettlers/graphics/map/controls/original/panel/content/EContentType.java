@@ -14,9 +14,10 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.utils.UIPanel;
 
 /**
@@ -35,7 +36,7 @@ public enum EContentType implements IContentProvider {
 	STOCK(ESecondaryTabType.GOODS, null),
 	TOOLS(ESecondaryTabType.GOODS, null),
 	GOODS_SPREAD(ESecondaryTabType.GOODS, null),
-	GOODS_TRANSPORT(ESecondaryTabType.GOODS, new MaterialPriorityPanel()),
+	GOODS_TRANSPORT(ESecondaryTabType.GOODS, new MaterialPriorityContent()),
 
 	SETTLERSTATISTIC(ESecondaryTabType.SETTLERS, null),
 	PROFESSION(ESecondaryTabType.SETTLERS, null),
@@ -43,9 +44,9 @@ public enum EContentType implements IContentProvider {
 	PRODUCTION(ESecondaryTabType.SETTLERS, null);
 
 	private final ESecondaryTabType tabs;
-	private final ContentFactory factory;
+	private final IContentFactory factory;
 
-	private EContentType(ESecondaryTabType tabs, ContentFactory factory) {
+	private EContentType(ESecondaryTabType tabs, IContentFactory factory) {
 		this.tabs = tabs;
 		this.factory = factory;
 
@@ -66,17 +67,31 @@ public enum EContentType implements IContentProvider {
 	}
 
 	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-		if (factory != null) {
-			factory.displayBuildingBuild(type);
-		}
-	}
-
-	@Override
 	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 		if (factory != null) {
 			factory.showMapPosition(pos, grid);
 		}
 	}
 
+	@Override
+	public Action catchAction(Action action) {
+		if (factory != null) {
+			return factory.catchAction(action);
+		}
+		return action;
+	}
+
+	@Override
+	public void contentHiding(ActionFireable actionFireable) {
+		if (factory != null) {
+			factory.contentHiding(actionFireable);
+		}
+	}
+
+	@Override
+	public void contentShowing(ActionFireable actionFireable) {
+		if (factory != null) {
+			factory.contentShowing(actionFireable);
+		}
+	}
 }

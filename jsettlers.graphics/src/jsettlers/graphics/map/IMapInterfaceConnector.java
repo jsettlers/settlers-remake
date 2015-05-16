@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.map;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 
@@ -30,8 +29,6 @@ public interface IMapInterfaceConnector extends IMessenger {
 	void addListener(IMapInterfaceListener listener);
 
 	void removeListener(IMapInterfaceListener guiInterface);
-
-	void setPreviewBuildingType(EBuildingType buildingType);
 
 	void scrollTo(ShortPoint2D point, boolean mark);
 

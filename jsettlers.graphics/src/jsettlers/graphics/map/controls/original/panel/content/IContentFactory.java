@@ -14,16 +14,29 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.utils.UIPanel;
 
-public interface ContentFactory {
+public interface IContentFactory {
 
 	UIPanel getPanel();
 
-	void displayBuildingBuild(EBuildingType type);
-
 	void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid);
+
+	Action catchAction(Action action);
+
+	/**
+	 * Called whenever this content is displayed.
+	 * @param actionFireable TODO
+	 */
+	void contentShowing(ActionFireable actionFireable);
+
+	/**
+	 * Called whenever this content is hidden.
+	 * @param actionFireable TODO
+	 */
+	void contentHiding(ActionFireable actionFireable);
 }

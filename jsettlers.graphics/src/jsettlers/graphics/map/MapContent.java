@@ -32,7 +32,6 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
@@ -164,7 +163,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		backgroundSound = new BackgroundSound(context, soundmanager);
 
 		if (controls == null) {
-			this.controls = new OriginalControls();
+			this.controls = new OriginalControls(this);
 		} else {
 			this.controls = controls;
 		}
@@ -854,10 +853,6 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	private void setZoom(float f) {
 		context.getScreen().setZoom(f);
 		reapplyContentSizes();
-	}
-
-	public void setPreviewBuildingType(EBuildingType buildingType) {
-		controls.displayBuildingBuild(buildingType);
 	}
 
 	public void addMessage(Message message) {
