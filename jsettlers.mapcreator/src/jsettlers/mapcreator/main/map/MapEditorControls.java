@@ -19,7 +19,6 @@ import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
@@ -116,10 +115,6 @@ public class MapEditorControls implements IControls {
 			event.setHandler(new GOEventHandlerImplementation(event.getDrawPosition()));
 		}
 		return true;
-	}
-
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
 	}
 
 	@Override
