@@ -93,4 +93,6 @@ public interface BuildingJobData {
 	 */
 	String getName();
 
+	boolean isTakeMaterialFromMap();
+
 }

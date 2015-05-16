@@ -318,4 +318,16 @@ public abstract class MovableStrategy implements Serializable {
 
 	protected void pathAborted(ShortPoint2D pathTarget) {
 	}
+
+	public boolean offerDroppedMaterial() {
+		return true;
+	}
+
+	protected boolean take(EMaterialType materialToTake, boolean takeFromMap) {
+		return movable.take(materialToTake, takeFromMap);
+	}
+
+	protected void drop(EMaterialType materialToDrop) {
+		movable.drop(materialToDrop);
+	}
 }

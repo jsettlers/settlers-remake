@@ -174,7 +174,7 @@
 	<job name="looktake" type="LOOK_AT" successjob="take" failjob="gohome"
 		direction="NORTH_WEST" />
 	<job name="take" type="TAKE" successjob="changeMat2" failjob="gohome"
-		material="TRUNK" />
+		material="TRUNK" takeMaterialFromMap="false"/>
 	<job name="changeMat2" type="SET_MATERIAL" successjob="goback"
 		failjob="gohome" material="TRUNK" />
 
@@ -182,10 +182,8 @@
 		dx="0" dy="3" />
 	<job name="look" type="LOOK_AT" successjob="drop" failjob="hide"
 		direction="NORTH_EAST" />
-	<job name="drop" type="DROP" successjob="changeMat" failjob="hide"
+	<job name="drop" type="DROP" successjob="walk2" failjob="hide"
 		material="TRUNK" />
-	<job name="changeMat" type="SET_MATERIAL" successjob="walk2"
-		failjob="hide" material="NO_MATERIAL" />
 	<job name="walk2" type="WALK" successjob="walk3" failjob="hide"
 		direction="NORTH_WEST" />
 	<job name="walk3" type="WALK" successjob="hide" failjob="hide"

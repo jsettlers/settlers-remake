@@ -239,7 +239,11 @@ public final class MainGrid implements Serializable {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
 				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, availablePlayers)) {
-					addMapObject(x, y, object);
+					try {
+						addMapObject(x, y, object);
+					} catch (Throwable t) {
+						t.printStackTrace();
+					}
 				}
 			}
 		}
@@ -797,6 +801,11 @@ public final class MainGrid implements Serializable {
 		public boolean isBuildingAreaAt(short x, short y) {
 			return objectsGrid.isBuildingAreaAt(x, y);
 		}
+
+		@Override
+		public boolean hasMapObjectType(int x, int y, EMapObjectType... mapObjectTypes) {
+			return objectsGrid.hasMapObjectType(x, y, mapObjectTypes);
+		}
 	}
 
 	final class EnclosedBlockedAreaFinderGrid implements IEnclosedBlockedAreaFinderGrid {
@@ -977,7 +986,7 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean canPop(ShortPoint2D position, EMaterialType material) {
+		public final boolean canTakeMaterial(ShortPoint2D position, EMaterialType material) {
 			return mapObjectsManager.canPop(position.x, position.y, material);
 		}
 
@@ -1072,10 +1081,7 @@ public final class MainGrid implements Serializable {
 		public boolean takeMaterial(ShortPoint2D position, EMaterialType materialType) {
 			short x = position.x;
 			short y = position.y;
-			if (mapObjectsManager.popMaterial(x, y, materialType)) {
-				return true;
-			} else
-				return false;
+			return mapObjectsManager.popMaterial(x, y, materialType);
 		}
 
 		@Override

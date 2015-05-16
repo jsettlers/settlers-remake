@@ -97,6 +97,10 @@
 	RIVER4|
 	MOUNTAINBORDER
 )">
+<!ENTITY % boolean "(
+	true|
+	false
+)">
 <!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
 
 <!ATTLIST building
@@ -180,6 +184,7 @@
    material %material; #IMPLIED
    direction %direction; #IMPLIED
    search %searchtype; #IMPLIED
+   takeMaterialFromMap %boolean; #IMPLIED
 >
 
 <!ELEMENT image EMPTY>

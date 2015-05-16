@@ -173,12 +173,11 @@
 
     <job name="execute1"		type="EXECUTE"			successjob="look_at"		failjob="gohome"		search="CUTTABLE_CORN"/>
     <job name="look_at"			type="LOOK_AT"			successjob="changeMat2"		failjob="gohome"		direction="NORTH_EAST"/>
-	<job name="changeMat2" 		type="SET_MATERIAL" 	successjob="take" 			failjob="gohome" 		material="CROP"/>
-    <job name="take" 			type="TAKE" 			successjob="goback" 		failjob="gohome"		material="CROP"/>
+	<job name="changeMat2" 		type="SET_MATERIAL" 	successjob="take" 			failjob="gohome" 		material="NO_MATERIAL"/>
+    <job name="take" 			type="TAKE" 			successjob="goback" 		failjob="gohome"		material="CROP" 	takeMaterialFromMap="false"/>
 	<job name="goback" 			type="GO_TO" 			successjob="look" 			failjob="hide" 			dx="3" dy="6"/>
 	<job name="look"			type="LOOK_AT"			successjob="drop"			failjob="hide"			direction="NORTH_EAST"/>
-	<job name="drop" 			type="DROP" 			successjob="changeMat" 		failjob="hide" 			material="CROP"/>
-	<job name="changeMat" 		type="SET_MATERIAL"		successjob="gohome" 		failjob="hide" 			material="NO_MATERIAL"/>
+	<job name="drop" 			type="DROP" 			successjob="gohome" 		failjob="hide" 			material="CROP"/>
 
      <!-- 2: plant a new corn -->
     <job name="show2"			type="SHOW"				successjob="with_plant"		failjob="start"			dx="-1" dy="4"/>
