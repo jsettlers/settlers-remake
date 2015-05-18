@@ -30,15 +30,18 @@ public class AutoReplayIT {
 
 	@Test
 	public void testSingleplayerMountainLake() throws IOException {
+		testReplay("basicProduction-mountainlake");
+	}
 
+	private void testReplay(String folderName) throws IOException {
 		TestUtils.setupResourcesManager();
 
-		File replay = new File("resources/autoreplay/singleplayerMountainLake/2015-05-18_12-43-14_mountain_lake_replay.log");
+		File replay = new File("resources/autoreplay/" + folderName + "/replay.log");
 		ReplayTool.replayAndCreateSavegame(replay, 15 * 60 * 1000, remainingReplay);
 
 		Path savegameFile = findSavegameFile();
 		System.out.println("Savegame found: " + savegameFile);
-		Path expectedFile = Paths.get("resources/autoreplay/singleplayerMountainLake/mountainlake-2015-05-18_15-25-23.map");
+		Path expectedFile = Paths.get("resources/autoreplay/" + folderName + "/savegame.map");
 
 		compareMapFiles(expectedFile, savegameFile);
 	}
