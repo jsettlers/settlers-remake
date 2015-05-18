@@ -120,7 +120,7 @@ public class ChannelTest {
 		c1.close();
 		assertTrue(c1.isClosed());
 
-		Thread.sleep(10);
+		Thread.sleep(40);
 		assertTrue(c2.isClosed());
 	}
 
@@ -132,7 +132,7 @@ public class ChannelTest {
 		c2.close();
 		assertTrue(c2.isClosed());
 
-		Thread.sleep(30);
+		Thread.sleep(40);
 		assertTrue(c1.isClosed());
 	}
 
