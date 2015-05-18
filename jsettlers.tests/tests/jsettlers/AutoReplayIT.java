@@ -13,6 +13,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
@@ -21,17 +22,23 @@ import jsettlers.main.replay.ReplayTool;
 import org.junit.Test;
 
 public class AutoReplayIT {
+	static {
+		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+	}
+
 	private static final String remainingReplay = "out/remainingReplay.log";
 
 	@Test
 	public void testSingleplayerMountainLake() throws IOException {
+
 		TestUtils.setupResourcesManager();
 
-		File replay = new File("resources/autoreplay/singleplayerMountainLake/2015-03-14_14-40-19_mountain_lake_replay.log");
-		ReplayTool.replayAndCreateSavegame(replay, 3 * 60 * 60 * 1000, remainingReplay);
+		File replay = new File("resources/autoreplay/singleplayerMountainLake/2015-05-18_12-43-14_mountain_lake_replay.log");
+		ReplayTool.replayAndCreateSavegame(replay, 15 * 60 * 1000, remainingReplay);
 
 		Path savegameFile = findSavegameFile();
-		Path expectedFile = Paths.get("resources/autoreplay/singleplayerMountainLake/mountainlake-2015-03-14_16-10-50.map");
+		System.out.println("Savegame found: " + savegameFile);
+		Path expectedFile = Paths.get("resources/autoreplay/singleplayerMountainLake/mountainlake-2015-05-18_15-25-23.map");
 
 		compareMapFiles(expectedFile, savegameFile);
 	}

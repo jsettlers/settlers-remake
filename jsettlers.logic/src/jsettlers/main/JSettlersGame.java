@@ -153,7 +153,7 @@ public class JSettlersGame {
 		}
 	}
 
-	private class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
+	public class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
 		private IStartingGameListener startingGameListener;
 		private MainGrid mainGrid;
 		private GameStatistics statistics;
@@ -327,6 +327,10 @@ public class JSettlersGame {
 		@Override
 		public boolean isStartupFinished() {
 			return gameRunning;
+		}
+
+		public MainGrid getMainGrid() {
+			return mainGrid;
 		}
 	}
 

@@ -111,6 +111,10 @@ public final class FogOfWar implements Serializable {
 		enabled = !enabled;
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	final class NewFoWThread extends Thread {
 		private static final byte DIM_DOWN_SPEED = 10;
 		private final CircleDrawer drawer;
@@ -238,4 +242,10 @@ public final class FogOfWar implements Serializable {
 	public void cancel() {
 		this.canceled = true;
 	}
+
+	public void reset() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

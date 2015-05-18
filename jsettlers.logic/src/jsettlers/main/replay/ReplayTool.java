@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
@@ -26,6 +27,7 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
+import jsettlers.main.JSettlersGame.GameRunner;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.OfflineNetworkConnector;
@@ -34,10 +36,12 @@ import jsettlers.network.client.interfaces.INetworkConnector;
 public class ReplayTool {
 	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMs, String newReplayFile) throws IOException {
 		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
+		networkConnector.getGameClock().setPausing(true);
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
 		IStartingGame startingGame = game.start();
-		waitForGameStartup(startingGame);
+		IStartedGame startedGame = waitForGameStartup(startingGame);
+		((GameRunner) startedGame).getMainGrid().getGuiInputGrid().getFogOfWar().setEnabled(false); // deactivate FoW, it is useless here
 
 		// schedule the save task and run the game to the target game time
 		networkConnector.scheduleTaskAt(targetGameTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD,
@@ -49,10 +53,10 @@ public class ReplayTool {
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
 	}
 
-	private static void waitForGameStartup(IStartingGame game) {
+	private static IStartedGame waitForGameStartup(IStartingGame game) {
 		DummyStartingGameListener startingGameListener = new DummyStartingGameListener();
 		game.setListener(startingGameListener);
-		startingGameListener.waitForGameStartup();
+		return startingGameListener.waitForGameStartup();
 	}
 
 	private static JSettlersGame loadGameFromReplay(File replayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
