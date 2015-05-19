@@ -394,12 +394,12 @@ BEARER, NO_ACTION, SULFUR, SOUTH_EAST = 10, 59, 60, 1
 
 
 
-BEARER, RAISE_UP, *, SOUTH_WEST = 10, 48, 0, 9
-BEARER, RAISE_UP, *, WEST       = 10, 49, 0, 9
-BEARER, RAISE_UP, *, NORTH_WEST = 10, 50, 0, 9
-BEARER, RAISE_UP, *, NORTH_EAST = 10, 51, 0, 9
-BEARER, RAISE_UP, *, EAST       = 10, 52, 0, 9
-BEARER, RAISE_UP, *, SOUTH_EAST = 10, 53, 0, 9
+BEARER, RAISE_UP, *, SOUTH_WEST = 10, 48, 5, 4
+BEARER, RAISE_UP, *, WEST       = 10, 49, 5, 4
+BEARER, RAISE_UP, *, NORTH_WEST = 10, 50, 5, 4
+BEARER, RAISE_UP, *, NORTH_EAST = 10, 51, 5, 4
+BEARER, RAISE_UP, *, EAST       = 10, 52, 5, 4
+BEARER, RAISE_UP, *, SOUTH_EAST = 10, 53, 5, 4
 
 # animation is available if the bears something in his hands (in the front)
 # throw with a sweep to the right of the settler
