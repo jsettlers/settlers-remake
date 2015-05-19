@@ -1284,7 +1284,7 @@ public final class MainGrid implements Serializable {
 
 				int factor;
 
-				if (!MainGrid.this.isInBounds(currX, currY) || flagsGrid.isBlocked(currX, currY)) {
+				if (!MainGrid.this.isInBounds(currX, currY)) {
 					factor = radius == 1 ? 6 : 2;
 				} else if (!movableGrid.hasNoMovableAt(currX, currY)) {
 					factor = Constants.MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS - radius + 1;
