@@ -12,6 +12,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.Arrays;
+import java.util.Collection;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
@@ -20,33 +22,53 @@ import jsettlers.logic.map.save.MapList;
 import jsettlers.main.replay.ReplayTool;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class AutoReplayIT {
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 	}
-
 	private static final String remainingReplay = "out/remainingReplay.log";
 
-	@Test
-	public void testSingleplayerMountainLake() throws IOException {
-		testReplay("basicProduction-mountainlake", 15);
+	@Parameters(name = "{index}: {0} : {1}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				{ "basicProduction-mountainlake", 15 }
+		});
 	}
 
-	private void testReplay(String folderName, int targetTimeMinutes) throws IOException {
+	private final String folderName;
+	private final int targetTimeMinutes;
+
+	public AutoReplayIT(String folderName, int targetTimeMinutes) {
+		this.folderName = folderName;
+		this.targetTimeMinutes = targetTimeMinutes;
+	}
+
+	@Test
+	public void testReplay() throws IOException {
 		TestUtils.setupResourcesManager();
 
-		File replay = new File("resources/autoreplay/" + folderName + "/replay.log");
-		ReplayTool.replayAndCreateSavegame(replay, targetTimeMinutes * 60 * 1000, remainingReplay);
-
-		Path savegameFile = findSavegameFile();
-		System.out.println("Savegame found: " + savegameFile);
-		Path expectedFile = Paths.get("resources/autoreplay/" + folderName + "/savegame.map");
+		Path savegameFile = replayAndGetSavegame(getReplayPath(), targetTimeMinutes);
+		Path expectedFile = getSavegamePath();
 
 		compareMapFiles(expectedFile, savegameFile);
 	}
 
-	private void compareMapFiles(Path expectedFile, Path actualFile) throws IOException {
+	private Path getSavegamePath() {
+		return Paths.get("resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m.map");
+	}
+
+	private Path getReplayPath() {
+		return Paths.get("resources/autoreplay/" + folderName + "/replay.log");
+	}
+
+	private static void compareMapFiles(Path expectedFile, Path actualFile) throws IOException {
+		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "'");
+
 		BufferedInputStream expectedStream = new BufferedInputStream(Files.newInputStream(expectedFile));
 		MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
 		BufferedInputStream actualStream = new BufferedInputStream(Files.newInputStream(actualFile));
@@ -66,7 +88,15 @@ public class AutoReplayIT {
 		actualStream.close();
 	}
 
-	private Path findSavegameFile() throws IOException { // TODO implement better way to find the correct savegame
+	private static Path replayAndGetSavegame(Path replayPath, int targetTimeMinutes) throws IOException {
+		ReplayTool.replayAndCreateSavegame(replayPath.toFile(), targetTimeMinutes * 60 * 1000, remainingReplay);
+
+		Path savegameFile = findSavegameFile();
+		System.out.println("Replayed: " + replayPath + " and created savegame: " + savegameFile);
+		return savegameFile;
+	}
+
+	private static Path findSavegameFile() throws IOException { // TODO implement better way to find the correct savegame
 		Path saveDirPath = new File(ResourceManager.getSaveDirectory(), "save").toPath();
 
 		final Path[] newestFile = new Path[1];
