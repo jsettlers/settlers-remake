@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
@@ -65,24 +63,11 @@ public class NewMultiplayerGamePanel extends
 	}
 
 	@Override
-	protected Action getSubmitAction() {
-		return new ExecutableAction() {
-			@Override
-			public void execute() {
-				IOpenMultiplayerGameInfo gameInfo =
-						new OpenMultiplayerGameInfo(getActiveListItem());
-				IJoiningGame joiningGame;
-
-				SettingsManager sm = SettingsManager.getInstance();
-				joiningGame =
-						screen.getMultiplayerConnector(
-								sm.get(SettingsManager.SETTING_SERVER),
-								sm.getPlayer())
-								.openNewMultiplayerGame(gameInfo);
-				contentSetable.setContent(new JoiningGamePanel(joiningGame,
-						contentSetable));
-			}
-		};
+	protected void onSubmitAction() {
+		IOpenMultiplayerGameInfo gameInfo = new OpenMultiplayerGameInfo(getActiveListItem());
+		SettingsManager sm = SettingsManager.getInstance();
+		IJoiningGame joiningGame = screen.getMultiplayerConnector(sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer()).openNewMultiplayerGame(gameInfo);
+		contentSetable.setContent(new JoiningGamePanel(joiningGame, contentSetable));
 	}
 
 	@Override
