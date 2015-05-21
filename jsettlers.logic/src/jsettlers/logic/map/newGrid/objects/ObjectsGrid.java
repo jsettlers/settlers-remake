@@ -61,14 +61,18 @@ public final class ObjectsGrid implements Serializable {
 		for (int idx = 0; idx < length; idx++) {
 			AbstractHexMapObject currObject = objectsGrid[idx];
 
-			while (currObject != null) {
-				if (currObject.getObjectType() != EMapObjectType.WORKAREA_MARK) {
-					oos.writeObject(currObject);
+			if (currObject != null) {
+				oos.writeInt(idx);
+				while (currObject != null) {
+					if (currObject.getObjectType() != EMapObjectType.WORKAREA_MARK) {
+						oos.writeObject(currObject);
+					}
+					currObject = currObject.getNextObject();
 				}
-				currObject = currObject.getNextObject();
+				oos.writeObject(null);
 			}
-			oos.writeObject(null);
 		}
+		oos.writeInt(-1); // this is used to detect the end
 	}
 
 	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -76,15 +80,18 @@ public final class ObjectsGrid implements Serializable {
 		int length = ois.readInt();
 		objectsGrid = new AbstractHexMapObject[length];
 
-		for (int idx = 0; idx < length; idx++) {
+		int index = ois.readInt();
+		while (index >= 0) {
 			AbstractHexMapObject currObject = (AbstractHexMapObject) ois.readObject();
-			objectsGrid[idx] = currObject;
+			objectsGrid[index] = currObject;
 
 			while (currObject != null) {
 				AbstractHexMapObject newObject = (AbstractHexMapObject) ois.readObject();
 				currObject.addMapObject(newObject);
 				currObject = newObject;
 			}
+
+			index = ois.readInt();
 		}
 	}
 
