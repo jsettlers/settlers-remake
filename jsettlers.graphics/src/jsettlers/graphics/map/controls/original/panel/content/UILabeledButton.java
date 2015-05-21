@@ -25,6 +25,7 @@ import jsettlers.graphics.utils.UIPanel;
 public class UILabeledButton extends UIPanel {
 	private final String text;
 	private final Action action;
+	private boolean isEnabled = true;
 
 	private static final OriginalImageLink BUTTON = new OriginalImageLink(EImageLinkType.GUI,
 			3, 324, 0);
@@ -53,7 +54,7 @@ public class UILabeledButton extends UIPanel {
 
 	@Override
 	public Action getAction(float relativex, float relativey) {
-		return action;
+		return isEnabled ? action : null;
 	}
 
 	public void setActive(boolean b) {
@@ -62,5 +63,9 @@ public class UILabeledButton extends UIPanel {
 		} else {
 			setBackground(BUTTON);
 		}
+	}
+
+	public void setEnabled(boolean enabled){
+		isEnabled = enabled;
 	}
 }
