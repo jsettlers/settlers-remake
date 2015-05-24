@@ -63,7 +63,7 @@ import jsettlers.network.client.interfaces.ITaskScheduler;
 
 /**
  * Class to handle the events provided by the user through jsettlers.graphics.
- * 
+ *
  * @author Andreas Eberle
  */
 public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInterface {
@@ -109,7 +109,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		switch (action.getActionType()) {
-		case BUILD: {
+		case BUILD:
 			this.setSelection(new SelectionSet());
 			BuildAction buildAction = (BuildAction) action;
 			EBuildingType buildingType = buildAction.getBuildingType();
@@ -121,11 +121,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 
 			System.out.println("build: " + buildingType);
-		}
+			break;
 
 		case SHOW_CONSTRUCTION_MARK: {
-			EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
-
+			buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
 			constructionMarksCalculator.setBuildingType(buildingType);
 			break;
 		}
@@ -549,7 +548,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	/**
 	 * Sets the selection.
-	 * 
+	 *
 	 * @param selection
 	 *            The selected items. Not null!
 	 */
