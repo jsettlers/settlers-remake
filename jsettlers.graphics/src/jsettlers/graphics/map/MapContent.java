@@ -89,7 +89,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
  * </ul>
  * </li>
  * </ul>
- * 
+ *
  * @author michael
  */
 public final class MapContent implements RegionContent, GOEventHandlerProvider,
@@ -143,7 +143,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Creates a new map content for the given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
 	 * @param playerStatistics
@@ -519,7 +519,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Draws the background.
-	 * 
+	 *
 	 * @param gl
 	 * @param screen2
 	 */
@@ -595,7 +595,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Gets a action for a keyboard key
-	 * 
+	 *
 	 * @param keyCode
 	 *            The key
 	 * @return The action that corresponds to the key
@@ -623,6 +623,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		} else if ("o".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_ORIGINAL_GRAPHICS);
 		} else if ("q".equalsIgnoreCase(keyCode)) {
+			// TODO: Only show the exit menu.
 			return new Action(EActionType.EXIT);
 		} else if ("w".equalsIgnoreCase(keyCode)) {
 			return new Action(EActionType.TOGGLE_FOG_OF_WAR);
@@ -804,7 +805,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Gets the interface connector for the ui.
-	 * 
+	 *
 	 * @return The connector to access the interface.
 	 */
 	public MapInterfaceConnector getInterfaceConnector() {
