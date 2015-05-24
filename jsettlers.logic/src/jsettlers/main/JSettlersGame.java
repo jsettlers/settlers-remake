@@ -57,7 +57,7 @@ import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class can start a Thread that loads and sets up a game and wait's for its termination.
- * 
+ *
  * @author Andreas Eberle
  */
 public class JSettlersGame {
@@ -102,7 +102,7 @@ public class JSettlersGame {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param networkConnector
@@ -114,7 +114,7 @@ public class JSettlersGame {
 
 	/**
 	 * Creates a new {@link JSettlersGame} object with an {@link OfflineNetworkConnector}.
-	 * 
+	 *
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param playerId
@@ -135,7 +135,7 @@ public class JSettlersGame {
 
 	/**
 	 * Starts the game in a new thread. Returns immediately.
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized IStartingGame start() {
@@ -200,10 +200,10 @@ public class JSettlersGame {
 				waitForAllPlayersStartFinished(networkConnector);
 
 				final IMapInterfaceConnector connector = startingGameListener.startFinished(this);
-				connector.loadUIState(playerState.getUiState());
-
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-						this, playerId, multiplayer);
+                        this, playerId, multiplayer);
+                connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
+                                                                 // has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
 
 				if (replayFileInputStream != null) {
 					gameClock.loadReplayLogFromStream(replayFileInputStream);

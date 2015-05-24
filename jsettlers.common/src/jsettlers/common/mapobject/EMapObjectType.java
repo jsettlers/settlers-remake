@@ -100,6 +100,11 @@ public enum EMapObjectType {
 	 */
 	BUILDING,
 
+    /**
+     * Type to represent the Building shown when placing for construction.
+     */
+    PLACEMENT_BUILDING,
+
 	/**
 	 * Simple smoke
 	 */

@@ -32,6 +32,7 @@ import go.graphics.event.mouse.GOPanEventProxy;
 import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.region.PositionedRegion;
 import go.graphics.region.Region;
+import go.graphics.region.RegionContent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ import java.util.LinkedList;
 
 /**
  * This class represents an area. This is a rectangular part of the screen that consists of multiple regions.
- * 
+ *
  * @author michael
  */
 public class Area implements RedrawListener, GOEventHandlerProvider {
@@ -69,7 +70,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	/**
 	 * Sets the width of the area.
-	 * 
+	 *
 	 * @param width
 	 *            The width in pixels.
 	 */
@@ -80,7 +81,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	/**
 	 * gets the width of the area.
-	 * 
+	 *
 	 * @return The width
 	 */
 	public int getWidth() {
@@ -106,7 +107,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	 * Draws the area at the given gl context.
 	 * <p>
 	 * it assumes that the transformation is set so that the lower left corner is (0,0).
-	 * 
+	 *
 	 * @param gl2
 	 */
 	public void drawArea(GLDrawContext gl2) {
@@ -232,7 +233,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	/**
 	 * Handles a mouse event somewhere in the area and passes it on to the region.
-	 * 
+	 *
 	 * @param event
 	 *            The event.
 	 */
@@ -259,27 +260,9 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	}
 
 	private class SplitHoverHandler implements GOModalEventHandler {
-		PositionedRegion currentRegion = null;
+		private PositionedRegion currentRegion;
+		private RegionContent currentContent;
 		private SimpleHoverEvent sendEvent;
-
-		private void startWithRegion(UIPoint areaPoint) {
-			sendEvent = new SimpleHoverEvent();
-			changePoint(areaPoint);
-			currentRegion.getRegion().handleEvent(sendEvent);
-			sendEvent.initialized();
-		}
-
-		private void endWithRegion(UIPoint point) {
-			changePoint(point);
-			sendEvent.finish();
-			sendEvent = null;
-		}
-
-		private void changePoint(UIPoint point) {
-			double x = point.getX() - currentRegion.getLeft();
-			double y = point.getY() - currentRegion.getBottom();
-			sendEvent.setMousePosition(new UIPoint(x, y));
-		}
 
 		@Override
 		public void phaseChanged(GOEvent event) {
@@ -307,11 +290,13 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			if (event instanceof GOHoverEvent) {
 				UIPoint point = ((GOHoverEvent) event).getHoverPosition();
 				PositionedRegion nextRegion = getUnder(point);
-				if (nextRegion != currentRegion) {
+				RegionContent nextContent = nextRegion == null ? null : nextRegion.getRegion().getContent();
+				if (nextContent != currentContent) {
 					if (currentRegion != null) {
 						endWithRegion(point);
 					}
 					currentRegion = nextRegion;
+					currentContent = nextContent;
 					if (nextRegion != null) {
 						startWithRegion(point);
 					}
@@ -321,6 +306,24 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			}
 		}
 
+        private void startWithRegion(UIPoint areaPoint) {
+            sendEvent = new SimpleHoverEvent();
+            changePoint(areaPoint);
+            currentRegion.getRegion().handleEvent(sendEvent);
+            sendEvent.initialized();
+        }
+
+        private void endWithRegion(UIPoint point) {
+            changePoint(point);
+            sendEvent.finish();
+            sendEvent = null;
+        }
+
+        private void changePoint(UIPoint point) {
+            double x = point.getX() - currentRegion.getLeft();
+            double y = point.getY() - currentRegion.getBottom();
+            sendEvent.setMousePosition(new UIPoint(x, y));
+        }
 	}
 
 	private class SimpleHoverEvent extends AbstractMouseEvent implements
@@ -373,7 +376,7 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 
 	/**
 	 * Handles any known type of event.
-	 * 
+	 *
 	 * @param event
 	 *            The event to handle.
 	 */

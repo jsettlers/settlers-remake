@@ -30,6 +30,7 @@ import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -38,6 +39,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
@@ -90,7 +92,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
  * </ul>
  * </li>
  * </ul>
- * 
+ *
  * @author michael
  */
 public final class MapContent implements RegionContent, GOEventHandlerProvider,
@@ -123,6 +125,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	 * The controls that represent the interface.
 	 */
 	private final IControls controls;
+    private UIPoint mousePosition = new UIPoint(0, 0);
 
 	private int windowWidth = 1;
 	private int windowHeight = 1;
@@ -140,11 +143,15 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	private final ReplaceableTextDrawer textDrawer;
 	private final IStatisticable playerStatistics;
 
+    private String tooltipString = "";
+
 	private EDebugColorModes debugColorMode = EDebugColorModes.NONE;
+
+    private PlacementBuilding placementBuilding;
 
 	/**
 	 * Creates a new map content for the given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
 	 * @param playerStatistics
@@ -410,23 +417,13 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			}
 		}
 
-		// if (map.getConstructionPreviewBuilding() != null) {
-		// Sequence<? extends Image> sequence =
-		// ImageProvider.getInstance().getSettlerSequence(4, 5);
-		// float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
-		//
-		// ShortPoint2D underMouse =
-		// this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
-		// IHexTile tile = map.getTile(underMouse);
-		// if (tile != null) {
-		// context.beginTileContext(tile);
-		// for (ImageLink image :
-		// map.getConstructionPreviewBuilding().getImages()) {
-		// ImageProvider.getInstance().getImage(image).draw(context.getGl());
-		// }
-		// context.endTileContext();
-		// }
-		// }
+        if (placementBuilding != null) {
+            ShortPoint2D underMouse = this.context.getPositionOnScreen((float) mousePosition.getX(), (float) mousePosition.getY());
+            IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
+            if (mapObject != null && mapObject.getObjectType() == EMapObjectType.CONSTRUCTION_MARK) {
+                this.objectDrawer.drawMapObject(map, underMouse.x, underMouse.y, placementBuilding);
+            }
+        }
 
 		if (debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
@@ -520,7 +517,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Draws the background.
-	 * 
+	 *
 	 * @param gl
 	 * @param screen2
 	 */
@@ -596,7 +593,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Gets a action for a keyboard key
-	 * 
+	 *
 	 * @param keyCode
 	 *            The key
 	 * @return The action that corresponds to the key
@@ -663,10 +660,6 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			changeMousePosition(((GOHoverEvent) event).getHoverPosition());
 		}
 	};
-
-	private String tooltipString = "";
-
-	private UIPoint mousePosition = new UIPoint(0, 0);
 
 	private void handleHover(GOHoverEvent hoverEvent) {
 		hoverEvent.setHandler(hoverHandler);
@@ -805,7 +798,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 
 	/**
 	 * Gets the interface connector for the ui.
-	 * 
+	 *
 	 * @return The connector to access the interface.
 	 */
 	public MapInterfaceConnector getInterfaceConnector() {
@@ -857,6 +850,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	}
 
 	public void setPreviewBuildingType(EBuildingType buildingType) {
+	    placementBuilding = new PlacementBuilding(buildingType);
 		controls.displayBuildingBuild(buildingType);
 	}
 
