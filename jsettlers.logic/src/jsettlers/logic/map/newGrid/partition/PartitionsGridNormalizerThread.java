@@ -14,10 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.map.newGrid.partition;
 
-import java.util.BitSet;
-
 import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 
 /**
  * This class implements a Thread that periodically checks if there are to much merged partitions on the grid. Merged partitions aren't needed an so,
@@ -28,10 +25,9 @@ import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
  */
 final class PartitionsGridNormalizerThread extends Thread {
 	private static final int MERGED_PARTITIONS_THRESHOLD = 700;
-	private static final int CHECK_DELAY_MS = 1000;
+	private static final int CHECK_DELAY_MS = 5000;
 
 	private final PartitionsGrid grid;
-	private final Object lock;
 	private boolean running = true;
 
 	/**
@@ -39,12 +35,10 @@ final class PartitionsGridNormalizerThread extends Thread {
 	 * synchronization lock when writing the partitions or the partition objects.
 	 * 
 	 * @param grid
-	 * @param lock
 	 */
-	PartitionsGridNormalizerThread(PartitionsGrid grid, Object lock) {
+	PartitionsGridNormalizerThread(PartitionsGrid grid) {
 		super("PartitionsGridNormalizer");
 		this.grid = grid;
-		this.lock = lock;
 
 		super.setDaemon(true);
 	}
@@ -56,9 +50,6 @@ final class PartitionsGridNormalizerThread extends Thread {
 
 	@Override
 	public void run() {
-		int width = grid.width;
-		int height = grid.height;
-
 		MilliStopWatch milliWatch = new MilliStopWatch();
 
 		while (running) {
@@ -69,44 +60,9 @@ final class PartitionsGridNormalizerThread extends Thread {
 
 			milliWatch.restart();
 
-			int maxPartitions = grid.partitionRepresentatives.length;
-			BitSet stoppedManagers = new BitSet(maxPartitions);
+			int normlizedPartitions = grid.checkNormalizePartitions(MERGED_PARTITIONS_THRESHOLD);
 
-			int counter = 0;
-
-			for (int i = 1; i < maxPartitions; i++) {
-				PartitionManager partitionObject = grid.partitionObjects[i];
-
-				if (partitionObject != null && grid.partitionRepresentatives[i] != i) {
-					stoppedManagers.set(i);
-					counter++;
-				}
-			}
-
-			if (counter <= MERGED_PARTITIONS_THRESHOLD) {
-				continue;// skip the rest if nothing is to do.
-			}
-
-			// normalize the partitions
-			for (int y = 0; y < height; y++) {
-				synchronized (lock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
-					for (int x = 0; x < width; x++) {
-						int idx = x + y * width;
-						grid.partitions[idx] = grid.partitionRepresentatives[grid.partitions[idx]];
-					}
-				}
-			}
-
-			// clear the partition objects
-			synchronized (lock) {
-				for (int i = 1; i < maxPartitions; i++) {
-					if (stoppedManagers.get(i)) {
-						grid.partitionObjects[i] = null;
-					}
-				}
-			}
-
-			System.out.println("PartitionsGridNormalizerThread: NORMALIZED " + counter + " partitions in " + milliWatch.getDiff()
+			System.out.println("PartitionsGridNormalizerThread: NORMALIZED " + normlizedPartitions + " partitions in " + milliWatch.getDiff()
 					+ "ms!-----------------------------------");
 		}
 	}

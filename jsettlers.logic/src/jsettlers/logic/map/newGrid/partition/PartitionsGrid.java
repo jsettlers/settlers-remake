@@ -16,8 +16,10 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -66,13 +68,13 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	final short width;
 	final short height;
-	final Player[] players;
+	private final Player[] players;
 	private final IBlockingProvider blockingProvider;
 
 	final short[] partitions;
-	final byte[] towers;
+	private final byte[] towers;
 
-	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
+	private Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 	short[] partitionRepresentatives = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
 	private final short[] blockedPartitionsForPlayers;
@@ -105,6 +107,12 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		initAdditionalFields();
 	}
 
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		int normalizedPartitions = checkNormalizePartitions(0);
+		System.out.println("Normalized " + normalizedPartitions + " partitions");
+		oos.defaultWriteObject();
+	}
+
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		initAdditionalFields();
@@ -112,7 +120,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	private void initAdditionalFields() {
 		partitionsWriteLock = new Object();
-		this.gridNormalizer = new PartitionsGridNormalizerThread(this, partitionsWriteLock);
+		this.gridNormalizer = new PartitionsGridNormalizerThread(this);
 	}
 
 	public void startThreads() {
@@ -604,7 +612,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		Partition partitionObject = partitionObjects[oldPartition];
 
-		System.out.println("Dividing partition " + oldPartition + " with relabelStartPos: "				+ relabelStartPosition + " and " + partitionObject.getNumberOfElements() + " elements. " + otherPosition				+ " will keep the old partition id.");
+		System.out.println("Dividing partition " + oldPartition + " with relabelStartPos: " + relabelStartPosition + " and "
+				+ partitionObject.getNumberOfElements() + " elements. " + otherPosition + " will keep the old partition id.");
 
 		short newPartition = createNewPartition(partitionObject.playerId);
 
@@ -768,6 +777,47 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	public byte getNumberOfPlayers() {
 		return (byte) players.length;
+	}
+
+	int checkNormalizePartitions(int mergePartitionsThreshold) {
+		int maxPartitions = this.partitionRepresentatives.length;
+		BitSet stoppedManagers = new BitSet(maxPartitions);
+
+		int counter = 0;
+
+		for (int i = 1; i < maxPartitions; i++) {
+			PartitionManager partitionObject = this.partitionObjects[i];
+
+			if (partitionObject != null && this.partitionRepresentatives[i] != i) {
+				stoppedManagers.set(i);
+				counter++;
+			}
+		}
+
+		if (counter <= mergePartitionsThreshold) {
+			return 0;// skip the rest if nothing is to do.
+		}
+
+		// normalize the partitions
+		for (int y = 0; y < height; y++) {
+			synchronized (partitionsWriteLock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
+				for (int x = 0; x < width; x++) {
+					int idx = x + y * width;
+					this.partitions[idx] = this.partitionRepresentatives[this.partitions[idx]];
+				}
+			}
+		}
+
+		// clear the partition objects
+		synchronized (partitionsWriteLock) {
+			for (int i = 1; i < maxPartitions; i++) {
+				if (stoppedManagers.get(i)) {
+					this.partitionObjects[i] = null;
+				}
+			}
+		}
+
+		return counter;
 	}
 
 }
