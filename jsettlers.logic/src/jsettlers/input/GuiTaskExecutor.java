@@ -37,6 +37,7 @@ import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.task.packets.TaskPacket;
+import jsettlers.network.synchronic.random.RandomSingleton;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
 
 /**
@@ -89,6 +90,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			break;
 
 		case QUICK_SAVE:
+			System.out.println("Saving game. Current random number: " + RandomSingleton.nextD());
 			save();
 			break;
 
