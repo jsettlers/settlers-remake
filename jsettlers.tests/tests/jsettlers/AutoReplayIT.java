@@ -3,13 +3,16 @@ package jsettlers;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
@@ -30,13 +33,22 @@ import org.junit.runners.Parameterized.Parameters;
 public class AutoReplayIT {
 	static {
 		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+		CommonConstants.CONTROL_ALL = true;
+
+		TestUtils.setupResourcesManager();
 	}
 	private static final String remainingReplay = "out/remainingReplay.log";
 
 	@Parameters(name = "{index}: {0} : {1}")
-	public static Collection<Object[]> data() {
+	public static Collection<Object[]> replaySets() {
 		return Arrays.asList(new Object[][] {
-				{ "basicProduction-mountainlake", 15 }
+				{ "basicProduction-mountainlake", 15 },
+				{ "fullProduction-mountainlake", 10 },
+				{ "fullProduction-mountainlake", 20 },
+				// { "fullProduction-mountainlake", 30 },
+				// { "fullProduction-mountainlake", 40 },
+				// { "fullProduction-mountainlake", 50 },
+				// { "fullProduction-mountainlake", 69 }
 		});
 	}
 
@@ -50,8 +62,6 @@ public class AutoReplayIT {
 
 	@Test
 	public void testReplay() throws IOException {
-		TestUtils.setupResourcesManager();
-
 		Path savegameFile = replayAndGetSavegame(getReplayPath(), targetTimeMinutes);
 		Path expectedFile = getSavegamePath();
 
@@ -76,13 +86,22 @@ public class AutoReplayIT {
 
 		assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
 
-		int e, a;
-		int idx = 0;
-		while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
-			assertEquals("difference at byte " + idx, a, e);
-			idx++;
+		Path tempPath = Paths.get("temp.txt");
+		Files.deleteIfExists(tempPath);
+		BufferedWriter writer = Files.newBufferedWriter(tempPath, StandardCharsets.UTF_8);
+
+		try {
+			int e, a;
+			int idx = 0;
+			while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
+				writer.write(e);
+				assertEquals("difference at byte " + idx, a, e);
+				idx++;
+			}
+			assertEquals("files have different lengths", e, a);
+		} finally {
+			writer.close();
 		}
-		assertEquals("files have different lengths", e, a);
 
 		expectedStream.close();
 		actualStream.close();
@@ -115,5 +134,21 @@ public class AutoReplayIT {
 		});
 
 		return newestFile[0];
+	}
+
+	public static void main(String[] args) throws IOException {
+		System.out.println("Creating reference files for replays...");
+
+		for (Object[] replaySet : replaySets()) {
+			String folderName = (String) replaySet[0];
+			int targetTimeMinutes = (Integer) replaySet[1];
+
+			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
+			Path savegame = AutoReplayIT.replayAndGetSavegame(replayIT.getReplayPath(), targetTimeMinutes);
+			Path expectedSavegamePath = replayIT.getSavegamePath();
+
+			Files.move(savegame, expectedSavegamePath, StandardCopyOption.REPLACE_EXISTING);
+			System.out.println("Moved savegame '" + savegame + "' to expected location '" + expectedSavegamePath + "'");
+		}
 	}
 }

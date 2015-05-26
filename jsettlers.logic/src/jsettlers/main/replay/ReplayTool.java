@@ -51,6 +51,12 @@ public class ReplayTool {
 		// create a replay basing on the savegame and containing the remaining tasks.
 		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
+
+		((GameRunner) startedGame).stopGame();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+		}
 	}
 
 	private static IStartedGame waitForGameStartup(IStartingGame game) {
