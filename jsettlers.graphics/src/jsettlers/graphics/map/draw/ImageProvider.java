@@ -47,7 +47,7 @@ import jsettlers.graphics.sequence.Sequence;
  * @author michael
  */
 public final class ImageProvider {
-	private static final String FILE_SUFFIX = ".7c003e01f.dat";
+	private static final String FILE_SUFFIX = ".f8007e01f.dat";
 	private static final String FILE_PREFIX = "siedler3_";
 	private static final int LAST_SEQUENCE_NUMBER = 2;
 	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
