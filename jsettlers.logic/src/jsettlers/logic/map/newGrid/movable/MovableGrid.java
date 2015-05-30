@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.logic.map.newGrid.movable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import jsettlers.common.map.shapes.HexBorderArea;
@@ -22,6 +25,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.newGrid.landscape.IWalkableGround;
 import jsettlers.logic.movable.Movable;
@@ -35,7 +39,7 @@ import jsettlers.logic.movable.interfaces.IAttackable;
 public final class MovableGrid implements Serializable {
 	private static final long serialVersionUID = 7003522358013103962L;
 
-	private final Movable[] movableGrid;
+	private transient Movable[] movableGrid;
 	private final IWalkableGround ground;
 	private final short width;
 
@@ -46,6 +50,16 @@ public final class MovableGrid implements Serializable {
 		this.height = height;
 		this.ground = ground;
 		this.movableGrid = new Movable[width * height];
+	}
+
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		SerializationUtils.writeSparseArray(oos, movableGrid);
+		oos.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		movableGrid = SerializationUtils.readSparseArray(ois, Movable.class);
+		ois.defaultReadObject();
 	}
 
 	public final Movable getMovableAt(int x, int y) {
