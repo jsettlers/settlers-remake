@@ -26,6 +26,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -43,8 +44,8 @@ public final class ObjectsGrid implements Serializable {
 	private final short width;
 	private final short height;
 
-	private transient AbstractHexMapObject[] objectsGrid; // don't use default serialization for this => transient
-	private final Building[] buildingsGrid;
+	private transient AbstractHexMapObject[] objectsGrid;
+	private transient Building[] buildingsGrid;
 
 	public ObjectsGrid(short width, short height) {
 		this.width = width;
@@ -55,6 +56,9 @@ public final class ObjectsGrid implements Serializable {
 
 	private final void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
+
+		SerializationUtils.writeSparseArray(oos, buildingsGrid);
+
 		int length = objectsGrid.length;
 		oos.writeInt(length);
 
@@ -77,6 +81,9 @@ public final class ObjectsGrid implements Serializable {
 
 	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
+
+		buildingsGrid = SerializationUtils.readSparseArray(ois, Building.class);
+
 		int length = ois.readInt();
 		objectsGrid = new AbstractHexMapObject[length];
 
