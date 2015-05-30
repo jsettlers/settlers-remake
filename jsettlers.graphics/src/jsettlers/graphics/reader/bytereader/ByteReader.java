@@ -84,29 +84,6 @@ public class ByteReader {
 	}
 
 	/**
-	 * Converts a color given in RGB565 into RGB555.
-	 *
-	 * @param RGB565
-	 * @return RGB555
-	 *
-	 */
-	public int convert565to555(int RGB565) {
-		int R5 = (int)((RGB565 & 0xF800) >> 11);
-		int G6 = (int)((RGB565 & 0x07E0) >> 5);
-		int B5 = (int)(RGB565 & 0x001F);
-
-		int G5 = (int)( (float) G6 * 31.0f / 63.0f + 0.5f );
-
-		int RGB555 = R5;
-		RGB555 = RGB555 << 5;
-		RGB555 |= G5;
-		RGB555 = RGB555 << 5;
-		RGB555 |= B5;
-
-		return RGB555;
-	}
-
-	/**
 	 * Sets the cache position pointer and the cache so that the pointer is on the given position in the file.
 	 *
 	 * @param newCachePosition

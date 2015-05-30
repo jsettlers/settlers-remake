@@ -90,6 +90,22 @@ public final class Color {
 				| ((int) (blue * 255) & 0xff) << 16;
 	}
 
+	public static final int convert565to555(int rgb565) {
+		int r5 = (int)((rgb565 & 0xF800) >> 11);
+		int g6 = (int)((rgb565 & 0x07E0) >> 5);
+		int b5 = (int)(rgb565 & 0x001F);
+
+		int g5 = (int)( (float) g6 * 31.0f / 63.0f + 0.5f );
+
+		int rgb555 = r5;
+		rgb555 = rgb555 << 5;
+		rgb555 |= g5;
+		rgb555 = rgb555 << 5;
+		rgb555 |= b5;
+
+		return rgb555;
+	}
+
 	public short toShortColor(float multiply) {
 		if (multiply == 1) {
 			return shortColor;

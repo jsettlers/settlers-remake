@@ -16,6 +16,7 @@ package jsettlers.graphics.reader.translator;
 
 import java.io.IOException;
 
+import jsettlers.common.Color;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
@@ -45,7 +46,7 @@ public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return (short) (reader.convert565to555(reader.read16()) << 1 | 0x01);
+		return (short) (Color.convert565to555(reader.read16()) << 1 | 0x01);
 	}
 
 }
