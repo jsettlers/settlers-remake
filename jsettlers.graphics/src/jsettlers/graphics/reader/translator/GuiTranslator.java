@@ -29,21 +29,7 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		int read = reader.read16();
-
-		int R5 = (int)((read & 0xF800) >> 11);
-		int G6 = (int)((read & 0x07E0) >> 5);
-		int B5 = (int)(read & 0x001F);
-
-		int G5 = (int)( (float) G6 * 31.0f / 63.0f + 0.5f );
-
-		int rgb = R5;
-		rgb = rgb << 5;
-		rgb |= G5;
-		rgb = rgb << 5;
-		rgb |= B5;
-
-		return (short) (rgb << 1 | 0x01);
+		return (short) (reader.convert565to555(reader.read16()) << 1 | 0x01);
 	}
 
 	@Override
