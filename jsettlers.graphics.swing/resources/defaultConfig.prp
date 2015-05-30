@@ -1,3 +1,5 @@
-# Default settings.
-resources-folder = ../jsettlers.common/resources/
-settlers-folder = .
+#Default Settings
+#Sat May 30 17:47:34 BST 2015
+resources-folder=../jsettlers.common/resources/
+settlers-folder=.
+commit_info=86d82dd

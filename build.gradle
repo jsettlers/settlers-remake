@@ -11,7 +11,7 @@ buildscript {
 
 
 ext {
-  gradleVersion = '2.3'
+  gradleVersion = '2.4-rc-1'
   jogampVer   = '2.2.1'
   joglJars = [
       "jogl-all-${jogampVer}-natives-linux-i586",
@@ -37,6 +37,36 @@ ext {
       "jogl-all-${jogampVer}-natives-windows-amd64.jar",
       "jogl-all-${jogampVer}-natives-windows-i586.jar",
   ]
+  cmd = { String command ->
+	def stdout = new ByteArrayOutputStream()
+	exec {
+		workingDir rootProject.projectDir
+		commandLine command.split()
+		standardOutput = stdout
+	}
+    return stdout.toString().trim()
+  }
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = rootProject.ext.gradleVersion
+}
+
+
+task populateCommitProperty << {
+	def defaultConfig = file('jsettlers.graphics.swing/resources/defaultConfig.prp')
+	def props = new Properties()
+	props.load(  new FileReader( defaultConfig )  )
+	props.setProperty( 'commit_info', cmd("git rev-parse --short HEAD") )
+	def writer = new FileWriter( defaultConfig )
+	try {
+		props.store( writer, 'Default Settings' )
+		writer.flush()
+	}
+	finally {
+		writer.close()
+	}
 }
 
 subprojects { subproject ->
@@ -67,6 +97,7 @@ subprojects { subproject ->
   }
 }
 
+
 project('jsettlers.main.swing') {
   apply plugin: 'application'
   apply plugin: "com.stehno.natives"
@@ -80,6 +111,8 @@ project('jsettlers.main.swing') {
     compile project(":jsettlers.graphics.swing")
   }
 
+  rootProject.tasks.populateCommitProperty.execute()
+
   jar {
     baseName = project.name
     manifest { attributes "Main-Class": "jsettlers.main.swing.SwingManagedJSettlers" }
@@ -92,6 +125,7 @@ project('jsettlers.main.swing') {
   project.mainClassName="jsettlers.main.swing.SwingManagedJSettlers"
 }
 
+
 project('jsettlers.network') {
   apply plugin: 'application'
 
@@ -103,6 +137,7 @@ project('jsettlers.network') {
 
   project.mainClassName="jsettlers.network.server.DedicatedServerApp"
 }
+
 
 project('jsettlers.mapcreator') {
   apply plugin: 'application'
@@ -121,9 +156,11 @@ project('jsettlers.mapcreator') {
   project.mainClassName="jsettlers.mapcreator.main.MapCreatorApp"
 }
 
+
 project('jsettlers.common') {
   sourceSets.main.java.srcDirs = ["src","gen"]
 }
+
 
 project('jsettlers.graphics') {
   sourceSets.main.java.srcDirs = ["src","texture"]
@@ -133,6 +170,7 @@ project('jsettlers.graphics') {
   }
 }
 
+
 project('jsettlers.graphics.swing') {
   dependencies {
     compile project(":jsettlers.common")
@@ -140,6 +178,7 @@ project('jsettlers.graphics.swing') {
     compile project(":go.graphics.swing")
   }
 }
+
 
 project('jsettlers.logic') {
   dependencies {
@@ -149,12 +188,14 @@ project('jsettlers.logic') {
   }
 }
 
+
 project('jsettlers.buildingcreator') {
   dependencies {
     compile project(":jsettlers.graphics.swing")
     compile project(":jsettlers.main.swing")
   }
 }
+
 
 project('go.graphics.nativegl') {
   dependencies {
@@ -164,18 +205,20 @@ project('go.graphics.nativegl') {
   }
 }
 
+
 project('go.graphics.swing') {
   dependencies {
     compile project(":go.graphics.nativegl")
     compile "org.jogamp.gluegen:gluegen-rt-main:${jogampVer}"
     compile "org.jogamp.jogl:jogl-all-main:${jogampVer}"
-
   }
 }
+
 
 //TODO, have a full fat gradle build file in the anddroid app that
 //is compatible with the new IDEA based Android Studio
 //must have this project as a parent.
+
 
 //project('jsettlers.graphics.androidui') {
 //  dependencies {
@@ -184,17 +227,22 @@ project('go.graphics.swing') {
 //    compile project(":go.graphics.android")
 //  }
 //}
+
+
 //project('jsettlers.main.android') {
 //  dependencies {
 //    compile project(":jsettlers.logic")
 //    compile project(":jsettlers.graphics.androidui")
 //  }
 //}
+
+
 //project('go.graphics.android') {
 //  dependencies {
 //    compile project(":go.graphics")
 //  }
 //}
+
 
 project('jsettlers.tests') {
   sourceSets.test.java.srcDirs = ["tests","tools", "tests.network/"]
@@ -203,8 +251,4 @@ project('jsettlers.tests') {
     compile project(":jsettlers.network")
     testCompile fileTree(dir: 'libs', include: '*.jar')
   }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.4-rc-1'
 }
