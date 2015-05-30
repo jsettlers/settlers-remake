@@ -48,7 +48,8 @@ public class OriginalControls implements IControls {
 	private Minimap minimap;
 	private final Button btnABC = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 318, 321, "");
 	private final Button btnScroll = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 342, 348, ""); // 345 - image for 3rd setting.
-	private final Button btnSettlers = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 351, 354, ""); // 357 - image for 3rd setting (show soldiers?).
+	private final Button btnSettlers = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 351, 354, ""); // 357 - image for 3rd setting (show
+																												// soldiers?).
 	private final Button btnBuildings = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 360, 367, "");
 
 	private final MainPanel mainPanel = new MainPanel();
@@ -160,14 +161,24 @@ public class OriginalControls implements IControls {
 	@Override
 	public boolean containsPoint(UIPoint position) {
 		float width = uiBase.getPosition().getWidth();
-		float height = uiBase.getPosition().getHeight();
 		float uicenter = width * layoutProperties.UI_CENTER_X;
+		return position.getX() < Math.max(uicenter, getMinimapOffset(position.getY()) + layoutProperties.UI_CENTER_X * width);
+	}
+
+	/**
+	 * Gets the X-Offset of the minimap at the given y position.
+	 * 
+	 * @param y
+	 * @return
+	 */
+	private double getMinimapOffset(double y) {
+		float width = uiBase.getPosition().getWidth();
+		float height = uiBase.getPosition().getHeight();
 		float m =
 				1 / (1 - layoutProperties.UI_CENTER_X) / width
 						* (1 - layoutProperties.UI_CENTER_Y) * height;
-		return position.getX() < uicenter
-				|| position.getY() > position.getX() * m + layoutProperties.UI_CENTER_Y
-						* height - m * layoutProperties.UI_CENTER_X * width;
+		return y / m - layoutProperties.UI_CENTER_Y
+				* height / m;
 	}
 
 	@Override
@@ -177,7 +188,7 @@ public class OriginalControls implements IControls {
 		float relativey =
 				(float) position.getY() / this.uiBase.getPosition().getHeight();
 		Action action;
-		if (minimap != null && relativey > layoutProperties.UI_CENTER_Y) {
+		if (minimap != null && relativey > layoutProperties.UI_CENTER_Y && getMinimapOffset(position.getY()) < position.getX()) {
 			action = getForMinimap(relativex, relativey, selecting);
 			startMapPosition = null; // to prevent it from jumping back.
 		} else {
