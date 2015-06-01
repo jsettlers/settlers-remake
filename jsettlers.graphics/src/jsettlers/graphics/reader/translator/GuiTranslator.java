@@ -16,6 +16,7 @@ package jsettlers.graphics.reader.translator;
 
 import java.io.IOException;
 
+import jsettlers.common.Color;
 import jsettlers.graphics.image.GuiImage;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
@@ -29,7 +30,7 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return (short) ((reader.read16() << 1) | 0x01);
+		return (short) (Color.convert565to555(reader.read16()) << 1 | 0x01);
 	}
 
 	@Override

@@ -68,7 +68,7 @@ public class SwingResourceLoader {
 		}
 
 		for (String gfxFolder : cf.getGfxFolders()) {
-			hasGfxDir = hasGfxDir || new File(gfxFolder, "siedler3_00.7c003e01f.dat").exists();
+			hasGfxDir = hasGfxDir || new File(gfxFolder, "siedler3_00.f8007e01f.dat").exists();
 		}
 
 		if (!hasSndDir || !hasGfxDir) {

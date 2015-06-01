@@ -90,6 +90,33 @@ public final class Color {
 				| ((int) (blue * 255) & 0xff) << 16;
 	}
 
+	private static final int convertColorChannel6to5(int c) {
+		int[] table6to5 = {
+			0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7,
+			8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15,
+			16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23,
+			24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 31, 31
+		};
+
+		return table6to5[c];
+	}
+
+	public static final int convert565to555(int rgb565) {
+		int r5 = (int)((rgb565 & 0xf800) >> 11);
+		int g6 = (int)((rgb565 & 0x07e0) >> 5);
+		int b5 = (int)(rgb565 & 0x001f);
+
+		int g5 = convertColorChannel6to5(g6);
+
+		int rgb555 = r5;
+		rgb555 = rgb555 << 5;
+		rgb555 |= g5;
+		rgb555 = rgb555 << 5;
+		rgb555 |= b5;
+
+		return rgb555;
+	}
+
 	public short toShortColor(float multiply) {
 		if (multiply == 1) {
 			return shortColor;

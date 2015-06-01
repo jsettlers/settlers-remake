@@ -46,11 +46,11 @@ import jsettlers.graphics.sequence.Sequence;
 
 public class DatFileTester {
 
-	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
+	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%.f8007e01f.dat";
 
 	private static final Color[] colors = new Color[] { Color.WHITE };
 	// private static final String FILE =
-	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
+	// "D:/Games/Siedler3/GFX/siedler3_%.f8007e01f.dat";
 
 	private static int datFileIndex = 18;
 
