@@ -178,8 +178,7 @@ public class MapList implements IMapListerCallable {
 	 * @param grid
 	 * @throws IOException
 	 */
-	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid)
-			throws IOException {
+	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid) throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream outStream = saveDir.getOutputStream(header);
 
@@ -205,8 +204,7 @@ public class MapList implements IMapListerCallable {
 	 *            The random map rule text.
 	 * @throws IOException
 	 */
-	public synchronized void saveRandomMap(MapFileHeader header,
-			String definition) throws IOException {
+	public synchronized void saveRandomMap(MapFileHeader header, String definition) throws IOException {
 		OutputStream out = mapsDir.getOutputStream(header);
 		MapSaver.saveRandomMap(header, definition, out);
 		loadFileList();

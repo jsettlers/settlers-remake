@@ -87,13 +87,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private byte state = STATE_CREATED;
 	private EPriority priority = EPriority.DEFAULT;
 
-	transient private boolean selected;
-
 	private float constructionProgress = 0.0f;
 	private byte heightAvg;
 
 	private short remainingMaterialActions = 0;
 	private List<RequestStack> stacks;
+
+	private transient boolean selected;
 
 	protected Building(EBuildingType type, Player player) {
 		this.type = type;
