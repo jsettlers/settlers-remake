@@ -75,7 +75,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private final byte[] towers;
 
 	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
-	short[] partitionRepresentatives = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
 	private final short[] blockedPartitionsForPlayers;
 
@@ -102,7 +101,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 		// the no player partition (the manager won't be started)
 		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
-		this.partitionRepresentatives[NO_PLAYER_PARTITION_ID] = NO_PLAYER_PARTITION_ID;
 
 		initAdditionalFields();
 	}
@@ -574,7 +572,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		smallerPartitionObject.stopManager();
 
 		partitionObjects[smallerPartition] = biggerPartitionObject;
-		partitionRepresentatives[smallerPartition] = biggerPartition;
 
 		/**
 		 * Flatten all hierarchies: <br>
@@ -586,7 +583,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		int numberOfPartitions = partitionObjects.length;
 		for (int i = 1; i < numberOfPartitions; i++) {
 			if (partitionObjects[i] == smallerPartitionObject) {
-				partitionRepresentatives[i] = biggerPartition;
 				partitionObjects[i] = biggerPartitionObject;
 			}
 		}
@@ -690,12 +686,9 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 				synchronized (partitionsWriteLock) {
 					int newLength = (int) (length * PARTITIONS_EXPAND_FACTOR);
 					Partition[] newPartitionObjects = new Partition[newLength];
-					short[] newPartitionRepresentatives = new short[newLength];
 
 					System.arraycopy(partitionObjects, 0, newPartitionObjects, 0, length);
 					partitionObjects = newPartitionObjects;
-					System.arraycopy(partitionRepresentatives, 0, newPartitionRepresentatives, 0, length);
-					partitionRepresentatives = newPartitionRepresentatives;
 
 					System.out.println("PartitionsGrid: Expanded the number of possible partitions from " + length + " to " + newLength);
 				}
@@ -705,7 +698,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		Partition newPartitionObject = new Partition(newPartitionId, player);
 		newPartitionObject.startManager();
 		partitionObjects[newPartitionId] = newPartitionObject;
-		partitionRepresentatives[newPartitionId] = newPartitionId;
 
 		return newPartitionId;
 	}
