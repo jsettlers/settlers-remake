@@ -27,17 +27,20 @@ import jsettlers.logic.map.newGrid.partition.manager.PartitionManager;
 public final class Partition extends PartitionManager implements Serializable {
 	private static final long serialVersionUID = -2087692347209993840L;
 
+	final short partitionId;
 	final byte playerId;
+
 	private int counter = 0;
 	private int xSum = 0;
 	private int ySum = 0;
 
-	public Partition(final byte player) {
+	public Partition(short partitionId, byte player) {
+		this.partitionId = partitionId;
 		this.playerId = player;
 	}
 
-	public Partition(byte player, int size) {
-		this(player);
+	public Partition(short partitionId, byte player, int size) {
+		this(partitionId, player);
 		this.counter = size;
 	}
 

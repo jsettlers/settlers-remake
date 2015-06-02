@@ -62,7 +62,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 3000;
 	private static final float PARTITIONS_EXPAND_FACTOR = 1.5f;
 
-	private static final int NO_PLAYER_PARTITION_ID = 0;
+	private static final short NO_PLAYER_PARTITION_ID = 0;
 
 	private final PartitionOccupyingTowerList occupyingTowers = new PartitionOccupyingTowerList();
 
@@ -74,7 +74,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	final short[] partitions;
 	private final byte[] towers;
 
-	private Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
+	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
 	short[] partitionRepresentatives = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
 	private final short[] blockedPartitionsForPlayers;
@@ -101,7 +101,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.towers = new byte[width * height];
 
 		// the no player partition (the manager won't be started)
-		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition((byte) -1, width * height);
+		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
 		this.partitionRepresentatives[NO_PLAYER_PARTITION_ID] = NO_PLAYER_PARTITION_ID;
 
 		initAdditionalFields();
@@ -136,7 +136,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	public short getPartitionIdAt(int x, int y) {
-		return partitionRepresentatives[partitions[x + y * width]];
+		return partitionObjects[partitions[x + y * width]].partitionId;
 	}
 
 	/**
@@ -429,7 +429,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 				@Override
 				public boolean contains(int x, int y) {
-					return partitionRepresentatives[partitions[x + y * width]] == partitionRepresentatives[innerPartition];
+					return partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition];
 				}
 			}, pos, borderVisitor, true);
 
@@ -553,8 +553,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			biggerPartition = partition2;
 			smallerPartition = partition1;
 		}
-		biggerPartition = partitionRepresentatives[biggerPartition]; // ensure that we have the top representative
-		smallerPartition = partitionRepresentatives[smallerPartition];
+		biggerPartition = partitionObjects[biggerPartition].partitionId; // ensure that we have the top representative
+		smallerPartition = partitionObjects[smallerPartition].partitionId;
 
 		assert biggerPartition != smallerPartition : "the partitions can not be the same!";
 
@@ -585,7 +585,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		 */
 		int numberOfPartitions = partitionObjects.length;
 		for (int i = 1; i < numberOfPartitions; i++) {
-			if (partitionRepresentatives[i] == smallerPartition) {
+			if (partitionObjects[i] == smallerPartitionObject) {
 				partitionRepresentatives[i] = biggerPartition;
 				partitionObjects[i] = biggerPartitionObject;
 			}
@@ -636,7 +636,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		IContainingProvider containingProvider = new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return partitionRepresentatives[partitions[x + y * width]] == oldPartition;
+				return partitionObjects[partitions[x + y * width]].partitionId == oldPartition;
 			}
 		};
 
@@ -680,13 +680,13 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	short createNewPartition(byte player) { // package private for tests
-		short newPartition = 1;
+		short newPartitionId = 1;
 
-		while (partitionObjects[newPartition] != null) { // get a free partition
-			newPartition++;
+		while (partitionObjects[newPartitionId] != null) { // get a free partition
+			newPartitionId++;
 			int length = partitionObjects.length;
 
-			if (newPartition >= length) {
+			if (newPartitionId >= length) {
 				synchronized (partitionsWriteLock) {
 					int newLength = (int) (length * PARTITIONS_EXPAND_FACTOR);
 					Partition[] newPartitionObjects = new Partition[newLength];
@@ -702,20 +702,16 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			}
 		}
 
-		Partition newPartitionObject = new Partition(player);
+		Partition newPartitionObject = new Partition(newPartitionId, player);
 		newPartitionObject.startManager();
-		partitionObjects[newPartition] = newPartitionObject;
-		partitionRepresentatives[newPartition] = newPartition;
+		partitionObjects[newPartitionId] = newPartitionObject;
+		partitionRepresentatives[newPartitionId] = newPartitionId;
 
-		return newPartition;
+		return newPartitionId;
 	}
 
 	public void setPartitionAt(int x, int y, short newPartition) {
-		if (getPartitionIdAt(x, y) != partitionRepresentatives[newPartition]) {
-			if (x == 106 && y == 212) {
-				System.out.println();
-			}
-
+		if (getPartitionAt(x, y) != partitionObjects[newPartition]) {
 			byte playerId = changePartitionUncheckedAt(x, y, newPartition);
 			notifyPlayerChangedListener(x, y, playerId);
 		}
@@ -749,7 +745,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 					byte neighborPlayer = partitionObjects[neighborPartition].playerId;
 
 					// if the position and the neighbor are from the same player, then merge the partitions
-					if (playerId == neighborPlayer && partitionRepresentatives[newPartition] != partitionRepresentatives[neighborPartition]) {
+					if (playerId == neighborPlayer && partitionObjects[newPartition] != partitionObjects[neighborPartition]) {
 						mergePartitions(newPartition, neighborPartition);
 					}
 				}
@@ -780,7 +776,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	int checkNormalizePartitions(int mergePartitionsThreshold) {
-		int maxPartitions = this.partitionRepresentatives.length;
+		int maxPartitions = this.partitionObjects.length;
 		BitSet stoppedManagers = new BitSet(maxPartitions);
 
 		int counter = 0;
@@ -788,7 +784,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		for (int i = 1; i < maxPartitions; i++) {
 			PartitionManager partitionObject = this.partitionObjects[i];
 
-			if (partitionObject != null && this.partitionRepresentatives[i] != i) {
+			if (partitionObject != null && this.partitionObjects[i].partitionId != i) {
 				stoppedManagers.set(i);
 				counter++;
 			}
@@ -803,7 +799,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			synchronized (partitionsWriteLock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
 				for (int x = 0; x < width; x++) {
 					int idx = x + y * width;
-					this.partitions[idx] = this.partitionRepresentatives[this.partitions[idx]];
+					this.partitions[idx] = this.partitionObjects[this.partitions[idx]].partitionId;
 				}
 			}
 		}
