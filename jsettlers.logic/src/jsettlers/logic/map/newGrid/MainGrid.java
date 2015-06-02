@@ -185,7 +185,6 @@ public final class MainGrid implements Serializable {
 
 	public void startThreads() {
 		bordersThread.start();
-		partitionsGrid.startThreads();
 		if (fogOfWar != null) {
 			fogOfWar.start(new FogOfWarGrid());
 		}
@@ -193,7 +192,6 @@ public final class MainGrid implements Serializable {
 
 	public void stopThreads() {
 		bordersThread.cancel();
-		partitionsGrid.cancelThreads();
 		if (fogOfWar != null) {
 			fogOfWar.cancel();
 		}

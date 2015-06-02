@@ -78,7 +78,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	private final short[] blockedPartitionsForPlayers;
 
-	private transient PartitionsGridNormalizerThread gridNormalizer;
 	private transient Object partitionsWriteLock;
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
@@ -118,15 +117,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	private void initAdditionalFields() {
 		partitionsWriteLock = new Object();
-		this.gridNormalizer = new PartitionsGridNormalizerThread(this);
-	}
-
-	public void startThreads() {
-		this.gridNormalizer.start();
-	}
-
-	public void cancelThreads() {
-		this.gridNormalizer.cancel();
 	}
 
 	public boolean isDefaultPartition(short partitionId) {
@@ -676,6 +666,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	short createNewPartition(byte player) { // package private for tests
+		checkNormalizePartitions(NUMBER_OF_START_PARTITION_OBJECTS / 2);
+
 		short newPartitionId = 1;
 
 		while (partitionObjects[newPartitionId] != null) { // get a free partition
