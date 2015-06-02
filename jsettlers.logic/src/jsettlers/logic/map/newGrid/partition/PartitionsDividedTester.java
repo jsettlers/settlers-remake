@@ -51,18 +51,18 @@ final class PartitionsDividedTester {
 	 * @return true if both positions are connected by the given partition.<br>
 	 *         false if the positions are not connected.
 	 */
-	public static boolean isPartitionDivided(short[] partitionRepresentatives, short[] partitions, short width, ShortPoint2D pos1,
+	public static boolean isPartitionDivided(Partition[] partitionObjects, short[] partitions, short width, ShortPoint2D pos1,
 			MutableInt partition1Size, ShortPoint2D pos2, MutableInt partition2Size, short partition) {
 
-		return posNotOnBorder(partitionRepresentatives, partitions, width, pos1, pos2, partition, partition1Size)
-				&& posNotOnBorder(partitionRepresentatives, partitions, width, pos2, pos1, partition, partition2Size);
+		return posNotOnBorder(partitionObjects, partitions, width, pos1, pos2, partition, partition1Size)
+				&& posNotOnBorder(partitionObjects, partitions, width, pos2, pos1, partition, partition2Size);
 	}
 
 	/**
 	 * NOTE: The call to this method is different if the given positions are swaped!
 	 * 
 	 * @param debugColorSetable
-	 * @param partitionRepresentatives
+	 * @param partitionObjects
 	 * @param partitions
 	 * @param width
 	 * @param startPosition
@@ -70,8 +70,8 @@ final class PartitionsDividedTester {
 	 * @param partition
 	 * @return
 	 */
-	private static boolean posNotOnBorder(final short[] partitionRepresentatives,
-			final short[] partitions, final short width, final ShortPoint2D startPosition, final ShortPoint2D checkPosition, final short partition,
+	private static boolean posNotOnBorder(final Partition[] partitionObjects, final short[] partitions, final short width,
+			final ShortPoint2D startPosition, final ShortPoint2D checkPosition, final short partition,
 			MutableInt partitionSize) {
 		final short checkPositionX = checkPosition.x;
 		final short checkPositionY = checkPosition.y;
@@ -79,7 +79,7 @@ final class PartitionsDividedTester {
 		boolean pos2NotOnBorder = BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return partitionRepresentatives[partitions[x + y * width]] == partition;
+				return partitionObjects[partitions[x + y * width]].partitionId == partition;
 			}
 		}, startPosition, new ITraversingVisitor() {
 			@Override

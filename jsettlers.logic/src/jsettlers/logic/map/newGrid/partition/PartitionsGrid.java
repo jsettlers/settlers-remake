@@ -461,8 +461,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		partitionsList.addLast(partitionsList.getFirst()); // add first at the end
 
 		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			if (partitionObjects[currPartition.e1].playerId == playerId
-					&& partitionRepresentatives[currPartition.e1] != partitionRepresentatives[innerPartition]) {
+			Partition currPartitionObject = partitionObjects[currPartition.e1];
+			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.e1] != partitionObjects[innerPartition]) {
 				mergePartitions(currPartition.e1, innerPartition);
 			}
 		}
@@ -479,7 +479,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		MutableInt partition1Size = new MutableInt();
 		MutableInt partition2Size = new MutableInt();
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionRepresentatives, partitions, width, pos1, partition1Size, pos2,
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, pos1, partition1Size, pos2,
 						partition2Size, partition)) {
 			if (partition1Size.value < partition2Size.value) {
 				dividePartition(partition, pos1, pos2);
