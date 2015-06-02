@@ -46,7 +46,7 @@ final class PartitionsListingBorderVisitor implements ITraversingVisitor {
 		if (blockingProvider.isBlocked(x, y)) {
 			lastPartititon = -1;
 		} else {
-			short currPartition = grid.partitionRepresentatives[grid.partitions[x + y * grid.width]];
+			short currPartition = grid.partitionObjects[grid.partitions[x + y * grid.width]].partitionId;
 
 			if (currPartition != lastPartititon) {
 				partitionsList.addLast(new Tuple<Short, ShortPoint2D>(currPartition, new ShortPoint2D(x, y)));

@@ -39,7 +39,7 @@ final class PartitionsDividedTester {
 	 * 
 	 * @param debugColorSetable
 	 * 
-	 * @param partitionRepresentatives
+	 * @param partitionObjects
 	 * @param partitions
 	 * @param width
 	 * @param pos1
