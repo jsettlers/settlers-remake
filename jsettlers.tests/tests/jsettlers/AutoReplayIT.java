@@ -19,7 +19,6 @@ import java.util.Collection;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.replay.ReplayTool;
 
@@ -79,11 +78,7 @@ public class AutoReplayIT {
 		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "'");
 
 		BufferedInputStream expectedStream = new BufferedInputStream(Files.newInputStream(expectedFile));
-		MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
 		BufferedInputStream actualStream = new BufferedInputStream(Files.newInputStream(actualFile));
-		MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
-
-		assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
 
 		int e, a;
 		int idx = 0;
