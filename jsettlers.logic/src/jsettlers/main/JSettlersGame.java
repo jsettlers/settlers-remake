@@ -65,7 +65,7 @@ public class JSettlersGame {
 
 	private final Object stopMutex = new Object();
 
-	private final IGameCreator mapcreator;
+	private final IGameCreator mapCreator;
 	private final long randomSeed;
 	private final byte playerId;
 	private final boolean[] availablePlayers;
@@ -78,13 +78,18 @@ public class JSettlersGame {
 	private boolean stopped = false;
 	private boolean started = false;
 
+	private PrintStream systemErrorStream;
+	private PrintStream systemOutStream;
+
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
 			boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
+		configureLogging(mapCreator);
+
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
 				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator + " replayStream: "
 				+ replayFileInputStream);
 
-		this.mapcreator = mapCreator;
+		this.mapCreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkConnector = networkConnector;
 		this.playerId = playerId;
@@ -97,8 +102,6 @@ public class JSettlersGame {
 		MatchConstants.ENABLE_FOG_OF_WAR_DISABLING = controlAll;
 
 		this.gameRunner = new GameRunner();
-
-		configureLogging(mapCreator);
 	}
 
 	/**
@@ -165,6 +168,7 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
+
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
 				DataOutputStream replayFileStream = createReplayFileStream();
@@ -177,7 +181,7 @@ public class JSettlersGame {
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
-				MainGridWithUiSettings gridWithUiState = mapcreator.loadMainGrid(availablePlayers);
+				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(availablePlayers);
 				mainGrid = gridWithUiState.getMainGrid();
 				PlayerState playerState = gridWithUiState.getPlayerState(playerId);
 
@@ -229,6 +233,9 @@ public class JSettlersGame {
 				RescheduleTimer.stop();
 				Movable.resetState();
 				Building.dropAllBuildings();
+
+				System.setErr(systemErrorStream);
+				System.setOut(systemOutStream);
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);
@@ -242,10 +249,10 @@ public class JSettlersGame {
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {
-			final String replayFilename = getLogFile(mapcreator, "_replay.log");
+			final String replayFilename = getLogFile(mapCreator, "_replay.log");
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
-			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapcreator.getMapName(), mapcreator.getMapID(), playerId,
+			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapID(), playerId,
 					availablePlayers);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();
@@ -332,10 +339,14 @@ public class JSettlersGame {
 		public MainGrid getMainGrid() {
 			return mainGrid;
 		}
+
 	}
 
-	private static void configureLogging(final IGameCreator mapcreator) {
+	private void configureLogging(final IGameCreator mapcreator) {
 		try {
+			systemErrorStream = System.err;
+			systemOutStream = System.out;
+
 			if (!CommonConstants.ENABLE_CONSOLE_LOGGING) {
 				PrintStream outLogStream = new PrintStream(ResourceManager.writeFile(getLogFile(mapcreator, "_out.log")));
 				System.setOut(outLogStream);

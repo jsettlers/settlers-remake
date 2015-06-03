@@ -49,15 +49,16 @@ public class ReplayTool {
 				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
 		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
-		// create a replay basing on the savegame and containing the remaining tasks.
-		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
-		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
-
 		((GameRunner) startedGame).stopGame();
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 		}
+
+		// create a replay basing on the savegame and containing the remaining tasks.
+		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
+		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
+
 	}
 
 	private static IStartedGame waitForGameStartup(IStartingGame game) {
