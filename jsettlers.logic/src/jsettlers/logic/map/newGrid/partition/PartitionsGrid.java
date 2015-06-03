@@ -591,7 +591,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param otherPosition
 	 *            A position in the part of the divided partition that will keep the old partition id.
 	 */
-	void dividePartition(final short oldPartition, ShortPoint2D relabelStartPosition, ShortPoint2D otherPosition) {
+	private void dividePartition(final short oldPartition, ShortPoint2D relabelStartPosition, ShortPoint2D otherPosition) {
 		if (oldPartition == NO_PLAYER_PARTITION_ID) {
 			return; // don't divide the no player partition
 		}
@@ -759,7 +759,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return (byte) players.length;
 	}
 
-	int checkNormalizePartitions(int mergePartitionsThreshold) {
+	private int checkNormalizePartitions(int mergePartitionsThreshold) {
 		int maxPartitions = this.partitionObjects.length;
 		BitSet stoppedManagers = new BitSet(maxPartitions);
 
