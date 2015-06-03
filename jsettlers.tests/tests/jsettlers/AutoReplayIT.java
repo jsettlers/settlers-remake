@@ -31,7 +31,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
 	static {
-		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+		// CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 
 		TestUtils.setupResourcesManager();
