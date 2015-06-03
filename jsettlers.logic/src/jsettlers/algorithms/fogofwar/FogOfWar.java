@@ -46,28 +46,18 @@ public final class FogOfWar implements Serializable {
 	byte[][] sight;
 
 	private transient boolean enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
-	transient private IFogOfWarGrid grid;
+	private transient IFogOfWarGrid grid;
 	private transient boolean canceled;
 
 	public FogOfWar(short width, short height) {
-		this(width, height, (byte) 0, false);
+		this(width, height, (byte) 0);
 	}
 
-	public FogOfWar(final short width, final short height, final byte player, final boolean exploredOnStart) {
+	public FogOfWar(short width, short height, byte player) {
 		this.width = width;
 		this.height = height;
 		this.player = player;
 		this.sight = new byte[width][height];
-
-		byte defaultSight = 0;
-		if (exploredOnStart) {
-			defaultSight = CommonConstants.FOG_OF_WAR_EXPLORED;
-		}
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				sight[x][y] = defaultSight;
-			}
-		}
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {

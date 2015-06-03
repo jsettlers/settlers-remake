@@ -174,7 +174,7 @@ public final class MainGrid implements Serializable {
 		if (fogOfWar != null) {
 			this.fogOfWar = fogOfWar;
 		} else {
-			this.fogOfWar = new FogOfWar(width, height, playerId, false);
+			this.fogOfWar = new FogOfWar(width, height, playerId);
 		}
 	}
 
