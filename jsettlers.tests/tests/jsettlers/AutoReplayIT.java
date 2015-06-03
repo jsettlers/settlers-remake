@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.replay.ReplayTool;
@@ -97,6 +98,7 @@ public class AutoReplayIT {
 	}
 
 	private static Path replayAndGetSavegame(Path replayPath, int targetTimeMinutes) throws IOException {
+		Constants.FOG_OF_WAR_DEFAULT_ENABLED = false;
 		ReplayTool.replayAndCreateSavegame(replayPath.toFile(), targetTimeMinutes * 60 * 1000, remainingReplay);
 
 		Path savegameFile = findSavegameFile();

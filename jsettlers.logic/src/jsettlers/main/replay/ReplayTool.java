@@ -34,14 +34,15 @@ import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
+
 	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMs, String newReplayFile) throws IOException {
+
 		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
 		networkConnector.getGameClock().setPausing(true);
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
 		IStartingGame startingGame = game.start();
 		IStartedGame startedGame = waitForGameStartup(startingGame);
-		((GameRunner) startedGame).getMainGrid().getGuiInputGrid().getFogOfWar().setEnabled(false); // deactivate FoW, it is useless here
 
 		// schedule the save task and run the game to the target game time
 		networkConnector.scheduleTaskAt(targetGameTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD,
