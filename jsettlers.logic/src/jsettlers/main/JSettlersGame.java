@@ -242,9 +242,10 @@ public class JSettlersGame {
 			} catch (Exception e) {
 				e.printStackTrace();
 				reportFail(EGameError.UNKNOWN_ERROR, e);
-			}
-			if (exitListener != null) {
-				exitListener.gameExited(this);
+			} finally {
+				if (exitListener != null) {
+					exitListener.gameExited(this);
+				}
 			}
 		}
 

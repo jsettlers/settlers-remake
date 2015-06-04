@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import jsettlers.common.utils.MutableInt;
+import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.input.tasks.EGuiAction;
@@ -49,16 +51,36 @@ public class ReplayTool {
 				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
 		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
-		((GameRunner) startedGame).stopGame();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-		}
-
 		// create a replay basing on the savegame and containing the remaining tasks.
 		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
 
+		awaitShutdown(startedGame);
+	}
+
+	private static void awaitShutdown(IStartedGame startedGame) {
+		final MutableInt gameStopped = new MutableInt(0);
+
+		startedGame.setGameExitListener(new IGameExitListener() {
+			@Override
+			public void gameExited(IStartedGame game) {
+				gameStopped.value = 1;
+				synchronized (gameStopped) {
+					gameStopped.notifyAll();
+				}
+			}
+		});
+
+		((GameRunner) startedGame).stopGame();
+
+		try {
+			while (gameStopped.value == 0) {
+				synchronized (gameStopped) {
+					gameStopped.wait();
+				}
+			}
+		} catch (InterruptedException e) {
+		}
 	}
 
 	private static IStartedGame waitForGameStartup(IStartingGame game) {
