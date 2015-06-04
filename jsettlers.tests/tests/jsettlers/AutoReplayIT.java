@@ -88,7 +88,7 @@ public class AutoReplayIT {
 
 		int e, a;
 		while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
-			assertEquals("difference at byte " + actualStream.getByteCounter(), a, e);
+			assertEquals("difference at byte " + (actualStream.getByteCounter() - 1), a, e);
 		}
 		assertEquals("files have different lengths", e, a);
 
