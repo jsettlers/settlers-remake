@@ -37,7 +37,9 @@ public class AutoReplayIT {
 
 		TestUtils.setupResourcesManager();
 	}
+
 	private static final String remainingReplay = "out/remainingReplay.log";
+	private static final Object lock = new Object();
 
 	@Parameters(name = "{index}: {0} : {1}")
 	public static Collection<Object[]> replaySets() {
@@ -62,10 +64,12 @@ public class AutoReplayIT {
 
 	@Test
 	public void testReplay() throws IOException {
-		Path savegameFile = replayAndGetSavegame(getReplayPath(), targetTimeMinutes);
-		Path expectedFile = getSavegamePath();
+		synchronized (lock) {
+			Path savegameFile = replayAndGetSavegame(getReplayPath(), targetTimeMinutes);
+			Path expectedFile = getSavegamePath();
 
-		compareMapFiles(expectedFile, savegameFile);
+			compareMapFiles(expectedFile, savegameFile);
+		}
 	}
 
 	private Path getSavegamePath() {
