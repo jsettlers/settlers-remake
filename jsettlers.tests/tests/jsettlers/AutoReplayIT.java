@@ -19,8 +19,10 @@ import java.util.Collection;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.constants.Constants;
+import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.main.replay.ReplayTool;
+import jsettlers.tests.utils.CountingInputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +32,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class AutoReplayIT {
 	static {
-		CommonConstants.ENABLE_CONSOLE_LOGGING = true;
+		// CommonConstants.ENABLE_CONSOLE_LOGGING = true;
 		CommonConstants.CONTROL_ALL = true;
 
 		TestUtils.setupResourcesManager();
@@ -78,13 +80,15 @@ public class AutoReplayIT {
 		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "'");
 
 		BufferedInputStream expectedStream = new BufferedInputStream(Files.newInputStream(expectedFile));
-		BufferedInputStream actualStream = new BufferedInputStream(Files.newInputStream(actualFile));
+		MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
+		CountingInputStream actualStream = new CountingInputStream(new BufferedInputStream(Files.newInputStream(actualFile)));
+		MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
+
+		assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
 
 		int e, a;
-		int idx = 0;
 		while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
-			assertEquals("difference at byte " + idx, a, e);
-			idx++;
+			assertEquals("difference at byte " + actualStream.getByteCounter(), a, e);
 		}
 		assertEquals("files have different lengths", e, a);
 
