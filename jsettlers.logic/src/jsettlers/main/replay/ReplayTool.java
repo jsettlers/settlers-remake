@@ -51,7 +51,7 @@ public class ReplayTool {
 
 		((GameRunner) startedGame).stopGame();
 		try {
-			Thread.sleep(500);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
 
