@@ -97,6 +97,9 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 					scale = ((Integer) scaleOfField).intValue();
 				}
 			}
+		} catch (NoSuchFieldException exception) {
+			// if there is no Field scale then we have a scale factor of 1
+			// this is expected for Oracle JRE < 1.7.0_u40
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
