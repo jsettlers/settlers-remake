@@ -21,10 +21,6 @@ import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 import java.awt.Component;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -32,16 +28,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.lang.reflect.Field;
 
 /**
- * This class listens to swing events, converts them to a go events and sends
- * them to handlers.
+ * This class listens to swing events, converts them to a go events and sends them to handlers.
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements
-		MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
+public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -52,8 +45,6 @@ public class GOSwingEventConverter extends AbstractEventConverter implements
 	 */
 	private boolean panWithButton3;
 
-	private static Window referenceWindowToCalculateRetinaScale;
-	
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
 	 * 
@@ -62,8 +53,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements
 	 * @param provider
 	 *            THe provider to which to send the events.
 	 */
-	public GOSwingEventConverter(Component component,
-			GOEventHandlerProvider provider) {
+	public GOSwingEventConverter(Component component, GOEventHandlerProvider provider) {
 		super(provider);
 
 		component.addKeyListener(this);
@@ -71,43 +61,12 @@ public class GOSwingEventConverter extends AbstractEventConverter implements
 		component.addMouseMotionListener(this);
 		component.addMouseWheelListener(this);
 
-		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW,
-				Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD,
-				MOUSE_MOVE_TRESHOLD));
-		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN,
-				Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD,
-				MOUSE_MOVE_TRESHOLD));
-	}
-	
-	public static void setReferenceWindowToCalculateRetinaScale(Window window) {
-		referenceWindowToCalculateRetinaScale = window;
-	}
-
-	private int determineRetinaScaleFactor() {
-		int scale = 1;
-
-		GraphicsConfiguration config = referenceWindowToCalculateRetinaScale.getGraphicsConfiguration();
-		GraphicsDevice myScreen = config.getDevice();
-
-		try {
-			Field field = myScreen.getClass().getDeclaredField("scale");
-			if (field != null) {
-				field.setAccessible(true);
-				Object scaleOfField = field.get(myScreen);
-				if (scaleOfField instanceof Integer) {
-					scale = ((Integer) scaleOfField).intValue();
-				}
-			}
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
-
-		return scale;
+		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
+		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 	}
 
 	private UIPoint convertToLocal(MouseEvent e) {
-		               int scale = determineRetinaScaleFactor();
-		               return new UIPoint(e.getX() * scale, (e.getComponent().getHeight() - e.getY()) * scale);
+		return new UIPoint(e.getX(), e.getComponent().getHeight() - e.getY());
 	}
 
 	@Override
@@ -136,8 +95,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements
 		if (mouseButton == MouseEvent.BUTTON1) {
 			startDraw(local);
 		} else {
-			boolean isPanClick = mouseButton == MouseEvent.BUTTON2
-					|| mouseButton == MouseEvent.BUTTON3;
+			boolean isPanClick = mouseButton == MouseEvent.BUTTON2 || mouseButton == MouseEvent.BUTTON3;
 			if (isPanClick) {
 				startPan(local);
 				panWithButton3 = mouseButton == MouseEvent.BUTTON3;
@@ -172,15 +130,10 @@ public class GOSwingEventConverter extends AbstractEventConverter implements
 		String text = getKeyName(e);
 		startKeyEvent(text);
 		/*
-		 * if (ongoingKeyEvent == null) { if (e.getKeyCode() ==
-		 * KeyEvent.VK_ESCAPE) { ongoingKeyEvent.setHandler(getCancelHandler());
-		 * } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-		 * ongoingKeyEvent.setHandler(getPanHandler(0, -KEYPAN)); } else if
-		 * (e.getKeyCode() == KeyEvent.VK_DOWN) {
-		 * ongoingKeyEvent.setHandler(getPanHandler(0, KEYPAN)); } else if
-		 * (e.getKeyCode() == KeyEvent.VK_LEFT) {
-		 * ongoingKeyEvent.setHandler(getPanHandler(KEYPAN, 0)); } else if
-		 * (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+		 * if (ongoingKeyEvent == null) { if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { ongoingKeyEvent.setHandler(getCancelHandler()); } else if
+		 * (e.getKeyCode() == KeyEvent.VK_UP) { ongoingKeyEvent.setHandler(getPanHandler(0, -KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+		 * { ongoingKeyEvent.setHandler(getPanHandler(0, KEYPAN)); } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+		 * ongoingKeyEvent.setHandler(getPanHandler(KEYPAN, 0)); } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 		 * ongoingKeyEvent.setHandler(getPanHandler(-KEYPAN, 0)); }
 		 * 
 		 * provider.handleEvent(ongoingKeyEvent);
