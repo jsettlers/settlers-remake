@@ -197,13 +197,6 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	public void waitForThreadsToFinish() {
-		try {
-			Thread.sleep(300); // TODO @Andreas Eberle: Wait for the threads to finish their work
-		} catch (InterruptedException e) {
-		}
-	}
-
 	public MainGrid(String mapId, String mapName, IMapData mapGrid, boolean[] availablePlayers) {
 		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), (byte) availablePlayers.length);
 
@@ -1623,7 +1616,7 @@ public final class MainGrid implements Serializable {
 			boolean savedPausingState = MatchConstants.clock.isPausing();
 			MatchConstants.clock.setPausing(true);
 			try {
-				Thread.sleep(100); // FIXME @Andreas serializer should wait until threads did their work!
+				Thread.sleep(300); // FIXME @Andreas serializer should wait until threads did their work!
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
