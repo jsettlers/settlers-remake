@@ -155,14 +155,19 @@ public class MapList implements IMapListerCallable {
 	 *            The header to use.
 	 * @param data
 	 *            The data to save.
+	 * @param out
+	 *            This parameter is optional. If it is not null, the stream is used to save the map to this location. If it is null, the map is saved
+	 *            in the default location.
 	 * @throws IOException
 	 *             If any IO error occurred.
 	 */
-	public synchronized void saveNewMap(MapFileHeader header, IMapData data) throws IOException {
-		OutputStream out = null;
+	public synchronized void saveNewMap(MapFileHeader header, IMapData data, OutputStream out) throws IOException {
 		try {
-			out = mapsDir.getOutputStream(header);
-			MapSaver.saveMap(header, data, out);
+			if (out == null) {
+				out = mapsDir.getOutputStream(header);
+			}
+			header.writeTo(out);
+			MapDataSerializer.serialize(data, out);
 		} finally {
 			if (out != null) {
 				out.close();
@@ -192,21 +197,6 @@ public class MapList implements IMapListerCallable {
 
 		oos.close();
 
-		loadFileList();
-	}
-
-	/**
-	 * Saves a random map to the given file.
-	 * 
-	 * @param header
-	 *            The header to save
-	 * @param definition
-	 *            The random map rule text.
-	 * @throws IOException
-	 */
-	public synchronized void saveRandomMap(MapFileHeader header, String definition) throws IOException {
-		OutputStream out = mapsDir.getOutputStream(header);
-		MapSaver.saveRandomMap(header, definition, out);
 		loadFileList();
 	}
 
