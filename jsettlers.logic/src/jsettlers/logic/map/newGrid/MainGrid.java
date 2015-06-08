@@ -472,7 +472,7 @@ public final class MainGrid implements Serializable {
 				return isInBounds(x, y) && !hasSamePlayer(x, y, pathCalculable) && mapObjectsManager.hasStealableMaterial(x, y);
 
 			default:
-				System.err.println("can't handle search type in fitsSearchType(): " + searchType);
+				System.err.println("ERROR: Can't handle search type in fitsSearchType(): " + searchType);
 				return false;
 			}
 		}
@@ -1642,7 +1642,7 @@ public final class MainGrid implements Serializable {
 			if (constructionMarksGrid.canConstructAt(position.x, position.y, type, playerId)) {
 				MainGrid.this.constructBuildingAt(position, type, partitionsGrid.getPlayerAt(position.x, position.y), false);
 			} else {
-				System.err.println("WARNING: TRIED TO CONSTRUCT BUILDING OUTSIDE COUNTRY! Type: " + type + "  pos: " + position + "  playerId: "
+				System.out.println("WARNING: TRIED TO CONSTRUCT BUILDING OUTSIDE COUNTRY! Type: " + type + "  pos: " + position + "  playerId: "
 						+ playerId);
 			}
 		}

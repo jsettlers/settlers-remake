@@ -616,7 +616,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
 
 		default:
-			System.err.println("couldn't create new building, because type is unknown: " + type);
+			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);
 			return null;
 		}
 	}

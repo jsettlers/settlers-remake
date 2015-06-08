@@ -39,7 +39,7 @@ class DummyStartingGameListener implements IStartingGameListener {
 
 	@Override
 	public void startFailed(EGameError errorType, Exception exception) {
-		System.err.println("start failed due to: " + errorType);
+		System.err.println("ERROR: Start failed due to: " + errorType);
 		exception.printStackTrace();
 		System.exit(1);
 	}
