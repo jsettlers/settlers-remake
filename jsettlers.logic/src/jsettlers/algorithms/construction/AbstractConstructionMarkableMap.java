@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.algorithms.construction;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.position.RelativePoint;
 
@@ -70,4 +71,6 @@ public abstract class AbstractConstructionMarkableMap {
 	public abstract boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
 
 	public abstract boolean isInBounds(int x, int y);
+
+	public abstract boolean canConstructAt(short x, short y, EBuildingType type, byte playerId);
 }

@@ -309,6 +309,10 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
+	public ConstructionMarksGrid getConstructionMarksGrid() {
+		return constructionMarksGrid;
+	}
+	
 	public IGraphicsGrid getGraphicsGrid() {
 		return graphicsGrid;
 	}
@@ -863,7 +867,8 @@ public final class MainGrid implements Serializable {
 			return height;
 		}
 
-		boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
+		@Override
+		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			RelativePoint[] protectedTiles = type.getProtectedTiles();
 
