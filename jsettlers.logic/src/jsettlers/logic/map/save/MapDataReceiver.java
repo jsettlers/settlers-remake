@@ -19,7 +19,6 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.random.generation.PlayerStart;
 import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
 
 /**
@@ -33,7 +32,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	private int height;
 
 	private int playerCount;
-	private PlayerStart[] playerStarts;
+	private ShortPoint2D[] playerStarts;
 
 	private byte[][] heights;
 	private ELandscapeType[][] landscapes;
@@ -47,7 +46,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 		this.width = width;
 		this.height = height;
 		this.playerCount = playerCount;
-		this.playerStarts = new PlayerStart[playerCount];
+		this.playerStarts = new ShortPoint2D[playerCount];
 		this.heights = new byte[width][height];
 		this.landscapes = new ELandscapeType[width][height];
 		this.mapObjects = new MapObject[width][height];
@@ -58,7 +57,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 
 	@Override
 	public void setPlayerStart(byte player, int x, int y) {
-		playerStarts[player] = new PlayerStart(x, y, player, player);
+		playerStarts[player] = new ShortPoint2D(x, y);
 	}
 
 	@Override
