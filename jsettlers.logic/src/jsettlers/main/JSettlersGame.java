@@ -86,8 +86,7 @@ public class JSettlersGame {
 		configureLogging(mapCreator);
 
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
-				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator + " replayStream: "
-				+ replayFileInputStream);
+				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
 
 		this.mapCreator = mapCreator;
 		this.randomSeed = randomSeed;
