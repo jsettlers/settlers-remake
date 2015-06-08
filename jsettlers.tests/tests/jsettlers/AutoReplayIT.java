@@ -69,6 +69,7 @@ public class AutoReplayIT {
 			Path expectedFile = getSavegamePath();
 
 			compareMapFiles(expectedFile, savegameFile);
+			Files.delete(savegameFile);
 		}
 	}
 
