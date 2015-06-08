@@ -19,7 +19,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Random;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -166,7 +165,6 @@ public class MapDataSerializer {
 			if (!(version == VERSION || version == VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS)) {
 				throw new IOException("wrong stream version, got: " + version);
 			}
-			Random rand = new Random(123);
 
 			int width = stream.readShort();
 			int height = stream.readShort();

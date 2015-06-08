@@ -20,7 +20,6 @@ import java.io.InputStream;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapDataReceiver;
 import jsettlers.logic.map.save.MapDataSerializer;
 import jsettlers.logic.map.save.MapFileHeader;
 
