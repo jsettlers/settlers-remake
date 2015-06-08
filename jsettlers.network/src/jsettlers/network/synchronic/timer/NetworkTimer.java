@@ -135,7 +135,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			while (tasksPacket != null && tasksPacket.getLockstepNumber() <= lockstep) {
 				assert tasksPacket.getLockstepNumber() == lockstep : "FOUND TasksPacket FOR older lockstep!";
 
-				System.out.printf("Executing SyncTaskPacket(" + tasksPacket + ") in " + getLockstepText(lockstep));
+				System.out.println("Executing SyncTaskPacket(" + tasksPacket + ") in " + getLockstepText(lockstep));
 
 				try {
 					executeTasksPacket(tasksPacket);
@@ -160,14 +160,6 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 			System.err.println("WARNING: Networking Timer catched Throwable!!!");
 			t.printStackTrace();
 		}
-	}
-
-	private String getLockstepText(int lockstep) {
-		int hours = time / (1000 * 60 * 60);
-		int minutes = (time / (1000 * 60)) % 60;
-		int seconds = (time / 1000) % 60;
-		int millis = time % 1000;
-		return String.format("lockstep: %d at game time: %dms (%02d:%02d:%02d:%03d)\n", lockstep, time, hours, minutes, seconds, millis);
 	}
 
 	private void executeTasksPacket(SyncTasksPacket tasksPacket) {
@@ -392,6 +384,15 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 				e2.printStackTrace();
 			}
 		}
+	}
+
+	private String getLockstepText(int lockstep) {
+		int time = lockstep * NetworkConstants.Client.LOCKSTEP_PERIOD;
+		int hours = time / (1000 * 60 * 60);
+		int minutes = (time / (1000 * 60)) % 60;
+		int seconds = (time / 1000) % 60;
+		int millis = time % 1000;
+		return String.format("lockstep: %d (game time: %dms / %02d:%02d:%02d:%03d)", lockstep, time, hours, minutes, seconds, millis);
 	}
 
 }
