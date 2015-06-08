@@ -181,7 +181,7 @@ public class ChannelTest {
 		c1.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("sdfsf���", -2342));
 		c2.sendPacket(NetworkConstants.ENetworkKey.ARRAY_OF_MATCHES, new TestPacket("dsfs", 4234)); // test both channels
 
-		Thread.sleep(10);
+		Thread.sleep(40);
 
 		testConnection(); // now the normal test should still work.
 	}
@@ -194,7 +194,7 @@ public class ChannelTest {
 		TestPacket testPackage = new TestPacket("dsfs", 2332);
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
 
-		Thread.sleep(30);
+		Thread.sleep(80);
 
 		assertEquals(1, listener.packets.size());
 		assertEquals(testPackage, listener.packets.get(0));
@@ -202,7 +202,7 @@ public class ChannelTest {
 		c2.removeListener(listener.getKeys()[0]);
 
 		c1.sendPacket(ENetworkKey.TEST_PACKET, testPackage);
-		Thread.sleep(30);
+		Thread.sleep(80);
 		assertEquals(1, listener.packets.size());
 	}
 
