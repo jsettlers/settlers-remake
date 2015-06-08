@@ -196,8 +196,11 @@ public class JSettlersGame {
 					imagePreloader.join(); // Wait for ImageProvider to finish loading the images
 
 				waitForStartingGameListener();
-
 				updateProgressListener(EProgressState.WAITING_FOR_OTHER_PLAYERS, 0.98f);
+
+				if (replayFileInputStream != null) {
+					gameClock.loadReplayLogFromStream(replayFileInputStream);
+				}
 
 				networkConnector.setStartFinished(true);
 				waitForAllPlayersStartFinished(networkConnector);
@@ -207,10 +210,6 @@ public class JSettlersGame {
 
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
 						this, playerId, multiplayer);
-
-				if (replayFileInputStream != null) {
-					gameClock.loadReplayLogFromStream(replayFileInputStream);
-				}
 
 				gameClock.startExecution();
 				gameRunning = true;
