@@ -37,7 +37,6 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 	private final BitSet blockedGrid;
 	private final BitSet markedGrid;
 	private final BitSet protectedGrid;
-	private final BitSet bordersGrid;
 
 	private IBlockingChangedListener blockingChangedListener = null;
 	private IProtectedChangedListener protectedChangedListener = null;
@@ -50,7 +49,6 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 		this.blockedGrid = new BitSet(width * height);
 		this.protectedGrid = new BitSet(width * height);
 		this.markedGrid = new BitSet(width * height);
-		this.bordersGrid = new BitSet(width * height);
 
 		initAdditional();
 	}
@@ -133,14 +131,6 @@ public final class FlagsGrid implements Serializable, IBlockingProvider, IPartit
 		if (protectedChangedListener != null) {
 			this.protectedChangedListener.protectedChanged(x, y, newProtected);
 		}
-	}
-
-	public boolean isBorderAt(int x, int y) {
-		return this.bordersGrid.get(x + y * width);
-	}
-
-	public void setBorderAt(short x, short y, boolean setProtected) {
-		this.bordersGrid.set(x + y * width, setProtected);
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -133,7 +134,7 @@ public final class MainGrid implements Serializable {
 	final BuildingsGrid buildingsGrid;
 
 	transient FogOfWar fogOfWar;
-	transient IGraphicsGrid graphicsGrid;
+	transient GraphicsGrid graphicsGrid;
 	transient ConstructionMarksGrid constructionMarksGrid;
 	transient BordersThread bordersThread;
 	transient IGuiInputGrid guiInputGrid;
@@ -164,7 +165,7 @@ public final class MainGrid implements Serializable {
 		this.graphicsGrid = new GraphicsGrid();
 		this.constructionMarksGrid = new ConstructionMarksGrid();
 		this.bordersThread = new BordersThread(new BordersThreadGrid());
-		this.guiInputGrid = new GUIInputGrid();
+		this.guiInputGrid = new GuiInputGrid();
 
 		this.partitionsGrid.setPlayerChangedListener(new PlayerChangedListener());
 		this.enclosedBlockedAreaFinderGrid = new EnclosedBlockedAreaFinderGrid();
@@ -181,6 +182,7 @@ public final class MainGrid implements Serializable {
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
 		initAdditional();
+		this.bordersThread.checkArea(0, 0, width, height);
 	}
 
 	public void startThreads() {
@@ -607,6 +609,8 @@ public final class MainGrid implements Serializable {
 	}
 
 	final class GraphicsGrid implements IGraphicsGrid {
+		private transient BitSet bordersGrid = new BitSet(width * height);
+
 		@Override
 		public final short getHeight() {
 			return height;
@@ -674,7 +678,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final boolean isBorder(int x, int y) {
-			return flagsGrid.isBorderAt(x, y);
+			return bordersGrid.get(x + y * width);
 		}
 
 		@Override
@@ -1315,7 +1319,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final void setBorderAt(short x, short y, boolean isBorder) {
-			flagsGrid.setBorderAt(x, y, isBorder);
+			graphicsGrid.bordersGrid.set(x + y * width, isBorder);
 		}
 
 		@Override
@@ -1563,7 +1567,7 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	final class GUIInputGrid implements IGuiInputGrid {
+	final class GuiInputGrid implements IGuiInputGrid {
 		@Override
 		public final Movable getMovable(short x, short y) {
 			return movableGrid.getMovableAt(x, y);
