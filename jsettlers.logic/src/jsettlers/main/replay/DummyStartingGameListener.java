@@ -29,11 +29,8 @@ class DummyStartingGameListener implements IStartingGameListener {
 	}
 
 	@Override
-	public IMapInterfaceConnector startFinished(IStartedGame game) {
+	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
 		startedGame = game;
-		synchronized (waitMutex) {
-			waitMutex.notifyAll();
-		}
 		return new DummyMapInterfaceConnector();
 	}
 
@@ -54,5 +51,12 @@ class DummyStartingGameListener implements IStartingGameListener {
 			}
 		}
 		return startedGame;
+	}
+
+	@Override
+	public void startFinished() {
+		synchronized (waitMutex) {
+			waitMutex.notifyAll();
+		}
 	}
 }

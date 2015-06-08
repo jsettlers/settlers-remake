@@ -205,7 +205,7 @@ public class JSettlersGame {
 				networkConnector.setStartFinished(true);
 				waitForAllPlayersStartFinished(networkConnector);
 
-				final IMapInterfaceConnector connector = startingGameListener.startFinished(this);
+				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				connector.loadUIState(playerState.getUiState());
 
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
@@ -213,6 +213,8 @@ public class JSettlersGame {
 
 				gameClock.startExecution();
 				gameRunning = true;
+
+				startingGameListener.startFinished();
 
 				synchronized (stopMutex) {
 					while (!stopped) {
