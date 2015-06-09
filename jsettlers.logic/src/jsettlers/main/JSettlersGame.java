@@ -21,12 +21,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
+import jsettlers.ai.highlevel.AiThread;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.IMapInterfaceConnector;
@@ -48,6 +54,7 @@ import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.player.Player;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
@@ -69,6 +76,7 @@ public class JSettlersGame {
 	private final long randomSeed;
 	private final byte playerId;
 	private final boolean[] availablePlayers;
+	private final List<Byte> aiPlayers;
 	private final INetworkConnector networkConnector;
 	private final boolean multiplayer;
 	private final DataInputStream replayFileInputStream;
@@ -79,7 +87,7 @@ public class JSettlersGame {
 	private boolean started = false;
 
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
-			boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
+			List<Byte> aiPlayers, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
 				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator + " replayStream: "
 				+ replayFileInputStream);
@@ -89,6 +97,7 @@ public class JSettlersGame {
 		this.networkConnector = networkConnector;
 		this.playerId = playerId;
 		this.availablePlayers = availablePlayers;
+		this.aiPlayers = aiPlayers;
 		this.multiplayer = multiplayer;
 		this.replayFileInputStream = replayFileInputStream;
 
@@ -108,8 +117,8 @@ public class JSettlersGame {
 	 * @param networkConnector
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers) {
-		this(mapCreator, randomSeed, networkConnector, playerId, availablePlayers, CommonConstants.CONTROL_ALL, true, null);
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers, List<Byte> aiPlayers) {
+		this(mapCreator, randomSeed, networkConnector, playerId, availablePlayers, aiPlayers, CommonConstants.CONTROL_ALL, true, null);
 	}
 
 	/**
@@ -119,8 +128,8 @@ public class JSettlersGame {
 	 * @param randomSeed
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerId, boolean[] availablePlayers) {
-		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, availablePlayers, true, false, null);
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerId, boolean[] availablePlayers, List<Byte> aiPlayers) {
+		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, availablePlayers, aiPlayers, true, false, null);
 	}
 
 	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector,
@@ -130,7 +139,7 @@ public class JSettlersGame {
 
 		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
 		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers(), true, false, replayFileInputStream);
+				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers(), new ArrayList<Byte>(), true, false, replayFileInputStream);
 	}
 
 	/**
@@ -212,6 +221,9 @@ public class JSettlersGame {
 				gameClock.startExecution();
 				gameRunning = true;
 
+				AiThread aiThread = new AiThread(aiPlayers, mainGrid);
+				aiThread.start();
+				
 				synchronized (stopMutex) {
 					while (!stopped) {
 						try {
@@ -221,6 +233,7 @@ public class JSettlersGame {
 					}
 				}
 
+				aiThread.shutdown();
 				networkConnector.shutdown();
 				gameClock.stopExecution();
 				connector.shutdown();

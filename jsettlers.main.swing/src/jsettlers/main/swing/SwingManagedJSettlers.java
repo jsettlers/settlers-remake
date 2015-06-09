@@ -23,7 +23,9 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -212,7 +214,14 @@ public class SwingManagedJSettlers {
 				byte playerId = 0;
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				availablePlayers[playerId] = true;
-				game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers).start();
+				List<Byte> aiPlayers = new ArrayList<Byte>();
+				for (byte i = 0; i < availablePlayers.length;i++) {
+					if (i != playerId) {
+						aiPlayers.add(i);
+					}
+				}
+				
+				game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers, aiPlayers).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			}

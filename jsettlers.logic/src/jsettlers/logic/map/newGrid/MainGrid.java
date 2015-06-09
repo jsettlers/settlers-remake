@@ -939,7 +939,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
-			return (MatchConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
+			return (playerId == 0 && MatchConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
 					|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
 		}
 

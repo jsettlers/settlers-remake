@@ -97,8 +97,13 @@ public class StartScreenConnector implements IStartScreen {
 		for (int i = 0; i < availablePlayers.length; i++) {
 			availablePlayers[i] = true;
 		}
-
-		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers);
+		List<Byte> aiPlayers = new ArrayList<Byte>();
+		for (byte i = 0; i < availablePlayers.length;i++) {
+			if (i != playerId) {
+				aiPlayers.add(i);
+			}
+		}
+		JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers, aiPlayers);
 		return game.start();
 	}
 
