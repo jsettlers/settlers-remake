@@ -56,7 +56,7 @@ import jsettlers.common.position.ShortPoint2D;
  * @author michael
  * @see IMapData
  */
-public class MapDataSerializer {
+public class FreshMapSerializer {
 	private static final int VERSION = 3;
 	private static final int VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS = 3;
 

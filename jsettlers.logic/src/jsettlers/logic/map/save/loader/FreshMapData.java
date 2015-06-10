@@ -19,7 +19,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.object.MapObject;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
+import jsettlers.logic.map.save.FreshMapSerializer.IMapDataReceiver;
 
 /**
  * This is a map data receiver that stores the given data and provides access to it via the {@link IMapData} interface.

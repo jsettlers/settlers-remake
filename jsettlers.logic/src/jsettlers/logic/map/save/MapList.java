@@ -167,7 +167,7 @@ public class MapList implements IMapListerCallable {
 				out = mapsDir.getOutputStream(header);
 			}
 			header.writeTo(out);
-			MapDataSerializer.serialize(data, out);
+			FreshMapSerializer.serialize(data, out);
 		} finally {
 			if (out != null) {
 				out.close();
