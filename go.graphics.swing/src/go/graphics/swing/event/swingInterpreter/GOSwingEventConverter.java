@@ -23,8 +23,11 @@ import go.graphics.event.interpreter.AbstractEventConverter;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -39,7 +42,7 @@ import java.lang.reflect.Field;
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener {
+public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener, HierarchyListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -67,8 +70,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
 		component.addMouseWheelListener(this);
-		component.addComponentListener(this);
-		updateRetinaScaleFactor(component);
+		component.addHierarchyListener(this);
 		
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
@@ -306,4 +308,22 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void hierarchyChanged(HierarchyEvent hierarchyEvent) {
+		Component component = hierarchyEvent.getComponent();
+		privateRegisterComponentListenerToParentWindowOf(component, component);
+	}
+	
+	void privateRegisterComponentListenerToParentWindowOf(Component component, Component childComponent) {
+		if (component == null) {
+			return;
+		} else if (component instanceof Window) {
+			updateRetinaScaleFactor(component);
+			component.addComponentListener(this);
+			childComponent.removeComponentListener(this);
+		} else {
+			privateRegisterComponentListenerToParentWindowOf(component.getParent(), childComponent);
+		}
+	}
 }
