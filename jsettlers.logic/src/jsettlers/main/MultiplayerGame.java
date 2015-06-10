@@ -145,16 +145,8 @@ public class MultiplayerGame {
 			return aiPlayerIds;
 		}
 		
-		for (byte playerId = 0; playerId < availablePlayers.length; playerId++) {
-			boolean playerIsMultiplayer = false;
-			for (IMultiplayerPlayer currentPlayer : playersList.getItems()) {
-				if (currentPlayer.getId().equals(new Integer(playerId).toString())) {
-					playerIsMultiplayer = true;
-					}
-				}
-			if (!playerIsMultiplayer) {
-				aiPlayerIds.add(playerId);
-			}
+		for (byte playerId = (byte) playersList.getItems().size(); playerId < availablePlayers.length; playerId++) {
+			aiPlayerIds.add(playerId);
 		}
 
 		return aiPlayerIds;
