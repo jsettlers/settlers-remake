@@ -1,4 +1,4 @@
-package jsettlers;
+package jsettlers.tests.autoreplay;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,6 +16,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Collection;
 
+import jsettlers.TestUtils;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.logic.constants.Constants;
