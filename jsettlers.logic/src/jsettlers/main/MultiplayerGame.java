@@ -163,6 +163,9 @@ public class MultiplayerGame {
 			}
 			i++;
 		}
+		for (byte ii = i; ii < availablePlayers.length; ii++) {
+			availablePlayers[ii] = true;
+		}
 
 		if (ownPlayerId < 0) {
 			throw new RuntimeException("Wasn't able to find my id!");
