@@ -15,18 +15,20 @@
 package jsettlers.graphics.androidui.menu;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 public class BuildMenu extends AndroidMenu {
 
@@ -44,27 +46,54 @@ public class BuildMenu extends AndroidMenu {
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		TableLayout list =
-				(TableLayout) ((LinearLayout) view)
+		LinearLayout outer =
+				(LinearLayout) view
 						.findViewById(R.id.build_list);
 
+		addBuildings(outer, BuildingBuildContent.normalBuildings, "");
+		addBuildings(outer, BuildingBuildContent.foodBuildings, "");
+		addBuildings(outer, BuildingBuildContent.militaryBuildings, "");
+		addBuildings(outer, BuildingBuildContent.socialBuildings, "");
+	}
+
+	private void addBuildings(LinearLayout outer, EBuildingType[] types, String headline) {
+		// TODO: add a headline text.
+		TableLayout table = new TableLayout(outer.getContext());
+		fillTableLayout(table, types);
+		outer.addView(table);
+	}
+
+	private void fillTableLayout(TableLayout table, EBuildingType[] types) {
 		TableRow currentRow = null;
-		for (EBuildingType type : EBuildingType.values) {
+		for (EBuildingType type : types) {
 			if (currentRow == null
 					|| currentRow.getChildCount() >= ITEMS_PER_ROW) {
-				currentRow = new TableRow(view.getContext());
-				list.addView(currentRow);
+				currentRow = new TableRow(table.getContext());
+				table.addView(currentRow);
 			}
 
-			int resourceId = Graphics.BUILDING_IMAGE_MAP[type.ordinal()];
-			if (resourceId != -1) {
-				ImageButton b = new ImageButton(view.getContext());
-				b.setImageResource(resourceId);
-				b.setOnClickListener(generateActionListener(new ShowConstructionMarksAction(
-						type), true));
-				currentRow.addView(b);
-			}
+			createButton(currentRow, type);
 		}
 
+	}
+
+	private View createButton(TableRow currentRow, EBuildingType type) {
+		int resourceId = Graphics.BUILDING_IMAGE_MAP[type.ordinal()];
+		if (resourceId == -1) {
+			return null;
+		}
+		LayoutInflater layoutInflater = LayoutInflater.from(currentRow.getContext());
+		View buttonRoot = layoutInflater.inflate(R.layout.buildingbutton, currentRow, false);
+		TextView count = (TextView) buttonRoot.findViewById(R.id.buildingbutton_count);
+		ImageView image = (ImageView) buttonRoot.findViewById(R.id.buildingbutton_image);
+		Button button = (Button) buttonRoot.findViewById(R.id.buildingbutton_button);
+
+		image.setImageResource(resourceId);
+		button.setOnClickListener(generateActionListener(new ShowConstructionMarksAction(
+				type), true));
+		count.setText("?\n+?");
+
+		currentRow.addView(buttonRoot);
+		return buttonRoot;
 	}
 }
