@@ -20,24 +20,30 @@ import go.graphics.text.TextDrawer;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.utils.Button;
 
-public class UILabeledButton extends UIPanel {
+/**
+ * This is a special button that has a label on it.
+ * 
+ * @author Michael Zangl
+ */
+public class UILabeledButton extends Button {
 	private final String text;
 	private final Action action;
-	private boolean isEnabled = true;
 
 	private static final OriginalImageLink BUTTON = new OriginalImageLink(EImageLinkType.GUI,
 			3, 324, 0);
 	private static final OriginalImageLink BUTTON_ACTIVE = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 327, 0);
+
 	private final EFontSize size;
+	private boolean enabled = true;
 
 	public UILabeledButton(String text, Action action, EFontSize size) {
+		super(action, BUTTON, BUTTON_ACTIVE, null);
 		this.size = size;
 		this.text = text;
 		this.action = action;
-		setActive(false);
 	}
 
 	public UILabeledButton(String text, Action action) {
@@ -54,18 +60,20 @@ public class UILabeledButton extends UIPanel {
 
 	@Override
 	public Action getAction(float relativex, float relativey) {
-		return isEnabled ? action : null;
+		return enabled ? action : null;
 	}
 
-	public void setActive(boolean b) {
-		if (b) {
-			setBackground(BUTTON_ACTIVE);
-		} else {
-			setBackground(BUTTON);
-		}
+	/**
+	 * Enables or disables the button. A disabled button won't send any actions.
+	 * 
+	 * @param enabled
+	 *            <code>true</code> to enable the button to send actions (default).
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
-	public void setEnabled(boolean enabled){
-		isEnabled = enabled;
+	public boolean isEnabled() {
+		return enabled;
 	}
 }
