@@ -26,7 +26,7 @@ import jsettlers.graphics.reader.ImageMetadata;
  * This is the base for all images.
  * <p>
  * This class interprets the image data in 5-5-5-1-Format. To change the interpretation, it is possible to subclass this class.
- * 
+ *
  * @author michael
  */
 public class SingleImage extends Image implements ImageDataPrivider {
@@ -44,7 +44,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Creates a new image by the given buffer.
-	 * 
+	 *
 	 * @param data
 	 *            The data buffer for the image with an unspecified color format.
 	 * @param width
@@ -67,7 +67,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Creates a new image by linking this images data to the data of the provider.
-	 * 
+	 *
 	 * @param provider
 	 *            The provider.
 	 */
@@ -129,7 +129,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Generates the texture, if needed, and returns the index of that texutre.
-	 * 
+	 *
 	 * @return The gl index or 0 if the texture is not allocated.
 	 */
 	public int getTextureIndex(GLDrawContext gl) {
@@ -178,7 +178,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float)
 	 */
 	@Override
@@ -188,7 +188,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see jsettlers.graphics.image.Image#drawAt(go.graphics.GLDrawContext, float, float, go.graphics.Color)
 	 */
 	@Override
@@ -206,7 +206,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see jsettlers.graphics.image.Image#draw(go.graphics.GLDrawContext, go.graphics.Color)
 	 */
 	@Override
@@ -300,15 +300,26 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		return (float) height / textureHeight;
 	}
 
-	@Override
-	public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, int iColor) {
-		int textureIndex = getTextureIndex(gl);
-		buffer.addImage(textureIndex, viewX + getOffsetX(), viewY
-				- getOffsetY(), viewX + getOffsetX() + width, viewY
-				- getOffsetY() - height, 0, 0, getTextureScaleX(),
-				getTextureScaleY(), iColor);
-	}
+    @Override
+    public void drawAt(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY, int iColor) {
+        int textureIndex = getTextureIndex(gl);
+
+        float left = viewX + getOffsetX();
+        float top = viewY - getOffsetY();
+
+        buffer.addImage(
+                textureIndex,
+                left,
+                top,
+                left + width,
+                top - height,
+                0,
+                0,
+                getTextureScaleX(),
+                getTextureScaleY(),
+                iColor
+                );
+    }
 
 	protected float convertU(float relativeU) {
 		return relativeU * getTextureScaleX();
@@ -320,7 +331,7 @@ public class SingleImage extends Image implements ImageDataPrivider {
 
 	/**
 	 * Draws a triangle part of this image on the image buffer.
-	 * 
+	 *
 	 * @param gl
 	 *            The context to use
 	 * @param buffer
@@ -337,41 +348,26 @@ public class SingleImage extends Image implements ImageDataPrivider {
 	 * @param v3
 	 * @param activeColor
 	 */
-	public void drawTriangle(GLDrawContext gl, DrawBuffer buffer, float viewX,
-			float viewY, float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
-		DrawBuffer.Buffer buffer2 = buffer.getBuffer(getTextureIndex(gl));
-		float left = getOffsetX() + viewX;
-		float top = -getOffsetY() + viewY;
+    public void drawTriangle(GLDrawContext gl, DrawBuffer buffer, float viewX, float viewY,
+            float u1, float v1, float u2, float v2, float u3, float v3, int activeColor) {
+        DrawBuffer.Buffer buffer2 = buffer.getBuffer(getTextureIndex(gl));
+        float left = viewX + getOffsetX();
+        float top = viewY - getOffsetY();
 
-		buffer2.addTriangle(
-			alignCoord( left + u1 * width ),
-			alignCoord( top - v1 * height ),
-			alignCoord( left + u2 * width ),
-			alignCoord( top - v2 * height ),
-			alignCoord( left + u3 * width ),
-			alignCoord( top - v3 * height ),
-			convertU(u1),
-			convertV(v1),
-			convertU(u2),
-			convertV(v2),
-			convertU(u3),
-			convertV(v3),
-			activeColor
-		);
-	}
-
-	/**
-	 * In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
-	 * growing image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more
-	 * predictable and controlled manner.
-	 * @param value the coordinate to be aligned.
-	 * @return an aligned coordinate value.
-	 */
-	private float alignCoord( float value )
-	{
-		//At larger scales the issue is still present to some degree which zoomFactor helps to minimize.
-		//TODO need to find the factor based on the zoom level.
-		float zoomFactor = 1.06f;
-		return (float)((Math.floor( value * zoomFactor )) / zoomFactor);
-	}
+        buffer2.addTriangle(
+                left + (u1 * width),
+                top - (v1 * height),
+                left + (u2 * width),
+                top - (v2 * height),
+                left + (u3 * width),
+                top - (v3 * height),
+                convertU(u1),
+                convertV(v1),
+                convertU(u2),
+                convertV(v2),
+                convertU(u3),
+                convertV(v3),
+                activeColor
+                );
+    }
 }

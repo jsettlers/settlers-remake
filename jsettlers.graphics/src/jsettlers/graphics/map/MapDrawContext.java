@@ -46,7 +46,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * given in draw space.
  * <h2>Draw buffer</h2> We hold a draw buffer everyone drawing with the map draw context can use. The buffer should be flushed when drawing one
  * component finished. When the draw buffer is used after a call to end(), the buffer is invalid.
- * 
+ *
  * @author michael
  */
 public final class MapDrawContext implements IGLProvider {
@@ -96,7 +96,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Creates a new map context for a given map.
-	 * 
+	 *
 	 * @param map
 	 *            The map.
 	 */
@@ -119,7 +119,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Sets the size of the context to width/height.
-	 * 
+	 *
 	 * @param newWidth
 	 *            The width.
 	 * @param newHeight
@@ -131,7 +131,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Sets the center of the screen.
-	 * 
+	 *
 	 * @param x
 	 *            X in pixels.
 	 * @param y
@@ -143,7 +143,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Begin a new draw session (=> draw a new image). Sets up the gl screen assuming the current viewport is set to (0,0,width,height)
-	 * 
+	 *
 	 * @param gl2
 	 *            The gl context to use.
 	 * @see #end()
@@ -152,12 +152,14 @@ public final class MapDrawContext implements IGLProvider {
 		this.gl = gl2;
 
 		// beginTime = System.nanoTime();
-
 		gl2.glPushMatrix();
+
 		float zoom = screen.getZoom();
-		gl2.glScalef(zoom, zoom, 1);
-		gl2.glTranslatef((int) -this.screen.getLeft() + .5f,
-				(int) -this.screen.getBottom() + .5f, 0);
+		gl2.glScalef(zoom, zoom, 1f);
+
+		float left = screen.getLeft();
+		float bottom = screen.getBottom();
+		gl2.glTranslatef(-left, -bottom, 0);
 	}
 
 	/**
@@ -170,7 +172,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the current gl context, of <code>null</code> if it is called outside a gl drawing session.
-	 * 
+	 *
 	 * @return The gl context that was given to {@link #begin(GLDrawContext)}
 	 */
 	@Override
@@ -184,7 +186,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the text drawer for the draw context. Use this method instead of the opengl one, because we might override it.
-	 * 
+	 *
 	 * @param size
 	 * @return
 	 */
@@ -194,7 +196,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the region of the draw space that is drawn on the screen and therefore rendered.
-	 * 
+	 *
 	 * @return The region displayed on the screen as Rectangle.
 	 */
 	public ScreenPosition getScreen() {
@@ -251,7 +253,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Checks two map coordiantes if they are on the map.
-	 * 
+	 *
 	 * @param x
 	 *            The y coordinate in map space.
 	 * @param y
@@ -265,7 +267,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the color for a given player.
-	 * 
+	 *
 	 * @param player
 	 *            The player to get the color for.
 	 * @return The color.
@@ -280,7 +282,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Gets the converter for the map coordinate system
-	 * 
+	 *
 	 * @return The map coordinate converter.
 	 */
 	public MapCoordinateConverter getConverter() {
@@ -289,7 +291,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * sets up the gl drawing context to draw a given tile.
-	 * 
+	 *
 	 * @param pos
 	 *            The tile to draw.
 	 */
@@ -310,7 +312,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * Sets up drawing between two tiles.
-	 * 
+	 *
 	 * @param tile
 	 *            The start tile
 	 * @param destination
@@ -340,7 +342,7 @@ public final class MapDrawContext implements IGLProvider {
 
 	/**
 	 * gets a rect on the screen.
-	 * 
+	 *
 	 * @param x1
 	 *            one x (not ordered)
 	 * @param y1
@@ -374,7 +376,7 @@ public final class MapDrawContext implements IGLProvider {
 
 		/**
 		 * Creates a new IMapArea that contains the points that are in the rectangle on the screen.
-		 * 
+		 *
 		 * @param drawRect
 		 *            The rectangle in draw space
 		 */

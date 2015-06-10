@@ -53,7 +53,7 @@ import jsettlers.graphics.sound.SoundManager;
 
 /**
  * This class handles drawing of objects on the map.
- * 
+ *
  * @author michael
  */
 public class MapObjectDrawer {
@@ -85,17 +85,17 @@ public class MapObjectDrawer {
 	 */
 	private static final float TREE_FALLING_SPEED = 1 / 0.001f;
 	/**
-	 * 
+	 *
 	 */
 	private static final int TREE_ROT_IMAGES = 4;
 
 	/**
-	 * 
+	 *
 	 */
 	private static final int TREE_SMALL = 12;
 
 	/**
-	 * 
+	 *
 	 */
 	private static final int TREE_MEDIUM = 11;
 
@@ -152,7 +152,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a map object at a given position.
-	 * 
+	 *
 	 * @param context
 	 *            The context.
 	 * @param map
@@ -392,7 +392,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a movable
-	 * 
+	 *
 	 * @param movable
 	 *            The movable.
 	 */
@@ -726,7 +726,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * gets a 0 or a 1.
-	 * 
+	 *
 	 * @param pos
 	 * @return
 	 */
@@ -736,7 +736,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a player border at a given position.
-	 * 
+	 *
 	 * @param player
 	 *            The player.
 	 */
@@ -772,7 +772,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a stack
-	 * 
+	 *
 	 * @param context
 	 *            The context to draw with
 	 * @param object
@@ -789,7 +789,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the stack directly to the screen.
-	 * 
+	 *
 	 * @param glDrawContext
 	 *            The gl context to draw at.
 	 * @param material
@@ -808,7 +808,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Gets the gray color for a given fog.
-	 * 
+	 *
 	 * @param fogstatus
 	 * @return
 	 */
@@ -818,7 +818,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a given buildng to the context.
-	 * 
+	 *
 	 * @param context
 	 * @param building
 	 * @param color
@@ -829,6 +829,7 @@ public class MapObjectDrawer {
 
 		float state = building.getStateProgress();
 		float maskState;
+
 		if (state < 0.5f) {
 			maskState = state * 2;
 			for (ImageLink link : type.getBuildImages()) {
@@ -887,7 +888,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the occupiers of a building
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate of the building
 	 * @param y
@@ -956,32 +957,39 @@ public class MapObjectDrawer {
 
 	private void drawWithConstructionMask(int x, int y, float maskState,
 			Image unsafeimage, float color) {
-		if (!(unsafeimage instanceof SingleImage)) {
-			return; // should not happen
-		}
-		int height = context.getHeight(x, y);
-		float viewX = context.getConverter().getViewX(x, y, height);
-		float viewY = context.getConverter().getViewY(x, y, height);
-		int iColor = Color.getABGR(color, color, color, 1);
+        if (!(unsafeimage instanceof SingleImage)) {
+            return; // should not happen
+        }
+        int height = context.getHeight(x, y);
+        float viewX = context.getConverter().getViewX(x, y, height);
+        float viewY = context.getConverter().getViewY(x, y, height);
+        int iColor = Color.getABGR(color, color, color, 1);
 
-		SingleImage image = (SingleImage) unsafeimage;
-		// number of tiles in x direction, can be adjusted for performance
-		int tiles = 6;
+        SingleImage image = (SingleImage) unsafeimage;
+        // number of tiles in x direction, can be adjusted for performance
+        int tiles = 6;
 
-		float toplineBottom = 1 - maskState;
-		float toplineTop = Math.max(0, toplineBottom - .1f);
+        float toplineBottom = 1f - maskState;
+        float toplineTop = Math.max(0, toplineBottom - .1f);
 
-		image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX,
-				viewY, 0, 1, 1, 1, 0, toplineBottom, iColor);
-		image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX,
-				viewY, 1, 1, 1, toplineBottom, 0, toplineBottom, iColor);
+        GLDrawContext glDrawContext = context.getGl();
+        DrawBuffer drawBuffer = context.getDrawBuffer();
 
-		for (int i = 0; i < tiles; i++) {
-			image.drawTriangle(context.getGl(), context.getDrawBuffer(), viewX,
-					viewY, 1.0f / tiles * i, toplineBottom, 1.0f / tiles
-							* (i + 1), toplineBottom, 1.0f / tiles * (i + .5f),
-					toplineTop, iColor);
-		}
+        image.drawTriangle(glDrawContext, drawBuffer, viewX, viewY, 0, 1, 1, 1, 0, toplineBottom, iColor);
+        image.drawTriangle(glDrawContext, drawBuffer, viewX, viewY, 1f, 1f, 1f, toplineBottom, 0, toplineBottom, iColor);
+        float triangleWidth = 1f / tiles;
+        for (int i = 0; i < tiles; i++) {
+            image.drawTriangle(
+                    glDrawContext,
+                    drawBuffer,
+                    viewX,
+                    viewY,
+                    triangleWidth * i, toplineBottom,
+                    triangleWidth * (i + 1), toplineBottom,
+                    triangleWidth * (i + .5f), toplineTop,
+                    iColor
+                    );
+        }
 	}
 
 	private void drawPlayerableByProgress(int x, int y, int file,
