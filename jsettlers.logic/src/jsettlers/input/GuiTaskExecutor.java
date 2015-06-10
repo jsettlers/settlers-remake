@@ -17,6 +17,7 @@ package jsettlers.input;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.map.shapes.HexBorderArea;
@@ -215,16 +216,19 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			short ringsWithoutSuccessCtr = 0; // used to stop the loop
 			Iterator<ShortPoint2D> posIterator = new HexBorderArea(targetPosition, radius).iterator();
 
+			LinkedList<Movable> movables = new LinkedList<>();
 			for (Integer currMovableId : movableIds) {
 				Movable currMovable = Movable.getMovableByID(currMovableId);
-
-				if (currMovable == null) {
-					continue;
+				if (currMovable != null) {
+					movables.add(currMovable);
 				}
+			}
 
+			while (!movables.isEmpty()) {
 				ShortPoint2D currTargetPos;
 
 				do {
+					posIterator.next();
 					if (!posIterator.hasNext()) {
 						ringsWithoutSuccessCtr++;
 						if (ringsWithoutSuccessCtr > 5) {
@@ -236,10 +240,18 @@ public class GuiTaskExecutor implements ITaskExecutor {
 					}
 
 					currTargetPos = posIterator.next();
-				} while (!canMoveTo(currMovable, currTargetPos));
 
-				ringsWithoutSuccessCtr = 0;
-				currMovable.moveTo(currTargetPos);
+					// test all movables for this position.
+					for (Iterator<Movable> iterator = movables.iterator(); iterator.hasNext();) {
+						Movable movable = iterator.next();
+						if (canMoveTo(movable, currTargetPos)) {
+							ringsWithoutSuccessCtr = 0;
+							movable.moveTo(currTargetPos);
+							iterator.remove();
+							break;
+						}
+					}
+				} while (true);
 			}
 		}
 	}
