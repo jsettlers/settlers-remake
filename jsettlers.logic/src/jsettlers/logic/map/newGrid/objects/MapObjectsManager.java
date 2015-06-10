@@ -128,7 +128,7 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 			return addRessourceSign(pos);
 
 		default:
-			System.err.println("can't handle search type in executeSearchType(): " + type);
+			System.err.println("ERROR: Can't handle search type in executeSearchType(): " + type);
 			return false;
 		}
 	}

@@ -140,7 +140,7 @@ public final class MaterialsForBuildingsRequestPrioQueue extends AbstractMateria
 			}
 		}
 
-		System.err.println("WARNING: No correct material distribution!");
+		System.err.println("ERROR: No correct material distribution!");
 		return 0;
 	}
 

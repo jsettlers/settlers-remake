@@ -26,6 +26,7 @@ import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.SerializationUtils;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -43,8 +44,8 @@ public final class ObjectsGrid implements Serializable {
 	private final short width;
 	private final short height;
 
-	private transient AbstractHexMapObject[] objectsGrid; // don't use default serialization for this => transient
-	private final Building[] buildingsGrid;
+	private transient AbstractHexMapObject[] objectsGrid;
+	private transient Building[] buildingsGrid;
 
 	public ObjectsGrid(short width, short height) {
 		this.width = width;
@@ -55,36 +56,49 @@ public final class ObjectsGrid implements Serializable {
 
 	private final void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
+
+		SerializationUtils.writeSparseArray(oos, buildingsGrid);
+
 		int length = objectsGrid.length;
 		oos.writeInt(length);
 
 		for (int idx = 0; idx < length; idx++) {
 			AbstractHexMapObject currObject = objectsGrid[idx];
 
-			while (currObject != null) {
-				if (currObject.getObjectType() != EMapObjectType.WORKAREA_MARK) {
-					oos.writeObject(currObject);
+			if (currObject != null) {
+				oos.writeInt(idx);
+				while (currObject != null) {
+					if (currObject.getObjectType() != EMapObjectType.WORKAREA_MARK) {
+						oos.writeObject(currObject);
+					}
+					currObject = currObject.getNextObject();
 				}
-				currObject = currObject.getNextObject();
+				oos.writeObject(null);
 			}
-			oos.writeObject(null);
 		}
+		oos.writeInt(-1); // this is used to detect the end
 	}
 
 	private final void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
+
+		buildingsGrid = SerializationUtils.readSparseArray(ois, Building.class);
+
 		int length = ois.readInt();
 		objectsGrid = new AbstractHexMapObject[length];
 
-		for (int idx = 0; idx < length; idx++) {
+		int index = ois.readInt();
+		while (index >= 0) {
 			AbstractHexMapObject currObject = (AbstractHexMapObject) ois.readObject();
-			objectsGrid[idx] = currObject;
+			objectsGrid[index] = currObject;
 
 			while (currObject != null) {
 				AbstractHexMapObject newObject = (AbstractHexMapObject) ois.readObject();
 				currObject.addMapObject(newObject);
 				currObject = newObject;
 			}
+
+			index = ois.readInt();
 		}
 	}
 

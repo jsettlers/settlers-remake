@@ -22,6 +22,7 @@ package jsettlers.logic.constants;
  */
 public final class Constants {
 
+	public static boolean FOG_OF_WAR_DEFAULT_ENABLED = true;
 	/**
 	 * private constructor, because no instances of this class can be created.
 	 */

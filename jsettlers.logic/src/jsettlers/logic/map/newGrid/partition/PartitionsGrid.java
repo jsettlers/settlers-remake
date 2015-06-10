@@ -16,8 +16,10 @@ package jsettlers.logic.map.newGrid.partition;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -60,24 +62,22 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	private static final int NUMBER_OF_START_PARTITION_OBJECTS = 3000;
 	private static final float PARTITIONS_EXPAND_FACTOR = 1.5f;
 
-	private static final int NO_PLAYER_PARTITION_ID = 0;
+	private static final short NO_PLAYER_PARTITION_ID = 0;
 
 	private final PartitionOccupyingTowerList occupyingTowers = new PartitionOccupyingTowerList();
 
 	final short width;
 	final short height;
-	final Player[] players;
+	private final Player[] players;
 	private final IBlockingProvider blockingProvider;
 
 	final short[] partitions;
-	final byte[] towers;
+	private final byte[] towers;
 
 	Partition[] partitionObjects = new Partition[NUMBER_OF_START_PARTITION_OBJECTS];
-	short[] partitionRepresentatives = new short[NUMBER_OF_START_PARTITION_OBJECTS];
 
 	private final short[] blockedPartitionsForPlayers;
 
-	private transient PartitionsGridNormalizerThread gridNormalizer;
 	private transient Object partitionsWriteLock;
 	private transient IPlayerChangedListener playerChangedListener = IPlayerChangedListener.DEFAULT_IMPLEMENTATION;
 
@@ -99,10 +99,15 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.towers = new byte[width * height];
 
 		// the no player partition (the manager won't be started)
-		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition((byte) -1, width * height);
-		this.partitionRepresentatives[NO_PLAYER_PARTITION_ID] = NO_PLAYER_PARTITION_ID;
+		this.partitionObjects[NO_PLAYER_PARTITION_ID] = new Partition(NO_PLAYER_PARTITION_ID, (byte) -1, width * height);
 
 		initAdditionalFields();
+	}
+
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		int normalizedPartitions = checkNormalizePartitions(0);
+		System.out.println("Normalized " + normalizedPartitions + " partitions");
+		oos.defaultWriteObject();
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -112,15 +117,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	private void initAdditionalFields() {
 		partitionsWriteLock = new Object();
-		this.gridNormalizer = new PartitionsGridNormalizerThread(this, partitionsWriteLock);
-	}
-
-	public void startThreads() {
-		this.gridNormalizer.start();
-	}
-
-	public void cancelThreads() {
-		this.gridNormalizer.cancel();
 	}
 
 	public boolean isDefaultPartition(short partitionId) {
@@ -128,7 +124,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	public short getPartitionIdAt(int x, int y) {
-		return partitionRepresentatives[partitions[x + y * width]];
+		return partitionObjects[partitions[x + y * width]].partitionId;
 	}
 
 	/**
@@ -421,7 +417,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			BorderTraversingAlgorithm.traverseBorder(new IContainingProvider() {
 				@Override
 				public boolean contains(int x, int y) {
-					return partitionRepresentatives[partitions[x + y * width]] == partitionRepresentatives[innerPartition];
+					return partitionObjects[partitions[x + y * width]] == partitionObjects[innerPartition];
 				}
 			}, pos, borderVisitor, true);
 
@@ -453,8 +449,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		partitionsList.addLast(partitionsList.getFirst()); // add first at the end
 
 		for (Tuple<Short, ShortPoint2D> currPartition : partitionsList) {
-			if (partitionObjects[currPartition.e1].playerId == playerId
-					&& partitionRepresentatives[currPartition.e1] != partitionRepresentatives[innerPartition]) {
+			Partition currPartitionObject = partitionObjects[currPartition.e1];
+			if (currPartitionObject.playerId == playerId && partitionObjects[currPartition.e1] != partitionObjects[innerPartition]) {
 				mergePartitions(currPartition.e1, innerPartition);
 			}
 		}
@@ -471,7 +467,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		MutableInt partition1Size = new MutableInt();
 		MutableInt partition2Size = new MutableInt();
 		if (partition != NO_PLAYER_PARTITION_ID
-				&& PartitionsDividedTester.isPartitionDivided(partitionRepresentatives, partitions, width, pos1, partition1Size, pos2,
+				&& PartitionsDividedTester.isPartitionDivided(partitionObjects, partitions, width, pos1, partition1Size, pos2,
 						partition2Size, partition)) {
 			if (partition1Size.value < partition2Size.value) {
 				dividePartition(partition, pos1, pos2);
@@ -545,8 +541,8 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 			biggerPartition = partition2;
 			smallerPartition = partition1;
 		}
-		biggerPartition = partitionRepresentatives[biggerPartition]; // ensure that we have the top representative
-		smallerPartition = partitionRepresentatives[smallerPartition];
+		biggerPartition = partitionObjects[biggerPartition].partitionId; // ensure that we have the top representative
+		smallerPartition = partitionObjects[smallerPartition].partitionId;
 
 		assert biggerPartition != smallerPartition : "the partitions can not be the same!";
 
@@ -566,7 +562,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		smallerPartitionObject.stopManager();
 
 		partitionObjects[smallerPartition] = biggerPartitionObject;
-		partitionRepresentatives[smallerPartition] = biggerPartition;
 
 		/**
 		 * Flatten all hierarchies: <br>
@@ -577,8 +572,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		 */
 		int numberOfPartitions = partitionObjects.length;
 		for (int i = 1; i < numberOfPartitions; i++) {
-			if (partitionRepresentatives[i] == smallerPartition) {
-				partitionRepresentatives[i] = biggerPartition;
+			if (partitionObjects[i] == smallerPartitionObject) {
 				partitionObjects[i] = biggerPartitionObject;
 			}
 		}
@@ -597,14 +591,15 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	 * @param otherPosition
 	 *            A position in the part of the divided partition that will keep the old partition id.
 	 */
-	void dividePartition(final short oldPartition, ShortPoint2D relabelStartPosition, ShortPoint2D otherPosition) {
+	private void dividePartition(final short oldPartition, ShortPoint2D relabelStartPosition, ShortPoint2D otherPosition) {
 		if (oldPartition == NO_PLAYER_PARTITION_ID) {
 			return; // don't divide the no player partition
 		}
 
 		Partition partitionObject = partitionObjects[oldPartition];
 
-		System.out.println("Dividing partition " + oldPartition + " with relabelStartPos: "				+ relabelStartPosition + " and " + partitionObject.getNumberOfElements() + " elements. " + otherPosition				+ " will keep the old partition id.");
+		System.out.println("Dividing partition " + oldPartition + " with relabelStartPos: " + relabelStartPosition + " and "
+				+ partitionObject.getNumberOfElements() + " elements. " + otherPosition + " will keep the old partition id.");
 
 		short newPartition = createNewPartition(partitionObject.playerId);
 
@@ -627,7 +622,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		IContainingProvider containingProvider = new IContainingProvider() {
 			@Override
 			public boolean contains(int x, int y) {
-				return partitionRepresentatives[partitions[x + y * width]] == oldPartition;
+				return partitionObjects[partitions[x + y * width]].partitionId == oldPartition;
 			}
 		};
 
@@ -671,42 +666,36 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	short createNewPartition(byte player) { // package private for tests
-		short newPartition = 1;
+		checkNormalizePartitions(NUMBER_OF_START_PARTITION_OBJECTS / 2);
 
-		while (partitionObjects[newPartition] != null) { // get a free partition
-			newPartition++;
+		short newPartitionId = 1;
+
+		while (partitionObjects[newPartitionId] != null) { // get a free partition
+			newPartitionId++;
 			int length = partitionObjects.length;
 
-			if (newPartition >= length) {
+			if (newPartitionId >= length) {
 				synchronized (partitionsWriteLock) {
 					int newLength = (int) (length * PARTITIONS_EXPAND_FACTOR);
 					Partition[] newPartitionObjects = new Partition[newLength];
-					short[] newPartitionRepresentatives = new short[newLength];
 
 					System.arraycopy(partitionObjects, 0, newPartitionObjects, 0, length);
 					partitionObjects = newPartitionObjects;
-					System.arraycopy(partitionRepresentatives, 0, newPartitionRepresentatives, 0, length);
-					partitionRepresentatives = newPartitionRepresentatives;
 
 					System.out.println("PartitionsGrid: Expanded the number of possible partitions from " + length + " to " + newLength);
 				}
 			}
 		}
 
-		Partition newPartitionObject = new Partition(player);
+		Partition newPartitionObject = new Partition(newPartitionId, player);
 		newPartitionObject.startManager();
-		partitionObjects[newPartition] = newPartitionObject;
-		partitionRepresentatives[newPartition] = newPartition;
+		partitionObjects[newPartitionId] = newPartitionObject;
 
-		return newPartition;
+		return newPartitionId;
 	}
 
 	public void setPartitionAt(int x, int y, short newPartition) {
-		if (getPartitionIdAt(x, y) != partitionRepresentatives[newPartition]) {
-			if (x == 106 && y == 212) {
-				System.out.println();
-			}
-
+		if (getPartitionAt(x, y) != partitionObjects[newPartition]) {
 			byte playerId = changePartitionUncheckedAt(x, y, newPartition);
 			notifyPlayerChangedListener(x, y, playerId);
 		}
@@ -740,7 +729,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 					byte neighborPlayer = partitionObjects[neighborPartition].playerId;
 
 					// if the position and the neighbor are from the same player, then merge the partitions
-					if (playerId == neighborPlayer && partitionRepresentatives[newPartition] != partitionRepresentatives[neighborPartition]) {
+					if (playerId == neighborPlayer && partitionObjects[newPartition] != partitionObjects[neighborPartition]) {
 						mergePartitions(newPartition, neighborPartition);
 					}
 				}
@@ -768,6 +757,47 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 
 	public byte getNumberOfPlayers() {
 		return (byte) players.length;
+	}
+
+	private int checkNormalizePartitions(int mergePartitionsThreshold) {
+		int maxPartitions = this.partitionObjects.length;
+		BitSet stoppedManagers = new BitSet(maxPartitions);
+
+		int counter = 0;
+
+		for (int i = 1; i < maxPartitions; i++) {
+			PartitionManager partitionObject = this.partitionObjects[i];
+
+			if (partitionObject != null && this.partitionObjects[i].partitionId != i) {
+				stoppedManagers.set(i);
+				counter++;
+			}
+		}
+
+		if (counter <= mergePartitionsThreshold) {
+			return 0;// skip the rest if nothing is to do.
+		}
+
+		// normalize the partitions
+		for (int y = 0; y < height; y++) {
+			synchronized (partitionsWriteLock) { // the lock is acquired here to prevent holding it for a long time without requesting it every time
+				for (int x = 0; x < width; x++) {
+					int idx = x + y * width;
+					this.partitions[idx] = this.partitionObjects[this.partitions[idx]].partitionId;
+				}
+			}
+		}
+
+		// clear the partition objects
+		synchronized (partitionsWriteLock) {
+			for (int i = 1; i < maxPartitions; i++) {
+				if (stoppedManagers.get(i)) {
+					this.partitionObjects[i] = null;
+				}
+			}
+		}
+
+		return counter;
 	}
 
 }

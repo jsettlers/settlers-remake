@@ -89,11 +89,9 @@ public class GameSerializer {
 		@Override
 		public void run() {
 			try {
-				grid.waitForThreadsToFinish();
-
 				oos.writeInt(MatchConstants.clock.getTime());
-				RandomSingleton.serialize(oos);
 				oos.writeObject(grid);
+				RandomSingleton.serialize(oos);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				this.exception = t;
@@ -114,8 +112,8 @@ public class GameSerializer {
 		public void run() {
 			try {
 				MatchConstants.clock.setTime(ois.readInt());
-				RandomSingleton.deserialize(ois);
 				grid = (MainGrid) ois.readObject();
+				RandomSingleton.deserialize(ois);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				this.exception = t;

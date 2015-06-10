@@ -53,8 +53,6 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		switch (header.getType()) {
 		case NORMAL:
 			return new FreshMapLoader(file, header);
-		case RANDOM:
-			return new RandomMapLoader(file, header);
 		case SAVED_SINGLE:
 			return new SavegameLoader(file, header);
 		default:

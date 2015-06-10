@@ -19,7 +19,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Random;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -34,7 +33,6 @@ import jsettlers.common.map.object.StackObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.random.grid.MapGrid;
 
 /**
  * Serializes the map data to a byte stream.
@@ -60,7 +58,6 @@ import jsettlers.logic.map.random.grid.MapGrid;
  */
 public class MapDataSerializer {
 	private static final int VERSION = 3;
-	private static final int VERSION_WITH_RESOURCES = 2;
 	private static final int VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS = 3;
 
 	private static final int TYPE_TREE = 1;
@@ -165,10 +162,9 @@ public class MapDataSerializer {
 			DataInputStream stream = new DataInputStream(in);
 			int version = stream.readShort();
 
-			if (!(version == VERSION || version == VERSION_WITH_RESOURCES || version == VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS)) {
+			if (!(version == VERSION || version == VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS)) {
 				throw new IOException("wrong stream version, got: " + version);
 			}
-			Random rand = new Random(123);
 
 			int width = stream.readShort();
 			int height = stream.readShort();
@@ -188,11 +184,6 @@ public class MapDataSerializer {
 				for (int y = 0; y < height; y++) {
 					byte type = stream.readByte();
 					data.setLandscape(x, y, types[type]);
-					if (version < VERSION_WITH_RESOURCES) {
-						// fallback. Can be removed once all maps use new format.
-						EResourceType type2 = MapGrid.getResourceType(types[type], rand);
-						data.setResources(x, y, type2, MapGrid.getResourceAmount(types[type], rand));
-					}
 				}
 			}
 
@@ -203,22 +194,17 @@ public class MapDataSerializer {
 				}
 			}
 
-			if (version >= VERSION_WITH_RESOURCES) {
-				for (int x = 0; x < width; x++) {
-					for (int y = 0; y < height; y++) {
-						byte t = stream.readByte();
-						byte amount = stream.readByte();
-						data.setResources(x, y, EResourceType.values[t], amount);
-					}
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					byte t = stream.readByte();
+					byte amount = stream.readByte();
+					data.setResources(x, y, EResourceType.values[t], amount);
 				}
-
 			}
 
-			if (version >= VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS) {
-				for (int x = 0; x < width; x++) {
-					for (int y = 0; y < height; y++) {
-						data.setBlockedPartition(x, y, stream.readShort());
-					}
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					data.setBlockedPartition(x, y, stream.readShort());
 				}
 			}
 
@@ -232,7 +218,6 @@ public class MapDataSerializer {
 					data.setMapObject(x, y, object);
 				}
 			}
-
 		} catch (Throwable t) {
 			throw new IOException("Error while reading map file", t);
 		}
