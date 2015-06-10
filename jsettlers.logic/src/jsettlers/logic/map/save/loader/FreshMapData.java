@@ -26,7 +26,7 @@ import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
  * 
  * @author michael
  */
-public class MapDataReceiver implements IMapDataReceiver, IMapData {
+public class FreshMapData implements IMapDataReceiver, IMapData {
 
 	private int width;
 	private int height;
@@ -37,7 +37,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	private byte[][] heights;
 	private ELandscapeType[][] landscapes;
 	private MapObject[][] mapObjects;
-	private byte[][] resourceTypes;
+	private EResourceType[][] resourceTypes;
 	private byte[][] resourceAmount;
 	private short[][] blockedPartitions;
 
@@ -50,7 +50,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 		this.heights = new byte[width][height];
 		this.landscapes = new ELandscapeType[width][height];
 		this.mapObjects = new MapObject[width][height];
-		this.resourceTypes = new byte[width][height];
+		this.resourceTypes = new EResourceType[width][height];
 		this.resourceAmount = new byte[width][height];
 		this.blockedPartitions = new short[width][height];
 	}
@@ -114,7 +114,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 
 	@Override
 	public EResourceType getResourceType(short x, short y) {
-		return EResourceType.values[resourceTypes[x][y]];
+		return resourceTypes[x][y];
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class MapDataReceiver implements IMapDataReceiver, IMapData {
 	@Override
 	public void setResources(int x, int y, EResourceType type, byte amount) {
 		resourceAmount[x][y] = amount;
-		resourceTypes[x][y] = type.ordinal;
+		resourceTypes[x][y] = type;
 	}
 
 	@Override

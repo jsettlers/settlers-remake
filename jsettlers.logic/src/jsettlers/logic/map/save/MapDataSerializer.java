@@ -218,7 +218,6 @@ public class MapDataSerializer {
 					data.setMapObject(x, y, object);
 				}
 			}
-
 		} catch (Throwable t) {
 			throw new IOException("Error while reading map file", t);
 		}
