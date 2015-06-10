@@ -32,6 +32,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.androidui.actions.ConstructBuilding;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
@@ -240,8 +241,15 @@ public class MobileControls implements IControls, ContextActionListener {
 			setActiveMenu(null);
 		} else if (action.getActionType() == EActionType.SET_WORK_AREA
 				|| action.getActionType() == EActionType.SELECT_POINT
-				|| action.getActionType() == EActionType.MOVE_TO) {
+				|| action.getActionType() == EActionType.SELECT_AREA
+				|| action.getActionType() == EActionType.MOVE_TO
+				|| action.getActionType() == EActionType.BUILD) {
 			setActiveAction(null);
+		} else if (action.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
+			EBuildingType type = ((ShowConstructionMarksAction) action).getBuildingType();
+			if (type != null) {
+				setActiveAction(new ConstructBuilding(type));
+			}
 		}
 	}
 
@@ -255,19 +263,14 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void setMapViewport(MapRectangle screenArea) {
 	}
 
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-		if (type == null) {
-			setActiveAction(null);
-		} else {
-			setActiveAction(new ConstructBuilding(type));
-
-		}
-	}
-
 	private void setActiveAction(ContextAction activeAction) {
 		synchronized (activeActionMutex) {
-			this.activeAction = activeAction;
+			if (activeAction != this.activeAction) {
+				if (this.activeAction != null) {
+					this.activeAction.onDeactivate(androidMenuPutable);
+				}
+				this.activeAction = activeAction;
+			}
 		}
 	}
 

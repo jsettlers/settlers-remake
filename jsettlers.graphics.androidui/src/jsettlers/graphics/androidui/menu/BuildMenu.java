@@ -16,6 +16,7 @@ package jsettlers.graphics.androidui.menu;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.androidui.Graphics;
 import jsettlers.graphics.androidui.R;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class BuildMenu extends AndroidMenu {
 			if (resourceId != -1) {
 				ImageButton b = new ImageButton(view.getContext());
 				b.setImageResource(resourceId);
-				b.setOnClickListener(generateActionListener(new BuildAction(
+				b.setOnClickListener(generateActionListener(new ShowConstructionMarksAction(
 						type), true));
 				currentRow.addView(b);
 			}
