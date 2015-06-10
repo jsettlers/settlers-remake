@@ -19,13 +19,19 @@ import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
 import go.graphics.event.GOKeyEvent;
+import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.command.GOCommandEvent;
+import go.graphics.event.mouse.GOHoverEvent;
 import go.graphics.region.Region;
 import go.graphics.region.RegionContent;
 import go.graphics.sound.SoundPlayer;
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.image.Image;
+import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
@@ -35,12 +41,64 @@ import jsettlers.graphics.utils.UIPanel;
 
 /**
  * This is the main jsettlers screen manager. It manages the content {@link Region}. TODO: JOGLPanel had the right timers for redraw.
- * 
+ *
  * @author michael
  */
-public class JSettlersScreen implements IContentSetable {
+public class JSettlersScreen implements IContentSetable
+{
+    static class RootRegion extends Region
+    {
+        private static final Image cursor = ImageProvider.getInstance().getImage(new OriginalImageLink(EImageLinkType.SETTLER, 2, 20, 0));
+        private final GOEventHandler mouseListener = new GOModalEventHandler() {
+            @Override
+            public void phaseChanged(GOEvent event) {
+            }
 
-	private final Region region = new Region(Region.POSITION_CENTER);
+            @Override
+            public void finished(GOEvent event) {
+                cursorVisible = false;
+            }
+
+            @Override
+            public void aborted(GOEvent event) {
+            }
+
+            @Override
+            public void eventDataChanged(GOEvent event) {
+                UIPoint point = ((GOHoverEvent) event).getHoverPosition();
+                cursorX = (float) point.getX();
+                cursorY = (float) point.getY();
+            }
+        };
+        private float cursorX, cursorY;
+        private boolean cursorVisible = false;
+
+        public RootRegion()
+        {
+            super(Region.POSITION_CENTER);
+        }
+
+        @Override
+        public void handleEvent(GOEvent event)
+        {
+            super.handleEvent(event);
+            if (event instanceof GOHoverEvent) {
+                cursorVisible = true;
+                event.setHandler(mouseListener);
+            }
+        };
+
+        @Override
+        public void drawRegion(GLDrawContext gl2, int width, int height)
+        {
+            super.drawRegion(gl2, width, height);
+            if (cursorVisible) {
+                cursor.drawAt(gl2, cursorX, cursorY);
+            }
+        }
+    }
+
+	private final Region region = new RootRegion();
 	private UIPanel activePanel;
 	private final SoundPlayer soundPlayer;
 	private final IStartScreen baseConnector;

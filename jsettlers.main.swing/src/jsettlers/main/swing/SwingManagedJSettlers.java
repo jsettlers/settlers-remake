@@ -18,7 +18,12 @@ import go.graphics.area.Area;
 import go.graphics.swing.AreaContainer;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,7 +57,7 @@ import jsettlers.main.StartScreenConnector;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
- * 
+ *
  * @author Andreas Eberle
  * @author michael
  */
@@ -80,7 +85,7 @@ public class SwingManagedJSettlers {
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
 	 * file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
-	 * 
+	 *
 	 * @param argsMap
 	 * @param defaultConfigFileName
 	 * @throws FileNotFoundException
@@ -161,7 +166,7 @@ public class SwingManagedJSettlers {
 
 	/**
 	 * Creates a new SWING GUI for the game.
-	 * 
+	 *
 	 * @param argsList
 	 * @return
 	 * @throws IOException
@@ -243,6 +248,11 @@ public class SwingManagedJSettlers {
 
 	private static void startJogl(Area area) {
 		JFrame jsettlersWnd = new JFrame("JSettlers - " + getBuild());
+
+        Toolkit t = Toolkit.getDefaultToolkit();
+        Image i = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        Cursor noCursor = t.createCustomCursor(i, new Point(0, 0), "none");
+        jsettlersWnd.setCursor(noCursor);
 
 		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
