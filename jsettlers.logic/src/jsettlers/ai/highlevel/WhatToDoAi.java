@@ -3,8 +3,7 @@ package jsettlers.ai.highlevel;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.MainGrid;
-import jsettlers.logic.player.Player;
+import jsettlers.logic.map.grid.MainGrid;
 
 public class WhatToDoAi implements IWhatToDoAi {
 

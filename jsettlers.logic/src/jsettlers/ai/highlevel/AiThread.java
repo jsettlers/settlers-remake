@@ -1,10 +1,9 @@
 package jsettlers.ai.highlevel;
 
+import jsettlers.logic.map.grid.MainGrid;
 import java.util.ArrayList;
 import java.util.List;
 
-import jsettlers.logic.map.newGrid.MainGrid;
-import jsettlers.logic.player.Player;
 
 public class AiThread extends Thread {
 
