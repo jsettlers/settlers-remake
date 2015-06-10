@@ -38,6 +38,7 @@ import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
 import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
 import jsettlers.graphics.map.minimap.Minimap;
+import jsettlers.graphics.map.minimap.MinimapMode;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
@@ -45,12 +46,13 @@ public class OriginalControls implements IControls {
 	private UIPanel uiBase;
 
 	private Minimap minimap;
+
+	private MinimapMode minimapSettings = new MinimapMode();
+
 	private final Button btnABC = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 318, 321, "");
 	private final Button btnScroll = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 342, 348, ""); // 345 - image for 3rd setting.
 	private final Button btnSettlers = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 351, 354, ""); // 357 - image for 3rd setting (show
 																												// soldiers?).
-	private final Button btnBuildings = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 360, 367, "");
-
 	private final MainPanel mainPanel;
 
 	private ControlPanelLayoutProperties layoutProperties;
@@ -93,21 +95,21 @@ public class OriginalControls implements IControls {
 				layoutProperties.MINIMAP_BUTTON_ABC_TOP
 				);
 		minimapbg_left.addChild(
-				btnScroll,
+				new MinimapOccupiedButton(minimapSettings),
 				layoutProperties.MINIMAP_BUTTON_SCROLL_LEFT,
 				layoutProperties.MINIMAP_BUTTON_SCROLL_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
 				layoutProperties.MINIMAP_BUTTON_SCROLL_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
 				layoutProperties.MINIMAP_BUTTON_SCROLL_TOP
 				);
 		minimapbg_left.addChild(
-				btnSettlers,
+				new MinimapSettlersButton(minimapSettings),
 				layoutProperties.MINIMAP_BUTTON_SETTLERS_LEFT,
 				layoutProperties.MINIMAP_BUTTON_SETTLERS_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
 				layoutProperties.MINIMAP_BUTTON_SETTLERS_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
 				layoutProperties.MINIMAP_BUTTON_SETTLERS_TOP
 				);
 		minimapbg_left.addChild(
-				btnBuildings,
+				new MinimapBuildingButton(minimapSettings),
 				layoutProperties.MINIMAP_BUTTON_BUILDINGS_LEFT,
 				layoutProperties.MINIMAP_BUTTON_BUILDINGS_TOP - layoutProperties.MINIMAP_BUTTON_HEIGHT,
 				layoutProperties.MINIMAP_BUTTON_BUILDINGS_LEFT + layoutProperties.MINIMAP_BUTTON_WIDTH,
@@ -343,7 +345,7 @@ public class OriginalControls implements IControls {
 	@Override
 	public void setDrawContext(ActionFireable actionFireable, MapDrawContext context) {
 		this.context = context;
-		this.minimap = new Minimap(context);
+		this.minimap = new Minimap(context, minimapSettings);
 	}
 
 	@Override

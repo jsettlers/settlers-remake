@@ -66,6 +66,20 @@ public final class OriginalImageLink extends ImageLink {
 	}
 
 	/**
+	 * Creates a new image link description for {@value EImageLinkType#GUI} images.
+	 * 
+	 * @param type
+	 *            The type
+	 * @param file
+	 *            The file it is in
+	 * @param sequence
+	 *            The sequence index
+	 */
+	public OriginalImageLink(EImageLinkType type, int file, int sequence) {
+		this(type, file, sequence, 0);
+	}
+
+	/**
 	 * Gets the type of the image.
 	 * 
 	 * @return The image type

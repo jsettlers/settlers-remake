@@ -40,6 +40,7 @@ import jsettlers.graphics.map.geometry.MapCoordinateConverter;
  * @author michael
  */
 public final class Minimap {
+
 	private final MapCoordinateConverter converter;
 	private int width;
 	private int height;
@@ -56,14 +57,14 @@ public final class Minimap {
 	private final LineLoader lineLoader;
 	private boolean stopped = false;
 
-	public Minimap(MapDrawContext context) {
+	public Minimap(MapDrawContext context, MinimapMode modeSettings) {
 		this.context = context;
 		IGraphicsGrid map = context.getMap();
 		stride = map.getHeight() / 2.0f / map.getWidth();
 		converter =
 				new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1,
 						1);
-		lineLoader = new LineLoader(this);
+		lineLoader = new LineLoader(this, modeSettings);
 		Thread minimapThread = new Thread(lineLoader, "minimap loader");
 		minimapThread.setDaemon(true);
 		minimapThread.start();
