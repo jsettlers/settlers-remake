@@ -82,7 +82,6 @@ import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import jsettlers.logic.map.save.MapSaver;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.swing.SwingManagedJSettlers;
 import jsettlers.mapcreator.data.MapData;
@@ -576,7 +575,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		try {
 			MapFileHeader imagedHeader = generateMapHeader();
 			data.doPreSaveActions();
-			MapList.getDefaultList().saveNewMap(imagedHeader, data);
+			MapList.getDefaultList().saveNewMap(imagedHeader, data, null);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(saveButton, e.getMessage());
@@ -595,7 +594,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		try {
 			File temp = File.createTempFile("tmp_map", "");
 			data.doPreSaveActions();
-			MapSaver.saveMap(generateMapHeader(), data, new FileOutputStream(temp));
+			MapList.getDefaultList().saveNewMap(generateMapHeader(), data, new FileOutputStream(temp));
 
 			String[] args = new String[] { "java", "-classpath", System.getProperty("java.class.path"), SwingManagedJSettlers.class.getName(),
 					"--mapfile=" + temp.getAbsolutePath(), "--control-all", "--activate-all-players" };

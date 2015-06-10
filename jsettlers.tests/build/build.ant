@@ -151,4 +151,15 @@
 		</junit>
 	</target>
 
+	<target name="autoReplayIT" depends="build">
+		<junit fork="yes" printsummary="on" haltonfailure="yes" dir="${basedir}">
+			<formatter type="brief" usefile="false" />
+			<classpath refid="jsettlers.tests.classpath" />
+
+			<batchtest>
+				<fileset dir="tests" includes="**/AutoReplayIT.java" />
+			</batchtest>
+		</junit>
+	</target>
+
 </project>

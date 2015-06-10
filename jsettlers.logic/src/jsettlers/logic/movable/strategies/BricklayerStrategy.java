@@ -17,8 +17,8 @@ package jsettlers.logic.movable.strategies;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IConstructableBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 

@@ -19,7 +19,7 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
-import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
+import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.player.Player;
 
 /**

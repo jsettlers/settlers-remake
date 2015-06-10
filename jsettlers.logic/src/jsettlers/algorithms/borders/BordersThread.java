@@ -65,6 +65,7 @@ public class BordersThread implements Runnable {
 	private void calculateForPosition(ShortPoint2D position) {
 		short x = position.x;
 		short y = position.y;
+
 		byte player = grid.getPlayerIdAt(x, y);
 		boolean isBorder = false;
 
@@ -109,9 +110,14 @@ public class BordersThread implements Runnable {
 		this.positionsQueue.offer(position);
 	}
 
-	public void checkPositions(Iterable<ShortPoint2D> positions) {
-		for (ShortPoint2D currPos : positions) {
-			positionsQueue.offer(currPos);
+	public void checkArea(int x, int y, short width, short height) {
+		int endX = x + width;
+		int endY = y + height;
+
+		for (; y < endY; y += 2) {
+			for (int currX = x; currX < endX; currX += 2) {
+				this.positionsQueue.offer(new ShortPoint2D(currX, y));
+			}
 		}
 	}
 
@@ -123,4 +129,5 @@ public class BordersThread implements Runnable {
 	public void start() {
 		bordersThread.start();
 	}
+
 }
