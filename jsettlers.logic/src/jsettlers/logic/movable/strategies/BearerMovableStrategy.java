@@ -17,9 +17,9 @@ package jsettlers.logic.movable.strategies;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 

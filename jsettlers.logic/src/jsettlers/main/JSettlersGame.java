@@ -48,7 +48,7 @@ import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
@@ -72,7 +72,7 @@ public class JSettlersGame {
 
 	private final Object stopMutex = new Object();
 
-	private final IGameCreator mapcreator;
+	private final IGameCreator mapCreator;
 	private final long randomSeed;
 	private final byte playerId;
 	private final boolean[] availablePlayers;
@@ -86,13 +86,17 @@ public class JSettlersGame {
 	private boolean stopped = false;
 	private boolean started = false;
 
+	private PrintStream systemErrorStream;
+	private PrintStream systemOutStream;
+
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
 			List<Byte> aiPlayers, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
+		configureLogging(mapCreator);
+		
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
-				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator + " replayStream: "
-				+ replayFileInputStream);
+				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
 
-		this.mapcreator = mapCreator;
+		this.mapCreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkConnector = networkConnector;
 		this.playerId = playerId;
@@ -106,8 +110,6 @@ public class JSettlersGame {
 		MatchConstants.ENABLE_FOG_OF_WAR_DISABLING = controlAll;
 
 		this.gameRunner = new GameRunner();
-
-		configureLogging(mapCreator);
 	}
 
 	/**
@@ -162,7 +164,7 @@ public class JSettlersGame {
 		}
 	}
 
-	private class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
+	public class GameRunner implements Runnable, IStartingGame, IStartedGame, IGameStoppable {
 		private IStartingGameListener startingGameListener;
 		private MainGrid mainGrid;
 		private GameStatistics statistics;
@@ -174,6 +176,7 @@ public class JSettlersGame {
 		@Override
 		public void run() {
 			try {
+
 				updateProgressListener(EProgressState.LOADING, 0.1f);
 
 				DataOutputStream replayFileStream = createReplayFileStream();
@@ -186,7 +189,7 @@ public class JSettlersGame {
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
-				MainGridWithUiSettings gridWithUiState = mapcreator.loadMainGrid(availablePlayers);
+				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(availablePlayers);
 				mainGrid = gridWithUiState.getMainGrid();
 				PlayerState playerState = gridWithUiState.getPlayerState(playerId);
 
@@ -202,28 +205,28 @@ public class JSettlersGame {
 					imagePreloader.join(); // Wait for ImageProvider to finish loading the images
 
 				waitForStartingGameListener();
-
 				updateProgressListener(EProgressState.WAITING_FOR_OTHER_PLAYERS, 0.98f);
-
-				networkConnector.setStartFinished(true);
-				waitForAllPlayersStartFinished(networkConnector);
-
-				final IMapInterfaceConnector connector = startingGameListener.startFinished(this);
-				connector.loadUIState(playerState.getUiState());
-
-				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-						this, playerId, multiplayer);
 
 				if (replayFileInputStream != null) {
 					gameClock.loadReplayLogFromStream(replayFileInputStream);
 				}
 
+				networkConnector.setStartFinished(true);
+				waitForAllPlayersStartFinished(networkConnector);
+
+				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
+				connector.loadUIState(playerState.getUiState());
+
+				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
+						this, playerId, multiplayer);
+
 				gameClock.startExecution();
 				gameRunning = true;
 
+				startingGameListener.startFinished();
 				AiThread aiThread = new AiThread(aiPlayers, mainGrid);
 				aiThread.start();
-				
+
 				synchronized (stopMutex) {
 					while (!stopped) {
 						try {
@@ -242,23 +245,27 @@ public class JSettlersGame {
 				RescheduleTimer.stop();
 				Movable.resetState();
 				Building.dropAllBuildings();
+
+				System.setErr(systemErrorStream);
+				System.setOut(systemOutStream);
 			} catch (MapLoadException e) {
 				e.printStackTrace();
 				reportFail(EGameError.MAPLOADING_ERROR, e);
 			} catch (Exception e) {
 				e.printStackTrace();
 				reportFail(EGameError.UNKNOWN_ERROR, e);
-			}
-			if (exitListener != null) {
-				exitListener.gameExited(this);
+			} finally {
+				if (exitListener != null) {
+					exitListener.gameExited(this);
+				}
 			}
 		}
 
 		private DataOutputStream createReplayFileStream() throws IOException {
-			final String replayFilename = getLogFile(mapcreator, "_replay.log");
+			final String replayFilename = getLogFile(mapCreator, "_replay.log");
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
-			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapcreator.getMapName(), mapcreator.getMapID(), playerId,
+			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapID(), playerId,
 					availablePlayers);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();
@@ -341,10 +348,18 @@ public class JSettlersGame {
 		public boolean isStartupFinished() {
 			return gameRunning;
 		}
+
+		public MainGrid getMainGrid() {
+			return mainGrid;
+		}
+
 	}
 
-	private static void configureLogging(final IGameCreator mapcreator) {
+	private void configureLogging(final IGameCreator mapcreator) {
 		try {
+			systemErrorStream = System.err;
+			systemOutStream = System.out;
+
 			if (!CommonConstants.ENABLE_CONSOLE_LOGGING) {
 				PrintStream outLogStream = new PrintStream(ResourceManager.writeFile(getLogFile(mapcreator, "_out.log")));
 				System.setOut(outLogStream);

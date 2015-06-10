@@ -2,7 +2,7 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 import jsettlers.logic.stack.IStackSizeSupplier;
 
 public class WineBowlMapObject extends AbstractHexMapObject {

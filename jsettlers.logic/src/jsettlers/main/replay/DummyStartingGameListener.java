@@ -29,17 +29,14 @@ class DummyStartingGameListener implements IStartingGameListener {
 	}
 
 	@Override
-	public IMapInterfaceConnector startFinished(IStartedGame game) {
+	public IMapInterfaceConnector preLoadFinished(IStartedGame game) {
 		startedGame = game;
-		synchronized (waitMutex) {
-			waitMutex.notifyAll();
-		}
 		return new DummyMapInterfaceConnector();
 	}
 
 	@Override
 	public void startFailed(EGameError errorType, Exception exception) {
-		System.err.println("start failed due to: " + errorType);
+		System.err.println("ERROR: Start failed due to: " + errorType);
 		exception.printStackTrace();
 		System.exit(1);
 	}
@@ -54,5 +51,12 @@ class DummyStartingGameListener implements IStartingGameListener {
 			}
 		}
 		return startedGame;
+	}
+
+	@Override
+	public void startFinished() {
+		synchronized (waitMutex) {
+			waitMutex.notifyAll();
+		}
 	}
 }

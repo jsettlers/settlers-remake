@@ -24,6 +24,10 @@ import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Window;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -38,7 +42,7 @@ import java.lang.reflect.Field;
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
+public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener, HierarchyListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -49,7 +53,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	 */
 	private boolean panWithButton3;
 
-	private static Window referenceWindowToCalculateRetinaScale;
+	private int retinaScaleFactor = 1;
 
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
@@ -66,36 +70,34 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
 		component.addMouseWheelListener(this);
-
+		component.addHierarchyListener(this);
+		
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 	}
 
-	public static void setReferenceWindowToCalculateRetinaScale(Window window) {
-
-		referenceWindowToCalculateRetinaScale = window;
-	}
-
 	private UIPoint convertToLocal(MouseEvent e) {
-		int scale = determineRetinaScaleFactor();
-		return new UIPoint(e.getX() * scale, (e.getComponent().getHeight() - e.getY()) * scale);
+		return new UIPoint(e.getX() * retinaScaleFactor, (e.getComponent().getHeight() - e.getY()) * retinaScaleFactor);
 
 	}
 
-	private int determineRetinaScaleFactor() {
-		int scale = 1;
-
-		GraphicsConfiguration config = referenceWindowToCalculateRetinaScale.getGraphicsConfiguration();
+	private void updateRetinaScaleFactor(Component component) {
+		GraphicsConfiguration config = component.getGraphicsConfiguration();
+		if (config == null) {
+			return;
+		}
+		
 		GraphicsDevice myScreen = config.getDevice();
 
 		try {
 			Field field = myScreen.getClass().getDeclaredField("scale");
-			if (field != null) {
-				field.setAccessible(true);
-				Object scaleOfField = field.get(myScreen);
-				if (scaleOfField instanceof Integer) {
-					scale = ((Integer) scaleOfField).intValue();
-				}
+			if (field == null) {
+				return;
+			}
+			field.setAccessible(true);
+			Object scaleOfField = field.get(myScreen);
+			if (scaleOfField instanceof Integer) {
+				retinaScaleFactor = ((Integer) scaleOfField).intValue();
 			}
 		} catch (NoSuchFieldException exception) {
 			// if there is no Field scale then we have a scale factor of 1
@@ -103,8 +105,6 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
-
-		return scale;
 	}
 
 	@Override
@@ -291,5 +291,39 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		float factor = (float) Math.exp(-e.getUnitsToScroll() / 20.0);
 		startZoom();
 		endZoomEvent(factor);
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent componentEvent) {
+		updateRetinaScaleFactor(componentEvent.getComponent());
+	}
+
+	@Override
+	public void componentShown(ComponentEvent componentEvent) {
+		updateRetinaScaleFactor(componentEvent.getComponent());
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void hierarchyChanged(HierarchyEvent hierarchyEvent) {
+		Component component = hierarchyEvent.getComponent();
+		privateRegisterComponentListenerToParentWindowOf(component, component);
+	}
+	
+	void privateRegisterComponentListenerToParentWindowOf(Component component, Component childComponent) {
+		if (component == null) {
+			return;
+		} else if (component instanceof Window) {
+			updateRetinaScaleFactor(component);
+			component.addComponentListener(this);
+			childComponent.removeComponentListener(this);
+		} else {
+			privateRegisterComponentListenerToParentWindowOf(component.getParent(), childComponent);
+		}
 	}
 }
