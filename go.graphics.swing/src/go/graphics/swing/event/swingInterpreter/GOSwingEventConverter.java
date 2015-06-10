@@ -23,7 +23,6 @@ import go.graphics.event.interpreter.AbstractEventConverter;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -49,7 +48,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	 */
 	private boolean panWithButton3;
 
-	private static Window referenceWindowToCalculateRetinaScale;
+	private Component component;
 
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
@@ -62,18 +61,14 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	public GOSwingEventConverter(Component component, GOEventHandlerProvider provider) {
 		super(provider);
 
-		component.addKeyListener(this);
-		component.addMouseListener(this);
-		component.addMouseMotionListener(this);
-		component.addMouseWheelListener(this);
+		this.component = component;
+		this.component.addKeyListener(this);
+		this.component.addMouseListener(this);
+		this.component.addMouseMotionListener(this);
+		this.component.addMouseWheelListener(this);
 
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
-	}
-
-	public static void setReferenceWindowToCalculateRetinaScale(Window window) {
-
-		referenceWindowToCalculateRetinaScale = window;
 	}
 
 	private UIPoint convertToLocal(MouseEvent e) {
@@ -85,7 +80,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	private int determineRetinaScaleFactor() {
 		int scale = 1;
 
-		GraphicsConfiguration config = referenceWindowToCalculateRetinaScale.getGraphicsConfiguration();
+		GraphicsConfiguration config = component.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
 
 		try {

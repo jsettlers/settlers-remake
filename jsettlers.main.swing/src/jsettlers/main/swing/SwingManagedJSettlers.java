@@ -16,7 +16,6 @@ package jsettlers.main.swing;
 
 import go.graphics.area.Area;
 import go.graphics.swing.AreaContainer;
-import go.graphics.swing.event.swingInterpreter.GOSwingEventConverter;
 import go.graphics.swing.sound.SwingSoundPlayer;
 
 import java.awt.Dimension;
@@ -244,7 +243,6 @@ public class SwingManagedJSettlers {
 
 	private static void startJogl(Area area) {
 		JFrame jsettlersWnd = new JFrame("JSettlers - " + getBuild());
-		GOSwingEventConverter.setReferenceWindowToCalculateRetinaScale(jsettlersWnd);
 		
 		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
