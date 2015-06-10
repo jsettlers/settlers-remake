@@ -243,7 +243,7 @@ public class SwingManagedJSettlers {
 
 	private static void startJogl(Area area) {
 		JFrame jsettlersWnd = new JFrame("JSettlers - " + getBuild());
-		
+
 		// StartMenuPanel panel = new StartMenuPanel(new StartScreenConnector());
 		AreaContainer panel = new AreaContainer(area);
 		panel.setPreferredSize(new Dimension(640, 480));
