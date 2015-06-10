@@ -15,8 +15,6 @@
 package jsettlers.graphics.startscreen.startlists;
 
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
@@ -45,17 +43,10 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	}
 
 	@Override
-	protected Action getSubmitAction() {
-		return new ExecutableAction() {
-			@Override
-			public void execute() {
-				IJoiningGame joiningGame =
-						connector.joinMultiplayerGame(getActiveListItem());
-				gameStarted = true;
-				contentSetable.setContent(new JoiningGamePanel(joiningGame,
-						contentSetable));
-			}
-		};
+	protected void onSubmitAction() {
+		IJoiningGame joiningGame = connector.joinMultiplayerGame(getActiveListItem());
+		gameStarted = true;
+		contentSetable.setContent(new JoiningGamePanel(joiningGame, contentSetable));
 	}
 
 	@Override
