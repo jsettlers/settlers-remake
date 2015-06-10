@@ -52,6 +52,17 @@ public final class Color {
 		this.shortColor = toShortColorForced(1);
 	}
 
+	public Color toGreyScale()
+	{
+	    float intensity = 0.2126f * red + 0.7152f * green + 0.0722f * blue;
+	    return new Color(intensity, intensity, intensity, alpha);
+	}
+
+	public Color overlay( Color colour )
+	{
+	    return new Color( red * colour.getRed(), green * colour.getGreen(), blue * colour.getBlue(), alpha * colour.getAlpha() );
+	}
+
 	public final float getAlpha() {
 		return alpha;
 	}
