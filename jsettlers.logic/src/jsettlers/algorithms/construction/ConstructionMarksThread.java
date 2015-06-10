@@ -24,9 +24,9 @@ import jsettlers.network.client.interfaces.IPausingSupplier;
 /**
  * Thread to calculate the markings for the user if he want's to construct a new building.<br>
  * This is a singleton class.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class ConstructionMarksThread implements Runnable {
 
@@ -67,7 +67,6 @@ public final class ConstructionMarksThread implements Runnable {
 						watch.restart();
 
 						EBuildingType buildingType = this.buildingType;
-						MapRectangle mapArea = this.mapArea;
 						if (buildingType != null && mapArea != null) { // if the task has already been canceled
 							algorithm.calculateConstructMarks(mapArea, buildingType.getBuildingAreaBitSet(), buildingType.getGroundtypes(),
 									buildingType.getBlockedTiles());
