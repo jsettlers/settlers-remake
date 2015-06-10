@@ -23,6 +23,8 @@ import go.graphics.event.interpreter.AbstractEventConverter;
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -37,7 +39,7 @@ import java.lang.reflect.Field;
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
+public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -48,7 +50,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	 */
 	private boolean panWithButton3;
 
-	private Component component;
+	private int retinaScaleFactor = 1;
 
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
@@ -61,36 +63,39 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	public GOSwingEventConverter(Component component, GOEventHandlerProvider provider) {
 		super(provider);
 
-		this.component = component;
-		this.component.addKeyListener(this);
-		this.component.addMouseListener(this);
-		this.component.addMouseMotionListener(this);
-		this.component.addMouseWheelListener(this);
-
+		component.addKeyListener(this);
+		component.addMouseListener(this);
+		component.addMouseMotionListener(this);
+		component.addMouseWheelListener(this);
+		component.addComponentListener(this);
+		updateRetinaScaleFactor(component);
+		
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 	}
 
 	private UIPoint convertToLocal(MouseEvent e) {
-		int scale = determineRetinaScaleFactor();
-		return new UIPoint(e.getX() * scale, (e.getComponent().getHeight() - e.getY()) * scale);
+		return new UIPoint(e.getX() * retinaScaleFactor, (e.getComponent().getHeight() - e.getY()) * retinaScaleFactor);
 
 	}
 
-	private int determineRetinaScaleFactor() {
-		int scale = 1;
-
+	private void updateRetinaScaleFactor(Component component) {
 		GraphicsConfiguration config = component.getGraphicsConfiguration();
+		if (config == null) {
+			return;
+		}
+		
 		GraphicsDevice myScreen = config.getDevice();
 
 		try {
 			Field field = myScreen.getClass().getDeclaredField("scale");
-			if (field != null) {
-				field.setAccessible(true);
-				Object scaleOfField = field.get(myScreen);
-				if (scaleOfField instanceof Integer) {
-					scale = ((Integer) scaleOfField).intValue();
-				}
+			if (field == null) {
+				return;
+			}
+			field.setAccessible(true);
+			Object scaleOfField = field.get(myScreen);
+			if (scaleOfField instanceof Integer) {
+				retinaScaleFactor = ((Integer) scaleOfField).intValue();
 			}
 		} catch (NoSuchFieldException exception) {
 			// if there is no Field scale then we have a scale factor of 1
@@ -98,8 +103,6 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
-
-		return scale;
 	}
 
 	@Override
@@ -287,4 +290,20 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		startZoom();
 		endZoomEvent(factor);
 	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent componentEvent) {
+		updateRetinaScaleFactor(componentEvent.getComponent());
+	}
+
+	@Override
+	public void componentShown(ComponentEvent componentEvent) {
+		updateRetinaScaleFactor(componentEvent.getComponent());
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
 }
