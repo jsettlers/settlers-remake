@@ -12,38 +12,55 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.localization;
+package jsettlers.graphics.map.minimap;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import jsettlers.graphics.localization.AbstractLabels;
-
-public class EditorLabels extends AbstractLabels {
-	private static final EditorLabels instance = new EditorLabels();
-
-	private EditorLabels() {
+/**
+ * This is the current mode the minimap should have.
+ * 
+ * @author Michael Zangl
+ */
+public class MinimapMode {
+	public enum OccupiedAreaMode {
+		NONE,
+		BORDERS,
+		AREA
 	}
 
-	/**
-	 * Gets a string
-	 * 
-	 * @param key
-	 *            The name of the string
-	 * @return The localized string
-	 */
-	public static String getLabel(String key) {
-		return instance.getSingleString(key);
+	public enum SettlersMode {
+		NONE,
+		SOILDERS,
+		ALL
 	}
 
-	@Override
-	protected InputStream getLocaleStream(LocaleSuffix locale) throws IOException {
-		String filename = locale.getFileName("labels", ".properties");
-		InputStream stream = EditorLabels.class.getResourceAsStream(filename);
-		if (stream == null) {
-			throw new FileNotFoundException(filename);
-		}
-		return stream;
+	private boolean displayBuildings = true;
+	private OccupiedAreaMode displayOccupied = OccupiedAreaMode.BORDERS;
+	private SettlersMode displaySettlers = SettlersMode.SOILDERS;
+
+	public boolean getDisplayBuildings() {
+		return displayBuildings;
+	}
+
+	public void setDisplayBuildings(boolean displayBuildings) {
+		this.displayBuildings = displayBuildings;
+	}
+
+	public OccupiedAreaMode getDisplayOccupied() {
+		return displayOccupied;
+	}
+
+	public void setDisplayOccupied(OccupiedAreaMode displayOccupied) {
+		this.displayOccupied = displayOccupied;
+	}
+
+	public SettlersMode getDisplaySettlers() {
+		return displaySettlers;
+	}
+
+	public void setDisplaySettlers(SettlersMode displaySettlers) {
+		this.displaySettlers = displaySettlers;
+	}
+
+	public boolean simplifyLandscape() {
+		return displayOccupied != OccupiedAreaMode.NONE;
 	}
 }

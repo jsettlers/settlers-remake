@@ -260,7 +260,7 @@ public final class ImageProvider {
 	 *            The image number.
 	 * @return The image.
 	 */
-	private SingleImage getGuiImage(int file, int seqnumber) {
+	public SingleImage getGuiImage(int file, int seqnumber) {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {

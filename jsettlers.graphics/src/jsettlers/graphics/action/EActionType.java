@@ -29,6 +29,13 @@ public enum EActionType {
 	BUILD,
 
 	/**
+	 * Show or hide the construction marks.
+	 * 
+	 * @see ShowConstructionMarksAction
+	 */
+	SHOW_CONSTRUCTION_MARK,
+
+	/**
 	 * Destroys the selected items.
 	 */
 	DESTROY,

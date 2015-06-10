@@ -39,6 +39,7 @@ import jsettlers.graphics.action.SelectAreaAction;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.action.SetMaterialDistributionSettingsAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.map.IMapInterfaceConnector;
 import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.UIState;
@@ -80,10 +81,8 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 	private final ConstructionMarksThread constructionMarksCalculator;
 
 	/**
-	 * The current active action that waits for the user to select a point.
+	 * The current selection. This is updated by game logic.
 	 */
-	private Action activeAction = null;
-	private EBuildingType previewBuilding;
 	private SelectionSet currentSelection = new SelectionSet();
 
 	public GuiInterface(IMapInterfaceConnector connector, IGameClock clock, ITaskScheduler taskScheduler, IGuiInputGrid grid,
@@ -110,15 +109,27 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		switch (action.getActionType()) {
-		case BUILD:
+		case BUILD: {
 			this.setSelection(new SelectionSet());
-			EBuildingType buildingType = ((BuildAction) action).getBuilding();
+			BuildAction buildAction = (BuildAction) action;
+			EBuildingType buildingType = buildAction.getBuildingType();
+
+			ShortPoint2D pos2 = grid.getConstructablePosition(buildAction.getPosition(), buildingType, playerId,
+					InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
+			if (pos2 != null) {
+				scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, pos2, buildingType));
+			}
+
 			System.out.println("build: " + buildingType);
-			this.previewBuilding = buildingType;
-			connector.setPreviewBuildingType(buildingType);
-			constructionMarksCalculator.setBuildingType(buildingType);
-			setActiveAction(action);
 			break;
+		}
+
+		case SHOW_CONSTRUCTION_MARK: {
+			EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
+
+			constructionMarksCalculator.setBuildingType(buildingType);
+			break;
+		}
 
 		case DEBUG_ACTION:
 			for (ISelectable curr : currentSelection) {
@@ -184,18 +195,17 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			selectPointType((PointAction) action);
 			break;
 
-		case MOVE_TO:
-			if (!cancelActiveAction()) {
-				PointAction moveToAction = (PointAction) action;
+		case MOVE_TO: {
+			PointAction moveToAction = (PointAction) action;
 
-				if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
-					setBuildingWorkArea(moveToAction.getPosition());
+			if (currentSelection.getSelectionType() == ESelectionType.BUILDING && currentSelection.getSize() == 1) {
+				setBuildingWorkArea(moveToAction.getPosition());
 
-				} else {
-					moveTo(moveToAction.getPosition());
-				}
+			} else {
+				moveTo(moveToAction.getPosition());
 			}
 			break;
+		}
 
 		case SET_WORK_AREA:
 			if (currentSelection.getSize() > 0) {
@@ -262,7 +272,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		case ABORT:
-			cancelActiveAction();
 			break;
 
 		case EXIT:
@@ -358,21 +367,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 	}
 
-	private boolean cancelActiveAction() {
-		if (previewBuilding != null) { // cancel building creation
-			cancelBuildingCreation();
-			setActiveAction(null);
-			return true;
-		}
-		return false;
-	}
-
-	private void cancelBuildingCreation() {
-		previewBuilding = null;
-		constructionMarksCalculator.setBuildingType(null);
-		connector.setPreviewBuildingType(null);
-	}
-
 	private void destroySelected() {
 		if (currentSelection == null || currentSelection.getSize() == 0) {
 			return;
@@ -438,17 +432,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		return selectedIds;
 	}
 
-	private void setActiveAction(Action action) {
-		if (this.activeAction != null) {
-			// TODO: if it was a build action, remove build images
-			this.activeAction.setActive(false);
-		}
-		this.activeAction = action;
-		if (action != null) {
-			action.setActive(true);
-		}
-	}
-
 	private void selectArea(SelectAreaAction action) {
 		SelectionSet selectionSet = new SelectionSet();
 
@@ -477,30 +460,13 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		grid.postionClicked(pos.x, pos.y);
 
 		// check what's to do
-		if (activeAction == null) {
-			ISelectable selected = getSelectableAt(pos);
-			if (selected != null) {
-				setSelection(new SelectionSet(selected));
-			} else {
-				setSelection(new SelectionSet());
-			}
-
+		ISelectable selected = getSelectableAt(pos);
+		if (selected != null) {
+			setSelection(new SelectionSet(selected));
 		} else {
-			switch (activeAction.getActionType()) {
-			case BUILD:
-				EBuildingType type = previewBuilding;
-				ShortPoint2D pos2 = grid.getConstructablePosition(pos, type, playerId, InputSettings.USE_NEIGHBOR_POSITIONS_FOR_CONSTRUCTION);
-				if (pos2 != null) {
-					// cancelBuildingCreation();
-					scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, pos2, type));
-				}
-				return; // prevent resetting the current action
-			default:
-				break;
-			}
-
-			setActiveAction(null);
+			setSelection(new SelectionSet());
 		}
+
 	}
 
 	private void scheduleTask(SimpleGuiTask guiTask) {

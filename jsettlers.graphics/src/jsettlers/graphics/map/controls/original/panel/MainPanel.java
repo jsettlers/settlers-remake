@@ -14,11 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel;
 
-import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
@@ -33,7 +35,7 @@ import jsettlers.graphics.utils.UIPanel;
 
 /**
  * This class handles the contents of the main panel.
- * 
+ *
  * @author michael
  */
 public class MainPanel extends UIPanel {
@@ -66,10 +68,24 @@ public class MainPanel extends UIPanel {
 			new TabButton(EContentType.PRODUCTION, BUTTONS_FILE, 243, 255, ""),
 	};
 
-	private final Button btnSystem = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 93, 96, "");
-	{
-		btnSystem.setActive(true); // Show as inactive until the functionality has been implemented
-	}
+	private final MessageContent quitPrompt =
+			new MessageContent(
+					Labels.getString("game-quit"),
+					Labels.getString("game-quit-cancel"),
+					new ExecutableAction() {
+						@Override
+						public void execute() {
+							setContent(EContentType.BUILD_NORMAL);
+							btnSystem.setActive(false);
+						}
+					},
+					Labels.getString("game-quit-ok"),
+					new Action(EActionType.EXIT)
+			);
+
+	private final Button btnSystem = new TabButton(quitPrompt,
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");;
 
 	private final Button btnScroll = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
 	private final Button btnSwords = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 114, 102, "");
@@ -88,64 +104,26 @@ public class MainPanel extends UIPanel {
 
 	private IContentProvider activeContent = EContentType.BUILD_NORMAL;
 
-	private EBuildingType activeBuilding;
-
 	private IContentProvider goBackContent;
-
-	/**
-	 * The action type the next simple select action should be replaced with.
-	 * <p>
-	 * This field is reset on every content change.
-	 */
-	private EActionType selectAction;
 
 	private IGraphicsGrid grid;
 
 	private ShortPoint2D displayCenter;
 
-	public MainPanel() {
+	/**
+	 * Somewhere to fire actions to.
+	 */
+	private ActionFireable actionFireable;
+
+	public MainPanel(ActionFireable actionFireable) {
+		this.actionFireable = actionFireable;
+
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}
 
-	private void initTabbar1() {
-		int i = 0;
-		UIPanel tabbar1 = new UIPanel();
-		this.addChild(tabbar1, 0, constants.UI_TABS1_BOTTOM, 1, constants.UI_TABS1_TOP);
-		Button[] buttons = new Button[] { button_build, button_goods, button_settlers };
-		for (Button button : buttons) {
-			float left = constants.UI_TABS1_SIDEMARGIN + i * (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
-			tabbar1.addChild(button, left, 0, left + constants.UI_TABS1_WIDTH, 1);
-			i++;
-		}
-	}
-
-	private void initTabbar2() {
-		this.addChild(tabpanel, 0, constants.UI_TABS2_BOTTOM, 1, constants.UI_TABS2_TOP);
-	}
-
-	private void addSystemButton() {
-		this.addChild(
-				btnSystem,
-				constants.SYSTEM_BUTTON_LEFT,
-				constants.SYSTEM_BUTTON_BOTTOM,
-				constants.SYSTEM_BUTTON_RIGHT,
-				constants.SYSTEM_BUTTON_TOP
-				);
-	}
-
-	private void addLowerTabBar()
-	{
-		UIPanel lowerTabBar = new UIPanel();
-		Button[] buttons = new Button[] { btnScroll, btnSwords, btnSignPost, btnPots };
-		int i = 0;
-		for (Button button : buttons) {
-			float left = constants.LOWER_TABS_LEFT + (i++ * constants.LOWER_TABS_WIDTH);
-			lowerTabBar.addChild(button, left, 0, left + constants.LOWER_TABS_WIDTH, 1);
-		}
-		this.addChild(lowerTabBar, 0, constants.LOWER_TABS_BOTTOM, 1, constants.LOWER_TABS_TOP);
-	}
-
 	public void setContent(IContentProvider type) {
+		activeContent.contentHiding(actionFireable);
+
 		ESecondaryTabType tabs = type.getTabs();
 		showSecondaryTabs(tabs);
 
@@ -170,15 +148,16 @@ public class MainPanel extends UIPanel {
 		contentContainer.addChild(type.getPanel(), 0, 0, 1, 1);
 		activeContent = type;
 
-		activeContent.displayBuildingBuild(activeBuilding);
-		selectAction = null;
 		sendMapPositionChange();
+
+		activeContent.contentShowing(actionFireable);
 	}
 
 	private void setButtonsActive(TabButton[] buttons, IContentProvider type) {
 		for (TabButton button : buttons) {
 			button.setActiveByContent(type);
 		}
+		btnSystem.setActive(false);
 	}
 
 	private void showSecondaryTabs(ESecondaryTabType tabs) {
@@ -208,8 +187,8 @@ public class MainPanel extends UIPanel {
 	private void addTabpanelButtons(Button[] buttons) {
 		int i = 0;
 		for (Button button : buttons) {
-			float left = constants.UI_TABS2_SIDEMARGIN + i * (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
-			tabpanel.addChild(button, left, 0, left + constants.UI_TABS2_WIDTH, 1);
+			float left = constants.SECONDARY_TABS_SIDEMARGIN + i * (constants.SECONDARY_TABS_WIDTH + constants.SECONDARY_TABS_SPACING);
+			tabpanel.addChild(button, left, 0, left + constants.SECONDARY_TABS_WIDTH, 1);
 			i++;
 		}
 	}
@@ -231,18 +210,57 @@ public class MainPanel extends UIPanel {
 		setContent(activeContent);
 	}
 
-	public void displayBuildingBuild(EBuildingType type) {
-		activeBuilding = type;
-		activeContent.displayBuildingBuild(type);
+	private void initTabbar1() {
+		int i = 0;
+		UIPanel tabbar1 = new UIPanel();
+		this.addChild(tabbar1, 0, constants.PRIMARY_TABS_BOTTOM, 1, constants.PRIMARY_TABS_TOP);
+		Button[] buttons = new Button[] { button_build, button_goods, button_settlers };
+		for (Button button : buttons) {
+			float left = constants.PRIMARY_TABS_SIDEMARGIN + i * (constants.PRIMARY_TABS_WIDTH + constants.PRIMARY_TABS_SPACING);
+			tabbar1.addChild(button, left, 0, left + constants.PRIMARY_TABS_WIDTH, 1);
+			i++;
+		}
+	}
+
+	private void initTabbar2() {
+		this.addChild(tabpanel, 0, constants.SECONDARY_TABS_BOTTOM, 1, constants.SECONDARY_TABS_TOP);
+	}
+
+	private void addSystemButton() {
+		this.addChild(
+				btnSystem,
+				constants.SYSTEM_BUTTON_LEFT,
+				constants.SYSTEM_BUTTON_BOTTOM,
+				constants.SYSTEM_BUTTON_RIGHT,
+				constants.SYSTEM_BUTTON_TOP
+				);
+		btnSystem.setActive(true); // Show as inactive until the functionality has been implemented
+	}
+
+	private void addLowerTabBar()
+	{
+		UIPanel lowerTabBar = new UIPanel();
+		Button[] buttons = new Button[] { btnScroll, btnSwords, btnSignPost, btnPots };
+		int i = 0;
+		for (Button button : buttons) {
+			float left = constants.LOWER_TABS_LEFT + (i++ * constants.LOWER_TABS_WIDTH);
+			lowerTabBar.addChild(button, left, 0, left + constants.LOWER_TABS_WIDTH, 1);
+		}
+		this.addChild(lowerTabBar, 0, constants.LOWER_TABS_BOTTOM, 1, constants.LOWER_TABS_TOP);
 	}
 
 	public Action catchAction(Action action) {
+		// TODO: Abort on MOVE_TO-action.
 		if (action.getActionType() == EActionType.ASK_SET_WORK_AREA) {
 			goBackContent = activeContent;
 			setContent(new MessageContent(
 					Labels.getString("click_set_workcenter"), null, null,
-					Labels.getString("abort"), new Action(EActionType.ABORT)));
-			selectAction = EActionType.SET_WORK_AREA;
+					Labels.getString("abort"), new Action(EActionType.ABORT)) {
+				@Override
+				public PointAction getSelectAction(ShortPoint2D position) {
+					return new PointAction(EActionType.SET_WORK_AREA, position);
+				}
+			});
 			return null;
 		} else if (action.getActionType() == EActionType.ASK_DESTROY) {
 			goBackContent = activeContent;
@@ -252,12 +270,6 @@ public class MainPanel extends UIPanel {
 							EActionType.DESTROY), Labels.getString("abort"),
 					new Action(EActionType.ABORT)));
 			return null;
-		} else if (action.getActionType() == EActionType.SELECT_POINT
-				&& selectAction != null) {
-			ShortPoint2D position = ((PointAction) action).getPosition();
-			PointAction replaced = new PointAction(selectAction, position);
-			goBack();
-			return replaced;
 		} else if (action.getActionType() == EActionType.ABORT) {
 			goBack();
 			return action;
@@ -265,12 +277,11 @@ public class MainPanel extends UIPanel {
 			((ExecutableAction) action).execute();
 			return null;
 		} else {
-			return action;
+			return activeContent.catchAction(action);
 		}
 	}
 
 	private void goBack() {
-		selectAction = null;
 		if (goBackContent != null) {
 			setContent(goBackContent);
 			goBackContent = null;

@@ -49,19 +49,23 @@ public class UIList<T> implements UIElement {
 		UIListItem getItem(T item);
 	}
 
-	public UIList(List<? extends T> items, ListItemGenerator<T> generator,
-			float itemheight) {
-		this.items = items;
+	public UIList(List<? extends T> items, ListItemGenerator<T> generator, float itemheight) {
+		setItems(items);
 		this.generator = generator;
 		this.itemheight = itemheight;
-		if (items.size() > 0) {
-			activeItem = items.get(0);
-		}
 	}
 
 	public void setItems(List<? extends T> list) {
 		synchronized (itemsMutex) {
 			this.items = list;
+
+			if (!items.contains(activeItem)) {
+				if (items.size() > 0) {
+					activeItem = items.get(0);
+				} else {
+					activeItem = null;
+				}
+			}
 		}
 	}
 
@@ -185,7 +189,11 @@ public class UIList<T> implements UIElement {
 	}
 
 	public void setActiveItem(T activeItem) {
-		this.activeItem = activeItem;
+		synchronized (itemsMutex) {
+			if (items.contains(activeItem)) {
+				this.activeItem = activeItem;
+			}
+		}
 	}
 
 	public T getActiveItem() {

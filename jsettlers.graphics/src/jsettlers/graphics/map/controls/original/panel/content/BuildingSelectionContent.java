@@ -19,7 +19,6 @@ import go.graphics.text.EFontSize;
 
 import java.util.List;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
@@ -27,10 +26,8 @@ import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.IMovable;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
@@ -40,7 +37,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
-public class BuildingSelectionPanel implements IContentProvider {
+public class BuildingSelectionContent extends AbstractContentProvider {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
@@ -64,7 +61,7 @@ public class BuildingSelectionPanel implements IContentProvider {
 
 	private BuildingState lastState = null;
 
-	public BuildingSelectionPanel(ISelectionSet selection) {
+	public BuildingSelectionContent(ISelectionSet selection) {
 		building = (IBuilding) selection.get(0);
 
 		ImageLink[] images = building.getBuildingType().getImages();
@@ -240,18 +237,5 @@ public class BuildingSelectionPanel implements IContentProvider {
 			addPanelContent();
 			lastState = new BuildingState(building);
 		}
-	}
-
-	@Override
-	public ESecondaryTabType getTabs() {
-		return null;
-	}
-
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-	}
-
-	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 	}
 }

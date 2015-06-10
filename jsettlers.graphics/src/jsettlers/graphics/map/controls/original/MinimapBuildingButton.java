@@ -12,38 +12,46 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel;
+package jsettlers.graphics.map.controls.original;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.graphics.action.ChangePanelAction;
-import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
+import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.MainPanel;
+import jsettlers.graphics.map.minimap.MinimapMode;
 import jsettlers.graphics.utils.Button;
 
 /**
- * This is a button intended to be used tp change the content of the main panel.
+ * A button that controls the display of the buildings on the minimap.
  * 
- * @author michael
+ * @author Michael Zangl
  */
-public class TabButton extends Button {
+public class MinimapBuildingButton extends Button {
+	private static final class NextDisplayMode extends ExecutableAction {
+		private final MinimapMode minimapSettings;
 
-	private final IContentProvider content;
+		private NextDisplayMode(MinimapMode minimapSettings) {
+			this.minimapSettings = minimapSettings;
+		}
 
-	public TabButton(IContentProvider content, int file, int image,
-			int activeImage, String description) {
-		this(content, new OriginalImageLink(EImageLinkType.GUI, file, image, 0),
-				new OriginalImageLink(EImageLinkType.GUI, file, activeImage, 0),
-				description);
+		@Override
+		public void execute() {
+			minimapSettings.setDisplayBuildings(!minimapSettings.getDisplayBuildings());
+		}
 	}
 
-	public TabButton(IContentProvider content, OriginalImageLink image,
-			OriginalImageLink activeImage, String description) {
-		super(new ChangePanelAction(content), image, activeImage, description);
-		this.content = content;
+	private static final OriginalImageLink INACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 364, 0);
+	private static final OriginalImageLink ACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 360, 0);
+	private MinimapMode minimapSettings;
+
+	public MinimapBuildingButton(final MinimapMode minimapSettings) {
+		super(new NextDisplayMode(minimapSettings), null, null, Labels.getString("minimap-buildings"));
+		this.minimapSettings = minimapSettings;
 	}
 
-	public void setActiveByContent(IContentProvider content) {
-		setActive(content.equals(this.content));
+	@Override
+	protected OriginalImageLink getBackgroundImage() {
+		return minimapSettings.getDisplayBuildings() ? ACTIVE : INACTIVE;
 	}
-
 }

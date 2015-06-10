@@ -15,6 +15,7 @@
 package jsettlers.graphics.androidui.actions;
 
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
 
 /**
  * This is something the user is currenlty doing
@@ -26,5 +27,8 @@ public abstract class ContextAction {
 
 	public Action replaceAction(Action action) {
 		return action;
+	}
+
+	public void onDeactivate(ActionFireable actionFireable) {
 	}
 }
