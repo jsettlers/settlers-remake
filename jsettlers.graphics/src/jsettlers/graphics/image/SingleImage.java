@@ -16,6 +16,7 @@ package jsettlers.graphics.image;
 
 import go.graphics.GLDrawContext;
 
+import java.awt.image.BufferedImage;
 import java.nio.ShortBuffer;
 
 import jsettlers.common.Color;
@@ -344,34 +345,58 @@ public class SingleImage extends Image implements ImageDataPrivider {
 		float top = -getOffsetY() + viewY;
 
 		buffer2.addTriangle(
-			alignCoord( left + u1 * width ),
-			alignCoord( top - v1 * height ),
-			alignCoord( left + u2 * width ),
-			alignCoord( top - v2 * height ),
-			alignCoord( left + u3 * width ),
-			alignCoord( top - v3 * height ),
-			convertU(u1),
-			convertV(v1),
-			convertU(u2),
-			convertV(v2),
-			convertU(u3),
-			convertV(v3),
-			activeColor
-		);
+				alignCoord(left + u1 * width),
+				alignCoord(top - v1 * height),
+				alignCoord(left + u2 * width),
+				alignCoord(top - v2 * height),
+				alignCoord(left + u3 * width),
+				alignCoord(top - v3 * height),
+				convertU(u1),
+				convertV(v1),
+				convertU(u2),
+				convertV(v2),
+				convertU(u3),
+				convertV(v3),
+				activeColor
+				);
 	}
 
 	/**
-	 * In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the
-	 * growing image of a building in the construction phase. By aligning to the nearest integer images can be placed in a more
-	 * predictable and controlled manner.
-	 * @param value the coordinate to be aligned.
+	 * In the draw process sub-integer coordinates can be rounded in unexpected ways that is particularly noticeable when redrawing the growing image
+	 * of a building in the construction phase. By aligning to the nearest integer images can be placed in a more predictable and controlled manner.
+	 * 
+	 * @param value
+	 *            the coordinate to be aligned.
 	 * @return an aligned coordinate value.
 	 */
-	private float alignCoord( float value )
+	private float alignCoord(float value)
 	{
-		//At larger scales the issue is still present to some degree which zoomFactor helps to minimize.
-		//TODO need to find the factor based on the zoom level.
+		// At larger scales the issue is still present to some degree which zoomFactor helps to minimize.
+		// TODO need to find the factor based on the zoom level.
 		float zoomFactor = 1.06f;
-		return (float)((Math.floor( value * zoomFactor )) / zoomFactor);
+		return (float) ((Math.floor(value * zoomFactor)) / zoomFactor);
+	}
+
+	public BufferedImage generateBufferedImage() {
+		if (width <= 0 || height <= 0) {
+			return null;
+		}
+
+		BufferedImage rendered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		ShortBuffer data = this.data.duplicate();
+		data.rewind();
+
+		int[] rgbArray = new int[data.remaining()];
+		for (int i = 0; i < rgbArray.length; i++) {
+			short myColor = data.get();
+			float red = (float) ((myColor >> 11) & 0x1f) / 0x1f;
+			float green = (float) ((myColor >> 6) & 0x1f) / 0x1f;
+			float blue = (float) ((myColor >> 1) & 0x1f) / 0x1f;
+			float alpha = myColor & 0x1;
+			rgbArray[i] = Color.getARGB(red, green, blue, alpha);
+		}
+
+		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
+		return rendered;
 	}
 }
