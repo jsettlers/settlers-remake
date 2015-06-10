@@ -121,6 +121,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 
 			System.out.println("build: " + buildingType);
+			break;
 		}
 
 		case SHOW_CONSTRUCTION_MARK: {
