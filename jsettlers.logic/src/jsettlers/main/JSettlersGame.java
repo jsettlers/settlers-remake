@@ -42,7 +42,7 @@ import jsettlers.input.IGameStoppable;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;

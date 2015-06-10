@@ -16,7 +16,7 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 
 /**
  * A pig that can be placed on the map. it can be "cut" after some time (that means can be cut return true).

@@ -24,7 +24,7 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
