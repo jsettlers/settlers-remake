@@ -30,9 +30,11 @@ import jsettlers.graphics.map.minimap.MinimapMode.OccupiedAreaMode;
 import jsettlers.graphics.map.minimap.MinimapMode.SettlersMode;
 
 class LineLoader implements Runnable {
-	private static final short TRANSPARENT = 0;
-
 	protected static final short BLACK = 0x0001;
+	private static final short TRANSPARENT = 0;
+	private static final int Y_STEP_HEIGHT = 5;
+	private static final int X_STEP_WIDTH = 5;
+	private static final int LINES_PER_RUN = 30;
 
 	private static final List<EMovableType> soildertypes = Arrays.asList(
 			EMovableType.SWORDSMAN_L1,
@@ -49,15 +51,18 @@ class LineLoader implements Runnable {
 			);
 
 	/**
-     *
-     */
+	 * The minimap we work for.
+	 */
 	private final Minimap minimap;
-
+	private boolean showBuildings = false;
 	private int currentline = 0;
-
 	private boolean stopped;
 
 	private final MinimapMode modeSettings;
+
+	private short[][] buffer = new short[1][1];
+	private int currYOffset = 0;
+	private int currXOffset = 0;
 
 	public LineLoader(Minimap minimap, MinimapMode modeSettings) {
 		this.minimap = minimap;
@@ -75,14 +80,11 @@ class LineLoader implements Runnable {
 		}
 	};
 
-	private int currYOffset = 0;
-	private int currXOffset = 0;
-	private static final int Y_STEP_HEIGHT = 5;
-	private static final int X_STEP_WIDTH = 5;
-
-	private static final int LINES_PER_RUN = 30;
-
-	private short[][] buffer = new short[1][1];
+	public void setShowBuildings(boolean showBuildings)
+	{
+		this.showBuildings = showBuildings;
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
 
 	private boolean isFirstRun;
 
@@ -186,9 +188,7 @@ class LineLoader implements Runnable {
 				basecolor *= (1 + .15f * dheight);
 
 				if (basecolor >= 0) {
-					color =
-							getLandscapeForArea(map, mapMinX, mapMinY, mapMaxX,
-									mapMaxY, basecolor);
+					color = getLandscapeForArea(map, context, mapMinX, mapMinY, mapMaxX, mapMaxY).toShortColor(basecolor);
 				}
 			}
 
@@ -200,14 +200,16 @@ class LineLoader implements Runnable {
 
 	}
 
-	private static short getLandscapeForArea(IGraphicsGrid map, int mapminx,
-			int mapminy, int mapmaxx, int mapmaxy, float basecolor) {
+	private Color getLandscapeForArea(IGraphicsGrid map, MapDrawContext context, int mapminx, int mapminy, int mapmaxx, int mapmaxy) {
 		int centerx = (mapmaxx + mapminx) / 2;
 		int centery = (mapmaxy + mapminy) / 2;
 
 		ELandscapeType landscapeType = map.getLandscapeTypeAt(centerx, centery);
 
-		return landscapeType.color.toShortColor(basecolor);
+		if (modeSettings.simplifyLandscape()) {
+			landscapeType = getSimplifiedLandscapeType(landscapeType);
+		}
+		return landscapeType.color;
 	}
 
 	private short getSettlerForArea(
@@ -247,6 +249,9 @@ class LineLoader implements Runnable {
 					byte player = map.getPlayerIdAt(x, y);
 					if (player >= 0 && !map.getLandscapeTypeAt(x, y).isBlocking) {
 						Color playerColor = context.getPlayerColor(player);
+						// Now add a landscape below that....
+						Color landscape = getLandscapeForArea(map, context, mapminx, mapminy, mapmaxx, mapmaxy);
+						playerColor = landscape.toGreyScale().overlay(playerColor);
 						occupiedColor = playerColor.toShortColor(1);
 						displayOccupied = OccupiedAreaMode.NONE;
 					}
@@ -267,8 +272,86 @@ class LineLoader implements Runnable {
 		return settlerColor != TRANSPARENT ? settlerColor : buildingColor != TRANSPARENT ? buildingColor : occupiedColor;
 	}
 
+	/**
+	 * TODO this needs a more complete implementation.
+	 *
+	 * @param landscapeType
+	 * @return
+	 */
+	private static ELandscapeType getSimplifiedLandscapeType(ELandscapeType landscapeType)
+	{
+		switch (landscapeType) {
+		case SNOW:
+		case MOUNTAIN:
+			return ELandscapeType.GRASS;
+		case DESERT:
+			// break;
+		case DRY_GRASS:
+			// break;
+		case EARTH:
+			// break;
+		case FLATTENED:
+			// break;
+		case FLATTENED_DESERT:
+			// break;
+		case GRAVEL:
+			// break;
+		case MOOR:
+			// break;
+		case MOORBORDER:
+			// break;
+		case MOORINNER:
+			// break;
+		case MOUNTAINBORDER:
+			// break;
+		case MOUNTAINBORDEROUTER:
+			// break;
+		case RIVER1:
+			// break;
+		case RIVER2:
+			// break;
+		case RIVER3:
+			// break;
+		case RIVER4:
+			// break;
+		case SAND:
+			// break;
+		case SHARP_FLATTENED_DESERT:
+			// break;
+		case GRASS:
+		case WATER1:
+		case WATER2:
+		case WATER3:
+		case WATER4:
+		case WATER5:
+		case WATER6:
+		case WATER7:
+		case WATER8:
+		default:
+			return landscapeType;
+		}
+	}
+
 	private boolean isSoilder(IMovable settler) {
 		return soildertypes.contains(settler.getMovableType());
+	}
+
+	private static boolean isSoldier(IMovable settler)
+	{
+		switch (settler.getMovableType()) {
+		case BOWMAN_L1:
+		case BOWMAN_L2:
+		case BOWMAN_L3:
+		case PIKEMAN_L1:
+		case PIKEMAN_L2:
+		case PIKEMAN_L3:
+		case SWORDSMAN_L1:
+		case SWORDSMAN_L2:
+		case SWORDSMAN_L3:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	/**

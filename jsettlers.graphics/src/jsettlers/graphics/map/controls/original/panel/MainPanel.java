@@ -187,8 +187,8 @@ public class MainPanel extends UIPanel {
 	private void addTabpanelButtons(Button[] buttons) {
 		int i = 0;
 		for (Button button : buttons) {
-			float left = constants.UI_TABS2_SIDEMARGIN + i * (constants.UI_TABS2_WIDTH + constants.UI_TABS2_SPACING);
-			tabpanel.addChild(button, left, 0, left + constants.UI_TABS2_WIDTH, 1);
+			float left = constants.SECONDARY_TABS_SIDEMARGIN + i * (constants.SECONDARY_TABS_WIDTH + constants.SECONDARY_TABS_SPACING);
+			tabpanel.addChild(button, left, 0, left + constants.SECONDARY_TABS_WIDTH, 1);
 			i++;
 		}
 	}
@@ -213,17 +213,17 @@ public class MainPanel extends UIPanel {
 	private void initTabbar1() {
 		int i = 0;
 		UIPanel tabbar1 = new UIPanel();
-		this.addChild(tabbar1, 0, constants.UI_TABS1_BOTTOM, 1, constants.UI_TABS1_TOP);
+		this.addChild(tabbar1, 0, constants.PRIMARY_TABS_BOTTOM, 1, constants.PRIMARY_TABS_TOP);
 		Button[] buttons = new Button[] { button_build, button_goods, button_settlers };
 		for (Button button : buttons) {
-			float left = constants.UI_TABS1_SIDEMARGIN + i * (constants.UI_TABS1_WIDTH + constants.UI_TABS1_SPACING);
-			tabbar1.addChild(button, left, 0, left + constants.UI_TABS1_WIDTH, 1);
+			float left = constants.PRIMARY_TABS_SIDEMARGIN + i * (constants.PRIMARY_TABS_WIDTH + constants.PRIMARY_TABS_SPACING);
+			tabbar1.addChild(button, left, 0, left + constants.PRIMARY_TABS_WIDTH, 1);
 			i++;
 		}
 	}
 
 	private void initTabbar2() {
-		this.addChild(tabpanel, 0, constants.UI_TABS2_BOTTOM, 1, constants.UI_TABS2_TOP);
+		this.addChild(tabpanel, 0, constants.SECONDARY_TABS_BOTTOM, 1, constants.SECONDARY_TABS_TOP);
 	}
 
 	private void addSystemButton() {

@@ -22,7 +22,7 @@ import jsettlers.graphics.action.Action;
  * This is a button, consisting of images in the given file.
  * <p>
  * The first 3 images after the start index are images for a small, medium and big button.
- * 
+ *
  * @author michael
  */
 public class Button extends UIPanel implements UIButton {
@@ -32,7 +32,7 @@ public class Button extends UIPanel implements UIButton {
 	private boolean active = false;
 	private final Action action;
 	private final String description;
-	private final OriginalImageLink image;
+	private OriginalImageLink image;
 	private final OriginalImageLink activeImage;
 
 	public Button(Action action, OriginalImageLink image, OriginalImageLink active,
@@ -47,12 +47,17 @@ public class Button extends UIPanel implements UIButton {
 	 * @Override public void drawAt(GL2 gl) { ImageLink start = active ? activeImage : image; Image image = null; // for (int i = 0; i <
 	 * DETAIL_IMAGES; i++) { image = provider.getImage(start); // if (image.getWidth() >= position.getWidth() // && image.getHeight() >=
 	 * position.getHeight()) { // break; // } // }
-	 * 
+	 *
 	 * image.drawAt(gl, position.getMinX(), position.getMaxY());
-	 * 
+	 *
 	 * gl.glBegin(GL2.GL_LINE_LOOP); gl.glVertex2i(position.getMinX(), position.getMinY()); gl.glVertex2i(position.getMinX(), position.getMaxY());
 	 * gl.glVertex2i(position.getMaxX(), position.getMaxY()); gl.glVertex2i(position.getMaxX(), position.getMinY()); gl.glEnd(); }
 	 */
+
+    public void setImage(OriginalImageLink image)
+    {
+        this.image = image;
+    }
 
 	@Override
 	protected ImageLink getBackgroundImage() {

@@ -25,22 +25,22 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.MapDrawContext;
+import jsettlers.graphics.map.controls.original.MiniMapLayoutProperties;
 import jsettlers.graphics.map.geometry.MapCoordinateConverter;
 
 /**
  * This is the minimap. It is drawn on on the rectangle:
- * 
+ *
  * <pre>
  *       (width * stride | height)      (width * (stride + 1) | height)
  *  (0 | 0)         (width * 1 | 0)
  * </pre>
- * 
- * currently stride is fixed to mapheigh / 2 / mapwidth
- * 
+ *
+ * currently stride is fixed to (mapwidth / 2) / mapwidth.
+ *
  * @author michael
  */
 public final class Minimap {
-
 	private final MapCoordinateConverter converter;
 	private int width;
 	private int height;
@@ -60,10 +60,8 @@ public final class Minimap {
 	public Minimap(MapDrawContext context, MinimapMode modeSettings) {
 		this.context = context;
 		IGraphicsGrid map = context.getMap();
-		stride = map.getHeight() / 2.0f / map.getWidth();
-		converter =
-				new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1,
-						1);
+		stride = MiniMapLayoutProperties.getStride(map.getWidth()) / map.getWidth();
+		converter = new MapCoordinateConverter(map.getWidth(), map.getHeight(), 1, 1);
 		lineLoader = new LineLoader(this, modeSettings);
 		Thread minimapThread = new Thread(lineLoader, "minimap loader");
 		minimapThread.setDaemon(true);
@@ -204,7 +202,7 @@ public final class Minimap {
 
 	/**
 	 * Sets the data
-	 * 
+	 *
 	 * @param line
 	 * @param data
 	 */
@@ -276,5 +274,4 @@ public final class Minimap {
 
 		}
 	}
-
 }
