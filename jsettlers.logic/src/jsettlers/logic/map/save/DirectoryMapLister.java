@@ -46,7 +46,6 @@ public class DirectoryMapLister implements IMapLister {
 		public ListedMapFile(File file, boolean writeable) {
 			this.file = file;
 			this.writeable = writeable;
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override

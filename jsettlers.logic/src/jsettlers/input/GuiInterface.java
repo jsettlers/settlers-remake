@@ -279,7 +279,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		default:
-			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
 	}
 
@@ -358,7 +358,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 			break;
 		default:
-			System.err.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
+			System.out.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
 			return;
 		}
 

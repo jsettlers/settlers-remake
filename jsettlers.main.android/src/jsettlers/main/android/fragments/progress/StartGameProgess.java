@@ -35,7 +35,7 @@ public class StartGameProgess extends ProgressFragment implements IStartingGameL
 	}
 
 	@Override
-	public MapInterfaceConnector startFinished(IStartedGame game) {
+	public MapInterfaceConnector preLoadFinished(IStartedGame game) {
 		return getJsettlersActivity().showGameMap(game);
 	}
 
@@ -43,6 +43,12 @@ public class StartGameProgess extends ProgressFragment implements IStartingGameL
 	public void startFailed(EGameError errorType, Exception exception) {
 		// TODO Error message
 		getJsettlersActivity().showStartScreen();
+	}
+
+	@Override
+	public void startFinished() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

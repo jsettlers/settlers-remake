@@ -8,8 +8,8 @@ jdk:
 
 env:
   - TARGET=runUnitTests
+  - TARGET=runAutoReplayIT
   - TARGET=buildDedicatedServer
   - TARGET=buildSwing
-# - TARGET=runAutosimTests
 
 script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET
