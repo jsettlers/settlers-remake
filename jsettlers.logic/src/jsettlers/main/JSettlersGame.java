@@ -220,7 +220,7 @@ public class JSettlersGame {
 				gameRunning = true;
 
 				startingGameListener.startFinished();
-				AiThread aiThread = new AiThread(aiPlayers, mainGrid);
+				AiThread aiThread = new AiThread(aiPlayers, mainGrid, networkConnector.getTaskScheduler());
 				aiThread.start();
 
 				synchronized (stopMutex) {

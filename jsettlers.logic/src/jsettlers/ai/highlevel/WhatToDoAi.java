@@ -3,16 +3,22 @@ package jsettlers.ai.highlevel;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.SimpleGuiTask;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.network.client.interfaces.ITaskScheduler;
 
 public class WhatToDoAi implements IWhatToDoAi {
 
 	private final MainGrid mainGrid;
 	private final byte playerId;
+	private final ITaskScheduler taskScheduler;
 	
-	public WhatToDoAi(byte playerId, MainGrid mainGrid) {
+	public WhatToDoAi(byte playerId, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
+		this.taskScheduler = taskScheduler;
 	}
 	
 	private boolean buildingsAreConstructed = false;
@@ -20,29 +26,20 @@ public class WhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		if (!buildingsAreConstructed) {
-			BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
-			ShortPoint2D position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(EBuildingType.STONECUTTER).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), playerId);
-			if (position != null) {
-			 mainGrid.getGuiInputGrid().constructBuildingAt(position, EBuildingType.STONECUTTER, playerId);
-			}
-			 position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(EBuildingType.LUMBERJACK).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), playerId);
-			if (position != null) {
-				 mainGrid.getGuiInputGrid().constructBuildingAt(position, EBuildingType.LUMBERJACK, playerId);
-				}
-			 position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(EBuildingType.SAWMILL).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), playerId);
-			if (position != null) {
-				 mainGrid.getGuiInputGrid().constructBuildingAt(position, EBuildingType.SAWMILL, playerId);
-				}
-			 position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(EBuildingType.FORESTER).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), playerId);
-			if (position != null) {
-				 mainGrid.getGuiInputGrid().constructBuildingAt(position, EBuildingType.FORESTER, playerId);
-				}
-			 position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(EBuildingType.MEDIUM_LIVINGHOUSE).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), playerId);
-			if (position != null) {
-				 mainGrid.getGuiInputGrid().constructBuildingAt(position, EBuildingType.MEDIUM_LIVINGHOUSE, playerId);
-				}
+			construct(EBuildingType.STONECUTTER);
+			construct(EBuildingType.LUMBERJACK);
+			construct(EBuildingType.SAWMILL);
+			construct(EBuildingType.FORESTER);
+			buildingsAreConstructed = true;
 		}
-		buildingsAreConstructed = true;
+	}
+	
+	private void construct(EBuildingType type) {
+		BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
+		ShortPoint2D position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(type).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), playerId);
+		if (position != null) {
+			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
+		}
 	}
 
 }

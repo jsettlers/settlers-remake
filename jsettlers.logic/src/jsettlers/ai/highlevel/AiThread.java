@@ -1,20 +1,22 @@
 package jsettlers.ai.highlevel;
 
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.network.client.interfaces.ITaskScheduler;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class AiThread extends Thread {
 
-	private List<IWhatToDoAi> whatToDoAis;
+	private final List<IWhatToDoAi> whatToDoAis;
 	private boolean shutdownRequested;
 	
-	public AiThread(List<Byte> aiPlayers, MainGrid mainGrid) {
+	public AiThread(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		shutdownRequested = false;
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		for (byte playerId : aiPlayers) {
-			whatToDoAis.add(new WhatToDoAi(playerId, mainGrid));
+			whatToDoAis.add(new WhatToDoAi(playerId, mainGrid, taskScheduler));
 		}
 	}
 	
