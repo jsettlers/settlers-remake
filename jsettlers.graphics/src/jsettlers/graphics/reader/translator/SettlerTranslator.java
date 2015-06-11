@@ -17,16 +17,23 @@ package jsettlers.graphics.reader.translator;
 import java.io.IOException;
 
 import jsettlers.graphics.image.SettlerImage;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 /**
  * This class translates settler images.
- * 
+ *
  * @author michael
  *
  */
 public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
+
+	private final DatFileType type;
+
+	public SettlerTranslator(DatFileType type) {
+		this.type = type;
+	}
 
 	@Override
 	public SettlerImage createImage(ImageMetadata metadata, short[] array) {
@@ -44,9 +51,8 @@ public class SettlerTranslator implements DatBitmapTranslator<SettlerImage> {
 	}
 
 	@Override
-	public short readUntransparentColor(ByteReader reader)
-			throws IOException {
-		return (short) ((reader.read16() << 1) | 0x01);
+	public short readUntransparentColor(ByteReader reader) throws IOException {
+		return type.convertTo5551(reader.read16());
 	}
 
 }
