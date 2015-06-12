@@ -18,17 +18,15 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final ITaskScheduler taskScheduler;
 	private final AiStatistics aiStatistics;
 	
-	public WhatToDoAi(byte playerId, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
-		this.aiStatistics = new AiStatistics();
-		this.aiStatistics.updateStatistics();
+		this.aiStatistics = aiStatistics;
 	}
 	
 	@Override
 	public void applyRules() {
-		aiStatistics.updateStatistics();
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
 		int numberOfTotalStonecutters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.STONECUTTER, playerId);
 		int numberOfTotalLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.LUMBERJACK, playerId);

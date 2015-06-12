@@ -13,8 +13,27 @@ public class AiStatistics {
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
 	
-	AiStatistics() {
+	public AiStatistics() {
 		this.buildings = Building.getAllBuildings();
+	}
+	
+	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!totalBuildingsNumbers.containsKey(playerIdInteger)) {
+			return 0;
+		}
+		if (!totalBuildingsNumbers.get(playerIdInteger).containsKey(type)) {
+			return 0;
+		}
+		return totalBuildingsNumbers.get(playerIdInteger).get(type);
+	}
+	
+	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!numberOfNotFinishedBuildings.containsKey(playerIdInteger)) {
+			return 0;
+		}
+		return numberOfNotFinishedBuildings.get(playerIdInteger);
 	}
 	
 	public void updateStatistics() {
@@ -47,24 +66,4 @@ public class AiStatistics {
 			numberOfNotFinishedBuildings.put(playerId, numberOfNotFinishedBuildings.get(playerId) + 1);
 		}
 	}
-	
-	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
-		if (!totalBuildingsNumbers.containsKey(playerIdInteger)) {
-			return 0;
-		}
-		if (!totalBuildingsNumbers.get(playerIdInteger).containsKey(type)) {
-			return 0;
-		}
-		return totalBuildingsNumbers.get(playerIdInteger).get(type);
-	}
-	
-	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
-		if (!numberOfNotFinishedBuildings.containsKey(playerIdInteger)) {
-			return 0;
-		}
-		return numberOfNotFinishedBuildings.get(playerIdInteger);
-	}
-	
 }

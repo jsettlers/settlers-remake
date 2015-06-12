@@ -10,13 +10,15 @@ import java.util.List;
 public class AiThread implements Runnable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
+	AiStatistics aiStatistics;
 	private boolean shutdownRequested;
 	
 	public AiThread(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		shutdownRequested = false;
+		aiStatistics = new AiStatistics();
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		for (byte playerId : aiPlayers) {
-			whatToDoAis.add(new WhatToDoAi(playerId, mainGrid, taskScheduler));
+			whatToDoAis.add(new WhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
 		}
 	}
 	
@@ -25,6 +27,7 @@ public class AiThread implements Runnable {
 		System.out.println("AI Thread started");
 		while (!shutdownRequested) {
 			try {
+				aiStatistics.updateStatistics();
 				for (IWhatToDoAi whatToDoAi: whatToDoAis) {
 					whatToDoAi.applyRules();
 				}
