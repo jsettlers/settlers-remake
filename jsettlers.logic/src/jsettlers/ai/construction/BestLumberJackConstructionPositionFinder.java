@@ -3,12 +3,10 @@ package jsettlers.ai.construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.objects.ObjectsGrid;
-import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
 public class BestLumberJackConstructionPositionFinder implements IBestConstructionPositionFinder {
 
@@ -17,55 +15,25 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 	public BestLumberJackConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
 	}
-	
+
 	@Override
-	public ShortPoint2D findBestConstructionPosition(AbstractConstructionMarkableMap constructionMap, PartitionsGrid partitionsGrid, ObjectsGrid objectsGrid, byte playerId) {
-		short minX = partitionsGrid.getWidth();
-		short maxX = 0;
-		short minY = partitionsGrid.getHeight();
-		short maxY = 0;
-		
-		for(short x = 0; x < partitionsGrid.getWidth(); x++) {
-			for(short y = 0; y < partitionsGrid.getHeight(); y++) {
-				if (partitionsGrid.getPlayerAt(x, y) != null && partitionsGrid.getPlayerAt(x, y).playerId == playerId) {
-					if (minX > x) {
-						minX = x;
-					}
-					if (minY > y) {
-						minY = y;
-					}
-					if (maxX < x) {
-						maxX = x;
-					}
-					if (maxY < y) {
-						maxY = y;
-					}
-				}
-			}	
-		}
-		
-		List<ShortPoint2D> trees = new ArrayList<ShortPoint2D>();
-		for(short xx = minX; xx < maxX; xx++) {
-			for(short yy = minY; yy < maxY; yy++) {
-				if (objectsGrid.hasCuttableObject(xx, yy, EMapObjectType.TREE_ADULT)) {
-					trees.add(new ShortPoint2D(xx, yy));
-				}
-			}
-		}
-		
+	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
+
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		for(short xx = minX; xx < maxX; xx++) {
-			for(short yy = minY; yy < maxY; yy++) {
-				if (constructionMap.canConstructAt(xx, yy, buildingType, playerId)) {
-					double score = 0;
-					for (ShortPoint2D tree : trees) {
-						score = score + 1/(Math.abs(tree.x - xx) * Math.abs((tree.y - yy)));
+		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
+				double treeDistance = Double.MAX_VALUE;
+				for (ShortPoint2D tree : trees) {
+					double currentTreeDistance = Math.sqrt((tree.x - point.x) * (tree.x - point.x) + (tree.y - point.y) * (tree.y - point.y));
+					if (currentTreeDistance < treeDistance) {
+						treeDistance = currentTreeDistance;
 					}
-					scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(xx, yy), (int) Math.round(score)));
 				}
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), treeDistance));
 			}
 		}
-		
+
 		ScoredConstructionPosition winnerPosition = null;
 		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
 			if (winnerPosition == null) {
@@ -74,15 +42,12 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 				winnerPosition = scoredConstructionPosition;
 			}
 		}
-			
+
 		if (winnerPosition == null) {
 			return null;
 		}
-		
+
 		return winnerPosition.point;
 	}
 
 }
-
-
-

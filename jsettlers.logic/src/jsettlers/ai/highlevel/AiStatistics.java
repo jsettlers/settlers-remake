@@ -22,6 +22,7 @@ public class AiStatistics {
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
+	private Map<Integer, List<ShortPoint2D>> land;
     private final MainGrid mainGrid;
 	private final ObjectsGrid objectsGrid;
 	private final PartitionsGrid partitionsGrid;
@@ -60,38 +61,52 @@ public class AiStatistics {
 		return stones.get(playerIdInteger);
 	}
 	
-	public List getTreesForPlayer(byte playerId) {
+	public List<ShortPoint2D> getTreesForPlayer(byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!trees.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
 		return trees.get(playerIdInteger);
 	}
+	
+	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!land.containsKey(playerIdInteger)) {
+			return new ArrayList<ShortPoint2D>();
+		}
+		return land.get(playerIdInteger);
+	}
 
 	public void updateStatistics() {
 		updateBuildingStatistics();
-		updateMapObjectsStatistics();
+		updateMapStatistics();
 	}
 	
-	private void updateMapObjectsStatistics() {
+	private void updateMapStatistics() {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
+		land = new HashMap<Integer, List<ShortPoint2D>>();
 		for(short x = 0; x < mainGrid.getWidth(); x++) {
 			for(short y = 0; y < mainGrid.getHeight(); y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
 				if (player != null) {
 					Integer playerId = new Integer(partitionsGrid.getPlayerAt(x, y).playerId);
+					ShortPoint2D point = new ShortPoint2D(x, y);
+					if (!land.containsKey(playerId)) {
+						land.put(playerId, new ArrayList<ShortPoint2D>());
+					}
+					land.get(playerId).add(point);
 					if (!stones.containsKey(playerId)) {
 						stones.put(playerId, new ArrayList<ShortPoint2D>());
+					}
+					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
+						stones.get(playerId).add(point);
 					}
 					if (!trees.containsKey(playerId)) {
 						trees.put(playerId, new ArrayList<ShortPoint2D>());
 					}
-					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
-						stones.get(playerId).add(new ShortPoint2D(x, y));
-					}
 					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
-						trees.get(playerId).add(new ShortPoint2D(x, y));
+						trees.get(playerId).add(point);
 					}
 				}
 			}

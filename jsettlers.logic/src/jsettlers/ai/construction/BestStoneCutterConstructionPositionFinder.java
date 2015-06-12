@@ -1,19 +1,12 @@
 package jsettlers.ai.construction;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
-import jsettlers.logic.map.grid.objects.ObjectsGrid;
-import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
 public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
@@ -22,53 +15,25 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
 	}
-	
+
 	@Override
-	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, PartitionsGrid partitionsGrid, ObjectsGrid objectsGrid, byte playerId) {
-		short minX = partitionsGrid.getWidth();
-		short maxX = 0;
-		short minY = partitionsGrid.getHeight();
-		short maxY = 0;
-		
-		for(short x = 0; x < partitionsGrid.getWidth(); x++) {
-			for(short y = 0; y < partitionsGrid.getHeight(); y++) {
-				if (partitionsGrid.getPlayerAt(x, y) != null && partitionsGrid.getPlayerAt(x, y).playerId == playerId) {
-					if (minX > x) {
-						minX = x;
-					}
-					if (minY > y) {
-						minY = y;
-					}
-					if (maxX < x) {
-						maxX = x;
-					}
-					if (maxY < y) {
-						maxY = y;
-					}
-				}
-			}	
-		}
-		
+	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
-		
+
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		for(short xx = minX; xx < maxX; xx++) {
-			for(short yy = minY; yy < maxY; yy++) {
-				if (constructionMap.canConstructAt(xx, yy, buildingType, playerId)) {
-					LinkedList<Double> scores = new LinkedList<Double>();
-					double stoneDistance = Double.MAX_VALUE;
-					for (ShortPoint2D stone : stones) {
-						double currentStoneDistance = Math.sqrt((stone.x - xx)*(stone.x - xx) + (stone.y - yy)*(stone.y - yy));
-						if (currentStoneDistance < stoneDistance) {
-							stoneDistance = currentStoneDistance;
-						}
+		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
+				double stoneDistance = Double.MAX_VALUE;
+				for (ShortPoint2D stone : stones) {
+					double currentStoneDistance = Math.sqrt((stone.x - point.x) * (stone.x - point.x) + (stone.y - point.y) * (stone.y - point.y));
+					if (currentStoneDistance < stoneDistance) {
+						stoneDistance = currentStoneDistance;
 					}
-					
-					scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(xx, yy), stoneDistance));
 				}
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), stoneDistance));
 			}
 		}
-		
+
 		ScoredConstructionPosition winnerPosition = null;
 		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
 			if (winnerPosition == null) {
@@ -77,11 +42,11 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 				winnerPosition = scoredConstructionPosition;
 			}
 		}
-			
+
 		if (winnerPosition == null) {
 			return null;
 		}
-		
+
 		return winnerPosition.point;
 	}
 
