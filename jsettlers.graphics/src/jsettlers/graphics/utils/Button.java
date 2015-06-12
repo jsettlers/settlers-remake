@@ -30,10 +30,16 @@ public class Button extends UIPanel implements UIButton {
 	 * How many detail steps there are usually
 	 */
 	private boolean active = false;
-	private final Action action;
+	private Action action;
 	private final String description;
 	private OriginalImageLink image;
 	private final OriginalImageLink activeImage;
+
+    public Button(OriginalImageLink image) {
+        this.image = image;
+        activeImage = image;
+        description = "";
+    }
 
 	public Button(Action action, OriginalImageLink image, OriginalImageLink active,
 			String description) {
@@ -72,6 +78,11 @@ public class Button extends UIPanel implements UIButton {
 		this.active = active;
 	}
 
+    public void setAction(Action action)
+    {
+        this.action = action;
+    }
+
 	@Override
 	public Action getAction() {
 		return action;
@@ -86,5 +97,4 @@ public class Button extends UIPanel implements UIButton {
 	public String getDescription(float relativex, float relativey) {
 		return description;
 	}
-
 }

@@ -28,7 +28,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
  * This is a panel that holds UI elements and can have a background.
  * <p>
  * All elements are positioned relatively.
- * 
+ *
  * @author michael
  */
 public class UIPanel implements UIElement {
@@ -45,7 +45,7 @@ public class UIPanel implements UIElement {
 
 	/**
 	 * Sets the background. file=-1 means no background
-	 * 
+	 *
 	 * @param file
 	 * @param settlerSeqIndex
 	 */
@@ -55,7 +55,7 @@ public class UIPanel implements UIElement {
 
 	/**
 	 * Adds a child to the panel.
-	 * 
+	 *
 	 * @param child
 	 *            The child to add.
 	 * @param left
@@ -73,9 +73,18 @@ public class UIPanel implements UIElement {
 		child.onAttach();
 	}
 
+	public void removeChild(UIElement child)
+    {
+        for (ChildLink link : children) {
+            if(link.child == child){
+                children.remove(link);
+            }
+        }
+    }
+
 	/**
 	 * Adds a child to the center of the panel.
-	 * 
+	 *
 	 * @param child
 	 *            The child to add.
 	 * @param width
@@ -113,7 +122,7 @@ public class UIPanel implements UIElement {
 
 	/**
 	 * Draws an image at a given rect
-	 * 
+	 *
 	 * @param gl
 	 *            The context to use
 	 * @param image
