@@ -305,6 +305,12 @@ public final class MainGrid implements Serializable {
 	public ConstructionMarksGrid getConstructionMarksGrid() {
 		return constructionMarksGrid;
 	}
+	public ObjectsGrid getObjectsGrid() {
+		return objectsGrid;
+	}
+	public PartitionsGrid getPartitionsGrid() {
+		return partitionsGrid;
+	}
 	
 	public IGraphicsGrid getGraphicsGrid() {
 		return graphicsGrid;

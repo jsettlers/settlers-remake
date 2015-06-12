@@ -104,6 +104,14 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		initAdditionalFields();
 	}
 
+	public short getWidth() {
+		return width;
+	}
+
+	public short getHeight() {
+		return height;
+	}
+	
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		int normalizedPartitions = checkNormalizePartitions(0);
 		System.out.println("Normalized " + normalizedPartitions + " partitions");

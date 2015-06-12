@@ -3,6 +3,8 @@ package jsettlers.ai.construction;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.objects.ObjectsGrid;
+import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 
 public class NearDiggersConstructionPositionFinder implements IBestConstructionPositionFinder {
@@ -14,7 +16,7 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 	}
 
 	@Override
-	public ShortPoint2D findBestConstructionPosition(AbstractConstructionMarkableMap constructionMap, byte playerId) {
+	public ShortPoint2D findBestConstructionPosition(AbstractConstructionMarkableMap constructionMap, PartitionsGrid partitionsGrid, ObjectsGrid objectsGrid, byte playerId) {
 		// this first iteration of the code just places the building anywhere at the first matching position
 		short westOffset = 0;
 		short eastOffset = 0;

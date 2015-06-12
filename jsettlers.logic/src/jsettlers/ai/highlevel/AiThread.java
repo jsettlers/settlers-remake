@@ -28,7 +28,7 @@ public class AiThread extends Thread {
 				for (IWhatToDoAi whatToDoAi: whatToDoAis) {
 					whatToDoAi.applyRules();
 				}
-				AiThread.sleep(1000l);
+				AiThread.sleep(3000l);
 			} catch (InterruptedException e) {
 				//continiue and then return run
 			}
