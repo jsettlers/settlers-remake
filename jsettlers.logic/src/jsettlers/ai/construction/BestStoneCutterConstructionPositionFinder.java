@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -23,7 +24,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 	}
 	
 	@Override
-	public ShortPoint2D findBestConstructionPosition(AbstractConstructionMarkableMap constructionMap, PartitionsGrid partitionsGrid, ObjectsGrid objectsGrid, byte playerId) {
+	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, PartitionsGrid partitionsGrid, ObjectsGrid objectsGrid, byte playerId) {
 		short minX = partitionsGrid.getWidth();
 		short maxX = 0;
 		short minY = partitionsGrid.getHeight();
@@ -48,14 +49,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 			}	
 		}
 		
-		List<ShortPoint2D> stones = new ArrayList<ShortPoint2D>();
-		for(short xx = minX; xx < maxX; xx++) {
-			for(short yy = minY; yy < maxY; yy++) {
-				if (objectsGrid.hasCuttableObject(xx, yy, EMapObjectType.STONE)) {
-					stones.add(new ShortPoint2D(xx, yy));
-				}
-			}
-		}
+		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for(short xx = minX; xx < maxX; xx++) {

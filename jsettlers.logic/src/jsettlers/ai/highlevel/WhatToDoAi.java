@@ -17,16 +17,19 @@ public class WhatToDoAi implements IWhatToDoAi {
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
 	private final AiStatistics aiStatistics;
+	BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 	
 	public WhatToDoAi(byte playerId, AiStatistics aiStatistics, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
+		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
 	}
 	
 	@Override
 	public void applyRules() {
+		long startTime = System.currentTimeMillis();
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
 		int numberOfTotalStonecutters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.STONECUTTER, playerId);
 		int numberOfTotalLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.LUMBERJACK, playerId);
@@ -69,11 +72,11 @@ public class WhatToDoAi implements IWhatToDoAi {
 				) {
 			construct(EBuildingType.SAWMILL);
 		}
+		System.out.println("WhatToDoAi took " + (System.currentTimeMillis() - startTime) + " ms");
 	}
 	
 	private void construct(EBuildingType type) {
-		BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
-		ShortPoint2D position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(type).findBestConstructionPosition(mainGrid.getConstructionMarksGrid(), mainGrid.getPartitionsGrid(), mainGrid.getObjectsGrid(),playerId);
+		ShortPoint2D position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(type).findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), mainGrid.getPartitionsGrid(), mainGrid.getObjectsGrid(),playerId);
 		if (position != null) {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
 		}

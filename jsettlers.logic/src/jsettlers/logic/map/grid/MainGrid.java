@@ -171,6 +171,14 @@ public final class MainGrid implements Serializable {
 		this.enclosedBlockedAreaFinderGrid = new EnclosedBlockedAreaFinderGrid();
 	}
 
+	public final short getHeight() {
+		return height;
+	}
+
+	public final short getWidth() {
+		return width;
+	}
+	
 	public void initForPlayer(byte playerId, FogOfWar fogOfWar) {
 		if (fogOfWar != null) {
 			this.fogOfWar = fogOfWar;

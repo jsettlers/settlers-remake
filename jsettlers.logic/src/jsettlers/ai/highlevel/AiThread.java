@@ -15,7 +15,7 @@ public class AiThread implements Runnable {
 	
 	public AiThread(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		shutdownRequested = false;
-		aiStatistics = new AiStatistics();
+		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		for (byte playerId : aiPlayers) {
 			whatToDoAis.add(new WhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
