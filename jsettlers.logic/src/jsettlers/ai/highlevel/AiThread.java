@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AiThread extends Thread {
+public class AiThread implements Runnable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	private boolean shutdownRequested;
@@ -28,12 +28,16 @@ public class AiThread extends Thread {
 				for (IWhatToDoAi whatToDoAi: whatToDoAis) {
 					whatToDoAi.applyRules();
 				}
-				AiThread.sleep(3000l);
+				Thread.sleep(3000l);
 			} catch (InterruptedException e) {
 				//continiue and then return run
 			}
 		}
 		System.out.println("AI Thread finished");
+	}
+	
+	public void start() {
+		(new Thread(this)).start();
 	}
 	
 	public void shutdown() {
