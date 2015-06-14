@@ -178,7 +178,7 @@ public final class MainGrid implements Serializable {
 	public final short getWidth() {
 		return width;
 	}
-	
+
 	public void initForPlayer(byte playerId, FogOfWar fogOfWar) {
 		if (fogOfWar != null) {
 			this.fogOfWar = fogOfWar;
@@ -313,19 +313,25 @@ public final class MainGrid implements Serializable {
 	public ConstructionMarksGrid getConstructionMarksGrid() {
 		return constructionMarksGrid;
 	}
+
 	public ObjectsGrid getObjectsGrid() {
 		return objectsGrid;
 	}
+
 	public PartitionsGrid getPartitionsGrid() {
 		return partitionsGrid;
 	}
-	
+
 	public IGraphicsGrid getGraphicsGrid() {
 		return graphicsGrid;
 	}
 
 	public IGuiInputGrid getGuiInputGrid() {
 		return guiInputGrid;
+	}
+
+	public MovableGrid getMovableGrid() {
+		return movableGrid;
 	}
 
 	/**

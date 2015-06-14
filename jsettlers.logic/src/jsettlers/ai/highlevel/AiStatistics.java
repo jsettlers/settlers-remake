@@ -22,17 +22,21 @@ import java.util.Queue;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
+import jsettlers.logic.movable.Movable;
 import jsettlers.logic.player.Player;
 
 public class AiStatistics {
 
 	private final Queue<Building> buildings;
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
+	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movableNumbers;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
@@ -41,12 +45,22 @@ public class AiStatistics {
 	private final MainGrid mainGrid;
 	private final ObjectsGrid objectsGrid;
 	private final PartitionsGrid partitionsGrid;
+	private final MovableGrid movableGrid;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
 		this.mainGrid = mainGrid;
 		this.objectsGrid = mainGrid.getObjectsGrid();
 		this.partitionsGrid = mainGrid.getPartitionsGrid();
+		this.movableGrid = mainGrid.getMovableGrid();
+	}
+
+	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!movableNumbers.containsKey(playerIdInteger) || !movableNumbers.get(playerIdInteger).containsKey(movableType)) {
+			return new ArrayList<ShortPoint2D>();
+		}
+		return movableNumbers.get(playerIdInteger).get(movableType);
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
@@ -109,6 +123,7 @@ public class AiStatistics {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
 		land = new HashMap<Integer, List<ShortPoint2D>>();
+		movableNumbers = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
 
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
@@ -131,6 +146,17 @@ public class AiStatistics {
 					}
 					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
 						trees.get(playerId).add(point);
+					}
+					Movable movable = movableGrid.getMovableAt(x, y);
+					if (movable != null) {
+						EMovableType movableType = movable.getMovableType();
+						if (!movableNumbers.containsKey(playerId)) {
+							movableNumbers.put(playerId, new HashMap<EMovableType, List<ShortPoint2D>>());
+						}
+						if (!movableNumbers.get(playerId).containsKey(movableType)) {
+							movableNumbers.get(playerId).put(movableType, new ArrayList<ShortPoint2D>());
+						}
+						movableNumbers.get(playerId).get(movableType).add(point);
 					}
 				}
 			}

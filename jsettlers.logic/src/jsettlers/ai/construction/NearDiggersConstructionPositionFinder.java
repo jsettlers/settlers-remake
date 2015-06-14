@@ -14,6 +14,11 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import static jsettlers.common.movable.EMovableType.DIGGER;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
@@ -29,13 +34,36 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		List<ShortPoint2D> diggers = aiStatistics.getMovablePositionsByTypeForPlayer(DIGGER, playerId);
+
+		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
-				return point;
+
+				double lumberJackDistances = 0;
+				for (ShortPoint2D digger : diggers) {
+					double currentLumberJackDistance = Math.sqrt((digger.x - point.x) * (digger.x - point.x) + (digger.y - point.y)
+							* (digger.y - point.y));
+					lumberJackDistances += currentLumberJackDistance;
+				}
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistances));
 			}
 		}
 
-		return null;
+		ScoredConstructionPosition winnerPosition = null;
+		for (ScoredConstructionPosition currentPosition : scoredConstructionPositions) {
+			if (winnerPosition == null) {
+				winnerPosition = currentPosition;
+			} else if (currentPosition.score < winnerPosition.score) {
+				winnerPosition = currentPosition;
+			}
+		}
+
+		if (winnerPosition == null) {
+			return null;
+		}
+
+		return winnerPosition.point;
 	}
 
 }
