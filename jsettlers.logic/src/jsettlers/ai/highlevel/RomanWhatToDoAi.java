@@ -20,6 +20,7 @@ import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
+import static jsettlers.common.movable.EMovableType.BEARER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,11 +54,11 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingMaterialEconomy.add(STONECUTTER);
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(LUMBERJACK);
+		buildingMaterialEconomy.add(TOWER);
 		buildingMaterialEconomy.add(SAWMILL);
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(FORESTER);
 		buildingMaterialEconomy.add(MEDIUM_LIVINGHOUSE);
-		buildingMaterialEconomy.add(TOWER);
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(SAWMILL);
@@ -80,20 +81,32 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	public void applyRules() {
 		long startTime = System.currentTimeMillis();
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
-		int totalNumberOfStoneCutters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
 		int totalNumberOfLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId);
 		int totalNumberOfSawMills = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId);
 		int totalNumberOfForesters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(FORESTER, playerId);
 		int totalNumberOfMediumLivingHouse = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
 		int totalNumberOfTowers = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId);
 		int numberOfTowers = aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId);
+		int totalNumberOfMediumLivingHouses = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
+		int numberOfMediumLivingHouses = aiStatistics.getNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
+		int numberOfBearer = aiStatistics.getMovablePositionsByTypeForPlayer(BEARER, playerId).size();
 
-		if (numberOfNotFinishedBuildings < 5 && nextBuilding < buildingMaterialEconomy.size()) {
+		boolean iCanBuild = (numberOfBearer < 10 && numberOfNotFinishedBuildings <= 1) ||
+				(numberOfBearer < 15 && numberOfNotFinishedBuildings <= 2) ||
+				(numberOfBearer < 20 && numberOfNotFinishedBuildings <= 3) ||
+				(numberOfBearer < 25 && numberOfNotFinishedBuildings <= 4) ||
+				(numberOfBearer < 30 && numberOfNotFinishedBuildings <= 5);
+
+		if (iCanBuild && numberOfBearer < 20 && numberOfMediumLivingHouses == totalNumberOfMediumLivingHouses) {
+			construct(MEDIUM_LIVINGHOUSE);
+		}
+
+		if (iCanBuild && nextBuilding < buildingMaterialEconomy.size()) {
 			construct(buildingMaterialEconomy.get(nextBuilding));
 			nextBuilding++;
 		}
 
-		if (nextBuilding == buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
+		if (iCanBuild && nextBuilding == buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
 			construct(TOWER);
 		}
 
