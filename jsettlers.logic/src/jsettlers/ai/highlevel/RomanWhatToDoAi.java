@@ -19,6 +19,7 @@ import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
+import static jsettlers.common.buildings.EBuildingType.TOWER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(FORESTER);
 		buildingMaterialEconomy.add(MEDIUM_LIVINGHOUSE);
+		buildingMaterialEconomy.add(TOWER);
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(LUMBERJACK);
 		buildingMaterialEconomy.add(SAWMILL);
@@ -78,15 +80,21 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	public void applyRules() {
 		long startTime = System.currentTimeMillis();
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
-		int numberOfStoneCutters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
-		int numberOfLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId);
-		int numberOfSawMills = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId);
-		int numberOfForesters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(FORESTER, playerId);
-		int numberOfMediumLivingHouse = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
+		int totalNumberOfStoneCutters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId);
+		int totalNumberOfLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId);
+		int totalNumberOfSawMills = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId);
+		int totalNumberOfForesters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(FORESTER, playerId);
+		int totalNumberOfMediumLivingHouse = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
+		int totalNumberOfTowers = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId);
+		int numberOfTowers = aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId);
 
 		if (numberOfNotFinishedBuildings < 5 && nextBuilding < buildingMaterialEconomy.size()) {
 			construct(buildingMaterialEconomy.get(nextBuilding));
 			nextBuilding++;
+		}
+
+		if (nextBuilding == buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
+			construct(TOWER);
 		}
 
 		System.out.println("WhatToDoAi took " + (System.currentTimeMillis() - startTime) + " ms");

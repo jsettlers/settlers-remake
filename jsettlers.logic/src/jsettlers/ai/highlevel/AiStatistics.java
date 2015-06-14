@@ -38,6 +38,7 @@ public class AiStatistics {
 
 	private final Queue<Building> buildings;
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
+	private Map<Integer, Map<EBuildingType, Integer>> buildingsNumbers;
 	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movableNumbers;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
 	private Map<Integer, List<ShortPoint2D>> stones;
@@ -75,6 +76,17 @@ public class AiStatistics {
 			return 0;
 		}
 		return totalBuildingsNumbers.get(playerIdInteger).get(type);
+	}
+
+	public int getNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!buildingsNumbers.containsKey(playerIdInteger)) {
+			return 0;
+		}
+		if (!buildingsNumbers.get(playerIdInteger).containsKey(type)) {
+			return 0;
+		}
+		return buildingsNumbers.get(playerIdInteger).get(type);
 	}
 
 	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
@@ -194,13 +206,14 @@ public class AiStatistics {
 
 	private void updateBuildingStatistics() {
 		totalBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
+		buildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		numberOfNotFinishedBuildings = new HashMap<Integer, Integer>();
 		buildingPositions = new HashMap<Integer, Map<EBuildingType, List<ShortPoint2D>>>();
 		for (Building building : buildings) {
 			Integer playerId = new Integer(building.getPlayerId());
 			EBuildingType type = building.getBuildingType();
 			updateNumberOfNotFinishedBuildings(building, playerId);
-			updateTotalBuildingsNumbers(playerId, type);
+			updateBuildingsNumbers(playerId, building, type);
 			updateBuildingPositions(playerId, type, building);
 		}
 	}
@@ -215,14 +228,19 @@ public class AiStatistics {
 		buildingPositions.get(playerId).get(type).add(building.getPos());
 	}
 
-	private void updateTotalBuildingsNumbers(Integer playerId, EBuildingType type) {
+	private void updateBuildingsNumbers(Integer playerId, Building building, EBuildingType type) {
 		if (!totalBuildingsNumbers.containsKey(playerId)) {
 			totalBuildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
+			buildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
 		}
 		if (!totalBuildingsNumbers.get(playerId).containsKey(type)) {
 			totalBuildingsNumbers.get(playerId).put(type, 0);
+			buildingsNumbers.get(playerId).put(type, 0);
 		}
 		totalBuildingsNumbers.get(playerId).put(type, totalBuildingsNumbers.get(playerId).get(type) + 1);
+		if (building.getStateProgress() == 1f) {
+			buildingsNumbers.get(playerId).put(type, totalBuildingsNumbers.get(playerId).get(type) + 1);
+		}
 	}
 
 	private void updateNumberOfNotFinishedBuildings(Building building, Integer playerId) {
