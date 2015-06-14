@@ -23,14 +23,29 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
-				double treeDistance = Double.MAX_VALUE;
+				double[] treeDistance = new double[5];
+				treeDistance[0] = Double.MAX_VALUE / 5;
+				treeDistance[1] = Double.MAX_VALUE / 5;
+				treeDistance[2] = Double.MAX_VALUE / 5;
+				treeDistance[3] = Double.MAX_VALUE / 5;
+				treeDistance[4] = Double.MAX_VALUE / 5;
 				for (ShortPoint2D tree : trees) {
 					double currentTreeDistance = Math.sqrt((tree.x - point.x) * (tree.x - point.x) + (tree.y - point.y) * (tree.y - point.y));
-					if (currentTreeDistance < treeDistance) {
-						treeDistance = currentTreeDistance;
+					for (int i = 0; i < treeDistance.length; i++) {
+						if (currentTreeDistance < treeDistance[i]) {
+							for (int ii = i + 1; ii < treeDistance.length; ii++) {
+								treeDistance[ii] = treeDistance[ii - 1];
+							}
+							treeDistance[i] = currentTreeDistance;
+							break;
+						}
 					}
 				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), treeDistance));
+				double score = 0;
+				for (int i = 0; i < treeDistance.length; i++) {
+					score += treeDistance[i];
+				}
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), score));
 			}
 		}
 

@@ -11,6 +11,9 @@ public class BestConstructionPositionFinderFactory {
 		if (type == EBuildingType.LUMBERJACK) {
 			return new BestLumberJackConstructionPositionFinder(type);
 		}
+		if (type == EBuildingType.FORESTER) {
+			return new BestForesterConstructionPositionFinder(type);
+		}
 		return new NearDiggersConstructionPositionFinder(type);
 	}
 

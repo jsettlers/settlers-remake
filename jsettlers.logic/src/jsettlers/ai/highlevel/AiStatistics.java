@@ -23,17 +23,18 @@ public class AiStatistics {
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
 	private Map<Integer, List<ShortPoint2D>> land;
-    private final MainGrid mainGrid;
+	private Map<Integer, Map<EBuildingType, List<ShortPoint2D>>> buildingPositions;
+	private final MainGrid mainGrid;
 	private final ObjectsGrid objectsGrid;
 	private final PartitionsGrid partitionsGrid;
-	
+
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
 		this.mainGrid = mainGrid;
 		this.objectsGrid = mainGrid.getObjectsGrid();
 		this.partitionsGrid = mainGrid.getPartitionsGrid();
 	}
-	
+
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!totalBuildingsNumbers.containsKey(playerIdInteger)) {
@@ -44,13 +45,21 @@ public class AiStatistics {
 		}
 		return totalBuildingsNumbers.get(playerIdInteger).get(type);
 	}
-	
+
 	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!numberOfNotFinishedBuildings.containsKey(playerIdInteger)) {
 			return 0;
 		}
 		return numberOfNotFinishedBuildings.get(playerIdInteger);
+	}
+
+	public List<ShortPoint2D> getBuildingPositionsOfTypeForPlayer(EBuildingType type, byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!buildingPositions.containsKey(playerIdInteger) || !buildingPositions.get(playerIdInteger).containsKey(type)) {
+			return new ArrayList<ShortPoint2D>();
+		}
+		return buildingPositions.get(playerIdInteger).get(type);
 	}
 
 	public List<ShortPoint2D> getStonesForPlayer(byte playerId) {
@@ -60,7 +69,7 @@ public class AiStatistics {
 		}
 		return stones.get(playerIdInteger);
 	}
-	
+
 	public List<ShortPoint2D> getTreesForPlayer(byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!trees.containsKey(playerIdInteger)) {
@@ -68,7 +77,7 @@ public class AiStatistics {
 		}
 		return trees.get(playerIdInteger);
 	}
-	
+
 	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!land.containsKey(playerIdInteger)) {
@@ -81,13 +90,14 @@ public class AiStatistics {
 		updateBuildingStatistics();
 		updateMapStatistics();
 	}
-	
+
 	private void updateMapStatistics() {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
 		land = new HashMap<Integer, List<ShortPoint2D>>();
-		for(short x = 0; x < mainGrid.getWidth(); x++) {
-			for(short y = 0; y < mainGrid.getHeight(); y++) {
+
+		for (short x = 0; x < mainGrid.getWidth(); x++) {
+			for (short y = 0; y < mainGrid.getHeight(); y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
 				if (player != null) {
 					Integer playerId = new Integer(partitionsGrid.getPlayerAt(x, y).playerId);
@@ -112,16 +122,28 @@ public class AiStatistics {
 			}
 		}
 	}
-	
+
 	private void updateBuildingStatistics() {
 		totalBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		numberOfNotFinishedBuildings = new HashMap<Integer, Integer>();
-		for (Building building: buildings) {
+		buildingPositions = new HashMap<Integer, Map<EBuildingType, List<ShortPoint2D>>>();
+		for (Building building : buildings) {
 			Integer playerId = new Integer(building.getPlayerId());
 			EBuildingType type = building.getBuildingType();
 			updateNumberOfNotFinishedBuildings(building, playerId);
 			updateTotalBuildingsNumbers(playerId, type);
+			updateBuildingPositions(playerId, type, building);
 		}
+	}
+
+	private void updateBuildingPositions(Integer playerId, EBuildingType type, Building building) {
+		if (!buildingPositions.containsKey(playerId)) {
+			buildingPositions.put(playerId, new HashMap<EBuildingType, List<ShortPoint2D>>());
+		}
+		if (!buildingPositions.get(playerId).containsKey(type)) {
+			buildingPositions.get(playerId).put(type, new ArrayList<ShortPoint2D>());
+		}
+		buildingPositions.get(playerId).get(type).add(building.getPos());
 	}
 
 	private void updateTotalBuildingsNumbers(Integer playerId, EBuildingType type) {
