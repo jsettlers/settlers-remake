@@ -46,17 +46,24 @@ public class WhatToDoAi implements IWhatToDoAi {
 		int numberOfTotalLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.LUMBERJACK, playerId);
 		int numberOfTotalSawMills = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.SAWMILL, playerId);
 		int numberOfTotalForesters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(EBuildingType.FORESTER, playerId);
-
-		if (numberOfNotFinishedBuildings < 5 && numberOfTotalStonecutters < 1) {
+		if (numberOfNotFinishedBuildings < 5 &&
+				numberOfTotalStonecutters < 1) {
 			construct(EBuildingType.STONECUTTER);
 		}
-		if (numberOfNotFinishedBuildings < 5 && numberOfTotalLumberJacks < 1) {
+		if (numberOfNotFinishedBuildings < 5 &&
+				numberOfTotalLumberJacks < 1) {
 			construct(EBuildingType.LUMBERJACK);
 		}
-		if (numberOfNotFinishedBuildings < 5 && numberOfTotalSawMills < 1) {
+		if (numberOfNotFinishedBuildings < 5 &&
+				numberOfTotalSawMills < 1 &&
+				numberOfTotalLumberJacks >= 1) {
 			construct(EBuildingType.SAWMILL);
 		}
-		if (numberOfNotFinishedBuildings < 5 && numberOfTotalForesters < 1) {
+		if (numberOfNotFinishedBuildings < 5 &&
+				numberOfTotalForesters < 1 &&
+				numberOfTotalLumberJacks >= 1 &&
+				numberOfTotalStonecutters >= 1 &&
+				numberOfTotalSawMills >= 1) {
 			construct(EBuildingType.FORESTER);
 		}
 		if (numberOfNotFinishedBuildings < 5 &&
