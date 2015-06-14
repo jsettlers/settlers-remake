@@ -14,20 +14,28 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import static jsettlers.common.buildings.EBuildingType.FORESTER;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.SAWMILL;
+import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import jsettlers.common.buildings.EBuildingType;
 
 public class BestConstructionPositionFinderFactory {
 
 	public final IBestConstructionPositionFinder getBestConstructionPositionFinderFor(EBuildingType type) {
-		if (type == EBuildingType.STONECUTTER) {
+		if (type == STONECUTTER) {
 			return new BestStoneCutterConstructionPositionFinder(type);
 		}
-		if (type == EBuildingType.LUMBERJACK) {
+		if (type == LUMBERJACK) {
 			return new BestLumberJackConstructionPositionFinder(type);
 		}
-		if (type == EBuildingType.FORESTER) {
+		if (type == FORESTER) {
 			return new BestForesterConstructionPositionFinder(type);
 		}
+		if (type == SAWMILL) {
+			return new BestSawMillConstructionPositionFinder(type);
+		}
+
 		return new NearDiggersConstructionPositionFinder(type);
 	}
 

@@ -31,7 +31,7 @@ public class AiThread implements Runnable {
 		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		for (byte playerId : aiPlayers) {
-			whatToDoAis.add(new WhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
+			whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
 		}
 	}
 

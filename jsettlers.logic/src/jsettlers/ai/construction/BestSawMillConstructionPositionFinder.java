@@ -23,49 +23,36 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Assumptions: foresters are placed after lumberjacks were placed
+ * Assumptions: sawmills are placed after lumberjacks were placed
  * 
  * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
- * score is affected by distance to the most near lumberjack - score is affected by distance to other foresters in order to not build new foresters
- * next to other foresters
+ * score is affected by the distance to of all lumberjacks
  * 
  * @author codingberlin
  */
-public class BestForesterConstructionPositionFinder implements IBestConstructionPositionFinder {
+public class BestSawMillConstructionPositionFinder implements IBestConstructionPositionFinder {
 
 	EBuildingType buildingType;
 
-	public BestForesterConstructionPositionFinder(EBuildingType buildingType) {
+	public BestSawMillConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
 	}
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ShortPoint2D> lumberJacks = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId);
-		List<ShortPoint2D> foresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.FORESTER, playerId);
 
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
 
-				double lumberJackDistance = 0;
+				double lumberJackDistances = 0;
 				for (ShortPoint2D lumberJack : lumberJacks) {
 					double currentLumberJackDistance = Math.sqrt((lumberJack.x - point.x) * (lumberJack.x - point.x) + (lumberJack.y - point.y)
 							* (lumberJack.y - point.y));
-					if (lumberJackDistance == 0 || currentLumberJackDistance < lumberJackDistance) {
-						lumberJackDistance = currentLumberJackDistance;
-					}
+					lumberJackDistances += currentLumberJackDistance;
 				}
-				double foresterDistance = 0;
-				for (ShortPoint2D forester : foresters) {
-					double currentForesterDistance = Math.sqrt((forester.x - point.x) * (forester.x - point.x) + (forester.y - point.y)
-							* (forester.y - point.y));
-					if (foresterDistance == 0 || currentForesterDistance < foresterDistance) {
-						foresterDistance = currentForesterDistance;
-					}
-				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance
-						- foresterDistance));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistances));
 			}
 		}
 
