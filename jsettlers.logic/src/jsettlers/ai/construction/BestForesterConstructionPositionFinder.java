@@ -25,17 +25,14 @@ import jsettlers.common.position.ShortPoint2D;
 /**
  * Assumptions: foresters are placed after lumberjacks were placed
  * 
- * Algorithm: find all possible construction points within the borders of the player - calculates a score (0% bad position till 100% bad position) and
- * take the position with the lowest bad score - score is affected by distance to the most near lumberjack (0% bad position means the most near lumber
- * jack is next to this position, 100% bad position means the most near lumber jack is in comparison to the other positions most far away) - score is
- * affected by distance to other foresters in order to build new foresters to needily lumberjacks (0% bad position means that the most nearest
- * forester's distance is greater than 25, 100% bad position means that the most nearest forester is just next to the construction position)
+ * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
+ * score is affected by distance to the most near lumberjack - score is affected by distance to other foresters in order to not build new foresters
+ * next to other foresters
  * 
  * @author codingberlin
  */
 public class BestForesterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	private static final Double MIN_FORESTER_DISTANCE = new Double(25);
 	EBuildingType buildingType;
 
 	public BestForesterConstructionPositionFinder(EBuildingType buildingType) {
@@ -48,42 +45,37 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 		List<ShortPoint2D> foresters = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.FORESTER, playerId);
 
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
+		double maxLumberJackDistance = 0;
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
 
-				double minLumberJackDistance = Double.MAX_VALUE;
-				double maxLumberJackDistance = 0;
+				double lumberJackDistance = 0;
 				for (ShortPoint2D lumberJack : lumberJacks) {
 					double currentLumberJackDistance = Math.sqrt((lumberJack.x - point.x) * (lumberJack.x - point.x) + (lumberJack.y - point.y)
 							* (lumberJack.y - point.y));
-					if (currentLumberJackDistance < minLumberJackDistance) {
-						minLumberJackDistance = currentLumberJackDistance;
-					}
-					if (currentLumberJackDistance > maxLumberJackDistance) {
-						maxLumberJackDistance = currentLumberJackDistance;
+					if (lumberJackDistance == 0 || currentLumberJackDistance < lumberJackDistance) {
+						lumberJackDistance = currentLumberJackDistance;
 					}
 				}
-				double foresterDistance = MIN_FORESTER_DISTANCE;
+				double foresterDistance = 0;
 				for (ShortPoint2D forester : foresters) {
-					double currentForesterDistance = Math.sqrt((forester.x - point.x) * (forester.x - point.x)
-							+ (forester.y - point.y)
+					double currentForesterDistance = Math.sqrt((forester.x - point.x) * (forester.x - point.x) + (forester.y - point.y)
 							* (forester.y - point.y));
-					if (currentForesterDistance < foresterDistance) {
+					if (foresterDistance == 0 || currentForesterDistance < foresterDistance) {
 						foresterDistance = currentForesterDistance;
 					}
 				}
-				double score = 1 - (foresterDistance / MIN_FORESTER_DISTANCE) + (minLumberJackDistance / maxLumberJackDistance);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), score));
-
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance
+						- foresterDistance));
 			}
 		}
 
 		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
+		for (ScoredConstructionPosition currentPosition : scoredConstructionPositions) {
 			if (winnerPosition == null) {
-				winnerPosition = scoredConstructionPosition;
-			} else if (winnerPosition.score > scoredConstructionPosition.score) {
-				winnerPosition = scoredConstructionPosition;
+				winnerPosition = currentPosition;
+			} else if (currentPosition.score < winnerPosition.score) {
+				winnerPosition = currentPosition;
 			}
 		}
 
