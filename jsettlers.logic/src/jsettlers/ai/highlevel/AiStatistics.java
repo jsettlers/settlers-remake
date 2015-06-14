@@ -34,6 +34,8 @@ import jsettlers.logic.player.Player;
 
 public class AiStatistics {
 
+	private static final short BORDER_LAND_WIDTH = 10;
+
 	private final Queue<Building> buildings;
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
 	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movableNumbers;
@@ -41,6 +43,7 @@ public class AiStatistics {
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
 	private Map<Integer, List<ShortPoint2D>> land;
+	private Map<Integer, List<ShortPoint2D>> borderLandNextToFreeLand;
 	private Map<Integer, Map<EBuildingType, List<ShortPoint2D>>> buildingPositions;
 	private final MainGrid mainGrid;
 	private final ObjectsGrid objectsGrid;
@@ -114,6 +117,14 @@ public class AiStatistics {
 		return land.get(playerIdInteger);
 	}
 
+	public List<ShortPoint2D> getBorderLandNextToFreeLandForPlayer(byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!borderLandNextToFreeLand.containsKey(playerIdInteger)) {
+			return new ArrayList<ShortPoint2D>();
+		}
+		return borderLandNextToFreeLand.get(playerIdInteger);
+	}
+
 	public void updateStatistics() {
 		updateBuildingStatistics();
 		updateMapStatistics();
@@ -123,6 +134,7 @@ public class AiStatistics {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
 		land = new HashMap<Integer, List<ShortPoint2D>>();
+		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
 		movableNumbers = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
 
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
@@ -131,6 +143,7 @@ public class AiStatistics {
 				if (player != null) {
 					Integer playerId = new Integer(partitionsGrid.getPlayerAt(x, y).playerId);
 					ShortPoint2D point = new ShortPoint2D(x, y);
+					updateBorderlandNextToFreeLand(playerId, point);
 					if (!land.containsKey(playerId)) {
 						land.put(playerId, new ArrayList<ShortPoint2D>());
 					}
@@ -160,6 +173,22 @@ public class AiStatistics {
 					}
 				}
 			}
+		}
+	}
+
+	private void updateBorderlandNextToFreeLand(Integer playerId, ShortPoint2D point) {
+		if (!borderLandNextToFreeLand.containsKey(playerId)) {
+			borderLandNextToFreeLand.put(playerId, new ArrayList<ShortPoint2D>());
+		}
+		short west = (short) Math.max(0, point.x - BORDER_LAND_WIDTH);
+		short east = (short) Math.min(mainGrid.getWidth(), point.x + BORDER_LAND_WIDTH);
+		short north = (short) Math.max(0, point.y - BORDER_LAND_WIDTH);
+		short south = (short) Math.min(mainGrid.getHeight(), point.y + BORDER_LAND_WIDTH);
+		if (partitionsGrid.getPlayerAt(west, point.y) == null ||
+				partitionsGrid.getPlayerAt(east, point.y) == null ||
+				partitionsGrid.getPlayerAt(point.x, north) == null ||
+				partitionsGrid.getPlayerAt(point.x, south) == null) {
+			borderLandNextToFreeLand.get(playerId).add(point);
 		}
 	}
 
