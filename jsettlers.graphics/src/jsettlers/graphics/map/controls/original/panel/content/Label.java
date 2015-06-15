@@ -20,22 +20,40 @@ import go.graphics.text.TextDrawer;
 import jsettlers.graphics.utils.UIPanel;
 
 public class Label extends UIPanel {
+    public enum HorizontalAlignment {
+        LEFT,
+        CENTRE,
+        RIGHT,
+    }
 
 	private final EFontSize size;
-	private final String[] words;
+	private String[] words;
 	private double[] widths = null;
 	private double spaceWidth;
 	private double lineHeight;
+	private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTRE;
 
 	public Label(String message, EFontSize size) {
 		this.size = size;
 
-		words = message.split(" ");
+		setText(message);
+	}
+
+	public void setText( String text )
+    {
+        words = text.split(" ");
+    }
+
+	public void setHorizontalAlignment(HorizontalAlignment horizontalAlignment)
+	{
+	    this.horizontalAlignment = horizontalAlignment;
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		super.drawAt(gl);
+
+		String[] words = this.words; //local copy to avoid concurrant modification.
 
 		TextDrawer drawer = gl.getTextDrawer(size);
 
@@ -71,7 +89,20 @@ public class Label extends UIPanel {
 	}
 
 	private void drawLine(TextDrawer drawer, String string, double y) {
-		drawer.renderCentered(getPosition().getCenterX(),
-				(float) (getPosition().getMaxY() - y - lineHeight / 2), string);
+	    float left;
+	    switch(horizontalAlignment){
+        case LEFT:
+            left = getPosition().getMinX();
+            break;
+        case RIGHT:
+            left =  getPosition().getMaxX() - (float)drawer.getWidth(string);
+            break;
+        default:
+        case CENTRE:
+            left = getPosition().getCenterX() - (float)(drawer.getWidth(string) / 2);
+            break;
+	    }
+        float bottom = getPosition().getMaxY() - (float)y - (float)drawer.getHeight("A");
+	    drawer.drawString(left, bottom, string);
 	}
 }

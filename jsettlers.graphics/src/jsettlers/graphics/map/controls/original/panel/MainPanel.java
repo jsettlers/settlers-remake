@@ -69,23 +69,32 @@ public class MainPanel extends UIPanel {
 	};
 
 	private final MessageContent quitPrompt =
-			new MessageContent(
-					Labels.getString("game-quit"),
-					Labels.getString("game-quit-cancel"),
-					new ExecutableAction() {
-						@Override
-						public void execute() {
-							setContent(EContentType.BUILD_NORMAL);
-							btnSystem.setActive(false);
-						}
-					},
-					Labels.getString("game-quit-ok"),
-					new Action(EActionType.EXIT)
-			);
+		new MessageContent(
+			Labels.getString("game-quit"),
+			Labels.getString("game-quit-cancel"),
+			new ExecutableAction() {
+				@Override
+				public void execute() {
+					setContent(EContentType.BUILD_NORMAL);
+					btnSystem.setActive(false);
+				}
+			},
+			Labels.getString("game-quit-ok"),
+			new Action(EActionType.EXIT)
+        ){
+            @Override
+            public void contentShowing(ActionFireable actionFireable) {
+                btnSystem.setActive(true);
+            }
+            @Override
+            public void contentHiding(ActionFireable actionFireable) {
+                btnSystem.setActive(false);
+            }
+	    };
 
 	private final Button btnSystem = new TabButton(quitPrompt,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
-			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");;
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");
 
 	private final Button btnScroll = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
 	private final Button btnSwords = new TabButton(EContentType.EMPTY, BUTTONS_FILE, 114, 102, "");
@@ -157,7 +166,6 @@ public class MainPanel extends UIPanel {
 		for (TabButton button : buttons) {
 			button.setActiveByContent(type);
 		}
-		btnSystem.setActive(false);
 	}
 
 	private void showSecondaryTabs(ESecondaryTabType tabs) {
@@ -234,7 +242,6 @@ public class MainPanel extends UIPanel {
 				constants.SYSTEM_BUTTON_RIGHT,
 				constants.SYSTEM_BUTTON_TOP
 				);
-		btnSystem.setActive(true); // Show as inactive until the functionality has been implemented
 	}
 
 	private void addLowerTabBar()
