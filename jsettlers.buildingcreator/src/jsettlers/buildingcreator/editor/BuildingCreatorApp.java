@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -38,6 +39,7 @@ import jsettlers.buildingcreator.editor.map.PseudoTile;
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
+import jsettlers.common.buildings.stacks.ConstructionStack;
 import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
@@ -172,22 +174,36 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 
 			positionDisplayer.setText("x = " + (pos.x - BuildingtestMap.OFFSET) + ", y = " + (pos.y - BuildingtestMap.OFFSET));
 
-			if (tool == ToolType.SET_BLOCKED) {
+			switch (tool) {
+
+			case SET_BLOCKED:
 				toogleUsedTile(relative);
-			} else if (tool == ToolType.SET_DOOR) {
+				break;
+			case SET_DOOR:
 				setDoor(relative);
-			} else if (tool == ToolType.ADD_STACK) {
-				addStack(relative);
-			} else if (tool == ToolType.REMOVE_STACK) {
+				break;
+			case ADD_CONSTRUCTION_STACK:
+				addConstructionStack(relative);
+				break;
+			case ADD_REQUEST_STACK:
+			case ADD_OFFER_STACK:
+				addStack(relative, tool == ToolType.ADD_REQUEST_STACK);
+				break;
+			case REMOVE_STACK:
 				removeStack(relative);
-			} else if (tool == ToolType.SET_FLAG) {
+				break;
+			case SET_FLAG:
 				setFlag(relative);
-			} else if (tool == ToolType.SET_BUILDMARK) {
+				break;
+			case SET_BUILDMARK:
 				definition.toggleBuildmarkStatus(relative);
-			} else if (tool == ToolType.BRICKLAYER_NE) {
+				break;
+			case BRICKLAYER_NE:
 				definition.toggleBrickayer(relative, EDirection.NORTH_EAST);
-			} else if (tool == ToolType.BRICKLAYER_NW) {
+				break;
+			case BRICKLAYER_NW:
 				definition.toggleBrickayer(relative, EDirection.NORTH_WEST);
+				break;
 			}
 
 			reloadColor(pos);
@@ -198,14 +214,32 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		definition.removeStack(relative);
 	}
 
-	private void addStack(RelativePoint relative) {
-		EMaterialType material = (EMaterialType) JOptionPane.showInputDialog(null, "Select building type", "Building Type",
-				JOptionPane.QUESTION_MESSAGE, null, EMaterialType.values(), tool);
-		Integer buildrequired = (Integer) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE,
-				null, new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, tool);
-		if (material != null && buildrequired != null) {
-			definition.setStack(relative, material, buildrequired.intValue());
+	private void addStack(RelativePoint relative, boolean requestStack) {
+		EMaterialType material = requestMaterialType(tool);
+
+		if (material != null) {
+			if (requestStack) {
+				definition.setRequestStack(relative, material);
+			} else {
+				definition.setOfferStack(relative, material);
+			}
 		}
+	}
+
+	private void addConstructionStack(RelativePoint relative) {
+		EMaterialType material = requestMaterialType(tool);
+
+		Integer buildrequired = (Integer) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE,
+				null, new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8 }, tool);
+
+		if (material != null && buildrequired != null) {
+			definition.setConstructionStack(relative, material, buildrequired.intValue());
+		}
+	}
+
+	private EMaterialType requestMaterialType(ToolType tool) {
+		return (EMaterialType) JOptionPane.showInputDialog(null, "Select Material Type", "Material Type",
+				JOptionPane.QUESTION_MESSAGE, null, EMaterialType.values(), tool);
 	}
 
 	private void setDoor(RelativePoint tile) {
@@ -255,43 +289,91 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			colors.add(new Color(0xff75bbfd));
 		}
 
-		if (tool == ToolType.SET_BUILDMARK) {
+		switch (tool) {
+		case SET_BUILDMARK:
 			if (definition.getBuildmarkStatus(relative)) {
 				colors.add(new Color(0xfff97306));
 			}
-		}
+			break;
 
-		if (tool == ToolType.SET_DOOR) {
+		case SET_DOOR:
 			if (definition.getDoor().equals(relative)) {
 				colors.add(new Color(0xfff97306));
 			}
-		}
+			break;
 
-		if (tool == ToolType.SET_FLAG) {
+		case SET_FLAG:
 			if (definition.getFlag().equals(relative)) {
 				colors.add(new Color(0xfff97306));
 			}
-		}
+			break;
 
-		if (tool == ToolType.ADD_STACK || tool == ToolType.REMOVE_STACK) {
-			if (definition.getStack(relative) != null) {
-				colors.add(new Color(0xfff97306));
-				tile.setStack(new MapStack(definition.getStack(relative)));
-			} else {
-				tile.setStack(null);
-			}
-		}
+		case ADD_CONSTRUCTION_STACK:
+			checkAddConstructionStack(tile, colors, relative);
+			break;
 
-		if (tool == ToolType.BRICKLAYER_NE || tool == ToolType.BRICKLAYER_NW) {
+		case ADD_REQUEST_STACK:
+			checkAddRequestStack(tile, colors, relative);
+			break;
+
+		case ADD_OFFER_STACK:
+			checkAddOfferStack(tile, colors, relative);
+			break;
+
+		case REMOVE_STACK:
+			checkAddConstructionStack(tile, colors, relative);
+			checkAddRequestStack(tile, colors, relative);
+			checkAddOfferStack(tile, colors, relative);
+			break;
+
+		case BRICKLAYER_NE:
+		case BRICKLAYER_NW:
 			if (definition.getBricklayerStatus(relative)) {
 				colors.add(new Color(0xfff97306));
 			}
+			break;
+
+		default:
+			break;
 		}
 
 		if (!colors.isEmpty()) {
 			tile.setDebugColor(mixColors(colors));
 		} else {
 			tile.setDebugColor(0);
+		}
+	}
+
+	private void checkAddConstructionStack(PseudoTile tile, ArrayList<Color> colors, RelativePoint relative) {
+		RelativeStack stack = getStackAt(relative, definition.getConstructionStacks());
+		if (stack != null) {
+			colors.add(new Color(0xfff97386));
+		}
+		tile.setStack(new MapStack(stack));
+	}
+
+	private void checkAddRequestStack(PseudoTile tile, ArrayList<Color> colors, RelativePoint relative) {
+		RelativeStack stack = getStackAt(relative, definition.getRequestStacks());
+		if (stack != null) {
+			colors.add(new Color(0xfff973F6));
+		}
+		tile.setStack(new MapStack(stack));
+	}
+
+	private void checkAddOfferStack(PseudoTile tile, ArrayList<Color> colors, RelativePoint relative) {
+		RelativeStack stack = getStackAt(relative, definition.getOfferStacks());
+		if (stack != null) {
+			colors.add(new Color(0xfff97306));
+		}
+		tile.setStack(new MapStack(stack));
+	}
+
+	private static RelativeStack getStackAt(RelativePoint position, List<? extends RelativeStack> stacks) {
+		int indexOf = stacks.indexOf(position);
+		if (indexOf >= 0) {
+			return stacks.get(indexOf);
+		} else {
+			return null;
 		}
 	}
 
@@ -317,6 +399,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			builder.append(tile.getDy());
 			builder.append("\" block=\"true\" />\n");
 		}
+		builder.append("\n");
 		for (RelativePoint tile : definition.getJustProtected()) {
 			builder.append("\t<blocked dx=\"");
 			builder.append(tile.getDx());
@@ -324,6 +407,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			builder.append(tile.getDy());
 			builder.append("\" block=\"false\" />\n");
 		}
+		builder.append("\n");
 
 		RelativePoint door = definition.getDoor();
 		builder.append("\t<door dx=\"");
@@ -331,9 +415,10 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		builder.append("\" dy=\"");
 		builder.append(door.getDy());
 		builder.append("\" />\n");
+		builder.append("\n");
 
-		for (RelativeStack stack : definition.getStacks()) {
-			builder.append("\t<stack dx=\"");
+		for (ConstructionStack stack : definition.getConstructionStacks()) {
+			builder.append("\t<constructionStack dx=\"");
 			builder.append(stack.getDx());
 			builder.append("\" dy=\"");
 			builder.append(stack.getDy());
@@ -343,6 +428,26 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			builder.append(stack.requiredForBuild());
 			builder.append("\" />\n");
 		}
+		for (RelativeStack stack : definition.getRequestStacks()) {
+			builder.append("\t<requestStack dx=\"");
+			builder.append(stack.getDx());
+			builder.append("\" dy=\"");
+			builder.append(stack.getDy());
+			builder.append("\" material=\"");
+			builder.append(stack.getMaterialType().name());
+			builder.append("\" />\n");
+		}
+		for (RelativeStack stack : definition.getOfferStacks()) {
+			builder.append("\t<offerStack dx=\"");
+			builder.append(stack.getDx());
+			builder.append("\" dy=\"");
+			builder.append(stack.getDy());
+			builder.append("\" material=\"");
+			builder.append(stack.getMaterialType().name());
+			builder.append("\" />\n");
+		}
+		builder.append("\n");
+
 		for (RelativeBricklayer bricklayer : definition.getBricklayers()) {
 			builder.append("\t<bricklayer dx=\"");
 			builder.append(bricklayer.getDx());
@@ -352,6 +457,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			builder.append(bricklayer.getDirection());
 			builder.append("\" />\n");
 		}
+		builder.append("\n");
 
 		RelativePoint flag = definition.getFlag();
 		builder.append("\t<flag dx=\"");
@@ -359,6 +465,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		builder.append("\" dy=\"");
 		builder.append(flag.getDy());
 		builder.append("\" />\n");
+		builder.append("\n");
 
 		for (RelativePoint mark : definition.getBuildmarks()) {
 			builder.append("\t<buildmark dx=\"");
@@ -367,6 +474,7 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 			builder.append(mark.getDy());
 			builder.append("\" />\n");
 		}
+		builder.append("\n");
 
 		JDialog dialog = new JDialog(window, "xml");
 		dialog.add(new JScrollPane(new JTextArea(builder.toString())));
