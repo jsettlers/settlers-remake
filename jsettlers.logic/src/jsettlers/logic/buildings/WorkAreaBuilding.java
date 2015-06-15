@@ -70,7 +70,9 @@ public abstract class WorkAreaBuilding extends Building {
 
 	@Override
 	public void kill() {
-		drawWorkAreaCircle(false);
+		if (workAreaCenter != null) {
+			drawWorkAreaCircle(false);
+		}
 
 		super.kill();
 	}
