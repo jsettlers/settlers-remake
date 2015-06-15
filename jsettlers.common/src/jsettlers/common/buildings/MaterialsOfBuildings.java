@@ -16,6 +16,7 @@ package jsettlers.common.buildings;
 
 import java.util.LinkedList;
 
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 
 /**

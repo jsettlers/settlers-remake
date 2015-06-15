@@ -38,7 +38,7 @@ import jsettlers.buildingcreator.editor.map.PseudoTile;
 import jsettlers.common.Color;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
@@ -345,9 +345,9 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 		}
 		for (RelativeBricklayer bricklayer : definition.getBricklayers()) {
 			builder.append("\t<bricklayer dx=\"");
-			builder.append(bricklayer.getPosition().getDx());
+			builder.append(bricklayer.getDx());
 			builder.append("\" dy=\"");
-			builder.append(bricklayer.getPosition().getDy());
+			builder.append(bricklayer.getDy());
 			builder.append("\" direction=\"");
 			builder.append(bricklayer.getDirection());
 			builder.append("\" />\n");

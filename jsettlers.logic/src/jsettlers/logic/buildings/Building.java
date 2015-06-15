@@ -26,7 +26,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EPriority;
@@ -262,7 +262,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void requestBricklayers() {
 		RelativeBricklayer[] bricklayers = type.getBricklayers();
 		for (RelativeBricklayer curr : bricklayers) {
-			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
+			grid.requestBricklayer(this, curr.calculatePoint(pos), curr.getDirection());
 		}
 	}
 

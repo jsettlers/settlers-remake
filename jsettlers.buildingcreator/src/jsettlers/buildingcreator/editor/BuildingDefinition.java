@@ -22,7 +22,7 @@ import java.util.Set;
 import jsettlers.buildingcreator.editor.jobeditor.BuildingPersonJobProperties;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
@@ -146,9 +146,9 @@ public class BuildingDefinition {
 	}
 
 	private RelativeBricklayer getBricklayerAt(RelativePoint relative) {
-		for (RelativeBricklayer b : bricklayers) {
-			if (b.getPosition().equals(relative)) {
-				return b;
+		for (RelativeBricklayer bricklayer : bricklayers) {
+			if (relative.equals(bricklayer)) {
+				return bricklayer;
 			}
 		}
 		return null;

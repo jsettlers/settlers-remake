@@ -14,7 +14,7 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor;
 
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
