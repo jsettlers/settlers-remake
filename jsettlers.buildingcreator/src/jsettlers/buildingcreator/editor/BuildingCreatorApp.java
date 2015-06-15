@@ -250,8 +250,16 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 	}
 
 	private EMaterialType requestMaterialType(ToolType tool) {
+		EMaterialType[] materialTypes = EMaterialType.values();
+		Arrays.sort(materialTypes, new Comparator<EMaterialType>() {
+			@Override
+			public int compare(EMaterialType o1, EMaterialType o2) {
+				return o1.name().compareTo(o2.name());
+			}
+		});
+
 		return (EMaterialType) JOptionPane.showInputDialog(null, "Select Material Type", "Material Type",
-				JOptionPane.QUESTION_MESSAGE, null, EMaterialType.values(), tool);
+				JOptionPane.QUESTION_MESSAGE, null, materialTypes, tool);
 	}
 
 	private void setDoor(RelativePoint tile) {
