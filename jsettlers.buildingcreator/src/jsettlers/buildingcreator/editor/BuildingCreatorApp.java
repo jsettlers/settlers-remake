@@ -142,8 +142,12 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				tool = (ToolType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
-						ToolType.values(), tool);
+				ToolType newTool = (ToolType) JOptionPane.showInputDialog(null, "Select building type", "Building Type",
+						JOptionPane.QUESTION_MESSAGE, null, ToolType.values(), tool);
+
+				if (newTool != null) {
+					tool = newTool;
+				}
 
 				for (int x = 0; x < map.getWidth(); x++) {
 					for (int y = 0; y < map.getWidth(); y++) {
@@ -478,8 +482,9 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 
 		JDialog dialog = new JDialog(window, "xml");
 		dialog.add(new JScrollPane(new JTextArea(builder.toString())));
-		dialog.setLocationRelativeTo(null);
 		dialog.pack();
+		dialog.setSize(700, 900);
+		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 	}
 }
