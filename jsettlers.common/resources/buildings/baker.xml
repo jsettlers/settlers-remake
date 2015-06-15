@@ -58,10 +58,12 @@
 	<blocked dx="3" dy="2" block="false" />
 	<blocked dx="5" dy="3" block="false" />
 	<door dx="3" dy="2" />
-	<stack dx="3" dy="5" material="PLANK" buildrequired="4" />
-	<stack dx="5" dy="5" material="STONE" buildrequired="5" />
-	<stack dx="3" dy="4" material="FLOUR" buildrequired="0" />
-	<stack dx="4" dy="2" material="WATER" buildrequired="0" />
+	
+	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="4" />
+	<constructionStack dx="5" dy="5" material="STONE" buildrequired="5" />
+	<requestStack dx="3" dy="4" material="FLOUR" />
+	<requestStack dx="4" dy="2" material="WATER" />
+	
 	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="4" direction="NORTH_WEST" />

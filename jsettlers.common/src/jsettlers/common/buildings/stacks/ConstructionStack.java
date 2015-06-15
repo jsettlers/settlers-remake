@@ -15,28 +15,29 @@
 package jsettlers.common.buildings.stacks;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.RelativePoint;
 
 /**
  * This is a stack request that can be positioned relatively to a building.
  * 
  * @author michael
  */
-public class RelativeStack extends RelativePoint {
+public class ConstructionStack extends RelativeStack {
+	private static final long serialVersionUID = -3592197606402226146L;
 
-	/**
-     * 
-     */
-	private static final long serialVersionUID = -6513966510581344171L;
+	private final short requiredForBuild;
 
-	private final EMaterialType type;
-
-	public RelativeStack(int dx, int dy, EMaterialType type) {
-		super(dx, dy);
-		this.type = type;
+	public ConstructionStack(int dx, int dy, EMaterialType type, short requiredForBuild) {
+		super(dx, dy, type);
+		this.requiredForBuild = requiredForBuild;
 	}
 
-	public EMaterialType getMaterialType() {
-		return type;
+	/**
+	 * If this property is not zero, the specified amount of this material is needed to build the building. If it is 0, the material is needed after
+	 * building the building.
+	 * 
+	 * @return the number of materials of this type required to construct a building.
+	 */
+	public short requiredForBuild() {
+		return requiredForBuild;
 	}
 }

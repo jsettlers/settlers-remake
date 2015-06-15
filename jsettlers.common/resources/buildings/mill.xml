@@ -44,18 +44,23 @@
 	<blocked dx="-2" dy="-3" block="false" />
 	<blocked dx="-3" dy="-2" block="false" />
 	<blocked dx="-3" dy="-3" block="false" />
+	
 	<door dx="-1" dy="1" />
+	
 	<!-- materials checked with original -->
-	<stack dx="2" dy="2" material="CROP" buildrequired="0" />
-	<stack dx="0" dy="3" material="PLANK" buildrequired="3" />
-	<stack dx="2" dy="3" material="STONE" buildrequired="3" />
+	<constructionStack dx="0" dy="3" material="PLANK" buildrequired="3" />
+	<constructionStack dx="2" dy="3" material="STONE" buildrequired="3" />
+	<requestStack dx="2" dy="2" material="CROP" />
+	
 	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
 	<bricklayer dx="3" dy="1" direction="NORTH_WEST" />
 	<bricklayer dx="-2" dy="1" direction="NORTH_EAST" />
 	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="2" dy="0" direction="NORTH_WEST" />
+	
 	<flag dx="-2" dy="-1" />
+	
 	<buildmark dx="1" dy="2" />
 	<buildmark dx="0" dy="2" />
 	<buildmark dx="-2" dy="0" />
