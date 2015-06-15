@@ -21,7 +21,7 @@ public class WineBowlMapObject extends AbstractHexMapObject {
 
 	@Override
 	public float getStateProgress() {
-		return ((float) wineStack.getMaterialCount()) / Constants.STACK_SIZE;
+		return ((float) wineStack.getStackSize()) / Constants.STACK_SIZE;
 	}
 
 	@Override

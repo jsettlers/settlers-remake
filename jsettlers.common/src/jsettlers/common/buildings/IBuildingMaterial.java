@@ -34,7 +34,7 @@ public interface IBuildingMaterial {
 	 * 
 	 * @return The number of material items on that given stack.
 	 */
-	public int getMaterialCount();
+	public int getStackSize();
 
 	/**
 	 * If the current stack is offered, so that people can take material from here.
@@ -42,4 +42,12 @@ public interface IBuildingMaterial {
 	 * @return <code>true</code> if it is an offering stack, <code>false</code> if it is an request stack.
 	 */
 	public boolean isOffering();
+
+	/**
+	 * Gets the number of materials that is still required for a construction.
+	 * 
+	 * @return Short.MAX_VALUE if this is a normal request stack.<br>
+	 *         The number of materials still required, if this is a construction stack.
+	 */
+	public short getRequiredMaterials();
 }

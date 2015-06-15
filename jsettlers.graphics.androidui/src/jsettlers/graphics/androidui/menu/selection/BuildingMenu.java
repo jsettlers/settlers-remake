@@ -224,7 +224,7 @@ public class BuildingMenu extends AndroidMenu {
 						.getMaterialType().ordinal()]);
 
 		TextView count = new TextView(getContext());
-		count.setText(mat.getMaterialCount() + "");
+		count.setText(mat.getStackSize() + "");
 		((TableRow) button.getParent()).addView(count);
 
 		MaterialTab materialTab = new MaterialTab(button, count, mat);
