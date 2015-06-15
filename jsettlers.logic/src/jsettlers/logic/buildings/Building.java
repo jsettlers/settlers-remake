@@ -650,7 +650,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
 
 		for (RequestStack stack : stacks) {
-			materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), stack.getStillNeeded()));
+			if (state == STATE_CONSTRUCTED) {
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
+			} else { // during construction
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillNeeded()));
+			}
 		}
 
 		for (RelativeStack offerStack : type.getOfferStacks()) {

@@ -6,22 +6,17 @@ import jsettlers.common.material.EMaterialType;
 class BuildingMaterial implements IBuildingMaterial {
 
 	private final EMaterialType materialType;
-	private final int stackSize;
+	private final int materialCount;
 	private final boolean offering;
-	private final short stillRequired;
 
-	BuildingMaterial(EMaterialType materialType, int stackSize, short stillRequired) {
-		this.materialType = materialType;
-		this.stackSize = stackSize;
-		this.offering = false;
-		this.stillRequired = stillRequired;
+	BuildingMaterial(EMaterialType materialType, int stillRequired) {
+		this(materialType, stillRequired, false);
 	}
 
 	BuildingMaterial(EMaterialType materialType, int stackSize, boolean offering) {
 		this.materialType = materialType;
-		this.stackSize = stackSize;
+		this.materialCount = stackSize;
 		this.offering = offering;
-		this.stillRequired = offering ? 0 : Short.MAX_VALUE;
 	}
 
 	@Override
@@ -30,17 +25,12 @@ class BuildingMaterial implements IBuildingMaterial {
 	}
 
 	@Override
-	public int getStackSize() {
-		return stackSize;
+	public int getMaterialCount() {
+		return materialCount;
 	}
 
 	@Override
 	public boolean isOffering() {
 		return offering;
-	}
-
-	@Override
-	public short getRequiredMaterials() {
-		return stillRequired;
 	}
 }
