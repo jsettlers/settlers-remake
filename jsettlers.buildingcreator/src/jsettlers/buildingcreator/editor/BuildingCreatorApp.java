@@ -21,6 +21,8 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -160,12 +162,18 @@ public class BuildingCreatorApp implements IMapInterfaceListener {
 	}
 
 	private EBuildingType askType() {
+		EBuildingType[] buildingTypes = EBuildingType.values();
+		Arrays.sort(buildingTypes, new Comparator<EBuildingType>() {
+			@Override
+			public int compare(EBuildingType o1, EBuildingType o2) {
+				return o1.name().compareTo(o2.name());
+			}
+		});
 		return (EBuildingType) JOptionPane.showInputDialog(null, "Select building type", "Building Type", JOptionPane.QUESTION_MESSAGE, null,
-				EBuildingType.values, null);
+				buildingTypes, null);
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-
 		new BuildingCreatorApp(MainUtils.createArgumentsMap(args));
 	}
 
