@@ -90,7 +90,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				(numberOfBearer < 15 && numberOfNotFinishedBuildings <= 2) ||
 				(numberOfBearer < 20 && numberOfNotFinishedBuildings <= 3) ||
 				(numberOfBearer < 25 && numberOfNotFinishedBuildings <= 4) ||
-				(numberOfBearer < 30 && numberOfNotFinishedBuildings <= 5);
+				(numberOfNotFinishedBuildings <= 5);
 
 		if (iCanBuild && numberOfBearer < 20 && numberOfMediumLivingHouses == totalNumberOfMediumLivingHouses) {
 			construct(MEDIUM_LIVINGHOUSE);
