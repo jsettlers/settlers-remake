@@ -53,7 +53,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	 */
 	private boolean panWithButton3;
 
-	private int retinaScaleFactor = 1;
+	private int scaleFactor = 1;
 
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
@@ -77,11 +77,11 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	}
 
 	private UIPoint convertToLocal(MouseEvent e) {
-		return new UIPoint(e.getX() * retinaScaleFactor, (e.getComponent().getHeight() - e.getY()) * retinaScaleFactor);
+		return new UIPoint(e.getX() * scaleFactor, (e.getComponent().getHeight() - e.getY()) * scaleFactor);
 
 	}
 
-	private void updateRetinaScaleFactor(Component component) {
+	private void updateScaleFactor(Component component) {
 		GraphicsConfiguration config = component.getGraphicsConfiguration();
 		if (config == null) {
 			return;
@@ -97,7 +97,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 			field.setAccessible(true);
 			Object scaleOfField = field.get(myScreen);
 			if (scaleOfField instanceof Integer) {
-				retinaScaleFactor = ((Integer) scaleOfField).intValue();
+				scaleFactor = ((Integer) scaleOfField).intValue();
 			}
 		} catch (NoSuchFieldException exception) {
 			// if there is no Field scale then we have a scale factor of 1
@@ -298,12 +298,12 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 
 	@Override
 	public void componentMoved(ComponentEvent componentEvent) {
-		updateRetinaScaleFactor(componentEvent.getComponent());
+		updateScaleFactor(componentEvent.getComponent());
 	}
 
 	@Override
 	public void componentShown(ComponentEvent componentEvent) {
-		updateRetinaScaleFactor(componentEvent.getComponent());
+		updateScaleFactor(componentEvent.getComponent());
 	}
 
 	@Override
@@ -319,7 +319,7 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		if (component == null) {
 			return;
 		} else if (component instanceof Window) {
-			updateRetinaScaleFactor(component);
+			updateScaleFactor(component);
 			component.addComponentListener(this);
 			childComponent.removeComponentListener(this);
 		} else {
