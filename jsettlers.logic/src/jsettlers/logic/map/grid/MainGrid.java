@@ -314,6 +314,10 @@ public final class MainGrid implements Serializable {
 		return constructionMarksGrid;
 	}
 
+	public LandscapeGrid getLandscapeGrid() {
+		return landscapeGrid;
+	}
+
 	public ObjectsGrid getObjectsGrid() {
 		return objectsGrid;
 	}

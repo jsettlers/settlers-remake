@@ -21,11 +21,13 @@ import java.util.Map;
 import java.util.Queue;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
@@ -47,6 +49,7 @@ public class AiStatistics {
 	private Map<Integer, List<ShortPoint2D>> borderLandNextToFreeLand;
 	private Map<Integer, Map<EBuildingType, List<ShortPoint2D>>> buildingPositions;
 	private final MainGrid mainGrid;
+	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
 	private final PartitionsGrid partitionsGrid;
 	private final MovableGrid movableGrid;
@@ -54,9 +57,79 @@ public class AiStatistics {
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
 		this.mainGrid = mainGrid;
+		this.landscapeGrid = mainGrid.getLandscapeGrid();
 		this.objectsGrid = mainGrid.getObjectsGrid();
 		this.partitionsGrid = mainGrid.getPartitionsGrid();
 		this.movableGrid = mainGrid.getMovableGrid();
+	}
+
+	public ShortPoint2D getNearestResourcePointFor(ShortPoint2D point) {
+		ShortPoint2D result = null;
+		double currentNearestResourceDistance = Double.MAX_VALUE;
+		ShortPoint2D nearestRightPoint = getNearestResourcePointoForPointInXDirection(point, currentNearestResourceDistance, new Integer(point.x), 1,
+				new Integer(mainGrid.getWidth() + 1));
+		if (nearestRightPoint != null) {
+			currentNearestResourceDistance = getDistance(point, nearestRightPoint);
+			result = nearestRightPoint;
+		}
+		ShortPoint2D nearestLeftPoint = getNearestResourcePointoForPointInXDirection(point, currentNearestResourceDistance, new Integer(point.x - 1),
+				-1, -1);
+		if (nearestLeftPoint != null) {
+			result = nearestLeftPoint;
+		}
+		return result;
+	}
+
+	private ShortPoint2D getNearestResourcePointoForPointInXDirection(ShortPoint2D point, double currentNearestResourceDistance, Integer x,
+			Integer increment, Integer border) {
+		if (x.equals(border) || Math.abs(x - point.x) > currentNearestResourceDistance) {
+			return null;
+		}
+		Map<Integer, Map<Integer, EResourceType>> resourceTypes = landscapeGrid.getResourceTypes();
+		if (!resourceTypes.containsKey(x)) {
+			return getNearestResourcePointoForPointInXDirection(point, currentNearestResourceDistance, x + increment, increment, border);
+		}
+		ShortPoint2D result = null;
+		ShortPoint2D southYPoint = getNearestResourcePointoForPointInYDirection(resourceTypes.get(x), point, currentNearestResourceDistance, x,
+				new Integer(point.y), 1, new Integer(mainGrid.getHeight() + 1));
+		if (southYPoint != null) {
+			result = southYPoint;
+			currentNearestResourceDistance = getDistance(point, southYPoint);
+		}
+		ShortPoint2D northYPoint = getNearestResourcePointoForPointInYDirection(resourceTypes.get(x), point, currentNearestResourceDistance, x,
+				new Integer(point.y - 1), -1, -1);
+		if (northYPoint != null) {
+			result = northYPoint;
+			currentNearestResourceDistance = getDistance(point, northYPoint);
+		}
+		if (Math.abs(point.x - (x + increment)) < currentNearestResourceDistance) {
+			ShortPoint2D nextPoint = getNearestResourcePointoForPointInXDirection(point, currentNearestResourceDistance, x + increment, increment,
+					border);
+			if (nextPoint != null) {
+				result = nextPoint;
+			}
+		}
+		return result;
+	}
+
+	private ShortPoint2D getNearestResourcePointoForPointInYDirection(Map<Integer, EResourceType> yResourceTypes, ShortPoint2D point,
+			double currentNearestResourceDistance, Integer x, Integer y, Integer increment, Integer border) {
+		if (y.equals(border) || Math.abs(y - point.y) > currentNearestResourceDistance) {
+			return null;
+		}
+		if (!yResourceTypes.containsKey(y)) {
+			return getNearestResourcePointoForPointInYDirection(yResourceTypes, point, currentNearestResourceDistance, x, y + increment,
+					increment, border);
+		}
+		if (getDistance(point, new ShortPoint2D(x, y)) > currentNearestResourceDistance) {
+			return null;
+		}
+		return new ShortPoint2D(x, y);
+
+	}
+
+	public double getDistance(ShortPoint2D pointA, ShortPoint2D pointB) {
+		return Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {

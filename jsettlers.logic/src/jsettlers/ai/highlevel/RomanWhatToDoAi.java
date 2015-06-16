@@ -79,12 +79,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	@Override
 	public void applyRules() {
-		long startTime = System.currentTimeMillis();
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
-		int totalNumberOfLumberJacks = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId);
-		int totalNumberOfSawMills = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId);
-		int totalNumberOfForesters = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(FORESTER, playerId);
-		int totalNumberOfMediumLivingHouse = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
 		int totalNumberOfTowers = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId);
 		int numberOfTowers = aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId);
 		int totalNumberOfMediumLivingHouses = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
@@ -99,18 +94,19 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 		if (iCanBuild && numberOfBearer < 20 && numberOfMediumLivingHouses == totalNumberOfMediumLivingHouses) {
 			construct(MEDIUM_LIVINGHOUSE);
+			return;
 		}
 
 		if (iCanBuild && nextBuilding < buildingMaterialEconomy.size()) {
 			construct(buildingMaterialEconomy.get(nextBuilding));
 			nextBuilding++;
+			return;
 		}
 
 		if (iCanBuild && nextBuilding == buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
 			construct(TOWER);
+			return;
 		}
-
-		System.out.println("WhatToDoAi took " + (System.currentTimeMillis() - startTime) + " ms");
 	}
 
 	private void construct(EBuildingType type) {

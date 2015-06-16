@@ -17,6 +17,8 @@ package jsettlers.logic.map.grid.landscape;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import jsettlers.algorithms.previewimage.IPreviewImageDataSupplier;
 import jsettlers.common.CommonConstants;
@@ -58,6 +60,8 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private final byte[] resourceType;
 	private final short[] blockedPartitions;
 
+	private final Map<Integer, Map<Integer, EResourceType>> resourceTypes;
+
 	private final short width;
 	private final short height;
 
@@ -85,6 +89,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		setBackgroundListener(null);
 
 		protectedProvider.setProtectedChangedListener(this);
+		resourceTypes = new HashMap<Integer, Map<Integer, EResourceType>>();
 	}
 
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -187,6 +192,18 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
 		this.resourceType[x + y * width] = resourceType.ordinal;
 		this.resourceAmount[x + y * width] = amount;
+		if (resourceType != EResourceType.FISH) {
+			Integer xInteger = new Integer(x);
+			Integer yInteger = new Integer(y);
+			if (!resourceTypes.containsKey(xInteger)) {
+				resourceTypes.put(xInteger, new HashMap<Integer, EResourceType>());
+			}
+			resourceTypes.get(xInteger).put(yInteger, resourceType);
+		}
+	}
+
+	public Map<Integer, Map<Integer, EResourceType>> getResourceTypes() {
+		return resourceTypes;
 	}
 
 	/**

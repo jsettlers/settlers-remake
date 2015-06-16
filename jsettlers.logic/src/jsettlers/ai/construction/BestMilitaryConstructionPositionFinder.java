@@ -27,10 +27,11 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Assumptions: sawmills are placed after lumberjacks were placed
+ * Assumptions: the most needed land are mountains with resources for military production
  * 
  * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
- * score is affected by the distance to of all lumberjacks
+ * score is affected by the distance to of other militairy buildings to get the most land out of the less militairy buildings - score is affected by
+ * distance of resources
  * 
  * @author codingberlin
  */
@@ -61,7 +62,13 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 						militairyBuildingDistance = currentMilitaryBuildingDistance;
 					}
 				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), militairyBuildingDistance));
+				ShortPoint2D nearestResourcePoint = aiStatistics.getNearestResourcePointFor(point);
+				double nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
+				System.out.println(point.x + "|" + point.y + " -> " + nearestResourcePoint.x + "|" + nearestResourcePoint.y);
+				System.out.println(militairyBuildingDistance + " - " + nearestResourcePointDistance + " =  "
+						+ (militairyBuildingDistance - nearestResourcePointDistance));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), militairyBuildingDistance
+						- nearestResourcePointDistance));
 			}
 		}
 
