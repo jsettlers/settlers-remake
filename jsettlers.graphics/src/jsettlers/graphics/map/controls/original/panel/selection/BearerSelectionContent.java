@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.map.controls.original.panel.selection;
 
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
@@ -23,11 +23,11 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
-public class BearerSelection extends AbstractContentProvider {
+public class BearerSelectionContent extends AbstractSelectionContent {
 	private final UIPanel panel;
 	private final int count;
 
-	public BearerSelection(ISelectionSet selection) {
+	public BearerSelectionContent(ISelectionSet selection) {
 		panel = new UIPanel();
 		count = selection.getMovableCount(EMovableType.BEARER);
 

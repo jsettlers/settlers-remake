@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.map.controls.original.panel.selection;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
@@ -22,7 +22,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIPanel;
 
-public class SoilderSelection extends AbstractContentProvider {
+public class SoilderSelectionContent extends AbstractSelectionContent {
 
 	private static final EMovableType[] soildertypes = new EMovableType[] {
 			EMovableType.SWORDSMAN_L1,
@@ -43,7 +43,7 @@ public class SoilderSelection extends AbstractContentProvider {
 
 	private final UIPanel panel;
 
-	public SoilderSelection(ISelectionSet selection) {
+	public SoilderSelectionContent(ISelectionSet selection) {
 		panel = new UIPanel();
 
 		addRowsToPanel(panel, selection, soildertypes);

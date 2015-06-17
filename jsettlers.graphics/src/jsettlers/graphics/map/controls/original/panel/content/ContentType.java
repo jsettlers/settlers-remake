@@ -14,13 +14,42 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import jsettlers.graphics.ui.UIPanel;
+
 /**
- * Classes of this type provide content for the main panel.
+ * This are the main content types
  * 
  * @author michael
  */
-public interface IContentProvider extends IContentFactory {
-	ESecondaryTabType getTabs();
+public final class ContentType {
+	public static final AbstractContentProvider EMPTY = new AbstractContentProvider() {
+		@Override
+		public UIPanel getPanel() {
+			return new UIPanel();
+		}
 
-	boolean isForSelection();
+		@Override
+		public boolean isForSelection() {
+			// This is the empty selection content.
+			return true;
+		};
+	};
+
+	public static final AbstractContentProvider BUILD_NORMAL = BuildingBuildContent.getNormal();
+	public static final AbstractContentProvider BUILD_SOCIAL = BuildingBuildContent.getSocial();
+	public static final AbstractContentProvider BUILD_MILITARY = BuildingBuildContent.getMilitary();
+	public static final AbstractContentProvider BUILD_FOOD = BuildingBuildContent.getFood();
+
+	public static final AbstractContentProvider STOCK = EMPTY;
+	public static final AbstractContentProvider TOOLS = EMPTY;
+	public static final AbstractContentProvider GOODS_SPREAD = EMPTY;
+	public static final AbstractContentProvider GOODS_TRANSPORT = new MaterialPriorityContent();
+
+	public static final AbstractContentProvider SETTLERSTATISTIC = EMPTY;
+	public static final AbstractContentProvider PROFESSION = EMPTY;
+	public static final AbstractContentProvider WARRIORS = EMPTY;
+	public static final AbstractContentProvider PRODUCTION = EMPTY;
+
+	private ContentType() {
+	}
 }

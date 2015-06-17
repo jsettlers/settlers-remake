@@ -116,6 +116,11 @@ public class BuildingBuildContent extends AbstractContentProvider {
 		return panel;
 	}
 
+	@Override
+	public ESecondaryTabType getTabs() {
+		return ESecondaryTabType.BUILD;
+	}
+
 	public static BuildingBuildContent getNormal() {
 		return new BuildingBuildContent(normalBuildings);
 	}
@@ -154,7 +159,7 @@ public class BuildingBuildContent extends AbstractContentProvider {
 	}
 
 	@Override
-	public void contentHiding(ActionFireable actionFireable) {
+	public void contentHiding(ActionFireable actionFireable, IContentProvider nextContent) {
 		if (activeBuilding != null) {
 			actionFireable.fireAction(new ShowConstructionMarksAction(null));
 		}

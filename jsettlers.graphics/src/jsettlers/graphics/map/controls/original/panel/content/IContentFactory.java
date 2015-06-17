@@ -30,13 +30,18 @@ public interface IContentFactory {
 
 	/**
 	 * Called whenever this content is displayed.
-	 * @param actionFireable TODO
+	 * 
+	 * @param actionFireable
+	 *            TODO
 	 */
 	void contentShowing(ActionFireable actionFireable);
 
 	/**
 	 * Called whenever this content is hidden.
-	 * @param actionFireable TODO
+	 * 
+	 * @param actionFireable
+	 *            TODO
+	 * @param nextContent
 	 */
-	void contentHiding(ActionFireable actionFireable);
+	void contentHiding(ActionFireable actionFireable, IContentProvider nextContent);
 }

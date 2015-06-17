@@ -35,15 +35,13 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
 
-public class BuildingSelectionContent extends AbstractContentProvider {
+public class BuildingSelectionContent extends AbstractSelectionContent {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 45, 0);
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(

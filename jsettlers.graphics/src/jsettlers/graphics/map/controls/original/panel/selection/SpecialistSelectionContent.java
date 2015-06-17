@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.map.controls.original.panel.selection;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
@@ -28,7 +28,7 @@ import jsettlers.graphics.ui.UIPanel;
  * 
  * @author michael
  */
-public class SpecialistSelection extends AbstractContentProvider {
+public class SpecialistSelectionContent extends AbstractSelectionContent {
 
 	private static final EMovableType[] specialists = new EMovableType[] {
 			EMovableType.PIONEER, EMovableType.THIEF, EMovableType.GEOLOGIST,
@@ -41,10 +41,10 @@ public class SpecialistSelection extends AbstractContentProvider {
 
 	private final UIPanel panel;
 
-	public SpecialistSelection(ISelectionSet selection) {
+	public SpecialistSelectionContent(ISelectionSet selection) {
 		panel = new UIPanel();
 
-		SoilderSelection.addRowsToPanel(panel, selection, specialists);
+		SoilderSelectionContent.addRowsToPanel(panel, selection, specialists);
 
 		UIPanel stop =
 				new LabeledButton(Labels.getString("stop"),
