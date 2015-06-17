@@ -14,9 +14,13 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingMaterial;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 
 /**
@@ -28,6 +32,25 @@ public class BuildingState {
 
 	private final EPriority priority;
 	private final EPriority[] supportedPriorities;
+	private final ArrayList<StackState> stackStates = new ArrayList<>();
+	private boolean constructed;
+
+	private static class StackState {
+		private final EMaterialType type;
+		private final int count;
+		private final boolean offering;
+
+		public StackState(IBuildingMaterial mat) {
+			type = mat.getMaterialType();
+			count = mat.getMaterialCount();
+			offering = mat.isOffering();
+		}
+
+		public boolean isStillInState(IBuildingMaterial mat) {
+			return mat.getMaterialType() == type && mat.getMaterialCount() == count && mat.isOffering() == offering;
+		}
+
+	}
 
 	/**
 	 * Saves the current state of the building
@@ -38,17 +61,38 @@ public class BuildingState {
 	public BuildingState(IBuilding building) {
 		priority = building.getPriority();
 		supportedPriorities = building.getSupportedPriorities();
+		constructed = building.getStateProgress() < 1;
 		if (building instanceof IBuilding.IOccupyed) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
 			// TODO: use this to store how many people are occupying the
 			// building.
+		}
+
+		for (IBuildingMaterial mat : building.getMaterials()) {
+			stackStates.add(new StackState(mat));
 		}
 	}
 
 	public boolean isStillInState(IBuilding building) {
 		return building.getPriority() == priority
 				&& Arrays.equals(supportedPriorities,
-						building.getSupportedPriorities());
+						building.getSupportedPriorities())
+				&& constructed == (building.getStateProgress() < 1)
+				&& hasSameStacks(building);
+	}
+
+	private boolean hasSameStacks(IBuilding building) {
+		List<IBuildingMaterial> materials = building.getMaterials();
+		if (materials.size() != stackStates.size()) {
+			return false;
+		}
+		int i = 0;
+		for (IBuildingMaterial mat : materials) {
+			if (stackStates.get(i++).isStillInState(mat)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
