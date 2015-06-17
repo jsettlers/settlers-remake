@@ -35,35 +35,22 @@ public class Button extends UIPanel implements UIButton {
 	private OriginalImageLink image;
 	private final OriginalImageLink activeImage;
 
-    public Button(OriginalImageLink image) {
-        this.image = image;
-        activeImage = image;
-        description = "";
-    }
+	public Button(OriginalImageLink image) {
+		this.image = image;
+		activeImage = image;
+		description = "";
+	}
 
-	public Button(Action action, OriginalImageLink image, OriginalImageLink active,
-			String description) {
+	public Button(Action action, OriginalImageLink image, OriginalImageLink active, String description) {
 		this.action = action;
 		this.image = image;
 		activeImage = active;
 		this.description = description;
 	}
 
-	/*
-	 * @Override public void drawAt(GL2 gl) { ImageLink start = active ? activeImage : image; Image image = null; // for (int i = 0; i <
-	 * DETAIL_IMAGES; i++) { image = provider.getImage(start); // if (image.getWidth() >= position.getWidth() // && image.getHeight() >=
-	 * position.getHeight()) { // break; // } // }
-	 *
-	 * image.drawAt(gl, position.getMinX(), position.getMaxY());
-	 *
-	 * gl.glBegin(GL2.GL_LINE_LOOP); gl.glVertex2i(position.getMinX(), position.getMinY()); gl.glVertex2i(position.getMinX(), position.getMaxY());
-	 * gl.glVertex2i(position.getMaxX(), position.getMaxY()); gl.glVertex2i(position.getMaxX(), position.getMinY()); gl.glEnd(); }
-	 */
-
-    public void setImage(OriginalImageLink image)
-    {
-        this.image = image;
-    }
+	public void setImage(OriginalImageLink image) {
+		this.image = image;
+	}
 
 	@Override
 	protected ImageLink getBackgroundImage() {
@@ -78,10 +65,9 @@ public class Button extends UIPanel implements UIButton {
 		this.active = active;
 	}
 
-    public void setAction(Action action)
-    {
-        this.action = action;
-    }
+	public void setAction(Action action) {
+		this.action = action;
+	}
 
 	@Override
 	public Action getAction() {

@@ -24,221 +24,207 @@ import jsettlers.graphics.utils.Button;
 import jsettlers.graphics.utils.UIPanel;
 
 public class DistributionPanel extends AbstractContentProvider {
-    private static class ConfigurationPanelRow extends UIPanel
-    {
-        private static final float textHeight = rowTextHeight_px / rowHeight_px;
-        private static final float textMarginBottom = rowTextMarginBottom_px / rowHeight_px;
-        private static final float textPercentageWidth = 30f / 84f;
+	private static class ConfigurationPanelRow extends UIPanel {
+		private static final float textHeight = rowTextHeight_px / rowHeight_px;
+		private static final float textMarginBottom = rowTextMarginBottom_px / rowHeight_px;
+		private static final float textPercentageWidth = 30f / 84f;
 
-        private final Label lblPercentage;
-        private final BarFill barFill;
+		private final Label lblPercentage;
+		private final BarFill barFill;
 
-        public ConfigurationPanelRow(String receiver)
-        {
-            Label rowTitle = new Label(Labels.getString(receiver), EFontSize.SMALL);
-            rowTitle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+		public ConfigurationPanelRow(String receiver) {
+			Label rowTitle = new Label(Labels.getString(receiver), EFontSize.SMALL);
+			rowTitle.setHorizontalAlignment(HorizontalAlignment.LEFT);
 
-            lblPercentage = new Label("0%", EFontSize.NORMAL);
-            lblPercentage.setHorizontalAlignment(HorizontalAlignment.LEFT);
+			lblPercentage = new Label("0%", EFontSize.NORMAL);
+			lblPercentage.setHorizontalAlignment(HorizontalAlignment.LEFT);
 
-            barFill = new BarFill();
+			barFill = new BarFill();
 
-            addChild(rowTitle, 0f, 1f - textHeight, 1f, 1f);
-            addChild(lblPercentage, 0f, 0f, textPercentageWidth, 1f - (textHeight + textMarginBottom));
-            addChild(barFill, textPercentageWidth, 0f, 1f, 1f - (textHeight + textMarginBottom));
-        }
+			addChild(rowTitle, 0f, 1f - textHeight, 1f, 1f);
+			addChild(lblPercentage, 0f, 0f, textPercentageWidth, 1f - (textHeight + textMarginBottom));
+			addChild(barFill, textPercentageWidth, 0f, 1f, 1f - (textHeight + textMarginBottom));
+		}
 
-        public void setPercentage(int percentage)
-        {
-            lblPercentage.setText(Integer.toString(percentage)+"%");
-        }
-    }
+		public void setPercentage(int percentage) {
+			lblPercentage.setText(Integer.toString(percentage) + "%");
+		}
+	}
 
-    private static class ConfigurationPanel extends UIPanel
-    {
-        private static final float panelHeight_px = contentHeight_px - marginTop_px;
-        private static final float rowHeight = rowHeight_px / panelHeight_px;
-        private static final float rowSpacing = rowSpacingV_px / panelHeight_px;
+	private static class ConfigurationPanel extends UIPanel {
+		private static final float panelHeight_px = contentHeight_px - marginTop_px;
+		private static final float rowHeight = rowHeight_px / panelHeight_px;
+		private static final float rowSpacing = rowSpacingV_px / panelHeight_px;
 
-        public ConfigurationPanel(final ConfigurationPanelRow[] rows)
-        {
-            int percentage = 100 / rows.length;
-            float top = 1f;
-            for (ConfigurationPanelRow row : rows) {
-                row.barFill.setAction(new ExecutableAction() {
-                    @Override
-                    public void execute() {
-                        float total = 0f;
-                        for(ConfigurationPanelRow r : rows){
-                            total += r.barFill.getValue();
-                        }
-                        for(ConfigurationPanelRow r : rows){
-                            int percentage = (int)(100 * (r.barFill.getValue() / total));
-                            r.setPercentage(percentage);
-                        }
-                    }
-                });
-                row.setPercentage(percentage);
-                addChild(row, 0f, top - rowHeight, 1f, top);
-                top -= rowHeight + rowSpacing;
-            }
-        }
-    }
+		public ConfigurationPanel(final ConfigurationPanelRow[] rows) {
+			int percentage = 100 / rows.length;
+			float top = 1f;
+			for (ConfigurationPanelRow row : rows) {
+				row.barFill.setAction(new ExecutableAction() {
+					@Override
+					public void execute() {
+						float total = 0f;
+						for (ConfigurationPanelRow r : rows) {
+							total += r.barFill.getValue();
+						}
+						for (ConfigurationPanelRow r : rows) {
+							int percentage = (int) (100 * (r.barFill.getValue() / total));
+							r.setPercentage(percentage);
+						}
+					}
+				});
+				row.setPercentage(percentage);
+				addChild(row, 0f, top - rowHeight, 1f, top);
+				top -= rowHeight + rowSpacing;
+			}
+		}
+	}
 
-    private static class Tab
-    {
-        private final Button icon;
-        private final ConfigurationPanel configurationPanel;
+	private static class Tab {
+		private final Button icon;
+		private final ConfigurationPanel configurationPanel;
 
-        private Tab(Button icon, ConfigurationPanel configurationPanel)
-        {
-            this.icon = icon;
-            this.configurationPanel = configurationPanel;
-        }
-    }
+		private Tab(Button icon, ConfigurationPanel configurationPanel) {
+			this.icon = icon;
+			this.configurationPanel = configurationPanel;
+		}
+	}
 
-    private final Tab[] tabs = {
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 144, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Ironsmith"),
-                        new ConfigurationPanelRow("Goldsmith"),
-                        new ConfigurationPanelRow("Weaponsmith"),
-                        new ConfigurationPanelRow("Toolsmith"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 132, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Building"),
-                        new ConfigurationPanelRow("Shipyard"),
-                        new ConfigurationPanelRow("Charcoal"),
-                        new ConfigurationPanelRow("Catapult Workshop"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 168, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Weaponsmith"),
-                        new ConfigurationPanelRow("Toolsmith"),
-                        new ConfigurationPanelRow("Shipyard"),
-                        new ConfigurationPanelRow("Catapult Workshop"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 174, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Building"),
-                        new ConfigurationPanelRow("Catapult Workshop"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 180, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Windmill"),
-                        new ConfigurationPanelRow("Pig Farm"),
-                        new ConfigurationPanelRow("Donkey Farm"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 156, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Bakery"),
-                        new ConfigurationPanelRow("Pig Farm"),
-                        new ConfigurationPanelRow("Donkey Farm"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 186, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Coal Mine"),
-                        new ConfigurationPanelRow("Iron Mine"),
-                        new ConfigurationPanelRow("Gold Mine"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 162, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Iron Mine"),
-                        new ConfigurationPanelRow("Gold Mine"),
-                        new ConfigurationPanelRow("Coal Mine"),
-                })),
-        new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 189, 0)),
-                new ConfigurationPanel(new ConfigurationPanelRow[]{
-                        new ConfigurationPanelRow("Gold Mine"),
-                        new ConfigurationPanelRow("Coal Mine"),
-                        new ConfigurationPanelRow("Iron Mine"),
-                })),
-    };
+	private final Tab[] tabs = {
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 144, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Ironsmith"),
+							new ConfigurationPanelRow("Goldsmith"),
+							new ConfigurationPanelRow("Weaponsmith"),
+							new ConfigurationPanelRow("Toolsmith"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 132, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Building"),
+							new ConfigurationPanelRow("Shipyard"),
+							new ConfigurationPanelRow("Charcoal"),
+							new ConfigurationPanelRow("Catapult Workshop"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 168, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Weaponsmith"),
+							new ConfigurationPanelRow("Toolsmith"),
+							new ConfigurationPanelRow("Shipyard"),
+							new ConfigurationPanelRow("Catapult Workshop"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 174, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Building"),
+							new ConfigurationPanelRow("Catapult Workshop"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 180, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Windmill"),
+							new ConfigurationPanelRow("Pig Farm"),
+							new ConfigurationPanelRow("Donkey Farm"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 156, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Bakery"),
+							new ConfigurationPanelRow("Pig Farm"),
+							new ConfigurationPanelRow("Donkey Farm"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 186, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Coal Mine"),
+							new ConfigurationPanelRow("Iron Mine"),
+							new ConfigurationPanelRow("Gold Mine"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 162, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Iron Mine"),
+							new ConfigurationPanelRow("Gold Mine"),
+							new ConfigurationPanelRow("Coal Mine"),
+					})),
+			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 189, 0)),
+					new ConfigurationPanel(new ConfigurationPanelRow[] {
+							new ConfigurationPanelRow("Gold Mine"),
+							new ConfigurationPanelRow("Coal Mine"),
+							new ConfigurationPanelRow("Iron Mine"),
+					})),
+	};
 
-    private static final float contentHeight_px = 216; // 360
-    private static final float contentWidth_px = 118; // 197
+	private static final float contentHeight_px = 216; // 360
+	private static final float contentWidth_px = 118; // 197
 
-    private static final float titleTop_px = 2;
-    private static final float titleTextHeight_px = 12;
-    private static final float iconSize_px = 18; // 30
+	private static final float titleTop_px = 2;
+	private static final float titleTextHeight_px = 12;
+	private static final float iconSize_px = 18; // 30
 
-    private static final float marginTop_px = 23f;
+	private static final float marginTop_px = 23f;
 
-    private static final float titleTop = 1 - (titleTop_px / contentHeight_px);
-    private static final float titleTextHeight = titleTextHeight_px / contentHeight_px;
+	private static final float titleTop = 1 - (titleTop_px / contentHeight_px);
+	private static final float titleTextHeight = titleTextHeight_px / contentHeight_px;
 
-    private static final float rowHeight = iconSize_px / contentHeight_px;
-    private static final float tileWidth = iconSize_px / contentWidth_px;
-    private static final float marginTop = 1 - (marginTop_px / contentHeight_px);
-    private static final float marginV = 3 / contentHeight_px;
-    private static final float marginH = 5 / contentWidth_px;
-    private static final int ROWS = 9;
+	private static final float rowHeight = iconSize_px / contentHeight_px;
+	private static final float tileWidth = iconSize_px / contentWidth_px;
+	private static final float marginTop = 1 - (marginTop_px / contentHeight_px);
+	private static final float marginV = 3 / contentHeight_px;
+	private static final float marginH = 5 / contentWidth_px;
+	private static final int ROWS = 9;
 
-    private static final float rowHeight_px = 25f;
-    private static final float rowSpacingV_px = 8f;
-    private static final float rowTextHeight_px = 9f;
-    private static final float rowTextMarginBottom_px = 4f;
-    private static final float rowTextMarginLeft_px = 6f;
-//    private static final float rowText2MarginLeft_px = 8f;
-//    private static final float barWidth_px = 54f;
+	private static final float rowHeight_px = 25f;
+	private static final float rowSpacingV_px = 8f;
+	private static final float rowTextHeight_px = 9f;
+	private static final float rowTextMarginBottom_px = 4f;
+	private static final float rowTextMarginLeft_px = 6f;
 
-    private static final float rowTextMarginLeft = rowTextMarginLeft_px / contentWidth_px;
+	private static final float rowTextMarginLeft = rowTextMarginLeft_px / contentWidth_px;
 
+	private final UIPanel panel;
+	private final UIPanel selectionFrame;
+	private Tab tab;
 
-    private final UIPanel panel;
-    private final UIPanel selectionFrame;
-    private Tab tab;
+	public DistributionPanel() {
+		selectionFrame = new UIPanel();
+		selectionFrame.setBackground(new OriginalImageLink(EImageLinkType.GUI, 3, 339, 0));
 
-    public DistributionPanel()
-    {
-        selectionFrame = new UIPanel();
-        selectionFrame.setBackground(new OriginalImageLink(EImageLinkType.GUI, 3, 339, 0));
+		panel = new UIPanel();
+		panel.addChild(new Label(Labels.getString("controlpanel_distribution_title"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f, titleTop);
 
-        panel = new UIPanel();
-        panel.addChild(new Label(Labels.getString("controlpanel_distribution_title"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f, titleTop);
+		int tabIdx = 0;
+		float top = marginTop;
+		for (int r = 0; r < ROWS; r++, top -= (rowHeight + marginV)) {
+			final Tab item = tabs[tabIdx];
+			Button icon = item.icon;
+			panel.addChild(
+					tabs[tabIdx].icon,
+					marginH,
+					top - rowHeight,
+					marginH + tileWidth,
+					top
+					);
+			icon.setAction(new ExecutableAction() {
+				@Override
+				public void execute() {
+					setConfigurationPanel(item);
+				}
+			});
+			tabIdx++;
+		}
+		tab = tabs[0];
+	}
 
-        int tabIdx = 0;
-        float top = marginTop;
-        for (int r = 0; r < ROWS; r++, top -= (rowHeight + marginV)) {
-            final Tab item = tabs[tabIdx];
-            Button icon = item.icon;
-            panel.addChild(
-                    tabs[tabIdx].icon,
-                    marginH,
-                    top - rowHeight,
-                    marginH + tileWidth,
-                    top
-                    );
-            icon.setAction(new ExecutableAction() {
-                @Override
-                public void execute() {
-                    setConfigurationPanel(item);
-                }
-            });
-            tabIdx++;
-        }
-        tab = tabs[0];
-    }
+	public void setConfigurationPanel(Tab item) {
+		panel.removeChild(this.tab.configurationPanel);
+		this.tab.icon.removeChild(selectionFrame);
+		this.tab = item;
+		item.icon.addChild(selectionFrame, 0f, 0f, 1f, 1f);
+		panel.addChild(item.configurationPanel, marginH + tileWidth + rowTextMarginLeft, 0f, 1f - marginH, marginTop);
+	}
 
-    public void setConfigurationPanel(Tab item)
-    {
-        panel.removeChild(this.tab.configurationPanel);
-        this.tab.icon.removeChild(selectionFrame);
-        this.tab = item;
-        item.icon.addChild(selectionFrame, 0f, 0f, 1f, 1f);
-        panel.addChild(item.configurationPanel, marginH + tileWidth + rowTextMarginLeft, 0f, 1f - marginH, marginTop);
-    }
+	@Override
+	public ESecondaryTabType getTabs() {
+		return ESecondaryTabType.GOODS;
+	}
 
-    @Override
-    public ESecondaryTabType getTabs()
-    {
-        return ESecondaryTabType.GOODS;
-    }
-
-    @Override
-    public UIPanel getPanel()
-    {
-        return panel;
-    }
+	@Override
+	public UIPanel getPanel() {
+		return panel;
+	}
 }

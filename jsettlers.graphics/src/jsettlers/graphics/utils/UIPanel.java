@@ -32,16 +32,12 @@ import jsettlers.graphics.map.draw.ImageProvider;
  * @author michael
  */
 public class UIPanel implements UIElement {
-	private final LinkedList<ChildLink> children =
-			new LinkedList<UIPanel.ChildLink>();
+	private final LinkedList<ChildLink> children = new LinkedList<UIPanel.ChildLink>();
 	private FloatRectangle position = new FloatRectangle(0, 0, 1, 1);
 
 	private ImageLink background;
 
 	private boolean attached = false;
-
-	public UIPanel() {
-	}
 
 	/**
 	 * Sets the background. file=-1 means no background
@@ -73,14 +69,13 @@ public class UIPanel implements UIElement {
 		child.onAttach();
 	}
 
-	public void removeChild(UIElement child)
-    {
-        for (ChildLink link : children) {
-            if(link.child == child){
-                children.remove(link);
-            }
-        }
-    }
+	public void removeChild(UIElement child) {
+		for (ChildLink link : children) {
+			if (link.child == child) {
+				children.remove(link);
+			}
+		}
+	}
 
 	/**
 	 * Adds a child to the center of the panel.
@@ -93,8 +88,7 @@ public class UIPanel implements UIElement {
 	 *            The relative height of the child (0..1).
 	 */
 	public void addChildCentered(UIElement child, float width, float height) {
-		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2,
-				0.5f + height / 2);
+		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2, 0.5f + height / 2);
 	}
 
 	@Override
@@ -115,7 +109,7 @@ public class UIPanel implements UIElement {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
 			FloatRectangle position = getPosition();
-			Image image = ImageProvider.getInstance().getImage( link, position.getWidth(), position.getHeight() );
+			Image image = ImageProvider.getInstance().getImage(link, position.getWidth(), position.getHeight());
 			drawAtRect(gl, image, position);
 		}
 	}
@@ -130,8 +124,7 @@ public class UIPanel implements UIElement {
 	 * @param position
 	 *            The position to draw the image at
 	 */
-	protected void drawAtRect(GLDrawContext gl, Image image,
-			FloatRectangle position) {
+	protected void drawAtRect(GLDrawContext gl, Image image, FloatRectangle position) {
 		gl.color(1, 1, 1, 1);
 		float minX = position.getMinX();
 		float minY = position.getMinY();
@@ -152,8 +145,7 @@ public class UIPanel implements UIElement {
 		private final float top;
 		private final float bottom;
 
-		public ChildLink(UIElement child, float left, float bottom,
-				float right, float top) {
+		public ChildLink(UIElement child, float left, float bottom, float right, float top) {
 			this.child = child;
 			this.left = left;
 			this.right = right;
@@ -162,14 +154,12 @@ public class UIPanel implements UIElement {
 		}
 
 		public void drawAt(GLDrawContext gl, float width, float height) {
-			child.setPosition(new FloatRectangle((left * width),
-					(bottom * height), (right * width), (top * height)));
+			child.setPosition(new FloatRectangle((left * width), (bottom * height), (right * width), (top * height)));
 			child.drawAt(gl);
 		}
 
 		public Action getActionRelative(float parentx, float parenty) {
-			if (left <= parentx && parentx <= right && bottom <= parenty
-					&& parenty <= top) {
+			if (left <= parentx && parentx <= right && bottom <= parenty && parenty <= top) {
 				float relativex = (parentx - left) / (right - left);
 				float relativey = (parenty - bottom) / (top - bottom);
 				return child.getAction(relativex, relativey);
@@ -179,8 +169,7 @@ public class UIPanel implements UIElement {
 		}
 
 		public String getDesctiptionRelative(float parentx, float parenty) {
-			if (left <= parentx && parentx <= right && bottom <= parenty
-					&& parenty <= top) {
+			if (left <= parentx && parentx <= right && bottom <= parenty && parenty <= top) {
 				float relativex = (parentx - left) / (right - left);
 				float relativey = (parenty - bottom) / (top - bottom);
 				return child.getDescription(relativex, relativey);
@@ -222,8 +211,7 @@ public class UIPanel implements UIElement {
 	@Override
 	public String getDescription(float relativex, float relativey) {
 		for (ChildLink link : children) {
-			String description =
-					link.getDesctiptionRelative(relativex, relativey);
+			String description = link.getDesctiptionRelative(relativex, relativey);
 			if (description != null) {
 				return description;
 			}

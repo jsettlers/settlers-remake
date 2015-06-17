@@ -23,75 +23,70 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.utils.UIPanel;
 
-public class BarFill extends UIPanel
-{
-    private static final ImageLink barImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 330, 0); //or 336
+public class BarFill extends UIPanel {
 
-    private final UIPanel fill;
-    private final UIPanel frame;
-    private ExecutableAction listener;
-    private float value;
+	private static final ImageLink barImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 330, 0); // or 336
 
-    public BarFill()
-    {
-        fill = new UIPanel(){
-            @Override
-            public void drawAt(GLDrawContext gl) {
-                gl.color(0f, 0.78f, 0.78f, 1f);
-                FloatRectangle position = getPosition();
-                gl.fillQuad(position.getMinX(), position.getMinY(), position.getMaxX(), position.getMaxY());
-            }
-        };
+	private final UIPanel fill;
+	private final UIPanel frame;
+	private ExecutableAction listener;
+	private float value;
 
-        frame = new UIPanel();
-        frame.setBackground(barImageLink);
-        addChild(frame, 0f, 0f, 1f, 1f);
-    }
+	public BarFill() {
+		fill = new UIPanel() {
+			@Override
+			public void drawAt(GLDrawContext gl) {
+				gl.color(0f, 0.78f, 0.78f, 1f);
+				FloatRectangle position = getPosition();
+				gl.fillQuad(position.getMinX(), position.getMinY(), position.getMaxX(), position.getMaxY());
+			}
+		};
 
-    @Override
-    public Action getAction(final float relativex, float relativey)
-    {
-        return new ExecutableAction() {
-            @Override
-            public void execute() {
-                setBarFill(relativex);
-                if (listener != null) {
-                    listener.execute();
-                }
-            }
-        };
-    }
+		frame = new UIPanel();
+		frame.setBackground(barImageLink);
+		addChild(frame, 0f, 0f, 1f, 1f);
+	}
 
-    public void setAction(ExecutableAction action)
-    {
-        this.listener = action;
-    }
+	@Override
+	public Action getAction(final float relativex, float relativey) {
+		return new ExecutableAction() {
+			@Override
+			public void execute() {
+				setBarFill(relativex);
+				if (listener != null) {
+					listener.execute();
+				}
+			}
+		};
+	}
 
-    /**
-     *
-     * @return A value from 0 to 1 indicating the proportion of the bar filled.
-     */
-    public float getValue()
-    {
-       return value;
-    }
+	public void setAction(ExecutableAction action) {
+		this.listener = action;
+	}
 
-    /**
-     *
-     * @param percentage expects a value in the range 0.0 to 1.0. Values outside this range
-     * will be clamped.
-     */
-    public void setBarFill(float percentage)
-    {
-        if (percentage < 0) {
-            percentage = 0;
-        }
-        else if (percentage > 1) {
-            percentage = 1;
-        }
-        value = percentage;
-        removeAll();
-        addChild(fill, 0f, 0f, percentage, 1f);
-        addChild(frame, 0f, 0f, 1f, 1f);
-    }
+	/**
+	 *
+	 * @return A value from 0 to 1 indicating the proportion of the bar filled.
+	 */
+	public float getValue() {
+		return value;
+	}
+
+	/**
+	 *
+	 * @param percentage
+	 *            expects a value in the range 0.0 to 1.0. Values outside this range will be clamped.
+	 */
+	public void setBarFill(float percentage) {
+		if (percentage < 0) {
+			percentage = 0;
+		}
+		else if (percentage > 1) {
+			percentage = 1;
+		}
+		value = percentage;
+		removeAll();
+		addChild(fill, 0f, 0f, percentage, 1f);
+		addChild(frame, 0f, 0f, 1f, 1f);
+	}
 }

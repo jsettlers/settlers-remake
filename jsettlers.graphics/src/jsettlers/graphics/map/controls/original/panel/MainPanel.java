@@ -69,28 +69,29 @@ public class MainPanel extends UIPanel {
 	};
 
 	private final MessageContent quitPrompt =
-		new MessageContent(
-			Labels.getString("game-quit"),
-			Labels.getString("game-quit-cancel"),
-			new ExecutableAction() {
+			new MessageContent(
+					Labels.getString("game-quit"),
+					Labels.getString("game-quit-cancel"),
+					new ExecutableAction() {
+						@Override
+						public void execute() {
+							setContent(EContentType.BUILD_NORMAL);
+							btnSystem.setActive(false);
+						}
+					},
+					Labels.getString("game-quit-ok"),
+					new Action(EActionType.EXIT)
+			) {
 				@Override
-				public void execute() {
-					setContent(EContentType.BUILD_NORMAL);
+				public void contentShowing(ActionFireable actionFireable) {
+					btnSystem.setActive(true);
+				}
+
+				@Override
+				public void contentHiding(ActionFireable actionFireable) {
 					btnSystem.setActive(false);
 				}
-			},
-			Labels.getString("game-quit-ok"),
-			new Action(EActionType.EXIT)
-        ){
-            @Override
-            public void contentShowing(ActionFireable actionFireable) {
-                btnSystem.setActive(true);
-            }
-            @Override
-            public void contentHiding(ActionFireable actionFireable) {
-                btnSystem.setActive(false);
-            }
-	    };
+			};
 
 	private final Button btnSystem = new TabButton(quitPrompt,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
