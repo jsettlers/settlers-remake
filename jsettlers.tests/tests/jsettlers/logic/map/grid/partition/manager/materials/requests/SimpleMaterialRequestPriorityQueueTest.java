@@ -27,9 +27,6 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
-import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialsForBuildingsRequestPrioQueue;
-import jsettlers.logic.map.grid.partition.manager.materials.requests.SimpleMaterialRequestPriorityQueue;
 import jsettlers.network.synchronic.random.RandomSingleton;
 
 import org.junit.Test;
@@ -188,21 +185,21 @@ public class SimpleMaterialRequestPriorityQueueTest {
 
 		private final ShortPoint2D position;
 
-		private int stillNeeded;
+		private short stillNeeded;
 		private int onStack;
 
-		public TestMaterialRequest(ShortPoint2D position, int stillNeeded, int onStack) {
+		public TestMaterialRequest(ShortPoint2D position, short stillNeeded, int onStack) {
 			this.position = position;
 			this.stillNeeded = stillNeeded;
 			this.onStack = onStack;
 		}
 
 		public TestMaterialRequest(int stillNeeded, int onStack) {
-			this(new ShortPoint2D(0, 0), stillNeeded, onStack);
+			this(new ShortPoint2D(0, 0), (short) stillNeeded, onStack);
 		}
 
 		@Override
-		public int getStillNeeded() {
+		public short getStillNeeded() {
 			return stillNeeded;
 		}
 

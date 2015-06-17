@@ -22,8 +22,9 @@ import java.util.Hashtable;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
 import jsettlers.common.buildings.jobs.IBuildingJob;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -57,7 +58,9 @@ public class BuildingFile implements BuildingJobDataProvider {
 	private static final String TAG_STARTJOB = "startjob";
 	private static final String TAG_DOOR = "door";
 	private static final String TAG_BLOCKED = "blocked";
-	private static final String TAG_STACK = "stack";
+	private static final String TAG_CONSTRUCTION_STACK = "constructionStack";
+	private static final String TAG_REQUEST_STACK = "requestStack";
+	private static final String TAG_OFFER_STACK = "offerStack";
 	private static final String TAG_OCCUPYER = "occupyer";
 	private static final String ATTR_JOBNAME = "name";
 	private static final String ATTR_DX = "dx";
@@ -76,15 +79,19 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private final ArrayList<RelativePoint> protectedTiles = new ArrayList<RelativePoint>();
 
-	private final Hashtable<String, JobElementWrapper> jobElements = new Hashtable<String, JobElementWrapper>();
+	private final Hashtable<String, JobElementWrapper> jobElements = new Hashtable<>();
 
 	private String startJobName = "";
 	private RelativePoint door = new RelativePoint(0, 0);
 	private IBuildingJob startJob = null;
 
 	private EMovableType workerType;
-	private ArrayList<RelativeStack> stacks = new ArrayList<RelativeStack>();
-	private ArrayList<RelativeBricklayer> bricklayers = new ArrayList<RelativeBricklayer>();
+
+	private ArrayList<ConstructionStack> constructionStacks = new ArrayList<>();
+	private ArrayList<RelativeStack> requestStacks = new ArrayList<>();
+	private ArrayList<RelativeStack> offerStacks = new ArrayList<>();
+
+	private ArrayList<RelativeBricklayer> bricklayers = new ArrayList<>();
 
 	private int workradius;
 	private RelativePoint workCenter = new RelativePoint(0, 0);
@@ -146,8 +153,12 @@ public class BuildingFile implements BuildingJobDataProvider {
 					blocked.add(point);
 				}
 				protectedTiles.add(point);
-			} else if (TAG_STACK.equals(tagName)) {
-				readRelativeStack(attributes);
+			} else if (TAG_CONSTRUCTION_STACK.equals(tagName)) {
+				readConstructionStack(attributes);
+			} else if (TAG_REQUEST_STACK.equals(tagName)) {
+				readAndAddRelativeStack(attributes, requestStacks);
+			} else if (TAG_OFFER_STACK.equals(tagName)) {
+				readAndAddRelativeStack(attributes, offerStacks);
 			} else if (TAG_BRICKLAYER.equals(tagName)) {
 				readRelativeBricklayer(attributes);
 			} else if (TAG_IMAGE.equals(tagName)) {
@@ -267,15 +278,32 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
-	private void readRelativeStack(Attributes attributes) {
+	private void readAndAddRelativeStack(Attributes attributes, ArrayList<RelativeStack> stacks) {
+		try {
+			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
+			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
+			EMaterialType type = EMaterialType.valueOf(attributes.getValue(ATTR_MATERIAl));
+
+			stacks.add(new RelativeStack(dx, dy, type));
+		} catch (NumberFormatException e) {
+			System.err.println("Warning: illegal number " + "for stack attribute, in definiton for " + buildingName);
+		} catch (IllegalArgumentException e) {
+			System.err.println("Illegal material name in " + buildingName);
+		}
+	}
+
+	private void readConstructionStack(Attributes attributes) {
 		try {
 			int dx = Integer.parseInt(attributes.getValue(ATTR_DX));
 			int dy = Integer.parseInt(attributes.getValue(ATTR_DY));
 			EMaterialType type = EMaterialType.valueOf(attributes.getValue(ATTR_MATERIAl));
 			short requiredForBuild = Short.parseShort(attributes.getValue(ATTR_BUILDREQUIRED));
 
-			stacks.add(new RelativeStack(dx, dy, type, requiredForBuild));
+			if (requiredForBuild <= 0) {
+				throw new NumberFormatException("RequiredForBuild attribute needs to be an integer > 0");
+			}
 
+			constructionStacks.add(new ConstructionStack(dx, dy, type, requiredForBuild));
 		} catch (NumberFormatException e) {
 			System.err.println("Warning: illegal number " + "for stack attribute, in definiton for " + buildingName);
 		} catch (IllegalArgumentException e) {
@@ -348,8 +376,16 @@ public class BuildingFile implements BuildingJobDataProvider {
 		return blocked.toArray(new RelativePoint[blocked.size()]);
 	}
 
-	public RelativeStack[] getStacks() {
-		return stacks.toArray(new RelativeStack[stacks.size()]);
+	public ConstructionStack[] getConstructionRequiredStacks() {
+		return constructionStacks.toArray(new ConstructionStack[constructionStacks.size()]);
+	}
+
+	public RelativeStack[] getRequestStacks() {
+		return requestStacks.toArray(new RelativeStack[requestStacks.size()]);
+	}
+
+	public RelativeStack[] getOfferStacks() {
+		return offerStacks.toArray(new RelativeStack[offerStacks.size()]);
 	}
 
 	public RelativeBricklayer[] getBricklayers() {

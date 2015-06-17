@@ -26,7 +26,7 @@ import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 
-public class PseudoBuilding implements IBuilding {
+public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 	private final EBuildingType type;
 	private final ShortPoint2D pos;
 
@@ -98,6 +98,20 @@ public class PseudoBuilding implements IBuilding {
 	@Override
 	public EPriority[] getSupportedPriorities() {
 		return new EPriority[0];
+	}
+
+	@Override
+	public void setSoundPlayed() {
+	}
+
+	@Override
+	public boolean isSoundPlayed() {
+		return false;
+	}
+
+	@Override
+	public boolean isRotating() {
+		return false;
 	}
 
 }

@@ -16,6 +16,7 @@ package jsettlers.common.buildings;
 
 import java.util.LinkedList;
 
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 
 /**
@@ -35,11 +36,9 @@ public final class MaterialsOfBuildings {
 			buildingsForMaterials[i] = new LinkedList<EBuildingType>();
 		}
 
-		for (EBuildingType building : EBuildingType.values) {
-			for (RelativeStack stack : building.getRequestStacks()) {
-				if (stack.requiredForBuild() == 0) { // if it's not a stack used for constructing the building
-					buildingsForMaterials[stack.getMaterialType().ordinal].add(building);
-				}
+		for (EBuildingType buildingType : EBuildingType.values) {
+			for (RelativeStack requestStack : buildingType.getRequestStacks()) {
+				buildingsForMaterials[requestStack.getMaterialType().ordinal].add(buildingType);
 			}
 		}
 
