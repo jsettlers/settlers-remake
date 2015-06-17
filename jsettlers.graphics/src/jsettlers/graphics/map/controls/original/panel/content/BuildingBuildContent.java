@@ -134,6 +134,10 @@ public class BuildingBuildContent extends AbstractContentProvider {
 
 	@Override
 	public Action catchAction(Action action) {
+		if ((action.getActionType() == EActionType.MOVE_TO || action.getActionType() == EActionType.ABORT) && activeBuilding != null) {
+			action = new ShowConstructionMarksAction(null);
+		}
+
 		if (action.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
 			setActiveBuilding(((ShowConstructionMarksAction) action).getBuildingType());
 		}
