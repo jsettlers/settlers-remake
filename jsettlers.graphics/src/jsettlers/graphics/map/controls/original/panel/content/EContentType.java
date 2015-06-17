@@ -33,10 +33,10 @@ public enum EContentType implements IContentProvider {
 	BUILD_MILITARY(ESecondaryTabType.BUILD, BuildingBuildContent.getMilitary()),
 	BUILD_FOOD(ESecondaryTabType.BUILD, BuildingBuildContent.getFood()),
 
-	STOCK(ESecondaryTabType.GOODS, null/*new InventoryPanel()*/), //TODO implement these game controls and wire into the UI.
-	TOOLS(ESecondaryTabType.GOODS, null/*new ToolsPanel()*/),
-	GOODS_SPREAD(ESecondaryTabType.GOODS, null/*new DistributionPanel()*/),
-    GOODS_TRANSPORT(ESecondaryTabType.GOODS, new MaterialPriorityContent()),
+	STOCK(ESecondaryTabType.GOODS, new InventoryPanel()),
+	TOOLS(ESecondaryTabType.GOODS, new ToolsPanel()),
+	GOODS_SPREAD(ESecondaryTabType.GOODS, new DistributionPanel()),
+	GOODS_TRANSPORT(ESecondaryTabType.GOODS, new MaterialPriorityContent()),
 
 	SETTLERSTATISTIC(ESecondaryTabType.SETTLERS, null),
 	PROFESSION(ESecondaryTabType.SETTLERS, null),
