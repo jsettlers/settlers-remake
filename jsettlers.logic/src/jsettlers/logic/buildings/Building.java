@@ -657,9 +657,11 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 			}
 		}
 
-		for (RelativeStack offerStack : type.getOfferStacks()) {
-			byte stackSize = grid.getRequestStackGrid().getStackSize(offerStack.calculatePoint(pos), offerStack.getMaterialType());
-			materials.add(new BuildingMaterial(offerStack.getMaterialType(), stackSize, true));
+		if (state == STATE_CONSTRUCTED) {
+			for (RelativeStack offerStack : type.getOfferStacks()) {
+				byte stackSize = grid.getRequestStackGrid().getStackSize(offerStack.calculatePoint(pos), offerStack.getMaterialType());
+				materials.add(new BuildingMaterial(offerStack.getMaterialType(), stackSize, true));
+			}
 		}
 
 		return materials;
