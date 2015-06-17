@@ -19,7 +19,7 @@ import go.graphics.UIPoint;
 import java.util.ArrayList;
 
 import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 
 /**
  * This is a map of actions.

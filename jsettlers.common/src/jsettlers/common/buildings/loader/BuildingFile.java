@@ -201,14 +201,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 
 	private void readImageLink(Attributes attributes) {
 		try {
-			ImageLink imageLink;
-			if (attributes.getIndex("name") < 0) {
-				imageLink = getOriginalImageLink(attributes);
-			} else {
-				String name = attributes.getValue("name");
-				int image = Integer.parseInt(attributes.getValue("image"));
-				imageLink = ImageLink.fromName(name, image);
-			}
+			ImageLink imageLink = getImageFromAttributes(attributes);
 			String forState = attributes.getValue("for");
 			if ("GUI".equals(forState)) {
 				guiimage = imageLink;
@@ -224,10 +217,23 @@ public class BuildingFile implements BuildingJobDataProvider {
 		}
 	}
 
+	public static ImageLink getImageFromAttributes(Attributes attributes) {
+		ImageLink imageLink;
+		if (attributes.getIndex("name") < 0) {
+			imageLink = getOriginalImageLink(attributes);
+		} else {
+			String name = attributes.getValue("name");
+			int image = Integer.parseInt(attributes.getValue("image"));
+			imageLink = ImageLink.fromName(name, image);
+		}
+		return imageLink;
+	}
+
 	private static OriginalImageLink getOriginalImageLink(Attributes attributes) {
 		int file = Integer.parseInt(attributes.getValue("file"));
 		int sequence = Integer.parseInt(attributes.getValue("sequence"));
-		int image = Integer.parseInt(attributes.getValue("image"));
+		String imageStr = attributes.getValue("image");
+		int image = imageStr != null ? Integer.parseInt(imageStr) : 0;
 		EImageLinkType type = EImageLinkType.valueOf(attributes.getValue("type"));
 		OriginalImageLink imageLink = new OriginalImageLink(type, file, sequence, image);
 		return imageLink;

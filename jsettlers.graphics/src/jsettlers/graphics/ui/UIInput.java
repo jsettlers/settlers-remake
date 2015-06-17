@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.event.GOEvent;
@@ -21,7 +21,14 @@ import go.graphics.event.GOKeyEvent;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.graphics.action.Action;
+import jsettlers.graphics.utils.FocusAction;
 
+/**
+ * This is single line text input field.
+ * 
+ * @author Michael Zangl
+ *
+ */
 public class UIInput extends UIPanel implements GOEventHandler {
 
 	private StringBuffer inputString = new StringBuffer();

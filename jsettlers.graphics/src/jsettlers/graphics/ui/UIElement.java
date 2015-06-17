@@ -12,31 +12,33 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.startscreen.startlists;
+package jsettlers.graphics.ui;
 
-import java.util.List;
+import go.graphics.GLDrawContext;
+import jsettlers.common.position.FloatRectangle;
+import jsettlers.graphics.action.Action;
 
-import jsettlers.graphics.startscreen.GenericListItem;
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.ui.UIListItem;
+public interface UIElement {
+	void setPosition(FloatRectangle position);
 
-public class LoadableMapListItem extends GenericListItem implements UIListItem {
+	/**
+	 * Draws the element at the given position.
+	 * 
+	 * @param gl
+	 */
+	void drawAt(GLDrawContext gl);
 
-	public LoadableMapListItem(IMapDefinition item) {
-		// TODO: Load time.
-		super(item.getName(), toPlayerString(item.getPlayers()));
-	}
+	Action getAction(float relativex, float relativey);
 
-	private static String toPlayerString(List<ILoadableMapPlayer> players) {
-		StringBuffer buffer = new StringBuffer();
-		for (ILoadableMapPlayer p : players) {
-			if (buffer.length() != 0) {
-				buffer.append(", ");
-			}
-			buffer.append(p.getName());
-		}
-		return buffer.toString();
-	}
+	String getDescription(float relativex, float relativey);
 
+	/**
+	 * Called once to indicate that this element is not attached to the gui and could be visible.
+	 */
+	void onAttach();
+
+	/**
+	 * The opposite of {@link #onAttach()}.
+	 */
+	void onDetach();
 }

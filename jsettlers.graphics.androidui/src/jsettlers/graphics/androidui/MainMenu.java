@@ -19,7 +19,7 @@ import go.graphics.UIPoint;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * This is the main menu on the left side of the screen.

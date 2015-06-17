@@ -33,15 +33,15 @@ import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.map.controls.original.panel.content.BearerSelection;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
 import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent;
 import jsettlers.graphics.map.minimap.Minimap;
 import jsettlers.graphics.map.minimap.MinimapMode;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.UIPanel;
 
 public class OriginalControls implements IControls {
 	private ControlPanelLayoutProperties layoutProperties;

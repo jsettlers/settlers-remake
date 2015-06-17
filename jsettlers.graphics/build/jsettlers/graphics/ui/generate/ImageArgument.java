@@ -12,33 +12,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui.generate;
 
-import go.graphics.GLDrawContext;
-import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.images.ImageLink;
 
-public interface UIElement {
-	void setPosition(FloatRectangle position);
+import org.xml.sax.Attributes;
 
-	/**
-	 * Draws the element at the given position.
-	 * 
-	 * @param gl
-	 */
-	void drawAt(GLDrawContext gl);
+public class ImageArgument extends AbstractArgument {
 
-	Action getAction(float relativex, float relativey);
+	private ImageLink image;
 
-	String getDescription(float relativex, float relativey);
+	public ImageArgument(Attributes attributes) {
+		image = BuildingFile.getImageFromAttributes(attributes);
+	}
 
-	/**
-	 * Called once to indicate that this element is not attached to the gui and could be visible.
-	 */
-	void onAttach();
-
-	/**
-	 * The opposite of {@link #onAttach()}.
-	 */
-	void onDetach();
+	@Override
+	public String getArgumentSource() {
+		// FIXME: Escape string.
+		return "jsettlers.common.images.ImageLink.fromName(\"" + image.getName() + "\", " + image.getImageIndex() + ")";
+	}
 }

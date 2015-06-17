@@ -130,4 +130,14 @@ public final class OriginalImageLink extends ImageLink {
 	public int getLength() {
 		return length;
 	}
+
+	@Override
+	public String getName() {
+		return "original_" + file + "_" + type + "_" + sequence;
+	}
+
+	@Override
+	public int getImageIndex() {
+		return image;
+	}
 }

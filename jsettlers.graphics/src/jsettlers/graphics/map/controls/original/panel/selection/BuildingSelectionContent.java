@@ -12,30 +12,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.map.controls.original.panel.selection;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 
 import java.util.List;
 
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
 import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingState;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.UIPanel;
+import jsettlers.graphics.ui.layout.BuildingSelectionLayout;
 
 public class BuildingSelectionContent extends AbstractContentProvider {
 	private static final OriginalImageLink SOILDER_MISSING = new OriginalImageLink(
@@ -43,107 +49,150 @@ public class BuildingSelectionContent extends AbstractContentProvider {
 	private static final OriginalImageLink SOILDER_COMMING = new OriginalImageLink(
 			EImageLinkType.GUI, 3, 48, 0);
 	private final IBuilding building;
-	private final UIPanel panel;
-
-	private static OriginalImageLink SET_WORK_AREA = new OriginalImageLink(EImageLinkType.GUI,
-			3, 201, 0);
-	private static OriginalImageLink PRIORITY_STOPPED = new OriginalImageLink(EImageLinkType.GUI,
-			3, 192, 0);
-	private static OriginalImageLink PRIORITY_LOW = new OriginalImageLink(EImageLinkType.GUI,
-			3, 195, 0);
-	private static OriginalImageLink PRIORITY_HIGH = new OriginalImageLink(EImageLinkType.GUI,
-			3, 378, 0);
-
-	private static OriginalImageLink DESTROY = new OriginalImageLink(EImageLinkType.GUI, 3,
-			198, 0);
-	private static OriginalImageLink NEXT = new OriginalImageLink(EImageLinkType.GUI, 3,
-			230, 0);
+	private final UIPanel rootPanel = new ContentRefreshingPanel();
 
 	private BuildingState lastState = null;
 
 	public BuildingSelectionContent(ISelectionSet selection) {
 		building = (IBuilding) selection.get(0);
 
-		ImageLink[] images = building.getBuildingType().getImages();
-		panel = new BuidlingBackgroundPanel(images);
-
 		lastState = new BuildingState(building);
 		addPanelContent();
 	}
 
 	private void addPanelContent() {
-		addPriorityButton();
+		rootPanel.removeAll();
+		ImageLink[] images = building.getBuildingType().getImages();
+		BuildingSelectionLayout layout = new BuildingSelectionLayout();
+		layout.background.setImages(images);
 
-		if (building.getBuildingType().getWorkradius() > 0) {
-			Button setWorkcenter =
-					new Button(new Action(EActionType.ASK_SET_WORK_AREA),
-							SET_WORK_AREA, SET_WORK_AREA,
-							Labels.getName(EActionType.SET_WORK_AREA));
-			panel.addChild(setWorkcenter, .4f, .9f, .6f, 1);
+		EPriority[] supported = building.getSupportedPriorities();
+		if (supported.length < 2) {
+			layout.background.removeChild(layout.priority);
+		} else {
+			layout.priority.setPriority(supported, building.getPriority());
 		}
 
-		Button destroy =
-				new Button(new Action(EActionType.ASK_DESTROY), DESTROY,
-						DESTROY, Labels.getName(EActionType.DESTROY));
-		panel.addChild(destroy, .8f, .9f, 1, 1);
-		Button next =
-				new Button(new Action(EActionType.NEXT_OF_TYPE), NEXT,
-						NEXT, Labels.getName(EActionType.NEXT_OF_TYPE));
-		panel.addChild(next, .6f, .9f, .8f, 1);
+		if (building.getBuildingType().getWorkradius() <= 0) {
+			layout.background.removeChild(layout.workRadius);
+		}
 
-		UIPanel namePanel = new UIPanel() {
-			@Override
-			public void drawAt(GLDrawContext gl) {
-				gl.getTextDrawer(EFontSize.HEADLINE).renderCentered(
-						getPosition().getCenterX(), getPosition().getCenterY(),
-						Labels.getName(building.getBuildingType()));
-			}
-		};
-		panel.addChild(namePanel, 0, .8f, 1, .9f);
+		layout.nameText.setType(building.getBuildingType(), building.getStateProgress() < 1);
+
+		addRequestAndOfferStacks(layout.materialArea);
 
 		if (building instanceof IBuilding.IOccupyed) {
 			List<? extends IBuildingOccupyer> occupyers =
 					((IBuilding.IOccupyed) building).getOccupyers();
-			addOccupyerPlaces(occupyers);
+			addOccupyerPlaces(layout.background, occupyers);
+		}
+		rootPanel.addChild(layout._root, 0, 0, 1, 1);
+	}
 
+	private void addRequestAndOfferStacks(UIPanel materialArea) {
+		// hardcoded...
+		float buttonWidth = 18f / (127 - 9);
+		float buttonSpace = 12f / (127 - 9);
+		float requestOfferSpace = 18f / (127 - 9);
+		List<IBuildingMaterial> materials = building.getMaterials();
+
+		float requestX = buttonSpace;
+		float offerX = 1 - buttonSpace - buttonWidth;
+
+		for (IBuildingMaterial mat : materials) {
+			MaterialDisplay display = new MaterialDisplay(mat.getMaterialType(), mat.getMaterialCount(), -1);
+			if (mat.isOffering()) {
+				materialArea.addChild(display, offerX, 0, offerX + buttonWidth, 1);
+				offerX -= buttonSpace + buttonWidth;
+			} else {
+				materialArea.addChild(display, requestX, 0, requestX + buttonWidth, 1);
+				requestX += buttonSpace + buttonWidth;
+			}
 		}
 	}
 
-	private void addPriorityButton() {
-		EPriority[] supported = building.getSupportedPriorities();
-		if (supported.length < 2) {
-			return;
+	public static class MaterialDisplay extends UIPanel {
+		private static final float BUTTON_BOTTOM = 1 - 18f / 29;
+
+		public MaterialDisplay(EMaterialType type, int amount, int required) {
+			String label = required < 0 ? "building-material-count" : "building-material-required";
+			String text = Labels.getString(label, amount, required);
+			// TODO: use Labels.getName(type) ?
+			addChild(new Button(null, type.getIcon(), type.getIcon(), ""), 0, BUTTON_BOTTOM, 1, 1);
+			addChild(new Label(text, EFontSize.NORMAL), 0, 0, 1, BUTTON_BOTTOM);
+		}
+	}
+
+	public static class NamePanel extends Label {
+		public NamePanel() {
+			super("", EFontSize.HEADLINE);
 		}
 
-		EPriority priority = building.getPriority();
-		OriginalImageLink image;
-		switch (priority) {
-		case HIGH:
-			image = PRIORITY_HIGH;
-			break;
-		case LOW:
-			image = PRIORITY_LOW;
-			break;
-		case STOPPED:
-		default:
-			image = PRIORITY_STOPPED;
-			break;
+		public void setType(EBuildingType type, boolean workplace) {
+			String text = Labels.getName(type);
+			if (workplace) {
+				text = Labels.getString("building-build-in-progress", text);
+			}
+			setMessage(text);
+		}
+	}
+
+	/**
+	 * A button to change the priority of the current building.
+	 * 
+	 * @author michael
+	 *
+	 */
+	public static class PriorityButton extends Button {
+		private ImageLink stopped;
+		private ImageLink low;
+		private ImageLink high;
+		private EPriority next = EPriority.DEFAULT;
+		private EPriority current = EPriority.DEFAULT;
+
+		public PriorityButton(ImageLink stopped, ImageLink low, ImageLink high) {
+			super(null, null, null, null);
+			this.stopped = stopped;
+			this.low = low;
+			this.high = high;
 		}
 
-		EPriority next = supported[0];
-		for (int i = 0; i < supported.length; i++) {
-			if (supported[i] == priority) {
-				next = supported[(i + 1) % supported.length];
+		public void setPriority(EPriority[] supported, EPriority current) {
+			this.current = current;
+			next = supported[0];
+			for (int i = 0; i < supported.length; i++) {
+				if (supported[i] == current) {
+					next = supported[(i + 1) % supported.length];
+				}
 			}
 		}
 
-		Button changeWorking = new Button(new SetBuildingPriorityAction(next),
-				image, image,
-				Labels.getString("priority_" + next));
-		panel.addChild(changeWorking, 0, .9f, .2f, 1);
+		@Override
+		protected ImageLink getBackgroundImage() {
+			switch (current) {
+			case HIGH:
+				return high;
+			case LOW:
+				return low;
+			case STOPPED:
+			default:
+				return stopped;
+			}
+		}
+
+		@Override
+		public Action getAction() {
+			return new SetBuildingPriorityAction(next);
+		}
+
+		@Override
+		public String getDescription(float relativex, float relativey) {
+			return Labels.getString("priority_" + next);
+		}
+
 	}
 
-	private void addOccupyerPlaces(List<? extends IBuildingOccupyer> occupyers) {
+	private void addOccupyerPlaces(BuidlingBackgroundPanel panel, List<? extends IBuildingOccupyer> occupyers) {
 		int bottomindex = 0;
 
 		int topindex = 0;
@@ -201,16 +250,15 @@ public class BuildingSelectionContent extends AbstractContentProvider {
 		}
 	}
 
-	private class BuidlingBackgroundPanel extends UIPanel {
-		private final ImageLink[] links;
+	public static class BuidlingBackgroundPanel extends UIPanel {
+		private ImageLink[] links = new ImageLink[0];
 
-		public BuidlingBackgroundPanel(ImageLink[] images) {
-			this.links = images;
+		public void setImages(ImageLink[] links) {
+			this.links = links;
 		}
 
 		@Override
 		public void drawAt(GLDrawContext gl) {
-			refreshContentIfNeeded();
 			super.drawAt(gl);
 		}
 
@@ -226,14 +274,23 @@ public class BuildingSelectionContent extends AbstractContentProvider {
 
 	}
 
+	private class ContentRefreshingPanel extends UIPanel {
+		@Override
+		public void drawAt(GLDrawContext gl) {
+			// replaces our children.
+			refreshContentIfNeeded();
+			super.drawAt(gl);
+		}
+	}
+
 	@Override
 	public UIPanel getPanel() {
-		return panel;
+		return rootPanel;
 	}
 
 	public void refreshContentIfNeeded() {
 		if (!lastState.isStillInState(building)) {
-			panel.removeAll();
+			rootPanel.removeAll();
 			addPanelContent();
 			lastState = new BuildingState(building);
 		}

@@ -25,7 +25,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.settlerimages.SettlerImageMap;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 public class SelectionRow extends UIPanel {
 

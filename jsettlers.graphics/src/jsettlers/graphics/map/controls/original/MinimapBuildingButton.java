@@ -20,7 +20,7 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.map.minimap.MinimapMode;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 
 /**
  * A button that controls the display of the buildings on the minimap.

@@ -18,7 +18,7 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ChangePanelAction;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 
 /**
  * This is a button intended to be used tp change the content of the main panel.

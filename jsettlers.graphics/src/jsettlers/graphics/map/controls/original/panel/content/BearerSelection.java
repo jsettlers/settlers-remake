@@ -20,7 +20,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIPanel;
 
 public class BearerSelection extends AbstractContentProvider {
 	private final UIPanel panel;
@@ -58,11 +59,11 @@ public class BearerSelection extends AbstractContentProvider {
 		UIPanel icon = new UIPanel();
 		icon.setBackground(imageLink);
 
-		UILabeledButton convert1 =
-				new UILabeledButton(Labels.getString("convert_1_to_" + type),
+		LabeledButton convert1 =
+				new LabeledButton(Labels.getString("convert_1_to_" + type),
 						new ConvertAction(type, (short) 1));
-		UILabeledButton convertall =
-				new UILabeledButton(Labels.getString("convert_all_to_" + type),
+		LabeledButton convertall =
+				new LabeledButton(Labels.getString("convert_all_to_" + type),
 						new ConvertAction(type, Short.MAX_VALUE));
 
 		panel.addChild(icon, .1f, bottom, .3f, bottom + .2f);

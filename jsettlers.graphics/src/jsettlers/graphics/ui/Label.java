@@ -12,17 +12,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import jsettlers.graphics.utils.UIPanel;
 
 public class Label extends UIPanel {
 
 	private final EFontSize size;
-	private final String[] words;
+	private String[] words;
 	private double[] widths = null;
 	private double spaceWidth;
 	private double lineHeight;
@@ -30,7 +29,12 @@ public class Label extends UIPanel {
 	public Label(String message, EFontSize size) {
 		this.size = size;
 
+		setMessage(message);
+	}
+
+	public void setMessage(String message) {
 		words = message.split(" ");
+		widths = null;
 	}
 
 	@Override

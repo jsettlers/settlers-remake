@@ -45,7 +45,7 @@ import jsettlers.graphics.androidui.menu.selection.BuildingMenu;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 import android.os.Handler;
 
 /**

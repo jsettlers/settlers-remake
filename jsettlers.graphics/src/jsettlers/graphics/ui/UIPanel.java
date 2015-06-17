@@ -12,10 +12,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import jsettlers.common.images.ImageLink;
@@ -70,7 +71,9 @@ public class UIPanel implements UIElement {
 	public void addChild(UIElement child, float left, float bottom,
 			float right, float top) {
 		this.children.add(new ChildLink(child, left, bottom, right, top));
-		child.onAttach();
+		if (attached) {
+			child.onAttach();
+		}
 	}
 
 	/**
@@ -86,6 +89,19 @@ public class UIPanel implements UIElement {
 	public void addChildCentered(UIElement child, float width, float height) {
 		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2,
 				0.5f + height / 2);
+	}
+
+	public void removeChild(UIElement child) {
+		for (Iterator<ChildLink> iterator = children.iterator(); iterator.hasNext();) {
+			ChildLink l = iterator.next();
+			if (l.child.equals(child)) {
+				if (attached) {
+					l.child.onDetach();
+				}
+				iterator.remove();
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -106,7 +122,7 @@ public class UIPanel implements UIElement {
 		ImageLink link = getBackgroundImage();
 		if (link != null) {
 			FloatRectangle position = getPosition();
-			Image image = ImageProvider.getInstance().getImage( link, position.getWidth(), position.getHeight() );
+			Image image = ImageProvider.getInstance().getImage(link, position.getWidth(), position.getHeight());
 			drawAtRect(gl, image, position);
 		}
 	}

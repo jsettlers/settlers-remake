@@ -12,31 +12,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.startscreen.startlists;
+package jsettlers.graphics.ui.generate;
 
-import java.util.List;
+public class NullArgument extends AbstractArgument {
 
-import jsettlers.graphics.startscreen.GenericListItem;
-import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
-import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.ui.UIListItem;
-
-public class LoadableMapListItem extends GenericListItem implements UIListItem {
-
-	public LoadableMapListItem(IMapDefinition item) {
-		// TODO: Load time.
-		super(item.getName(), toPlayerString(item.getPlayers()));
+	@Override
+	public String getArgumentSource() {
+		return "null";
 	}
-
-	private static String toPlayerString(List<ILoadableMapPlayer> players) {
-		StringBuffer buffer = new StringBuffer();
-		for (ILoadableMapPlayer p : players) {
-			if (buffer.length() != 0) {
-				buffer.append(", ");
-			}
-			buffer.append(p.getName());
-		}
-		return buffer.toString();
-	}
-
 }

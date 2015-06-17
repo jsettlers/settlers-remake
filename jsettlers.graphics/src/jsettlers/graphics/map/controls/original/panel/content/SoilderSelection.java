@@ -19,7 +19,8 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIPanel;
 
 public class SoilderSelection extends AbstractContentProvider {
 
@@ -47,8 +48,8 @@ public class SoilderSelection extends AbstractContentProvider {
 
 		addRowsToPanel(panel, selection, soildertypes);
 
-		UIPanel kill = new UILabeledButton(Labels.getString("kill"), new Action(EActionType.DESTROY));
-		UIPanel stop = new UILabeledButton(Labels.getString("stop"), new Action(EActionType.STOP_WORKING));
+		UIPanel kill = new LabeledButton(Labels.getString("kill"), new Action(EActionType.DESTROY));
+		UIPanel stop = new LabeledButton(Labels.getString("stop"), new Action(EActionType.STOP_WORKING));
 
 		panel.addChild(kill, .1f, .1f, .5f, .2f);
 		panel.addChild(stop, .5f, .1f, .9f, .2f);

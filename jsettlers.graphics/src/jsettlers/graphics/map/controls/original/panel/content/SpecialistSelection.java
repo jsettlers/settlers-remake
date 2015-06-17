@@ -20,7 +20,8 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ConvertAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * Displays a selection of specialists.
@@ -46,10 +47,10 @@ public class SpecialistSelection extends AbstractContentProvider {
 		SoilderSelection.addRowsToPanel(panel, selection, specialists);
 
 		UIPanel stop =
-				new UILabeledButton(Labels.getString("stop"),
+				new LabeledButton(Labels.getString("stop"),
 						new Action(EActionType.STOP_WORKING));
 		UIPanel work =
-				new UILabeledButton(Labels.getString("work"), new Action(
+				new LabeledButton(Labels.getString("work"), new Action(
 						EActionType.START_WORKING));
 
 		panel.addChild(stop, .1f, .1f, .5f, .2f);
@@ -57,7 +58,7 @@ public class SpecialistSelection extends AbstractContentProvider {
 
 		if (selection.getMovableCount(EMovableType.PIONEER) > 0) {
 			UIPanel convert =
-					new UILabeledButton(Labels.getString("convert_all_to_BEARER"),
+					new LabeledButton(Labels.getString("convert_all_to_BEARER"),
 							new ConvertAction(EMovableType.BEARER,
 									Short.MAX_VALUE));
 			panel.addChild(convert, .1f, .2f, .9f, .3f);

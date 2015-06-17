@@ -30,8 +30,8 @@ import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
 import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * This class handles the contents of the main panel.

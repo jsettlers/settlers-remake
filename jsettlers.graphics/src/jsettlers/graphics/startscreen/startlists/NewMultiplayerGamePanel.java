@@ -21,7 +21,7 @@ import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIListItem;
 
 public class NewMultiplayerGamePanel extends
 		StartListPanel<IMapDefinition> {

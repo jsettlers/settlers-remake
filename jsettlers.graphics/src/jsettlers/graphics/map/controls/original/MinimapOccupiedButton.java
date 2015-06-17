@@ -21,7 +21,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.map.minimap.MinimapMode;
 import jsettlers.graphics.map.minimap.MinimapMode.OccupiedAreaMode;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 
 /**
  * A button that selects the display mode of the occupied areas on the minimap.

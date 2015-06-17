@@ -22,7 +22,7 @@ import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIListItem;
 
 public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 

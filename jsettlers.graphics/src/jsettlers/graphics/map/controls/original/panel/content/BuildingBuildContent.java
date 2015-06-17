@@ -24,7 +24,7 @@ import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 public class BuildingBuildContent extends AbstractContentProvider {
 	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
