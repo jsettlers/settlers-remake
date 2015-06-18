@@ -47,6 +47,12 @@
     </target>
     <target name="clean">
         <delete dir="bin"/>
+
+		<delete failonerror="false">
+			<fileset dir="../gen">
+			    <include name="**"/>
+			</fileset>
+		</delete>
     </target>
     <target depends="clean" name="cleanall">
         <ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean"/>
