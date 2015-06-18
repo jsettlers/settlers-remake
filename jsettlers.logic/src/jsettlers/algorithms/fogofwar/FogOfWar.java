@@ -92,10 +92,6 @@ public final class FogOfWar implements Serializable {
 		return (MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayerId() == player));
 	}
 
-	public final boolean isVisible(int centerx, int centery) {
-		return sight[centerx][centery] >= CommonConstants.FOG_OF_WAR_VISIBLE;
-	}
-
 	public final void toggleEnabled() {
 		enabled = !enabled;
 	}

@@ -212,11 +212,6 @@ public class LandmarksThreadTester {
 		}
 
 		@Override
-		public boolean isFogOfWarVisible(int x, int y) {
-			return true;
-		}
-
-		@Override
 		public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 		}
 

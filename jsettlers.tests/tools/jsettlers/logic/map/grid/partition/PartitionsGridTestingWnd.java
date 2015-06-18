@@ -37,8 +37,6 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
-import jsettlers.logic.map.grid.partition.IPartitionsGridBlockingProvider;
-import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
 public class PartitionsGridTestingWnd {
 
@@ -161,11 +159,6 @@ public class PartitionsGridTestingWnd {
 			@Override
 			public int nextDrawableX(int x, int y, int maxX) {
 				return x + 1;
-			}
-
-			@Override
-			public boolean isFogOfWarVisible(int x, int y) {
-				return true;
 			}
 
 			@Override

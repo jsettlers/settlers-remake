@@ -692,11 +692,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isFogOfWarVisible(int x, int y) {
-			return fogOfWar.isVisible(x, y);
-		}
-
-		@Override
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
 		}

@@ -105,11 +105,6 @@ public class BuildingtestMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public boolean isFogOfWarVisible(int x, int y) {
-		return true;
-	}
-
-	@Override
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 		// TODO Auto-generated method stub
 
