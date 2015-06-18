@@ -24,6 +24,11 @@
    action CDATA #REQUIRED
 >
 
+<!ELEMENT material EMPTY>
+<!ATTLIST material
+   material CDATA #REQUIRED
+>
+
 <!ELEMENT null EMPTY>
 
 <!ELEMENT image EMPTY>

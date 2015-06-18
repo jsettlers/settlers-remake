@@ -24,13 +24,6 @@ import java.util.LinkedList;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import jsettlers.graphics.ui.generate.ActionArgument;
-import jsettlers.graphics.ui.generate.ImageArgument;
-import jsettlers.graphics.ui.generate.LayoutPanel;
-import jsettlers.graphics.ui.generate.LayoutSourceGenerator;
-import jsettlers.graphics.ui.generate.LocalizedArgument;
-import jsettlers.graphics.ui.generate.NullArgument;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -64,6 +57,9 @@ public class LayoutLoader {
 				break;
 			case "image":
 				panelStack.getLast().addArgument(new ImageArgument(attributes));
+				break;
+			case "material":
+				panelStack.getLast().addArgument(new MaterialArgument(attributes));
 				break;
 			case "localized":
 				panelStack.getLast().addArgument(new LocalizedArgument(attributes));
