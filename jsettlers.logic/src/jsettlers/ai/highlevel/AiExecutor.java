@@ -42,7 +42,6 @@ public class AiExecutor implements IClockListener {
 	@Override
 	public void notify(int time) {
 		if (nextExecutionTime <= time) {
-			System.out.println("AI Thread: tick");
 			aiStatistics.updateStatistics();
 			for (IWhatToDoAi whatToDoAi : whatToDoAis) {
 				whatToDoAi.applyRules();

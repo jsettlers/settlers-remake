@@ -20,10 +20,10 @@ import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
-import static jsettlers.common.movable.EMovableType.BEARER;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.common.buildings.EBuildingType;
@@ -49,72 +49,103 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
-		buildingMaterialEconomy = new ArrayList<EBuildingType>();
-		buildingMaterialEconomy.add(STONECUTTER);
-		buildingMaterialEconomy.add(STONECUTTER);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(TOWER);
-		buildingMaterialEconomy.add(SAWMILL);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(FORESTER);
-		buildingMaterialEconomy.add(MEDIUM_LIVINGHOUSE);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(SAWMILL);
-		buildingMaterialEconomy.add(FORESTER);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(LUMBERJACK);
-		buildingMaterialEconomy.add(SAWMILL);
-		buildingMaterialEconomy.add(FORESTER);
-		buildingMaterialEconomy.add(FORESTER);
-		buildingMaterialEconomy.add(STONECUTTER);
-		buildingMaterialEconomy.add(STONECUTTER);
-		buildingMaterialEconomy.add(STONECUTTER);
-		buildingMaterialEconomy.add(MEDIUM_LIVINGHOUSE);
-		buildingMaterialEconomy.add(MEDIUM_LIVINGHOUSE);
-		nextBuilding = 0;
 	}
 
 	@Override
 	public void applyRules() {
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
-		int totalNumberOfTowers = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId);
+
+		Map<EBuildingType, Integer> totalNumberOf = new HashMap<EBuildingType, Integer>();
 		int numberOfTowers = aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId);
-		int totalNumberOfMediumLivingHouses = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
-		int numberOfMediumLivingHouses = aiStatistics.getNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId);
-		int numberOfBearer = aiStatistics.getMovablePositionsByTypeForPlayer(BEARER, playerId).size();
+		totalNumberOf.put(STONECUTTER, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId));
+		totalNumberOf.put(LUMBERJACK, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId));
+		totalNumberOf.put(TOWER, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId));
+		totalNumberOf.put(SAWMILL, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId));
+		totalNumberOf.put(FORESTER, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(FORESTER, playerId));
+		totalNumberOf.put(MEDIUM_LIVINGHOUSE, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId));
 
-		boolean iCanBuild = (numberOfBearer < 10 && numberOfNotFinishedBuildings <= 1) ||
-				(numberOfBearer < 15 && numberOfNotFinishedBuildings <= 2) ||
-				(numberOfBearer < 20 && numberOfNotFinishedBuildings <= 3) ||
-				(numberOfBearer < 25 && numberOfNotFinishedBuildings <= 4) ||
-				(numberOfNotFinishedBuildings <= 5);
+		boolean iCanBuild = numberOfNotFinishedBuildings <= 4;
 
-		if (iCanBuild && numberOfBearer < 20 && numberOfMediumLivingHouses == totalNumberOfMediumLivingHouses) {
-			construct(MEDIUM_LIVINGHOUSE);
-			return;
+		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 0) {
+			construct(STONECUTTER);
 		}
-
-		if (iCanBuild && nextBuilding < buildingMaterialEconomy.size()) {
-			construct(buildingMaterialEconomy.get(nextBuilding));
-			nextBuilding++;
-			return;
+		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 1) {
+			construct(STONECUTTER);
 		}
-
-		if (iCanBuild && nextBuilding >= buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
+		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 2 && totalNumberOf.get(LUMBERJACK) < 1) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 1 && totalNumberOf.get(LUMBERJACK) < 2) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) >= 2 && totalNumberOf.get(TOWER) == numberOfTowers) {
 			construct(TOWER);
-			return;
+		}
+		if (iCanBuild && totalNumberOf.get(TOWER) == 1 && totalNumberOf.get(SAWMILL) < 1) {
+			construct(SAWMILL);
+		}
+		if (iCanBuild && totalNumberOf.get(SAWMILL) == 1 && totalNumberOf.get(LUMBERJACK) < 3) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 3 && totalNumberOf.get(FORESTER) < 1) {
+			construct(FORESTER);
+		}
+		if (iCanBuild && totalNumberOf.get(FORESTER) == 1 && totalNumberOf.get(MEDIUM_LIVINGHOUSE) < 1) {
+			construct(MEDIUM_LIVINGHOUSE);
+		}
+		if (iCanBuild && totalNumberOf.get(MEDIUM_LIVINGHOUSE) == 1 && totalNumberOf.get(LUMBERJACK) < 4) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 4 && totalNumberOf.get(LUMBERJACK) < 5) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 5 && totalNumberOf.get(SAWMILL) < 2) {
+			construct(SAWMILL);
+		}
+		if (iCanBuild && totalNumberOf.get(SAWMILL) == 2 && totalNumberOf.get(FORESTER) < 2) {
+			construct(FORESTER);
+		}
+		if (iCanBuild && totalNumberOf.get(FORESTER) == 2 && totalNumberOf.get(LUMBERJACK) < 6) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 6 && totalNumberOf.get(LUMBERJACK) < 7) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 7 && totalNumberOf.get(LUMBERJACK) < 8) {
+			construct(LUMBERJACK);
+		}
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 8 && totalNumberOf.get(SAWMILL) < 3) {
+			construct(SAWMILL);
+		}
+		if (iCanBuild && totalNumberOf.get(SAWMILL) == 3 && totalNumberOf.get(FORESTER) < 3) {
+			construct(FORESTER);
+		}
+		if (iCanBuild && totalNumberOf.get(FORESTER) == 3 && totalNumberOf.get(FORESTER) < 4) {
+			construct(FORESTER);
+		}
+		if (iCanBuild && totalNumberOf.get(FORESTER) == 4 && totalNumberOf.get(STONECUTTER) < 3) {
+			construct(STONECUTTER);
+		}
+		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 3 && totalNumberOf.get(STONECUTTER) < 4) {
+			construct(STONECUTTER);
+		}
+		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 4 && totalNumberOf.get(STONECUTTER) < 5) {
+			construct(STONECUTTER);
+		}
+		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 5 && totalNumberOf.get(MEDIUM_LIVINGHOUSE) < 2) {
+			construct(MEDIUM_LIVINGHOUSE);
+		}
+		if (iCanBuild && totalNumberOf.get(MEDIUM_LIVINGHOUSE) == 2 && totalNumberOf.get(MEDIUM_LIVINGHOUSE) < 3) {
+			construct(MEDIUM_LIVINGHOUSE);
 		}
 	}
 
 	private void construct(EBuildingType type) {
-		ShortPoint2D position = bestConstructionPositionFinderFactory.getBestConstructionPositionFinderFor(type).findBestConstructionPosition(
-				aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
+		ShortPoint2D position = bestConstructionPositionFinderFactory
+				.getBestConstructionPositionFinderFor(type)
+				.findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
 		if (position != null) {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
 		}
 	}
-
 }

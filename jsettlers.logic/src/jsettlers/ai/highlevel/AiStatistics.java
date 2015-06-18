@@ -312,7 +312,7 @@ public class AiStatistics {
 		}
 		totalBuildingsNumbers.get(playerId).put(type, totalBuildingsNumbers.get(playerId).get(type) + 1);
 		if (building.getStateProgress() == 1f) {
-			buildingsNumbers.get(playerId).put(type, totalBuildingsNumbers.get(playerId).get(type) + 1);
+			buildingsNumbers.get(playerId).put(type, buildingsNumbers.get(playerId).get(type) + 1);
 		}
 	}
 
