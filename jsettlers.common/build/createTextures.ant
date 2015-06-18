@@ -26,7 +26,7 @@
          - - - - - - - - - - - - - - - - - -->
     <target name="loadLib">
         <mkdir dir="./build/.buildScripts" />
-        <javac srcdir="./build:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
+        <javac srcdir="./build:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
         <taskdef name="createTextures" classname="jsettlers.common.texturegeneration.TextureCompiler" classpath="./build/.buildScripts/" />
     </target>
 
