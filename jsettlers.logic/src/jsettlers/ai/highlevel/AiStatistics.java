@@ -233,6 +233,15 @@ public class AiStatistics {
 		return numberOfNotOccupiedTowers.get(playerIdInteger);
 	}
 
+	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId) {
+		for (ShortPoint2D buildingPoint : getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId)) {
+			if (point.y > buildingPoint.y && point.y - buildingPoint.y < 17 && Math.abs(point.x - buildingPoint.x) < 17) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void updateMapStatistics() {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
@@ -299,7 +308,7 @@ public class AiStatistics {
 		totalBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		buildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		numberOfNotFinishedBuildings = new HashMap<Integer, Integer>();
-		numberOfTotalBuildings =  new HashMap<Integer, Integer>();
+		numberOfTotalBuildings = new HashMap<Integer, Integer>();
 		numberOfNotOccupiedTowers = new HashMap<Integer, Integer>();
 		buildingPositions = new HashMap<Integer, Map<EBuildingType, List<ShortPoint2D>>>();
 		for (Building building : buildings) {

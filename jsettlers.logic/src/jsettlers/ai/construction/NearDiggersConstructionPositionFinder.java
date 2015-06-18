@@ -38,7 +38,7 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point, playerId)) {
 
 				double lumberJackDistances = 0;
 				for (ShortPoint2D digger : diggers) {
@@ -46,7 +46,7 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 							* (digger.y - point.y));
 					lumberJackDistances += currentLumberJackDistance;
 				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistances));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, lumberJackDistances));
 			}
 		}
 

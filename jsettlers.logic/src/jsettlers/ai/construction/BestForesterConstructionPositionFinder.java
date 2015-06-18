@@ -46,7 +46,7 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point, playerId)) {
 
 				double lumberJackDistance = 0;
 				for (ShortPoint2D lumberJack : lumberJacks) {
