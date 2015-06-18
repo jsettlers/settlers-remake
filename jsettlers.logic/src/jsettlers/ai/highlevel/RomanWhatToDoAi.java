@@ -14,10 +14,12 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.FORESTER;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
+import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
 
@@ -27,6 +29,7 @@ import java.util.Map;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.EGuiAction;
@@ -55,17 +58,39 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	public void applyRules() {
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
 
+		Map<EBuildingType, Integer> numberOf = new HashMap<EBuildingType, Integer>();
+		numberOf.put(SMALL_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(SMALL_LIVINGHOUSE, playerId));
+		numberOf.put(MEDIUM_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId));
+		numberOf.put(BIG_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId));
 		Map<EBuildingType, Integer> totalNumberOf = new HashMap<EBuildingType, Integer>();
-		int numberOfTowers = aiStatistics.getNumberOfBuildingTypeForPlayer(TOWER, playerId);
 		totalNumberOf.put(STONECUTTER, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId));
 		totalNumberOf.put(LUMBERJACK, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId));
 		totalNumberOf.put(TOWER, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOWER, playerId));
 		totalNumberOf.put(SAWMILL, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId));
 		totalNumberOf.put(FORESTER, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(FORESTER, playerId));
+		totalNumberOf.put(SMALL_LIVINGHOUSE, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SMALL_LIVINGHOUSE, playerId));
 		totalNumberOf.put(MEDIUM_LIVINGHOUSE, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId));
+		totalNumberOf.put(BIG_LIVINGHOUSE, aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId));
+		int numberOfNotOccupiedTowers = aiStatistics.getNumberOfNotOccupiedTowers(playerId);
+		int numberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
+		int numberOfTotalBuildings = aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId);
 
 		boolean iCanBuild = numberOfNotFinishedBuildings <= 4;
 
+		int futureNumberOfBearers = numberOfBearers
+				+ totalNumberOf.get(SMALL_LIVINGHOUSE)
+				- numberOf.get(SMALL_LIVINGHOUSE)
+				+ totalNumberOf.get(MEDIUM_LIVINGHOUSE)
+				- numberOf.get(MEDIUM_LIVINGHOUSE)
+				+ totalNumberOf.get(BIG_LIVINGHOUSE)
+				- numberOf.get(BIG_LIVINGHOUSE);
+		if (iCanBuild && (futureNumberOfBearers < 10 || numberOfTotalBuildings > 1.5 * futureNumberOfBearers)) {
+			if (totalNumberOf.get(STONECUTTER) < 4 || totalNumberOf.get(SAWMILL) < 3) {
+				construct(SMALL_LIVINGHOUSE);
+			} else {
+				construct(MEDIUM_LIVINGHOUSE);
+			}
+		}
 		if (iCanBuild && totalNumberOf.get(STONECUTTER) == 0) {
 			construct(STONECUTTER);
 		}
@@ -78,7 +103,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 1 && totalNumberOf.get(LUMBERJACK) < 2) {
 			construct(LUMBERJACK);
 		}
-		if (iCanBuild && totalNumberOf.get(LUMBERJACK) >= 2 && totalNumberOf.get(TOWER) == numberOfTowers) {
+		if (iCanBuild && totalNumberOf.get(LUMBERJACK) >= 2 && numberOfNotOccupiedTowers == 0) {
 			construct(TOWER);
 		}
 		if (iCanBuild && totalNumberOf.get(TOWER) == 1 && totalNumberOf.get(SAWMILL) < 1) {
@@ -90,10 +115,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 3 && totalNumberOf.get(FORESTER) < 1) {
 			construct(FORESTER);
 		}
-		if (iCanBuild && totalNumberOf.get(FORESTER) == 1 && totalNumberOf.get(MEDIUM_LIVINGHOUSE) < 1) {
-			construct(MEDIUM_LIVINGHOUSE);
-		}
-		if (iCanBuild && totalNumberOf.get(MEDIUM_LIVINGHOUSE) == 1 && totalNumberOf.get(LUMBERJACK) < 4) {
+		if (iCanBuild && totalNumberOf.get(FORESTER) == 1 && totalNumberOf.get(LUMBERJACK) < 4) {
 			construct(LUMBERJACK);
 		}
 		if (iCanBuild && totalNumberOf.get(LUMBERJACK) == 4 && totalNumberOf.get(LUMBERJACK) < 5) {

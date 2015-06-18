@@ -43,6 +43,8 @@ public class AiStatistics {
 	private Map<Integer, Map<EBuildingType, Integer>> buildingsNumbers;
 	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movableNumbers;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
+	private Map<Integer, Integer> numberOfTotalBuildings;
+	private Map<Integer, Integer> numberOfNotOccupiedTowers;
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
 	private Map<Integer, List<ShortPoint2D>> land;
@@ -170,6 +172,14 @@ public class AiStatistics {
 		return numberOfNotFinishedBuildings.get(playerIdInteger);
 	}
 
+	public int getNumberOfTotalBuildingsForPlayer(byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!numberOfTotalBuildings.containsKey(playerIdInteger)) {
+			return 0;
+		}
+		return numberOfTotalBuildings.get(playerIdInteger);
+	}
+
 	public List<ShortPoint2D> getBuildingPositionsOfTypeForPlayer(EBuildingType type, byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!buildingPositions.containsKey(playerIdInteger) || !buildingPositions.get(playerIdInteger).containsKey(type)) {
@@ -213,6 +223,14 @@ public class AiStatistics {
 	public void updateStatistics() {
 		updateBuildingStatistics();
 		updateMapStatistics();
+	}
+
+	public int getNumberOfNotOccupiedTowers(short playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (numberOfNotOccupiedTowers.get(playerIdInteger) == null) {
+			return 0;
+		}
+		return numberOfNotOccupiedTowers.get(playerIdInteger);
 	}
 
 	private void updateMapStatistics() {
@@ -281,6 +299,8 @@ public class AiStatistics {
 		totalBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		buildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		numberOfNotFinishedBuildings = new HashMap<Integer, Integer>();
+		numberOfTotalBuildings =  new HashMap<Integer, Integer>();
+		numberOfNotOccupiedTowers = new HashMap<Integer, Integer>();
 		buildingPositions = new HashMap<Integer, Map<EBuildingType, List<ShortPoint2D>>>();
 		for (Building building : buildings) {
 			Integer playerId = new Integer(building.getPlayerId());
@@ -317,11 +337,19 @@ public class AiStatistics {
 	}
 
 	private void updateNumberOfNotFinishedBuildings(Building building, Integer playerId) {
+		if (!numberOfNotFinishedBuildings.containsKey(playerId)) {
+			numberOfNotFinishedBuildings.put(playerId, 0);
+			numberOfNotOccupiedTowers.put(playerId, 0);
+			numberOfTotalBuildings.put(playerId, 0);
+		}
+		numberOfTotalBuildings.put(playerId, numberOfTotalBuildings.get(playerId) + 1);
 		if (building.getStateProgress() < 1f) {
-			if (!numberOfNotFinishedBuildings.containsKey(playerId)) {
-				numberOfNotFinishedBuildings.put(playerId, 0);
-			}
 			numberOfNotFinishedBuildings.put(playerId, numberOfNotFinishedBuildings.get(playerId) + 1);
+			if (building.getBuildingType() == EBuildingType.TOWER) {
+				numberOfNotOccupiedTowers.put(playerId, numberOfNotOccupiedTowers.get(playerId) + 1);
+			}
+		} else if (building.getBuildingType() == EBuildingType.TOWER && !building.isOccupied()) {
+			numberOfNotOccupiedTowers.put(playerId, numberOfNotOccupiedTowers.get(playerId) + 1);
 		}
 	}
 }
