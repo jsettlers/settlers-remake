@@ -91,15 +91,16 @@ public class LayoutLoader {
 	private File dtdDirectory = new File("");
 
 	public LayoutSourceGenerator loadFromXML(String layoutName, File file) throws FileNotFoundException, IOException {
-		return loadFromXML(layoutName, new FileInputStream(file));
+		return new LayoutSourceGenerator(layoutName, loadLayoutFromXML(file));
 	}
 
 	public void setDtdDirectory(File dtdDirectory) {
 		this.dtdDirectory = dtdDirectory;
 	}
 
-	public LayoutSourceGenerator loadFromXML(String name, InputStream is) throws IOException {
+	public LayoutPanel loadLayoutFromXML(File file) throws IOException {
 		try {
+			InputStream is = new FileInputStream(file);
 			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 			saxParserFactory.setValidating(true);
 			saxParserFactory.setNamespaceAware(true);
@@ -120,8 +121,7 @@ public class LayoutLoader {
 			xmlReader.parse(new InputSource(is));
 
 			LayoutPanel root = xmlHandler.getRootPanel();
-			LayoutSourceGenerator lsg = new LayoutSourceGenerator(name, root);
-			return lsg;
+			return root;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IOException(e);

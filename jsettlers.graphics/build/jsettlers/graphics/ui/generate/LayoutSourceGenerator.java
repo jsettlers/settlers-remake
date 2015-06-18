@@ -18,21 +18,26 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-
-import jsettlers.graphics.ui.generate.AbstractArgument;
-import jsettlers.graphics.ui.generate.LayoutPanel;
+import java.util.Hashtable;
+import java.util.Map.Entry;
 
 public class LayoutSourceGenerator {
 
-	private final LayoutPanel root;
+	private final LayoutPanel defaultRoot;
+	private final Hashtable<EGeneratedLayoutSize, LayoutPanel> sizes = new Hashtable<>();
 	private final String name;
 	private String packageName;
 
 	private int idCounter = 1;
 
-	public LayoutSourceGenerator(String name, LayoutPanel root) {
+	public LayoutSourceGenerator(String name, LayoutPanel defaultRoot) {
 		this.name = name;
-		this.root = root;
+		this.defaultRoot = defaultRoot;
+	}
+
+	public void addSize(EGeneratedLayoutSize size, LayoutPanel panel) {
+		this.sizes.put(size, panel);
+		// TODO: We should check if that size has the same ids/types for those ids,
 	}
 
 	public void setPackageName(String packageName) {
@@ -60,14 +65,33 @@ public class LayoutSourceGenerator {
 		}
 		writer.println();
 		writer.println("public class " + name + " {");
-		writer.println(getField("_root", root));
-		writeIdsOfTo(writer, root);
+		writer.println(getField("_root", defaultRoot));
+		writeIdsOfTo(writer, defaultRoot);
 
 		writer.println();
 		writer.println("public " + name + "() {");
-		String rootVar = writeSourceOfTo(writer, root);
-		writer.println("this._root = " + rootVar + ";");
+		writer.println("this(null);");
 		writer.println("}");
+
+		writer.println();
+		writer.println("public " + name + "(jsettlers.graphics.ui.ELayoutSize __size) {");
+
+		for (Entry<EGeneratedLayoutSize, LayoutPanel> s : sizes.entrySet()) {
+			writer.print("if (__size == " + s.getKey().getSymbol() + ")");
+			writeAndAssignRoot(writer, s.getValue());
+			writer.print("else ");
+		}
+
+		writeAndAssignRoot(writer, defaultRoot);
+
+		writer.println("}");
+		writer.println("}");
+	}
+
+	private void writeAndAssignRoot(PrintWriter writer, LayoutPanel panel) {
+		writer.println("{");
+		String rootVar = writeSourceOfTo(writer, panel);
+		writer.println("this._root = " + rootVar + ";");
 		writer.println("}");
 	}
 

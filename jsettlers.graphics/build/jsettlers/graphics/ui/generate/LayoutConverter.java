@@ -17,8 +17,8 @@ package jsettlers.graphics.ui.generate;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class is used in ANT build scripts to convert an XML layout file to a java class.
@@ -46,20 +46,24 @@ public class LayoutConverter {
 	}
 
 	public void execute() throws IOException {
-		String name = layoutName;
-		if (name != null) {
-			convertLayout(name);
-		} else {
-			Pattern filePattern = Pattern.compile("^(.*)\\.xml$");
-			for (File f :  sourceXMLDirectory.listFiles()) {
-				if (!f.isFile() || f.isHidden()) {
-					continue;
-				}
-				Matcher m = filePattern.matcher(f.getName());
-				if (m.matches()) {
-					convertLayout(m.group(1));
+		try {
+			String name = layoutName;
+			if (name != null) {
+				convertLayout(name);
+			} else {
+				Pattern filePattern = Pattern.compile("^(\\w+)\\.xml$");
+				for (File f : sourceXMLDirectory.listFiles()) {
+					if (!f.isFile() || f.isHidden()) {
+						continue;
+					}
+					Matcher m = filePattern.matcher(f.getName());
+					if (m.matches()) {
+						convertLayout(m.group(1));
+					}
 				}
 			}
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 	}
 
@@ -71,6 +75,16 @@ public class LayoutConverter {
 		LayoutLoader loader = new LayoutLoader();
 		loader.setDtdDirectory(sourceXMLDirectory);
 		LayoutSourceGenerator sourceGenerator = loader.loadFromXML(name, xmlFile);
+
+		// size alternatives
+		for (EGeneratedLayoutSize s : EGeneratedLayoutSize.values()) {
+			File sizeXmlFile = new File(sourceXMLDirectory, name + "." + s.toString().toLowerCase() + ".xml");
+			if (sizeXmlFile.isFile()) {
+				sourceGenerator.addSize(s, loader.loadLayoutFromXML(sizeXmlFile));
+			}
+		}
+
+		// now write
 		File genPackage = genDirectory;
 		for (String s : PACKAGE.split("\\.")) {
 			genPackage = new File(genPackage, s);
