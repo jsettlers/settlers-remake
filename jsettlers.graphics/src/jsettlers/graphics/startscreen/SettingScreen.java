@@ -25,10 +25,10 @@ import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.UIInput;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIInput;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIPanel;
 
 public class SettingScreen extends UIPanel {
 
@@ -106,14 +106,14 @@ public class SettingScreen extends UIPanel {
 	}
 
 	private void addButtons() {
-		addChild(new UILabeledButton(Labels.getString("settings-back"),
+		addChild(new LabeledButton(Labels.getString("settings-back"),
 				new ExecutableAction() {
 					@Override
 					public void execute() {
 						connector.goToStartScreen("");
 					}
 				}), 0.38f, (600 - 291) / 600.0f, 0.48f, (600 - 267) / 600.0f);
-		addChild(new UILabeledButton(Labels.getString("settings-ok"),
+		addChild(new LabeledButton(Labels.getString("settings-ok"),
 				new ExecutableAction() {
 					@Override
 					public void execute() {

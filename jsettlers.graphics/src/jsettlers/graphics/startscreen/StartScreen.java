@@ -25,14 +25,14 @@ import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.startlists.JoinableGamePanel;
 import jsettlers.graphics.startscreen.startlists.LoadGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewGamePanel;
 import jsettlers.graphics.startscreen.startlists.NewMultiplayerGamePanel;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIPanel;
 
 public class StartScreen extends UIPanel {
 	public static final ImageLink BACKGROUND = new OriginalImageLink(
@@ -41,8 +41,8 @@ public class StartScreen extends UIPanel {
 	private static final OriginalImageLink SETTINGS = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 0);
 	private static final OriginalImageLink SETTINGS_ACTIVE = new OriginalImageLink(EImageLinkType.SETTLER, 2, 28, 1);
 
-	private final LinkedList<UILabeledButton> mainButtons =
-			new LinkedList<UILabeledButton>();
+	private final LinkedList<LabeledButton> mainButtons =
+			new LinkedList<LabeledButton>();
 	private final UIPanel content;
 
 	private final IStartScreen connector;
@@ -91,13 +91,13 @@ public class StartScreen extends UIPanel {
 	}
 
 	private class MainButton {
-		private final UILabeledButton button;
+		private final LabeledButton button;
 
 		private MainButton(String labelId, final UIPanel panel, float top) {
 			ExecutableAction action = new ExecutableAction() {
 				@Override
 				public void execute() {
-					for (UILabeledButton b : mainButtons) {
+					for (LabeledButton b : mainButtons) {
 						b.setActive(false);
 					}
 					setContent(panel);
@@ -105,17 +105,17 @@ public class StartScreen extends UIPanel {
 				}
 			};
 			button =
-					new UILabeledButton(Labels.getString(labelId), action,
+					new LabeledButton(Labels.getString(labelId), action,
 							EFontSize.HEADLINE);
 		}
 
-		private UILabeledButton getButton() {
+		private LabeledButton getButton() {
 			return button;
 		}
 	}
 
 	private void addMainButton(String labelId, final UIPanel panel, float top) {
-		final UILabeledButton child =
+		final LabeledButton child =
 				new MainButton(labelId, panel, top).getButton();
 		addChild(child, .05f, top - .1f, .45f, top);
 		mainButtons.add(child);

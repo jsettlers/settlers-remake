@@ -25,7 +25,7 @@ import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 
 /**
  * This is a button to construct a building.

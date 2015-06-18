@@ -30,4 +30,8 @@ public abstract class ImageLink {
 			return new DirectImageLink(name + "." + imageIndex);
 		}
 	}
+
+	public abstract String getName();
+
+	public abstract int getImageIndex();
 }

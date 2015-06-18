@@ -76,7 +76,7 @@ public abstract class MaterialRequestObject extends DoubleLinkedListItem<Materia
 	 * @return Returns the number of materials that are still needed by this {@link MaterialRequestObject}.<br>
 	 *         (That means, that materials that are in delivery are not counted here!)
 	 */
-	protected abstract int getStillNeeded();
+	protected abstract short getStillNeeded();
 
 	/**
 	 * Gets the number of deliveries that can currently be done in parallel.

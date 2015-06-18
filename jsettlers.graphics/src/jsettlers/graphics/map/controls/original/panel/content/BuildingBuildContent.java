@@ -24,7 +24,7 @@ import jsettlers.graphics.action.BuildAction;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ShowConstructionMarksAction;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 public class BuildingBuildContent extends AbstractContentProvider {
 	public static final EBuildingType[] normalBuildings = new EBuildingType[] {
@@ -116,6 +116,11 @@ public class BuildingBuildContent extends AbstractContentProvider {
 		return panel;
 	}
 
+	@Override
+	public ESecondaryTabType getTabs() {
+		return ESecondaryTabType.BUILD;
+	}
+
 	public static BuildingBuildContent getNormal() {
 		return new BuildingBuildContent(normalBuildings);
 	}
@@ -134,6 +139,10 @@ public class BuildingBuildContent extends AbstractContentProvider {
 
 	@Override
 	public Action catchAction(Action action) {
+		if ((action.getActionType() == EActionType.MOVE_TO || action.getActionType() == EActionType.ABORT) && activeBuilding != null) {
+			action = new ShowConstructionMarksAction(null);
+		}
+
 		if (action.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
 			setActiveBuilding(((ShowConstructionMarksAction) action).getBuildingType());
 		}
@@ -150,7 +159,7 @@ public class BuildingBuildContent extends AbstractContentProvider {
 	}
 
 	@Override
-	public void contentHiding(ActionFireable actionFireable) {
+	public void contentHiding(ActionFireable actionFireable, IContentProvider nextContent) {
 		if (activeBuilding != null) {
 			actionFireable.fireAction(new ShowConstructionMarksAction(null));
 		}

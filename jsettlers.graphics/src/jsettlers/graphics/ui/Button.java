@@ -12,10 +12,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui;
 
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
 
 /**
@@ -25,39 +24,20 @@ import jsettlers.graphics.action.Action;
  *
  * @author michael
  */
-public class Button extends UIPanel implements UIButton {
-	/**
-	 * How many detail steps there are usually
-	 */
+public class Button extends UIPanel {
 	private boolean active = false;
 	private final Action action;
 	private final String description;
-	private OriginalImageLink image;
-	private final OriginalImageLink activeImage;
+	private ImageLink image;
+	private final ImageLink activeImage;
 
-	public Button(Action action, OriginalImageLink image, OriginalImageLink active,
+	public Button(Action action, ImageLink image, ImageLink active,
 			String description) {
 		this.action = action;
 		this.image = image;
 		activeImage = active;
 		this.description = description;
 	}
-
-	/*
-	 * @Override public void drawAt(GL2 gl) { ImageLink start = active ? activeImage : image; Image image = null; // for (int i = 0; i <
-	 * DETAIL_IMAGES; i++) { image = provider.getImage(start); // if (image.getWidth() >= position.getWidth() // && image.getHeight() >=
-	 * position.getHeight()) { // break; // } // }
-	 *
-	 * image.drawAt(gl, position.getMinX(), position.getMaxY());
-	 *
-	 * gl.glBegin(GL2.GL_LINE_LOOP); gl.glVertex2i(position.getMinX(), position.getMinY()); gl.glVertex2i(position.getMinX(), position.getMaxY());
-	 * gl.glVertex2i(position.getMaxX(), position.getMaxY()); gl.glVertex2i(position.getMaxX(), position.getMinY()); gl.glEnd(); }
-	 */
-
-    public void setImage(OriginalImageLink image)
-    {
-        this.image = image;
-    }
 
 	@Override
 	protected ImageLink getBackgroundImage() {
@@ -72,7 +52,6 @@ public class Button extends UIPanel implements UIButton {
 		this.active = active;
 	}
 
-	@Override
 	public Action getAction() {
 		return action;
 	}

@@ -29,9 +29,9 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.StartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
+import jsettlers.graphics.ui.UIInput;
+import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.utils.FocusAction;
-import jsettlers.graphics.utils.UIInput;
-import jsettlers.graphics.utils.UIPanel;
 
 /**
  * This is the main jsettlers screen manager. It manages the content {@link Region}. TODO: JOGLPanel had the right timers for redraw.

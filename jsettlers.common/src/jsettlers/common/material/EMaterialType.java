@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.common.material;
 
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
+
 /**
  * Enum to define all material types.
  * 
@@ -109,17 +113,11 @@ public enum EMaterialType {
 		return stackIndex;
 	}
 
-	/**
-	 * Gets the gui icon base. That is the index of the small image for this material in the gui file 2.
-	 * 
-	 * @return The index.
-	 */
-	public int getGuiIconBase() {
-		return guiBase;
-	}
-
-	public short getGuiFile() {
-		return guiFile;
+	public ImageLink getIcon() {
+		int image = guiBase;
+		int file = guiFile;
+		return new OriginalImageLink(EImageLinkType.GUI, file, image,
+				0);
 	}
 
 	/**

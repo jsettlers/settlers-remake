@@ -21,4 +21,6 @@ package jsettlers.graphics.map.controls.original.panel.content;
  */
 public interface IContentProvider extends IContentFactory {
 	ESecondaryTabType getTabs();
+
+	boolean isForSelection();
 }

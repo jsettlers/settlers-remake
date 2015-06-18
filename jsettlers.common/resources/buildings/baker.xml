@@ -30,6 +30,7 @@
 	<blocked dx="2" dy="3" block="true" />
 	<blocked dx="3" dy="3" block="true" />
 	<blocked dx="3" dy="1" block="true" />
+
 	<blocked dx="4" dy="1" block="false" />
 	<blocked dx="4" dy="2" block="false" />
 	<blocked dx="4" dy="3" block="false" />
@@ -49,24 +50,28 @@
 	<blocked dx="1" dy="-2" block="false" />
 	<blocked dx="2" dy="-1" block="false" />
 	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="3" dy="4" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="-3" dy="0" block="false" />
 	<blocked dx="2" dy="5" block="false" />
 	<blocked dx="3" dy="5" block="false" />
-	<blocked dx="3" dy="4" block="false" />
 	<blocked dx="4" dy="5" block="false" />
-	<blocked dx="5" dy="5" block="false" />
-	<blocked dx="5" dy="4" block="false" />
-	<blocked dx="3" dy="2" block="false" />
-	<blocked dx="5" dy="3" block="false" />
+
 	<door dx="3" dy="2" />
-	<stack dx="3" dy="5" material="PLANK" buildrequired="4" />
-	<stack dx="5" dy="5" material="STONE" buildrequired="5" />
-	<stack dx="3" dy="4" material="FLOUR" buildrequired="0" />
-	<stack dx="4" dy="2" material="WATER" buildrequired="0" />
+
+	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="4" />
+	<constructionStack dx="5" dy="5" material="STONE" buildrequired="5" />
+	<requestStack dx="3" dy="4" material="FLOUR" />
+	<requestStack dx="4" dy="2" material="WATER" />
+	<offerStack dx="-2" dy="1" material="BREAD" />
+
 	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
 	<bricklayer dx="1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="4" dy="4" direction="NORTH_WEST" />
 	<bricklayer dx="4" dy="2" direction="NORTH_WEST" />
+
 	<flag dx="1" dy="-2" />
+
 	<buildmark dx="3" dy="1" />
 	<buildmark dx="3" dy="3" />
 	<buildmark dx="1" dy="3" />

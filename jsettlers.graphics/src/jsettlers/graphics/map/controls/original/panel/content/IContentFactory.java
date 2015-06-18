@@ -18,7 +18,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 public interface IContentFactory {
 
@@ -30,13 +30,18 @@ public interface IContentFactory {
 
 	/**
 	 * Called whenever this content is displayed.
-	 * @param actionFireable TODO
+	 * 
+	 * @param actionFireable
+	 *            TODO
 	 */
 	void contentShowing(ActionFireable actionFireable);
 
 	/**
 	 * Called whenever this content is hidden.
-	 * @param actionFireable TODO
+	 * 
+	 * @param actionFireable
+	 *            TODO
+	 * @param nextContent
 	 */
-	void contentHiding(ActionFireable actionFireable);
+	void contentHiding(ActionFireable actionFireable, IContentProvider nextContent);
 }

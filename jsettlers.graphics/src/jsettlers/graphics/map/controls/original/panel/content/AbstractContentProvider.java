@@ -19,6 +19,11 @@ public abstract class AbstractContentProvider implements IContentProvider {
 	}
 
 	@Override
+	public boolean isForSelection() {
+		return false;
+	}
+
+	@Override
 	public Action catchAction(Action action) {
 		PointAction overrideAction;
 		if (action.getActionType() == EActionType.SELECT_POINT
@@ -34,7 +39,7 @@ public abstract class AbstractContentProvider implements IContentProvider {
 	}
 
 	@Override
-	public void contentHiding(ActionFireable actionFireable) {
+	public void contentHiding(ActionFireable actionFireable, IContentProvider nextContent) {
 	}
 
 	@Override
