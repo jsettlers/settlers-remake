@@ -22,7 +22,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -295,10 +295,8 @@ public class MobileControls implements IControls, ContextActionListener {
 			case BUILDING:
 				IBuilding building = (IBuilding) selection.get(0);
 				ShortPoint2D pos = building.getPos();
-				IPartitionSettings settings =
-						context.getMap().getPartitionSettings(pos.x, pos.y);
-				setActiveMenu(new BuildingMenu(androidMenuPutable,
-						building, settings));
+				IPartitionData partitionData = context.getMap().getPartitionData(pos.x, pos.y);
+				setActiveMenu(new BuildingMenu(androidMenuPutable, building, partitionData));
 			}
 		}
 		showSelectionButton.setActive(selection != null);

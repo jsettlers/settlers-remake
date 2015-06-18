@@ -751,7 +751,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 	}
 
-	public PartitionManagerSettings getSettingsForManagerAt(int x, int y) {
+	public PartitionManagerSettings getPartitionDataForManagerAt(int x, int y) {
 		return getPartitionAt(x, y).getSettings();
 	}
 

@@ -27,7 +27,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -445,7 +445,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	@Override
-	public IPartitionSettings getPartitionSettings(int x, int y) {
+	public IPartitionData getPartitionData(int x, int y) {
 		return null;
 	}
 }
