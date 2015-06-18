@@ -21,7 +21,7 @@ import java.util.Arrays;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -142,10 +142,10 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 		private void updatePositions() {
 			if (currentGrid != null) {
-				IPartitionSettings settings = currentGrid.getPartitionSettings(currentPos.x, currentPos.y);
-				if (settings != null) {
+				IPartitionData partitionData = currentGrid.getPartitionData(currentPos.x, currentPos.y);
+				if (partitionData != null) {
 					for (int i = 0; i < order.length; i++) {
-						EMaterialType should = settings.getMaterialTypeForPrio(i);
+						EMaterialType should = partitionData.getMaterialTypeForPrio(i);
 						if (order[i] != should) {
 							setToPosition(should, i);
 							order[i] = should;
@@ -221,12 +221,11 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 		currentPos = pos;
 		this.currentGrid = grid;
-		IPartitionSettings data = grid.getPartitionSettings(pos.x, pos.y);
-		if (data != null) {
-			order =
-					new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+		IPartitionData partitionData = grid.getPartitionData(pos.x, pos.y);
+		if (partitionData != null) {
+			order = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 			for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
-				order[i] = data.getMaterialTypeForPrio(i);
+				order[i] = partitionData.getMaterialTypeForPrio(i);
 			}
 			System.out.println("Using map pos: " + pos + " => " + Arrays.deepToString(order));
 		} else {

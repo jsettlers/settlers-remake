@@ -22,7 +22,7 @@ import jsettlers.common.material.EMaterialType;
  * @author Andreas Eberle
  * 
  */
-public interface IPartitionSettings {
+public interface IPartitionData {
 
 	/**
 	 * This method gives access to the material distribution settings of the partition.
@@ -41,4 +41,13 @@ public interface IPartitionSettings {
 	 * @return Returns the {@link EMaterialType} with the given priority.
 	 */
 	EMaterialType getMaterialTypeForPrio(int priorityIdx);
+
+	/**
+	 * Returns the number of materials of the given type, available in the respective partition.
+	 * 
+	 * @param materialType
+	 *            Type of material.
+	 * @return Available amount of that material.
+	 */
+	int getAmountOf(EMaterialType materialType);
 }

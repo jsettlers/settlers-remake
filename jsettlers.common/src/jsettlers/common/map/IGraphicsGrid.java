@@ -15,7 +15,7 @@
 package jsettlers.common.map;
 
 import jsettlers.common.landscape.ELandscapeType;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 
@@ -138,14 +138,14 @@ public interface IGraphicsGrid {
 	int nextDrawableX(int x, int y, int maxX);
 
 	/**
-	 * Gets the current settings of the partition at the given position.
+	 * Gets the current data and settings of the partition at the given position.
 	 * 
 	 * @param x
 	 *            X coordinate of the position.
 	 * @param y
 	 *            Y coordinate of the position.
-	 * @return Returns an object that gives access to the settings of the partition at the given position.<br>
+	 * @return Returns an object that gives access to the data and settings of the partition at the given position.<br>
 	 *         For convenience during testing, the given value might be null.
 	 */
-	IPartitionSettings getPartitionSettings(int x, int y);
+	IPartitionData getPartitionData(int x, int y);
 }

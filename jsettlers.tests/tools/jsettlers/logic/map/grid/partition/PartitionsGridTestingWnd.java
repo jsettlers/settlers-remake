@@ -25,7 +25,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -225,7 +225,7 @@ public class PartitionsGridTestingWnd {
 			}
 
 			@Override
-			public IPartitionSettings getPartitionSettings(int x, int y) {
+			public IPartitionData getPartitionData(int x, int y) {
 				return null;
 			}
 		};

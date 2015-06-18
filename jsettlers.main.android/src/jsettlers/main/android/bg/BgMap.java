@@ -19,7 +19,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
@@ -124,7 +124,7 @@ public class BgMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public IPartitionSettings getPartitionSettings(int x, int y) {
+	public IPartitionData getPartitionData(int x, int y) {
 		return null;
 	}
 
