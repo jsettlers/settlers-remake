@@ -18,46 +18,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.network.client.interfaces.IClockListener;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
-public class AiThread implements Runnable {
+public class AiExecutor implements IClockListener {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	AiStatistics aiStatistics;
 	private boolean shutdownRequested;
+	private int nextExecutionTime;
+	private final int TICK_TIME = 3000;
 
-	public AiThread(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+	public AiExecutor(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		shutdownRequested = false;
 		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
+		nextExecutionTime = 0;
 		for (byte playerId : aiPlayers) {
 			whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
 		}
 	}
 
 	@Override
-	public void run() {
-		System.out.println("AI Thread started");
-		while (!shutdownRequested) {
-			try {
-				aiStatistics.updateStatistics();
-				for (IWhatToDoAi whatToDoAi : whatToDoAis) {
-					whatToDoAi.applyRules();
-				}
-				Thread.sleep(3000l);
-			} catch (InterruptedException e) {
-				// continiue and then return run
+	public void notify(int time) {
+		if (nextExecutionTime <= time) {
+			System.out.println("AI Thread: tick");
+			aiStatistics.updateStatistics();
+			for (IWhatToDoAi whatToDoAi : whatToDoAis) {
+				whatToDoAi.applyRules();
 			}
+			nextExecutionTime = nextExecutionTime + TICK_TIME;
 		}
-		System.out.println("AI Thread finished");
 	}
-
-	public void start() {
-		(new Thread(this)).start();
-	}
-
-	public void shutdown() {
-		shutdownRequested = true;
-	}
-
 }

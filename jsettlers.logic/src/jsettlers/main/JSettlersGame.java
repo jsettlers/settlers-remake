@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import jsettlers.ai.highlevel.AiThread;
+import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
@@ -88,7 +88,7 @@ public class JSettlersGame {
 	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
 			List<Byte> aiPlayers, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
-		
+
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
 				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
 
@@ -115,7 +115,8 @@ public class JSettlersGame {
 	 * @param networkConnector
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers, List<Byte> aiPlayers) {
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
+			List<Byte> aiPlayers) {
 		this(mapCreator, randomSeed, networkConnector, playerId, availablePlayers, aiPlayers, CommonConstants.CONTROL_ALL, true, null);
 	}
 
@@ -137,7 +138,8 @@ public class JSettlersGame {
 
 		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
 		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers(), new ArrayList<Byte>(), true, false, replayFileInputStream);
+				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers(), new ArrayList<Byte>(), true, false,
+				replayFileInputStream);
 	}
 
 	/**
@@ -220,8 +222,8 @@ public class JSettlersGame {
 				gameRunning = true;
 
 				startingGameListener.startFinished();
-				AiThread aiThread = new AiThread(aiPlayers, mainGrid, networkConnector.getTaskScheduler());
-				aiThread.start();
+				AiExecutor aiExecutor = new AiExecutor(aiPlayers, mainGrid, networkConnector.getTaskScheduler());
+				networkConnector.getGameClock().addClockListener(aiExecutor);
 
 				synchronized (stopMutex) {
 					while (!stopped) {
@@ -232,7 +234,6 @@ public class JSettlersGame {
 					}
 				}
 
-				aiThread.shutdown();
 				networkConnector.shutdown();
 				gameClock.stopExecution();
 				connector.shutdown();

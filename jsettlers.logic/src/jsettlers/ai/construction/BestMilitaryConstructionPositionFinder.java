@@ -64,9 +64,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				}
 				ShortPoint2D nearestResourcePoint = aiStatistics.getNearestResourcePointFor(point);
 				double nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
-				System.out.println(point.x + "|" + point.y + " -> " + nearestResourcePoint.x + "|" + nearestResourcePoint.y);
-				System.out.println(militairyBuildingDistance + " - " + nearestResourcePointDistance + " =  "
-						+ (militairyBuildingDistance - nearestResourcePointDistance));
 				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), militairyBuildingDistance
 						- nearestResourcePointDistance));
 			}

@@ -28,6 +28,7 @@ import java.util.TimerTask;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.INetworkClientClock;
+import jsettlers.network.client.interfaces.IClockListener;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
 
@@ -40,6 +41,7 @@ import jsettlers.network.client.task.packets.TaskPacket;
  */
 public final class NetworkTimer extends TimerTask implements INetworkClientClock {
 	public static final short TIME_SLICE = 50;
+	private final List<IClockListener> clockListeners;
 	private Comparator<SyncTasksPacket> tasksByTimeComperator = new Comparator<SyncTasksPacket>() {
 		@Override
 		public int compare(SyncTasksPacket o1, SyncTasksPacket o2) {
@@ -72,6 +74,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	public NetworkTimer() {
 		super();
 		this.timer = new Timer("NetworkTimer");
+		clockListeners = new ArrayList<IClockListener>();
 	}
 
 	public NetworkTimer(boolean disableLockstepWaiting) {
@@ -125,6 +128,10 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 					System.out.println("WAITING for lockstep!");
 					lockstepLock.wait();
 				}
+			}
+
+			for (IClockListener clockListener : clockListeners) {
+				clockListener.notify(time);
 			}
 
 			SyncTasksPacket tasksPacket;
@@ -324,7 +331,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	@Override
-	public int getTime() {
+	public synchronized int getTime() {
 		return time;
 	}
 
@@ -393,6 +400,11 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		int seconds = (time / 1000) % 60;
 		int millis = time % 1000;
 		return String.format("lockstep: %d (game time: %dms / %02d:%02d:%02d:%03d)", lockstep, time, hours, minutes, seconds, millis);
+	}
+
+	@Override
+	public void addClockListener(IClockListener listener) {
+		clockListeners.add(listener);
 	}
 
 }

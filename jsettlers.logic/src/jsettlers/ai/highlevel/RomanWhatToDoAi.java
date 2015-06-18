@@ -103,7 +103,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 			return;
 		}
 
-		if (iCanBuild && nextBuilding == buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
+		if (iCanBuild && nextBuilding >= buildingMaterialEconomy.size() && numberOfTowers == totalNumberOfTowers) {
 			construct(TOWER);
 			return;
 		}
