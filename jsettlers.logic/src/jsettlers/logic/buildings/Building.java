@@ -26,7 +26,8 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EPriority;
@@ -160,30 +161,21 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private List<RequestStack> createConstructionStacks() {
-		RelativeStack[] requestStacks = type.getRequestStacks();
 		List<RequestStack> result = new LinkedList<RequestStack>();
 
-		for (int i = 0; i < requestStacks.length; i++) {
-			RelativeStack currStack = requestStacks[i];
-			if (currStack.requiredForBuild() > 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getMaterialType(), type,
-						priority, currStack.requiredForBuild()));
-			}
+		for (ConstructionStack stack : type.getConstructionStacks()) {
+			result.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority,
+					stack.requiredForBuild()));
 		}
 
 		return result;
 	}
 
 	protected void createWorkStacks() {
-		RelativeStack[] requestStacks = type.getRequestStacks();
 		List<RequestStack> newStacks = new LinkedList<RequestStack>();
 
-		for (int i = 0; i < requestStacks.length; i++) {
-			RelativeStack currStack = requestStacks[i];
-			if (currStack.requiredForBuild() == 0) {
-				newStacks.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getMaterialType(), type,
-						priority));
-			}
+		for (RelativeStack stack : type.getRequestStacks()) {
+			newStacks.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority));
 		}
 
 		this.stacks = newStacks;
@@ -262,7 +254,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void requestBricklayers() {
 		RelativeBricklayer[] bricklayers = type.getBricklayers();
 		for (RelativeBricklayer curr : bricklayers) {
-			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
+			grid.requestBricklayer(this, curr.calculatePoint(pos), curr.getDirection());
 		}
 	}
 
@@ -472,22 +464,20 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		FreeMapArea buildingArea = new FreeMapArea(this.pos, type.getBlockedTiles());
 
 		if (isConstructionFinished()) {
-			for (RelativeStack curr : type.getRequestStacks()) {
-				if (curr.requiredForBuild() > 0) {
-					ShortPoint2D position = buildingArea.get(posIdx);
-					posIdx += 2;
-					byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
-							Constants.STACK_SIZE);
-					grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
-				}
+			for (ConstructionStack curr : type.getConstructionStacks()) {
+				ShortPoint2D position = buildingArea.get(posIdx);
+				posIdx += 2;
+				byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
+						Constants.STACK_SIZE);
+				grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
 			}
 		} else {
 			for (RequestStack stack : stacks) {
 				posIdx += 2;
-				int paybackAmpunt = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
-				if (paybackAmpunt > 0) {
+				int paybackAmount = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
+				if (paybackAmount > 0) {
 					ShortPoint2D position = buildingArea.get(posIdx);
-					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(paybackAmpunt, Constants.STACK_SIZE));
+					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(paybackAmount, Constants.STACK_SIZE));
 				}
 			}
 		}
@@ -658,8 +648,22 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public List<IBuildingMaterial> getMaterials() {
 		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
-		materials.addAll(stacks);
-		// TODO @Andreas: Add a list of offering stacks to this building.
+
+		for (RequestStack stack : stacks) {
+			if (state == STATE_CONSTRUCTED) {
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
+			} else { // during construction
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillNeeded()));
+			}
+		}
+
+		if (state == STATE_CONSTRUCTED) {
+			for (RelativeStack offerStack : type.getOfferStacks()) {
+				byte stackSize = grid.getRequestStackGrid().getStackSize(offerStack.calculatePoint(pos), offerStack.getMaterialType());
+				materials.add(new BuildingMaterial(offerStack.getMaterialType(), stackSize, true));
+			}
+		}
+
 		return materials;
 	}
 

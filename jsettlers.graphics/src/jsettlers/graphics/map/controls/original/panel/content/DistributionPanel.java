@@ -19,9 +19,10 @@ import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.Label.HorizontalAlignment;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.Label.HorizontalAlignment;
+import jsettlers.graphics.ui.UIPanel;
 
 public class DistributionPanel extends AbstractContentProvider {
 	private static class ConfigurationPanelRow extends UIPanel {
@@ -199,12 +200,12 @@ public class DistributionPanel extends AbstractContentProvider {
 					marginH + tileWidth,
 					top
 					);
-			icon.setAction(new ExecutableAction() {
-				@Override
-				public void execute() {
-					setConfigurationPanel(item);
-				}
-			});
+			// icon.setAction(new ExecutableAction() {
+			// @Override
+			// public void execute() {
+			// setConfigurationPanel(item);
+			// }
+			// });
 			tabIdx++;
 		}
 		tab = tabs[0];

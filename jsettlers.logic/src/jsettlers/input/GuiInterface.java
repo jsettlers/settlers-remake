@@ -191,6 +191,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			selectArea((SelectAreaAction) action);
 			break;
 
+		case DESELECT:
+			deselect();
+			break;
+
 		case SELECT_POINT_TYPE:
 			selectPointType((PointAction) action);
 			break;
@@ -451,6 +455,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private boolean canSelectPlayer(byte playerIdOfSelected) {
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
+	}
+
+	private void deselect() {
+		setSelection(new SelectionSet());
 	}
 
 	private void handleSelectPointAction(PointAction action) {

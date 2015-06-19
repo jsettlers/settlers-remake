@@ -22,7 +22,6 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
 import jsettlers.graphics.startscreen.GenericListItem;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.interfaces.IJoinPhaseMultiplayerGameConnector;
@@ -30,10 +29,11 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
-import jsettlers.graphics.utils.UIList;
-import jsettlers.graphics.utils.UIList.ListItemGenerator;
-import jsettlers.graphics.utils.UIListItem;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIList;
+import jsettlers.graphics.ui.UIList.ListItemGenerator;
+import jsettlers.graphics.ui.UIListItem;
+import jsettlers.graphics.ui.UIPanel;
 
 public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 		IChangingListListener<IMultiplayerPlayer> {
@@ -105,15 +105,15 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 	}
 
 	private void addStartButton() {
-		UILabeledButton startButton =
-				new UILabeledButton(Labels.getString("start-joining-start"),
+		LabeledButton startButton =
+				new LabeledButton(Labels.getString("start-joining-start"),
 						new StartGameAction());
 		this.addChild(startButton, .78f, 1 - .895f, .96f, 1 - .816f);
 	}
 
 	private void addReadyButton() {
-		UILabeledButton startButton =
-				new UILabeledButton(Labels.getString("start-joining-ready"),
+		LabeledButton startButton =
+				new LabeledButton(Labels.getString("start-joining-ready"),
 						new ToggleReadyAction()) {
 					@Override
 					protected ImageLink getBackgroundImage() {

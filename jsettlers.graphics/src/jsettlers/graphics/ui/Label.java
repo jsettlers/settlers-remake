@@ -12,12 +12,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
-import jsettlers.graphics.utils.UIPanel;
 
 public class Label extends UIPanel {
 	public enum HorizontalAlignment {
@@ -31,6 +30,7 @@ public class Label extends UIPanel {
 	private double[] widths = null;
 	private double spaceWidth;
 	private double lineHeight;
+	private double lineBottom;
 	private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTRE;
 
 	public Label(String message, EFontSize size) {
@@ -47,11 +47,14 @@ public class Label extends UIPanel {
 		this.horizontalAlignment = horizontalAlignment;
 	}
 
+	public void setMessage(String message) {
+		words = message.split(" ");
+		widths = null;
+	}
+
 	@Override
 	public void drawAt(GLDrawContext gl) {
 		super.drawAt(gl);
-
-		String[] words = this.words; // local copy to avoid concurrant modification.
 
 		TextDrawer drawer = gl.getTextDrawer(size);
 
@@ -62,6 +65,7 @@ public class Label extends UIPanel {
 			}
 			spaceWidth = drawer.getWidth(" ");
 			lineHeight = drawer.getHeight("j");
+			lineBottom = drawer.getHeight("A");
 		}
 
 		double maxwidth = getPosition().getWidth();
@@ -72,7 +76,7 @@ public class Label extends UIPanel {
 		for (int i = 1; i < words.length; i++) {
 			double newlinewidth = linewidth + spaceWidth + widths[i];
 			if (newlinewidth > maxwidth) {
-				drawLine(drawer, line.toString(), y);
+				drawLine(drawer, line.toString(), y, linewidth);
 				line = new StringBuilder(words[i]);
 				y += lineHeight;
 				linewidth = widths[i];
@@ -82,25 +86,25 @@ public class Label extends UIPanel {
 				linewidth = newlinewidth;
 			}
 		}
-		drawLine(drawer, line.toString(), y);
+		drawLine(drawer, line.toString(), y, linewidth);
 
 	}
 
-	private void drawLine(TextDrawer drawer, String string, double y) {
+	private void drawLine(TextDrawer drawer, String string, double y, double linewidth) {
 		float left;
 		switch (horizontalAlignment) {
 		case LEFT:
 			left = getPosition().getMinX();
 			break;
 		case RIGHT:
-			left = getPosition().getMaxX() - (float) drawer.getWidth(string);
+			left = (float) (getPosition().getMaxX() - linewidth);
 			break;
 		default:
 		case CENTRE:
-			left = getPosition().getCenterX() - (float) (drawer.getWidth(string) / 2);
+			left = (float) (getPosition().getCenterX() - linewidth / 2);
 			break;
 		}
-		float bottom = getPosition().getMaxY() - (float) y - (float) drawer.getHeight("A");
+		float bottom = (float) (getPosition().getMaxY() - y - lineBottom);
 		drawer.drawString(left, bottom, string);
 	}
 }

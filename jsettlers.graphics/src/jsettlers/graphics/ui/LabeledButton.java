@@ -12,7 +12,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
@@ -20,14 +20,13 @@ import go.graphics.text.TextDrawer;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.utils.Button;
 
 /**
  * This is a special button that has a label on it.
  * 
  * @author Michael Zangl
  */
-public class UILabeledButton extends Button {
+public class LabeledButton extends Button {
 	private final String text;
 	private final Action action;
 
@@ -39,14 +38,14 @@ public class UILabeledButton extends Button {
 	private final EFontSize size;
 	private boolean enabled = true;
 
-	public UILabeledButton(String text, Action action, EFontSize size) {
+	public LabeledButton(String text, Action action, EFontSize size) {
 		super(action, BUTTON, BUTTON_ACTIVE, null);
 		this.size = size;
 		this.text = text;
 		this.action = action;
 	}
 
-	public UILabeledButton(String text, Action action) {
+	public LabeledButton(String text, Action action) {
 		this(text, action, EFontSize.NORMAL);
 	}
 

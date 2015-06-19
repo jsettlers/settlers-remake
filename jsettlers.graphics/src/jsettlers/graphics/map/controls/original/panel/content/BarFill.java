@@ -21,7 +21,7 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 public class BarFill extends UIPanel {
 

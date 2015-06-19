@@ -12,8 +12,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui.generate;
 
-public interface UIListItem extends UIElement {
-	void setHighlighted(boolean highlight);
+import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.images.ImageLink;
+
+import org.xml.sax.Attributes;
+
+public class ImageArgument extends AbstractArgument {
+
+	private ImageLink image;
+
+	public ImageArgument(Attributes attributes) {
+		image = BuildingFile.getImageFromAttributes(attributes);
+	}
+
+	@Override
+	public String getArgumentSource() {
+		// FIXME: Escape string.
+		return "jsettlers.common.images.ImageLink.fromName(\"" + image.getName() + "\", " + image.getImageIndex() + ")";
+	}
 }

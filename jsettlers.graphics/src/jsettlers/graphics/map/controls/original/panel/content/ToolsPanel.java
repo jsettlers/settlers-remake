@@ -21,8 +21,9 @@ import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.UIPanel;
 
 public class ToolsPanel extends AbstractContentProvider {
 	private static class Row extends UIPanel {
@@ -86,17 +87,17 @@ public class ToolsPanel extends AbstractContentProvider {
 	}
 
 	private final Row[] rows = {
-			new Row(EMaterialType.HAMMER.getImageLink()),
-			new Row(EMaterialType.BLADE.getImageLink()),
-			new Row(EMaterialType.PICK.getImageLink()),
-			new Row(EMaterialType.AXE.getImageLink()),
-			new Row(EMaterialType.SAW.getImageLink()),
-			new Row(EMaterialType.SCYTHE.getImageLink()),
-			new Row(EMaterialType.FISHINGROD.getImageLink()),
+			new Row(EMaterialType.HAMMER.getIcon()),
+			new Row(EMaterialType.BLADE.getIcon()),
+			new Row(EMaterialType.PICK.getIcon()),
+			new Row(EMaterialType.AXE.getIcon()),
+			new Row(EMaterialType.SAW.getIcon()),
+			new Row(EMaterialType.SCYTHE.getIcon()),
+			new Row(EMaterialType.FISHINGROD.getIcon()),
 
-			new Row(EMaterialType.SWORD.getImageLink()),
-			new Row(EMaterialType.BOW.getImageLink()),
-			new Row(EMaterialType.SPEAR.getImageLink()),
+			new Row(EMaterialType.SWORD.getIcon()),
+			new Row(EMaterialType.BOW.getIcon()),
+			new Row(EMaterialType.SPEAR.getIcon()),
 	};
 
 	private static final float contentHeight_px = 216;

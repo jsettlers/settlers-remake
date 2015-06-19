@@ -12,13 +12,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.ui.generate;
 
-/**
- * Classes of this type provide content for the main panel.
- * 
- * @author michael
- */
-public interface IContentProvider extends IContentFactory {
-	ESecondaryTabType getTabs();
+import org.xml.sax.Attributes;
+
+public class ActionArgument extends AbstractArgument {
+
+	private String type;
+
+	public ActionArgument(Attributes attributes) {
+		type = attributes.getValue("action");
+	}
+
+	@Override
+	public String getArgumentSource() {
+		return "jsettlers.graphics.action.EActionType." + type;
+	}
+
 }

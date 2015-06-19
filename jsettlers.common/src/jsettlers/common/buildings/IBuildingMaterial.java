@@ -30,7 +30,7 @@ public interface IBuildingMaterial {
 	public EMaterialType getMaterialType();
 
 	/**
-	 * Gets the amount of material this building has.
+	 * Gets the amount of material this building has or needs (in case this is a construction stack).
 	 * 
 	 * @return The number of material items on that given stack.
 	 */

@@ -14,7 +14,8 @@
  *******************************************************************************/
 package jsettlers.buildingcreator.editor;
 
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.mapobject.IStackMapObject;
@@ -51,7 +52,7 @@ public class MapStack implements IStackMapObject {
 
 	@Override
 	public byte getSize() {
-		return (byte) (stack.requiredForBuild() == 0 ? 8 : 3);
+		return (byte) (stack instanceof ConstructionStack ? 3 : 8);
 	}
 
 }

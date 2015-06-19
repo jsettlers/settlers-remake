@@ -20,7 +20,7 @@ import go.graphics.text.TextDrawer;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.progress.EProgressState;
 import jsettlers.graphics.startscreen.StartScreen;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * This content displays progress information for wait screens.

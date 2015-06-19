@@ -22,10 +22,10 @@ import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
-import jsettlers.graphics.utils.UIList;
-import jsettlers.graphics.utils.UIList.ListItemGenerator;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIList;
+import jsettlers.graphics.ui.UIList.ListItemGenerator;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * A side panel of the start screen. TODO: Do not reload the list each time it changes, and only use it if we are in foreground.
@@ -39,7 +39,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	private static final ImageLink LIST_BACKGROUND = null;
 	private final ChangingList<T> list;
 	private final UIList<T> uiList;
-	private final UILabeledButton startbutton;
+	private final LabeledButton startbutton;
 
 	public StartListPanel(ChangingList<T> list) {
 		this.list = list;
@@ -50,7 +50,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 		this.addChild(listBg, 0, .15f, 1, 1);
 
 		startbutton =
-				new UILabeledButton(
+				new LabeledButton(
 						Labels.getString(getSubmitTextId()),
 						new ExecutableAction() {
 							public void execute() {

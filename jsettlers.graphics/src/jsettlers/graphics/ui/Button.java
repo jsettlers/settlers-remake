@@ -12,10 +12,9 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui;
 
 import jsettlers.common.images.ImageLink;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.graphics.action.Action;
 
 /**
@@ -25,31 +24,22 @@ import jsettlers.graphics.action.Action;
  *
  * @author michael
  */
-public class Button extends UIPanel implements UIButton {
-	/**
-	 * How many detail steps there are usually
-	 */
+public class Button extends UIPanel {
 	private boolean active = false;
 	private Action action;
 	private final String description;
-	private OriginalImageLink image;
-	private final OriginalImageLink activeImage;
+	private ImageLink image;
+	private final ImageLink activeImage;
 
-	public Button(OriginalImageLink image) {
-		this.image = image;
-		activeImage = image;
-		description = "";
+	public Button(ImageLink image) {
+		this(null, image, image, "");
 	}
 
-	public Button(Action action, OriginalImageLink image, OriginalImageLink active, String description) {
+	public Button(Action action, ImageLink image, ImageLink active, String description) {
 		this.action = action;
 		this.image = image;
 		activeImage = active;
 		this.description = description;
-	}
-
-	public void setImage(OriginalImageLink image) {
-		this.image = image;
 	}
 
 	@Override
@@ -65,11 +55,6 @@ public class Button extends UIPanel implements UIButton {
 		this.active = active;
 	}
 
-	public void setAction(Action action) {
-		this.action = action;
-	}
-
-	@Override
 	public Action getAction() {
 		return action;
 	}

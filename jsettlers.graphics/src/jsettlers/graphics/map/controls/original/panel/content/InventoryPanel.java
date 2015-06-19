@@ -15,58 +15,82 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
-import jsettlers.common.images.ImageLink;
+import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.UIElement;
+import jsettlers.graphics.ui.UIPanel;
+import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
 
 public class InventoryPanel extends AbstractContentProvider {
+	public static class InventoryCount extends Label {
 
-	private static class InventoryItem extends UIPanel {
-		private static final float quantityTextTop = (fontSize + tileSpacingV) / (iconSize_px + fontSize + tileSpacingV);
-		private UIPanel goodsIcon;
-		private Label lblQuantity;
+		private final EMaterialType material;
 
-		private InventoryItem(ImageLink imageLink) {
-			goodsIcon = new UIPanel();
-			goodsIcon.setBackground(imageLink);
-			addChild(goodsIcon, 0f, quantityTextTop, 1f, 1f);
+		public InventoryCount(EMaterialType material) {
+			super("", EFontSize.NORMAL);
+			this.material = material;
+		}
 
-			lblQuantity = new Label(Labels.getString("0"), EFontSize.SMALL);
-			addChild(lblQuantity, 0f, 0f, 1f, quantityTextTop);
+		@Override
+		public String getDescription(float relativex, float relativey) {
+			return "";// Labels.getName(material); TODO
+		}
+
+		public void loadFromData(IPartitionData data) {
+			setText(data.getAmountOf(material) + "");
 		}
 	}
 
-	private final InventoryItem[] inventoryItems = {
-			new InventoryItem(EMaterialType.PLANK.getImageLink()),
-			new InventoryItem(EMaterialType.STONE.getImageLink()),
-			new InventoryItem(EMaterialType.TRUNK.getImageLink()),
-			new InventoryItem(EMaterialType.COAL.getImageLink()),
-			new InventoryItem(EMaterialType.IRONORE.getImageLink()),
-			new InventoryItem(EMaterialType.GOLDORE.getImageLink()),
-			new InventoryItem(EMaterialType.IRON.getImageLink()),
-			new InventoryItem(EMaterialType.HAMMER.getImageLink()),
-			new InventoryItem(EMaterialType.BLADE.getImageLink()),
-			new InventoryItem(EMaterialType.AXE.getImageLink()),
-			new InventoryItem(EMaterialType.SAW.getImageLink()),
-			new InventoryItem(EMaterialType.PICK.getImageLink()),
-			new InventoryItem(EMaterialType.FISHINGROD.getImageLink()),
-			new InventoryItem(EMaterialType.SCYTHE.getImageLink()),
-			new InventoryItem(EMaterialType.SWORD.getImageLink()),
-			new InventoryItem(EMaterialType.BOW.getImageLink()),
-			new InventoryItem(EMaterialType.SPEAR.getImageLink()),
-			new InventoryItem(EMaterialType.MEAD.getImageLink()),
-			new InventoryItem(EMaterialType.FISH.getImageLink()),
-			new InventoryItem(EMaterialType.PIG.getImageLink()),
-			new InventoryItem(EMaterialType.MEAT.getImageLink()),
-			new InventoryItem(EMaterialType.CROP.getImageLink()),
-			new InventoryItem(EMaterialType.FLOUR.getImageLink()),
-			new InventoryItem(EMaterialType.BREAD.getImageLink()),
-			new InventoryItem(EMaterialType.WATER.getImageLink()),
-			new InventoryItem(EMaterialType.WINE.getImageLink()),
-			new InventoryItem(EMaterialType.HONEY.getImageLink()),
-			new InventoryItem(EMaterialType.GOLD.getImageLink()),
-	};
+	public static class MaterialButton extends Button {
+
+		private final EMaterialType material;
+
+		public MaterialButton(EMaterialType material) {
+			super(material.getIcon());
+			this.material = material;
+		}
+
+		@Override
+		public String getDescription(float relativex, float relativey) {
+			return "";// Labels.getName(material); TODO
+		}
+
+	}
+
+	// private final InventoryItem[] inventoryItems = {
+	// new InventoryItem(EMaterialType.PLANK.getImageLink()),
+	// new InventoryItem(EMaterialType.STONE.getImageLink()),
+	// new InventoryItem(EMaterialType.TRUNK.getImageLink()),
+	// new InventoryItem(EMaterialType.COAL.getImageLink()),
+	// new InventoryItem(EMaterialType.IRONORE.getImageLink()),
+	// new InventoryItem(EMaterialType.GOLDORE.getImageLink()),
+	// new InventoryItem(EMaterialType.IRON.getImageLink()),
+	// new InventoryItem(EMaterialType.HAMMER.getImageLink()),
+	// new InventoryItem(EMaterialType.BLADE.getImageLink()),
+	// new InventoryItem(EMaterialType.AXE.getImageLink()),
+	// new InventoryItem(EMaterialType.SAW.getImageLink()),
+	// new InventoryItem(EMaterialType.PICK.getImageLink()),
+	// new InventoryItem(EMaterialType.FISHINGROD.getImageLink()),
+	// new InventoryItem(EMaterialType.SCYTHE.getImageLink()),
+	// new InventoryItem(EMaterialType.SWORD.getImageLink()),
+	// new InventoryItem(EMaterialType.BOW.getImageLink()),
+	// new InventoryItem(EMaterialType.SPEAR.getImageLink()),
+	// new InventoryItem(EMaterialType.MEAD.getImageLink()),
+	// new InventoryItem(EMaterialType.FISH.getImageLink()),
+	// new InventoryItem(EMaterialType.PIG.getImageLink()),
+	// new InventoryItem(EMaterialType.MEAT.getImageLink()),
+	// new InventoryItem(EMaterialType.CROP.getImageLink()),
+	// new InventoryItem(EMaterialType.FLOUR.getImageLink()),
+	// new InventoryItem(EMaterialType.BREAD.getImageLink()),
+	// new InventoryItem(EMaterialType.WATER.getImageLink()),
+	// new InventoryItem(EMaterialType.WINE.getImageLink()),
+	// new InventoryItem(EMaterialType.HONEY.getImageLink()),
+	// new InventoryItem(EMaterialType.GOLD.getImageLink()),
+	// };
 
 	private static final float contentHeight_px = 216; // 360
 	private static final float contentWidth_px = 118; // 197
@@ -89,24 +113,39 @@ public class InventoryPanel extends AbstractContentProvider {
 	private UIPanel panel;
 
 	public InventoryPanel() {
-		panel = new UIPanel();
 
-		panel.addChild(new Label(Labels.getString("controlpanel_title_inventory"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f, titleTop);
+		panel = new MaterialInventoryLayout()._root;
+		// panel = new UIPanel();
+		//
+		// panel.addChild(new Label(Labels.getString("controlpanel_title_inventory"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f,
+		// titleTop);
+		//
+		// int itemIdx = 0;
+		// float top = marginTop;
+		// for (int r = 0; r < ROWS && itemIdx < inventoryItems.length; r++, top -= tileHeight) {
+		// float left = marginLeft;
+		// for (int c = 0; c < COLUMNS; c++, left += tileWidth) {
+		//
+		// if (r == 4 && 1 < c && c < 5) {
+		// continue; // Position is kept blank.
+		// }
+		//
+		// panel.addChild(inventoryItems[itemIdx], left, top - tileHeight, left + tileWidth, top);
+		// if (++itemIdx == inventoryItems.length) {
+		// break;
+		// }
+		// }
+		// }
+	}
 
-		int itemIdx = 0;
-		float top = marginTop;
-		for (int r = 0; r < ROWS && itemIdx < inventoryItems.length; r++, top -= tileHeight) {
-			float left = marginLeft;
-			for (int c = 0; c < COLUMNS; c++, left += tileWidth) {
+	@Override
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+		super.showMapPosition(pos, grid);
 
-				if (r == 4 && 1 < c && c < 5) {
-					continue; // Position is kept blank.
-				}
-
-				panel.addChild(inventoryItems[itemIdx], left, top - tileHeight, left + tileWidth, top);
-				if (++itemIdx == inventoryItems.length) {
-					break;
-				}
+		IPartitionData data = grid.getPartitionData(pos.x, pos.y);
+		for (UIElement c : panel.getChildren()) {
+			if (c instanceof InventoryCount) {
+				((InventoryCount) c).loadFromData(data);
 			}
 		}
 	}

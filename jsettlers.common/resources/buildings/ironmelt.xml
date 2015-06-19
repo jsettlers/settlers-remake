@@ -92,10 +92,11 @@
 
 	<door dx="2" dy="0" />
 
-	<stack dx="-3" dy="2" material="COAL" buildrequired="0" />
-	<stack dx="3" dy="3" material="IRONORE" buildrequired="0" />
-	<stack dx="3" dy="5" material="PLANK" buildrequired="7" />
-	<stack dx="0" dy="5" material="STONE" buildrequired="4" />
+	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="7" />
+	<constructionStack dx="0" dy="5" material="STONE" buildrequired="4" />
+	<requestStack dx="-3" dy="2" material="COAL" />
+	<requestStack dx="3" dy="3" material="IRONORE" />
+	<offerStack dx="4" dy="0" material="IRON" />
 
 	<bricklayer dx="-1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="-3" dy="2" direction="NORTH_EAST" />

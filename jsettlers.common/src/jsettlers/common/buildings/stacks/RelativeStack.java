@@ -12,33 +12,31 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.common.buildings.stacks;
 
-import go.graphics.GLDrawContext;
-import jsettlers.common.position.FloatRectangle;
-import jsettlers.graphics.action.Action;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.RelativePoint;
 
-public interface UIElement {
-	void setPosition(FloatRectangle position);
-
-	/**
-	 * Draws the element at the given position.
-	 * 
-	 * @param gl
-	 */
-	void drawAt(GLDrawContext gl);
-
-	Action getAction(float relativex, float relativey);
-
-	String getDescription(float relativex, float relativey);
+/**
+ * This is a stack request that can be positioned relatively to a building.
+ * 
+ * @author michael
+ */
+public class RelativeStack extends RelativePoint {
 
 	/**
-	 * Called once to indicate that this element is not attached to the gui and could be visible.
-	 */
-	void onAttach();
+     * 
+     */
+	private static final long serialVersionUID = -6513966510581344171L;
 
-	/**
-	 * The opposite of {@link #onAttach()}.
-	 */
-	void onDetach();
+	private final EMaterialType type;
+
+	public RelativeStack(int dx, int dy, EMaterialType type) {
+		super(dx, dy);
+		this.type = type;
+	}
+
+	public EMaterialType getMaterialType() {
+		return type;
+	}
 }

@@ -12,11 +12,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.utils;
+package jsettlers.graphics.ui;
 
 import go.graphics.GLDrawContext;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.position.FloatRectangle;
@@ -66,14 +69,8 @@ public class UIPanel implements UIElement {
 	public void addChild(UIElement child, float left, float bottom,
 			float right, float top) {
 		this.children.add(new ChildLink(child, left, bottom, right, top));
-		child.onAttach();
-	}
-
-	public void removeChild(UIElement child) {
-		for (ChildLink link : children) {
-			if (link.child == child) {
-				children.remove(link);
-			}
+		if (attached) {
+			child.onAttach();
 		}
 	}
 
@@ -89,6 +86,27 @@ public class UIPanel implements UIElement {
 	 */
 	public void addChildCentered(UIElement child, float width, float height) {
 		addChild(child, 0.5f - width / 2, 0.5f - height / 2, 0.5f + width / 2, 0.5f + height / 2);
+	}
+
+	public void removeChild(UIElement child) {
+		for (Iterator<ChildLink> iterator = children.iterator(); iterator.hasNext();) {
+			ChildLink l = iterator.next();
+			if (l.child.equals(child)) {
+				if (attached) {
+					l.child.onDetach();
+				}
+				iterator.remove();
+				break;
+			}
+		}
+	}
+
+	public List<UIElement> getChildren() {
+		ArrayList<UIElement> list = new ArrayList<>();
+		for (ChildLink c : children) {
+			list.add(c.child);
+		}
+		return list;
 	}
 
 	@Override

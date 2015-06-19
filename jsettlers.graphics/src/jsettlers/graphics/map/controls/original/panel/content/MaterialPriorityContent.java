@@ -30,8 +30,8 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * This panel lets the user select the priorities in which the materials should be transported by settlers.
@@ -260,8 +260,11 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 	}
 
 	private void drawButton(GLDrawContext gl, float x, float y, EMaterialType materialType) {
-		Image image = ImageProvider.getInstance().getImage(materialType.getImageLink());
-		image.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y + RELATIVE_BUTTONHEIGHT);
+
+		Image iamgeLink = ImageProvider.getInstance().getImage(materialType.getIcon());
+		// TODO: add 1 or 2 for bigger gui
+		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y + RELATIVE_BUTTONHEIGHT);
+
 		if (selected == materialType) {
 			ImageProvider
 					.getInstance()

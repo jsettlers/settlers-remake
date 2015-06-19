@@ -12,31 +12,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.ui.generate;
 
-import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ActionFireable;
-import jsettlers.graphics.utils.UIPanel;
+public class NullArgument extends AbstractArgument {
 
-public interface IContentFactory {
-
-	UIPanel getPanel();
-
-	void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid);
-
-	Action catchAction(Action action);
-
-	/**
-	 * Called whenever this content is displayed.
-	 * @param actionFireable TODO
-	 */
-	void contentShowing(ActionFireable actionFireable);
-
-	/**
-	 * Called whenever this content is hidden.
-	 * @param actionFireable TODO
-	 */
-	void contentHiding(ActionFireable actionFireable);
+	@Override
+	public String getArgumentSource() {
+		return "null";
+	}
 }

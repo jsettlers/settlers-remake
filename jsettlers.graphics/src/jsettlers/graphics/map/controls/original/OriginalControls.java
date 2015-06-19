@@ -32,16 +32,16 @@ import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
-import jsettlers.graphics.map.controls.original.panel.content.BearerSelection;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingSelectionContent;
-import jsettlers.graphics.map.controls.original.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.ContentType;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
-import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
-import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
+import jsettlers.graphics.map.controls.original.panel.selection.BearerSelectionContent;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent;
+import jsettlers.graphics.map.controls.original.panel.selection.SoilderSelectionContent;
+import jsettlers.graphics.map.controls.original.panel.selection.SpecialistSelectionContent;
 import jsettlers.graphics.map.minimap.Minimap;
 import jsettlers.graphics.map.minimap.MinimapMode;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.UIPanel;
 
 public class OriginalControls implements IControls {
 	private ControlPanelLayoutProperties layoutProperties;
@@ -73,7 +73,7 @@ public class OriginalControls implements IControls {
 									new ExecutableAction() {
 										@Override
 										public void execute() {
-											mainPanel.setContent(EContentType.BUILD_NORMAL);
+											mainPanel.setContent(ContentType.BUILD_NORMAL);
 											btnChat.setActive(false);
 										}
 									},
@@ -81,7 +81,7 @@ public class OriginalControls implements IControls {
 									new ExecutableAction() {
 										@Override
 										public void execute() {
-											mainPanel.setContent(EContentType.BUILD_NORMAL);
+											mainPanel.setContent(ContentType.BUILD_NORMAL);
 											btnChat.setActive(false);
 										}
 									}
@@ -347,20 +347,22 @@ public class OriginalControls implements IControls {
 		if (selection == null || selection.getSize() == 0) {
 			if (!lastSelectionWasNull) {
 				lastSelectionWasNull = true;
-				mainPanel.setContent(EContentType.EMPTY);
+				if (mainPanel.isSelectionActive()) {
+					mainPanel.setContent(ContentType.EMPTY);
+				}
 			}// else: nothing to do
 		} else {
 			lastSelectionWasNull = false;
 
 			switch (selection.getSelectionType()) {
 			case PEOPLE:
-				mainPanel.setContent(new BearerSelection(selection));
+				mainPanel.setContent(new BearerSelectionContent(selection));
 				break;
 			case SOLDIERS:
-				mainPanel.setContent(new SoilderSelection(selection));
+				mainPanel.setContent(new SoilderSelectionContent(selection));
 				break;
 			case SPECIALISTS:
-				mainPanel.setContent(new SpecialistSelection(selection));
+				mainPanel.setContent(new SpecialistSelectionContent(selection));
 				break;
 
 			case BUILDING:
