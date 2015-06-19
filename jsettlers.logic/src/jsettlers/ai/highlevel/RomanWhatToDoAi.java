@@ -14,6 +14,26 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.common.buildings.EBuildingType.BAKER;
+import static jsettlers.common.buildings.EBuildingType.COALMINE;
+import static jsettlers.common.buildings.EBuildingType.FARM;
+import static jsettlers.common.buildings.EBuildingType.FORESTER;
+import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
+import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
+import static jsettlers.common.buildings.EBuildingType.IRONMELT;
+import static jsettlers.common.buildings.EBuildingType.IRONMINE;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.MILL;
+import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
+import static jsettlers.common.buildings.EBuildingType.SAWMILL;
+import static jsettlers.common.buildings.EBuildingType.SLAUGHTERHOUSE;
+import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
+import static jsettlers.common.buildings.EBuildingType.TEMPLE;
+import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
+import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
+import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
+import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

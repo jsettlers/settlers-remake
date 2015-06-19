@@ -14,6 +14,10 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.common.buildings.EBuildingType.FARM;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +25,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
@@ -233,13 +238,29 @@ public class AiStatistics {
 		return numberOfNotOccupiedTowers.get(playerIdInteger);
 	}
 
-	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point, byte playerId) {
-		for (ShortPoint2D buildingPoint : getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId)) {
-			if (point.y > buildingPoint.y && point.y - buildingPoint.y < 17 && Math.abs(point.x - buildingPoint.x) < 17) {
-				return true;
-			}
+	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point) {
+		return pointIsBlocked((point.x), (short) (point.y - 12))
+				|| pointIsBlocked((short) (point.x - 5), (short) (point.y - 12))
+				|| pointIsBlocked((short) (point.x - 10), (short) (point.y - 12));
+	}
+
+	private boolean pointIsBlocked(short x, short y) {
+		IBuilding building = objectsGrid.getBuildingOn(x, y);
+		if (building != null && (building.getBuildingType() == LUMBERJACK || building.getBuildingType() == FARM
+				|| building.getBuildingType() == WINEGROWER)) {
+			return true;
 		}
 		return false;
+	}
+
+	public boolean southIsFreeForPlayer(ShortPoint2D point, byte playerId) {
+		return pointIsFreeForPlayer(point.x, (short) (point.y + 12), playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 5), (short) (point.y + 12), playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 12), playerId);
+	}
+
+	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
+		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAreaAt(x, y);
 	}
 
 	private void updateMapStatistics() {
