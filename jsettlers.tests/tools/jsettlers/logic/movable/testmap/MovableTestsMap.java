@@ -130,11 +130,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	@Override
-	public boolean isFogOfWarVisible(int x, int y) {
-		return true;
-	}
-
-	@Override
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 

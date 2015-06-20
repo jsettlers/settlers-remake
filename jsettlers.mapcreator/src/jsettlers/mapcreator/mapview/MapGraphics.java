@@ -100,11 +100,6 @@ public class MapGraphics implements IGraphicsGrid {
 	}
 
 	@Override
-	public boolean isFogOfWarVisible(int x, int y) {
-		return true;
-	}
-
-	@Override
 	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 		data.setListener(backgroundListener);
 	}

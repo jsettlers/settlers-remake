@@ -116,8 +116,6 @@ public interface IGraphicsGrid {
 	 */
 	byte getVisibleStatus(int x, int y);
 
-	boolean isFogOfWarVisible(int x, int y);
-
 	/**
 	 * This method can be used to set a {@link IGraphicsBackgroundListener} to this {@link IGraphicsGrid}. <br>
 	 * 
