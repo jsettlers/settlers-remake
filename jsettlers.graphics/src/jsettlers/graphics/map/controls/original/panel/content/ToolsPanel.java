@@ -27,7 +27,7 @@ import jsettlers.graphics.ui.UIPanel;
 
 public class ToolsPanel extends AbstractContentProvider {
 	private static class Row extends UIPanel {
-		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 18, 0); // or 231
+		private static final ImageLink arrowsImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 231, 0); // checked in the original game
 		private static final float iconWidth = iconSize_px / contentWidth_px;
 		private static final float quantityTextWidth = 18f / contentWidth_px;
 		private static final float quantityTextMarginV = 5f / iconSize_px;
