@@ -15,11 +15,7 @@
 package jsettlers.graphics.localization;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.io.InputStream;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
@@ -34,73 +30,17 @@ import jsettlers.graphics.progress.EProgressState;
  * 
  * @author michael
  */
-public final class Labels {
-
-	public static class LocaleSuffix {
-		private Locale locale;
-		private boolean useCountry;
-
-		public LocaleSuffix(Locale locale, boolean useCountry) {
-			this.locale = locale;
-			this.useCountry = useCountry;
-		}
-
-		public Locale getLocale() {
-			return locale;
-		}
-
-		public String getFileName(String prefix, String suffix) {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(prefix);
-			stringBuilder.append("_");
-			stringBuilder.append(locale.getLanguage());
-			if (useCountry) {
-				stringBuilder.append("_");
-				stringBuilder.append(locale.getCountry());
-			}
-			stringBuilder.append(suffix);
-			return stringBuilder.toString();
-		}
-	}
+public final class Labels extends AbstractLabels {
+	private static final Labels instance = new Labels();
 
 	private Labels() {
 	}
 
-	private static ResourceBundle labels;
-	private static boolean labelsLoaded;
-	private static Locale usedLocale;
-	public static Locale preferredLocale = Locale.getDefault();
-
-	private static synchronized ResourceBundle getLabels() {
-		if (!labelsLoaded) {
-			loadLabels();
-			labelsLoaded = true;
-		}
-		return labels;
-	}
-
-	private static void loadLabels() {
-		LocaleSuffix[] locales = getLocaleSuffixes();
-
-		for (LocaleSuffix locale : locales) {
-			String filename = locale.getFileName("localization/labels", ".properties");
-			try {
-				labels = new PropertyResourceBundle(new InputStreamReader(ResourceManager.getFile(filename), "UTF-8"));
-				usedLocale = locale.getLocale();
-				break;
-			} catch (IOException e) {
-				System.err.println("Warning: Could not find " + filename + ". Falling back to next file.");
-			}
-		}
-	}
-
-	public static LocaleSuffix[] getLocaleSuffixes() {
-		LocaleSuffix[] locales = new LocaleSuffix[] {
-				new LocaleSuffix(preferredLocale, true),
-				new LocaleSuffix(preferredLocale, false),
-				new LocaleSuffix(new Locale("en"), false),
-		};
-		return locales;
+	@Override
+	protected InputStream getLocaleStream(LocaleSuffix locale) throws IOException {
+		String filename = locale.getFileName("localization/labels", ".properties");
+		InputStream inputStream = ResourceManager.getFile(filename);
+		return inputStream;
 	}
 
 	/**
@@ -111,21 +51,12 @@ public final class Labels {
 	 * @return The localized string
 	 */
 	public static String getString(String key) {
-		ResourceBundle labels = getLabels();
-		if (labels == null) {
-			return key;
-		} else {
-			try {
-				return labels.getString(key);
-			} catch (MissingResourceException e) {
-				return key;
-			}
-		}
+		return instance.getSingleString(key);
 	}
 
 	public static String getString(String string, Object... args) {
 		String parsedString = getString(string);
-		return String.format(usedLocale, parsedString, args);
+		return String.format(instance.usedLocale, parsedString, args);
 	}
 
 	/**

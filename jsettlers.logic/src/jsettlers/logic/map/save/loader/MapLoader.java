@@ -24,7 +24,7 @@ import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
@@ -53,8 +53,6 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		switch (header.getType()) {
 		case NORMAL:
 			return new FreshMapLoader(file, header);
-		case RANDOM:
-			return new RandomMapLoader(file, header);
 		case SAVED_SINGLE:
 			return new SavegameLoader(file, header);
 		default:

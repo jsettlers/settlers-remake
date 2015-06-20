@@ -19,8 +19,8 @@ import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
 
@@ -88,7 +88,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			super.releaseRequestStacks();
 			requestWorker();
 		} else {
-			System.err.println("A worker not registered at the building wanted to leave it!");
+			System.err.println("ERROR: A worker not registered at the building wanted to leave it!");
 		}
 	}
 

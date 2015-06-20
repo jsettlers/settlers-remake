@@ -22,7 +22,8 @@ import java.util.Set;
 import jsettlers.buildingcreator.editor.jobeditor.BuildingPersonJobProperties;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.RelativePoint;
@@ -38,17 +39,18 @@ public class BuildingDefinition {
 	/**
 	 * A table of known actions and their names.
 	 */
-	private Hashtable<String, BuildingPersonJobProperties> actions =
-			new Hashtable<String, BuildingPersonJobProperties>();
+	private final Hashtable<String, BuildingPersonJobProperties> actions = new Hashtable<>();
 
-	private LinkedList<RelativeStack> stacks = new LinkedList<RelativeStack>();
-	private LinkedList<RelativeBricklayer> bricklayers =
-			new LinkedList<RelativeBricklayer>();
+	private final LinkedList<ConstructionStack> constructionStacks = new LinkedList<>();
+	private final LinkedList<RelativeStack> requestStacks = new LinkedList<>();
+	private final LinkedList<RelativeStack> offerStacks = new LinkedList<>();
 
-	private LinkedList<RelativePoint> blocked = new LinkedList<RelativePoint>();
-	private LinkedList<RelativePoint> justProtected = new LinkedList<RelativePoint>();
+	private final LinkedList<RelativeBricklayer> bricklayers = new LinkedList<>();
 
-	private LinkedList<RelativePoint> buildmarks = new LinkedList<RelativePoint>();
+	private final LinkedList<RelativePoint> blocked = new LinkedList<>();
+	private final LinkedList<RelativePoint> justProtected = new LinkedList<>();
+
+	private final LinkedList<RelativePoint> buildmarks = new LinkedList<>();
 	private RelativePoint door = new RelativePoint(0, 0);
 	private RelativePoint flag = new RelativePoint(0, 0);
 
@@ -68,7 +70,10 @@ public class BuildingDefinition {
 
 		door = type.getDoorTile();
 		flag = type.getFlag();
-		stacks.addAll(Arrays.asList(type.getRequestStacks()));
+
+		constructionStacks.addAll(Arrays.asList(type.getConstructionStacks()));
+		requestStacks.addAll(Arrays.asList(type.getRequestStacks()));
+		offerStacks.addAll(Arrays.asList(type.getOfferStacks()));
 	}
 
 	public Set<String> getActionNames() {
@@ -77,11 +82,6 @@ public class BuildingDefinition {
 
 	public BuildingPersonJobProperties getActionByName(String name) {
 		return actions.get(name);
-	}
-
-	public void removeAction(String name) {
-		// TODO: look if there are references to this action!
-		actions.remove(name);
 	}
 
 	public void addAction(String name) {
@@ -146,9 +146,9 @@ public class BuildingDefinition {
 	}
 
 	private RelativeBricklayer getBricklayerAt(RelativePoint relative) {
-		for (RelativeBricklayer b : bricklayers) {
-			if (b.getPosition().equals(relative)) {
-				return b;
+		for (RelativeBricklayer bricklayer : bricklayers) {
+			if (relative.equals(bricklayer)) {
+				return bricklayer;
 			}
 		}
 		return null;
@@ -174,24 +174,25 @@ public class BuildingDefinition {
 		return flag;
 	}
 
-	public void setStack(RelativePoint relative, EMaterialType material,
-			int required) {
+	public void setConstructionStack(RelativePoint relative, EMaterialType material, int required) {
 		removeStack(relative);
-		stacks.add(new RelativeStack(relative.getDx(), relative.getDy(),
-				material, (short) required));
+		constructionStacks.add(new ConstructionStack(relative.getDx(), relative.getDy(), material, (short) required));
+	}
+
+	public void setRequestStack(RelativePoint relative, EMaterialType material) {
+		removeStack(relative);
+		requestStacks.add(new RelativeStack(relative.getDx(), relative.getDy(), material));
+	}
+
+	public void setOfferStack(RelativePoint relative, EMaterialType material) {
+		removeStack(relative);
+		offerStacks.add(new RelativeStack(relative.getDx(), relative.getDy(), material));
 	}
 
 	public void removeStack(RelativePoint relative) {
-		stacks.remove(relative); // Uses that stack is a relative point
-	}
-
-	public RelativeStack getStack(RelativePoint relative) {
-		int index = stacks.indexOf(relative);
-		if (index >= 0) {
-			return stacks.get(index);
-		} else {
-			return null;
-		}
+		constructionStacks.remove(relative); // Uses that stack is a relative point
+		requestStacks.remove(relative);
+		offerStacks.remove(relative);
 	}
 
 	public LinkedList<RelativePoint> getBlocked() {
@@ -202,8 +203,16 @@ public class BuildingDefinition {
 		return justProtected;
 	}
 
-	public LinkedList<RelativeStack> getStacks() {
-		return stacks;
+	public LinkedList<ConstructionStack> getConstructionStacks() {
+		return constructionStacks;
+	}
+
+	public LinkedList<RelativeStack> getRequestStacks() {
+		return requestStacks;
+	}
+
+	public LinkedList<RelativeStack> getOfferStacks() {
+		return offerStacks;
 	}
 
 	public LinkedList<RelativePoint> getBuildmarks() {

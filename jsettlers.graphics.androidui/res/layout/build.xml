@@ -12,15 +12,16 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="wrap_content"
+        android:id="@+id/build_list_outer"
+        android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <TableLayout
+        <LinearLayout
             android:id="@+id/build_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </TableLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

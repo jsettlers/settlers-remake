@@ -2,7 +2,7 @@ package jsettlers.logic.objects;
 
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 import jsettlers.logic.stack.IStackSizeSupplier;
 
 public class WineBowlMapObject extends AbstractHexMapObject {
@@ -21,7 +21,7 @@ public class WineBowlMapObject extends AbstractHexMapObject {
 
 	@Override
 	public float getStateProgress() {
-		return ((float) wineStack.getMaterialCount()) / Constants.STACK_SIZE;
+		return ((float) wineStack.getStackSize()) / Constants.STACK_SIZE;
 	}
 
 	@Override

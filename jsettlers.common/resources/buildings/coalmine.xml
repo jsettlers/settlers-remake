@@ -3,76 +3,71 @@
 <building worker="MINER" workradius="0">
     <ground groundtype="MOUNTAIN" />
 
-    <blocked dx="1" dy="3" block="true" />
-    <blocked dx="1" dy="2" block="true" />
-    <blocked dx="2" dy="2" block="true" />
-    <blocked dx="2" dy="1" block="true" />
-    <blocked dx="2" dy="0" block="true" />
-    <blocked dx="1" dy="1" block="true" />
-    <blocked dx="1" dy="0" block="true" />
-    <blocked dx="1" dy="-1" block="true" />
-    <blocked dx="0" dy="-2" block="true" />
-    <blocked dx="0" dy="-1" block="true" />
-    <blocked dx="0" dy="0" block="true" />
-    <blocked dx="0" dy="1" block="true" />
-    <blocked dx="0" dy="2" block="true" />
-    <blocked dx="-2" dy="0" block="true" />
-    <blocked dx="-3" dy="-1" block="true" />
-    <blocked dx="-1" dy="0" block="true" />
-    <blocked dx="-2" dy="-1" block="true" />
-    <blocked dx="-3" dy="-2" block="true" />
-    <blocked dx="-3" dy="-3" block="true" />
-    <blocked dx="-3" dy="-4" block="true" />
-    <blocked dx="-2" dy="-3" block="true" />
-    <blocked dx="-2" dy="-4" block="true" />
-    <blocked dx="-2" dy="-2" block="true" />
-    <blocked dx="-1" dy="-1" block="true" />
-    <blocked dx="-1" dy="-2" block="true" />
-    <blocked dx="-1" dy="-3" block="true" />
-    <blocked dx="-1" dy="1" block="false" />
-    <blocked dx="-2" dy="1" block="false" />
-    <blocked dx="-3" dy="0" block="false" />
-    <blocked dx="-1" dy="2" block="false" />
-    <blocked dx="0" dy="3" block="false" />
-    <blocked dx="1" dy="4" block="false" />
-    <blocked dx="2" dy="4" block="false" />
-    <blocked dx="2" dy="3" block="false" />
-    <blocked dx="3" dy="3" block="false" />
-    <blocked dx="3" dy="2" block="false" />
-    <blocked dx="3" dy="1" block="false" />
-    <blocked dx="3" dy="0" block="false" />
-    <blocked dx="2" dy="-1" block="false" />
-    <blocked dx="1" dy="-2" block="false" />
-    <blocked dx="0" dy="-3" block="false" />
-    <blocked dx="-1" dy="-4" block="false" />
-    <blocked dx="-2" dy="-5" block="false" />
-    <blocked dx="-3" dy="-5" block="false" />
-    <blocked dx="-4" dy="-5" block="false" />
-    <blocked dx="-4" dy="-4" block="false" />
-    <blocked dx="-4" dy="-3" block="false" />
-    <blocked dx="-4" dy="-2" block="false" />
-    <blocked dx="-4" dy="-1" block="false" />
-    <blocked dx="-3" dy="1" block="false" />
-    <blocked dx="-2" dy="2" block="false" />
-    <blocked dx="-1" dy="3" block="false" />
-    <blocked dx="0" dy="4" block="false" />
-    <blocked dx="1" dy="5" block="false" />
-    <door dx="-1" dy="1" />
-    <!-- materials checked with original -->
-    <stack dx="-2" dy="2" material="PLANK" buildrequired="4" />
-    <stack dx="1" dy="4" material="STONE" buildrequired="1" />
-    <stack dx="2" dy="4" material="FISH" buildrequired="0" />
-    <stack dx="3" dy="3" material="MEAT" buildrequired="0" />
-    <stack dx="3" dy="1" material="BREAD" buildrequired="0" />
-    <bricklayer dx="-2" dy="1" direction="NORTH_EAST" />
-    <bricklayer dx="0" dy="3" direction="NORTH_EAST" />
-    <bricklayer dx="2" dy="3" direction="NORTH_WEST" />
-    <bricklayer dx="3" dy="2" direction="NORTH_WEST" />
-    <flag dx="-3" dy="-5" />
-    <buildmark dx="1" dy="3" />
-    <buildmark dx="2" dy="0" />
-    <buildmark dx="-2" dy="-4" />
-    <buildmark dx="-3" dy="-1" />
+    	<blocked dx="1" dy="2" block="true" />
+	<blocked dx="2" dy="1" block="true" />
+	<blocked dx="2" dy="0" block="true" />
+	<blocked dx="1" dy="1" block="true" />
+	<blocked dx="1" dy="0" block="true" />
+	<blocked dx="1" dy="-1" block="true" />
+	<blocked dx="0" dy="-2" block="true" />
+	<blocked dx="0" dy="-1" block="true" />
+	<blocked dx="0" dy="0" block="true" />
+	<blocked dx="0" dy="1" block="true" />
+	<blocked dx="-2" dy="0" block="true" />
+	<blocked dx="-1" dy="0" block="true" />
+	<blocked dx="-2" dy="-1" block="true" />
+	<blocked dx="-2" dy="-3" block="true" />
+	<blocked dx="-2" dy="-2" block="true" />
+	<blocked dx="-1" dy="-1" block="true" />
+	<blocked dx="-1" dy="-2" block="true" />
+	<blocked dx="-1" dy="-3" block="true" />
+	<blocked dx="0" dy="2" block="true" />
+
+	<blocked dx="-1" dy="1" block="false" />
+	<blocked dx="-2" dy="1" block="false" />
+	<blocked dx="-1" dy="2" block="false" />
+	<blocked dx="0" dy="3" block="false" />
+	<blocked dx="2" dy="3" block="false" />
+	<blocked dx="3" dy="2" block="false" />
+	<blocked dx="3" dy="1" block="false" />
+	<blocked dx="2" dy="-1" block="false" />
+	<blocked dx="1" dy="-2" block="false" />
+	<blocked dx="0" dy="-3" block="false" />
+	<blocked dx="-1" dy="-4" block="false" />
+	<blocked dx="-2" dy="2" block="false" />
+	<blocked dx="-3" dy="-4" block="false" />
+	<blocked dx="-2" dy="-4" block="false" />
+	<blocked dx="-3" dy="-1" block="false" />
+	<blocked dx="-3" dy="-2" block="false" />
+	<blocked dx="-3" dy="-3" block="false" />
+	<blocked dx="-3" dy="0" block="false" />
+	<blocked dx="2" dy="2" block="false" />
+	<blocked dx="1" dy="3" block="false" />
+	<blocked dx="3" dy="0" block="false" />
+	<blocked dx="1" dy="4" block="false" />
+	<blocked dx="-1" dy="3" block="false" />
+
+	<door dx="-1" dy="1" />
+
+	<constructionStack dx="-2" dy="2" material="PLANK" buildrequired="4" />
+	<constructionStack dx="1" dy="4" material="STONE" buildrequired="1" />
+	<requestStack dx="1" dy="3" material="BREAD" />
+	<requestStack dx="2" dy="2" material="MEAT" />
+	<requestStack dx="3" dy="1" material="FISH" />
+	<offerStack dx="-1" dy="3" material="COAL" />
+
+	<bricklayer dx="-2" dy="1" direction="NORTH_EAST" />
+	<bricklayer dx="0" dy="3" direction="NORTH_EAST" />
+	<bricklayer dx="2" dy="3" direction="NORTH_WEST" />
+	<bricklayer dx="3" dy="2" direction="NORTH_WEST" />
+
+	<flag dx="-3" dy="-5" />
+
+	<buildmark dx="1" dy="3" />
+	<buildmark dx="2" dy="0" />
+	<buildmark dx="-2" dy="-4" />
+	<buildmark dx="-3" dy="-1" />
+    
     <image file="14" for="GUI" type="GUI" sequence="51" image="0" />
     <image file="13" for="FINAL" type="SETTLER" sequence="6" image="0" />
     <image file="13" for="BUILD" type="SETTLER" sequence="6" image="1" />
@@ -86,38 +81,38 @@
     <!-- Wait for BREAD -->
     <job name="A_wait" type="WAIT" successjob="A_checkore" failjob="A_checkore" time="3" />
     <job name="A_checkore" type="NOT_FULL" successjob="A_checkfood" failjob="B_wait" dx="-1" dy="3" material="COAL" />
-    <job name="A_checkfood" type="AVAILABLE" successjob="mine_bread" failjob="B_wait" dx="3" dy="1" material="BREAD" />
+    <job name="A_checkfood" type="AVAILABLE" successjob="mine_bread" failjob="B_wait" dx="1" dy="3" material="BREAD" />
 
     <!-- Wait some more for BREAD -->
     <job name="B_wait" type="WAIT" successjob="B_checkore" failjob="B_checkore" time="5" />
     <job name="B_checkore" type="NOT_FULL" successjob="B_checkfood" failjob="C_wait" dx="-1" dy="3" material="COAL" />
-    <job name="B_checkfood" type="AVAILABLE" successjob="mine_bread" failjob="C_wait" dx="3" dy="1" material="BREAD" />
+    <job name="B_checkfood" type="AVAILABLE" successjob="mine_bread" failjob="C_wait" dx="1" dy="3" material="BREAD" />
 
     <!-- Wait for MEAT -->
     <job name="C_wait" type="WAIT" successjob="C_checkore" failjob="C_checkore" time="7" />
     <job name="C_checkore" type="NOT_FULL" successjob="C_checkfood1" failjob="D_wait" dx="-1" dy="3" material="COAL" />
-    <job name="C_checkfood1" type="AVAILABLE" successjob="mine_bread" failjob="C_checkfood2" dx="3" dy="1" material="BREAD" />
-    <job name="C_checkfood2" type="AVAILABLE" successjob="mine_meat" failjob="D_wait" dx="3" dy="3" material="MEAT" />
+    <job name="C_checkfood1" type="AVAILABLE" successjob="mine_bread" failjob="C_checkfood2" dx="1" dy="3" material="BREAD" />
+    <job name="C_checkfood2" type="AVAILABLE" successjob="mine_meat" failjob="D_wait" dx="2" dy="2" material="MEAT" />
 
     <!-- Wait for FISH -->
     <job name="D_wait" type="WAIT" successjob="D_checkore" failjob="D_checkore" time="6" />
     <job name="D_checkore" type="NOT_FULL" successjob="D_checkfood1" failjob="E_wait" dx="-1" dy="3" material="COAL" />
-    <job name="D_checkfood1" type="AVAILABLE" successjob="mine_bread" failjob="D_checkfood2" dx="3" dy="1" material="BREAD" />
-    <job name="D_checkfood2" type="AVAILABLE" successjob="mine_meat" failjob="D_checkfood3" dx="3" dy="3" material="MEAT" />
-    <job name="D_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" dx="2" dy="4" material="FISH" />
+    <job name="D_checkfood1" type="AVAILABLE" successjob="mine_bread" failjob="D_checkfood2" dx="1" dy="3" material="BREAD" />
+    <job name="D_checkfood2" type="AVAILABLE" successjob="mine_meat" failjob="D_checkfood3" dx="2" dy="2" material="MEAT" />
+    <job name="D_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" dx="3" dy="1" material="FISH" />
 
     <!-- Wait for FISH -->
     <job name="E_wait" type="WAIT" successjob="E_checkore" failjob="E_checkore" time="5" />
 
     <job name="E_checkore" type="NOT_FULL" successjob="E_checkfood1" failjob="E_wait" dx="-1" dy="3" material="COAL" />
-    <job name="E_checkfood1" type="AVAILABLE" successjob="mine_bread" failjob="E_checkfood2" dx="3" dy="1" material="BREAD" />
-    <job name="E_checkfood2" type="AVAILABLE" successjob="mine_meat" failjob="E_checkfood3" dx="3" dy="3" material="MEAT" />
-    <job name="E_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" dx="2" dy="4" material="FISH" />
+    <job name="E_checkfood1" type="AVAILABLE" successjob="mine_bread" failjob="E_checkfood2" dx="1" dy="3" material="BREAD" />
+    <job name="E_checkfood2" type="AVAILABLE" successjob="mine_meat" failjob="E_checkfood3" dx="2" dy="2" material="MEAT" />
+    <job name="E_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" dx="3" dy="1" material="FISH" />
 
 
-    <job name="mine_meat" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="MEAT" dx="3" dy="3" />
-    <job name="mine_bread" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="BREAD"  dx="3" dy="1" />
-    <job name="mine_fish" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="FISH" dx="2" dy="4" />
+    <job name="mine_meat" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="MEAT" dx="2" dy="2" />
+    <job name="mine_bread" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="BREAD"  dx="1" dy="3" />
+    <job name="mine_fish" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="FISH" dx="3" dy="1" />
 
     <job name="mine" type="IS_PRODUCTIVE" successjob="successful" failjob="noore1" />
 

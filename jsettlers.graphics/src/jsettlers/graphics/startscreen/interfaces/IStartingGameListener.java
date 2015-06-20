@@ -23,7 +23,7 @@ import jsettlers.graphics.progress.EProgressState;
  */
 public interface IStartingGameListener {
 	/**
-	 * Notifies this listener of the current progress of the start. May only be called before {@link #startFinished(IStartedGame)} is called.
+	 * Notifies this listener of the current progress of the start. May only be called before {@link #preLoadFinished(IStartedGame)} is called.
 	 * 
 	 * @param state
 	 * @param progress
@@ -37,7 +37,9 @@ public interface IStartingGameListener {
 	 *            The game that was just started.
 	 * @retrun A {@link IMapInterfaceConnector} that can be used to access the game afterwards.
 	 */
-	IMapInterfaceConnector startFinished(IStartedGame game);
+	IMapInterfaceConnector preLoadFinished(IStartedGame game);
 
 	void startFailed(EGameError errorType, Exception exception);
+
+	void startFinished();
 }

@@ -5,7 +5,6 @@ logs
 
 /.metadata
 /.recommenders
-.externalToolBuilders
 .settings
 .buildScripts
 /jsettlers.main.android/assets/*
@@ -17,3 +16,4 @@ logs
 
 /jsettlers.main.swing/*.log
 
+/jsettlers.tests/out

@@ -25,6 +25,8 @@ Many thanks in advance for helping to improve this game!
 
 In order to play the game, you need to have the "GFX" and "SND" folders of the original version of "The Settlers 3" as obtained by installing the original "The Settlers 3" game (DEMO version also works).
 
+Furthermore, you need an up to date installation of [Java 1.7 or 1.8](http://java.com/). The Java Runtime Environment (JRE) is needed to run JSettlers, as it is written in the programming language Java.
+
 After that, follow the detailed installation instructions for you platform.
 
 ### Windows, Linux, Mac OS
@@ -70,8 +72,11 @@ In order to assist development, follow these steps:
 ### Development Guidelines
 In order to ease collaboration and reduce unnecessary overhead, developers should follow these guidelines.
 
-#### Eclipse Auto Formatter
-This project uses a common [Eclipse Auto Formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml). To configure Eclipse correctly, open the workspace containing the project and select "Window" -> "Preferences" in the top bar. In the search field of the dialog, type "save actions" and select the Java save actions as shown in the picture below.
+#### Auto Formatter
+This project uses a common auto formatter configuration. Please stick to this convention to prevent unnecessary merge overhead. The configuration file is provided as [Eclipse Auto Formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml).
+
+##### Eclipse
+To configure Eclipse correctly, open the workspace containing the project and select "Window" -> "Preferences" in the top bar. In the search field of the dialog, type "save actions" and select the Java save actions as shown in the picture below.
 
 ![configuring save actions](/docs/eclipse-setup/01_configuringSaveActions.png)
 
@@ -80,6 +85,9 @@ Adjust your settings to match the ones of the figure before clicking on "Formatt
 ![importing formatter](/docs/eclipse-setup/02_importingFormatter.png)
 
 The [formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml) can be found in the repository at "docs/eclipse-setup/formatterConfiguration.xml".
+
+##### IntelliJ IDEA
+For IntelliJ IDEA, there is a plugin to use the Eclipse Auto Formatter configuration. For example [this article](http://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importing-code-formatter-settings-from-eclipse/) covers the subject and gives a detailed manual.
 
 #### Further Plugins
 - Android Development Tools for Eclipse: Required for building, running and developing the Android version of JSettlers in Eclipse. You furthermore require the Android SDK installed on your machine. Even if you don't want to develop the Android version, this is recommended, as without it, you will have compile errors in the Android projects, making it hard to find real compile errors introduced by your changes.

@@ -110,7 +110,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	/**
 	 * Every dat file seems to have to start with this sequence.
 	 */
-	private static final byte[] FILE_START = {
+	private static final byte[] FILE_START1 = {
 			0x04,
 			0x13,
 			0x04,
@@ -144,11 +144,8 @@ public class AdvancedDatFileReader implements DatFileSet {
 			0x00,
 			0x00,
 			0x00,
-			0x7c,
-			0x00,
-			0x00,
-			(byte) 0xe0,
-			0x03,
+	};
+	private static final byte[] FILE_START2 = {
 			0x00,
 			0x00,
 			0x1f,
@@ -189,20 +186,15 @@ public class AdvancedDatFileReader implements DatFileSet {
 	// fullscreen images
 	static final int ID_GUIS = 0x11306;
 
-	public static final DatBitmapTranslator<SettlerImage> SETTLER_TRANSLATOR =
-			new SettlerTranslator();
+	private final DatBitmapTranslator<SettlerImage> settlerTranslator;
 
-	public static final DatBitmapTranslator<Torso> TORSO_TRANSLATOR =
-			new TorsoTranslator();
+	private final DatBitmapTranslator<Torso> torsoTranslator;
 
-	public static final DatBitmapTranslator<LandscapeImage> LANDSCAPE_TRANSLATOR =
-			new LandscapeTranslator();
+	private final DatBitmapTranslator<LandscapeImage> landscapeTranslator;
 
-	static final DatBitmapTranslator<ShadowImage> SHADOW_TRANSLATOR =
-			new ShadowTranslator();
+	private final DatBitmapTranslator<ShadowImage> shadowTranslator;
 
-	static final DatBitmapTranslator<GuiImage> GUI_TRANSLATOR =
-			new GuiTranslator();
+	private final DatBitmapTranslator<GuiImage> guiTranslator;
 
 	private ByteReader reader = null;
 	private final File file;
@@ -243,9 +235,23 @@ public class AdvancedDatFileReader implements DatFileSet {
 			0x02, 0x14, 0x00, 0x00, 0x08, 0x00, 0x00
 	};
 
-	public AdvancedDatFileReader(File file) {
+	private final DatFileType type;
+
+	public AdvancedDatFileReader(File file, DatFileType type) {
 		this.file = file;
+		this.type = type;
 		directSettlerList = new DirectSettlerSequenceList();
+
+		settlerTranslator =
+				new SettlerTranslator(type);
+		torsoTranslator =
+				new TorsoTranslator();
+		landscapeTranslator =
+				new LandscapeTranslator(type);
+		shadowTranslator =
+				new ShadowTranslator();
+		guiTranslator =
+				new GuiTranslator(type);
 	}
 
 	/**
@@ -317,9 +323,11 @@ public class AdvancedDatFileReader implements DatFileSet {
 		}
 	}
 
-	private static int[] readSequenceIndexStarts(long filelength,
+	private int[] readSequenceIndexStarts(long filelength,
 			ByteReader reader) throws IOException {
-		reader.assumeToRead(FILE_START);
+		reader.assumeToRead(FILE_START1);
+		reader.assumeToRead(type.getFileStartMagic());
+		reader.assumeToRead(FILE_START2);
 		int fileSize = reader.read32();
 
 		if (fileSize != filelength) {
@@ -457,7 +465,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		SettlerImage[] images = new SettlerImage[framePositions.length];
 		for (int i = 0; i < framePositions.length; i++) {
 			reader.skipTo(framePositions[i]);
-			images[i] = DatBitmapReader.getImage(SETTLER_TRANSLATOR, reader);
+			images[i] = DatBitmapReader.getImage(settlerTranslator, reader);
 		}
 
 		int torsoposition = torsostarts[index];
@@ -467,7 +475,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 					&& i < framePositions.length; i++) {
 				reader.skipTo(torsoPositions[i]);
 				Torso torso =
-						DatBitmapReader.getImage(TORSO_TRANSLATOR, reader);
+						DatBitmapReader.getImage(torsoTranslator, reader);
 				images[i].setTorso(torso);
 			}
 		}
@@ -546,7 +554,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 		try {
 			reader.skipTo(landscapestarts[index]);
 			LandscapeImage image =
-					DatBitmapReader.getImage(LANDSCAPE_TRANSLATOR, reader);
+					DatBitmapReader.getImage(landscapeTranslator, reader);
 			landscapeimages[index] = image;
 		} catch (IOException e) {
 			landscapeimages[index] = NullImage.getForLandscape();
@@ -594,7 +602,7 @@ public class AdvancedDatFileReader implements DatFileSet {
 	private void loadGuiImage(int index) {
 		try {
 			reader.skipTo(guistarts[index]);
-			GuiImage image = DatBitmapReader.getImage(GUI_TRANSLATOR, reader);
+			GuiImage image = DatBitmapReader.getImage(guiTranslator, reader);
 			guiimages[index] = image;
 		} catch (IOException e) {
 			guiimages[index] = NullImage.getForGui();
@@ -638,5 +646,17 @@ public class AdvancedDatFileReader implements DatFileSet {
 			map.addSequences(this, sequences, settlersequences);
 			map.writeCache();
 		}
+	}
+
+	public DatBitmapTranslator<SettlerImage> getSettlerTranslator() {
+		return settlerTranslator;
+	}
+
+	public DatBitmapTranslator<Torso> getTorsoTranslator() {
+		return torsoTranslator;
+	}
+
+	public DatBitmapTranslator<LandscapeImage> getLandscapeTranslator() {
+		return landscapeTranslator;
 	}
 }

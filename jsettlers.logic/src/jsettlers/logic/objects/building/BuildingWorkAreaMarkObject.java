@@ -15,7 +15,7 @@
 package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 
 /**
  * map object to visialize the work area of a building to the user.

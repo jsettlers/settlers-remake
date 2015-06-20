@@ -16,7 +16,7 @@ package jsettlers.graphics.startscreen.startlists;
 
 import jsettlers.graphics.startscreen.GenericListItem;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIListItem;
 
 public class JoinableGameItem extends GenericListItem implements UIListItem {
 

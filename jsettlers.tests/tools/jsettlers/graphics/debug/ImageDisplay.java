@@ -42,7 +42,7 @@ import javax.swing.event.DocumentListener;
 public class ImageDisplay extends JFrame {
 
 	private static final String FILE =
-			// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.7c003e01f.dat";
+			// "/home/michael/.wine/drive_c/BlueByte/S3AmazonenDemo/GFX/siedler3_14.f8007e01f.dat";
 			"/home/michael/Desktop/sounds/VL-212.DX4";
 	/**
      * 

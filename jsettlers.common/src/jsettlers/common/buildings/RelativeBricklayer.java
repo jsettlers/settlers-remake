@@ -22,20 +22,17 @@ import jsettlers.common.position.RelativePoint;
  * 
  * @author michael
  */
-public class RelativeBricklayer {
+public class RelativeBricklayer extends RelativePoint {
+	private static final long serialVersionUID = 8474598621080781081L;
+
 	private final EDirection direction;
-	private final RelativePoint position;
 
 	public RelativeBricklayer(int dx, int dy, EDirection direction) {
+		super(dx, dy);
 		this.direction = direction;
-		this.position = new RelativePoint(dx, dy);
 	}
 
 	public EDirection getDirection() {
 		return direction;
-	}
-
-	public RelativePoint getPosition() {
-		return position;
 	}
 }

@@ -52,6 +52,17 @@ public final class Color {
 		this.shortColor = toShortColorForced(1);
 	}
 
+	public Color toGreyScale()
+	{
+		float intensity = 0.2126f * red + 0.7152f * green + 0.0722f * blue;
+		return new Color(intensity, intensity, intensity, alpha);
+	}
+
+	public Color overlay(Color colour)
+	{
+		return new Color(red * colour.getRed(), green * colour.getGreen(), blue * colour.getBlue(), alpha * colour.getAlpha());
+	}
+
 	public final float getAlpha() {
 		return alpha;
 	}
@@ -88,6 +99,35 @@ public final class Color {
 		return ((int) (alpha * 255) & 0xff) << 24 | ((int) (red * 255) & 0xff)
 				| ((int) (green * 255) & 0xff) << 8
 				| ((int) (blue * 255) & 0xff) << 16;
+	}
+
+	private static final int[] table6to5 = new int[64];
+
+	static {
+		// Generate table6to5
+		for (int i = 0; i < 64; i++) {
+			table6to5[i] = Math.round(i / 63.0f * 31.0f);
+		}
+	}
+
+	private static final int convertColorChannel6to5(int c) {
+		return table6to5[c];
+	}
+
+	public static final int convert565to555(int rgb565) {
+		int r5 = (rgb565 & 0xf800) >> 11;
+		int g6 = (rgb565 & 0x07e0) >> 5;
+		int b5 = rgb565 & 0x001f;
+
+		int g5 = convertColorChannel6to5(g6);
+
+		int rgb555 = r5;
+		rgb555 = rgb555 << 5;
+		rgb555 |= g5;
+		rgb555 = rgb555 << 5;
+		rgb555 |= b5;
+
+		return rgb555;
 	}
 
 	public short toShortColor(float multiply) {

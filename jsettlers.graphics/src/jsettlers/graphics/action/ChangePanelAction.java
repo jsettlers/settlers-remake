@@ -14,18 +14,18 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import jsettlers.graphics.map.controls.original.panel.content.EContentType;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 
 public class ChangePanelAction extends Action {
 
-	private final EContentType content;
+	private final AbstractContentProvider content;
 
-	public ChangePanelAction(EContentType content) {
+	public ChangePanelAction(AbstractContentProvider content) {
 		super(EActionType.CHANGE_PANEL);
 		this.content = content;
 	}
 
-	public EContentType getContent() {
+	public AbstractContentProvider getContent() {
 		return content;
 	}
 

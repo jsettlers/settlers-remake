@@ -21,10 +21,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.algorithms.fogofwar.CachedViewCircle.CachedViewCircleIterator;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.logging.MilliStopWatch;
-import jsettlers.common.logging.StopWatch;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.constants.MatchConstants;
 
 /**
@@ -46,29 +45,19 @@ public final class FogOfWar implements Serializable {
 	final short height;
 	byte[][] sight;
 
-	private transient boolean enabled = true;
-	transient private IFogOfWarGrid grid;
+	private transient boolean enabled = Constants.FOG_OF_WAR_DEFAULT_ENABLED;
+	private transient IFogOfWarGrid grid;
 	private transient boolean canceled;
 
 	public FogOfWar(short width, short height) {
-		this(width, height, (byte) 0, false);
+		this(width, height, (byte) 0);
 	}
 
-	public FogOfWar(final short width, final short height, final byte player, final boolean exploredOnStart) {
+	public FogOfWar(short width, short height, byte player) {
 		this.width = width;
 		this.height = height;
 		this.player = player;
 		this.sight = new byte[width][height];
-
-		byte defaultSight = 0;
-		if (exploredOnStart) {
-			defaultSight = CommonConstants.FOG_OF_WAR_EXPLORED;
-		}
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				sight[x][y] = defaultSight;
-			}
-		}
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
@@ -103,12 +92,12 @@ public final class FogOfWar implements Serializable {
 		return (MatchConstants.ENABLE_ALL_PLAYER_FOG_OF_WAR || (playerable.getPlayerId() == player));
 	}
 
-	public final boolean isVisible(int centerx, int centery) {
-		return sight[centerx][centery] >= CommonConstants.FOG_OF_WAR_VISIBLE;
-	}
-
 	public final void toggleEnabled() {
 		enabled = !enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	final class NewFoWThread extends Thread {
@@ -117,7 +106,7 @@ public final class FogOfWar implements Serializable {
 		private byte[][] buffer;
 
 		NewFoWThread() {
-			super("NewFoWThread");
+			super("FoWThread");
 			super.setDaemon(true);
 			this.buffer = new byte[width][height];
 			drawer = new CircleDrawer();
@@ -128,8 +117,8 @@ public final class FogOfWar implements Serializable {
 			mySleep(500);
 
 			while (!canceled) {
-				StopWatch watch = new MilliStopWatch();
-				watch.restart();
+				// StopWatch watch = new MilliStopWatch();
+				// watch.restart();
 				if (enabled) {
 					rebuildSight();
 				}
@@ -238,4 +227,10 @@ public final class FogOfWar implements Serializable {
 	public void cancel() {
 		this.canceled = true;
 	}
+
+	public void reset() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

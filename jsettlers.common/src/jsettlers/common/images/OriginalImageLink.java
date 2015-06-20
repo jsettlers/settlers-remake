@@ -66,6 +66,20 @@ public final class OriginalImageLink extends ImageLink {
 	}
 
 	/**
+	 * Creates a new image link description for {@value EImageLinkType#GUI} images.
+	 * 
+	 * @param type
+	 *            The type
+	 * @param file
+	 *            The file it is in
+	 * @param sequence
+	 *            The sequence index
+	 */
+	public OriginalImageLink(EImageLinkType type, int file, int sequence) {
+		this(type, file, sequence, 0);
+	}
+
+	/**
 	 * Gets the type of the image.
 	 * 
 	 * @return The image type
@@ -115,5 +129,15 @@ public final class OriginalImageLink extends ImageLink {
 	 */
 	public int getLength() {
 		return length;
+	}
+
+	@Override
+	public String getName() {
+		return "original_" + file + "_" + type + "_" + sequence;
+	}
+
+	@Override
+	public int getImageIndex() {
+		return image;
 	}
 }

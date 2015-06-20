@@ -15,21 +15,21 @@
 package jsettlers.graphics.startscreen.startlists;
 
 import java.util.Collections;
+import java.util.List;
 
-import jsettlers.common.images.DirectImageLink;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.common.utils.collections.IChangingListListener;
-import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
-import jsettlers.graphics.map.controls.original.panel.content.UILabeledButton;
-import jsettlers.graphics.utils.UIList;
-import jsettlers.graphics.utils.UIList.ListItemGenerator;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIList;
+import jsettlers.graphics.ui.UIList.ListItemGenerator;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * A side panel of the start screen. TODO: Do not reload the list each time it changes, and only use it if we are in foreground.
- * 
+ *
  * @author michael
  */
 public abstract class StartListPanel<T> extends UIPanel implements
@@ -39,6 +39,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	private static final ImageLink LIST_BACKGROUND = null;
 	private final ChangingList<T> list;
 	private final UIList<T> uiList;
+	private final LabeledButton startbutton;
 
 	public StartListPanel(ChangingList<T> list) {
 		this.list = list;
@@ -48,14 +49,24 @@ public abstract class StartListPanel<T> extends UIPanel implements
 		listBg.setBackground(LIST_BACKGROUND);
 		this.addChild(listBg, 0, .15f, 1, 1);
 
-		// start button
-		UILabeledButton startbutton =
-				new UILabeledButton(Labels.getString(getSubmitTextId()),
-						getSubmitAction());
+		startbutton =
+				new LabeledButton(
+						Labels.getString(getSubmitTextId()),
+						new ExecutableAction() {
+							public void execute() {
+								onSubmitAction();
+							}
+						}
+				);
 		this.addChild(startbutton, .3f, 0, 1, .1f);
+
+        if (list != null) {
+            list.setListener(this);
+            listChanged(list);
+        }
 	}
 
-	protected abstract Action getSubmitAction();
+	protected abstract void onSubmitAction();
 
 	protected abstract String getSubmitTextId();
 
@@ -65,7 +76,9 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	@Override
 	public void listChanged(ChangingList<T> list) {
-		uiList.setItems(list.getItems());
+		List<? extends T> items = list.getItems();
+		startbutton.setEnabled( items.size() > 0 );
+		uiList.setItems(items);
 	}
 
 	protected ChangingList<T> getList() {
@@ -74,13 +87,9 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	@Override
 	public void onAttach() {
-		ChangingList<T> list2 = getList();
-		listChanged(list2);
-		list2.setListener(this);
 	}
 
 	@Override
 	public void onDetach() {
-		getList().setListener(null);
 	};
 }

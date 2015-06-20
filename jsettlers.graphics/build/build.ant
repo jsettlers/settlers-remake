@@ -30,16 +30,29 @@
         <path refid="go.graphics.classpath"/>
     </path>
     <target name="init">
+		<ant antfile="build/buildLayouts.ant" inheritAll="false" target="buildLayouts" />
+
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
-                <exclude name="**/*.launch"/>
+            	<exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="gen">
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
     </target>
     <target name="clean">
         <delete dir="bin"/>
+
+		<delete failonerror="false">
+			<fileset dir="../gen">
+			    <include name="**"/>
+			</fileset>
+		</delete>
     </target>
     <target depends="clean" name="cleanall">
         <ant antfile="build/build.ant" dir="${go.graphics.location}" inheritAll="false" target="clean"/>
@@ -62,6 +75,7 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
+            <src path="gen"/>
             <classpath refid="jsettlers.graphics.classpath"/>
         </javac>
     </target>
@@ -114,5 +128,10 @@
                 <propertyref name="build.compiler"/>
             </propertyset>
         </ant>
+    </target>
+    <target name="LayoutLoader">
+        <java classname="jsettlers.graphics.ui.generate.LayoutLoader" failonerror="true" fork="yes">
+            <classpath refid="jsettlers.graphics.classpath"/>
+        </java>
     </target>
 </project>

@@ -15,6 +15,12 @@
 package jsettlers.graphics.androidui.actions;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.action.BuildAction;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.localization.Labels;
 
 public class ConstructBuilding extends ContextAction {
@@ -27,6 +33,21 @@ public class ConstructBuilding extends ContextAction {
 	@Override
 	public String getDesciption() {
 		return String.format(Labels.getString("select_to_build"), Labels.getName(type));
+	}
+
+	@Override
+	public Action replaceAction(Action action) {
+		if (action.getActionType() == EActionType.SELECT_POINT) {
+			return new BuildAction(type, ((PointAction) action).getPosition());
+		} else {
+			return action;
+		}
+	}
+
+	@Override
+	public void onDeactivate(ActionFireable actionFireable) {
+		actionFireable.fireAction(new ShowConstructionMarksAction(null));
+		super.onDeactivate(actionFireable);
 	}
 
 }
