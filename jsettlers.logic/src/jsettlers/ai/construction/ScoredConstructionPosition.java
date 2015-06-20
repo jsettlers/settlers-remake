@@ -27,7 +27,7 @@ class ScoredConstructionPosition {
 		this.score = score;
 	}
 
-	public static ShortPoint2D getPositionWithLowestScore(List<ScoredConstructionPosition> scoredConstructionPositions) {
+	public static ShortPoint2D detectPositionWithLowestScore(List<ScoredConstructionPosition> scoredConstructionPositions) {
 		if (scoredConstructionPositions.size() == 0) {
 			return null;
 		}

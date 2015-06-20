@@ -57,7 +57,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 			}
 		}
 
-		return ScoredConstructionPosition.getPositionWithLowestScore(scoredConstructionPositions);
+		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
 }

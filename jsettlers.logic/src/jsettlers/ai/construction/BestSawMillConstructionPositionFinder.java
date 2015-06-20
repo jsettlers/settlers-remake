@@ -46,29 +46,12 @@ public class BestSawMillConstructionPositionFinder implements IBestConstructionP
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 
-				double lumberJackDistances = 0;
-				for (ShortPoint2D lumberJack : lumberJacks) {
-					double currentLumberJackDistance = Math.sqrt((lumberJack.x - point.x) * (lumberJack.x - point.x) + (lumberJack.y - point.y)
-							* (lumberJack.y - point.y));
-					lumberJackDistances += currentLumberJackDistance;
-				}
+				ShortPoint2D nearestLumberJackPosition = aiStatistics.detectNearestPointFromList(point, lumberJacks);
+				double lumberJackDistances = aiStatistics.getDistance(point, nearestLumberJackPosition);
 				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistances));
 			}
 		}
 
-		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition currentPosition : scoredConstructionPositions) {
-			if (winnerPosition == null) {
-				winnerPosition = currentPosition;
-			} else if (currentPosition.score < winnerPosition.score) {
-				winnerPosition = currentPosition;
-			}
-		}
-
-		if (winnerPosition == null) {
-			return null;
-		}
-
-		return winnerPosition.point;
+		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 }
