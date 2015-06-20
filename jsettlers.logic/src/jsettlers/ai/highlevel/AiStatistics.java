@@ -398,12 +398,12 @@ public class AiStatistics {
 			return;
 		}
 
-		ShortPoint2D nearestSoldierPosition = getNearestPointFromList(targetPosition, soldierPositions);
+		ShortPoint2D nearestSoldierPosition = detectNearestPointFromList(targetPosition, soldierPositions);
 		Movable soldier = movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
 		soldier.moveTo(targetPosition);
 	}
 
-	public ShortPoint2D getNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
+	public ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
 		ShortPoint2D nearestPoint = null;
 		double nearestPointDistance = Double.MAX_VALUE;
 		for (ShortPoint2D point : points) {
