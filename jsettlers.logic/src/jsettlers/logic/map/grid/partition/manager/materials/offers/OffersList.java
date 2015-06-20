@@ -19,6 +19,7 @@ import java.io.Serializable;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
+import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
 
 /**
  * This class builds a data structure to hold {@link MaterialOffer}s and access them with range searches.
@@ -30,6 +31,7 @@ public final class OffersList implements Serializable {
 	private static final long serialVersionUID = 3747575330300586115L;
 
 	private final PositionableList<MaterialOffer>[] offersLists;
+	private final short[] numberOfOffers = new short[EMaterialType.NUMBER_OF_MATERIALS];
 
 	/**
 	 * Constructor to create a new {@link OffersList}.
@@ -59,6 +61,8 @@ public final class OffersList implements Serializable {
 		} else {
 			list.insert(new MaterialOffer(position, (byte) 1));
 		}
+
+		numberOfOffers[material.ordinal]++;
 	}
 
 	/**
@@ -86,7 +90,7 @@ public final class OffersList implements Serializable {
 		PositionableList<MaterialOffer> offerSlot = offersLists[materialType.ordinal];
 		MaterialOffer offer = offerSlot.getObjectCloseTo(position);
 
-		decrementOfferAmount(offerSlot, offer);
+		decrementOfferAmount(offerSlot, materialType, offer);
 		return offer;
 	}
 
@@ -103,15 +107,16 @@ public final class OffersList implements Serializable {
 		PositionableList<MaterialOffer> offerSlot = offersLists[materialType.ordinal];
 		MaterialOffer offer = offerSlot.getObjectAt(position);
 
-		decrementOfferAmount(offerSlot, offer);
+		decrementOfferAmount(offerSlot, materialType, offer);
 		return offer;
 	}
 
-	private void decrementOfferAmount(PositionableList<MaterialOffer> offerSlot, MaterialOffer offer) {
+	private void decrementOfferAmount(PositionableList<MaterialOffer> offerSlot, EMaterialType materialType, MaterialOffer offer) {
 		if (offer != null) {
 			if (offer.decAmount() <= 0) { // if the offer is now empty.
 				offerSlot.remove(offer);
 			}
+			numberOfOffers[materialType.ordinal]--;
 		}
 	}
 
@@ -127,15 +132,27 @@ public final class OffersList implements Serializable {
 		return offerSlot.getObjectAt(position);
 	}
 
-	public void moveOffersAtPositionTo(ShortPoint2D position, OffersList materialOffers) {
+	public void moveOffersAtPositionTo(ShortPoint2D position, final OffersList otherList) {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			offersLists[i].moveObjectsAtPositionTo(position, materialOffers.offersLists[i]);
+			final int materialType = i;
+			offersLists[materialType].moveObjectsAtPositionTo(position, otherList.offersLists[i], new IMovedVisitor<MaterialOffer>() {
+				@Override
+				public void visit(MaterialOffer moved) { // correct the counts
+					numberOfOffers[materialType] -= moved.getAmount();
+					otherList.numberOfOffers[materialType] += moved.getAmount();
+				}
+			});
 		}
 	}
 
-	public void addAll(OffersList materialOffers) {
+	public void addAll(OffersList otherList) {
 		for (int i = 0; i < EMaterialType.NUMBER_OF_MATERIALS; i++) {
-			offersLists[i].addAll(materialOffers.offersLists[i]);
+			offersLists[i].addAll(otherList.offersLists[i]);
+			numberOfOffers[i] += otherList.numberOfOffers[i];
 		}
+	}
+
+	public int getOffersOf(EMaterialType materialType) {
+		return numberOfOffers[materialType.ordinal];
 	}
 }
