@@ -17,6 +17,8 @@ package jsettlers.ai.highlevel;
 import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.mapobject.EMapObjectType.STONE;
+import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
@@ -55,6 +57,7 @@ public class AiStatistics {
 	private Map<Integer, Integer> numberOfNotOccupiedTowers;
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
+	private Map<EMapObjectType, Map<Integer, List<Integer>>> sortedCuttableObjectsInDefaultPartition;
 	private Map<Integer, List<ShortPoint2D>> land;
 	private Map<Integer, List<ShortPoint2D>> borderLandNextToFreeLand;
 	private Map<Integer, Map<EBuildingType, List<ShortPoint2D>>> buildingPositions;
@@ -75,6 +78,11 @@ public class AiStatistics {
 
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType) {
 		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints);
+	}
+
+	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject) {
+		Map<Integer, List<Integer>> sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints);
 	}
 
@@ -276,6 +284,7 @@ public class AiStatistics {
 	private void updateMapStatistics() {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
+		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, Map<Integer, List<Integer>>>();
 		land = new HashMap<Integer, List<ShortPoint2D>>();
 		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
 		movablePositions = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
@@ -283,7 +292,28 @@ public class AiStatistics {
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
-				if (player != null) {
+				if (player == null) {
+					Integer xInteger = new Integer(x);
+					Integer yInteger = new Integer(y);
+					if (objectsGrid.hasCuttableObject(x, y, TREE_ADULT)) {
+						if (!sortedCuttableObjectsInDefaultPartition.containsKey(TREE_ADULT)) {
+							sortedCuttableObjectsInDefaultPartition.put(TREE_ADULT, new HashMap<Integer, List<Integer>>());
+						}
+						if (!sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).containsKey(xInteger)) {
+							sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).put(xInteger, new ArrayList<Integer>());
+						}
+						sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).get(xInteger).add(yInteger);
+					}
+					if (objectsGrid.hasCuttableObject(x, y, STONE)) {
+						if (!sortedCuttableObjectsInDefaultPartition.containsKey(STONE)) {
+							sortedCuttableObjectsInDefaultPartition.put(STONE, new HashMap<Integer, List<Integer>>());
+						}
+						if (!sortedCuttableObjectsInDefaultPartition.get(STONE).containsKey(xInteger)) {
+							sortedCuttableObjectsInDefaultPartition.get(STONE).put(xInteger, new ArrayList<Integer>());
+						}
+						sortedCuttableObjectsInDefaultPartition.get(STONE).get(xInteger).add(yInteger);
+					}
+				} else {
 					Integer playerId = new Integer(partitionsGrid.getPlayerAt(x, y).playerId);
 					ShortPoint2D point = new ShortPoint2D(x, y);
 					updateBorderlandNextToFreeLand(playerId, point);
@@ -422,9 +452,5 @@ public class AiStatistics {
 		}
 
 		return nearestPoint;
-	}
-
-	public ShortPoint2D getNearestTreePointInDefaultPartitionFor(ShortPoint2D point) {
-		return null;
 	}
 }

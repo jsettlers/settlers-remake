@@ -25,6 +25,7 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -56,6 +57,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId);
+		System.out.println("importantResource:" + importantResource + " " + playerId);
 
 		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId);
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TOWER, playerId));
@@ -67,7 +69,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				ShortPoint2D nearestResourcePoint;
 				switch (importantResource) {
 				case TREES:
-					nearestResourcePoint = aiStatistics.getNearestTreePointInDefaultPartitionFor(point);
+					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE);
 					break;
 				default:
 					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL);
@@ -85,7 +87,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId) {
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
 
-		if (trees.size() < 20) {
+		if (trees.size() < 30) {
 			return ImportantResource.TREES;
 		}
 
