@@ -139,8 +139,8 @@ public class DistributionPanel extends AbstractContentProvider {
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 162, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Iron Mine"),
-							new ConfigurationPanelRow("Gold Mine"),
 							new ConfigurationPanelRow("Coal Mine"),
+							new ConfigurationPanelRow("Gold Mine"),
 					})),
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 189, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
