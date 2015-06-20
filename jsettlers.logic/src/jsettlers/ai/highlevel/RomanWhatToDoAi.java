@@ -15,6 +15,8 @@
 package jsettlers.ai.highlevel;
 
 import static jsettlers.common.buildings.EBuildingType.BAKER;
+import static jsettlers.common.buildings.EBuildingType.BARRACK;
+import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.COALMINE;
 import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.FORESTER;
@@ -23,13 +25,16 @@ import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
 import static jsettlers.common.buildings.EBuildingType.IRONMELT;
 import static jsettlers.common.buildings.EBuildingType.IRONMINE;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.MILL;
 import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
 import static jsettlers.common.buildings.EBuildingType.SLAUGHTERHOUSE;
+import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TEMPLE;
 import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
+import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
@@ -48,8 +53,6 @@ import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.network.client.interfaces.ITaskScheduler;
-
-import static jsettlers.common.buildings.EBuildingType.*;
 
 public class RomanWhatToDoAi implements IWhatToDoAi {
 
@@ -97,6 +100,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		weaponsEconomy.add(new BuildingCount(IRONMINE, 0.5f));
 		weaponsEconomy.add(new BuildingCount(IRONMELT, 1));
 		weaponsEconomy.add(new BuildingCount(WEAPONSMITH, 1));
+		weaponsEconomy.add(new BuildingCount(BARRACK, 0.4f));
 		toolsEconomy.add(new BuildingCount(COALMINE, 1));
 		toolsEconomy.add(new BuildingCount(IRONMINE, 0.5f));
 		toolsEconomy.add(new BuildingCount(IRONMELT, 1));
@@ -118,6 +122,31 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(goldEconomy);
+		economiesOrder.add(foodEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(goldEconomy);
+		economiesOrder.add(foodEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(foodEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(foodEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
 	}
 
 	@Override
@@ -142,7 +171,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 					+ aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId) * 100
 					- aiStatistics.getNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
 			if (futureNumberOfBearers < 10 || numberOfTotalBuildings > 1.5 * futureNumberOfBearers) {
-				if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 4 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 3) {
+				if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 4
+						|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 3) {
 					construct(SMALL_LIVINGHOUSE);
 					return;
 				} else {
@@ -163,8 +193,10 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 						currentBuildingPlan.put(currentBuildingCount.buildingType, 0f);
 					}
 					float newCount = currentBuildingPlan.get(currentBuildingCount.buildingType) + currentBuildingCount.count;
-					currentBuildingPlan.put(currentBuildingCount.buildingType, currentBuildingPlan.get(currentBuildingCount.buildingType) + currentBuildingCount.count);
-					if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingCount.buildingType, playerId) < Math.max(1, Math.floor(newCount))) {
+					currentBuildingPlan.put(currentBuildingCount.buildingType, currentBuildingPlan.get(currentBuildingCount.buildingType)
+							+ currentBuildingCount.count);
+					if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingCount.buildingType, playerId) < Math.max(1,
+							Math.floor(newCount))) {
 						boolean constructWasSuccessful = construct(currentBuildingCount.buildingType);
 						if (constructWasSuccessful) {
 							return;
@@ -174,6 +206,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 			}
 		}
 	}
+
 	private boolean construct(EBuildingType type) {
 		ShortPoint2D position = bestConstructionPositionFinderFactory
 				.getBestConstructionPositionFinderFor(type)
