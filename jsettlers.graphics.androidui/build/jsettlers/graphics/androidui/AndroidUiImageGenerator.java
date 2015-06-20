@@ -133,7 +133,7 @@ public class AndroidUiImageGenerator {
 			String name = "mat_" + t.toString().toLowerCase();
 			File file = new File(destinationDirectory, name + ".png");
 
-			Image guiImage = i.getGuiImage(t.getGuiFile(), t.getGuiIconBase() + resolution);
+			Image guiImage = i.getImage(t.getIcon());
 			if (guiImage instanceof SingleImage) {
 				export((SingleImage) guiImage, file);
 				listOutput.println("\t\tR.drawable." + name + ",");
