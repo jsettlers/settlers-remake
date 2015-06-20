@@ -52,36 +52,14 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-
-				double militairyBuildingDistance = Double.MAX_VALUE;
-				for (ShortPoint2D militairyBuilding : militaryBuildings) {
-					double currentMilitaryBuildingDistance = Math.sqrt((militairyBuilding.x - point.x) * (militairyBuilding.x - point.x)
-							+ (militairyBuilding.y - point.y)
-							* (militairyBuilding.y - point.y));
-					if (currentMilitaryBuildingDistance < militairyBuildingDistance) {
-						militairyBuildingDistance = currentMilitaryBuildingDistance;
-					}
-				}
+				ShortPoint2D nearestMilitairyBuildingPosition = aiStatistics.detectNearestPointFromList(point, militaryBuildings);
+				double militairyBuildingDistance = aiStatistics.getDistance(point, nearestMilitairyBuildingPosition);
 				ShortPoint2D nearestResourcePoint = aiStatistics.getNearestResourcePointFor(point);
 				double nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), militairyBuildingDistance
-						- nearestResourcePointDistance));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance - militairyBuildingDistance));
 			}
 		}
 
-		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition currentPosition : scoredConstructionPositions) {
-			if (winnerPosition == null) {
-				winnerPosition = currentPosition;
-			} else if (currentPosition.score > winnerPosition.score) {
-				winnerPosition = currentPosition;
-			}
-		}
-
-		if (winnerPosition == null) {
-			return null;
-		}
-
-		return winnerPosition.point;
+		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 }
