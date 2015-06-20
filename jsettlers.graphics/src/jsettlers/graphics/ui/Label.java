@@ -19,17 +19,32 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 public class Label extends UIPanel {
+	public enum HorizontalAlignment {
+		LEFT,
+		CENTRE,
+		RIGHT,
+	}
 
 	private final EFontSize size;
 	private String[] words;
 	private double[] widths = null;
 	private double spaceWidth;
 	private double lineHeight;
+	private double lineBottom;
+	private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTRE;
 
 	public Label(String message, EFontSize size) {
 		this.size = size;
 
-		setMessage(message);
+		setText(message);
+	}
+
+	public void setText(String text) {
+		words = text.split(" ");
+	}
+
+	public void setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+		this.horizontalAlignment = horizontalAlignment;
 	}
 
 	public void setMessage(String message) {
@@ -50,6 +65,7 @@ public class Label extends UIPanel {
 			}
 			spaceWidth = drawer.getWidth(" ");
 			lineHeight = drawer.getHeight("j");
+			lineBottom = drawer.getHeight("A");
 		}
 
 		double maxwidth = getPosition().getWidth();
@@ -60,7 +76,7 @@ public class Label extends UIPanel {
 		for (int i = 1; i < words.length; i++) {
 			double newlinewidth = linewidth + spaceWidth + widths[i];
 			if (newlinewidth > maxwidth) {
-				drawLine(drawer, line.toString(), y);
+				drawLine(drawer, line.toString(), y, linewidth);
 				line = new StringBuilder(words[i]);
 				y += lineHeight;
 				linewidth = widths[i];
@@ -70,12 +86,25 @@ public class Label extends UIPanel {
 				linewidth = newlinewidth;
 			}
 		}
-		drawLine(drawer, line.toString(), y);
+		drawLine(drawer, line.toString(), y, linewidth);
 
 	}
 
-	private void drawLine(TextDrawer drawer, String string, double y) {
-		drawer.renderCentered(getPosition().getCenterX(),
-				(float) (getPosition().getMaxY() - y - lineHeight / 2), string);
+	private void drawLine(TextDrawer drawer, String string, double y, double linewidth) {
+		float left;
+		switch (horizontalAlignment) {
+		case LEFT:
+			left = getPosition().getMinX();
+			break;
+		case RIGHT:
+			left = (float) (getPosition().getMaxX() - linewidth);
+			break;
+		default:
+		case CENTRE:
+			left = (float) (getPosition().getCenterX() - linewidth / 2);
+			break;
+		}
+		float bottom = (float) (getPosition().getMaxY() - y - lineBottom);
+		drawer.drawString(left, bottom, string);
 	}
 }

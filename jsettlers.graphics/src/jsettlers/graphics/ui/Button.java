@@ -26,13 +26,16 @@ import jsettlers.graphics.action.Action;
  */
 public class Button extends UIPanel {
 	private boolean active = false;
-	private final Action action;
+	private Action action;
 	private final String description;
 	private ImageLink image;
 	private final ImageLink activeImage;
 
-	public Button(Action action, ImageLink image, ImageLink active,
-			String description) {
+	public Button(ImageLink image) {
+		this(null, image, image, "");
+	}
+
+	public Button(Action action, ImageLink image, ImageLink active, String description) {
 		this.action = action;
 		this.image = image;
 		activeImage = active;
@@ -65,5 +68,4 @@ public class Button extends UIPanel {
 	public String getDescription(float relativex, float relativey) {
 		return description;
 	}
-
 }

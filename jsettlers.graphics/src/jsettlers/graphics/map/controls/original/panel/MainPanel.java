@@ -26,9 +26,9 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.original.ControlPanelLayoutProperties;
+import jsettlers.graphics.map.controls.original.panel.content.AbstractContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.ContentType;
 import jsettlers.graphics.map.controls.original.panel.content.ESecondaryTabType;
-import jsettlers.graphics.map.controls.original.panel.content.IContentProvider;
 import jsettlers.graphics.map.controls.original.panel.content.MessageContent;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
@@ -81,11 +81,21 @@ public class MainPanel extends UIPanel {
 					},
 					Labels.getString("game-quit-ok"),
 					new Action(EActionType.EXIT)
-			);
+			) {
+				@Override
+				public void contentShowing(ActionFireable actionFireable) {
+					btnSystem.setActive(true);
+				}
+
+				@Override
+				public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
+					btnSystem.setActive(false);
+				}
+			};
 
 	private final Button btnSystem = new TabButton(quitPrompt,
 			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 93, 0),
-			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");;
+			new OriginalImageLink(EImageLinkType.GUI, BUTTONS_FILE, 96, 0), "game-quit-description");
 
 	private final Button btnScroll = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 111, 99, "");
 	private final Button btnSwords = new TabButton(ContentType.EMPTY, BUTTONS_FILE, 114, 102, "");
@@ -102,9 +112,9 @@ public class MainPanel extends UIPanel {
 
 	private ControlPanelLayoutProperties constants;
 
-	private IContentProvider activeContent = ContentType.BUILD_NORMAL;
+	private AbstractContentProvider activeContent = ContentType.BUILD_NORMAL;
 
-	private IContentProvider goBackContent;
+	private AbstractContentProvider goBackContent;
 
 	private IGraphicsGrid grid;
 
@@ -121,7 +131,7 @@ public class MainPanel extends UIPanel {
 		layoutPanel(ControlPanelLayoutProperties.getLayoutPropertiesFor(480));
 	}
 
-	public void setContent(IContentProvider type) {
+	public void setContent(AbstractContentProvider type) {
 		activeContent.contentHiding(actionFireable, type);
 
 		ESecondaryTabType tabs = type.getTabs();
@@ -153,11 +163,10 @@ public class MainPanel extends UIPanel {
 		activeContent.contentShowing(actionFireable);
 	}
 
-	private void setButtonsActive(TabButton[] buttons, IContentProvider type) {
+	private void setButtonsActive(TabButton[] buttons, AbstractContentProvider type) {
 		for (TabButton button : buttons) {
 			button.setActiveByContent(type);
 		}
-		btnSystem.setActive(false);
 	}
 
 	private void showSecondaryTabs(ESecondaryTabType tabs) {
@@ -234,7 +243,6 @@ public class MainPanel extends UIPanel {
 				constants.SYSTEM_BUTTON_RIGHT,
 				constants.SYSTEM_BUTTON_TOP
 				);
-		btnSystem.setActive(true); // Show as inactive until the functionality has been implemented
 	}
 
 	private void addLowerTabBar()

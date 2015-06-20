@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!ENTITY % imagelinktype "(SETTLER| GUI| LANDSCAPE)">
-<!ELEMENT element ((image|localized|null|action)*, element*) >
+<!ELEMENT element ((image|localized|null|action|material)*, element*) >
 
 <!ATTLIST element
    x CDATA #IMPLIED

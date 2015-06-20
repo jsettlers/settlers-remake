@@ -40,9 +40,9 @@ public final class ContentType {
 	public static final AbstractContentProvider BUILD_MILITARY = BuildingBuildContent.getMilitary();
 	public static final AbstractContentProvider BUILD_FOOD = BuildingBuildContent.getFood();
 
-	public static final AbstractContentProvider STOCK = EMPTY;
-	public static final AbstractContentProvider TOOLS = EMPTY;
-	public static final AbstractContentProvider GOODS_SPREAD = EMPTY;
+	public static final AbstractContentProvider STOCK = new InventoryPanel();
+	public static final AbstractContentProvider TOOLS = new ToolsPanel();
+	public static final AbstractContentProvider GOODS_SPREAD = new DistributionPanel();
 	public static final AbstractContentProvider GOODS_TRANSPORT = new MaterialPriorityContent();
 
 	public static final AbstractContentProvider SETTLERSTATISTIC = EMPTY;

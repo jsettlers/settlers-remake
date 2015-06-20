@@ -24,7 +24,7 @@ import jsettlers.graphics.ui.Button;
 
 /**
  * A button that controls the display of the buildings on the minimap.
- * 
+ *
  * @author Michael Zangl
  */
 public class MinimapBuildingButton extends Button {
@@ -41,7 +41,7 @@ public class MinimapBuildingButton extends Button {
 		}
 	}
 
-	private static final OriginalImageLink INACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 364, 0);
+	private static final OriginalImageLink INACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 363, 0); //TODO this should be referencing MiniMapLayoutProperties
 	private static final OriginalImageLink ACTIVE = new OriginalImageLink(EImageLinkType.GUI, MainPanel.BUTTONS_FILE, 360, 0);
 	private MinimapMode minimapSettings;
 

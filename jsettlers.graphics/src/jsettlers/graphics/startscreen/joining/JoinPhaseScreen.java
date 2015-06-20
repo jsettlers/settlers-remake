@@ -31,9 +31,9 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIList;
+import jsettlers.graphics.ui.UIList.ListItemGenerator;
 import jsettlers.graphics.ui.UIListItem;
 import jsettlers.graphics.ui.UIPanel;
-import jsettlers.graphics.ui.UIList.ListItemGenerator;
 
 public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 		IChangingListListener<IMultiplayerPlayer> {

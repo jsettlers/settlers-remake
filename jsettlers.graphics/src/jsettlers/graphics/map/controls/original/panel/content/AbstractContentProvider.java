@@ -6,24 +6,23 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
+import jsettlers.graphics.ui.UIPanel;
 
-public abstract class AbstractContentProvider implements IContentProvider {
+public abstract class AbstractContentProvider {
 
-	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
-	}
+	public abstract UIPanel getPanel();
 
-	@Override
 	public ESecondaryTabType getTabs() {
 		return ESecondaryTabType.NONE;
 	}
 
-	@Override
 	public boolean isForSelection() {
 		return false;
 	}
 
-	@Override
+	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
+	}
+
 	public Action catchAction(Action action) {
 		PointAction overrideAction;
 		if (action.getActionType() == EActionType.SELECT_POINT
@@ -38,11 +37,9 @@ public abstract class AbstractContentProvider implements IContentProvider {
 		return null;
 	}
 
-	@Override
-	public void contentHiding(ActionFireable actionFireable, IContentProvider nextContent) {
+	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
 	}
 
-	@Override
 	public void contentShowing(ActionFireable actionFireable) {
 	}
 

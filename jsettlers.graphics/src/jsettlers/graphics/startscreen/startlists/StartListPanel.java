@@ -24,8 +24,8 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.LabeledButton;
 import jsettlers.graphics.ui.UIList;
-import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.UIList.ListItemGenerator;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * A side panel of the start screen. TODO: Do not reload the list each time it changes, and only use it if we are in foreground.

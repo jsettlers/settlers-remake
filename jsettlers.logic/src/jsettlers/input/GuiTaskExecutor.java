@@ -129,7 +129,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case SET_MATERIAL_PRIORITIES: {
 			SetMaterialPrioritiesGuiTask task = (SetMaterialPrioritiesGuiTask) guiTask;
-			grid.setMaterialPrioritiesSetting(task.getManagerPosition(), task.getMaterialTypeForPriority());
+			grid.setMaterialPrioritiesSettings(task.getManagerPosition(), task.getMaterialTypeForPriority());
 		}
 			break;
 

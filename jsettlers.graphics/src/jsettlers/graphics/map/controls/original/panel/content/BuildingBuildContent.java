@@ -159,7 +159,7 @@ public class BuildingBuildContent extends AbstractContentProvider {
 	}
 
 	@Override
-	public void contentHiding(ActionFireable actionFireable, IContentProvider nextContent) {
+	public void contentHiding(ActionFireable actionFireable, AbstractContentProvider nextContent) {
 		if (activeBuilding != null) {
 			actionFireable.fireAction(new ShowConstructionMarksAction(null));
 		}
