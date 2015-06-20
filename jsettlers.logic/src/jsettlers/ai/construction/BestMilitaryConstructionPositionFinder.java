@@ -69,6 +69,9 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				ShortPoint2D nearestResourcePoint;
 				switch (importantResource) {
 				case TREES:
+					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT);
+					break;
+				case STONES:
 					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE);
 					break;
 				default:
@@ -86,11 +89,13 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId) {
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
-
+		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		if (trees.size() < 30) {
 			return ImportantResource.TREES;
 		}
-
+		if (stones.size() < 7) {
+			return ImportantResource.STONES;
+		}
 		return ImportantResource.COAL;
 	}
 }
