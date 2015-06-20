@@ -213,6 +213,9 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				.findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
 		if (position != null) {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
+			if (type == TOWER) {
+				aiStatistics.sendAnySoldierToPosition(position, playerId);
+			}
 			return true;
 		}
 		return false;

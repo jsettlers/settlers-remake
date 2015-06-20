@@ -17,6 +17,9 @@ package jsettlers.ai.highlevel;
 import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
+import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +49,7 @@ public class AiStatistics {
 	private final Queue<Building> buildings;
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
 	private Map<Integer, Map<EBuildingType, Integer>> buildingsNumbers;
-	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movableNumbers;
+	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movablePositions;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
 	private Map<Integer, Integer> numberOfTotalBuildings;
 	private Map<Integer, Integer> numberOfNotOccupiedTowers;
@@ -141,10 +144,10 @@ public class AiStatistics {
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
-		if (!movableNumbers.containsKey(playerIdInteger) || !movableNumbers.get(playerIdInteger).containsKey(movableType)) {
+		if (!movablePositions.containsKey(playerIdInteger) || !movablePositions.get(playerIdInteger).containsKey(movableType)) {
 			return new ArrayList<ShortPoint2D>();
 		}
-		return movableNumbers.get(playerIdInteger).get(movableType);
+		return movablePositions.get(playerIdInteger).get(movableType);
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
@@ -268,7 +271,7 @@ public class AiStatistics {
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
 		land = new HashMap<Integer, List<ShortPoint2D>>();
 		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
-		movableNumbers = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
+		movablePositions = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
 
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
@@ -296,13 +299,13 @@ public class AiStatistics {
 					Movable movable = movableGrid.getMovableAt(x, y);
 					if (movable != null) {
 						EMovableType movableType = movable.getMovableType();
-						if (!movableNumbers.containsKey(playerId)) {
-							movableNumbers.put(playerId, new HashMap<EMovableType, List<ShortPoint2D>>());
+						if (!movablePositions.containsKey(playerId)) {
+							movablePositions.put(playerId, new HashMap<EMovableType, List<ShortPoint2D>>());
 						}
-						if (!movableNumbers.get(playerId).containsKey(movableType)) {
-							movableNumbers.get(playerId).put(movableType, new ArrayList<ShortPoint2D>());
+						if (!movablePositions.get(playerId).containsKey(movableType)) {
+							movablePositions.get(playerId).put(movableType, new ArrayList<ShortPoint2D>());
 						}
-						movableNumbers.get(playerId).get(movableType).add(point);
+						movablePositions.get(playerId).get(movableType).add(point);
 					}
 				}
 			}
@@ -381,5 +384,36 @@ public class AiStatistics {
 		} else if (building.getBuildingType() == EBuildingType.TOWER && !building.isOccupied()) {
 			numberOfNotOccupiedTowers.put(playerId, numberOfNotOccupiedTowers.get(playerId) + 1);
 		}
+	}
+
+	public void sendAnySoldierToPosition(ShortPoint2D targetPosition, byte playerId) {
+		List<ShortPoint2D> soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L3, playerId);
+		if (soldierPositions.size() == 0) {
+			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L2, playerId);
+		}
+		if (soldierPositions.size() == 0) {
+			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L1, playerId);
+		}
+		if (soldierPositions.size() == 0) {
+			return;
+		}
+
+		ShortPoint2D nearestSoldierPosition = getNearestPointFromList(targetPosition, soldierPositions);
+		Movable soldier = movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
+		soldier.moveTo(targetPosition);
+	}
+
+	public ShortPoint2D getNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
+		ShortPoint2D nearestPoint = null;
+		double nearestPointDistance = Double.MAX_VALUE;
+		for (ShortPoint2D point : points) {
+			double currentPointDistance = getDistance(referencePoint, point);
+			if (nearestPoint == null || currentPointDistance < nearestPointDistance) {
+				nearestPoint = point;
+				nearestPointDistance = currentPointDistance;
+			}
+		}
+
+		return nearestPoint;
 	}
 }
