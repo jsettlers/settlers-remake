@@ -42,35 +42,22 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
+		if (stones.size() == 0) {
+			return null;
+		}
 
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				double stoneDistance = Double.MAX_VALUE;
-				for (ShortPoint2D stone : stones) {
-					double currentStoneDistance = Math.sqrt((stone.x - point.x) * (stone.x - point.x) + (stone.y - point.y) * (stone.y - point.y));
-					if (currentStoneDistance < stoneDistance) {
-						stoneDistance = currentStoneDistance;
-					}
+				ShortPoint2D nearestStonePosition = aiStatistics.getNearestPointFromList(point, stones);
+				double stoneDistance = aiStatistics.getDistance(point, nearestStonePosition);
+				if (stoneDistance < MAX_STONE_DISTANCE) {
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance));
 				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), stoneDistance));
 			}
 		}
 
-		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
-			if (winnerPosition == null) {
-				winnerPosition = scoredConstructionPosition;
-			} else if (winnerPosition.score > scoredConstructionPosition.score) {
-				winnerPosition = scoredConstructionPosition;
-			}
-		}
-
-		if (winnerPosition == null || winnerPosition.score > MAX_STONE_DISTANCE) {
-			return null;
-		}
-
-		return winnerPosition.point;
+		return ScoredConstructionPosition.getPositionWithLowestScore(scoredConstructionPositions);
 	}
 
 }

@@ -16,6 +16,8 @@ package jsettlers.ai.construction;
 
 import jsettlers.common.position.ShortPoint2D;
 
+import java.util.List;
+
 class ScoredConstructionPosition {
 	ShortPoint2D point;
 	double score;
@@ -23,6 +25,23 @@ class ScoredConstructionPosition {
 	public ScoredConstructionPosition(ShortPoint2D point, double score) {
 		this.point = point;
 		this.score = score;
+	}
+
+	public static ShortPoint2D getPositionWithLowestScore(List<ScoredConstructionPosition> scoredConstructionPositions) {
+		if (scoredConstructionPositions.size() == 0) {
+			return null;
+		}
+
+		ScoredConstructionPosition winnerPosition = null;
+		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
+			if (winnerPosition == null) {
+				winnerPosition = scoredConstructionPosition;
+			} else if (scoredConstructionPosition.score < winnerPosition.score ) {
+				winnerPosition = scoredConstructionPosition;
+			}
+		}
+
+		return winnerPosition.point;
 	}
 
 }
