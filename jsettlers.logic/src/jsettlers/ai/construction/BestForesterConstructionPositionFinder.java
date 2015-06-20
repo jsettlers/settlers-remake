@@ -47,41 +47,18 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-
-				double lumberJackDistance = 0;
-				for (ShortPoint2D lumberJack : lumberJacks) {
-					double currentLumberJackDistance = Math.sqrt((lumberJack.x - point.x) * (lumberJack.x - point.x) + (lumberJack.y - point.y)
-							* (lumberJack.y - point.y));
-					if (lumberJackDistance == 0 || currentLumberJackDistance < lumberJackDistance) {
-						lumberJackDistance = currentLumberJackDistance;
-					}
-				}
+				ShortPoint2D nearestLumberJackPoint = aiStatistics.detectNearestPointFromList(point, lumberJacks);
+				ShortPoint2D nearestForesterPoint = aiStatistics.detectNearestPointFromList(point, foresters);
+				double lumberJackDistance = aiStatistics.getDistance(point, nearestLumberJackPoint);
 				double foresterDistance = 0;
-				for (ShortPoint2D forester : foresters) {
-					double currentForesterDistance = Math.sqrt((forester.x - point.x) * (forester.x - point.x) + (forester.y - point.y)
-							* (forester.y - point.y));
-					if (foresterDistance == 0 || currentForesterDistance < foresterDistance) {
-						foresterDistance = currentForesterDistance;
-					}
+				if (nearestForesterPoint != null) {
+					foresterDistance = aiStatistics.getDistance(point, nearestForesterPoint);
 				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance
-						- foresterDistance));
+
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance - foresterDistance));
 			}
 		}
 
-		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition currentPosition : scoredConstructionPositions) {
-			if (winnerPosition == null) {
-				winnerPosition = currentPosition;
-			} else if (currentPosition.score < winnerPosition.score) {
-				winnerPosition = currentPosition;
-			}
-		}
-
-		if (winnerPosition == null) {
-			return null;
-		}
-
-		return winnerPosition.point;
+		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 }
