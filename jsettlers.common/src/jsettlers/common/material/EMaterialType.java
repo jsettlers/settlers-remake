@@ -55,10 +55,24 @@ public enum EMaterialType {
 	WATER((short) 77, 3, 156, true, 12, false),
 	WINE((short) 69, 14, 123, true, 25, false),
 
-	WHITE_BREAD((short) 0, 0, 0, false, -1, false),
-	BASKET((short) 0, 0, 0, false, -1, false),
-	TREE((short) 0, 0, 0, false, -1, false),
-	PLANT((short) 0, 0, 0, false, -1, false);
+	GEMS((short) 79, (short) 24, (short) 120, true, -1, false),
+	SULFUR((short) 80, (short) 34, (short) 126, true, -1, false),
+	RICE((short) 78, (short) 34, (short) 129, true, -1, false),
+	KEG((short) 70, (short) 34, (short) 132, true, -1, false),
+
+	BOX((short) 82, (short) 0, (short) 0, true, -1, false),
+
+	// ammo for cannon (6 frames instead of 8)
+	CANNON_AMMO((short) 86, (short) 0, (short) 0, false, -1, false),
+	// ammo for ballista (6 frames instead of 8)
+	BALLISTA_AMMO((short) 87, (short) 0, (short) 0, false, -1, false),
+	// ammo for catapult (6 frames instead of 8)
+	CATAPULT_AMMO((short) 88, (short) 0, (short) 0, false, -1, false),
+
+	WHITE_BREAD((short) 0, (short) 0, (short) 0, false, -1, false),
+	BASKET((short) 0, (short) 0, (short) 0, false, -1, false),
+	TREE((short) 0, (short) 0, (short) 0, false, -1, false),
+	PLANT((short) 0, (short) 0, (short) 0, false, -1, false);
 
 	public static final EMaterialType[] values = EMaterialType.values();
 	public static final int NUMBER_OF_MATERIALS = values.length;
@@ -70,17 +84,17 @@ public enum EMaterialType {
 
 	static {
 		// calculate the number of droppable materials and build up an array in
-		// the default priority order.
+		// the default priority order. (not all materials have priority index but may be dropped)
 		int numberOfDroppable = 0;
 		for (int i = 0; i < NUMBER_OF_MATERIALS; i++) {
-			if (values[i].droppable) {
+			if (values[i].droppable && values[i].defaultPrioIdx >= 0) {
 				numberOfDroppable++;
 			}
 		}
 		NUMBER_OF_DROPPABLE_MATERIALS = numberOfDroppable;
 		DROPPABLE_MATERIALS = new EMaterialType[numberOfDroppable];
 		for (int i = 0; i < NUMBER_OF_MATERIALS; i++) {
-			if (values[i].droppable) {
+			if (values[i].droppable && values[i].defaultPrioIdx >= 0) {
 				DROPPABLE_MATERIALS[values[i].defaultPrioIdx] = values[i];
 			}
 		}

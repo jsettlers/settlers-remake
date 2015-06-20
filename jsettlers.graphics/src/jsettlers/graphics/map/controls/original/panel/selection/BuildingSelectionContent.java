@@ -35,6 +35,7 @@ import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.SetBuildingPriorityAction;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.selection.BuildingState.StackState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
@@ -54,17 +55,21 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	public BuildingSelectionContent(ISelectionSet selection) {
 		building = (IBuilding) selection.get(0);
 
-		lastState = new BuildingState(building);
-		addPanelContent();
+		updatePanelContent();
 	}
 
-	private void addPanelContent() {
+	private void updatePanelContent() {
+		lastState = new BuildingState(building);
+		addPanelContent(lastState);
+	}
+
+	private void addPanelContent(BuildingState state) {
 		rootPanel.removeAll();
 		ImageLink[] images = building.getBuildingType().getImages();
 		BuildingSelectionLayout layout = new BuildingSelectionLayout();
 		layout.background.setImages(images);
 
-		EPriority[] supported = building.getSupportedPriorities();
+		EPriority[] supported = state.getSupportedPriorities();
 		if (supported.length < 2) {
 			layout.background.removeChild(layout.priority);
 		} else {
@@ -75,10 +80,11 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			layout.background.removeChild(layout.workRadius);
 		}
 
-		layout.nameText.setType(building.getBuildingType(), building.getStateProgress() < 1);
+		layout.nameText.setType(building.getBuildingType(), state.isConstruction());
 
-		addRequestAndOfferStacks(layout.materialArea);
+		addRequestAndOfferStacks(layout.materialArea, state);
 
+		// TODO: convert to state
 		if (building instanceof IBuilding.IOccupyed) {
 			List<? extends IBuildingOccupyer> occupyers =
 					((IBuilding.IOccupyed) building).getOccupyers();
@@ -87,7 +93,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		rootPanel.addChild(layout._root, 0, 0, 1, 1);
 	}
 
-	private void addRequestAndOfferStacks(UIPanel materialArea) {
+	private void addRequestAndOfferStacks(UIPanel materialArea, BuildingState state) {
 		// hardcoded...
 		float buttonWidth = 18f / (127 - 9);
 		float buttonSpace = 12f / (127 - 9);
@@ -97,9 +103,9 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		float requestX = buttonSpace;
 		float offerX = 1 - buttonSpace - buttonWidth;
 
-		for (IBuildingMaterial mat : materials) {
-			MaterialDisplay display = new MaterialDisplay(mat.getMaterialType(), mat.getMaterialCount(), -1);
-			if (mat.isOffering()) {
+		for (StackState mat : state.getStackStates()) {
+			MaterialDisplay display = new MaterialDisplay(mat.type, mat.count, -1);
+			if (mat.offering) {
 				materialArea.addChild(display, offerX, 0, offerX + buttonWidth, 1);
 				offerX -= buttonSpace + buttonWidth;
 			} else {
@@ -289,8 +295,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 	public void refreshContentIfNeeded() {
 		if (!lastState.isStillInState(building)) {
 			rootPanel.removeAll();
-			addPanelContent();
-			lastState = new BuildingState(building);
+			updatePanelContent();
 		}
 	}
 }
