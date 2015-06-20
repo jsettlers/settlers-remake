@@ -42,52 +42,20 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
-
+		if (trees.size() == 0) {
+			return null;
+		}
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && aiStatistics.southIsFreeForPlayer(point, playerId)
 					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-
-				double[] treeDistance = new double[5];
-				treeDistance[0] = Double.MAX_VALUE / 5;
-				treeDistance[1] = Double.MAX_VALUE / 5;
-				treeDistance[2] = Double.MAX_VALUE / 5;
-				treeDistance[3] = Double.MAX_VALUE / 5;
-				treeDistance[4] = Double.MAX_VALUE / 5;
-				for (ShortPoint2D tree : trees) {
-					double currentTreeDistance = Math.sqrt((tree.x - point.x) * (tree.x - point.x) + (tree.y - point.y) * (tree.y - point.y));
-					for (int i = 0; i < treeDistance.length; i++) {
-						if (currentTreeDistance < treeDistance[i]) {
-							for (int ii = i + 1; ii < treeDistance.length; ii++) {
-								treeDistance[ii] = treeDistance[ii - 1];
-							}
-							treeDistance[i] = currentTreeDistance;
-							break;
-						}
-					}
-				}
-				double score = 0;
-				for (int i = 0; i < treeDistance.length; i++) {
-					score += treeDistance[i];
-				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), score));
+				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
+				double treeDistance = aiStatistics.getDistance(point, nearestTreePosition);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
 			}
 		}
 
-		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
-			if (winnerPosition == null) {
-				winnerPosition = scoredConstructionPosition;
-			} else if (winnerPosition.score > scoredConstructionPosition.score) {
-				winnerPosition = scoredConstructionPosition;
-			}
-		}
-
-		if (winnerPosition == null) {
-			return null;
-		}
-
-		return winnerPosition.point;
+		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
 }

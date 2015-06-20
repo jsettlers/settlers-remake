@@ -139,6 +139,9 @@ public class AiStatistics {
 	}
 
 	public double getDistance(ShortPoint2D pointA, ShortPoint2D pointB) {
+		if (pointA == null || pointB == null) {
+			return 0;
+		}
 		return Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
 	}
 
