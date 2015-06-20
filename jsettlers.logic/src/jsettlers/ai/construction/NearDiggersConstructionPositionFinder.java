@@ -23,7 +23,13 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
-
+/**
+ * Assumptions: farms and winegrowers are placed near by diggers and with free space at the south
+ *
+ * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score - score is affected by the distance to all diggers
+ *
+ * @author codingberlin
+ */
 public class NearDiggersConstructionPositionFinder implements IBestConstructionPositionFinder {
 
 	EBuildingType buildingType;
@@ -35,35 +41,17 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ShortPoint2D> diggers = aiStatistics.getMovablePositionsByTypeForPlayer(DIGGER, playerId);
-
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
+
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-
-				double lumberJackDistances = 0;
-				for (ShortPoint2D digger : diggers) {
-					double currentLumberJackDistance = Math.sqrt((digger.x - point.x) * (digger.x - point.x) + (digger.y - point.y)
-							* (digger.y - point.y));
-					lumberJackDistances += currentLumberJackDistance;
-				}
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, lumberJackDistances));
+				ShortPoint2D nearestDiggerPosition = aiStatistics.detectNearestPointFromList(point, diggers);
+				double nearestDiggerDistance = aiStatistics.getDistance(point, nearestDiggerPosition);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestDiggerDistance));
 			}
 		}
 
-		ScoredConstructionPosition winnerPosition = null;
-		for (ScoredConstructionPosition currentPosition : scoredConstructionPositions) {
-			if (winnerPosition == null) {
-				winnerPosition = currentPosition;
-			} else if (currentPosition.score < winnerPosition.score) {
-				winnerPosition = currentPosition;
-			}
-		}
-
-		if (winnerPosition == null) {
-			return null;
-		}
-
-		return winnerPosition.point;
+		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
 }

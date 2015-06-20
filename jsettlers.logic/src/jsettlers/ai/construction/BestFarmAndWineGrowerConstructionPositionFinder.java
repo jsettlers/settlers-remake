@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import static jsettlers.common.movable.EMovableType.DIGGER;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,38 +25,35 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Assumptions: trees are placed as groups or as a single tree on the map
+ * Assumptions: farms and winegrowers are placed near by diggers and with free space at the south
  * 
- * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the distance from the most near
- * tree of the possible construction position - takes the position with the best score (lowest distance to the most near tree)
+ * Algorithm: find all possible construction points within the borders of the player where the south is free - calculates a score and take the
+ * position with the best score - score is affected by the distance to all diggers
  * 
  * @author codingberlin
  */
-public class BestLumberJackConstructionPositionFinder implements IBestConstructionPositionFinder {
+public class BestFarmAndWineGrowerConstructionPositionFinder implements IBestConstructionPositionFinder {
 
 	EBuildingType buildingType;
 
-	public BestLumberJackConstructionPositionFinder(EBuildingType buildingType) {
+	public BestFarmAndWineGrowerConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
 	}
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
-		if (trees.size() == 0) {
-			return null;
-		}
+		List<ShortPoint2D> diggers = aiStatistics.getMovablePositionsByTypeForPlayer(DIGGER, playerId);
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
+
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && aiStatistics.southIsFreeForPlayer(point, playerId)
-					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
-				double treeDistance = aiStatistics.getDistance(point, nearestTreePosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
+			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)
+					&& aiStatistics.southIsFreeForPlayer(point, playerId)) {
+				ShortPoint2D nearestDiggerPosition = aiStatistics.detectNearestPointFromList(point, diggers);
+				double nearestDiggerDistance = aiStatistics.getDistance(point, nearestDiggerPosition);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestDiggerDistance));
 			}
 		}
 
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
-
 }

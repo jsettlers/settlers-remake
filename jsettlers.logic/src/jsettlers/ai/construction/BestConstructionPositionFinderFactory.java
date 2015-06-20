@@ -16,11 +16,13 @@ package jsettlers.ai.construction;
 
 import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
 import static jsettlers.common.buildings.EBuildingType.CASTLE;
+import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.FORESTER;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TOWER;
+import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import jsettlers.common.buildings.EBuildingType;
 
 public class BestConstructionPositionFinderFactory {
@@ -40,6 +42,9 @@ public class BestConstructionPositionFinderFactory {
 		}
 		if (type == TOWER || type == BIG_TOWER || type == CASTLE) {
 			return new BestMilitaryConstructionPositionFinder(type);
+		}
+		if (type == FARM || type == WINEGROWER) {
+			return new BestFarmAndWineGrowerConstructionPositionFinder(type);
 		}
 
 		return new NearDiggersConstructionPositionFinder(type);
