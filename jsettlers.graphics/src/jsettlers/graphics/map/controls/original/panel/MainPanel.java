@@ -261,6 +261,11 @@ public class MainPanel extends UIPanel {
 				public PointAction getSelectAction(ShortPoint2D position) {
 					return new PointAction(EActionType.SET_WORK_AREA, position);
 				}
+
+				@Override
+				public boolean isForSelection() {
+					return true;
+				}
 			});
 			return null;
 		} else if (action.getActionType() == EActionType.ASK_DESTROY) {
@@ -269,7 +274,12 @@ public class MainPanel extends UIPanel {
 					Labels.getString("really_destroy_building"),
 					Labels.getName(EActionType.DESTROY), new Action(
 							EActionType.DESTROY), Labels.getString("abort"),
-					new Action(EActionType.ABORT)));
+					new Action(EActionType.ABORT)) {
+				@Override
+				public boolean isForSelection() {
+					return true;
+				}
+			});
 			return null;
 		} else if (action.getActionType() == EActionType.ABORT) {
 			goBack();
