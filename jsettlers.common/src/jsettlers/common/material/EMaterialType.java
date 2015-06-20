@@ -38,10 +38,10 @@ public enum EMaterialType {
 	GOLD((short) 37, 3, 135, true, 24, false),
 	GOLDORE((short) 36, 3, 150, true, 23, false),
 	HAMMER((short) 51, 3, 126, true, 17, false),
-	HONEY((short) 0, 14, 129, true, 26, true),
+	HONEY((short) 89, 14, 129, true, 26, true),
 	IRON((short) 42, 3, 132, true, 3, true),
 	IRONORE((short) 39, 3, 147, true, 4, false),
-	MEAD((short) 0, 14, 126, true, 27, true),
+	MEAD((short) 90, 14, 126, true, 27, true),
 	MEAT((short) 52, 3, 162, true, 8, true),
 	PICK((short) 53, 3, 129, true, 19, false),
 	PIG((short) 73, 3, 159, true, 11, false),
@@ -129,7 +129,7 @@ public enum EMaterialType {
 
 	/**
 	 * Gets an icon that is used in the GUI for this material.
-	 * 
+	 *
 	 * @return An image link to the icon.
 	 */
 	public ImageLink getIcon() {
