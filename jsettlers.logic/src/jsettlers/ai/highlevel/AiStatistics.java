@@ -31,12 +31,14 @@ import java.util.Queue;
 
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
@@ -66,6 +68,7 @@ public class AiStatistics {
 	private final ObjectsGrid objectsGrid;
 	private final PartitionsGrid partitionsGrid;
 	private final MovableGrid movableGrid;
+	private final FlagsGrid flagsGrid;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
@@ -74,6 +77,7 @@ public class AiStatistics {
 		this.objectsGrid = mainGrid.getObjectsGrid();
 		this.partitionsGrid = mainGrid.getPartitionsGrid();
 		this.movableGrid = mainGrid.getMovableGrid();
+		this.flagsGrid = mainGrid.getFlagsGrid();
 	}
 
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType) {
@@ -259,7 +263,10 @@ public class AiStatistics {
 	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point) {
 		return pointIsBlocked((point.x), (short) (point.y - 12))
 				|| pointIsBlocked((short) (point.x - 5), (short) (point.y - 12))
-				|| pointIsBlocked((short) (point.x - 10), (short) (point.y - 12));
+				|| pointIsBlocked((short) (point.x - 10), (short) (point.y - 12))
+				|| pointIsBlocked((point.x), (short) (point.y - 6))
+				|| pointIsBlocked((short) (point.x - 5), (short) (point.y - 6))
+				|| pointIsBlocked((short) (point.x - 10), (short) (point.y - 6));
 	}
 
 	private boolean pointIsBlocked(short x, short y) {
@@ -274,11 +281,15 @@ public class AiStatistics {
 	public boolean southIsFreeForPlayer(ShortPoint2D point, byte playerId) {
 		return pointIsFreeForPlayer(point.x, (short) (point.y + 12), playerId)
 				&& pointIsFreeForPlayer((short) (point.x + 5), (short) (point.y + 12), playerId)
-				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 12), playerId);
+				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 12), playerId)
+				&& pointIsFreeForPlayer(point.x, (short) (point.y + 6), playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 5), (short) (point.y + 6), playerId)
+				&& pointIsFreeForPlayer((short) (point.x + 10), (short) (point.y + 6), playerId);
 	}
 
 	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
-		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAreaAt(x, y);
+		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAreaAt(x, y) && !flagsGrid.isProtected(x, y)
+				&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 
 	private void updateMapStatistics() {

@@ -412,6 +412,10 @@ public final class MainGrid implements Serializable {
 				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
 	}
 
+	public FlagsGrid getFlagsGrid() {
+		return flagsGrid;
+	}
+
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
 		private static final long serialVersionUID = -2775530442375843213L;
 
