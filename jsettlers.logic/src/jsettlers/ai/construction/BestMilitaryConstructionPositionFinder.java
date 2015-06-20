@@ -24,6 +24,7 @@ import java.util.List;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
@@ -37,7 +38,16 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class BestMilitaryConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	EBuildingType buildingType;
+	private final EBuildingType buildingType;
+
+	private enum ImportantResource {
+		TREES,
+		STONES,
+		COAL,
+		IRON,
+		GOLD,
+		WINE_MOUNTAIN
+	}
 
 	public BestMilitaryConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
@@ -45,6 +55,8 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId);
+
 		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId);
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TOWER, playerId));
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(CASTLE, playerId));
@@ -52,14 +64,31 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
+				ShortPoint2D nearestResourcePoint;
+				switch (importantResource) {
+				case TREES:
+					nearestResourcePoint = aiStatistics.getNearestTreePointInDefaultPartitionFor(point);
+					break;
+				default:
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL);
+				}
+				double nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
 				ShortPoint2D nearestMilitairyBuildingPosition = aiStatistics.detectNearestPointFromList(point, militaryBuildings);
 				double militairyBuildingDistance = aiStatistics.getDistance(point, nearestMilitairyBuildingPosition);
-				ShortPoint2D nearestResourcePoint = aiStatistics.getNearestResourcePointFor(point);
-				double nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
 				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance - militairyBuildingDistance));
 			}
 		}
 
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
+	}
+
+	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId) {
+		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
+
+		if (trees.size() < 20) {
+			return ImportantResource.TREES;
+		}
+
+		return ImportantResource.COAL;
 	}
 }
