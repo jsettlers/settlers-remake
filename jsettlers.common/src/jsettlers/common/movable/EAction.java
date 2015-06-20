@@ -51,7 +51,7 @@ package jsettlers.common.movable;
  * <td></td>
  * </tr>
  * </table>
- * 
+ *
  * @author michael
  */
 public enum EAction {
@@ -81,4 +81,27 @@ public enum EAction {
 	 * The settler raises up
 	 */
 	RAISE_UP,
+
+	/**
+	 * The settler removes his hands behind his back (activation HOMELESS state)
+	 */
+	HOMELESS1,
+	/**
+	 * The settler hands behind his back IDLE state (only in HOMELESS state, HOMELESS state still active)
+	 */
+	HOMELESS2,
+	/**
+	 * The settler shakes his head, sighing (only in HOMELESS state, HOMELESS state still active)
+	 * after complating HOMELESS2 animation goto HOMELESS3 or stay in HOMELESS_IDLE state
+	 */
+	HOMELESS3,
+	/**
+	 * The settler kicks a pebbles on the ground (only in HOMELESS state, HOMELESS state still active)
+	 * after complating HOMELESS3 animation goto HOMELESS4 or stay in HOMELESS_IDLE state
+	 */
+	HOMELESS4,
+	/**
+	 * The settler returns hands back (only in HOMELESS state, completion HOMELESS state)
+	 */
+	HOMELESS_IDLE,
 }

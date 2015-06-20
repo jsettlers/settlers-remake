@@ -35,7 +35,7 @@ import jsettlers.graphics.ui.UIPanel;
 
 /**
  * This panel lets the user select the priorities in which the materials should be transported by settlers.
- * 
+ *
  * @author michael
  */
 public class MaterialPriorityContent extends AbstractContentProvider {
@@ -306,7 +306,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 	/**
 	 * Sets the selected material type.
-	 * 
+	 *
 	 * @param eMaterialType
 	 */
 	public synchronized void selectMaterial(EMaterialType eMaterialType) {

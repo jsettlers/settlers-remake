@@ -38,9 +38,9 @@ import jsettlers.logic.player.Player;
 
 /**
  * Abstract super class of all movable strategies.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public abstract class MovableStrategy implements Serializable {
 	private static final long serialVersionUID = 3135655342562634378L;
@@ -84,6 +84,7 @@ public abstract class MovableStrategy implements Serializable {
 		case STONECUTTER:
 		case WATERWORKER:
 		case WINEGROWER:
+		case HEALER:
 			return new BuildingWorkerStrategy(movable, movableType);
 
 		case DIGGER:
@@ -97,6 +98,7 @@ public abstract class MovableStrategy implements Serializable {
 		case GEOLOGIST:
 			return new GeologistStrategy(movable);
 		case THIEF:
+		case MAGE:
 			return new DummySpecialistStrategy(movable);
 
 		default:
@@ -134,7 +136,7 @@ public abstract class MovableStrategy implements Serializable {
 
 	/**
 	 * Tries to go a step in the given direction.
-	 * 
+	 *
 	 * @param direction
 	 *            direction to go
 	 * @return true if the step can and will immediately be executed. <br>
@@ -146,7 +148,7 @@ public abstract class MovableStrategy implements Serializable {
 
 	/**
 	 * Forces the movable to go a step in the given direction (if it is not blocked).
-	 * 
+	 *
 	 * @param direction
 	 *            direction to go
 	 */
@@ -163,7 +165,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dijkstra
 	 *            if true, dijkstra algorithm is used<br>
 	 *            if false, in area finder is used.
@@ -219,12 +221,12 @@ public abstract class MovableStrategy implements Serializable {
 
 	/**
 	 * Checks preconditions before the next path step can be gone.
-	 * 
+	 *
 	 * @param pathTarget
 	 *            Target of the current path.
 	 * @param step
 	 *            The number of the current step where 1 means the first step.
-	 * 
+	 *
 	 * @return true if the path should be continued<br>
 	 *         false if it must be stopped.
 	 */
@@ -234,7 +236,7 @@ public abstract class MovableStrategy implements Serializable {
 
 	/**
 	 * This method is called when a movable is killed or converted to another strategy and can be used for finalization work in the strategy.
-	 * 
+	 *
 	 * @param pathTarget
 	 *            if the movable is currently walking on a path, this is the target of the path<br>
 	 *            else it is null.
@@ -243,7 +245,7 @@ public abstract class MovableStrategy implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param oldPosition
 	 *            The position the movable was positioned before the new path has been calculated and the first step on the new path has been done.
 	 * @param oldTargetPos
@@ -256,7 +258,7 @@ public abstract class MovableStrategy implements Serializable {
 
 	/**
 	 * This method may only be called if this movable shall be informed about a movable that's in it's search radius.
-	 * 
+	 *
 	 * @param other
 	 *            The other movable.
 	 */
