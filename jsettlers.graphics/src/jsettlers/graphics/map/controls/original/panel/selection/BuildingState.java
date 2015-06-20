@@ -33,12 +33,12 @@ public class BuildingState {
 	private final EPriority priority;
 	private final EPriority[] supportedPriorities;
 	private final ArrayList<StackState> stackStates = new ArrayList<>();
-	private boolean constructed;
+	private boolean construction;
 
-	private static class StackState {
-		private final EMaterialType type;
-		private final int count;
-		private final boolean offering;
+	public static class StackState {
+		public final EMaterialType type;
+		public final int count;
+		public final boolean offering;
 
 		public StackState(IBuildingMaterial mat) {
 			type = mat.getMaterialType();
@@ -61,7 +61,7 @@ public class BuildingState {
 	public BuildingState(IBuilding building) {
 		priority = building.getPriority();
 		supportedPriorities = building.getSupportedPriorities();
-		constructed = building.getStateProgress() < 1;
+		construction = building.getStateProgress() < 1;
 		if (building instanceof IBuilding.IOccupyed) {
 			IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
 			// TODO: use this to store how many people are occupying the
@@ -73,11 +73,23 @@ public class BuildingState {
 		}
 	}
 
+	public EPriority[] getSupportedPriorities() {
+		return supportedPriorities;
+	}
+
+	public boolean isConstruction() {
+		return construction;
+	}
+
+	public ArrayList<StackState> getStackStates() {
+		return stackStates;
+	}
+
 	public boolean isStillInState(IBuilding building) {
 		return building.getPriority() == priority
 				&& Arrays.equals(supportedPriorities,
 						building.getSupportedPriorities())
-				&& constructed == (building.getStateProgress() < 1)
+				&& construction == (building.getStateProgress() < 1)
 				&& hasSameStacks(building);
 	}
 
