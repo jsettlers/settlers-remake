@@ -157,6 +157,10 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		numberOf.put(SMALL_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(SMALL_LIVINGHOUSE, playerId));
 		numberOf.put(MEDIUM_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId));
 		numberOf.put(BIG_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId));
+		numberOf.put(COALMINE, aiStatistics.getNumberOfBuildingTypeForPlayer(COALMINE, playerId));
+		numberOf.put(IRONMINE, aiStatistics.getNumberOfBuildingTypeForPlayer(IRONMINE, playerId));
+		numberOf.put(IRONMELT, aiStatistics.getNumberOfBuildingTypeForPlayer(IRONMELT, playerId));
+		numberOf.put(TOOLSMITH, aiStatistics.getNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId));
 		int numberOfNotOccupiedTowers = aiStatistics.getNumberOfNotOccupiedTowers(playerId);
 		int numberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
 		int numberOfTotalBuildings = aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId);
@@ -186,6 +190,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				return;
 			}
 
+			boolean toolsEconomyNeedsToBeChecked = true;
 			Map<EBuildingType, Float> currentBuildingPlan = new HashMap<EBuildingType, Float>();
 			for (List<BuildingCount> currentEconomy : economiesOrder) {
 				for (BuildingCount currentBuildingCount : currentEconomy) {
@@ -197,6 +202,23 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 							+ currentBuildingCount.count);
 					if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingCount.buildingType, playerId) < Math.max(1,
 							Math.floor(newCount))) {
+						if (toolsEconomyNeedsToBeChecked
+								&& !aiStatistics.toolIsAvailableForBuildingTypeAndPlayer(currentBuildingCount.buildingType, playerId)) {
+							System.out.println("ick brooche tools" + currentBuildingCount.buildingType);
+							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId) < 1 && construct(COALMINE)) {
+								return;
+							}
+							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId) < 1 && construct(IRONMINE)) {
+								return;
+							}
+							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMELT, playerId) < 1 && construct(IRONMELT)) {
+								return;
+							}
+							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId) < 1 && construct(TOOLSMITH)) {
+								return;
+							}
+							toolsEconomyNeedsToBeChecked = false;
+						}
 						boolean constructWasSuccessful = construct(currentBuildingCount.buildingType);
 						if (constructWasSuccessful) {
 							return;

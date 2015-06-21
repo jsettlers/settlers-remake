@@ -34,6 +34,7 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
@@ -44,6 +45,7 @@ import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 
 public class AiStatistics {
@@ -53,6 +55,7 @@ public class AiStatistics {
 	private final Queue<Building> buildings;
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
 	private Map<Integer, Map<EBuildingType, Integer>> buildingsNumbers;
+	private Map<Integer, Map<EMaterialType, Integer>> materialNumbers;
 	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movablePositions;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
 	private Map<Integer, Integer> numberOfTotalBuildings;
@@ -299,6 +302,7 @@ public class AiStatistics {
 		land = new HashMap<Integer, List<ShortPoint2D>>();
 		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
 		movablePositions = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
+		materialNumbers = new HashMap<Integer, Map<EMaterialType, Integer>>();
 
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
@@ -343,6 +347,17 @@ public class AiStatistics {
 					}
 					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
 						trees.get(playerId).add(point);
+					}
+					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
+					if (stack != null) {
+						EMaterialType materialType = stack.getMaterialType();
+						if (!materialNumbers.containsKey(playerId)) {
+							materialNumbers.put(playerId, new HashMap<EMaterialType, Integer>());
+						}
+						if (!materialNumbers.get(playerId).containsKey(materialType)) {
+							materialNumbers.get(playerId).put(materialType, 0);
+						}
+						materialNumbers.get(playerId).put(materialType, materialNumbers.get(playerId).get(materialType) + stack.getSize());
 					}
 					Movable movable = movableGrid.getMovableAt(x, y);
 					if (movable != null) {
@@ -463,5 +478,29 @@ public class AiStatistics {
 		}
 
 		return nearestPoint;
+	}
+
+	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!materialNumbers.containsKey(playerIdInteger)) {
+			return 0;
+		}
+		if (!materialNumbers.get(playerIdInteger).containsKey(type)) {
+			return 0;
+		}
+		return materialNumbers.get(playerIdInteger).get(type);
+	}
+
+	public boolean toolIsAvailableForBuildingTypeAndPlayer(EBuildingType buildingType, byte playerId) {
+		EMovableType movableType = buildingType.getWorkerType();
+		if (movableType == null) {
+			return true;
+		}
+		EMaterialType materialType = movableType.getTool();
+		if (materialType == EMaterialType.NO_MATERIAL) {
+			return true;
+		}
+		return getNumberOfMaterialTypeForPlayer(materialType, playerId) - getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId)
+				+ getNumberOfBuildingTypeForPlayer(buildingType, playerId) >= 1;
 	}
 }
