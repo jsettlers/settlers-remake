@@ -147,7 +147,7 @@ public class AiStatistics {
 		if (y.equals(border) || Math.abs(y - point.y) > currentNearestPointDistance) {
 			return null;
 		}
-		if (!ypsilons.contains(y)) {
+		if (!ypsilons.contains(y) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != -1) {
 			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
 					increment, border);
 		}
