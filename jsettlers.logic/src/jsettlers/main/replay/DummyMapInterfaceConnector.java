@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.replay;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.map.IMapInterfaceConnector;
@@ -50,10 +49,6 @@ class DummyMapInterfaceConnector implements IMapInterfaceConnector {
 
 	@Override
 	public void removeListener(IMapInterfaceListener guiInterface) {
-	}
-
-	@Override
-	public void setPreviewBuildingType(EBuildingType buildingType) {
 	}
 
 	@Override

@@ -19,6 +19,6 @@ package jsettlers.graphics.map.controls.original.panel.content;
  * 
  * @author michael
  */
-public interface IContentProvider extends ContentFactory {
+public interface IContentProvider extends IContentFactory {
 	ESecondaryTabType getTabs();
 }

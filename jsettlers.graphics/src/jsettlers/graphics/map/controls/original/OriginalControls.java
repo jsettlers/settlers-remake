@@ -19,7 +19,6 @@ import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.mouse.GODrawEvent;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -34,7 +33,7 @@ import jsettlers.graphics.map.controls.IControls;
 import jsettlers.graphics.map.controls.original.panel.MainPanel;
 import jsettlers.graphics.map.controls.original.panel.TabButton;
 import jsettlers.graphics.map.controls.original.panel.content.BearerSelection;
-import jsettlers.graphics.map.controls.original.panel.content.BuildingSelectionPanel;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingSelectionContent;
 import jsettlers.graphics.map.controls.original.panel.content.EContentType;
 import jsettlers.graphics.map.controls.original.panel.content.SoilderSelection;
 import jsettlers.graphics.map.controls.original.panel.content.SpecialistSelection;
@@ -52,7 +51,7 @@ public class OriginalControls implements IControls {
 																												// soldiers?).
 	private final Button btnBuildings = new TabButton(EContentType.EMPTY, MainPanel.BUTTONS_FILE, 360, 367, "");
 
-	private final MainPanel mainPanel = new MainPanel();
+	private final MainPanel mainPanel;
 
 	private ControlPanelLayoutProperties layoutProperties;
 
@@ -60,8 +59,9 @@ public class OriginalControls implements IControls {
 
 	private MapDrawContext context;
 
-	public OriginalControls() {
+	public OriginalControls(ActionFireable actionFireable) {
 		layoutProperties = ControlPanelLayoutProperties.getLayoutPropertiesFor(480);
+		mainPanel = new MainPanel(actionFireable);
 		uiBase = createInterface();
 		mainPanel.layoutPanel(layoutProperties);
 	}
@@ -308,11 +308,6 @@ public class OriginalControls implements IControls {
 	}
 
 	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-		mainPanel.displayBuildingBuild(type);
-	}
-
-	@Override
 	public void displaySelection(ISelectionSet selection) {
 		if (selection == null || selection.getSize() == 0) {
 			if (!lastSelectionWasNull) {
@@ -334,7 +329,7 @@ public class OriginalControls implements IControls {
 				break;
 
 			case BUILDING:
-				mainPanel.setContent(new BuildingSelectionPanel(selection));
+				mainPanel.setContent(new BuildingSelectionContent(selection));
 				break;
 			default:
 				System.err
