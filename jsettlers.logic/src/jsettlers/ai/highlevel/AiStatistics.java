@@ -503,4 +503,8 @@ public class AiStatistics {
 		return getNumberOfMaterialTypeForPlayer(materialType, playerId) - getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId)
 				+ getNumberOfBuildingTypeForPlayer(buildingType, playerId) >= 1;
 	}
+
+	public MainGrid getMainGrid() {
+		return mainGrid;
+	}
 }
