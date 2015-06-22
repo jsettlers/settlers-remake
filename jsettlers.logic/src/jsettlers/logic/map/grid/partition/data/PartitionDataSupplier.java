@@ -12,17 +12,43 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.common.map.partition;
+package jsettlers.logic.map.grid.partition.data;
 
-import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.map.partition.IBuildingCounts;
+import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.material.EMaterialType;
 
-public interface IBuildingCounts {
+public final class PartitionDataSupplier implements IPartitionData {
 
-	int buildingsInPartitionUnderConstruction(EBuildingType buildingType);
+	private final byte playerId;
+	private final short partitionId;
+	private final IPartitionSettings settings;
+	private final IMaterialCounts materialCounts;
+	private IBuildingCounts buildingCounts;
 
-	int buildingsInPartiton(EBuildingType buildingType);
+	public PartitionDataSupplier(byte playerId, short partitionId, IPartitionSettings settings, IMaterialCounts materialCounts) {
+		this.playerId = playerId;
+		this.partitionId = partitionId;
+		this.settings = settings;
+		this.materialCounts = materialCounts;
+	}
 
-	int buildingsUnderConstruction(EBuildingType buildingType);
+	@Override
+	public IPartitionSettings getPartitionSettings() {
+		return settings;
+	}
 
-	int buildings(EBuildingType buildingType);
+	@Override
+	public int getAmountOf(EMaterialType materialType) {
+		return materialCounts.getAmountOf(materialType);
+	}
+
+	@Override
+	public IBuildingCounts getBuildingCounts() {
+		if (buildingCounts == null) {
+			buildingCounts = new BuildingCounts(playerId, partitionId);
+		}
+		return buildingCounts;
+	}
 }

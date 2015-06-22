@@ -17,7 +17,7 @@ package jsettlers.common.map.partition;
 import jsettlers.common.material.EMaterialType;
 
 /**
- * This interface gives access to the settings of a partition.
+ * This interface provides access to the settings of a partition.
  * 
  * @author Andreas Eberle
  * 
@@ -43,7 +43,7 @@ public interface IPartitionData {
 	/**
 	 * Returns the number of buildings in the partition and of the player over all.
 	 * 
-	 * @return An instance of {@link IBuildingCounts} giving the number of buildings.
+	 * @return An instance of {@link IBuildingCounts} providing the number of buildings.
 	 */
 	IBuildingCounts getBuildingCounts();
 }

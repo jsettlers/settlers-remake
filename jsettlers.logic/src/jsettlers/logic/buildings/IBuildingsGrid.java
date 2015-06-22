@@ -146,4 +146,6 @@ public interface IBuildingsGrid {
 	 */
 	void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw);
 
+	short getPartitionIdAt(ShortPoint2D pos);
+
 }

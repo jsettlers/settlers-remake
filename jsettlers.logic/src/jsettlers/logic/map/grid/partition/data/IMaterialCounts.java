@@ -12,38 +12,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager;
+package jsettlers.logic.map.grid.partition.data;
 
-import jsettlers.common.map.partition.IBuildingCounts;
-import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 
-public final class PartitionDataSupplier implements IPartitionData {
-
-	private final IPartitionSettings settings;
-	private final OffersList offers;
-
-	public PartitionDataSupplier(IPartitionSettings settings, OffersList offers) {
-		this.settings = settings;
-		this.offers = offers;
-	}
-
-	@Override
-	public IPartitionSettings getPartitionSettings() {
-		return settings;
-	}
-
-	@Override
-	public int getAmountOf(EMaterialType materialType) {
-		return offers.getOffersOf(materialType);
-	}
-
-	@Override
-	public IBuildingCounts getBuildingCounts() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+public interface IMaterialCounts {
+	int getAmountOf(EMaterialType materialType);
 }
