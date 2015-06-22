@@ -38,20 +38,20 @@ import jsettlers.logic.timer.RescheduleTimer;
  * It lists all available maps, and it can be used to add maps to the game.
  * <p>
  * TODO: load maps before they are needed, to decrease startup time.
- * 
+ *
  * @author michael
  * @author Andreas Eberle
  */
-public class MapList implements IMapListerCallable {
-	private static class DefaultMapListFactory implements IMapListFactory {
-		@Override
-		public MapList getMapList() {
-			return new MapList(ResourceManager.getSaveDirectory());
-		}
-	}
-
+public class MapList implements IMapListerCallable
+{
 	public static final String MAP_EXTENSION = ".map";
-	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
+	private static IMapListFactory mapListFactory = new IMapListFactory(){
+        MapList defaultMapList = new MapList(ResourceManager.getSaveDirectory());
+        @Override
+        public MapList getMapList() {
+            return defaultMapList;
+        }
+	};
 	private final IMapLister mapsDir;
 	private final IMapLister saveDir;
 
@@ -116,7 +116,7 @@ public class MapList implements IMapListerCallable {
 
 	/**
 	 * Gives the {@link MapLoader} for the map with the given id.
-	 * 
+	 *
 	 * @param id
 	 *            The id of the map to be found.
 	 * @return Returns the corresponding {@link MapLoader}<br>
@@ -150,7 +150,7 @@ public class MapList implements IMapListerCallable {
 
 	/**
 	 * saves a static map to the given directory.
-	 * 
+	 *
 	 * @param header
 	 *            The header to use.
 	 * @param data
@@ -178,7 +178,7 @@ public class MapList implements IMapListerCallable {
 
 	/**
 	 * Saves a map to disk. The map logic should be paused while calling this method.
-	 * 
+	 *
 	 * @param state
 	 * @param grid
 	 * @throws IOException
@@ -207,7 +207,7 @@ public class MapList implements IMapListerCallable {
 
 	/**
 	 * gets the list of the default directory.
-	 * 
+	 *
 	 * @return
 	 */
 	public static MapList getDefaultList() {
@@ -223,5 +223,4 @@ public class MapList implements IMapListerCallable {
 	public static void setDefaultList(IMapListFactory factory) {
 		mapListFactory = factory;
 	}
-
 }

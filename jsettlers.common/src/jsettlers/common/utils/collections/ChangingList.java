@@ -14,20 +14,21 @@
  *******************************************************************************/
 package jsettlers.common.utils.collections;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * This class implements the {@link IChangingList} interface and represents a list that can change and will inform it's listener of this change.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  * @param <T>
  */
 public class ChangingList<T> {
 
-	private List<? extends T> items;
-	private IChangingListListener<T> listener;
+    private List<? extends T> items;
+    private ArrayList<IChangingListListener<T>> listeners = new ArrayList<>();
 
 	public ChangingList() {
 		this(Collections.<T> emptyList());
@@ -37,17 +38,21 @@ public class ChangingList<T> {
 		setList(items);
 	}
 
-	public synchronized void setListener(IChangingListListener<T> listener) {
-		this.listener = listener;
+	public synchronized void addListener(IChangingListListener<T> listener) {
+	    listeners.add(listener);
 	}
+
+    public synchronized void removeListener(IChangingListListener<T> listener) {
+        listeners.remove(listener);
+    }
 
 	public List<? extends T> getItems() {
-		return items;
-	}
+		return new ArrayList<>(items);
+    }
 
-	public void stop() {
-		listener = null;
-		items = Collections.emptyList();
+    public void stop() {
+        listeners.clear();
+        items = Collections.emptyList();
 	}
 
 	public void setList(List<? extends T> items) {
@@ -58,10 +63,9 @@ public class ChangingList<T> {
 		informListener();
 	}
 
-	private synchronized void informListener() {
-		if (listener != null) {
-			listener.listChanged(this);
-		}
+    private synchronized void informListener() {
+        for (IChangingListListener<T> listener : listeners) {
+            listener.listChanged(this);
+        }
 	}
-
 }

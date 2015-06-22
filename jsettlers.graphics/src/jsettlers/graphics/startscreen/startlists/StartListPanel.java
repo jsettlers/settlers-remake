@@ -61,7 +61,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 		this.addChild(startbutton, .3f, 0, 1, .1f);
 
         if (list != null) {
-            list.setListener(this);
+            list.addListener(this);
             listChanged(list);
         }
 	}

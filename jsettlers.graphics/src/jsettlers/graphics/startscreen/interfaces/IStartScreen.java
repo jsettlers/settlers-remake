@@ -20,7 +20,7 @@ import jsettlers.common.utils.collections.ChangingList;
  * This is the main start screen interface. It is given to the start screen when the screen is created.
  * <p>
  * This interface provides access to methods for getting a list of startable games.
- * 
+ *
  * @author michael
  */
 public interface IStartScreen {
@@ -28,35 +28,35 @@ public interface IStartScreen {
 	/**
 	 * Gets a list of installed maps. The list may change after this call, e.g. because it was not fully loaded. This only returns maps that can be
 	 * played in singleplayer.
-	 * 
+	 *
 	 * @return The list of installed and therefore startable maps.
 	 */
 	ChangingList<IMapDefinition> getSingleplayerMaps();
 
 	/**
 	 * Gets a list of games that were saved in singleplayer mode.
-	 * 
+	 *
 	 * @return The list.
 	 */
 	ChangingList<IMapDefinition> getStoredSingleplayerGames();
 
 	/**
 	 * Gets the maps for which a new multiplayer game can be started.
-	 * 
+	 *
 	 * @return The list of maps.
 	 */
 	ChangingList<IMapDefinition> getMultiplayerMaps();
 
 	/**
 	 * Gets a list of saved multiplayer games which we can restore.
-	 * 
+	 *
 	 * @return
 	 */
 	ChangingList<IMapDefinition> getRestorableMultiplayerGames();
 
 	/**
 	 * TODO: Add map settings.
-	 * 
+	 *
 	 * @param map
 	 * @param listener
 	 */
@@ -66,7 +66,7 @@ public interface IStartScreen {
 
 	/**
 	 * Opens a new connection to the server at the given address.
-	 * 
+	 *
 	 * @param serverAddr
 	 *            Address of the server.
 	 * @param player
@@ -75,6 +75,8 @@ public interface IStartScreen {
 	 */
 	IMultiplayerConnector getMultiplayerConnector(String serverAddr,
 			Player player);
+
+    void reloadContent();
 
 	public static final IStartScreen DEFAULT_IMPLEMENTATION = new IStartScreen() {
 
@@ -116,5 +118,8 @@ public interface IStartScreen {
 			return null;
 		}
 
+        @Override
+        public void reloadContent() {
+        }
 	};
 }

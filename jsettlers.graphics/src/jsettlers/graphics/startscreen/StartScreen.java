@@ -131,4 +131,9 @@ public class StartScreen extends UIPanel {
 				getPosition().getMinY() + 5, revision);
 	}
 
+	@Override
+    public void onAttach() {
+        connector.reloadContent();
+	    super.onAttach();
+	}
 }

@@ -135,12 +135,12 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 
 	@Override
 	public void onAttach() {
-		connector.getPlayers().setListener(this);
+		connector.getPlayers().addListener(this);
 	}
 
 	@Override
 	public void onDetach() {
-		connector.getPlayers().setListener(null);
+		connector.getPlayers().removeListener(this);
 	}
 
 	@Override
