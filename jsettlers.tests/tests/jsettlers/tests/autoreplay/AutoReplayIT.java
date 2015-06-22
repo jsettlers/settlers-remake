@@ -61,12 +61,15 @@ public class AutoReplayIT {
 	public static Collection<Object[]> replaySets() {
 		return Arrays.asList(new Object[][] {
 				{ "basicProduction-mountainlake", 15 },
+
 				{ "fullProduction-mountainlake", 10 },
 				{ "fullProduction-mountainlake", 20 },
 				{ "fullProduction-mountainlake", 30 },
 				{ "fullProduction-mountainlake", 40 },
 				{ "fullProduction-mountainlake", 50 },
-				{ "fullProduction-mountainlake", 69 }
+				{ "fullProduction-mountainlake", 69 },
+
+				{ "fighting-testmap", 8 }
 		});
 	}
 
