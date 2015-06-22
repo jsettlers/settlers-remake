@@ -15,30 +15,24 @@
 package jsettlers.logic.map.grid.partition.manager;
 
 import jsettlers.common.map.partition.IBuildingCounts;
-import jsettlers.common.map.partition.IMaterialsDistributionSettings;
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
-import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 
 public final class PartitionDataSupplier implements IPartitionData {
 
-	private final PartitionManagerSettings settings;
+	private final IPartitionSettings settings;
 	private final OffersList offers;
 
-	public PartitionDataSupplier(PartitionManagerSettings settings, OffersList offers) {
+	public PartitionDataSupplier(IPartitionSettings settings, OffersList offers) {
 		this.settings = settings;
 		this.offers = offers;
 	}
 
 	@Override
-	public IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType) {
-		return settings.getDistributionSettings(materialType);
-	}
-
-	@Override
-	public EMaterialType getMaterialTypeForPrio(int priorityIdx) {
-		return settings.getMaterialTypeForPrio(priorityIdx);
+	public IPartitionSettings getPartitionSettings() {
+		return settings;
 	}
 
 	@Override
@@ -51,4 +45,5 @@ public final class PartitionDataSupplier implements IPartitionData {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

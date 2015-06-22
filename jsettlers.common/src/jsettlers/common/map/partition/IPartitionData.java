@@ -22,7 +22,14 @@ import jsettlers.common.material.EMaterialType;
  * @author Andreas Eberle
  * 
  */
-public interface IPartitionData extends IPartitionSettings {
+public interface IPartitionData {
+
+	/**
+	 * Returns the settings of this partition.
+	 * 
+	 * @return An instance of {@link IPartitionSettings} providing the settings of the partition.
+	 */
+	IPartitionSettings getPartitionSettings();
 
 	/**
 	 * Returns the number of materials of the given type, available in the respective partition.
