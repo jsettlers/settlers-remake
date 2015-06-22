@@ -12,43 +12,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager;
+package jsettlers.common.map.partition;
 
-import jsettlers.common.map.partition.IBuildingCounts;
-import jsettlers.common.map.partition.IMaterialsDistributionSettings;
-import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
-import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 
-public final class PartitionDataSupplier implements IPartitionData {
+/**
+ * This interface gives access to the settings of a partition.
+ * 
+ * @author Andreas Eberle
+ * 
+ */
+public interface IPartitionSettings {
 
-	private final PartitionManagerSettings settings;
-	private final OffersList offers;
+	/**
+	 * This method gives access to the material distribution settings of the partition.
+	 * 
+	 * @param materialType
+	 * @return Returns the distribution settings for the given {@link EMaterialType}.
+	 */
+	IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType);
 
-	public PartitionDataSupplier(PartitionManagerSettings settings, OffersList offers) {
-		this.settings = settings;
-		this.offers = offers;
-	}
+	/**
+	 * This method gives the {@link EMaterialType} for the given priority index.
+	 * 
+	 * @param priorityIdx
+	 *            The priority for which to return the {@link EMaterialType}.<br>
+	 *            The priority must be in the interval [0, {@link EMaterialType}.NUMBER_OF_DROPPABLE_MATERIALS-1] where 0 is the highest priority.
+	 * @return Returns the {@link EMaterialType} with the given priority.
+	 */
+	EMaterialType getMaterialTypeForPrio(int priorityIdx);
 
-	@Override
-	public IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType) {
-		return settings.getDistributionSettings(materialType);
-	}
-
-	@Override
-	public EMaterialType getMaterialTypeForPrio(int priorityIdx) {
-		return settings.getMaterialTypeForPrio(priorityIdx);
-	}
-
-	@Override
-	public int getAmountOf(EMaterialType materialType) {
-		return offers.getOffersOf(materialType);
-	}
-
-	@Override
-	public IBuildingCounts getBuildingCounts() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
