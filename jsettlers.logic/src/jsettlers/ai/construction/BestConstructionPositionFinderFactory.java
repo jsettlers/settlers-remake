@@ -46,6 +46,8 @@ public class BestConstructionPositionFinderFactory {
 			return new BestMineConstructionPositionFinder(type, IRON);
 		case GOLDMINE:
 			return new BestMineConstructionPositionFinder(type, GOLD);
+		case WATERWORKS:
+			return new BestWaterWorksConstructionPositionFinder(type);
 		default:
 			return new NearDiggersConstructionPositionFinder(type);
 		}

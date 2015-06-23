@@ -17,6 +17,10 @@ package jsettlers.ai.highlevel;
 import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.landscape.ELandscapeType.RIVER1;
+import static jsettlers.common.landscape.ELandscapeType.RIVER2;
+import static jsettlers.common.landscape.ELandscapeType.RIVER3;
+import static jsettlers.common.landscape.ELandscapeType.RIVER4;
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
@@ -62,7 +66,9 @@ public class AiStatistics {
 	private Map<Integer, Integer> numberOfNotOccupiedTowers;
 	private Map<Integer, List<ShortPoint2D>> stones;
 	private Map<Integer, List<ShortPoint2D>> trees;
+	private Map<Integer, List<ShortPoint2D>> rivers;
 	private Map<EMapObjectType, Map<Integer, List<Integer>>> sortedCuttableObjectsInDefaultPartition;
+	private Map<Integer, List<Integer>> sortedRiversInDefaultPartition;
 	private Map<Integer, List<ShortPoint2D>> land;
 	private Map<Integer, List<ShortPoint2D>> borderLandNextToFreeLand;
 	private Map<Integer, Map<EBuildingType, List<ShortPoint2D>>> buildingPositions;
@@ -298,6 +304,8 @@ public class AiStatistics {
 	private void updateMapStatistics() {
 		stones = new HashMap<Integer, List<ShortPoint2D>>();
 		trees = new HashMap<Integer, List<ShortPoint2D>>();
+		rivers = new HashMap<Integer, List<ShortPoint2D>>();
+		sortedRiversInDefaultPartition = new HashMap<Integer, List<Integer>>();
 		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, Map<Integer, List<Integer>>>();
 		land = new HashMap<Integer, List<ShortPoint2D>>();
 		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
@@ -328,6 +336,13 @@ public class AiStatistics {
 						}
 						sortedCuttableObjectsInDefaultPartition.get(STONE).get(xInteger).add(yInteger);
 					}
+					if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
+							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
+						if (!sortedRiversInDefaultPartition.containsKey(xInteger)) {
+							sortedRiversInDefaultPartition.put(xInteger, new ArrayList<Integer>());
+						}
+						sortedRiversInDefaultPartition.get(xInteger).add(yInteger);
+					}
 				} else {
 					Integer playerId = new Integer(partitionsGrid.getPlayerAt(x, y).playerId);
 					ShortPoint2D point = new ShortPoint2D(x, y);
@@ -347,6 +362,13 @@ public class AiStatistics {
 					}
 					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
 						trees.get(playerId).add(point);
+					}
+					if (!rivers.containsKey(playerId)) {
+						rivers.put(playerId, new ArrayList<ShortPoint2D>());
+					}
+					if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
+							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
+						rivers.get(playerId).add(point);
 					}
 					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
 					if (stack != null) {
@@ -506,5 +528,17 @@ public class AiStatistics {
 
 	public MainGrid getMainGrid() {
 		return mainGrid;
+	}
+
+	public ShortPoint2D getNearestRiverPointInDefaultPartitionFor(ShortPoint2D referencePoint) {
+		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition);
+	}
+
+	public List<ShortPoint2D> getRiversForPlayer(byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!rivers.containsKey(playerIdInteger)) {
+			return new ArrayList<ShortPoint2D>();
+		}
+		return rivers.get(playerIdInteger);
 	}
 }

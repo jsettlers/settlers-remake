@@ -33,7 +33,7 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
  * score is affected by the distance to of other militairy buildings to get the most land out of the less militairy buildings - score is affected by
- * distance of resources
+ * distance of the most important resource at the moment. The most important resource is: first trees, then: stones, rivers, coal
  * 
  * @author codingberlin
  */
@@ -47,7 +47,8 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		COAL,
 		IRON,
 		GOLD,
-		WINE_MOUNTAIN
+		WINE_MOUNTAIN,
+		RIVER
 	}
 
 	public BestMilitaryConstructionPositionFinder(EBuildingType buildingType) {
@@ -74,6 +75,9 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				case STONES:
 					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE);
 					break;
+				case RIVER:
+					nearestResourcePoint = aiStatistics.getNearestRiverPointInDefaultPartitionFor(point);
+					break;
 				default:
 					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL);
 				}
@@ -90,11 +94,15 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId) {
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
+		List<ShortPoint2D> rivers = aiStatistics.getRiversForPlayer(playerId);
 		if (trees.size() < 30) {
 			return ImportantResource.TREES;
 		}
 		if (stones.size() < 7) {
 			return ImportantResource.STONES;
+		}
+		if (rivers.size() < 15) {
+			return ImportantResource.RIVER;
 		}
 		return ImportantResource.COAL;
 	}
