@@ -204,7 +204,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 							Math.floor(newCount))) {
 						if (toolsEconomyNeedsToBeChecked
 								&& !aiStatistics.toolIsAvailableForBuildingTypeAndPlayer(currentBuildingCount.buildingType, playerId)) {
-							System.out.println("ick brooche tools" + currentBuildingCount.buildingType);
 							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId) < 1 && construct(COALMINE)) {
 								return;
 							}
