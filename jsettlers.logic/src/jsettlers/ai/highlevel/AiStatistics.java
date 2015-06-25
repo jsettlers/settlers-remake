@@ -403,9 +403,9 @@ public class AiStatistics {
 			borderLandNextToFreeLand.put(playerId, new ArrayList<ShortPoint2D>());
 		}
 		short west = (short) Math.max(0, point.x - BORDER_LAND_WIDTH);
-		short east = (short) Math.min(mainGrid.getWidth(), point.x + BORDER_LAND_WIDTH);
+		short east = (short) Math.min(mainGrid.getWidth() - 1, point.x + BORDER_LAND_WIDTH);
 		short north = (short) Math.max(0, point.y - BORDER_LAND_WIDTH);
-		short south = (short) Math.min(mainGrid.getHeight(), point.y + BORDER_LAND_WIDTH);
+		short south = (short) Math.min(mainGrid.getHeight() - 1, point.y + BORDER_LAND_WIDTH);
 		if (partitionsGrid.getPlayerAt(west, point.y) == null ||
 				partitionsGrid.getPlayerAt(east, point.y) == null ||
 				partitionsGrid.getPlayerAt(point.x, north) == null ||
