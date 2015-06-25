@@ -38,6 +38,8 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.material.EMaterialType.HAMMER;
+import static jsettlers.common.material.EMaterialType.PICK;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +49,7 @@ import java.util.Map;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
@@ -83,6 +86,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		goldEconomy = new ArrayList<BuildingCount>();
 		economiesOrder = new ArrayList<List<BuildingCount>>();
 		initializeEconomies();
+
 	}
 
 	private void initializeEconomies() {
@@ -153,30 +157,17 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	public void applyRules() {
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
 
-		Map<EBuildingType, Integer> numberOf = new HashMap<EBuildingType, Integer>();
-		numberOf.put(SMALL_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(SMALL_LIVINGHOUSE, playerId));
-		numberOf.put(MEDIUM_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId));
-		numberOf.put(BIG_LIVINGHOUSE, aiStatistics.getNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId));
-		numberOf.put(COALMINE, aiStatistics.getNumberOfBuildingTypeForPlayer(COALMINE, playerId));
-		numberOf.put(IRONMINE, aiStatistics.getNumberOfBuildingTypeForPlayer(IRONMINE, playerId));
-		numberOf.put(IRONMELT, aiStatistics.getNumberOfBuildingTypeForPlayer(IRONMELT, playerId));
-		numberOf.put(TOOLSMITH, aiStatistics.getNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId));
 		int numberOfNotOccupiedTowers = aiStatistics.getNumberOfNotOccupiedTowers(playerId);
 		int numberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
 		int numberOfTotalBuildings = aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId);
 
 		if (numberOfNotFinishedBuildings <= 4) {
-
-			int futureNumberOfBearers = numberOfBearers
-					+ aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
-					- aiStatistics.getNumberOfBuildingTypeForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
-					+ aiStatistics.getTotalNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30
-					- aiStatistics.getNumberOfBuildingTypeForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30
-					+ aiStatistics.getTotalNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId) * 100
-					- aiStatistics.getNumberOfBuildingTypeForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
-			if (futureNumberOfBearers < 10 || numberOfTotalBuildings > 1.5 * futureNumberOfBearers) {
-				if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 4
-						|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 3) {
+			int futureNumberOfBearers = numberOfBearers + aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
+					+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30
+					+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
+			if (futureNumberOfBearers < 10 || numberOfTotalBuildings * 1.5 > futureNumberOfBearers) {
+				if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER,
+						playerId) < 4 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 3) {
 					construct(SMALL_LIVINGHOUSE);
 					return;
 				} else {
@@ -202,8 +193,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 							+ currentBuildingCount.count);
 					if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingCount.buildingType, playerId) < Math.max(1,
 							Math.floor(newCount))) {
-						if (toolsEconomyNeedsToBeChecked
-								&& !aiStatistics.toolIsAvailableForBuildingTypeAndPlayer(currentBuildingCount.buildingType, playerId)) {
+						if (toolsEconomyNeedsToBeChecked && !toolIsAvailableForBuildingType(currentBuildingCount.buildingType)) {
 							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId) < 1 && construct(COALMINE)) {
 								return;
 							}
@@ -226,9 +216,26 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				}
 			}
 		}
+
+	}
+
+	private boolean toolIsAvailableForBuildingType(EBuildingType buildingType) {
+		EMovableType movableType = buildingType.getWorkerType();
+		if (movableType == null) {
+			return true;
+		}
+		EMaterialType materialType = movableType.getTool();
+		if (materialType == EMaterialType.NO_MATERIAL) {
+			return true;
+		}
+		return aiStatistics.getNumberOfMaterialTypeForPlayer(materialType, playerId)
+				- aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(buildingType, playerId) >= 1;
 	}
 
 	private boolean construct(EBuildingType type) {
+		if (newBuildingWouldUseReservedTool(type)) {
+			return false;
+		}
 		ShortPoint2D position = bestConstructionPositionFinderFactory
 				.getBestConstructionPositionFinderFor(type)
 				.findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
@@ -238,6 +245,47 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				aiStatistics.sendAnySoldierToPosition(position, playerId);
 			}
 			return true;
+		}
+		return false;
+	}
+
+	private boolean newBuildingWouldUseReservedTool(EBuildingType buildingType) {
+		EMovableType movableType = buildingType.getWorkerType();
+		if (movableType == null) {
+			return false;
+		}
+		EMaterialType materialType = movableType.getTool();
+		if (materialType == PICK) {
+			int numberOfCoalMines = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId);
+			int numberOfIronMines = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId);
+			if (numberOfCoalMines >= 1 && numberOfIronMines >= 1) {
+				return false;
+			}
+			if (buildingType == COALMINE && numberOfCoalMines == 0) {
+				return false;
+			}
+			if (buildingType == IRONMINE && numberOfIronMines == 0) {
+				return false;
+			}
+			int requiredPicks = 1;
+			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(COALMINE, playerId);
+			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(IRONMINE, playerId);
+			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(STONECUTTER, playerId);
+			requiredPicks += aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(GOLDMINE, playerId);
+			if (numberOfCoalMines == 0) {
+				requiredPicks++;
+			}
+			if (numberOfIronMines == 0) {
+				requiredPicks++;
+			}
+			return aiStatistics.getNumberOfMaterialTypeForPlayer(PICK, playerId) < requiredPicks;
+		}
+		if (materialType == HAMMER) {
+			if (buildingType == TOOLSMITH || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId) >= 1) {
+				return false;
+			}
+			int requiredPicks = 2 + aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(WEAPONSMITH, playerId);
+			return aiStatistics.getNumberOfMaterialTypeForPlayer(HAMMER, playerId) < requiredPicks;
 		}
 		return false;
 	}

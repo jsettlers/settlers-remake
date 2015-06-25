@@ -59,6 +59,7 @@ public class AiStatistics {
 	private final Queue<Building> buildings;
 	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
 	private Map<Integer, Map<EBuildingType, Integer>> buildingsNumbers;
+	private Map<Integer, Map<EBuildingType, Integer>> unoccupiedBuildingsNumbers;
 	private Map<Integer, Map<EMaterialType, Integer>> materialNumbers;
 	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movablePositions;
 	private Map<Integer, Integer> numberOfNotFinishedBuildings;
@@ -416,6 +417,7 @@ public class AiStatistics {
 	private void updateBuildingStatistics() {
 		totalBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		buildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
+		unoccupiedBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
 		numberOfNotFinishedBuildings = new HashMap<Integer, Integer>();
 		numberOfTotalBuildings = new HashMap<Integer, Integer>();
 		numberOfNotOccupiedTowers = new HashMap<Integer, Integer>();
@@ -443,14 +445,19 @@ public class AiStatistics {
 		if (!totalBuildingsNumbers.containsKey(playerId)) {
 			totalBuildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
 			buildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
+			unoccupiedBuildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
 		}
 		if (!totalBuildingsNumbers.get(playerId).containsKey(type)) {
 			totalBuildingsNumbers.get(playerId).put(type, 0);
 			buildingsNumbers.get(playerId).put(type, 0);
+			unoccupiedBuildingsNumbers.get(playerId).put(type, 0);
 		}
 		totalBuildingsNumbers.get(playerId).put(type, totalBuildingsNumbers.get(playerId).get(type) + 1);
 		if (building.getStateProgress() == 1f) {
 			buildingsNumbers.get(playerId).put(type, buildingsNumbers.get(playerId).get(type) + 1);
+		}
+		if (!building.isOccupied()) {
+			unoccupiedBuildingsNumbers.get(playerId).put(type, unoccupiedBuildingsNumbers.get(playerId).get(type) + 1);
 		}
 	}
 
@@ -513,19 +520,6 @@ public class AiStatistics {
 		return materialNumbers.get(playerIdInteger).get(type);
 	}
 
-	public boolean toolIsAvailableForBuildingTypeAndPlayer(EBuildingType buildingType, byte playerId) {
-		EMovableType movableType = buildingType.getWorkerType();
-		if (movableType == null) {
-			return true;
-		}
-		EMaterialType materialType = movableType.getTool();
-		if (materialType == EMaterialType.NO_MATERIAL) {
-			return true;
-		}
-		return getNumberOfMaterialTypeForPlayer(materialType, playerId) - getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId)
-				+ getNumberOfBuildingTypeForPlayer(buildingType, playerId) >= 1;
-	}
-
 	public MainGrid getMainGrid() {
 		return mainGrid;
 	}
@@ -534,11 +528,26 @@ public class AiStatistics {
 		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition);
 	}
 
+	public int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {
+		return getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId) - getNumberOfBuildingTypeForPlayer(buildingType, playerId);
+	}
+
 	public List<ShortPoint2D> getRiversForPlayer(byte playerId) {
 		Integer playerIdInteger = new Integer(playerId);
 		if (!rivers.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
 		return rivers.get(playerIdInteger);
+	}
+
+	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
+		Integer playerIdInteger = new Integer(playerId);
+		if (!unoccupiedBuildingsNumbers.containsKey(playerIdInteger)) {
+			return 0;
+		}
+		if (!unoccupiedBuildingsNumbers.get(playerIdInteger).containsKey(buildingType)) {
+			return 0;
+		}
+		return unoccupiedBuildingsNumbers.get(playerIdInteger).get(buildingType);
 	}
 }
