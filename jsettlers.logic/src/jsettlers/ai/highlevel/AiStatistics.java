@@ -90,27 +90,32 @@ public class AiStatistics {
 		this.flagsGrid = mainGrid.getFlagsGrid();
 	}
 
+	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId) {
+		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId);
+	}
+
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType) {
 		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1);
 	}
 
 	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject) {
 		Map<Integer, List<Integer>> sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1);
 	}
 
-	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints) {
+	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints, byte playerId) {
 		ShortPoint2D result = null;
 		double currentNearestPointDistance = Double.MAX_VALUE;
 		ShortPoint2D nearestRightPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				new Integer(point.x), 1, new Integer(mainGrid.getWidth() + 1));
+				new Integer(point.x), 1, new Integer(mainGrid.getWidth() + 1), playerId);
 		if (nearestRightPoint != null) {
 			currentNearestPointDistance = getDistance(point, nearestRightPoint);
 			result = nearestRightPoint;
 		}
 		ShortPoint2D nearestLeftPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				new Integer(point.x - 1), -1, -1);
+				new Integer(point.x - 1), -1, -1, playerId);
 		if (nearestLeftPoint != null) {
 			result = nearestLeftPoint;
 		}
@@ -118,30 +123,30 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints,
-			double currentNearestPointDistance, Integer x, Integer increment, Integer border) {
+			double currentNearestPointDistance, Integer x, Integer increment, Integer border, byte playerId) {
 		if (x.equals(border) || Math.abs(x - point.x) > currentNearestPointDistance) {
 			return null;
 		}
 		if (!sortedPoints.containsKey(x)) {
 			return getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x + increment,
-					increment, border);
+					increment, border, playerId);
 		}
 		ShortPoint2D result = null;
 		ShortPoint2D southYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, new Integer(point.y), 1, new Integer(mainGrid.getHeight() + 1));
+				currentNearestPointDistance, x, new Integer(point.y), 1, new Integer(mainGrid.getHeight() + 1), playerId);
 		if (southYPoint != null) {
 			result = southYPoint;
 			currentNearestPointDistance = getDistance(point, southYPoint);
 		}
 		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, new Integer(point.y - 1), -1, -1);
+				currentNearestPointDistance, x, new Integer(point.y - 1), -1, -1, playerId);
 		if (northYPoint != null) {
 			result = northYPoint;
 			currentNearestPointDistance = getDistance(point, northYPoint);
 		}
 		if (Math.abs(point.x - (x + increment)) < currentNearestPointDistance) {
 			ShortPoint2D nextPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x
-					+ increment, increment, border);
+					+ increment, increment, border, playerId);
 			if (nextPoint != null) {
 				result = nextPoint;
 			}
@@ -150,13 +155,13 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(List<Integer> ypsilons, ShortPoint2D point,
-			double currentNearestPointDistance, Integer x, Integer y, Integer increment, Integer border) {
+			double currentNearestPointDistance, Integer x, Integer y, Integer increment, Integer border, byte playerId) {
 		if (y.equals(border) || Math.abs(y - point.y) > currentNearestPointDistance) {
 			return null;
 		}
-		if (!ypsilons.contains(y) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != -1) {
+		if (!ypsilons.contains(y) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
 			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
-					increment, border);
+					increment, border, playerId);
 		}
 		if (getDistance(point, new ShortPoint2D(x, y)) > currentNearestPointDistance) {
 			return null;
@@ -525,7 +530,7 @@ public class AiStatistics {
 	}
 
 	public ShortPoint2D getNearestRiverPointInDefaultPartitionFor(ShortPoint2D referencePoint) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(referencePoint, sortedRiversInDefaultPartition, (byte) -1);
 	}
 
 	public int getNumberOfNotFinishedBuildingTypesForPlayer(EBuildingType buildingType, byte playerId) {

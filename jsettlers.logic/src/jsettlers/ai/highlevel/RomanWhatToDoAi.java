@@ -19,6 +19,7 @@ import static jsettlers.common.buildings.EBuildingType.BARRACK;
 import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
 import static jsettlers.common.buildings.EBuildingType.COALMINE;
 import static jsettlers.common.buildings.EBuildingType.FARM;
+import static jsettlers.common.buildings.EBuildingType.FISHER;
 import static jsettlers.common.buildings.EBuildingType.FORESTER;
 import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
 import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
@@ -111,6 +112,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		toolsEconomy.add(new BuildingCount(TOOLSMITH, 1));
 		manaEconomy.add(new BuildingCount(WINEGROWER, 1));
 		manaEconomy.add(new BuildingCount(TEMPLE, 1));
+		goldEconomy.add(new BuildingCount(FISHER, 0.5f));
 		goldEconomy.add(new BuildingCount(COALMINE, 0.5f));
 		goldEconomy.add(new BuildingCount(GOLDMINE, 0.5f));
 		goldEconomy.add(new BuildingCount(GOLDMELT, 1));

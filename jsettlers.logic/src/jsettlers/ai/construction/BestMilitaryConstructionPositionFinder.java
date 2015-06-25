@@ -48,7 +48,8 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		IRON,
 		GOLD,
 		WINE_MOUNTAIN,
-		RIVER
+		RIVER,
+		FISH
 	}
 
 	public BestMilitaryConstructionPositionFinder(EBuildingType buildingType) {
@@ -57,14 +58,19 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId);
+		List<ShortPoint2D> borderLandNextToFreeLandForPlayer = aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId);
+		if (borderLandNextToFreeLandForPlayer.size() == 0) {
+			return null;
+		}
+
+		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId, borderLandNextToFreeLandForPlayer.get(0));
 
 		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId);
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TOWER, playerId));
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(CASTLE, playerId));
 
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		for (ShortPoint2D point : aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId)) {
+		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestResourcePoint;
 				switch (importantResource) {
@@ -76,6 +82,15 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 					break;
 				case RIVER:
 					nearestResourcePoint = aiStatistics.getNearestRiverPointInDefaultPartitionFor(point);
+					break;
+				case GOLD:
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLD);
+					break;
+				case FISH:
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.FISH);
+					break;
+				case IRON:
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON);
 					break;
 				default:
 					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL);
@@ -90,7 +105,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
-	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId) {
+	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		List<ShortPoint2D> rivers = aiStatistics.getRiversForPlayer(playerId);
@@ -102,6 +117,18 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		}
 		if (rivers.size() < 15) {
 			return ImportantResource.RIVER;
+		}
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId) == null) {
+			return ImportantResource.COAL;
+		}
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId) == null) {
+			return ImportantResource.IRON;
+		}
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId) == null) {
+			return ImportantResource.FISH;
+		}
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId) == null) {
+			return ImportantResource.GOLD;
 		}
 		return ImportantResource.COAL;
 	}

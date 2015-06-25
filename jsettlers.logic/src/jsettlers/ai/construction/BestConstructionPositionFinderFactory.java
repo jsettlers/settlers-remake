@@ -16,10 +16,9 @@
  */
 package jsettlers.ai.construction;
 
-import static jsettlers.common.landscape.EResourceType.COAL;
-import static jsettlers.common.landscape.EResourceType.GOLD;
-import static jsettlers.common.landscape.EResourceType.IRON;
 import jsettlers.common.buildings.EBuildingType;
+
+import static jsettlers.common.landscape.EResourceType.*;
 
 public class BestConstructionPositionFinderFactory {
 
@@ -68,6 +67,8 @@ public class BestConstructionPositionFinderFactory {
 			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.WINEGROWER);
 		case GOLDMELT:
 			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.GOLDMINE);
+		case FISHER:
+			return new BestFisherConstructionPositionFinder(type);
 		default:
 			return new NearDiggersConstructionPositionFinder(type);
 		}
