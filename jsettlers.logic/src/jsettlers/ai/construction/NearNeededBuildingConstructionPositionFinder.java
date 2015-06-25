@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
+import static jsettlers.common.movable.EMovableType.DIGGER;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,31 +25,34 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 
 /**
- * Assumptions: sawmills are placed after lumberjacks were placed
- * 
  * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
- * score is affected by the distance to of all lumberjacks
+ * score is affected by the distance to needed buildings (eg. lumberjacks for sawmills) - score is affected by the distance to diggers so that the
+ * diggers and bricklayers don't need to walk over the whole map to build the next building
  * 
  * @author codingberlin
  */
-public class BestSawMillConstructionPositionFinder implements IBestConstructionPositionFinder {
+public class NearNeededBuildingConstructionPositionFinder implements IBestConstructionPositionFinder {
 
 	EBuildingType buildingType;
+	EBuildingType neededBuildingType;
 
-	public BestSawMillConstructionPositionFinder(EBuildingType buildingType) {
-		this.buildingType = buildingType;
+	public NearNeededBuildingConstructionPositionFinder(EBuildingType ownBuildingType, EBuildingType neededBuildingType) {
+		this.buildingType = ownBuildingType;
+		this.neededBuildingType = neededBuildingType;
 	}
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> lumberJacks = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId);
+		List<ShortPoint2D> neededBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(neededBuildingType, playerId);
+		List<ShortPoint2D> diggers = aiStatistics.getMovablePositionsByTypeForPlayer(DIGGER, playerId);
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-
-				ShortPoint2D nearestLumberJackPosition = aiStatistics.detectNearestPointFromList(point, lumberJacks);
-				double lumberJackDistances = aiStatistics.getDistance(point, nearestLumberJackPosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistances));
+				ShortPoint2D nearestDiggerPosition = aiStatistics.detectNearestPointFromList(point, diggers);
+				ShortPoint2D nearestNeededBuilding = aiStatistics.detectNearestPointFromList(point, neededBuildings);
+				double nearestNeededBuildingDistance = aiStatistics.getDistance(point, nearestNeededBuilding);
+				double nearestDiggerDistance = aiStatistics.getDistance(point, nearestDiggerPosition);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestNeededBuildingDistance + nearestDiggerDistance));
 			}
 		}
 

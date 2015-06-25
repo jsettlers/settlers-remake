@@ -58,7 +58,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId);
-		System.out.println("importantResource:" + importantResource + " " + playerId);
 
 		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId);
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TOWER, playerId));
