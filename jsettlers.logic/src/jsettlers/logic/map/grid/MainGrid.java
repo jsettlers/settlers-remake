@@ -897,6 +897,9 @@ public final class MainGrid implements Serializable {
 
 			int firstPosX = protectedTiles[0].calculateX(x);
 			int firstPosY = protectedTiles[0].calculateY(y);
+			if (firstPosX < 0 || firstPosY < 0 || firstPosX > partitionsGrid.getWidth() || firstPosY > partitionsGrid.getHeight()) {
+				return false;
+			}
 			final short partitionId = getPartitionIdAt(firstPosX, firstPosY);
 			if (!canPlayerConstructOnPartition(playerId, partitionId)) {
 				return false;
