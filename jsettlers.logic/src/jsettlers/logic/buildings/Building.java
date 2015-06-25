@@ -403,6 +403,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.state = STATE_CONSTRUCTED;
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
 			createWorkStacks();
+		} else {
+			stacks = new LinkedList<>(); // create a new stacks list
 		}
 		int timerPeriod = constructionFinishedEvent();
 		RescheduleTimer.add(this, timerPeriod);

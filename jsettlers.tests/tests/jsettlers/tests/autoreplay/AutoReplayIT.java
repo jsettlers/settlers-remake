@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
@@ -60,12 +61,15 @@ public class AutoReplayIT {
 	public static Collection<Object[]> replaySets() {
 		return Arrays.asList(new Object[][] {
 				{ "basicProduction-mountainlake", 15 },
+
 				{ "fullProduction-mountainlake", 10 },
 				{ "fullProduction-mountainlake", 20 },
 				{ "fullProduction-mountainlake", 30 },
 				{ "fullProduction-mountainlake", 40 },
 				{ "fullProduction-mountainlake", 50 },
-				{ "fullProduction-mountainlake", 69 }
+				{ "fullProduction-mountainlake", 69 },
+
+				{ "fighting-testmap", 8 }
 		});
 	}
 
@@ -99,21 +103,19 @@ public class AutoReplayIT {
 	private static void compareMapFiles(Path expectedFile, Path actualFile) throws IOException {
 		System.out.println("Comparing expected '" + expectedFile + "' with actual '" + actualFile + "'");
 
-		BufferedInputStream expectedStream = new BufferedInputStream(Files.newInputStream(expectedFile));
-		MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
-		CountingInputStream actualStream = new CountingInputStream(new BufferedInputStream(Files.newInputStream(actualFile)));
-		MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
+		try (BufferedInputStream expectedStream = new BufferedInputStream(Files.newInputStream(expectedFile));
+				CountingInputStream actualStream = new CountingInputStream(new BufferedInputStream(Files.newInputStream(actualFile)))) {
+			MapFileHeader expectedHeader = MapFileHeader.readFromStream(expectedStream);
+			MapFileHeader actualHeader = MapFileHeader.readFromStream(actualStream);
 
-		assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
+			assertEquals(expectedHeader.getBaseMapId(), actualHeader.getBaseMapId());
 
-		int e, a;
-		while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
-			assertEquals("difference at byte " + (actualStream.getByteCounter() - 1), a, e);
+			int e, a;
+			while ((e = expectedStream.read()) != -1 & (a = actualStream.read()) != -1) {
+				assertEquals("difference at byte " + (actualStream.getByteCounter() - 1), a, e);
+			}
+			assertEquals("files have different lengths", e, a);
 		}
-		assertEquals("files have different lengths", e, a);
-
-		expectedStream.close();
-		actualStream.close();
 	}
 
 	private static Path replayAndGetSavegame(Path replayPath, int targetTimeMinutes) throws IOException {
@@ -154,11 +156,16 @@ public class AutoReplayIT {
 			int targetTimeMinutes = (Integer) replaySet[1];
 
 			AutoReplayIT replayIT = new AutoReplayIT(folderName, targetTimeMinutes);
-			Path savegame = AutoReplayIT.replayAndGetSavegame(replayIT.getReplayPath(), targetTimeMinutes);
+			Path newSavegame = AutoReplayIT.replayAndGetSavegame(replayIT.getReplayPath(), targetTimeMinutes);
 			Path expectedSavegamePath = replayIT.getSavegamePath();
 
-			Files.move(savegame, expectedSavegamePath, StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("Moved savegame '" + savegame + "' to expected location '" + expectedSavegamePath + "'");
+			try {
+				compareMapFiles(expectedSavegamePath, newSavegame);
+				System.out.println("New savegame is equal to old one => won't replace.");
+			} catch (AssertionError | NoSuchFileException ex) { // if the files are not equal, replace the existing one.
+				Files.move(newSavegame, expectedSavegamePath, StandardCopyOption.REPLACE_EXISTING);
+				System.out.println("Replacing reference file '" + expectedSavegamePath + "' with new savegame '" + newSavegame + "'");
+			}
 		}
 	}
 }

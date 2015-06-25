@@ -268,6 +268,10 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 			result = false;
 		}
 
+		if (enemy != null && state == ESoldierState.SEARCH_FOR_ENEMIES && isEnemyAttackable(enemy, false)) {
+			result = false;
+		}
+
 		return result;
 	}
 
