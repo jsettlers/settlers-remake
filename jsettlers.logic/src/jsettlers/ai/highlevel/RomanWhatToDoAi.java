@@ -49,6 +49,7 @@ import java.util.Map;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
+import jsettlers.ai.construction.IBestConstructionPositionFinder;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;

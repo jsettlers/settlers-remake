@@ -25,12 +25,10 @@ public class AiExecutor implements IClockListener {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	AiStatistics aiStatistics;
-	private boolean shutdownRequested;
 	private int nextExecutionTime;
 	private final int TICK_TIME = 3000;
 
 	public AiExecutor(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
-		shutdownRequested = false;
 		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		nextExecutionTime = 0;

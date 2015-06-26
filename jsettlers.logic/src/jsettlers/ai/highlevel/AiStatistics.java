@@ -100,14 +100,24 @@ public class AiStatistics {
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1);
 	}
 
+	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType,
+			double currentNearestPointDistance) {
+		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1, currentNearestPointDistance);
+	}
+
 	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject) {
 		Map<Integer, List<Integer>> sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1);
 	}
 
 	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints, byte playerId) {
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedPoints, playerId, Double.MAX_VALUE);
+	}
+
+	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints, byte playerId,
+			double currentNearestPointDistance) {
 		ShortPoint2D result = null;
-		double currentNearestPointDistance = Double.MAX_VALUE;
 		ShortPoint2D nearestRightPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
 				new Integer(point.x), 1, new Integer(mainGrid.getWidth() + 1), playerId);
 		if (nearestRightPoint != null) {
@@ -263,8 +273,11 @@ public class AiStatistics {
 	}
 
 	public void updateStatistics() {
+		long startTime = System.currentTimeMillis();
 		updateBuildingStatistics();
 		updateMapStatistics();
+		System.out.println(this.getClass().getSimpleName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " "
+				+ (System.currentTimeMillis() - startTime) + " ms");
 	}
 
 	public int getNumberOfNotOccupiedTowers(short playerId) {

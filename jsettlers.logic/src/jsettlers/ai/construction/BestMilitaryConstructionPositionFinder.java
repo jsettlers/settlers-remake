@@ -69,6 +69,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TOWER, playerId));
 		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(CASTLE, playerId));
 
+		double nearestResourcePointDistance = Double.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
@@ -93,12 +94,15 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON);
 					break;
 				default:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL);
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL,
+							nearestResourcePointDistance);
 				}
-				double nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
-				ShortPoint2D nearestMilitairyBuildingPosition = aiStatistics.detectNearestPointFromList(point, militaryBuildings);
-				double militairyBuildingDistance = aiStatistics.getDistance(point, nearestMilitairyBuildingPosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance - militairyBuildingDistance));
+				if (nearestResourcePoint != null) {
+					nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
+					ShortPoint2D nearestMilitairyBuildingPosition = aiStatistics.detectNearestPointFromList(point, militaryBuildings);
+					double militairyBuildingDistance = aiStatistics.getDistance(point, nearestMilitairyBuildingPosition);
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance - militairyBuildingDistance));
+				}
 			}
 		}
 
