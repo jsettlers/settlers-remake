@@ -76,22 +76,27 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				ShortPoint2D nearestResourcePoint;
 				switch (importantResource) {
 				case TREES:
-					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT);
+					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT,
+							nearestResourcePointDistance);
 					break;
 				case STONES:
-					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE);
+					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE,
+							nearestResourcePointDistance);
 					break;
 				case RIVER:
-					nearestResourcePoint = aiStatistics.getNearestRiverPointInDefaultPartitionFor(point);
+					nearestResourcePoint = aiStatistics.getNearestRiverPointInDefaultPartitionFor(point, nearestResourcePointDistance);
 					break;
 				case GOLD:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLD);
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLD,
+							nearestResourcePointDistance);
 					break;
 				case FISH:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.FISH);
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.FISH,
+							nearestResourcePointDistance);
 					break;
 				case IRON:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON);
+					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON,
+							nearestResourcePointDistance);
 					break;
 				default:
 					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL,
@@ -122,16 +127,16 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		if (rivers.size() < 15) {
 			return ImportantResource.RIVER;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Double.MAX_VALUE) == null) {
 			return ImportantResource.COAL;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Double.MAX_VALUE) == null) {
 			return ImportantResource.IRON;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Double.MAX_VALUE) == null) {
 			return ImportantResource.FISH;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Double.MAX_VALUE) == null) {
 			return ImportantResource.GOLD;
 		}
 		return ImportantResource.COAL;

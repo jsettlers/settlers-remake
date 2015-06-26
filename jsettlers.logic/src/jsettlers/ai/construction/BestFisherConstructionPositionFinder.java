@@ -14,19 +14,15 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.landscape.EResourceType;
-import jsettlers.common.position.RelativePoint;
-import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.grid.landscape.LandscapeGrid;
+import static jsettlers.common.landscape.EResourceType.FISH;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static jsettlers.common.landscape.EResourceType.FISH;
-import static jsettlers.common.movable.EMovableType.DIGGER;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the amount of fish
@@ -44,11 +40,12 @@ public class BestFisherConstructionPositionFinder implements IBestConstructionPo
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
+		double fishDistance = Double.MAX_VALUE;
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D fishPosition = aiStatistics.getNearestResourcePointForPlayer(point, FISH, playerId);
+				ShortPoint2D fishPosition = aiStatistics.getNearestResourcePointForPlayer(point, FISH, playerId, fishDistance);
 				if (fishPosition != null) {
-					double fishDistance = aiStatistics.getDistance(point, fishPosition);
+					fishDistance = aiStatistics.getDistance(point, fishPosition);
 					scoredConstructionPositions.add(new ScoredConstructionPosition(point, fishDistance));
 				}
 			}
