@@ -32,8 +32,7 @@ import jsettlers.common.position.ShortPoint2D;
  * Assumptions: the most needed land are mountains with resources for military production
  * 
  * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
- * score is affected by the distance to of other militairy buildings to get the most land out of the less militairy buildings - score is affected by
- * distance of the most important resource at the moment. The most important resource is: first trees, then: stones, rivers, coal
+ * score is affected by distance of the most important resource at the moment. The most important resource is: first trees, then: stones, rivers, coal
  * 
  * @author codingberlin
  */
@@ -64,10 +63,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		}
 
 		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId, borderLandNextToFreeLandForPlayer.get(0));
-
-		List<ShortPoint2D> militaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId);
-		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(BIG_TOWER, playerId));
-		militaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(CASTLE, playerId));
 
 		double nearestResourcePointDistance = Double.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
@@ -104,9 +99,8 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 				}
 				if (nearestResourcePoint != null) {
 					nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
-					ShortPoint2D nearestMilitairyBuildingPosition = aiStatistics.detectNearestPointFromList(point, militaryBuildings);
-					double militairyBuildingDistance = aiStatistics.getDistance(point, nearestMilitairyBuildingPosition);
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance - militairyBuildingDistance));
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance));
+					System.out.println(point + " " + nearestResourcePointDistance);
 				}
 			}
 		}
