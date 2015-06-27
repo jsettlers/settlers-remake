@@ -56,6 +56,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.EGuiAction;
+import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
@@ -68,7 +69,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private final List<BuildingCount> buildMaterialEconomy;
 	private final List<BuildingCount> foodEconomy;
 	private final List<BuildingCount> weaponsEconomy;
-	private final List<BuildingCount> toolsEconomy;
 	private final List<BuildingCount> manaEconomy;
 	private final List<BuildingCount> goldEconomy;
 	private final List<List<BuildingCount>> economiesOrder;
@@ -83,7 +83,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildMaterialEconomy = new ArrayList<BuildingCount>();
 		foodEconomy = new ArrayList<BuildingCount>();
 		weaponsEconomy = new ArrayList<BuildingCount>();
-		toolsEconomy = new ArrayList<BuildingCount>();
 		manaEconomy = new ArrayList<BuildingCount>();
 		goldEconomy = new ArrayList<BuildingCount>();
 		economiesOrder = new ArrayList<List<BuildingCount>>();
@@ -130,7 +129,17 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		destroyBuildings();
+		occupyTowers();
 		buildBuildings();
+	}
+
+	private void occupyTowers() {
+		for (ShortPoint2D towerPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId)) {
+			Building tower = aiStatistics.getBuildingAt(towerPosition);
+			if (tower.getStateProgress() == 1 && !tower.isOccupied()) {
+				aiStatistics.sendAnySoldierToPosition(tower.getDoor(), playerId);
+			}
+		}
 	}
 
 	private void destroyBuildings() {
@@ -156,7 +165,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 					+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
 			if (futureNumberOfBearers < 10 || numberOfTotalBuildings * 1.5 > futureNumberOfBearers) {
 				if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER,
-						playerId) < 4 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 3) {
+						playerId) < 2 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 1) {
 					construct(SMALL_LIVINGHOUSE);
 					return;
 				} else {

@@ -53,7 +53,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		long time = System.currentTimeMillis();
 		List<ShortPoint2D> borderLandNextToFreeLandForPlayer = aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId);
 		if (borderLandNextToFreeLandForPlayer.size() == 0) {
 			return null;
@@ -129,7 +128,6 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 			}
 		}
 
-		System.out.println("BestMili: " + (System.currentTimeMillis() - time) + " ms");
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
