@@ -14,10 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import static jsettlers.common.buildings.EBuildingType.BIG_TOWER;
-import static jsettlers.common.buildings.EBuildingType.CASTLE;
-import static jsettlers.common.buildings.EBuildingType.TOWER;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,82 +53,128 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
+		long time = System.currentTimeMillis();
 		List<ShortPoint2D> borderLandNextToFreeLandForPlayer = aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId);
 		if (borderLandNextToFreeLandForPlayer.size() == 0) {
 			return null;
 		}
 
-		ImportantResource importantResource = detectMostImportantResourcePoints(aiStatistics, playerId, borderLandNextToFreeLandForPlayer.get(0));
+		List<ImportantResource> importantResources = detectMostImportantResourcePoints(aiStatistics, playerId,
+				borderLandNextToFreeLandForPlayer.get(0));
 
-		double nearestResourcePointDistance = Double.MAX_VALUE;
+		double nearestResourcePointsDistance = Double.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestResourcePoint;
-				switch (importantResource) {
-				case TREES:
-					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT,
-							nearestResourcePointDistance);
-					break;
-				case STONES:
-					nearestResourcePoint = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE,
-							nearestResourcePointDistance);
-					break;
-				case RIVER:
-					nearestResourcePoint = aiStatistics.getNearestRiverPointInDefaultPartitionFor(point, nearestResourcePointDistance);
-					break;
-				case GOLD:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLD,
-							nearestResourcePointDistance);
-					break;
-				case FISH:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.FISH,
-							nearestResourcePointDistance);
-					break;
-				case IRON:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON,
-							nearestResourcePointDistance);
-					break;
-				default:
-					nearestResourcePoint = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL,
-							nearestResourcePointDistance);
+				List<ShortPoint2D> nearestResourcePoints = new ArrayList<ShortPoint2D>();
+				if (importantResources.contains(ImportantResource.TREES)) {
+					ShortPoint2D nearestTree = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.TREE_ADULT,
+							nearestResourcePointsDistance);
+					if (nearestTree != null) {
+						nearestResourcePoints.add(nearestTree);
+					}
 				}
-				if (nearestResourcePoint != null) {
-					nearestResourcePointDistance = aiStatistics.getDistance(nearestResourcePoint, point);
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestResourcePointDistance));
-					System.out.println(point + " " + nearestResourcePointDistance);
+				if (importantResources.contains(ImportantResource.STONES)) {
+					ShortPoint2D nearestStone = aiStatistics.getNearestCuttableObjectPointInDefaultPartitionFor(point, EMapObjectType.STONE,
+							nearestResourcePointsDistance);
+					if (nearestStone != null) {
+						nearestResourcePoints.add(nearestStone);
+					}
+				}
+				if (importantResources.contains(ImportantResource.RIVER)) {
+					ShortPoint2D nearestRiver = aiStatistics.getNearestRiverPointInDefaultPartitionFor(point, nearestResourcePointsDistance);
+					if (nearestRiver != null) {
+						nearestResourcePoints.add(nearestRiver);
+					}
+				}
+				if (importantResources.contains(ImportantResource.GOLD)) {
+					ShortPoint2D nearestGold = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLD,
+							nearestResourcePointsDistance);
+					if (nearestGold != null) {
+						nearestResourcePoints.add(nearestGold);
+					}
+				}
+				if (importantResources.contains(ImportantResource.IRON)) {
+					ShortPoint2D nearestIron = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON,
+							nearestResourcePointsDistance);
+					if (nearestIron != null) {
+						nearestResourcePoints.add(nearestIron);
+					}
+				}
+				if (importantResources.contains(ImportantResource.COAL)) {
+					ShortPoint2D nearestCoal = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.COAL,
+							nearestResourcePointsDistance);
+					if (nearestCoal != null) {
+						nearestResourcePoints.add(nearestCoal);
+					}
+				}
+				if (importantResources.contains(ImportantResource.FISH)) {
+					ShortPoint2D nearestFish = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.FISH,
+							nearestResourcePointsDistance);
+					if (nearestFish != null) {
+						nearestResourcePoints.add(nearestFish);
+					}
+				}
+				if (nearestResourcePoints.size() == importantResources.size()) {
+					double maximumDistanceOfResourcesOfThisPoint = 0;
+					double score = 0;
+					for (ShortPoint2D currentPoint : nearestResourcePoints) {
+						double distance = aiStatistics.getDistance(currentPoint, point);
+						score += distance;
+						maximumDistanceOfResourcesOfThisPoint = Math.max(maximumDistanceOfResourcesOfThisPoint, distance);
+					}
+					nearestResourcePointsDistance = maximumDistanceOfResourcesOfThisPoint;
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, score));
 				}
 			}
 		}
 
+		System.out.println("BestMili: " + (System.currentTimeMillis() - time) + " ms");
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
-	private ImportantResource detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
+	private List<ImportantResource> detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
+		List<ImportantResource> importantResources = new ArrayList<ImportantResource>();
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		List<ShortPoint2D> rivers = aiStatistics.getRiversForPlayer(playerId);
 		if (trees.size() < 30) {
-			return ImportantResource.TREES;
+			importantResources.add(ImportantResource.TREES);
 		}
 		if (stones.size() < 7) {
-			return ImportantResource.STONES;
+			importantResources.add(ImportantResource.STONES);
 		}
 		if (rivers.size() < 15) {
-			return ImportantResource.RIVER;
+			importantResources.add(ImportantResource.RIVER);
+		}
+		if (importantResources.size() == 3) {
+			return importantResources;
 		}
 		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Double.MAX_VALUE) == null) {
-			return ImportantResource.COAL;
+			importantResources.add(ImportantResource.COAL);
+		}
+		if (importantResources.size() == 3) {
+			return importantResources;
 		}
 		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Double.MAX_VALUE) == null) {
-			return ImportantResource.IRON;
+			importantResources.add(ImportantResource.IRON);
+		}
+		if (importantResources.size() == 3) {
+			return importantResources;
 		}
 		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Double.MAX_VALUE) == null) {
-			return ImportantResource.FISH;
+			importantResources.add(ImportantResource.FISH);
+		}
+		if (importantResources.size() == 3) {
+			return importantResources;
 		}
 		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Double.MAX_VALUE) == null) {
-			return ImportantResource.GOLD;
+			importantResources.add(ImportantResource.GOLD);
 		}
-		return ImportantResource.COAL;
+		if (importantResources.size() == 0) {
+			importantResources.add(ImportantResource.COAL);
+		}
+
+		return importantResources;
 	}
 }
