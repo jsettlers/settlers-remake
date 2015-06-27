@@ -32,7 +32,7 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	private final static double MAX_STONE_DISTANCE = 18;
+	public final static double MAX_STONE_DISTANCE = 17;
 	private final EBuildingType buildingType;
 
 	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {

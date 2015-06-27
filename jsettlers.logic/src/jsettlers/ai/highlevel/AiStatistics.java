@@ -90,6 +90,10 @@ public class AiStatistics {
 		this.flagsGrid = mainGrid.getFlagsGrid();
 	}
 
+	public Building getBuildingAt(ShortPoint2D point) {
+		return (Building) objectsGrid.getMapObjectAt(point.x, point.y, EMapObjectType.BUILDING);
+	}
+
 	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId,
 			double currentNearestPointDistance) {
 		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
@@ -104,8 +108,13 @@ public class AiStatistics {
 
 	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject,
 			double currentNearestPointDistance) {
+		return getNearestCuttableObjectPointForPlayer(point, cuttableObject, currentNearestPointDistance, (byte) -1);
+	}
+
+	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject,
+			double currentNearestPointDistance, byte playerId) {
 		Map<Integer, List<Integer>> sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1, currentNearestPointDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
 	}
 
 	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints, byte playerId,

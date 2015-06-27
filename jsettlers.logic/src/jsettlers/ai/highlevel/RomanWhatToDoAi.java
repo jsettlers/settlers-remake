@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
+import static jsettlers.ai.construction.BestStoneCutterConstructionPositionFinder.MAX_STONE_DISTANCE;
 import static jsettlers.common.buildings.EBuildingType.BAKER;
 import static jsettlers.common.buildings.EBuildingType.BARRACK;
 import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
@@ -49,7 +50,6 @@ import java.util.Map;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
-import jsettlers.ai.construction.IBestConstructionPositionFinder;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -158,6 +158,21 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	@Override
 	public void applyRules() {
+		destroyBuildings();
+		buildBuildings();
+	}
+
+	private void destroyBuildings() {
+		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
+		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
+			ShortPoint2D nearestStone = aiStatistics.detectNearestPointFromList(stoneCutterPosition, stones);
+			if (nearestStone != null && aiStatistics.getDistance(stoneCutterPosition, nearestStone) > MAX_STONE_DISTANCE) {
+				aiStatistics.getBuildingAt(stoneCutterPosition).kill();
+			}
+		}
+	}
+
+	private void buildBuildings() {
 		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
 
 		int numberOfNotOccupiedTowers = aiStatistics.getNumberOfNotOccupiedTowers(playerId);
