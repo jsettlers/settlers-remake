@@ -495,7 +495,7 @@ public class AiStatistics {
 		}
 	}
 
-	public void sendAnySoldierToPosition(ShortPoint2D targetPosition, byte playerId) {
+	public Movable getNearestSwordsmanOf(ShortPoint2D targetPosition, byte playerId) {
 		List<ShortPoint2D> soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L3, playerId);
 		if (soldierPositions.size() == 0) {
 			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L2, playerId);
@@ -504,12 +504,11 @@ public class AiStatistics {
 			soldierPositions = getMovablePositionsByTypeForPlayer(SWORDSMAN_L1, playerId);
 		}
 		if (soldierPositions.size() == 0) {
-			return;
+			return null;
 		}
 
 		ShortPoint2D nearestSoldierPosition = detectNearestPointFromList(targetPosition, soldierPositions);
-		Movable soldier = movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
-		soldier.moveTo(targetPosition);
+		return movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
 	}
 
 	public ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {

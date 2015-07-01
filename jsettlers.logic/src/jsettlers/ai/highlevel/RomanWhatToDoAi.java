@@ -56,8 +56,10 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.EGuiAction;
+import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
 public class RomanWhatToDoAi implements IWhatToDoAi {
@@ -137,9 +139,17 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		for (ShortPoint2D towerPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId)) {
 			Building tower = aiStatistics.getBuildingAt(towerPosition);
 			if (tower.getStateProgress() == 1 && !tower.isOccupied()) {
-				aiStatistics.sendAnySoldierToPosition(tower.getDoor(), playerId);
+				ShortPoint2D door = tower.getDoor();
+				Movable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
+				sendMovableTo(soldier, door);
 			}
 		}
+	}
+
+	private void sendMovableTo(Movable movable, ShortPoint2D target) {
+		List<Integer> selectedIds = new ArrayList<Integer>();
+		selectedIds.add(movable.getID());
+		taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, selectedIds));
 	}
 
 	private void destroyBuildings() {
@@ -240,7 +250,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		if (position != null) {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
 			if (type == TOWER) {
-				aiStatistics.sendAnySoldierToPosition(position, playerId);
+				Movable soldier = aiStatistics.getNearestSwordsmanOf(position, playerId);
+				sendMovableTo(soldier, position);
 			}
 			return true;
 		}
