@@ -116,12 +116,21 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		goldEconomy.add(new BuildingCount(GOLDMELT, 1));
 		economiesOrder.add(buildMaterialEconomy);
 		economiesOrder.add(buildMaterialEconomy);
+		economiesOrder.add(buildMaterialEconomy);
 		economiesOrder.add(manaEconomy);
 		economiesOrder.add(foodEconomy);
 		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(goldEconomy);
+		economiesOrder.add(foodEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(foodEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
+		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(foodEconomy);
 		economiesOrder.add(weaponsEconomy);
 		economiesOrder.add(weaponsEconomy);
@@ -148,11 +157,14 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	private void sendMovableTo(Movable movable, ShortPoint2D target) {
 		List<Integer> selectedIds = new ArrayList<Integer>();
-		selectedIds.add(movable.getID());
-		taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, selectedIds));
+		if (movable != null) {
+			selectedIds.add(movable.getID());
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, selectedIds));
+		}
 	}
 
 	private void destroyBuildings() {
+		// destroy stonecutters
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 			ShortPoint2D nearestStone = aiStatistics.detectNearestPointFromList(stoneCutterPosition, stones);
@@ -160,90 +172,112 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				aiStatistics.getBuildingAt(stoneCutterPosition).kill();
 			}
 		}
+		// TODO: destroy towers which are surrounded by other towers or are in direction of no other player
+		// TODO: desroy living houses to get material back
 	}
 
 	private void buildBuildings() {
-		int numberOfNotFinishedBuildings = aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId);
-
-		int numberOfNotOccupiedTowers = aiStatistics.getNumberOfNotOccupiedTowers(playerId);
-		int numberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
-		int numberOfTotalBuildings = aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId);
-
-		if (numberOfNotFinishedBuildings <= 4) {
-			int futureNumberOfBearers = numberOfBearers + aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
-					+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30
-					+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
-			if (futureNumberOfBearers < 10 || numberOfTotalBuildings * 1.5 > futureNumberOfBearers) {
-				if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER,
-						playerId) < 2 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 1) {
-					construct(SMALL_LIVINGHOUSE);
-					return;
-				} else {
-					construct(MEDIUM_LIVINGHOUSE);
-					return;
-				}
-			}
-
-			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1 && numberOfNotOccupiedTowers == 0) {
-				construct(TOWER);
+		if (aiStatistics.getNumberOfNotFinishedBuildingsForPlayer(playerId) <= 4) {
+			if (buildLivingHouse())
 				return;
-			}
+			if (buildTower())
+				return;
+			buildEconomy();
+		}
+	}
 
-			boolean toolsEconomyNeedsToBeChecked = true;
-			Map<EBuildingType, Float> currentBuildingPlan = new HashMap<EBuildingType, Float>();
-			for (List<BuildingCount> currentEconomy : economiesOrder) {
-				for (BuildingCount currentBuildingCount : currentEconomy) {
-					if (!currentBuildingPlan.containsKey(currentBuildingCount.buildingType)) {
-						currentBuildingPlan.put(currentBuildingCount.buildingType, 0f);
-					}
-					float newCount = currentBuildingPlan.get(currentBuildingCount.buildingType) + currentBuildingCount.count;
-					currentBuildingPlan.put(currentBuildingCount.buildingType, currentBuildingPlan.get(currentBuildingCount.buildingType)
-							+ currentBuildingCount.count);
-					if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingCount.buildingType, playerId) < Math.max(1,
-							Math.floor(newCount))) {
-						if (toolsEconomyNeedsToBeChecked && !toolIsAvailableForBuildingType(currentBuildingCount.buildingType)) {
-							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId) < 1 && construct(COALMINE)) {
-								return;
-							}
-							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId) < 1 && construct(IRONMINE)) {
-								return;
-							}
-							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMELT, playerId) < 1 && construct(IRONMELT)) {
-								return;
-							}
-							if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId) < 1 && construct(TOOLSMITH)) {
-								return;
-							}
-							toolsEconomyNeedsToBeChecked = false;
-						}
-						boolean constructWasSuccessful = construct(currentBuildingCount.buildingType);
-						if (constructWasSuccessful) {
+	private void buildEconomy() {
+		boolean toolsEconomyNeedsToBeChecked = true;
+		Map<EBuildingType, Float> playerBuildingPlan = new HashMap<EBuildingType, Float>();
+		for (List<BuildingCount> currentEconomy : economiesOrder) {
+			for (BuildingCount currentBuildingCount : currentEconomy) {
+				addBuildingCountToBuildingPlan(currentBuildingCount, playerBuildingPlan);
+				if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingCount)) {
+					int numberOfAvailableTools = numberOfAvailableToolsForBuildingType(currentBuildingCount.buildingType);
+					if (toolsEconomyNeedsToBeChecked && numberOfAvailableTools < 1) {
+						if (buildToolsEconomy())
 							return;
-						}
+						toolsEconomyNeedsToBeChecked = false;
+					}
+					if (numberOfAvailableTools >= 0 && !newBuildingWouldUseReservedTool(currentBuildingCount.buildingType)
+							&& construct(currentBuildingCount.buildingType)) {
+						return;
 					}
 				}
 			}
 		}
-
 	}
 
-	private boolean toolIsAvailableForBuildingType(EBuildingType buildingType) {
+	private boolean buildToolsEconomy() {
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(COALMINE, playerId) < 1) {
+			return construct(COALMINE);
+		}
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMINE, playerId) < 1) {
+			return construct(IRONMINE);
+		}
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(IRONMELT, playerId) < 1) {
+			return construct(IRONMELT);
+		}
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(TOOLSMITH, playerId) < 1) {
+			return construct(TOOLSMITH);
+		}
+		return false;
+	}
+
+	private boolean buildingNeedsToBeBuild(Map<EBuildingType, Float> playerBuildingPlan, BuildingCount currentBuildingCount) {
+		int currentNumberOfBuildings = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(currentBuildingCount.buildingType, playerId);
+		int targetNumberOfBuildings = (int) Math.floor(playerBuildingPlan.get(currentBuildingCount.buildingType));
+		int targetNumberOfBuildingsWithMinimum = Math.max(1, targetNumberOfBuildings);
+		return currentNumberOfBuildings < targetNumberOfBuildingsWithMinimum;
+	}
+
+	private void addBuildingCountToBuildingPlan(BuildingCount currentBuildingCount, Map<EBuildingType, Float> playerBuildingPlan) {
+		if (!playerBuildingPlan.containsKey(currentBuildingCount.buildingType)) {
+			playerBuildingPlan.put(currentBuildingCount.buildingType, 0f);
+		}
+		float foo = playerBuildingPlan.get(currentBuildingCount.buildingType) + currentBuildingCount.count;
+		playerBuildingPlan.put(currentBuildingCount.buildingType, foo);
+	}
+
+	private boolean buildTower() {
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1
+				&& aiStatistics.getNumberOfNotOccupiedTowers(playerId) == 0) {
+			return construct(TOWER);
+		}
+		return false;
+	}
+
+	private boolean buildLivingHouse() {
+		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30
+				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
+		if (futureNumberOfBearers < 10 || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * 1.5 > futureNumberOfBearers) {
+			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER,
+					playerId) < 2 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 1) {
+				return construct(SMALL_LIVINGHOUSE);
+			} else {
+				return construct(MEDIUM_LIVINGHOUSE);
+			}
+		}
+		return false;
+	}
+
+	private int numberOfAvailableToolsForBuildingType(EBuildingType buildingType) {
 		EMovableType movableType = buildingType.getWorkerType();
 		if (movableType == null) {
-			return true;
+			return Integer.MAX_VALUE;
 		}
 		EMaterialType materialType = movableType.getTool();
 		if (materialType == EMaterialType.NO_MATERIAL) {
-			return true;
+			return Integer.MAX_VALUE;
 		}
 		return aiStatistics.getNumberOfMaterialTypeForPlayer(materialType, playerId)
-				- aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(buildingType, playerId) >= 1;
+				- aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(buildingType, playerId)
+				- aiStatistics.getNumberOfUnoccupiedBuildingTypeForPlayer(buildingType, playerId);
 	}
 
 	private boolean construct(EBuildingType type) {
-		if (newBuildingWouldUseReservedTool(type)) {
-			return false;
-		}
 		ShortPoint2D position = bestConstructionPositionFinderFactory
 				.getBestConstructionPositionFinderFor(type)
 				.findBestConstructionPosition(aiStatistics, mainGrid.getConstructionMarksGrid(), playerId);
