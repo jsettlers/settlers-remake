@@ -40,6 +40,8 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.buildings.OccupyerPlace.ESoldierType.INFANTRY;
+import static jsettlers.common.buildings.OccupyerPlace.ESoldierType.BOWMAN;
 import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 
@@ -57,7 +59,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
@@ -139,6 +141,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	@Override
 	public void applyRules() {
+		// TODO: Movable fixen
+		// Eisenschmelzen eindämmen
 		destroyBuildings();
 		occupyTowers();
 		buildBuildings();
@@ -146,11 +150,13 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	private void occupyTowers() {
 		for (ShortPoint2D towerPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId)) {
-			Building tower = aiStatistics.getBuildingAt(towerPosition);
-			if (tower.getStateProgress() == 1 && !tower.isOccupied()) {
+			OccupyingBuilding tower = (OccupyingBuilding) aiStatistics.getBuildingAt(towerPosition);
+			if (tower.getStateProgress() == 1 && !tower.isOccupied() && tower.getCurrentlyCommingSoldiers(INFANTRY) == 0 && tower.getCurrentlyCommingSoldiers(BOWMAN) == 0) {
 				ShortPoint2D door = tower.getDoor();
 				Movable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
-				sendMovableTo(soldier, door);
+				if (soldier != null) {
+					sendMovableTo(soldier, door);
+				}
 			}
 		}
 	}
@@ -285,7 +291,9 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 			taskScheduler.scheduleTask(new ConstructBuildingTask(EGuiAction.BUILD, playerId, position, type));
 			if (type == TOWER) {
 				Movable soldier = aiStatistics.getNearestSwordsmanOf(position, playerId);
-				sendMovableTo(soldier, position);
+				if (soldier != null) {
+					sendMovableTo(soldier, position);
+				}
 			}
 			return true;
 		}
