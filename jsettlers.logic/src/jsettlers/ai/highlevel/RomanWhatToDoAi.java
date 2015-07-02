@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
+import jsettlers.ai.construction.BuildingCount;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -69,6 +70,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private final ITaskScheduler taskScheduler;
 	private final AiStatistics aiStatistics;
 	private final List<EBuildingType> buildingsToBuild;
+	private final Map<EBuildingType, List<BuildingCount>> buildingNeeds;
+	private final Map<EBuildingType, List<EBuildingType>> buildingIsNeededBy;
 	BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 
 	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, MainGrid mainGrid, ITaskScheduler taskScheduler) {
@@ -76,13 +79,36 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
+		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
+		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
-		this.buildingsToBuild = new ArrayList<EBuildingType>();
-		initializeEconomies();
+		buildingsToBuild = new ArrayList<EBuildingType>();
+		initializeBuildingLists();
 
 	}
 
-	private void initializeEconomies() {
+	private void initializeBuildingLists() {
+		for (EBuildingType buildingType : EBuildingType.values()) {
+			buildingNeeds.put(buildingType, new ArrayList<BuildingCount>());
+			buildingIsNeededBy.put(buildingType, new ArrayList<EBuildingType>());
+		}
+		buildingNeeds.get(SAWMILL).add(new BuildingCount(LUMBERJACK, 3));
+		buildingNeeds.get(TEMPLE).add(new BuildingCount(WINEGROWER, 1));
+		buildingNeeds.get(WATERWORKS).add(new BuildingCount(FARM, 2));
+		buildingNeeds.get(MILL).add(new BuildingCount(FARM, 1));
+		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, 1 / 3));
+		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
+		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(FARM, 1 / 3));
+		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 1));
+		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 1));
+		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 1));
+		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
+		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 1));
+		for (Map.Entry<EBuildingType, List<BuildingCount>> buildingNeedsEntry : buildingNeeds.entrySet()) {
+			for (BuildingCount neededBuildingCount : buildingNeedsEntry.getValue()) {
+				buildingIsNeededBy.get(neededBuildingCount.buildingType).add(buildingNeedsEntry.getKey());
+			}
+		}
 		buildingsToBuild.add(LUMBERJACK);
 		buildingsToBuild.add(LUMBERJACK);
 		buildingsToBuild.add(SAWMILL);
@@ -164,7 +190,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	@Override
 	public void applyRules() {
-		// Eisenschmelzen eindämmen
 		destroyBuildings();
 		occupyTowers();
 		buildBuildings();
@@ -219,11 +244,14 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
 		for (EBuildingType currentBuildingType : buildingsToBuild) {
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
-			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)) {
+
+			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
+					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
 				int numberOfAvailableTools = numberOfAvailableToolsForBuildingType(currentBuildingType);
 				if (toolsEconomyNeedsToBeChecked && numberOfAvailableTools < 1) {
-					if (buildToolsEconomy())
+					if (buildToolsEconomy()) {
 						return;
+					}
 					toolsEconomyNeedsToBeChecked = false;
 				}
 				if (numberOfAvailableTools >= 0 && !newBuildingWouldUseReservedTool(currentBuildingType)
@@ -232,6 +260,29 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				}
 			}
 		}
+	}
+
+	private boolean buildingDependenciesAreFulfilled(EBuildingType targetBuilding) {
+		boolean buildingDependenciesAreFulfilled = true;
+		for (BuildingCount neededBuilding : buildingNeeds.get(targetBuilding)) {
+			if (!unusedBuildingExists(neededBuilding.buildingType)) {
+				buildingDependenciesAreFulfilled = false;
+			}
+		}
+		return buildingDependenciesAreFulfilled;
+	}
+
+	private boolean unusedBuildingExists(EBuildingType me) {
+		float howOftenAmIUsed = 0;
+		for (EBuildingType buildingWhichNeedsMe : buildingIsNeededBy.get(me)) {
+			for (BuildingCount buildingCount : buildingNeeds.get(buildingWhichNeedsMe)) {
+				if (buildingCount.buildingType == me) {
+					howOftenAmIUsed = howOftenAmIUsed + buildingCount.count
+							* aiStatistics.getTotalNumberOfBuildingTypeForPlayer(buildingWhichNeedsMe, playerId);
+				}
+			}
+		}
+		return aiStatistics.getTotalNumberOfBuildingTypeForPlayer(me, playerId) >= howOftenAmIUsed;
 	}
 
 	private boolean buildToolsEconomy() {
