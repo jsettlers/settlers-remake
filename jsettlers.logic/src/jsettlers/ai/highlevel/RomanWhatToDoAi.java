@@ -40,10 +40,9 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
-import static jsettlers.common.buildings.OccupyerPlace.ESoldierType.INFANTRY;
-import static jsettlers.common.buildings.OccupyerPlace.ESoldierType.BOWMAN;
 import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
+import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,7 +140,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	@Override
 	public void applyRules() {
-		// TODO: Movable fixen
 		// Eisenschmelzen eindämmen
 		destroyBuildings();
 		occupyTowers();
@@ -151,10 +149,10 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private void occupyTowers() {
 		for (ShortPoint2D towerPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(TOWER, playerId)) {
 			OccupyingBuilding tower = (OccupyingBuilding) aiStatistics.getBuildingAt(towerPosition);
-			if (tower.getStateProgress() == 1 && !tower.isOccupied() && tower.getCurrentlyCommingSoldiers(INFANTRY) == 0 && tower.getCurrentlyCommingSoldiers(BOWMAN) == 0) {
+			if (tower.getStateProgress() == 1 && !tower.isOccupied()) {
 				ShortPoint2D door = tower.getDoor();
 				Movable soldier = aiStatistics.getNearestSwordsmanOf(door, playerId);
-				if (soldier != null) {
+				if (soldier != null && aiStatistics.getDistance(tower.getPos(), soldier.getPos()) > TOWER_SEARCH_RADIUS) {
 					sendMovableTo(soldier, door);
 				}
 			}
