@@ -14,8 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import static jsettlers.common.movable.EMovableType.DIGGER;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +24,7 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score -
- * score is affected by the distance to needed buildings (eg. lumberjacks for sawmills) - score is affected by the distance to diggers so that the
- * diggers and bricklayers don't need to walk over the whole map to build the next building
+ * score is affected by the distance to needed buildings (eg. lumberjacks for sawmills)
  * 
  * @author codingberlin
  */
@@ -44,15 +41,12 @@ public class NearNeededBuildingConstructionPositionFinder implements IBestConstr
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
 		List<ShortPoint2D> neededBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(neededBuildingType, playerId);
-		List<ShortPoint2D> diggers = aiStatistics.getMovablePositionsByTypeForPlayer(DIGGER, playerId);
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestDiggerPosition = aiStatistics.detectNearestPointFromList(point, diggers);
 				ShortPoint2D nearestNeededBuilding = aiStatistics.detectNearestPointFromList(point, neededBuildings);
 				double nearestNeededBuildingDistance = aiStatistics.getDistance(point, nearestNeededBuilding);
-				double nearestDiggerDistance = aiStatistics.getDistance(point, nearestDiggerPosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestNeededBuildingDistance + nearestDiggerDistance));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestNeededBuildingDistance));
 			}
 		}
 
