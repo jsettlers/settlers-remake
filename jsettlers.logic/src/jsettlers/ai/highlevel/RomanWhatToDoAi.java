@@ -33,6 +33,7 @@ import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
 import static jsettlers.common.buildings.EBuildingType.SAWMILL;
 import static jsettlers.common.buildings.EBuildingType.SLAUGHTERHOUSE;
 import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
+import static jsettlers.common.buildings.EBuildingType.STOCK;
 import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
 import static jsettlers.common.buildings.EBuildingType.TEMPLE;
 import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
@@ -40,6 +41,7 @@ import static jsettlers.common.buildings.EBuildingType.TOWER;
 import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.material.EMaterialType.GOLD;
 import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
@@ -235,8 +237,22 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				return;
 			if (buildTower())
 				return;
+			if (buildStock())
+				return;
 			buildEconomy();
 		}
+	}
+
+	private boolean buildStock() {
+		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(GOLDMELT, playerId) < 1) {
+			return false;
+		}
+		int stockCount = aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STOCK, playerId);
+		int goldCount = aiStatistics.getNumberOfMaterialTypeForPlayer(GOLD, playerId);
+		if (stockCount * 6 * 8 - 32 < goldCount) {
+			return construct(STOCK);
+		}
+		return false;
 	}
 
 	private void buildEconomy() {

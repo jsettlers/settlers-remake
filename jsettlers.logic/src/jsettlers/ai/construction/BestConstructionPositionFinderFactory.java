@@ -18,6 +18,7 @@ package jsettlers.ai.construction;
 
 import jsettlers.common.buildings.EBuildingType;
 
+import static jsettlers.common.buildings.EBuildingType.*;
 import static jsettlers.common.landscape.EResourceType.*;
 
 public class BestConstructionPositionFinderFactory {
@@ -31,7 +32,7 @@ public class BestConstructionPositionFinderFactory {
 		case FORESTER:
 			return new BestForesterConstructionPositionFinder(type);
 		case SAWMILL:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.LUMBERJACK);
+			return new NearNeededBuildingConstructionPositionFinder(type, LUMBERJACK);
 		case TOWER:
 		case BIG_TOWER:
 		case CASTLE:
@@ -48,27 +49,29 @@ public class BestConstructionPositionFinderFactory {
 		case WATERWORKS:
 			return new BestWaterWorksConstructionPositionFinder(type);
 		case IRONMELT:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.IRONMINE);
+			return new NearNeededBuildingConstructionPositionFinder(type, IRONMINE);
 		case WEAPONSMITH:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.IRONMELT);
+			return new NearNeededBuildingConstructionPositionFinder(type, IRONMELT);
 		case TOOLSMITH:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.IRONMELT);
+			return new NearNeededBuildingConstructionPositionFinder(type, IRONMELT);
 		case BARRACK:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.WEAPONSMITH);
+			return new NearNeededBuildingConstructionPositionFinder(type, WEAPONSMITH);
 		case MILL:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.FARM);
+			return new NearNeededBuildingConstructionPositionFinder(type, FARM);
 		case BAKER:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.MILL);
+			return new NearNeededBuildingConstructionPositionFinder(type, MILL);
 		case PIG_FARM:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.FARM);
+			return new NearNeededBuildingConstructionPositionFinder(type, FARM);
 		case SLAUGHTERHOUSE:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.PIG_FARM);
+			return new NearNeededBuildingConstructionPositionFinder(type, PIG_FARM);
 		case TEMPLE:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.WINEGROWER);
+			return new NearNeededBuildingConstructionPositionFinder(type, WINEGROWER);
 		case GOLDMELT:
-			return new NearNeededBuildingConstructionPositionFinder(type, EBuildingType.GOLDMINE);
-		case FISHER:
-			return new BestFisherConstructionPositionFinder(type);
+			return new NearNeededBuildingConstructionPositionFinder(type, GOLDMINE);
+			case FISHER:
+				return new BestFisherConstructionPositionFinder(type);
+			case STOCK:
+				return new NearNeededBuildingConstructionPositionFinder(type, GOLDMELT);
 		default:
 			return new NearDiggersConstructionPositionFinder(type);
 		}
