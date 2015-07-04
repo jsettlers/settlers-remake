@@ -266,13 +266,6 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		for (EBuildingType currentBuildingType : buildingsToBuild) {
 
 			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
-			System.out.println("build " + playerId
-					+ " " + currentBuildingType
-					+ " " + buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
-					+ " " + buildingDependenciesAreFulfilled(currentBuildingType)
-					+ " " + numberOfAvailableToolsForBuildingType(currentBuildingType)
-					+ " " + newBuildingWouldUseReservedTool(currentBuildingType)
-					);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
 					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
 				int numberOfAvailableTools = numberOfAvailableToolsForBuildingType(currentBuildingType);
