@@ -16,7 +16,7 @@ package jsettlers.logic.map.grid.partition.manager.settings;
 
 import java.io.Serializable;
 
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 
@@ -26,7 +26,7 @@ import jsettlers.logic.map.grid.partition.manager.PartitionManager;
  * @author Andreas Eberle
  * 
  */
-public final class PartitionManagerSettings implements IPartitionSettings, Serializable {
+public final class PartitionManagerSettings implements IPartitionData, Serializable {
 	private static final long serialVersionUID = -6269898822727665606L;
 
 	private static final DistributionSettingsForMaterial[] defaultSettings = new DistributionSettingsForMaterial[EMaterialType.NUMBER_OF_MATERIALS];
@@ -77,5 +77,11 @@ public final class PartitionManagerSettings implements IPartitionSettings, Seria
 		for (int i = 0; i < materialTypeForPriority.length; i++) {
 			this.materialTypeForPriorities[i] = materialTypeForPriorities[i];
 		}
+	}
+
+	@Override
+	public int getAmountOf(EMaterialType materialType) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

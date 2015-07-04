@@ -29,7 +29,7 @@ public abstract class CommonConstants {
 	/**
 	 * If true, all System.err and System.out will be printed to the console instead of a file
 	 */
-	public static boolean ENABLE_CONSOLE_LOGGING = false;
+	public static boolean ENABLE_CONSOLE_LOGGING = true;
 
 	public static final boolean ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT = false;
 

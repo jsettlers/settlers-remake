@@ -18,6 +18,7 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,8 +29,8 @@ import android.widget.TextView;
 
 public class AndroidTextDrawer implements TextDrawer {
 
-	private static final int TEXTURE_HEIGHT = 256;
-	private static final int TEXTURE_WIDTH = 256;
+	private static final int TEXTURE_HEIGHT = 512;
+	private static final int TEXTURE_WIDTH = 512;
 
 	private static AndroidTextDrawer[] instances =
 			new AndroidTextDrawer[EFontSize.values().length];
@@ -37,11 +38,36 @@ public class AndroidTextDrawer implements TextDrawer {
 	private final EFontSize size;
 	private final AndroidContext context;
 	private int texture = 0;
+	/**
+	 * The number of lines we use on our texture.
+	 */
 	private int lines;
+	/**
+	 * The current string starting in line i.
+	 * <p>
+	 */
 	private String[] linestrings;
-	private int lineheight;
+
+	/**
+	 * The width of line i. This width can be higher than TEXTURE_WIDTH. Then the string is split to multiple lines.
+	 */
 	private int[] linewidths;
+
+	/**
+	 * An index of the next tile if the width of the current line is bigger than TEXTURE_WIDTH. This forms an linked list. -1 means no next tile.
+	 */
+	private int[] nextTile;
+
+	private int lineheight;
+
+	/**
+	 * Data to do LRU
+	 */
 	private int lastUsedCount = 0;
+	private int[] lastused;
+
+	private TextView renderer;
+	private float pixelScale;
 
 	private float[] texturepos = {
 			// top left
@@ -72,12 +98,34 @@ public class AndroidTextDrawer implements TextDrawer {
 			1,
 			0,
 	};
-	private int[] lastused;
-	private TextView renderer;
 
 	private AndroidTextDrawer(EFontSize size, AndroidContext context) {
 		this.size = size;
 		this.context = context;
+		pixelScale = context.getAndroidContext().getResources().getDisplayMetrics().scaledDensity;
+	}
+
+	private void checkInvariants() {
+		boolean[] isNextTile = new boolean[lines];
+		for (int i = 0; i < lines; i++) {
+			int next = nextTile[i];
+			if (next >= 0) {
+				if (isNextTile[next]) {
+					System.err.println("WARNING: The line " + next + " is linked multiple times as next line.");
+				}
+				isNextTile[next] = true;
+			}
+		}
+		for (int i = 0; i < lines; i++) {
+			if (isNextTile[i]) {
+				if (linestrings[i] != null) {
+					System.out.println("Linestring should be null for line " + i);
+				}
+				if (lastused[i] != Integer.MAX_VALUE) {
+					System.out.println("Last used should not be set for line " + i);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -93,75 +141,122 @@ public class AndroidTextDrawer implements TextDrawer {
 
 		int line = findLineFor(string);
 
-		// texture mirrored
-		float bottom = (float) ((line + 1) * lineheight) / TEXTURE_HEIGHT;
-		float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
-		texturepos[4] = top;
-		texturepos[9] = bottom;
-		texturepos[14] = bottom;
-		texturepos[19] = top;
+		for (; line >= 0; line = nextTile[line], x += TEXTURE_WIDTH) {
+			// texture mirrored
+			float bottom = (float) ((line + 1) * lineheight) / TEXTURE_HEIGHT;
+			float top = (float) (line * lineheight) / TEXTURE_HEIGHT;
+			texturepos[4] = top;
+			texturepos[9] = bottom;
+			texturepos[14] = bottom;
+			texturepos[19] = top;
 
-		context.glPushMatrix();
-		context.glTranslatef(x, y, 0);
-		context.drawQuadWithTexture(texture, texturepos);
-		context.glPopMatrix();
+			context.glPushMatrix();
+			context.glTranslatef(x, y, 0);
+			context.drawQuadWithTexture(texture, texturepos);
+			context.glPopMatrix();
+		}
 	}
 
-	private int findLineFor(String string) {
-		int unnededline = 0;
-		int unnededrating = Integer.MAX_VALUE;
-		int length = linestrings.length;
+	private int findExistingString(String string) {
+		int length = lines;
 		for (int i = 0; i < length; i++) {
 			if (string.equals(linestrings[i])) {
 				lastused[i] = lastUsedCount++;
 				return i;
 			}
 		}
+		return -1;
+	}
 
-		for (int i = 0; i < length; i++) {
+	private int findLineToUse() {
+		int unnededline = 0;
+		int unnededrating = Integer.MAX_VALUE;
+
+		for (int i = 0; i < lines; i++) {
 			if (lastused[i] < unnededrating) {
 				unnededline = i;
 				unnededrating = lastused[i];
 			}
 		}
 
-		// System.out.println("string cache miss for " + string +
-		// ", allocating new line: " + unnededline);
+		// now free the next lines
+		for (int next = unnededline; next > -1; next = nextTile[next]) {
+			nextTile[next] = -1;
+			lastused[next] = 0;
+			linestrings[next] = null;
+		}
 
-		// render the new text to that line.
-		Bitmap bitmap =
-				Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
-						Bitmap.Config.ALPHA_8);
-		Canvas canvas = new Canvas(bitmap);
+		return unnededline;
+	}
+
+	private int findLineFor(String string) {
+		int line = findExistingString(string);
+		if (line >= 0) {
+			return line;
+		}
+
+		int width = (int) Math.ceil(computeWidth(string) + 25);
 		renderer = new TextView(context.getAndroidContext());
-		renderer.layout(0, 0, TEXTURE_WIDTH, lineheight);
 		renderer.setTextColor(Color.WHITE);
 		renderer.setSingleLine(true);
-		renderer.setTextSize(TypedValue.COMPLEX_UNIT_PX, size.getSize());
+		renderer.setTextSize(TypedValue.COMPLEX_UNIT_PX, getScaledSize());
 		renderer.setText(string);
-		renderer.draw(canvas);
-		canvas.translate(50, .8f * lineheight);
-		ByteBuffer dst = ByteBuffer.allocateDirect(lineheight * TEXTURE_WIDTH);
-		bitmap.copyPixelsToBuffer(dst);
-		dst.rewind();
 
-		context.updateTextureAlpha(texture, 0, unnededline * lineheight,
-				TEXTURE_WIDTH, lineheight, dst);
+		int firstLine = findLineToUse();
+		System.out.println("string cache miss for " + string +
+				", allocating new line: " + firstLine);
+		int lastLine = firstLine;
 
-		lastused[unnededline] = lastUsedCount++;
-		linestrings[unnededline] = string;
-		return unnededline;
+		for (int x = 0; x < width; x += TEXTURE_WIDTH) {
+			if (x == 0) {
+				line = firstLine;
+			} else {
+				line = findLineToUse();
+				System.out.println("Using multiple lines: " + line);
+				nextTile[lastLine] = line;
+				linestrings[line] = null;
+				linewidths[line] = -1;
+			}
+			// important to not allow cycles.
+			lastused[line] = Integer.MAX_VALUE;
+			// just to be sure.
+			nextTile[line] = -1;
+
+			// render the new text to that line.
+			Bitmap bitmap =
+					Bitmap.createBitmap(TEXTURE_WIDTH, lineheight,
+							Bitmap.Config.ALPHA_8);
+			Canvas canvas = new Canvas(bitmap);
+			renderer.layout(0, 0, width, lineheight);
+			canvas.translate(-x, 0);
+			renderer.draw(canvas);
+			// canvas.translate(50, .8f * lineheight);
+			ByteBuffer dst = ByteBuffer.allocateDirect(lineheight * TEXTURE_WIDTH);
+			bitmap.copyPixelsToBuffer(dst);
+			dst.rewind();
+			context.updateTextureAlpha(texture, 0, line * lineheight,
+					TEXTURE_WIDTH, lineheight, dst);
+			lastLine = line;
+		}
+		lastused[firstLine] = lastUsedCount++;
+		linestrings[firstLine] = string;
+		linewidths[firstLine] = width;
+
+		checkInvariants();
+		return firstLine;
 	}
 
 	private void initialize() {
 		if (texture == 0) {
 			texture =
 					context.generateTextureAlpha(TEXTURE_WIDTH, TEXTURE_HEIGHT);
-			lineheight = (int) (size.getSize() * 1.3);
+			lineheight = (int) (getScaledSize() * 1.3);
 			lines = TEXTURE_HEIGHT / lineheight;
 			linestrings = new String[lines];
 			linewidths = new int[lines];
 			lastused = new int[lines];
+			nextTile = new int[lines];
+			Arrays.fill(nextTile, -1);
 
 			texturepos[1] = lineheight;
 			texturepos[16] = lineheight;
@@ -171,14 +266,27 @@ public class AndroidTextDrawer implements TextDrawer {
 
 	@Override
 	public double getWidth(String string) {
+		int index = findExistingString(string);
+		if (index < 0) {
+			return computeWidth(string);
+		} else {
+			return linewidths[index];
+		}
+	}
+
+	private double computeWidth(String string) {
 		Paint paint = new Paint();
-		paint.setTextSize(size.getSize());
+		paint.setTextSize(getScaledSize());
 		return paint.measureText(string);
 	}
 
 	@Override
 	public double getHeight(String string) {
-		return size.getSize();
+		return getScaledSize();
+	}
+
+	private float getScaledSize() {
+		return size.getSize() * pixelScale;
 	}
 
 	@Override

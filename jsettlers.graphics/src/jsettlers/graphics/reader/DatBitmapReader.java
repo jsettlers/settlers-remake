@@ -23,7 +23,7 @@ import jsettlers.graphics.reader.translator.HeaderType;
 
 /**
  * This class is capable of reading an image from the given stram.
- * 
+ *
  * @param <T>
  *            The image type.
  * @author michael
@@ -34,7 +34,7 @@ public final class DatBitmapReader<T extends Image> {
 
 	/**
 	 * Creates a new reader that starts to read fom the given bytereader at its current position and uses the translator to convert the image.
-	 * 
+	 *
 	 * @param translator
 	 *            The translator that translates the image data.
 	 * @param reader
@@ -74,7 +74,7 @@ public final class DatBitmapReader<T extends Image> {
 	 * Then a new meta short comes, until the end of the image is reached (a linebreak so that we get out of the image space)
 	 * <p>
 	 * This method initializes data, width, height and offset.
-	 * 
+	 *
 	 * @param reader
 	 * @param translator
 	 * @param
@@ -129,7 +129,7 @@ public final class DatBitmapReader<T extends Image> {
 
 	/**
 	 * Reads the compressed data.
-	 * 
+	 *
 	 * @param reader
 	 * @param translator
 	 * @return
@@ -236,7 +236,7 @@ public final class DatBitmapReader<T extends Image> {
 
 	/**
 	 * Gets an image form the reader.
-	 * 
+	 *
 	 * @param <T>
 	 *            The image type.
 	 * @param translator

@@ -479,10 +479,6 @@ public final class MapDrawContext implements IGLProvider {
 		return map.getVisibleStatus(x, y);
 	}
 
-	public boolean isFogOfWarVisible(int x, int y) {
-		return map.isFogOfWarVisible(x, y);
-	}
-
 	public IGraphicsGrid getMap() {
 		return map;
 	}

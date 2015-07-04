@@ -17,7 +17,6 @@ package jsettlers.logic.stack;
 import java.io.Serializable;
 
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.common.position.ShortPoint2D;
@@ -30,7 +29,7 @@ import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialReq
  * @author Andreas Eberle
  * 
  */
-public class RequestStack extends MaterialRequestObject implements Serializable, IBuildingMaterial, IStackSizeSupplier {
+public class RequestStack extends MaterialRequestObject implements Serializable, IStackSizeSupplier {
 	private static final long serialVersionUID = 8082718564781798767L;
 
 	private final ShortPoint2D position;
@@ -121,7 +120,6 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 		return position;
 	}
 
-	@Override
 	public EMaterialType getMaterialType() {
 		return materialType;
 	}
@@ -141,23 +139,18 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 	}
 
 	@Override
-	public int getMaterialCount() {
+	public int getStackSize() {
 		return grid.getStackSize(position, materialType);
 	}
 
 	@Override
-	public boolean isOffering() {
-		return false;
-	}
-
-	@Override
-	protected int getStillNeeded() {
+	public short getStillNeeded() {
 		return stillNeeded;
 	}
 
 	@Override
 	protected int getInDeliveryable() {
-		return Constants.STACK_SIZE - getMaterialCount();
+		return Constants.STACK_SIZE - getStackSize();
 	}
 
 	@Override

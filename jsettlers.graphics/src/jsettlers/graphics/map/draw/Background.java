@@ -975,7 +975,7 @@ public class Background implements IGraphicsBackgroundListener {
 
 			DatBitmapReader.uncompressImage(
 					reader.getReaderForLandscape(index),
-					AdvancedDatFileReader.LANDSCAPE_TRANSLATOR, meta,
+					reader.getLandscapeTranslator(), meta,
 					imageWriter);
 
 			// freaky stuff

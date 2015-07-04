@@ -828,26 +828,8 @@ public class MapObjectDrawer {
 		EBuildingType type = building.getBuildingType();
 
 		float state = building.getStateProgress();
-		float maskState;
-		if (state < 0.5f) {
-			maskState = state * 2;
-			for (ImageLink link : type.getBuildImages()) {
-				Image image = imageProvider.getImage(link);
-				drawWithConstructionMask(x, y, maskState, image, color);
-			}
 
-		} else if (state < 0.99) {
-			maskState = state * 2 - 1;
-			for (ImageLink link : type.getBuildImages()) {
-				Image image = imageProvider.getImage(link);
-				draw(image, x, y, color);
-			}
-
-			for (ImageLink link : type.getImages()) {
-				Image image = imageProvider.getImage(link);
-				drawWithConstructionMask(x, y, maskState, image, color);
-			}
-		} else {
+		if (state >= 0.99) {
 			if (type == EBuildingType.MILL
 					&& ((IBuilding.IMill) building).isRotating()) {
 				Sequence<? extends Image> seq =
@@ -878,10 +860,34 @@ public class MapObjectDrawer {
 					draw(image, x, y, color);
 				}
 			}
+		} else if (state >= .01f) {
+			drawBuildingConstruction(x, y, color, type, state);
 		}
 
 		if (building.isSelected()) {
 			drawBuildingSelectMarker(x, y);
+		}
+	}
+
+	private void drawBuildingConstruction(int x, int y, float color, EBuildingType type, float state) {
+		boolean hasTwoConstructionPhases = type.getBuildImages().length > 0;
+
+		boolean isInBuildPhase = hasTwoConstructionPhases && state < .5f;
+
+		if (!isInBuildPhase && hasTwoConstructionPhases) {
+			// draw the base build image
+			for (ImageLink link : type.getBuildImages()) {
+				Image image = imageProvider.getImage(link);
+				draw(image, x, y, color);
+			}
+		}
+
+		ImageLink[] constructionImages = isInBuildPhase ? type.getBuildImages() : type.getImages();
+
+		float maskState = hasTwoConstructionPhases ? (state * 2) % 1 : state;
+		for (ImageLink link : constructionImages) {
+			Image image = imageProvider.getImage(link);
+			drawWithConstructionMask(x, y, maskState, image, color);
 		}
 	}
 

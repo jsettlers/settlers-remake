@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.queue.SlotQueue;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -29,10 +30,10 @@ import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.grid.partition.manager.datastructures.SimpleSlotQueue;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer.IWorkerRequester;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer.IWorkerRequester;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.map.grid.partition.manager.materials.MaterialsManager;
@@ -490,7 +491,15 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		return this.materialOffers.getOfferObjectAt(pos, material);
 	}
 
-	public PartitionManagerSettings getSettings() {
-		return settings;
+	public IPartitionData getPartitionData() {
+		return new PartitionDataSupplier(settings, materialOffers);
+	}
+
+	public void setMaterialDistributionSettings(EMaterialType materialType, float[] probabilities) {
+		settings.getDistributionSettings(materialType).setProbabilities(probabilities);
+	}
+
+	public void setMaterialPrioritiesSettings(EMaterialType[] materialTypeForPriority) {
+		settings.setMaterialTypesForPriorities(materialTypeForPriority);
 	}
 }

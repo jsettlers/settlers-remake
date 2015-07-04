@@ -40,16 +40,17 @@ import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
 
 public class DatFileTester {
-
-	private static final String FILE = "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
+	private static final DatFileType TYPE = DatFileType.RGB565;
+	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%" + TYPE.getFileSuffix();
 
 	private static final Color[] colors = new Color[] { Color.WHITE };
 	// private static final String FILE =
-	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
+	// "D:/Games/Siedler3/GFX/siedler3_%.f8007e01f.dat";
 
 	private static int datFileIndex = 2;
 
@@ -318,7 +319,7 @@ public class DatFileTester {
 	private void reloadDatFile() {
 		File file = new File(FILE.replace("%", String.format("%02d", datFileIndex)));
 
-		reader = new AdvancedDatFileReader(file);
+		reader = new AdvancedDatFileReader(file, TYPE);
 	}
 
 	protected void export() {
@@ -343,7 +344,7 @@ public class DatFileTester {
 				File file = new File(FILE.replace("%", String.format("%02d", i)));
 
 				if (file.exists()) {
-					AdvancedDatFileReader reader = new AdvancedDatFileReader(file);
+					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);
 					exportTo(new File(dir, "" + i), reader);
 				}
 			}

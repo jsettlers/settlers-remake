@@ -22,7 +22,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -32,6 +32,7 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.ExecutableAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.androidui.actions.ConstructBuilding;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
@@ -44,7 +45,7 @@ import jsettlers.graphics.androidui.menu.selection.BuildingMenu;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.graphics.utils.Button;
+import jsettlers.graphics.ui.Button;
 import android.os.Handler;
 
 /**
@@ -240,8 +241,15 @@ public class MobileControls implements IControls, ContextActionListener {
 			setActiveMenu(null);
 		} else if (action.getActionType() == EActionType.SET_WORK_AREA
 				|| action.getActionType() == EActionType.SELECT_POINT
-				|| action.getActionType() == EActionType.MOVE_TO) {
+				|| action.getActionType() == EActionType.SELECT_AREA
+				|| action.getActionType() == EActionType.MOVE_TO
+				|| action.getActionType() == EActionType.BUILD) {
 			setActiveAction(null);
+		} else if (action.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
+			EBuildingType type = ((ShowConstructionMarksAction) action).getBuildingType();
+			if (type != null) {
+				setActiveAction(new ConstructBuilding(type));
+			}
 		}
 	}
 
@@ -255,19 +263,14 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void setMapViewport(MapRectangle screenArea) {
 	}
 
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-		if (type == null) {
-			setActiveAction(null);
-		} else {
-			setActiveAction(new ConstructBuilding(type));
-
-		}
-	}
-
 	private void setActiveAction(ContextAction activeAction) {
 		synchronized (activeActionMutex) {
-			this.activeAction = activeAction;
+			if (activeAction != this.activeAction) {
+				if (this.activeAction != null) {
+					this.activeAction.onDeactivate(androidMenuPutable);
+				}
+				this.activeAction = activeAction;
+			}
 		}
 	}
 
@@ -292,10 +295,8 @@ public class MobileControls implements IControls, ContextActionListener {
 			case BUILDING:
 				IBuilding building = (IBuilding) selection.get(0);
 				ShortPoint2D pos = building.getPos();
-				IPartitionSettings settings =
-						context.getMap().getPartitionSettings(pos.x, pos.y);
-				setActiveMenu(new BuildingMenu(androidMenuPutable,
-						building, settings));
+				IPartitionData partitionData = context.getMap().getPartitionData(pos.x, pos.y);
+				setActiveMenu(new BuildingMenu(androidMenuPutable, building, partitionData));
 			}
 		}
 		showSelectionButton.setActive(selection != null);

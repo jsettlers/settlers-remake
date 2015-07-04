@@ -17,10 +17,18 @@ package jsettlers.graphics.reader.translator;
 import java.io.IOException;
 
 import jsettlers.graphics.image.LandscapeImage;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> {
+
+	private final DatFileType type;
+
+	public LandscapeTranslator(DatFileType type) {
+		this.type = type;
+	}
+
 	@Override
 	public short getTransparentColor() {
 		return 0;
@@ -28,7 +36,7 @@ public class LandscapeTranslator implements DatBitmapTranslator<LandscapeImage> 
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return (short) ((reader.read16() << 1) | 0x01);
+		return type.convertTo5551(reader.read16());
 	}
 
 	@Override

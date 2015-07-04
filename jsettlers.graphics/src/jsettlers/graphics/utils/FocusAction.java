@@ -16,6 +16,7 @@ package jsettlers.graphics.utils;
 
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.ui.UIInput;
 
 public class FocusAction extends Action {
 

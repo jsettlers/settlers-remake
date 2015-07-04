@@ -37,17 +37,19 @@ import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
 import jsettlers.graphics.reader.DatFileSet;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.ArraySequence;
 import jsettlers.graphics.sequence.Sequence;
 
 /**
  * This is the main image provider. It provides access to all images.
+ * <p>
+ * Settlers supports two image modes, one rgb mode (555 bits) and one rgb mode (565 bits).
  * 
  * @author michael
  */
 public final class ImageProvider {
-	private static final String FILE_SUFFIX = ".7c003e01f.dat";
 	private static final String FILE_PREFIX = "siedler3_";
 	private static final int LAST_SEQUENCE_NUMBER = 2;
 	private static final List<Integer> HIGHRES_IMAGE_FILE_NUMBERS = Arrays.asList(3, 14);
@@ -260,7 +262,7 @@ public final class ImageProvider {
 	 *            The image number.
 	 * @return The image.
 	 */
-	private SingleImage getGuiImage(int file, int seqnumber) {
+	public SingleImage getGuiImage(int file, int seqnumber) {
 		DatFileSet set = getFileSet(file);
 
 		if (set != null) {
@@ -308,16 +310,17 @@ public final class ImageProvider {
 
 	private AdvancedDatFileReader createFileReader(int fileIndex) {
 		String numberString = String.format("%02d", fileIndex);
-		String fileName = FILE_PREFIX + numberString + FILE_SUFFIX;
+		for (DatFileType type : DatFileType.values()) {
+			String fileName = FILE_PREFIX + numberString + type.getFileSuffix();
 
-		File file = findFileInPaths(fileName);
+			File file = findFileInPaths(fileName);
 
-		if (file != null) {
-			return new AdvancedDatFileReader(file);
-		} else {
-			System.err.println("Could not find/load file " + fileName);
-			return null;
+			if (file != null) {
+				return new AdvancedDatFileReader(file, type);
+			}
 		}
+		System.err.println("Could not find/load graphic file " + numberString);
+		return null;
 	}
 
 	/**

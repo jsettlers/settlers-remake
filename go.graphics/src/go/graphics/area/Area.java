@@ -32,6 +32,7 @@ import go.graphics.event.mouse.GOPanEventProxy;
 import go.graphics.event.mouse.GOZoomEvent;
 import go.graphics.region.PositionedRegion;
 import go.graphics.region.Region;
+import go.graphics.region.RegionContent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -259,7 +260,8 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 	}
 
 	private class SplitHoverHandler implements GOModalEventHandler {
-		PositionedRegion currentRegion = null;
+		private PositionedRegion currentRegion = null;
+		private RegionContent currentContent;
 		private SimpleHoverEvent sendEvent;
 
 		private void startWithRegion(UIPoint areaPoint) {
@@ -307,11 +309,13 @@ public class Area implements RedrawListener, GOEventHandlerProvider {
 			if (event instanceof GOHoverEvent) {
 				UIPoint point = ((GOHoverEvent) event).getHoverPosition();
 				PositionedRegion nextRegion = getUnder(point);
-				if (nextRegion != currentRegion) {
+				RegionContent nextContent = nextRegion == null ? null : nextRegion.getRegion().getContent();
+				if (nextContent != currentContent) {
 					if (currentRegion != null) {
 						endWithRegion(point);
 					}
 					currentRegion = nextRegion;
+					currentContent = nextContent;
 					if (nextRegion != null) {
 						startWithRegion(point);
 					}

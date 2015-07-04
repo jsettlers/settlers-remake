@@ -30,9 +30,9 @@ import jsettlers.common.material.EMaterialType;
 public final class DistributionSettingsForMaterial implements IMaterialsDistributionSettings, Serializable {
 	private static final long serialVersionUID = -8519244429973606793L;
 
-	final EMaterialType materialType;
-	final EBuildingType[] requestingBuildings;
-	final float[] probabilities;
+	private final EMaterialType materialType;
+	private final EBuildingType[] requestingBuildings;
+	private final float[] probabilities;
 
 	/**
 	 * Creates a new object of {@link DistributionSettingsForMaterial} holding the settings for the given {@link EMaterialType}.
@@ -99,5 +99,4 @@ public final class DistributionSettingsForMaterial implements IMaterialsDistribu
 
 		return buffer.toString();
 	}
-
 }

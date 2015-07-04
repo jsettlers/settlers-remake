@@ -13,7 +13,8 @@
     </description>
 
     <property name="workspace" location="../"/>
-	
+	<property name="jsettlers.graphics.location" value="../jsettlers.graphics" />
+
     <!-- ================================= 
           target: createTextures              
          ================================= -->
@@ -26,7 +27,8 @@
          - - - - - - - - - - - - - - - - - -->
     <target name="loadLib">
         <mkdir dir="./build/.buildScripts" />
-        <javac srcdir="./build:${workspace}/jsettlers.graphics/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
+		<ant antfile="${jsettlers.graphics.location}/build/buildLayouts.ant" inheritAll="false" target="buildLayouts" dir="${jsettlers.graphics.location}" />
+        <javac srcdir="./build:${jsettlers.graphics.location}/gen:${jsettlers.graphics.location}/src:${workspace}/jsettlers.common/src:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
         <taskdef name="createTextures" classname="jsettlers.common.texturegeneration.TextureCompiler" classpath="./build/.buildScripts/" />
     </target>
 

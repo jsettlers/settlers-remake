@@ -121,6 +121,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 
 			System.out.println("build: " + buildingType);
+			break;
 		}
 
 		case SHOW_CONSTRUCTION_MARK: {
@@ -188,6 +189,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case SELECT_AREA:
 			selectArea((SelectAreaAction) action);
+			break;
+
+		case DESELECT:
+			deselect();
 			break;
 
 		case SELECT_POINT_TYPE:
@@ -450,6 +455,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private boolean canSelectPlayer(byte playerIdOfSelected) {
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
+	}
+
+	private void deselect() {
+		setSelection(new SelectionSet());
 	}
 
 	private void handleSelectPointAction(PointAction action) {

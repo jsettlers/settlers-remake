@@ -31,10 +31,12 @@ import jsettlers.algorithms.partitions.PartitionCalculatorAlgorithm;
 import jsettlers.algorithms.traversing.ITraversingVisitor;
 import jsettlers.algorithms.traversing.area.AreaTraversingAlgorithm;
 import jsettlers.algorithms.traversing.borders.BorderTraversingAlgorithm;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FilteredMapArea;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.SRectangle;
@@ -46,7 +48,6 @@ import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
-import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -759,10 +760,6 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 	}
 
-	public PartitionManagerSettings getSettingsForManagerAt(int x, int y) {
-		return getPartitionAt(x, y).getSettings();
-	}
-
 	public byte getNumberOfPlayers() {
 		return (byte) players.length;
 	}
@@ -806,6 +803,18 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		}
 
 		return counter;
+	}
+
+	public IPartitionData getPartitionDataForManagerAt(int x, int y) {
+		return getPartitionAt(x, y).getPartitionData();
+	}
+
+	public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
+		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialDistributionSettings(materialType, probabilities);
+	}
+
+	public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
+		getPartitionAt(managerPosition.x, managerPosition.y).setMaterialPrioritiesSettings(materialTypeForPriority);
 	}
 
 }

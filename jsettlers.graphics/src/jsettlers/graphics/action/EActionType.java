@@ -105,6 +105,11 @@ public enum EActionType {
 	SELECT_AREA,
 
 	/**
+	 * Deselect everything.
+	 */
+	DESELECT,
+
+	/**
 	 * The screen changed.
 	 * 
 	 * @see ScreenChangeAction

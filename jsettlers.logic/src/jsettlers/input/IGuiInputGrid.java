@@ -121,7 +121,7 @@ public interface IGuiInputGrid {
 	 * @param materialTypeForPriority
 	 *            The {@link EMaterialType}s for the priorities. The first element has the highest priority, the last one has the lowest.
 	 */
-	void setMaterialPrioritiesSetting(ShortPoint2D managerPosition,
+	void setMaterialPrioritiesSettings(ShortPoint2D managerPosition,
 			EMaterialType[] materialTypeForPriority);
 
 	short getBlockedPartition(ShortPoint2D pos);

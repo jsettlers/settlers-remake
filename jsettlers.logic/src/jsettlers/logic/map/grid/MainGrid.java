@@ -55,7 +55,7 @@ import jsettlers.common.map.object.MapStoneObject;
 import jsettlers.common.map.object.MapTreeObject;
 import jsettlers.common.map.object.MovableObject;
 import jsettlers.common.map.object.StackObject;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.map.shapes.HexGridArea.HexGridAreaIterator;
@@ -724,11 +724,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean isFogOfWarVisible(int x, int y) {
-			return fogOfWar.isVisible(x, y);
-		}
-
-		@Override
 		public final void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 			landscapeGrid.setBackgroundListener(backgroundListener);
 		}
@@ -739,8 +734,8 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public IPartitionSettings getPartitionSettings(int x, int y) {
-			return partitionsGrid.getSettingsForManagerAt(x, y);
+		public IPartitionData getPartitionData(int x, int y) {
+			return partitionsGrid.getPartitionDataForManagerAt(x, y);
 		}
 	}
 
@@ -1697,14 +1692,13 @@ public final class MainGrid implements Serializable {
 		@Override
 		public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {
 			if (isInBounds(managerPosition))
-				partitionsGrid.getSettingsForManagerAt(managerPosition.x, managerPosition.y).getDistributionSettings(materialType)
-						.setProbabilities(probabilities);
+				partitionsGrid.setMaterialDistributionSettings(managerPosition, materialType, probabilities);
 		}
 
 		@Override
-		public void setMaterialPrioritiesSetting(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
+		public void setMaterialPrioritiesSettings(ShortPoint2D managerPosition, EMaterialType[] materialTypeForPriority) {
 			if (isInBounds(managerPosition))
-				partitionsGrid.getSettingsForManagerAt(managerPosition.x, managerPosition.y).setMaterialTypesForPriorities(materialTypeForPriority);
+				partitionsGrid.setMaterialPrioritiesSettings(managerPosition, materialTypeForPriority);
 		}
 
 		@Override

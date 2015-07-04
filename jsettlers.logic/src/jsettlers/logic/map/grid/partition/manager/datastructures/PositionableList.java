@@ -147,15 +147,19 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return data.isEmpty();
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList) {
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<T> movedVisitor) {
 		Iterator<T> iter = data.iterator();
 		while (iter.hasNext()) {
 			T curr = iter.next();
 			if (curr.getPos().equals(position)) {
 				iter.remove();
+				movedVisitor.visit(curr);
 				newList.data.add(curr);
 			}
 		}
 	}
 
+	public interface IMovedVisitor<T> {
+		void visit(T moved);
+	}
 }

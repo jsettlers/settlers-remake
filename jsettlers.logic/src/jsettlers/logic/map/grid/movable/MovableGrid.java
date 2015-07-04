@@ -53,13 +53,13 @@ public final class MovableGrid implements Serializable {
 	}
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
-		SerializationUtils.writeSparseArray(oos, movableGrid);
 		oos.defaultWriteObject();
+		SerializationUtils.writeSparseArray(oos, movableGrid);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-		movableGrid = SerializationUtils.readSparseArray(ois, Movable.class);
 		ois.defaultReadObject();
+		movableGrid = SerializationUtils.readSparseArray(ois, Movable.class);
 	}
 
 	public final Movable getMovableAt(int x, int y) {

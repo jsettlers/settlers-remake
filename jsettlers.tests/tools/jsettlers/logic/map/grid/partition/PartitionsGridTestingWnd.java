@@ -25,7 +25,7 @@ import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapCircle;
@@ -37,8 +37,6 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
-import jsettlers.logic.map.grid.partition.IPartitionsGridBlockingProvider;
-import jsettlers.logic.map.grid.partition.PartitionsGrid;
 
 public class PartitionsGridTestingWnd {
 
@@ -164,11 +162,6 @@ public class PartitionsGridTestingWnd {
 			}
 
 			@Override
-			public boolean isFogOfWarVisible(int x, int y) {
-				return true;
-			}
-
-			@Override
 			public boolean isBorder(int x, int y) {
 				byte playerAtPos = getPlayerIdAt(x, y);
 				for (EDirection dir : EDirection.values) {
@@ -232,7 +225,7 @@ public class PartitionsGridTestingWnd {
 			}
 
 			@Override
-			public IPartitionSettings getPartitionSettings(int x, int y) {
+			public IPartitionData getPartitionData(int x, int y) {
 				return null;
 			}
 		};
