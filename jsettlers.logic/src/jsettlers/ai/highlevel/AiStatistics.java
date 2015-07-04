@@ -69,6 +69,7 @@ public class AiStatistics {
 	private Map<Integer, List<ShortPoint2D>> trees;
 	private Map<Integer, List<ShortPoint2D>> rivers;
 	private Map<EMapObjectType, Map<Integer, List<Integer>>> sortedCuttableObjectsInDefaultPartition;
+	private Map<EResourceType, Map<Integer, List<Integer>>> sortedResourceTypes;
 	private Map<Integer, List<Integer>> sortedRiversInDefaultPartition;
 	private Map<Integer, List<ShortPoint2D>> land;
 	private Map<Integer, List<ShortPoint2D>> borderLandNextToFreeLand;
@@ -96,14 +97,12 @@ public class AiStatistics {
 
 	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId,
 			double currentNearestPointDistance) {
-		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes.get(resourceType), playerId, currentNearestPointDistance);
 	}
 
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType,
 			double currentNearestPointDistance) {
-		Map<Integer, List<Integer>> sortedResourcePoints = landscapeGrid.getSortedMapForResourceType(resourceType);
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, (byte) -1, currentNearestPointDistance);
+		return getNearestResourcePointForPlayer(point, resourceType, (byte) -1, currentNearestPointDistance);
 	}
 
 	public ShortPoint2D getNearestCuttableObjectPointInDefaultPartitionFor(ShortPoint2D point, EMapObjectType cuttableObject,
@@ -329,13 +328,24 @@ public class AiStatistics {
 		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
 		movablePositions = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
 		materialNumbers = new HashMap<Integer, Map<EMaterialType, Integer>>();
+		sortedResourceTypes = new HashMap<EResourceType, Map<Integer, List<Integer>>>();
+		for (EResourceType type : EResourceType.values()) {
+			sortedResourceTypes.put(type, new HashMap<Integer, List<Integer>>());
+		}
 
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
+				Integer xInteger = new Integer(x);
+				Integer yInteger = new Integer(y);
+				EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
+				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
+					if (!sortedResourceTypes.get(resourceType).containsKey(xInteger)) {
+						sortedResourceTypes.get(resourceType).put(xInteger, new ArrayList<Integer>());
+					}
+					sortedResourceTypes.get(resourceType).get(xInteger).add(yInteger);
+				}
 				Player player = partitionsGrid.getPlayerAt(x, y);
 				if (player == null) {
-					Integer xInteger = new Integer(x);
-					Integer yInteger = new Integer(y);
 					if (objectsGrid.hasCuttableObject(x, y, TREE_ADULT)) {
 						if (!sortedCuttableObjectsInDefaultPartition.containsKey(TREE_ADULT)) {
 							sortedCuttableObjectsInDefaultPartition.put(TREE_ADULT, new HashMap<Integer, List<Integer>>());

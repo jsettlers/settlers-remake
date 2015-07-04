@@ -100,7 +100,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingNeeds.get(MILL).add(new BuildingCount(FARM, 1));
 		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, 1 / 3));
 		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
-		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(FARM, 1 / 3));
+		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, 1 / 3));
 		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 1));
 		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 1));
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 1));
@@ -228,7 +228,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 			}
 		}
 		// TODO: destroy towers which are surrounded by other towers or are in direction of no other player
-		// TODO: desroy living houses to get material back
+		// TODO: destroy living houses to get material back
+		// TODO: destroy mines which have no resources anymore
 	}
 
 	private void buildBuildings() {
