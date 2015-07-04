@@ -106,6 +106,10 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 1));
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
 		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 1));
+		buildingNeeds.get(BARRACK).add(new BuildingCount(WEAPONSMITH, 4));
+		//Ironmine depends of coalmine to prevent iron and coal are build 1:1 when picks are missing
+		//otherwise always as loop: one additional ironmine and coalmine would be build for inform toolsmith to produce picks
+		buildingNeeds.get(IRONMINE).add(new BuildingCount(COALMINE, 2));
 		for (Map.Entry<EBuildingType, List<BuildingCount>> buildingNeedsEntry : buildingNeeds.entrySet()) {
 			for (BuildingCount neededBuildingCount : buildingNeedsEntry.getValue()) {
 				buildingIsNeededBy.get(neededBuildingCount.buildingType).add(buildingNeedsEntry.getKey());
@@ -260,8 +264,15 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		boolean toolsEconomyNeedsToBeChecked = true;
 		Map<EBuildingType, Integer> playerBuildingPlan = new HashMap<EBuildingType, Integer>();
 		for (EBuildingType currentBuildingType : buildingsToBuild) {
-			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
 
+			addBuildingCountToBuildingPlan(currentBuildingType, playerBuildingPlan);
+			System.out.println("build " + playerId
+					+ " " + currentBuildingType
+					+ " " + buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
+					+ " " + buildingDependenciesAreFulfilled(currentBuildingType)
+					+ " " + numberOfAvailableToolsForBuildingType(currentBuildingType)
+					+ " " + newBuildingWouldUseReservedTool(currentBuildingType)
+					);
 			if (buildingNeedsToBeBuild(playerBuildingPlan, currentBuildingType)
 					&& buildingDependenciesAreFulfilled(currentBuildingType)) {
 				int numberOfAvailableTools = numberOfAvailableToolsForBuildingType(currentBuildingType);
