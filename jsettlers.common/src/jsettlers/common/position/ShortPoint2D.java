@@ -114,4 +114,11 @@ public class ShortPoint2D implements Serializable {
 	public boolean equals(int x, int y) {
 		return this.x == x && this.y == y;
 	}
+
+	public double calculateDistanceTo(ShortPoint2D that) {
+		if (that == null) {
+			return 0;
+		}
+		return Math.sqrt((this.x - that.x) * (this.x - that.x) + (this.y - that.y) * (this.y - that.y));
+	}
 }

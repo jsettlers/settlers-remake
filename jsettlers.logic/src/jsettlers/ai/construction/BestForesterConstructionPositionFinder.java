@@ -49,10 +49,10 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestLumberJackPoint = aiStatistics.detectNearestPointFromList(point, lumberJacks);
 				ShortPoint2D nearestForesterPoint = aiStatistics.detectNearestPointFromList(point, foresters);
-				double lumberJackDistance = aiStatistics.getDistance(point, nearestLumberJackPoint);
+				double lumberJackDistance = point.calculateDistanceTo(nearestLumberJackPoint);
 				double foresterDistance = 0;
 				if (nearestForesterPoint != null) {
-					foresterDistance = aiStatistics.getDistance(point, nearestForesterPoint);
+					foresterDistance = point.calculateDistanceTo(nearestForesterPoint);
 				}
 
 				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance - foresterDistance));

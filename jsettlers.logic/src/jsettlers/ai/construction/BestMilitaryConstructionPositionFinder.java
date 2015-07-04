@@ -118,7 +118,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 					double maximumDistanceOfResourcesOfThisPoint = 0;
 					double score = 0;
 					for (ShortPoint2D currentPoint : nearestResourcePoints) {
-						double distance = aiStatistics.getDistance(currentPoint, point);
+						double distance = currentPoint.calculateDistanceTo(point);
 						score += distance;
 						maximumDistanceOfResourcesOfThisPoint = Math.max(maximumDistanceOfResourcesOfThisPoint, distance);
 					}

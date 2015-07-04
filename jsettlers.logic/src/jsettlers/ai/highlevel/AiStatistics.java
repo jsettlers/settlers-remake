@@ -122,7 +122,7 @@ public class AiStatistics {
 		ShortPoint2D nearestRightPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
 				new Integer(point.x), 1, new Integer(mainGrid.getWidth() + 1), playerId);
 		if (nearestRightPoint != null) {
-			currentNearestPointDistance = getDistance(point, nearestRightPoint);
+			currentNearestPointDistance = point.calculateDistanceTo(nearestRightPoint);
 			result = nearestRightPoint;
 		}
 		ShortPoint2D nearestLeftPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
@@ -147,13 +147,13 @@ public class AiStatistics {
 				currentNearestPointDistance, x, new Integer(point.y), 1, new Integer(mainGrid.getHeight() + 1), playerId);
 		if (southYPoint != null) {
 			result = southYPoint;
-			currentNearestPointDistance = getDistance(point, southYPoint);
+			currentNearestPointDistance = point.calculateDistanceTo(southYPoint);
 		}
 		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
 				currentNearestPointDistance, x, new Integer(point.y - 1), -1, -1, playerId);
 		if (northYPoint != null) {
 			result = northYPoint;
-			currentNearestPointDistance = getDistance(point, northYPoint);
+			currentNearestPointDistance = point.calculateDistanceTo(northYPoint);
 		}
 		if (Math.abs(point.x - (x + increment)) < currentNearestPointDistance) {
 			ShortPoint2D nextPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x
@@ -174,17 +174,10 @@ public class AiStatistics {
 			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
 					increment, border, playerId);
 		}
-		if (getDistance(point, new ShortPoint2D(x, y)) > currentNearestPointDistance) {
+		if (point.calculateDistanceTo(new ShortPoint2D(x, y)) > currentNearestPointDistance) {
 			return null;
 		}
 		return new ShortPoint2D(x, y);
-	}
-
-	public double getDistance(ShortPoint2D pointA, ShortPoint2D pointB) {
-		if (pointA == null || pointB == null) {
-			return 0;
-		}
-		return Math.sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
@@ -525,7 +518,7 @@ public class AiStatistics {
 		ShortPoint2D nearestPoint = null;
 		double nearestPointDistance = Double.MAX_VALUE;
 		for (ShortPoint2D point : points) {
-			double currentPointDistance = getDistance(referencePoint, point);
+			double currentPointDistance = referencePoint.calculateDistanceTo(point);
 			if (nearestPoint == null || currentPointDistance < nearestPointDistance) {
 				nearestPoint = point;
 				nearestPointDistance = currentPointDistance;

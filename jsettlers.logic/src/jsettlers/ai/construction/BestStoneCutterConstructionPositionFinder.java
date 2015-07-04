@@ -50,7 +50,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestStonePosition = aiStatistics.detectNearestPointFromList(point, stones);
-				double stoneDistance = aiStatistics.getDistance(point, nearestStonePosition);
+				double stoneDistance = point.calculateDistanceTo(nearestStonePosition);
 				if (stoneDistance < MAX_STONE_DISTANCE) {
 					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance));
 				}
