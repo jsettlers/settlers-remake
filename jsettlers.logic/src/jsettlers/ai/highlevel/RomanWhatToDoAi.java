@@ -15,32 +15,7 @@
 package jsettlers.ai.highlevel;
 
 import static jsettlers.ai.construction.BestStoneCutterConstructionPositionFinder.MAX_STONE_DISTANCE;
-import static jsettlers.common.buildings.EBuildingType.BAKER;
-import static jsettlers.common.buildings.EBuildingType.BARRACK;
-import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
-import static jsettlers.common.buildings.EBuildingType.COALMINE;
-import static jsettlers.common.buildings.EBuildingType.FARM;
-import static jsettlers.common.buildings.EBuildingType.FISHER;
-import static jsettlers.common.buildings.EBuildingType.FORESTER;
-import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
-import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
-import static jsettlers.common.buildings.EBuildingType.IRONMELT;
-import static jsettlers.common.buildings.EBuildingType.IRONMINE;
-import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
-import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
-import static jsettlers.common.buildings.EBuildingType.MILL;
-import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
-import static jsettlers.common.buildings.EBuildingType.SAWMILL;
-import static jsettlers.common.buildings.EBuildingType.SLAUGHTERHOUSE;
-import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
-import static jsettlers.common.buildings.EBuildingType.STOCK;
-import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
-import static jsettlers.common.buildings.EBuildingType.TEMPLE;
-import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
-import static jsettlers.common.buildings.EBuildingType.TOWER;
-import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
-import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
-import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.buildings.EBuildingType.*;
 import static jsettlers.common.material.EMaterialType.GOLD;
 import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
@@ -65,6 +40,12 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
+/**
+ * This WhatToDoAi is a high level KI for romans. It builds a longterm economy with 8 lumberjacks first, then mana, food, weapons and gold economy. It
+ * spreads out the land in direction of the prioritized needed resources and builds a toolsmith as late as possible.
+ *
+ * TODOs: Currently it is vulnerable by rushes so adding an early weaponsmith when enemies build fast weaponsmiths could be implemented.
+ */
 public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	private final MainGrid mainGrid;
@@ -107,8 +88,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
 		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 1));
 		buildingNeeds.get(BARRACK).add(new BuildingCount(WEAPONSMITH, 4));
-		//Ironmine depends of coalmine to prevent iron and coal are build 1:1 when picks are missing
-		//otherwise always as loop: one additional ironmine and coalmine would be build for inform toolsmith to produce picks
+		// Ironmine depends of coalmine to prevent iron and coal are build 1:1 when picks are missing
+		// otherwise always as loop: one additional ironmine and coalmine would be build for inform toolsmith to produce picks
 		buildingNeeds.get(IRONMINE).add(new BuildingCount(COALMINE, 2));
 		for (Map.Entry<EBuildingType, List<BuildingCount>> buildingNeedsEntry : buildingNeeds.entrySet()) {
 			for (BuildingCount neededBuildingCount : buildingNeedsEntry.getValue()) {
@@ -136,9 +117,15 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingsToBuild.add(STONECUTTER);
 		buildingsToBuild.add(STONECUTTER);
 		buildingsToBuild.add(WINEGROWER);
+		buildingsToBuild.add(WINEGROWER);
+		buildingsToBuild.add(WINEGROWER);
+		buildingsToBuild.add(WINEGROWER);
 		buildingsToBuild.add(FARM);
 		buildingsToBuild.add(FARM);
 		buildingsToBuild.add(FARM);
+		buildingsToBuild.add(TEMPLE);
+		buildingsToBuild.add(TEMPLE);
+		buildingsToBuild.add(TEMPLE);
 		buildingsToBuild.add(TEMPLE);
 		buildingsToBuild.add(WATERWORKS);
 		buildingsToBuild.add(MILL);
@@ -158,6 +145,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingsToBuild.add(IRONMELT);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(BIG_TEMPLE);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
