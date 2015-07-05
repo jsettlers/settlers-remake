@@ -15,7 +15,33 @@
 package jsettlers.ai.highlevel;
 
 import static jsettlers.ai.construction.BestStoneCutterConstructionPositionFinder.MAX_STONE_DISTANCE;
-import static jsettlers.common.buildings.EBuildingType.*;
+import static jsettlers.common.buildings.EBuildingType.BAKER;
+import static jsettlers.common.buildings.EBuildingType.BARRACK;
+import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
+import static jsettlers.common.buildings.EBuildingType.BIG_TEMPLE;
+import static jsettlers.common.buildings.EBuildingType.COALMINE;
+import static jsettlers.common.buildings.EBuildingType.FARM;
+import static jsettlers.common.buildings.EBuildingType.FISHER;
+import static jsettlers.common.buildings.EBuildingType.FORESTER;
+import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
+import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
+import static jsettlers.common.buildings.EBuildingType.IRONMELT;
+import static jsettlers.common.buildings.EBuildingType.IRONMINE;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.MEDIUM_LIVINGHOUSE;
+import static jsettlers.common.buildings.EBuildingType.MILL;
+import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
+import static jsettlers.common.buildings.EBuildingType.SAWMILL;
+import static jsettlers.common.buildings.EBuildingType.SLAUGHTERHOUSE;
+import static jsettlers.common.buildings.EBuildingType.SMALL_LIVINGHOUSE;
+import static jsettlers.common.buildings.EBuildingType.STOCK;
+import static jsettlers.common.buildings.EBuildingType.STONECUTTER;
+import static jsettlers.common.buildings.EBuildingType.TEMPLE;
+import static jsettlers.common.buildings.EBuildingType.TOOLSMITH;
+import static jsettlers.common.buildings.EBuildingType.TOWER;
+import static jsettlers.common.buildings.EBuildingType.WATERWORKS;
+import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
+import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.material.EMaterialType.GOLD;
 import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
@@ -33,6 +59,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.input.tasks.ConstructBuildingTask;
+import jsettlers.input.tasks.DestroyBuildingGuiTask;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.MoveToGuiTask;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
@@ -216,12 +243,17 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 			ShortPoint2D nearestStone = aiStatistics.detectNearestPointFromList(stoneCutterPosition, stones);
 			if (nearestStone != null && stoneCutterPosition.calculateDistanceTo(nearestStone) > MAX_STONE_DISTANCE) {
-				aiStatistics.getBuildingAt(stoneCutterPosition).kill();
+				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
 			}
 		}
-		// TODO: destroy towers which are surrounded by other towers or are in direction of no other player
 		// TODO: destroy living houses to get material back
 		// TODO: destroy mines which have no resources anymore
+	}
+
+	private void destroyHinterlandTowers() {
+		for (ShortPoint2D towerPositions : aiStatistics.getHinterlandTowerPositionsOfPlayer(playerId)) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, towerPositions));
+		}
 	}
 
 	private void buildBuildings() {
@@ -326,6 +358,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private boolean buildTower() {
 		if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) >= 1
 				&& aiStatistics.getNumberOfNotOccupiedTowers(playerId) == 0) {
+			destroyHinterlandTowers();
 			return construct(TOWER);
 		}
 		return false;

@@ -33,10 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
@@ -281,6 +283,27 @@ public class AiStatistics {
 				partitionsGrid.getPlayerAt(point.x, south) == null) {
 			borderLandNextToFreeLand.get(playerId).add(point);
 		}
+	}
+
+	public List<ShortPoint2D> getHinterlandTowerPositionsOfPlayer(byte playerId) {
+		List<ShortPoint2D> hinterlandTowerPositions = new ArrayList<ShortPoint2D>();
+		for (ShortPoint2D towerPosition : getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId)) {
+			Building tower = getBuildingAt(towerPosition);
+			if (isTowerInHinterland(tower, playerId)) {
+				hinterlandTowerPositions.add(towerPosition);
+			}
+		}
+		return hinterlandTowerPositions;
+	}
+
+	private boolean isTowerInHinterland(Building tower, byte playerId) {
+		for (ShortPoint2D occupiedPosition : new MapCircle(tower.getPos(), CommonConstants.TOWER_RADIUS)) {
+			if (getBorderLandNextToFreeLandForPlayer(playerId).contains(occupiedPosition)
+					&& partitionsGrid.getTowerCountAt(occupiedPosition.x, occupiedPosition.y) == 1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public Building getBuildingAt(ShortPoint2D point) {
