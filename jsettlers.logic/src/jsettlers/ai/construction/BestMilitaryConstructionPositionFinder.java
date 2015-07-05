@@ -139,7 +139,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		if (trees.size() < 30) {
 			importantResources.add(ImportantResource.TREES);
 		}
-		if (stones.size() < 7) {
+		if (stones.size() < 15) {
 			importantResources.add(ImportantResource.STONES);
 		}
 		if (rivers.size() < 15) {
