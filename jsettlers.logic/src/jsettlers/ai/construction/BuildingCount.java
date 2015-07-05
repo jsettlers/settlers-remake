@@ -16,13 +16,19 @@ package jsettlers.ai.construction;
 
 import jsettlers.common.buildings.EBuildingType;
 
+/**
+ * Whis this class you can store a specific count of a specific building type. e.g. you can use this class to store dependencies like that a baker
+ * needs 1/3 mills: BuildingCount(MILL, 0.33f)
+ * 
+ * @author codingberlin
+ */
 public class BuildingCount {
 
-    public final EBuildingType buildingType;
-    public final float count;
+	public final EBuildingType buildingType;
+	public final float count;
 
-    public BuildingCount(EBuildingType buildingType, float count) {
-        this.buildingType = buildingType;
-        this.count = count;
-    }
+	public BuildingCount(EBuildingType buildingType, float count) {
+		this.buildingType = buildingType;
+		this.count = count;
+	}
 }

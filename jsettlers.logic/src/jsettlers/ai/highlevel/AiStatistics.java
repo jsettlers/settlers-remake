@@ -54,6 +54,12 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 
+/**
+ * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
+ * multiple times within one AiExecutor step triggerd by the game clock.
+ * 
+ * @author codingberlin
+ */
 public class AiStatistics {
 
 	private static final short BORDER_LAND_WIDTH = 10;

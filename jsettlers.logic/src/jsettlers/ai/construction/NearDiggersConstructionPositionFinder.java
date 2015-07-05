@@ -23,10 +23,10 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
+
 /**
- * Assumptions: farms and winegrowers are placed near by diggers and with free space at the south
- *
- * Algorithm: find all possible construction points within the borders of the player - calculates a score and take the position with the best score - score is affected by the distance to all diggers
+ * Algorithm: find all possible construction points within the land of the player - calculates a score and take the position with the best score -
+ * score is affected by the distance to diggers
  *
  * @author codingberlin
  */

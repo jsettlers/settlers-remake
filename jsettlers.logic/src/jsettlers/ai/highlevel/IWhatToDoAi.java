@@ -15,13 +15,10 @@
 package jsettlers.ai.highlevel;
 
 /**
- * The purpose of the higher level IWhatToDoAi is to decide WHAT is to do. It delegates the decision WHERE it is to do to the lower level KI. For
- * example if the AI player has no stone cutters the WhatToDoAi decides to build with high priority a stone cutter because otherwise the AI player
- * would be unable to build more houses without stones. Then the WhatToDoAi gets a BestConstructionPositionFinder for Stonecutters and asks it to find
- * the best place to put a stone cutter on the map - which means near some stones ;-) - and builds the stone cutter there.
- * 
- * The separation of high level and low level AI enables the programmer to think in more abstract levels instead of going into details while
- * programming strategic AIs
+ * The purpose of the higher level IWhatToDoAi is to decide WHAT to do. It delegates the decision WHERE it is to do to the lower level KI. For example
+ * if the AI player has no stone cutters the WhatToDoAi decides to build with high priority a stone cutter because otherwise the AI player would be
+ * unable to build more houses without stones. Then the WhatToDoAi gets a BestConstructionPositionFinder for Stonecutters and asks it to find the best
+ * place to put a stone cutter on the map - which means near some stones ;-) - and builds the stone cutter there.
  * 
  * @author codingberlin
  */

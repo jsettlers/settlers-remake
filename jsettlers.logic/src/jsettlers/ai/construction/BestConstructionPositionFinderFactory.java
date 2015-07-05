@@ -16,10 +16,20 @@
  */
 package jsettlers.ai.construction;
 
+import static jsettlers.common.buildings.EBuildingType.FARM;
+import static jsettlers.common.buildings.EBuildingType.GOLDMELT;
+import static jsettlers.common.buildings.EBuildingType.GOLDMINE;
+import static jsettlers.common.buildings.EBuildingType.IRONMELT;
+import static jsettlers.common.buildings.EBuildingType.IRONMINE;
+import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
+import static jsettlers.common.buildings.EBuildingType.MILL;
+import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
+import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
+import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
+import static jsettlers.common.landscape.EResourceType.COAL;
+import static jsettlers.common.landscape.EResourceType.GOLD;
+import static jsettlers.common.landscape.EResourceType.IRON;
 import jsettlers.common.buildings.EBuildingType;
-
-import static jsettlers.common.buildings.EBuildingType.*;
-import static jsettlers.common.landscape.EResourceType.*;
 
 public class BestConstructionPositionFinderFactory {
 
@@ -68,10 +78,10 @@ public class BestConstructionPositionFinderFactory {
 			return new NearNeededBuildingConstructionPositionFinder(type, WINEGROWER);
 		case GOLDMELT:
 			return new NearNeededBuildingConstructionPositionFinder(type, GOLDMINE);
-			case FISHER:
-				return new BestFisherConstructionPositionFinder(type);
-			case STOCK:
-				return new NearNeededBuildingConstructionPositionFinder(type, GOLDMELT);
+		case FISHER:
+			return new BestFisherConstructionPositionFinder(type);
+		case STOCK:
+			return new NearNeededBuildingConstructionPositionFinder(type, GOLDMELT);
 		default:
 			return new NearDiggersConstructionPositionFinder(type);
 		}

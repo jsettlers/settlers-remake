@@ -18,8 +18,14 @@ import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.position.ShortPoint2D;
 
+/**
+ * This is the low level KI. It is called by the high level KI which decites what to build. The purpose of this low level KI is, to determine WHERE to
+ * build.
+ *
+ * @author codingberlin
+ */
 public interface IBestConstructionPositionFinder {
 
-	public abstract ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap,
+	abstract ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap,
 			byte playerId);
 }

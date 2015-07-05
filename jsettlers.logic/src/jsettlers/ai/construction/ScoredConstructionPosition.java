@@ -14,10 +14,16 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import jsettlers.common.position.ShortPoint2D;
-
 import java.util.List;
 
+import jsettlers.common.position.ShortPoint2D;
+
+/**
+ * The ScoredConstructionPosition helps to create lists of possible construction positions with their score for the low level KI
+ * IBestConstructionPositionFinder
+ *
+ * @author codingberlin
+ */
 class ScoredConstructionPosition {
 	ShortPoint2D point;
 	double score;
@@ -36,7 +42,7 @@ class ScoredConstructionPosition {
 		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
 			if (winnerPosition == null) {
 				winnerPosition = scoredConstructionPosition;
-			} else if (scoredConstructionPosition.score < winnerPosition.score ) {
+			} else if (scoredConstructionPosition.score < winnerPosition.score) {
 				winnerPosition = scoredConstructionPosition;
 			}
 		}

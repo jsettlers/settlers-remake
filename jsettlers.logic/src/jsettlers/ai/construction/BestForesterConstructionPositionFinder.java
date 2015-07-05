@@ -55,7 +55,8 @@ public class BestForesterConstructionPositionFinder implements IBestConstruction
 					foresterDistance = point.calculateDistanceTo(nearestForesterPoint);
 				}
 
-				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance - foresterDistance));
+				scoredConstructionPositions.add(new ScoredConstructionPosition(new ShortPoint2D(point.x, point.y), lumberJackDistance
+						- foresterDistance));
 			}
 		}
 

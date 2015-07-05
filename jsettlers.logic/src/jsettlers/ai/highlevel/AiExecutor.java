@@ -21,6 +21,11 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.network.client.interfaces.IClockListener;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 
+/**
+ * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when the game clock notifies it.
+ * 
+ * @author codingberlin
+ */
 public class AiExecutor implements IClockListener {
 
 	private final List<IWhatToDoAi> whatToDoAis;
