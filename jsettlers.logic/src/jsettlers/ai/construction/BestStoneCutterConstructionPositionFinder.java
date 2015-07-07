@@ -32,11 +32,12 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	public final static double MAX_STONE_DISTANCE = 17;
 	private final EBuildingType buildingType;
+	private final short workingRadius;
 
 	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
+		workingRadius = buildingType.getWorkradius();
 	}
 
 	@Override
@@ -51,9 +52,8 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestStonePosition = aiStatistics.detectNearestPointFromList(point, stones);
 				double stoneDistance = point.calculateDistanceTo(nearestStonePosition);
-				if (stoneDistance < MAX_STONE_DISTANCE) {
-					byte flatternEffort = aiStatistics.getFlatternEffortAtPositionForBuilding(point, buildingType);
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance + flatternEffort));
+				if (stoneDistance < workingRadius) {
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance));
 				}
 			}
 		}

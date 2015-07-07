@@ -32,10 +32,12 @@ import jsettlers.common.position.ShortPoint2D;
  */
 public class BestLumberJackConstructionPositionFinder implements IBestConstructionPositionFinder {
 
-	EBuildingType buildingType;
+	private EBuildingType buildingType;
+	private final short workingRadius;
 
 	public BestLumberJackConstructionPositionFinder(EBuildingType buildingType) {
 		this.buildingType = buildingType;
+		workingRadius = buildingType.getWorkradius();
 	}
 
 	@Override
@@ -50,8 +52,9 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
 				double treeDistance = point.calculateDistanceTo(nearestTreePosition);
-				byte flatternEffort = aiStatistics.getFlatternEffortAtPositionForBuilding(point, buildingType);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance + flatternEffort));
+				if (treeDistance < workingRadius) {
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
+				}
 			}
 		}
 
