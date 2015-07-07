@@ -47,7 +47,8 @@ public class NearDiggersConstructionPositionFinder implements IBestConstructionP
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestDiggerPosition = aiStatistics.detectNearestPointFromList(point, diggers);
 				double nearestDiggerDistance = point.calculateDistanceTo(nearestDiggerPosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestDiggerDistance));
+				byte flatternEffort = aiStatistics.getFlatternEffortAtPositionForBuilding(point, buildingType);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, nearestDiggerDistance + flatternEffort));
 			}
 		}
 

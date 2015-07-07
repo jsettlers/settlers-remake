@@ -47,7 +47,8 @@ public class BestWaterWorksConstructionPositionFinder implements IBestConstructi
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestRiverPosition = aiStatistics.detectNearestPointFromList(point, rivers);
 				double riverDistance = point.calculateDistanceTo(nearestRiverPosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, riverDistance));
+				byte flatternEffort = aiStatistics.getFlatternEffortAtPositionForBuilding(point, buildingType);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, riverDistance + flatternEffort));
 			}
 		}
 

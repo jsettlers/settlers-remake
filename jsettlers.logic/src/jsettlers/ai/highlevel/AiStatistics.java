@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
@@ -88,6 +89,7 @@ public class AiStatistics {
 	private final PartitionsGrid partitionsGrid;
 	private final MovableGrid movableGrid;
 	private final FlagsGrid flagsGrid;
+	private final AbstractConstructionMarkableMap constructionMarksGrid;
 
 	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
@@ -97,6 +99,11 @@ public class AiStatistics {
 		this.partitionsGrid = mainGrid.getPartitionsGrid();
 		this.movableGrid = mainGrid.getMovableGrid();
 		this.flagsGrid = mainGrid.getFlagsGrid();
+		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
+	}
+
+	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
+		return constructionMarksGrid.getConstructionMarkValue(position.x, position.y, buildingType.getProtectedTiles());
 	}
 
 	public void updateStatistics() {

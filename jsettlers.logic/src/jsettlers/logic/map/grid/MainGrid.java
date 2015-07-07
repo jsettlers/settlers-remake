@@ -863,7 +863,7 @@ public final class MainGrid implements Serializable {
 
 	}
 
-	final class ConstructionMarksGrid extends AbstractConstructionMarkableMap {
+	final class ConstructionMarksGrid implements AbstractConstructionMarkableMap {
 		@Override
 		public final void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {
@@ -929,7 +929,8 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+		@Override
+		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			int sum = 0;
 
 			for (RelativePoint currPos : flattenPositions) {

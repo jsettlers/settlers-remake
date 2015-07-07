@@ -52,7 +52,8 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 				ShortPoint2D nearestStonePosition = aiStatistics.detectNearestPointFromList(point, stones);
 				double stoneDistance = point.calculateDistanceTo(nearestStonePosition);
 				if (stoneDistance < MAX_STONE_DISTANCE) {
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance));
+					byte flatternEffort = aiStatistics.getFlatternEffortAtPositionForBuilding(point, buildingType);
+					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance + flatternEffort));
 				}
 			}
 		}

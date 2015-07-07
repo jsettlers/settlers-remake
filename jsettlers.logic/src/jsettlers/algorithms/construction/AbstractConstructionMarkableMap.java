@@ -23,7 +23,7 @@ import jsettlers.common.position.RelativePoint;
  * 
  * @author Andreas Eberle
  */
-public abstract class AbstractConstructionMarkableMap {
+public interface AbstractConstructionMarkableMap {
 
 	/**
 	 * Sets or removes a construction mark
@@ -37,17 +37,17 @@ public abstract class AbstractConstructionMarkableMap {
 	 * @param flattenPositions
 	 *            The positions that need to be flattened to position this building. This value might be null whenever set is false.
 	 */
-	public abstract void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
+	void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
 
 	/**
 	 * @return width of map.
 	 */
-	public abstract short getWidth();
+	short getWidth();
 
 	/**
 	 * @return height of map
 	 */
-	public abstract short getHeight();
+	short getHeight();
 
 	/**
 	 * Checks if the given position is valid to build a building of given player that can stand on the given {@link ELandscapeType}s. Bounds checks
@@ -64,13 +64,15 @@ public abstract class AbstractConstructionMarkableMap {
 	 * @return true if a building can be positioned at the given position<br>
 	 *         false otherwise.
 	 */
-	public abstract boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId);
+	boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId);
 
-	public abstract short getPartitionIdAt(int x, int y);
+	short getPartitionIdAt(int x, int y);
 
-	public abstract boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
+	boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
 
-	public abstract boolean isInBounds(int x, int y);
+	boolean isInBounds(int x, int y);
 
-	public abstract boolean canConstructAt(short x, short y, EBuildingType type, byte playerId);
+	boolean canConstructAt(short x, short y, EBuildingType type, byte playerId);
+
+	byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions);
 }

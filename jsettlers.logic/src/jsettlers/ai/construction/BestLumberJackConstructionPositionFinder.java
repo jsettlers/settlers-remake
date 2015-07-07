@@ -50,7 +50,8 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
 				double treeDistance = point.calculateDistanceTo(nearestTreePosition);
-				scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
+				byte flatternEffort = aiStatistics.getFlatternEffortAtPositionForBuilding(point, buildingType);
+				scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance + flatternEffort));
 			}
 		}
 
