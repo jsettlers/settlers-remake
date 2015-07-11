@@ -103,11 +103,10 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		}
 		buildingNeeds.get(SAWMILL).add(new BuildingCount(LUMBERJACK, 3));
 		buildingNeeds.get(TEMPLE).add(new BuildingCount(WINEGROWER, 1));
-		buildingNeeds.get(WATERWORKS).add(new BuildingCount(FARM, 2));
 		buildingNeeds.get(MILL).add(new BuildingCount(FARM, 1));
-		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, 1 / 3));
+		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, (float) 1 / 3));
 		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
-		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, 1 / 3));
+		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, (float) 1 / 3));
 		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 1));
 		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 1));
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 1));
