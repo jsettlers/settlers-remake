@@ -24,7 +24,7 @@ import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Algorithm: find all possible construction points within the land of the player - calculates a score and take the position with the best score -
- * score is affected by the distance to needed buildings (eg. lumberjacks for sawmills)
+ * score is affected by the distance to needed buildings (eg. lumberjacks for sawmills) - score is affected by the effort to flattern
  * 
  * @author codingberlin
  */
