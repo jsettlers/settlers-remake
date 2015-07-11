@@ -14,7 +14,6 @@
  *******************************************************************************/
 package jsettlers.ai.highlevel;
 
-import static jsettlers.ai.construction.BestStoneCutterConstructionPositionFinder.MAX_STONE_DISTANCE;
 import static jsettlers.common.buildings.EBuildingType.BAKER;
 import static jsettlers.common.buildings.EBuildingType.BARRACK;
 import static jsettlers.common.buildings.EBuildingType.BIG_LIVINGHOUSE;
@@ -242,7 +241,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 			ShortPoint2D nearestStone = aiStatistics.detectNearestPointFromList(stoneCutterPosition, stones);
-			if (nearestStone != null && stoneCutterPosition.calculateDistanceTo(nearestStone) > MAX_STONE_DISTANCE) {
+			if (nearestStone != null && stoneCutterPosition.calculateDistanceTo(nearestStone) > STONECUTTER.getWorkradius()) {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
 			}
 		}
