@@ -167,12 +167,12 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(BARRACK);
+		buildingsToBuild.add(BIG_TEMPLE);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(BIG_TEMPLE);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
