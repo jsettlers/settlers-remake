@@ -26,7 +26,7 @@ public class LoadableMapListAdapter extends MapListAdapter<IMapDefinition> {
 
 	@Override
 	public String getTitle(IMapDefinition item) {
-		return item.getName();
+		return item.getMapName();
 	}
 
 	@Override

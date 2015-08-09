@@ -17,12 +17,16 @@ package jsettlers.logic.map.save.loader;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.graphics.map.UIState;
+import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IGameCreator;
@@ -38,7 +42,7 @@ import jsettlers.logic.map.save.MapFileHeader.MapType;
  * @author michael
  * @author Andreas Eberle
  */
-public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
+public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, IMapDefinition {
 	private final IListedMap file;
 	private final MapFileHeader header;
 
@@ -98,14 +102,17 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 		return header.getName();
 	}
 
+	@Override
 	public int getMinPlayers() {
 		return header.getMinPlayer();
 	}
 
+	@Override
 	public int getMaxPlayers() {
 		return header.getMaxPlayer();
 	}
 
+	@Override
 	public Date getCreationDate() {
 		return header.getCreationDate();
 	}
@@ -119,20 +126,27 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 
 	@Override
 	public String toString() {
-		return "MapLoader: mapName: " + file.getFileName() + " mapId: " + getMapID();
+		return "MapLoader: mapName: " + file.getFileName() + " mapId: " + getMapId();
 	}
 
 	@Override
-	public String getMapID() {
+	public String getMapId() {
 		return header.getUniqueId();
 	}
 
+	@Override
 	public String getDescription() {
 		return header.getDescription();
 	}
 
+	@Override
 	public short[] getImage() {
 		return header.getBgimage();
+	}
+
+	@Override
+	public List<ILoadableMapPlayer> getPlayers() { // TODO @Andreas Eberle: supply saved players information.
+		return new ArrayList<ILoadableMapPlayer>();
 	}
 
 	@Override
@@ -159,7 +173,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader> {
 			}
 		}
 
-		MainGrid mainGrid = new MainGrid(getMapID(), getMapName(), mapData, availablePlayers);
+		MainGrid mainGrid = new MainGrid(getMapId(), getMapName(), mapData, availablePlayers);
 
 		PlayerState[] playerStates = new PlayerState[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {

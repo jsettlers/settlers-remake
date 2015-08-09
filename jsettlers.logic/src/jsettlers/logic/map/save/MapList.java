@@ -128,7 +128,7 @@ public class MapList implements IMapListerCallable {
 		maps.addAll(getSavedMaps());
 
 		for (MapLoader curr : maps) {
-			if (curr.getMapID().equals(id)) {
+			if (curr.getMapId().equals(id)) {
 				return curr;
 			}
 		}

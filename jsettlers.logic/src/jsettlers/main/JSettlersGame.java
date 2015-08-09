@@ -253,7 +253,7 @@ public class JSettlersGame {
 			final String replayFilename = getLogFile(mapCreator, "_replay.log");
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
-			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapID(), playerId,
+			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapId(), playerId,
 					availablePlayers);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();

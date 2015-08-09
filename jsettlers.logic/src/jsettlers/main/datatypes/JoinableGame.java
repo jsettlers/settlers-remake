@@ -34,7 +34,7 @@ public class JoinableGame implements IJoinableGame {
 	public JoinableGame(MatchInfoPacket matchInfo) {
 		this.id = matchInfo.getId();
 		this.name = matchInfo.getMatchName();
-		this.map = new MapDefinition(MapList.getDefaultList().getMapById(matchInfo.getMapInfo().getId()));
+		this.map = MapList.getDefaultList().getMapById(matchInfo.getMapInfo().getId());
 	}
 
 	@Override

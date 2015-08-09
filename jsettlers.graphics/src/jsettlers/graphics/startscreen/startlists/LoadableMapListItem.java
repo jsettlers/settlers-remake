@@ -25,7 +25,7 @@ public class LoadableMapListItem extends GenericListItem implements UIListItem {
 
 	public LoadableMapListItem(IMapDefinition item) {
 		// TODO: Load time.
-		super(item.getName(), toPlayerString(item.getPlayers()));
+		super(item.getMapName(), toPlayerString(item.getPlayers()));
 	}
 
 	private static String toPlayerString(List<ILoadableMapPlayer> players) {

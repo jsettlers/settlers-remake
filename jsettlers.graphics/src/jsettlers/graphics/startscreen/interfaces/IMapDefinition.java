@@ -30,14 +30,14 @@ public interface IMapDefinition {
 	 * 
 	 * @return The unique identifier of the represented map.
 	 */
-	String getId();
+	String getMapId();
 
 	/**
 	 * Gets the name of the map.
 	 * 
 	 * @return A name describing the map.
 	 */
-	String getName();
+	String getMapName();
 
 	/**
 	 * Gets the description of this map.

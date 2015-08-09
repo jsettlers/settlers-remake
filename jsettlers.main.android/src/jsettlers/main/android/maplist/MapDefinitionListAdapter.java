@@ -31,7 +31,7 @@ public class MapDefinitionListAdapter<T extends IMapDefinition> extends MapListA
 
 	@Override
 	public String getTitle(T map) {
-		String title = map.getName();
+		String title = map.getMapName();
 		return title;
 	}
 
