@@ -101,16 +101,16 @@ public class DistributionPanel extends AbstractContentProvider {
 					})),
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 132, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
-							new ConfigurationPanelRow("Building"),
+							new ConfigurationPanelRow("Weaponsmith"),
+							new ConfigurationPanelRow("Toolsmith"),
 							new ConfigurationPanelRow("Shipyard"),
-							new ConfigurationPanelRow("Charcoal"),
 							new ConfigurationPanelRow("Catapult Workshop"),
 					})),
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 168, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
-							new ConfigurationPanelRow("Weaponsmith"),
-							new ConfigurationPanelRow("Toolsmith"),
+							new ConfigurationPanelRow("Building"),
 							new ConfigurationPanelRow("Shipyard"),
+							new ConfigurationPanelRow("Charcoal"),
 							new ConfigurationPanelRow("Catapult Workshop"),
 					})),
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 174, 0)),
@@ -139,8 +139,8 @@ public class DistributionPanel extends AbstractContentProvider {
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 162, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {
 							new ConfigurationPanelRow("Iron Mine"),
-							new ConfigurationPanelRow("Gold Mine"),
 							new ConfigurationPanelRow("Coal Mine"),
+							new ConfigurationPanelRow("Gold Mine"),
 					})),
 			new Tab(new Button(new OriginalImageLink(EImageLinkType.GUI, 3, 189, 0)),
 					new ConfigurationPanel(new ConfigurationPanelRow[] {

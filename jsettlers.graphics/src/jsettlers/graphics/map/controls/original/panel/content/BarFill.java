@@ -25,7 +25,7 @@ import jsettlers.graphics.ui.UIPanel;
 
 public class BarFill extends UIPanel {
 
-	private static final ImageLink barImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 330, 0); // or 336
+	private static final ImageLink barImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 336, 0); // checked in the original game
 
 	private final UIPanel fill;
 	private final UIPanel frame;
