@@ -88,6 +88,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	@Override
 	public void onAttach() {
+		super.onAttach();
 		ChangingList<T> list = getList();
 		list.setListener(this);
 		listChanged(list);
@@ -95,6 +96,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	@Override
 	public void onDetach() {
+		super.onDetach();
 		getList().setListener(null);
 	}
 }
