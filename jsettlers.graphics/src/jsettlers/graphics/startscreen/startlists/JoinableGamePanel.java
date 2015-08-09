@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.Comparator;
+
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
@@ -73,5 +75,10 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	@Override
 	protected String getSubmitTextId() {
 		return "start-joinmultiplayer-start";
+	}
+
+	@Override
+	protected Comparator<? super IJoinableGame> getDefaultComparator() {
+		return IJoinableGame.MATCH_NAME_COMPARATOR;
 	}
 }

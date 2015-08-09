@@ -20,9 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -74,7 +74,7 @@ public class MapCreatorApp {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Open map"));
-		ArrayList<MapLoader> maps = MapList.getDefaultList().getFreshMaps();
+		List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
 		Object[] array = maps.toArray();
 		Arrays.sort(array, new Comparator<Object>() {
 			@Override

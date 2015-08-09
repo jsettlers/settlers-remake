@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.main.android.maplist;
 
+import java.util.Comparator;
+
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import android.view.LayoutInflater;
@@ -41,4 +43,8 @@ public class JoinableMapListAdapter extends MapListAdapter<IJoinableGame> {
 		// TODO: use current players here.
 	}
 
+	@Override
+	protected Comparator<? super IJoinableGame> getDefaultComparator() {
+		return IJoinableGame.MATCH_NAME_COMPARATOR;
+	}
 }

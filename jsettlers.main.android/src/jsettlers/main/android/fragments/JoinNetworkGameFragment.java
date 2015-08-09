@@ -40,7 +40,7 @@ public class JoinNetworkGameFragment extends MapSelectionFragment<IJoinableGame>
 
 	@Override
 	protected String getItemDescription(IJoinableGame item) {
-		return String.format("map id: %s\nmatch id: %s", item.getMap().getId(),
+		return String.format("map id: %s\nmatch id: %s", item.getMap().getMapId(),
 				item.getId());
 	}
 

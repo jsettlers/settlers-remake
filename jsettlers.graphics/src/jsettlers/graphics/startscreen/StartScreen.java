@@ -130,5 +130,4 @@ public class StartScreen extends UIPanel {
 		drawer.drawString(getPosition().getCenterX() - width / 2,
 				getPosition().getMinY() + 5, revision);
 	}
-
 }
