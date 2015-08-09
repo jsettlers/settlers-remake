@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main.android.maplist;
 
+import java.util.Comparator;
 import java.util.List;
 
 import jsettlers.common.utils.collections.ChangingList;
@@ -50,4 +51,8 @@ public class MapDefinitionListAdapter<T extends IMapDefinition> extends MapListA
 		return maps.isEmpty();
 	}
 
+	@Override
+	protected Comparator<? super IMapDefinition> getDefaultComparator() {
+		return IMapDefinition.MAP_NAME_COMPARATOR;
+	}
 }

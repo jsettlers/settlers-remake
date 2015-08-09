@@ -14,7 +14,9 @@
  *******************************************************************************/
 package jsettlers.main.android.maplist;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import jsettlers.common.utils.collections.ChangingList;
@@ -36,8 +38,7 @@ import android.widget.TextView;
  * 
  * @param <T>
  */
-public abstract class MapListAdapter<T> extends BaseAdapter implements
-		IChangingListListener<T> {
+public abstract class MapListAdapter<T> extends BaseAdapter implements IChangingListListener<T> {
 
 	private final LayoutInflater inflater;
 	private final Handler handler;
@@ -114,7 +115,8 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 
 	@Override
 	public void listChanged(ChangingList<? extends T> list) {
-		final List<? extends T> newList = list.getItems();
+		final List<T> newList = new ArrayList<T>(list.getItems());
+		Collections.sort(newList, getDefaultComparator());
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -123,4 +125,6 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 			}
 		});
 	}
+
+	protected abstract Comparator<? super T> getDefaultComparator();
 }

@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.interfaces;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,18 @@ import java.util.List;
  * @author Andreas Eberle
  */
 public interface IMapDefinition {
+	public static final Comparator<IMapDefinition> MAP_NAME_COMPARATOR = new Comparator<IMapDefinition>() {
+		@Override
+		public int compare(IMapDefinition o1, IMapDefinition o2) {
+			return o1.getMapName().compareToIgnoreCase(o2.getMapName());
+		}
+	};
+	public static final Comparator<IMapDefinition> CREATION_DATE_COMPARATOR = new Comparator<IMapDefinition>() {
+		@Override
+		public int compare(IMapDefinition o1, IMapDefinition o2) {
+			return o2.getCreationDate().compareTo(o1.getCreationDate());
+		}
+	};
 
 	/**
 	 * Gets the id of the map. This id must be unique! The id must also differ between maps in a different version.

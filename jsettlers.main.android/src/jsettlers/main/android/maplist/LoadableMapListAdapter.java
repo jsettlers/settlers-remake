@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.main.android.maplist;
 
+import java.util.Comparator;
+
 import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import android.view.LayoutInflater;
@@ -37,5 +39,10 @@ public class LoadableMapListAdapter extends MapListAdapter<IMapDefinition> {
 	@Override
 	protected String getDescriptionString(IMapDefinition item) {
 		return item.getCreationDate().toLocaleString();
+	}
+
+	@Override
+	protected Comparator<? super IMapDefinition> getDefaultComparator() {
+		return IMapDefinition.CREATION_DATE_COMPARATOR;
 	}
 }

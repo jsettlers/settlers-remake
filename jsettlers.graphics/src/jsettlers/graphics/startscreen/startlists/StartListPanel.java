@@ -14,7 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import jsettlers.common.images.ImageLink;
@@ -69,10 +71,13 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	@Override
 	public void listChanged(ChangingList<? extends T> list) {
-		List<? extends T> items = list.getItems();
+		List<T> items = new ArrayList<>(list.getItems());
+		Collections.sort(items, getDefaultComparator());
 		startbutton.setEnabled(items.size() > 0);
 		uiList.setItems(items);
 	}
+
+	protected abstract Comparator<? super T> getDefaultComparator();
 
 	protected ChangingList<? extends T> getList() {
 		return list;
