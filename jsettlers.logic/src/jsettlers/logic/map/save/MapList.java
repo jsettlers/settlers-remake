@@ -223,5 +223,6 @@ public class MapList implements IMapListerCallable {
 
 	public static void setDefaultListFactory(IMapListFactory factory) {
 		mapListFactory = factory;
+		defaultList = null;
 	}
 }
