@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -77,26 +78,21 @@ public class MapCreatorApp {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Open map"));
+
 		List<MapLoader> maps = MapList.getDefaultList().getFreshMaps().getItems();
-		Object[] array = maps.toArray();
-		Arrays.sort(array, new Comparator<Object>() {
+		Collections.sort(maps, new Comparator<MapLoader>() {
 			@Override
-			public int compare(Object arg0, Object arg1) {
-				if (arg0 instanceof MapLoader && arg1 instanceof MapLoader) {
-					MapLoader mapLoader1 = (MapLoader) arg0;
-					MapLoader mapLoader2 = (MapLoader) arg1;
-					int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
-					if (nameComp != 0) {
-						return nameComp;
-					} else {
-						return mapLoader1.toString().compareTo(mapLoader2.toString());
-					}
+			public int compare(MapLoader mapLoader1, MapLoader mapLoader2) {
+				int nameComp = mapLoader1.getMapName().compareTo(mapLoader2.getMapName());
+				if (nameComp != 0) {
+					return nameComp;
 				} else {
-					return 0;
+					return mapLoader1.toString().compareTo(mapLoader2.toString());
 				}
 			}
 		});
-		final JList<Object> mapList = new JList<Object>(array);
+
+		final JList<MapLoader> mapList = new JList<MapLoader>(maps.toArray(new MapLoader[maps.size()]));
 		mapList.setCellRenderer(new DefaultListCellRenderer() {
 			private static final long serialVersionUID = 648829725137437178L;
 
@@ -109,17 +105,13 @@ public class MapCreatorApp {
 				return super.getListCellRendererComponent(mapList, displayName, index, isSelected, cellHasFocus);
 			}
 		});
-
 		panel.add(mapList);
 
 		JButton button = new JButton("Open");
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Object value = mapList.getSelectedValue();
-				if (value instanceof MapLoader) {
-					loadMap((MapLoader) value);
-				}
+				loadMap(mapList.getSelectedValue());
 			}
 		});
 		panel.add(button, BorderLayout.SOUTH);
