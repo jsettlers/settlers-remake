@@ -38,8 +38,14 @@ public class ChangingList<T> {
 		this.items = items;
 	}
 
-	public synchronized void setListener(IChangingListListener<? super T> listener) {
+	public void setListener(IChangingListListener<? super T> listener) {
 		this.listener = listener;
+	}
+
+	public void removeListener(IChangingListListener<? super T> listener) {
+		if (this.listener == listener) {
+			this.listener = null;
+		}
 	}
 
 	public List<T> getItems() {
@@ -48,7 +54,7 @@ public class ChangingList<T> {
 
 	public void stop() {
 		listener = null;
-		items = Collections.emptyList();
+		items = new LinkedList<>();
 	}
 
 	public void setList(List<T> items) {

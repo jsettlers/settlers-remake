@@ -94,6 +94,6 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		getList().setListener(null);
+		getList().removeListener(this);
 	}
 }
