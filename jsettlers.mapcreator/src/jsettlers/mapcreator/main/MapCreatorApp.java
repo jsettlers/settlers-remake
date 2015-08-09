@@ -15,6 +15,7 @@
 package jsettlers.mapcreator.main;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -38,6 +40,7 @@ import javax.swing.SpinnerListModel;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.utils.MainUtils;
+import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.MapList;
@@ -94,6 +97,19 @@ public class MapCreatorApp {
 			}
 		});
 		final JList<Object> mapList = new JList<Object>(array);
+		mapList.setCellRenderer(new DefaultListCellRenderer() {
+			private static final long serialVersionUID = 648829725137437178L;
+
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				IMapDefinition map = (IMapDefinition) value;
+				String longMapId = map.getMapId();
+				String shortMapId = longMapId == null ? "no map id" : longMapId.substring(0, Math.min(longMapId.length(), 8));
+				String displayName = map.getMapName() + " \t   (" + shortMapId + ")      created: " + map.getCreationDate();
+				return super.getListCellRendererComponent(mapList, displayName, index, isSelected, cellHasFocus);
+			}
+		});
+
 		panel.add(mapList);
 
 		JButton button = new JButton("Open");
