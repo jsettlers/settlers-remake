@@ -21,7 +21,7 @@ import java.util.Arrays;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
@@ -30,12 +30,12 @@ import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.action.SetMaterialPrioritiesAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.utils.Button;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.UIPanel;
 
 /**
  * This panel lets the user select the priorities in which the materials should be transported by settlers.
- * 
+ *
  * @author michael
  */
 public class MaterialPriorityContent extends AbstractContentProvider {
@@ -45,14 +45,10 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 	private static final float RELATIVE_BUTTONWIDTH = 1f / (COLUMNS + 2);
 
-	private static final OriginalImageLink ALL_UP_IMAGE =
-			new OriginalImageLink(EImageLinkType.GUI, 3, 219, 0);
-	private static final OriginalImageLink ALL_DOWN_IMAGE =
-			new OriginalImageLink(EImageLinkType.GUI, 3, 222, 0);
-	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(
-			EImageLinkType.GUI, 3, 225, 0);
-	private static final OriginalImageLink DOWN_IMAGE = new OriginalImageLink(
-			EImageLinkType.GUI, 3, 228, 0);
+	private static final OriginalImageLink ALL_UP_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 219, 0);
+	private static final OriginalImageLink ALL_DOWN_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 222, 0);
+	private static final OriginalImageLink UP_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 225, 0);
+	private static final OriginalImageLink DOWN_IMAGE = new OriginalImageLink(EImageLinkType.GUI, 3, 228, 0);
 
 	private static final float ROWHEIGHT = .1f;
 
@@ -63,15 +59,12 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		 * <p>
 		 * They are indexed by slot.
 		 */
-		private final float[] xpoints =
-				new float[EMaterialType.NUMBER_OF_MATERIALS];
-		private final float[] ypoints =
-				new float[EMaterialType.NUMBER_OF_MATERIALS];
+		private final float[] xpoints = new float[EMaterialType.NUMBER_OF_MATERIALS];
+		private final float[] ypoints = new float[EMaterialType.NUMBER_OF_MATERIALS];
 		/**
 		 * This is a mapping: {@link EMaterialType} -> label position
 		 */
-		private final AnimateablePosition[] positions =
-				new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
+		private final AnimateablePosition[] positions = new AnimateablePosition[EMaterialType.NUMBER_OF_MATERIALS];
 
 		public MaterialPriorityPanel() {
 			addRowPositions(0, true);
@@ -82,27 +75,18 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 			updateDisplayedData();
 
-			addChild(new ReorderButton(-1000, ALL_UP_IMAGE,
-					ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
-			addChild(new ReorderButton((-1), UP_IMAGE, UP_IMAGE,
-					"one up"), .6f, .1f, .75f, .18f);
-			addChild(new ReorderButton((1), DOWN_IMAGE, DOWN_IMAGE,
-					"one down"), .45f, .1f, .6f, .18f);
-			addChild(new ReorderButton((1000), ALL_DOWN_IMAGE,
-					ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
+			addChild(new ReorderButton(-1000, ALL_UP_IMAGE, ALL_UP_IMAGE, "all up"), .75f, .1f, .9f, .18f);
+			addChild(new ReorderButton((-1), UP_IMAGE, UP_IMAGE, "one up"), .6f, .1f, .75f, .18f);
+			addChild(new ReorderButton((1), DOWN_IMAGE, DOWN_IMAGE, "one down"), .45f, .1f, .6f, .18f);
+			addChild(new ReorderButton((1000), ALL_DOWN_IMAGE, ALL_DOWN_IMAGE, "all down"), .3f, .1f, .45f, .18f);
 		}
 
 		private void addRowPositions(int rowIndex, boolean descent) {
 			for (int column = 0; column < COLUMNS; column++) {
 				int index = rowIndex * COLUMNS + column;
 				if (index < xpoints.length) {
-					xpoints[index] =
-							(float) (descent ? (column + 1) : (COLUMNS - column))
-									/ (COLUMNS + 2);
-					ypoints[index] =
-							.8f - rowIndex * ROWHEIGHT - (float) column
-									/ (COLUMNS - 1)
-									* (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
+					xpoints[index] = (float) (descent ? (column + 1) : (COLUMNS - column)) / (COLUMNS + 2);
+					ypoints[index] = .8f - rowIndex * ROWHEIGHT - (float) column / (COLUMNS - 1) * (ROWHEIGHT - RELATIVE_BUTTONHEIGHT);
 				}
 			}
 		}
@@ -111,14 +95,12 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			Arrays.fill(positions, null);
 			for (int i = 0; i < order.length; i++) {
 				EMaterialType material = order[i];
-				positions[material.ordinal] =
-						new AnimateablePosition(xpoints[i], ypoints[i]);
+				positions[material.ordinal] = new AnimateablePosition(xpoints[i], ypoints[i]);
 			}
 		}
 
 		private void setToPosition(EMaterialType type, int newindex) {
-			positions[type.ordinal()]
-					.setPosition(xpoints[newindex], ypoints[newindex]);
+			positions[type.ordinal()].setPosition(xpoints[newindex], ypoints[newindex]);
 		}
 
 		@Override
@@ -142,10 +124,10 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 		private void updatePositions() {
 			if (currentGrid != null) {
-				IPartitionSettings settings = currentGrid.getPartitionSettings(currentPos.x, currentPos.y);
-				if (settings != null) {
+				IPartitionData partitionData = currentGrid.getPartitionData(currentPos.x, currentPos.y);
+				if (partitionData != null) {
 					for (int i = 0; i < order.length; i++) {
-						EMaterialType should = settings.getMaterialTypeForPrio(i);
+						EMaterialType should = partitionData.getMaterialTypeForPrio(i);
 						if (order[i] != should) {
 							setToPosition(should, i);
 							order[i] = should;
@@ -166,7 +148,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 						float y = pos.getY();
 						if (relativex >= x && relativex < x + RELATIVE_BUTTONWIDTH
 								&& relativey >= y
-								&& relativey < y + RELATIVE_BUTTONWIDTH) {
+								&& relativey < y + RELATIVE_BUTTONHEIGHT) {
 							return new SelectMaterialAction(EMaterialType.values[i]);
 						}
 					}
@@ -214,19 +196,15 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 	private final MaterialPriorityPanel panel = new MaterialPriorityPanel();
 
-	public MaterialPriorityContent() {
-	}
-
 	@Override
 	public synchronized void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 		currentPos = pos;
 		this.currentGrid = grid;
-		IPartitionSettings data = grid.getPartitionSettings(pos.x, pos.y);
-		if (data != null) {
-			order =
-					new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
+		IPartitionData partitionData = grid.getPartitionData(pos.x, pos.y);
+		if (partitionData != null) {
+			order = new EMaterialType[EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS];
 			for (int i = 0; i < EMaterialType.NUMBER_OF_DROPPABLE_MATERIALS; i++) {
-				order[i] = data.getMaterialTypeForPrio(i);
+				order[i] = partitionData.getMaterialTypeForPrio(i);
 			}
 			System.out.println("Using map pos: " + pos + " => " + Arrays.deepToString(order));
 		} else {
@@ -266,8 +244,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 			return order;
 		}
 		EMaterialType[] newOrder = order.clone();
-		int newPos =
-				Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
+		int newPos = Math.max(Math.min(desiredNewPosition, order.length - 1), 0);
 
 		if (newPos > oldPos) {
 			for (int i = oldPos; i < newPos; i++) {
@@ -282,24 +259,17 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 		return newOrder;
 	}
 
-	private void drawButton(GLDrawContext gl, float x, float y,
-			EMaterialType materialType) {
+	private void drawButton(GLDrawContext gl, float x, float y, EMaterialType materialType) {
+
+		Image iamgeLink = ImageProvider.getInstance().getImage(materialType.getIcon());
 		// TODO: add 1 or 2 for bigger gui
-		int image = materialType.getGuiIconBase();
-		int file = materialType.getGuiFile();
-		Image iamgeLink =
-				ImageProvider.getInstance().getImage(
-						new OriginalImageLink(EImageLinkType.GUI, file, image,
-								0));
-		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y
-				+ RELATIVE_BUTTONHEIGHT);
+		iamgeLink.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y + RELATIVE_BUTTONHEIGHT);
 
 		if (selected == materialType) {
 			ImageProvider
 					.getInstance()
 					.getImage(new OriginalImageLink(EImageLinkType.GUI, 3, 339, 0))
-					.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH,
-							y + RELATIVE_BUTTONHEIGHT);
+					.drawImageAtRect(gl, x, y, x + RELATIVE_BUTTONWIDTH, y + RELATIVE_BUTTONHEIGHT);
 		}
 	}
 
@@ -310,7 +280,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 
 	/**
 	 * Sets the selected material type.
-	 * 
+	 *
 	 * @param eMaterialType
 	 */
 	public synchronized void selectMaterial(EMaterialType eMaterialType) {

@@ -27,7 +27,7 @@ import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.material.EMaterialType;
@@ -35,11 +35,11 @@ import jsettlers.common.material.ESearchType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBricklayer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBricklayer;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
@@ -127,11 +127,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	@Override
 	public byte getVisibleStatus(int x, int y) {
 		return CommonConstants.FOG_OF_WAR_VISIBLE;
-	}
-
-	@Override
-	public boolean isFogOfWarVisible(int x, int y) {
-		return true;
 	}
 
 	@Override
@@ -445,7 +440,7 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 	}
 
 	@Override
-	public IPartitionSettings getPartitionSettings(int x, int y) {
+	public IPartitionData getPartitionData(int x, int y) {
 		return null;
 	}
 }

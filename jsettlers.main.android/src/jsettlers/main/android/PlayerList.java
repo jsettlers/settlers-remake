@@ -87,7 +87,7 @@ public class PlayerList extends BaseAdapter implements
 	}
 
 	@Override
-	public void listChanged(ChangingList<IMultiplayerPlayer> list) {
+	public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {

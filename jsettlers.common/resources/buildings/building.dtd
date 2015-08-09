@@ -29,6 +29,14 @@
 	TRUNK|
 	WATER|
 	WINE|
+	GEMS|
+	SULFUR|
+	RICE|
+	KEG|
+	BOX|
+	CANNON_AMMO|
+	BALLISTA_AMMO|
+	CATAPULT_AMMO|
 	WHITE_BREAD|
 	BASKET|
 	TREE|
@@ -101,7 +109,7 @@
 	true|
 	false
 )">
-<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
+<!ELEMENT building (ground+, blocked+, door, constructionStack+, requestStack*, offerStack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
 
 <!ATTLIST building
    worker CDATA #REQUIRED
@@ -141,11 +149,25 @@
 >
 
 
-<!ELEMENT stack EMPTY>
-<!ATTLIST stack
+<!ELEMENT constructionStack EMPTY>
+<!ATTLIST constructionStack
    dx CDATA #REQUIRED
    dy CDATA #REQUIRED
    buildrequired CDATA #REQUIRED
+   material %material; #REQUIRED
+>
+
+<!ELEMENT requestStack EMPTY>
+<!ATTLIST requestStack
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+   material %material; #REQUIRED
+>
+
+<!ELEMENT offerStack EMPTY>
+<!ATTLIST offerStack
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
    material %material; #REQUIRED
 >
 

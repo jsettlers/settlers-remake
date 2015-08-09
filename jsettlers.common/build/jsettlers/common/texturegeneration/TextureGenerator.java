@@ -30,6 +30,7 @@ import jsettlers.graphics.image.ImageDataPrivider;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.DatFileType;
 
 /**
  * This class lets you generate a texture that can be understood by the graphics module. It generates the .texture file.
@@ -157,7 +158,7 @@ public final class TextureGenerator {
 		// open original image files
 		if (matcher.matches()) {
 			File datfile = null; // TODO: Load dat file matcher.group(1)
-			AdvancedDatFileReader reader = new AdvancedDatFileReader(datfile);
+			AdvancedDatFileReader reader = new AdvancedDatFileReader(datfile, DatFileType.RGB555);
 			Image image = reader.getSettlers()
 					.get(Integer.parseInt(matcher.group(2)))
 					.getImageSafe(Integer.parseInt(matcher.group(3)));

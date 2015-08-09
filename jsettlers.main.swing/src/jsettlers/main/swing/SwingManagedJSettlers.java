@@ -38,6 +38,7 @@ import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.utils.MainUtils;
 import jsettlers.graphics.JSettlersScreen;
+import jsettlers.graphics.localization.AbstractLabels;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
@@ -152,7 +153,7 @@ public class SwingManagedJSettlers {
 			String localeString = argsMap.get("locale");
 			String[] localeParts = localeString.split("_");
 			if (localeParts.length == 2) {
-				Labels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
+				AbstractLabels.preferredLocale = new Locale(localeParts[0], localeParts[1]);
 			} else {
 				System.err.println("Please specify the locale with language and country. (For example: de_de or en_us)");
 			}
@@ -207,7 +208,7 @@ public class SwingManagedJSettlers {
 		if (mapfile != null || loadableReplayFile != null) {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
-				MapLoader mapLoader = MapLoader.getLoaderForFile(new DirectoryMapLister.ListedMapFile(new File(mapfile), false));
+				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile), false));
 				byte playerId = 0;
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				availablePlayers[playerId] = true;

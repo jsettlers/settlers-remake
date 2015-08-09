@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
-import jsettlers.logic.map.newGrid.GameSerializer;
-import jsettlers.logic.map.newGrid.MainGrid;
+import jsettlers.logic.map.grid.GameSerializer;
+import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IMapLister.IMapListerCallable;
 import jsettlers.logic.map.save.MapFileHeader.MapType;
 import jsettlers.logic.map.save.loader.MapLoader;
@@ -43,20 +43,21 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  */
 public class MapList implements IMapListerCallable {
-	private static class DefaultMapListFactory implements IMapListFactory {
+	public static final String MAP_EXTENSION = ".map";
+
+	private static IMapListFactory mapListFactory = new IMapListFactory() {
 		@Override
 		public MapList getMapList() {
 			return new MapList(ResourceManager.getSaveDirectory());
 		}
-	}
+	};
+	private static MapList defaultList;
 
-	public static final String MAP_EXTENSION = ".map";
-	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
 	private final IMapLister mapsDir;
 	private final IMapLister saveDir;
 
-	private final ArrayList<MapLoader> freshMaps = new ArrayList<MapLoader>();
-	private final ArrayList<MapLoader> savedMaps = new ArrayList<MapLoader>();
+	private final ChangingList<MapLoader> freshMaps = new ChangingList<>();
+	private final ChangingList<MapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
 
@@ -76,15 +77,12 @@ public class MapList implements IMapListerCallable {
 
 		mapsDir.getMaps(this);
 		saveDir.getMaps(this);
-
-		Collections.sort(freshMaps);
-		Collections.sort(savedMaps);
 	}
 
 	@Override
 	public synchronized void foundMap(IListedMap map) {
 		try {
-			MapLoader loader = MapLoader.getLoaderForFile(map);
+			MapLoader loader = MapLoader.getLoaderForListedMap(map);
 			MapType type = loader.getFileHeader().getType();
 			if (type == MapType.SAVED_SINGLE) {
 				savedMaps.add(loader);
@@ -98,7 +96,7 @@ public class MapList implements IMapListerCallable {
 		}
 	}
 
-	public synchronized ArrayList<MapLoader> getSavedMaps() {
+	public synchronized ChangingList<MapLoader> getSavedMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -106,7 +104,7 @@ public class MapList implements IMapListerCallable {
 		return savedMaps;
 	}
 
-	public synchronized ArrayList<MapLoader> getFreshMaps() {
+	public synchronized ChangingList<MapLoader> getFreshMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -124,11 +122,11 @@ public class MapList implements IMapListerCallable {
 	 */
 	public MapLoader getMapById(String id) {
 		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
-		maps.addAll(getFreshMaps());
-		maps.addAll(getSavedMaps());
+		maps.addAll(getFreshMaps().getItems());
+		maps.addAll(getSavedMaps().getItems());
 
 		for (MapLoader curr : maps) {
-			if (curr.getMapID().equals(id)) {
+			if (curr.getMapId().equals(id)) {
 				return curr;
 			}
 		}
@@ -137,8 +135,8 @@ public class MapList implements IMapListerCallable {
 
 	public MapLoader getMapByName(String mapName) {
 		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
-		maps.addAll(getFreshMaps());
-		maps.addAll(getSavedMaps());
+		maps.addAll(getFreshMaps().getItems());
+		maps.addAll(getSavedMaps().getItems());
 
 		for (MapLoader curr : maps) {
 			if (curr.getMapName().equals(mapName)) {
@@ -155,14 +153,19 @@ public class MapList implements IMapListerCallable {
 	 *            The header to use.
 	 * @param data
 	 *            The data to save.
+	 * @param out
+	 *            This parameter is optional. If it is not null, the stream is used to save the map to this location. If it is null, the map is saved
+	 *            in the default location.
 	 * @throws IOException
 	 *             If any IO error occurred.
 	 */
-	public synchronized void saveNewMap(MapFileHeader header, IMapData data) throws IOException {
-		OutputStream out = null;
+	public synchronized void saveNewMap(MapFileHeader header, IMapData data, OutputStream out) throws IOException {
 		try {
-			out = mapsDir.getOutputStream(header);
-			MapSaver.saveMap(header, data, out);
+			if (out == null) {
+				out = mapsDir.getOutputStream(header);
+			}
+			header.writeTo(out);
+			FreshMapSerializer.serialize(data, out);
 		} finally {
 			if (out != null) {
 				out.close();
@@ -178,8 +181,7 @@ public class MapList implements IMapListerCallable {
 	 * @param grid
 	 * @throws IOException
 	 */
-	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid)
-			throws IOException {
+	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid) throws IOException {
 		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream outStream = saveDir.getOutputStream(header);
 
@@ -196,22 +198,6 @@ public class MapList implements IMapListerCallable {
 		loadFileList();
 	}
 
-	/**
-	 * Saves a random map to the given file.
-	 * 
-	 * @param header
-	 *            The header to save
-	 * @param definition
-	 *            The random map rule text.
-	 * @throws IOException
-	 */
-	public synchronized void saveRandomMap(MapFileHeader header,
-			String definition) throws IOException {
-		OutputStream out = mapsDir.getOutputStream(header);
-		MapSaver.saveRandomMap(header, definition, out);
-		loadFileList();
-	}
-
 	public ArrayList<MapLoader> getSavedMultiplayerMaps() {
 		// TODO: save multiplayer maps, so that we can load them.
 		return null;
@@ -222,18 +208,21 @@ public class MapList implements IMapListerCallable {
 	 * 
 	 * @return
 	 */
-	public static MapList getDefaultList() {
-		return mapListFactory.getMapList();
+	public static synchronized MapList getDefaultList() {
+		if (defaultList == null) {
+			defaultList = mapListFactory.getMapList();
+		}
+		return defaultList;
 	}
 
 	public void deleteLoadableGame(MapLoader game) {
-		game.delete();
+		game.getFile().delete();
 		savedMaps.remove(game);
 		loadFileList();
 	}
 
-	public static void setDefaultList(IMapListFactory factory) {
+	public static void setDefaultListFactory(IMapListFactory factory) {
 		mapListFactory = factory;
+		defaultList = null;
 	}
-
 }

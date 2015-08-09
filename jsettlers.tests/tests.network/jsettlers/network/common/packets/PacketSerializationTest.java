@@ -140,7 +140,7 @@ public class PacketSerializationTest {
 		c2.registerListener(listener);
 		c1.sendPacket(NetworkConstants.ENetworkKey.TEST_PACKET, packet);
 
-		Thread.sleep(80);
+		Thread.sleep(150);
 
 		List<? extends Packet> bufferedPackets = listener.popBufferedPackets();
 		assertEquals(1, bufferedPackets.size());

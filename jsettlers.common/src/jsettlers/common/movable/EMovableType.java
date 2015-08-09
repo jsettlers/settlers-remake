@@ -19,9 +19,9 @@ import jsettlers.common.selectable.ESelectionType;
 
 /**
  * Defines all types of movables with the tool they need, their selection level and if they need their players ground.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public enum EMovableType {
 	BEARER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
@@ -41,6 +41,7 @@ public enum EMovableType {
 	CHARCOAL_BURNER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	WATERWORKER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 	WINEGROWER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
+	HEALER(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, true),
 
 	BRICKLAYER(EMaterialType.HAMMER, ESelectionType.PEOPLE, true),
 	DIGGER(EMaterialType.BLADE, ESelectionType.PEOPLE, true),
@@ -48,6 +49,8 @@ public enum EMovableType {
 	THIEF(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 	PIONEER(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
 	GEOLOGIST(EMaterialType.NO_MATERIAL, ESelectionType.SPECIALISTS, false),
+
+	MAGE(EMaterialType.NO_MATERIAL, ESelectionType.PEOPLE, false),
 
 	SWORDSMAN_L1(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),
 	SWORDSMAN_L2(EMaterialType.SWORD, ESelectionType.SOLDIERS, false),

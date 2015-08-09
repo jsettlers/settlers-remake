@@ -41,8 +41,8 @@ import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.save.MapDataSerializer;
-import jsettlers.logic.map.save.MapDataSerializer.IMapDataReceiver;
+import jsettlers.logic.map.save.FreshMapSerializer;
+import jsettlers.logic.map.save.FreshMapSerializer.IMapDataReceiver;
 import jsettlers.mapcreator.data.MapDataDelta.HeightChange;
 import jsettlers.mapcreator.data.MapDataDelta.LandscapeChange;
 import jsettlers.mapcreator.data.MapDataDelta.ObjectAdder;
@@ -620,7 +620,7 @@ public class MapData implements IMapData {
 
 	public static MapData deserialize(InputStream in) throws IOException {
 		MapDataReceiver receiver = new MapDataReceiver();
-		MapDataSerializer.deserialize(receiver, in);
+		FreshMapSerializer.deserialize(receiver, in);
 		return receiver.data;
 	}
 

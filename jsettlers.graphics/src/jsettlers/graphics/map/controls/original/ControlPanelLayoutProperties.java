@@ -26,52 +26,36 @@ public class ControlPanelLayoutProperties {
 
 	private static final ControlPanelLayoutProperties height480 = new ControlPanelLayoutProperties(Resolution.HEIGHT480);
 	private static final ControlPanelLayoutProperties height600 = new ControlPanelLayoutProperties(Resolution.HEIGHT600);
-	private static final ControlPanelLayoutProperties height768 = new ControlPanelLayoutProperties(Resolution.HEIGHT768);
+    private static final ControlPanelLayoutProperties height768 = new ControlPanelLayoutProperties(Resolution.HEIGHT768);
+	private static final int UI_BG_FILE = 4;
+	private static final int UI_BG_SEQINDEX_MAIN = 2;
+	private static final int UI_BG_SEQINDEX_RIGHT = 3;
 
-	public final float UI_RATIO;
-	public final float UI_CENTER_Y;
-	public final float UI_CENTER_X;
-	public final float UI_DECORATIONRIGHT;
-	public final float UI_MINIMAP_DECORATORRIGHT;
+	public final float ASPECT_RATIO;
+	public final float MAIN_PANEL_TOP;
 
-	// relative to top minimap area. This is the whole area including the right half.
-	public final float MINIMAP_WIDTH;
-	public final float MINIMAP_HEIGHT;
-	public final float MINIMAP_BOTTOM_Y;
-	public final float MINIMAP_BOTTOMLEFT_X;
+	public final MiniMapLayoutProperties miniMap;
 
-	public final float MINIMAP_BUTTON_WIDTH;
-	public final float MINIMAP_BUTTON_HEIGHT;
-
-	public final float MINIMAP_BUTTON_ABC_TOP;
-	public final float MINIMAP_BUTTON_ABC_LEFT;
-
-	public final float MINIMAP_BUTTON_SCROLL_TOP;
-	public final float MINIMAP_BUTTON_SCROLL_LEFT;
-
-	public final float MINIMAP_BUTTON_SETTLERS_TOP;
-	public final float MINIMAP_BUTTON_SETTLERS_LEFT;
-
-	public final float MINIMAP_BUTTON_BUILDINGS_TOP;
-	public final float MINIMAP_BUTTON_BUILDINGS_LEFT;
+    public final OriginalImageLink IMAGELINK_MAIN;
+    public final OriginalImageLink IMAGELINK_DECORATION_RIGHT;
 
 	// relative to main content
-	public final float UI_TABS1_TOP;
-	public final float UI_TABS1_BOTTOM;
-	public final float UI_TABS1_SIDEMARGIN;
-	public final float UI_TABS1_WIDTH;
-	public final float UI_TABS1_SPACING;
+	public final float PRIMARY_TABS_TOP;
+	public final float PRIMARY_TABS_BOTTOM;
+	public final float PRIMARY_TABS_SIDEMARGIN;
+	public final float PRIMARY_TABS_WIDTH;
+	public final float PRIMARY_TABS_SPACING;
 
-	public final float UI_TABS2_TOP;
-	public final float UI_TABS2_BOTTOM;
-	public final float UI_TABS2_SIDEMARGIN;
-	public final float UI_TABS2_WIDTH;
-	public final float UI_TABS2_SPACING;
+	public final float SECONDARY_TABS_TOP;
+	public final float SECONDARY_TABS_BOTTOM;
+	public final float SECONDARY_TABS_SIDEMARGIN;
+	public final float SECONDARY_TABS_WIDTH;
+	public final float SECONDARY_TABS_SPACING;
 
-	public final float CONTENT_LEFT;
-	public final float CONTENT_BOTTOM;
-	public final float CONTENT_RIGHT;
 	public final float CONTENT_TOP;
+	public final float CONTENT_BOTTOM;
+	public final float CONTENT_LEFT;
+	public final float CONTENT_RIGHT;
 
 	public final float SYSTEM_BUTTON_TOP;
 	public final float SYSTEM_BUTTON_BOTTOM;
@@ -83,35 +67,14 @@ public class ControlPanelLayoutProperties {
 	public final float LOWER_TABS_LEFT;
 	public final float LOWER_TABS_WIDTH;
 
-	public final OriginalImageLink UI_BG_SEQ_MAIN;
-	public final OriginalImageLink UI_BG_SEQ_MINIMAPR;
-	public final OriginalImageLink UI_BG_SEQ_MINIMAPL;
-	public final OriginalImageLink UI_BG_SEQ_RIGHT;
+    public final float RIGHT_DECORATION_WIDTH;
 
-	// Raw Image Dimensions
+	// Raw image dimensions.
 
-	// Minimap left-half graphic:
-	private final float MINIMAP_LEFT_DECORATION_WIDTH_PX;
-	private final float MINIMAP_LEFT_DECORATION_HEIGHT_PX;
-
-	private final float MINIMAP_BUTTON_WIDTH_PX;
-	private final float MINIMAP_BUTTON_HEIGHT_PX;
-
-	private final float MINIMAP_BUTTON_ABC_TOP_PX;
-	private final float MINIMAP_BUTTON_ABC_LEFT_PX;
-
-	private final float MINIMAP_BUTTON_SCROLL_TOP_PX;
-	private final float MINIMAP_BUTTON_SCROLL_LEFT_PX;
-
-	private final float MINIMAP_BUTTON_SETTLERS_TOP_PX;
-	private final float MINIMAP_BUTTON_SETTLERS_LEFT_PX;
-
-	private final float MINIMAP_BUTTON_BUILDINGS_TOP_PX;
-	private final float MINIMAP_BUTTON_BUILDINGS_LEFT_PX;
-
-	// Main sidebar panel (below minimap):
 	private final float PANEL_HEIGHT_PX;
 	private final float PANEL_WIDTH_PX;
+
+	private final float RIGHT_DECORATION_WIDTH_PX;
 
 	private final float PRIMARY_TABS_BUTTON_PLACEHOLDER_WIDTH_PX;
 	private final float PRIMARY_TABS_BUTTON_PLACEHOLDER_HEIGHT_PX;
@@ -158,26 +121,11 @@ public class ControlPanelLayoutProperties {
 	}
 
 	private ControlPanelLayoutProperties(Resolution resolution) {
-		UI_RATIO = (float) 480 / 209;
-		UI_CENTER_Y = (float) 338 / 480;
-
 		int imageSequenceNumber;
 
 		switch (resolution) {
 		case HEIGHT480:
-			MINIMAP_LEFT_DECORATION_WIDTH_PX = 136;
-			MINIMAP_LEFT_DECORATION_HEIGHT_PX = 142;
-
-			MINIMAP_BUTTON_WIDTH_PX = 18;
-			MINIMAP_BUTTON_HEIGHT_PX = 15;
-			MINIMAP_BUTTON_ABC_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 5;
-			MINIMAP_BUTTON_ABC_LEFT_PX = 5;
-			MINIMAP_BUTTON_SCROLL_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 8;
-			MINIMAP_BUTTON_SCROLL_LEFT_PX = 35;
-			MINIMAP_BUTTON_SETTLERS_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 26;
-			MINIMAP_BUTTON_SETTLERS_LEFT_PX = 26;
-			MINIMAP_BUTTON_BUILDINGS_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 45;
-			MINIMAP_BUTTON_BUILDINGS_LEFT_PX = 16;
+		    miniMap = new MiniMapLayoutProperties(Resolution.HEIGHT480);
 
 			PANEL_WIDTH_PX = 136;
 			PANEL_HEIGHT_PX = 338;
@@ -210,26 +158,12 @@ public class ControlPanelLayoutProperties {
 			LOWER_TABS_TOP_PX = 12 + LOWER_TABS_BUTTON_HEIGHT_PX;
 			LOWER_TABS_LEFT_PX = 30;
 
-			UI_CENTER_X = (float) 136 / 209;
-			UI_DECORATIONRIGHT = (float) 8 / 209 + UI_CENTER_X;
-			UI_MINIMAP_DECORATORRIGHT = 1;
+            RIGHT_DECORATION_WIDTH_PX = 8;
 
 			imageSequenceNumber = 0;
 			break;
 		case HEIGHT600:
-			MINIMAP_LEFT_DECORATION_WIDTH_PX = 176;
-			MINIMAP_LEFT_DECORATION_HEIGHT_PX = 170;
-
-			MINIMAP_BUTTON_WIDTH_PX = 24;
-			MINIMAP_BUTTON_HEIGHT_PX = 20;
-			MINIMAP_BUTTON_ABC_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 5;
-			MINIMAP_BUTTON_ABC_LEFT_PX = 5;
-			MINIMAP_BUTTON_SCROLL_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 9;
-			MINIMAP_BUTTON_SCROLL_LEFT_PX = 44;
-			MINIMAP_BUTTON_SETTLERS_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 32;
-			MINIMAP_BUTTON_SETTLERS_LEFT_PX = 32;
-			MINIMAP_BUTTON_BUILDINGS_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 55;
-			MINIMAP_BUTTON_BUILDINGS_LEFT_PX = 22;
+            miniMap = new MiniMapLayoutProperties(Resolution.HEIGHT600);
 
 			PANEL_WIDTH_PX = 176;
 			PANEL_HEIGHT_PX = 430;
@@ -264,27 +198,13 @@ public class ControlPanelLayoutProperties {
 			LOWER_TABS_TOP_PX = 7 + LOWER_TABS_BUTTON_HEIGHT_PX;
 			LOWER_TABS_LEFT_PX = 38;
 
-			UI_CENTER_X = (float) 140 / 209;
-			UI_DECORATIONRIGHT = (float) 8 / 209 + UI_CENTER_X;
-			UI_MINIMAP_DECORATORRIGHT = 0.98f;
+            RIGHT_DECORATION_WIDTH_PX = 8;
 
 			imageSequenceNumber = 1;
 			break;
 		default:
 		case HEIGHT768:
-			MINIMAP_LEFT_DECORATION_WIDTH_PX = 216;
-			MINIMAP_LEFT_DECORATION_HEIGHT_PX = 224;
-
-			MINIMAP_BUTTON_WIDTH_PX = 30;
-			MINIMAP_BUTTON_HEIGHT_PX = 25;
-			MINIMAP_BUTTON_ABC_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 8;
-			MINIMAP_BUTTON_ABC_LEFT_PX = 8;
-			MINIMAP_BUTTON_SCROLL_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 13;
-			MINIMAP_BUTTON_SCROLL_LEFT_PX = 57;
-			MINIMAP_BUTTON_SETTLERS_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 43;
-			MINIMAP_BUTTON_SETTLERS_LEFT_PX = 41;
-			MINIMAP_BUTTON_BUILDINGS_TOP_PX = MINIMAP_LEFT_DECORATION_HEIGHT_PX - 72;
-			MINIMAP_BUTTON_BUILDINGS_LEFT_PX = 25;
+            miniMap = new MiniMapLayoutProperties(Resolution.HEIGHT768);
 
 			PANEL_WIDTH_PX = 216;
 			PANEL_HEIGHT_PX = 544;
@@ -317,44 +237,31 @@ public class ControlPanelLayoutProperties {
 			LOWER_TABS_TOP_PX = 13 + LOWER_TABS_BUTTON_HEIGHT_PX;
 			LOWER_TABS_LEFT_PX = 45;
 
-			UI_CENTER_X = (float) 132 / 209;
-			UI_DECORATIONRIGHT = (float) 8 / 209 + UI_CENTER_X;
-			UI_MINIMAP_DECORATORRIGHT = 0.97f;
+            RIGHT_DECORATION_WIDTH_PX = 8;
 
 			imageSequenceNumber = 2;
 		}
 
-		MINIMAP_WIDTH = 124f / 201f;
-		MINIMAP_HEIGHT = 135f / 142f;
-		MINIMAP_BOTTOMLEFT_X = 3f / 201f;
-		MINIMAP_BOTTOM_Y = 5f / 142f;
+        float MAIN_PANEL_ASPECT_RATIO = PANEL_WIDTH_PX / PANEL_HEIGHT_PX;
+        float miniMapHeightRelativeToControlPanelWidth = 1f / miniMap.ASPECT_RATIO;
+        float mainPanelHeightRelativeToControlPanelWidth = miniMap.RIGHT_DECORATION_LEFT / MAIN_PANEL_ASPECT_RATIO;
 
-		MINIMAP_BUTTON_HEIGHT = MINIMAP_BUTTON_HEIGHT_PX / MINIMAP_LEFT_DECORATION_HEIGHT_PX;
-		MINIMAP_BUTTON_WIDTH = MINIMAP_BUTTON_WIDTH_PX / MINIMAP_LEFT_DECORATION_WIDTH_PX;
+        ASPECT_RATIO = 1f / (miniMapHeightRelativeToControlPanelWidth + mainPanelHeightRelativeToControlPanelWidth);
+        MAIN_PANEL_TOP = 1f - (miniMapHeightRelativeToControlPanelWidth / (miniMapHeightRelativeToControlPanelWidth + mainPanelHeightRelativeToControlPanelWidth));
 
-		MINIMAP_BUTTON_ABC_TOP = MINIMAP_BUTTON_ABC_TOP_PX / MINIMAP_LEFT_DECORATION_HEIGHT_PX;
-		MINIMAP_BUTTON_ABC_LEFT = MINIMAP_BUTTON_ABC_LEFT_PX / MINIMAP_LEFT_DECORATION_WIDTH_PX;
+		RIGHT_DECORATION_WIDTH = (RIGHT_DECORATION_WIDTH_PX / PANEL_WIDTH_PX) * miniMap.RIGHT_DECORATION_LEFT;
 
-		MINIMAP_BUTTON_SCROLL_TOP = MINIMAP_BUTTON_SCROLL_TOP_PX / MINIMAP_LEFT_DECORATION_HEIGHT_PX;
-		MINIMAP_BUTTON_SCROLL_LEFT = MINIMAP_BUTTON_SCROLL_LEFT_PX / MINIMAP_LEFT_DECORATION_WIDTH_PX;
+		PRIMARY_TABS_TOP = PRIMARY_TABS_TOP_PX / PANEL_HEIGHT_PX;
+		PRIMARY_TABS_BOTTOM = (PRIMARY_TABS_TOP_PX - PRIMARY_TABS_BUTTON_PLACEHOLDER_HEIGHT_PX) / PANEL_HEIGHT_PX;
+		PRIMARY_TABS_SIDEMARGIN = PRIMARY_TABS_LEFT_PX / PANEL_WIDTH_PX;
+		PRIMARY_TABS_WIDTH = PRIMARY_TABS_BUTTON_PLACEHOLDER_WIDTH_PX / PANEL_WIDTH_PX;
+		PRIMARY_TABS_SPACING = PRIMARY_TABS_INTER_BUTTON_SPACING_PX / PANEL_WIDTH_PX;
 
-		MINIMAP_BUTTON_SETTLERS_TOP = MINIMAP_BUTTON_SETTLERS_TOP_PX / MINIMAP_LEFT_DECORATION_HEIGHT_PX;
-		MINIMAP_BUTTON_SETTLERS_LEFT = MINIMAP_BUTTON_SETTLERS_LEFT_PX / MINIMAP_LEFT_DECORATION_WIDTH_PX;
-
-		MINIMAP_BUTTON_BUILDINGS_TOP = MINIMAP_BUTTON_BUILDINGS_TOP_PX / MINIMAP_LEFT_DECORATION_HEIGHT_PX;
-		MINIMAP_BUTTON_BUILDINGS_LEFT = MINIMAP_BUTTON_BUILDINGS_LEFT_PX / MINIMAP_LEFT_DECORATION_WIDTH_PX;
-
-		UI_TABS1_TOP = PRIMARY_TABS_TOP_PX / PANEL_HEIGHT_PX;
-		UI_TABS1_BOTTOM = (PRIMARY_TABS_TOP_PX - PRIMARY_TABS_BUTTON_PLACEHOLDER_HEIGHT_PX) / PANEL_HEIGHT_PX;
-		UI_TABS1_SIDEMARGIN = PRIMARY_TABS_LEFT_PX / PANEL_WIDTH_PX;
-		UI_TABS1_WIDTH = PRIMARY_TABS_BUTTON_PLACEHOLDER_WIDTH_PX / PANEL_WIDTH_PX;
-		UI_TABS1_SPACING = PRIMARY_TABS_INTER_BUTTON_SPACING_PX / PANEL_WIDTH_PX;
-
-		UI_TABS2_TOP = SECONDARY_TABS_TOP_PX / PANEL_HEIGHT_PX;
-		UI_TABS2_BOTTOM = (SECONDARY_TABS_TOP_PX - SECONDARY_TABS_BUTTON_HEIGHT_PX) / PANEL_HEIGHT_PX;
-		UI_TABS2_SIDEMARGIN = SECONDARY_TABS_LEFT_PX / PANEL_WIDTH_PX;
-		UI_TABS2_WIDTH = SECONDARY_TABS_BUTTON_WIDTH_PX / PANEL_WIDTH_PX;
-		UI_TABS2_SPACING = SECONDARY_TABS_INTER_BUTTON_SPACING_PX / PANEL_WIDTH_PX;
+		SECONDARY_TABS_TOP = SECONDARY_TABS_TOP_PX / PANEL_HEIGHT_PX;
+		SECONDARY_TABS_BOTTOM = (SECONDARY_TABS_TOP_PX - SECONDARY_TABS_BUTTON_HEIGHT_PX) / PANEL_HEIGHT_PX;
+		SECONDARY_TABS_SIDEMARGIN = SECONDARY_TABS_LEFT_PX / PANEL_WIDTH_PX;
+		SECONDARY_TABS_WIDTH = SECONDARY_TABS_BUTTON_WIDTH_PX / PANEL_WIDTH_PX;
+		SECONDARY_TABS_SPACING = SECONDARY_TABS_INTER_BUTTON_SPACING_PX / PANEL_WIDTH_PX;
 
 		CONTENT_TOP = CONTENT_PANE_TOP_PX / PANEL_HEIGHT_PX;
 		CONTENT_BOTTOM = (CONTENT_PANE_TOP_PX - CONTENT_PANE_HEIGHT_PX) / PANEL_HEIGHT_PX;
@@ -371,18 +278,7 @@ public class ControlPanelLayoutProperties {
 		LOWER_TABS_LEFT = LOWER_TABS_LEFT_PX / PANEL_WIDTH_PX;
 		LOWER_TABS_WIDTH = LOWER_TABS_BUTTON_WIDTH_PX / PANEL_WIDTH_PX;
 
-		// file
-		final int UI_BG_FILE = 4;
-
-		// sequences
-		final int UI_BG_SEQINDEX_MAIN = 2;
-		final int UI_BG_SEQINDEX_MINIMAPR = 1;
-		final int UI_BG_SEQINDEX_MINIMAPL = 0;
-		final int UI_BG_SEQINDEX_RIGHT = 3;
-
-		UI_BG_SEQ_MAIN = new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE, UI_BG_SEQINDEX_MAIN, imageSequenceNumber);
-		UI_BG_SEQ_MINIMAPR = new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE, UI_BG_SEQINDEX_MINIMAPR, imageSequenceNumber);
-		UI_BG_SEQ_MINIMAPL = new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE, UI_BG_SEQINDEX_MINIMAPL, imageSequenceNumber);
-		UI_BG_SEQ_RIGHT = new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE, UI_BG_SEQINDEX_RIGHT, imageSequenceNumber);
+		IMAGELINK_MAIN = new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE, UI_BG_SEQINDEX_MAIN, imageSequenceNumber);
+		IMAGELINK_DECORATION_RIGHT = new OriginalImageLink(EImageLinkType.SETTLER, UI_BG_FILE, UI_BG_SEQINDEX_RIGHT, imageSequenceNumber);
 	}
 }

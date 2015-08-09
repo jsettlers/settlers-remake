@@ -22,7 +22,13 @@ public class DirectImageLink extends ImageLink {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public int getImageIndex() {
+		return 0;
 	}
 }

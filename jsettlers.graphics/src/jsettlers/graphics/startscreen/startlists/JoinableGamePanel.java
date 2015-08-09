@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.Comparator;
+
 import jsettlers.common.utils.collections.ChangingList;
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IJoinableGame;
@@ -24,7 +24,7 @@ import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIListItem;
 
 public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 
@@ -45,25 +45,16 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	}
 
 	@Override
-	protected Action getSubmitAction() {
-		return new ExecutableAction() {
-			@Override
-			public void execute() {
-				IJoiningGame joiningGame =
-						connector.joinMultiplayerGame(getActiveListItem());
-				gameStarted = true;
-				contentSetable.setContent(new JoiningGamePanel(joiningGame,
-						contentSetable));
-			}
-		};
+	protected void onSubmitAction() {
+		IJoiningGame joiningGame = connector.joinMultiplayerGame(getActiveListItem());
+		gameStarted = true;
+		contentSetable.setContent(new JoiningGamePanel(joiningGame, contentSetable));
 	}
 
 	@Override
 	public void onAttach() {
 		SettingsManager sm = SettingsManager.getInstance();
-		connector =
-				screen.getMultiplayerConnector(
-						sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
+		connector = screen.getMultiplayerConnector(sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
 		super.onAttach();
 	}
 
@@ -84,5 +75,10 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	@Override
 	protected String getSubmitTextId() {
 		return "start-joinmultiplayer-start";
+	}
+
+	@Override
+	protected Comparator<? super IJoinableGame> getDefaultComparator() {
+		return IJoinableGame.MATCH_NAME_COMPARATOR;
 	}
 }

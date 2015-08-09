@@ -17,7 +17,7 @@ package jsettlers.logic.objects;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
+import jsettlers.logic.map.grid.objects.AbstractObjectsManagerObject;
 import jsettlers.network.synchronic.random.RandomSingleton;
 
 public final class RessourceSignMapObject extends AbstractObjectsManagerObject {

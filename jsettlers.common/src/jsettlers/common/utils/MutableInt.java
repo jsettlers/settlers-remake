@@ -16,4 +16,11 @@ package jsettlers.common.utils;
 
 public class MutableInt {
 	public int value;
+
+	public MutableInt() {
+	}
+
+	public MutableInt(int value) {
+		this.value = value;
+	}
 }

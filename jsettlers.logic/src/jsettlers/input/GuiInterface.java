@@ -189,6 +189,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			selectArea((SelectAreaAction) action);
 			break;
 
+		case DESELECT:
+			deselect();
+			break;
+
 		case SELECT_POINT_TYPE:
 			selectPointType((PointAction) action);
 			break;
@@ -277,7 +281,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			break;
 
 		default:
-			System.err.println("GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
+			System.out.println("WARNING: GuiInterface.action() called, but event can't be handled... (" + action.getActionType() + ")");
 		}
 	}
 
@@ -356,7 +360,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 			}
 			break;
 		default:
-			System.err.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
+			System.out.println("WARNING: can't handle convert to this movable type: " + action.getTargetType());
 			return;
 		}
 
@@ -449,6 +453,10 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 	private boolean canSelectPlayer(byte playerIdOfSelected) {
 		return MatchConstants.ENABLE_ALL_PLAYER_SELECTION || playerIdOfSelected == playerId;
+	}
+
+	private void deselect() {
+		setSelection(new SelectionSet());
 	}
 
 	private void handleSelectPointAction(PointAction action) {

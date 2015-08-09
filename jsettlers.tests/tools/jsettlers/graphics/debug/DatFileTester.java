@@ -28,7 +28,6 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ShortBuffer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
@@ -41,18 +40,19 @@ import jsettlers.graphics.image.LandscapeImage;
 import jsettlers.graphics.image.SettlerImage;
 import jsettlers.graphics.image.SingleImage;
 import jsettlers.graphics.reader.AdvancedDatFileReader;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.SequenceList;
 import jsettlers.graphics.sequence.Sequence;
 
 public class DatFileTester {
-
-	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%.7c003e01f.dat";
+	private static final DatFileType TYPE = DatFileType.RGB565;
+	private static final String FILE = "/home/michael/.jsettlers/GFX/siedler3_%" + TYPE.getFileSuffix();
 
 	private static final Color[] colors = new Color[] { Color.WHITE };
 	// private static final String FILE =
-	// "D:/Games/Siedler3/GFX/siedler3_%.7c003e01f.dat";
+	// "D:/Games/Siedler3/GFX/siedler3_%.f8007e01f.dat";
 
-	private static int datFileIndex = 18;
+	private static int datFileIndex = 2;
 
 	private AdvancedDatFileReader reader;
 
@@ -319,7 +319,7 @@ public class DatFileTester {
 	private void reloadDatFile() {
 		File file = new File(FILE.replace("%", String.format("%02d", datFileIndex)));
 
-		reader = new AdvancedDatFileReader(file);
+		reader = new AdvancedDatFileReader(file, TYPE);
 	}
 
 	protected void export() {
@@ -344,7 +344,7 @@ public class DatFileTester {
 				File file = new File(FILE.replace("%", String.format("%02d", i)));
 
 				if (file.exists()) {
-					AdvancedDatFileReader reader = new AdvancedDatFileReader(file);
+					AdvancedDatFileReader reader = new AdvancedDatFileReader(file, TYPE);
 					exportTo(new File(dir, "" + i), reader);
 				}
 			}
@@ -384,26 +384,10 @@ public class DatFileTester {
 
 	private static void export(SingleImage image, File file) {
 		// does not work if gpu does not support non-power-of-two
-		int width = image.getWidth();
-		int height = image.getHeight();
-		if (width <= 0 || height <= 0) {
+		BufferedImage rendered = image.generateBufferedImage();
+		if (rendered == null) {
 			return;
 		}
-
-		BufferedImage rendered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		ShortBuffer data = image.getData().duplicate();
-		data.rewind();
-		int[] rgbArray = new int[data.remaining()];
-		for (int i = 0; i < rgbArray.length; i++) {
-			short myColor = data.get();
-			float red = (float) ((myColor >> 11) & 0x1f) / 0x1f;
-			float green = (float) ((myColor >> 6) & 0x1f) / 0x1f;
-			float blue = (float) ((myColor >> 1) & 0x1f) / 0x1f;
-			float alpha = myColor & 0x1;
-			rgbArray[i] = Color.getARGB(red, green, blue, alpha);
-		}
-
-		rendered.setRGB(0, 0, width, height, rgbArray, 0, width);
 
 		try {
 			ImageIO.write(rendered, "png", file);
@@ -411,5 +395,4 @@ public class DatFileTester {
 			e.printStackTrace();
 		}
 	}
-
 }

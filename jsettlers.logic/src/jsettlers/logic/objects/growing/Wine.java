@@ -17,8 +17,8 @@ package jsettlers.logic.objects.growing;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.objects.IMapObjectsManagerGrid;
-import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
+import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
+import jsettlers.logic.map.grid.objects.MapObjectsManager;
 
 /**
  * This is a Corn on the map.

@@ -15,7 +15,7 @@
 package jsettlers.logic.objects.building;
 
 import jsettlers.common.mapobject.EMapObjectType;
-import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IInformable;
 

@@ -87,7 +87,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 				ByteReader reader;
 				reader = dfr.getReaderForPointer(settlers[i]);
 				DatBitmapReader.uncompressImage(reader,
-						AdvancedDatFileReader.SETTLER_TRANSLATOR, settlermeta,
+						dfr.getSettlerTranslator(), settlermeta,
 						this);
 				int settlerx = drawx - settlermeta.width;
 				int settlery = linetop;
@@ -98,7 +98,7 @@ public class MultiImageMap implements ImageArrayProvider, GLPreloadTask {
 					reader = dfr.getReaderForPointer(torsos[i]);
 					if (reader != null) {
 						DatBitmapReader.uncompressImage(reader,
-								AdvancedDatFileReader.TORSO_TRANSLATOR,
+								dfr.getTorsoTranslator(),
 								torsometa, this);
 						torsox = drawx - torsometa.width;
 						torsoy = linetop;

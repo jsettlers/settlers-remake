@@ -15,5 +15,5 @@
 package jsettlers.common.utils.collections;
 
 public interface IChangingListListener<T> {
-	void listChanged(ChangingList<T> list);
+	void listChanged(ChangingList<? extends T> list);
 }

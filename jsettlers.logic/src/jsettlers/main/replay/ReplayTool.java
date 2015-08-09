@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import jsettlers.common.utils.MutableInt;
+import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
+import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.input.tasks.EGuiAction;
 import jsettlers.input.tasks.SimpleGuiTask;
@@ -26,32 +29,64 @@ import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.main.JSettlersGame;
+import jsettlers.main.JSettlersGame.GameRunner;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.OfflineNetworkConnector;
 import jsettlers.network.client.interfaces.INetworkConnector;
 
 public class ReplayTool {
-	public static void replayAndCreateSavegame(File replayFile, int targetGameTime) throws IOException {
+
+	public static void replayAndCreateSavegame(File replayFile, int targetGameTimeMs, String newReplayFile) throws IOException {
+
 		OfflineNetworkConnector networkConnector = new OfflineNetworkConnector();
+		networkConnector.getGameClock().setPausing(true);
 		ReplayStartInformation replayStartInformation = new ReplayStartInformation();
 		JSettlersGame game = loadGameFromReplay(replayFile, networkConnector, replayStartInformation);
 		IStartingGame startingGame = game.start();
-		waitForGameStartup(startingGame);
+		IStartedGame startedGame = waitForGameStartup(startingGame);
 
 		// schedule the save task and run the game to the target game time
-		networkConnector.scheduleTaskAt(targetGameTime / NetworkConstants.Client.LOCKSTEP_PERIOD, new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
-		MatchConstants.clock.fastForwardTo(targetGameTime);
+		networkConnector.scheduleTaskAt(targetGameTimeMs / NetworkConstants.Client.LOCKSTEP_PERIOD,
+				new SimpleGuiTask(EGuiAction.QUICK_SAVE, (byte) 0));
+		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
-		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
-		createReplayOfRemainingTasks(newSavegame, replayStartInformation, "replayForSavegame.log");
+		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().getItems().get(0);
+		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
+
+		awaitShutdown(startedGame);
 	}
 
-	private static void waitForGameStartup(IStartingGame game) {
+	private static void awaitShutdown(IStartedGame startedGame) {
+		final MutableInt gameStopped = new MutableInt(0);
+
+		startedGame.setGameExitListener(new IGameExitListener() {
+			@Override
+			public void gameExited(IStartedGame game) {
+				gameStopped.value = 1;
+				synchronized (gameStopped) {
+					gameStopped.notifyAll();
+				}
+			}
+		});
+
+		((GameRunner) startedGame).stopGame();
+
+		try {
+			while (gameStopped.value == 0) {
+				synchronized (gameStopped) {
+					gameStopped.wait();
+				}
+			}
+		} catch (InterruptedException e) {
+		}
+	}
+
+	private static IStartedGame waitForGameStartup(IStartingGame game) {
 		DummyStartingGameListener startingGameListener = new DummyStartingGameListener();
 		game.setListener(startingGameListener);
-		startingGameListener.waitForGameStartup();
+		return startingGameListener.waitForGameStartup();
 	}
 
 	private static JSettlersGame loadGameFromReplay(File replayFile, INetworkConnector networkConnector, ReplayStartInformation replayStartInformation)
@@ -65,9 +100,10 @@ public class ReplayTool {
 	private static void createReplayOfRemainingTasks(MapLoader newSavegame, ReplayStartInformation replayStartInformation, String newReplayFile)
 			throws IOException {
 		System.out.println("Creating new replay file (" + newReplayFile + ")...");
+		new File(newReplayFile).getParentFile().mkdirs();
 
 		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
-				newSavegame.getMapID(), replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers());
+				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers());
 
 		DataOutputStream dos = new DataOutputStream(new FileOutputStream(newReplayFile));
 		replayInfo.serialize(dos);

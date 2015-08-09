@@ -28,8 +28,7 @@ public class LoadLocalGameFragment extends MapSelectionFragment<IMapDefinition> 
 		LayoutInflater inflater =
 				(LayoutInflater) getActivity().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-		return new LoadableMapListAdapter(inflater, getJsettlersActivity()
-				.getStartConnector().getStoredSingleplayerGames());
+		return new LoadableMapListAdapter(inflater, getJsettlersActivity().getStartConnector().getStoredSingleplayerGames());
 	}
 
 	@Override

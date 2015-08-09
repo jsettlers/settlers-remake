@@ -20,8 +20,8 @@ import jsettlers.graphics.startscreen.GenericListItem;
 import jsettlers.graphics.startscreen.interfaces.ENetworkMessage;
 import jsettlers.graphics.startscreen.interfaces.IChatMessageListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
-import jsettlers.graphics.utils.UIList;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIList;
+import jsettlers.graphics.ui.UIListItem;
 
 // TODO: List height/width for the Strings. Nice wrapping...
 public class ChatList extends UIList<String> implements IChatMessageListener {

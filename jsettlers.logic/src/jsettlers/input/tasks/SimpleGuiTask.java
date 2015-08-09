@@ -91,4 +91,9 @@ public class SimpleGuiTask extends TaskPacket {
 	public static ShortPoint2D deserializePosition(DataInputStream dis) throws IOException {
 		return new ShortPoint2D(dis.readShort(), dis.readShort());
 	}
+
+	@Override
+	public String toString() {
+		return "SimpleGuiTask: " + guiAction + " playerId: " + playerId;
+	}
 }
