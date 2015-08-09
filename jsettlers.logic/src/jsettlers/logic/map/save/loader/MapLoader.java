@@ -183,7 +183,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		return new MainGridWithUiSettings(mainGrid, playerStates);
 	}
 
-	public void delete() {
-		file.delete();
+	public IListedMap getFile() {
+		return file;
 	}
 }
