@@ -49,22 +49,14 @@ public abstract class StartListPanel<T> extends UIPanel implements
 		listBg.setBackground(LIST_BACKGROUND);
 		this.addChild(listBg, 0, .15f, 1, 1);
 
-		startbutton =
-				new LabeledButton(
-						Labels.getString(getSubmitTextId()),
-						new ExecutableAction() {
-							@Override
-							public void execute() {
-								onSubmitAction();
-							}
-						}
-				);
+		startbutton = new LabeledButton(Labels.getString(getSubmitTextId()),
+				new ExecutableAction() {
+					@Override
+					public void execute() {
+						onSubmitAction();
+					}
+				});
 		this.addChild(startbutton, .3f, 0, 1, .1f);
-
-		if (list != null) {
-			list.setListener(this);
-			listChanged(list);
-		}
 	}
 
 	protected abstract void onSubmitAction();
