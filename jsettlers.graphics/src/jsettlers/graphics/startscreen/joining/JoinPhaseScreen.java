@@ -97,10 +97,7 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 	private void addPlayerList() {
 		// TODO: Ping 2 settlers 14 0..7 => good .. bad
 		// TODO: Ready / Not ready: 2 settlers 16 0 and 1
-		multiplayerList =
-				new UIList<IMultiplayerPlayer>(connector.getPlayers()
-						.getItems(),
-						new PlayerListItemGenerator(), .1f);
+		multiplayerList = new UIList<IMultiplayerPlayer>(connector.getPlayers().getItems(), new PlayerListItemGenerator(), .1f);
 		this.addChild(multiplayerList, .0375f, 1 - .895f, .54125f, 1 - .166f);
 	}
 
@@ -144,7 +141,7 @@ public class JoinPhaseScreen extends UIPanel implements IMultiplayerListener,
 	}
 
 	@Override
-	public void listChanged(ChangingList<IMultiplayerPlayer> list) {
+	public void listChanged(ChangingList<? extends IMultiplayerPlayer> list) {
 		multiplayerList.setItems(list.getItems());
 	}
 

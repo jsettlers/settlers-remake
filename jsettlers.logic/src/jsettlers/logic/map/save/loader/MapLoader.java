@@ -51,14 +51,14 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		this.header = header;
 	}
 
-	public static MapLoader getLoaderForFile(IListedMap file) throws MapLoadException {
-		MapFileHeader header = loadHeader(file);
+	public static MapLoader getLoaderForListedMap(IListedMap listedMap) throws MapLoadException {
+		MapFileHeader header = loadHeader(listedMap);
 
 		switch (header.getType()) {
 		case NORMAL:
-			return new FreshMapLoader(file, header);
+			return new FreshMapLoader(listedMap, header);
 		case SAVED_SINGLE:
-			return new SavegameLoader(file, header);
+			return new SavegameLoader(listedMap, header);
 		default:
 			throw new MapLoadException("Unkown EMapType: " + header.getType());
 		}

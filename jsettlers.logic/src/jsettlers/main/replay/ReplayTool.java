@@ -52,7 +52,7 @@ public class ReplayTool {
 		MatchConstants.clock.fastForwardTo(targetGameTimeMs);
 
 		// create a replay basing on the savegame and containing the remaining tasks.
-		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().get(0);
+		MapLoader newSavegame = MapList.getDefaultList().getSavedMaps().getItems().get(0);
 		createReplayOfRemainingTasks(newSavegame, replayStartInformation, newReplayFile);
 
 		awaitShutdown(startedGame);

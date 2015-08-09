@@ -41,10 +41,10 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 
 	private final LayoutInflater inflater;
 	private final Handler handler;
-	private final ChangingList<T> baseList;
+	private final ChangingList<? extends T> baseList;
 	private List<? extends T> maps = Collections.emptyList();;
 
-	public MapListAdapter(LayoutInflater inflater, ChangingList<T> baseList) {
+	public MapListAdapter(LayoutInflater inflater, ChangingList<? extends T> baseList) {
 		this.inflater = inflater;
 		this.baseList = baseList;
 		handler = new Handler();
@@ -113,7 +113,7 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 	protected abstract String getDescriptionString(T item);
 
 	@Override
-	public void listChanged(ChangingList<T> list) {
+	public void listChanged(ChangingList<? extends T> list) {
 		final List<? extends T> newList = list.getItems();
 		handler.post(new Runnable() {
 			@Override

@@ -31,28 +31,28 @@ public interface IStartScreen {
 	 * 
 	 * @return The list of installed and therefore startable maps.
 	 */
-	ChangingList<IMapDefinition> getSingleplayerMaps();
+	ChangingList<? extends IMapDefinition> getSingleplayerMaps();
 
 	/**
 	 * Gets a list of games that were saved in singleplayer mode.
 	 * 
 	 * @return The list.
 	 */
-	ChangingList<IMapDefinition> getStoredSingleplayerGames();
+	ChangingList<? extends IMapDefinition> getStoredSingleplayerGames();
 
 	/**
 	 * Gets the maps for which a new multiplayer game can be started.
 	 * 
 	 * @return The list of maps.
 	 */
-	ChangingList<IMapDefinition> getMultiplayerMaps();
+	ChangingList<? extends IMapDefinition> getMultiplayerMaps();
 
 	/**
 	 * Gets a list of saved multiplayer games which we can restore.
 	 * 
 	 * @return
 	 */
-	ChangingList<IMapDefinition> getRestorableMultiplayerGames();
+	ChangingList<? extends IMapDefinition> getRestorableMultiplayerGames();
 
 	/**
 	 * TODO: Add map settings.

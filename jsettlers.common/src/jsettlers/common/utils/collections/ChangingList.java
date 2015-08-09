@@ -15,6 +15,7 @@
 package jsettlers.common.utils.collections;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,22 +27,22 @@ import java.util.List;
  */
 public class ChangingList<T> {
 
-	private List<? extends T> items;
-	private IChangingListListener<T> listener;
+	private List<T> items;
+	private IChangingListListener<? super T> listener;
 
 	public ChangingList() {
-		this(Collections.<T> emptyList());
+		this.items = new LinkedList<>();
 	}
 
-	public ChangingList(List<? extends T> items) {
-		setList(items);
+	public ChangingList(List<T> items) {
+		this.items = items;
 	}
 
-	public synchronized void setListener(IChangingListListener<T> listener) {
+	public synchronized void setListener(IChangingListListener<? super T> listener) {
 		this.listener = listener;
 	}
 
-	public List<? extends T> getItems() {
+	public List<T> getItems() {
 		return items;
 	}
 
@@ -50,18 +51,39 @@ public class ChangingList<T> {
 		items = Collections.emptyList();
 	}
 
-	public void setList(List<? extends T> items) {
+	public void setList(List<T> items) {
 		if (items == null) {
 			throw new NullPointerException();
 		}
 		this.items = items;
-		informListener();
+		notifyListener();
 	}
 
-	private synchronized void informListener() {
+	private synchronized void notifyListener() {
 		if (listener != null) {
 			listener.listChanged(this);
 		}
 	}
 
+	public void clear() {
+		if (items != null) {
+			items.clear();
+			notifyListener();
+		}
+	}
+
+	public void add(T item) {
+		items.add(item);
+		notifyListener();
+	}
+
+	public void remove(T item) {
+		items.remove(item);
+		notifyListener();
+	}
+
+	@Override
+	public String toString() {
+		return items == null ? "[]" : items.toString();
+	}
 }

@@ -38,22 +38,22 @@ public class StartScreenConnector implements IStartScreen {
 	}
 
 	@Override
-	public ChangingList<IMapDefinition> getSingleplayerMaps() {
-		return new ChangingList<IMapDefinition>(mapList.getFreshMaps());
+	public ChangingList<? extends IMapDefinition> getSingleplayerMaps() {
+		return mapList.getFreshMaps();
 	}
 
 	@Override
-	public ChangingList<IMapDefinition> getStoredSingleplayerGames() {
-		return new ChangingList<IMapDefinition>(mapList.getSavedMaps());
+	public ChangingList<? extends IMapDefinition> getStoredSingleplayerGames() {
+		return mapList.getSavedMaps();
 	}
 
 	@Override
-	public ChangingList<IMapDefinition> getMultiplayerMaps() {
+	public ChangingList<? extends IMapDefinition> getMultiplayerMaps() {
 		return getSingleplayerMaps();
 	}
 
 	@Override
-	public ChangingList<IMapDefinition> getRestorableMultiplayerGames() {
+	public ChangingList<? extends IMapDefinition> getRestorableMultiplayerGames() {
 		return getStoredSingleplayerGames();
 	}
 

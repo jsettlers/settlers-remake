@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
+import jsettlers.common.utils.collections.ChangingList;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
@@ -43,20 +43,21 @@ import jsettlers.logic.timer.RescheduleTimer;
  * @author Andreas Eberle
  */
 public class MapList implements IMapListerCallable {
-	private static class DefaultMapListFactory implements IMapListFactory {
+	public static final String MAP_EXTENSION = ".map";
+
+	private static IMapListFactory mapListFactory = new IMapListFactory() {
 		@Override
 		public MapList getMapList() {
 			return new MapList(ResourceManager.getSaveDirectory());
 		}
-	}
+	};
+	private static MapList defaultList;
 
-	public static final String MAP_EXTENSION = ".map";
-	private static IMapListFactory mapListFactory = new DefaultMapListFactory();
 	private final IMapLister mapsDir;
 	private final IMapLister saveDir;
 
-	private final ArrayList<MapLoader> freshMaps = new ArrayList<MapLoader>();
-	private final ArrayList<MapLoader> savedMaps = new ArrayList<MapLoader>();
+	private final ChangingList<MapLoader> freshMaps = new ChangingList<>();
+	private final ChangingList<MapLoader> savedMaps = new ChangingList<>();
 
 	private boolean fileListLoaded = false;
 
@@ -76,15 +77,12 @@ public class MapList implements IMapListerCallable {
 
 		mapsDir.getMaps(this);
 		saveDir.getMaps(this);
-
-		Collections.sort(freshMaps);
-		Collections.sort(savedMaps);
 	}
 
 	@Override
 	public synchronized void foundMap(IListedMap map) {
 		try {
-			MapLoader loader = MapLoader.getLoaderForFile(map);
+			MapLoader loader = MapLoader.getLoaderForListedMap(map);
 			MapType type = loader.getFileHeader().getType();
 			if (type == MapType.SAVED_SINGLE) {
 				savedMaps.add(loader);
@@ -98,7 +96,7 @@ public class MapList implements IMapListerCallable {
 		}
 	}
 
-	public synchronized ArrayList<MapLoader> getSavedMaps() {
+	public synchronized ChangingList<MapLoader> getSavedMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -106,7 +104,7 @@ public class MapList implements IMapListerCallable {
 		return savedMaps;
 	}
 
-	public synchronized ArrayList<MapLoader> getFreshMaps() {
+	public synchronized ChangingList<MapLoader> getFreshMaps() {
 		if (!fileListLoaded) {
 			loadFileList();
 			fileListLoaded = true;
@@ -124,8 +122,8 @@ public class MapList implements IMapListerCallable {
 	 */
 	public MapLoader getMapById(String id) {
 		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
-		maps.addAll(getFreshMaps());
-		maps.addAll(getSavedMaps());
+		maps.addAll(getFreshMaps().getItems());
+		maps.addAll(getSavedMaps().getItems());
 
 		for (MapLoader curr : maps) {
 			if (curr.getMapId().equals(id)) {
@@ -137,8 +135,8 @@ public class MapList implements IMapListerCallable {
 
 	public MapLoader getMapByName(String mapName) {
 		ArrayList<MapLoader> maps = new ArrayList<MapLoader>();
-		maps.addAll(getFreshMaps());
-		maps.addAll(getSavedMaps());
+		maps.addAll(getFreshMaps().getItems());
+		maps.addAll(getSavedMaps().getItems());
 
 		for (MapLoader curr : maps) {
 			if (curr.getMapName().equals(mapName)) {
@@ -210,8 +208,11 @@ public class MapList implements IMapListerCallable {
 	 * 
 	 * @return
 	 */
-	public static MapList getDefaultList() {
-		return mapListFactory.getMapList();
+	public static synchronized MapList getDefaultList() {
+		if (defaultList == null) {
+			defaultList = mapListFactory.getMapList();
+		}
+		return defaultList;
 	}
 
 	public void deleteLoadableGame(MapLoader game) {
@@ -220,8 +221,7 @@ public class MapList implements IMapListerCallable {
 		loadFileList();
 	}
 
-	public static void setDefaultList(IMapListFactory factory) {
+	public static void setDefaultListFactory(IMapListFactory factory) {
 		mapListFactory = factory;
 	}
-
 }

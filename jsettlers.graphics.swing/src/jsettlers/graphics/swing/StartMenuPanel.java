@@ -245,7 +245,7 @@ public class StartMenuPanel extends JPanel {
 
 	}
 
-	protected ListModel<IMapDefinition> generateModel(ChangingList<IMapDefinition> maps) {
+	protected ListModel<IMapDefinition> generateModel(ChangingList<? extends IMapDefinition> maps) {
 		DefaultListModel<IMapDefinition> model = new DefaultListModel<IMapDefinition>();
 		for (IMapDefinition curr : maps.getItems())
 			model.addElement(curr);

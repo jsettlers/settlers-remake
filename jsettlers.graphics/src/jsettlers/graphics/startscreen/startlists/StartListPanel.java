@@ -37,11 +37,11 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	// private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
 	private static final ImageLink LIST_BACKGROUND = null;
-	private final ChangingList<T> list;
+	private final ChangingList<? extends T> list;
 	private final UIList<T> uiList;
 	private final LabeledButton startbutton;
 
-	public StartListPanel(ChangingList<T> list) {
+	public StartListPanel(ChangingList<? extends T> list) {
 		this.list = list;
 		uiList = new UIList<T>(Collections.<T> emptyList(), this, .1f);
 		UIPanel listBg = new UIPanel();
@@ -76,20 +76,20 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	}
 
 	@Override
-	public void listChanged(ChangingList<T> list) {
+	public void listChanged(ChangingList<? extends T> list) {
 		List<? extends T> items = list.getItems();
 		startbutton.setEnabled(items.size() > 0);
 		uiList.setItems(items);
 	}
 
-	protected ChangingList<T> getList() {
+	protected ChangingList<? extends T> getList() {
 		return list;
 	}
 
 	@Override
 	public void onAttach() {
 		super.onAttach();
-		ChangingList<T> list = getList();
+		ChangingList<? extends T> list = getList();
 		list.setListener(this);
 		listChanged(list);
 	}

@@ -24,7 +24,7 @@ public class MapDefinitionListAdapter<T extends IMapDefinition> extends MapListA
 
 	private final List<? extends T> maps;
 
-	public MapDefinitionListAdapter(LayoutInflater inflater, ChangingList<T> changingList) {
+	public MapDefinitionListAdapter(LayoutInflater inflater, ChangingList<? extends T> changingList) {
 		super(inflater, changingList);
 		this.maps = changingList.getItems();
 	}

@@ -20,7 +20,7 @@ import android.view.LayoutInflater;
 
 public class LoadableMapListAdapter extends MapListAdapter<IMapDefinition> {
 
-	public LoadableMapListAdapter(LayoutInflater inflater, ChangingList<IMapDefinition> baseList) {
+	public LoadableMapListAdapter(LayoutInflater inflater, ChangingList<? extends IMapDefinition> baseList) {
 		super(inflater, baseList);
 	}
 
