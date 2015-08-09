@@ -35,7 +35,7 @@ import jsettlers.graphics.ui.UIPanel;
 public abstract class StartListPanel<T> extends UIPanel implements
 		IChangingListListener<T>, ListItemGenerator<T> {
 
-	//private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
+	// private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
 	private static final ImageLink LIST_BACKGROUND = null;
 	private final ChangingList<T> list;
 	private final UIList<T> uiList;
@@ -53,6 +53,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 				new LabeledButton(
 						Labels.getString(getSubmitTextId()),
 						new ExecutableAction() {
+							@Override
 							public void execute() {
 								onSubmitAction();
 							}
@@ -60,10 +61,10 @@ public abstract class StartListPanel<T> extends UIPanel implements
 				);
 		this.addChild(startbutton, .3f, 0, 1, .1f);
 
-        if (list != null) {
-            list.setListener(this);
-            listChanged(list);
-        }
+		if (list != null) {
+			list.setListener(this);
+			listChanged(list);
+		}
 	}
 
 	protected abstract void onSubmitAction();
@@ -77,7 +78,7 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	@Override
 	public void listChanged(ChangingList<T> list) {
 		List<? extends T> items = list.getItems();
-		startbutton.setEnabled( items.size() > 0 );
+		startbutton.setEnabled(items.size() > 0);
 		uiList.setItems(items);
 	}
 
@@ -87,9 +88,13 @@ public abstract class StartListPanel<T> extends UIPanel implements
 
 	@Override
 	public void onAttach() {
+		ChangingList<T> list = getList();
+		list.setListener(this);
+		listChanged(list);
 	}
 
 	@Override
 	public void onDetach() {
-	};
+		getList().setListener(null);
+	}
 }

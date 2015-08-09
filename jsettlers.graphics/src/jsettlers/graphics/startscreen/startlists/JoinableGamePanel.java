@@ -52,9 +52,7 @@ public class JoinableGamePanel extends StartListPanel<IJoinableGame> {
 	@Override
 	public void onAttach() {
 		SettingsManager sm = SettingsManager.getInstance();
-		connector =
-				screen.getMultiplayerConnector(
-						sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
+		connector = screen.getMultiplayerConnector(sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer());
 		super.onAttach();
 	}
 
