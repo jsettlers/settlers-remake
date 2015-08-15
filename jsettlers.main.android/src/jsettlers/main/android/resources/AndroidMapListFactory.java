@@ -16,10 +16,10 @@ package jsettlers.main.android.resources;
 
 import java.io.File;
 
-import android.content.res.AssetManager;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.IMapListFactory;
 import jsettlers.logic.map.save.MapList;
+import android.content.res.AssetManager;
 
 public class AndroidMapListFactory implements IMapListFactory {
 
@@ -34,8 +34,7 @@ public class AndroidMapListFactory implements IMapListFactory {
 
 	@Override
 	public MapList getMapList() {
-		return new MapList(new AndroidAssetsMapLister(manager, "maps"),
-				new DirectoryMapLister(new File(writeableDir, "save"), true));
+		return new MapList(new AndroidAssetsMapLister(manager, "maps"), new DirectoryMapLister(new File(writeableDir, "save"), true));
 	}
 
 }

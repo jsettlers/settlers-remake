@@ -21,7 +21,7 @@ import jsettlers.graphics.ui.UIListItem;
 public class JoinableGameItem extends GenericListItem implements UIListItem {
 
 	public JoinableGameItem(IJoinableGame item) {
-		super(item.getMap().getName(), item.getId());
+		super(item.getMap().getMapName(), item.getId());
 	}
 
 }

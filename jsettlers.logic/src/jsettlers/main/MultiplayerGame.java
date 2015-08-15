@@ -81,7 +81,7 @@ public class MultiplayerGame {
 				networkClient = networkClientFactory.getNetworkClient();
 
 				IMapDefinition mapDefintion = gameInfo.getMapDefinition();
-				MapInfoPacket mapInfo = new MapInfoPacket(mapDefintion.getId(), mapDefintion.getName(), "", "", mapDefintion.getMaxPlayers());
+				MapInfoPacket mapInfo = new MapInfoPacket(mapDefintion.getMapId(), mapDefintion.getMapName(), "", "", mapDefintion.getMaxPlayers());
 
 				networkClient.openNewMatch(gameInfo.getMatchName(), gameInfo.getMaxPlayers(), mapInfo, 4711L, generateMatchStartedListener(),
 						generateMatchInfoUpdatedListener(), generateChatMessageReceiver());

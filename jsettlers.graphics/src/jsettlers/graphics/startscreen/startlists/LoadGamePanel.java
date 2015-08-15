@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.Comparator;
+
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
@@ -48,4 +50,8 @@ public class LoadGamePanel extends StartListPanel<IMapDefinition> {
 		return "start-loadgame-start";
 	}
 
+	@Override
+	protected Comparator<? super IMapDefinition> getDefaultComparator() {
+		return IMapDefinition.CREATION_DATE_COMPARATOR;
+	}
 }

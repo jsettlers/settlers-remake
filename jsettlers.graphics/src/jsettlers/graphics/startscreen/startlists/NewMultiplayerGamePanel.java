@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.Comparator;
+
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.SettingsManager;
 import jsettlers.graphics.startscreen.interfaces.IJoiningGame;
@@ -23,10 +25,8 @@ import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.progress.JoiningGamePanel;
 import jsettlers.graphics.ui.UIListItem;
 
-public class NewMultiplayerGamePanel extends
-		StartListPanel<IMapDefinition> {
-	private final class OpenMultiplayerGameInfo implements
-			IOpenMultiplayerGameInfo {
+public class NewMultiplayerGamePanel extends StartListPanel<IMapDefinition> {
+	private final class OpenMultiplayerGameInfo implements IOpenMultiplayerGameInfo {
 		private final IMapDefinition map;
 
 		public OpenMultiplayerGameInfo(IMapDefinition map) {
@@ -34,16 +34,13 @@ public class NewMultiplayerGamePanel extends
 		}
 
 		@Override
-		public int getMaxPlayers() {
-			// We might limit this more...
+		public int getMaxPlayers() { // We might limit this more...
 			return map.getMaxPlayers();
 		}
 
 		@Override
 		public String getMatchName() {
-			return "TODO Matchname ("
-					+ SettingsManager.getInstance().get(
-							SettingsManager.SETTING_USERNAME) + ")";
+			return "TODO Matchname (" + SettingsManager.getInstance().get(SettingsManager.SETTING_USERNAME) + ")";
 		}
 
 		@Override
@@ -55,8 +52,7 @@ public class NewMultiplayerGamePanel extends
 	private final IStartScreen screen;
 	private final IContentSetable contentSetable;
 
-	public NewMultiplayerGamePanel(IStartScreen screen,
-			IContentSetable contentSetable) {
+	public NewMultiplayerGamePanel(IStartScreen screen, IContentSetable contentSetable) {
 		super(screen.getMultiplayerMaps());
 		this.screen = screen;
 		this.contentSetable = contentSetable;
@@ -66,7 +62,8 @@ public class NewMultiplayerGamePanel extends
 	protected void onSubmitAction() {
 		IOpenMultiplayerGameInfo gameInfo = new OpenMultiplayerGameInfo(getActiveListItem());
 		SettingsManager sm = SettingsManager.getInstance();
-		IJoiningGame joiningGame = screen.getMultiplayerConnector(sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer()).openNewMultiplayerGame(gameInfo);
+		IJoiningGame joiningGame = screen.getMultiplayerConnector(sm.get(SettingsManager.SETTING_SERVER), sm.getPlayer()).openNewMultiplayerGame(
+				gameInfo);
 		contentSetable.setContent(new JoiningGamePanel(joiningGame, contentSetable));
 	}
 
@@ -80,4 +77,8 @@ public class NewMultiplayerGamePanel extends
 		return "start-newmultiplayer-start";
 	}
 
+	@Override
+	protected Comparator<? super IMapDefinition> getDefaultComparator() {
+		return IMapDefinition.MAP_NAME_COMPARATOR;
+	}
 }
