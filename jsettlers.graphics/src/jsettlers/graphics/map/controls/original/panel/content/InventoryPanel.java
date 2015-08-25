@@ -19,6 +19,7 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
@@ -31,15 +32,20 @@ import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
  * @author Michael Zangl
  */
 public class InventoryPanel extends AbstractContentProvider {
+	public static interface IPartitionDataLoadable {
+		void loadFromData(IPartitionData data);
+	}
+
 	/**
 	 * This label displays the number of items in the current area.
 	 * 
 	 * @author Michael Zangl
 	 *
 	 */
-	public static class InventoryCount extends Label {
+	public static class InventoryCount extends Label implements IPartitionDataLoadable {
 
 		private final EMaterialType material;
+		private boolean plural;
 
 		public InventoryCount(EMaterialType material) {
 			super("", EFontSize.NORMAL);
@@ -48,11 +54,14 @@ public class InventoryPanel extends AbstractContentProvider {
 
 		@Override
 		public String getDescription(float relativex, float relativey) {
-			return "";// Labels.getName(material); TODO
+			return Labels.getName(material, plural);
 		}
 
+		@Override
 		public void loadFromData(IPartitionData data) {
-			setText(data.getAmountOf(material) + "");
+			int amountOf = data.getAmountOf(material);
+			plural = amountOf != 1;
+			setText(amountOf + "");
 		}
 	}
 
@@ -61,9 +70,10 @@ public class InventoryPanel extends AbstractContentProvider {
 	 * 
 	 * @author Michael Zangl
 	 */
-	public static class MaterialButton extends Button {
+	public static class MaterialButton extends Button implements IPartitionDataLoadable {
 
 		private final EMaterialType material;
+		private boolean plural;
 
 		public MaterialButton(EMaterialType material) {
 			super(material.getIcon());
@@ -72,9 +82,14 @@ public class InventoryPanel extends AbstractContentProvider {
 
 		@Override
 		public String getDescription(float relativex, float relativey) {
-			return "";// Labels.getName(material); TODO
+			return Labels.getName(material, plural);
 		}
 
+		@Override
+		public void loadFromData(IPartitionData data) {
+			int amountOf = data.getAmountOf(material);
+			plural = amountOf != 1;
+		}
 	}
 
 	private UIPanel panel;
@@ -90,8 +105,8 @@ public class InventoryPanel extends AbstractContentProvider {
 		IPartitionData data = grid.getPartitionData(pos.x, pos.y);
 		// TODO: Add a data observer.
 		for (UIElement c : panel.getChildren()) {
-			if (c instanceof InventoryCount) {
-				((InventoryCount) c).loadFromData(data);
+			if (c instanceof IPartitionDataLoadable) {
+				((IPartitionDataLoadable) c).loadFromData(data);
 			}
 		}
 	}
