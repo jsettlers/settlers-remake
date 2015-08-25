@@ -75,7 +75,7 @@ public class LayoutLoader {
 				break;
 			case "alignment":
 				panelStack.getLast().addArgument(
-						new UncheckedEnumArgument(attributes, "alignment", "jsettlers.graphics.ui.Label.HorizontalAlignment"));
+						new UncheckedEnumArgument(attributes, "alignment", "jsettlers.graphics.ui.Label.EHorizontalAlignment"));
 				break;
 
 			}
