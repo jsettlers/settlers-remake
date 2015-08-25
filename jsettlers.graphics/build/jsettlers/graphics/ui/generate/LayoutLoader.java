@@ -59,7 +59,7 @@ public class LayoutLoader {
 				panelStack.getLast().addArgument(new ImageArgument(attributes));
 				break;
 			case "material":
-				panelStack.getLast().addArgument(new MaterialArgument(attributes));
+				panelStack.getLast().addArgument(new UncheckedEnumArgument(attributes, "material", "jsettlers.common.material.EMaterialType"));
 				break;
 			case "localized":
 				panelStack.getLast().addArgument(new LocalizedArgument(attributes));
@@ -69,6 +69,13 @@ public class LayoutLoader {
 				break;
 			case "null":
 				panelStack.getLast().addArgument(new NullArgument());
+				break;
+			case "font-size":
+				panelStack.getLast().addArgument(new UncheckedEnumArgument(attributes, "size", "go.graphics.text.EFontSize"));
+				break;
+			case "alignment":
+				panelStack.getLast().addArgument(
+						new UncheckedEnumArgument(attributes, "alignment", "jsettlers.graphics.ui.Label.HorizontalAlignment"));
 				break;
 
 			}

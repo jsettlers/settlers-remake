@@ -21,7 +21,7 @@ import go.graphics.text.TextDrawer;
 public class Label extends UIPanel {
 	public enum HorizontalAlignment {
 		LEFT,
-		CENTRE,
+		CENTER,
 		RIGHT,
 	}
 
@@ -31,7 +31,7 @@ public class Label extends UIPanel {
 	private double spaceWidth;
 	private double lineHeight;
 	private double lineBottom;
-	private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTRE;
+	private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTER;
 
 	public Label(String message, EFontSize size) {
 		this.size = size;
@@ -100,7 +100,7 @@ public class Label extends UIPanel {
 			left = (float) (getPosition().getMaxX() - linewidth);
 			break;
 		default:
-		case CENTRE:
+		case CENTER:
 			left = (float) (getPosition().getCenterX() - linewidth / 2);
 			break;
 		}

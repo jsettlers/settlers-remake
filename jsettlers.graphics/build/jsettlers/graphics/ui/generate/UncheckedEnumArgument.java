@@ -16,17 +16,19 @@ package jsettlers.graphics.ui.generate;
 
 import org.xml.sax.Attributes;
 
-public class MaterialArgument extends AbstractArgument {
+public class UncheckedEnumArgument extends AbstractArgument {
 
-	private String material;
+	private String constant;
+	private String className;
 
-	public MaterialArgument(Attributes attributes) {
-		material = attributes.getValue("material");
+	public UncheckedEnumArgument(Attributes attributes, String attribute, String className) {
+		this.className = className;
+		constant = attributes.getValue(attribute);
 	}
 
 	@Override
 	public String getArgumentSource() {
-		return "jsettlers.common.material.EMaterialType." + material;
+		return className + "." + constant;
 	}
 
 }
