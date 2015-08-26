@@ -30,6 +30,7 @@ import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.Label.EHorizontalAlignment;
+import jsettlers.graphics.ui.Label.EVerticalAlignment;
 import jsettlers.graphics.utils.UIUpdater.IUpdateReceiver;
 
 /**
@@ -53,13 +54,13 @@ public class BuildingButton extends Button implements IUpdateReceiver<BuildingCo
 	private float iconRight;
 	private float iconTop;
 	private float iconBottom;
-	private final Label constructedLabel = new Label("", EFontSize.SMALL, EHorizontalAlignment.RIGHT);
+	private final Label constructedLabel = new Label("", EFontSize.SMALL, EHorizontalAlignment.RIGHT, EVerticalAlignment.TOP);
 
 	public BuildingButton(EBuildingType buildingType) {
 		super(new ShowConstructionMarksAction(buildingType), null, null, Labels.getName(buildingType));
 		this.buildingType = buildingType;
 		buildingImageLink = buildingType.getGuiImage();
-		addChild(constructedLabel, 0, 0, 1, 1);
+		addChild(constructedLabel, 0.05f, 0.05f, .95f, .95f);
 	}
 
 	@Override
