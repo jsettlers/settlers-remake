@@ -57,7 +57,7 @@ import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This class can start a Thread that loads and sets up a game and wait's for its termination.
- * 
+ *
  * @author Andreas Eberle
  */
 public class JSettlersGame {
@@ -104,7 +104,7 @@ public class JSettlersGame {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param networkConnector
@@ -116,7 +116,7 @@ public class JSettlersGame {
 
 	/**
 	 * Creates a new {@link JSettlersGame} object with an {@link OfflineNetworkConnector}.
-	 * 
+	 *
 	 * @param mapCreator
 	 * @param randomSeed
 	 * @param playerId
@@ -137,7 +137,7 @@ public class JSettlersGame {
 
 	/**
 	 * Starts the game in a new thread. Returns immediately.
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized IStartingGame start() {
@@ -206,10 +206,10 @@ public class JSettlersGame {
 				waitForAllPlayersStartFinished(networkConnector);
 
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
-				connector.loadUIState(playerState.getUiState());
-
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-						this, playerId, multiplayer);
+                        this, playerId, multiplayer);
+                connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
+                                                                 // has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
 
 				gameClock.startExecution();
 				gameRunning = true;
@@ -253,7 +253,7 @@ public class JSettlersGame {
 			final String replayFilename = getLogFile(mapCreator, "_replay.log");
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
-			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapID(), playerId,
+			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapId(), playerId,
 					availablePlayers);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();

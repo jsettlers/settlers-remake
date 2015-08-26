@@ -150,7 +150,7 @@ public class MaterialPriorityContent extends AbstractContentProvider {
 						float y = pos.getY();
 						if (relativex >= x && relativex < x + RELATIVE_BUTTONWIDTH
 								&& relativey >= y
-								&& relativey < y + RELATIVE_BUTTONWIDTH) {
+								&& relativey < y + RELATIVE_BUTTONHEIGHT) {
 							return new SelectMaterialAction(EMaterialType.values[i]);
 						}
 					}

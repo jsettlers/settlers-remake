@@ -14,7 +14,9 @@
  *******************************************************************************/
 package jsettlers.main.android.maplist;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import jsettlers.common.utils.collections.ChangingList;
@@ -36,15 +38,14 @@ import android.widget.TextView;
  * 
  * @param <T>
  */
-public abstract class MapListAdapter<T> extends BaseAdapter implements
-		IChangingListListener<T> {
+public abstract class MapListAdapter<T> extends BaseAdapter implements IChangingListListener<T> {
 
 	private final LayoutInflater inflater;
 	private final Handler handler;
-	private final ChangingList<T> baseList;
+	private final ChangingList<? extends T> baseList;
 	private List<? extends T> maps = Collections.emptyList();;
 
-	public MapListAdapter(LayoutInflater inflater, ChangingList<T> baseList) {
+	public MapListAdapter(LayoutInflater inflater, ChangingList<? extends T> baseList) {
 		this.inflater = inflater;
 		this.baseList = baseList;
 		handler = new Handler();
@@ -113,8 +114,9 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 	protected abstract String getDescriptionString(T item);
 
 	@Override
-	public void listChanged(ChangingList<T> list) {
-		final List<? extends T> newList = list.getItems();
+	public void listChanged(ChangingList<? extends T> list) {
+		final List<T> newList = new ArrayList<T>(list.getItems());
+		Collections.sort(newList, getDefaultComparator());
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -123,4 +125,6 @@ public abstract class MapListAdapter<T> extends BaseAdapter implements
 			}
 		});
 	}
+
+	protected abstract Comparator<? super T> getDefaultComparator();
 }

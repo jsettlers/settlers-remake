@@ -208,7 +208,7 @@ public class SwingManagedJSettlers {
 		if (mapfile != null || loadableReplayFile != null) {
 			IStartingGame game;
 			if (loadableReplayFile == null) {
-				MapLoader mapLoader = MapLoader.getLoaderForFile(new DirectoryMapLister.ListedMapFile(new File(mapfile), false));
+				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile), false));
 				byte playerId = 0;
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				availablePlayers[playerId] = true;

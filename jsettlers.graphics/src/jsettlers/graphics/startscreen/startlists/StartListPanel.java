@@ -14,7 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import jsettlers.common.images.ImageLink;
@@ -35,13 +37,13 @@ import jsettlers.graphics.ui.UIPanel;
 public abstract class StartListPanel<T> extends UIPanel implements
 		IChangingListListener<T>, ListItemGenerator<T> {
 
-	//private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
+	// private static final ImageLink LIST_BACKGROUND = new DirectImageLink("startscreen.0");
 	private static final ImageLink LIST_BACKGROUND = null;
-	private final ChangingList<T> list;
+	private final ChangingList<? extends T> list;
 	private final UIList<T> uiList;
 	private final LabeledButton startbutton;
 
-	public StartListPanel(ChangingList<T> list) {
+	public StartListPanel(ChangingList<? extends T> list) {
 		this.list = list;
 		uiList = new UIList<T>(Collections.<T> emptyList(), this, .1f);
 		UIPanel listBg = new UIPanel();
@@ -49,21 +51,14 @@ public abstract class StartListPanel<T> extends UIPanel implements
 		listBg.setBackground(LIST_BACKGROUND);
 		this.addChild(listBg, 0, .15f, 1, 1);
 
-		startbutton =
-				new LabeledButton(
-						Labels.getString(getSubmitTextId()),
-						new ExecutableAction() {
-							public void execute() {
-								onSubmitAction();
-							}
-						}
-				);
+		startbutton = new LabeledButton(Labels.getString(getSubmitTextId()),
+				new ExecutableAction() {
+					@Override
+					public void execute() {
+						onSubmitAction();
+					}
+				});
 		this.addChild(startbutton, .3f, 0, 1, .1f);
-
-        if (list != null) {
-            list.setListener(this);
-            listChanged(list);
-        }
 	}
 
 	protected abstract void onSubmitAction();
@@ -75,21 +70,30 @@ public abstract class StartListPanel<T> extends UIPanel implements
 	}
 
 	@Override
-	public void listChanged(ChangingList<T> list) {
-		List<? extends T> items = list.getItems();
-		startbutton.setEnabled( items.size() > 0 );
+	public void listChanged(ChangingList<? extends T> list) {
+		List<T> items = new ArrayList<>(list.getItems());
+		Collections.sort(items, getDefaultComparator());
+		startbutton.setEnabled(items.size() > 0);
 		uiList.setItems(items);
 	}
 
-	protected ChangingList<T> getList() {
+	protected abstract Comparator<? super T> getDefaultComparator();
+
+	protected ChangingList<? extends T> getList() {
 		return list;
 	}
 
 	@Override
 	public void onAttach() {
+		super.onAttach();
+		ChangingList<? extends T> list = getList();
+		list.setListener(this);
+		listChanged(list);
 	}
 
 	@Override
 	public void onDetach() {
-	};
+		super.onDetach();
+		getList().removeListener(this);
+	}
 }

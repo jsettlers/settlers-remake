@@ -32,6 +32,6 @@ public class MapDefinitionListCellRenderer implements ListCellRenderer<IMapDefin
 	@Override
 	public Component getListCellRendererComponent(JList<? extends IMapDefinition> list, IMapDefinition map, int index, boolean isSelected,
 			boolean hasFocus) {
-		return new MapDefintionPanel(map.getName(), map.getDescription(), map.getCreationDate(), isSelected);
+		return new MapDefintionPanel(map.getMapName(), map.getDescription(), map.getCreationDate(), isSelected);
 	}
 }

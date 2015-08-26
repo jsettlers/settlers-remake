@@ -18,7 +18,6 @@ import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.GOEvent;
 import go.graphics.event.GOEventHandler;
-import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.GOKeyEvent;
 import go.graphics.event.GOModalEventHandler;
 import go.graphics.event.command.GOCommandEvent;
@@ -32,11 +31,13 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.shapes.IMapArea;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.map.shapes.MapShapeFilter;
+import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.position.FloatRectangle;
@@ -51,6 +52,7 @@ import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.action.PointAction;
 import jsettlers.graphics.action.ScreenChangeAction;
 import jsettlers.graphics.action.SelectAreaAction;
+import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.font.FontDrawerFactory;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.controls.IControls;
@@ -92,9 +94,8 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
  *
  * @author michael
  */
-public final class MapContent implements RegionContent, GOEventHandlerProvider,
-		IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
-	private static final int SCREEN_PADDING = 50;
+public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
+    private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final int MAX_MESSAGES = 10;
 	private static final float MESSAGE_OFFSET_X = 200;
@@ -122,6 +123,7 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	 * The controls that represent the interface.
 	 */
 	private final IControls controls;
+    private UIPoint mousePosition = new UIPoint(0, 0);
 
 	private int windowWidth = 1;
 	private int windowHeight = 1;
@@ -139,7 +141,11 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	private final ReplaceableTextDrawer textDrawer;
 	private final IStatisticable playerStatistics;
 
+    private String tooltipString = "";
+
 	private EDebugColorModes debugColorMode = EDebugColorModes.NONE;
+
+    private PlacementBuilding placementBuilding;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -409,23 +415,16 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 			}
 		}
 
-		// if (map.getConstructionPreviewBuilding() != null) {
-		// Sequence<? extends Image> sequence =
-		// ImageProvider.getInstance().getSettlerSequence(4, 5);
-		// float imageScale = Byte.MAX_VALUE / Math.max(sequence.length(), 1);
-		//
-		// ShortPoint2D underMouse =
-		// this.context.getPositionOnScreen(mousePosition.x, mousePosition.y);
-		// IHexTile tile = map.getTile(underMouse);
-		// if (tile != null) {
-		// context.beginTileContext(tile);
-		// for (ImageLink image :
-		// map.getConstructionPreviewBuilding().getImages()) {
-		// ImageProvider.getInstance().getImage(image).draw(context.getGl());
-		// }
-		// context.endTileContext();
-		// }
-		// }
+        if (placementBuilding != null) {
+            ShortPoint2D underMouse = this.context.getPositionOnScreen((float) mousePosition.getX(), (float) mousePosition.getY());
+            IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
+            while(mapObject != null){
+                if (mapObject.getObjectType() == EMapObjectType.CONSTRUCTION_MARK) {
+                    this.objectDrawer.drawMapObject(map, underMouse.x, underMouse.y, placementBuilding);
+                }
+                mapObject = mapObject.getNextObject();
+            }
+        }
 
 		if (debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
@@ -664,10 +663,6 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 		}
 	};
 
-	private String tooltipString = "";
-
-	private UIPoint mousePosition = new UIPoint(0, 0);
-
 	private void handleHover(GOHoverEvent hoverEvent) {
 		hoverEvent.setHandler(hoverHandler);
 	}
@@ -827,28 +822,42 @@ public final class MapContent implements RegionContent, GOEventHandlerProvider,
 	@Override
 	public void action(Action action) {
 		controls.action(action);
-		if (action.getActionType() == EActionType.TOGGLE_DEBUG) {
-			debugColorMode = EDebugColorModes.getNextMode(debugColorMode);
-		} else if (action.getActionType() == EActionType.TOGGLE_ORIGINAL_GRAPHICS) {
-			context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
-		} else if (action.getActionType() == EActionType.PAN_TO) {
-			PointAction panAction = (PointAction) action;
-			scrollTo(panAction.getPosition(), false);
-		} else if (action.getActionType() == EActionType.SCREEN_CHANGE) {
-			ScreenChangeAction screenAction = (ScreenChangeAction) action;
-			controls.setMapViewport(screenAction.getScreenArea());
-		} else if (action.getActionType() == EActionType.ZOOM_IN) {
-			if (context.getScreen().getZoom() < 1.1) {
-				setZoom(context.getScreen().getZoom() * 2);
-			}
-		} else if (action.getActionType() == EActionType.ZOOM_OUT) {
-			if (context.getScreen().getZoom() > 0.6) {
-				setZoom(context.getScreen().getZoom() / 2);
-			}
-		} else if (action.getActionType() == EActionType.MOVE_TO) {
-			moveToMarker = ((PointAction) action).getPosition();
-			moveToMarkerTime = System.currentTimeMillis();
-		}
+        switch (action.getActionType()) {
+        case TOGGLE_DEBUG:
+            debugColorMode = EDebugColorModes.getNextMode(debugColorMode);
+            break;
+        case TOGGLE_ORIGINAL_GRAPHICS:
+            context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
+            break;
+        case PAN_TO:
+            PointAction panAction = (PointAction) action;
+            scrollTo(panAction.getPosition(), false);
+            break;
+        case SCREEN_CHANGE:
+            ScreenChangeAction screenAction = (ScreenChangeAction) action;
+            controls.setMapViewport(screenAction.getScreenArea());
+            break;
+        case ZOOM_IN:
+            if (context.getScreen().getZoom() < 1.1) {
+                setZoom(context.getScreen().getZoom() * 2);
+            }
+            break;
+        case ZOOM_OUT:
+            if (context.getScreen().getZoom() > 0.6) {
+                setZoom(context.getScreen().getZoom() / 2);
+            }
+            break;
+        case MOVE_TO:
+            moveToMarker = ((PointAction) action).getPosition();
+            moveToMarkerTime = System.currentTimeMillis();
+            break;
+        case SHOW_CONSTRUCTION_MARK:
+            EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
+            placementBuilding = buildingType == null ? null : new PlacementBuilding(buildingType);
+            break;
+        default:
+            break;
+        }
 	}
 
 	private void setZoom(float f) {

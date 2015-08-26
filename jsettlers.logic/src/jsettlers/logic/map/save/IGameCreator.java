@@ -30,7 +30,7 @@ public interface IGameCreator {
 
 	public String getMapName();
 
-	public String getMapID();
+	public String getMapId();
 
 	public class MainGridWithUiSettings {
 		private final MainGrid mainGrid;

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
+import java.util.Comparator;
+
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
@@ -45,5 +47,10 @@ public class NewGamePanel extends StartListPanel<IMapDefinition> {
 	@Override
 	protected String getSubmitTextId() {
 		return "start-newgame-start";
+	}
+
+	@Override
+	protected Comparator<? super IMapDefinition> getDefaultComparator() {
+		return IMapDefinition.MAP_NAME_COMPARATOR;
 	}
 }

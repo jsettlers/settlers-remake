@@ -53,7 +53,7 @@ import jsettlers.graphics.sound.SoundManager;
 
 /**
  * This class handles drawing of objects on the map.
- * 
+ *
  * @author michael
  */
 public class MapObjectDrawer {
@@ -85,17 +85,17 @@ public class MapObjectDrawer {
 	 */
 	private static final float TREE_FALLING_SPEED = 1 / 0.001f;
 	/**
-	 * 
+	 *
 	 */
 	private static final int TREE_ROT_IMAGES = 4;
 
 	/**
-	 * 
+	 *
 	 */
 	private static final int TREE_SMALL = 12;
 
 	/**
-	 * 
+	 *
 	 */
 	private static final int TREE_MEDIUM = 11;
 
@@ -135,6 +135,12 @@ public class MapObjectDrawer {
 	private static final int MOVE_TO_MARKER_SEQUENCE = 0;
 	private static final int MARKER_FILE = 3;
 
+	private static final float CONSTRUCTION_MARK_Z = 0.92f;
+	private static final float PLACEMENT_BUILDING_Z = 0.91f;
+	private static final float MOVABLE_SELECTION_MARKER_Z = 0.9f;
+	private static final float BUILDING_SELECTION_MARKER_Z = 0.9f;
+	private static final float FLAG_ROOF_Z = 0.89f;
+
 	int animationStep = 0;
 
 	private ImageProvider imageProvider;
@@ -152,7 +158,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a map object at a given position.
-	 * 
+	 *
 	 * @param context
 	 *            The context.
 	 * @param map
@@ -178,6 +184,8 @@ public class MapObjectDrawer {
 		if (type == EMapObjectType.ARROW) {
 			drawArrow(context, (IArrowMapObject) object, color);
 		} else {
+		    float z;
+
 			switch (type) {
 
 			case TREE_ADULT:
@@ -291,12 +299,15 @@ public class MapObjectDrawer {
 				break;
 
 			case CONSTRUCTION_MARK:
+                z = context.getDrawBuffer().getZ();
+                context.getDrawBuffer().setZ(CONSTRUCTION_MARK_Z);
 				drawByProgress(x, y, 4, 6, object.getStateProgress(), color);
+                context.getDrawBuffer().setZ(z);
 				break;
 
 			case FLAG_ROOF:
-				float z = context.getDrawBuffer().getZ();
-				context.getDrawBuffer().setZ(.89f);
+				z = context.getDrawBuffer().getZ();
+				context.getDrawBuffer().setZ(FLAG_ROOF_Z);
 				drawPlayerableWaving(x, y, 13, 64, object, color);
 				context.getDrawBuffer().setZ(z);
 				break;
@@ -304,6 +315,13 @@ public class MapObjectDrawer {
 			case BUILDING:
 				drawBuilding(x, y, (IBuilding) object, color);
 				break;
+
+			case PLACEMENT_BUILDING:
+                z = context.getDrawBuffer().getZ();
+                context.getDrawBuffer().setZ(PLACEMENT_BUILDING_Z);
+                drawBuilding(x, y, (IBuilding) object, color);
+                context.getDrawBuffer().setZ(z);
+			    break;
 
 			case STACK_OBJECT:
 				drawStack(x, y, (IStackMapObject) object, color);
@@ -392,7 +410,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a movable
-	 * 
+	 *
 	 * @param movable
 	 *            The movable.
 	 */
@@ -510,7 +528,7 @@ public class MapObjectDrawer {
 
 	private void drawSelectionMark(float viewX, float viewY, float health) {
 		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(.9f);
+		context.getDrawBuffer().setZ(MOVABLE_SELECTION_MARKER_Z);
 
 		Image image =
 				ImageProvider.getInstance().getSettlerSequence(4, 7)
@@ -726,7 +744,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * gets a 0 or a 1.
-	 * 
+	 *
 	 * @param pos
 	 * @return
 	 */
@@ -736,7 +754,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a player border at a given position.
-	 * 
+	 *
 	 * @param player
 	 *            The player.
 	 */
@@ -772,7 +790,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a stack
-	 * 
+	 *
 	 * @param context
 	 *            The context to draw with
 	 * @param object
@@ -789,7 +807,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the stack directly to the screen.
-	 * 
+	 *
 	 * @param glDrawContext
 	 *            The gl context to draw at.
 	 * @param material
@@ -808,7 +826,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Gets the gray color for a given fog.
-	 * 
+	 *
 	 * @param fogstatus
 	 * @return
 	 */
@@ -818,7 +836,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws a given buildng to the context.
-	 * 
+	 *
 	 * @param context
 	 * @param building
 	 * @param color
@@ -893,7 +911,7 @@ public class MapObjectDrawer {
 
 	/**
 	 * Draws the occupiers of a building
-	 * 
+	 *
 	 * @param x
 	 *            The x coordinate of the building
 	 * @param y
@@ -950,7 +968,7 @@ public class MapObjectDrawer {
 
 	private void drawBuildingSelectMarker(int x, int y) {
 		float z = context.getDrawBuffer().getZ();
-		context.getDrawBuffer().setZ(.9f);
+		context.getDrawBuffer().setZ(BUILDING_SELECTION_MARKER_Z);
 
 		Image image =
 				imageProvider.getSettlerSequence(SELECTMARK_FILE,

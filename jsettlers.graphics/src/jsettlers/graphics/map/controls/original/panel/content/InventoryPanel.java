@@ -19,16 +19,33 @@ import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
 
+/**
+ * This is a statistics panel that displays the number of items the user has on the current partition.
+ * 
+ * @author Michael Zangl
+ */
 public class InventoryPanel extends AbstractContentProvider {
-	public static class InventoryCount extends Label {
+	public static interface IPartitionDataLoadable {
+		void loadFromData(IPartitionData data);
+	}
+
+	/**
+	 * This label displays the number of items in the current area.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
+	public static class InventoryCount extends Label implements IPartitionDataLoadable {
 
 		private final EMaterialType material;
+		private boolean plural;
 
 		public InventoryCount(EMaterialType material) {
 			super("", EFontSize.NORMAL);
@@ -37,17 +54,26 @@ public class InventoryPanel extends AbstractContentProvider {
 
 		@Override
 		public String getDescription(float relativex, float relativey) {
-			return "";// Labels.getName(material); TODO
+			return Labels.getName(material, plural);
 		}
 
+		@Override
 		public void loadFromData(IPartitionData data) {
-			setText(data.getAmountOf(material) + "");
+			int amountOf = data.getAmountOf(material);
+			plural = amountOf != 1;
+			setText(amountOf + "");
 		}
 	}
 
-	public static class MaterialButton extends Button {
+	/**
+	 * This is a button that displays the icon of a material.
+	 * 
+	 * @author Michael Zangl
+	 */
+	public static class MaterialButton extends Button implements IPartitionDataLoadable {
 
 		private final EMaterialType material;
+		private boolean plural;
 
 		public MaterialButton(EMaterialType material) {
 			super(material.getIcon());
@@ -56,86 +82,20 @@ public class InventoryPanel extends AbstractContentProvider {
 
 		@Override
 		public String getDescription(float relativex, float relativey) {
-			return "";// Labels.getName(material); TODO
+			return Labels.getName(material, plural);
 		}
 
+		@Override
+		public void loadFromData(IPartitionData data) {
+			int amountOf = data.getAmountOf(material);
+			plural = amountOf != 1;
+		}
 	}
-
-	// private final InventoryItem[] inventoryItems = {
-	// new InventoryItem(EMaterialType.PLANK.getImageLink()),
-	// new InventoryItem(EMaterialType.STONE.getImageLink()),
-	// new InventoryItem(EMaterialType.TRUNK.getImageLink()),
-	// new InventoryItem(EMaterialType.COAL.getImageLink()),
-	// new InventoryItem(EMaterialType.IRONORE.getImageLink()),
-	// new InventoryItem(EMaterialType.GOLDORE.getImageLink()),
-	// new InventoryItem(EMaterialType.IRON.getImageLink()),
-	// new InventoryItem(EMaterialType.HAMMER.getImageLink()),
-	// new InventoryItem(EMaterialType.BLADE.getImageLink()),
-	// new InventoryItem(EMaterialType.AXE.getImageLink()),
-	// new InventoryItem(EMaterialType.SAW.getImageLink()),
-	// new InventoryItem(EMaterialType.PICK.getImageLink()),
-	// new InventoryItem(EMaterialType.FISHINGROD.getImageLink()),
-	// new InventoryItem(EMaterialType.SCYTHE.getImageLink()),
-	// new InventoryItem(EMaterialType.SWORD.getImageLink()),
-	// new InventoryItem(EMaterialType.BOW.getImageLink()),
-	// new InventoryItem(EMaterialType.SPEAR.getImageLink()),
-	// new InventoryItem(EMaterialType.MEAD.getImageLink()),
-	// new InventoryItem(EMaterialType.FISH.getImageLink()),
-	// new InventoryItem(EMaterialType.PIG.getImageLink()),
-	// new InventoryItem(EMaterialType.MEAT.getImageLink()),
-	// new InventoryItem(EMaterialType.CROP.getImageLink()),
-	// new InventoryItem(EMaterialType.FLOUR.getImageLink()),
-	// new InventoryItem(EMaterialType.BREAD.getImageLink()),
-	// new InventoryItem(EMaterialType.WATER.getImageLink()),
-	// new InventoryItem(EMaterialType.WINE.getImageLink()),
-	// new InventoryItem(EMaterialType.HONEY.getImageLink()),
-	// new InventoryItem(EMaterialType.GOLD.getImageLink()),
-	// };
-
-	private static final float contentHeight_px = 216; // 360
-	private static final float contentWidth_px = 118; // 197
-
-	private static final float titleTop_px = 2;
-	private static final float titleTextHeight_px = 12;
-	private static final float titleTop = 1 - (titleTop_px / contentHeight_px);
-	private static final float titleTextHeight = titleTextHeight_px / contentHeight_px;
-
-	private static final float iconSize_px = 18; // 30
-	private static final float fontSize = 7f;
-	private static final float tileSpacingV = 2f;
-	private static final float tileHeight = (iconSize_px + fontSize + tileSpacingV) / contentHeight_px;
-	private static final float tileWidth = iconSize_px / contentWidth_px;
-	private static final float marginTop = 1 - (29 / contentHeight_px); // 56
-	private static final float marginLeft = 5 / contentWidth_px; // 9 <-> 8
-	private static final int COLUMNS = 6;
-	private static final int ROWS = 6;
 
 	private UIPanel panel;
 
 	public InventoryPanel() {
-
 		panel = new MaterialInventoryLayout()._root;
-		// panel = new UIPanel();
-		//
-		// panel.addChild(new Label(Labels.getString("controlpanel_title_inventory"), EFontSize.NORMAL), 0f, titleTop - titleTextHeight, 1f,
-		// titleTop);
-		//
-		// int itemIdx = 0;
-		// float top = marginTop;
-		// for (int r = 0; r < ROWS && itemIdx < inventoryItems.length; r++, top -= tileHeight) {
-		// float left = marginLeft;
-		// for (int c = 0; c < COLUMNS; c++, left += tileWidth) {
-		//
-		// if (r == 4 && 1 < c && c < 5) {
-		// continue; // Position is kept blank.
-		// }
-		//
-		// panel.addChild(inventoryItems[itemIdx], left, top - tileHeight, left + tileWidth, top);
-		// if (++itemIdx == inventoryItems.length) {
-		// break;
-		// }
-		// }
-		// }
 	}
 
 	@Override
@@ -143,9 +103,10 @@ public class InventoryPanel extends AbstractContentProvider {
 		super.showMapPosition(pos, grid);
 
 		IPartitionData data = grid.getPartitionData(pos.x, pos.y);
+		// TODO: Add a data observer.
 		for (UIElement c : panel.getChildren()) {
-			if (c instanceof InventoryCount) {
-				((InventoryCount) c).loadFromData(data);
+			if (c instanceof IPartitionDataLoadable) {
+				((IPartitionDataLoadable) c).loadFromData(data);
 			}
 		}
 	}

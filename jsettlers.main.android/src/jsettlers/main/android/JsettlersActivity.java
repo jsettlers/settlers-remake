@@ -154,7 +154,7 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 			ImageProvider.getInstance().addLookupPath(file);
 			SoundManager.addLookupPath(new File(file, "SND"));
 		}
-		MapList.setDefaultList(new AndroidMapListFactory(getAssets(), files[0]));
+		MapList.setDefaultListFactory(new AndroidMapListFactory(getAssets(), files[0]));
 
 		provider = new ResourceProvider(this, files[0]);
 		ResourceManager.setProvider(provider);

@@ -558,7 +558,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			return false;
 		} else {
 			followPath(path);
-			return true;
+			return path != null;
 		}
 	}
 

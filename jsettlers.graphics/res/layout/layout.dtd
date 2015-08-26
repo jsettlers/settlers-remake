@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!ENTITY % imagelinktype "(SETTLER| GUI| LANDSCAPE)">
-<!ELEMENT element ((image|localized|null|action|material)*, element*) >
+<!ENTITY % fontsize "(SMALL | NORMAL | HEADLINE)">
+<!ENTITY % alignment "(LEFT | CENTRE | RIGHT)">
+
+<!ELEMENT element ((image|localized|null|action|material|font-size|alignment)*, element*) >
 
 <!ATTLIST element
    x CDATA #IMPLIED
@@ -38,4 +41,14 @@
    file CDATA #IMPLIED
    sequence CDATA #IMPLIED
    image CDATA #IMPLIED
+>
+
+<!ELEMENT font-size EMPTY>
+<!ATTLIST font-size
+   size %fontsize; #REQUIRED
+>
+
+<!ELEMENT alignment EMPTY>
+<!ATTLIST alignment
+   alignment %alignment; #REQUIRED
 >
