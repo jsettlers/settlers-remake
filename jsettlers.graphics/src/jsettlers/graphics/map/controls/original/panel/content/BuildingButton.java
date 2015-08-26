@@ -15,6 +15,7 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.GLDrawContext;
+import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -24,15 +25,19 @@ import jsettlers.graphics.action.ShowConstructionMarksAction;
 import jsettlers.graphics.image.Image;
 import jsettlers.graphics.image.NullImage;
 import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.map.controls.original.panel.content.BuildingBuildContent.BuildingCountState;
 import jsettlers.graphics.map.draw.ImageProvider;
 import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.Label.EHorizontalAlignment;
+import jsettlers.graphics.utils.UIUpdater.IUpdateReceiver;
 
 /**
  * This is a button to construct a building.
  * 
- * @author michael
+ * @author Michael Zangl
  */
-public class BuildingButton extends Button {
+public class BuildingButton extends Button implements IUpdateReceiver<BuildingCountState> {
 	private static final OriginalImageLink activeMark = new OriginalImageLink(EImageLinkType.GUI, 3, 123, 0);
 	private static final float ICON_BUTTON_RATIO = 0.85f;
 
@@ -48,11 +53,13 @@ public class BuildingButton extends Button {
 	private float iconRight;
 	private float iconTop;
 	private float iconBottom;
+	private final Label constructedLabel = new Label("", EFontSize.SMALL, EHorizontalAlignment.RIGHT);
 
 	public BuildingButton(EBuildingType buildingType) {
 		super(new ShowConstructionMarksAction(buildingType), null, null, Labels.getName(buildingType));
 		this.buildingType = buildingType;
 		buildingImageLink = buildingType.getGuiImage();
+		addChild(constructedLabel, 0, 0, 1, 1);
 	}
 
 	@Override
@@ -64,6 +71,7 @@ public class BuildingButton extends Button {
 			ImageProvider.getInstance().getImage(activeMark, lastButtonWidth, lastButtonHeight)
 					.drawImageAtRect(gl, position.getMinX(), position.getMinY(), position.getMaxX(), position.getMaxY());
 		}
+		drawChildren(gl);
 	}
 
 	@Override
@@ -104,5 +112,17 @@ public class BuildingButton extends Button {
 
 	public EBuildingType getBuildingType() {
 		return buildingType;
+	}
+
+	@Override
+	public void uiUpdate(BuildingCountState data) {
+		if (data.isInPlayerPartition()) {
+			int constructed = data.getCount(getBuildingType(), false);
+			int construction = data.getCount(getBuildingType(), true);
+			String text = constructed + (construction == 0 ? "" : "\n+" + construction);
+			constructedLabel.setText(text);
+		} else {
+			constructedLabel.setText("");
+		}
 	}
 }

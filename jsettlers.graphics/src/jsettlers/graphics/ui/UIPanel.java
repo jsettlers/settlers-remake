@@ -113,6 +113,10 @@ public class UIPanel implements UIElement {
 	public void drawAt(GLDrawContext gl) {
 		drawBackground(gl);
 
+		drawChildren(gl);
+	}
+
+	protected void drawChildren(GLDrawContext gl) {
 		if (children.size() > 0) {
 			gl.glPushMatrix();
 			gl.glTranslatef(position.getMinX(), position.getMinY(), 0);
