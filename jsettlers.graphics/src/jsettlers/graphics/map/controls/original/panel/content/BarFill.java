@@ -23,14 +23,22 @@ import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ExecutableAction;
 import jsettlers.graphics.ui.UIPanel;
 
+/**
+ * This is a bar that is filled
+ * 
+ * @author michael
+ *
+ */
 public class BarFill extends UIPanel {
 
 	private static final ImageLink barImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 336, 0); // checked in the original game
 
+	private static final float EMPTY_X = .1f;
+	private static final float FULL_X = .9f;
+
 	private final UIPanel fill;
-	private final UIPanel frame;
 	private ExecutableAction listener;
-	private float value;
+	private float value = 0;
 
 	public BarFill() {
 		fill = new UIPanel() {
@@ -42,22 +50,48 @@ public class BarFill extends UIPanel {
 			}
 		};
 
-		frame = new UIPanel();
-		frame.setBackground(barImageLink);
-		addChild(frame, 0f, 0f, 1f, 1f);
+		setBackground(barImageLink);
+		setBarFill(value);
+	}
+
+	@Override
+	public void drawAt(GLDrawContext gl) {
+		gl.color(0f, 0.78f, 0.78f, 1f);
+		FloatRectangle position = getPosition();
+		float fillx = value < .01f ? 0 : value > .99f ? 1 : EMPTY_X * (1 - value) + FULL_X * value;
+		float maxx = position.getMinX() * (1 - fillx) + position.getMaxX() * fillx;
+		gl.fillQuad(position.getMinX(), position.getMinY(), maxx, position.getMaxY());
+
+		super.drawBackground(gl);
 	}
 
 	@Override
 	public Action getAction(final float relativex, float relativey) {
+		final float relativeFill = getFillForClick(relativex);
 		return new ExecutableAction() {
 			@Override
 			public void execute() {
-				setBarFill(relativex);
+				setBarFill(relativeFill);
 				if (listener != null) {
 					listener.execute();
 				}
 			}
 		};
+	}
+
+	private float getFillForClick(final float relativex) {
+		if (relativex < EMPTY_X) {
+			return 0;
+		} else if (relativex > FULL_X) {
+			return 1;
+		} else {
+			return (relativex - EMPTY_X) / (FULL_X - EMPTY_X);
+		}
+	}
+
+	@Override
+	public String getDescription(float relativex, float relativey) {
+		return Math.round(value * 100) + "%";
 	}
 
 	public void setAction(ExecutableAction action) {
@@ -87,6 +121,5 @@ public class BarFill extends UIPanel {
 		value = percentage;
 		removeAll();
 		addChild(fill, 0f, 0f, percentage, 1f);
-		addChild(frame, 0f, 0f, 1f, 1f);
 	}
 }
