@@ -18,11 +18,29 @@ import go.graphics.GLDrawContext;
 import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
+import java.util.ArrayList;
+
+/**
+ * Displays a text on the GUI.
+ * 
+ * @author Michael Zangl
+ */
 public class Label extends UIPanel {
-	public enum HorizontalAlignment {
+	public enum EHorizontalAlignment {
 		LEFT,
-		CENTRE,
+		CENTER,
 		RIGHT,
+	}
+
+	private static class Line {
+		private final String string;
+		private final double linewidth;
+
+		public Line(String string, double linewidth) {
+			this.string = string;
+			this.linewidth = linewidth;
+		}
+
 	}
 
 	private final EFontSize size;
@@ -31,29 +49,50 @@ public class Label extends UIPanel {
 	private double spaceWidth;
 	private double lineHeight;
 	private double lineBottom;
-	private HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTRE;
+	private final EHorizontalAlignment horizontalAlignment;
 
+	/**
+	 * Constructs a new Label with center alignment.
+	 * 
+	 * @param text
+	 *            The text to display
+	 * @param size
+	 *            The font size for the text.
+	 */
 	public Label(String message, EFontSize size) {
+		this(message, size, EHorizontalAlignment.CENTER);
+	}
+
+	/**
+	 * Constructs a new Label.
+	 * 
+	 * @param text
+	 *            The text to display
+	 * @param size
+	 *            The font size for the text.
+	 * @param horizontalAlignment
+	 *            The horizontal alignment of the text.
+	 */
+	public Label(String text, EFontSize size, EHorizontalAlignment horizontalAlignment) {
 		this.size = size;
-
-		setText(message);
-	}
-
-	public void setText(String text) {
-		words = text.split(" ");
-	}
-
-	public void setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
 		this.horizontalAlignment = horizontalAlignment;
+
+		setText(text);
 	}
 
-	public void setMessage(String message) {
-		words = message.split(" ");
+	/**
+	 * Sets the text to display on the label.
+	 * 
+	 * @param text
+	 *            The text to display.
+	 */
+	public synchronized void setText(String text) {
+		words = text.split(" ");
 		widths = null;
 	}
 
 	@Override
-	public void drawAt(GLDrawContext gl) {
+	public synchronized void drawAt(GLDrawContext gl) {
 		super.drawAt(gl);
 
 		TextDrawer drawer = gl.getTextDrawer(size);
@@ -70,41 +109,45 @@ public class Label extends UIPanel {
 
 		double maxwidth = getPosition().getWidth();
 
-		StringBuilder line = new StringBuilder(words[0]);
+		StringBuilder lineText = new StringBuilder(words[0]);
 		double linewidth = widths[0];
-		double y = 0;
+		ArrayList<Line> lines = new ArrayList<>();
 		for (int i = 1; i < words.length; i++) {
 			double newlinewidth = linewidth + spaceWidth + widths[i];
 			if (newlinewidth > maxwidth) {
-				drawLine(drawer, line.toString(), y, linewidth);
-				line = new StringBuilder(words[i]);
-				y += lineHeight;
+				lines.add(new Line(lineText.toString(), linewidth));
+				lineText = new StringBuilder(words[i]);
 				linewidth = widths[i];
 			} else {
-				line.append(" ");
-				line.append(words[i]);
+				lineText.append(" ");
+				lineText.append(words[i]);
 				linewidth = newlinewidth;
 			}
 		}
-		drawLine(drawer, line.toString(), y, linewidth);
+		lines.add(new Line(lineText.toString(), linewidth));
 
+		double totalHeight = lines.size() * lineHeight;
+		float y = (float) (getPosition().getCenterY() + totalHeight / 2 - lineBottom);
+		for (Line line : lines) {
+			drawLine(drawer, line, y);
+			y -= lineHeight;
+		}
 	}
 
-	private void drawLine(TextDrawer drawer, String string, double y, double linewidth) {
+	private void drawLine(TextDrawer drawer, Line line, float bottom) {
 		float left;
 		switch (horizontalAlignment) {
 		case LEFT:
 			left = getPosition().getMinX();
 			break;
 		case RIGHT:
-			left = (float) (getPosition().getMaxX() - linewidth);
+			left = (float) (getPosition().getMaxX() - line.linewidth);
 			break;
 		default:
-		case CENTRE:
-			left = (float) (getPosition().getCenterX() - linewidth / 2);
+		case CENTER:
+			left = (float) (getPosition().getCenterX() - line.linewidth / 2);
 			break;
 		}
-		float bottom = (float) (getPosition().getMaxY() - y - lineBottom);
-		drawer.drawString(left, bottom, string);
+		drawer.drawString(left, bottom, line.string);
 	}
 }

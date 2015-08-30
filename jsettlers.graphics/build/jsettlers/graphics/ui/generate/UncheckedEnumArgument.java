@@ -12,21 +12,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.map.controls.original.panel.content;
+package jsettlers.graphics.ui.generate;
 
-/**
- * TODO: move this somewhere and let logic implement it.
- * 
- * @author michael
- *
- */
-public interface IStatistics {
+import org.xml.sax.Attributes;
 
-	/**
-	 * Gets the current order of materials to be transported.
-	 * 
-	 * @return
-	 */
-	int[] getMaterialPermutation();
+public class UncheckedEnumArgument extends AbstractArgument {
+
+	private String constant;
+	private String className;
+
+	public UncheckedEnumArgument(Attributes attributes, String attribute, String className) {
+		this.className = className;
+		constant = attributes.getValue(attribute);
+	}
+
+	@Override
+	public String getArgumentSource() {
+		return className + "." + constant;
+	}
 
 }

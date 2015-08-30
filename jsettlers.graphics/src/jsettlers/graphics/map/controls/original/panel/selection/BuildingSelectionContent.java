@@ -137,7 +137,7 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 			if (workplace) {
 				text = Labels.getString("building-build-in-progress", text);
 			}
-			setMessage(text);
+			setText(text);
 		}
 	}
 

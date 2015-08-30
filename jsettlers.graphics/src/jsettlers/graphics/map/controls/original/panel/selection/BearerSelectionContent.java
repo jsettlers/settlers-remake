@@ -37,19 +37,19 @@ public class BearerSelectionContent extends AbstractSelectionContent {
 	}
 
 	private void addPioneers(float bottom) {
-		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 210, 0);
+		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 204, 0);
 
 		drawButtongroup(bottom, imageLink, EMovableType.PIONEER);
 	}
 
 	private void addThieves(float bottom) {
-		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 189, 0);
+		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 183, 0);
 
 		drawButtongroup(bottom, imageLink, EMovableType.THIEF);
 	}
 
 	private void addGeologists(float bottom) {
-		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 192, 0);
+		OriginalImageLink imageLink = new OriginalImageLink(EImageLinkType.GUI, 14, 186, 0);
 
 		drawButtongroup(bottom, imageLink, EMovableType.GEOLOGIST);
 	}
