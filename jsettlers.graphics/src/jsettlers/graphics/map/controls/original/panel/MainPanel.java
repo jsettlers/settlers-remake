@@ -112,7 +112,7 @@ public class MainPanel extends UIPanel {
 
 	private ControlPanelLayoutProperties constants;
 
-	private AbstractContentProvider activeContent = ContentType.BUILD_NORMAL;
+	private AbstractContentProvider activeContent = ContentType.EMPTY;
 
 	private AbstractContentProvider goBackContent;
 

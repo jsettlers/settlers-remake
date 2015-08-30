@@ -432,7 +432,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.selected = selected;
 	}
 
-	private final boolean isConstructionFinished() {
+	public final boolean isConstructionFinished() {
 		return state == STATE_CONSTRUCTED || state == STATE_DESTROYED;
 	}
 
@@ -680,6 +680,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public final RelativePoint[] getFlattenTiles() {
 		return type.getProtectedTiles();
+	}
+
+	public short getPartitionId() {
+		return grid.getPartitionIdAt(pos);
 	}
 
 }

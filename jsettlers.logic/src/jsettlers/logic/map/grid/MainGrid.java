@@ -1560,6 +1560,11 @@ public final class MainGrid implements Serializable {
 			MapCircleBorder border = new MapCircleBorder(baseCircle);
 			return new MapShapeFilter(border, width, height);
 		}
+
+		@Override
+		public short getPartitionIdAt(ShortPoint2D pos) {
+			return partitionsGrid.getPartitionIdAt(pos.x, pos.y);
+		}
 	}
 
 	final class GuiInputGrid implements IGuiInputGrid {
