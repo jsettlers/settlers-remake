@@ -863,7 +863,7 @@ public final class MainGrid implements Serializable {
 
 	}
 
-	final class ConstructionMarksGrid implements AbstractConstructionMarkableMap {
+	final class ConstructionMarksGrid extends AbstractConstructionMarkableMap {
 		@Override
 		public final void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {

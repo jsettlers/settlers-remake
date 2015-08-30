@@ -26,7 +26,7 @@ public class PlayProcess {
 			final File file = new File(args[0]);
 
 			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file, false)), 123456L, (byte) 0,
-					null);
+					null, null);
 			game.start();
 		} catch (Exception e) {
 			e.printStackTrace();

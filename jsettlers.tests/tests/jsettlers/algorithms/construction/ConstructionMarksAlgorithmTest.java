@@ -25,6 +25,7 @@ import jsettlers.common.buildings.BuildingAreaBitSetTest;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.buildings.EBuildingType;
 
 import org.junit.Test;
 
@@ -200,5 +201,16 @@ public class ConstructionMarksAlgorithmTest {
 		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
 			return true;
 		}
+
+		@Override
+		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
+			throw new UnsupportedOperationException("not mocked");
+		};
+
+		@Override
+		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+			throw new UnsupportedOperationException("not mocked");
+		}
+
 	}
 }

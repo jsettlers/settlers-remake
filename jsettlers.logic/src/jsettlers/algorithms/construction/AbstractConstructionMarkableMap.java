@@ -23,7 +23,7 @@ import jsettlers.common.position.RelativePoint;
  * 
  * @author Andreas Eberle
  */
-public interface AbstractConstructionMarkableMap {
+public abstract class AbstractConstructionMarkableMap {
 
 	/**
 	 * Sets or removes a construction mark
@@ -37,17 +37,17 @@ public interface AbstractConstructionMarkableMap {
 	 * @param flattenPositions
 	 *            The positions that need to be flattened to position this building. This value might be null whenever set is false.
 	 */
-	void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
+	public abstract void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
 
 	/**
 	 * @return width of map.
 	 */
-	short getWidth();
+	public abstract short getWidth();
 
 	/**
 	 * @return height of map
 	 */
-	short getHeight();
+	public abstract short getHeight();
 
 	/**
 	 * Checks if the given position is valid to build a building of given player that can stand on the given {@link ELandscapeType}s. Bounds checks
@@ -64,15 +64,15 @@ public interface AbstractConstructionMarkableMap {
 	 * @return true if a building can be positioned at the given position<br>
 	 *         false otherwise.
 	 */
-	boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId);
+	public abstract boolean canUsePositionForConstruction(int x, int y, ELandscapeType[] landscapeTypes, short partitionId);
 
-	short getPartitionIdAt(int x, int y);
+	public abstract short getPartitionIdAt(int x, int y);
 
-	boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
+	public abstract boolean canPlayerConstructOnPartition(byte playerId, short partitionId);
 
-	boolean isInBounds(int x, int y);
+	public abstract boolean isInBounds(int x, int y);
 
-	boolean canConstructAt(short x, short y, EBuildingType type, byte playerId);
+	public abstract boolean canConstructAt(short x, short y, EBuildingType type, byte playerId);
 
-	byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions);
+	public abstract byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions);
 }
