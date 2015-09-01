@@ -96,8 +96,11 @@ For IntelliJ IDEA, there is a plugin to use the Eclipse Auto Formatter configura
 These plugins can be downloaded via the "Eclipse Marketplace". 
 
 
-### Tips & Tricks
+### Tips & Tricks for Developers
 The following tips can help you getting started with developing on this project.
+
+#### Correct Working Directory
+In order to run JSettlers properly as developer, you must start the `jsettlers.main.swing.SwingManagedJSettlers` main method in the correct working directory. This working directory is the `jsettlers.main.swing` subproject folder in the GIT repository. Only when using this working directory, the required config.prp file can be found (when developing).
 
 #### Recommended Run Configurations
 To ease development, JSettlers supports several command line parameters. Amongst others, we find the following combinations helpful.
@@ -121,7 +124,7 @@ To ease development, JSettlers supports several command line parameters. Amongst
 
 #### Known Issues
 *  The project "jsettlers.main.android" displays a classpath error (red exclamation mark on the project symbol)
-  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be build. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
+  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be built. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
 
 #### Project Structure Overview
 The JSettlers code is divided into multiple projects. In the following, there main purposes will be described.
