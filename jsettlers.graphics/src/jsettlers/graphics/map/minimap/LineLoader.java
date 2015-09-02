@@ -70,8 +70,7 @@ class LineLoader implements Runnable {
 		minimap.blockUntilUpdateAllowedOrStopped();
 		for (int i = 0; i < LINES_PER_RUN; i++) {
 
-			if (buffer.length != minimap.getHeight()
-					|| buffer[currentline].length != minimap.getWidth()) {
+			if (buffer.length != minimap.getHeight() || buffer[currentline].length != minimap.getWidth()) {
 				buffer = new short[minimap.getHeight()][minimap.getWidth()];
 				for (int y = 0; y < minimap.getHeight(); y++) {
 					for (int x = 0; x < minimap.getWidth(); x++) {
@@ -119,11 +118,9 @@ class LineLoader implements Runnable {
 		int mapLineHeight = mapHeight / safeHeight + 1;
 
 		// first map tile in line
-		int mapMaxY =
-				(int) ((1 - (float) currentline / safeHeight) * mapHeight);
+		int mapMaxY = (int) ((1 - (float) currentline / safeHeight) * mapHeight);
 		// first map line not in line
-		int mapMinY =
-				(int) ((1 - (float) (currentline + 1) / safeHeight) * mapHeight);
+		int mapMinY = (int) ((1 - (float) (currentline + 1) / safeHeight) * mapHeight);
 		if (mapMinY == mapMaxY) {
 			if (mapMaxY == mapHeight) {
 				mapMinY = mapHeight - 1;
@@ -147,19 +144,12 @@ class LineLoader implements Runnable {
 			short color = TRANSPARENT;
 			byte visibleStatus = map.getVisibleStatus(centerX, centerY);
 			if (visibleStatus > CommonConstants.FOG_OF_WAR_EXPLORED) {
-				color =
-						getSettlerForArea(map, context, mapMinX, mapMinY,
-								mapMaxX, mapMaxY);
+				color = getSettlerForArea(map, context, mapMinX, mapMinY, mapMaxX, mapMaxY);
 			}
 
 			if (color == TRANSPARENT && (visibleStatus > CommonConstants.FOG_OF_WAR_EXPLORED || isFirstRun)) {
-				float basecolor =
-						((float) visibleStatus)
-								/ CommonConstants.FOG_OF_WAR_VISIBLE;
-				int dheight =
-						map.getHeightAt(centerX, mapMinY)
-								- map.getHeightAt(centerX, Math.min(mapMinY
-										+ mapLineHeight, mapHeight - 1));
+				float basecolor = ((float) visibleStatus) / CommonConstants.FOG_OF_WAR_VISIBLE;
+				int dheight = map.getHeightAt(centerX, mapMinY) - map.getHeightAt(centerX, Math.min(mapMinY + mapLineHeight, mapHeight - 1));
 				basecolor *= (1 + .15f * dheight);
 
 				if (basecolor >= 0) {
@@ -170,9 +160,7 @@ class LineLoader implements Runnable {
 			if (color != TRANSPARENT) {
 				buffer[currentline][x] = color;
 			}
-
 		}
-
 	}
 
 	private Color getLandscapeForArea(IGraphicsGrid map, MapDrawContext context, int mapminx, int mapminy, int mapmaxx, int mapmaxy) {
@@ -187,10 +175,7 @@ class LineLoader implements Runnable {
 		return landscapeType.color;
 	}
 
-	private short getSettlerForArea(
-			IGraphicsGrid map, MapDrawContext context, int mapminx, int mapminy, int mapmaxx,
-			int mapmaxy) {
-
+	private short getSettlerForArea(IGraphicsGrid map, MapDrawContext context, int mapminX, int mapminY, int mapmaxX, int mapmaxY) {
 		SettlersMode displaySettlers = this.modeSettings.getDisplaySettlers();
 		OccupiedAreaMode displayOccupied = this.modeSettings.getDisplayOccupied();
 		boolean displayBuildings = this.modeSettings.getDisplayBuildings();
@@ -199,15 +184,14 @@ class LineLoader implements Runnable {
 		short settlerColor = TRANSPARENT;
 		short buildingColor = TRANSPARENT;
 
-		for (int y = mapminy; y < mapmaxy && (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); y++) {
-			for (int x = mapminx; x < mapmaxx
+		for (int y = mapminY; y < mapmaxY && (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); y++) {
+			for (int x = mapminX; x < mapmaxX
 					&& (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); x++) {
+
 				if (displaySettlers != SettlersMode.NONE) {
 					IMovable settler = map.getMovableAt(x, y);
 					if (settler != null && (displaySettlers == SettlersMode.ALL || settler.getMovableType().isMoveToAble())) {
-						settlerColor =
-								context.getPlayerColor(settler.getPlayerId())
-										.toShortColor(1);
+						settlerColor = context.getPlayerColor(settler.getPlayerId()).toShortColor(1);
 						// don't search any more.
 						displaySettlers = SettlersMode.NONE;
 					}
@@ -220,12 +204,13 @@ class LineLoader implements Runnable {
 						occupiedColor = playerColor.toShortColor(1);
 						displayOccupied = OccupiedAreaMode.NONE;
 					}
+
 				} else if (displayOccupied == OccupiedAreaMode.AREA) {
 					byte player = map.getPlayerIdAt(x, y);
 					if (player >= 0 && !map.getLandscapeTypeAt(x, y).isBlocking) {
 						Color playerColor = context.getPlayerColor(player);
 						// Now add a landscape below that....
-						Color landscape = getLandscapeForArea(map, context, mapminx, mapminy, mapmaxx, mapmaxy);
+						Color landscape = getLandscapeForArea(map, context, mapminX, mapminY, mapmaxX, mapmaxY);
 						playerColor = landscape.toGreyScale().overlay(playerColor);
 						occupiedColor = playerColor.toShortColor(1);
 						displayOccupied = OccupiedAreaMode.NONE;
@@ -253,55 +238,11 @@ class LineLoader implements Runnable {
 	 * @param landscapeType
 	 * @return
 	 */
-	private static ELandscapeType getSimplifiedLandscapeType(ELandscapeType landscapeType)
-	{
+	private static ELandscapeType getSimplifiedLandscapeType(ELandscapeType landscapeType) {
 		switch (landscapeType) {
 		case SNOW:
 		case MOUNTAIN:
 			return ELandscapeType.GRASS;
-		case DESERT:
-			// break;
-		case DRY_GRASS:
-			// break;
-		case EARTH:
-			// break;
-		case FLATTENED:
-			// break;
-		case FLATTENED_DESERT:
-			// break;
-		case GRAVEL:
-			// break;
-		case MOOR:
-			// break;
-		case MOORBORDER:
-			// break;
-		case MOORINNER:
-			// break;
-		case MOUNTAINBORDER:
-			// break;
-		case MOUNTAINBORDEROUTER:
-			// break;
-		case RIVER1:
-			// break;
-		case RIVER2:
-			// break;
-		case RIVER3:
-			// break;
-		case RIVER4:
-			// break;
-		case SAND:
-			// break;
-		case SHARP_FLATTENED_DESERT:
-			// break;
-		case GRASS:
-		case WATER1:
-		case WATER2:
-		case WATER3:
-		case WATER4:
-		case WATER5:
-		case WATER6:
-		case WATER7:
-		case WATER8:
 		default:
 			return landscapeType;
 		}
