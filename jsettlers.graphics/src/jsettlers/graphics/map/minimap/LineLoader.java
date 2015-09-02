@@ -14,16 +14,12 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
-import java.util.Arrays;
-import java.util.List;
-
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.movable.IMovable;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.minimap.MinimapMode.OccupiedAreaMode;
@@ -36,25 +32,10 @@ class LineLoader implements Runnable {
 	private static final int X_STEP_WIDTH = 5;
 	private static final int LINES_PER_RUN = 30;
 
-	private static final List<EMovableType> soildertypes = Arrays.asList(
-			EMovableType.SWORDSMAN_L1,
-			EMovableType.SWORDSMAN_L2,
-			EMovableType.SWORDSMAN_L3,
-			EMovableType.PIKEMAN_L1,
-			EMovableType.PIKEMAN_L2,
-			EMovableType.PIKEMAN_L3,
-			EMovableType.BOWMAN_L1,
-			EMovableType.BOWMAN_L2,
-			EMovableType.BOWMAN_L3,
-			EMovableType.GEOLOGIST,
-			EMovableType.PIONEER
-			);
-
 	/**
 	 * The minimap we work for.
 	 */
 	private final Minimap minimap;
-	private boolean showBuildings = false;
 	private int currentline = 0;
 	private boolean stopped;
 
@@ -79,12 +60,6 @@ class LineLoader implements Runnable {
 			}
 		}
 	};
-
-	public void setShowBuildings(boolean showBuildings)
-	{
-		this.showBuildings = showBuildings;
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
 
 	private boolean isFirstRun;
 
@@ -229,7 +204,7 @@ class LineLoader implements Runnable {
 					&& (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); x++) {
 				if (displaySettlers != SettlersMode.NONE) {
 					IMovable settler = map.getMovableAt(x, y);
-					if (settler != null && (displaySettlers == SettlersMode.ALL || isSoilder(settler))) {
+					if (settler != null && (displaySettlers == SettlersMode.ALL || settler.getMovableType().isMoveToAble())) {
 						settlerColor =
 								context.getPlayerColor(settler.getPlayerId())
 										.toShortColor(1);
@@ -329,28 +304,6 @@ class LineLoader implements Runnable {
 		case WATER8:
 		default:
 			return landscapeType;
-		}
-	}
-
-	private boolean isSoilder(IMovable settler) {
-		return soildertypes.contains(settler.getMovableType());
-	}
-
-	private static boolean isSoldier(IMovable settler)
-	{
-		switch (settler.getMovableType()) {
-		case BOWMAN_L1:
-		case BOWMAN_L2:
-		case BOWMAN_L3:
-		case PIKEMAN_L1:
-		case PIKEMAN_L2:
-		case PIKEMAN_L3:
-		case SWORDSMAN_L1:
-		case SWORDSMAN_L2:
-		case SWORDSMAN_L3:
-			return true;
-		default:
-			return false;
 		}
 	}
 
