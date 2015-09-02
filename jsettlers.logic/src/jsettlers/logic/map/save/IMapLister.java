@@ -32,6 +32,5 @@ public interface IMapLister {
 	 * @return A output stream to a fresh generated file.
 	 * @throws IOException
 	 */
-	OutputStream getOutputStream(MapFileHeader header)
-			throws IOException;
+	OutputStream getOutputStream(MapFileHeader header) throws IOException;
 }

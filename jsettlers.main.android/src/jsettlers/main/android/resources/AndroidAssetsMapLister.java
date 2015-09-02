@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import android.content.res.AssetManager;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.IMapLister;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
+import android.content.res.AssetManager;
 
 public class AndroidAssetsMapLister implements IMapLister {
 	public static final class AndroidAssetMap implements IListedMap {
@@ -74,8 +74,7 @@ public class AndroidAssetsMapLister implements IMapLister {
 	}
 
 	@Override
-	public OutputStream getOutputStream(MapFileHeader header)
-			throws IOException {
+	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
 		throw new UnsupportedOperationException();
 	}
 }
