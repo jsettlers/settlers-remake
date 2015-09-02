@@ -59,8 +59,4 @@ public class MinimapMode {
 	public void setDisplaySettlers(SettlersMode displaySettlers) {
 		this.displaySettlers = displaySettlers;
 	}
-
-	public boolean simplifyLandscape() {
-		return displayOccupied != OccupiedAreaMode.NONE;
-	}
 }

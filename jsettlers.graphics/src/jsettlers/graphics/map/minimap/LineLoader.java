@@ -16,7 +16,6 @@ package jsettlers.graphics.map.minimap;
 
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
-import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
@@ -153,7 +152,7 @@ class LineLoader implements Runnable {
 				basecolor *= (1 + .15f * dheight);
 
 				if (basecolor >= 0) {
-					color = getLandscapeForArea(map, context, mapMinX, mapMinY, mapMaxX, mapMaxY).toShortColor(basecolor);
+					color = getColorForArea(map, mapMinX, mapMinY, mapMaxX, mapMaxY).toShortColor(basecolor);
 				}
 			}
 
@@ -163,16 +162,11 @@ class LineLoader implements Runnable {
 		}
 	}
 
-	private Color getLandscapeForArea(IGraphicsGrid map, MapDrawContext context, int mapminx, int mapminy, int mapmaxx, int mapmaxy) {
-		int centerx = (mapmaxx + mapminx) / 2;
-		int centery = (mapmaxy + mapminy) / 2;
+	private Color getColorForArea(IGraphicsGrid map, int mapminX, int mapminY, int mapmaxX, int mapmaxY) {
+		int centerx = (mapmaxX + mapminX) / 2;
+		int centery = (mapmaxY + mapminY) / 2;
 
-		ELandscapeType landscapeType = map.getLandscapeTypeAt(centerx, centery);
-
-		if (modeSettings.simplifyLandscape()) {
-			landscapeType = getSimplifiedLandscapeType(landscapeType);
-		}
-		return landscapeType.color;
+		return map.getLandscapeTypeAt(centerx, centery).color;
 	}
 
 	private short getSettlerForArea(IGraphicsGrid map, MapDrawContext context, int mapminX, int mapminY, int mapmaxX, int mapmaxY) {
@@ -210,7 +204,7 @@ class LineLoader implements Runnable {
 					if (player >= 0 && !map.getLandscapeTypeAt(x, y).isBlocking) {
 						Color playerColor = context.getPlayerColor(player);
 						// Now add a landscape below that....
-						Color landscape = getLandscapeForArea(map, context, mapminX, mapminY, mapmaxX, mapmaxY);
+						Color landscape = getColorForArea(map, mapminX, mapminY, mapmaxX, mapmaxY);
 						playerColor = landscape.toGreyScale().overlay(playerColor);
 						occupiedColor = playerColor.toShortColor(1);
 						displayOccupied = OccupiedAreaMode.NONE;
@@ -230,22 +224,6 @@ class LineLoader implements Runnable {
 			}
 		}
 		return settlerColor != TRANSPARENT ? settlerColor : buildingColor != TRANSPARENT ? buildingColor : occupiedColor;
-	}
-
-	/**
-	 * TODO this needs a more complete implementation.
-	 *
-	 * @param landscapeType
-	 * @return
-	 */
-	private static ELandscapeType getSimplifiedLandscapeType(ELandscapeType landscapeType) {
-		switch (landscapeType) {
-		case SNOW:
-		case MOUNTAIN:
-			return ELandscapeType.GRASS;
-		default:
-			return landscapeType;
-		}
 	}
 
 	/**
