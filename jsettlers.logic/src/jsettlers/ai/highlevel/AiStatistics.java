@@ -516,7 +516,7 @@ public class AiStatistics {
 	}
 
 	private boolean pointIsBlocked(short x, short y) {
-		IBuilding building = objectsGrid.getBuildingOn(x, y);
+		IBuilding building = objectsGrid.getBuildingAt(x, y);
 		if (building != null && (building.getBuildingType() == LUMBERJACK || building.getBuildingType() == FARM
 				|| building.getBuildingType() == WINEGROWER)) {
 			return true;
@@ -534,7 +534,7 @@ public class AiStatistics {
 	}
 
 	private boolean pointIsFreeForPlayer(short x, short y, byte playerId) {
-		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAreaAt(x, y) && !flagsGrid.isProtected(x, y)
+		return partitionsGrid.getPlayerIdAt(x, y) == playerId && !objectsGrid.isBuildingAt(x, y) && !flagsGrid.isProtected(x, y)
 				&& landscapeGrid.areAllNeighborsOf(x, y, 0, 2, ELandscapeType.GRASS, ELandscapeType.EARTH);
 	}
 
