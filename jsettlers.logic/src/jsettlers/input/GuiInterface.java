@@ -489,7 +489,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 				return selectableMovable;
 			} else {
 				// search buildings
-				IBuilding building = getBuildingAround(pos);
+				IBuilding building = grid.getBuildingAt(pos.x, pos.y);
 				if (building != null && canSelectPlayer(building.getPlayerId())) {
 					return building;
 				} else {
@@ -540,18 +540,6 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 		}
 
 		setSelection(new SelectionSet(selected));
-	}
-
-	private IBuilding getBuildingAround(ShortPoint2D pos) {
-		for (ShortPoint2D curr : new MapCircle(pos.x, pos.y, 5)) {
-			if (grid.isInBounds(curr)) {
-				IBuilding building = grid.getBuildingAt(curr.x, curr.y);
-				if (building != null) {
-					return building;
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

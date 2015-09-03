@@ -30,13 +30,13 @@ Furthermore, you need an up to date installation of [Java 1.7 or 1.8](http://jav
 After that, follow the detailed installation instructions for you platform.
 
 ### Windows, Linux, Mac OS
-1. Install "The Settlers III" or a demo version ([Settlers III Amazons Demo](http://www.siedler-maps.de/downloads.php?action=download&downloadid=41)) of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files.
+1. Install "The Settlers III" or a demo version ([Settlers III Amazons Demo](http://www.siedler-maps.de/downloads.php?action=download&downloadid=41)) of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files. In order to get them, you can also unzip the Amazons Demo exe file (yes: unzip the .exe) and copy the folders `Gfx` and `Snd` into an empty folder on your computer.
 2. Download the newest stable [release of JSettlers*.zip / JSettlers*.tar.bz2](https://github.com/jsettlers/settlers-remake/releases) (this also includes the MapEditor).
 3. Unpack the downloaded archive to wherever you want JSettlers' installation to be.
 5. Run the "JSettlers.jar" file.
-  1. On the first start, the game will ask you for the folder where you've installed the original Settlers III. Please select the respective folder and continue.
+  1. On the first start, the game will ask you for the folder where you've installed / unziped (see step 1) the original Settlers III. Please select the respective folder and continue.
   2. Have fun and enjoy the game!
-6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game still lacks many controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
+6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game lacks some controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
 
 ### Android
 1. Enable installation of Apps from "Unknown Sources".
@@ -96,8 +96,11 @@ For IntelliJ IDEA, there is a plugin to use the Eclipse Auto Formatter configura
 These plugins can be downloaded via the "Eclipse Marketplace". 
 
 
-### Tips & Tricks
+### Tips & Tricks for Developers
 The following tips can help you getting started with developing on this project.
+
+#### Correct Working Directory
+In order to run JSettlers properly as developer, you must start the `jsettlers.main.swing.SwingManagedJSettlers` main method in the correct working directory. This working directory is the `jsettlers.main.swing` subproject folder in the GIT repository. Only when using this working directory, the required config.prp file can be found (when developing).
 
 #### Recommended Run Configurations
 To ease development, JSettlers supports several command line parameters. Amongst others, we find the following combinations helpful.
@@ -121,7 +124,7 @@ To ease development, JSettlers supports several command line parameters. Amongst
 
 #### Known Issues
 *  The project "jsettlers.main.android" displays a classpath error (red exclamation mark on the project symbol)
-  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be build. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
+  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be built. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
 
 #### Project Structure Overview
 The JSettlers code is divided into multiple projects. In the following, there main purposes will be described.

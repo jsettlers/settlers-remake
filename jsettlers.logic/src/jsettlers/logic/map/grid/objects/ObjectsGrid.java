@@ -231,11 +231,11 @@ public final class ObjectsGrid implements Serializable {
 		}
 	}
 
-	public Building getBuildingOn(int x, int y) {
+	public Building getBuildingAt(int x, int y) {
 		return buildingsGrid[x + y * width];
 	}
 
-	public boolean isBuildingAreaAt(short x, short y) {
+	public boolean isBuildingAt(short x, short y) {
 		return buildingsGrid[x + y * width] != null;
 	}
 

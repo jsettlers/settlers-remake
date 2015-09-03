@@ -34,7 +34,7 @@ public class AndroidMapListFactory implements IMapListFactory {
 
 	@Override
 	public MapList getMapList() {
-		return new MapList(new AndroidAssetsMapLister(manager, "maps"), new DirectoryMapLister(new File(writeableDir, "save"), true));
+		return new MapList(new AndroidAssetsMapLister(manager, "maps"), new DirectoryMapLister(new File(writeableDir, "save")));
 	}
 
 }

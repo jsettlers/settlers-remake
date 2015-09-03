@@ -19,6 +19,9 @@ import go.graphics.text.EFontSize;
 import go.graphics.text.TextDrawer;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Displays a text on the GUI.
@@ -32,6 +35,12 @@ public class Label extends UIPanel {
 		RIGHT,
 	}
 
+	public enum EVerticalAlignment {
+		TOP,
+		CENTER,
+		BOTTOM,
+	}
+
 	private static class Line {
 		private final String string;
 		private final double linewidth;
@@ -40,16 +49,34 @@ public class Label extends UIPanel {
 			this.string = string;
 			this.linewidth = linewidth;
 		}
+	}
 
+	private static class Word {
+		private String word;
+		private boolean lineBreakBefore;
+		private double width;
+
+		private Word(String word, boolean lineBreakBefore) {
+			this.word = word;
+			this.lineBreakBefore = lineBreakBefore;
+			this.width = Double.NaN;
+		}
+
+		public double getWidth(TextDrawer drawer) {
+			if (Double.isNaN(width)) {
+				width = drawer.getWidth(word);
+			}
+			return width;
+		}
 	}
 
 	private final EFontSize size;
-	private String[] words;
-	private double[] widths = null;
-	private double spaceWidth;
+	private List<Word> words = new ArrayList<>();
+	private double spaceWidth = Double.NaN;
 	private double lineHeight;
 	private double lineBottom;
 	private final EHorizontalAlignment horizontalAlignment;
+	private final EVerticalAlignment verticalAlignment;
 
 	/**
 	 * Constructs a new Label with center alignment.
@@ -74,8 +101,25 @@ public class Label extends UIPanel {
 	 *            The horizontal alignment of the text.
 	 */
 	public Label(String text, EFontSize size, EHorizontalAlignment horizontalAlignment) {
+		this(text, size, horizontalAlignment, EVerticalAlignment.CENTER);
+	}
+
+	/**
+	 * Constructs a new Label.
+	 * 
+	 * @param text
+	 *            The text to display
+	 * @param size
+	 *            The font size for the text.
+	 * @param horizontalAlignment
+	 *            The horizontal alignment of the text.
+	 * @param verticalAlignment
+	 *            The vertical alignment of the text.
+	 */
+	public Label(String text, EFontSize size, EHorizontalAlignment horizontalAlignment, EVerticalAlignment verticalAlignment) {
 		this.size = size;
 		this.horizontalAlignment = horizontalAlignment;
+		this.verticalAlignment = verticalAlignment;
 
 		setText(text);
 	}
@@ -87,8 +131,17 @@ public class Label extends UIPanel {
 	 *            The text to display.
 	 */
 	public synchronized void setText(String text) {
-		words = text.split(" ");
-		widths = null;
+		words.clear();
+		Matcher matcher = Pattern.compile("[ \n]").matcher(text);
+		boolean requestLinebreak = false;
+		int wordStart = 0;
+		while (matcher.find()) {
+			words.add(new Word(text.substring(wordStart, matcher.start()), requestLinebreak));
+			requestLinebreak = matcher.group().equals("\n");
+			wordStart = matcher.end();
+		}
+
+		words.add(new Word(text.substring(wordStart), requestLinebreak));
 	}
 
 	@Override
@@ -97,11 +150,7 @@ public class Label extends UIPanel {
 
 		TextDrawer drawer = gl.getTextDrawer(size);
 
-		if (widths == null) {
-			widths = new double[words.length];
-			for (int i = 0; i < words.length; i++) {
-				widths[i] = drawer.getWidth(words[i]);
-			}
+		if (Double.isNaN(spaceWidth)) {
 			spaceWidth = drawer.getWidth(" ");
 			lineHeight = drawer.getHeight("j");
 			lineBottom = drawer.getHeight("A");
@@ -109,29 +158,52 @@ public class Label extends UIPanel {
 
 		double maxwidth = getPosition().getWidth();
 
-		StringBuilder lineText = new StringBuilder(words[0]);
-		double linewidth = widths[0];
+		StringBuilder lineText = new StringBuilder();
+		double linewidth = -spaceWidth;
 		ArrayList<Line> lines = new ArrayList<>();
-		for (int i = 1; i < words.length; i++) {
-			double newlinewidth = linewidth + spaceWidth + widths[i];
-			if (newlinewidth > maxwidth) {
+		boolean firstWord = true;
+		for (Word word : words) {
+			double newlinewidth = linewidth + spaceWidth + word.getWidth(drawer);
+			if (!firstWord && (word.lineBreakBefore || newlinewidth > maxwidth)) {
 				lines.add(new Line(lineText.toString(), linewidth));
-				lineText = new StringBuilder(words[i]);
-				linewidth = widths[i];
+				lineText = new StringBuilder(word.word);
+				linewidth = word.getWidth(drawer);
 			} else {
-				lineText.append(" ");
-				lineText.append(words[i]);
+				if (!firstWord) {
+					lineText.append(" ");
+				}
+				lineText.append(word.word);
 				linewidth = newlinewidth;
 			}
+			firstWord = false;
 		}
 		lines.add(new Line(lineText.toString(), linewidth));
 
 		double totalHeight = lines.size() * lineHeight;
-		float y = (float) (getPosition().getCenterY() + totalHeight / 2 - lineBottom);
+		float y;
+		y = getTextBoxTop(totalHeight);
+
+		y -= lineBottom;
 		for (Line line : lines) {
 			drawLine(drawer, line, y);
 			y -= lineHeight;
 		}
+	}
+
+	private float getTextBoxTop(double totalHeight) {
+		float y;
+		switch (verticalAlignment) {
+		case TOP:
+			y = getPosition().getMaxY();
+			break;
+		case BOTTOM:
+			y = (float) (getPosition().getMinY() + totalHeight);
+			break;
+		case CENTER:
+		default:
+			y = (float) (getPosition().getCenterY() + totalHeight / 2);
+		}
+		return y;
 	}
 
 	private void drawLine(TextDrawer drawer, Line line, float bottom) {

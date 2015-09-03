@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList.IMovedVisitor;
 
@@ -27,7 +28,7 @@ import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableLis
  * @author Andreas Eberle
  * 
  */
-public final class OffersList implements Serializable {
+public final class OffersList implements IMaterialCounts, Serializable {
 	private static final long serialVersionUID = 3747575330300586115L;
 
 	private final PositionableList<MaterialOffer>[] offersLists;
@@ -152,7 +153,8 @@ public final class OffersList implements Serializable {
 		}
 	}
 
-	public int getOffersOf(EMaterialType materialType) {
+	@Override
+	public int getAmountOf(EMaterialType materialType) {
 		return numberOfOffers[materialType.ordinal];
 	}
 }
