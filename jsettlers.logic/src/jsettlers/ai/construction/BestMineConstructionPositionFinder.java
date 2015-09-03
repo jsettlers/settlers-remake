@@ -45,7 +45,7 @@ public class BestMineConstructionPositionFinder implements IBestConstructionPosi
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId)) {
-				double resourceAmount = 0;
+				int resourceAmount = 0;
 				LandscapeGrid landscapeGrid = aiStatistics.getMainGrid().getLandscapeGrid();
 				for (RelativePoint relativePoint : buildingType.getBlockedTiles()) {
 					int x = point.x + relativePoint.getDx();

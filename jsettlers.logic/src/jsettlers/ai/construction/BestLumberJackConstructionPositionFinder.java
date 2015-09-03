@@ -51,7 +51,7 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && aiStatistics.southIsFreeForPlayer(point, playerId)
 					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
 				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
-				double treeDistance = point.calculateDistanceTo(nearestTreePosition);
+				int treeDistance = point.getOnGridDistTo(nearestTreePosition);
 				if (treeDistance < workingRadius) {
 					scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
 				}

@@ -61,7 +61,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		List<ImportantResource> importantResources = detectMostImportantResourcePoints(aiStatistics, playerId,
 				borderLandNextToFreeLandForPlayer.get(0));
 
-		double nearestResourcePointsDistance = Double.MAX_VALUE;
+		int nearestResourcePointsDistance = Integer.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : borderLandNextToFreeLandForPlayer) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
@@ -115,10 +115,10 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 					}
 				}
 				if (nearestResourcePoints.size() == importantResources.size()) {
-					double maximumDistanceOfResourcesOfThisPoint = 0;
-					double score = 0;
+					int maximumDistanceOfResourcesOfThisPoint = 0;
+					int score = 0;
 					for (ShortPoint2D currentPoint : nearestResourcePoints) {
-						double distance = currentPoint.calculateDistanceTo(point);
+						int distance = currentPoint.getOnGridDistTo(point);
 						score += distance;
 						maximumDistanceOfResourcesOfThisPoint = Math.max(maximumDistanceOfResourcesOfThisPoint, distance);
 					}
@@ -148,25 +148,25 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		if (importantResources.size() == 3) {
 			return importantResources;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Double.MAX_VALUE) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.COAL);
 		}
 		if (importantResources.size() == 3) {
 			return importantResources;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Double.MAX_VALUE) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.IRON);
 		}
 		if (importantResources.size() == 3) {
 			return importantResources;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Double.MAX_VALUE) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.FISH);
 		}
 		if (importantResources.size() == 3) {
 			return importantResources;
 		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Double.MAX_VALUE) == null) {
+		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.GOLD);
 		}
 		if (importantResources.size() == 0) {
