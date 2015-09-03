@@ -17,12 +17,11 @@ package jsettlers.main.android.bg;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 
-public class BgFish implements IMapObject {
+public class BgMapObject implements IMapObject {
 
 	private EMapObjectType type;
 
-	public BgFish(EMapObjectType type) {
-		super();
+	public BgMapObject(EMapObjectType type) {
 		this.type = type;
 	}
 
@@ -41,4 +40,8 @@ public class BgFish implements IMapObject {
 		return null;
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

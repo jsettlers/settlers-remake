@@ -67,4 +67,8 @@ public class StackContainer implements ObjectContainer, IStackMapObject {
 		return (byte) object.getCount();
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

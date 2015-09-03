@@ -33,8 +33,7 @@ public class BgMap implements IGraphicsGrid {
 	private static final double MOVABLE_PROBABILITY = .001;
 	private static final double TREE_PROBABILITY = 0.1;
 
-	private final BgFish fish = new BgFish(EMapObjectType.FISH_DECORATION);;
-	private final BgFish tree = new BgFish(EMapObjectType.TREE_ADULT);
+	private final BgMapObject tree = new BgMapObject(EMapObjectType.TREE_ADULT);
 
 	private final double[] randoms = new double[17];
 

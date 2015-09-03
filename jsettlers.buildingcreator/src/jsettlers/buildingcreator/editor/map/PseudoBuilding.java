@@ -33,7 +33,6 @@ public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 	PseudoBuilding(EBuildingType type, ShortPoint2D pos) {
 		this.type = type;
 		this.pos = pos;
-
 	}
 
 	@Override
@@ -114,4 +113,8 @@ public class PseudoBuilding implements IBuilding, IBuilding.IMill {
 		return false;
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

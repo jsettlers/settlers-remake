@@ -41,7 +41,6 @@ public class MapStack implements IStackMapObject {
 
 	@Override
 	public IMapObject getNextObject() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -53,6 +52,11 @@ public class MapStack implements IStackMapObject {
 	@Override
 	public byte getSize() {
 		return (byte) (stack instanceof ConstructionStack ? 3 : 8);
+	}
+
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
 	}
 
 }

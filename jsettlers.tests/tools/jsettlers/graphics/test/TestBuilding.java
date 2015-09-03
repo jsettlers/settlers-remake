@@ -106,4 +106,9 @@ public class TestBuilding implements IBuilding {
 	public EPriority[] getSupportedPriorities() {
 		return EPriority.values;
 	}
+
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }
