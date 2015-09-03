@@ -95,7 +95,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartedGame;
  * @author michael
  */
 public final class MapContent implements RegionContent, IMapInterfaceListener, ActionFireable, ActionThreadBlockingListener {
-    private static final int SCREEN_PADDING = 50;
+	private static final int SCREEN_PADDING = 50;
 	private static final float OVERDRAW_BOTTOM_PX = 50;
 	private static final int MAX_MESSAGES = 10;
 	private static final float MESSAGE_OFFSET_X = 200;
@@ -123,7 +123,7 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	 * The controls that represent the interface.
 	 */
 	private final IControls controls;
-    private UIPoint mousePosition = new UIPoint(0, 0);
+	private UIPoint mousePosition = new UIPoint(0, 0);
 
 	private int windowWidth = 1;
 	private int windowHeight = 1;
@@ -141,11 +141,11 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	private final ReplaceableTextDrawer textDrawer;
 	private final IStatisticable playerStatistics;
 
-    private String tooltipString = "";
+	private String tooltipString = "";
 
 	private EDebugColorModes debugColorMode = EDebugColorModes.NONE;
 
-    private PlacementBuilding placementBuilding;
+	private PlacementBuilding placementBuilding;
 
 	/**
 	 * Creates a new map content for the given map.
@@ -415,16 +415,14 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 			}
 		}
 
-        if (placementBuilding != null) {
-            ShortPoint2D underMouse = this.context.getPositionOnScreen((float) mousePosition.getX(), (float) mousePosition.getY());
-            IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
-            while(mapObject != null){
-                if (mapObject.getObjectType() == EMapObjectType.CONSTRUCTION_MARK) {
-                    this.objectDrawer.drawMapObject(map, underMouse.x, underMouse.y, placementBuilding);
-                }
-                mapObject = mapObject.getNextObject();
-            }
-        }
+		if (placementBuilding != null) {
+			ShortPoint2D underMouse = this.context.getPositionOnScreen((float) mousePosition.getX(), (float) mousePosition.getY());
+			IMapObject mapObject = context.getMap().getMapObjectsAt(underMouse.x, underMouse.y);
+
+			if (mapObject != null && mapObject.getMapObject(EMapObjectType.CONSTRUCTION_MARK) != null) { // if there is a construction mark
+				this.objectDrawer.drawMapObject(map, underMouse.x, underMouse.y, placementBuilding);
+			}
+		}
 
 		if (debugColorMode != EDebugColorModes.NONE) {
 			drawDebugColors();
@@ -822,42 +820,42 @@ public final class MapContent implements RegionContent, IMapInterfaceListener, A
 	@Override
 	public void action(Action action) {
 		controls.action(action);
-        switch (action.getActionType()) {
-        case TOGGLE_DEBUG:
-            debugColorMode = EDebugColorModes.getNextMode(debugColorMode);
-            break;
-        case TOGGLE_ORIGINAL_GRAPHICS:
-            context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
-            break;
-        case PAN_TO:
-            PointAction panAction = (PointAction) action;
-            scrollTo(panAction.getPosition(), false);
-            break;
-        case SCREEN_CHANGE:
-            ScreenChangeAction screenAction = (ScreenChangeAction) action;
-            controls.setMapViewport(screenAction.getScreenArea());
-            break;
-        case ZOOM_IN:
-            if (context.getScreen().getZoom() < 1.1) {
-                setZoom(context.getScreen().getZoom() * 2);
-            }
-            break;
-        case ZOOM_OUT:
-            if (context.getScreen().getZoom() > 0.6) {
-                setZoom(context.getScreen().getZoom() / 2);
-            }
-            break;
-        case MOVE_TO:
-            moveToMarker = ((PointAction) action).getPosition();
-            moveToMarkerTime = System.currentTimeMillis();
-            break;
-        case SHOW_CONSTRUCTION_MARK:
-            EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
-            placementBuilding = buildingType == null ? null : new PlacementBuilding(buildingType);
-            break;
-        default:
-            break;
-        }
+		switch (action.getActionType()) {
+		case TOGGLE_DEBUG:
+			debugColorMode = EDebugColorModes.getNextMode(debugColorMode);
+			break;
+		case TOGGLE_ORIGINAL_GRAPHICS:
+			context.ENABLE_ORIGINAL = !context.ENABLE_ORIGINAL;
+			break;
+		case PAN_TO:
+			PointAction panAction = (PointAction) action;
+			scrollTo(panAction.getPosition(), false);
+			break;
+		case SCREEN_CHANGE:
+			ScreenChangeAction screenAction = (ScreenChangeAction) action;
+			controls.setMapViewport(screenAction.getScreenArea());
+			break;
+		case ZOOM_IN:
+			if (context.getScreen().getZoom() < 1.1) {
+				setZoom(context.getScreen().getZoom() * 2);
+			}
+			break;
+		case ZOOM_OUT:
+			if (context.getScreen().getZoom() > 0.6) {
+				setZoom(context.getScreen().getZoom() / 2);
+			}
+			break;
+		case MOVE_TO:
+			moveToMarker = ((PointAction) action).getPosition();
+			moveToMarkerTime = System.currentTimeMillis();
+			break;
+		case SHOW_CONSTRUCTION_MARK:
+			EBuildingType buildingType = ((ShowConstructionMarksAction) action).getBuildingType();
+			placementBuilding = buildingType == null ? null : new PlacementBuilding(buildingType);
+			break;
+		default:
+			break;
+		}
 	}
 
 	private void setZoom(float f) {

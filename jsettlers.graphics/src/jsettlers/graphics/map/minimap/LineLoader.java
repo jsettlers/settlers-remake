@@ -190,15 +190,14 @@ class LineLoader implements Runnable {
 						// don't search any more.
 						displaySettlers = SettlersMode.NONE;
 					} else if (displaySettlers != SettlersMode.NONE) {
-						IMapObject building = map.getMapObjectsAt(x, y);
-						while (building != null) {
-							if (building instanceof IBuilding.IOccupyed) {
-								IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
-								if (occupyed.isOccupied()) {
-									settlerColor = context.getPlayerColor(occupyed.getPlayerId()).toShortColor(1);
-								}
+						IMapObject object = map.getMapObjectsAt(x, y);
+						IBuilding building = (object != null) ? (IBuilding) object.getMapObject(EMapObjectType.BUILDING) : null;
+
+						if (building instanceof IBuilding.IOccupyed) {
+							IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
+							if (occupyed.isOccupied()) {
+								settlerColor = context.getPlayerColor(occupyed.getPlayerId()).toShortColor(1);
 							}
-							building = building.getNextObject();
 						}
 					}
 				}
