@@ -196,8 +196,8 @@ public class AiStatistics {
 
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
-				Integer xInteger = new Integer(x);
-				Integer yInteger = new Integer(y);
+				Integer xInteger = Integer.valueOf(x);
+				Integer yInteger = Integer.valueOf(y);
 				EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
 				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
 					if (!sortedResourceTypes.get(resourceType).containsKey(xInteger)) {
@@ -233,7 +233,7 @@ public class AiStatistics {
 						sortedRiversInDefaultPartition.get(xInteger).add(yInteger);
 					}
 				} else {
-					Integer playerId = new Integer(partitionsGrid.getPlayerAt(x, y).playerId);
+					Integer playerId = Integer.valueOf(partitionsGrid.getPlayerAt(x, y).playerId);
 					ShortPoint2D point = new ShortPoint2D(x, y);
 					updateBorderlandNextToFreeLand(playerId, point);
 					if (!land.containsKey(playerId)) {
@@ -352,13 +352,13 @@ public class AiStatistics {
 			double currentNearestPointDistance) {
 		ShortPoint2D result = null;
 		ShortPoint2D nearestRightPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				new Integer(point.x), 1, new Integer(mainGrid.getWidth() + 1), playerId);
+				Integer.valueOf(point.x), 1, Integer.valueOf(mainGrid.getWidth() + 1), playerId);
 		if (nearestRightPoint != null) {
 			currentNearestPointDistance = point.calculateDistanceTo(nearestRightPoint);
 			result = nearestRightPoint;
 		}
 		ShortPoint2D nearestLeftPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				new Integer(point.x - 1), -1, -1, playerId);
+				Integer.valueOf(point.x - 1), -1, -1, playerId);
 		if (nearestLeftPoint != null) {
 			result = nearestLeftPoint;
 		}
@@ -376,13 +376,13 @@ public class AiStatistics {
 		}
 		ShortPoint2D result = null;
 		ShortPoint2D southYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, new Integer(point.y), 1, new Integer(mainGrid.getHeight() + 1), playerId);
+				currentNearestPointDistance, x, Integer.valueOf(point.y), 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
 		if (southYPoint != null) {
 			result = southYPoint;
 			currentNearestPointDistance = point.calculateDistanceTo(southYPoint);
 		}
 		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, new Integer(point.y - 1), -1, -1, playerId);
+				currentNearestPointDistance, x, Integer.valueOf(point.y - 1), -1, -1, playerId);
 		if (northYPoint != null) {
 			result = northYPoint;
 			currentNearestPointDistance = point.calculateDistanceTo(northYPoint);
@@ -413,7 +413,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!movablePositions.containsKey(playerIdInteger) || !movablePositions.get(playerIdInteger).containsKey(movableType)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -421,7 +421,7 @@ public class AiStatistics {
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!totalBuildingsNumbers.containsKey(playerIdInteger)) {
 			return 0;
 		}
@@ -432,7 +432,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!buildingsNumbers.containsKey(playerIdInteger)) {
 			return 0;
 		}
@@ -443,7 +443,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!numberOfNotFinishedBuildings.containsKey(playerIdInteger)) {
 			return 0;
 		}
@@ -451,7 +451,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfTotalBuildingsForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!numberOfTotalBuildings.containsKey(playerIdInteger)) {
 			return 0;
 		}
@@ -459,7 +459,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getBuildingPositionsOfTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!buildingPositions.containsKey(playerIdInteger) || !buildingPositions.get(playerIdInteger).containsKey(type)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -467,7 +467,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getStonesForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!stones.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -475,7 +475,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getTreesForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!trees.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -483,7 +483,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!land.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -491,7 +491,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getBorderLandNextToFreeLandForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!borderLandNextToFreeLand.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -499,7 +499,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfNotOccupiedTowers(short playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (numberOfNotOccupiedTowers.get(playerIdInteger) == null) {
 			return 0;
 		}
@@ -569,7 +569,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!materialNumbers.containsKey(playerIdInteger)) {
 			return 0;
 		}
@@ -592,7 +592,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getRiversForPlayer(byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!rivers.containsKey(playerIdInteger)) {
 			return new ArrayList<ShortPoint2D>();
 		}
@@ -600,7 +600,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
-		Integer playerIdInteger = new Integer(playerId);
+		Integer playerIdInteger = Integer.valueOf(playerId);
 		if (!unoccupiedBuildingsNumbers.containsKey(playerIdInteger)) {
 			return 0;
 		}
