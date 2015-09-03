@@ -331,7 +331,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	}
 
 	@Override
-	public synchronized int getTime() {
+	public int getTime() {
 		return time;
 	}
 
