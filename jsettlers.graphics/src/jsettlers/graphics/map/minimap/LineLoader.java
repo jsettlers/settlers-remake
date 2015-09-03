@@ -16,6 +16,7 @@ package jsettlers.graphics.map.minimap;
 
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
@@ -188,6 +189,17 @@ class LineLoader implements Runnable {
 						settlerColor = context.getPlayerColor(settler.getPlayerId()).toShortColor(1);
 						// don't search any more.
 						displaySettlers = SettlersMode.NONE;
+					} else if (displaySettlers != SettlersMode.NONE) {
+						IMapObject building = map.getMapObjectsAt(x, y);
+						while (building != null) {
+							if (building instanceof IBuilding.IOccupyed) {
+								IBuilding.IOccupyed occupyed = (IBuilding.IOccupyed) building;
+								if (occupyed.isOccupied()) {
+									settlerColor = context.getPlayerColor(occupyed.getPlayerId()).toShortColor(1);
+								}
+							}
+							building = building.getNextObject();
+						}
 					}
 				}
 
