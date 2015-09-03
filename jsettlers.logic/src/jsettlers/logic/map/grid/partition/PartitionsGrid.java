@@ -47,6 +47,7 @@ import jsettlers.common.utils.collections.IPredicate;
 import jsettlers.common.utils.collections.ISerializablePredicate;
 import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
+import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
@@ -806,7 +807,9 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 	}
 
 	public IPartitionData getPartitionDataForManagerAt(int x, int y) {
-		return getPartitionAt(x, y).getPartitionData();
+		Partition partition = getPartitionAt(x, y);
+		return new PartitionDataSupplier(partition.getPlayerId(), partition.partitionId, partition.getPartitionSettings(),
+				partition.getMaterialCounts());
 	}
 
 	public void setMaterialDistributionSettings(ShortPoint2D managerPosition, EMaterialType materialType, float[] probabilities) {

@@ -61,4 +61,8 @@ public class ResourceMapObject implements IMapObject {
 		return null;
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

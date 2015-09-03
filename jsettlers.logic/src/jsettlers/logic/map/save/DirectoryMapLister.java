@@ -37,15 +37,12 @@ import jsettlers.common.utils.FileUtils.IFileVisitor;
 public class DirectoryMapLister implements IMapLister {
 
 	private final File directory;
-	private final boolean writeable;
 
 	public static class ListedMapFile implements IListedMap {
 		private final File file;
-		private final boolean writeable;
 
-		public ListedMapFile(File file, boolean writeable) {
+		public ListedMapFile(File file) {
 			this.file = file;
-			this.writeable = writeable;
 		}
 
 		@Override
@@ -60,16 +57,12 @@ public class DirectoryMapLister implements IMapLister {
 
 		@Override
 		public void delete() {
-			if (!writeable) {
-				throw new UnsupportedOperationException();
-			}
 			file.delete();
 		}
 	}
 
-	public DirectoryMapLister(File directory, boolean writeable) {
+	public DirectoryMapLister(File directory) {
 		this.directory = directory;
-		this.writeable = writeable;
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
@@ -77,11 +70,9 @@ public class DirectoryMapLister implements IMapLister {
 
 	@Override
 	public void getMaps(final IMapListerCallable callable) {
-
 		File[] files = directory.listFiles();
 		if (files == null) {
-			throw new IllegalArgumentException("map directory "
-					+ directory.getAbsolutePath() + " is not a directory.");
+			throw new IllegalArgumentException("map directory " + directory.getAbsolutePath() + " is not a directory.");
 		}
 
 		try {
@@ -90,7 +81,7 @@ public class DirectoryMapLister implements IMapLister {
 				@Override
 				public void visitFile(File file) throws IOException {
 					if (file.getName().endsWith(MapList.MAP_EXTENSION)) {
-						callable.foundMap(new ListedMapFile(file, writeable));
+						callable.foundMap(new ListedMapFile(file));
 					}
 				}
 			});
@@ -100,12 +91,7 @@ public class DirectoryMapLister implements IMapLister {
 	}
 
 	@Override
-	public OutputStream getOutputStream(MapFileHeader header)
-			throws IOException {
-		if (!writeable) {
-			throw new UnsupportedOperationException();
-		}
-
+	public OutputStream getOutputStream(MapFileHeader header) throws IOException {
 		String name = header.getName().toLowerCase().replaceAll("\\W+", "");
 		if (name.isEmpty()) {
 			name = "map";
@@ -113,8 +99,7 @@ public class DirectoryMapLister implements IMapLister {
 
 		Date date = header.getCreationDate();
 		if (date != null) {
-			SimpleDateFormat format = new SimpleDateFormat(
-					"-yyyy-MM-dd_HH-mm-ss");
+			SimpleDateFormat format = new SimpleDateFormat("-yyyy-MM-dd_HH-mm-ss");
 			name += format.format(date);
 		}
 
@@ -124,11 +109,11 @@ public class DirectoryMapLister implements IMapLister {
 			file = new File(directory, name + "-" + i + MapList.MAP_EXTENSION);
 			i++;
 		}
+
 		try {
 			return new BufferedOutputStream(new FileOutputStream(file));
 		} catch (FileNotFoundException e) {
 			throw new IOException(e);
 		}
 	}
-
 }

@@ -821,7 +821,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean isBuildingAreaAt(short x, short y) {
-			return objectsGrid.isBuildingAreaAt(x, y);
+			return objectsGrid.isBuildingAt(x, y);
 		}
 
 		@Override
@@ -1597,6 +1597,11 @@ public final class MainGrid implements Serializable {
 			MapCircleBorder border = new MapCircleBorder(baseCircle);
 			return new MapShapeFilter(border, width, height);
 		}
+
+		@Override
+		public short getPartitionIdAt(ShortPoint2D pos) {
+			return partitionsGrid.getPartitionIdAt(pos.x, pos.y);
+		}
 	}
 
 	final class GuiInputGrid implements IGuiInputGrid {
@@ -1617,7 +1622,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public final IBuilding getBuildingAt(short x, short y) {
-			return (IBuilding) objectsGrid.getMapObjectAt(x, y, EMapObjectType.BUILDING);
+			return objectsGrid.getBuildingAt(x, y);
 		}
 
 		@Override
@@ -1742,7 +1747,7 @@ public final class MainGrid implements Serializable {
 			final ShortPoint2D position = new ShortPoint2D(x, y);
 			bordersThread.checkPosition(position);
 
-			Building building = objectsGrid.getBuildingOn(x, y);
+			Building building = objectsGrid.getBuildingAt(x, y);
 			if (building != null && building.getPlayerId() != newPlayerId) {
 				building.kill();
 			}

@@ -95,8 +95,6 @@ public class ServerManager implements IServerManager {
 
 	@Override
 	public void channelClosed(Player player) {
-		database.removePlayer(player);
-
 		if (player.isInMatch()) {
 			try {
 				player.leaveMatch();
@@ -104,6 +102,8 @@ public class ServerManager implements IServerManager {
 				assert false : "This may never happen here!";
 			}
 		}
+
+		database.removePlayer(player);
 	}
 
 	@Override

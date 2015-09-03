@@ -28,7 +28,7 @@ import jsettlers.common.sound.ISoundable;
 /**
  * This is a normal building.
  * <p>
- * Buildings are map objects wit type {@link EMapObjectType#BUILDING}
+ * Buildings are map objects with type {@link EMapObjectType#BUILDING}
  * 
  * @author michael
  * @author Andreas Eberle

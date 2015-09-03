@@ -55,4 +55,8 @@ public class MapObjectContainer implements ObjectContainer, IMapObject {
 		return null;
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

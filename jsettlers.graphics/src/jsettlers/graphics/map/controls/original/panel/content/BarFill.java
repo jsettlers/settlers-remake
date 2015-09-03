@@ -33,25 +33,14 @@ public class BarFill extends UIPanel {
 
 	private static final ImageLink barImageLink = new OriginalImageLink(EImageLinkType.GUI, 3, 336, 0); // checked in the original game
 
-	private static final float EMPTY_X = .1f;
-	private static final float FULL_X = .9f;
+	private static final float EMPTY_X = .07f;
+	private static final float FULL_X = .93f;
 
-	private final UIPanel fill;
 	private ExecutableAction listener;
 	private float value = 0;
 
 	public BarFill() {
-		fill = new UIPanel() {
-			@Override
-			public void drawAt(GLDrawContext gl) {
-				gl.color(0f, 0.78f, 0.78f, 1f);
-				FloatRectangle position = getPosition();
-				gl.fillQuad(position.getMinX(), position.getMinY(), position.getMaxX(), position.getMaxY());
-			}
-		};
-
 		setBackground(barImageLink);
-		setBarFill(value);
 	}
 
 	@Override
@@ -119,7 +108,5 @@ public class BarFill extends UIPanel {
 			percentage = 1;
 		}
 		value = percentage;
-		removeAll();
-		addChild(fill, 0f, 0f, percentage, 1f);
 	}
 }

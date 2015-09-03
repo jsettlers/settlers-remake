@@ -17,7 +17,7 @@ package jsettlers.common.map.partition;
 import jsettlers.common.material.EMaterialType;
 
 /**
- * This interface gives access to the settings of a partition.
+ * This interface provides access to the settings of a partition.
  * 
  * @author Andreas Eberle
  * 
@@ -25,22 +25,11 @@ import jsettlers.common.material.EMaterialType;
 public interface IPartitionData {
 
 	/**
-	 * This method gives access to the material distribution settings of the partition.
+	 * Returns the settings of this partition.
 	 * 
-	 * @param materialType
-	 * @return Returns the distribution settings for the given {@link EMaterialType}.
+	 * @return An instance of {@link IPartitionSettings} providing the settings of the partition.
 	 */
-	IMaterialsDistributionSettings getDistributionSettings(EMaterialType materialType);
-
-	/**
-	 * This method gives the {@link EMaterialType} for the given priority index.
-	 * 
-	 * @param priorityIdx
-	 *            The priority for which to return the {@link EMaterialType}.<br>
-	 *            The priority must be in the interval [0, {@link EMaterialType}.NUMBER_OF_DROPPABLE_MATERIALS-1] where 0 is the highest priority.
-	 * @return Returns the {@link EMaterialType} with the given priority.
-	 */
-	EMaterialType getMaterialTypeForPrio(int priorityIdx);
+	IPartitionSettings getPartitionSettings();
 
 	/**
 	 * Returns the number of materials of the given type, available in the respective partition.
@@ -50,4 +39,11 @@ public interface IPartitionData {
 	 * @return Available amount of that material.
 	 */
 	int getAmountOf(EMaterialType materialType);
+
+	/**
+	 * Returns the number of buildings in the partition and of the player over all.
+	 * 
+	 * @return An instance of {@link IBuildingCounts} providing the number of buildings.
+	 */
+	IBuildingCounts getBuildingCounts();
 }

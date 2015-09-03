@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import jsettlers.algorithms.queue.SlotQueue;
-import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
@@ -27,6 +27,7 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
+import jsettlers.logic.map.grid.partition.data.IMaterialCounts;
 import jsettlers.logic.map.grid.partition.manager.datastructures.PositionableList;
 import jsettlers.logic.map.grid.partition.manager.datastructures.SimpleSlotQueue;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
@@ -491,8 +492,12 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		return this.materialOffers.getOfferObjectAt(pos, material);
 	}
 
-	public IPartitionData getPartitionData() {
-		return new PartitionDataSupplier(settings, materialOffers);
+	public IPartitionSettings getPartitionSettings() {
+		return settings;
+	}
+
+	public IMaterialCounts getMaterialCounts() {
+		return materialOffers;
 	}
 
 	public void setMaterialDistributionSettings(EMaterialType materialType, float[] probabilities) {

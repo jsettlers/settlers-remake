@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
 import jsettlers.graphics.action.ExecutableAction;
@@ -105,7 +106,8 @@ public class BuildingMenu extends AndroidMenu {
 					getActionFireable().fireAction(new SetMaterialDistributionSettingsAction(building.getPos(), material, distribution));
 				}
 			};
-			MaterialAdapter matAdapter = new MaterialAdapter(getContext(), partitionData.getDistributionSettings(mat), listener);
+			IPartitionSettings partitionSettings = partitionData.getPartitionSettings();
+			MaterialAdapter matAdapter = new MaterialAdapter(getContext(), partitionSettings.getDistributionSettings(mat), listener);
 			list.setAdapter(matAdapter);
 			tabContent.addView(list);
 		}

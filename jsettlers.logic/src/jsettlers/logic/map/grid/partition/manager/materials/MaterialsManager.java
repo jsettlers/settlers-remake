@@ -16,7 +16,7 @@ package jsettlers.logic.map.grid.partition.manager.materials;
 
 import java.io.Serializable;
 
-import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IJoblessSupplier;
@@ -41,7 +41,7 @@ public final class MaterialsManager implements Serializable {
 	private final AbstractMaterialRequestPriorityQueue[] requestQueues;
 	private final IJoblessSupplier joblessSupplier;
 
-	private final IPartitionData settings;
+	private final IPartitionSettings settings;
 
 	/**
 	 * Creates a new {@link MaterialsManager} that uses the given {@link IJoblessSupplier} and {@link OffersList} for it's operations.
@@ -50,8 +50,10 @@ public final class MaterialsManager implements Serializable {
 	 *            {@link IJoblessSupplier} providing the jobless bearers.
 	 * @param offersList
 	 *            {@link OffersList} providing the offered materials.
+	 * @param settings
+	 *            {@link IPartitionSettings} providing the settings of the partition.
 	 */
-	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IPartitionData settings) {
+	public MaterialsManager(IJoblessSupplier joblessSupplier, OffersList offersList, IPartitionSettings settings) {
 		this.joblessSupplier = joblessSupplier;
 		this.offersList = offersList;
 		this.settings = settings;

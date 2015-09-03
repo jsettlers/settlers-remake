@@ -62,8 +62,7 @@ public class MapList implements IMapListerCallable {
 	private boolean fileListLoaded = false;
 
 	public MapList(File dir) {
-		this(new DirectoryMapLister(new File(dir, "maps"), false),
-				new DirectoryMapLister(new File(dir, "save"), true));
+		this(new DirectoryMapLister(new File(dir, "maps")), new DirectoryMapLister(new File(dir, "save")));
 	}
 
 	public MapList(IMapLister mapsDir, IMapLister saveDir) {
