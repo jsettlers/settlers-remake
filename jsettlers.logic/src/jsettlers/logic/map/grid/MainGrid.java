@@ -705,6 +705,11 @@ public final class MainGrid implements Serializable {
 		public IPartitionData getPartitionData(int x, int y) {
 			return partitionsGrid.getPartitionDataForManagerAt(x, y);
 		}
+
+		@Override
+		public boolean isBuilding(int x, int y) {
+			return flagsGrid.isBlocked(x, y) && objectsGrid.isBuildingAt(x, y);
+		}
 	}
 
 	final class MapObjectsManagerGrid implements IMapObjectsManagerGrid {

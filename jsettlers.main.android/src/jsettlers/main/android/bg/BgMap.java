@@ -33,7 +33,6 @@ public class BgMap implements IGraphicsGrid {
 	private static final double MOVABLE_PROBABILITY = .001;
 	private static final double TREE_PROBABILITY = 0.1;
 
-	private final BgFish fish = new BgFish(EMapObjectType.FISH_DECORATION);;
 	private final BgFish tree = new BgFish(EMapObjectType.TREE_ADULT);
 
 	private final double[] randoms = new double[17];
@@ -114,8 +113,7 @@ public class BgMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public void setBackgroundListener(
-			IGraphicsBackgroundListener backgroundListener) {
+	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 
 	@Override
@@ -126,6 +124,11 @@ public class BgMap implements IGraphicsGrid {
 	@Override
 	public IPartitionData getPartitionData(int x, int y) {
 		return null;
+	}
+
+	@Override
+	public boolean isBuilding(int x, int y) {
+		return false;
 	}
 
 }

@@ -220,5 +220,9 @@ public class LandmarksThreadTester {
 			return null;
 		}
 
+		@Override
+		public boolean isBuilding(int x, int y) {
+			return false;
+		}
 	}
 }

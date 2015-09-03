@@ -148,4 +148,15 @@ public interface IGraphicsGrid {
 	 *         For convenience during testing, the given value might be null.
 	 */
 	IPartitionData getPartitionData(int x, int y);
+
+	/**
+	 * Returns true if the given position is covered by the blocked area of a building.
+	 * 
+	 * @param x
+	 *            X coordinate to check.
+	 * @param y
+	 *            Y coordinate to check.
+	 * @return Returns true if the given position is covered by the blocked area of any building, false otherwise.
+	 */
+	boolean isBuilding(int x, int y);
 }
