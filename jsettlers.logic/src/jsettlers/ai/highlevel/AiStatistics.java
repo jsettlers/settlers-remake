@@ -124,7 +124,7 @@ public class AiStatistics {
 		numberOfNotOccupiedTowers = new HashMap<Integer, Integer>();
 		buildingPositions = new HashMap<Integer, Map<EBuildingType, List<ShortPoint2D>>>();
 		for (Building building : buildings) {
-			Integer playerId = new Integer(building.getPlayerId());
+			Integer playerId = Integer.valueOf(building.getPlayerId());
 			EBuildingType type = building.getBuildingType();
 			updateNumberOfNotFinishedBuildings(building, playerId);
 			updateBuildingsNumbers(playerId, building, type);
