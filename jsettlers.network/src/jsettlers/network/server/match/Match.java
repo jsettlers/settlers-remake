@@ -193,6 +193,10 @@ public class Match {
 					leftPlayers.add(player);
 				}
 			}
+
+			if (players.isEmpty()) {
+				shutdownMatch();
+			}
 		}
 	}
 
@@ -241,4 +245,28 @@ public class Match {
 		return logger;
 	}
 
+	private void shutdownMatch() {
+		if (state == EMatchState.RUNNING) {
+			taskSendingTimerTask.cancel();
+			taskSendingTimerTask = null;
+
+			synchronized (players) {
+				if (players.size() > 0) {
+					logger.warn("Closing match with active players...");
+
+					for (Player player : players) {
+						player.getChannel().close();
+					}
+				}
+			}
+			taskCollectingListener = null;
+		}
+
+		state = EMatchState.FINISHED;
+	}
+
+	@Override
+	public String toString() {
+		return state + ": name: '" + name + "' numberOfPlayers: " + players.size() + " map: '" + map.getName() + "' ('" + map.getId() + "')";
+	}
 }
