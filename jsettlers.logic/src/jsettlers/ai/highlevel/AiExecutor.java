@@ -12,24 +12,44 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.ai.highlevel;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.JSettlersGame;
+import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.network.client.interfaces.IClockListener;
+import jsettlers.network.client.interfaces.ITaskScheduler;
 
-public class PlayProcess {
-	public static void main(String[] args) {
-		try {
-			final File file = new File(args[0]);
+/**
+ * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when the game clock notifies it.
+ * 
+ * @author codingberlin
+ */
+public class AiExecutor implements IClockListener {
 
-			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file)),
-					123456L, (byte) 0, null, null);
-			game.start();
-		} catch (Exception e) {
-			e.printStackTrace();
+	private final List<IWhatToDoAi> whatToDoAis;
+	AiStatistics aiStatistics;
+	private int nextExecutionTime;
+	private final int TICK_TIME = 3000;
+
+	public AiExecutor(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+		aiStatistics = new AiStatistics(mainGrid);
+		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
+		nextExecutionTime = 0;
+		for (byte playerId : aiPlayers) {
+			whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
+		}
+	}
+
+	@Override
+	public void notify(int time) {
+		if (nextExecutionTime <= time) {
+			aiStatistics.updateStatistics();
+			for (IWhatToDoAi whatToDoAi : whatToDoAis) {
+				whatToDoAi.applyRules();
+			}
+			nextExecutionTime = nextExecutionTime + TICK_TIME;
 		}
 	}
 }

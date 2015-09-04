@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.main;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class MultiplayerGame {
 	private IJoiningGameListener joiningGameListener;
 	private IMultiplayerListener multiplayerListener;
 	private IChatMessageListener chatMessageListener;
+	private boolean iAmTheHost = false;
 
 	public MultiplayerGame(AsyncNetworkClientConnector networkClientFactory) {
 		this.networkClientFactory = networkClientFactory;
@@ -72,6 +74,7 @@ public class MultiplayerGame {
 	}
 
 	public IJoiningGame openNewGame(final IOpenMultiplayerGameInfo gameInfo) {
+		iAmTheHost = true;
 		new Thread("openNewGameThread") {
 			@Override
 			public void run() {
@@ -125,15 +128,30 @@ public class MultiplayerGame {
 				long randomSeed = packet.getRandomSeed();
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				byte ownPlayerId = calculatePlayerInfos(availablePlayers);
+				List<Byte> aiPlayers = determineAiPlayers(availablePlayers);
 
-				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, availablePlayers);
-
+				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, availablePlayers, aiPlayers);
+				
 				multiplayerListener.gameIsStarting(game.start());
 			}
 
 		};
 	}
 
+	private List<Byte> determineAiPlayers(boolean[] availablePlayers) {
+		List<Byte> aiPlayerIds = new ArrayList<Byte>();
+	
+		if (!iAmTheHost) {
+			return aiPlayerIds;
+		}
+		
+		for (byte playerId = (byte) playersList.getItems().size(); playerId < availablePlayers.length; playerId++) {
+			aiPlayerIds.add(playerId);
+		}
+
+		return aiPlayerIds;
+	}
+	
 	byte calculatePlayerInfos(boolean[] availablePlayers) {
 		String myId = networkClient.getPlayerInfo().getId();
 		byte i = 0;
@@ -144,6 +162,9 @@ public class MultiplayerGame {
 				ownPlayerId = i;
 			}
 			i++;
+		}
+		for (byte ii = i; ii < availablePlayers.length; ii++) {
+			availablePlayers[ii] = true;
 		}
 
 		if (ownPlayerId < 0) {

@@ -23,6 +23,7 @@ import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
 import jsettlers.network.synchronic.timer.INetworkTimerable;
 import jsettlers.network.synchronic.timer.ITaskExecutor;
+import jsettlers.network.client.interfaces.IClockListener;
 
 /**
  * This class is a mock of the {@link INetworkClientClock} interface.
@@ -65,6 +66,11 @@ public class NetworkClientClockMock implements INetworkClientClock {
 		LinkedList<Integer> temp = adjustmentEvents;
 		adjustmentEvents = new LinkedList<Integer>();
 		return temp;
+	}
+
+	@Override
+	public void addClockListener(IClockListener listener) {
+		throw new UnsupportedOperationException("not mocked");
 	}
 
 	@Override

@@ -12,24 +12,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.ai.construction;
 
-import java.io.File;
+import jsettlers.common.buildings.EBuildingType;
 
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.JSettlersGame;
+/**
+ * Whis this class you can store a specific count of a specific building type. e.g. you can use this class to store dependencies like that a baker
+ * needs 1/3 mills: BuildingCount(MILL, 0.33f)
+ * 
+ * @author codingberlin
+ */
+public class BuildingCount {
 
-public class PlayProcess {
-	public static void main(String[] args) {
-		try {
-			final File file = new File(args[0]);
+	public final EBuildingType buildingType;
+	public final float count;
 
-			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file)),
-					123456L, (byte) 0, null, null);
-			game.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public BuildingCount(EBuildingType buildingType, float count) {
+		this.buildingType = buildingType;
+		this.count = count;
 	}
 }

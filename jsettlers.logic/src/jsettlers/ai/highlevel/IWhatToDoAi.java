@@ -12,24 +12,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.ai.highlevel;
 
-import java.io.File;
+/**
+ * The purpose of the higher level IWhatToDoAi is to decide WHAT to do. It delegates the decision WHERE it is to do to the lower level KI. For example
+ * if the AI player has no stone cutters the WhatToDoAi decides to build with high priority a stone cutter because otherwise the AI player would be
+ * unable to build more houses without stones. Then the WhatToDoAi gets a BestConstructionPositionFinder for Stonecutters and asks it to find the best
+ * place to put a stone cutter on the map - which means near some stones ;-) - and builds the stone cutter there.
+ * 
+ * @author codingberlin
+ */
+public interface IWhatToDoAi {
 
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.JSettlersGame;
+	abstract void applyRules();
 
-public class PlayProcess {
-	public static void main(String[] args) {
-		try {
-			final File file = new File(args[0]);
-
-			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file)),
-					123456L, (byte) 0, null, null);
-			game.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

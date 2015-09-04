@@ -12,24 +12,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.ai.construction;
 
-import java.io.File;
+import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
+import jsettlers.common.position.ShortPoint2D;
 
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.JSettlersGame;
+/**
+ * This is the low level KI. It is called by the high level KI which decites what to build. The purpose of this low level KI is, to determine WHERE to
+ * build.
+ *
+ * @author codingberlin
+ */
+public interface IBestConstructionPositionFinder {
 
-public class PlayProcess {
-	public static void main(String[] args) {
-		try {
-			final File file = new File(args[0]);
-
-			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file)),
-					123456L, (byte) 0, null, null);
-			game.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	abstract ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap,
+			byte playerId);
 }

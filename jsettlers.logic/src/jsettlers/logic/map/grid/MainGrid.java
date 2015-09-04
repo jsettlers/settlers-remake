@@ -171,6 +171,14 @@ public final class MainGrid implements Serializable {
 		this.enclosedBlockedAreaFinderGrid = new EnclosedBlockedAreaFinderGrid();
 	}
 
+	public final short getHeight() {
+		return height;
+	}
+
+	public final short getWidth() {
+		return width;
+	}
+
 	public void initForPlayer(byte playerId, FogOfWar fogOfWar) {
 		if (fogOfWar != null) {
 			this.fogOfWar = fogOfWar;
@@ -302,12 +310,32 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
+	public ConstructionMarksGrid getConstructionMarksGrid() {
+		return constructionMarksGrid;
+	}
+
+	public LandscapeGrid getLandscapeGrid() {
+		return landscapeGrid;
+	}
+
+	public ObjectsGrid getObjectsGrid() {
+		return objectsGrid;
+	}
+
+	public PartitionsGrid getPartitionsGrid() {
+		return partitionsGrid;
+	}
+
 	public IGraphicsGrid getGraphicsGrid() {
 		return graphicsGrid;
 	}
 
 	public IGuiInputGrid getGuiInputGrid() {
 		return guiInputGrid;
+	}
+
+	public MovableGrid getMovableGrid() {
+		return movableGrid;
 	}
 
 	/**
@@ -382,6 +410,10 @@ public final class MainGrid implements Serializable {
 	final boolean isValidPosition(IPathCalculatable pathCalculatable, int x, int y) {
 		return isInBounds(x, y) && !flagsGrid.isBlocked(x, y)
 				&& (!pathCalculatable.needsPlayersGround() || pathCalculatable.getPlayerId() == partitionsGrid.getPlayerIdAt(x, y));
+	}
+
+	public FlagsGrid getFlagsGrid() {
+		return flagsGrid;
 	}
 
 	final class PathfinderGrid implements IAStarPathMap, IDijkstraPathMap, IInAreaFinderMap, Serializable {
@@ -853,12 +885,16 @@ public final class MainGrid implements Serializable {
 			return height;
 		}
 
-		boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
+		@Override
+		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
 			ELandscapeType[] landscapes = type.getGroundtypes();
 			RelativePoint[] protectedTiles = type.getProtectedTiles();
 
 			int firstPosX = protectedTiles[0].calculateX(x);
 			int firstPosY = protectedTiles[0].calculateY(y);
+			if (firstPosX < 0 || firstPosY < 0 || firstPosX > partitionsGrid.getWidth() || firstPosY > partitionsGrid.getHeight()) {
+				return false;
+			}
 			final short partitionId = getPartitionIdAt(firstPosX, firstPosY);
 			if (!canPlayerConstructOnPartition(playerId, partitionId)) {
 				return false;
@@ -893,7 +929,8 @@ public final class MainGrid implements Serializable {
 			return false;
 		}
 
-		private byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
+		@Override
+		public byte getConstructionMarkValue(int mapX, int mapY, final RelativePoint[] flattenPositions) {
 			int sum = 0;
 
 			for (RelativePoint currPos : flattenPositions) {
@@ -924,7 +961,7 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean canPlayerConstructOnPartition(byte playerId, short partitionId) {
-			return (MatchConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
+			return (playerId == 0 && MatchConstants.ENABLE_ALL_PLAYER_SELECTION && !partitionsGrid.isDefaultPartition(partitionId))
 					|| partitionsGrid.ownsPlayerPartition(partitionId, playerId);
 		}
 

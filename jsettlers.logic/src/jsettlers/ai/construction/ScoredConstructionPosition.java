@@ -12,24 +12,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.mapcreator.main;
+package jsettlers.ai.construction;
 
-import java.io.File;
+import java.util.List;
 
-import jsettlers.logic.map.save.DirectoryMapLister;
-import jsettlers.logic.map.save.loader.MapLoader;
-import jsettlers.main.JSettlersGame;
+import jsettlers.common.position.ShortPoint2D;
 
-public class PlayProcess {
-	public static void main(String[] args) {
-		try {
-			final File file = new File(args[0]);
+/**
+ * The ScoredConstructionPosition helps to create lists of possible construction positions with their score for the low level KI
+ * IBestConstructionPositionFinder
+ *
+ * @author codingberlin
+ */
+class ScoredConstructionPosition {
+	ShortPoint2D point;
+	int score;
 
-			JSettlersGame game = new JSettlersGame(MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(file)),
-					123456L, (byte) 0, null, null);
-			game.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public ScoredConstructionPosition(ShortPoint2D point, int score) {
+		this.point = point;
+		this.score = score;
 	}
+
+	public static ShortPoint2D detectPositionWithLowestScore(List<ScoredConstructionPosition> scoredConstructionPositions) {
+		if (scoredConstructionPositions.size() == 0) {
+			return null;
+		}
+
+		ScoredConstructionPosition winnerPosition = null;
+		for (ScoredConstructionPosition scoredConstructionPosition : scoredConstructionPositions) {
+			if (winnerPosition == null) {
+				winnerPosition = scoredConstructionPosition;
+			} else if (scoredConstructionPosition.score < winnerPosition.score) {
+				winnerPosition = scoredConstructionPosition;
+			}
+		}
+
+		return winnerPosition.point;
+	}
+
 }
