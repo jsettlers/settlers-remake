@@ -60,7 +60,8 @@ public class FleeStrategy extends MovableStrategy {
 				ShortPoint2D newPos = newDirection.getNextHexPoint(position);
 
 				if (super.getStrategyGrid().isFreePosition(newPos)) {
-					super.goInDirection(newDirection);
+					super.goInDirection(newDirection, true);
+					turnNextTime = RandomSingleton.getInt(7) == 0;
 				} else {
 					super.lookInDirection(newDirection);
 					turnNextTime = true;

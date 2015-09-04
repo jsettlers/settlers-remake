@@ -23,6 +23,7 @@ package jsettlers.logic.constants;
 public final class Constants {
 
 	public static boolean FOG_OF_WAR_DEFAULT_ENABLED = true;
+
 	/**
 	 * private constructor, because no instances of this class can be created.
 	 */
@@ -53,7 +54,7 @@ public final class Constants {
 
 	public static final short MOVABLE_FLOCK_TO_DECENTRALIZE_MAX_RADIUS = 2;
 
-	public static final short MOVABLE_FLEE_TO_VALID_POSITION_RADIUS = 7;
+	public static final short MOVABLE_FLEE_TO_VALID_POSITION_RADIUS = 9;
 
 	public static final short SOLDIER_SEARCH_RADIUS = 30;
 	public static final short TOWER_SEARCH_RADIUS = 40;
