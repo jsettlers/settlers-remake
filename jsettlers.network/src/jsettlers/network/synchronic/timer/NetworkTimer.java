@@ -28,20 +28,18 @@ import java.util.TimerTask;
 
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.INetworkClientClock;
-import jsettlers.network.client.interfaces.IClockListener;
 import jsettlers.network.client.task.packets.SyncTasksPacket;
 import jsettlers.network.client.task.packets.TaskPacket;
 
 /**
  * This is a basic game timer. All synchronous actions must be based on this clock. The {@link NetworkTimer} also triggers the execution of
  * synchronous tasks in the network game.
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public final class NetworkTimer extends TimerTask implements INetworkClientClock {
 	public static final short TIME_SLICE = 50;
-	private final List<IClockListener> clockListeners;
 	private Comparator<SyncTasksPacket> tasksByTimeComperator = new Comparator<SyncTasksPacket>() {
 		@Override
 		public int compare(SyncTasksPacket o1, SyncTasksPacket o2) {
@@ -74,7 +72,6 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	public NetworkTimer() {
 		super();
 		this.timer = new Timer("NetworkTimer");
-		clockListeners = new ArrayList<IClockListener>();
 	}
 
 	public NetworkTimer(boolean disableLockstepWaiting) {
@@ -128,10 +125,6 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 					System.out.println("WAITING for lockstep!");
 					lockstepLock.wait();
 				}
-			}
-
-			for (IClockListener clockListener : clockListeners) {
-				clockListener.notify(time);
 			}
 
 			SyncTasksPacket tasksPacket;
@@ -205,7 +198,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 	 * Schedules the given {@link INetworkTimerable} with given delay. The internal delay of NetworkTimer is {@value #TIME_SLICE}, but you may choose
 	 * smaller delays for the {@link INetworkTimerable}. The NetworkTimer will then call the {@link INetworkTimerable} multiple times on each internal
 	 * tick in the exact rate to ensure the given delay in the long run.
-	 * 
+	 *
 	 * @param timerable
 	 *            {@link INetworkTimerable} to be scheduled.
 	 * @param delay
@@ -220,7 +213,7 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 
 	/**
 	 * removes an INetworkTimerable from the list of scheduled tasks.
-	 * 
+	 *
 	 * @param timerable
 	 */
 	@Override
@@ -400,11 +393,6 @@ public final class NetworkTimer extends TimerTask implements INetworkClientClock
 		int seconds = (time / 1000) % 60;
 		int millis = time % 1000;
 		return String.format("lockstep: %d (game time: %dms / %02d:%02d:%02d:%03d)", lockstep, time, hours, minutes, seconds, millis);
-	}
-
-	@Override
-	public void addClockListener(IClockListener listener) {
-		clockListeners.add(listener);
 	}
 
 }

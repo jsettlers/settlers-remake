@@ -18,38 +18,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.network.client.interfaces.IClockListener;
 import jsettlers.network.client.interfaces.ITaskScheduler;
+import jsettlers.network.synchronic.timer.INetworkTimerable;
 
 /**
- * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when the game clock notifies it.
+ * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when NetworkTimer notifies it.
  * 
  * @author codingberlin
  */
-public class AiExecutor implements IClockListener {
+public class AiExecutor implements INetworkTimerable {
 
 	private final List<IWhatToDoAi> whatToDoAis;
 	AiStatistics aiStatistics;
-	private int nextExecutionTime;
-	private final int TICK_TIME = 3000;
 
 	public AiExecutor(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		aiStatistics = new AiStatistics(mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
-		nextExecutionTime = 0;
 		for (byte playerId : aiPlayers) {
 			whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
 		}
 	}
 
 	@Override
-	public void notify(int time) {
-		if (nextExecutionTime <= time) {
-			aiStatistics.updateStatistics();
-			for (IWhatToDoAi whatToDoAi : whatToDoAis) {
-				whatToDoAi.applyRules();
-			}
-			nextExecutionTime = nextExecutionTime + TICK_TIME;
+	public void timerEvent() {
+		aiStatistics.updateStatistics();
+		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
+			whatToDoAi.applyRules();
 		}
 	}
 }

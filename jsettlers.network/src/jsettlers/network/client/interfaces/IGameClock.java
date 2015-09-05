@@ -53,8 +53,6 @@ public interface IGameClock extends IPausingSupplier {
 
 	void stopExecution();
 
-	void addClockListener(IClockListener listener);
-
 	/**
 	 * Sets the stream to be used to log the actions of the users.
 	 * 
