@@ -14,11 +14,11 @@
  *******************************************************************************/
 package jsettlers.logic.map.grid.partition.manager.manageables;
 
-import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerBearer;
+import jsettlers.logic.map.grid.partition.manager.objects.IWorkerCreationRequest;
 
 /**
  * This interface defines methods needed by a bearer to be managed by a PartitionManager.
@@ -28,9 +28,9 @@ import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IManagerB
  */
 public interface IManageableBearer extends IManageable, ILocatable, IManagerBearer {
 
-	void becomeWorker(IWorkerRequester requester, EMovableType movableType);
+	void becomeWorker(IWorkerRequester requester, IWorkerCreationRequest request);
 
-	void becomeWorker(IWorkerRequester requester, EMovableType movableType, ShortPoint2D offer);
+	void becomeWorker(IWorkerRequester requester, IWorkerCreationRequest request, ShortPoint2D offer);
 
 	void becomeSoldier(IBarrack barrack);
 
@@ -41,6 +41,6 @@ public interface IManageableBearer extends IManageable, ILocatable, IManagerBear
 	 * 
 	 */
 	public static interface IWorkerRequester {
-		void workerCreationRequestFailed(EMovableType type, ShortPoint2D position);
+		void workerCreationRequestFailed(IWorkerCreationRequest failedRequest);
 	}
 }

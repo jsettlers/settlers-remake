@@ -16,11 +16,12 @@ package jsettlers.logic.map.grid.partition.manager.objects;
 
 import java.io.Serializable;
 
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 
-public final class DiggerRequest implements ILocatable, Serializable {
+public final class DiggerRequest implements ILocatable, Serializable, IWorkerCreationRequest {
 	private static final long serialVersionUID = -3781604767367556333L;
 
 	public final IDiggerRequester requester;
@@ -35,5 +36,15 @@ public final class DiggerRequest implements ILocatable, Serializable {
 	@Override
 	public final ShortPoint2D getPos() {
 		return requester.getPos();
+	}
+
+	@Override
+	public boolean isRequestAlive() {
+		return requester.isDiggerRequestActive();
+	}
+
+	@Override
+	public EMovableType requestedMovableType() {
+		return EMovableType.DIGGER;
 	}
 }

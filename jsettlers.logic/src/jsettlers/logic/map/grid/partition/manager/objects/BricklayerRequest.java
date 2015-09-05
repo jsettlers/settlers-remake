@@ -17,11 +17,17 @@ package jsettlers.logic.map.grid.partition.manager.objects;
 import java.io.Serializable;
 
 import jsettlers.common.movable.EDirection;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
 
-public final class BricklayerRequest implements ILocatable, Serializable {
+/**
+ * 
+ * @author Andreas Eberle
+ *
+ */
+public final class BricklayerRequest implements ILocatable, Serializable, IWorkerCreationRequest {
 	private static final long serialVersionUID = -1673422793657988587L;
 
 	public final Building building;
@@ -44,7 +50,17 @@ public final class BricklayerRequest implements ILocatable, Serializable {
 		return creationRequested;
 	}
 
-	public void creationRequested() {
+	public void setCreationRequested() {
 		creationRequested = true;
+	}
+
+	@Override
+	public boolean isRequestAlive() {
+		return building.isBricklayerRequestActive();
+	}
+
+	@Override
+	public EMovableType requestedMovableType() {
+		return EMovableType.BRICKLAYER;
 	}
 }

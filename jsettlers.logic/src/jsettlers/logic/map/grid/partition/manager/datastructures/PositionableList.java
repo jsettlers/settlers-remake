@@ -25,7 +25,7 @@ import jsettlers.common.utils.MathUtils;
 
 /**
  * This is a data structure for storing and retrieving objects at given positions.<br>
- * It is also possible to find the nearest object arround a given position.
+ * It is also possible to find the nearest object around a given position.
  * 
  * @author Andreas Eberle
  * 
@@ -147,7 +147,7 @@ public class PositionableList<T extends ILocatable> implements Iterable<T>, Seri
 		return data.isEmpty();
 	}
 
-	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<T> movedVisitor) {
+	public void moveObjectsAtPositionTo(ShortPoint2D position, PositionableList<T> newList, IMovedVisitor<? super T> movedVisitor) {
 		Iterator<T> iter = data.iterator();
 		while (iter.hasNext()) {
 			T curr = iter.next();
