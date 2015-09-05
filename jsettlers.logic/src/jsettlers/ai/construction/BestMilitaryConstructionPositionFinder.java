@@ -15,7 +15,9 @@
 package jsettlers.ai.construction;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
@@ -58,7 +60,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 			return null;
 		}
 
-		List<ImportantResource> importantResources = detectMostImportantResourcePoints(aiStatistics, playerId,
+		Set<ImportantResource> importantResources = detectMostImportantResourcePoints(aiStatistics, playerId,
 				borderLandNextToFreeLandForPlayer.get(0));
 
 		int nearestResourcePointsDistance = Integer.MAX_VALUE;
@@ -131,8 +133,8 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
 	}
 
-	private List<ImportantResource> detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
-		List<ImportantResource> importantResources = new ArrayList<ImportantResource>();
+	private Set<ImportantResource> detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
+		Set<ImportantResource> importantResources = EnumSet.noneOf(ImportantResource.class);
 		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		List<ShortPoint2D> rivers = aiStatistics.getRiversForPlayer(playerId);
@@ -145,28 +147,20 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 		if (rivers.size() < 15) {
 			importantResources.add(ImportantResource.RIVER);
 		}
-		if (importantResources.size() == 3) {
-			return importantResources;
-		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Integer.MAX_VALUE) == null) {
+		if (importantResources.size() < 3 &&
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.COAL, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.COAL);
 		}
-		if (importantResources.size() == 3) {
-			return importantResources;
-		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Integer.MAX_VALUE) == null) {
+		if (importantResources.size() < 3 &&
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.IRON);
 		}
-		if (importantResources.size() == 3) {
-			return importantResources;
-		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Integer.MAX_VALUE) == null) {
+		if (importantResources.size() < 3 &&
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.FISH, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.FISH);
 		}
-		if (importantResources.size() == 3) {
-			return importantResources;
-		}
-		if (aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Integer.MAX_VALUE) == null) {
+		if (importantResources.size() < 3 &&
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.GOLD);
 		}
 		if (importantResources.size() == 0) {
