@@ -67,23 +67,10 @@ public class AiStatistics {
 	private static final short BORDER_LAND_WIDTH = 10;
 
 	private final Queue<Building> buildings;
-	private Map<Integer, Map<EBuildingType, Integer>> totalBuildingsNumbers;
-	private Map<Integer, Map<EBuildingType, Integer>> buildingsNumbers;
-	private Map<Integer, Map<EBuildingType, Integer>> unoccupiedBuildingsNumbers;
-	private Map<Integer, Map<EMaterialType, Integer>> materialNumbers;
-	private Map<Integer, Map<EMovableType, List<ShortPoint2D>>> movablePositions;
-	private Map<Integer, Integer> numberOfNotFinishedBuildings;
-	private Map<Integer, Integer> numberOfTotalBuildings;
-	private Map<Integer, Integer> numberOfNotOccupiedTowers;
-	private Map<Integer, List<ShortPoint2D>> stones;
-	private Map<Integer, List<ShortPoint2D>> trees;
-	private Map<Integer, List<ShortPoint2D>> rivers;
+	private PlayerStatistic[] playerStatistics;
 	private Map<EMapObjectType, Map<Integer, List<Integer>>> sortedCuttableObjectsInDefaultPartition;
 	private Map<EResourceType, Map<Integer, List<Integer>>> sortedResourceTypes;
 	private Map<Integer, List<Integer>> sortedRiversInDefaultPartition;
-	private Map<Integer, List<ShortPoint2D>> land;
-	private Map<Integer, List<ShortPoint2D>> borderLandNextToFreeLand;
-	private Map<Integer, Map<EBuildingType, List<ShortPoint2D>>> buildingPositions;
 	private final MainGrid mainGrid;
 	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
@@ -92,7 +79,7 @@ public class AiStatistics {
 	private final FlagsGrid flagsGrid;
 	private final AbstractConstructionMarkableMap constructionMarksGrid;
 
-	public AiStatistics(PlayerSetting[] playerSettings, MainGrid mainGrid) {
+	public AiStatistics(MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
 		this.mainGrid = mainGrid;
 		this.landscapeGrid = mainGrid.getLandscapeGrid();
@@ -101,6 +88,17 @@ public class AiStatistics {
 		this.movableGrid = mainGrid.getMovableGrid();
 		this.flagsGrid = mainGrid.getFlagsGrid();
 		this.constructionMarksGrid = mainGrid.getConstructionMarksGrid();
+		this.playerStatistics = new PlayerStatistic[mainGrid.getGuiInputGrid().getNumberOfPlayers()];
+		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
+			this.playerStatistics[i] = new PlayerStatistic();
+		}
+		sortedRiversInDefaultPartition = new HashMap<Integer, List<Integer>>();
+		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, Map<Integer, List<Integer>>>();
+		sortedResourceTypes = new HashMap<EResourceType, Map<Integer, List<Integer>>>();
+		for (EResourceType type : EResourceType.values()) {
+			sortedResourceTypes.put(type, new HashMap<Integer, List<Integer>>());
+		}
+
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -112,89 +110,65 @@ public class AiStatistics {
 	}
 
 	public void updateStatistics() {
+		for (PlayerStatistic playerStatistic: playerStatistics) {
+			playerStatistic.clearAll();
+		}
+		sortedRiversInDefaultPartition.clear();
+		sortedCuttableObjectsInDefaultPartition.clear();
+		for (Map<Integer, List<Integer>> xCoordinatesMap: sortedResourceTypes.values()) {
+			xCoordinatesMap.clear();
+		}
+
 		updateBuildingStatistics();
 		updateMapStatistics();
 	}
 
 	private void updateBuildingStatistics() {
-		totalBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
-		buildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
-		unoccupiedBuildingsNumbers = new HashMap<Integer, Map<EBuildingType, Integer>>();
-		numberOfNotFinishedBuildings = new HashMap<Integer, Integer>();
-		numberOfTotalBuildings = new HashMap<Integer, Integer>();
-		numberOfNotOccupiedTowers = new HashMap<Integer, Integer>();
-		buildingPositions = new HashMap<Integer, Map<EBuildingType, List<ShortPoint2D>>>();
 		for (Building building : buildings) {
-			Integer playerId = Integer.valueOf(building.getPlayerId());
+			PlayerStatistic playerStatistic = playerStatistics[building.getPlayerId()];
 			EBuildingType type = building.getBuildingType();
-			updateNumberOfNotFinishedBuildings(building, playerId);
-			updateBuildingsNumbers(playerId, building, type);
-			updateBuildingPositions(playerId, type, building);
+			updateNumberOfNotFinishedBuildings(playerStatistic, building);
+			updateBuildingsNumbers(playerStatistic, building, type);
+			updateBuildingPositions(playerStatistic, type, building);
 		}
 	}
 
-	private void updateBuildingPositions(Integer playerId, EBuildingType type, Building building) {
-		if (!buildingPositions.containsKey(playerId)) {
-			buildingPositions.put(playerId, new HashMap<EBuildingType, List<ShortPoint2D>>());
+	private void updateBuildingPositions(PlayerStatistic playerStatistic, EBuildingType type, Building building) {
+
+		if (!playerStatistic.buildingPositions.containsKey(type)) {
+			playerStatistic.buildingPositions.put(type, new ArrayList<ShortPoint2D>());
 		}
-		if (!buildingPositions.get(playerId).containsKey(type)) {
-			buildingPositions.get(playerId).put(type, new ArrayList<ShortPoint2D>());
-		}
-		buildingPositions.get(playerId).get(type).add(building.getPos());
+		playerStatistic.buildingPositions.get(type).add(building.getPos());
 	}
 
-	private void updateBuildingsNumbers(Integer playerId, Building building, EBuildingType type) {
-		if (!totalBuildingsNumbers.containsKey(playerId)) {
-			totalBuildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
-			buildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
-			unoccupiedBuildingsNumbers.put(playerId, new HashMap<EBuildingType, Integer>());
+	private void updateBuildingsNumbers(PlayerStatistic playerStatistic, Building building, EBuildingType type) {
+		if (!playerStatistic.totalBuildingsNumbers.containsKey(type)) {
+			playerStatistic.totalBuildingsNumbers.put(type, 0);
+			playerStatistic.buildingsNumbers.put(type, 0);
+			playerStatistic.unoccupiedBuildingsNumbers.put(type, 0);
 		}
-		if (!totalBuildingsNumbers.get(playerId).containsKey(type)) {
-			totalBuildingsNumbers.get(playerId).put(type, 0);
-			buildingsNumbers.get(playerId).put(type, 0);
-			unoccupiedBuildingsNumbers.get(playerId).put(type, 0);
-		}
-		totalBuildingsNumbers.get(playerId).put(type, totalBuildingsNumbers.get(playerId).get(type) + 1);
+		playerStatistic.totalBuildingsNumbers.put(type, playerStatistic.totalBuildingsNumbers.get(type) + 1);
 		if (building.getStateProgress() == 1f) {
-			buildingsNumbers.get(playerId).put(type, buildingsNumbers.get(playerId).get(type) + 1);
+			playerStatistic.buildingsNumbers.put(type, playerStatistic.buildingsNumbers.get(type) + 1);
 		}
 		if (!building.isOccupied()) {
-			unoccupiedBuildingsNumbers.get(playerId).put(type, unoccupiedBuildingsNumbers.get(playerId).get(type) + 1);
+			playerStatistic.unoccupiedBuildingsNumbers.put(type, playerStatistic.unoccupiedBuildingsNumbers.get(type) + 1);
 		}
 	}
 
-	private void updateNumberOfNotFinishedBuildings(Building building, Integer playerId) {
-		if (!numberOfNotFinishedBuildings.containsKey(playerId)) {
-			numberOfNotFinishedBuildings.put(playerId, 0);
-			numberOfNotOccupiedTowers.put(playerId, 0);
-			numberOfTotalBuildings.put(playerId, 0);
-		}
-		numberOfTotalBuildings.put(playerId, numberOfTotalBuildings.get(playerId) + 1);
+	private void updateNumberOfNotFinishedBuildings(PlayerStatistic playerStatistic, Building building) {
+		playerStatistic.numberOfTotalBuildings++;
 		if (building.getStateProgress() < 1f) {
-			numberOfNotFinishedBuildings.put(playerId, numberOfNotFinishedBuildings.get(playerId) + 1);
+			playerStatistic.numberOfNotFinishedBuildings++;
 			if (building.getBuildingType() == EBuildingType.TOWER) {
-				numberOfNotOccupiedTowers.put(playerId, numberOfNotOccupiedTowers.get(playerId) + 1);
+				playerStatistic.numberOfNotOccupiedTowers++;
 			}
 		} else if (building.getBuildingType() == EBuildingType.TOWER && !building.isOccupied()) {
-			numberOfNotOccupiedTowers.put(playerId, numberOfNotOccupiedTowers.get(playerId) + 1);
+			playerStatistic.numberOfNotOccupiedTowers++;
 		}
 	}
 
 	private void updateMapStatistics() {
-		stones = new HashMap<Integer, List<ShortPoint2D>>();
-		trees = new HashMap<Integer, List<ShortPoint2D>>();
-		rivers = new HashMap<Integer, List<ShortPoint2D>>();
-		sortedRiversInDefaultPartition = new HashMap<Integer, List<Integer>>();
-		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, Map<Integer, List<Integer>>>();
-		land = new HashMap<Integer, List<ShortPoint2D>>();
-		borderLandNextToFreeLand = new HashMap<Integer, List<ShortPoint2D>>();
-		movablePositions = new HashMap<Integer, Map<EMovableType, List<ShortPoint2D>>>();
-		materialNumbers = new HashMap<Integer, Map<EMaterialType, Integer>>();
-		sortedResourceTypes = new HashMap<EResourceType, Map<Integer, List<Integer>>>();
-		for (EResourceType type : EResourceType.values()) {
-			sortedResourceTypes.put(type, new HashMap<Integer, List<Integer>>());
-		}
-
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
 				Integer xInteger = Integer.valueOf(x);
@@ -235,62 +209,42 @@ public class AiStatistics {
 					}
 				} else {
 					Integer playerId = Integer.valueOf(partitionsGrid.getPlayerAt(x, y).playerId);
+					PlayerStatistic playerStatistic = playerStatistics[playerId];
 					ShortPoint2D point = new ShortPoint2D(x, y);
-					updateBorderlandNextToFreeLand(playerId, point);
-					if (!land.containsKey(playerId)) {
-						land.put(playerId, new ArrayList<ShortPoint2D>());
-					}
-					land.get(playerId).add(point);
-					if (!stones.containsKey(playerId)) {
-						stones.put(playerId, new ArrayList<ShortPoint2D>());
-					}
+					updateBorderlandNextToFreeLand(playerStatistic, point);
+					playerStatistic.land.add(point);
 					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
-						stones.get(playerId).add(point);
-					}
-					if (!trees.containsKey(playerId)) {
-						trees.put(playerId, new ArrayList<ShortPoint2D>());
+						playerStatistic.stones.add(point);
 					}
 					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
-						trees.get(playerId).add(point);
-					}
-					if (!rivers.containsKey(playerId)) {
-						rivers.put(playerId, new ArrayList<ShortPoint2D>());
+						playerStatistic.trees.add(point);
 					}
 					if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
 							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
-						rivers.get(playerId).add(point);
+						playerStatistic.rivers.add(point);
 					}
 					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
 					if (stack != null) {
 						EMaterialType materialType = stack.getMaterialType();
-						if (!materialNumbers.containsKey(playerId)) {
-							materialNumbers.put(playerId, new HashMap<EMaterialType, Integer>());
+						if (!playerStatistic.materialNumbers.containsKey(materialType)) {
+							playerStatistic.materialNumbers.put(materialType, 0);
 						}
-						if (!materialNumbers.get(playerId).containsKey(materialType)) {
-							materialNumbers.get(playerId).put(materialType, 0);
-						}
-						materialNumbers.get(playerId).put(materialType, materialNumbers.get(playerId).get(materialType) + stack.getSize());
+						playerStatistic.materialNumbers.put(materialType, playerStatistic.materialNumbers.get(materialType) + stack.getSize());
 					}
 					Movable movable = movableGrid.getMovableAt(x, y);
 					if (movable != null) {
 						EMovableType movableType = movable.getMovableType();
-						if (!movablePositions.containsKey(playerId)) {
-							movablePositions.put(playerId, new HashMap<EMovableType, List<ShortPoint2D>>());
+						if (!playerStatistic.movablePositions.containsKey(movableType)) {
+							playerStatistic.movablePositions.put(movableType, new ArrayList<ShortPoint2D>());
 						}
-						if (!movablePositions.get(playerId).containsKey(movableType)) {
-							movablePositions.get(playerId).put(movableType, new ArrayList<ShortPoint2D>());
-						}
-						movablePositions.get(playerId).get(movableType).add(point);
+						playerStatistic.movablePositions.get(movableType).add(point);
 					}
 				}
 			}
 		}
 	}
 
-	private void updateBorderlandNextToFreeLand(Integer playerId, ShortPoint2D point) {
-		if (!borderLandNextToFreeLand.containsKey(playerId)) {
-			borderLandNextToFreeLand.put(playerId, new ArrayList<ShortPoint2D>());
-		}
+	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, ShortPoint2D point) {
 		short west = (short) Math.max(0, point.x - BORDER_LAND_WIDTH);
 		short east = (short) Math.min(mainGrid.getWidth() - 1, point.x + BORDER_LAND_WIDTH);
 		short north = (short) Math.max(0, point.y - BORDER_LAND_WIDTH);
@@ -299,7 +253,7 @@ public class AiStatistics {
 				partitionsGrid.getPlayerAt(east, point.y) == null ||
 				partitionsGrid.getPlayerAt(point.x, north) == null ||
 				partitionsGrid.getPlayerAt(point.x, south) == null) {
-			borderLandNextToFreeLand.get(playerId).add(point);
+			playerStatistic.borderLandNextToFreeLand.add(point);
 		}
 	}
 
@@ -414,97 +368,59 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!movablePositions.containsKey(playerIdInteger) || !movablePositions.get(playerIdInteger).containsKey(movableType)) {
+		if (!playerStatistics[playerId].movablePositions.containsKey(movableType)) {
 			return new ArrayList<ShortPoint2D>();
 		}
-		return movablePositions.get(playerIdInteger).get(movableType);
+		return playerStatistics[playerId].movablePositions.get(movableType);
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!totalBuildingsNumbers.containsKey(playerIdInteger)) {
+		if (!playerStatistics[playerId].totalBuildingsNumbers.containsKey(type)) {
 			return 0;
 		}
-		if (!totalBuildingsNumbers.get(playerIdInteger).containsKey(type)) {
-			return 0;
-		}
-		return totalBuildingsNumbers.get(playerIdInteger).get(type);
+		return playerStatistics[playerId].totalBuildingsNumbers.get(type);
 	}
 
 	public int getNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!buildingsNumbers.containsKey(playerIdInteger)) {
+		if (!playerStatistics[playerId].buildingsNumbers.containsKey(type)) {
 			return 0;
 		}
-		if (!buildingsNumbers.get(playerIdInteger).containsKey(type)) {
-			return 0;
-		}
-		return buildingsNumbers.get(playerIdInteger).get(type);
+		return playerStatistics[playerId].buildingsNumbers.get(type);
 	}
 
 	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!numberOfNotFinishedBuildings.containsKey(playerIdInteger)) {
-			return 0;
-		}
-		return numberOfNotFinishedBuildings.get(playerIdInteger);
+		return playerStatistics[playerId].numberOfNotFinishedBuildings;
 	}
 
 	public int getNumberOfTotalBuildingsForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!numberOfTotalBuildings.containsKey(playerIdInteger)) {
-			return 0;
-		}
-		return numberOfTotalBuildings.get(playerIdInteger);
+		return playerStatistics[playerId].numberOfTotalBuildings;
 	}
 
 	public List<ShortPoint2D> getBuildingPositionsOfTypeForPlayer(EBuildingType type, byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!buildingPositions.containsKey(playerIdInteger) || !buildingPositions.get(playerIdInteger).containsKey(type)) {
+		if (!playerStatistics[playerId].buildingPositions.containsKey(type)) {
 			return new ArrayList<ShortPoint2D>();
 		}
-		return buildingPositions.get(playerIdInteger).get(type);
+		return playerStatistics[playerId].buildingPositions.get(type);
 	}
 
 	public List<ShortPoint2D> getStonesForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!stones.containsKey(playerIdInteger)) {
-			return new ArrayList<ShortPoint2D>();
-		}
-		return stones.get(playerIdInteger);
+		return playerStatistics[playerId].stones;
 	}
 
 	public List<ShortPoint2D> getTreesForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!trees.containsKey(playerIdInteger)) {
-			return new ArrayList<ShortPoint2D>();
-		}
-		return trees.get(playerIdInteger);
+		return playerStatistics[playerId].trees;
 	}
 
 	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!land.containsKey(playerIdInteger)) {
-			return new ArrayList<ShortPoint2D>();
-		}
-		return land.get(playerIdInteger);
+		return playerStatistics[playerId].land;
 	}
 
 	public List<ShortPoint2D> getBorderLandNextToFreeLandForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!borderLandNextToFreeLand.containsKey(playerIdInteger)) {
-			return new ArrayList<ShortPoint2D>();
-		}
-		return borderLandNextToFreeLand.get(playerIdInteger);
+		return playerStatistics[playerId].borderLandNextToFreeLand;
 	}
 
 	public int getNumberOfNotOccupiedTowers(short playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (numberOfNotOccupiedTowers.get(playerIdInteger) == null) {
-			return 0;
-		}
-		return numberOfNotOccupiedTowers.get(playerIdInteger);
+		return playerStatistics[playerId].numberOfNotOccupiedTowers;
 	}
 
 	public boolean blocksWorkingAreaOfOtherBuilding(ShortPoint2D point) {
@@ -570,14 +486,10 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!materialNumbers.containsKey(playerIdInteger)) {
+		if (!playerStatistics[playerId].materialNumbers.containsKey(type)) {
 			return 0;
 		}
-		if (!materialNumbers.get(playerIdInteger).containsKey(type)) {
-			return 0;
-		}
-		return materialNumbers.get(playerIdInteger).get(type);
+		return playerStatistics[playerId].materialNumbers.get(type);
 	}
 
 	public MainGrid getMainGrid() {
@@ -593,21 +505,69 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getRiversForPlayer(byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!rivers.containsKey(playerIdInteger)) {
-			return new ArrayList<ShortPoint2D>();
-		}
-		return rivers.get(playerIdInteger);
+		return playerStatistics[playerId].rivers;
 	}
 
 	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
-		Integer playerIdInteger = Integer.valueOf(playerId);
-		if (!unoccupiedBuildingsNumbers.containsKey(playerIdInteger)) {
+		if (!playerStatistics[playerId].unoccupiedBuildingsNumbers.containsKey(buildingType)) {
 			return 0;
 		}
-		if (!unoccupiedBuildingsNumbers.get(playerIdInteger).containsKey(buildingType)) {
-			return 0;
+		return playerStatistics[playerId].unoccupiedBuildingsNumbers.get(buildingType);
+	}
+
+	class PlayerStatistic {
+
+		private Map<EBuildingType, Integer> totalBuildingsNumbers;
+		private Map<EBuildingType, Integer> buildingsNumbers;
+		private Map<EBuildingType, Integer> unoccupiedBuildingsNumbers;
+		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
+		private List<ShortPoint2D> land;
+		private List<ShortPoint2D> borderLandNextToFreeLand;
+		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
+		private Map<EMaterialType, Integer> materialNumbers;
+		private List<ShortPoint2D> stones;
+		private List<ShortPoint2D> trees;
+		private List<ShortPoint2D> rivers;
+		private int numberOfNotFinishedBuildings;
+		private int numberOfTotalBuildings;
+		private int numberOfNotOccupiedTowers;
+
+
+
+		PlayerStatistic() {
+			totalBuildingsNumbers = new HashMap<EBuildingType, Integer>();
+			buildingsNumbers = new HashMap<EBuildingType, Integer>();
+			unoccupiedBuildingsNumbers = new HashMap<EBuildingType, Integer>();
+			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
+			stones = new ArrayList<ShortPoint2D>();
+			trees = new ArrayList<ShortPoint2D>();
+			rivers = new ArrayList<ShortPoint2D>();
+			land = new ArrayList<ShortPoint2D>();
+			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
+			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
+			materialNumbers = new HashMap<EMaterialType, Integer>();
+			numberOfNotFinishedBuildings = 0;
+			numberOfTotalBuildings = 0;
+			numberOfNotOccupiedTowers = 0;
+
 		}
-		return unoccupiedBuildingsNumbers.get(playerIdInteger).get(buildingType);
+
+		public void clearAll() {
+			totalBuildingsNumbers.clear();
+			buildingsNumbers.clear();
+			unoccupiedBuildingsNumbers.clear();
+			buildingPositions.clear();
+			stones.clear();
+			trees.clear();
+			rivers.clear();
+			land.clear();
+			borderLandNextToFreeLand.clear();
+			movablePositions.clear();
+			materialNumbers.clear();
+			numberOfNotFinishedBuildings = 0;
+			numberOfTotalBuildings = 0;
+			numberOfNotOccupiedTowers = 0;
+		}
+
 	}
 }
