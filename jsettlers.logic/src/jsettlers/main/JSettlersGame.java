@@ -51,6 +51,7 @@ import jsettlers.logic.map.save.IGameCreator.MainGridWithUiSettings;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
 import jsettlers.logic.movable.Movable;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.statistics.GameStatistics;
 import jsettlers.logic.timer.RescheduleTimer;
 import jsettlers.network.client.OfflineNetworkConnector;
@@ -71,8 +72,7 @@ public class JSettlersGame {
 	private final IGameCreator mapCreator;
 	private final long randomSeed;
 	private final byte playerId;
-	private final boolean[] availablePlayers;
-	private final List<Byte> aiPlayers;
+	private final PlayerSetting[] playerSettings;
 	private final INetworkConnector networkConnector;
 	private final boolean multiplayer;
 	private final DataInputStream replayFileInputStream;
@@ -85,19 +85,18 @@ public class JSettlersGame {
 	private PrintStream systemErrorStream;
 	private PrintStream systemOutStream;
 
-	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
-			List<Byte> aiPlayers, boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
+	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, PlayerSetting[] playerSettings,
+			boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
 
 		System.out.println("JsettlersGame(): seed: " + randomSeed + " playerId: " + playerId + " availablePlayers: "
-				+ Arrays.toString(availablePlayers) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
+				+ Arrays.toString(playerSettings) + " multiplayer: " + multiplayer + " mapCreator: " + mapCreator);
 
 		this.mapCreator = mapCreator;
 		this.randomSeed = randomSeed;
 		this.networkConnector = networkConnector;
 		this.playerId = playerId;
-		this.availablePlayers = availablePlayers;
-		this.aiPlayers = aiPlayers;
+		this.playerSettings = playerSettings;
 		this.multiplayer = multiplayer;
 		this.replayFileInputStream = replayFileInputStream;
 
@@ -115,9 +114,8 @@ public class JSettlersGame {
 	 * @param networkConnector
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, boolean[] availablePlayers,
-			List<Byte> aiPlayers) {
-		this(mapCreator, randomSeed, networkConnector, playerId, availablePlayers, aiPlayers, CommonConstants.CONTROL_ALL, true, null);
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, PlayerSetting[] playerSettings) {
+		this(mapCreator, randomSeed, networkConnector, playerId, playerSettings, CommonConstants.CONTROL_ALL, true, null);
 	}
 
 	/**
@@ -127,8 +125,8 @@ public class JSettlersGame {
 	 * @param randomSeed
 	 * @param playerId
 	 */
-	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerId, boolean[] availablePlayers, List<Byte> aiPlayers) {
-		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, availablePlayers, aiPlayers, true, false, null);
+	public JSettlersGame(IGameCreator mapCreator, long randomSeed, byte playerId, PlayerSetting[] playerSettings) {
+		this(mapCreator, randomSeed, new OfflineNetworkConnector(), playerId, playerSettings, true, false, null);
 	}
 
 	public static JSettlersGame loadFromReplayFile(File loadableReplayFile, INetworkConnector networkConnector,
@@ -138,7 +136,7 @@ public class JSettlersGame {
 
 		MapLoader mapCreator = MapList.getDefaultList().getMapById(replayStartInformation.getMapId());
 		return new JSettlersGame(mapCreator, replayStartInformation.getRandomSeed(), networkConnector,
-				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers(), new ArrayList<Byte>(), true, false,
+				(byte) replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings(), true, false,
 				replayFileInputStream);
 	}
 
@@ -187,7 +185,7 @@ public class JSettlersGame {
 				updateProgressListener(EProgressState.LOADING_MAP, 0.3f);
 				Thread imagePreloader = ImageProvider.getInstance().startPreloading();
 
-				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(availablePlayers);
+				MainGridWithUiSettings gridWithUiState = mapCreator.loadMainGrid(playerSettings);
 				mainGrid = gridWithUiState.getMainGrid();
 				PlayerState playerState = gridWithUiState.getPlayerState(playerId);
 
@@ -222,7 +220,7 @@ public class JSettlersGame {
 				gameRunning = true;
 
 				startingGameListener.startFinished();
-				AiExecutor aiExecutor = new AiExecutor(aiPlayers, mainGrid, networkConnector.getTaskScheduler());
+				AiExecutor aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
 				networkConnector.getGameClock().schedule(aiExecutor, (short) 3000);
 
 				synchronized (stopMutex) {
@@ -263,7 +261,7 @@ public class JSettlersGame {
 			DataOutputStream replayFileStream = new DataOutputStream(ResourceManager.writeFile(replayFilename));
 
 			ReplayStartInformation replayInfo = new ReplayStartInformation(randomSeed, mapCreator.getMapName(), mapCreator.getMapId(), playerId,
-					availablePlayers);
+					playerSettings);
 			replayInfo.serialize(replayFileStream);
 			replayFileStream.flush();
 

@@ -103,7 +103,7 @@ public class ReplayTool {
 		new File(newReplayFile).getParentFile().mkdirs();
 
 		ReplayStartInformation replayInfo = new ReplayStartInformation(0, newSavegame.getMapName(),
-				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getAvailablePlayers());
+				newSavegame.getMapId(), replayStartInformation.getPlayerId(), replayStartInformation.getPlayerSettings());
 
 		DataOutputStream dos = new DataOutputStream(new FileOutputStream(newReplayFile));
 		replayInfo.serialize(dos);

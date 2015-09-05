@@ -30,6 +30,7 @@ import jsettlers.graphics.startscreen.interfaces.IMultiplayerPlayer;
 import jsettlers.graphics.startscreen.interfaces.IOpenMultiplayerGameInfo;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.datatypes.MultiplayerPlayer;
 import jsettlers.network.NetworkConstants;
 import jsettlers.network.client.interfaces.INetworkClient;
@@ -128,9 +129,9 @@ public class MultiplayerGame {
 				long randomSeed = packet.getRandomSeed();
 				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
 				byte ownPlayerId = calculatePlayerInfos(availablePlayers);
-				List<Byte> aiPlayers = determineAiPlayers(availablePlayers);
+				PlayerSetting[] playerSettings = determinePlayerSettings(availablePlayers);
 
-				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, availablePlayers, aiPlayers);
+				JSettlersGame game = new JSettlersGame(mapLoader, randomSeed, networkClient.getNetworkConnector(), ownPlayerId, playerSettings);
 				
 				multiplayerListener.gameIsStarting(game.start());
 			}
@@ -138,18 +139,19 @@ public class MultiplayerGame {
 		};
 	}
 
-	private List<Byte> determineAiPlayers(boolean[] availablePlayers) {
-		List<Byte> aiPlayerIds = new ArrayList<Byte>();
-	
-		if (!iAmTheHost) {
-			return aiPlayerIds;
-		}
-		
-		for (byte playerId = (byte) playersList.getItems().size(); playerId < availablePlayers.length; playerId++) {
-			aiPlayerIds.add(playerId);
+	private PlayerSetting[] determinePlayerSettings(boolean[] availablePlayers) {
+		boolean aiPlayersEnabled = iAmTheHost;
+		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
+
+		for (byte i = 0; i < playersList.getItems().size(); i++) {
+			playerSettings[i] = new PlayerSetting(true, false);
 		}
 
-		return aiPlayerIds;
+		for (byte i = (byte) playersList.getItems().size(); i < availablePlayers.length; i++) {
+			playerSettings[i] = new PlayerSetting(true, aiPlayersEnabled);
+		}
+
+		return playerSettings;
 	}
 	
 	byte calculatePlayerInfos(boolean[] availablePlayers) {

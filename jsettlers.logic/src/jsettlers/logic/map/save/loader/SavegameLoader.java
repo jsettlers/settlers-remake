@@ -24,6 +24,7 @@ import jsettlers.logic.map.grid.GameSerializer;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.MapFileHeader;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.timer.RescheduleTimer;
 
 /**
@@ -38,7 +39,7 @@ public class SavegameLoader extends MapLoader {
 	}
 
 	@Override
-	public MainGridWithUiSettings loadMainGrid(boolean[] availablePlayers) throws MapLoadException {
+	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(super.getMapDataStream());
 

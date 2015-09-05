@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.main;
 
+import jsettlers.logic.player.PlayerSetting;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -34,11 +36,17 @@ public class ReplayStartInformation {
 	public ReplayStartInformation() {
 	}
 
-	public ReplayStartInformation(long randomSeed, String mapName, String mapId, int playerId, boolean[] availablePlayers) {
+	public ReplayStartInformation(long randomSeed, String mapName, String mapId, int playerId, PlayerSetting[] playerSettings) {
 		this.randomSeed = randomSeed;
 		this.playerId = playerId;
 		this.mapName = mapName;
 		this.mapId = mapId;
+
+
+		boolean[] availablePlayers = new boolean[playerSettings.length];
+		for (int i = 0; i < playerSettings.length; i++) {
+			availablePlayers[i] = playerSettings[i].isAvailable();
+		}
 		this.availablePlayers = availablePlayers;
 	}
 
@@ -58,8 +66,12 @@ public class ReplayStartInformation {
 		return mapId;
 	}
 
-	public boolean[] getAvailablePlayers() {
-		return availablePlayers;
+	public PlayerSetting[] getPlayerSettings() {
+		PlayerSetting[] playerSettings = new PlayerSetting[availablePlayers.length];
+		for (int i = 0; i < availablePlayers.length; i++) {
+			playerSettings[i] = new PlayerSetting(availablePlayers[i], false);
+		}
+		return playerSettings;
 	}
 
 	public void serialize(DataOutputStream oos) throws IOException {

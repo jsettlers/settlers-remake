@@ -17,6 +17,7 @@ package jsettlers.logic.map.save;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.input.PlayerState;
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.player.PlayerSetting;
 
 /**
  * Classes of this interface are capable of creating a game.
@@ -26,7 +27,7 @@ import jsettlers.logic.map.grid.MainGrid;
  */
 public interface IGameCreator {
 
-	public MainGridWithUiSettings loadMainGrid(boolean[] availablePlayers) throws MapLoadException;
+	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException;
 
 	public String getMapName();
 

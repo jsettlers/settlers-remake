@@ -107,6 +107,7 @@ import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.objects.arrow.ArrowObject;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.stack.IRequestsStackGrid;
 
 /**
@@ -207,8 +208,8 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
-	public MainGrid(String mapId, String mapName, IMapData mapGrid, boolean[] availablePlayers) {
-		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), (byte) availablePlayers.length);
+	public MainGrid(String mapId, String mapName, IMapData mapGrid, PlayerSetting[] playerSettings) {
+		this(mapId, mapName, (short) mapGrid.getWidth(), (short) mapGrid.getHeight(), (byte) playerSettings.length);
 
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
@@ -224,7 +225,7 @@ public final class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && isOccupyableBuilding(object) && isActivePlayer(object, availablePlayers)) {
+				if (object != null && isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
 					addMapObject(x, y, object);
 				}
 				if ((x + y / 2) % 4 == 0 && y % 4 == 0 && isInsideWater(x, y)) {
@@ -239,7 +240,7 @@ public final class MainGrid implements Serializable {
 		for (short y = 0; y < height; y++) {
 			for (short x = 0; x < width; x++) {
 				MapObject object = mapGrid.getMapObject(x, y);
-				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, availablePlayers)) {
+				if (object != null && !isOccupyableBuilding(object) && isActivePlayer(object, playerSettings)) {
 					try {
 						addMapObject(x, y, object);
 					} catch (Throwable t) {
@@ -251,8 +252,8 @@ public final class MainGrid implements Serializable {
 		System.out.println("grid filled");
 	}
 
-	private boolean isActivePlayer(MapObject object, boolean[] availablePlayers) {
-		return !(object instanceof IPlayerable) || availablePlayers[((IPlayerable) object).getPlayerId()];
+	private boolean isActivePlayer(MapObject object, PlayerSetting[] playerSettings) {
+		return !(object instanceof IPlayerable) || playerSettings[((IPlayerable) object).getPlayerId()].isAvailable();
 	}
 
 	private static boolean isOccupyableBuilding(MapObject object) {

@@ -49,6 +49,7 @@ import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.main.JSettlersGame;
 import jsettlers.main.ReplayStartInformation;
 import jsettlers.main.StartScreenConnector;
@@ -212,16 +213,15 @@ public class SwingManagedJSettlers {
 			if (loadableReplayFile == null) {
 				MapLoader mapLoader = MapLoader.getLoaderForListedMap(new DirectoryMapLister.ListedMapFile(new File(mapfile)));
 				byte playerId = 0;
-				boolean[] availablePlayers = new boolean[mapLoader.getMaxPlayers()];
-				availablePlayers[playerId] = true;
-				List<Byte> aiPlayers = new ArrayList<Byte>();
-				for (byte i = 0; i < availablePlayers.length;i++) {
+				PlayerSetting[] playerSettings = new PlayerSetting[mapLoader.getMaxPlayers()];
+				playerSettings[playerId] = new PlayerSetting(true, false);
+				for (byte i = 0; i < playerSettings.length;i++) {
 					if (i != playerId) {
-						aiPlayers.add(i);
+						playerSettings[i] = new PlayerSetting(false, true);
 					}
 				}
 				
-				game = new JSettlersGame(mapLoader, randomSeed, playerId, availablePlayers, aiPlayers).start();
+				game = new JSettlersGame(mapLoader, randomSeed, playerId, playerSettings).start();
 			} else {
 				game = JSettlersGame.loadFromReplayFile(loadableReplayFile, new OfflineNetworkConnector(), new ReplayStartInformation()).start();
 			}

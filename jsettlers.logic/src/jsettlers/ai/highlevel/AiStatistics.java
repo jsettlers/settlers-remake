@@ -54,6 +54,7 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
+import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
@@ -91,7 +92,7 @@ public class AiStatistics {
 	private final FlagsGrid flagsGrid;
 	private final AbstractConstructionMarkableMap constructionMarksGrid;
 
-	public AiStatistics(MainGrid mainGrid) {
+	public AiStatistics(PlayerSetting[] playerSettings, MainGrid mainGrid) {
 		this.buildings = Building.getAllBuildings();
 		this.mainGrid = mainGrid;
 		this.landscapeGrid = mainGrid.getLandscapeGrid();

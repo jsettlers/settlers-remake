@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jsettlers.logic.map.grid.MainGrid;
+import jsettlers.logic.player.PlayerSetting;
 import jsettlers.network.client.interfaces.ITaskScheduler;
 import jsettlers.network.synchronic.timer.INetworkTimerable;
 
@@ -31,11 +32,13 @@ public class AiExecutor implements INetworkTimerable {
 	private final List<IWhatToDoAi> whatToDoAis;
 	AiStatistics aiStatistics;
 
-	public AiExecutor(List<Byte> aiPlayers, MainGrid mainGrid, ITaskScheduler taskScheduler) {
-		aiStatistics = new AiStatistics(mainGrid);
+	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+		aiStatistics = new AiStatistics(playerSettings, mainGrid);
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
-		for (byte playerId : aiPlayers) {
-			whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
+		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
+			if (playerSettings[playerId].isAi()) {
+				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
+			}
 		}
 	}
 
