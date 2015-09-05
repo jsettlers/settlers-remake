@@ -71,7 +71,7 @@ public final class PioneerStrategy extends MovableStrategy {
 	private void findWorkablePosition() {
 		EDirection closeForeignTileDir = getCloseForeignTile();
 
-		if (closeForeignTileDir != null && super.goInDirection(closeForeignTileDir)) {
+		if (closeForeignTileDir != null && super.goInDirection(closeForeignTileDir, false)) {
 			this.state = EPioneerState.GOING_TO_POS;
 			return;
 		}
