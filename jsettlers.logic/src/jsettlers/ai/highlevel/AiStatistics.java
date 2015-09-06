@@ -226,10 +226,7 @@ public class AiStatistics {
 					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
 					if (stack != null) {
 						EMaterialType materialType = stack.getMaterialType();
-						if (!playerStatistic.materialNumbers.containsKey(materialType)) {
-							playerStatistic.materialNumbers.put(materialType, 0);
-						}
-						playerStatistic.materialNumbers.put(materialType, playerStatistic.materialNumbers.get(materialType) + stack.getSize());
+						playerStatistic.materialNumbers[materialType.ordinal] = playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
 					}
 					Movable movable = movableGrid.getMovableAt(x, y);
 					if (movable != null) {
@@ -486,10 +483,7 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
-		if (!playerStatistics[playerId].materialNumbers.containsKey(type)) {
-			return 0;
-		}
-		return playerStatistics[playerId].materialNumbers.get(type);
+		return playerStatistics[playerId].materialNumbers[type.ordinal];
 	}
 
 	public MainGrid getMainGrid() {
@@ -524,7 +518,7 @@ public class AiStatistics {
 		private List<ShortPoint2D> land;
 		private List<ShortPoint2D> borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
-		private Map<EMaterialType, Integer> materialNumbers;
+		private int[] materialNumbers;
 		private List<ShortPoint2D> stones;
 		private List<ShortPoint2D> trees;
 		private List<ShortPoint2D> rivers;
@@ -545,10 +539,8 @@ public class AiStatistics {
 			land = new ArrayList<ShortPoint2D>();
 			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
-			materialNumbers = new HashMap<EMaterialType, Integer>();
-			numberOfNotFinishedBuildings = 0;
-			numberOfTotalBuildings = 0;
-			numberOfNotOccupiedTowers = 0;
+			materialNumbers = new int[EMaterialType.values().length];
+			clearIntegers();
 
 		}
 
@@ -563,7 +555,13 @@ public class AiStatistics {
 			land.clear();
 			borderLandNextToFreeLand.clear();
 			movablePositions.clear();
-			materialNumbers.clear();
+			clearIntegers();
+		}
+
+		private void clearIntegers() {
+			for (int i = 0; i < materialNumbers.length; i++) {
+				materialNumbers[i] = 0;
+			}
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedTowers = 0;
