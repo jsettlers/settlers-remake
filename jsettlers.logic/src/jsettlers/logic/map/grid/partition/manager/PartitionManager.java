@@ -286,16 +286,15 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	private void handleWorkerCreationRequests() {
-		int runs = Math.min(10, workerCreationRequests.size());
-		for (int i = 0; i < runs; i++) {
-			IWorkerCreationRequest workerCreationRequest = workerCreationRequests.poll();
-			if (workerCreationRequest.isRequestAlive()) {
-				tryToCreateWorker(workerCreationRequest);
+		for (Iterator<IWorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext();) {
+			IWorkerCreationRequest workerCreationRequest = iterator.next();
+			if (!workerCreationRequest.isRequestAlive() || tryToCreateWorker(workerCreationRequest)) {
+				iterator.remove();
 			}
 		}
 	}
 
-	private void tryToCreateWorker(IWorkerCreationRequest workerCreationRequest) {
+	private boolean tryToCreateWorker(IWorkerCreationRequest workerCreationRequest) {
 		EMovableType movableType = workerCreationRequest.requestedMovableType();
 		EMaterialType tool = movableType.getTool();
 
@@ -306,22 +305,24 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(offer.getPos());
 				if (manageableBearer != null) {
 					manageableBearer.becomeWorker(this, workerCreationRequest, offer.getPos());
+					return true;
 
 				} else { // no free movable found => return material and add the creation request to the end of the queue
-					workerCreationRequests.offer(workerCreationRequest);
 					materialOffers.addOffer(offer.getPos(), tool);
+					return false;
 				}
 
-			} else { // no tool found => add creating request to the end of the queue
-				workerCreationRequests.offer(workerCreationRequest);
+			} else { // no tool found => cannot create worker
+				return false;
 			}
 
 		} else { // create worker without a tool
 			IManageableBearer manageableBearer = joblessBearer.removeObjectNextTo(workerCreationRequest.getPos());
 			if (manageableBearer != null) {
 				manageableBearer.becomeWorker(this, workerCreationRequest);
+				return true;
 			} else {
-				workerCreationRequests.offer(workerCreationRequest);
+				return false;
 			}
 		}
 	}
@@ -407,8 +408,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
 		byte bestPrio = 0;
-		int bestDistance = Integer.MAX_VALUE;
-		IWorkerCreationRequest bestRequest = null;
+		EMaterialType bestTool = null;
 
 		for (IWorkerCreationRequest request : workerCreationRequests) { // go through all requests and select the best one
 			if (!request.isRequestAlive())
@@ -416,20 +416,14 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 			EMaterialType tool = request.requestedMovableType().getTool();
 			byte prio = priorityForTool[tool.ordinal];
-			int distance = request.getPos().getOnGridDistTo(closeTo);
 
-			if (prio > bestPrio || (prio == bestPrio && distance < bestDistance)) {
+			if (prio > bestPrio) {
 				bestPrio = prio;
-				bestDistance = distance;
-				bestRequest = request;
+				bestTool = tool;
 			}
 		}
 
-		if (bestRequest != null) {
-			return bestRequest.requestedMovableType().getTool();
-		} else {
-			return null;
-		}
+		return bestTool;
 	}
 
 	@Override
