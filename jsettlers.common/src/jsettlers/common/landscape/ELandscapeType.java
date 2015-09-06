@@ -16,6 +16,9 @@ package jsettlers.common.landscape;
 
 import jsettlers.common.Color;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public enum ELandscapeType {
 	// DO NOT sort, order is important!
 	GRASS(0, new Color(0xff105910), false, false),
@@ -51,6 +54,7 @@ public enum ELandscapeType {
 	GRAVEL(230, new Color(0xff000000), false, false); // TODO: color
 
 	public static final ELandscapeType[] values = ELandscapeType.values();
+	private static final Set<ELandscapeType> rivers = EnumSet.of(RIVER1, RIVER2, RIVER3, RIVER4);
 
 	public final int image;
 	public final Color color;
@@ -92,5 +96,9 @@ public enum ELandscapeType {
 
 	public final boolean isGrass() {
 		return this == GRASS || this == FLATTENED;
+	}
+
+	public final boolean isRiver() {
+		return rivers.contains(this);
 	}
 }

@@ -191,8 +191,7 @@ public class AiStatistics {
 						}
 						sortedCuttableObjectsInDefaultPartition.get(STONE).get(xInteger).add(yInteger);
 					}
-					if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
-							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
+					if (landscapeGrid.getLandscapeTypeAt(x, y).isRiver()) {
 						if (!sortedRiversInDefaultPartition.containsKey(xInteger)) {
 							sortedRiversInDefaultPartition.put(xInteger, new ArrayList<Integer>());
 						}
