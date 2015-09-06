@@ -514,10 +514,10 @@ public class AiStatistics {
 			land = new ArrayList<ShortPoint2D>();
 			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
-			totalBuildingsNumbers = new int[EBuildingType.values().length];
-			buildingsNumbers = new int[EBuildingType.values().length];
-			unoccupiedBuildingsNumbers = new int[EBuildingType.values().length];
-			materialNumbers = new int[EMaterialType.values().length];
+			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+			unoccupiedBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
+			materialNumbers = new int[EMaterialType.NUMBER_OF_MATERIALS];
 			clearIntegers();
 		}
 
