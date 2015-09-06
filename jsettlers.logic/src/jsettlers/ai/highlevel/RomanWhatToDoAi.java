@@ -46,10 +46,7 @@ import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
@@ -228,10 +225,8 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	}
 
 	private void sendMovableTo(Movable movable, ShortPoint2D target) {
-		List<Integer> selectedIds = new ArrayList<Integer>();
 		if (movable != null) {
-			selectedIds.add(movable.getID());
-			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, selectedIds));
+			taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, Collections.singletonList(movable.getID())));
 		}
 	}
 
