@@ -27,6 +27,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,17 +143,12 @@ public class AiStatistics {
 	}
 
 	private void updateBuildingsNumbers(PlayerStatistic playerStatistic, Building building, EBuildingType type) {
-		if (!playerStatistic.totalBuildingsNumbers.containsKey(type)) {
-			playerStatistic.totalBuildingsNumbers.put(type, 0);
-			playerStatistic.buildingsNumbers.put(type, 0);
-			playerStatistic.unoccupiedBuildingsNumbers.put(type, 0);
-		}
-		playerStatistic.totalBuildingsNumbers.put(type, playerStatistic.totalBuildingsNumbers.get(type) + 1);
+		playerStatistic.totalBuildingsNumbers[type.ordinal] = playerStatistic.totalBuildingsNumbers[type.ordinal] + 1;
 		if (building.getStateProgress() == 1f) {
-			playerStatistic.buildingsNumbers.put(type, playerStatistic.buildingsNumbers.get(type) + 1);
+			playerStatistic.buildingsNumbers[type.ordinal] = playerStatistic.buildingsNumbers[type.ordinal] + 1;
 		}
 		if (!building.isOccupied()) {
-			playerStatistic.unoccupiedBuildingsNumbers.put(type, playerStatistic.unoccupiedBuildingsNumbers.get(type) + 1);
+			playerStatistic.unoccupiedBuildingsNumbers[type.ordinal] = playerStatistic.unoccupiedBuildingsNumbers[type.ordinal] + 1;
 		}
 	}
 
@@ -372,17 +368,11 @@ public class AiStatistics {
 	}
 
 	public int getTotalNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		if (!playerStatistics[playerId].totalBuildingsNumbers.containsKey(type)) {
-			return 0;
-		}
-		return playerStatistics[playerId].totalBuildingsNumbers.get(type);
+		return playerStatistics[playerId].totalBuildingsNumbers[type.ordinal];
 	}
 
 	public int getNumberOfBuildingTypeForPlayer(EBuildingType type, byte playerId) {
-		if (!playerStatistics[playerId].buildingsNumbers.containsKey(type)) {
-			return 0;
-		}
-		return playerStatistics[playerId].buildingsNumbers.get(type);
+		return playerStatistics[playerId].buildingsNumbers[type.ordinal];
 	}
 
 	public int getNumberOfNotFinishedBuildingsForPlayer(byte playerId) {
@@ -503,17 +493,14 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
-		if (!playerStatistics[playerId].unoccupiedBuildingsNumbers.containsKey(buildingType)) {
-			return 0;
-		}
-		return playerStatistics[playerId].unoccupiedBuildingsNumbers.get(buildingType);
+		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
 	}
 
 	class PlayerStatistic {
 
-		private Map<EBuildingType, Integer> totalBuildingsNumbers;
-		private Map<EBuildingType, Integer> buildingsNumbers;
-		private Map<EBuildingType, Integer> unoccupiedBuildingsNumbers;
+		private int[] totalBuildingsNumbers;
+		private int[] buildingsNumbers;
+		private int[] unoccupiedBuildingsNumbers;
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		private List<ShortPoint2D> land;
 		private List<ShortPoint2D> borderLandNextToFreeLand;
@@ -526,12 +513,7 @@ public class AiStatistics {
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
 
-
-
 		PlayerStatistic() {
-			totalBuildingsNumbers = new HashMap<EBuildingType, Integer>();
-			buildingsNumbers = new HashMap<EBuildingType, Integer>();
-			unoccupiedBuildingsNumbers = new HashMap<EBuildingType, Integer>();
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
 			stones = new ArrayList<ShortPoint2D>();
 			trees = new ArrayList<ShortPoint2D>();
@@ -539,15 +521,15 @@ public class AiStatistics {
 			land = new ArrayList<ShortPoint2D>();
 			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
+			totalBuildingsNumbers = new int[EBuildingType.values().length];
+			buildingsNumbers = new int[EBuildingType.values().length];
+			unoccupiedBuildingsNumbers = new int[EBuildingType.values().length];
 			materialNumbers = new int[EMaterialType.values().length];
 			clearIntegers();
 
 		}
 
 		public void clearAll() {
-			totalBuildingsNumbers.clear();
-			buildingsNumbers.clear();
-			unoccupiedBuildingsNumbers.clear();
 			buildingPositions.clear();
 			stones.clear();
 			trees.clear();
@@ -559,12 +541,19 @@ public class AiStatistics {
 		}
 
 		private void clearIntegers() {
-			for (int i = 0; i < materialNumbers.length; i++) {
-				materialNumbers[i] = 0;
-			}
+			clearIntegerArray(materialNumbers);
+			clearIntegerArray(totalBuildingsNumbers);
+			clearIntegerArray(buildingsNumbers);
+			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedTowers = 0;
+		}
+
+		private void clearIntegerArray(int[] theArray) {
+			for (int i = 0; i < theArray.length; i++) {
+				theArray[i] = 0;
+			}
 		}
 
 	}
