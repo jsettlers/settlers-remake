@@ -27,12 +27,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
@@ -362,7 +357,7 @@ public class AiStatistics {
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
 		if (!playerStatistics[playerId].movablePositions.containsKey(movableType)) {
-			return new ArrayList<ShortPoint2D>();
+			return Collections.emptyList();
 		}
 		return playerStatistics[playerId].movablePositions.get(movableType);
 	}
@@ -385,7 +380,7 @@ public class AiStatistics {
 
 	public List<ShortPoint2D> getBuildingPositionsOfTypeForPlayer(EBuildingType type, byte playerId) {
 		if (!playerStatistics[playerId].buildingPositions.containsKey(type)) {
-			return new ArrayList<ShortPoint2D>();
+			return Collections.emptyList();
 		}
 		return playerStatistics[playerId].buildingPositions.get(type);
 	}
