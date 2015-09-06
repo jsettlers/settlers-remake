@@ -61,6 +61,17 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 	private static final int SCHEDULING_PERIOD = 25;
 
+	private static final byte priorityForTool[] = new byte[EMaterialType.NUMBER_OF_MATERIALS];
+	static { // Tools with higher priorities are produced first by auto production.
+		priorityForTool[EMaterialType.AXE.ordinal] = 10;
+		priorityForTool[EMaterialType.SAW.ordinal] = 10;
+		priorityForTool[EMaterialType.PICK.ordinal] = 10;
+		priorityForTool[EMaterialType.SCYTHE.ordinal] = 5;
+		priorityForTool[EMaterialType.FISHINGROD.ordinal] = 5;
+		priorityForTool[EMaterialType.HAMMER.ordinal] = 1;
+		priorityForTool[EMaterialType.BLADE.ordinal] = 1;
+	}
+
 	private final PartitionManagerSettings settings = new PartitionManagerSettings();
 
 	private final MovableTypeAcceptor movableTypeAcceptor = new MovableTypeAcceptor();
@@ -395,15 +406,6 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	public final EMaterialType popToolProduction(ShortPoint2D closeTo) {
-		final byte priorityForTool[] = new byte[EMaterialType.NUMBER_OF_MATERIALS];
-		priorityForTool[EMaterialType.AXE.ordinal] = 10;
-		priorityForTool[EMaterialType.SAW.ordinal] = 10;
-		priorityForTool[EMaterialType.PICK.ordinal] = 10;
-		priorityForTool[EMaterialType.SCYTHE.ordinal] = 8;
-		priorityForTool[EMaterialType.FISHINGROD.ordinal] = 8;
-		priorityForTool[EMaterialType.HAMMER.ordinal] = 1;
-		priorityForTool[EMaterialType.BLADE.ordinal] = 1;
-
 		byte bestPrio = 0;
 		int bestDistance = Integer.MAX_VALUE;
 		IWorkerCreationRequest bestRequest = null;
