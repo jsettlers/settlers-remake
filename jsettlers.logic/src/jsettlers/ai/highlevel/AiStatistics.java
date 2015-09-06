@@ -497,7 +497,6 @@ public class AiStatistics {
 	}
 
 	class PlayerStatistic {
-
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
@@ -526,7 +525,6 @@ public class AiStatistics {
 			unoccupiedBuildingsNumbers = new int[EBuildingType.values().length];
 			materialNumbers = new int[EMaterialType.values().length];
 			clearIntegers();
-
 		}
 
 		public void clearAll() {
