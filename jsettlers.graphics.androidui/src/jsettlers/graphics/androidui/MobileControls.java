@@ -176,7 +176,8 @@ public class MobileControls implements IControls, ContextActionListener {
 				|| action.getActionType() == EActionType.SELECT_POINT
 				|| action.getActionType() == EActionType.SELECT_AREA
 				|| action.getActionType() == EActionType.MOVE_TO
-				|| action.getActionType() == EActionType.BUILD) {
+				|| action.getActionType() == EActionType.BUILD
+				|| action.getActionType() == EActionType.ABORT) {
 			setActiveAction(null);
 		} else if (action.getActionType() == EActionType.SHOW_CONSTRUCTION_MARK) {
 			EBuildingType type = ((ShowConstructionMarksAction) action).getBuildingType();
