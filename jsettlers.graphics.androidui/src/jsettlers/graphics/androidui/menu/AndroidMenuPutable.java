@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.androidui.MapViewChangeObserveable;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
 import jsettlers.graphics.map.MapDrawContext;
@@ -45,6 +46,8 @@ public class AndroidMenuPutable implements ActionFireable {
 
 	private MapDrawContext mapContext;
 
+	private MapViewChangeObserveable changeObserveable;
+
 	/**
 	 * Creates a new {@link AndroidMenuPutable}.
 	 */
@@ -55,6 +58,7 @@ public class AndroidMenuPutable implements ActionFireable {
 		this.layoutInflater =
 				(LayoutInflater) context
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		changeObserveable = new MapViewChangeObserveable(context);
 	}
 
 	public LayoutInflater getLayoutInflater() {
@@ -130,5 +134,9 @@ public class AndroidMenuPutable implements ActionFireable {
 
 	public MapDrawContext getMapContext() {
 		return mapContext;
+	}
+
+	public MapViewChangeObserveable getChangeObserveable() {
+		return changeObserveable;
 	}
 }

@@ -44,7 +44,7 @@
         android:layout_toLeftOf="@+id/button_statistics"
         android:src="@drawable/icon_build" />
 
-    <jsettlers.graphics.androidui.NavigationView
+    <jsettlers.graphics.androidui.hud.NavigationView
         android:id="@+id/navigate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
