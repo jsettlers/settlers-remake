@@ -21,7 +21,7 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 
-public final class DiggerRequest implements ILocatable, Serializable, IWorkerCreationRequest {
+public final class DiggerRequest extends WorkerCreationRequest implements ILocatable, Serializable {
 	private static final long serialVersionUID = -3781604767367556333L;
 
 	public final IDiggerRequester requester;

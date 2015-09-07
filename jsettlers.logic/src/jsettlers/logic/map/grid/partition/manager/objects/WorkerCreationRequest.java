@@ -19,9 +19,20 @@ import java.io.Serializable;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
 
-public interface IWorkerCreationRequest extends ILocatable, Serializable {
+public abstract class WorkerCreationRequest implements ILocatable, Serializable {
+	private static final long serialVersionUID = 7966882666760169041L;
 
-	boolean isRequestAlive();
+	private boolean toolProductionRequired;
 
-	EMovableType requestedMovableType();
+	public abstract boolean isRequestAlive();
+
+	public abstract EMovableType requestedMovableType();
+
+	public boolean isToolProductionRequired() {
+		return toolProductionRequired;
+	}
+
+	public void setToolProductionRequired(boolean toolProductionRequired) {
+		this.toolProductionRequired = toolProductionRequired;
+	}
 }
