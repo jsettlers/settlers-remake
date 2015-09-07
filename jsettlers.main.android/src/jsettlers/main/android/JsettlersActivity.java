@@ -200,11 +200,17 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 
 	public MapInterfaceConnector showGameMap(IStartedGame game) {
 		stopBgMapThreads();
-		GameCommandFragment p = showMapFragment();
+		GameCommandFragment p = new GameCommandFragment();
+		System.out.println("GameCommandFragment created");
 
 		MapContent content = new MapContent(game, soundPlayer,
 				new MobileControls(p.getPutable(this)));
+		System.out.println("MapContent created");
+
 		goRegion.setContent(content);
+		System.out.println("content set");
+		showMapFragment(p);
+		System.out.println("GameCommandFragment set");
 		game.setGameExitListener(this);
 		return content.getInterfaceConnector();
 	}
@@ -223,15 +229,13 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		}
 	}
 
-	private GameCommandFragment showMapFragment() {
-		final GameCommandFragment cFragment = new GameCommandFragment();
+	private void showMapFragment(final GameCommandFragment cFragment) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				showFragment(cFragment);
 			}
 		});
-		return cFragment;
 	}
 
 	public void fireKey(String string) {
