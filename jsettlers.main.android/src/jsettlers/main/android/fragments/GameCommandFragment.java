@@ -15,6 +15,7 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
+import jsettlers.graphics.androidui.menu.HudFragment;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.main.android.R;
 import android.app.Activity;
@@ -39,7 +40,11 @@ import android.widget.FrameLayout;
 public class GameCommandFragment extends JsettlersFragment implements
 		IFragmentHandler {
 
+	private static final String MY_TAG = "android-menu";
 	private static final int MY_ID = 237263849;
+
+	private HudFragment hudBase;
+	private AndroidMenuPutable putable;
 
 	@Override
 	public String getName() {
@@ -47,7 +52,13 @@ public class GameCommandFragment extends JsettlersFragment implements
 	}
 
 	public GameCommandFragment() {
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
+		hudBase = new HudFragment(getPutable(getActivity()));
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -56,6 +67,15 @@ public class GameCommandFragment extends JsettlersFragment implements
 		FrameLayout layout = new FrameLayout(inflater.getContext());
 		layout.setId(MY_ID);
 		return layout;
+	}
+
+	@Override
+	public void onResume() {
+		FragmentManager manager = getActivity().getFragmentManager();
+		FragmentTransaction transaction = manager.beginTransaction();
+		transaction.replace(MY_ID, hudBase, MY_TAG);
+		transaction.commit();
+		super.onResume();
 	}
 
 	@Override
@@ -106,8 +126,18 @@ public class GameCommandFragment extends JsettlersFragment implements
 		getJsettlersActivity().showBgMap();
 	}
 
+	/**
+	 * Gets an object that allows you to access the android menu.
+	 * 
+	 * @param context
+	 *            An Android context.
+	 * @return The menu putable.
+	 */
 	public AndroidMenuPutable getPutable(Context context) {
-		return new AndroidMenuPutable(context, this);
+		if (putable == null) {
+			putable = new AndroidMenuPutable(context, this);
+		}
+		return putable;
 	}
 
 	@Override
@@ -116,7 +146,7 @@ public class GameCommandFragment extends JsettlersFragment implements
 		if (activity != null) {
 			FragmentTransaction transaction =
 					activity.getFragmentManager().beginTransaction();
-			transaction.replace(MY_ID, fragment, "android-menu");
+			transaction.replace(MY_ID, fragment, MY_TAG);
 			transaction.commit();
 		}
 	}
@@ -125,11 +155,11 @@ public class GameCommandFragment extends JsettlersFragment implements
 	public void hideMenu() {
 		Activity activity = getActivity();
 		if (activity != null) {
-			FragmentManager getManager = activity.getFragmentManager();
-			Fragment fragment = getManager.findFragmentByTag("android-menu");
+			FragmentManager manager = activity.getFragmentManager();
+			Fragment fragment = manager.findFragmentByTag(MY_TAG);
 			if (fragment != null) {
-				FragmentTransaction transaction = getManager.beginTransaction();
-				transaction.remove(fragment);
+				FragmentTransaction transaction = manager.beginTransaction();
+				transaction.replace(MY_ID, hudBase, MY_TAG);
 				transaction.commit();
 			}
 		}

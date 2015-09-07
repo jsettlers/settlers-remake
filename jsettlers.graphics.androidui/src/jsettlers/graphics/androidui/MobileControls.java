@@ -20,11 +20,8 @@ import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.images.EImageLinkType;
-import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapRectangle;
-import jsettlers.common.position.FloatRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
 import jsettlers.common.selectable.ISelectionSet;
@@ -39,13 +36,10 @@ import jsettlers.graphics.androidui.actions.ContextActionListener;
 import jsettlers.graphics.androidui.actions.MoveToOnClick;
 import jsettlers.graphics.androidui.menu.AndroidMenu;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
-import jsettlers.graphics.androidui.menu.BuildMenu;
 import jsettlers.graphics.androidui.menu.PauseMenu;
 import jsettlers.graphics.androidui.menu.selection.BuildingMenu;
-import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
-import jsettlers.graphics.ui.Button;
 import android.os.Handler;
 
 /**
@@ -70,26 +64,25 @@ public class MobileControls implements IControls, ContextActionListener {
 	 */
 	private final AndroidMenuPutable androidMenuPutable;
 
-	private final AndroidMenu buildMenu;
-	Button showBuildButton = new Button(new ExecutableAction() {
-		@Override
-		public void execute() {
-			setActiveMenu(buildMenu);
-		}
-	}, new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
-			new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
-			Labels.getString("show-build-menu"));
+	// Button showBuildButton = new Button(new ExecutableAction() {
+	// @Override
+	// public void execute() {
+	// setActiveMenu(buildMenu);
+	// }
+	// }, new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
+	// new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
+	// Labels.getString("show-build-menu"));
+	//
+	// Button showSelectionButton = new Button(new ExecutableAction() {
+	// @Override
+	// public void execute() {
+	// showSelectionMenu();
+	// }
+	// }, new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
+	// new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
+	// Labels.getString("show-build-menu"));
 
-	Button showSelectionButton = new Button(new ExecutableAction() {
-		@Override
-		public void execute() {
-			showSelectionMenu();
-		}
-	}, new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
-			new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
-			Labels.getString("show-build-menu"));
-
-	private NavigationPoint naviPoint = new NavigationPoint(null);
+	// private NavigationPoint naviPoint = new NavigationPoint(null);
 	private final PauseMenu pauseMenu;
 	private ISelectionSet selection;
 	private MapDrawContext context;
@@ -97,17 +90,16 @@ public class MobileControls implements IControls, ContextActionListener {
 	public MobileControls(AndroidMenuPutable p) {
 		androidMenuPutable = p;
 		p.setContextActionListener(this);
-		buildMenu = new BuildMenu(androidMenuPutable);
-		pauseMenu = new PauseMenu(androidMenuPutable);
+		pauseMenu = new PauseMenu(p);
 	}
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
-		if (!naviPoint.isPanInProgress()) {
-			showBuildButton.drawAt(gl);
-			showSelectionButton.drawAt(gl);
-		}
-		naviPoint.drawAt(gl);
+		// if (!naviPoint.isPanInProgress()) {
+		// showBuildButton.drawAt(gl);
+		// showSelectionButton.drawAt(gl);
+		// }
+		// naviPoint.drawAt(gl);
 		synchronized (activeActionMutex) {
 			if (activeAction != null) {
 				gl.getTextDrawer(EFontSize.NORMAL).drawString(10, 10,
@@ -149,13 +141,13 @@ public class MobileControls implements IControls, ContextActionListener {
 		this.width = newWidth;
 		this.height = newHeight;
 
-		float buttonsize = height * .125f;
-		showBuildButton.setPosition(new FloatRectangle(width - buttonsize,
-				buttonsize * 2, width, buttonsize * 3));
-		showSelectionButton.setPosition(new FloatRectangle(width - 3
-				* buttonsize, 0, width - 2 * buttonsize, buttonsize));
-		naviPoint.setPosition(width - 1.7f * buttonsize, 1.7f * buttonsize,
-				buttonsize * 2.5f);
+		// float buttonsize = height * .125f;
+		// showBuildButton.setPosition(new FloatRectangle(width - buttonsize,
+		// buttonsize * 2, width, buttonsize * 3));
+		// showSelectionButton.setPosition(new FloatRectangle(width - 3
+		// * buttonsize, 0, width - 2 * buttonsize, buttonsize));
+		// naviPoint.setPosition(width - 1.7f * buttonsize, 1.7f * buttonsize,
+		// buttonsize * 2.5f);
 
 		// buildMenu.setPosition(new FloatRectangle(buttonsize / 2,
 		// buttonsize / 2, width - buttonsize * 3.5f, height - buttonsize
@@ -180,15 +172,15 @@ public class MobileControls implements IControls, ContextActionListener {
 		if (activeMenu != null) {
 			return activeMenu.getActionFor(position);
 		} else {
-			float y = (float) position.getY();
-			float x = (float) position.getX();
-			if (showBuildButton.getPosition().contains(x, y)) {
-				return showBuildButton.getAction();
-			} else if (showSelectionButton.getPosition().contains(x, y)) {
-				return showSelectionButton.getAction();
-			} else {
-				return null;
-			}
+			// float y = (float) position.getY();
+			// float x = (float) position.getX();
+			// if (showBuildButton.getPosition().contains(x, y)) {
+			// return showBuildButton.getAction();
+			// } else if (showSelectionButton.getPosition().contains(x, y)) {
+			// return showSelectionButton.getAction();
+			// } else {
+			return null;
+			// }
 		}
 	}
 
@@ -224,9 +216,9 @@ public class MobileControls implements IControls, ContextActionListener {
 		if (!containsPoint(event.getDrawPosition())) {
 			return false;
 		} else {
-			if (naviPoint.centerContains(event.getDrawPosition())) {
-				event.setHandler(new NavigationPointDrawHandler(naviPoint));
-			}
+			// if (naviPoint.centerContains(event.getDrawPosition())) {
+			// event.setHandler(new NavigationPointDrawHandler(naviPoint));
+			// }
 
 			return true;
 		}
@@ -299,15 +291,15 @@ public class MobileControls implements IControls, ContextActionListener {
 				setActiveMenu(new BuildingMenu(androidMenuPutable, building, partitionData));
 			}
 		}
-		showSelectionButton.setActive(selection != null);
+		// showSelectionButton.setActive(selection != null);
 	}
 
 	@Override
 	public void setDrawContext(ActionFireable actionFireable,
 			MapDrawContext context) {
 		this.context = context;
-		androidMenuPutable.setActionFireable(actionFireable);
-		naviPoint = new NavigationPoint(context);
+		androidMenuPutable.setDrawContext(actionFireable, context);
+		// naviPoint = new NavigationPoint(context);
 	}
 
 	@Override
