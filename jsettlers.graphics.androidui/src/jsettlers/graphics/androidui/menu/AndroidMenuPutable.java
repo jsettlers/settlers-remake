@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.androidui.MapViewChangeObserveable;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
@@ -93,6 +94,7 @@ public class AndroidMenuPutable implements ActionFireable {
 	 */
 	public void showMenuFragment(AndroidMenu fragment) {
 		synchronized (activeMenuMutex) {
+			actionFireable.fireAction(new Action(EActionType.ABORT));
 			activeMenu.add(fragment);
 			fragmentHandler.showMenuFragment(fragment);
 		}
