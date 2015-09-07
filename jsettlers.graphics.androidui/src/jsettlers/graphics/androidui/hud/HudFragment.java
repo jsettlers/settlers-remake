@@ -4,6 +4,7 @@ import jsettlers.graphics.androidui.R;
 import jsettlers.graphics.androidui.menu.AndroidMenu;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.BuildMenu;
+import jsettlers.graphics.androidui.menu.GameMenu;
 import jsettlers.graphics.map.ScreenPosition;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,11 +15,13 @@ import android.widget.ImageButton;
 
 public class HudFragment extends AndroidMenu {
 	private final AndroidMenu buildMenu;
+	private final AndroidMenu gameMenu;
 	private ButtonForSelectionManager selectionSetter;
 
 	public HudFragment(AndroidMenuPutable putable) {
 		super(putable);
 		buildMenu = new BuildMenu(putable);
+		gameMenu = new GameMenu(putable);
 	}
 
 	@Override
@@ -32,6 +35,13 @@ public class HudFragment extends AndroidMenu {
 			@Override
 			public void onClick(View v) {
 				getPutable().showMenuFragment(buildMenu);
+			}
+		});
+
+		view.findViewById(R.id.button_menu).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getPutable().showMenuFragment(gameMenu);
 			}
 		});
 

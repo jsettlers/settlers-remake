@@ -8,4 +8,6 @@
     <string name="building_destroy_abort">Abbrechen</string>
     <string name="building_destroy_text">Gebäude wirklich abreisen?</string>
     <string name="pause_hint">Drücke erneut Zurück, um das Spiel zu verlassen.</string>
+    <string name="gamemenu_speed">Game speed</string>
+    <string name="gamemenu_skip">Skip one Minute</string>
 </resources>
