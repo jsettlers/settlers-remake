@@ -20,7 +20,6 @@ import jsettlers.graphics.androidui.R;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 /**
@@ -42,19 +41,9 @@ public class GameMenu extends AndroidMenu {
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		view.findViewById(R.id.gamemenu_speed_skip).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getPutable().fireAction(new Action(EActionType.FAST_FORWARD));
-			}
-		});
+		view.findViewById(R.id.gamemenu_speed_skip).setOnClickListener(generateActionListener(new Action(EActionType.FAST_FORWARD), true));
 
-		view.findViewById(R.id.gamemenu_save).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getPutable().fireAction(new Action(EActionType.SAVE));
-			}
-		});
+		view.findViewById(R.id.gamemenu_save).setOnClickListener(generateActionListener(new Action(EActionType.SAVE), true));
 		super.onViewCreated(view, savedInstanceState);
 	}
 }
