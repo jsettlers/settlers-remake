@@ -43,8 +43,8 @@ import jsettlers.logic.map.grid.partition.manager.materials.offers.OffersList;
 import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 import jsettlers.logic.map.grid.partition.manager.objects.BricklayerRequest;
 import jsettlers.logic.map.grid.partition.manager.objects.DiggerRequest;
-import jsettlers.logic.map.grid.partition.manager.objects.IWorkerCreationRequest;
 import jsettlers.logic.map.grid.partition.manager.objects.SoilderCreationRequest;
+import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.map.grid.partition.manager.objects.WorkerRequest;
 import jsettlers.logic.map.grid.partition.manager.settings.PartitionManagerSettings;
 import jsettlers.logic.timer.IScheduledTimerable;
@@ -101,7 +101,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	private final LinkedList<BricklayerRequest> bricklayerRequests = new LinkedList<BricklayerRequest>();
 	private final PositionableList<IManageableBricklayer> joblessBricklayers = new PositionableList<IManageableBricklayer>();
 
-	private final LinkedList<IWorkerCreationRequest> workerCreationRequests = new LinkedList<IWorkerCreationRequest>();
+	private final LinkedList<WorkerCreationRequest> workerCreationRequests = new LinkedList<WorkerCreationRequest>();
 	private final LinkedList<SoilderCreationRequest> soilderCreationRequests = new LinkedList<SoilderCreationRequest>();
 
 	private boolean stopped = true;
@@ -252,13 +252,13 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 
 		materialsManager.distributeJobs();
 
-		handleWorkerCreationRequests();
-		handleSoldierCreationRequest();
-
 		handleDiggerRequest();
 		handleBricklayerRequest();
 
 		handleWorkerRequest();
+
+		handleWorkerCreationRequests();
+		handleSoldierCreationRequest();
 
 		return SCHEDULING_PERIOD;
 	}
@@ -281,20 +281,20 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		}
 	}
 
-	private void createNewToolUser(IWorkerCreationRequest workerCreationRequest) {
+	private void createNewToolUser(WorkerCreationRequest workerCreationRequest) {
 		workerCreationRequests.offer(workerCreationRequest);
 	}
 
 	private void handleWorkerCreationRequests() {
-		for (Iterator<IWorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext();) {
-			IWorkerCreationRequest workerCreationRequest = iterator.next();
+		for (Iterator<WorkerCreationRequest> iterator = workerCreationRequests.iterator(); iterator.hasNext() && !joblessBearer.isEmpty();) {
+			WorkerCreationRequest workerCreationRequest = iterator.next();
 			if (!workerCreationRequest.isRequestAlive() || tryToCreateWorker(workerCreationRequest)) {
 				iterator.remove();
 			}
 		}
 	}
 
-	private boolean tryToCreateWorker(IWorkerCreationRequest workerCreationRequest) {
+	private boolean tryToCreateWorker(WorkerCreationRequest workerCreationRequest) {
 		EMovableType movableType = workerCreationRequest.requestedMovableType();
 		EMaterialType tool = movableType.getTool();
 
@@ -313,6 +313,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 				}
 
 			} else { // no tool found => cannot create worker
+				workerCreationRequest.setToolProductionRequired(true);
 				return false;
 			}
 
@@ -328,7 +329,7 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 	}
 
 	@Override
-	public void workerCreationRequestFailed(IWorkerCreationRequest failedRequest) {
+	public void workerCreationRequestFailed(WorkerCreationRequest failedRequest) {
 		workerCreationRequests.offer(failedRequest);
 	}
 
@@ -410,9 +411,11 @@ public class PartitionManager implements IScheduledTimerable, Serializable, IWor
 		byte bestPrio = 0;
 		EMaterialType bestTool = null;
 
-		for (IWorkerCreationRequest request : workerCreationRequests) { // go through all requests and select the best one
-			if (!request.isRequestAlive())
-				continue; // skip inactive requests
+		for (WorkerCreationRequest request : workerCreationRequests) { // go through all requests and select the best one
+			if (!request.isRequestAlive() || !request.isToolProductionRequired())
+				continue; // skip inactive requests and requests not needing a tool production
+
+			request.setToolProductionRequired(false);
 
 			EMaterialType tool = request.requestedMovableType().getTool();
 			byte prio = priorityForTool[tool.ordinal];

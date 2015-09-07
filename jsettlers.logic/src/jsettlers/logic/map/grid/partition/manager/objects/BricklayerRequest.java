@@ -27,7 +27,7 @@ import jsettlers.logic.buildings.Building;
  * @author Andreas Eberle
  *
  */
-public final class BricklayerRequest implements ILocatable, Serializable, IWorkerCreationRequest {
+public final class BricklayerRequest extends WorkerCreationRequest implements ILocatable, Serializable {
 	private static final long serialVersionUID = -1673422793657988587L;
 
 	public final Building building;

@@ -20,7 +20,7 @@ import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
-import jsettlers.logic.map.grid.partition.manager.objects.IWorkerCreationRequest;
+import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -41,7 +41,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 	private IBarrack barrack;
 	private IWorkerRequester workerRequester;
-	private IWorkerCreationRequest workerCreationRequest;
+	private WorkerCreationRequest workerCreationRequest;
 
 	public BearerMovableStrategy(Movable movable) {
 		super(movable);
@@ -222,7 +222,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public void becomeWorker(IWorkerRequester requester, IWorkerCreationRequest workerCreationRequest) {
+	public void becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest) {
 		this.workerRequester = requester;
 		this.workerCreationRequest = workerCreationRequest;
 		this.state = EBearerState.INIT_CONVERT_JOB;
@@ -231,7 +231,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public void becomeWorker(IWorkerRequester requester, IWorkerCreationRequest workerCreationRequest, ShortPoint2D offer) {
+	public void becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest, ShortPoint2D offer) {
 		this.workerRequester = requester;
 		this.workerCreationRequest = workerCreationRequest;
 		this.offer = offer;

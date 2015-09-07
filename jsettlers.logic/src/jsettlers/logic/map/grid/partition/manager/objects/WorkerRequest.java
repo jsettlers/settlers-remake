@@ -21,7 +21,7 @@ import jsettlers.common.position.ILocatable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 
-public final class WorkerRequest implements ILocatable, Serializable, IWorkerCreationRequest {
+public final class WorkerRequest extends WorkerCreationRequest implements ILocatable, Serializable {
 	private static final long serialVersionUID = 6420250669583553112L;
 
 	public final EMovableType movableType;
