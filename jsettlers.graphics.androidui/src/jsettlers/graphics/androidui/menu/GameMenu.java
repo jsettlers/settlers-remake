@@ -49,6 +49,12 @@ public class GameMenu extends AndroidMenu {
 			}
 		});
 
+		view.findViewById(R.id.gamemenu_save).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getPutable().fireAction(new Action(EActionType.SAVE));
+			}
+		});
 		super.onViewCreated(view, savedInstanceState);
 	}
 }

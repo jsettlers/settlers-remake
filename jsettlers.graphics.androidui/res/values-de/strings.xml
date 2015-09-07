@@ -10,4 +10,5 @@
     <string name="pause_hint">Drücke erneut Zurück, um das Spiel zu verlassen.</string>
     <string name="gamemenu_speed">Speilgeschwindigkeit</string>
     <string name="gamemenu_skip">Eine Minute vorspulen</string>
+    <string name="gamemenu_save">Speichern</string>
 </resources>

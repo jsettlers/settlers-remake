@@ -23,4 +23,11 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/gamemenu_skip" />
 
+    <Button
+        android:id="@+id/gamemenu_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/gamemenu_save" />
+
 </LinearLayout>
