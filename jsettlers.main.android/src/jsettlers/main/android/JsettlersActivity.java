@@ -22,32 +22,28 @@ import go.graphics.region.Region;
 
 import java.io.File;
 
-import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.androidui.MobileControls;
 import jsettlers.graphics.map.MapContent;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.graphics.map.draw.ImageProvider;
-import jsettlers.graphics.sound.SoundManager;
 import jsettlers.graphics.startscreen.interfaces.FakeMapGame;
 import jsettlers.graphics.startscreen.interfaces.IGameExitListener;
 import jsettlers.graphics.startscreen.interfaces.IMultiplayerConnector;
 import jsettlers.graphics.startscreen.interfaces.IStartedGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
-import jsettlers.logic.map.save.MapList;
 import jsettlers.main.StartScreenConnector;
 import jsettlers.main.android.bg.BgControls;
 import jsettlers.main.android.bg.BgMap;
 import jsettlers.main.android.fragments.GameCommandFragment;
 import jsettlers.main.android.fragments.JsettlersFragment;
 import jsettlers.main.android.fragments.StartScreenFragment;
-import jsettlers.main.android.resources.AndroidMapListFactory;
-import jsettlers.main.android.resources.ResourceProvider;
+import jsettlers.main.android.resources.scanner.FileChoserFragment;
+import jsettlers.main.android.resources.scanner.ResourceLocationScanner;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -58,10 +54,10 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 	private GOSurfaceView goView;
 	private Region goRegion;
 	private AndroidSoundPlayer soundPlayer;
-	private ResourceProvider provider;
 	private MapContent activeBgMapContent;
 	private StartScreenConnector connector;
 	private AndroidPreferences prefs;
+	private boolean goViewResumeMissing;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +67,19 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		keepScreenOn();
 		setContentView(R.layout.base);
 		System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
-		loadImageLookups();
+		imageLookupFixed();
+	}
 
+	public void imageLookupFixed() {
+		if (loadImageLookups()) {
+			start();
+		} else {
+			// Display search dialog.
+			showFragment(FileChoserFragment.forDirectory(new File("/")));
+		}
+	}
+
+	private void start() {
 		goRegion = new Region(Region.POSITION_CENTER);
 		Area goArea = new Area();
 		goArea.add(goRegion);
@@ -83,6 +90,9 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 		showStartScreen();
 
 		showBgMap();
+		if (goViewResumeMissing) {
+			goViewResume();
+		}
 	}
 
 	@Override
@@ -93,22 +103,34 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if (goView != null) {
+			goViewResume();
+		} else {
+			goViewResumeMissing = true;
+		}
+	}
+
+	private void goViewResume() {
 		goView.onResume();
 		soundPlayer.setPaused(false);
+		goViewResumeMissing = false;
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		goView.onPause();
-		soundPlayer.setPaused(true);
+		if (goView != null) {
+			goView.onPause();
+			soundPlayer.setPaused(true);
 
-		goView.setContextDestroyedListener(new IContextDestroyedListener() {
-			@Override
-			public void glContextDestroyed() {
-				ImageProvider.getInstance().invalidateAll();
-			}
-		});
+			goView.setContextDestroyedListener(new IContextDestroyedListener() {
+				@Override
+				public void glContextDestroyed() {
+					ImageProvider.getInstance().invalidateAll();
+				}
+			});
+		}
+		goViewResumeMissing = false;
 	}
 
 	@Override
@@ -137,27 +159,8 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
-	private void loadImageLookups() {
-		File storage = Environment.getExternalStorageDirectory();
-		File jsettlersdir = new File(storage, "JSettlers");
-		File jsettlersSDdir = new File(new File("/storage/extSdCard/"), "JSettlers");
-		File michael = new File("/mnt/sdcard/usbStorage/JSettlers");
-		File[] files = new File[] {
-				getExternalFilesDir(null), // <- output dir, always writable
-				jsettlersdir, storage, jsettlersdir,
-				new File(jsettlersdir, "GFX"), michael,
-				new File(michael, "GFX"),
-				jsettlersSDdir,
-				new File(jsettlersSDdir, "GFX") };
-
-		for (File file : files) {
-			ImageProvider.getInstance().addLookupPath(file);
-			SoundManager.addLookupPath(new File(file, "SND"));
-		}
-		MapList.setDefaultListFactory(new AndroidMapListFactory(getAssets(), files[0]));
-
-		provider = new ResourceProvider(this, files[0]);
-		ResourceManager.setProvider(provider);
+	private boolean loadImageLookups() {
+		return new ResourceLocationScanner(this).scanForResources();
 	}
 
 	/* - - - - - - - Fragment stuff - - - - - - */
@@ -240,10 +243,6 @@ public class JsettlersActivity extends Activity implements IGameExitListener {
 
 	public void fireKey(String string) {
 		goView.fireKey(string);
-	}
-
-	public ResourceProvider getResourceProvider() {
-		return provider;
 	}
 
 	public IMultiplayerConnector generateMultiplayerConnector() {

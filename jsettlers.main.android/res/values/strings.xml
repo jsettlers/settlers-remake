@@ -48,5 +48,7 @@
     <string name="preferences_ok">Übernehmen</string>
     <string name="network_chat">Chat...</string>
     <string name="preferences_label">Einstellungen</string>
+    <string name="filechoser_ok">Use this directory</string>
+    <string name="filechoser_message">Where are the Gfx and Snd folders?</string>
 
 </resources>
