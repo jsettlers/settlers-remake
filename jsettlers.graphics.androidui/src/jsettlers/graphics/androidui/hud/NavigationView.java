@@ -1,10 +1,12 @@
-package jsettlers.graphics.androidui;
+package jsettlers.graphics.androidui.hud;
 
 import go.graphics.UIPoint;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import jsettlers.graphics.androidui.R;
+import jsettlers.graphics.androidui.R.drawable;
 import jsettlers.graphics.map.ScreenPosition;
 import jsettlers.graphics.map.controls.original.panel.content.AnimateablePosition;
 import android.annotation.SuppressLint;

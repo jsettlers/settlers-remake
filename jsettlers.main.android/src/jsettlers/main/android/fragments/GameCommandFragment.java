@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.main.android.fragments;
 
+import jsettlers.graphics.androidui.hud.HudFragment;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
-import jsettlers.graphics.androidui.menu.HudFragment;
 import jsettlers.graphics.androidui.menu.IFragmentHandler;
 import jsettlers.main.android.R;
 import android.app.Activity;

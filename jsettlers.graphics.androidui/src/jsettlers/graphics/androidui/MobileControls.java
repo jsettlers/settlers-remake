@@ -19,8 +19,6 @@ import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
 import go.graphics.text.EFontSize;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
-import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ESelectionType;
@@ -37,7 +35,6 @@ import jsettlers.graphics.androidui.actions.MoveToOnClick;
 import jsettlers.graphics.androidui.menu.AndroidMenu;
 import jsettlers.graphics.androidui.menu.AndroidMenuPutable;
 import jsettlers.graphics.androidui.menu.PauseMenu;
-import jsettlers.graphics.androidui.menu.selection.BuildingMenu;
 import jsettlers.graphics.map.MapDrawContext;
 import jsettlers.graphics.map.controls.IControls;
 import android.os.Handler;
@@ -64,25 +61,6 @@ public class MobileControls implements IControls, ContextActionListener {
 	 */
 	private final AndroidMenuPutable androidMenuPutable;
 
-	// Button showBuildButton = new Button(new ExecutableAction() {
-	// @Override
-	// public void execute() {
-	// setActiveMenu(buildMenu);
-	// }
-	// }, new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
-	// new OriginalImageLink(EImageLinkType.GUI, 3, 395, 0),
-	// Labels.getString("show-build-menu"));
-	//
-	// Button showSelectionButton = new Button(new ExecutableAction() {
-	// @Override
-	// public void execute() {
-	// showSelectionMenu();
-	// }
-	// }, new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
-	// new OriginalImageLink(EImageLinkType.GUI, 3, 437, 0),
-	// Labels.getString("show-build-menu"));
-
-	// private NavigationPoint naviPoint = new NavigationPoint(null);
 	private final PauseMenu pauseMenu;
 	private ISelectionSet selection;
 	private MapDrawContext context;
@@ -95,11 +73,6 @@ public class MobileControls implements IControls, ContextActionListener {
 
 	@Override
 	public void drawAt(GLDrawContext gl) {
-		// if (!naviPoint.isPanInProgress()) {
-		// showBuildButton.drawAt(gl);
-		// showSelectionButton.drawAt(gl);
-		// }
-		// naviPoint.drawAt(gl);
 		synchronized (activeActionMutex) {
 			if (activeAction != null) {
 				gl.getTextDrawer(EFontSize.NORMAL).drawString(10, 10,
@@ -140,18 +113,6 @@ public class MobileControls implements IControls, ContextActionListener {
 	public void resizeTo(float newWidth, float newHeight) {
 		this.width = newWidth;
 		this.height = newHeight;
-
-		// float buttonsize = height * .125f;
-		// showBuildButton.setPosition(new FloatRectangle(width - buttonsize,
-		// buttonsize * 2, width, buttonsize * 3));
-		// showSelectionButton.setPosition(new FloatRectangle(width - 3
-		// * buttonsize, 0, width - 2 * buttonsize, buttonsize));
-		// naviPoint.setPosition(width - 1.7f * buttonsize, 1.7f * buttonsize,
-		// buttonsize * 2.5f);
-
-		// buildMenu.setPosition(new FloatRectangle(buttonsize / 2,
-		// buttonsize / 2, width - buttonsize * 3.5f, height - buttonsize
-		// / 2));
 	}
 
 	@Override
@@ -159,10 +120,7 @@ public class MobileControls implements IControls, ContextActionListener {
 		if (androidMenuPutable.getActiveMenu() != null) {
 			return true;
 		} else {
-			float rHeight = SIZEFACTOR * height;
-
-			float lineOffset = -width + rHeight;
-			return position.getX() + lineOffset > position.getY();
+			return false;
 		}
 	}
 
@@ -172,22 +130,13 @@ public class MobileControls implements IControls, ContextActionListener {
 		if (activeMenu != null) {
 			return activeMenu.getActionFor(position);
 		} else {
-			// float y = (float) position.getY();
-			// float x = (float) position.getX();
-			// if (showBuildButton.getPosition().contains(x, y)) {
-			// return showBuildButton.getAction();
-			// } else if (showSelectionButton.getPosition().contains(x, y)) {
-			// return showSelectionButton.getAction();
-			// } else {
 			return null;
-			// }
 		}
 	}
 
 	@Override
 	public Action replaceAction(Action action) {
 		Action replaced = action;
-		System.out.println("Ready to replace: " + action);
 		synchronized (activeActionMutex) {
 			if (activeAction != null) {
 				replaced = activeAction.replaceAction(replaced);
@@ -213,15 +162,7 @@ public class MobileControls implements IControls, ContextActionListener {
 
 	@Override
 	public boolean handleDrawEvent(GODrawEvent event) {
-		if (!containsPoint(event.getDrawPosition())) {
-			return false;
-		} else {
-			// if (naviPoint.centerContains(event.getDrawPosition())) {
-			// event.setHandler(new NavigationPointDrawHandler(naviPoint));
-			// }
-
-			return true;
-		}
+		return false;
 	}
 
 	@Override
@@ -247,12 +188,12 @@ public class MobileControls implements IControls, ContextActionListener {
 
 	@Override
 	public String getDescriptionFor(UIPoint position) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void setMapViewport(MapRectangle screenArea) {
+		androidMenuPutable.getChangeObserveable().fireMapViewChanged(screenArea);
 	}
 
 	private void setActiveAction(ContextAction activeAction) {
@@ -274,24 +215,12 @@ public class MobileControls implements IControls, ContextActionListener {
 	@Override
 	public void displaySelection(ISelectionSet selection) {
 		this.selection = selection;
+		androidMenuPutable.getChangeObserveable().fireMapSelectionChanged(selection);
 		if (selection != null
 				&& (selection.getSelectionType() == ESelectionType.SOLDIERS || selection
 						.getSelectionType() == ESelectionType.SPECIALISTS)) {
 			setActiveAction(new MoveToOnClick());
 		}
-	}
-
-	protected void showSelectionMenu() {
-		if (selection != null) {
-			switch (selection.getSelectionType()) {
-			case BUILDING:
-				IBuilding building = (IBuilding) selection.get(0);
-				ShortPoint2D pos = building.getPos();
-				IPartitionData partitionData = context.getMap().getPartitionData(pos.x, pos.y);
-				setActiveMenu(new BuildingMenu(androidMenuPutable, building, partitionData));
-			}
-		}
-		// showSelectionButton.setActive(selection != null);
 	}
 
 	@Override
