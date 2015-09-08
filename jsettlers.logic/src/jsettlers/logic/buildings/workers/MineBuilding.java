@@ -15,6 +15,7 @@
 package jsettlers.logic.buildings.workers;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
@@ -28,7 +29,7 @@ import jsettlers.logic.player.Player;
  * @author Andreas Eberle
  * 
  */
-public final class MineBuilding extends WorkerBuilding {
+public final class MineBuilding extends WorkerBuilding implements IBuilding.IMine {
 	private static final long serialVersionUID = 9201058266194063092L;
 
 	public MineBuilding(EBuildingType type, Player player) {
@@ -53,5 +54,11 @@ public final class MineBuilding extends WorkerBuilding {
 				objectsManager.removeMapObjectType(currPos.x, currPos.y, EMapObjectType.FOUND_NOTHING);
 			}
 		}
+	}
+
+	@Override
+	public float getProductivity() {
+		// FIXME: implement.
+		return 0.5f;
 	}
 }

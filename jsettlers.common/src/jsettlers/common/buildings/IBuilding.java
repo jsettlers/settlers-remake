@@ -129,4 +129,17 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		int getCurrentlyCommingSoldiers(ESoldierType type);
 	}
 
+	/**
+	 * A mine provides an additional productivity field for the GUI.
+	 * 
+	 * @author Michael Zangl
+	 */
+	static interface IMine extends IBuilding {
+		/**
+		 * Gets the productivity of this mine.
+		 * 
+		 * @return The productivity in range 0..1
+		 */
+		float getProductivity();
+	}
 }

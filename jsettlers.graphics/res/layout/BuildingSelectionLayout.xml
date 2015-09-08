@@ -36,7 +36,9 @@
 		class="jsettlers.graphics.map.controls.original.panel.selection.BuildingSelectionContent.NamePanel">
 	</element>
 
-	<element x="9" y="378" maxx="127" maxy="397" id="materialText">
+	<element class="Label" x="9" y="378" maxx="127" maxy="397" id="materialText">
+		<localized label=""/>
+		<font-size size="NORMAL"/>
 	</element>
 
 	<element x="9" y="398" maxx="127" maxy="427" id="materialArea">
