@@ -4,6 +4,8 @@
     <string name="pause_text">Game paused</string>
     <string name="pause_quit">Quit game</string>
     <string name="pause_resume">Resume</string>
+    <string name="building_construction">Under construction</string>
+    <string name="building_productivity">Productivity: %d%%</string>
     <string name="building_destroy_ok">Destroy</string>
     <string name="building_destroy_abort">Abort</string>
     <string name="building_destroy_text">Really destroy this building?</string>

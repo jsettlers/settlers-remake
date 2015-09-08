@@ -82,6 +82,15 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 
 		layout.nameText.setType(building.getBuildingType(), state.isConstruction());
 
+		String text = "";
+		if (building.getStateProgress() < 1) {
+			text = Labels.getString("materials_required");
+		} else if (building instanceof IBuilding.IMine) {
+			IBuilding.IMine mill = (IBuilding.IMine) building;
+			text = Labels.getString("productivity", (int) (mill.getProductivity() * 100));
+		}
+		layout.materialText.setText(text);
+
 		addRequestAndOfferStacks(layout.materialArea, state);
 
 		// TODO: convert to state
