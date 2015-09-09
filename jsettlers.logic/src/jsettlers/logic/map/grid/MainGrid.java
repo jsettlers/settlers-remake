@@ -833,10 +833,11 @@ public final class MainGrid implements Serializable {
 
 	final class ConstructionMarksGrid extends AbstractConstructionMarkableMap {
 		@Override
-		public final void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
+		public final void setConstructMarking(int x, int y, boolean set, boolean binaryConstructionMarkValues, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {
 				if (set) {
-					mapObjectsManager.setConstructionMarking(x, y, getConstructionMarkValue(x, y, flattenPositions));
+					byte newValue = binaryConstructionMarkValues ? 0 : getConstructionMarkValue(x, y, flattenPositions);
+					mapObjectsManager.setConstructionMarking(x, y, newValue);
 				} else {
 					mapObjectsManager.setConstructionMarking(x, y, (byte) -1);
 				}

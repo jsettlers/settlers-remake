@@ -313,4 +313,15 @@ public enum EBuildingType {
 	public RelativeStack[] getOfferStacks() {
 		return offerStacks;
 	}
+
+	public boolean isMine() {
+		switch (this) {
+		case COALMINE:
+		case IRONMINE:
+		case GOLDMINE:
+			return true;
+		default:
+			return false;
+		}
+	}
 }
