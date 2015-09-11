@@ -38,7 +38,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	ShortPoint2D getWorkAreaCenter();
 
-	boolean popMaterial(ShortPoint2D position, EMaterialType material);
+	boolean popMaterialFromStack(EMaterialType material);
 
 	void occupyBuilding(IManageableWorker worker);
 

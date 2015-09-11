@@ -17,7 +17,6 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
@@ -61,9 +60,9 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	public final boolean popMaterial(ShortPoint2D position, EMaterialType material) {
+	public final boolean popMaterialFromStack(EMaterialType material) {
 		for (RequestStack stack : super.getStacks()) {
-			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
+			if (stack.getMaterialType() == material) {
 				stack.pop();
 				return true;
 			}

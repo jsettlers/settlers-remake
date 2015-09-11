@@ -27,13 +27,13 @@ import jsettlers.logic.movable.interfaces.AbstractStrategyGrid;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.strategies.BearerMovableStrategy;
 import jsettlers.logic.movable.strategies.BricklayerStrategy;
-import jsettlers.logic.movable.strategies.BuildingWorkerStrategy;
 import jsettlers.logic.movable.strategies.DiggerStrategy;
 import jsettlers.logic.movable.strategies.soldiers.BowmanStrategy;
 import jsettlers.logic.movable.strategies.soldiers.InfantryStrategy;
 import jsettlers.logic.movable.strategies.specialists.DummySpecialistStrategy;
 import jsettlers.logic.movable.strategies.specialists.GeologistStrategy;
 import jsettlers.logic.movable.strategies.specialists.PioneerStrategy;
+import jsettlers.logic.movable.strategies.workers.BuildingWorkerStrategy;
 import jsettlers.logic.player.Player;
 
 /**

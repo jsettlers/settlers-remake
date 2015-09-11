@@ -147,7 +147,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			takeAction();
 			break;
 		case REMOTETAKE:
-			if (this.building.popMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (this.building.popMaterialFromStack(currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
