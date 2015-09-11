@@ -63,8 +63,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	public final boolean popMaterialFromStack(EMaterialType material) {
 		for (RequestStack stack : super.getStacks()) {
 			if (stack.getMaterialType() == material) {
-				stack.pop();
-				return true;
+				return stack.pop();
 			}
 		}
 		return false;

@@ -57,6 +57,8 @@ public interface IRequestsStackGrid extends Serializable {
 	 *            The location to pop the material.
 	 * @param materialType
 	 *            The {@link EMaterialType} type to be popped.
+	 * @return if <code>true</code>, the material has been popped. If <code>false</code>, no material of this type has been found at the given
+	 *         position.
 	 */
-	void popMaterial(ShortPoint2D position, EMaterialType materialType);
+	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
 }

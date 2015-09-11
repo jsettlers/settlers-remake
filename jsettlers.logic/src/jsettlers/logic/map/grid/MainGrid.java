@@ -1478,8 +1478,8 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			public final void popMaterial(ShortPoint2D position, EMaterialType materialType) {
-				mapObjectsManager.popMaterial(position.x, position.y, materialType);
+			public final boolean popMaterial(ShortPoint2D position, EMaterialType materialType) {
+				return mapObjectsManager.popMaterial(position.x, position.y, materialType);
 			}
 
 			@Override
