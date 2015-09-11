@@ -54,9 +54,11 @@
 
 	<constructionStack dx="0" dy="3" material="PLANK" buildrequired="4" />
 	<constructionStack dx="3" dy="5" material="STONE" buildrequired="1" />
+	
 	<requestStack dx="3" dy="4" material="BREAD" />
 	<requestStack dx="3" dy="2" material="MEAT" />
 	<requestStack dx="4" dy="2" material="FISH" />
+	
 	<offerStack dx="0" dy="4" material="IRONORE" />
 
 	<bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
@@ -77,65 +79,34 @@
     <image file="13" for="FINAL" type="SETTLER" sequence="4" image="0" />
     <image file="13" for="BUILD" type="SETTLER" sequence="4" image="1" />
 
-    <!-- going home job -->
+    <!-- start with going home -->
     <startjob name="gohome" />
-    <job name="gohome" type="GO_TO" successjob="hide" failjob="hide" dx="0" dy="2" />
+    
+    <job name="gohome" 				type="GO_TO" 			successjob="hide" 				failjob="hide" 		dx="0" dy="2" />
+    <job name="hide"				type="HIDE" 			successjob="waitHome" 			failjob="waitHome" />
+    <job name="waitHome" 			type="WAIT" 			successjob="checkHasStackSpace" failjob="hide" 		time="3" />
+    
+    <job name="checkHasStackSpace"	type="NOT_FULL" 		successjob="checkHasFood" 		failjob="waitHome"	dx="0" dy="4" material="IRONORE" />
+    <job name="checkHasFood" 		type="TRY_TAKING_FOOD" 	successjob="startMining"		failjob="waitHome"  foodOrder="MEAT,BREAD,FISH"/>
 
-
-    <job name="hide" type="HIDE" successjob="A_wait" failjob="A_wait" />
-
-    <!-- Wait for MEAT -->
-    <job name="A_wait" type="WAIT" successjob="A_checkore" failjob="A_checkore" time="3" />
-    <job name="A_checkore" type="NOT_FULL" successjob="A_checkfood" failjob="B_wait" dx="0" dy="4" material="IRONORE" />
-    <job name="A_checkfood" type="AVAILABLE" successjob="mine_meat" failjob="B_wait" material="MEAT" dx="3" dy="2" />
-
-    <!-- Wait some more for MEAT -->
-    <job name="B_wait" type="WAIT" successjob="B_checkore" failjob="B_checkore" time="7" />
-    <job name="B_checkore" type="NOT_FULL" successjob="B_checkfood" failjob="C_wait" dx="0" dy="4" material="IRONORE" />
-    <job name="B_checkfood" type="AVAILABLE" successjob="mine_meat" failjob="C_wait" material="MEAT" dx="3" dy="2" />
-
-    <!-- Wait for BREAD -->
-    <job name="C_wait" type="WAIT" successjob="C_checkore" failjob="C_checkore" time="10" />
-    <job name="C_checkore" type="NOT_FULL" successjob="C_checkfood1" failjob="D_wait" dx="0" dy="4" material="IRONORE" />
-    <job name="C_checkfood1" type="AVAILABLE" successjob="mine_meat" failjob="C_checkfood2" material="MEAT" dx="3" dy="2" />
-    <job name="C_checkfood2" type="AVAILABLE" successjob="mine_bread" failjob="D_wait" material="BREAD" dx="3" dy="4" />
-
-    <!-- Wait for FISH -->
-    <job name="D_wait" type="WAIT" successjob="D_checkore" failjob="D_checkore" time="10" />
-    <job name="D_checkore" type="NOT_FULL" successjob="D_checkfood1" failjob="E_wait" dx="0" dy="4" material="IRONORE" />
-    <job name="D_checkfood1" type="AVAILABLE" successjob="mine_meat" failjob="D_checkfood2" material="MEAT" dx="3" dy="2" />
-    <job name="D_checkfood2" type="AVAILABLE" successjob="mine_bread" failjob="D_checkfood3" material="BREAD" dx="3" dy="4" />
-    <job name="D_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" material="FISH" dx="4" dy="2" />
-
-    <!-- Wait for FISH -->
-    <job name="E_wait" type="WAIT" successjob="E_checkore" failjob="E_checkore" time="10" />
-    <job name="E_checkore" type="NOT_FULL" successjob="E_checkfood1" failjob="E_wait" dx="0" dy="4" material="IRONORE" />
-    <job name="E_checkfood1" type="AVAILABLE" successjob="mine_meat" failjob="E_checkfood2" material="MEAT" dx="3" dy="2" />
-    <job name="E_checkfood2" type="AVAILABLE" successjob="mine_bread" failjob="E_checkfood3" material="BREAD" dx="3" dy="4" />
-    <job name="E_checkfood3" type="AVAILABLE" successjob="mine_fish" failjob="E_wait" material="FISH" dx="4" dy="2" />
-
-    <job name="mine_meat" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="MEAT" dx="3" dy="2" />
-    <job name="mine_bread" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="BREAD" dx="3" dy="4" />
-    <job name="mine_fish" type="REMOTETAKE" successjob="mine" failjob="E_wait" material="FISH" dx="4" dy="2" />
-
-    <job name="mine" type="IS_PRODUCTIVE" successjob="successful" failjob="noironore1" />
+    <job name="startMining" 		type="IS_PRODUCTIVE" 	successjob="successfulMining1" 	failjob="failedMining1" />
+	
 
     <!-- successful mining -->
-    <job name="successful" type="NOT_FULL" successjob="successfuls" failjob="successfuls" dx="0" dy="4" material="IRONORE" />
-    <job name="successfuls" type="SET_MATERIAL" successjob="show_full" failjob="gohome" material="IRONORE" />
-    <job name="show_full" type="SHOW" successjob="successful1" failjob="gohome" dx="0" dy="2" />
-    <job name="successful1" type="WALK" successjob="successful2" failjob="gohome" direction="SOUTH_WEST" />
-    <job name="successful2" type="WALK" successjob="successful3" failjob="gohome" direction="SOUTH_WEST" />
-    <job name="successful3" type="LOOK_AT" successjob="successful4" failjob="gohome" direction="SOUTH_WEST" />
-    <job name="successful4" type="DROP" successjob="successful7" failjob="gohome" material="IRONORE" />
-    <job name="successful7" type="WALK" successjob="successful8" failjob="gohome" direction="NORTH_EAST" />
-    <job name="successful8" type="WALK" successjob="hide" failjob="hide" direction="NORTH_EAST" />
+    <job name="successfulMining1" 	type="SET_MATERIAL" 	successjob="successfulMining2"	failjob="gohome" 	material="IRONORE" />
+    <job name="successfulMining2" 	type="SHOW" 			successjob="successfulMining3"	failjob="gohome" 	dx="0" dy="2" />
+    <job name="successfulMining3" 	type="WALK" 			successjob="successfulMining4"	failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="successfulMining4" 	type="WALK" 			successjob="successfulMining5"	failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="successfulMining5" 	type="LOOK_AT" 			successjob="successfulMining6"	failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="successfulMining6" 	type="DROP" 			successjob="successfulMining7"	failjob="gohome" 	material="IRONORE" />
+    <job name="successfulMining7" 	type="WALK" 			successjob="successfulMining8"	failjob="gohome" 	direction="NORTH_EAST" />
+    <job name="successfulMining8" 	type="WALK" 			successjob="hide" 				failjob="hide" 		direction="NORTH_EAST" />
 
     <!-- failed mining -->
-    <job name="noironore1" type="SET_MATERIAL" successjob="noironore2" failjob="gohome" material="BASKET" />
-    <job name="noironore2" type="SHOW" successjob="noironore4" failjob="gohome" dx="0" dy="2" />
-    <job name="noironore4" type="WALK" successjob="noironore5" failjob="gohome" direction="SOUTH_WEST" />
-    <job name="noironore5" type="LOOK_AT" successjob="noironore6" failjob="gohome" direction="SOUTH_WEST" />
-    <job name="noironore6" type="PLAY_ACTION1" successjob="noironore7" failjob="gohome" time="5.0" />
-    <job name="noironore7" type="WALK" successjob="hide" failjob="hide" direction="NORTH_EAST" />
+    <job name="failedMining1" 		type="SET_MATERIAL" 	successjob="failedMining2" 		failjob="gohome" 	material="BASKET" />
+    <job name="failedMining2" 		type="SHOW" 			successjob="failedMining3" 		failjob="gohome" 	dx="0" dy="2" />
+    <job name="failedMining3" 		type="WALK" 			successjob="failedMining4" 		failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="failedMining4" 		type="LOOK_AT" 			successjob="failedMining5" 		failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="failedMining5" 		type="PLAY_ACTION1" 	successjob="failedMining6" 		failjob="gohome" 	time="5.0" />
+    <job name="failedMining6" 		type="WALK" 			successjob="hide" 				failjob="hide" 		direction="NORTH_EAST" />
 </building>

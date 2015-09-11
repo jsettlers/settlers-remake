@@ -59,8 +59,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		return -1;
 	}
 
-	@Override
-	public final boolean popMaterialFromStack(EMaterialType material) {
+	protected final boolean popMaterialFromStack(EMaterialType material) {
 		for (RequestStack stack : super.getStacks()) {
 			if (stack.getMaterialType() == material) {
 				return stack.pop();
@@ -101,5 +100,14 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	@Override
 	public final boolean isOccupied() {
 		return worker != null;
+	}
+
+	@Override
+	public void workExecuted(boolean successfully) {
+	}
+
+	@Override
+	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
+		return false;
 	}
 }

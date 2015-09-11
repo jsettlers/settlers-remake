@@ -14,26 +14,61 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.workers;
 
+import jsettlers.algorithms.datastructures.BooleanMovingAverage;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.player.Player;
 
 /**
- * This is a mine building. It's only difference to a {@link WorkerBuilding} is that it's ground won't be flattened.
+ * This is a mine building. It's ground won't be flattened.
  * 
  * @author Andreas Eberle
  * 
  */
 public final class MineBuilding extends WorkerBuilding implements IBuilding.IMine {
 	private static final long serialVersionUID = 9201058266194063092L;
+	private static final byte[] workPackagesForFoodByOrder = { 10, 4, 2 };
+
+	private final BooleanMovingAverage movingAverage = new BooleanMovingAverage(8, false);
+	private byte feedWorkPackages = 10; // remaining work packages gained by eating food.
 
 	public MineBuilding(EBuildingType type, Player player) {
 		super(type, player);
+	}
+
+	@Override
+	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
+		if (feedWorkPackages <= 0) {
+			for (int i = 0; i < foodOrder.length; i++) { // check the types of food by order
+				if (super.popMaterialFromStack(foodOrder[i])) {
+					feedWorkPackages = workPackagesForFoodByOrder[i];
+					break;
+				}
+			}
+		}
+
+		if (feedWorkPackages > 0) {
+			feedWorkPackages--;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public float getProductivity() {
+		return movingAverage.getAverage();
+	}
+
+	@Override
+	public void workExecuted(boolean successfully) {
+		movingAverage.inserValue(successfully);
 	}
 
 	@Override
@@ -56,9 +91,4 @@ public final class MineBuilding extends WorkerBuilding implements IBuilding.IMin
 		}
 	}
 
-	@Override
-	public float getProductivity() {
-		// FIXME: implement.
-		return 0.5f;
-	}
 }

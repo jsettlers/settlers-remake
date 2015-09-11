@@ -38,8 +38,6 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	ShortPoint2D getWorkAreaCenter();
 
-	boolean popMaterialFromStack(EMaterialType material);
-
 	void occupyBuilding(IManageableWorker worker);
 
 	ShortPoint2D calculateRealPoint(short dx, short dy);
@@ -58,4 +56,13 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	 */
 	void leaveBuilding(IManageableWorker worker);
 
+	/**
+	 * This is required to calculate the productivity of mines.
+	 * 
+	 * @param successfully
+	 *            Must be <code>true</code> if the worker executed his main task successfully. False otherwise.
+	 */
+	void workExecuted(boolean successfully);
+
+	boolean tryTakingFoood(EMaterialType[] foodOrder);
 }
