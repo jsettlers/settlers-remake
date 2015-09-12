@@ -62,7 +62,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	 * @param successfully
 	 *            Must be <code>true</code> if the worker executed his main task successfully. False otherwise.
 	 */
-	void workExecuted(boolean successfully);
+	void resourceTaken(boolean successfully);
 
 	boolean tryTakingFoood(EMaterialType[] foodOrder);
 }

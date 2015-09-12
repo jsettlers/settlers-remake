@@ -103,7 +103,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	}
 
 	@Override
-	public void workExecuted(boolean successfully) {
+	public void resourceTaken(boolean successfully) {
 	}
 
 	@Override

@@ -1,4 +1,5 @@
-<?xml version="1.1" encoding="UTF-8"?><!DOCTYPE building SYSTEM "building.dtd">
+<?xml version="1.1" encoding="UTF-8"?>
+<!DOCTYPE building SYSTEM "building.dtd">
 <building worker="MINER" workradius="0">
     <ground groundtype="MOUNTAIN" />
     
@@ -22,9 +23,7 @@
 	<blocked dx="1" dy="0" block="true" />
 	<blocked dx="0" dy="-1" block="true" />
 	<blocked dx="-1" dy="-2" block="true" />
-	<blocked dx="-2" dy="-3" block="true" />
 	<blocked dx="-1" dy="-3" block="true" />
-	<blocked dx="3" dy="1" block="true" />
 
 	<blocked dx="3" dy="2" block="false" />
 	<blocked dx="3" dy="3" block="false" />
@@ -38,7 +37,6 @@
 	<blocked dx="-3" dy="-1" block="false" />
 	<blocked dx="-3" dy="-2" block="false" />
 	<blocked dx="-3" dy="-3" block="false" />
-	<blocked dx="-3" dy="-4" block="false" />
 	<blocked dx="-2" dy="-4" block="false" />
 	<blocked dx="-1" dy="-4" block="false" />
 	<blocked dx="0" dy="-3" block="false" />
@@ -47,8 +45,8 @@
 	<blocked dx="3" dy="0" block="false" />
 	<blocked dx="-1" dy="2" block="false" />
 	<blocked dx="0" dy="4" block="false" />
-	<blocked dx="4" dy="1" block="false" />
-	<blocked dx="4" dy="2" block="false" />
+	<blocked dx="3" dy="1" block="false" />
+	<blocked dx="-2" dy="-3" block="false" />
 
 	<door dx="0" dy="2" />
 
@@ -57,7 +55,7 @@
 	
 	<requestStack dx="3" dy="4" material="BREAD" />
 	<requestStack dx="3" dy="2" material="MEAT" />
-	<requestStack dx="4" dy="2" material="FISH" />
+	<requestStack dx="3" dy="0" material="FISH" />
 	
 	<offerStack dx="0" dy="4" material="IRONORE" />
 

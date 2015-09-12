@@ -67,7 +67,7 @@ public final class MineBuilding extends WorkerBuilding implements IBuilding.IMin
 	}
 
 	@Override
-	public void workExecuted(boolean successfully) {
+	public void resourceTaken(boolean successfully) {
 		movingAverage.inserValue(successfully);
 	}
 
