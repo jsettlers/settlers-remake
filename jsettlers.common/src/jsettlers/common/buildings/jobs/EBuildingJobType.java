@@ -220,7 +220,7 @@ public enum EBuildingJobType {
 	/**
 	 * If the settler should be productive, this method succeeds, it fails otherwise.
 	 */
-	IS_PRODUCTIVE,
+	TRY_TAKING_RESOURCE,
 
 	/**
 	 * Used for mines to check if they have food to use. Supplies parameter foodOrder.

@@ -94,7 +94,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			gotoAction();
 			break;
 
-		case IS_PRODUCTIVE:
+		case TRY_TAKING_RESOURCE:
 			if (isProductive()) {
 				decreaseResourceAmount();
 				building.workExecuted(true);

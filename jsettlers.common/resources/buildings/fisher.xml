@@ -92,7 +92,7 @@
 	<!-- fish it -->
 	<job name="look_at_fish" 	type="LOOK_AT_SEARCHED"			successjob="play" 			failjob="gohome" 		direction="NORTH_WEST" search="FISHABLE"/>
 	<job name="play" 			type="PLAY_ACTION2" 			successjob="successful" 	failjob="gohome" 		time="1"/>
-	<job name="successful"		type="IS_PRODUCTIVE"			successjob="play_success1" 	failjob="play_fail"		/>
+	<job name="successful"		type="TRY_TAKING_RESOURCE"		successjob="play_success1" 	failjob="play_fail"		/>
 
 	<!--  fail -->
 	<job name="play_fail" 		type="PLAY_ACTION1" 			successjob="gohome" 		failjob="gohome" 		time="2"/>

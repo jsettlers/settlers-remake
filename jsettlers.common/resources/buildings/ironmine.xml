@@ -82,25 +82,25 @@
     <!-- start with going home -->
     <startjob name="gohome" />
     
-    <job name="gohome" 				type="GO_TO" 			successjob="hide" 				failjob="hide" 		dx="0" dy="2" />
-    <job name="hide"				type="HIDE" 			successjob="waitHome" 			failjob="waitHome" />
-    <job name="waitHome" 			type="WAIT" 			successjob="checkHasStackSpace" failjob="hide" 		time="3" />
+    <job name="gohome" 				type="GO_TO" 				successjob="hide" 				failjob="hide" 		dx="0" dy="2" />
+    <job name="hide"				type="HIDE" 				successjob="waitHome" 			failjob="waitHome" />
+    <job name="waitHome" 			type="WAIT" 				successjob="checkHasStackSpace" failjob="hide" 		time="3" />
     
-    <job name="checkHasStackSpace"	type="NOT_FULL" 		successjob="checkHasFood" 		failjob="waitHome"	dx="0" dy="4" material="IRONORE" />
-    <job name="checkHasFood" 		type="TRY_TAKING_FOOD" 	successjob="startMining"		failjob="waitHome"  foodOrder="MEAT,BREAD,FISH"/>
+    <job name="checkHasStackSpace"	type="NOT_FULL" 			successjob="checkHasFood" 		failjob="waitHome"	dx="0" dy="4" material="IRONORE" />
+    <job name="checkHasFood" 		type="TRY_TAKING_FOOD" 		successjob="startMining"		failjob="waitHome"  foodOrder="MEAT,BREAD,FISH"/>
 
-    <job name="startMining" 		type="IS_PRODUCTIVE" 	successjob="successfulMining1" 	failjob="failedMining1" />
+    <job name="startMining" 		type="TRY_TAKING_RESOURCE" 	successjob="successfulMining1" 	failjob="failedMining1" />
 	
 
     <!-- successful mining -->
-    <job name="successfulMining1" 	type="SET_MATERIAL" 	successjob="successfulMining2"	failjob="gohome" 	material="IRONORE" />
-    <job name="successfulMining2" 	type="SHOW" 			successjob="successfulMining3"	failjob="gohome" 	dx="0" dy="2" />
-    <job name="successfulMining3" 	type="WALK" 			successjob="successfulMining4"	failjob="gohome" 	direction="SOUTH_WEST" />
-    <job name="successfulMining4" 	type="WALK" 			successjob="successfulMining5"	failjob="gohome" 	direction="SOUTH_WEST" />
-    <job name="successfulMining5" 	type="LOOK_AT" 			successjob="successfulMining6"	failjob="gohome" 	direction="SOUTH_WEST" />
-    <job name="successfulMining6" 	type="DROP" 			successjob="successfulMining7"	failjob="gohome" 	material="IRONORE" />
-    <job name="successfulMining7" 	type="WALK" 			successjob="successfulMining8"	failjob="gohome" 	direction="NORTH_EAST" />
-    <job name="successfulMining8" 	type="WALK" 			successjob="hide" 				failjob="hide" 		direction="NORTH_EAST" />
+    <job name="successfulMining1" 	type="SET_MATERIAL" 		successjob="successfulMining2"	failjob="gohome" 	material="IRONORE" />
+    <job name="successfulMining2" 	type="SHOW" 				successjob="successfulMining3"	failjob="gohome" 	dx="0" dy="2" />
+    <job name="successfulMining3" 	type="WALK" 				successjob="successfulMining4"	failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="successfulMining4" 	type="WALK" 				successjob="successfulMining5"	failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="successfulMining5" 	type="LOOK_AT" 				successjob="successfulMining6"	failjob="gohome" 	direction="SOUTH_WEST" />
+    <job name="successfulMining6" 	type="DROP" 				successjob="successfulMining7"	failjob="gohome" 	material="IRONORE" />
+    <job name="successfulMining7" 	type="WALK" 				successjob="successfulMining8"	failjob="gohome" 	direction="NORTH_EAST" />
+    <job name="successfulMining8" 	type="WALK" 				successjob="hide" 				failjob="hide" 		direction="NORTH_EAST" />
 
     <!-- failed mining -->
     <job name="failedMining1" 		type="SET_MATERIAL" 	successjob="failedMining2" 		failjob="gohome" 	material="BASKET" />
