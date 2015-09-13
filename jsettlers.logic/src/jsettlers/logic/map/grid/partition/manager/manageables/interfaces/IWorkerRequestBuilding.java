@@ -56,13 +56,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	 */
 	void leaveBuilding(IManageableWorker worker);
 
-	/**
-	 * This is required to calculate the productivity of mines.
-	 * 
-	 * @param successfully
-	 *            Must be <code>true</code> if the worker executed his main task successfully. False otherwise.
-	 */
-	void resourceTaken(boolean successfully);
-
 	boolean tryTakingFoood(EMaterialType[] foodOrder);
+
+	boolean tryTakingResource();
 }

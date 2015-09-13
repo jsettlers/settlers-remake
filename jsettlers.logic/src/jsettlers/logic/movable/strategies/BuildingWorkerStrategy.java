@@ -95,12 +95,9 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case TRY_TAKING_RESOURCE:
-			if (isProductive()) {
-				decreaseResourceAmount();
-				building.resourceTaken(true);
+			if (tryTakingResource()) {
 				jobFinished();
 			} else {
-				building.resourceTaken(false);
 				jobFailed();
 			}
 			break;
@@ -345,50 +342,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		}
 	}
 
-	private boolean isProductive() {
+	private boolean tryTakingResource() {
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = super.getMovable().getDirection();
-			return hasProductiveResource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 1);
+			return super.getStrategyGrid().tryTakingRecource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
 		case COALMINE:
-			return hasProductiveResource(building.getPos(), EResourceType.COAL, 1);
 		case IRONMINE:
-			return hasProductiveResource(building.getPos(), EResourceType.IRON, 1);
 		case GOLDMINE:
-			return hasProductiveResource(building.getPos(), EResourceType.GOLD, 1);
+			return building.tryTakingResource();
 
 		default:
 			return false;
 		}
-	}
-
-	private boolean hasProductiveResource(ShortPoint2D position, EResourceType type, int radius) {
-		float percentage = super.getStrategyGrid().getResourceProbabilityAround(position.x, position.y, type, radius);
-		return RandomSingleton.get().nextFloat() < percentage;
-	}
-
-	private void decreaseResourceAmount() {
-		switch (building.getBuildingType()) {
-		case FISHER:
-			EDirection fishDirection = super.getMovable().getDirection();
-			decreaseResourceAround(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 1);
-			break;
-		case COALMINE:
-			decreaseResourceAround(building.getPos(), EResourceType.COAL, 1);
-			break;
-		case IRONMINE:
-			decreaseResourceAround(building.getPos(), EResourceType.IRON, 1);
-			break;
-		case GOLDMINE:
-			decreaseResourceAround(building.getPos(), EResourceType.GOLD, 1);
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void decreaseResourceAround(ShortPoint2D position, EResourceType resourceType, int radius) {
-		super.getStrategyGrid().decreaseResourceAround(position.x, position.y, resourceType, radius, 1);
 	}
 
 	private void gotoAction() {

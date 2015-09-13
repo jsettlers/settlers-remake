@@ -204,12 +204,14 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return EResourceType.values[resourceType[x + y * width]];
 	}
 
-	public final boolean hasResourceAt(int x, int y, EResourceType resourceType) {
-		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x + y * width] > 0;
-	}
-
-	public final void pickResourceAt(short x, short y) {
-		resourceAmount[x + y * width]--;
+	public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
+		int idx = position.x + position.y * width;
+		if (resourceType[idx] == resource.ordinal && resourceAmount[idx] > 0) {
+			resourceAmount[idx]--;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -232,46 +234,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private void flatten(int x, int y) {
 		if (areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.FLATTENED)) {
 			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
-		}
-	}
-
-	public float getResourceProbabilityAround(int x, int y, EResourceType type, int radius) {
-		int minx = Math.max(x - radius, 0);
-		int maxx = Math.min(x + radius, width - 1);
-		int miny = Math.max(y - radius, 0);
-		int maxy = Math.min(y + radius, height - 1);
-		int amount = 0;
-		int area = 0;
-		for (int currentX = minx; currentX <= maxx; currentX++) {
-			for (int currentY = miny; currentY <= maxy; currentY++) {
-				int idx = currentX + currentY * width;
-				if (resourceType[idx] == type.ordinal) {
-					amount += resourceAmount[idx];
-					area++;
-				}
-			}
-		}
-		return ((float) amount) / (Byte.MAX_VALUE * area);
-	}
-
-	public void decreaseResourceAround(short x, short y, EResourceType type, int radius, int amount) {
-		int minx = Math.max(x - radius, 0);
-		int maxx = Math.min(x + radius, width - 1);
-		int miny = Math.max(y - radius, 0);
-		int maxy = Math.min(y + radius, height - 1);
-
-		for (int currentX = minx; currentX <= maxx; currentX++) {
-			for (int currentY = miny; currentY <= maxy; currentY++) {
-				int idx = currentX + currentY * width;
-				if (resourceType[idx] == type.ordinal && resourceAmount[idx] > 0) {
-					int delta = Math.min(amount, resourceAmount[idx]);
-					resourceAmount[idx] -= delta;
-					amount -= delta;
-
-					if (amount <= 0)
-						return;
-				}
-			}
 		}
 	}
 
@@ -358,5 +320,4 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 			activateUnflattening(x, y);
 		}
 	}
-
 }

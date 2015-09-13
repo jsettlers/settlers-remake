@@ -17,13 +17,16 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.algorithms.datastructures.BooleanMovingAverage;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.player.Player;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
  * This is a mine building. It's ground won't be flattened.
@@ -35,7 +38,7 @@ public final class MineBuilding extends WorkerBuilding implements IBuilding.IMin
 	private static final long serialVersionUID = 9201058266194063092L;
 	private static final byte[] workPackagesForFoodByOrder = { 10, 4, 2 };
 
-	private final BooleanMovingAverage movingAverage = new BooleanMovingAverage(8, false);
+	private final BooleanMovingAverage movingAverage = new BooleanMovingAverage(12, false);
 	private byte feedWorkPackages = 10; // remaining work packages gained by eating food.
 
 	public MineBuilding(EBuildingType type, Player player) {
@@ -67,8 +70,27 @@ public final class MineBuilding extends WorkerBuilding implements IBuilding.IMin
 	}
 
 	@Override
-	public void resourceTaken(boolean successfully) {
-		movingAverage.inserValue(successfully);
+	public boolean tryTakingResource() {
+		RelativePoint[] blockedPositions = super.getBuildingType().getBlockedTiles();
+		int randomPositionIndex = RandomSingleton.getInt(blockedPositions.length);
+		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.getPos());
+
+		boolean resourceTaken = super.getGrid().tryTakingResource(randomPosition, getProducedResource());
+		movingAverage.inserValue(resourceTaken);
+		return resourceTaken;
+	}
+
+	private EResourceType getProducedResource() {
+		switch (super.getBuildingType()) {
+		case COALMINE:
+			return EResourceType.COAL;
+		case IRONMINE:
+			return EResourceType.IRON;
+		case GOLDMINE:
+			return EResourceType.GOLD;
+		default:
+			throw new IllegalArgumentException("Unknown building type for a mine: " + super.getBuildingType());
+		}
 	}
 
 	@Override
