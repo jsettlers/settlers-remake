@@ -46,6 +46,7 @@ import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
+import jsettlers.logic.buildings.workers.ResourceBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
@@ -567,7 +568,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case CHARCOAL_BURNER:
 		case BAKER:
 		case FARM:
-		case FISHER:
 		case FORESTER:
 		case GOLDMELT:
 		case IRONMELT:
@@ -597,6 +597,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case GOLDMINE:
 		case COALMINE:
 			return new MineBuilding(type, player);
+
+		case FISHER:
+			return new ResourceBuilding(EBuildingType.FISHER, player, 12);
 
 		case STOCK:
 			return new StockBuilding(player);

@@ -85,8 +85,8 @@ public class BuildingSelectionContent extends AbstractSelectionContent {
 		String text = "";
 		if (building.getStateProgress() < 1) {
 			text = Labels.getString("materials_required");
-		} else if (building instanceof IBuilding.IMine) {
-			IBuilding.IMine mill = (IBuilding.IMine) building;
+		} else if (building instanceof IBuilding.IResourceBuilding) {
+			IBuilding.IResourceBuilding mill = (IBuilding.IResourceBuilding) building;
 			text = Labels.getString("productivity", (int) (mill.getProductivity() * 100));
 		}
 		layout.materialText.setText(text);

@@ -14,9 +14,7 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.workers;
 
-import jsettlers.algorithms.datastructures.BooleanMovingAverage;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
@@ -34,15 +32,14 @@ import jsettlers.network.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  * 
  */
-public final class MineBuilding extends WorkerBuilding implements IBuilding.IMine {
+public final class MineBuilding extends ResourceBuilding {
 	private static final long serialVersionUID = 9201058266194063092L;
 	private static final byte[] workPackagesForFoodByOrder = { 10, 4, 2 };
 
-	private final BooleanMovingAverage movingAverage = new BooleanMovingAverage(12, false);
 	private byte feedWorkPackages = 10; // remaining work packages gained by eating food.
 
 	public MineBuilding(EBuildingType type, Player player) {
-		super(type, player);
+		super(type, player, 12);
 	}
 
 	@Override
@@ -65,18 +62,13 @@ public final class MineBuilding extends WorkerBuilding implements IBuilding.IMin
 	}
 
 	@Override
-	public float getProductivity() {
-		return movingAverage.getAverage();
-	}
-
-	@Override
 	public boolean tryTakingResource() {
 		RelativePoint[] blockedPositions = super.getBuildingType().getBlockedTiles();
 		int randomPositionIndex = RandomSingleton.getInt(blockedPositions.length);
 		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.getPos());
 
 		boolean resourceTaken = super.getGrid().tryTakingResource(randomPosition, getProducedResource());
-		movingAverage.inserValue(resourceTaken);
+		super.productivityActionExecuted(resourceTaken);
 		return resourceTaken;
 	}
 
