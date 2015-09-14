@@ -77,9 +77,9 @@ public final class MineBuilding extends ResourceBuilding {
 		case COALMINE:
 			return EResourceType.COAL;
 		case IRONMINE:
-			return EResourceType.IRON;
+			return EResourceType.IRONORE;
 		case GOLDMINE:
-			return EResourceType.GOLD;
+			return EResourceType.GOLDORE;
 		default:
 			throw new IllegalArgumentException("Unknown building type for a mine: " + super.getBuildingType());
 		}
