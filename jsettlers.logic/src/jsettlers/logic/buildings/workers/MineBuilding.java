@@ -20,6 +20,7 @@ import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.RelativeToRealPointIterable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
@@ -105,4 +106,9 @@ public final class MineBuilding extends ResourceBuilding {
 		}
 	}
 
+	@Override
+	public int getRemainingResourceAmount() {
+		return super.getGrid().getAmountOfResource(getProducedResource(),
+				new RelativeToRealPointIterable(super.getBuildingType().getBlockedTiles(), super.getPos()));
+	}
 }

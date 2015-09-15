@@ -142,5 +142,12 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		 * @return The productivity in the interval [0,1].
 		 */
 		float getProductivity();
+
+		/**
+		 * Returns the remaining amount of the building's resource.
+		 * 
+		 * @return The number of resources available.
+		 */
+		public int getRemainingResourceAmount();
 	}
 }

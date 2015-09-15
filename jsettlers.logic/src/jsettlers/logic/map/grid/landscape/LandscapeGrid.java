@@ -36,6 +36,8 @@ import jsettlers.network.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  */
 public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener {
+	private static final long serialVersionUID = -751261669662036483L;
+
 	/**
 	 * This class is used as null object to get rid of a lot of null checks
 	 * 
@@ -49,7 +51,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		}
 	}
 
-	private static final long serialVersionUID = -751261669662036483L;
+	private static final byte MAX_RESOURCE_AMOUNT_PER_POSITION = 50;
 
 	private final byte[] heightGrid;
 	private final byte[] landscapeGrid;
@@ -186,7 +188,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
 		this.resourceType[x + y * width] = resourceType.ordinal;
-		this.resourceAmount[x + y * width] = amount;
+		this.resourceAmount[x + y * width] = (byte) Math.min(amount, MAX_RESOURCE_AMOUNT_PER_POSITION);
 	}
 
 	/**
@@ -202,6 +204,17 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final EResourceType getResourceTypeAt(int x, int y) {
 		return EResourceType.values[resourceType[x + y * width]];
+	}
+
+	public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
+		int amount = 0;
+		for (ShortPoint2D position : positions) {
+			int index = position.x + position.y * width;
+			if (resourceType[index] == resource.ordinal) {
+				amount += resourceAmount[index];
+			}
+		}
+		return amount;
 	}
 
 	public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
@@ -320,4 +333,5 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 			activateUnflattening(x, y);
 		}
 	}
+
 }

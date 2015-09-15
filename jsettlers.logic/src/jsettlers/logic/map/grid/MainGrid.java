@@ -1566,6 +1566,11 @@ public final class MainGrid implements Serializable {
 		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
 			return landscapeGrid.tryTakingResource(position, resource);
 		}
+
+		@Override
+		public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
+			return landscapeGrid.getAmountOfResource(resource, positions);
+		}
 	}
 
 	final class GuiInputGrid implements IGuiInputGrid {

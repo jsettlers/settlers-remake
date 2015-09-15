@@ -26,6 +26,10 @@ public class ResourceBuilding extends WorkerBuilding implements IBuilding.IResou
 		return movingAverage.getAverage();
 	}
 
+	public int getRemainingResourceAmount() {
+		return -1;
+	}
+
 	protected void productivityActionExecuted(boolean successfully) {
 		movingAverage.inserValue(successfully);
 	}

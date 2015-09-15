@@ -151,4 +151,6 @@ public interface IBuildingsGrid {
 
 	boolean tryTakingResource(ShortPoint2D position, EResourceType resource);
 
+	int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions);
+
 }
