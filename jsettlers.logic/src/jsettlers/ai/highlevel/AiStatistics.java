@@ -502,6 +502,16 @@ public class AiStatistics {
 		return enemies;
 	}
 
+	public ShortPoint2D calculateAveragePointFromList(List<ShortPoint2D> points) {
+		int averageX = 0;
+		int averageY = 0;
+		for (ShortPoint2D point : points) {
+			averageX += point.x;
+			averageY += point.y;
+		}
+		return new ShortPoint2D(averageX / points.size(), averageY / points.size());
+	}
+
 	class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;

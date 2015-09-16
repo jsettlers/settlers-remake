@@ -15,6 +15,7 @@
 package jsettlers.ai.army;
 
 import jsettlers.ai.highlevel.AiStatistics;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 
@@ -78,7 +79,24 @@ public class LooserGeneral implements ArmyGeneral {
 	}
 
 	private void attack(byte enemyToAttackId) {
+		ShortPoint2D towerToAttack = determineTowerToAttack(enemyToAttackId);
 
+		// calculate attack group size
+		// get 10 nearest spearmen (Lv3, Lv2, Lv1)
+		// get rest 10 nearest bowmen (lv3, lv2, lv1)
+		// attack (...move to)
+	}
+
+	private ShortPoint2D determineTowerToAttack(byte enemyToAttackId) {
+		List<ShortPoint2D> myMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId);
+		myMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_TOWER, playerId));
+		myMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.CASTLE, playerId));
+		ShortPoint2D myBaseAveragePoint = aiStatistics.calculateAveragePointFromList(myMilitaryBuildings);
+
+		List<ShortPoint2D> enemyMilitaryBuildings = aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, enemyToAttackId);
+		enemyMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_TOWER, enemyToAttackId));
+		enemyMilitaryBuildings.addAll(aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.CASTLE, enemyToAttackId));
+		return aiStatistics.detectNearestPointFromList(myBaseAveragePoint, enemyMilitaryBuildings);
 	}
 
 	private void updateSituation() {
