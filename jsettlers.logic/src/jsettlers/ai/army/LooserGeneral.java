@@ -1,17 +1,19 @@
-/*******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright (c) 2015
- *
+ * <p/>
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *******************************************************************************/
+ * *****************************************************************************
+ */
 package jsettlers.ai.army;
 
 import jsettlers.ai.construction.BuildingCount;
@@ -35,6 +37,10 @@ import java.util.Vector;
  * @author codingberlin
  */
 public class LooserGeneral implements ArmyGeneral {
+	private static final byte MIN_ATTACKER_SIZE = 10;
+	private static final byte SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS = 10;
+	private static final byte MIN_NEAR_COMBAT_SOLDIERS = 10;
+
 	private final AiStatistics aiStatistics;
 	private final byte playerId;
 	private final ITaskScheduler taskScheduler;
@@ -51,15 +57,12 @@ public class LooserGeneral implements ArmyGeneral {
 		Situation situation = calculateSituation();
 		AttackInformation attackInformation = determineAttackInformation(situation);
 		if (attackInformation != null) {
-			System.out.println("I (" + playerId + ") should attack " + attackInformation.targetPlayerId);
 			attack(situation, attackInformation);
-		} else {
-			System.out.println("I (" + playerId + ") should attack nobody");
 		}
 	}
 
 	private AttackInformation determineAttackInformation(Situation situation) {
-		if (situation.amountOfMyAttackingTroops < 30) {
+		if (situation.amountOfMyAttackingTroops < MIN_ATTACKER_SIZE) {
 			return null;
 		}
 
@@ -81,7 +84,7 @@ public class LooserGeneral implements ArmyGeneral {
 			if (situation.amountOfMyAttackingTroops > amountOfEnemyTroops) {
 				Building towerToAttack = determineTowerToAttack(enemy);
 				if (towerToAttack != null) {
-					return new AttackInformation(enemy, amountOfEnemyTroops, towerToAttack);
+					return new AttackInformation(enemy, Math.max(amountOfEnemyTroops, 10), towerToAttack);
 				}
 			}
 		}
@@ -89,13 +92,20 @@ public class LooserGeneral implements ArmyGeneral {
 	}
 
 	private void attack(Situation situation, AttackInformation attackInformation) {
-		byte numberOfSpearmen = (byte) Math.min(attackInformation.amountOfAttackers / 3, 20);
-		List<ShortPoint2D> attackerPositions = aiStatistics.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.spearmenPositions, numberOfSpearmen);
-		int numberOfBowmen = attackInformation.amountOfAttackers - attackerPositions.size();
-		attackerPositions.addAll(aiStatistics.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.bowmenPositions, numberOfBowmen));
+		int numberOfBowmen = Math.max(attackInformation.amountOfAttackers - MIN_NEAR_COMBAT_SOLDIERS, situation.bowmenPositions.size());
+		List<ShortPoint2D> attackerPositions = aiStatistics
+				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.bowmenPositions, numberOfBowmen);
+		int numberOfSpearmen = attackInformation.amountOfAttackers - attackerPositions.size();
+		attackerPositions.addAll(aiStatistics
+				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.spearmenPositions, numberOfSpearmen));
+		int numberOfSwordsmen = attackInformation.amountOfAttackers - attackerPositions.size();
+		if (numberOfSwordsmen > 0) {
+			attackerPositions.addAll(aiStatistics
+					.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.swordsmenPositions, numberOfSwordsmen));
+		}
 
 		List<Integer> attackerIds = new Vector<Integer>();
-		for (ShortPoint2D attackerPosition: attackerPositions) {
+		for (ShortPoint2D attackerPosition : attackerPositions) {
 			attackerIds.add(movableGrid.getMovableAt(attackerPosition.x, attackerPosition.y).getID());
 		}
 
@@ -121,18 +131,25 @@ public class LooserGeneral implements ArmyGeneral {
 
 	private Situation calculateSituation() {
 		Situation situation = new Situation();
+		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, playerId));
+		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, playerId));
+		situation.swordsmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, playerId));
 		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, playerId));
 		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, playerId));
 		situation.bowmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L3, playerId));
 		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L1, playerId));
 		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L2, playerId));
 		situation.spearmenPositions.addAll(aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.PIKEMAN_L3, playerId));
-		situation.amountOfMyAttackingTroops = situation.bowmenPositions.size() + situation.spearmenPositions.size();
+		situation.amountOfMyAttackingTroops =
+				Math.max(situation.swordsmenPositions.size() - SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS, 0)
+						+ situation.bowmenPositions.size()
+						+ situation.spearmenPositions.size();
 
 		return situation;
 	}
 
 	private class Situation {
+		private List<ShortPoint2D> swordsmenPositions = new Vector<ShortPoint2D>();
 		private List<ShortPoint2D> bowmenPositions = new Vector<ShortPoint2D>();
 		private List<ShortPoint2D> spearmenPositions = new Vector<ShortPoint2D>();
 		private int amountOfMyAttackingTroops = 0;
