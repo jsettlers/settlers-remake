@@ -15,7 +15,9 @@
 package jsettlers.ai.army;
 
 /**
- *
+ * The army general can command the troops of the computer player.
+ * The idea behind different army generals is, that easy, middle and strong players
+ * can be constructed by different difficult economies with different army generals.
  *
  * @author codingberlin
  */
