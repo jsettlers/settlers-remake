@@ -453,17 +453,25 @@ public class AiStatistics {
 	}
 
 	public ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
-		ShortPoint2D nearestPoint = null;
-		int nearestPointDistance = Integer.MAX_VALUE;
-		for (ShortPoint2D point : points) {
-			int currentPointDistance = referencePoint.getOnGridDistTo(point);
-			if (nearestPoint == null || currentPointDistance < nearestPointDistance) {
-				nearestPoint = point;
-				nearestPointDistance = currentPointDistance;
-			}
+		if (points.isEmpty()) {
+			return null;
 		}
 
-		return nearestPoint;
+		return detectNearestPointsFromList(referencePoint, points, 1).get(0);
+	}
+
+	public List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
+		if (points.size() <= amountOfPointsToDetect) {
+			return points;
+		}
+
+		points.sort(new Comparator<ShortPoint2D>() {
+			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
+				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
+			}
+		});
+
+		return points.subList(0, amountOfPointsToDetect);
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
