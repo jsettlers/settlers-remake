@@ -51,6 +51,7 @@ import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.PlayerSetting;
+import jsettlers.logic.player.Team;
 
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
@@ -94,7 +95,6 @@ public class AiStatistics {
 		for (EResourceType type : EResourceType.values()) {
 			sortedResourceTypes.put(type, new HashMap<Integer, List<Integer>>());
 		}
-
 	}
 
 	public byte getFlatternEffortAtPositionForBuilding(final ShortPoint2D position, final EBuildingType buildingType) {
@@ -488,6 +488,18 @@ public class AiStatistics {
 
 	public int getNumberOfUnoccupiedBuildingTypeForPlayer(EBuildingType buildingType, byte playerId) {
 		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
+	}
+
+	public List<Byte> getEnemiesOf(byte playerId) {
+      	List<Byte> enemies = new ArrayList<Byte>();
+		for (Team team : partitionsGrid.getTeams()) {
+			if (!team.isMember(playerId)) {
+				for (Player player: team.getMembers()) {
+					enemies.add(player.playerId);
+				}
+			}
+		}
+		return enemies;
 	}
 
 	class PlayerStatistic {

@@ -16,6 +16,7 @@ package jsettlers.logic.player;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Team implements Serializable {
 	private static final long serialVersionUID = 8051219906193296800L;
@@ -30,6 +31,19 @@ public class Team implements Serializable {
 
 	public void registerPlayer(Player player) {
 		members.add(player);
+	}
+
+	public boolean isMember(byte playerId) {
+		for (Player member: members) {
+			if (member.playerId == playerId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public List<Player> getMembers() {
+		return members;
 	}
 
 	@Override

@@ -213,6 +213,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		destroyBuildings();
 		occupyTowers();
 		buildBuildings();
+		armyGeneral.commandTroops();
 	}
 
 	private void occupyTowers() {

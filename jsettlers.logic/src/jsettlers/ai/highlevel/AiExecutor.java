@@ -38,7 +38,7 @@ public class AiExecutor implements INetworkTimerable {
 		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
 		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
 			if (playerSettings[playerId].isAi()) {
-				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, new LooserGeneral(aiStatistics), mainGrid, taskScheduler));
+				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, new LooserGeneral(aiStatistics, playerId), mainGrid, taskScheduler));
 			}
 		}
 	}
