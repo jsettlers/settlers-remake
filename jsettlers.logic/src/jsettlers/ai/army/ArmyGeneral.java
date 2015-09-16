@@ -12,42 +12,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.highlevel;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import jsettlers.ai.army.LooserGeneral;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
-import jsettlers.network.client.interfaces.ITaskScheduler;
-import jsettlers.network.synchronic.timer.INetworkTimerable;
+package jsettlers.ai.army;
 
 /**
- * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when NetworkTimer notifies it.
- * 
+ *
+ *
  * @author codingberlin
  */
-public class AiExecutor implements INetworkTimerable {
+public interface ArmyGeneral {
 
-	private final List<IWhatToDoAi> whatToDoAis;
-	AiStatistics aiStatistics;
+	void commandTroops();
 
-	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
-		aiStatistics = new AiStatistics(mainGrid);
-		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
-		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
-			if (playerSettings[playerId].isAi()) {
-				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, new LooserGeneral(aiStatistics), mainGrid, taskScheduler));
-			}
-		}
-	}
-
-	@Override
-	public void timerEvent() {
-		aiStatistics.updateStatistics();
-		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
-			whatToDoAi.applyRules();
-		}
-	}
 }

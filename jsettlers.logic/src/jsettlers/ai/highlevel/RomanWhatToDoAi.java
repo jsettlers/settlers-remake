@@ -48,6 +48,8 @@ import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
 import java.util.*;
 
+import jsettlers.ai.army.ArmyGeneral;
+import jsettlers.ai.army.LooserGeneral;
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
 import jsettlers.common.buildings.EBuildingType;
@@ -78,13 +80,15 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	private final List<EBuildingType> buildingsToBuild;
 	private final Map<EBuildingType, List<BuildingCount>> buildingNeeds;
 	private final Map<EBuildingType, List<EBuildingType>> buildingIsNeededBy;
+	private final ArmyGeneral armyGeneral;
 	BestConstructionPositionFinderFactory bestConstructionPositionFinderFactory;
 
-	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, MainGrid mainGrid, ITaskScheduler taskScheduler) {
+	public RomanWhatToDoAi(byte playerId, AiStatistics aiStatistics, ArmyGeneral armyGeneral, MainGrid mainGrid, ITaskScheduler taskScheduler) {
 		this.playerId = playerId;
 		this.mainGrid = mainGrid;
 		this.taskScheduler = taskScheduler;
 		this.aiStatistics = aiStatistics;
+		this.armyGeneral = armyGeneral;
 		buildingNeeds = new HashMap<EBuildingType, List<BuildingCount>>();
 		buildingIsNeededBy = new HashMap<EBuildingType, List<EBuildingType>>();
 		bestConstructionPositionFinderFactory = new BestConstructionPositionFinderFactory();
