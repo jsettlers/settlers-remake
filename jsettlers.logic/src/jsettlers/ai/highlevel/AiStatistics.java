@@ -172,6 +172,19 @@ public class AiStatistics {
 					sortedResourceTypes.get(resourceType).get(xInteger).add(yInteger);
 				}
 				Player player = partitionsGrid.getPlayerAt(x, y);
+				Movable movable = movableGrid.getMovableAt(x, y);
+				if (movable != null) {
+					int movablePlayerId = movable.getPlayerId();
+					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];
+					EMovableType movableType = movable.getMovableType();
+					if (!movablePlayerStatistic.movablePositions.containsKey(movableType)) {
+						movablePlayerStatistic.movablePositions.put(movableType, new Vector<ShortPoint2D>());
+					}
+					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
+					if (player != null && player.playerId != movablePlayerId && EMovableType.isSoldier(movableType)) {
+						playerStatistics[player.playerId].enemyTroopsInTown.add(movable.getPos());
+					}
+				}
 				if (player == null) {
 					if (objectsGrid.hasCuttableObject(x, y, TREE_ADULT)) {
 						if (!sortedCuttableObjectsInDefaultPartition.containsKey(TREE_ADULT)) {
@@ -217,14 +230,6 @@ public class AiStatistics {
 					if (stack != null) {
 						EMaterialType materialType = stack.getMaterialType();
 						playerStatistic.materialNumbers[materialType.ordinal] = playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
-					}
-					Movable movable = movableGrid.getMovableAt(x, y);
-					if (movable != null) {
-						EMovableType movableType = movable.getMovableType();
-						if (!playerStatistic.movablePositions.containsKey(movableType)) {
-							playerStatistic.movablePositions.put(movableType, new ArrayList<ShortPoint2D>());
-						}
-						playerStatistic.movablePositions.get(movableType).add(point);
 					}
 				}
 			}
@@ -520,6 +525,10 @@ public class AiStatistics {
 		return new ShortPoint2D(averageX / points.size(), averageY / points.size());
 	}
 
+	public List<ShortPoint2D> getEnemiesInTownOf(byte playerId) {
+		return playerStatistics[playerId].enemyTroopsInTown;
+	}
+
 	class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
@@ -532,6 +541,7 @@ public class AiStatistics {
 		private List<ShortPoint2D> stones;
 		private List<ShortPoint2D> trees;
 		private List<ShortPoint2D> rivers;
+		private List<ShortPoint2D> enemyTroopsInTown;
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
@@ -542,6 +552,7 @@ public class AiStatistics {
 			trees = new ArrayList<ShortPoint2D>();
 			rivers = new ArrayList<ShortPoint2D>();
 			land = new ArrayList<ShortPoint2D>();
+			enemyTroopsInTown = new Vector<ShortPoint2D>();
 			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
@@ -553,6 +564,7 @@ public class AiStatistics {
 
 		public void clearAll() {
 			buildingPositions.clear();
+			enemyTroopsInTown.clear();
 			stones.clear();
 			trees.clear();
 			rivers.clear();

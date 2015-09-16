@@ -55,10 +55,22 @@ public class LooserGeneral implements ArmyGeneral {
 
 	@Override public void commandTroops() {
 		Situation situation = calculateSituation();
-		AttackInformation attackInformation = determineAttackInformation(situation);
-		if (attackInformation != null) {
-			attack(situation, attackInformation);
+		if (aiStatistics.getEnemiesInTownOf(playerId).size() > 0) {
+			defend(situation);
+		} else {
+			AttackInformation attackInformation = determineAttackInformation(situation);
+			if (attackInformation != null) {
+				attack(situation, attackInformation);
+			}
 		}
+	}
+
+	private void defend(Situation situation) {
+		List<ShortPoint2D> allMyTroops = new Vector<ShortPoint2D>();
+		allMyTroops.addAll(situation.bowmenPositions);
+		allMyTroops.addAll(situation.spearmenPositions);
+		allMyTroops.addAll(situation.swordsmenPositions);
+		sendTroopsTo(allMyTroops, aiStatistics.getEnemiesInTownOf(playerId).get(0));
 	}
 
 	private AttackInformation determineAttackInformation(Situation situation) {
@@ -104,12 +116,16 @@ public class LooserGeneral implements ArmyGeneral {
 					.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.swordsmenPositions, numberOfSwordsmen));
 		}
 
+		sendTroopsTo(attackerPositions, attackInformation.towerToAttack.getDoor());
+	}
+
+	private void sendTroopsTo(List<ShortPoint2D> attackerPositions, ShortPoint2D target) {
 		List<Integer> attackerIds = new Vector<Integer>();
 		for (ShortPoint2D attackerPosition : attackerPositions) {
 			attackerIds.add(movableGrid.getMovableAt(attackerPosition.x, attackerPosition.y).getID());
 		}
 
-		taskScheduler.scheduleTask(new MoveToGuiTask(playerId, attackInformation.towerToAttack.getDoor(), attackerIds));
+		taskScheduler.scheduleTask(new MoveToGuiTask(playerId, target, attackerIds));
 	}
 
 	private Building determineTowerToAttack(byte enemyToAttackId) {
