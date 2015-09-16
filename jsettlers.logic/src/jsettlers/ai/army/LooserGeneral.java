@@ -32,7 +32,13 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- *
+ * This general is named looser because his attacks are no serious danger because he sends no more solders than his opponent has,
+ * which gives his opponent the chance to defeat.
+ * - When any enemy solder enters his land, he sends all his solders to it to defeat.
+ * - He keeps a 10 swordsmen buffer in his land to occupy own towers
+ * - He uses the rest of the troops to attack when the attack group minimum size is 10 and the opponent have less soldiers.
+ * - He sends at minimum 10 soldiers and maximum as many soldiers as his opoonent has
+ * - He preferes bowmens but takes 10 near combat soldiers at minimum to attack in order to occupy enemy towers.
  *
  * @author codingberlin
  */
