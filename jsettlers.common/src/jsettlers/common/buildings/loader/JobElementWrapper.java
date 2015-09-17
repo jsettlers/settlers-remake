@@ -33,6 +33,7 @@ public class JobElementWrapper implements BuildingJobData {
 	private static final String SEARCH = "search";
 	private static final String NAME = "name";
 	private static final String TAKE_MATERIAL_FROM_MAP = "takeMaterialFromMap";
+	private static final String FOOD_ORDER = "foodOrder";
 
 	private final EBuildingJobType type;
 	private final short dx;
@@ -45,6 +46,7 @@ public class JobElementWrapper implements BuildingJobData {
 	private final EDirection direction;
 	private final String name;
 	private final boolean takeMaterialFromMap;
+	private final EMaterialType[] foodOrder;
 
 	JobElementWrapper(Attributes attributes) {
 		type = getType(attributes);
@@ -58,10 +60,28 @@ public class JobElementWrapper implements BuildingJobData {
 		time = getAttributeAsFloat(attributes, ATTR_TIME);
 		direction = getDirection(attributes);
 		takeMaterialFromMap = isTakeMaterialFromMap(attributes);
+		foodOrder = getMaterialTypeArray(attributes);
 	}
 
-	private static EBuildingJobType getType(Attributes attributes)
-			throws IllegalAccessError {
+	private EMaterialType[] getMaterialTypeArray(Attributes attributes) {
+		String foodOrderString = attributes.getValue(FOOD_ORDER);
+		if (foodOrderString == null) {
+			return null;
+		}
+
+		try {
+			String[] foodOrderStrings = foodOrderString.split(",");
+			EMaterialType[] foodOrder = new EMaterialType[foodOrderStrings.length];
+			for (int i = 0; i < foodOrderStrings.length; i++) {
+				foodOrder[i] = EMaterialType.valueOf(foodOrderStrings[i]);
+			}
+			return foodOrder;
+		} catch (IllegalArgumentException e) {
+			throw new IllegalAccessError("Food order may only contain EMaterialTypes: " + foodOrderString);
+		}
+	}
+
+	private static EBuildingJobType getType(Attributes attributes) throws IllegalAccessError {
 		String typeString = attributes.getValue(TYPE);
 		try {
 			return EBuildingJobType.valueOf(typeString);
@@ -201,6 +221,11 @@ public class JobElementWrapper implements BuildingJobData {
 	@Override
 	public boolean isTakeMaterialFromMap() {
 		return takeMaterialFromMap;
+	}
+
+	@Override
+	public EMaterialType[] getFoodOrder() {
+		return foodOrder;
 	}
 
 }

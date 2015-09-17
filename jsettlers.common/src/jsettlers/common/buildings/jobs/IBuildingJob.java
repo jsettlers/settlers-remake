@@ -97,4 +97,6 @@ public interface IBuildingJob {
 	String getName();
 
 	boolean isTakeMaterialFromMap();
+
+	EMaterialType[] getFoodOrder();
 }

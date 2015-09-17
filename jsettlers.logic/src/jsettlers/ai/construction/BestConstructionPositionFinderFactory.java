@@ -27,8 +27,8 @@ import static jsettlers.common.buildings.EBuildingType.PIG_FARM;
 import static jsettlers.common.buildings.EBuildingType.WEAPONSMITH;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
 import static jsettlers.common.landscape.EResourceType.COAL;
-import static jsettlers.common.landscape.EResourceType.GOLD;
-import static jsettlers.common.landscape.EResourceType.IRON;
+import static jsettlers.common.landscape.EResourceType.GOLDORE;
+import static jsettlers.common.landscape.EResourceType.IRONORE;
 import jsettlers.common.buildings.EBuildingType;
 
 public class BestConstructionPositionFinderFactory {
@@ -53,9 +53,9 @@ public class BestConstructionPositionFinderFactory {
 		case COALMINE:
 			return new BestMineConstructionPositionFinder(type, COAL);
 		case IRONMINE:
-			return new BestMineConstructionPositionFinder(type, IRON);
+			return new BestMineConstructionPositionFinder(type, IRONORE);
 		case GOLDMINE:
-			return new BestMineConstructionPositionFinder(type, GOLD);
+			return new BestMineConstructionPositionFinder(type, GOLDORE);
 		case WATERWORKS:
 			return new BestWaterWorksConstructionPositionFinder(type);
 		case IRONMELT:
