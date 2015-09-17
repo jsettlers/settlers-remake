@@ -88,10 +88,16 @@ public class RequestStack extends MaterialRequestObject implements Serializable,
 
 	/**
 	 * Pops a material from this stack. The material is of the type returned by {@link #getMaterialType()} and specified in the constructor.
+	 * 
+	 * @return <code>true</code> if there was a material to be popped from this stack. False otherwise.
 	 */
-	public void pop() {
-		grid.popMaterial(position, materialType);
-		popped++;
+	public boolean pop() {
+		if (grid.popMaterial(position, materialType)) {
+			popped++;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**

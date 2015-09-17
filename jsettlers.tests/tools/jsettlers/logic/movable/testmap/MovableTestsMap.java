@@ -239,11 +239,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public float getResourceProbabilityAround(short x, short y, EResourceType type, int radius) {
-			return 0;
-		}
-
-		@Override
 		public EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType) {
 			return null;
 		}
@@ -394,16 +389,14 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
 			return isValidPosition(pathCalculatable, nextPos);
 		}
 
+		@Override
+		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
+			return false;
+		}
 	};
 
 	public AbstractMovableGrid getMovableGrid() {

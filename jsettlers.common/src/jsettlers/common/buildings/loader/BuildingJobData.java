@@ -95,4 +95,6 @@ public interface BuildingJobData {
 
 	boolean isTakeMaterialFromMap();
 
+	EMaterialType[] getFoodOrder();
+
 }

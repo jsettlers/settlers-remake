@@ -38,8 +38,6 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 
 	ShortPoint2D getWorkAreaCenter();
 
-	boolean popMaterial(ShortPoint2D position, EMaterialType material);
-
 	void occupyBuilding(IManageableWorker worker);
 
 	ShortPoint2D calculateRealPoint(short dx, short dy);
@@ -58,4 +56,7 @@ public interface IWorkerRequestBuilding extends IPlayerable, ILocatable, IBuildi
 	 */
 	void leaveBuilding(IManageableWorker worker);
 
+	boolean tryTakingFoood(EMaterialType[] foodOrder);
+
+	boolean tryTakingResource();
 }

@@ -1019,16 +1019,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public float getResourceProbabilityAround(short x, short y, EResourceType type, int radius) {
-			return landscapeGrid.getResourceProbabilityAround(x, y, type, radius);
-		}
-
-		@Override
-		public void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount) {
-			landscapeGrid.decreaseResourceAround(x, y, resourceType, radius, amount);
-		}
-
-		@Override
 		public void addJobless(IManageableBearer bearer) {
 			partitionsGrid.getPartitionAt(bearer).addJobless(bearer);
 		}
@@ -1305,6 +1295,11 @@ public final class MainGrid implements Serializable {
 			return isValidPosition(pathCalculatable, nextPos) && (!pathCalculatable.needsPlayersGround()
 					|| partitionsGrid.getPartitionAt(pathCalculatable) == partitionsGrid.getPartitionAt(targetPos.x, targetPos.y));
 		}
+
+		@Override
+		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
+			return landscapeGrid.tryTakingResource(position, resource);
+		}
 	}
 
 	final class BordersThreadGrid implements IBordersThreadGrid {
@@ -1478,8 +1473,8 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			public final void popMaterial(ShortPoint2D position, EMaterialType materialType) {
-				mapObjectsManager.popMaterial(position.x, position.y, materialType);
+			public final boolean popMaterial(ShortPoint2D position, EMaterialType materialType) {
+				return mapObjectsManager.popMaterial(position.x, position.y, materialType);
 			}
 
 			@Override
@@ -1565,6 +1560,16 @@ public final class MainGrid implements Serializable {
 		@Override
 		public short getPartitionIdAt(ShortPoint2D pos) {
 			return partitionsGrid.getPartitionIdAt(pos.x, pos.y);
+		}
+
+		@Override
+		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
+			return landscapeGrid.tryTakingResource(position, resource);
+		}
+
+		@Override
+		public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
+			return landscapeGrid.getAmountOfResource(resource, positions);
 		}
 	}
 

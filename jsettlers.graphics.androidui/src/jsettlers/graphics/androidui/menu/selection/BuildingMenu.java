@@ -131,8 +131,8 @@ public class BuildingMenu extends AndroidMenu {
 		TextView subheadline = (TextView) view.findViewById(R.id.building_info);
 		if (building.getStateProgress() < 1) {
 			subheadline.setText(R.string.building_construction);
-		} else if (building instanceof IBuilding.IMine) {
-			IBuilding.IMine mine = (IBuilding.IMine) building;
+		} else if (building instanceof IBuilding.IResourceBuilding) {
+			IBuilding.IResourceBuilding mine = (IBuilding.IResourceBuilding) building;
 			subheadline.setText(getResources().getString(R.string.building_productivity, (int) (mine.getProductivity() * 100)));
 		} else {
 			subheadline.setVisibility(View.GONE);
