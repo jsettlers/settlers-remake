@@ -37,10 +37,10 @@ public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 		case COAL:
 			objectType = EMapObjectType.FOUND_COAL.ordinal;
 			break;
-		case IRON:
+		case IRONORE:
 			objectType = EMapObjectType.FOUND_IRON.ordinal;
 			break;
-		case GOLD:
+		case GOLDORE:
 			objectType = EMapObjectType.FOUND_GOLD.ordinal;
 			break;
 		default:

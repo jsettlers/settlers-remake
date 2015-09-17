@@ -24,8 +24,8 @@ import jsettlers.common.mapobject.EMapObjectType;
  */
 public enum EResourceType {
 	COAL(EMapObjectType.FOUND_COAL),
-	GOLD(EMapObjectType.FOUND_GOLD),
-	IRON(EMapObjectType.FOUND_IRON),
+	GOLDORE(EMapObjectType.FOUND_GOLD),
+	IRONORE(EMapObjectType.FOUND_IRON),
 	FISH(null);
 
 	public static final EResourceType[] values = EResourceType.values();

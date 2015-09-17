@@ -130,16 +130,24 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	}
 
 	/**
-	 * A mine provides an additional productivity field for the GUI.
+	 * A {@link IResourceBuilding} provides an additional productivity field for the GUI.
 	 * 
 	 * @author Michael Zangl
+	 * @author Andreas Eberle
 	 */
-	static interface IMine extends IBuilding {
+	static interface IResourceBuilding extends IBuilding {
 		/**
-		 * Gets the productivity of this mine.
+		 * Gets the productivity of this {@link IResourceBuilding}.
 		 * 
-		 * @return The productivity in range 0..1
+		 * @return The productivity in the interval [0,1].
 		 */
 		float getProductivity();
+
+		/**
+		 * Returns the remaining amount of the building's resource.
+		 * 
+		 * @return The number of resources available.
+		 */
+		public int getRemainingResourceAmount();
 	}
 }

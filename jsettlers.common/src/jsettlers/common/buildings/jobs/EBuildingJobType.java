@@ -218,9 +218,14 @@ public enum EBuildingJobType {
 	LOOK_AT_SEARCHED,
 
 	/**
-	 * If the settler should be productive, this method succeds, it fails otherwise.
+	 * If the settler should be productive, this method succeeds, it fails otherwise.
 	 */
-	IS_PRODUCTIVE,
+	TRY_TAKING_RESOURCE,
+
+	/**
+	 * Used for mines to check if they have food to use. Supplies parameter foodOrder.
+	 */
+	TRY_TAKING_FOOD,
 
 	/**
 	 * Puts a smoke thing at a given position.
@@ -245,11 +250,6 @@ public enum EBuildingJobType {
 	 * Building stops working, e.g. for a mill.
 	 */
 	STOP_WORKING,
-
-	/**
-	 * pop a material at a given position.
-	 */
-	REMOTETAKE,
 
 	/**
 	 * Places a pig at (dx, dy)

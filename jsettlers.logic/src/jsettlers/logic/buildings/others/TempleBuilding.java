@@ -53,8 +53,7 @@ public final class TempleBuilding extends Building {
 	protected int subTimerEvent() {
 		RequestStack wineStack = getWineStack();
 
-		if (wineStack.hasMaterial()) {
-			wineStack.pop();
+		if (wineStack.pop()) {
 			return CONSUME_DELAY;
 		} else {
 			return CHECK_DELAY;

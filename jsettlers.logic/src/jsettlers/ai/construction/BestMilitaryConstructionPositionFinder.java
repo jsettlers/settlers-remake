@@ -89,14 +89,14 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 					}
 				}
 				if (importantResources.contains(ImportantResource.GOLD)) {
-					ShortPoint2D nearestGold = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLD,
+					ShortPoint2D nearestGold = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.GOLDORE,
 							nearestResourcePointsDistance);
 					if (nearestGold != null) {
 						nearestResourcePoints.add(nearestGold);
 					}
 				}
 				if (importantResources.contains(ImportantResource.IRON)) {
-					ShortPoint2D nearestIron = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRON,
+					ShortPoint2D nearestIron = aiStatistics.getNearestResourcePointInDefaultPartitionFor(point, EResourceType.IRONORE,
 							nearestResourcePointsDistance);
 					if (nearestIron != null) {
 						nearestResourcePoints.add(nearestIron);
@@ -152,7 +152,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 			importantResources.add(ImportantResource.COAL);
 		}
 		if (importantResources.size() < 3 &&
-				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRON, playerId, Integer.MAX_VALUE) == null) {
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.IRONORE, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.IRON);
 		}
 		if (importantResources.size() < 3 &&
@@ -160,7 +160,7 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 			importantResources.add(ImportantResource.FISH);
 		}
 		if (importantResources.size() < 3 &&
-				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLD, playerId, Integer.MAX_VALUE) == null) {
+				aiStatistics.getNearestResourcePointForPlayer(referencePoint, EResourceType.GOLDORE, playerId, Integer.MAX_VALUE) == null) {
 			importantResources.add(ImportantResource.GOLD);
 		}
 		if (importantResources.size() == 0) {

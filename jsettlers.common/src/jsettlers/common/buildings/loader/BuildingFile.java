@@ -431,5 +431,4 @@ public class BuildingFile implements BuildingJobDataProvider {
 	public OccupyerPlace[] getOccupyerPlaces() {
 		return occupyerplaces.toArray(new OccupyerPlace[occupyerplaces.size()]);
 	}
-
 }
