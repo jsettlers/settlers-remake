@@ -104,11 +104,11 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, (float) 1 / 3));
 		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
 		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, (float) 1 / 3));
-		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 1));
-		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 1));
-		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 1));
+		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 0.5f));
+		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 0.5f));
+		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 0.5f));
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
-		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 1));
+		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 0.5f));
 		buildingNeeds.get(BARRACK).add(new BuildingCount(WEAPONSMITH, 4));
 		// Ironmine depends of coalmine to prevent iron and coal are build 1:1 when picks are missing
 		// otherwise always as loop: one additional ironmine and coalmine would be build for inform toolsmith to produce picks
@@ -149,59 +149,74 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingsToBuild.add(TEMPLE);
 		buildingsToBuild.add(TEMPLE);
 		buildingsToBuild.add(TEMPLE);
-		buildingsToBuild.add(WATERWORKS);
-		buildingsToBuild.add(MILL);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(PIG_FARM);
-		buildingsToBuild.add(SLAUGHTERHOUSE);
-		buildingsToBuild.add(WATERWORKS);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(BARRACK);
+		buildingsToBuild.add(MILL);
+		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(WATERWORKS);
+		buildingsToBuild.add(PIG_FARM);
+		buildingsToBuild.add(SLAUGHTERHOUSE);
+		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(BIG_TEMPLE);
+		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(WATERWORKS);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(FARM);
+		buildingsToBuild.add(FARM);
+		buildingsToBuild.add(FARM);
+		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(BARRACK);
 		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMELT);
 		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(FISHER);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(GOLDMINE);
 		buildingsToBuild.add(GOLDMELT);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(FARM);
-		buildingsToBuild.add(WATERWORKS);
+		buildingsToBuild.add(PIG_FARM);
 		buildingsToBuild.add(MILL);
 		buildingsToBuild.add(BAKER);
+		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(BAKER);
-		buildingsToBuild.add(PIG_FARM);
 		buildingsToBuild.add(WATERWORKS);
+		buildingsToBuild.add(PIG_FARM);
+		buildingsToBuild.add(BAKER);
 		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(IRONMINE);
 		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(WEAPONSMITH);
-		buildingsToBuild.add(COALMINE);
-		buildingsToBuild.add(IRONMINE);
-		buildingsToBuild.add(IRONMELT);
-		buildingsToBuild.add(COALMINE);
 		buildingsToBuild.add(WEAPONSMITH);
 		buildingsToBuild.add(BARRACK);
+		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
+		buildingsToBuild.add(COALMINE);
+		buildingsToBuild.add(IRONMELT);
+		buildingsToBuild.add(WEAPONSMITH);
 	}
 
 	@Override
@@ -358,14 +373,19 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	}
 
 	private boolean buildLivingHouse() {
+		if (aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) > 0
+				|| aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) > 0) {
+			return false;
+		}
+
 		int futureNumberOfBearers = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size()
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(SMALL_LIVINGHOUSE, playerId) * 10
-				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(MEDIUM_LIVINGHOUSE, playerId) * 30
 				+ aiStatistics.getNumberOfNotFinishedBuildingTypesForPlayer(BIG_LIVINGHOUSE, playerId) * 100;
-		if (futureNumberOfBearers < 10 || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * 1.5 > futureNumberOfBearers) {
-			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER,
-					playerId) < 2 || aiStatistics.getTotalNumberOfBuildingTypeForPlayer(SAWMILL, playerId) < 1) {
+		if (futureNumberOfBearers < 10 || aiStatistics.getNumberOfTotalBuildingsForPlayer(playerId) * 3 > futureNumberOfBearers) {
+			if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(STONECUTTER, playerId) < 1
+					|| aiStatistics.getTotalNumberOfBuildingTypeForPlayer(LUMBERJACK, playerId) < 3) {
 				return construct(SMALL_LIVINGHOUSE);
+			} else if (aiStatistics.getTotalNumberOfBuildingTypeForPlayer(WEAPONSMITH, playerId) >= 2) {
+				return construct(BIG_LIVINGHOUSE);
 			} else {
 				return construct(MEDIUM_LIVINGHOUSE);
 			}
