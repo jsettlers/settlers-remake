@@ -174,14 +174,17 @@ public class AiStatistics {
 				Player player = partitionsGrid.getPlayerAt(x, y);
 				Movable movable = movableGrid.getMovableAt(x, y);
 				if (movable != null) {
-					int movablePlayerId = movable.getPlayerId();
+					byte movablePlayerId = movable.getPlayerId();
 					PlayerStatistic movablePlayerStatistic = playerStatistics[movablePlayerId];
 					EMovableType movableType = movable.getMovableType();
 					if (!movablePlayerStatistic.movablePositions.containsKey(movableType)) {
 						movablePlayerStatistic.movablePositions.put(movableType, new Vector<ShortPoint2D>());
 					}
 					movablePlayerStatistic.movablePositions.get(movableType).add(movable.getPos());
-					if (player != null && player.playerId != movablePlayerId && EMovableType.isSoldier(movableType)) {
+					if (player != null
+							&& player.playerId != movablePlayerId
+							&& EMovableType.isSoldier(movableType)
+							&& getEnemiesOf(player.playerId).contains(movablePlayerId)) {
 						playerStatistics[player.playerId].enemyTroopsInTown.add(movable.getPos());
 					}
 				}
