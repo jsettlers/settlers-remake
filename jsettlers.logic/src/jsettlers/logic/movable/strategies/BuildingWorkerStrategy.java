@@ -295,7 +295,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void executeAction() {
-		if (super.getStrategyGrid().executeSearchType(super.getPos(), currentJob.getSearchType())) {
+		if (super.getStrategyGrid().executeSearchType(super.getMovable(), super.getPos(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
