@@ -104,4 +104,9 @@ public final class Constants {
 	 */
 	public static final float CONSTRUCTION_MARK_POW_FACTOR = 1.5f;
 
+	/**
+	 * Maximum amount of resources per position.
+	 */
+	public static final byte MAX_RESOURCE_AMOUNT_PER_POSITION = 50;
+
 }

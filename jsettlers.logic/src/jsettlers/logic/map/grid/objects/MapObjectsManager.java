@@ -137,7 +137,8 @@ public final class MapObjectsManager implements IScheduledTimerable, Serializabl
 		EResourceType resourceType = grid.getRessourceTypeAt(pos.x, pos.y);
 		byte resourceAmount = grid.getRessourceAmountAt(pos.x, pos.y);
 
-		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, resourceAmount / ((float) Byte.MAX_VALUE));
+		RessourceSignMapObject object = new RessourceSignMapObject(pos, resourceType, resourceAmount
+				/ ((float) Constants.MAX_RESOURCE_AMOUNT_PER_POSITION));
 		addMapObject(pos, object);
 		timingQueue.add(new TimeEvent(object, RessourceSignMapObject.getLivetime(), true));
 
