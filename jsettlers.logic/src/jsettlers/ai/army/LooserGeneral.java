@@ -43,7 +43,7 @@ import java.util.Vector;
  * @author codingberlin
  */
 public class LooserGeneral implements ArmyGeneral {
-	private static final byte MIN_ATTACKER_SIZE = 10;
+	private static final byte MIN_ATTACKER_SIZE = 20;
 	private static final byte SWORDSMEN_BUFFER_TO_OCCUPY_TOWERS = 10;
 	private static final byte MIN_NEAR_COMBAT_SOLDIERS = 10;
 
