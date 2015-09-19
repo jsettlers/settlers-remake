@@ -27,7 +27,12 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
@@ -50,7 +55,6 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.player.PlayerSetting;
 
 /**
  * This class calculates statistics based on the grids which are used by highlevel and lowlevel KI. The statistics are calculated once and read
@@ -106,12 +110,12 @@ public class AiStatistics {
 	}
 
 	public void updateStatistics() {
-		for (PlayerStatistic playerStatistic: playerStatistics) {
+		for (PlayerStatistic playerStatistic : playerStatistics) {
 			playerStatistic.clearAll();
 		}
 		sortedRiversInDefaultPartition.clear();
 		sortedCuttableObjectsInDefaultPartition.clear();
-		for (Map<Integer, List<Integer>> xCoordinatesMap: sortedResourceTypes.values()) {
+		for (Map<Integer, List<Integer>> xCoordinatesMap : sortedResourceTypes.values()) {
 			xCoordinatesMap.clear();
 		}
 
@@ -198,7 +202,7 @@ public class AiStatistics {
 						sortedRiversInDefaultPartition.get(xInteger).add(yInteger);
 					}
 				} else {
-					Integer playerId = Integer.valueOf(partitionsGrid.getPlayerAt(x, y).playerId);
+					int playerId = partitionsGrid.getPlayerAt(x, y).playerId;
 					PlayerStatistic playerStatistic = playerStatistics[playerId];
 					ShortPoint2D point = new ShortPoint2D(x, y);
 					updateBorderlandNextToFreeLand(playerStatistic, point);
@@ -216,7 +220,8 @@ public class AiStatistics {
 					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
 					if (stack != null) {
 						EMaterialType materialType = stack.getMaterialType();
-						playerStatistic.materialNumbers[materialType.ordinal] = playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
+						playerStatistic.materialNumbers[materialType.ordinal] = playerStatistic.materialNumbers[materialType.ordinal]
+								+ stack.getSize();
 					}
 					Movable movable = movableGrid.getMovableAt(x, y);
 					if (movable != null) {
@@ -308,8 +313,8 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints,
-			int currentNearestPointDistance, Integer x, Integer increment, Integer border, byte playerId) {
-		if (x.equals(border) || Math.abs(x - point.x) > currentNearestPointDistance) {
+			int currentNearestPointDistance, Integer x, int increment, int border, byte playerId) {
+		if (x.intValue() == border || Math.abs(x - point.x) > currentNearestPointDistance) {
 			return null;
 		}
 		if (!sortedPoints.containsKey(x)) {
@@ -318,13 +323,13 @@ public class AiStatistics {
 		}
 		ShortPoint2D result = null;
 		ShortPoint2D southYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, Integer.valueOf(point.y), 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
+				currentNearestPointDistance, x, point.y, 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
 		if (southYPoint != null) {
 			result = southYPoint;
 			currentNearestPointDistance = point.getOnGridDistTo(southYPoint);
 		}
 		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, Integer.valueOf(point.y - 1), -1, -1, playerId);
+				currentNearestPointDistance, x, point.y - 1, -1, -1, playerId);
 		if (northYPoint != null) {
 			result = northYPoint;
 			currentNearestPointDistance = point.getOnGridDistTo(northYPoint);
@@ -340,11 +345,11 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(List<Integer> ypsilons, ShortPoint2D point,
-			int currentNearestPointDistance, Integer x, Integer y, Integer increment, Integer border, byte playerId) {
-		if (y.equals(border) || Math.abs(y - point.y) > currentNearestPointDistance) {
+			int currentNearestPointDistance, int x, int y, int increment, int border, byte playerId) {
+		if (y == border || Math.abs(y - point.y) > currentNearestPointDistance) {
 			return null;
 		}
-		if (!ypsilons.contains(y) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
+		if (!ypsilons.contains(Integer.valueOf(y)) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
 			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
 					increment, border, playerId);
 		}
@@ -490,7 +495,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
 	}
 
-	class PlayerStatistic {
+	private class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
@@ -547,6 +552,5 @@ public class AiStatistics {
 				theArray[i] = 0;
 			}
 		}
-
 	}
 }

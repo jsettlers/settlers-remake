@@ -21,10 +21,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
@@ -85,7 +83,8 @@ public class JSettlersGame {
 	private PrintStream systemErrorStream;
 	private PrintStream systemOutStream;
 
-	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId, PlayerSetting[] playerSettings,
+	private JSettlersGame(IGameCreator mapCreator, long randomSeed, INetworkConnector networkConnector, byte playerId,
+			PlayerSetting[] playerSettings,
 			boolean controlAll, boolean multiplayer, DataInputStream replayFileInputStream) {
 		configureLogging(mapCreator);
 
@@ -212,10 +211,10 @@ public class JSettlersGame {
 
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-                        this, playerId, multiplayer);
-                connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
-                                                                 // has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
-
+						this, playerId, multiplayer);
+				// This is required after the GuiInterface instantiation so that ConstructionMarksThread has it's mapArea variable initialized via the
+				// EActionType.SCREEN_CHANGE event.
+				connector.loadUIState(playerState.getUiState());
 				gameClock.startExecution();
 				gameRunning = true;
 
