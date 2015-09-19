@@ -26,6 +26,7 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.flags.IProtectedProvider;
 import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListener;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -50,8 +51,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		public final void backgroundChangedAt(int x, int y) {
 		}
 	}
-
-	private static final byte MAX_RESOURCE_AMOUNT_PER_POSITION = 50;
 
 	private final byte[] heightGrid;
 	private final byte[] landscapeGrid;
@@ -188,7 +187,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
 		this.resourceType[x + y * width] = resourceType.ordinal;
-		this.resourceAmount[x + y * width] = (byte) Math.min(amount, MAX_RESOURCE_AMOUNT_PER_POSITION);
+		this.resourceAmount[x + y * width] = (byte) Math.min(amount, Constants.MAX_RESOURCE_AMOUNT_PER_POSITION);
 	}
 
 	/**

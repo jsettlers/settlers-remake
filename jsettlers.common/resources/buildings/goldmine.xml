@@ -100,7 +100,7 @@
     <job name="successfulMining3" 	type="WALK" 				successjob="successfulMining4"	failjob="gohome" 	direction="SOUTH_WEST" />
     <job name="successfulMining4" 	type="WALK" 				successjob="successfulMining5"	failjob="gohome" 	direction="SOUTH_WEST" />
     <job name="successfulMining5" 	type="LOOK_AT" 				successjob="successfulMining6"	failjob="gohome" 	direction="SOUTH_WEST" />
-    <job name="successfulMining6" 	type="DROP" 				successjob="successfulMining7"	failjob="gohome" 	material="COAL" />
+    <job name="successfulMining6" 	type="DROP" 				successjob="successfulMining7"	failjob="gohome" 	material="GOLDORE" />
     <job name="successfulMining7" 	type="WALK" 				successjob="successfulMining8"	failjob="gohome" 	direction="NORTH_EAST" />
     <job name="successfulMining8" 	type="WALK" 				successjob="hide" 				failjob="hide" 		direction="NORTH_EAST" />
 

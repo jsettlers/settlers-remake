@@ -31,14 +31,10 @@ public enum EResourceType {
 	public static final EResourceType[] values = EResourceType.values();
 
 	public final byte ordinal;
-	private final EMapObjectType mapObjectType;
+	public final EMapObjectType mapObjectType;
 
 	private EResourceType(EMapObjectType mapObjectType) {
 		this.mapObjectType = mapObjectType;
 		this.ordinal = (byte) super.ordinal();
-	}
-
-	public final EMapObjectType getMapObjectType() {
-		return mapObjectType;
 	}
 }
