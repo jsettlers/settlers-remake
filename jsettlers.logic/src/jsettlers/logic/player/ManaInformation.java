@@ -15,10 +15,9 @@
 package jsettlers.logic.player;
 
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.player.EManaType;
 
 import java.io.Serializable;
-
-import static jsettlers.common.movable.EMovableType.*;
 
 /**
  * @author codingberlin

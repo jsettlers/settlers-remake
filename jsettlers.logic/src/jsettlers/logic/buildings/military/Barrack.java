@@ -23,7 +23,7 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.player.EManaType;
+import jsettlers.common.player.EManaType;
 import jsettlers.logic.player.ManaInformation;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestStackListener;

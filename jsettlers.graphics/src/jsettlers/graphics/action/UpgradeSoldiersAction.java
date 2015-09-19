@@ -12,40 +12,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.input.tasks;
+package jsettlers.graphics.action;
 
 import jsettlers.common.player.EManaType;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 /**
  * @author codingberlin
  */
-public class UpgradeSoldiersGuiTask extends SimpleGuiTask {
+public class UpgradeSoldiersAction extends Action {
 
-	private EManaType manaType;
+	private final EManaType manaType;
 
-	public UpgradeSoldiersGuiTask(byte playerId, EManaType manaType) {
-		super(EGuiAction.UPGRADE_SOLDIERS, playerId);
+	public UpgradeSoldiersAction(EManaType manaType) {
+		super(EActionType.UPGRADE_SOLDIERS);
 		this.manaType = manaType;
 	}
 
 	public EManaType getManaType() {
 		return manaType;
 	}
-
-	@Override
-	protected void serializeTask(DataOutputStream dos) throws IOException {
-		super.serializeTask(dos);
-		dos.writeInt(manaType.ordinal());
-	}
-
-	@Override
-	protected void deserializeTask(DataInputStream dis) throws IOException {
-		super.deserializeTask(dis);
-		manaType = EManaType.values[dis.readInt()];
-	}
-
 }
