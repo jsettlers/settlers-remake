@@ -26,13 +26,14 @@ import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
+import jsettlers.logic.player.ManaInformation;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 import jsettlers.network.synchronic.random.RandomSingleton;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
-	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0));
+	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), new ManaInformation());
 	private Movable movable;
 
 	public static void main(String args[]) throws InterruptedException {

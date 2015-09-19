@@ -49,6 +49,7 @@ import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+import jsettlers.logic.player.ManaInformation;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -93,7 +94,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.blockedPartitionsForPlayers = new short[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
 			Team team = new Team(playerId);
-			this.players[playerId] = new Player(playerId, team);
+			this.players[playerId] = new Player(playerId, team, new ManaInformation());
 			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
 
