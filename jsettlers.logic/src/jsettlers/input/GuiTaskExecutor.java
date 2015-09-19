@@ -21,19 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jsettlers.common.map.shapes.HexBorderArea;
+import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.map.UIState;
-import jsettlers.input.tasks.ConstructBuildingTask;
-import jsettlers.input.tasks.ConvertGuiTask;
-import jsettlers.input.tasks.DestroyBuildingGuiTask;
-import jsettlers.input.tasks.EGuiAction;
-import jsettlers.input.tasks.MovableGuiTask;
-import jsettlers.input.tasks.MoveToGuiTask;
-import jsettlers.input.tasks.SetBuildingPriorityGuiTask;
-import jsettlers.input.tasks.SetMaterialDistributionSettingsGuiTask;
-import jsettlers.input.tasks.SetMaterialPrioritiesGuiTask;
-import jsettlers.input.tasks.SimpleGuiTask;
-import jsettlers.input.tasks.WorkAreaGuiTask;
+import jsettlers.input.tasks.*;
 import jsettlers.logic.buildings.Building;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.movable.Movable;
@@ -132,6 +123,23 @@ public class GuiTaskExecutor implements ITaskExecutor {
 			grid.setMaterialPrioritiesSettings(task.getManagerPosition(), task.getMaterialTypeForPriority());
 		}
 			break;
+
+		case UPGRADE_SOLDIERS: {
+			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
+			switch (task.getMovableType()) {
+			case BOWMAN_L1:
+				grid.getPlayer(task.getPlayerId()).getManaInformation().upgradeBowmen();
+				break;
+			case SWORDSMAN_L1:
+				grid.getPlayer(task.getPlayerId()).getManaInformation().upgradeSwordsmen();
+				break;
+			case PIKEMAN_L1:
+				grid.getPlayer(task.getPlayerId()).getManaInformation().upgradePikemen();
+				break;
+			default:
+				break;
+			}
+		}
 
 		default:
 			break;
