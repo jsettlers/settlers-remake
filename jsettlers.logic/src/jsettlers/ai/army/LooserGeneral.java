@@ -89,6 +89,7 @@ public class LooserGeneral implements ArmyGeneral {
 			return null;
 		}
 
+		AttackInformation resultAttackInformation = null;
 		for (Byte enemy : enemies) {
 			int amountOfEnemyTroops = aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L1, enemy).size();
 			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BOWMAN_L2, enemy).size();
@@ -99,28 +100,28 @@ public class LooserGeneral implements ArmyGeneral {
 			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L1, enemy).size();
 			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L2, enemy).size();
 			amountOfEnemyTroops += aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.SWORDSMAN_L3, enemy).size();
-			if (situation.amountOfMyAttackingTroops > amountOfEnemyTroops) {
+			if (situation.amountOfMyAttackingTroops > amountOfEnemyTroops
+					&& (resultAttackInformation == null || resultAttackInformation.amountOfAttackers < amountOfEnemyTroops)) {
 				Building towerToAttack = determineTowerToAttack(enemy);
 				if (towerToAttack != null) {
-					return new AttackInformation(enemy, Math.max(amountOfEnemyTroops, 10), towerToAttack);
+					resultAttackInformation = new AttackInformation(enemy, Math.max(amountOfEnemyTroops, 10), towerToAttack);
 				}
 			}
 		}
-		return null;
+		return resultAttackInformation;
 	}
 
 	private void attack(Situation situation, AttackInformation attackInformation) {
-		int numberOfBowmen = Math.max(attackInformation.amountOfAttackers - MIN_NEAR_COMBAT_SOLDIERS, situation.bowmenPositions.size());
-		List<ShortPoint2D> attackerPositions = aiStatistics
-				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.bowmenPositions, numberOfBowmen);
+		List<ShortPoint2D> attackerPositions = new Vector<ShortPoint2D>();
+		int numberOfBowmen = Math.min(attackInformation.amountOfAttackers - MIN_NEAR_COMBAT_SOLDIERS, situation.bowmenPositions.size());
+		attackerPositions.addAll(aiStatistics
+				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.bowmenPositions, numberOfBowmen));
 		int numberOfSpearmen = attackInformation.amountOfAttackers - attackerPositions.size();
 		attackerPositions.addAll(aiStatistics
 				.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.spearmenPositions, numberOfSpearmen));
 		int numberOfSwordsmen = attackInformation.amountOfAttackers - attackerPositions.size();
-		if (numberOfSwordsmen > 0) {
-			attackerPositions.addAll(aiStatistics
+		attackerPositions.addAll(aiStatistics
 					.detectNearestPointsFromList(attackInformation.towerToAttack.getDoor(), situation.swordsmenPositions, numberOfSwordsmen));
-		}
 
 		sendTroopsTo(attackerPositions, attackInformation.towerToAttack.getDoor());
 	}

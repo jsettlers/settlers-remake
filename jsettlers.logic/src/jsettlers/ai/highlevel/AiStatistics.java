@@ -469,6 +469,10 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
+		if (amountOfPointsToDetect <= 0) {
+			return Collections.EMPTY_LIST;
+		}
+
 		if (points.size() <= amountOfPointsToDetect) {
 			return points;
 		}
