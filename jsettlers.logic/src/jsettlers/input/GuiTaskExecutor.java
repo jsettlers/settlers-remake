@@ -126,19 +126,7 @@ public class GuiTaskExecutor implements ITaskExecutor {
 
 		case UPGRADE_SOLDIERS: {
 			UpgradeSoldiersGuiTask task = (UpgradeSoldiersGuiTask) guiTask;
-			switch (task.getMovableType()) {
-			case BOWMAN_L1:
-				grid.getPlayer(task.getPlayerId()).getManaInformation().upgradeBowmen();
-				break;
-			case SWORDSMAN_L1:
-				grid.getPlayer(task.getPlayerId()).getManaInformation().upgradeSwordsmen();
-				break;
-			case PIKEMAN_L1:
-				grid.getPlayer(task.getPlayerId()).getManaInformation().upgradePikemen();
-				break;
-			default:
-				break;
-			}
+			grid.getPlayer(task.getPlayerId()).getManaInformation().upgrade(task.getManaType());
 		}
 
 		default:

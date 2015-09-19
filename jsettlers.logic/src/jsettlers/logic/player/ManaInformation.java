@@ -28,73 +28,56 @@ public class ManaInformation implements Serializable {
 	private short mana = 0;
 	private short numberOfUpgradesExecuted = 0;
 
-	private EMovableType bowmenType = BOWMAN_L1;
-	private EMovableType swordsmenType = SWORDSMAN_L1;
-	private EMovableType pikemenType = PIKEMAN_L1;
-
+	private byte[] levelOfTypes = {0, 0, 0};
+	private int[] bowmenTypes = {EMovableType.BOWMAN_L1.ordinal(), EMovableType.BOWMAN_L2.ordinal(), EMovableType.BOWMAN_L3.ordinal()};
+	private int[] swordsmenTypes = {EMovableType.SWORDSMAN_L1.ordinal(), EMovableType.SWORDSMAN_L2.ordinal(), EMovableType.SWORDSMAN_L3.ordinal()};
+	private int[] pikemenTypes = {EMovableType.PIKEMAN_L1.ordinal(), EMovableType.PIKEMAN_L2.ordinal(), EMovableType.PIKEMAN_L3.ordinal()};
+	private static final byte MAXIMUM_LEVEL = 2;
 	private static final short[] NECESSARY_MANA_FOR_UPGRADE = {10, 30, 60, 110, 170, 200};
 
 	public void increaseMana() {
 		mana++;
 	}
 
-	public boolean isBowmenUpgradePossible() {
-		return bowmenType != BOWMAN_L3
-			&& isManaForUpgradeAvailable()
-			&& (bowmenType == BOWMAN_L1 || isLevel3Available());
+	public boolean isUpgradePossible(EManaType type) {
+		return getLevel(type) != MAXIMUM_LEVEL
+				&& isManaAvailableForUpgrade()
+				&& noLevelBelow(getLevel(type));
 	}
 
-	public boolean isSwordsmenUpgradePossible() {
-		return swordsmenType != SWORDSMAN_L3
-				&& isManaForUpgradeAvailable()
-				&& (swordsmenType == SWORDSMAN_L1 || isLevel3Available());
+	private boolean noLevelBelow(byte level) {
+		for (byte levelOfType : levelOfTypes) {
+			if (levelOfType < level) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	public boolean isPikemenUpgradePossible() {
-		return pikemenType != PIKEMAN_L3
-				&& isManaForUpgradeAvailable()
-				&& (pikemenType == PIKEMAN_L1 || isLevel3Available());
+	private byte getLevel(EManaType type) {
+		return levelOfTypes[type.ordinal()];
 	}
 
-	public void upgradeBowmen() {
-		if (isBowmenUpgradePossible()) {
+	public void upgrade(EManaType type) {
+		if (isUpgradePossible(type)) {
 			numberOfUpgradesExecuted++;
-			bowmenType = bowmenType == BOWMAN_L1 ? BOWMAN_L2 : BOWMAN_L3;
+			levelOfTypes[type.ordinal()]++;
 		}
 	}
 
-	public void upgradeSwordsmen() {
-		if (isSwordsmenUpgradePossible()) {
-			numberOfUpgradesExecuted++;
-			swordsmenType = swordsmenType == SWORDSMAN_L1 ? SWORDSMAN_L2 : SWORDSMAN_L3;
+	public EMovableType getMovableTypeOf(EManaType type) {
+		switch (type) {
+		case BOWMEN:
+			return EMovableType.values[bowmenTypes[getLevel(type)]];
+		case SWORDSMEN:
+			return EMovableType.values[swordsmenTypes[getLevel(type)]];
+		default:
+			return EMovableType.values[pikemenTypes[getLevel(type)]];
 		}
 	}
 
-	public void upgradePikemen() {
-		if (isPikemenUpgradePossible()) {
-			numberOfUpgradesExecuted++;
-			pikemenType = pikemenType == PIKEMAN_L1 ? PIKEMAN_L2 : PIKEMAN_L3;
-		}
-	}
-
-	public EMovableType getBowmenType() {
-		return bowmenType;
-	}
-
-	public EMovableType getSwordsmenType() {
-		return swordsmenType;
-	}
-
-	public EMovableType getPikemenType() {
-		return pikemenType;
-	}
-
-	private boolean isManaForUpgradeAvailable() {
+	private boolean isManaAvailableForUpgrade() {
 		return mana >= NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted];
-	}
-
-	private boolean isLevel3Available() {
-		return numberOfUpgradesExecuted >= 3;
 	}
 
 }
