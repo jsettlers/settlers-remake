@@ -23,16 +23,16 @@ import java.io.Serializable;
  * @author codingberlin
  */
 public class ManaInformation implements Serializable {
+	private static final EMovableType[] BOWMEN_TYPES = {EMovableType.BOWMAN_L1, EMovableType.BOWMAN_L2, EMovableType.BOWMAN_L3};
+	private static final EMovableType[] SWORDSMEN_TYPES = {EMovableType.SWORDSMAN_L1, EMovableType.SWORDSMAN_L2, EMovableType.SWORDSMAN_L3};
+	private static final EMovableType[] PIKEMEN_TYPES = {EMovableType.PIKEMAN_L1, EMovableType.PIKEMAN_L2, EMovableType.PIKEMAN_L3};
+	private static final byte MAXIMUM_LEVEL = 2;
+	private static final short[] NECESSARY_MANA_FOR_UPGRADE = {10, 30, 60, 110, 170, 200};
+
+	private final byte[] levelOfTypes = {0, 0, 0};
 
 	private short mana = 0;
 	private short numberOfUpgradesExecuted = 0;
-
-	private byte[] levelOfTypes = {0, 0, 0};
-	private EMovableType[] bowmenTypes = {EMovableType.BOWMAN_L1, EMovableType.BOWMAN_L2, EMovableType.BOWMAN_L3};
-	private EMovableType[] swordsmenTypes = {EMovableType.SWORDSMAN_L1, EMovableType.SWORDSMAN_L2, EMovableType.SWORDSMAN_L3};
-	private EMovableType[] pikemenTypes = {EMovableType.PIKEMAN_L1, EMovableType.PIKEMAN_L2, EMovableType.PIKEMAN_L3};
-	private static final byte MAXIMUM_LEVEL = 2;
-	private static final short[] NECESSARY_MANA_FOR_UPGRADE = {10, 30, 60, 110, 170, 200};
 
 	public void increaseMana() {
 		mana++;
@@ -67,11 +67,11 @@ public class ManaInformation implements Serializable {
 	public EMovableType getMovableTypeOf(EManaType type) {
 		switch (type) {
 		case BOWMEN:
-			return bowmenTypes[getLevel(type)];
+			return BOWMEN_TYPES[getLevel(type)];
 		case SWORDSMEN:
-			return swordsmenTypes[getLevel(type)];
+			return SWORDSMEN_TYPES[getLevel(type)];
 		default:
-			return pikemenTypes[getLevel(type)];
+			return PIKEMEN_TYPES[getLevel(type)];
 		}
 	}
 
