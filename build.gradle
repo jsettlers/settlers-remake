@@ -11,7 +11,7 @@ buildscript {
 
 
 ext {
-  gradleVersion = '2.3'
+  gradleVersion = '2.7'
   jogampVer   = '2.2.1'
   joglJars = [
       "jogl-all-${jogampVer}-natives-linux-i586",
@@ -83,6 +83,7 @@ project('jsettlers.main.swing') {
   jar {
     baseName = project.name
     manifest { attributes "Main-Class": "jsettlers.main.swing.SwingManagedJSettlers" }
+    //TODO, bring in the natives using this. will need to rely on unpack natives?
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
   }
   task classpath << {
@@ -98,7 +99,6 @@ project('jsettlers.network') {
   jar {
     baseName = project.name
     manifest { attributes "Main-Class": "jsettlers.network.server.DedicatedServerApp" }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
   }
 
   project.mainClassName="jsettlers.network.server.DedicatedServerApp"
@@ -115,7 +115,6 @@ project('jsettlers.mapcreator') {
   jar {
     baseName = project.name
     manifest { attributes "Main-Class": "jsettlers.mapcreator.main.MapCreatorApp" }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
   }
 
   project.mainClassName="jsettlers.mapcreator.main.MapCreatorApp"
@@ -197,14 +196,25 @@ project('go.graphics.swing') {
 //}
 
 project('jsettlers.tests') {
-  sourceSets.test.java.srcDirs = ["tests","tools", "tests.network/"]
+  sourceSets.test.java.srcDirs = [
+      "tests",
+      "tools",
+      "tests.network/",
+      "test.integration"
+  ]
   dependencies {
     compile project(":jsettlers.main.swing")
     compile project(":jsettlers.network")
     testCompile fileTree(dir: 'libs', include: '*.jar')
   }
+  /*task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+  }
+
+  check.dependsOn integrationTest*/
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4-rc-1'
+    gradleVersion = '2.7'
 }
