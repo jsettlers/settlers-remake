@@ -36,11 +36,9 @@ import jsettlers.logic.stack.RequestStack;
  */
 public final class Barrack extends WorkAreaBuilding implements IBarrack, IRequestStackListener {
 	private static final long serialVersionUID = -6541972855836598068L;
-	private ManaInformation manaInformation;
 
 	public Barrack(Player player) {
 		super(EBuildingType.BARRACK, player);
-		manaInformation = player.getManaInformation();
 	}
 
 	@Override
@@ -66,11 +64,11 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 	private EMovableType getSoldierType(EMaterialType materialType) {
 		switch (materialType) {
 		case SWORD:
-			return manaInformation.getMovableTypeOf(EManaType.SWORDSMEN);
+			return getPlayer().getManaInformation().getMovableTypeOf(EManaType.SWORDSMEN);
 		case BOW:
-			return manaInformation.getMovableTypeOf(EManaType.BOWMEN);
+			return getPlayer().getManaInformation().getMovableTypeOf(EManaType.BOWMEN);
 		case SPEAR:
-			return manaInformation.getMovableTypeOf(EManaType.PIKEMEN);
+			return getPlayer().getManaInformation().getMovableTypeOf(EManaType.PIKEMEN);
 		default:
 			return null;
 		}
