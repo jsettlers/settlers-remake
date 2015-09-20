@@ -28,12 +28,12 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author codingberlin
  */
-public class NearNeededBuildingConstructionPositionFinder implements IBestConstructionPositionFinder {
+public class NearRequiredBuildingConstructionPositionFinder implements IBestConstructionPositionFinder {
 
 	EBuildingType buildingType;
 	EBuildingType neededBuildingType;
 
-	public NearNeededBuildingConstructionPositionFinder(EBuildingType ownBuildingType, EBuildingType neededBuildingType) {
+	public NearRequiredBuildingConstructionPositionFinder(EBuildingType ownBuildingType, EBuildingType neededBuildingType) {
 		this.buildingType = ownBuildingType;
 		this.neededBuildingType = neededBuildingType;
 	}

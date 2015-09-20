@@ -105,12 +105,12 @@ public class AiStatistics {
 	}
 
 	public void updateStatistics() {
-		for (PlayerStatistic playerStatistic: playerStatistics) {
+		for (PlayerStatistic playerStatistic : playerStatistics) {
 			playerStatistic.clearAll();
 		}
 		sortedRiversInDefaultPartition.clear();
 		sortedCuttableObjectsInDefaultPartition.clear();
-		for (Map<Integer, List<Integer>> xCoordinatesMap: sortedResourceTypes.values()) {
+		for (Map<Integer, List<Integer>> xCoordinatesMap : sortedResourceTypes.values()) {
 			xCoordinatesMap.clear();
 		}
 
@@ -237,6 +237,14 @@ public class AiStatistics {
 									playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
 						}
 					}
+					Movable movable = movableGrid.getMovableAt(x, y);
+					if (movable != null) {
+						EMovableType movableType = movable.getMovableType();
+						if (!playerStatistic.movablePositions.containsKey(movableType)) {
+							playerStatistic.movablePositions.put(movableType, new ArrayList<ShortPoint2D>());
+						}
+						playerStatistic.movablePositions.get(movableType).add(point);
+					}
 				}
 			}
 		}
@@ -333,8 +341,8 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints,
-			int currentNearestPointDistance, Integer x, Integer increment, Integer border, byte playerId) {
-		if (x.equals(border) || Math.abs(x - point.x) > currentNearestPointDistance) {
+			int currentNearestPointDistance, Integer x, int increment, int border, byte playerId) {
+		if (x.intValue() == border || Math.abs(x - point.x) > currentNearestPointDistance) {
 			return null;
 		}
 		if (!sortedPoints.containsKey(x)) {
@@ -343,13 +351,13 @@ public class AiStatistics {
 		}
 		ShortPoint2D result = null;
 		ShortPoint2D southYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, Integer.valueOf(point.y), 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
+				currentNearestPointDistance, x, point.y, 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
 		if (southYPoint != null) {
 			result = southYPoint;
 			currentNearestPointDistance = point.getOnGridDistTo(southYPoint);
 		}
 		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, Integer.valueOf(point.y - 1), -1, -1, playerId);
+				currentNearestPointDistance, x, point.y - 1, -1, -1, playerId);
 		if (northYPoint != null) {
 			result = northYPoint;
 			currentNearestPointDistance = point.getOnGridDistTo(northYPoint);
@@ -365,11 +373,11 @@ public class AiStatistics {
 	}
 
 	private ShortPoint2D getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(List<Integer> ypsilons, ShortPoint2D point,
-			int currentNearestPointDistance, Integer x, Integer y, Integer increment, Integer border, byte playerId) {
-		if (y.equals(border) || Math.abs(y - point.y) > currentNearestPointDistance) {
+			int currentNearestPointDistance, int x, int y, int increment, int border, byte playerId) {
+		if (y == border || Math.abs(y - point.y) > currentNearestPointDistance) {
 			return null;
 		}
-		if (!ypsilons.contains(y) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
+		if (!ypsilons.contains(Integer.valueOf(y)) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
 			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
 					increment, border, playerId);
 		}
@@ -527,6 +535,7 @@ public class AiStatistics {
 		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
 	}
 
+	private class PlayerStatistic {
 	public List<Byte> getEnemiesOf(byte playerId) {
       	List<Byte> enemies = new ArrayList<Byte>();
 		for (Team team : partitionsGrid.getTeams()) {
@@ -615,6 +624,5 @@ public class AiStatistics {
 				theArray[i] = 0;
 			}
 		}
-
 	}
 }

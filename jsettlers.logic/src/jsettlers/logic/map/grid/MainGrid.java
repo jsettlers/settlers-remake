@@ -1035,11 +1035,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean executeSearchType(ShortPoint2D position, ESearchType searchType) {
-			return mapObjectsManager.executeSearchType(position, searchType);
-		}
-
-		@Override
 		public final void placeSmoke(ShortPoint2D pos, boolean place) {
 			if (place) {
 				mapObjectsManager.addSimpleMapObject(pos, EMapObjectType.SMOKE, false, null);
@@ -1241,8 +1236,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculatable pathCalculable, ShortPoint2D pos, ESearchType searchType) {
-			return pathfinderGrid.fitsSearchType(pos.x, pos.y, searchType, pathCalculable);
+		public boolean fitsSearchType(IPathCalculatable pathCalculable, ShortPoint2D position, ESearchType searchType) {
+			return pathfinderGrid.fitsSearchType(position.x, position.y, searchType, pathCalculable);
+		}
+
+		@Override
+		public final boolean executeSearchType(IPathCalculatable pathCalculable, ShortPoint2D position, ESearchType searchType) {
+			if (fitsSearchType(pathCalculable, position, searchType)) {
+				return mapObjectsManager.executeSearchType(position, searchType);
+			} else {
+				return false;
+			}
 		}
 
 		@Override

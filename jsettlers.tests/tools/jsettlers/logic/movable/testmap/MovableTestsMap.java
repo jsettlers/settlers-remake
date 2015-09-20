@@ -244,11 +244,6 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 		}
 
 		@Override
-		public boolean executeSearchType(ShortPoint2D pos, ESearchType searchType) {
-			return false;
-		}
-
-		@Override
 		public EMaterialType popToolProductionRequest(ShortPoint2D pos) {
 			return null;
 		}
@@ -332,6 +327,11 @@ public class MovableTestsMap implements IGraphicsGrid, IAStarPathMap {
 
 		@Override
 		public boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D pos, ESearchType searchType) {
+			return false;
+		}
+
+		@Override
+		public boolean executeSearchType(IPathCalculatable pathCalculatable, ShortPoint2D position, ESearchType searchType) {
 			return false;
 		}
 

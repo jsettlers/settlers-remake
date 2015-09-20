@@ -42,7 +42,7 @@ public class BestConstructionPositionFinderFactory {
 		case FORESTER:
 			return new BestForesterConstructionPositionFinder(type);
 		case SAWMILL:
-			return new NearNeededBuildingConstructionPositionFinder(type, LUMBERJACK);
+			return new NearRequiredBuildingConstructionPositionFinder(type, LUMBERJACK);
 		case TOWER:
 		case BIG_TOWER:
 		case CASTLE:
@@ -59,29 +59,29 @@ public class BestConstructionPositionFinderFactory {
 		case WATERWORKS:
 			return new BestWaterWorksConstructionPositionFinder(type);
 		case IRONMELT:
-			return new NearNeededBuildingConstructionPositionFinder(type, IRONMINE);
+			return new NearRequiredBuildingConstructionPositionFinder(type, IRONMINE);
 		case WEAPONSMITH:
-			return new NearNeededBuildingConstructionPositionFinder(type, IRONMELT);
+			return new NearRequiredBuildingConstructionPositionFinder(type, IRONMELT);
 		case TOOLSMITH:
-			return new NearNeededBuildingConstructionPositionFinder(type, IRONMELT);
+			return new NearRequiredBuildingConstructionPositionFinder(type, IRONMELT);
 		case BARRACK:
-			return new NearNeededBuildingConstructionPositionFinder(type, WEAPONSMITH);
+			return new NearRequiredBuildingConstructionPositionFinder(type, WEAPONSMITH);
 		case MILL:
-			return new NearNeededBuildingConstructionPositionFinder(type, FARM);
+			return new NearRequiredBuildingConstructionPositionFinder(type, FARM);
 		case BAKER:
-			return new NearNeededBuildingConstructionPositionFinder(type, MILL);
+			return new NearRequiredBuildingConstructionPositionFinder(type, MILL);
 		case PIG_FARM:
-			return new NearNeededBuildingConstructionPositionFinder(type, FARM);
+			return new NearRequiredBuildingConstructionPositionFinder(type, FARM);
 		case SLAUGHTERHOUSE:
-			return new NearNeededBuildingConstructionPositionFinder(type, PIG_FARM);
+			return new NearRequiredBuildingConstructionPositionFinder(type, PIG_FARM);
 		case TEMPLE:
-			return new NearNeededBuildingConstructionPositionFinder(type, WINEGROWER);
+			return new NearRequiredBuildingConstructionPositionFinder(type, WINEGROWER);
 		case GOLDMELT:
-			return new NearNeededBuildingConstructionPositionFinder(type, GOLDMINE);
+			return new NearRequiredBuildingConstructionPositionFinder(type, GOLDMINE);
 		case FISHER:
 			return new BestFisherConstructionPositionFinder(type);
 		case STOCK:
-			return new NearNeededBuildingConstructionPositionFinder(type, GOLDMELT);
+			return new NearRequiredBuildingConstructionPositionFinder(type, GOLDMELT);
 		default:
 			return new NearDiggersConstructionPositionFinder(type);
 		}
