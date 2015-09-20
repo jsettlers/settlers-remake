@@ -15,6 +15,7 @@ logs
 /jsettlers.common/resources/images/*
 !/jsettlers.common/resources/images/movables.txt
 /jsettlers.common/resources/save
+config.prp
 
 /jsettlers.main.swing/*.log
 
