@@ -108,9 +108,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		buildingNeeds.get(BAKER).add(new BuildingCount(MILL, (float) 1 / 3));
 		buildingNeeds.get(PIG_FARM).add(new BuildingCount(FARM, 1));
 		buildingNeeds.get(SLAUGHTERHOUSE).add(new BuildingCount(PIG_FARM, (float) 1 / 3));
-		buildingNeeds.get(IRONMELT).add(new BuildingCount(COALMINE, 0.5f));
 		buildingNeeds.get(IRONMELT).add(new BuildingCount(IRONMINE, 0.5f));
-		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(COALMINE, 0.5f));
 		buildingNeeds.get(WEAPONSMITH).add(new BuildingCount(IRONMELT, 1));
 		buildingNeeds.get(GOLDMELT).add(new BuildingCount(GOLDMINE, 0.5f));
 		buildingNeeds.get(BARRACK).add(new BuildingCount(WEAPONSMITH, 4));
@@ -226,9 +224,9 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 	@Override
 	public void applyRules() {
 		destroyBuildings();
-		occupyTowers();
 		buildBuildings();
 		armyGeneral.commandTroops();
+		occupyTowers();
 	}
 
 	private void occupyTowers() {
