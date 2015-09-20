@@ -296,7 +296,10 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
 		}
 
-		// TODO: destroy mines which have no resources anymore
+		// destroy mines
+		for (ShortPoint2D mine: aiStatistics.getDeadMinesOf(playerId)) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, mine));
+		}
 	}
 
 	private void destroyHinterlandTowers() {

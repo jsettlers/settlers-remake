@@ -41,6 +41,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
+import jsettlers.logic.buildings.workers.MineBuilding;
 import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
@@ -61,6 +62,8 @@ import jsettlers.logic.player.Team;
 public class AiStatistics {
 
 	private static final short BORDER_LAND_WIDTH = 10;
+	private static final int MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD = 200;
+	private static final float MINE_PRODUCTIVITY_WHEN_DEAD = 0.1f;
 
 	private final Queue<Building> buildings;
 	private PlayerStatistic[] playerStatistics;
@@ -129,11 +132,18 @@ public class AiStatistics {
 	}
 
 	private void updateBuildingPositions(PlayerStatistic playerStatistic, EBuildingType type, Building building) {
-
 		if (!playerStatistic.buildingPositions.containsKey(type)) {
 			playerStatistic.buildingPositions.put(type, new ArrayList<ShortPoint2D>());
 		}
 		playerStatistic.buildingPositions.get(type).add(building.getPos());
+
+		if (building.getBuildingType().isMine() && building.isOccupied()) {
+			MineBuilding mine = (MineBuilding) building;
+			System.out.println("mine: " + mine.getRemainingResourceAmount() + " " + mine.getProductivity());
+			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD && mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
+				playerStatistic.deadMines.add(mine.getPos());
+			}
+		}
 	}
 
 	private void updateBuildingsNumbers(PlayerStatistic playerStatistic, Building building, EBuildingType type) {
@@ -566,6 +576,10 @@ public class AiStatistics {
 		return playerStatistics[playerId].enemyTroopsInTown;
 	}
 
+	public List<ShortPoint2D> getDeadMinesOf(byte playerId) {
+		return playerStatistics[playerId].deadMines;
+	}
+
 	class PlayerStatistic {
 		private int[] totalBuildingsNumbers;
 		private int[] buildingsNumbers;
@@ -580,6 +594,7 @@ public class AiStatistics {
 		private List<ShortPoint2D> trees;
 		private List<ShortPoint2D> rivers;
 		private List<ShortPoint2D> enemyTroopsInTown;
+		private List<ShortPoint2D> deadMines;
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
@@ -592,6 +607,7 @@ public class AiStatistics {
 			short partitionIdToBuildOn;
 			landToBuildOn = new ArrayList<ShortPoint2D>();
 			enemyTroopsInTown = new Vector<ShortPoint2D>();
+			deadMines = new Vector<ShortPoint2D>();
 			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
@@ -604,6 +620,7 @@ public class AiStatistics {
 		public void clearAll() {
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
+			deadMines.clear();
 			stones.clear();
 			trees.clear();
 			rivers.clear();
