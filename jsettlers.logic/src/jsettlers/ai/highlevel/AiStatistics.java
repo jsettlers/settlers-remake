@@ -35,6 +35,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -139,7 +140,6 @@ public class AiStatistics {
 
 		if (building.getBuildingType().isMine() && building.isOccupied()) {
 			MineBuilding mine = (MineBuilding) building;
-			System.out.println("mine: " + mine.getRemainingResourceAmount() + " " + mine.getProductivity());
 			if (mine.getRemainingResourceAmount() <= MINE_REMAINING_RESOURCE_AMOUNT_WHEN_DEAD && mine.getProductivity() <= MINE_PRODUCTIVITY_WHEN_DEAD) {
 				playerStatistic.deadMines.add(mine.getPos());
 			}
@@ -239,12 +239,6 @@ public class AiStatistics {
 						if (landscapeGrid.getLandscapeTypeAt(x, y).isRiver()) {
 							playerStatistic.rivers.add(point);
 						}
-						StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
-						if (stack != null) {
-							EMaterialType materialType = stack.getMaterialType();
-							playerStatistic.materialNumbers[materialType.ordinal] =
-									playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
-						}
 					}
 				}
 			}
@@ -275,6 +269,7 @@ public class AiStatistics {
 			}
 			if (referencePosition != null) {
 				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
+				playerStatistics[playerId].materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
 		}
 	}
@@ -527,7 +522,11 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
-		return playerStatistics[playerId].materialNumbers[type.ordinal];
+		if (playerStatistics[playerId].materials == null) {
+			return 0;
+		}
+
+		return playerStatistics[playerId].materials.getAmountOf(type);
 	}
 
 	public MainGrid getMainGrid() {
@@ -586,10 +585,10 @@ public class AiStatistics {
 		private int[] unoccupiedBuildingsNumbers;
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		private short partitionIdToBuildOn;
+		private IPartitionData materials;
 		private List<ShortPoint2D> landToBuildOn;
 		private List<ShortPoint2D> borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
-		private int[] materialNumbers;
 		private List<ShortPoint2D> stones;
 		private List<ShortPoint2D> trees;
 		private List<ShortPoint2D> rivers;
@@ -604,7 +603,6 @@ public class AiStatistics {
 			stones = new ArrayList<ShortPoint2D>();
 			trees = new ArrayList<ShortPoint2D>();
 			rivers = new ArrayList<ShortPoint2D>();
-			short partitionIdToBuildOn;
 			landToBuildOn = new ArrayList<ShortPoint2D>();
 			enemyTroopsInTown = new Vector<ShortPoint2D>();
 			deadMines = new Vector<ShortPoint2D>();
@@ -613,11 +611,11 @@ public class AiStatistics {
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			unoccupiedBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-			materialNumbers = new int[EMaterialType.NUMBER_OF_MATERIALS];
 			clearIntegers();
 		}
 
 		public void clearAll() {
+			materials = null;
 			buildingPositions.clear();
 			enemyTroopsInTown.clear();
 			deadMines.clear();
@@ -631,13 +629,13 @@ public class AiStatistics {
 		}
 
 		private void clearIntegers() {
-			clearIntegerArray(materialNumbers);
 			clearIntegerArray(totalBuildingsNumbers);
 			clearIntegerArray(buildingsNumbers);
 			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedTowers = 0;
+			partitionIdToBuildOn = Short.MIN_VALUE;
 		}
 
 		private void clearIntegerArray(int[] theArray) {
