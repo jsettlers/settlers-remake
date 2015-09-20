@@ -507,7 +507,7 @@ public class AiStatistics {
 			return points;
 		}
 
-		points.sort(new Comparator<ShortPoint2D>() {
+		Collections.sort(points, new Comparator<ShortPoint2D>() {
 			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
 				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
 			}
