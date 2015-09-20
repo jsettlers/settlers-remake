@@ -14,14 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.startlists;
 
-import jsettlers.graphics.action.Action;
-import jsettlers.graphics.action.ExecutableAction;
+import java.util.Comparator;
+
 import jsettlers.graphics.startscreen.IContentSetable;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
 import jsettlers.graphics.startscreen.interfaces.IStartScreen;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIListItem;
 
 public class NewGamePanel extends StartListPanel<IMapDefinition> {
 	private final IStartScreen screen;
@@ -34,15 +34,9 @@ public class NewGamePanel extends StartListPanel<IMapDefinition> {
 	}
 
 	@Override
-	protected Action getSubmitAction() {
-		return new ExecutableAction() {
-			@Override
-			public void execute() {
-				IStartingGame game =
-						screen.startSingleplayerGame(getActiveListItem());
-				contentSetable.setContent(new StartingGamePanel(game, contentSetable));
-			}
-		};
+	protected void onSubmitAction() {
+		IStartingGame game = screen.startSingleplayerGame(getActiveListItem());
+		contentSetable.setContent(new StartingGamePanel(game, contentSetable));
 	}
 
 	@Override
@@ -53,5 +47,10 @@ public class NewGamePanel extends StartListPanel<IMapDefinition> {
 	@Override
 	protected String getSubmitTextId() {
 		return "start-newgame-start";
+	}
+
+	@Override
+	protected Comparator<? super IMapDefinition> getDefaultComparator() {
+		return IMapDefinition.MAP_NAME_COMPARATOR;
 	}
 }

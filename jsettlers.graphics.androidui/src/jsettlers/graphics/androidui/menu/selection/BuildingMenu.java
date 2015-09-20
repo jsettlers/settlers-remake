@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.partition.IPartitionSettings;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.material.EPriority;
@@ -56,7 +57,7 @@ public class BuildingMenu extends AndroidMenu {
 
 	private ImageButton pauseButton;
 
-	private IPartitionSettings settings;
+	private IPartitionData partitionData;
 
 	private float lastState;
 
@@ -84,11 +85,10 @@ public class BuildingMenu extends AndroidMenu {
 		}
 	}
 
-	public BuildingMenu(AndroidMenuPutable androidMenuPutable,
-			IBuilding building, IPartitionSettings settings) {
+	public BuildingMenu(AndroidMenuPutable androidMenuPutable, IBuilding building, IPartitionData partitionData) {
 		super(androidMenuPutable);
 		this.building = building;
-		this.settings = settings;
+		this.partitionData = partitionData;
 	}
 
 	public void showMaterialContent(EMaterialType mat) {
@@ -102,24 +102,19 @@ public class BuildingMenu extends AndroidMenu {
 			ListView list = new ListView(getContext());
 			DistributionListener listener = new DistributionListener() {
 				@Override
-				public void distributionChanged(EMaterialType material,
-						float[] distribution) {
-					getActionFireable().fireAction(
-							new SetMaterialDistributionSettingsAction(building
-									.getPos(), material, distribution));
+				public void distributionChanged(EMaterialType material, float[] distribution) {
+					getActionFireable().fireAction(new SetMaterialDistributionSettingsAction(building.getPos(), material, distribution));
 				}
 			};
-			MaterialAdapter matAdapter =
-					new MaterialAdapter(getContext(),
-							settings.getDistributionSettings(mat), listener);
+			IPartitionSettings partitionSettings = partitionData.getPartitionSettings();
+			MaterialAdapter matAdapter = new MaterialAdapter(getContext(), partitionSettings.getDistributionSettings(mat), listener);
 			list.setAdapter(matAdapter);
 			tabContent.addView(list);
 		}
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.building, container, false);
 	}
 
@@ -131,11 +126,16 @@ public class BuildingMenu extends AndroidMenu {
 
 		TextView title = (TextView) view.findViewById(R.id.building_name);
 		String name = Labels.getName(building.getBuildingType());
+		title.setText(name);
+
+		TextView subheadline = (TextView) view.findViewById(R.id.building_info);
 		if (building.getStateProgress() < 1) {
-			title.setText(String.format(Labels.getString("under_construction"),
-					name));
+			subheadline.setText(R.string.building_construction);
+		} else if (building instanceof IBuilding.IResourceBuilding) {
+			IBuilding.IResourceBuilding mine = (IBuilding.IResourceBuilding) building;
+			subheadline.setText(getResources().getString(R.string.building_productivity, (int) (mine.getProductivity() * 100)));
 		} else {
-			title.setText(name);
+			subheadline.setVisibility(View.GONE);
 		}
 
 		TableLayout tabs = (TableLayout) view.findViewById(R.id.building_tabs);

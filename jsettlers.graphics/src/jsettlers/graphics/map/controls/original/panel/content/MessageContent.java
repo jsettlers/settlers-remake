@@ -15,13 +15,12 @@
 package jsettlers.graphics.map.controls.original.panel.content;
 
 import go.graphics.text.EFontSize;
-import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.action.Action;
-import jsettlers.graphics.utils.UIPanel;
+import jsettlers.graphics.ui.Label;
+import jsettlers.graphics.ui.LabeledButton;
+import jsettlers.graphics.ui.UIPanel;
 
-public class MessageContent implements IContentProvider {
+public class MessageContent extends AbstractContentProvider {
 
 	private final UIPanel panel;
 
@@ -32,11 +31,11 @@ public class MessageContent implements IContentProvider {
 		panel.addChild(new Label(message, EFontSize.NORMAL), .1f, .5f, .9f, .9f);
 
 		if (abortMessage != null && abortAction != null) {
-			UILabeledButton okButton = new UILabeledButton(abortMessage, abortAction);
+			LabeledButton okButton = new LabeledButton(abortMessage, abortAction);
 			panel.addChild(okButton, .1f, .1f, .5f, .2f);
 		}
 		if (okMessage != null && okAction != null) {
-			UILabeledButton okButton = new UILabeledButton(okMessage, okAction);
+			LabeledButton okButton = new LabeledButton(okMessage, okAction);
 			panel.addChild(okButton, .5f, .1f, .9f, .2f);
 		}
 	}
@@ -49,14 +48,6 @@ public class MessageContent implements IContentProvider {
 	@Override
 	public ESecondaryTabType getTabs() {
 		return null;
-	}
-
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
-	}
-
-	@Override
-	public void showMapPosition(ShortPoint2D pos, IGraphicsGrid grid) {
 	}
 
 }

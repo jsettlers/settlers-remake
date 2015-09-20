@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.map.draw.ImageProvider;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.sound.SoundManager;
 
 /**
@@ -68,7 +69,9 @@ public class SwingResourceLoader {
 		}
 
 		for (String gfxFolder : cf.getGfxFolders()) {
-			hasGfxDir = hasGfxDir || new File(gfxFolder, "siedler3_00.7c003e01f.dat").exists();
+			for (DatFileType t : DatFileType.values()) {
+				hasGfxDir = hasGfxDir || new File(gfxFolder, "siedler3_00" + t.getFileSuffix()).exists();
+			}
 		}
 
 		if (!hasSndDir || !hasGfxDir) {

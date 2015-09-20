@@ -21,17 +21,17 @@ package jsettlers.common.mapobject;
  * 
  */
 public interface IMapObject {
-	public static final float TREE_CUT_1 = 0.03F;
-	public static final float TREE_CUT_2 = 0.06F;
-	public static final float TREE_CUT_3 = 0.09F;
-	public static final float TREE_TAKEN = 0.1F;
+	static final float TREE_CUT_1 = 0.03F;
+	static final float TREE_CUT_2 = 0.06F;
+	static final float TREE_CUT_3 = 0.09F;
+	static final float TREE_TAKEN = 0.1F;
 
 	/**
 	 * Gets the type of the object.
 	 * 
 	 * @return The type of the object to display. May not be <code>null</code>.
 	 */
-	public EMapObjectType getObjectType();
+	EMapObjectType getObjectType();
 
 	/**
 	 * this value is used for different things:<br>
@@ -47,13 +47,21 @@ public interface IMapObject {
 	 * 
 	 * @return a positive float, normally from 0..1
 	 */
-	public float getStateProgress();
+	float getStateProgress();
 
 	/**
 	 * Gets the next map object for that position.
 	 * 
 	 * @return The next object at the same position
 	 */
-	public IMapObject getNextObject();
+	IMapObject getNextObject();
 
+	/**
+	 * Returns the first {@link IMapObject} on this stack having the given {@link EMapObjectType}.
+	 * 
+	 * @param type
+	 *            The {@link EMapObjectType} to look for.
+	 * @return The first {@link IMapObject} found on this stack or <code>null</code> if none of this type has been found.
+	 */
+	IMapObject getMapObject(EMapObjectType type);
 }

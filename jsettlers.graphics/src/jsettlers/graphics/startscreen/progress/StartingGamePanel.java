@@ -41,7 +41,7 @@ public class StartingGamePanel extends ProgressPanel implements IStartingGameLis
 	}
 
 	@Override
-	public MapInterfaceConnector startFinished(IStartedGame game) {
+	public MapInterfaceConnector preLoadFinished(IStartedGame game) {
 		MapContent content = new MapContent(game, contentSetable.getSoundPlayer());
 		contentSetable.setContent(content);
 		game.setGameExitListener(new IGameExitListener() {
@@ -57,6 +57,11 @@ public class StartingGamePanel extends ProgressPanel implements IStartingGameLis
 	public void startFailed(EGameError errorType, Exception exception) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void startFinished() {
+		// TODO Auto-generated method stub
 	}
 
 }

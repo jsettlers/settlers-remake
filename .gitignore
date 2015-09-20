@@ -6,7 +6,6 @@ logs
 
 /.metadata
 /.recommenders
-.externalToolBuilders
 .settings
 .buildScripts
 /jsettlers.main.android/assets/*
@@ -27,4 +26,4 @@ config.prp
 .project
 .classpath
 .settings
-build/
+build//jsettlers.tests/out

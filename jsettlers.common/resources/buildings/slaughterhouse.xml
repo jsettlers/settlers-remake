@@ -91,15 +91,20 @@
 	<blocked dx="8" dy="7" block="false" />
 	<blocked dx="7" dy="7" block="false" />
 	<blocked dx="-1" dy="2" block="false" />
+	
 	<door dx="-1" dy="2" />
-	<stack dx="2" dy="5" material="PLANK" buildrequired="1" />
-	<stack dx="4" dy="5" material="STONE" buildrequired="1" />
-	<stack dx="-3" dy="2" material="PIG" buildrequired="0" />
+	
+	<constructionStack dx="2" dy="5" material="PLANK" buildrequired="1" />
+	<constructionStack dx="4" dy="5" material="STONE" buildrequired="1" />
+	<requestStack dx="-3" dy="2" material="PIG" />
+	
 	<bricklayer dx="-3" dy="1" direction="NORTH_EAST" />
 	<bricklayer dx="0" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="3" dy="4" direction="NORTH_WEST" />
 	<bricklayer dx="4" dy="3" direction="NORTH_WEST" />
+
 	<flag dx="-4" dy="-5" />
+	
 	<buildmark dx="-3" dy="0" />
 	<buildmark dx="0" dy="3" />
 	<buildmark dx="3" dy="1" />
@@ -127,10 +132,8 @@
 	<job name="A_show"   type="SHOW"         successjob="A_walkA1" failjob="gohome" dx="-1" dy="2" />
 	<job name="A_walkA1" type="WALK"         successjob="A_walkA2" failjob="gohome" direction="SOUTH_WEST"/>
 	<job name="A_walkA2" type="WALK"         successjob="A_walkA3" failjob="gohome" direction="WEST"/>
-	<job name="A_walkA3" type="WALK"         successjob="A_take1" failjob="gohome" direction="NORTH_WEST"/>
-	<job name="A_take1"  type="DROP"         successjob="A_take2"  failjob="gohome" material="NO_MATERIAL"/>
-	<job name="A_take2"  type="SET_MATERIAL" successjob="A_take3"  failjob="gohome" material="PIG"/>
-	<job name="A_take3"  type="TAKE"         successjob="A_walkB1" failjob="gohome" material="PIG"/>
+	<job name="A_walkA3" type="WALK"         successjob="A_take" failjob="gohome" direction="NORTH_WEST"/>
+	<job name="A_take"	 type="TAKE"         successjob="A_walkB1" failjob="gohome" material="PIG"/>
 	<job name="A_walkB1" type="WALK"         successjob="A_walkB2" failjob="gohome" direction="SOUTH_EAST"/>
 	<job name="A_walkB2" type="WALK"         successjob="A_walkB3" failjob="gohome" direction="EAST"/>
 	<job name="A_walkB3" type="WALK"         successjob="A_hide" failjob="gohome" direction="NORTH_EAST"/>
@@ -142,9 +145,7 @@
 	<job name="B_walkA1" type="WALK"         successjob="B_walkA2" failjob="gohome" direction="SOUTH_WEST"/>
 	<job name="B_walkA2" type="WALK"         successjob="B_walkA3"  failjob="gohome" direction="SOUTH_EAST"/>
 	<job name="B_walkA3" type="WALK"         successjob="B_take1"  failjob="gohome" direction="EAST"/>
-	<job name="B_take1"  type="DROP"         successjob="B_take2"  failjob="gohome" material="MEAT"/>
-	<job name="B_take2"  type="SET_MATERIAL" successjob="B_take3"  failjob="gohome" material="NO_MATERIAL"/>
-	<job name="B_take3"  type="TAKE"         successjob="B_walkB1" failjob="gohome" material="NO_MATERIAL"/>
+	<job name="B_take1"  type="DROP"         successjob="B_walkB1"  failjob="gohome" material="MEAT"/>
 	<job name="B_walkB1" type="WALK"         successjob="B_walkB2" failjob="gohome" direction="WEST"/>
 	<job name="B_walkB2" type="WALK"         successjob="B_walkB3"   failjob="gohome" direction="NORTH_WEST"/>
 	<job name="B_walkB3" type="WALK"         successjob="hide"   failjob="gohome" direction="NORTH_EAST"/>

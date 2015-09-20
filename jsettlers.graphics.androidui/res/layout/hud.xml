@@ -4,11 +4,52 @@
     android:layout_height="match_parent" >
 
     <ImageButton
-        android:id="@+id/imageButton1"
+        android:id="@+id/button_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:src="@drawable/icon_menu" />
+
+    <ImageButton
+        android:id="@+id/button_minimap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_menu"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/icon_minimap" />
+
+    <ImageButton
+        android:id="@+id/button_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_minimap"
+        android:layout_alignParentRight="true"
         android:src="@drawable/icon_selection" />
+
+    <ImageButton
+        android:id="@+id/button_statistics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/button_menu"
+        android:src="@drawable/icon_stats" />
+
+    <ImageButton
+        android:id="@+id/button_build"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/button_statistics"
+        android:src="@drawable/icon_build" />
+
+    <jsettlers.graphics.androidui.hud.NavigationView
+        android:id="@+id/navigate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/button_minimap"
+        android:layout_alignLeft="@+id/button_build"
+        android:layout_alignRight="@+id/button_statistics"
+        android:layout_alignTop="@+id/button_selection" />
 
 </RelativeLayout>

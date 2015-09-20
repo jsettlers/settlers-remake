@@ -74,16 +74,21 @@
     <blocked dx="3" dy="-3" block="false" />
     <blocked dx="4" dy="-2" block="false" />
     <blocked dx="5" dy="-1" block="false" />
+    
     <door dx="0" dy="1" />
-    <stack dx="0" dy="4" material="STONE" buildrequired="3" />
-    <stack dx="3" dy="4" material="PLANK" buildrequired="4" />
-    <stack dx="6" dy="4" material="PLANK" buildrequired="0" />
+    
+    <constructionStack dx="0" dy="4" material="STONE" buildrequired="3" />
+    <constructionStack dx="3" dy="4" material="PLANK" buildrequired="4" />
+    <requestStack dx="6" dy="4" material="PLANK" />
+    
     <bricklayer dx="2" dy="3" direction="NORTH_EAST" />
     <bricklayer dx="6" dy="4" direction="NORTH_WEST" />
     <bricklayer dx="6" dy="2" direction="NORTH_WEST" />
     <bricklayer dx="1" dy="2" direction="NORTH_WEST" />
     <bricklayer dx="-1" dy="3" direction="NORTH_EAST" />
+    
     <flag dx="0" dy="-1" />
+    
     <buildmark dx="3" dy="3" />
     <buildmark dx="5" dy="3" />
     <buildmark dx="4" dy="0" />
@@ -125,9 +130,7 @@
     <job name="A_walkA5" type="WALK" successjob="A_walkA6" failjob="gohome" direction="EAST" />
     <job name="A_walkA6" type="WALK" successjob="A_take1" failjob="gohome" direction="EAST" />
 
-    <job name="A_take1" type="DROP" successjob="A_take2" failjob="resetandgohome" material="NO_MATERIAL" />
-    <job name="A_take2" type="SET_MATERIAL" successjob="A_take3" failjob="resetandgohome" material="PLANK" />
-    <job name="A_take3" type="TAKE" successjob="A_walkB1" failjob="resetandgohome" material="PLANK" />
+    <job name="A_take1" type="TAKE" successjob="A_walkB1" failjob="resetandgohome" material="PLANK" />
 
     <job name="A_walkB1" type="WALK" successjob="A_walkB2" failjob="resetandgohome" direction="WEST" />
     <job name="A_walkB2" type="WALK" successjob="A_walkB3" failjob="resetandgohome" direction="WEST" />
@@ -149,9 +152,7 @@
     <job name="B_walkA5" type="WALK" successjob="B_walkA6" failjob="gohome" direction="EAST" />
     <job name="B_walkA6" type="WALK" successjob="B_take1" failjob="gohome" direction="EAST" />
 
-    <job name="B_take1" type="DROP" successjob="B_take2" failjob="resetandgohome" material="NO_MATERIAL" />
-    <job name="B_take2" type="SET_MATERIAL" successjob="B_take3" failjob="resetandgohome" material="PLANK" />
-    <job name="B_take3" type="TAKE" successjob="B_walkB1" failjob="resetandgohome" material="PLANK" />
+    <job name="B_take1" type="TAKE" successjob="B_walkB1" failjob="resetandgohome" material="PLANK" />
 
     <job name="B_walkB1" type="WALK" successjob="B_walkB2" failjob="resetandgohome" direction="WEST" />
     <job name="B_walkB2" type="WALK" successjob="B_walkB3" failjob="resetandgohome" direction="WEST" />
@@ -176,9 +177,7 @@
     <job name="C_walkA5" type="WALK" successjob="C_walkA6" failjob="gohome" direction="EAST" />
     <job name="C_walkA6" type="WALK" successjob="C_take1" failjob="gohome" direction="EAST" />
 
-    <job name="C_take1" type="DROP" successjob="C_take2" failjob="resetandgohome" material="NO_MATERIAL" />
-    <job name="C_take2" type="SET_MATERIAL" successjob="C_take3" failjob="resetandgohome" material="PLANK" />
-    <job name="C_take3" type="TAKE" successjob="C_walkB1" failjob="resetandgohome" material="PLANK" />
+    <job name="C_take1" type="TAKE" successjob="C_walkB1" failjob="resetandgohome" material="PLANK" />
 
     <job name="C_walkB1" type="WALK" successjob="C_walkB2" failjob="resetandgohome" direction="WEST" />
     <job name="C_walkB2" type="WALK" successjob="C_walkB3" failjob="resetandgohome" direction="WEST" />
@@ -200,9 +199,7 @@
     <job name="D_walkA5" type="WALK" successjob="D_walkA6" failjob="gohome" direction="EAST" />
     <job name="D_walkA6" type="WALK" successjob="D_take1" failjob="gohome" direction="EAST" />
 
-    <job name="D_take1" type="DROP" successjob="D_take2" failjob="resetandgohome" material="NO_MATERIAL" />
-    <job name="D_take2" type="SET_MATERIAL" successjob="D_take3" failjob="resetandgohome" material="PLANK" />
-    <job name="D_take3" type="TAKE" successjob="D_walkB1" failjob="resetandgohome" material="PLANK" />
+    <job name="D_take1" type="TAKE" successjob="D_walkB1" failjob="resetandgohome" material="PLANK" />
 
     <job name="D_walkB1" type="WALK" successjob="D_walkB2" failjob="resetandgohome" direction="WEST" />
     <job name="D_walkB2" type="WALK" successjob="D_walkB3" failjob="resetandgohome" direction="WEST" />
@@ -222,9 +219,7 @@
     <job name="Z_walkA2" type="WALK" successjob="Z_walkA3" failjob="resetandgohome" direction="SOUTH_EAST" />
     <job name="Z_walkA3" type="WALK" successjob="Z_drop1" failjob="resetandgohome" direction="SOUTH_EAST" />
 
-    <job name="Z_drop1" type="DROP" successjob="Z_drop2" failjob="resetandgohome" material="COAL" />
-    <job name="Z_drop2" type="SET_MATERIAL" successjob="Z_drop3" failjob="resetandgohome" material="NO_MATERIAL" />
-    <job name="Z_drop3" type="TAKE" successjob="Z_walkB1" failjob="resetandgohome" material="NO_MATERIAL" />
+    <job name="Z_drop1" type="DROP" successjob="Z_walkB1" failjob="resetandgohome" material="COAL" />
 
     <job name="Z_walkB1" type="WALK" successjob="Z_walkB2" failjob="resetandgohome" direction="NORTH_WEST" />
     <job name="Z_walkB2" type="WALK" successjob="Z_walkB3" failjob="resetandgohome" direction="NORTH_WEST" />

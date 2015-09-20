@@ -27,23 +27,21 @@ import jsettlers.common.movable.EDirection;
 
 public class SimpleBuildingJob implements IBuildingJob {
 	private final short dx;
-
 	private final short dy;
 
 	private final float time;
 
 	private final EMaterialType material;
-
 	private final EDirection direction;
-
 	private final EBuildingJobType type;
-
 	private final ESearchType search;
+	private final String name;
+	private final boolean takeMaterialFromMap;
+
+	private final EMaterialType[] foodOrder;
 
 	private IBuildingJob successJob;
 	private IBuildingJob failJob;
-
-	private final String name;
 
 	/**
 	 * Creates a new simple building job with the given data.
@@ -60,6 +58,8 @@ public class SimpleBuildingJob implements IBuildingJob {
 		direction = data.getDirection();
 		search = data.getSearchType();
 		name = data.getName();
+		takeMaterialFromMap = data.isTakeMaterialFromMap();
+		foodOrder = data.getFoodOrder();
 	}
 
 	private SimpleBuildingJob(EBuildingJobType type, int time) {
@@ -70,7 +70,9 @@ public class SimpleBuildingJob implements IBuildingJob {
 		this.material = null;
 		this.direction = null;
 		this.search = null;
-		name = "";
+		this.name = "";
+		this.takeMaterialFromMap = true;
+		this.foodOrder = null;
 	}
 
 	@Override
@@ -202,5 +204,15 @@ public class SimpleBuildingJob implements IBuildingJob {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public boolean isTakeMaterialFromMap() {
+		return takeMaterialFromMap;
+	}
+
+	@Override
+	public EMaterialType[] getFoodOrder() {
+		return foodOrder;
 	}
 }

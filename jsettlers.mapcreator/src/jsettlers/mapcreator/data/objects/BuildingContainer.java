@@ -159,4 +159,9 @@ public class BuildingContainer implements ObjectContainer, IBuilding, LandscapeC
 	public EPriority[] getSupportedPriorities() {
 		return new EPriority[0];
 	}
+
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

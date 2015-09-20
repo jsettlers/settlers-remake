@@ -33,10 +33,13 @@ public abstract class AbstractConstructionMarkableMap {
 	 *            y coordinate
 	 * @param set
 	 *            If true, the construction mark shall be set, otherwise, it shall be removed.
+	 * @param binaryConstructionMarkValues
+	 *            If true, the construction marks can only have to values: Either building is possible (set == <code>true</code>) or building is not
+	 *            possible (set == <code>false</code>).
 	 * @param flattenPositions
 	 *            The positions that need to be flattened to position this building. This value might be null whenever set is false.
 	 */
-	public abstract void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions);
+	public abstract void setConstructMarking(int x, int y, boolean set, boolean binaryConstructionMarkValues, RelativePoint[] flattenPositions);
 
 	/**
 	 * @return width of map.

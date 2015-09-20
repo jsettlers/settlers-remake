@@ -2,7 +2,8 @@
 
 <!ENTITY % imagelinktype "(SETTLER| GUI| LANDSCAPE)">
 
-<!ENTITY % material "(NO_MATERIAL|
+<!ENTITY % material "(
+	NO_MATERIAL|
 	AXE|
 	BOW|
 	BLADE|
@@ -29,10 +30,19 @@
 	TRUNK|
 	WATER|
 	WINE|
+	GEMS|
+	SULFUR|
+	RICE|
+	KEG|
+	BOX|
+	CANNON_AMMO|
+	BALLISTA_AMMO|
+	CATAPULT_AMMO|
 	WHITE_BREAD|
 	BASKET|
 	TREE|
-	PLANT)">
+	PLANT)
+">
 <!ENTITY % jobtype "(
 	WAIT|
 	WALK|
@@ -52,7 +62,8 @@
 	AVAILABLE|
 	NOT_FULL|
 	LOOK_AT_SEARCHED|
-	IS_PRODUCTIVE|
+	TRY_TAKING_RESOURCE|
+	TRY_TAKING_FOOD|
 	SMOKE_ON|
 	SMOKE_OFF|
 	START_WORKING|
@@ -66,15 +77,17 @@
 	POP_WEAPON|
 	DROP_POPPED)
 ">
-<!ENTITY % direction "(EAST| SOUTH_EAST| SOUTH_WEST| WEST | NORTH_WEST | NORTH_EAST)
-">
+<!ENTITY % direction "(EAST| SOUTH_EAST| SOUTH_WEST| WEST | NORTH_WEST | NORTH_EAST)">
 
-<!ENTITY % searchtype "(FOREIGN_GROUND|
+<!ENTITY % searchtype "(
+	FOREIGN_GROUND|
 	CUTTABLE_TREE|
 	CUTTABLE_STONE|
 	PLANTABLE_TREE|
 	PLANTABLE_CORN|
 	CUTTABLE_CORN|
+	PLANTABLE_WINE|
+	HARVESTABLE_WINE|
 	FISHABLE|
 	RIVER|
 	ENEMY)
@@ -95,7 +108,9 @@
 	RIVER4|
 	MOUNTAINBORDER
 )">
-<!ELEMENT building (ground+, blocked+, door, stack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
+<!ENTITY % boolean "(true|false)">
+
+<!ELEMENT building (ground+, blocked+, door, constructionStack+, requestStack*, offerStack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
 
 <!ATTLIST building
    worker CDATA #REQUIRED
@@ -135,11 +150,25 @@
 >
 
 
-<!ELEMENT stack EMPTY>
-<!ATTLIST stack
+<!ELEMENT constructionStack EMPTY>
+<!ATTLIST constructionStack
    dx CDATA #REQUIRED
    dy CDATA #REQUIRED
    buildrequired CDATA #REQUIRED
+   material %material; #REQUIRED
+>
+
+<!ELEMENT requestStack EMPTY>
+<!ATTLIST requestStack
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
+   material %material; #REQUIRED
+>
+
+<!ELEMENT offerStack EMPTY>
+<!ATTLIST offerStack
+   dx CDATA #REQUIRED
+   dy CDATA #REQUIRED
    material %material; #REQUIRED
 >
 
@@ -178,6 +207,8 @@
    material %material; #IMPLIED
    direction %direction; #IMPLIED
    search %searchtype; #IMPLIED
+   takeMaterialFromMap %boolean; #IMPLIED
+   foodOrder CDATA #IMPLIED
 >
 
 <!ELEMENT image EMPTY>

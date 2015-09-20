@@ -19,13 +19,13 @@ import java.util.List;
 import jsettlers.graphics.startscreen.GenericListItem;
 import jsettlers.graphics.startscreen.interfaces.ILoadableMapPlayer;
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
-import jsettlers.graphics.utils.UIListItem;
+import jsettlers.graphics.ui.UIListItem;
 
 public class LoadableMapListItem extends GenericListItem implements UIListItem {
 
 	public LoadableMapListItem(IMapDefinition item) {
 		// TODO: Load time.
-		super(item.getName(), toPlayerString(item.getPlayers()));
+		super(item.getMapName(), toPlayerString(item.getPlayers()));
 	}
 
 	private static String toPlayerString(List<ILoadableMapPlayer> players) {

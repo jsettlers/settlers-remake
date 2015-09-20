@@ -39,10 +39,10 @@ public class ResourceMapObject implements IMapObject {
 		case COAL:
 			return EMapObjectType.FOUND_COAL;
 
-		case GOLD:
+		case GOLDORE:
 			return EMapObjectType.FOUND_GOLD;
 
-		case IRON:
+		case IRONORE:
 			return EMapObjectType.FOUND_IRON;
 
 		case FISH:
@@ -61,4 +61,8 @@ public class ResourceMapObject implements IMapObject {
 		return null;
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

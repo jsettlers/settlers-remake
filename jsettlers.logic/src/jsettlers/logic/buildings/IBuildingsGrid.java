@@ -16,6 +16,7 @@ package jsettlers.logic.buildings;
 
 import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.common.landscape.ELandscapeType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.material.EMaterialType;
@@ -24,9 +25,9 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
-import jsettlers.logic.map.newGrid.objects.MapObjectsManager;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
+import jsettlers.logic.map.grid.objects.MapObjectsManager;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.interfaces.AbstractMovableGrid;
 import jsettlers.logic.player.Player;
@@ -145,5 +146,11 @@ public interface IBuildingsGrid {
 	 *            if false, it is removed.
 	 */
 	void drawWorkAreaCircle(ShortPoint2D buildingPosition, ShortPoint2D workAreaCenter, short radius, boolean draw);
+
+	short getPartitionIdAt(ShortPoint2D pos);
+
+	boolean tryTakingResource(ShortPoint2D position, EResourceType resource);
+
+	int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions);
 
 }

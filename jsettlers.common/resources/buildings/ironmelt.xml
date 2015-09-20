@@ -92,10 +92,11 @@
 
 	<door dx="2" dy="0" />
 
-	<stack dx="-3" dy="2" material="COAL" buildrequired="0" />
-	<stack dx="3" dy="3" material="IRONORE" buildrequired="0" />
-	<stack dx="3" dy="5" material="PLANK" buildrequired="7" />
-	<stack dx="0" dy="5" material="STONE" buildrequired="4" />
+	<constructionStack dx="3" dy="5" material="PLANK" buildrequired="7" />
+	<constructionStack dx="0" dy="5" material="STONE" buildrequired="4" />
+	<requestStack dx="-3" dy="2" material="COAL" />
+	<requestStack dx="3" dy="3" material="IRONORE" />
+	<offerStack dx="4" dy="0" material="IRON" />
 
 	<bricklayer dx="-1" dy="4" direction="NORTH_EAST" />
 	<bricklayer dx="-3" dy="2" direction="NORTH_EAST" />
@@ -128,7 +129,7 @@
 	<job name="wait" 		type="WAIT" 		successjob="checkA1" 	failjob="checkA1" time="1.0" />
 	<job name="checkA1" 	type="AVAILABLE" 	successjob="checkA2" 	failjob="wait"   dx="-3" dy="2" material="COAL" />
 	<job name="checkA2" 	type="AVAILABLE" 	successjob="checkA3" 	failjob="wait"   dx="3" dy="3" material="IRONORE" />
-	<job name="checkA3" 	type="NOT_FULL" 	successjob="leaveHouse" failjob="wait" 	 dx="3" dy="1" material="IRON" />
+	<job name="checkA3" 	type="NOT_FULL" 	successjob="leaveHouse" failjob="wait" 	 dx="4" dy="0" material="IRON" />
 
 	<!-- leave the building -->
 	<job name="leaveHouse" 	type="SHOW" 		successjob="toore1" 	failjob="gohome" dx="2" dy="0" />
@@ -136,11 +137,10 @@
 	<!-- go to the ore stack -->
 	<job name="toore1" 		type="WALK" 		successjob="toore2" 	failjob="gohome" direction="SOUTH_EAST" />
 	<job name="toore2" 		type="WALK" 		successjob="toore3" 	failjob="gohome" direction="SOUTH_WEST" />
-	<job name="toore3" 		type="WALK" 		successjob="takeore2" 	failjob="gohome" direction="SOUTH_WEST" />
+	<job name="toore3" 		type="WALK" 		successjob="takeore" 	failjob="gohome" direction="SOUTH_WEST" />
 
 	<!-- take iron ore -->
-	<job name="takeore2" 	type="SET_MATERIAL" successjob="takeore3" 	failjob="gohome" material="IRONORE" />
-	<job name="takeore3" 	type="TAKE" 		successjob="goputore0" 	failjob="gohome" material="IRONORE" />
+	<job name="takeore" 	type="TAKE" 		successjob="goputore0" 	failjob="gohome" material="IRONORE" />
 
 	<!-- go to the melting pot -->
 	<job name="goputore0" 	type="WALK" 		successjob="goputore1" 	failjob="gohome" direction="SOUTH_WEST" />
@@ -153,48 +153,39 @@
 	<job name="goputore7" 	type="LOOK_AT" 		successjob="goputore8" 	failjob="gohome" direction="NORTH_EAST" />
 
 	<!-- drop the iron ore into the melting pot -->
-	<job name="goputore8" 	type="DROP" 		successjob="goputore9" 	failjob="gohome" material="NO_MATERIAL" />
-	<job name="goputore9" 	type="SET_MATERIAL" successjob="goToCoal" 	failjob="gohome" material="NO_MATERIAL" />
+	<job name="goputore8" 	type="DROP" 		successjob="goToCoal" 	failjob="gohome" material="NO_MATERIAL" />
 
 	<!-- go to the coal stack -->
 	<job name="goToCoal" 	type="WALK" 		successjob="takeCoal1" 	failjob="gohome" direction="NORTH_WEST" />
 
 	<!-- take the coal -->
 	<job name="takeCoal1" 	type="LOOK_AT"		successjob="takeCoal2" 	failjob="gohome" direction="NORTH_WEST" />
-	<job name="takeCoal2" 	type="SET_MATERIAL" successjob="takeCoal3" 	failjob="gohome" material="COAL" />
-	<job name="takeCoal3" 	type="TAKE" 		successjob="goPutCoal" 	failjob="gohome" material="COAL" />
+	<job name="takeCoal2" 	type="TAKE" 		successjob="goPutCoal" 	failjob="gohome" material="COAL" />
 
 	<!-- go to the melting pot -->
 	<job name="goPutCoal" 	type="WALK" 		successjob="putCoal1" 	failjob="gohome" direction="SOUTH_EAST" />
 
 	<!-- put the coal into the melting pot -->
 	<job name="putCoal1" 	type="LOOK_AT" 		successjob="putCoal2" 	failjob="gohome" direction="NORTH_EAST" />
-	<job name="putCoal2" 	type="DROP" 		successjob="putCoal3" 	failjob="gohome" material="NO_MATERIAL" />
-	<job name="putCoal3" 	type="SET_MATERIAL" successjob="gopot1"		failjob="gohome" material="NO_MATERIAL" />
+	<job name="putCoal2" 	type="DROP" 		successjob="gopot1" 	failjob="gohome" material="NO_MATERIAL" />
 
 	<!-- go in front of the melting pot -->
 	<job name="gopot1" 		type="WALK" 		successjob="gopot2" 	failjob="gohome" direction="SOUTH_EAST" />
 	<job name="gopot2" 		type="WALK" 		successjob="gopot3" 	failjob="gohome" direction="SOUTH_EAST" />
 	<job name="gopot3" 		type="WALK" 		successjob="gopot4" 	failjob="gohome" direction="EAST" />
-	<job name="gopot4" 		type="WALK" 		successjob="gopot5" 	failjob="gohome" direction="EAST" />
-	<job name="gopot5" 		type="WALK" 		successjob="gopot6" 	failjob="gohome" direction="EAST" />
+	<job name="gopot4" 		type="WALK" 		successjob="gopot6" 	failjob="gohome" direction="EAST" />
 	<job name="gopot6" 		type="LOOK_AT" 		successjob="gopot7" 	failjob="gohome" direction="NORTH_WEST" />
-	<job name="gopot7" 		type="WAIT" 		successjob="takeiron1" 	failjob="gohome" time="1.5" />
+	<job name="gopot7" 		type="WAIT" 		successjob="takeiron" 	failjob="gohome" time="1.5" />
 
 	<!-- take the iron -->
-	<job name="takeiron1" 	type="SET_MATERIAL" successjob="takeiron2" 	failjob="gohome" material="IRON" />
-	<job name="takeiron2" 	type="TAKE" 		successjob="bringiron1" failjob="gohome" material="NO_MATERIAL" />
-	<job name="bringiron1" 	type="WALK" 		successjob="bringiron2" failjob="gohome" direction="NORTH_EAST" />
-	<job name="bringiron2" 	type="WALK" 		successjob="bringiron3" failjob="gohome" direction="NORTH_EAST" />
-	<job name="bringiron3" 	type="WALK" 		successjob="bringiron4" failjob="gohome" direction="NORTH_EAST" />
-	<job name="bringiron4" 	type="WALK"			successjob="bringiron5" failjob="gohome" direction="NORTH_EAST" />
-	<job name="bringiron5" 	type="DROP" 		successjob="bringiron6" failjob="gohome" material="IRON" />
-	<job name="bringiron6" 	type="SET_MATERIAL" successjob="checkB1"	failjob="gohome" material="NO_MATERIAL" />
+	<job name="takeiron" 	type="TAKE" 		successjob="dropIron1" 	failjob="gohome" material="IRON"  takeMaterialFromMap="false" />
+	<job name="dropIron1"	type="GO_TO" 		successjob="dropIron2"	failjob="gohome" dx="4" dy="0" />
+	<job name="dropIron2" 	type="DROP" 		successjob="checkB1"	failjob="gohome" material="IRON" />
 
 	<!-- do not disappear if there is still stuff left -->
 	<job name="checkB1" 	type="AVAILABLE" 	successjob="checkB2" 	failjob="gohome" dx="-3" dy="2" material="COAL" />
 	<job name="checkB2" 	type="AVAILABLE" 	successjob="checkB3" 	failjob="gohome" dx="3" dy="3"  material="IRONORE" />
-	<job name="checkB3" 	type="NOT_FULL" 	successjob="toore2"		failjob="gohome" dx="3" dy="1"  material="IRON" />
+	<job name="checkB3" 	type="NOT_FULL" 	successjob="toore2"		failjob="gohome" dx="4" dy="0"  material="IRON" />
 
 
 </building>

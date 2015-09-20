@@ -15,13 +15,12 @@
 package jsettlers.logic.movable.strategies;
 
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableBearer;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.logic.map.newGrid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
+import jsettlers.logic.map.grid.partition.manager.materials.interfaces.IMaterialRequest;
+import jsettlers.logic.map.grid.partition.manager.objects.WorkerCreationRequest;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 
@@ -40,10 +39,9 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	private IMaterialRequest request;
 	private EMaterialType materialType;
 
-	private EMovableType targetMovableType;
-
 	private IBarrack barrack;
 	private IWorkerRequester workerRequester;
+	private WorkerCreationRequest workerCreationRequest;
 
 	public BearerMovableStrategy(Movable movable) {
 		super(movable);
@@ -71,40 +69,37 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 			}
 		case GOING_TO_OFFER:
 			if (super.getPos().equals(offer)) {
-				super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.TAKING;
-			} else {
-				handleJobFailed(true);
-			}
-			break;
-		case TAKING:
-			if (super.getStrategyGrid().takeMaterial(super.getPos(), materialType)) {
-				if (request == null) { // we handle a convert with tool job
-					state = EBearerState.DEAD_OBJECT;
-					super.convertTo(targetMovableType);
-				} else {
-					super.setMaterial(materialType);
-					offer = null;
-					state = EBearerState.GOING_TO_REQUEST;
-					if (!super.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
-						handleJobFailed(true);
-					}
+				if (!super.take(materialType, true)) {
+					handleJobFailed(true);
 				}
 			} else {
 				handleJobFailed(true);
 			}
 			break;
+		case TAKING:
+			if (workerCreationRequest != null) { // we handle a convert with tool job
+				state = EBearerState.DEAD_OBJECT;
+				super.setMaterial(EMaterialType.NO_MATERIAL);
+				super.convertTo(workerCreationRequest.requestedMovableType());
+			} else {
+				offer = null;
+				state = EBearerState.GOING_TO_REQUEST;
+				if (!super.getPos().equals(request.getPos()) && !super.goToPos(request.getPos())) {
+					handleJobFailed(true);
+				}
+			}
+
+			break;
 		case GOING_TO_REQUEST:
 			if (super.getPos().equals(request.getPos())) {
-				super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
 				state = EBearerState.DROPPING;
+				super.drop(materialType);
 			} else {
 				handleJobFailed(true);
 			}
 			break;
 		case DROPPING:
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, !request.isActive()); // if request is inactive, offer the material
-			super.setMaterial(EMaterialType.NO_MATERIAL);
 			request.deliveryFulfilled();
 			request = null;
 			materialType = null;
@@ -114,7 +109,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 
 		case INIT_CONVERT_JOB:
 			state = EBearerState.DEAD_OBJECT;
-			super.convertTo(targetMovableType);
+			super.convertTo(workerCreationRequest.requestedMovableType());
 			break;
 
 		case INIT_BECOME_SOLDIER_JOB:
@@ -140,14 +135,19 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		}
 	}
 
+	@Override
+	public boolean offerDroppedMaterial() {
+		return request == null || !request.isActive();
+	}
+
 	private void handleJobFailed(boolean reportAsJobless) {
 		switch (state) {
 		case INIT_CARRY_JOB:
 		case GOING_TO_OFFER:
 			reoffer();
 		case TAKING:
-			if (targetMovableType != null) {
-				workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
+			if (workerCreationRequest != null) {
+				workerRequester.workerCreationRequestFailed(workerCreationRequest);
 			}
 		case GOING_TO_REQUEST:
 			if (request != null) {
@@ -166,7 +166,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		case INIT_CONVERT_WITH_TOOL_JOB:
 			reoffer();
 		case INIT_CONVERT_JOB:
-			workerRequester.workerCreationRequestFailed(targetMovableType, super.getPos());
+			workerRequester.workerCreationRequestFailed(workerCreationRequest);
 			break;
 
 		case DEAD_OBJECT:
@@ -185,7 +185,7 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 		offer = null;
 		request = null;
 		materialType = null;
-		targetMovableType = null;
+		workerCreationRequest = null;
 		workerRequester = null;
 		state = EBearerState.JOBLESS;
 
@@ -222,21 +222,21 @@ public final class BearerMovableStrategy extends MovableStrategy implements IMan
 	}
 
 	@Override
-	public void becomeWorker(IWorkerRequester requester, EMovableType movableType) {
+	public void becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest) {
 		this.workerRequester = requester;
-		this.targetMovableType = movableType;
+		this.workerCreationRequest = workerCreationRequest;
 		this.state = EBearerState.INIT_CONVERT_JOB;
 		this.offer = null;
 		this.materialType = null;
 	}
 
 	@Override
-	public void becomeWorker(IWorkerRequester requester, EMovableType movableType, ShortPoint2D offer) {
+	public void becomeWorker(IWorkerRequester requester, WorkerCreationRequest workerCreationRequest, ShortPoint2D offer) {
 		this.workerRequester = requester;
-		this.targetMovableType = movableType;
+		this.workerCreationRequest = workerCreationRequest;
 		this.offer = offer;
-		this.materialType = movableType.getTool();
 		this.state = EBearerState.INIT_CONVERT_WITH_TOOL_JOB;
+		this.materialType = workerCreationRequest.requestedMovableType().getTool();
 	}
 
 	@Override

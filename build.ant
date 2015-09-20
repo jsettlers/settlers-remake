@@ -14,5 +14,27 @@
 		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="unitTests.network" />
 	</target>
 	
-	<target name="buildAll" depends="runUnitTests,buildSwing,buildDedicatedServer" />
+	<target name="runAutoReplayIT">
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="autoReplayIT" />
+	</target>
+	
+	<target name="buildAll" depends="runUnitTests,runAutoReplayIT,buildSwing,buildDedicatedServer" />
+
+	<target name="clean">
+		<ant antfile="go.graphics/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<!--<ant antfile="go.graphics.android/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />-->
+		<!--<ant antfile="go.graphics.nativegl/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />-->
+		<ant antfile="go.graphics.swing/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<!--<ant antfile="jsettlers.buildingcreator/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />-->
+		<ant antfile="jsettlers.common/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<ant antfile="jsettlers.graphics/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<!--<ant antfile="jsettlers.graphics.androidui/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />-->
+		<ant antfile="jsettlers.graphics.swing/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<ant antfile="jsettlers.logic/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<!--<ant antfile="jsettlers.main.android/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />-->
+		<ant antfile="jsettlers.main.swing/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<ant antfile="jsettlers.mapcreator/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<ant antfile="jsettlers.network/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+		<ant antfile="jsettlers.tests/build/build.ant" useNativeBasedir="true" inheritAll="false" target="clean" />
+	</target>
 </project>

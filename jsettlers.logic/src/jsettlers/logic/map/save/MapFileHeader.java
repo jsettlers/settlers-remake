@@ -77,7 +77,6 @@ public class MapFileHeader {
 	 * @author michael
 	 */
 	public static enum MapType {
-		RANDOM,
 		NORMAL,
 		SAVED_SINGLE,
 	}

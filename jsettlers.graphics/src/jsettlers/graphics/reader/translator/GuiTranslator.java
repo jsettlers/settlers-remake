@@ -17,10 +17,17 @@ package jsettlers.graphics.reader.translator;
 import java.io.IOException;
 
 import jsettlers.graphics.image.GuiImage;
+import jsettlers.graphics.reader.DatFileType;
 import jsettlers.graphics.reader.ImageMetadata;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 
 public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
+
+	private final DatFileType type;
+
+	public GuiTranslator(DatFileType type) {
+		this.type = type;
+	}
 
 	@Override
 	public short getTransparentColor() {
@@ -29,7 +36,7 @@ public class GuiTranslator implements DatBitmapTranslator<GuiImage> {
 
 	@Override
 	public short readUntransparentColor(ByteReader reader) throws IOException {
-		return (short) ((reader.read16() << 1) | 0x01);
+		return type.convertTo5551(reader.read16());
 	}
 
 	@Override

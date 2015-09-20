@@ -18,8 +18,8 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableDigger;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableDigger;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -60,6 +60,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		case PLAYING_ACTION:
 			executeDigg();
 			if (!requester.isDiggerRequestActive()) {
+				super.getStrategyGrid().setMarked(super.getPos(), false);
 				reportJobless();
 				break;
 			}

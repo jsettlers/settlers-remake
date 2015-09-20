@@ -91,6 +91,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	private boolean isRightstep = false;
 	private int flockDelay = 700;
 
+	private EMaterialType takeDropMaterial;
+
 	private transient boolean selected = false;
 	private transient boolean soundPlayed = false;
 
@@ -146,7 +148,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (goInDirection(currDir)) {
+			if (goInDirection(currDir, false)) {
 				break;
 			} else {
 				Movable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
@@ -166,6 +168,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		switch (state) { // ensure animation is finished, if not, reschedule
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
+		case TAKE:
+		case DROP:
 		case PATHING:
 		case WAITING:
 			int remainingAnimationTime = animationStartTime + animationDuration - MatchConstants.clock.getTime();
@@ -178,6 +182,12 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		}
 
 		switch (state) {
+		case TAKE:
+		case DROP:
+			if (this.movableAction != EAction.RAISE_UP) {
+				break;
+			}// TAKE and DROP are finished if we get here and we the action is RAISE_UP, otherwise continue with second part.
+
 		case WAITING:
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
@@ -223,6 +233,19 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		case PATHING:
 			pathingAction();
+			break;
+
+		case TAKE:
+			grid.takeMaterial(position, takeDropMaterial);
+			setMaterial(takeDropMaterial);
+			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
+			break;
+		case DROP:
+			if (takeDropMaterial != null && takeDropMaterial != EMaterialType.NO_MATERIAL) {
+				grid.dropMaterial(position, takeDropMaterial, strategy.offerDroppedMaterial());
+			}
+			setMaterial(EMaterialType.NO_MATERIAL);
+			playAnimation(EAction.RAISE_UP, Constants.MOVABLE_BEND_DURATION);
 			break;
 
 		default:
@@ -276,8 +299,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			boolean pushedSuccessful = grid.getMovableAt(path.nextX(), path.nextY()).push(this);
 			if (!pushedSuccessful) {
 				path = strategy.findWayAroundObstacle(direction, position, path);
-				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD;
-			}
+			} else if (movableAction == EAction.NO_ACTION) {
+				animationDuration = Constants.MOVABLE_INTERRUPT_PERIOD; // recheck shortly
+			} // else: push initiated our next step
 		}
 	}
 
@@ -287,9 +311,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	}
 
 	private void initGoingSingleStep(ShortPoint2D position) {
-		movableAction = EAction.WALKING;
-		animationStartTime = MatchConstants.clock.getTime();
-		animationDuration = Constants.MOVABLE_STEP_DURATION;
+		playAnimation(EAction.WALKING, Constants.MOVABLE_STEP_DURATION);
 		grid.leavePosition(this.position, this);
 		grid.enterPosition(position, this, false);
 		this.position = position;
@@ -334,7 +356,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
 			flockDelay = Math.max(flockDelay - 100, 500);
-			if (this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy))) {
+			if (this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy), false)) {
 				return true;
 			} else {
 				return false;
@@ -372,8 +394,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 				} else { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
-					pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
-					goInDirection(directionToPushing);
+					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
+					goInDirection(directionToPushing, false);
 					return true;
 				}
 			}
@@ -412,6 +434,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		case GOING_SINGLE_STEP:
 		case PLAYING_ACTION:
+		case TAKE:
+		case DROP:
 		case WAITING:
 			return false; // we can't do anything
 
@@ -430,7 +454,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (currDir != pushedFromDir && goInDirection(currDir)) {
+			if (currDir != pushedFromDir && goInDirection(currDir, false)) {
 				return true;
 			}
 		}
@@ -462,11 +486,39 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	final void playAction(EAction movableAction, float duration) {
 		assert state == EMovableState.DOING_NOTHING : "can't do playAction() if state isn't DOING_NOTHING. curr state: " + state;
 
-		this.movableAction = movableAction;
+		playAnimation(movableAction, (short) (duration * 1000));
 		setState(EMovableState.PLAYING_ACTION);
-		this.animationStartTime = MatchConstants.clock.getTime();
-		this.animationDuration = (short) (duration * 1000);
 		this.soundPlayed = false;
+	}
+
+	private void playAnimation(EAction movableAction, short duration) {
+		this.animationStartTime = MatchConstants.clock.getTime();
+		this.animationDuration = duration;
+		this.movableAction = movableAction;
+	}
+
+	/**
+	 * 
+	 * @param materialToTake
+	 * @return true if the animation will be executed.
+	 */
+	final boolean take(EMaterialType materialToTake, boolean takeFromMap) {
+		if (!takeFromMap || grid.canTakeMaterial(position, materialToTake)) {
+			this.takeDropMaterial = materialToTake;
+
+			playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+			setState(EMovableState.TAKE);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	final void drop(EMaterialType materialToDrop) {
+		this.takeDropMaterial = materialToDrop;
+
+		playAnimation(EAction.BEND_DOWN, Constants.MOVABLE_BEND_DURATION);
+		setState(EMovableState.DROP);
 	}
 
 	/**
@@ -477,10 +529,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	final void wait(short sleepTime) {
 		assert state == EMovableState.DOING_NOTHING : "can't do sleep() if state isn't DOING_NOTHING. curr state: " + state;
 
-		this.animationStartTime = MatchConstants.clock.getTime();
-		this.animationDuration = sleepTime;
-		this.movableAction = EAction.NO_ACTION;
-		this.state = EMovableState.WAITING;
+		playAnimation(EAction.NO_ACTION, sleepTime);
+		setState(EMovableState.WAITING);
 	}
 
 	/**
@@ -508,7 +558,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			return false;
 		} else {
 			followPath(path);
-			return true;
+			return this.path != null;
 		}
 	}
 
@@ -517,14 +567,16 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * 
 	 * @param direction
 	 *            direction to go
+	 * @param force
+	 *            If true, the step will be forced and the method will always return true.
 	 * @return true if the step can and will immediately be executed. <br>
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
-	final boolean goInDirection(EDirection direction) {
+	final boolean goInDirection(EDirection direction, boolean force) {
 		ShortPoint2D pos = direction.getNextHexPoint(position);
-		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y)) {
-			initGoingSingleStep(pos);
+		if (force || (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y))) {
 			this.direction = direction;
+			initGoingSingleStep(pos);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
 		} else {
@@ -848,7 +900,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	@Override
 	public String toString() {
 		return "Movable: " + id + " position: " + position + " player: " + player.playerId + " movableType: " + movableType
-				+ " direction: " + direction;
+				+ " direction: " + direction + " material: " + materialType;
 	}
 
 	private static enum EMovableState {
@@ -857,6 +909,9 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 		DOING_NOTHING,
 		GOING_SINGLE_STEP,
 		WAITING,
+
+		TAKE,
+		DROP,
 
 		/**
 		 * This state may only be used for debugging reasons!

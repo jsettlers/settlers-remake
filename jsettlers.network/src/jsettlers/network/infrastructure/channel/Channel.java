@@ -133,7 +133,7 @@ public class Channel implements Runnable, IRoundTripTimeSupplier {
 	}
 
 	/**
-	 * Registers the given listener to receive data of the type it specifys with it's getKeys() method.
+	 * Registers the given listener to receive data of the type it specifies with it's getKeys() method.
 	 * 
 	 * @param listener
 	 *            The listener that shall be registered.

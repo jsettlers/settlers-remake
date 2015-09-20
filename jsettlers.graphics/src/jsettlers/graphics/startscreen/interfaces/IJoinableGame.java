@@ -14,14 +14,23 @@
  *******************************************************************************/
 package jsettlers.graphics.startscreen.interfaces;
 
+import java.util.Comparator;
+
 /**
  * A
  * 
  * @author Andreas Eberle
  */
 public interface IJoinableGame {
+	public static final Comparator<IJoinableGame> MATCH_NAME_COMPARATOR = new Comparator<IJoinableGame>() {
+		@Override
+		public int compare(IJoinableGame o1, IJoinableGame o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+	};
+
 	/*
-	 * TODO: Send a list of players / how many places are still free / ... Currently not needed.
+	 * TODO: Supply a list of players / how many places are still free / ... Currently not needed.
 	 */
 
 	String getId();

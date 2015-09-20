@@ -16,7 +16,6 @@ package jsettlers.graphics.map;
 
 import java.util.LinkedList;
 
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
 import jsettlers.graphics.action.Action;
@@ -70,6 +69,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	 * @param selection
 	 *            The selection.
 	 */
+	@Override
 	public void setSelection(ISelectionSet selection) {
 		this.content.setSelection(selection);
 	}
@@ -82,6 +82,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	 * @param mark
 	 *            If there should be a mark displayed at the point.
 	 */
+	@Override
 	public void scrollTo(ShortPoint2D point, boolean mark) {
 		this.content.scrollTo(point, mark);
 	}
@@ -94,6 +95,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	 *            The listener.
 	 * @see #removeListener(IMapInterfaceListener)
 	 */
+	@Override
 	public void addListener(IMapInterfaceListener listener) {
 		synchronized (this.listeners) {
 			if (listener != null && !this.listeners.contains(listener)) {
@@ -108,6 +110,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	 * @param listener
 	 *            The listener to remove.
 	 */
+	@Override
 	public void removeListener(IMapInterfaceListener listener) {
 		synchronized (this.listeners) {
 			this.listeners.remove(listener);
@@ -119,16 +122,6 @@ public class MapInterfaceConnector implements ActionFireable,
 		this.actionFirerer.fireAction(action);
 	}
 
-	/**
-	 * Sets the building the user is currently building.
-	 * 
-	 * @param buildingType
-	 *            The type of the building.
-	 */
-	public void setPreviewBuildingType(EBuildingType buildingType) {
-		content.setPreviewBuildingType(buildingType);
-	}
-
 	@Override
 	public void showMessage(Message message) {
 		content.addMessage(message);
@@ -137,6 +130,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	/**
 	 * Stops all threads related to the graphics display. You may experience crazy results when trying to use the map view afterwards.
 	 */
+	@Override
 	public void shutdown() {
 		actionFirerer.stop();
 		content.stop();
@@ -148,6 +142,7 @@ public class MapInterfaceConnector implements ActionFireable,
 	 * @return The state of the UI so that it can be restored by setting it on {@link MapContent} creation.
 	 * @see #loadUIState(UIState)
 	 */
+	@Override
 	public UIState getUIState() {
 		return content.getUIState();
 	}

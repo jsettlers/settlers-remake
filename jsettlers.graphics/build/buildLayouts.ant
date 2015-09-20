@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     17.06.2015 09:53:41                                                        
+
+     jsettlers - build UI layouts    
+     Builds the UI layout files from their xml representation
+                   
+     michael                                                                
+     ====================================================================== -->
+<project name="jsettlers - build UI layouts" default="buildLayouts">
+    <description>
+            Builds the UI layout files from their xml representation
+    </description>
+
+    <property name="workspace" location="../"/>
+
+    <!-- ================================= 
+          target: buildLayouts              
+         ================================= -->
+    <target name="buildLayouts" depends="loadLib" description="Builds the UI layout files from their xml representation">
+        <convertLayout sourceXMLDirectory="./res/layout" genDirectory="./gen"/>
+    </target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: loadLib                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="loadLib">
+        <mkdir dir="./build/.buildScripts" />
+        <javac srcdir="./build:${workspace}/jsettlers.common/src:${workspace}/jsettlers.common/gen:${workspace}/go.graphics/src" destdir="./build/.buildScripts" />
+        <copy file="${workspace}/jsettlers.graphics.swing/src/jsettlers/graphics/swing/resources/defaultConfig.prp" tofile="./build/.buildScripts/jsettlers/graphics/swing/resources/defaultConfig.prp" />
+    	<taskdef name="convertLayout" classname="jsettlers.graphics.ui.generate.LayoutConverter" classpath="./build/.buildScripts/" />
+    </target>
+
+</project>

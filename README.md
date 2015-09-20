@@ -25,16 +25,18 @@ Many thanks in advance for helping to improve this game!
 
 In order to play the game, you need to have the "GFX" and "SND" folders of the original version of "The Settlers 3" as obtained by installing the original "The Settlers 3" game (DEMO version also works).
 
+Furthermore, you need an up to date installation of [Java 1.7 or 1.8](http://java.com/). The Java Runtime Environment (JRE) is needed to run JSettlers, as it is written in the programming language Java.
+
 After that, follow the detailed installation instructions for you platform.
 
 ### Windows, Linux, Mac OS
-1. Install "The Settlers III" or a demo version ([Settlers III Amazons Demo](http://www.siedler-maps.de/downloads.php?action=download&downloadid=41)) of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files.
+1. Install "The Settlers III" or a demo version ([Settlers III Amazons Demo](http://www.siedler-maps.de/downloads.php?action=download&downloadid=41)) of it. Don't worry, if it is not running on your OS, we only need the graphics and sound files. In order to get them, you can also unzip the Amazons Demo exe file (yes: unzip the .exe) and copy the folders `Gfx` and `Snd` into an empty folder on your computer.
 2. Download the newest stable [release of JSettlers*.zip / JSettlers*.tar.bz2](https://github.com/jsettlers/settlers-remake/releases) (this also includes the MapEditor).
 3. Unpack the downloaded archive to wherever you want JSettlers' installation to be.
 5. Run the "JSettlers.jar" file.
-  1. On the first start, the game will ask you for the folder where you've installed the original Settlers III. Please select the respective folder and continue.
+  1. On the first start, the game will ask you for the folder where you've installed / unziped (see step 1) the original Settlers III. Please select the respective folder and continue.
   2. Have fun and enjoy the game!
-6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game still lacks many controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
+6. Please have a look at the [manual](https://github.com/jsettlers/settlers-remake/wiki/JSettlers-Manual). The current state of the game lacks some controls known from the original, but also contains new ways to do things, which you shouldn't miss. 
 
 ### Android
 1. Enable installation of Apps from "Unknown Sources".
@@ -70,8 +72,11 @@ In order to assist development, follow these steps:
 ### Development Guidelines
 In order to ease collaboration and reduce unnecessary overhead, developers should follow these guidelines.
 
-#### Eclipse Auto Formatter
-This project uses a common [Eclipse Auto Formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml). To configure Eclipse correctly, open the workspace containing the project and select "Window" -> "Preferences" in the top bar. In the search field of the dialog, type "save actions" and select the Java save actions as shown in the picture below.
+#### Auto Formatter
+This project uses a common auto formatter configuration. Please stick to this convention to prevent unnecessary merge overhead. The configuration file is provided as [Eclipse Auto Formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml).
+
+##### Eclipse
+To configure Eclipse correctly, open the workspace containing the project and select "Window" -> "Preferences" in the top bar. In the search field of the dialog, type "save actions" and select the Java save actions as shown in the picture below.
 
 ![configuring save actions](/docs/eclipse-setup/01_configuringSaveActions.png)
 
@@ -81,6 +86,9 @@ Adjust your settings to match the ones of the figure before clicking on "Formatt
 
 The [formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml) can be found in the repository at "docs/eclipse-setup/formatterConfiguration.xml".
 
+##### IntelliJ IDEA
+For IntelliJ IDEA, there is a plugin to use the Eclipse Auto Formatter configuration. For example [this article](http://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importing-code-formatter-settings-from-eclipse/) covers the subject and gives a detailed manual.
+
 #### Further Plugins
 - Android Development Tools for Eclipse: Required for building, running and developing the Android version of JSettlers in Eclipse. You furthermore require the Android SDK installed on your machine. Even if you don't want to develop the Android version, this is recommended, as without it, you will have compile errors in the Android projects, making it hard to find real compile errors introduced by your changes.
 - FindBugs: Runs a static code analysis to detect potential bugs and bad code.
@@ -88,8 +96,11 @@ The [formatter configuration](/docs/eclipse-setup/formatterConfiguration.xml) ca
 These plugins can be downloaded via the "Eclipse Marketplace". 
 
 
-### Tips & Tricks
+### Tips & Tricks for Developers
 The following tips can help you getting started with developing on this project.
+
+#### Correct Working Directory
+In order to run JSettlers properly as developer, you must start the `jsettlers.main.swing.SwingManagedJSettlers` main method in the correct working directory. This working directory is the `jsettlers.main.swing` subproject folder in the GIT repository. Only when using this working directory, the required config.prp file can be found (when developing).
 
 #### Recommended Run Configurations
 To ease development, JSettlers supports several command line parameters. Amongst others, we find the following combinations helpful.
@@ -113,7 +124,7 @@ To ease development, JSettlers supports several command line parameters. Amongst
 
 #### Known Issues
 *  The project "jsettlers.main.android" displays a classpath error (red exclamation mark on the project symbol)
-  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be build. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
+  * Right click the project, select "Run As" -> "Android Application". This causes the missing dependency to be built. Please note, the first run may fail, with the message that there are errors in the project. After that, simply wait until Eclipse detects that the errors are no longer valid. Then you can run the project as Android Application and install it on your device.
 
 #### Project Structure Overview
 The JSettlers code is divided into multiple projects. In the following, there main purposes will be described.

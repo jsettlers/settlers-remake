@@ -18,8 +18,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
-import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
-import jsettlers.algorithms.construction.NewConstructionMarksAlgorithm;
 import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.BuildingAreaBitSetTest;
 import jsettlers.common.landscape.ELandscapeType;
@@ -62,7 +60,7 @@ public class ConstructionMarksAlgorithmTest {
 
 		TestMap map = new TestMap(blocked);
 		NewConstructionMarksAlgorithm algorithm = new NewConstructionMarksAlgorithm(map, (byte) 0);
-		algorithm.calculateConstructMarks(mapArea, buildingSet, null, null);
+		algorithm.calculateConstructMarks(mapArea, buildingSet, null, null, false);
 
 		// print(map, blocked, buildingSet);
 
@@ -152,7 +150,7 @@ public class ConstructionMarksAlgorithmTest {
 		}
 
 		@Override
-		public void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
+		public void setConstructMarking(int x, int y, boolean set, boolean binaryConstructionMarkValues, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y))
 				marksSet[x + y * width] = set ? 1 : -1;
 		}

@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.partition.manager.materials.requests.MaterialRequestObject;
+import jsettlers.logic.map.grid.partition.manager.materials.requests.MaterialRequestObject;
 
 /**
  * This interface defines the methods a grid must supply that it can be used by a {@link RequestStack}.
@@ -57,6 +57,8 @@ public interface IRequestsStackGrid extends Serializable {
 	 *            The location to pop the material.
 	 * @param materialType
 	 *            The {@link EMaterialType} type to be popped.
+	 * @return if <code>true</code>, the material has been popped. If <code>false</code>, no material of this type has been found at the given
+	 *         position.
 	 */
-	void popMaterial(ShortPoint2D position, EMaterialType materialType);
+	boolean popMaterial(ShortPoint2D position, EMaterialType materialType);
 }

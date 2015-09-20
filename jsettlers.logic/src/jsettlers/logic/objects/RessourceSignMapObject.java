@@ -17,7 +17,7 @@ package jsettlers.logic.objects;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.position.ShortPoint2D;
-import jsettlers.logic.map.newGrid.objects.AbstractObjectsManagerObject;
+import jsettlers.logic.map.grid.objects.AbstractObjectsManagerObject;
 import jsettlers.network.synchronic.random.RandomSingleton;
 
 public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
@@ -31,21 +31,10 @@ public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 
 	public RessourceSignMapObject(ShortPoint2D pos, EResourceType resourceType, float amount) {
 		super(pos);
-		this.amount = amount;
+		assert resourceType != EResourceType.FISH : "Wrong resource type for ResourceSignMapObeject!";
 
-		switch (resourceType) {
-		case COAL:
-			objectType = EMapObjectType.FOUND_COAL.ordinal;
-			break;
-		case IRON:
-			objectType = EMapObjectType.FOUND_IRON.ordinal;
-			break;
-		case GOLD:
-			objectType = EMapObjectType.FOUND_GOLD.ordinal;
-			break;
-		default:
-			throw new IllegalArgumentException("Can't create ressource sign for: " + resourceType);
-		}
+		this.amount = amount;
+		this.objectType = resourceType.mapObjectType.ordinal;
 	}
 
 	@Override

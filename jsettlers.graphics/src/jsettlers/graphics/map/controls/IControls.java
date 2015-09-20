@@ -17,7 +17,6 @@ package jsettlers.graphics.map.controls;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
@@ -96,14 +95,6 @@ public interface IControls extends IMapInterfaceListener {
 	 * @return If the event was handled.
 	 */
 	boolean handleDrawEvent(GODrawEvent event);
-
-	/**
-	 * Indicates that the user builds the building.
-	 *
-	 * @param type
-	 *            The type the user wants to build.
-	 */
-	void displayBuildingBuild(EBuildingType type);
 
 	/**
 	 * Changes the selection for the map.

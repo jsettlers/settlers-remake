@@ -109,7 +109,7 @@ public class ScreenPosition {
 	 * @param y
 	 *            Y in pixels.
 	 */
-	public void setScreenCenter(float x, float y) {
+	public synchronized void setScreenCenter(float x, float y) {
 		this.screenCenterX = x;
 		this.screenCenterY = y;
 		recalculateScreen();
@@ -222,7 +222,7 @@ public class ScreenPosition {
 	 * @param distance
 	 *            The distance we panned.
 	 */
-	public void setPanProgress(Object key, UIPoint distance) {
+	public synchronized void setPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.put(key, distance);
 		recalculateScreen();
 	}
@@ -235,7 +235,7 @@ public class ScreenPosition {
 	 * @param distance
 	 *            The actual distance when the event ended.
 	 */
-	public void finishPanProgress(Object key, UIPoint distance) {
+	public synchronized void finishPanProgress(Object key, UIPoint distance) {
 		this.panProgresses.remove(key);
 		setScreenCenter((int) (this.screenCenterX - distance.getX() / zoom),
 				(int) (this.screenCenterY - distance.getY() / zoom));

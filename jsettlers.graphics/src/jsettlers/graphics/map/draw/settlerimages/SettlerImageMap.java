@@ -51,7 +51,7 @@ public final class SettlerImageMap {
 	private Pattern linePattern = Pattern.compile("\\s*([\\w\\*]+)\\s*,"
 			+ "\\s*([\\w\\*]+)\\s*," + "\\s*([\\w\\*]+)\\s*,"
 			+ "\\s*([\\w\\*]+)\\s*" + "=\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*,"
-			+ "\\s*(\\d+)\\s*," + "\\s*(\\d+)\\s*");
+			+ "\\s*(\\d+)\\s*," + "\\s*(-?\\d+)\\s*");
 
 	private final int types;
 
@@ -336,11 +336,13 @@ public final class SettlerImageMap {
 				getMapItem(movableType, action, material, direction);
 
 		int duration = item.getDuration();
-		int imageIndex =
-				item.getStart()
-						+ Math.min((int) (progress * duration), duration - 1);
-		return this.imageProvider.getSettlerSequence(item.getFile(),
-				item.getSequenceIndex()).getImageSafe(imageIndex);
+		int imageIndex;
+		if (duration >= 0) {
+			imageIndex = item.getStart() + Math.min((int) (progress * duration), duration - 1);
+		} else {
+			imageIndex = item.getStart() + Math.max((int) (progress * duration), duration + 1);
+		}
+		return this.imageProvider.getSettlerSequence(item.getFile(), item.getSequenceIndex()).getImageSafe(imageIndex);
 	}
 
 	/**

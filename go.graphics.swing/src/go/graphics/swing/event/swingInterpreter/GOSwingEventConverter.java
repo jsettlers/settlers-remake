@@ -21,6 +21,13 @@ import go.graphics.event.GOEventHandlerProvider;
 import go.graphics.event.interpreter.AbstractEventConverter;
 
 import java.awt.Component;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.Window;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -28,13 +35,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.lang.reflect.Field;
 
 /**
  * This class listens to swing events, converts them to a go events and sends them to handlers.
  * 
  * @author michael
  */
-public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
+public class GOSwingEventConverter extends AbstractEventConverter implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener, ComponentListener, HierarchyListener {
 
 	private static final int MOUSE_MOVE_TRESHOLD = 10;
 
@@ -44,6 +52,8 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 	 * Are we currently panning with button 3?
 	 */
 	private boolean panWithButton3;
+
+	private int scaleFactor = 1;
 
 	/**
 	 * Creates a new event converter, that converts swing events to go events.
@@ -60,13 +70,41 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		component.addMouseListener(this);
 		component.addMouseMotionListener(this);
 		component.addMouseWheelListener(this);
-
+		component.addHierarchyListener(this);
+		
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.DRAW, Replacement.COMMAND_SELECT, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 		addReplaceRule(new EventReplacementRule(ReplacableEvent.PAN, Replacement.COMMAND_ACTION, MOUSE_TIME_TRSHOLD, MOUSE_MOVE_TRESHOLD));
 	}
 
 	private UIPoint convertToLocal(MouseEvent e) {
-		return new UIPoint(e.getX(), e.getComponent().getHeight() - e.getY());
+		return new UIPoint(e.getX() * scaleFactor, (e.getComponent().getHeight() - e.getY()) * scaleFactor);
+
+	}
+
+	private void updateScaleFactor(Component component) {
+		GraphicsConfiguration config = component.getGraphicsConfiguration();
+		if (config == null) {
+			return;
+		}
+		
+		GraphicsDevice myScreen = config.getDevice();
+
+		try {
+			Field field = myScreen.getClass().getDeclaredField("scale");
+			if (field == null) {
+				return;
+			}
+			field.setAccessible(true);
+			Object scaleOfField = field.get(myScreen);
+			if (scaleOfField instanceof Integer) {
+				scaleFactor = ((Integer) scaleOfField).intValue();
+			}
+		} catch (NoSuchFieldException exception) {
+			// if there is no Field scale then we have a scale factor of 1
+			// this is expected for Oracle JRE < 1.7.0_u40
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 
 	@Override
@@ -253,5 +291,39 @@ public class GOSwingEventConverter extends AbstractEventConverter implements Mou
 		float factor = (float) Math.exp(-e.getUnitsToScroll() / 20.0);
 		startZoom();
 		endZoomEvent(factor);
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent componentEvent) {
+		updateScaleFactor(componentEvent.getComponent());
+	}
+
+	@Override
+	public void componentShown(ComponentEvent componentEvent) {
+		updateScaleFactor(componentEvent.getComponent());
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void hierarchyChanged(HierarchyEvent hierarchyEvent) {
+		Component component = hierarchyEvent.getComponent();
+		privateRegisterComponentListenerToParentWindowOf(component, component);
+	}
+	
+	void privateRegisterComponentListenerToParentWindowOf(Component component, Component childComponent) {
+		if (component == null) {
+			return;
+		} else if (component instanceof Window) {
+			updateScaleFactor(component);
+			component.addComponentListener(this);
+			childComponent.removeComponentListener(this);
+		} else {
+			privateRegisterComponentListenerToParentWindowOf(component.getParent(), childComponent);
+		}
 	}
 }

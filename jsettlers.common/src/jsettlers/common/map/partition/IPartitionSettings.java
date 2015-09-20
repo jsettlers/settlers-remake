@@ -41,4 +41,5 @@ public interface IPartitionSettings {
 	 * @return Returns the {@link EMaterialType} with the given priority.
 	 */
 	EMaterialType getMaterialTypeForPrio(int priorityIdx);
+
 }

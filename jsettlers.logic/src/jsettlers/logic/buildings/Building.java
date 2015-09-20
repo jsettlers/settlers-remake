@@ -26,7 +26,8 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuildingMaterial;
 import jsettlers.common.buildings.RelativeBricklayer;
-import jsettlers.common.buildings.RelativeStack;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EPriority;
@@ -39,16 +40,18 @@ import jsettlers.logic.buildings.military.Barrack;
 import jsettlers.logic.buildings.military.OccupyingBuilding;
 import jsettlers.logic.buildings.others.DefaultBuilding;
 import jsettlers.logic.buildings.others.StockBuilding;
+import jsettlers.logic.buildings.others.TempleBuilding;
 import jsettlers.logic.buildings.spawn.BigLivinghouse;
 import jsettlers.logic.buildings.spawn.MediumLivinghouse;
 import jsettlers.logic.buildings.spawn.SmallLivinghouse;
 import jsettlers.logic.buildings.workers.MillBuilding;
 import jsettlers.logic.buildings.workers.MineBuilding;
+import jsettlers.logic.buildings.workers.ResourceBuilding;
 import jsettlers.logic.buildings.workers.WorkerBuilding;
 import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.objects.AbstractHexMapObject;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IConstructableBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IDiggerRequester;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IConstructableBuilding;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IDiggerRequester;
 import jsettlers.logic.movable.interfaces.IDebugable;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
@@ -86,13 +89,13 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private byte state = STATE_CREATED;
 	private EPriority priority = EPriority.DEFAULT;
 
-	transient private boolean selected;
-
 	private float constructionProgress = 0.0f;
 	private byte heightAvg;
 
 	private short remainingMaterialActions = 0;
 	private List<RequestStack> stacks;
+
+	private transient boolean selected;
 
 	protected Building(EBuildingType type, Player player) {
 		this.type = type;
@@ -159,30 +162,21 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	private List<RequestStack> createConstructionStacks() {
-		RelativeStack[] requestStacks = type.getRequestStacks();
 		List<RequestStack> result = new LinkedList<RequestStack>();
 
-		for (int i = 0; i < requestStacks.length; i++) {
-			RelativeStack currStack = requestStacks[i];
-			if (currStack.requiredForBuild() > 0) {
-				result.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getMaterialType(), type,
-						priority, currStack.requiredForBuild()));
-			}
+		for (ConstructionStack stack : type.getConstructionStacks()) {
+			result.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority,
+					stack.requiredForBuild()));
 		}
 
 		return result;
 	}
 
 	protected void createWorkStacks() {
-		RelativeStack[] requestStacks = type.getRequestStacks();
 		List<RequestStack> newStacks = new LinkedList<RequestStack>();
 
-		for (int i = 0; i < requestStacks.length; i++) {
-			RelativeStack currStack = requestStacks[i];
-			if (currStack.requiredForBuild() == 0) {
-				newStacks.add(new RequestStack(grid.getRequestStackGrid(), currStack.calculatePoint(this.pos), currStack.getMaterialType(), type,
-						priority));
-			}
+		for (RelativeStack stack : type.getRequestStacks()) {
+			newStacks.add(new RequestStack(grid.getRequestStackGrid(), stack.calculatePoint(this.pos), stack.getMaterialType(), type, priority));
 		}
 
 		this.stacks = newStacks;
@@ -222,7 +216,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	/**
 	 * Used to set or clear the small red flag atop a building to indicate it is occupied.
-	 * @param place specifies whether the flag should appear or not.
+	 * 
+	 * @param place
+	 *            specifies whether the flag should appear or not.
 	 */
 	protected void placeFlag(boolean place) {
 		ShortPoint2D flagPosition = type.getFlag().calculatePoint(pos);
@@ -259,7 +255,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	private void requestBricklayers() {
 		RelativeBricklayer[] bricklayers = type.getBricklayers();
 		for (RelativeBricklayer curr : bricklayers) {
-			grid.requestBricklayer(this, curr.getPosition().calculatePoint(pos), curr.getDirection());
+			grid.requestBricklayer(this, curr.calculatePoint(pos), curr.getDirection());
 		}
 	}
 
@@ -314,7 +310,9 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	}
 
 	/**
-	 * This method will be called every 100 ms when the building has finished construction and is not destroyed yet.
+	 * This method will be called when the building has finished construction and is not destroyed yet.
+	 * 
+	 * @return Gives the number of milliseconds when this method should be called again. Return -1 to unschedule the building.
 	 */
 	protected abstract int subTimerEvent();
 
@@ -406,6 +404,8 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.state = STATE_CONSTRUCTED;
 		if (getFlagType() == EMapObjectType.FLAG_DOOR) { // this building has no worker
 			createWorkStacks();
+		} else {
+			stacks = new LinkedList<>(); // create a new stacks list
 		}
 		int timerPeriod = constructionFinishedEvent();
 		RescheduleTimer.add(this, timerPeriod);
@@ -433,7 +433,7 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		this.selected = selected;
 	}
 
-	private final boolean isConstructionFinished() {
+	public final boolean isConstructionFinished() {
 		return state == STATE_CONSTRUCTED || state == STATE_DESTROYED;
 	}
 
@@ -467,22 +467,20 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		FreeMapArea buildingArea = new FreeMapArea(this.pos, type.getBlockedTiles());
 
 		if (isConstructionFinished()) {
-			for (RelativeStack curr : type.getRequestStacks()) {
-				if (curr.requiredForBuild() > 0) {
-					ShortPoint2D position = buildingArea.get(posIdx);
-					posIdx += 2;
-					byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
-							Constants.STACK_SIZE);
-					grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
-				}
+			for (ConstructionStack curr : type.getConstructionStacks()) {
+				ShortPoint2D position = buildingArea.get(posIdx);
+				posIdx += 2;
+				byte paybackAmount = (byte) Math.min(curr.requiredForBuild() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR,
+						Constants.STACK_SIZE);
+				grid.pushMaterialsTo(position, curr.getMaterialType(), paybackAmount);
 			}
 		} else {
 			for (RequestStack stack : stacks) {
 				posIdx += 2;
-				int paybackAmpunt = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
-				if (paybackAmpunt > 0) {
+				int paybackAmount = (int) (stack.getNumberOfPopped() * Constants.BUILDINGS_DESTRUCTION_MATERIALS_PAYBACK_FACTOR);
+				if (paybackAmount > 0) {
 					ShortPoint2D position = buildingArea.get(posIdx);
-					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(paybackAmpunt, Constants.STACK_SIZE));
+					grid.pushMaterialsTo(position, stack.getMaterialType(), (byte) Math.min(paybackAmount, Constants.STACK_SIZE));
 				}
 			}
 		}
@@ -570,7 +568,6 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case CHARCOAL_BURNER:
 		case BAKER:
 		case FARM:
-		case FISHER:
 		case FORESTER:
 		case GOLDMELT:
 		case IRONMELT:
@@ -601,14 +598,20 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 		case COALMINE:
 			return new MineBuilding(type, player);
 
+		case FISHER:
+			return new ResourceBuilding(EBuildingType.FISHER, player, 12);
+
 		case STOCK:
 			return new StockBuilding(player);
+
+		case TEMPLE:
+			return new TempleBuilding(player);
 
 		case LOOKOUT_TOWER:
 			return new DefaultBuilding(EBuildingType.LOOKOUT_TOWER, player);
 
 		default:
-			System.err.println("couldn't create new building, because type is unknown: " + type);
+			System.err.println("ERROR: couldn't create new building, because type is unknown: " + type);
 			return null;
 		}
 	}
@@ -650,8 +653,22 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 	@Override
 	public List<IBuildingMaterial> getMaterials() {
 		ArrayList<IBuildingMaterial> materials = new ArrayList<IBuildingMaterial>();
-		materials.addAll(stacks);
-		// TODO @Andreas: Add a list of offering stacks to this building.
+
+		for (RequestStack stack : stacks) {
+			if (state == STATE_CONSTRUCTED) {
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStackSize(), false));
+			} else { // during construction
+				materials.add(new BuildingMaterial(stack.getMaterialType(), stack.getStillNeeded()));
+			}
+		}
+
+		if (state == STATE_CONSTRUCTED) {
+			for (RelativeStack offerStack : type.getOfferStacks()) {
+				byte stackSize = grid.getRequestStackGrid().getStackSize(offerStack.calculatePoint(pos), offerStack.getMaterialType());
+				materials.add(new BuildingMaterial(offerStack.getMaterialType(), stackSize, true));
+			}
+		}
+
 		return materials;
 	}
 
@@ -666,6 +683,10 @@ public abstract class Building extends AbstractHexMapObject implements IConstruc
 
 	public final RelativePoint[] getFlattenTiles() {
 		return type.getProtectedTiles();
+	}
+
+	public short getPartitionId() {
+		return grid.getPartitionIdAt(pos);
 	}
 
 }

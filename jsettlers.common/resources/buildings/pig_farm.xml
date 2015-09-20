@@ -116,11 +116,11 @@
 	<!-- real door is at dx="1" dy="2", but blocked -->
 	<door dx="0" dy="1" />
 
-	<stack dx="5" dy="5" material="CROP" buildrequired="0" />
+	<constructionStack dx="1" dy="6" material="PLANK" buildrequired="1" />
+	<constructionStack dx="3" dy="6" material="STONE" buildrequired="1" />
+	<requestStack dx="5" dy="5" material="CROP" />
+	<requestStack dx="3" dy="6" material="WATER" />
 	<!--<stack dx="-1" dy="4" material="PIG" buildrequired="0" /> -->
-	<stack dx="3" dy="6" material="WATER" buildrequired="0" />
-	<stack dx="1" dy="6" material="PLANK" buildrequired="1" />
-	<stack dx="3" dy="6" material="STONE" buildrequired="1" />
 
 	<bricklayer dx="-2" dy="3" direction="NORTH_EAST" />
 	<bricklayer dx="0" dy="5" direction="NORTH_EAST" />
@@ -204,9 +204,8 @@
 	<job name="killPig1Show3" type="SHOW" dx="0" dy="1" successjob="killPig1GoTo" failjob="hide" />
 	<job name="killPig1GoTo" type="GO_TO" dx="2" dy="2" successjob="killPig1Kill1" failjob="gohome" />
 
-	<job name="killPig1Kill1" type="TAKE" material="NO_MATERIAL" successjob="killPig1Kill2" failjob="gohome" />
-	<job name="killPig1Kill2" type="PIG_REMOVE" dx="2" dy="2" successjob="killPig1Kill3" failjob="gohome" />
-	<job name="killPig1Kill3" type="SET_MATERIAL" material="PIG" successjob="deliverPigToStack1" failjob="gohome" />
+	<job name="killPig1Kill1" type="TAKE" material="PIG" successjob="killPig1Kill2" failjob="gohome" takeMaterialFromMap="false" />
+	<job name="killPig1Kill2" type="PIG_REMOVE" dx="2" dy="2" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
@@ -216,9 +215,8 @@
 	<job name="killPig2Show3" type="SHOW" dx="0" dy="1" successjob="killPig2GoTo" failjob="hide" />
 	<job name="killPig2GoTo" type="GO_TO" dx="2" dy="1" successjob="killPig2Kill1" failjob="gohome" />
 
-	<job name="killPig2Kill1" type="TAKE" material="NO_MATERIAL" successjob="killPig2Kill2" failjob="gohome" />
-	<job name="killPig2Kill2" type="PIG_REMOVE" dx="2" dy="1" successjob="killPig2Kill3" failjob="gohome" />
-	<job name="killPig2Kill3" type="SET_MATERIAL" material="PIG" successjob="deliverPigToStack1" failjob="gohome" />
+	<job name="killPig2Kill1" type="TAKE" material="PIG" successjob="killPig2Kill2" failjob="gohome" takeMaterialFromMap="false" />
+	<job name="killPig2Kill2" type="PIG_REMOVE" dx="2" dy="1" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
@@ -228,9 +226,8 @@
 	<job name="killPig3Show3" type="SHOW" dx="0" dy="1" successjob="killPig3GoTo" failjob="hide" />
 	<job name="killPig3GoTo" type="GO_TO" dx="3" dy="2" successjob="killPig3Kill1" failjob="gohome" />
 
-	<job name="killPig3Kill1" type="TAKE" material="NO_MATERIAL" successjob="killPig3Kill2" failjob="gohome" />
-	<job name="killPig3Kill2" type="PIG_REMOVE" dx="3" dy="2" successjob="killPig3Kill3" failjob="gohome" />
-	<job name="killPig3Kill3" type="SET_MATERIAL" material="PIG" successjob="deliverPigToStack1" failjob="gohome" />
+	<job name="killPig3Kill1" type="TAKE" material="PIG" successjob="killPig3Kill2" failjob="gohome" takeMaterialFromMap="false" />
+	<job name="killPig3Kill2" type="PIG_REMOVE" dx="3" dy="2" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
@@ -240,16 +237,14 @@
 	<job name="killPig4Show3" type="SHOW" dx="0" dy="1" successjob="killPig4GoTo" failjob="hide" />
 	<job name="killPig4GoTo" type="GO_TO" dx="3" dy="3" successjob="killPig4Kill1" failjob="gohome" />
 
-	<job name="killPig4Kill1" type="TAKE" material="NO_MATERIAL" successjob="killPig4Kill2" failjob="gohome" />
-	<job name="killPig4Kill2" type="PIG_REMOVE" dx="3" dy="3" successjob="killPig4Kill3" failjob="gohome" />
-	<job name="killPig4Kill3" type="SET_MATERIAL" material="PIG" successjob="deliverPigToStack1" failjob="gohome" />
+	<job name="killPig4Kill1" type="TAKE" material="PIG" successjob="killPig4Kill2" failjob="gohome" takeMaterialFromMap="false" />
+	<job name="killPig4Kill2" type="PIG_REMOVE" dx="3" dy="3" successjob="deliverPigToStack1" failjob="gohome" />
 	<!-- jump to common kill end -->
 
 
 	<!-- Common to all kills: walk from 1, 2 -->
 	<job name="deliverPigToStack1" type="GO_TO" dx="-1" dy="4" successjob="deliverPigToStack2" failjob="gohome" />
-	<job name="deliverPigToStack2" type="DROP" material="PIG" successjob="deliverPigToStack3" failjob="gohome" />
-	<job name="deliverPigToStack3" type="SET_MATERIAL" material="NO_MATERIAL" successjob="gohome" failjob="gohome" />
+	<job name="deliverPigToStack2" type="DROP" material="PIG" successjob="gohome" failjob="gohome" />
 
 
 </building>

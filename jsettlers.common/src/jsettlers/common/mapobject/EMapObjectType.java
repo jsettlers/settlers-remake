@@ -18,9 +18,16 @@ public enum EMapObjectType {
 	TREE_GROWING,
 	TREE_ADULT,
 	TREE_DEAD,
+
 	CORN_GROWING,
 	CORN_ADULT,
 	CORN_DEAD,
+
+	WINE_GROWING,
+	WINE_HARVESTABLE,
+	WINE_DEAD,
+	WINE_BOWL,
+
 	WAVES,
 	STONE,
 	/**
@@ -92,6 +99,11 @@ public enum EMapObjectType {
 	 * {@link IMapObject}s of this type must implement {@link IBuildingMapObject}.
 	 */
 	BUILDING,
+
+    /**
+     * Type to represent the Building shown when placing for construction.
+     */
+    PLACEMENT_BUILDING,
 
 	/**
 	 * Simple smoke

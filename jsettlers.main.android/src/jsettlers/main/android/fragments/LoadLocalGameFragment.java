@@ -15,7 +15,9 @@
 package jsettlers.main.android.fragments;
 
 import jsettlers.graphics.startscreen.interfaces.IMapDefinition;
+import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.main.android.R;
+import jsettlers.main.android.fragments.progress.StartGameProgess;
 import jsettlers.main.android.maplist.LoadableMapListAdapter;
 import jsettlers.main.android.maplist.MapListAdapter;
 import android.content.Context;
@@ -28,8 +30,7 @@ public class LoadLocalGameFragment extends MapSelectionFragment<IMapDefinition> 
 		LayoutInflater inflater =
 				(LayoutInflater) getActivity().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-		return new LoadableMapListAdapter(inflater, getJsettlersActivity()
-				.getStartConnector().getStoredSingleplayerGames());
+		return new LoadableMapListAdapter(inflater, getJsettlersActivity().getStartConnector().getStoredSingleplayerGames());
 	}
 
 	@Override
@@ -50,7 +51,8 @@ public class LoadLocalGameFragment extends MapSelectionFragment<IMapDefinition> 
 
 	@Override
 	protected void startGame(IMapDefinition game) {
-		getJsettlersActivity().getStartConnector().loadSingleplayerGame(game);
+		IStartingGame started = getJsettlersActivity().getStartConnector().loadSingleplayerGame(game);
+		getJsettlersActivity().showFragment(new StartGameProgess(started));
 	}
 
 	@Override

@@ -95,4 +95,8 @@ public interface IBuildingJob {
 	ESearchType getSearchType();
 
 	String getName();
+
+	boolean isTakeMaterialFromMap();
+
+	EMaterialType[] getFoodOrder();
 }

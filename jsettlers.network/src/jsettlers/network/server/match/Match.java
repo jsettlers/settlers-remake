@@ -14,6 +14,7 @@
  *******************************************************************************/
 package jsettlers.network.server.match;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import jsettlers.network.server.match.lockstep.TaskSendingTimerTask;
 public class Match {
 
 	private final Logger logger;
+	private final Date date;
 	private final String id;
 	private final LinkedList<Player> players;
 	private final LinkedList<Player> leftPlayers;
@@ -63,6 +65,7 @@ public class Match {
 		this.players = new LinkedList<Player>();
 		this.leftPlayers = new LinkedList<Player>();
 		this.logger = LoggerManager.getMatchLogger(id, name);
+		this.date = new Date();
 	}
 
 	public EMatchState getState() {
@@ -193,6 +196,10 @@ public class Match {
 					leftPlayers.add(player);
 				}
 			}
+
+			if (players.isEmpty()) {
+				shutdownMatch();
+			}
 		}
 	}
 
@@ -241,4 +248,29 @@ public class Match {
 		return logger;
 	}
 
+	private void shutdownMatch() {
+		if (state == EMatchState.RUNNING) {
+			taskSendingTimerTask.cancel();
+			taskSendingTimerTask = null;
+
+			synchronized (players) {
+				if (players.size() > 0) {
+					logger.warn("Closing match with active players...");
+
+					for (Player player : players) {
+						player.getChannel().close();
+					}
+				}
+			}
+			taskCollectingListener = null;
+		}
+
+		state = EMatchState.FINISHED;
+	}
+
+	@Override
+	public String toString() {
+		return state + ": name: '" + name + "' opened: '" + date + "' numberOfPlayers: " + players.size() + " map: '" + map.getName() + "' ('"
+				+ map.getId() + "')";
+	}
 }

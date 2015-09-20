@@ -19,7 +19,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.map.EDebugColorModes;
 import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.IGraphicsGrid;
-import jsettlers.common.map.partition.IPartitionSettings;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.movable.IMovable;
@@ -33,8 +33,7 @@ public class BgMap implements IGraphicsGrid {
 	private static final double MOVABLE_PROBABILITY = .001;
 	private static final double TREE_PROBABILITY = 0.1;
 
-	private final BgFish fish = new BgFish(EMapObjectType.FISH_DECORATION);;
-	private final BgFish tree = new BgFish(EMapObjectType.TREE_ADULT);
+	private final BgMapObject tree = new BgMapObject(EMapObjectType.TREE_ADULT);
 
 	private final double[] randoms = new double[17];
 
@@ -114,11 +113,6 @@ public class BgMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public boolean isFogOfWarVisible(int x, int y) {
-		return true;
-	}
-
-	@Override
 	public void setBackgroundListener(
 			IGraphicsBackgroundListener backgroundListener) {
 	}
@@ -129,7 +123,7 @@ public class BgMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public IPartitionSettings getPartitionSettings(int x, int y) {
+	public IPartitionData getPartitionData(int x, int y) {
 		return null;
 	}
 

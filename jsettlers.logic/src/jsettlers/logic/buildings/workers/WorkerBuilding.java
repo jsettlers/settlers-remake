@@ -17,10 +17,9 @@ package jsettlers.logic.buildings.workers;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.RequestStack;
 
@@ -60,12 +59,10 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 		return -1;
 	}
 
-	@Override
-	public final boolean popMaterial(ShortPoint2D position, EMaterialType material) {
+	protected final boolean popMaterialFromStack(EMaterialType material) {
 		for (RequestStack stack : super.getStacks()) {
-			if (stack.getPosition().equals(position) && stack.getMaterialType() == material) {
-				stack.pop();
-				return true;
+			if (stack.getMaterialType() == material) {
+				return stack.pop();
 			}
 		}
 		return false;
@@ -88,7 +85,7 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 			super.releaseRequestStacks();
 			requestWorker();
 		} else {
-			System.err.println("A worker not registered at the building wanted to leave it!");
+			System.err.println("ERROR: A worker not registered at the building wanted to leave it!");
 		}
 	}
 
@@ -103,5 +100,15 @@ public class WorkerBuilding extends WorkAreaBuilding implements IWorkerRequestBu
 	@Override
 	public final boolean isOccupied() {
 		return worker != null;
+	}
+
+	@Override
+	public boolean tryTakingResource() {
+		return false;
+	}
+
+	@Override
+	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
+		return false;
 	}
 }

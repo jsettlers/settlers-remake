@@ -19,6 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.loader.BuildingFile;
+import jsettlers.common.buildings.stacks.ConstructionStack;
+import jsettlers.common.buildings.stacks.RelativeStack;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -30,6 +32,7 @@ import jsettlers.common.position.RelativePoint;
  * This interface defines the main building type.
  * 
  * @author michael
+ * @author Andreas Eberle
  */
 public enum EBuildingType {
 	STONECUTTER(3),
@@ -57,7 +60,7 @@ public enum EBuildingType {
 	FISHER(22),
 	WINEGROWER(33),
 	CHARCOAL_BURNER(30),
-	DONKEY_FARM(35),
+	DONKEY_FARM(35), // GUI 87
 
 	SMALL_LIVINGHOUSE(24),
 	MEDIUM_LIVINGHOUSE(25),
@@ -67,7 +70,7 @@ public enum EBuildingType {
 	TOWER(17),
 	BIG_TOWER(18),
 	CASTLE(16),
-	HOSPITAL(29),
+	HOSPITAL(29), // GUI 93
 	BARRACK(34),
 
 	DOCKYARD(45),
@@ -101,7 +104,9 @@ public enum EBuildingType {
 
 	private final short workradius;
 
-	private final RelativeStack[] stacks;
+	private final ConstructionStack[] constructionStacks;
+	private final RelativeStack[] requestStacks;
+	private final RelativeStack[] offerStacks;
 
 	private final RelativePoint workcenter;
 
@@ -139,7 +144,11 @@ public enum EBuildingType {
 		doorTile = file.getDoor();
 		blockedTiles = file.getBlockedTiles();
 		protectedTiles = file.getProtectedTiles();
-		stacks = file.getStacks();
+
+		constructionStacks = file.getConstructionRequiredStacks();
+		requestStacks = file.getRequestStacks();
+		offerStacks = file.getOfferStacks();
+
 		workradius = file.getWorkradius();
 		workcenter = file.getWorkcenter();
 		flag = file.getFlag();
@@ -168,8 +177,8 @@ public enum EBuildingType {
 
 	private final byte calculateNumberOfConstructionMaterials() {
 		byte sum = 0;
-		for (RelativeStack curr : stacks) {
-			sum += curr.requiredForBuild();
+		for (ConstructionStack stack : getConstructionStacks()) {
+			sum += stack.requiredForBuild();
 		}
 		return sum;
 	}
@@ -188,10 +197,6 @@ public enum EBuildingType {
 
 	public final RelativePoint[] getBlockedTiles() {
 		return blockedTiles;
-	}
-
-	public final RelativeStack[] getRequestStacks() {
-		return stacks;
 	}
 
 	@Deprecated
@@ -297,4 +302,26 @@ public enum EBuildingType {
 		return buildingAreaBitSet;
 	}
 
+	public ConstructionStack[] getConstructionStacks() {
+		return constructionStacks;
+	}
+
+	public RelativeStack[] getRequestStacks() {
+		return requestStacks;
+	}
+
+	public RelativeStack[] getOfferStacks() {
+		return offerStacks;
+	}
+
+	public boolean isMine() {
+		switch (this) {
+		case COALMINE:
+		case IRONMINE:
+		case GOLDMINE:
+			return true;
+		default:
+			return false;
+		}
+	}
 }

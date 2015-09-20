@@ -48,8 +48,8 @@
     <blocked dx="-2" dy="0" block="false" />
     <blocked dx="0" dy="-2" block="false" />
     <door dx="0" dy="3" />
-    <stack dx="3" dy="4" material="STONE" buildrequired="3" />
-    <stack dx="4" dy="4" material="STONE" buildrequired="3" />
+    <constructionStack dx="3" dy="4" material="STONE" buildrequired="3" />
+    <constructionStack dx="4" dy="4" material="STONE" buildrequired="3" />
     <bricklayer dx="-1" dy="2" direction="NORTH_EAST" />
     <bricklayer dx="1" dy="4" direction="NORTH_EAST" />
     <bricklayer dx="4" dy="2" direction="NORTH_WEST" />

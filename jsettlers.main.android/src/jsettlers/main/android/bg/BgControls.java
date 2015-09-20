@@ -17,7 +17,6 @@ package jsettlers.main.android.bg;
 import go.graphics.GLDrawContext;
 import go.graphics.UIPoint;
 import go.graphics.event.mouse.GODrawEvent;
-import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.map.shapes.MapRectangle;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.common.selectable.ISelectionSet;
@@ -72,10 +71,6 @@ public class BgControls implements IControls {
 	@Override
 	public boolean handleDrawEvent(GODrawEvent event) {
 		return true;
-	}
-
-	@Override
-	public void displayBuildingBuild(EBuildingType type) {
 	}
 
 	@Override

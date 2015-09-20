@@ -22,7 +22,7 @@ import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IBarrack;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestStackListener;
 import jsettlers.logic.stack.RequestStack;
@@ -50,8 +50,7 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 		for (RequestStack stack : stacks) {
 			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
 					|| stack.getMaterialType() == EMaterialType.SPEAR) {
-				if (stack.hasMaterial()) {
-					stack.pop();
+				if (stack.pop()) {
 					return getSoldierType(stack.getMaterialType());
 				}
 			}

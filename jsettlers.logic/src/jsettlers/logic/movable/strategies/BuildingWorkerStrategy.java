@@ -29,9 +29,8 @@ import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.graphics.messages.SimpleMessage;
 import jsettlers.logic.buildings.workers.MillBuilding;
-import jsettlers.logic.constants.Constants;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.IManageableWorker;
-import jsettlers.logic.map.newGrid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IWorkerRequestBuilding;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.MovableStrategy;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -47,7 +46,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	private final EMovableType movableType;
 
 	private transient IBuildingJob currentJob = null;
-	private IWorkerRequestBuilding building;
+	protected IWorkerRequestBuilding building;
 
 	private boolean done;
 
@@ -95,9 +94,16 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			gotoAction();
 			break;
 
-		case IS_PRODUCTIVE:
-			if (isProductive()) {
-				decreaseResourceAmount();
+		case TRY_TAKING_RESOURCE:
+			if (tryTakingResource()) {
+				jobFinished();
+			} else {
+				jobFailed();
+			}
+			break;
+
+		case TRY_TAKING_FOOD:
+			if (building.tryTakingFoood(currentJob.getFoodOrder())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -147,13 +153,6 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		case TAKE:
 			takeAction();
 			break;
-		case REMOTETAKE:
-			if (this.building.popMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
-				jobFinished();
-			} else {
-				jobFailed();
-			}
-			break;
 
 		case DROP:
 			dropAction(currentJob.getMaterial());
@@ -196,7 +195,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 			break;
 
 		case AVAILABLE:
-			if (super.getStrategyGrid().canPop(getCurrentJobPos(), currentJob.getMaterial())) {
+			if (super.getStrategyGrid().canTakeMaterial(getCurrentJobPos(), currentJob.getMaterial())) {
 				jobFinished();
 			} else {
 				jobFailed();
@@ -296,7 +295,7 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void executeAction() {
-		if (super.getStrategyGrid().executeSearchType(super.getPos(), currentJob.getSearchType())) {
+		if (super.getStrategyGrid().executeSearchType(super.getMovable(), super.getPos(), currentJob.getSearchType())) {
 			jobFinished();
 		} else {
 			jobFailed();
@@ -304,23 +303,16 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 	}
 
 	private void takeAction() {
-		super.playAction(EAction.TAKE, Constants.MOVABLE_TAKE_DROP_DURATION);
-		this.building.popMaterial(super.getPos(), currentJob.getMaterial());
-		jobFinished();
+		if (super.take(currentJob.getMaterial(), currentJob.isTakeMaterialFromMap())) {
+			jobFinished();
+		} else {
+			jobFailed();
+		}
 	}
 
 	private void dropAction(EMaterialType materialType) {
-		if (!done) {
-			super.playAction(EAction.DROP, Constants.MOVABLE_TAKE_DROP_DURATION);
-			if (materialType == EMaterialType.NO_MATERIAL) { // if materialType == NO_MATERIAL then, don't drop anything, just play the animation
-				jobFinished();
-			} else {
-				done = true;
-			}
-		} else {
-			super.getStrategyGrid().dropMaterial(super.getPos(), materialType, true);
-			jobFinished();
-		}
+		super.drop(materialType);
+		jobFinished();
 	}
 
 	/**
@@ -334,8 +326,8 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 
 		ShortPoint2D workAreaCenter = building.getWorkAreaCenter();
 
-		boolean pathFound = super.preSearchPath(dijkstra, workAreaCenter.x, workAreaCenter.y, building.getBuildingType()
-				.getWorkradius(), currentJob.getSearchType());
+		boolean pathFound = super.preSearchPath(dijkstra, workAreaCenter.x, workAreaCenter.y, building.getBuildingType().getWorkradius(),
+				currentJob.getSearchType());
 
 		if (pathFound) {
 			jobFinished();
@@ -350,50 +342,19 @@ public final class BuildingWorkerStrategy extends MovableStrategy implements IMa
 		}
 	}
 
-	private boolean isProductive() {
+	private boolean tryTakingResource() {
 		switch (building.getBuildingType()) {
 		case FISHER:
 			EDirection fishDirection = super.getMovable().getDirection();
-			return hasProductiveResource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 1);
+			return super.getStrategyGrid().tryTakingRecource(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH);
 		case COALMINE:
-			return hasProductiveResource(building.getPos(), EResourceType.COAL, 1);
 		case IRONMINE:
-			return hasProductiveResource(building.getPos(), EResourceType.IRON, 1);
 		case GOLDMINE:
-			return hasProductiveResource(building.getPos(), EResourceType.GOLD, 1);
+			return building.tryTakingResource();
 
 		default:
 			return false;
 		}
-	}
-
-	private boolean hasProductiveResource(ShortPoint2D position, EResourceType type, int radius) {
-		float percentage = super.getStrategyGrid().getResourceProbabilityAround(position.x, position.y, type, radius);
-		return RandomSingleton.get().nextFloat() < percentage;
-	}
-
-	private void decreaseResourceAmount() {
-		switch (building.getBuildingType()) {
-		case FISHER:
-			EDirection fishDirection = super.getMovable().getDirection();
-			decreaseResourceAround(fishDirection.getNextHexPoint(super.getPos()), EResourceType.FISH, 1);
-			break;
-		case COALMINE:
-			decreaseResourceAround(building.getPos(), EResourceType.COAL, 1);
-			break;
-		case IRONMINE:
-			decreaseResourceAround(building.getPos(), EResourceType.IRON, 1);
-			break;
-		case GOLDMINE:
-			decreaseResourceAround(building.getPos(), EResourceType.GOLD, 1);
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void decreaseResourceAround(ShortPoint2D position, EResourceType resourceType, int radius) {
-		super.getStrategyGrid().decreaseResourceAround(position.x, position.y, resourceType, radius, 1);
 	}
 
 	private void gotoAction() {

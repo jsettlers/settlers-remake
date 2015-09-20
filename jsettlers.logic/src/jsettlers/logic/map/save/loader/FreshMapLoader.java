@@ -20,8 +20,7 @@ import java.io.InputStream;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.logic.map.save.IListedMap;
-import jsettlers.logic.map.save.MapDataReceiver;
-import jsettlers.logic.map.save.MapDataSerializer;
+import jsettlers.logic.map.save.FreshMapSerializer;
 import jsettlers.logic.map.save.MapFileHeader;
 
 /**
@@ -31,7 +30,7 @@ import jsettlers.logic.map.save.MapFileHeader;
  */
 public class FreshMapLoader extends MapLoader {
 
-	private MapDataReceiver data = null;
+	private FreshMapData data = null;
 
 	public FreshMapLoader(IListedMap file, MapFileHeader header) {
 		super(file, header);
@@ -45,8 +44,8 @@ public class FreshMapLoader extends MapLoader {
 
 		try {
 			InputStream stream = super.getMapDataStream();
-			data = new MapDataReceiver();
-			MapDataSerializer.deserialize(data, stream);
+			data = new FreshMapData();
+			FreshMapSerializer.deserialize(data, stream);
 			return data;
 		} catch (IOException ex) {
 			throw new MapLoadException(ex);

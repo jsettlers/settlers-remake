@@ -15,14 +15,15 @@
 package jsettlers.graphics.action;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.position.ShortPoint2D;
 
 /**
- * This is a build action.
+ * This is a build action. This happens when the user clicks on a map position to build a building there.
  * 
  * @author michael
  *
  */
-public class BuildAction extends Action {
+public class BuildAction extends PointAction {
 
 	private final EBuildingType building;
 
@@ -31,9 +32,11 @@ public class BuildAction extends Action {
 	 * 
 	 * @param building
 	 *            The building to be built.
+	 * @param position
+	 *            The position at which the building should (approximately) be built.
 	 */
-	public BuildAction(EBuildingType building) {
-		super(EActionType.BUILD);
+	public BuildAction(EBuildingType building, ShortPoint2D position) {
+		super(EActionType.BUILD, position);
 		this.building = building;
 	}
 
@@ -42,7 +45,7 @@ public class BuildAction extends Action {
 	 * 
 	 * @return The building, <code>null</code> if it is not a build action.
 	 */
-	public EBuildingType getBuilding() {
+	public EBuildingType getBuildingType() {
 		return this.building;
 	}
 

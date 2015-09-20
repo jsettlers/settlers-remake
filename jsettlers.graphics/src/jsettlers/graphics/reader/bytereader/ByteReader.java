@@ -19,7 +19,7 @@ import java.io.RandomAccessFile;
 
 /**
  * This class provides a little endian wrapper of a reader.
- * 
+ *
  * @author michael
  */
 public class ByteReader {
@@ -34,7 +34,7 @@ public class ByteReader {
 	 * The current cache position the user is reading from next.
 	 * <p>
 	 * It may never be greater than CACHE_SIZE.
-	 * 
+	 *
 	 * @see ByteReader#assertCacheHolds(int);
 	 */
 	private int cachePosition;
@@ -54,7 +54,7 @@ public class ByteReader {
 
 	/**
 	 * Creates a new reader.
-	 * 
+	 *
 	 * @param in
 	 *            The in reader.
 	 * @throws IOException
@@ -67,7 +67,7 @@ public class ByteReader {
 
 	/**
 	 * Reads a 16 bit int.
-	 * 
+	 *
 	 * @return The int.
 	 * @throws IOException
 	 *             If an io error occured.
@@ -85,7 +85,7 @@ public class ByteReader {
 
 	/**
 	 * Sets the cache position pointer and the cache so that the pointer is on the given position in the file.
-	 * 
+	 *
 	 * @param newCachePosition
 	 *            A file position
 	 * @throws IOException
@@ -109,7 +109,7 @@ public class ByteReader {
 	 * Asserts that the cache hold bytecount valid bytes.
 	 * <p>
 	 * if the rest of the cache is not long enough
-	 * 
+	 *
 	 * @param bytecount
 	 * @throws IOException
 	 */
@@ -138,7 +138,7 @@ public class ByteReader {
 
 	/**
 	 * Reads an int with 32 bit from the stram.
-	 * 
+	 *
 	 * @return The int's value.
 	 * @throws IOException
 	 *             If an IO error occured.
@@ -160,7 +160,7 @@ public class ByteReader {
 
 	/**
 	 * Assumes to read the given data.
-	 * 
+	 *
 	 * @param toRead
 	 *            The array that the read bytes should be like.
 	 * @throws IOException
@@ -181,7 +181,7 @@ public class ByteReader {
 
 	/**
 	 * Reads a signed 16 bit value.
-	 * 
+	 *
 	 * @return The signed 16 bit value
 	 * @throws IOException
 	 *             If an IO error occured.
@@ -197,7 +197,7 @@ public class ByteReader {
 
 	/**
 	 * Reads a byte from the stream.
-	 * 
+	 *
 	 * @return The byte's value.
 	 * @throws IOException
 	 *             If an io error occured.
@@ -211,7 +211,7 @@ public class ByteReader {
 	 * Reads a byte stream from the stream.
 	 * <p>
 	 * Warning: this is not guaranteed to work for long arrays.
-	 * 
+	 *
 	 * @param b
 	 *            The byte array to read to.
 	 * @param off
@@ -233,7 +233,7 @@ public class ByteReader {
 
 	/**
 	 * Skipps to a given position.
-	 * 
+	 *
 	 * @param pos
 	 *            The position to go to.
 	 * @return The actual position we went to.
@@ -248,7 +248,7 @@ public class ByteReader {
 	/**
 	 * gets the number of read or skipped bytes. It is equal to the position in the stream, as long as no {@link IOException}s occurred and reset()
 	 * was not used.
-	 * 
+	 *
 	 * @return The number.
 	 */
 	public long getReadBytes() {
@@ -257,7 +257,7 @@ public class ByteReader {
 
 	/**
 	 * Closes the underlying stream.
-	 * 
+	 *
 	 * @throws IOException
 	 *             If the close failed.
 	 */
