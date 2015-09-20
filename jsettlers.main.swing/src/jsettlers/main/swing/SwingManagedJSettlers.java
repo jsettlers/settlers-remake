@@ -32,7 +32,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
@@ -43,6 +42,7 @@ import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.progress.StartingGamePanel;
 import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile;
+import jsettlers.graphics.swing.resources.ConfigurationPropertiesFile.Property;
 import jsettlers.graphics.swing.resources.SwingResourceLoader;
 import jsettlers.logic.constants.MatchConstants;
 import jsettlers.logic.map.save.DirectoryMapLister;
@@ -53,11 +53,12 @@ import jsettlers.main.StartScreenConnector;
 import jsettlers.network.client.OfflineNetworkConnector;
 
 /**
- * 
+ *
  * @author Andreas Eberle
  * @author michael
  */
 public class SwingManagedJSettlers {
+    private static String commitInfo;
 
 	/**
 	 * @param args
@@ -81,7 +82,7 @@ public class SwingManagedJSettlers {
 	 * First it is checked, if the given argsMap contains a "configFile" parameter. If so, the path specified for this parameter is used to get the
 	 * file. <br>
 	 * If the parameter is not given, the defaultConfigFile is used.
-	 * 
+	 *
 	 * @param argsMap
 	 * @param defaultConfigFileName
 	 * @throws FileNotFoundException
@@ -89,6 +90,7 @@ public class SwingManagedJSettlers {
 	 */
 	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
 		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
+		commitInfo = configFile.getProperty(Property.COMMIT_INFO);
 		SwingResourceLoader.setupResourcesManager(configFile);
 
 		if (!configFile.isSettlersFolderSet()) {
@@ -162,7 +164,7 @@ public class SwingManagedJSettlers {
 
 	/**
 	 * Creates a new SWING GUI for the game.
-	 * 
+	 *
 	 * @param argsList
 	 * @return
 	 * @throws IOException
@@ -259,6 +261,6 @@ public class SwingManagedJSettlers {
 	}
 
 	private static String getBuild() {
-		return Labels.getString("version-build", CommitInfo.COMMIT_HASH_SHORT);
+		return Labels.getString("version-build", commitInfo);
 	}
 }

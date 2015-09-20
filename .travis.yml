@@ -7,9 +7,10 @@ jdk:
 
 
 env:
-  - TARGET=runUnitTests
-  - TARGET=runAutoReplayIT
-  - TARGET=buildDedicatedServer
-  - TARGET=buildSwing
+  - TARGET=check
+  - TARGET=:jsettlers.main.swing:assembleMainDist
+  - TARGET=:jsettlers.mapcreator:assembleMainDist
+  - TARGET=:jsettlers.network:assembleMainDist
+# - TARGET=runAutosimTests
 
-script: ANT_OPTS="-Xmx2048m" ant -buildfile ./build.ant $TARGET
+script: ./gradlew $TARGET

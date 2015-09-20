@@ -2,6 +2,7 @@ bin
 gen
 target
 logs
+.gradle
 
 /.metadata
 /.recommenders
@@ -13,7 +14,16 @@ logs
 /jsettlers.common/resources/images/*
 !/jsettlers.common/resources/images/movables.txt
 /jsettlers.common/resources/save
+config.prp
 
 /jsettlers.main.swing/*.log
 
-/jsettlers.tests/out
+#IDE Files
+*.iml
+*.ipr
+*.iws
+.idea
+.project
+.classpath
+.settings
+build//jsettlers.tests/out

@@ -22,11 +22,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * 
+ *
  * @author Andreas Eberle
- * 
+ *
  */
 public class ConfigurationPropertiesFile {
+    public enum Property{
+        COMMIT_INFO,
+    }
+
 	private static final String SETTLERS_FOLDER = "settlers-folder";
 	private static final String SPLIT_CHARACTER = ";";
 
@@ -38,12 +42,17 @@ public class ConfigurationPropertiesFile {
 		this.configFile = file;
 
 		Properties defaultProperties = new Properties();
-		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("defaultConfig.prp"));
+		defaultProperties.load(ConfigurationPropertiesFile.class.getResourceAsStream("/defaultConfig.prp"));
 		this.properties = new Properties(defaultProperties);
 
 		if (file.exists()) {
 			this.properties.load(new FileInputStream(file));
 		}
+	}
+
+	public String getProperty(Property key)
+	{
+	    return properties.getProperty(key.toString());
 	}
 
 	public File getResourcesFolder() {

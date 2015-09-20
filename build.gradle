@@ -1,0 +1,264 @@
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.stehno:gradle-natives:0.2.3"
+  }
+}
+
+
+ext {
+  gradleVersion = '2.7'
+  jogampVer   = '2.2.1'
+  joglJars = [
+      "jogl-all-${jogampVer}-natives-linux-i586",
+      "jogl-all-${jogampVer}-natives-linux-amd64",
+      "gluegen-rt-${jogampVer}-natives-android-armv6.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-amd64.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-armv6.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-armv6hf.jar",
+      "gluegen-rt-${jogampVer}-natives-linux-i586.jar",
+      "gluegen-rt-${jogampVer}-natives-macosx-universal.jar",
+      "gluegen-rt-${jogampVer}-natives-solaris-amd64.jar",
+      "gluegen-rt-${jogampVer}-natives-solaris-i586.jar",
+      "gluegen-rt-${jogampVer}-natives-windows-amd64.jar",
+      "gluegen-rt-${jogampVer}-natives-windows-i586.jar",
+      "jogl-all-${jogampVer}-natives-android-armv6.jar",
+      "jogl-all-${jogampVer}-natives-linux-amd64.jar",
+      "jogl-all-${jogampVer}-natives-linux-armv6.jar",
+      "jogl-all-${jogampVer}-natives-linux-armv6hf.jar",
+      "jogl-all-${jogampVer}-natives-linux-i586.jar",
+      "jogl-all-${jogampVer}-natives-macosx-universal.jar",
+      "jogl-all-${jogampVer}-natives-solaris-amd64.jar",
+      "jogl-all-${jogampVer}-natives-solaris-i586.jar",
+      "jogl-all-${jogampVer}-natives-windows-amd64.jar",
+      "jogl-all-${jogampVer}-natives-windows-i586.jar",
+  ]
+  cmd = { String command ->
+	def stdout = new ByteArrayOutputStream()
+	exec {
+		workingDir rootProject.projectDir
+		commandLine command.split()
+		standardOutput = stdout
+	}
+    return stdout.toString().trim()
+  }
+}
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = rootProject.ext.gradleVersion
+}
+
+
+task populateCommitProperty << {
+	def defaultConfig = file('jsettlers.graphics.swing/resources/defaultConfig.prp')
+	def props = new Properties()
+	props.load(  new FileReader( defaultConfig )  )
+	props.setProperty( 'commit_info', cmd("git rev-parse --short HEAD") )
+	def writer = new FileWriter( defaultConfig )
+	try {
+		props.store( writer, 'Default Settings' )
+		writer.flush()
+	}
+	finally {
+		writer.close()
+	}
+}
+
+subprojects { subproject ->
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+
+  sourceSets.main.java.srcDirs = ["src/"]
+  sourceSets.main.resources.srcDirs = ["resources/"]
+  sourceSets.test.java.srcDirs = ["test/"]
+
+  dependencies {
+    testCompile "junit:junit:4.11"
+  }
+
+  repositories {
+    jcenter()
+  }
+
+  compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  }
+
+  compileTestJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  }
+}
+
+
+project('jsettlers.main.swing') {
+  apply plugin: 'application'
+  apply plugin: "com.stehno.natives"
+
+  natives {
+    jars = joglJars
+  }
+
+  dependencies {
+    compile project(":jsettlers.logic")
+    compile project(":jsettlers.graphics.swing")
+  }
+
+  rootProject.tasks.populateCommitProperty.execute()
+
+  jar {
+    baseName = project.name
+    manifest { attributes "Main-Class": "jsettlers.main.swing.SwingManagedJSettlers" }
+    //TODO, bring in the natives using this. will need to rely on unpack natives?
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  }
+  task classpath << {
+    println configurations.runtime.files.join(':')
+  }
+
+  project.mainClassName="jsettlers.main.swing.SwingManagedJSettlers"
+}
+
+
+project('jsettlers.network') {
+  apply plugin: 'application'
+
+  jar {
+    baseName = project.name
+    manifest { attributes "Main-Class": "jsettlers.network.server.DedicatedServerApp" }
+  }
+
+  project.mainClassName="jsettlers.network.server.DedicatedServerApp"
+}
+
+
+project('jsettlers.mapcreator') {
+  apply plugin: 'application'
+
+  dependencies {
+    compile project(":jsettlers.graphics.swing")
+    compile project(":jsettlers.main.swing")
+  }
+
+  jar {
+    baseName = project.name
+    manifest { attributes "Main-Class": "jsettlers.mapcreator.main.MapCreatorApp" }
+  }
+
+  project.mainClassName="jsettlers.mapcreator.main.MapCreatorApp"
+}
+
+
+project('jsettlers.common') {
+  sourceSets.main.java.srcDirs = ["src","gen"]
+}
+
+
+project('jsettlers.graphics') {
+  sourceSets.main.java.srcDirs = ["src","texture"]
+  dependencies {
+    compile project(":jsettlers.common")
+    compile project(":go.graphics.swing")
+  }
+}
+
+
+project('jsettlers.graphics.swing') {
+  dependencies {
+    compile project(":jsettlers.common")
+    compile project(":jsettlers.graphics")
+    compile project(":go.graphics.swing")
+  }
+}
+
+
+project('jsettlers.logic') {
+  dependencies {
+    compile project(":jsettlers.common")
+    compile project(":jsettlers.network")
+    compile project(":jsettlers.graphics")
+  }
+}
+
+
+project('jsettlers.buildingcreator') {
+  dependencies {
+    compile project(":jsettlers.graphics.swing")
+    compile project(":jsettlers.main.swing")
+  }
+}
+
+
+project('go.graphics.nativegl') {
+  dependencies {
+    compile project(":go.graphics")
+    compile "org.jogamp.gluegen:gluegen-rt-main:${jogampVer}"
+    compile "org.jogamp.jogl:jogl-all-main:${jogampVer}"
+  }
+}
+
+
+project('go.graphics.swing') {
+  dependencies {
+    compile project(":go.graphics.nativegl")
+    compile "org.jogamp.gluegen:gluegen-rt-main:${jogampVer}"
+    compile "org.jogamp.jogl:jogl-all-main:${jogampVer}"
+  }
+}
+
+
+//TODO, have a full fat gradle build file in the anddroid app that
+//is compatible with the new IDEA based Android Studio
+//must have this project as a parent.
+
+
+//project('jsettlers.graphics.androidui') {
+//  dependencies {
+//    compile project(":jsettlers.common")
+//    compile project(":jsettlers.graphics")
+//    compile project(":go.graphics.android")
+//  }
+//}
+
+
+//project('jsettlers.main.android') {
+//  dependencies {
+//    compile project(":jsettlers.logic")
+//    compile project(":jsettlers.graphics.androidui")
+//  }
+//}
+
+
+//project('go.graphics.android') {
+//  dependencies {
+//    compile project(":go.graphics")
+//  }
+//}
+
+
+project('jsettlers.tests') {
+  sourceSets.test.java.srcDirs = [
+      "tests",
+      "tools",
+      "tests.network/",
+      "test.integration"
+  ]
+  dependencies {
+    compile project(":jsettlers.main.swing")
+    compile project(":jsettlers.network")
+    testCompile fileTree(dir: 'libs', include: '*.jar')
+  }
+  /*task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+  }
+
+  check.dependsOn integrationTest*/
+}
