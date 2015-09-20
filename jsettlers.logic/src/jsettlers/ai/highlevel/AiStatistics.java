@@ -50,7 +50,6 @@ import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
 import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
-import jsettlers.logic.player.PlayerSetting;
 import jsettlers.logic.player.Team;
 
 /**
@@ -160,6 +159,7 @@ public class AiStatistics {
 	}
 
 	private void updateMapStatistics() {
+		updatePartitionIdsToBuildOn();
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
 				Integer xInteger = Integer.valueOf(x);
@@ -216,25 +216,42 @@ public class AiStatistics {
 				} else {
 					Integer playerId = Integer.valueOf(partitionsGrid.getPlayerAt(x, y).playerId);
 					PlayerStatistic playerStatistic = playerStatistics[playerId];
-					ShortPoint2D point = new ShortPoint2D(x, y);
-					updateBorderlandNextToFreeLand(playerStatistic, point);
-					playerStatistic.land.add(point);
-					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
-						playerStatistic.stones.add(point);
-					}
-					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
-						playerStatistic.trees.add(point);
-					}
-					if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
-							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
-						playerStatistic.rivers.add(point);
-					}
-					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
-					if (stack != null) {
-						EMaterialType materialType = stack.getMaterialType();
-						playerStatistic.materialNumbers[materialType.ordinal] = playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
+					if (partitionsGrid.getPartitionIdAt(x, y) == playerStatistic.partitionIdToBuildOn) {
+						ShortPoint2D point = new ShortPoint2D(x, y);
+						updateBorderlandNextToFreeLand(playerStatistic, point);
+						playerStatistic.landToBuildOn.add(point);
+						if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
+							playerStatistic.stones.add(point);
+						}
+						if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
+							playerStatistic.trees.add(point);
+						}
+						if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
+								|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
+							playerStatistic.rivers.add(point);
+						}
+						StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
+						if (stack != null) {
+							EMaterialType materialType = stack.getMaterialType();
+							playerStatistic.materialNumbers[materialType.ordinal] =
+									playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
+						}
 					}
 				}
+			}
+		}
+	}
+
+	private void updatePartitionIdsToBuildOn() {
+		for (byte playerId = 0; playerId < playerStatistics.length; playerId++) {
+			ShortPoint2D referencePosition = null;
+			if (getTotalNumberOfBuildingTypeForPlayer(EBuildingType.LUMBERJACK, playerId) > 0) {
+				referencePosition = getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId).get(0);
+			} else if (getTotalNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, playerId) > 0) {
+				referencePosition = getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId).get(0);
+			}
+			if (referencePosition != null) {
+				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
 			}
 		}
 	}
@@ -401,7 +418,7 @@ public class AiStatistics {
 	}
 
 	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
-		return playerStatistics[playerId].land;
+		return playerStatistics[playerId].landToBuildOn;
 	}
 
 	public List<ShortPoint2D> getBorderLandNextToFreeLandForPlayer(byte playerId) {
@@ -541,7 +558,8 @@ public class AiStatistics {
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
-		private List<ShortPoint2D> land;
+		private short partitionIdToBuildOn;
+		private List<ShortPoint2D> landToBuildOn;
 		private List<ShortPoint2D> borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
 		private int[] materialNumbers;
@@ -558,7 +576,8 @@ public class AiStatistics {
 			stones = new ArrayList<ShortPoint2D>();
 			trees = new ArrayList<ShortPoint2D>();
 			rivers = new ArrayList<ShortPoint2D>();
-			land = new ArrayList<ShortPoint2D>();
+			short partitionIdToBuildOn;
+			landToBuildOn = new ArrayList<ShortPoint2D>();
 			enemyTroopsInTown = new Vector<ShortPoint2D>();
 			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
@@ -575,7 +594,7 @@ public class AiStatistics {
 			stones.clear();
 			trees.clear();
 			rivers.clear();
-			land.clear();
+			landToBuildOn.clear();
 			borderLandNextToFreeLand.clear();
 			movablePositions.clear();
 			clearIntegers();
