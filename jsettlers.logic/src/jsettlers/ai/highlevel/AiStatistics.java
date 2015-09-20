@@ -220,14 +220,13 @@ public class AiStatistics {
 						ShortPoint2D point = new ShortPoint2D(x, y);
 						updateBorderlandNextToFreeLand(playerStatistic, point);
 						playerStatistic.landToBuildOn.add(point);
-						if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
+						if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE) && isCuttableByPlayer(x, y, player.playerId)) {
 							playerStatistic.stones.add(point);
 						}
-						if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
+						if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT) && isCuttableByPlayer(x, y, player.playerId)) {
 							playerStatistic.trees.add(point);
 						}
-						if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
-								|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
+						if (landscapeGrid.getLandscapeTypeAt(x, y).isRiver()) {
 							playerStatistic.rivers.add(point);
 						}
 						StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
@@ -240,6 +239,20 @@ public class AiStatistics {
 				}
 			}
 		}
+	}
+
+	private boolean isCuttableByPlayer(short x, short y, byte playerId) {
+		byte[] playerIds = new byte[4];
+		playerIds[0] = partitionsGrid.getPlayerIdAt(x - 2, y - 2);
+		playerIds[1] = partitionsGrid.getPlayerIdAt(x - 2, y + 2);
+		playerIds[2] = partitionsGrid.getPlayerIdAt(x + 2, y - 2);
+		playerIds[3] = partitionsGrid.getPlayerIdAt(x + 2, y + 2);
+		for (byte positionPlayerId: playerIds) {
+			if (positionPlayerId != playerId) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void updatePartitionIdsToBuildOn() {

@@ -255,7 +255,7 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
 			ShortPoint2D nearestStone = aiStatistics.detectNearestPointFromList(stoneCutterPosition, stones);
-			if (nearestStone != null && stoneCutterPosition.getOnGridDistTo(nearestStone) > STONECUTTER.getWorkradius()) {
+			if (nearestStone != null && stoneCutterPosition.getOnGridDistTo(nearestStone) > STONECUTTER.getWorkradius() - 2) {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
 			}
 		}
