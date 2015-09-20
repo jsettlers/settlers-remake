@@ -279,7 +279,23 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
 			}
 		}
-		// TODO: destroy living houses to get material back
+
+		// destroy livinghouses
+		int numberOfFreeBeds = aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) * 10
+				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) * 30
+				+ aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) * 100
+				- aiStatistics.getMovablePositionsByTypeForPlayer(EMovableType.BEARER, playerId).size();
+		if (numberOfFreeBeds >= 11 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId) > 0) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.SMALL_LIVINGHOUSE, playerId).get(0)));
+		} else if (numberOfFreeBeds >= 31 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId) > 0) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.MEDIUM_LIVINGHOUSE, playerId).get(0)));
+		} else if (numberOfFreeBeds >= 101 && aiStatistics.getNumberOfBuildingTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId) > 0) {
+			taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId,
+					aiStatistics.getBuildingPositionsOfTypeForPlayer(EBuildingType.BIG_LIVINGHOUSE, playerId).get(0)));
+		}
+
 		// TODO: destroy mines which have no resources anymore
 	}
 
