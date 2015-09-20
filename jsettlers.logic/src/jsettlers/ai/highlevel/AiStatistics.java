@@ -105,12 +105,12 @@ public class AiStatistics {
 	}
 
 	public void updateStatistics() {
-		for (PlayerStatistic playerStatistic : playerStatistics) {
+		for (PlayerStatistic playerStatistic: playerStatistics) {
 			playerStatistic.clearAll();
 		}
 		sortedRiversInDefaultPartition.clear();
 		sortedCuttableObjectsInDefaultPartition.clear();
-		for (Map<Integer, List<Integer>> xCoordinatesMap : sortedResourceTypes.values()) {
+		for (Map<Integer, List<Integer>> xCoordinatesMap: sortedResourceTypes.values()) {
 			xCoordinatesMap.clear();
 		}
 
@@ -236,14 +236,6 @@ public class AiStatistics {
 							playerStatistic.materialNumbers[materialType.ordinal] =
 									playerStatistic.materialNumbers[materialType.ordinal] + stack.getSize();
 						}
-					}
-					Movable movable = movableGrid.getMovableAt(x, y);
-					if (movable != null) {
-						EMovableType movableType = movable.getMovableType();
-						if (!playerStatistic.movablePositions.containsKey(movableType)) {
-							playerStatistic.movablePositions.put(movableType, new ArrayList<ShortPoint2D>());
-						}
-						playerStatistic.movablePositions.get(movableType).add(point);
 					}
 				}
 			}
@@ -535,7 +527,6 @@ public class AiStatistics {
 		return playerStatistics[playerId].unoccupiedBuildingsNumbers[buildingType.ordinal];
 	}
 
-	private class PlayerStatistic {
 	public List<Byte> getEnemiesOf(byte playerId) {
       	List<Byte> enemies = new ArrayList<Byte>();
 		for (Team team : partitionsGrid.getTeams()) {
