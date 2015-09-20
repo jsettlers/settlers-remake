@@ -94,7 +94,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.blockedPartitionsForPlayers = new short[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
 			Team team = new Team(playerId);
-			this.players[playerId] = new Player(playerId, team, new ManaInformation());
+			this.players[playerId] = new Player(playerId, team);
 			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
 

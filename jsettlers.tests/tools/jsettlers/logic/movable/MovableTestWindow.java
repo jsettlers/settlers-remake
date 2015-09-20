@@ -33,7 +33,7 @@ import jsettlers.network.synchronic.random.RandomSingleton;
 import jsettlers.network.synchronic.timer.NetworkTimer;
 
 public class MovableTestWindow {
-	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0), new ManaInformation());
+	private static final Player PLAYER_0 = new Player((byte) 0, new Team((byte) 0));
 	private Movable movable;
 
 	public static void main(String args[]) throws InterruptedException {
