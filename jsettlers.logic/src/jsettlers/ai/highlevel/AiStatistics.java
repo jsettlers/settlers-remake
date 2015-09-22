@@ -40,6 +40,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.landscape.EResourceType;
+import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
@@ -164,6 +165,7 @@ public class AiStatistics {
 	}
 
 	private void updateMapStatistics() {
+		updatePartitionIdsToBuildOn();
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
 				Integer xInteger = Integer.valueOf(x);
@@ -217,12 +219,6 @@ public class AiStatistics {
 							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
 						playerStatistic.rivers.add(point);
 					}
-					StackMapObject stack = (StackMapObject) objectsGrid.getMapObjectAt(x, y, EMapObjectType.STACK_OBJECT);
-					if (stack != null) {
-						EMaterialType materialType = stack.getMaterialType();
-						playerStatistic.materialNumbers[materialType.ordinal] = playerStatistic.materialNumbers[materialType.ordinal]
-								+ stack.getSize();
-					}
 					Movable movable = movableGrid.getMovableAt(x, y);
 					if (movable != null) {
 						EMovableType movableType = movable.getMovableType();
@@ -232,6 +228,21 @@ public class AiStatistics {
 						playerStatistic.movablePositions.get(movableType).add(point);
 					}
 				}
+			}
+		}
+	}
+
+	private void updatePartitionIdsToBuildOn() {
+		for (byte playerId = 0; playerId < playerStatistics.length; playerId++) {
+			ShortPoint2D referencePosition = null;
+			if (getTotalNumberOfBuildingTypeForPlayer(EBuildingType.LUMBERJACK, playerId) > 0) {
+				referencePosition = getBuildingPositionsOfTypeForPlayer(EBuildingType.LUMBERJACK, playerId).get(0);
+			} else if (getTotalNumberOfBuildingTypeForPlayer(EBuildingType.TOWER, playerId) > 0) {
+				referencePosition = getBuildingPositionsOfTypeForPlayer(EBuildingType.TOWER, playerId).get(0);
+			}
+			if (referencePosition != null) {
+				playerStatistics[playerId].partitionIdToBuildOn = partitionsGrid.getPartitionIdAt(referencePosition.x, referencePosition.y);
+				playerStatistics[playerId].materials = partitionsGrid.getPartitionDataForManagerAt(referencePosition.x, referencePosition.y);
 			}
 		}
 	}
@@ -472,7 +483,11 @@ public class AiStatistics {
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
-		return playerStatistics[playerId].materialNumbers[type.ordinal];
+		if (playerStatistics[playerId].materials == null) {
+			return 0;
+		}
+
+		return playerStatistics[playerId].materials.getAmountOf(type);
 	}
 
 	public MainGrid getMainGrid() {
@@ -500,10 +515,11 @@ public class AiStatistics {
 		private int[] buildingsNumbers;
 		private int[] unoccupiedBuildingsNumbers;
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
+		private short partitionIdToBuildOn;
+		private IPartitionData materials;
 		private List<ShortPoint2D> land;
 		private List<ShortPoint2D> borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
-		private int[] materialNumbers;
 		private List<ShortPoint2D> stones;
 		private List<ShortPoint2D> trees;
 		private List<ShortPoint2D> rivers;
@@ -522,11 +538,11 @@ public class AiStatistics {
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			unoccupiedBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
-			materialNumbers = new int[EMaterialType.NUMBER_OF_MATERIALS];
 			clearIntegers();
 		}
 
 		public void clearAll() {
+			materials = null;
 			buildingPositions.clear();
 			stones.clear();
 			trees.clear();
@@ -538,13 +554,13 @@ public class AiStatistics {
 		}
 
 		private void clearIntegers() {
-			clearIntegerArray(materialNumbers);
 			clearIntegerArray(totalBuildingsNumbers);
 			clearIntegerArray(buildingsNumbers);
 			clearIntegerArray(unoccupiedBuildingsNumbers);
 			numberOfNotFinishedBuildings = 0;
 			numberOfTotalBuildings = 0;
 			numberOfNotOccupiedTowers = 0;
+			partitionIdToBuildOn = Short.MIN_VALUE;
 		}
 
 		private void clearIntegerArray(int[] theArray) {
