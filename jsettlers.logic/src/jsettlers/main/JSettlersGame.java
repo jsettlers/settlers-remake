@@ -220,7 +220,7 @@ public class JSettlersGame {
 
 				startingGameListener.startFinished();
 				AiExecutor aiExecutor = new AiExecutor(playerSettings, mainGrid, networkConnector.getTaskScheduler());
-				networkConnector.getGameClock().schedule(aiExecutor, (short) 3000);
+				networkConnector.getGameClock().schedule(aiExecutor, (short) 10000);
 
 				synchronized (stopMutex) {
 					while (!stopped) {
