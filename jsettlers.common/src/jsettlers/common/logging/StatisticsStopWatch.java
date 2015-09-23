@@ -12,48 +12,53 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.highlevel;
+package jsettlers.common.logging;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import jsettlers.common.logging.StatisticsStopWatch;
-import jsettlers.common.logging.StopWatch;
-import jsettlers.logic.map.grid.MainGrid;
-import jsettlers.logic.player.PlayerSetting;
-import jsettlers.network.client.interfaces.ITaskScheduler;
-import jsettlers.network.synchronic.timer.INetworkTimerable;
+import java.util.Vector;
 
 /**
- * The AiExecutor holds all IWhatToDoAi high level KIs and executes them when NetworkTimer notifies it.
- * 
+ * This class implements a simple stop watch that records the time in milliseconds and prints
+ * the average, mean, min and max of all measured measurements.
+ *
  * @author codingberlin
  */
-public class AiExecutor implements INetworkTimerable {
+public class StatisticsStopWatch extends StopWatch {
 
-	private final List<IWhatToDoAi> whatToDoAis;
-	AiStatistics aiStatistics;
-	StopWatch stopWatch;
+	List<Long> measurements = new Vector<Long>();
 
-	public AiExecutor(PlayerSetting[] playerSettings, MainGrid mainGrid, ITaskScheduler taskScheduler) {
-		aiStatistics = new AiStatistics(mainGrid);
-		this.whatToDoAis = new ArrayList<IWhatToDoAi>();
-		stopWatch = new StatisticsStopWatch();
-		for (byte playerId = 0; playerId < playerSettings.length; playerId++) {
-			if (playerSettings[playerId].isAi()) {
-				whatToDoAis.add(new RomanWhatToDoAi(playerId, aiStatistics, mainGrid, taskScheduler));
-			}
-		}
+	@Override
+	public long now() {
+		return System.currentTimeMillis();
 	}
 
 	@Override
-	public void timerEvent() {
-		stopWatch.restart();
-		aiStatistics.updateStatistics();
-		for (IWhatToDoAi whatToDoAi : whatToDoAis) {
-			whatToDoAi.applyRules();
-		}
-		stopWatch.stop("computerplayer");
+	protected String getUnit() {
+		return "ms";
+	}
 
+	@Override
+	public void stop(String leadingText) {
+		measurements.add(getDiff());
+		Collections.sort(measurements);
+		System.out.println(leadingText
+						+ " -> number of measurements: " + measurements.size()
+						+ ", min: " + measurements.get(0) + " " + getUnit()
+						+ ", average: " + calculateAverage(measurements) + " " + getUnit()
+						+ ", median: " + measurements.get((int) Math.floor(measurements.size() / 2)) + " " + getUnit()
+						+ ", max: " + measurements.get(measurements.size() - 1) + " " + getUnit()
+		);
+	}
+
+	private double calculateAverage(List<Long> measurements) {
+		long sum = 0;
+		if(!measurements.isEmpty()) {
+			for (Long measurement : measurements) {
+				sum += measurement;
+			}
+			return sum / measurements.size();
+		}
+		return sum;
 	}
 }
