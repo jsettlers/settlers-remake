@@ -27,12 +27,7 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
@@ -469,17 +464,29 @@ public class AiStatistics {
 	}
 
 	public ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
-		ShortPoint2D nearestPoint = null;
-		int nearestPointDistance = Integer.MAX_VALUE;
-		for (ShortPoint2D point : points) {
-			int currentPointDistance = referencePoint.getOnGridDistTo(point);
-			if (nearestPoint == null || currentPointDistance < nearestPointDistance) {
-				nearestPoint = point;
-				nearestPointDistance = currentPointDistance;
-			}
+		if (points.isEmpty()) {
+			return null;
 		}
 
-		return nearestPoint;
+		return detectNearestPointsFromList(referencePoint, points, 1).get(0);
+	}
+
+	public List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
+		if (amountOfPointsToDetect <= 0) {
+			return Collections.EMPTY_LIST;
+		}
+
+		if (points.size() <= amountOfPointsToDetect) {
+			return points;
+		}
+
+		Collections.sort(points, new Comparator<ShortPoint2D>() {
+			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
+				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
+			}
+		});
+
+		return points.subList(0, amountOfPointsToDetect);
 	}
 
 	public int getNumberOfMaterialTypeForPlayer(EMaterialType type, byte playerId) {
