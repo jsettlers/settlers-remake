@@ -73,8 +73,8 @@ public class WarriorsPanel extends AbstractContentProvider {
 			this.manaType = manaType;
 			switch(manaType) {
 			case SWORDSMEN:
-				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 398, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 404, 0)};
-				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 401, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 407, 0)};
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 398-3, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 404-3, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 401-3, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 407-3, 0)};
 				break;
 			case BOWMEN:
 				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
