@@ -235,13 +235,8 @@ class LineLoader implements Runnable {
 				}
 
 				if (displayBuildings) {
-					// TODO: Implement building shape.
-					IMapObject object = map.getMapObjectsAt(x, y);
-					while (object != null) {
-						if (object.getObjectType() == EMapObjectType.BUILDING) {
-							buildingColor = BLACK;
-						}
-						object = object.getNextObject();
+					if (map.isBuilding(x, y)) {
+						buildingColor = BLACK;
 					}
 				}
 			}
