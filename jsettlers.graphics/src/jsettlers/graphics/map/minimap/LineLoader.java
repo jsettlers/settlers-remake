@@ -14,6 +14,8 @@
  *******************************************************************************/
 package jsettlers.graphics.map.minimap;
 
+import java.util.Arrays;
+
 import jsettlers.common.Color;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.IBuilding;
@@ -41,7 +43,14 @@ class LineLoader implements Runnable {
 
 	private final MinimapMode modeSettings;
 
+	/**
+	 * The minimap image, including settlers.
+	 */
 	private short[][] buffer = new short[1][1];
+	/**
+	 * The explored landscape.
+	 */
+	private short[][] landscape = new short[1][1];
 	private int currYOffset = 0;
 	private int currXOffset = 0;
 
@@ -61,8 +70,6 @@ class LineLoader implements Runnable {
 		}
 	};
 
-	private boolean isFirstRun;
-
 	/**
 	 * Updates a line by putting it to the update buffer. Next time the gl context is available, it is updated.
 	 */
@@ -72,14 +79,13 @@ class LineLoader implements Runnable {
 
 			if (buffer.length != minimap.getHeight() || buffer[currentline].length != minimap.getWidth()) {
 				buffer = new short[minimap.getHeight()][minimap.getWidth()];
+				landscape = new short[minimap.getHeight()][minimap.getWidth()];
 				for (int y = 0; y < minimap.getHeight(); y++) {
-					for (int x = 0; x < minimap.getWidth(); x++) {
-						buffer[y][x] = BLACK;
-					}
+					Arrays.fill(buffer[y], BLACK);
+					Arrays.fill(landscape[y], TRANSPARENT);
 				}
 				minimap.setBufferArray(buffer);
 				currentline = 0;
-				isFirstRun = true;
 				currXOffset = 0;
 				currYOffset = 0;
 			}
@@ -94,9 +100,6 @@ class LineLoader implements Runnable {
 					currYOffset = 0;
 					currXOffset += 3;
 					currXOffset %= X_STEP_WIDTH;
-					if (currXOffset == 0) {
-						isFirstRun = false;
-					}
 				}
 
 				currentline = currYOffset;
@@ -147,18 +150,27 @@ class LineLoader implements Runnable {
 				color = getSettlerForArea(map, context, mapMinX, mapMinY, mapMaxX, mapMaxY);
 			}
 
-			if (color == TRANSPARENT && (visibleStatus > CommonConstants.FOG_OF_WAR_EXPLORED || isFirstRun)) {
+			if (visibleStatus > CommonConstants.FOG_OF_WAR_EXPLORED || landscape[currentline][x] == TRANSPARENT) {
 				float basecolor = ((float) visibleStatus) / CommonConstants.FOG_OF_WAR_VISIBLE;
 				int dheight = map.getHeightAt(centerX, mapMinY) - map.getHeightAt(centerX, Math.min(mapMinY + mapLineHeight, mapHeight - 1));
 				basecolor *= (1 + .15f * dheight);
 
+				short landscapeColor;
 				if (basecolor >= 0) {
-					color = getColorForArea(map, mapMinX, mapMinY, mapMaxX, mapMaxY).toShortColor(basecolor);
+					landscapeColor = getColorForArea(map, mapMinX, mapMinY, mapMaxX, mapMaxY).toShortColor(basecolor);
+				} else {
+					landscapeColor = BLACK;
 				}
+				if (color == TRANSPARENT) {
+					color = landscapeColor;
+				}
+				landscape[currentline][x] = landscapeColor;
 			}
 
 			if (color != TRANSPARENT) {
 				buffer[currentline][x] = color;
+			} else {
+				buffer[currentline][x] = landscape[currentline][x];
 			}
 		}
 	}
