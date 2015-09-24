@@ -182,8 +182,8 @@ class LineLoader implements Runnable {
 		for (int y = mapminY; y < mapmaxY && (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); y++) {
 			for (int x = mapminX; x < mapmaxX
 					&& (displayOccupied != OccupiedAreaMode.NONE || displayBuildings || displaySettlers != SettlersMode.NONE); x++) {
-
-				if (displaySettlers != SettlersMode.NONE) {
+				boolean visible = map.getVisibleStatus(x, y) > CommonConstants.FOG_OF_WAR_EXPLORED;
+				if (visible && displaySettlers != SettlersMode.NONE) {
 					IMovable settler = map.getMovableAt(x, y);
 					if (settler != null && (displaySettlers == SettlersMode.ALL || settler.getMovableType().isMoveToAble())) {
 						settlerColor = context.getPlayerColor(settler.getPlayerId()).toShortColor(1);
@@ -202,7 +202,7 @@ class LineLoader implements Runnable {
 					}
 				}
 
-				if (displayOccupied == OccupiedAreaMode.BORDERS) {
+				if (visible && displayOccupied == OccupiedAreaMode.BORDERS) {
 					if (map.isBorder(x, y)) {
 						byte player = map.getPlayerIdAt(x, y);
 						Color playerColor = context.getPlayerColor(player);
@@ -210,7 +210,7 @@ class LineLoader implements Runnable {
 						displayOccupied = OccupiedAreaMode.NONE;
 					}
 
-				} else if (displayOccupied == OccupiedAreaMode.AREA) {
+				} else if (visible && displayOccupied == OccupiedAreaMode.AREA) {
 					byte player = map.getPlayerIdAt(x, y);
 					if (player >= 0 && !map.getLandscapeTypeAt(x, y).isBlocking) {
 						Color playerColor = context.getPlayerColor(player);
