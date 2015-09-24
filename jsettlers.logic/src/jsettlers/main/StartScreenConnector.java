@@ -22,6 +22,7 @@ import jsettlers.graphics.startscreen.interfaces.IStartingGame;
 import jsettlers.graphics.startscreen.interfaces.Player;
 import jsettlers.logic.map.save.MapList;
 import jsettlers.logic.map.save.loader.MapLoader;
+import jsettlers.logic.player.Team;
 
 /**
  * This class implements the {@link IStartScreen} interface and acts as connector between the start screen and the game logic.

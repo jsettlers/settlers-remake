@@ -14,13 +14,16 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
-import jsettlers.common.map.partition.IPartitionData;
-import jsettlers.common.material.EMaterialType;
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
 import jsettlers.common.player.EManaType;
+import jsettlers.common.player.IManaInformation;
+import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
-import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
 import jsettlers.graphics.ui.layout.WarriorsLayout;
 
 /**
@@ -29,13 +32,19 @@ import jsettlers.graphics.ui.layout.WarriorsLayout;
  */
 public class WarriorsPanel extends AbstractContentProvider {
 
-
-
 	private UIPanel panel;
 
 	public WarriorsPanel() {
+	}
+
+	public void setManaInformation(IManaInformation manaInformation) {
 		panel = new WarriorsLayout()._root;
+		for (UIElement element : panel.getChildren()) {
+			if (element instanceof UpgradeButton) {
+				((UpgradeButton) element).setManaInformation(manaInformation);
 			}
+		}
+	}
 
 	@Override
 	public ESecondaryTabType getTabs() {
@@ -55,10 +64,46 @@ public class WarriorsPanel extends AbstractContentProvider {
 	public static class UpgradeButton extends Button {
 
 		private final EManaType manaType;
+		private IManaInformation manaInformation;
+		private final ImageLink[] imageLinksActive;
+		private final ImageLink[] imageLinksInActive;
 
 		public UpgradeButton(EManaType manaType) {
-			super(manaType.getIcon());
+			super(new UpgradeSoldiersAction(manaType), null, null, "");
 			this.manaType = manaType;
+			switch(manaType) {
+			case SWORDSMEN:
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 398, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 404, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 401, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 407, 0)};
+				break;
+			case BOWMEN:
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
+				break;
+			default:
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
+				break;
+			}
+
+		}
+
+		public void setManaInformation(IManaInformation manaInformation) {
+			this.manaInformation = manaInformation;
+		}
+
+		@Override
+		public boolean isActive() {
+			return manaInformation.isUpgradePossible(manaType);
+		}
+
+		@Override
+		protected ImageLink getBackgroundImage() {
+			if (isActive()) {
+				return imageLinksActive[manaInformation.getLevel(manaType)];
+			} else {
+				return imageLinksInActive[manaInformation.getLevel(manaType)];
+			}
 		}
 
 		@Override

@@ -16,13 +16,14 @@ package jsettlers.logic.player;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.player.EManaType;
+import jsettlers.common.player.IManaInformation;
 
 import java.io.Serializable;
 
 /**
  * @author codingberlin
  */
-public class ManaInformation implements Serializable {
+public class ManaInformation implements Serializable, IManaInformation {
 	private static final EMovableType[] BOWMEN_TYPES = {EMovableType.BOWMAN_L1, EMovableType.BOWMAN_L2, EMovableType.BOWMAN_L3};
 	private static final EMovableType[] SWORDSMEN_TYPES = {EMovableType.SWORDSMAN_L1, EMovableType.SWORDSMAN_L2, EMovableType.SWORDSMAN_L3};
 	private static final EMovableType[] PIKEMEN_TYPES = {EMovableType.PIKEMAN_L1, EMovableType.PIKEMAN_L2, EMovableType.PIKEMAN_L3};
@@ -38,7 +39,7 @@ public class ManaInformation implements Serializable {
 		mana++;
 	}
 
-	public boolean isUpgradePossible(EManaType type) {
+	@Override public boolean isUpgradePossible(EManaType type) {
 		return getLevel(type) != MAXIMUM_LEVEL
 				&& isManaAvailableForUpgrade()
 				&& noLevelBelow(getLevel(type));
@@ -53,11 +54,11 @@ public class ManaInformation implements Serializable {
 		return true;
 	}
 
-	private byte getLevel(EManaType type) {
+	@Override public byte getLevel(EManaType type) {
 		return levelOfTypes[type.ordinal()];
 	}
 
-	public void upgrade(EManaType type) {
+	@Override public void upgrade(EManaType type) {
 		if (isUpgradePossible(type)) {
 			numberOfUpgradesExecuted++;
 			levelOfTypes[type.ordinal()]++;

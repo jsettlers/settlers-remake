@@ -13,7 +13,7 @@
 	</element>
 
 
-	<element x="14" width="200" y="348" height="60"
+	<element x="14" width="60" y="348" height="40"
 			 class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
 		<mana mana="SWORDSMEN" />
 	</element>
