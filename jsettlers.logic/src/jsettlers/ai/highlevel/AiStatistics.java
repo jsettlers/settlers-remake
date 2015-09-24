@@ -27,8 +27,15 @@ import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
+import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -49,7 +56,6 @@ import jsettlers.logic.map.grid.movable.MovableGrid;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 
 /**
@@ -64,9 +70,9 @@ public class AiStatistics {
 
 	private final Queue<Building> buildings;
 	private PlayerStatistic[] playerStatistics;
-	private Map<EMapObjectType, Map<Integer, List<Integer>>> sortedCuttableObjectsInDefaultPartition;
-	private Map<EResourceType, Map<Integer, List<Integer>>> sortedResourceTypes;
-	private Map<Integer, List<Integer>> sortedRiversInDefaultPartition;
+	private Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
+	private Map<EResourceType, AiPositions> sortedResourceTypes;
+	private AiPositions sortedRiversInDefaultPartition;
 	private final MainGrid mainGrid;
 	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
@@ -88,11 +94,11 @@ public class AiStatistics {
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
-		sortedRiversInDefaultPartition = new HashMap<Integer, List<Integer>>();
-		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, Map<Integer, List<Integer>>>();
-		sortedResourceTypes = new HashMap<EResourceType, Map<Integer, List<Integer>>>();
+		sortedRiversInDefaultPartition = new AiPositions();
+		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, AiPositions>();
+		sortedResourceTypes = new HashMap<EResourceType, AiPositions>();
 		for (EResourceType type : EResourceType.values()) {
-			sortedResourceTypes.put(type, new HashMap<Integer, List<Integer>>());
+			sortedResourceTypes.put(type, new AiPositions());
 		}
 
 	}
@@ -111,7 +117,7 @@ public class AiStatistics {
 		}
 		sortedRiversInDefaultPartition.clear();
 		sortedCuttableObjectsInDefaultPartition.clear();
-		for (Map<Integer, List<Integer>> xCoordinatesMap : sortedResourceTypes.values()) {
+		for (AiPositions xCoordinatesMap : sortedResourceTypes.values()) {
 			xCoordinatesMap.clear();
 		}
 
@@ -163,40 +169,26 @@ public class AiStatistics {
 		updatePartitionIdsToBuildOn();
 		for (short x = 0; x < mainGrid.getWidth(); x++) {
 			for (short y = 0; y < mainGrid.getHeight(); y++) {
-				Integer xInteger = Integer.valueOf(x);
-				Integer yInteger = Integer.valueOf(y);
 				EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
 				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					if (!sortedResourceTypes.get(resourceType).containsKey(xInteger)) {
-						sortedResourceTypes.get(resourceType).put(xInteger, new ArrayList<Integer>());
-					}
-					sortedResourceTypes.get(resourceType).get(xInteger).add(yInteger);
+					sortedResourceTypes.get(resourceType).addNoCollission(x, y);
 				}
 				Player player = partitionsGrid.getPlayerAt(x, y);
 				if (player == null) {
 					if (objectsGrid.hasCuttableObject(x, y, TREE_ADULT)) {
 						if (!sortedCuttableObjectsInDefaultPartition.containsKey(TREE_ADULT)) {
-							sortedCuttableObjectsInDefaultPartition.put(TREE_ADULT, new HashMap<Integer, List<Integer>>());
+							sortedCuttableObjectsInDefaultPartition.put(TREE_ADULT, new AiPositions());
 						}
-						if (!sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).containsKey(xInteger)) {
-							sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).put(xInteger, new ArrayList<Integer>());
-						}
-						sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).get(xInteger).add(yInteger);
+						sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).addNoCollission(x, y);
 					}
 					if (objectsGrid.hasCuttableObject(x, y, STONE)) {
 						if (!sortedCuttableObjectsInDefaultPartition.containsKey(STONE)) {
-							sortedCuttableObjectsInDefaultPartition.put(STONE, new HashMap<Integer, List<Integer>>());
+							sortedCuttableObjectsInDefaultPartition.put(STONE, new AiPositions());
 						}
-						if (!sortedCuttableObjectsInDefaultPartition.get(STONE).containsKey(xInteger)) {
-							sortedCuttableObjectsInDefaultPartition.get(STONE).put(xInteger, new ArrayList<Integer>());
-						}
-						sortedCuttableObjectsInDefaultPartition.get(STONE).get(xInteger).add(yInteger);
+						sortedCuttableObjectsInDefaultPartition.get(STONE).addNoCollission(x, y);
 					}
 					if (landscapeGrid.getLandscapeTypeAt(x, y).isRiver()) {
-						if (!sortedRiversInDefaultPartition.containsKey(xInteger)) {
-							sortedRiversInDefaultPartition.put(xInteger, new ArrayList<Integer>());
-						}
-						sortedRiversInDefaultPartition.get(xInteger).add(yInteger);
+						sortedRiversInDefaultPartition.addNoCollission(x, y);
 					}
 				} else {
 					int playerId = partitionsGrid.getPlayerAt(x, y).playerId;
@@ -297,72 +289,19 @@ public class AiStatistics {
 
 	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject,
 			int currentNearestPointDistance, byte playerId) {
-		Map<Integer, List<Integer>> sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
+		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
 	}
 
-	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints, byte playerId,
+	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, AiPositions sortedPoints, final byte playerId,
 			int currentNearestPointDistance) {
-		ShortPoint2D result = null;
-		ShortPoint2D nearestRightPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				Integer.valueOf(point.x), 1, Integer.valueOf(mainGrid.getWidth() + 1), playerId);
-		if (nearestRightPoint != null) {
-			currentNearestPointDistance = point.getOnGridDistTo(nearestRightPoint);
-			result = nearestRightPoint;
-		}
-		ShortPoint2D nearestLeftPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				Integer.valueOf(point.x - 1), -1, -1, playerId);
-		if (nearestLeftPoint != null) {
-			result = nearestLeftPoint;
-		}
-		return result;
-	}
+		return sortedPoints.getNearestPoint(point, currentNearestPointDistance, new AiPositionFilter() {
 
-	private ShortPoint2D getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints,
-			int currentNearestPointDistance, Integer x, int increment, int border, byte playerId) {
-		if (x.intValue() == border || Math.abs(x - point.x) > currentNearestPointDistance) {
-			return null;
-		}
-		if (!sortedPoints.containsKey(x)) {
-			return getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x + increment,
-					increment, border, playerId);
-		}
-		ShortPoint2D result = null;
-		ShortPoint2D southYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, point.y, 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
-		if (southYPoint != null) {
-			result = southYPoint;
-			currentNearestPointDistance = point.getOnGridDistTo(southYPoint);
-		}
-		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, point.y - 1, -1, -1, playerId);
-		if (northYPoint != null) {
-			result = northYPoint;
-			currentNearestPointDistance = point.getOnGridDistTo(northYPoint);
-		}
-		if (Math.abs(point.x - (x + increment)) < currentNearestPointDistance) {
-			ShortPoint2D nextPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x
-					+ increment, increment, border, playerId);
-			if (nextPoint != null) {
-				result = nextPoint;
+			@Override
+			public boolean contains(int x, int y) {
+				return partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId;
 			}
-		}
-		return result;
-	}
-
-	private ShortPoint2D getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(List<Integer> ypsilons, ShortPoint2D point,
-			int currentNearestPointDistance, int x, int y, int increment, int border, byte playerId) {
-		if (y == border || Math.abs(y - point.y) > currentNearestPointDistance) {
-			return null;
-		}
-		if (!ypsilons.contains(Integer.valueOf(y)) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
-			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
-					increment, border, playerId);
-		}
-		if (point.getOnGridDistTo(new ShortPoint2D(x, y)) > currentNearestPointDistance) {
-			return null;
-		}
-		return new ShortPoint2D(x, y);
+		});
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
@@ -481,7 +420,8 @@ public class AiStatistics {
 		}
 
 		Collections.sort(points, new Comparator<ShortPoint2D>() {
-			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
+			@Override
+			public int compare(ShortPoint2D o1, ShortPoint2D o2) {
 				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
 			}
 		});
