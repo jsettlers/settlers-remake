@@ -24,6 +24,11 @@ import jsettlers.TestUtils;
 import jsettlers.graphics.reader.bytereader.ByteReader;
 import jsettlers.graphics.sound.SoundManager;
 
+/**
+ * Exports all sounds as wav files.
+ * 
+ * @author Michael Zangl
+ */
 public class ExtractSounds extends SoundManager {
 
 	private ExtractSounds() {
