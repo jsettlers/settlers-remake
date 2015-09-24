@@ -26,7 +26,7 @@ import java.util.Vector;
  */
 public class StatisticsStopWatch extends StopWatch {
 
-	List<Long> measurements = new Vector<Long>();
+	private final List<Long> measurements = new Vector<Long>();
 
 	@Override
 	public long now() {
