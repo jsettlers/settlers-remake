@@ -14,7 +14,14 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import jsettlers.common.map.partition.IPartitionData;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.player.EManaType;
+import jsettlers.graphics.localization.Labels;
+import jsettlers.graphics.ui.Button;
 import jsettlers.graphics.ui.UIPanel;
+import jsettlers.graphics.ui.layout.MaterialInventoryLayout;
+import jsettlers.graphics.ui.layout.WarriorsLayout;
 
 /**
  *
@@ -23,6 +30,13 @@ import jsettlers.graphics.ui.UIPanel;
 public class WarriorsPanel extends AbstractContentProvider {
 
 
+
+	private UIPanel panel;
+
+	public WarriorsPanel() {
+		panel = new WarriorsLayout()._root;
+			}
+
 	@Override
 	public ESecondaryTabType getTabs() {
 		return ESecondaryTabType.SETTLERS;
@@ -30,6 +44,27 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 	@Override
 	public UIPanel getPanel() {
-		return new UIPanel();
+		return panel;
+	}
+
+	/**
+	 * This is a button that displays the upgrade possibility of a mana type.
+	 *
+	 * @author Michael Zangl
+	 */
+	public static class UpgradeButton extends Button {
+
+		private final EManaType manaType;
+
+		public UpgradeButton(EManaType manaType) {
+			super(manaType.getIcon());
+			this.manaType = manaType;
+		}
+
+		@Override
+		public String getDescription(float relativex, float relativey) {
+			return Labels.getString("upgrade_warriors", Labels.getName(manaType));
+		}
+
 	}
 }

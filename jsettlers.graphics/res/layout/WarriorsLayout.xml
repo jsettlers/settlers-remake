@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE element SYSTEM "layout.dtd">
+<element x="9" y="219" maxx="127" maxy="435">
+	<element class="Label" x="9" maxx="127" y="219" maxy="234">
+		<localized label="warriors_title" />
+		<font-size size="NORMAL" />
+	</element>
+
+	<!-- Row 1 -->
+	<element x="14" width="18" y="248" height="18"
+			 class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
+		<material material="PLANK" />
+	</element>
+
+
+	<element x="14" width="200" y="348" height="60"
+			 class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+		<mana mana="SWORDSMEN" />
+	</element>
+
+
+</element>

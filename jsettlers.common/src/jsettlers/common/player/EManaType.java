@@ -14,13 +14,28 @@
  *******************************************************************************/
 package jsettlers.common.player;
 
+import jsettlers.common.images.EImageLinkType;
+import jsettlers.common.images.ImageLink;
+import jsettlers.common.images.OriginalImageLink;
+
 /**
  * @author codingberlin
  */
 public enum EManaType {
-	BOWMEN,
-	SWORDSMEN,
-	PIKEMEN;
+	BOWMEN(3, 150),
+	SWORDSMEN(3, 150),
+	PIKEMEN(3, 150);
+
+
+	private final OriginalImageLink imageLink;
 
 	public static final EManaType[] values = EManaType.values();
+
+	EManaType(int guiFile, int guiBase) {
+		imageLink = new OriginalImageLink(EImageLinkType.GUI, guiFile, guiBase, 0);
+	}
+
+	public ImageLink getIcon() {
+		return imageLink;
+	}
 }
