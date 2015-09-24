@@ -60,6 +60,7 @@ public final class DiggerStrategy extends MovableStrategy implements IManageable
 		case PLAYING_ACTION:
 			executeDigg();
 			if (!requester.isDiggerRequestActive()) {
+				super.getStrategyGrid().setMarked(super.getPos(), false);
 				reportJobless();
 				break;
 			}

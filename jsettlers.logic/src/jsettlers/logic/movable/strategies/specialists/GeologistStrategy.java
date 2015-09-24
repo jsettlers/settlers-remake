@@ -118,7 +118,7 @@ public final class GeologistStrategy extends MovableStrategy {
 	}
 
 	private void executeAction(ShortPoint2D pos) {
-		super.getStrategyGrid().executeSearchType(pos, ESearchType.RESOURCE_SIGNABLE);
+		super.getStrategyGrid().executeSearchType(super.getMovable(), pos, ESearchType.RESOURCE_SIGNABLE);
 	}
 
 	private boolean canWorkOnPos(ShortPoint2D pos) {

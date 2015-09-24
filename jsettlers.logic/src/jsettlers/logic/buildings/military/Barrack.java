@@ -50,8 +50,7 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 		for (RequestStack stack : stacks) {
 			if (stack.getMaterialType() == EMaterialType.BOW || stack.getMaterialType() == EMaterialType.SWORD
 					|| stack.getMaterialType() == EMaterialType.SPEAR) {
-				if (stack.hasMaterial()) {
-					stack.pop();
+				if (stack.pop()) {
 					return getSoldierType(stack.getMaterialType());
 				}
 			}

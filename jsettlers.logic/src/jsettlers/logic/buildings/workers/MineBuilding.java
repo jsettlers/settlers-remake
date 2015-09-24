@@ -15,24 +15,75 @@
 package jsettlers.logic.buildings.workers;
 
 import jsettlers.common.buildings.EBuildingType;
+import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.map.shapes.FreeMapArea;
 import jsettlers.common.mapobject.EMapObjectType;
+import jsettlers.common.material.EMaterialType;
+import jsettlers.common.position.RelativePoint;
+import jsettlers.common.position.RelativeToRealPointIterable;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.IBuildingsGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.player.Player;
+import jsettlers.network.synchronic.random.RandomSingleton;
 
 /**
- * This is a mine building. It's only difference to a {@link WorkerBuilding} is that it's ground won't be flattened.
+ * This is a mine building. It's ground won't be flattened.
  * 
  * @author Andreas Eberle
  * 
  */
-public final class MineBuilding extends WorkerBuilding {
+public final class MineBuilding extends ResourceBuilding {
 	private static final long serialVersionUID = 9201058266194063092L;
+	private static final byte[] workPackagesForFoodByOrder = { 10, 4, 2 };
+
+	private byte feedWorkPackages = 10; // remaining work packages gained by eating food.
 
 	public MineBuilding(EBuildingType type, Player player) {
-		super(type, player);
+		super(type, player, 12);
+	}
+
+	@Override
+	public boolean tryTakingFoood(EMaterialType[] foodOrder) {
+		if (feedWorkPackages <= 0) {
+			for (int i = 0; i < foodOrder.length; i++) { // check the types of food by order
+				if (super.popMaterialFromStack(foodOrder[i])) {
+					feedWorkPackages = workPackagesForFoodByOrder[i];
+					break;
+				}
+			}
+		}
+
+		if (feedWorkPackages > 0) {
+			feedWorkPackages--;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean tryTakingResource() {
+		RelativePoint[] blockedPositions = super.getBuildingType().getBlockedTiles();
+		int randomPositionIndex = RandomSingleton.getInt(blockedPositions.length);
+		ShortPoint2D randomPosition = blockedPositions[randomPositionIndex].calculatePoint(super.getPos());
+
+		boolean resourceTaken = super.getGrid().tryTakingResource(randomPosition, getProducedResource());
+		super.productivityActionExecuted(resourceTaken);
+		return resourceTaken;
+	}
+
+	private EResourceType getProducedResource() {
+		switch (super.getBuildingType()) {
+		case COALMINE:
+			return EResourceType.COAL;
+		case IRONMINE:
+			return EResourceType.IRONORE;
+		case GOLDMINE:
+			return EResourceType.GOLDORE;
+		default:
+			throw new IllegalArgumentException("Unknown building type for a mine: " + super.getBuildingType());
+		}
 	}
 
 	@Override
@@ -53,5 +104,11 @@ public final class MineBuilding extends WorkerBuilding {
 				objectsManager.removeMapObjectType(currPos.x, currPos.y, EMapObjectType.FOUND_NOTHING);
 			}
 		}
+	}
+
+	@Override
+	public int getRemainingResourceAmount() {
+		return super.getGrid().getAmountOfResource(getProducedResource(),
+				new RelativeToRealPointIterable(super.getBuildingType().getBlockedTiles(), super.getPos()));
 	}
 }

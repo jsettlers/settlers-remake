@@ -42,7 +42,7 @@ public final class NewConstructionMarksAlgorithm {
 	}
 
 	public void calculateConstructMarks(final MapRectangle mapArea, final BuildingAreaBitSet buildingArea, final ELandscapeType[] landscapeTypes,
-			RelativePoint[] flattenPositions) {
+			RelativePoint[] flattenPositions, boolean binaryConstructionMarkValues) {
 		if (lastArea != null) {
 			removeConstructionMarks(lastArea, mapArea);
 		}
@@ -97,7 +97,7 @@ public final class NewConstructionMarksAlgorithm {
 								&& !map.canUsePositionForConstruction(x + buildingDx + xOffsetForBuilding, y + buildingDy + yOffsetForBuilding,
 										landscapeTypes, partitionId)) {
 
-							map.setConstructMarking(x, y, false, null);
+							map.setConstructMarking(x, y, false, binaryConstructionMarkValues, null);
 
 							// prune the positions we already know that they are invalid.
 							for (int pruneX = 0; pruneX < xJumps[index]; pruneX++) {
@@ -109,7 +109,7 @@ public final class NewConstructionMarksAlgorithm {
 
 									doneSet.set((dx + pruneX) + (line + pruneY) * lineLength);
 
-									map.setConstructMarking(x + pruneX, y + pruneY, false, null);
+									map.setConstructMarking(x + pruneX, y + pruneY, false, binaryConstructionMarkValues, null);
 								}
 							}
 
@@ -119,7 +119,7 @@ public final class NewConstructionMarksAlgorithm {
 				}
 
 				// no bad position found, so set the construction mark
-				map.setConstructMarking(x, y, true, flattenPositions);
+				map.setConstructMarking(x, y, true, binaryConstructionMarkValues, flattenPositions);
 			}
 		}
 
@@ -134,7 +134,7 @@ public final class NewConstructionMarksAlgorithm {
 	public void removeConstructionMarks() {
 		if (lastArea != null) {
 			for (ShortPoint2D pos : new MapShapeFilter(lastArea, map.getWidth(), map.getHeight())) {
-				map.setConstructMarking(pos.x, pos.y, false, null);
+				map.setConstructMarking(pos.x, pos.y, false, false, null);
 			}
 			lastArea = null;
 		}
@@ -151,7 +151,7 @@ public final class NewConstructionMarksAlgorithm {
 	private void removeConstructionMarks(IMapArea area, IMapArea notIn) {
 		for (ShortPoint2D pos : new MapShapeFilter(area, map.getWidth(), map.getHeight())) {
 			if (!notIn.contains(pos)) {
-				map.setConstructMarking(pos.x, pos.y, false, null);
+				map.setConstructMarking(pos.x, pos.y, false, false, null);
 			}
 		}
 	}

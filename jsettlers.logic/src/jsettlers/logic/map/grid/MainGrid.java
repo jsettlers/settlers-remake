@@ -838,10 +838,11 @@ public final class MainGrid implements Serializable {
 
 	final class ConstructionMarksGrid extends AbstractConstructionMarkableMap {
 		@Override
-		public final void setConstructMarking(int x, int y, boolean set, RelativePoint[] flattenPositions) {
+		public final void setConstructMarking(int x, int y, boolean set, boolean binaryConstructionMarkValues, RelativePoint[] flattenPositions) {
 			if (isInBounds(x, y)) {
 				if (set) {
-					mapObjectsManager.setConstructionMarking(x, y, getConstructionMarkValue(x, y, flattenPositions));
+					byte newValue = binaryConstructionMarkValues ? 0 : getConstructionMarkValue(x, y, flattenPositions);
+					mapObjectsManager.setConstructionMarking(x, y, newValue);
 				} else {
 					mapObjectsManager.setConstructionMarking(x, y, (byte) -1);
 				}
@@ -1001,11 +1002,6 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public final boolean executeSearchType(ShortPoint2D position, ESearchType searchType) {
-			return mapObjectsManager.executeSearchType(position, searchType);
-		}
-
-		@Override
 		public final void placeSmoke(ShortPoint2D pos, boolean place) {
 			if (place) {
 				mapObjectsManager.addSimpleMapObject(pos, EMapObjectType.SMOKE, false, null);
@@ -1020,16 +1016,6 @@ public final class MainGrid implements Serializable {
 			bordersThread.checkPosition(position);
 
 			checkPositionThatChangedPlayer(position);
-		}
-
-		@Override
-		public float getResourceProbabilityAround(short x, short y, EResourceType type, int radius) {
-			return landscapeGrid.getResourceProbabilityAround(x, y, type, radius);
-		}
-
-		@Override
-		public void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount) {
-			landscapeGrid.decreaseResourceAround(x, y, resourceType, radius, amount);
 		}
 
 		@Override
@@ -1217,8 +1203,17 @@ public final class MainGrid implements Serializable {
 		}
 
 		@Override
-		public boolean fitsSearchType(IPathCalculatable pathCalculable, ShortPoint2D pos, ESearchType searchType) {
-			return pathfinderGrid.fitsSearchType(pos.x, pos.y, searchType, pathCalculable);
+		public boolean fitsSearchType(IPathCalculatable pathCalculable, ShortPoint2D position, ESearchType searchType) {
+			return pathfinderGrid.fitsSearchType(position.x, position.y, searchType, pathCalculable);
+		}
+
+		@Override
+		public final boolean executeSearchType(IPathCalculatable pathCalculable, ShortPoint2D position, ESearchType searchType) {
+			if (fitsSearchType(pathCalculable, position, searchType)) {
+				return mapObjectsManager.executeSearchType(position, searchType);
+			} else {
+				return false;
+			}
 		}
 
 		@Override
@@ -1308,6 +1303,11 @@ public final class MainGrid implements Serializable {
 		public boolean isValidNextPathPosition(IPathCalculatable pathCalculatable, ShortPoint2D nextPos, ShortPoint2D targetPos) {
 			return isValidPosition(pathCalculatable, nextPos) && (!pathCalculatable.needsPlayersGround()
 					|| partitionsGrid.getPartitionAt(pathCalculatable) == partitionsGrid.getPartitionAt(targetPos.x, targetPos.y));
+		}
+
+		@Override
+		public boolean tryTakingRecource(ShortPoint2D position, EResourceType resource) {
+			return landscapeGrid.tryTakingResource(position, resource);
 		}
 	}
 
@@ -1482,8 +1482,8 @@ public final class MainGrid implements Serializable {
 			}
 
 			@Override
-			public final void popMaterial(ShortPoint2D position, EMaterialType materialType) {
-				mapObjectsManager.popMaterial(position.x, position.y, materialType);
+			public final boolean popMaterial(ShortPoint2D position, EMaterialType materialType) {
+				return mapObjectsManager.popMaterial(position.x, position.y, materialType);
 			}
 
 			@Override
@@ -1569,6 +1569,16 @@ public final class MainGrid implements Serializable {
 		@Override
 		public short getPartitionIdAt(ShortPoint2D pos) {
 			return partitionsGrid.getPartitionIdAt(pos.x, pos.y);
+		}
+
+		@Override
+		public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
+			return landscapeGrid.tryTakingResource(position, resource);
+		}
+
+		@Override
+		public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
+			return landscapeGrid.getAmountOfResource(resource, positions);
 		}
 	}
 

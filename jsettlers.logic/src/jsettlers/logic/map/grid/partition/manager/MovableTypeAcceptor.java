@@ -12,39 +12,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.graphics.androidui;
+package jsettlers.logic.map.grid.partition.manager;
 
-import go.graphics.UIPoint;
-import go.graphics.event.GOEvent;
-import go.graphics.event.GOModalEventHandler;
-import go.graphics.event.mouse.GODrawEvent;
+import java.io.Serializable;
 
-public class NavigationPointDrawHandler implements GOModalEventHandler {
+import jsettlers.algorithms.queue.ITypeAcceptor;
+import jsettlers.common.movable.EMovableType;
+import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
 
-	private NavigationPoint point;
+public final class MovableTypeAcceptor implements ITypeAcceptor<IManageableWorker>, Serializable {
+	private static final long serialVersionUID = 111392803354934224L;
 
-	NavigationPointDrawHandler(NavigationPoint point) {
-		this.point = point;
-	}
+	public EMovableType movableType = null;
 
 	@Override
-	public void phaseChanged(GOEvent event) {
+	public final boolean accepts(IManageableWorker worker) {
+		return this.movableType == worker.getMovableType();
 	}
-
-	@Override
-	public void finished(GOEvent event) {
-		point.abortPanning();
-	}
-
-	@Override
-	public void aborted(GOEvent event) {
-		point.abortPanning();
-	}
-
-	@Override
-	public void eventDataChanged(GOEvent event) {
-		UIPoint current = ((GODrawEvent) event).getDrawPosition();
-		point.setPanningPosition(current);
-	}
-
 }

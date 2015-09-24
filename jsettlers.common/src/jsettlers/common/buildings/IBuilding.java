@@ -28,7 +28,7 @@ import jsettlers.common.sound.ISoundable;
 /**
  * This is a normal building.
  * <p>
- * Buildings are map objects wit type {@link EMapObjectType#BUILDING}
+ * Buildings are map objects with type {@link EMapObjectType#BUILDING}
  * 
  * @author michael
  * @author Andreas Eberle
@@ -129,4 +129,25 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 		int getCurrentlyCommingSoldiers(ESoldierType type);
 	}
 
+	/**
+	 * A {@link IResourceBuilding} provides an additional productivity field for the GUI.
+	 * 
+	 * @author Michael Zangl
+	 * @author Andreas Eberle
+	 */
+	static interface IResourceBuilding extends IBuilding {
+		/**
+		 * Gets the productivity of this {@link IResourceBuilding}.
+		 * 
+		 * @return The productivity in the interval [0,1].
+		 */
+		float getProductivity();
+
+		/**
+		 * Returns the remaining amount of the building's resource.
+		 * 
+		 * @return The number of resources available.
+		 */
+		public int getRemainingResourceAmount();
+	}
 }

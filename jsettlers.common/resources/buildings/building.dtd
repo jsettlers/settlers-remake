@@ -2,7 +2,8 @@
 
 <!ENTITY % imagelinktype "(SETTLER| GUI| LANDSCAPE)">
 
-<!ENTITY % material "(NO_MATERIAL|
+<!ENTITY % material "(
+	NO_MATERIAL|
 	AXE|
 	BOW|
 	BLADE|
@@ -40,7 +41,8 @@
 	WHITE_BREAD|
 	BASKET|
 	TREE|
-	PLANT)">
+	PLANT)
+">
 <!ENTITY % jobtype "(
 	WAIT|
 	WALK|
@@ -60,7 +62,8 @@
 	AVAILABLE|
 	NOT_FULL|
 	LOOK_AT_SEARCHED|
-	IS_PRODUCTIVE|
+	TRY_TAKING_RESOURCE|
+	TRY_TAKING_FOOD|
 	SMOKE_ON|
 	SMOKE_OFF|
 	START_WORKING|
@@ -74,10 +77,10 @@
 	POP_WEAPON|
 	DROP_POPPED)
 ">
-<!ENTITY % direction "(EAST| SOUTH_EAST| SOUTH_WEST| WEST | NORTH_WEST | NORTH_EAST)
-">
+<!ENTITY % direction "(EAST| SOUTH_EAST| SOUTH_WEST| WEST | NORTH_WEST | NORTH_EAST)">
 
-<!ENTITY % searchtype "(FOREIGN_GROUND|
+<!ENTITY % searchtype "(
+	FOREIGN_GROUND|
 	CUTTABLE_TREE|
 	CUTTABLE_STONE|
 	PLANTABLE_TREE|
@@ -105,10 +108,8 @@
 	RIVER4|
 	MOUNTAINBORDER
 )">
-<!ENTITY % boolean "(
-	true|
-	false
-)">
+<!ENTITY % boolean "(true|false)">
+
 <!ELEMENT building (ground+, blocked+, door, constructionStack+, requestStack*, offerStack*, bricklayer+, flag, buildmark*, workcenter?, image*, occupyer*, startjob?, job*) >
 
 <!ATTLIST building
@@ -207,6 +208,7 @@
    direction %direction; #IMPLIED
    search %searchtype; #IMPLIED
    takeMaterialFromMap %boolean; #IMPLIED
+   foodOrder CDATA #IMPLIED
 >
 
 <!ELEMENT image EMPTY>

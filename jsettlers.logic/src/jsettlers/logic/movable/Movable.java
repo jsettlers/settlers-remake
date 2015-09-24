@@ -148,7 +148,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (goInDirection(currDir)) {
+			if (goInDirection(currDir, false)) {
 				break;
 			} else {
 				Movable movableAtPos = grid.getMovableAt(currDir.getNextTileX(position.x), currDir.getNextTileY(position.y));
@@ -356,7 +356,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		if (ShortPoint2D.getOnGridDist(dx, dy) >= 2) {
 			flockDelay = Math.max(flockDelay - 100, 500);
-			if (this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy))) {
+			if (this.goInDirection(EDirection.getApproxDirection(0, 0, dx, dy), false)) {
 				return true;
 			} else {
 				return false;
@@ -394,8 +394,8 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 					return false; // the other movable just pushed to get space, we can't do anything for it here.
 				} else { // exchange positions
 					EDirection directionToPushing = EDirection.getDirection(position, pushingMovable.getPos());
-					pushingMovable.goSinglePathStep(); // if no free direction found, exchange movables positions
-					goInDirection(directionToPushing);
+					pushingMovable.goSinglePathStep(); // if no free direction found, exchange the positions of the movables
+					goInDirection(directionToPushing, false);
 					return true;
 				}
 			}
@@ -454,7 +454,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 
 		for (int i = 0; i < EDirection.NUMBER_OF_DIRECTIONS; i++) {
 			EDirection currDir = EDirection.values[(i + offset) % EDirection.NUMBER_OF_DIRECTIONS];
-			if (currDir != pushedFromDir && goInDirection(currDir)) {
+			if (currDir != pushedFromDir && goInDirection(currDir, false)) {
 				return true;
 			}
 		}
@@ -558,7 +558,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 			return false;
 		} else {
 			followPath(path);
-			return path != null;
+			return this.path != null;
 		}
 	}
 
@@ -567,14 +567,16 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * 
 	 * @param direction
 	 *            direction to go
+	 * @param force
+	 *            If true, the step will be forced and the method will always return true.
 	 * @return true if the step can and will immediately be executed. <br>
 	 *         false if the target position is generally blocked or a movable occupies that position.
 	 */
-	final boolean goInDirection(EDirection direction) {
+	final boolean goInDirection(EDirection direction, boolean force) {
 		ShortPoint2D pos = direction.getNextHexPoint(position);
-		if (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y)) {
-			initGoingSingleStep(pos);
+		if (force || (grid.isValidPosition(this, pos) && grid.hasNoMovableAt(pos.x, pos.y))) {
 			this.direction = direction;
+			initGoingSingleStep(pos);
 			setState(EMovableState.GOING_SINGLE_STEP);
 			return true;
 		} else {

@@ -12,28 +12,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager.objects;
+package jsettlers.graphics.androidui.menu;
 
-import java.io.Serializable;
+import jsettlers.graphics.action.Action;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.androidui.R;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import jsettlers.common.material.EMaterialType;
-import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
+/**
+ * The main game settings menu.
+ * 
+ * @author Michael Zangl
+ *
+ */
+public class GameMenu extends AndroidMenu {
 
-public final class ProductionRequest implements ILocatable, Serializable {
-	private static final long serialVersionUID = -1849601517609060590L;
-
-	public final ShortPoint2D pos;
-	public final EMaterialType type;
-
-	public ProductionRequest(EMaterialType type, ShortPoint2D pos) {
-		this.type = type;
-		this.pos = pos;
+	public GameMenu(AndroidMenuPutable puttable) {
+		super(puttable);
 	}
 
 	@Override
-	public ShortPoint2D getPos() {
-		return pos;
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.gamemenu, container, false);
 	}
 
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		view.findViewById(R.id.gamemenu_speed_skip).setOnClickListener(generateActionListener(new Action(EActionType.FAST_FORWARD), true));
+
+		view.findViewById(R.id.gamemenu_save).setOnClickListener(generateActionListener(new Action(EActionType.SAVE), true));
+		super.onViewCreated(view, savedInstanceState);
+	}
 }

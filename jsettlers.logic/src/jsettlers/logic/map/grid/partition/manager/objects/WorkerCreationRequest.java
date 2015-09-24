@@ -18,26 +18,21 @@ import java.io.Serializable;
 
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ILocatable;
-import jsettlers.common.position.ShortPoint2D;
 
-public final class WorkerCreationRequest implements ILocatable, Serializable {
-	private static final long serialVersionUID = 3047014371520017602L;
+public abstract class WorkerCreationRequest implements ILocatable, Serializable {
+	private static final long serialVersionUID = 7966882666760169041L;
 
-	public final EMovableType movableType;
-	public final ShortPoint2D position;
+	private boolean toolProductionRequired;
 
-	public WorkerCreationRequest(EMovableType movableType, ShortPoint2D position) {
-		this.movableType = movableType;
-		this.position = position;
+	public abstract boolean isRequestAlive();
+
+	public abstract EMovableType requestedMovableType();
+
+	public boolean isToolProductionRequired() {
+		return toolProductionRequired;
 	}
 
-	@Override
-	public String toString() {
-		return movableType + "    " + position;
-	}
-
-	@Override
-	public ShortPoint2D getPos() {
-		return position;
+	public void setToolProductionRequired(boolean toolProductionRequired) {
+		this.toolProductionRequired = toolProductionRequired;
 	}
 }

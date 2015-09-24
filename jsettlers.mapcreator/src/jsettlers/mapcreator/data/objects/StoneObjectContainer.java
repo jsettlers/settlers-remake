@@ -21,7 +21,7 @@ import jsettlers.common.mapobject.IMapObject;
 import jsettlers.common.position.RelativePoint;
 
 public class StoneObjectContainer implements ObjectContainer, IMapObject {
-	MapStoneObject peer;
+	private final MapStoneObject peer;
 
 	public StoneObjectContainer(int stones) {
 		this(MapStoneObject.getInstance(stones));
@@ -78,4 +78,8 @@ public class StoneObjectContainer implements ObjectContainer, IMapObject {
 		};
 	}
 
+	@Override
+	public IMapObject getMapObject(EMapObjectType type) {
+		return type == getObjectType() ? this : null;
+	}
 }

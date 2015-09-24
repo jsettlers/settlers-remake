@@ -12,21 +12,44 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.logic.map.grid.partition.manager.objects;
+package jsettlers.common.position;
 
-import java.io.Serializable;
+import java.util.Iterator;
 
-import jsettlers.algorithms.queue.ITypeAcceptor;
-import jsettlers.common.movable.EMovableType;
-import jsettlers.logic.map.grid.partition.manager.manageables.IManageableWorker;
+/**
+ * 
+ * @author Andreas Eberle
+ *
+ */
+public class RelativeToRealPointIterable implements Iterable<ShortPoint2D> {
 
-public final class MovableTypeAcceptor implements ITypeAcceptor<IManageableWorker>, Serializable {
-	private static final long serialVersionUID = 111392803354934224L;
+	private final RelativePoint[] relativePositions;
+	private final ShortPoint2D relationPosition;
 
-	public EMovableType movableType = null;
+	public RelativeToRealPointIterable(RelativePoint[] relativePositions, ShortPoint2D relationPosition) {
+		this.relativePositions = relativePositions;
+		this.relationPosition = relationPosition;
+	}
 
 	@Override
-	public final boolean accepts(IManageableWorker worker) {
-		return this.movableType == worker.getMovableType();
+	public Iterator<ShortPoint2D> iterator() {
+		return new Iterator<ShortPoint2D>() {
+			int index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return index < relativePositions.length;
+			}
+
+			@Override
+			public ShortPoint2D next() {
+				return relativePositions[index++].calculatePoint(relationPosition);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 }

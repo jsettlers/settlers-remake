@@ -73,10 +73,6 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 */
 	public abstract boolean dropMaterial(ShortPoint2D pos, EMaterialType materialType, boolean offer);
 
-	public abstract float getResourceProbabilityAround(short x, short y, EResourceType type, int radius);
-
-	public abstract void decreaseResourceAround(short x, short y, EResourceType resourceType, int radius, int amount);
-
 	/**
 	 * 
 	 * @param position
@@ -87,26 +83,29 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	public abstract EDirection getDirectionOfSearched(ShortPoint2D position, ESearchType searchType);
 
 	/**
-	 * 
-	 * @param pos
-	 * @param searchType
-	 * @return true if the given position can be used to execute the search type.<br>
-	 *         false if it can not
-	 */
-	public abstract boolean executeSearchType(ShortPoint2D pos, ESearchType searchType);
-
-	/**
 	 * Checks if the given position fits the given search type.
 	 * 
 	 * @param pathCalculateable
 	 *            path requester
-	 * @param pos
-	 *            position
+	 * @param position
+	 *            position to check the given {@link ESearchType}.
 	 * @param searchType
 	 *            search type to be checked
 	 * @return true if the search type fits the given position.
 	 */
-	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D pos, ESearchType searchType);
+	public abstract boolean fitsSearchType(IPathCalculatable pathCalculateable, ShortPoint2D position, ESearchType searchType);
+
+	/**
+	 * 
+	 * @param pathCalculatable
+	 *            requester
+	 * @param position
+	 *            Position to execute the given {@link ESearchType}.
+	 * @param searchType
+	 * @return true if the given position can be used to execute the search type.<br>
+	 *         false if it can not
+	 */
+	public abstract boolean executeSearchType(IPathCalculatable pathCalculatable, ShortPoint2D position, ESearchType searchType);
 
 	public abstract EMaterialType popToolProductionRequest(ShortPoint2D pos);
 
@@ -227,5 +226,7 @@ public abstract class AbstractStrategyGrid implements Serializable {
 	 *         false otherwise.
 	 */
 	public abstract boolean isFreePosition(ShortPoint2D position);
+
+	public abstract boolean tryTakingRecource(ShortPoint2D position, EResourceType resource);
 
 }

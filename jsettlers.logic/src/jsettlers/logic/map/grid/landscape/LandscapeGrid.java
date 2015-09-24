@@ -26,6 +26,7 @@ import jsettlers.common.map.IGraphicsBackgroundListener;
 import jsettlers.common.map.shapes.HexGridArea;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.position.ShortPoint2D;
+import jsettlers.logic.constants.Constants;
 import jsettlers.logic.map.grid.flags.IProtectedProvider;
 import jsettlers.logic.map.grid.flags.IProtectedProvider.IProtectedChangedListener;
 import jsettlers.network.synchronic.random.RandomSingleton;
@@ -36,6 +37,8 @@ import jsettlers.network.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  */
 public final class LandscapeGrid implements Serializable, IWalkableGround, IFlattenedResettable, IDebugColorSetable, IProtectedChangedListener {
+	private static final long serialVersionUID = -751261669662036483L;
+
 	/**
 	 * This class is used as null object to get rid of a lot of null checks
 	 * 
@@ -48,8 +51,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		public final void backgroundChangedAt(int x, int y) {
 		}
 	}
-
-	private static final long serialVersionUID = -751261669662036483L;
 
 	private final byte[] heightGrid;
 	private final byte[] landscapeGrid;
@@ -186,7 +187,7 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 
 	public final void setResourceAt(short x, short y, EResourceType resourceType, byte amount) {
 		this.resourceType[x + y * width] = resourceType.ordinal;
-		this.resourceAmount[x + y * width] = amount;
+		this.resourceAmount[x + y * width] = (byte) Math.min(amount, Constants.MAX_RESOURCE_AMOUNT_PER_POSITION);
 	}
 
 	/**
@@ -204,12 +205,25 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return EResourceType.values[resourceType[x + y * width]];
 	}
 
-	public final boolean hasResourceAt(int x, int y, EResourceType resourceType) {
-		return getResourceTypeAt(x, y) == resourceType && resourceAmount[x + y * width] > 0;
+	public int getAmountOfResource(EResourceType resource, Iterable<ShortPoint2D> positions) {
+		int amount = 0;
+		for (ShortPoint2D position : positions) {
+			int index = position.x + position.y * width;
+			if (resourceType[index] == resource.ordinal) {
+				amount += resourceAmount[index];
+			}
+		}
+		return amount;
 	}
 
-	public final void pickResourceAt(short x, short y) {
-		resourceAmount[x + y * width]--;
+	public boolean tryTakingResource(ShortPoint2D position, EResourceType resource) {
+		int idx = position.x + position.y * width;
+		if (resourceType[idx] == resource.ordinal && resourceAmount[idx] > 0) {
+			resourceAmount[idx]--;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -232,46 +246,6 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 	private void flatten(int x, int y) {
 		if (areAllNeighborsOf(x, y, 0, 1, ELandscapeType.GRASS, ELandscapeType.FLATTENED)) {
 			setLandscapeTypeAt((short) x, (short) y, ELandscapeType.FLATTENED);
-		}
-	}
-
-	public float getResourceProbabilityAround(int x, int y, EResourceType type, int radius) {
-		int minx = Math.max(x - radius, 0);
-		int maxx = Math.min(x + radius, width - 1);
-		int miny = Math.max(y - radius, 0);
-		int maxy = Math.min(y + radius, height - 1);
-		int amount = 0;
-		int area = 0;
-		for (int currentX = minx; currentX <= maxx; currentX++) {
-			for (int currentY = miny; currentY <= maxy; currentY++) {
-				int idx = currentX + currentY * width;
-				if (resourceType[idx] == type.ordinal) {
-					amount += resourceAmount[idx];
-					area++;
-				}
-			}
-		}
-		return ((float) amount) / (Byte.MAX_VALUE * area);
-	}
-
-	public void decreaseResourceAround(short x, short y, EResourceType type, int radius, int amount) {
-		int minx = Math.max(x - radius, 0);
-		int maxx = Math.min(x + radius, width - 1);
-		int miny = Math.max(y - radius, 0);
-		int maxy = Math.min(y + radius, height - 1);
-
-		for (int currentX = minx; currentX <= maxx; currentX++) {
-			for (int currentY = miny; currentY <= maxy; currentY++) {
-				int idx = currentX + currentY * width;
-				if (resourceType[idx] == type.ordinal && resourceAmount[idx] > 0) {
-					int delta = Math.min(amount, resourceAmount[idx]);
-					resourceAmount[idx] -= delta;
-					amount -= delta;
-
-					if (amount <= 0)
-						return;
-				}
-			}
 		}
 	}
 

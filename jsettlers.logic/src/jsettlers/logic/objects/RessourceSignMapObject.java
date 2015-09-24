@@ -31,21 +31,10 @@ public final class RessourceSignMapObject extends AbstractObjectsManagerObject {
 
 	public RessourceSignMapObject(ShortPoint2D pos, EResourceType resourceType, float amount) {
 		super(pos);
-		this.amount = amount;
+		assert resourceType != EResourceType.FISH : "Wrong resource type for ResourceSignMapObeject!";
 
-		switch (resourceType) {
-		case COAL:
-			objectType = EMapObjectType.FOUND_COAL.ordinal;
-			break;
-		case IRON:
-			objectType = EMapObjectType.FOUND_IRON.ordinal;
-			break;
-		case GOLD:
-			objectType = EMapObjectType.FOUND_GOLD.ordinal;
-			break;
-		default:
-			throw new IllegalArgumentException("Can't create ressource sign for: " + resourceType);
-		}
+		this.amount = amount;
+		this.objectType = resourceType.mapObjectType.ordinal;
 	}
 
 	@Override

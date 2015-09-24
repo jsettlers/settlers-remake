@@ -18,8 +18,11 @@ import java.util.ArrayList;
 
 import jsettlers.graphics.action.Action;
 import jsettlers.graphics.action.ActionFireable;
+import jsettlers.graphics.action.EActionType;
+import jsettlers.graphics.androidui.MapViewChangeObserveable;
 import jsettlers.graphics.androidui.actions.ContextAction;
 import jsettlers.graphics.androidui.actions.ContextActionListener;
+import jsettlers.graphics.map.MapDrawContext;
 import android.content.Context;
 import android.view.LayoutInflater;
 
@@ -42,6 +45,10 @@ public class AndroidMenuPutable implements ActionFireable {
 	private ArrayList<AndroidMenu> activeMenu = new ArrayList<AndroidMenu>();
 	private final Object activeMenuMutex = new Object();
 
+	private MapDrawContext mapContext;
+
+	private MapViewChangeObserveable changeObserveable;
+
 	/**
 	 * Creates a new {@link AndroidMenuPutable}.
 	 */
@@ -52,14 +59,16 @@ public class AndroidMenuPutable implements ActionFireable {
 		this.layoutInflater =
 				(LayoutInflater) context
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		changeObserveable = new MapViewChangeObserveable(context);
 	}
 
 	public LayoutInflater getLayoutInflater() {
 		return layoutInflater;
 	}
 
-	public void setActionFireable(ActionFireable actionFireable) {
+	public void setDrawContext(ActionFireable actionFireable, MapDrawContext mapContext) {
 		this.actionFireable = actionFireable;
+		this.mapContext = mapContext;
 	}
 
 	@Override
@@ -85,6 +94,7 @@ public class AndroidMenuPutable implements ActionFireable {
 	 */
 	public void showMenuFragment(AndroidMenu fragment) {
 		synchronized (activeMenuMutex) {
+			actionFireable.fireAction(new Action(EActionType.ABORT));
 			activeMenu.add(fragment);
 			fragmentHandler.showMenuFragment(fragment);
 		}
@@ -122,5 +132,13 @@ public class AndroidMenuPutable implements ActionFireable {
 			return activeMenu.isEmpty() ? null : activeMenu.get(activeMenu
 					.size() - 1);
 		}
+	}
+
+	public MapDrawContext getMapContext() {
+		return mapContext;
+	}
+
+	public MapViewChangeObserveable getChangeObserveable() {
+		return changeObserveable;
 	}
 }
