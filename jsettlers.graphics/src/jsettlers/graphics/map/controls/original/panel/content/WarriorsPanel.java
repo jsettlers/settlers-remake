@@ -81,7 +81,11 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 		@Override
 		public synchronized void drawAt(GLDrawContext gl) {
-			setText(Labels.getString("upgrade_warriros_progress", manaInformation.getNextUpdateProgressPercent()));
+			if (manaInformation == null) {
+				setText(Labels.getString("upgrade_warriros_progress"));
+			} else {
+				setText(Labels.getString("upgrade_warriros_progress", manaInformation.getNextUpdateProgressPercent()));
+			}
 			super.drawAt(gl);
 		}
 	}
@@ -124,11 +128,14 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 		@Override
 		public boolean isActive() {
-			return manaInformation.isUpgradePossible(manaType);
+			return manaInformation != null && manaInformation.isUpgradePossible(manaType);
 		}
 
 		@Override
 		protected ImageLink getBackgroundImage() {
+			if (manaInformation == null) {
+				return null;
+			}
 			if (manaInformation.getLevel(manaType) >= manaInformation.getMaximumLevel()) {
 				return null;
 			} else if (isActive()) {
