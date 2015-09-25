@@ -27,6 +27,7 @@ import java.util.Date;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.IMapInterfaceConnector;
@@ -207,9 +208,9 @@ public class JSettlersGame {
 
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
-                        this, playerId, multiplayer);
-                connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
-                                                                 // has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
+						this, playerId, multiplayer);
+				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
+				// has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
 
 				gameClock.startExecution();
 				gameRunning = true;
@@ -320,6 +321,10 @@ public class JSettlersGame {
 		@Override
 		public IStatisticable getPlayerStatistics() {
 			return statistics;
+		}
+
+		@Override public IManaInformation getManaInformation() {
+			return mainGrid.getPartitionsGrid().getPlayer(playerId).getManaInformation();
 		}
 
 		@Override

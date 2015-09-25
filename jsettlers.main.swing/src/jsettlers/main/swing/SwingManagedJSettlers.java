@@ -14,10 +14,6 @@
  *******************************************************************************/
 package jsettlers.main.swing;
 
-import go.graphics.area.Area;
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
-
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +28,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
+import go.graphics.area.Area;
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.common.CommitInfo;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.MapLoadException;
@@ -87,7 +86,8 @@ public class SwingManagedJSettlers {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName) throws FileNotFoundException, IOException {
+	public static void setupResourceManagers(HashMap<String, String> argsMap, String defaultConfigFileName)
+			throws FileNotFoundException, IOException {
 		ConfigurationPropertiesFile configFile = getConfigFile(argsMap, defaultConfigFileName);
 		SwingResourceLoader.setupResourcesManager(configFile);
 

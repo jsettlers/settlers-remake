@@ -25,7 +25,6 @@ import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.buildings.IBuilding.IOccupyed;
 import jsettlers.common.buildings.IBuildingOccupyer;
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.images.AnimationSequence;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
@@ -39,6 +38,7 @@ import jsettlers.common.mapobject.IStackMapObject;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.movable.IMovable;
 import jsettlers.common.player.IPlayerable;
 import jsettlers.common.position.ShortPoint2D;
@@ -936,7 +936,7 @@ public class MapObjectDrawer {
 				Color color = context.getPlayerColor(movable.getPlayerId());
 
 				Image image;
-				switch (place.getType()) {
+				switch (place.getSoldierClass()) {
 				case INFANTRY:
 					OriginalImageLink imageLink =
 							place.looksRight() ? INSIDE_BUILDING_RIGHT
@@ -954,7 +954,7 @@ public class MapObjectDrawer {
 				image.drawAt(gl, context.getDrawBuffer(), viewX, viewY, color,
 						basecolor);
 
-				if (place.getType() == ESoldierType.BOWMAN) {
+				if (place.getSoldierClass() == ESoldierClass.BOWMAN) {
 					playMovableSound(movable);
 					if (movable.isSelected()) {
 						drawSelectionMark(viewX, viewY, movable.getHealth());

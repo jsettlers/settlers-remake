@@ -24,7 +24,6 @@ import jsettlers.graphics.map.IMapInterfaceListener;
 import jsettlers.graphics.map.MapInterfaceConnector;
 import jsettlers.input.SelectionSet;
 import jsettlers.logic.constants.MatchConstants;
-import jsettlers.logic.movable.Movable;
 import jsettlers.logic.movable.testmap.MovableTestsMap;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;

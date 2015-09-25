@@ -265,5 +265,6 @@ public enum EActionType {
 	 */
 	FOCUS,
 
-	NEXT_OF_TYPE
+	NEXT_OF_TYPE,
+	UPGRADE_SOLDIERS
 }

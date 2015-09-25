@@ -302,6 +302,10 @@ public final class MainGrid implements Serializable {
 		}
 	}
 
+	public PartitionsGrid getPartitionsGrid() {
+		return partitionsGrid;
+	}
+
 	public IGraphicsGrid getGraphicsGrid() {
 		return graphicsGrid;
 	}

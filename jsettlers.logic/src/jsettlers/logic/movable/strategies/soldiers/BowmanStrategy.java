@@ -14,9 +14,9 @@
  *******************************************************************************/
 package jsettlers.logic.movable.strategies.soldiers;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EAction;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.constants.Constants;
 import jsettlers.logic.movable.Movable;
@@ -41,8 +41,8 @@ public final class BowmanStrategy extends SoldierStrategy {
 	}
 
 	@Override
-	public final ESoldierType getSoldierType() {
-		return ESoldierType.BOWMAN;
+	public final ESoldierClass getSoldierClass() {
+		return ESoldierClass.BOWMAN;
 	}
 
 	@Override
