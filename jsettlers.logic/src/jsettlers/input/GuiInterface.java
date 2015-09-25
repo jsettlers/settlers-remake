@@ -255,7 +255,7 @@ public class GuiInterface implements IMapInterfaceListener, ITaskExecutorGuiInte
 
 		case UPGRADE_SOLDIERS:
 			UpgradeSoldiersAction a = (UpgradeSoldiersAction) action;
-			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getManaType()));
+			taskScheduler.scheduleTask(new UpgradeSoldiersGuiTask(playerId, a.getSoldierType()));
 			break;
 
 		case ABORT:

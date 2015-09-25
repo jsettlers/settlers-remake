@@ -21,7 +21,7 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.EResourceType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
-import jsettlers.common.player.EManaType;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.graphics.action.EActionType;
 import jsettlers.graphics.progress.EProgressState;
@@ -107,14 +107,14 @@ public final class Labels extends AbstractLabels {
 	}
 
 	/**
-	 * Gets the name of a mana type
+	 * Gets the name of a {@link ESoldierType}
 	 *
 	 * @param type
-	 *            The mana type
+	 *            The soldier type
 	 * @return The localized name.
 	 */
-	public static String getName(EManaType type) {
-		return getString("mana_" + type);
+	public static String getName(ESoldierType type) {
+		return getString("soldier_" + type);
 	}
 
 	/**

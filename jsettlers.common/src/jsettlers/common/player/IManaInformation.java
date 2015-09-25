@@ -1,17 +1,17 @@
 package jsettlers.common.player;
 
-import jsettlers.common.player.EManaType;
+import jsettlers.common.movable.ESoldierType;
 
 /**
  * @author codingberlin
  */
 public interface IManaInformation {
 
-	boolean isUpgradePossible(EManaType type);
+	boolean isUpgradePossible(ESoldierType type);
 
-	byte getLevel(EManaType type);
+	byte getLevel(ESoldierType type);
 
-	void upgrade(EManaType type);
+	void upgrade(ESoldierType type);
 
 	byte getNextUpdateProgressPercent();
 

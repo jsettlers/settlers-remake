@@ -14,23 +14,26 @@
  *******************************************************************************/
 package jsettlers.logic.player;
 
-import jsettlers.common.movable.EMovableType;
-import jsettlers.common.player.EManaType;
-import jsettlers.common.player.IManaInformation;
-
 import java.io.Serializable;
+
+import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierType;
+import jsettlers.common.player.IManaInformation;
 
 /**
  * @author codingberlin
  */
 public class ManaInformation implements Serializable, IManaInformation {
-	private static final EMovableType[] BOWMEN_TYPES = {EMovableType.BOWMAN_L1, EMovableType.BOWMAN_L2, EMovableType.BOWMAN_L3};
-	private static final EMovableType[] SWORDSMEN_TYPES = {EMovableType.SWORDSMAN_L1, EMovableType.SWORDSMAN_L2, EMovableType.SWORDSMAN_L3};
-	private static final EMovableType[] PIKEMEN_TYPES = {EMovableType.PIKEMAN_L1, EMovableType.PIKEMAN_L2, EMovableType.PIKEMAN_L3};
-	public static final byte MAXIMUM_LEVEL = 2;
-	private static final short[] NECESSARY_MANA_FOR_UPGRADE = {10, 30, 60, 110, 170, 200};
+	private static final long serialVersionUID = -2354905349487371882L;
 
-	private final byte[] levelOfTypes = {0, 0, 0};
+	private static final EMovableType[] BOWMAN_TYPES = { EMovableType.BOWMAN_L1, EMovableType.BOWMAN_L2, EMovableType.BOWMAN_L3 };
+	private static final EMovableType[] SWORDSMAN_TYPES = { EMovableType.SWORDSMAN_L1, EMovableType.SWORDSMAN_L2, EMovableType.SWORDSMAN_L3 };
+	private static final EMovableType[] PIKEMAN_TYPES = { EMovableType.PIKEMAN_L1, EMovableType.PIKEMAN_L2, EMovableType.PIKEMAN_L3 };
+
+	private static final byte MAXIMUM_LEVEL = 2;
+	private static final short[] NECESSARY_MANA_FOR_UPGRADE = { 10, 30, 60, 110, 170, 200 };
+
+	private final byte[] levelOfTypes = { 0, 0, 0 };
 
 	private short mana = 0;
 	private short numberOfUpgradesExecuted = 0;
@@ -39,10 +42,9 @@ public class ManaInformation implements Serializable, IManaInformation {
 		mana++;
 	}
 
-	@Override public boolean isUpgradePossible(EManaType type) {
-		return getLevel(type) != MAXIMUM_LEVEL
-				&& isManaAvailableForUpgrade()
-				&& noLevelBelow(getLevel(type));
+	@Override
+	public boolean isUpgradePossible(ESoldierType type) {
+		return getLevel(type) != MAXIMUM_LEVEL && isManaAvailableForUpgrade() && noLevelBelow(getLevel(type));
 	}
 
 	private boolean noLevelBelow(byte level) {
@@ -54,31 +56,33 @@ public class ManaInformation implements Serializable, IManaInformation {
 		return true;
 	}
 
-	@Override public byte getLevel(EManaType type) {
+	@Override
+	public byte getLevel(ESoldierType type) {
 		return levelOfTypes[type.ordinal()];
 	}
 
-	@Override public void upgrade(EManaType type) {
+	@Override
+	public void upgrade(ESoldierType type) {
 		if (isUpgradePossible(type)) {
 			numberOfUpgradesExecuted++;
 			levelOfTypes[type.ordinal()]++;
 		}
 	}
 
-	@Override public byte getNextUpdateProgressPercent() {
+	@Override
+	public byte getNextUpdateProgressPercent() {
 		if (numberOfUpgradesExecuted == NECESSARY_MANA_FOR_UPGRADE.length) {
 			return 0;
 		}
 		if (numberOfUpgradesExecuted == 0) {
 			return sanitizePercent((float) mana / NECESSARY_MANA_FOR_UPGRADE[0]);
 		}
-		return sanitizePercent(
-				(float) (mana - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1]) /
-				(NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted] - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1])
-		);
+		return sanitizePercent((float) (mana - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted - 1]) /
+				(NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted] - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted - 1]));
 	}
 
-	@Override public byte getMaximumLevel() {
+	@Override
+	public byte getMaximumLevel() {
 		return MAXIMUM_LEVEL;
 	}
 
@@ -92,14 +96,14 @@ public class ManaInformation implements Serializable, IManaInformation {
 		return (byte) (percent * 100);
 	}
 
-	public EMovableType getMovableTypeOf(EManaType type) {
+	public EMovableType getMovableTypeOf(ESoldierType type) {
 		switch (type) {
-		case BOWMEN:
-			return BOWMEN_TYPES[getLevel(type)];
-		case SWORDSMEN:
-			return SWORDSMEN_TYPES[getLevel(type)];
+		case BOWMAN:
+			return BOWMAN_TYPES[getLevel(type)];
+		case SWORDSMAN:
+			return SWORDSMAN_TYPES[getLevel(type)];
 		default:
-			return PIKEMEN_TYPES[getLevel(type)];
+			return PIKEMAN_TYPES[getLevel(type)];
 		}
 	}
 

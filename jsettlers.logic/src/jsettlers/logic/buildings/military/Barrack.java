@@ -20,11 +20,10 @@ import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.WorkAreaBuilding;
 import jsettlers.logic.map.grid.partition.manager.manageables.interfaces.IBarrack;
-import jsettlers.common.player.EManaType;
-import jsettlers.logic.player.ManaInformation;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.stack.IRequestStackListener;
 import jsettlers.logic.stack.RequestStack;
@@ -64,11 +63,11 @@ public final class Barrack extends WorkAreaBuilding implements IBarrack, IReques
 	private EMovableType getSoldierType(EMaterialType materialType) {
 		switch (materialType) {
 		case SWORD:
-			return getPlayer().getManaInformation().getMovableTypeOf(EManaType.SWORDSMEN);
+			return getPlayer().getManaInformation().getMovableTypeOf(ESoldierType.SWORDSMAN);
 		case BOW:
-			return getPlayer().getManaInformation().getMovableTypeOf(EManaType.BOWMEN);
+			return getPlayer().getManaInformation().getMovableTypeOf(ESoldierType.BOWMAN);
 		case SPEAR:
-			return getPlayer().getManaInformation().getMovableTypeOf(EManaType.PIKEMEN);
+			return getPlayer().getManaInformation().getMovableTypeOf(ESoldierType.PIKEMAN);
 		default:
 			return null;
 		}

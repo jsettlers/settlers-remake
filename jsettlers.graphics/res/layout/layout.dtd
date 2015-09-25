@@ -4,7 +4,7 @@
 <!ENTITY % fontsize "(SMALL | NORMAL | HEADLINE)">
 <!ENTITY % alignment "(LEFT | CENTRE | RIGHT)">
 
-<!ELEMENT element ((image|localized|null|action|material|mana|font-size|alignment)*, element*) >
+<!ELEMENT element ((image|localized|null|action|material|soldierType|font-size|alignment)*, element*) >
 
 <!ATTLIST element
    x CDATA #IMPLIED
@@ -32,9 +32,9 @@
    material CDATA #REQUIRED
 >
 
-<!ELEMENT mana EMPTY>
-<!ATTLIST mana
-  mana CDATA #REQUIRED
+<!ELEMENT soldierType EMPTY>
+<!ATTLIST soldierType
+  soldierType CDATA #REQUIRED
  >
 
 <!ELEMENT null EMPTY>

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.buildings.RelativeBricklayer;
 import jsettlers.common.buildings.jobs.IBuildingJob;
 import jsettlers.common.buildings.stacks.ConstructionStack;
@@ -32,6 +31,7 @@ import jsettlers.common.landscape.ELandscapeType;
 import jsettlers.common.material.EMaterialType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.RelativePoint;
 import jsettlers.common.resources.ResourceManager;
 
@@ -183,7 +183,7 @@ public class BuildingFile implements BuildingJobDataProvider {
 		try {
 			int x = parseOptionalInteger(attributes.getValue("offsetX"));
 			int y = parseOptionalInteger(attributes.getValue("offsetY"));
-			ESoldierType type = OccupyerPlace.ESoldierType.valueOf(attributes.getValue("type"));
+			ESoldierClass type = ESoldierClass.valueOf(attributes.getValue("type"));
 			RelativePoint position = new RelativePoint(Short.parseShort(attributes.getValue("soldierX")), Short.parseShort(attributes
 					.getValue("soldierY")));
 			OccupyerPlace place = new OccupyerPlace(x, y, type, position, "true".equals(attributes.getValue("looksRight")));

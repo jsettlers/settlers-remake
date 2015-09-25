@@ -14,21 +14,22 @@
  *******************************************************************************/
 package jsettlers.graphics.action;
 
-import jsettlers.common.player.EManaType;
+import jsettlers.common.movable.ESoldierType;
 
 /**
  * @author codingberlin
+ * @author Andreas Eberle
  */
 public class UpgradeSoldiersAction extends Action {
 
-	private final EManaType manaType;
+	private final ESoldierType soldierType;
 
-	public UpgradeSoldiersAction(EManaType manaType) {
+	public UpgradeSoldiersAction(ESoldierType soldierType) {
 		super(EActionType.UPGRADE_SOLDIERS);
-		this.manaType = manaType;
+		this.soldierType = soldierType;
 	}
 
-	public EManaType getManaType() {
-		return manaType;
+	public ESoldierType getSoldierType() {
+		return soldierType;
 	}
 }

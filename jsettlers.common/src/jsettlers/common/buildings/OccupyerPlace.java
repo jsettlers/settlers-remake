@@ -16,6 +16,7 @@ package jsettlers.common.buildings;
 
 import java.io.Serializable;
 
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.RelativePoint;
 
 /**
@@ -26,20 +27,20 @@ import jsettlers.common.position.RelativePoint;
 public class OccupyerPlace implements Serializable {
 	private static final long serialVersionUID = 1355922428788608890L;
 
-	private final ESoldierType type;
+	private final ESoldierClass soldierClass;
 	private final int offsetY;
 	private final int offsetX;
 	private final RelativePoint position;
 
 	private final boolean looksRight;
 
-	public OccupyerPlace(int offsetX, int offsetY, ESoldierType type, RelativePoint position, boolean looksRight) {
-		if (position == null || type == null) {
+	public OccupyerPlace(int offsetX, int offsetY, ESoldierClass soldierClass, RelativePoint position, boolean looksRight) {
+		if (position == null || soldierClass == null) {
 			throw new NullPointerException();
 		}
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
-		this.type = type;
+		this.soldierClass = soldierClass;
 		this.position = position;
 		this.looksRight = looksRight;
 	}
@@ -47,10 +48,10 @@ public class OccupyerPlace implements Serializable {
 	/**
 	 * gets the type of the occupyer.
 	 * 
-	 * @return {@link ESoldierType#INFANTRY} if it is a person that is inside, {@link ESoldierType#BOWMAN} if it is a bowman on the roof.
+	 * @return {@link ESoldierClass#INFANTRY} if it is a person that is inside, {@link ESoldierClass#BOWMAN} if it is a bowman on the roof.
 	 */
-	public final ESoldierType getType() {
-		return type;
+	public final ESoldierClass getSoldierClass() {
+		return soldierClass;
 	}
 
 	/**
@@ -69,16 +70,6 @@ public class OccupyerPlace implements Serializable {
 	 */
 	public final int getOffsetY() {
 		return offsetY;
-	}
-
-	/**
-	 * The type a soldier can have.
-	 * 
-	 * @author michael
-	 */
-	public enum ESoldierType {
-		INFANTRY,
-		BOWMAN
 	}
 
 	/**

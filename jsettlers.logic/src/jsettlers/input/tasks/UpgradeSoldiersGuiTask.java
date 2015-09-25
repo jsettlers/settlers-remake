@@ -14,38 +14,38 @@
  *******************************************************************************/
 package jsettlers.input.tasks;
 
-import jsettlers.common.player.EManaType;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import jsettlers.common.movable.ESoldierType;
+
 /**
  * @author codingberlin
+ * @author Andreas Eberle
  */
 public class UpgradeSoldiersGuiTask extends SimpleGuiTask {
 
-	private EManaType manaType;
+	private ESoldierType soldierType;
 
-	public UpgradeSoldiersGuiTask(byte playerId, EManaType manaType) {
+	public UpgradeSoldiersGuiTask(byte playerId, ESoldierType soldierType) {
 		super(EGuiAction.UPGRADE_SOLDIERS, playerId);
-		this.manaType = manaType;
+		this.soldierType = soldierType;
 	}
 
-	public EManaType getManaType() {
-		return manaType;
+	public ESoldierType getSoldierType() {
+		return soldierType;
 	}
 
 	@Override
 	protected void serializeTask(DataOutputStream dos) throws IOException {
 		super.serializeTask(dos);
-		dos.writeInt(manaType.ordinal());
+		dos.writeInt(soldierType.ordinal);
 	}
 
 	@Override
 	protected void deserializeTask(DataInputStream dis) throws IOException {
 		super.deserializeTask(dis);
-		manaType = EManaType.values[dis.readInt()];
+		soldierType = ESoldierType.values[dis.readInt()];
 	}
-
 }
