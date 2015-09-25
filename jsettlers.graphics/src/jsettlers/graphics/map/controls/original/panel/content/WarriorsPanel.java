@@ -64,6 +64,11 @@ public class WarriorsPanel extends AbstractContentProvider {
 		void setManaInformation(IManaInformation manaInformation);
 	}
 
+	/**
+	 * This is a label that displays the upgrade progress percentage of the next upgrade.
+	 *
+	 * @author codingberlin
+	 */
 	public static class UpgradeProgressLabel extends Label implements IManaInformationConsument {
 		private IManaInformation manaInformation;
 		public UpgradeProgressLabel() {
@@ -84,7 +89,7 @@ public class WarriorsPanel extends AbstractContentProvider {
 	/**
 	 * This is a button that displays the upgrade possibility of a mana type.
 	 *
-	 * @author cofing berlin
+	 * @author codingberlin
 	 */
 	public static class UpgradeButton extends Button implements IManaInformationConsument {
 
