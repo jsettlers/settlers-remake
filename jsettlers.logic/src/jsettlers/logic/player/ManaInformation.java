@@ -27,7 +27,7 @@ public class ManaInformation implements Serializable, IManaInformation {
 	private static final EMovableType[] BOWMEN_TYPES = {EMovableType.BOWMAN_L1, EMovableType.BOWMAN_L2, EMovableType.BOWMAN_L3};
 	private static final EMovableType[] SWORDSMEN_TYPES = {EMovableType.SWORDSMAN_L1, EMovableType.SWORDSMAN_L2, EMovableType.SWORDSMAN_L3};
 	private static final EMovableType[] PIKEMEN_TYPES = {EMovableType.PIKEMAN_L1, EMovableType.PIKEMAN_L2, EMovableType.PIKEMAN_L3};
-	private static final byte MAXIMUM_LEVEL = 2;
+	public static final byte MAXIMUM_LEVEL = 2;
 	private static final short[] NECESSARY_MANA_FOR_UPGRADE = {10, 30, 60, 110, 170, 200};
 
 	private final byte[] levelOfTypes = {0, 0, 0};
@@ -66,7 +66,7 @@ public class ManaInformation implements Serializable, IManaInformation {
 	}
 
 	@Override public byte getNextUpdateProgressPercent() {
-		if (numberOfUpgradesExecuted == 6) {
+		if (numberOfUpgradesExecuted == NECESSARY_MANA_FOR_UPGRADE.length) {
 			return 0;
 		}
 		if (numberOfUpgradesExecuted == 0) {
@@ -76,6 +76,10 @@ public class ManaInformation implements Serializable, IManaInformation {
 				(float) (mana - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1]) /
 				(NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted] - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1])
 		);
+	}
+
+	@Override public byte getMaximumLevel() {
+		return MAXIMUM_LEVEL;
 	}
 
 	private byte sanitizePercent(float percent) {

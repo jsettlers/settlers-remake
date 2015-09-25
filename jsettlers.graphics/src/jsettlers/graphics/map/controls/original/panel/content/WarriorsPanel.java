@@ -129,7 +129,7 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 		@Override
 		protected ImageLink getBackgroundImage() {
-			if (manaInformation.getLevel(manaType) >= 2) {
+			if (manaInformation.getLevel(manaType) >= manaInformation.getMaximumLevel()) {
 				return null;
 			} else if (isActive()) {
 				return imageLinksActive[manaInformation.getLevel(manaType)];

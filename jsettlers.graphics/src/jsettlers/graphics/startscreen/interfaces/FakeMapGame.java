@@ -81,6 +81,10 @@ public class FakeMapGame implements IStartedGame {
 			@Override public byte getNextUpdateProgressPercent() {
 				return 0;
 			}
+
+			@Override public byte getMaximumLevel() {
+				return 0;
+			}
 		};
 	}
 

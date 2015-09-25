@@ -30,15 +30,13 @@ public class Player implements Serializable, IMessenger {
 
 	public final byte playerId;
 	private final Team team;
-
-	private ManaInformation manaInformation;
+	private final ManaInformation manaInformation = new ManaInformation();;
 
 	private transient IMessenger messenger;
 
 	public Player(byte playerId, Team team) {
 		this.playerId = playerId;
 		this.team = team;
-		this.manaInformation = new ManaInformation();
 		team.registerPlayer(this);
 	}
 
