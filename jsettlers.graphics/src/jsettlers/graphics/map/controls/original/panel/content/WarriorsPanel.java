@@ -73,16 +73,16 @@ public class WarriorsPanel extends AbstractContentProvider {
 			this.manaType = manaType;
 			switch(manaType) {
 			case SWORDSMEN:
-				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 398-3, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 404-3, 0)};
-				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 401-3, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 407-3, 0)};
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 396, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 402, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 399, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 405, 0)};
 				break;
 			case BOWMEN:
-				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
-				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 408, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 414, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 411, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 417, 0)};
 				break;
 			default:
-				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
-				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 150, 0)};
+				imageLinksActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 420, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 426, 0)};
+				imageLinksInActive = new OriginalImageLink[] {new OriginalImageLink(EImageLinkType.GUI, 3, 423, 0), new OriginalImageLink(EImageLinkType.GUI, 3, 429, 0)};
 				break;
 			}
 
@@ -99,7 +99,9 @@ public class WarriorsPanel extends AbstractContentProvider {
 
 		@Override
 		protected ImageLink getBackgroundImage() {
-			if (isActive()) {
+			if (manaInformation.getLevel(manaType) >= 2) {
+				return null;
+			} else if (isActive()) {
 				return imageLinksActive[manaInformation.getLevel(manaType)];
 			} else {
 				return imageLinksInActive[manaInformation.getLevel(manaType)];

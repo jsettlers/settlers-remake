@@ -6,17 +6,21 @@
 		<font-size size="NORMAL" />
 	</element>
 
-	<!-- Row 1 -->
-	<element x="14" width="18" y="248" height="18"
-			 class="jsettlers.graphics.map.controls.original.panel.content.InventoryPanel.MaterialButton">
-		<material material="PLANK" />
-	</element>
-
-
-	<element x="14" width="60" y="348" height="40"
+	<element x="15" width="35" y="280" height="23"
 			 class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
 		<mana mana="SWORDSMEN" />
 	</element>
+
+	<element x="50" width="35" y="280" height="23"
+			 class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+		<mana mana="BOWMEN" />
+	</element>
+
+	<element x="85" width="35" y="280" height="23"
+			 class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
+		<mana mana="PIKEMEN" />
+	</element>
+
 
 
 </element>
