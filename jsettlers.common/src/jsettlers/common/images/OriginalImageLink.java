@@ -21,6 +21,8 @@ package jsettlers.common.images;
  * @author michael
  */
 public final class OriginalImageLink extends ImageLink {
+	private static final long serialVersionUID = -9042004381156308651L;
+
 	private final EImageLinkType type;
 	private final int file;
 	private final int sequence;

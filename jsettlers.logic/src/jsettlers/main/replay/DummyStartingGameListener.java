@@ -42,8 +42,8 @@ class DummyStartingGameListener implements IStartingGameListener {
 	}
 
 	public IStartedGame waitForGameStartup() {
-		while (startedGame == null) {
-			synchronized (waitMutex) {
+		synchronized (waitMutex) {
+			while (startedGame == null) {
 				try {
 					waitMutex.wait();
 				} catch (InterruptedException e) {

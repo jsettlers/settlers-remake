@@ -14,10 +14,13 @@
  *******************************************************************************/
 package jsettlers.common.images;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class ImageLink {
+public abstract class ImageLink implements Serializable {
+	private static final long serialVersionUID = 1572028978425777114L;
+
 	private static final Pattern ORIGINAL_LINK = Pattern
 			.compile("original_(\\d+)_(SETTLER|GUI|LANDSCAPE)_(\\d+)");
 

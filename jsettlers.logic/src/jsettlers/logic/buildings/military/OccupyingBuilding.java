@@ -180,7 +180,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 				if (soldier != null && soldier.setOccupyableBuilding(this)) {
 					ESearchType searchedSoldier = searchedSoldiers.pop();
 					currentlyCommingSoldiers[getSoldierClass(searchedSoldier).ordinal]++;
-				}// soldier wasn't at the position or wasn't able to take the job to go to this building
+				} // soldier wasn't at the position or wasn't able to take the job to go to this building
 			}
 		}
 		return TIMER_PERIOD;
@@ -338,9 +338,7 @@ public class OccupyingBuilding extends Building implements IBuilding.IOccupyed, 
 		ESearchType searchType = getSearchType(movableType);
 
 		currentlyCommingSoldiers[getSoldierClass(searchType).ordinal]--;
-
-		if (searchType != null)
-			searchedSoldiers.add(searchType);
+		searchedSoldiers.add(searchType);
 	}
 
 	@Override
