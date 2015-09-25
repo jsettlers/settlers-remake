@@ -49,7 +49,6 @@ import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
-import jsettlers.logic.player.ManaInformation;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
