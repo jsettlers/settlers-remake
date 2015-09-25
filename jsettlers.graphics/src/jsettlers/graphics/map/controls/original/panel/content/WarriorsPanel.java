@@ -14,6 +14,9 @@
  *******************************************************************************/
 package jsettlers.graphics.map.controls.original.panel.content;
 
+import go.graphics.GLDrawContext;
+import go.graphics.text.EFontSize;
+import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.images.EImageLinkType;
 import jsettlers.common.images.ImageLink;
 import jsettlers.common.images.OriginalImageLink;
@@ -22,6 +25,7 @@ import jsettlers.common.player.IManaInformation;
 import jsettlers.graphics.action.UpgradeSoldiersAction;
 import jsettlers.graphics.localization.Labels;
 import jsettlers.graphics.ui.Button;
+import jsettlers.graphics.ui.Label;
 import jsettlers.graphics.ui.UIElement;
 import jsettlers.graphics.ui.UIPanel;
 import jsettlers.graphics.ui.layout.WarriorsLayout;
@@ -40,8 +44,8 @@ public class WarriorsPanel extends AbstractContentProvider {
 	public void setManaInformation(IManaInformation manaInformation) {
 		panel = new WarriorsLayout()._root;
 		for (UIElement element : panel.getChildren()) {
-			if (element instanceof UpgradeButton) {
-				((UpgradeButton) element).setManaInformation(manaInformation);
+			if (element instanceof IManaInformationConsument) {
+				((IManaInformationConsument) element).setManaInformation(manaInformation);
 			}
 		}
 	}
@@ -56,12 +60,33 @@ public class WarriorsPanel extends AbstractContentProvider {
 		return panel;
 	}
 
+	public interface IManaInformationConsument {
+		void setManaInformation(IManaInformation manaInformation);
+	}
+
+	public static class UpgradeProgressLabel extends Label implements IManaInformationConsument {
+		private IManaInformation manaInformation;
+		public UpgradeProgressLabel() {
+			super("", EFontSize.NORMAL);
+		}
+
+		public void setManaInformation(IManaInformation manaInformation) {
+			this.manaInformation = manaInformation;
+		}
+
+		@Override
+		public synchronized void drawAt(GLDrawContext gl) {
+			setText(Labels.getString("upgrade_warriros_progress", manaInformation.getNextUpdateProgressPercent()));
+			super.drawAt(gl);
+		}
+	}
+
 	/**
 	 * This is a button that displays the upgrade possibility of a mana type.
 	 *
-	 * @author Michael Zangl
+	 * @author cofing berlin
 	 */
-	public static class UpgradeButton extends Button {
+	public static class UpgradeButton extends Button implements IManaInformationConsument {
 
 		private final EManaType manaType;
 		private IManaInformation manaInformation;

@@ -66,13 +66,26 @@ public class ManaInformation implements Serializable, IManaInformation {
 	}
 
 	@Override public byte getNextUpdateProgressPercent() {
-		short manaOfNextUpgrade = numberOfUpgradesExecuted == 0 ? mana : (short) (mana - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1]);
-
-		if (manaOfNextUpgrade == 0) {
+		if (numberOfUpgradesExecuted == 6) {
 			return 0;
 		}
+		if (numberOfUpgradesExecuted == 0) {
+			return sanitizePercent((float) mana / NECESSARY_MANA_FOR_UPGRADE[0]);
+		}
+		return sanitizePercent(
+				(float) (mana - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1]) /
+				(NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted] - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1])
+		);
+	}
 
-		return (byte) ((manaOfNextUpgrade / NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted]) * 100);
+	private byte sanitizePercent(float percent) {
+		if (percent == 0) {
+			return 0;
+		}
+		if (percent > 1) {
+			return 100;
+		}
+		return (byte) (percent * 100);
 	}
 
 	public EMovableType getMovableTypeOf(EManaType type) {
