@@ -77,6 +77,10 @@ public class FakeMapGame implements IStartedGame {
 			}
 
 			@Override public void upgrade(EManaType type) {}
+
+			@Override public byte getNextUpdateProgressPercent() {
+				return 0;
+			}
 		};
 	}
 

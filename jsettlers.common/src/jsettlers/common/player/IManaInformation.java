@@ -11,4 +11,6 @@ public interface IManaInformation {
 	byte getLevel(EManaType type);
 
 	void upgrade(EManaType type);
+
+	byte getNextUpdateProgressPercent();
 }

@@ -6,6 +6,12 @@
 		<font-size size="NORMAL" />
 	</element>
 
+
+	<element class="Label" x="9" maxx="127" y="235" maxy="250">
+		<localized label="upgrade_warriros_progress" />
+		<font-size size="NORMAL" />
+	</element>
+
 	<element x="15" width="35" y="280" height="23"
 			 class="jsettlers.graphics.map.controls.original.panel.content.WarriorsPanel.UpgradeButton">
 		<mana mana="SWORDSMEN" />

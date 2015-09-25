@@ -65,6 +65,16 @@ public class ManaInformation implements Serializable, IManaInformation {
 		}
 	}
 
+	@Override public byte getNextUpdateProgressPercent() {
+		short manaOfNextUpgrade = numberOfUpgradesExecuted == 0 ? mana : (short) (mana - NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted-1]);
+
+		if (manaOfNextUpgrade == 0) {
+			return 0;
+		}
+
+		return (byte) ((manaOfNextUpgrade / NECESSARY_MANA_FOR_UPGRADE[numberOfUpgradesExecuted]) * 100);
+	}
+
 	public EMovableType getMovableTypeOf(EManaType type) {
 		switch (type) {
 		case BOWMEN:
