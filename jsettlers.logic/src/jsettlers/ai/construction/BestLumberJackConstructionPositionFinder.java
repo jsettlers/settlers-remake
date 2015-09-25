@@ -17,6 +17,7 @@ package jsettlers.ai.construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
@@ -42,7 +43,7 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
+		AiPositions trees = aiStatistics.getTreesForPlayer(playerId);
 		if (trees.size() == 0) {
 			return null;
 		}
@@ -50,10 +51,12 @@ public class BestLumberJackConstructionPositionFinder implements IBestConstructi
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && aiStatistics.southIsFreeForPlayer(point, playerId)
 					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
-				int treeDistance = point.getOnGridDistTo(nearestTreePosition);
-				if (treeDistance < workingRadius) {
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
+				ShortPoint2D nearestTreePosition = trees.getNearestPoint(point, workingRadius, null);
+				if (nearestTreePosition != null) {
+					int treeDistance = point.getOnGridDistTo(nearestTreePosition);
+					if (treeDistance < workingRadius) {
+						scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
+					}
 				}
 			}
 		}

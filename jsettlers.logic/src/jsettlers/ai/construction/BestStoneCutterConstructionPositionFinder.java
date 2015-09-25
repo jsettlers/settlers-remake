@@ -17,6 +17,7 @@ package jsettlers.ai.construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
@@ -42,7 +43,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
+		AiPositions stones = aiStatistics.getStonesForPlayer(playerId);
 		if (stones.size() == 0) {
 			return null;
 		}
@@ -50,7 +51,7 @@ public class BestStoneCutterConstructionPositionFinder implements IBestConstruct
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestStonePosition = aiStatistics.detectNearestPointFromList(point, stones);
+				ShortPoint2D nearestStonePosition = stones.getNearestPoint(point);
 				int stoneDistance = point.getOnGridDistTo(nearestStonePosition);
 				if (stoneDistance < workingRadius) {
 					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance));

@@ -109,6 +109,7 @@ public class AiPositions implements IMapArea {
 	private void ensureSorted() {
 		if (!sorted) {
 			Arrays.sort(points, 0, size);
+			sorted = true;
 		}
 	}
 
@@ -133,18 +134,25 @@ public class AiPositions implements IMapArea {
 		points = new int[MIN_SIZE];
 	}
 
+	public ShortPoint2D getNearestPoint(ShortPoint2D point) {
+		return getNearestPoint(point, Integer.MAX_VALUE, null);
+	}
+
 	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance, AiPositionFilter filter) {
 		int resX = -1, resY = -1;
 		int median = findClosestIndex(center.x, center.y);
+		if (median == size) {
+			median--;
+		}
 		int l = median, r = median + 1;
 		while (true) {
 			int current;
-			int rDist = unpackX(r) - center.x;
-			if (l >= 0 && center.x - unpackX(l) <= rDist) {
-				current = l;
+			int rDist = r < size ? unpackX(points[r]) - center.x : maxDistance;
+			if (l >= 0 && center.x - unpackX(points[l]) <= rDist) {
+				current = points[l];
 				l--;
 			} else if (r < size && rDist < maxDistance) {
-				current = r;
+				current = points[r];
 				r++;
 			} else {
 				break;
@@ -170,4 +178,29 @@ public class AiPositions implements IMapArea {
 	private int findClosestIndex(int x, int y) {
 		return Math.abs(indexOf(x, y));
 	}
+
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public String toString() {
+		final int maxLen = 100;
+		StringBuilder pointsStr = new StringBuilder();
+		for (ShortPoint2D p : this) {
+			if (pointsStr.length() > 0) {
+				pointsStr.append(" ");
+			}
+			if (pointsStr.length() > maxLen) {
+				pointsStr.append("...");
+				break;
+			}
+			pointsStr.append(p.x);
+			pointsStr.append(",");
+			pointsStr.append(p.y);
+		}
+		return "AiPositions [sorted=" + sorted + ", size=" + size + ", points="
+				+ pointsStr + "]";
+	}
+
 }

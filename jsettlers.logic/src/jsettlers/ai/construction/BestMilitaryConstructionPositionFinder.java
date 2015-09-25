@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
@@ -55,13 +56,13 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> borderLandNextToFreeLandForPlayer = aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId);
+		AiPositions borderLandNextToFreeLandForPlayer = aiStatistics.getBorderLandNextToFreeLandForPlayer(playerId);
 		if (borderLandNextToFreeLandForPlayer.size() == 0) {
 			return null;
 		}
 
 		Set<ImportantResource> importantResources = detectMostImportantResourcePoints(aiStatistics, playerId,
-				borderLandNextToFreeLandForPlayer.get(0));
+				borderLandNextToFreeLandForPlayer.iterator().next());
 
 		int nearestResourcePointsDistance = Integer.MAX_VALUE;
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
@@ -135,9 +136,9 @@ public class BestMilitaryConstructionPositionFinder implements IBestConstruction
 
 	private Set<ImportantResource> detectMostImportantResourcePoints(AiStatistics aiStatistics, byte playerId, ShortPoint2D referencePoint) {
 		Set<ImportantResource> importantResources = EnumSet.noneOf(ImportantResource.class);
-		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
-		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
-		List<ShortPoint2D> rivers = aiStatistics.getRiversForPlayer(playerId);
+		AiPositions trees = aiStatistics.getTreesForPlayer(playerId);
+		AiPositions stones = aiStatistics.getStonesForPlayer(playerId);
+		AiPositions rivers = aiStatistics.getRiversForPlayer(playerId);
 		if (trees.size() < 30) {
 			importantResources.add(ImportantResource.TREES);
 		}
