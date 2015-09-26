@@ -20,6 +20,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
 import jsettlers.common.resources.ResourceManager;
@@ -44,6 +45,7 @@ import jsettlers.logic.timer.RescheduleTimer;
  */
 public class MapList implements IMapListerCallable {
 	public static final String MAP_EXTENSION = ".map";
+	public static final String COMPRESSED_MAP_EXTENSION = ".zmap";
 
 	private static IMapListFactory mapListFactory = new IMapListFactory() {
 		@Override
@@ -51,6 +53,7 @@ public class MapList implements IMapListerCallable {
 			return new MapList(ResourceManager.getSaveDirectory());
 		}
 	};
+
 	private static MapList defaultList;
 
 	private final IMapLister mapsDir;
@@ -74,8 +77,8 @@ public class MapList implements IMapListerCallable {
 		freshMaps.clear();
 		savedMaps.clear();
 
-		mapsDir.getMaps(this);
-		saveDir.getMaps(this);
+		mapsDir.listMaps(this);
+		saveDir.listMaps(this);
 	}
 
 	@Override
@@ -89,8 +92,7 @@ public class MapList implements IMapListerCallable {
 				freshMaps.add(loader);
 			}
 		} catch (MapLoadException e) {
-			System.err.println("Cought exception while loading header for "
-					+ map.getFileName());
+			System.err.println("Cought exception while loading header for " + map.getFileName());
 			e.printStackTrace();
 		}
 	}
@@ -181,6 +183,7 @@ public class MapList implements IMapListerCallable {
 	 * @throws IOException
 	 */
 	public synchronized void saveMap(PlayerState[] playerStates, MainGrid grid) throws IOException {
+		MilliStopWatch watch = new MilliStopWatch();
 		MapFileHeader header = grid.generateSaveHeader();
 		OutputStream outStream = saveDir.getOutputStream(header);
 
@@ -193,6 +196,7 @@ public class MapList implements IMapListerCallable {
 		RescheduleTimer.saveTo(oos);
 
 		oos.close();
+		watch.stop("Writing savegame required");
 
 		loadFileList();
 	}

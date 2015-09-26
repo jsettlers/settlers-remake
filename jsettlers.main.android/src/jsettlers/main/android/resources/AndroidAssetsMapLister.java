@@ -18,11 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android.content.res.AssetManager;
 import jsettlers.logic.map.save.IListedMap;
 import jsettlers.logic.map.save.IMapLister;
 import jsettlers.logic.map.save.MapFileHeader;
 import jsettlers.logic.map.save.MapList;
-import android.content.res.AssetManager;
 
 public class AndroidAssetsMapLister implements IMapLister {
 	public static final class AndroidAssetMap implements IListedMap {
@@ -50,6 +50,10 @@ public class AndroidAssetsMapLister implements IMapLister {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
+		public boolean isCompressed() {
+			return path.endsWith(MapList.COMPRESSED_MAP_EXTENSION);
+		}
 	}
 
 	private AssetManager manager;
@@ -61,7 +65,7 @@ public class AndroidAssetsMapLister implements IMapLister {
 	}
 
 	@Override
-	public void getMaps(IMapListerCallable callable) {
+	public void listMaps(IMapListerCallable callable) {
 		try {
 			for (String s : manager.list(prefix)) {
 				if (s.endsWith(MapList.MAP_EXTENSION)) {

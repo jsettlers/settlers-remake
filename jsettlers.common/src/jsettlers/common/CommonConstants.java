@@ -34,7 +34,8 @@ public abstract class CommonConstants {
 	public static final boolean ENABLE_GRAPHICS_TIMES_DEBUG_OUTPUT = false;
 
 	/**
-	 * NOTE: this value has only an effect if it's changed before the MainGrid is created! IT MUSTN'T BE CHANGED AFTER A MAIN GRID HAS BEEN CREATED<br>
+	 * NOTE: this value has only an effect if it's changed before the MainGrid is created! IT MUSTN'T BE CHANGED AFTER A MAIN GRID HAS BEEN CREATED
+	 * <br>
 	 * if false, no debug coloring is possible (but saves memory) <br>
 	 * if true, debug coloring is possible.
 	 */
@@ -43,4 +44,6 @@ public abstract class CommonConstants {
 	public static String DEFAULT_SERVER_ADDRESS = "87.106.88.80";
 
 	public static boolean CONTROL_ALL = false;
+
+	public static final boolean USE_SAVEGAME_COMPRESSION = true;
 }

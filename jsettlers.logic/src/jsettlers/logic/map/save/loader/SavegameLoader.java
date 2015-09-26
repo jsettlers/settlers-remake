@@ -40,9 +40,7 @@ public class SavegameLoader extends MapLoader {
 
 	@Override
 	public MainGridWithUiSettings loadMainGrid(PlayerSetting[] playerSettings) throws MapLoadException {
-		try {
-			ObjectInputStream ois = new ObjectInputStream(super.getMapDataStream());
-
+		try (ObjectInputStream ois = new ObjectInputStream(super.getMapDataStream())) {
 			PlayerState[] playerStates = (PlayerState[]) ois.readObject();
 			GameSerializer gameSerializer = new GameSerializer();
 			MainGrid mainGrid = gameSerializer.load(ois);
@@ -51,9 +49,7 @@ public class SavegameLoader extends MapLoader {
 			ois.close();
 
 			return new MainGridWithUiSettings(mainGrid, playerStates);
-		} catch (IOException ex) {
-			throw new MapLoadException(ex);
-		} catch (ClassNotFoundException ex) {
+		} catch (IOException | ClassNotFoundException ex) {
 			throw new MapLoadException(ex);
 		}
 	}
