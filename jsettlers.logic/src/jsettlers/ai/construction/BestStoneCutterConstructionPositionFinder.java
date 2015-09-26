@@ -14,14 +14,9 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Assumptions: stones are placed as groups at the map, never alone without other stones
@@ -31,35 +26,14 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author codingberlin
  */
-public class BestStoneCutterConstructionPositionFinder implements IBestConstructionPositionFinder {
-
-	private final EBuildingType buildingType;
-	private final short workingRadius;
+public class BestStoneCutterConstructionPositionFinder extends BestWorkareaConstructionPositionFinder {
 
 	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {
-		this.buildingType = buildingType;
-		workingRadius = buildingType.getWorkradius();
+		super(buildingType);
 	}
 
-	@Override
-	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		AiPositions stones = aiStatistics.getStonesForPlayer(playerId);
-		if (stones.size() == 0) {
-			return null;
-		}
-
-		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestStonePosition = stones.getNearestPoint(point);
-				int stoneDistance = point.getOnGridDistTo(nearestStonePosition);
-				if (stoneDistance < workingRadius) {
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, stoneDistance));
-				}
-			}
-		}
-
-		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
+	protected AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId) {
+		return aiStatistics.getStonesForPlayer(playerId);
 	}
 
 }

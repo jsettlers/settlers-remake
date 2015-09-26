@@ -13,17 +13,43 @@ import jsettlers.common.position.ShortPoint2D;
  *
  */
 public class AiPositions implements IMapArea {
-
-	public interface AiPositionFilter {
-		public boolean contains(int x, int y);
-	}
-
 	private static final int MIN_SIZE = 16;
 	private static final int SHORT_MASK = 0x7fff;
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1032477484624659731L;
+
+	/**
+	 * Filters a position map.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
+	public interface AiPositionFilter {
+		public boolean contains(int x, int y);
+	}
+
+	/**
+	 * Rates each position. A lower rating means better.
+	 * 
+	 * @author Michael Zangl
+	 *
+	 */
+	public interface PositionRater {
+		public static final int RATE_INVALID = Integer.MAX_VALUE;
+
+		/**
+		 * Rates a given position.
+		 * 
+		 * @param x
+		 * @param y
+		 * @param currentBestRating
+		 *            The best rating found so far, you can return {@link #RATE_INVALID} if yours is worse.
+		 * @return The rating or {@link #RATE_INVALID} if this position is not possible.
+		 */
+		public abstract int rate(int x, int y, int currentBestRating);
+	}
 
 	private class PositionsIterator implements Iterator<ShortPoint2D> {
 		private int index;
@@ -142,7 +168,7 @@ public class AiPositions implements IMapArea {
 		int resX = -1, resY = -1;
 		int median = findClosestIndex(center.x, center.y);
 		if (median >= size) {
-			median = size -1;
+			median = size - 1;
 		}
 		int l = median, r = median + 1;
 		while (true) {
@@ -203,4 +229,20 @@ public class AiPositions implements IMapArea {
 				+ pointsStr + "]";
 	}
 
+	public ShortPoint2D getBestRatedPoint(PositionRater rater) {
+		// TODO: Parallel ?
+		int currentBestRating = PositionRater.RATE_INVALID;
+		ShortPoint2D currentBest = null;
+		for (int i = 0; i < size; i++) {
+			int x = unpackX(points[i]);
+			int y = unpackY(points[i]);
+			int rating = rater.rate(x, y, currentBestRating);
+			if (rating < currentBestRating) {
+				currentBestRating = rating;
+				currentBest = new ShortPoint2D(x, y);
+			}
+		}
+
+		return currentBest;
+	}
 }
