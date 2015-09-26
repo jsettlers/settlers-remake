@@ -41,6 +41,7 @@ import jsettlers.algorithms.path.dijkstra.DijkstraAlgorithm;
 import jsettlers.algorithms.path.dijkstra.IDijkstraPathMap;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.Color;
+import jsettlers.common.buildings.BuildingAreaBitSet;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.buildings.IBuilding;
 import jsettlers.common.landscape.ELandscapeType;
@@ -889,24 +890,22 @@ public final class MainGrid implements Serializable {
 
 		@Override
 		public boolean canConstructAt(short x, short y, EBuildingType type, byte playerId) {
-			ELandscapeType[] landscapes = type.getGroundtypes();
 			RelativePoint[] protectedTiles = type.getProtectedTiles();
-
-			int firstPosX = protectedTiles[0].calculateX(x);
-			int firstPosY = protectedTiles[0].calculateY(y);
-			if (!isInBounds(firstPosX, firstPosY)) {
+			BuildingAreaBitSet areaBitSet = type.getBuildingAreaBitSet();
+			if (!isInBounds(areaBitSet.minX + x, areaBitSet.minY + y) || !isInBounds(areaBitSet.maxX + x, areaBitSet.maxY + y)) {
 				return false;
 			}
-			final short partitionId = getPartitionIdAt(firstPosX, firstPosY);
 
-			if (!canPlayerConstructOnPartition(playerId, partitionId)) {
+			short partition = getPartitionIdAt(areaBitSet.aPosition.calculateX(x), areaBitSet.aPosition.calculateY(y));
+
+			if (!canPlayerConstructOnPartition(playerId, partition)) {
 				return false;
 			}
 			for (RelativePoint curr : protectedTiles) {
 				int currX = curr.calculateX(x);
 				int currY = curr.calculateY(y);
 
-				if (!canUsePositionForConstruction(currX, currY, landscapes, partitionId)) {
+				if (!canUsePositionForConstructionSafe(currX, currY, type, partition)) {
 					return false;
 				}
 			}
@@ -929,6 +928,13 @@ public final class MainGrid implements Serializable {
 				}
 			}
 			return false;
+		}
+
+		private boolean canUsePositionForConstructionSafe(int x, int y, EBuildingType buildingType, short partition) {
+			// FIXME @Andreas: this can be merged with canUsePositionForConstruction
+			return !flagsGrid.isProtected(x, y)
+					&& buildingType.allowsLandscapeId(landscapeGrid.getLandscapeIdAt(x, y))
+					&& partitionsGrid.getPartitionIdAt(x, y) == partition;
 		}
 
 		@Override

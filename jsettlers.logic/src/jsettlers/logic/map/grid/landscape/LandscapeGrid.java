@@ -111,6 +111,10 @@ public final class LandscapeGrid implements Serializable, IWalkableGround, IFlat
 		return ELandscapeType.values[landscapeGrid[x + y * width]];
 	}
 
+	public final int getLandscapeIdAt(int x, int y) {
+		return landscapeGrid[x + y * width];
+	}
+
 	public boolean isLandscapeOf(int x, int y, ELandscapeType... landscapeTypes) {
 		ELandscapeType landscapeType = getLandscapeTypeAt(x, y);
 		for (ELandscapeType curr : landscapeTypes) {
