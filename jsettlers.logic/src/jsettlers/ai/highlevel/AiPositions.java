@@ -141,8 +141,8 @@ public class AiPositions implements IMapArea {
 	public ShortPoint2D getNearestPoint(ShortPoint2D center, int maxDistance, AiPositionFilter filter) {
 		int resX = -1, resY = -1;
 		int median = findClosestIndex(center.x, center.y);
-		if (median == size) {
-			median--;
+		if (median >= size) {
+			median = size -1;
 		}
 		int l = median, r = median + 1;
 		while (true) {
