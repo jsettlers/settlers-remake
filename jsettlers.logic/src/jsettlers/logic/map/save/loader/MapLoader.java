@@ -93,7 +93,7 @@ public abstract class MapLoader implements IGameCreator, Comparable<MapLoader>, 
 		return inputStream;
 	}
 
-	private static InputStream getMapInputStream(IListedMap file) throws IOException {
+	public static InputStream getMapInputStream(IListedMap file) throws IOException {
 		InputStream inputStream = new BufferedInputStream(file.getInputStream());
 		if (file.isCompressed()) {
 			ZipInputStream zipInputStream = new ZipInputStream(inputStream);
