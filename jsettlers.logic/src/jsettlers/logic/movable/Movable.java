@@ -601,7 +601,7 @@ public final class Movable implements IScheduledTimerable, IPathCalculatable, II
 	 * 
 	 * @return {@link AbstractStrategyGrid} that can be used by the strategy to gain informations from the grid.
 	 */
-	final AbstractStrategyGrid getStrategyGrid() {
+	public final AbstractStrategyGrid getStrategyGrid() {
 		return grid;
 	}
 

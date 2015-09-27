@@ -18,12 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import jsettlers.algorithms.interfaces.IContainingProvider;
 import jsettlers.algorithms.partitions.IBlockingProvider;
@@ -49,6 +44,7 @@ import jsettlers.common.utils.collections.IteratorFilter;
 import jsettlers.logic.map.grid.flags.IBlockingChangedListener;
 import jsettlers.logic.map.grid.partition.data.PartitionDataSupplier;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
+import jsettlers.logic.player.CombatStrengthInformation;
 import jsettlers.logic.player.Player;
 import jsettlers.logic.player.Team;
 
@@ -96,7 +92,7 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		this.teams = new Team[numberOfPlayers];
 		for (byte playerId = 0; playerId < numberOfPlayers; playerId++) {
 			Team team = new Team(playerId);
-			this.players[playerId] = new Player(playerId, team);
+			this.players[playerId] = new Player(playerId, team, new CombatStrengthInformation(playerId, this, numberOfPlayers));
 			this.teams[playerId] = team;
 			this.blockedPartitionsForPlayers[playerId] = createNewPartition(playerId); // create a blocked partition for every player
 		}
@@ -828,4 +824,13 @@ public final class PartitionsGrid implements Serializable, IBlockingChangedListe
 		return teams;
 	}
 
+	public List<Partition> getPartitionsOfPlayerId(byte playerId) {
+		List<Partition> playersPartition = new Vector<Partition>();
+		for (Partition partition : partitionObjects) {
+			if (partition != null && partition.getPlayerId() == playerId) {
+				playersPartition.add(partition);
+			}
+		}
+		return playersPartition;
+	}
 }

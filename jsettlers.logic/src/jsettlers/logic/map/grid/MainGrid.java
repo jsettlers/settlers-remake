@@ -90,6 +90,7 @@ import jsettlers.logic.map.grid.objects.IMapObjectsManagerGrid;
 import jsettlers.logic.map.grid.objects.MapObjectsManager;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
 import jsettlers.logic.map.grid.partition.IPlayerChangedListener;
+import jsettlers.logic.map.grid.partition.Partition;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.map.grid.partition.manager.PartitionManager;
 import jsettlers.logic.map.grid.partition.manager.manageables.IManageableBearer;

@@ -16,6 +16,9 @@ package jsettlers.logic.player;
 
 import java.io.Serializable;
 
+import jsettlers.common.player.ICombatStrengthInformation;
+import jsettlers.common.player.IInGamePlayer;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.graphics.map.IMessenger;
 import jsettlers.graphics.messages.Message;
 
@@ -25,18 +28,22 @@ import jsettlers.graphics.messages.Message;
  * @author Andreas Eberle
  * 
  */
-public class Player implements Serializable, IMessenger {
+public class Player implements Serializable, IMessenger, IInGamePlayer {
 	private static final long serialVersionUID = 1L;
 
 	public final byte playerId;
 	private final Team team;
-	private final ManaInformation manaInformation = new ManaInformation();;
+	private final IManaInformation manaInformation = new ManaInformation();
+
+
+	private final ICombatStrengthInformation combatStrengthInformation;
 
 	private transient IMessenger messenger;
 
-	public Player(byte playerId, Team team) {
+	public Player(byte playerId, Team team, ICombatStrengthInformation combatStrengthInformation) {
 		this.playerId = playerId;
 		this.team = team;
+		this.combatStrengthInformation = combatStrengthInformation;
 		team.registerPlayer(this);
 	}
 
@@ -56,7 +63,13 @@ public class Player implements Serializable, IMessenger {
 		}
 	}
 
-	public ManaInformation getManaInformation() {
+	@Override
+	public IManaInformation getManaInformation() {
 		return manaInformation;
+	}
+
+	@Override
+	public ICombatStrengthInformation getCombatStrengthInformation() {
+		return combatStrengthInformation;
 	}
 }

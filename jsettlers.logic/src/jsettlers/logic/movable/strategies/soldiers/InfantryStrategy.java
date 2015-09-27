@@ -53,7 +53,8 @@ public final class InfantryStrategy extends SoldierStrategy {
 
 	@Override
 	protected void hitEnemy(IAttackable enemy) {
-		enemy.receiveHit(0.1f, super.getPos(), super.getPlayer().playerId); // decrease the enemy's health
+		enemy.receiveHit(getMovable().getPlayer().getCombatStrengthInformation().getCombatStrengthAtPosition(getMovable().getPos()) *  0.1f,
+				super.getPos(), super.getPlayer().playerId); // decrease the enemy's health
 	}
 
 	@Override
