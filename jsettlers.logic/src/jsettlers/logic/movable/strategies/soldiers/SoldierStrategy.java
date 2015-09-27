@@ -16,9 +16,9 @@ package jsettlers.logic.movable.strategies.soldiers;
 
 import jsettlers.algorithms.path.Path;
 import jsettlers.common.buildings.OccupyerPlace;
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.military.IBuildingOccupyableMovable;
 import jsettlers.logic.buildings.military.IOccupyableBuilding;
@@ -159,7 +159,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 	}
 
 	private boolean isBowman() {
-		return getSoldierType() == ESoldierType.BOWMAN;
+		return getSoldierClass() == ESoldierClass.BOWMAN;
 	}
 
 	private void goToEnemy(IAttackable enemy) {
@@ -243,7 +243,7 @@ public abstract class SoldierStrategy extends MovableStrategy implements IBuildi
 
 	@Override
 	public void informAboutAttackable(IAttackable other) {
-		if (state == ESoldierState.AGGRESSIVE && (!isInTower || getSoldierType() == ESoldierType.BOWMAN)) {
+		if (state == ESoldierState.AGGRESSIVE && (!isInTower || getSoldierClass() == ESoldierClass.BOWMAN)) {
 			changeStateTo(ESoldierState.SEARCH_FOR_ENEMIES); // this searches for the enemy on the next timer click
 		}
 	}

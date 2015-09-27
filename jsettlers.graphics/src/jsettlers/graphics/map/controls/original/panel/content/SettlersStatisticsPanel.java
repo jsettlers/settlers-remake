@@ -12,34 +12,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.input.tasks;
+package jsettlers.graphics.map.controls.original.panel.content;
+
+import jsettlers.graphics.ui.UIPanel;
 
 /**
- * Actions of the gui used to send them over the network.
- * 
- * @author Andreas Eberle
- * 
+ * This temporary empty panel is necessary so that you can choose the SETTLERSTATISTIC in the gui
+ *
+ * @author codingberlin
  */
-public enum EGuiAction {
-	BUILD,
-	SET_WORK_AREA,
-	MOVE_TO,
-	QUICK_SAVE,
-	DESTROY_MOVABLES,
-	DESTROY_BUILDING,
-	STOP_WORKING,
-	START_WORKING,
-	CONVERT,
-	SET_BUILDING_PRIORITY,
-	SET_MATERIAL_DISTRIBUTION_SETTINGS,
+public class SettlersStatisticsPanel extends AbstractContentProvider {
 
-	/**
-	 * The user wants to change the order in which materials are served by bearers.
-	 * 
-	 * @see SetMaterialPrioritiesGuiTask
-	 */
-	SET_MATERIAL_PRIORITIES,
-	UPGRADE_SOLDIERS;
 
-	public static final EGuiAction[] values = values();
+	@Override
+	public ESecondaryTabType getTabs() {
+		return ESecondaryTabType.SETTLERS;
+	}
+
+	@Override
+	public UIPanel getPanel() {
+		return new UIPanel();
+	}
 }

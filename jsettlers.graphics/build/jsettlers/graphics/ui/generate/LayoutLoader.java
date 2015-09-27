@@ -61,6 +61,9 @@ public class LayoutLoader {
 			case "material":
 				panelStack.getLast().addArgument(new UncheckedEnumArgument(attributes, "material", "jsettlers.common.material.EMaterialType"));
 				break;
+			case "soldierType":
+				panelStack.getLast().addArgument(new UncheckedEnumArgument(attributes, "soldierType", "jsettlers.common.movable.ESoldierType"));
+				break;
 			case "localized":
 				panelStack.getLast().addArgument(new LocalizedArgument(attributes));
 				break;

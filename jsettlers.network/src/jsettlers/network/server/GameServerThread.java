@@ -34,7 +34,7 @@ import jsettlers.network.server.lan.LanServerBroadcastThread;
  * @author Andreas Eberle
  * 
  */
-public class GameServerThread extends Thread {
+public final class GameServerThread extends Thread {
 
 	private static final Logger LOGGER = LoggerManager.ROOT_LOGGER;
 

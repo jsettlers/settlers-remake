@@ -80,7 +80,7 @@ public class RelativePoint implements Serializable {
 
 	@Override
 	public final int hashCode() {
-		return getDy() << 16 + getDx();
+		return (getDy() << 16) + getDx();
 	}
 
 	@Override

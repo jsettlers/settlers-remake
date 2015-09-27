@@ -113,8 +113,7 @@ public class BgMap implements IGraphicsGrid {
 	}
 
 	@Override
-	public void setBackgroundListener(
-			IGraphicsBackgroundListener backgroundListener) {
+	public void setBackgroundListener(IGraphicsBackgroundListener backgroundListener) {
 	}
 
 	@Override
@@ -125,6 +124,11 @@ public class BgMap implements IGraphicsGrid {
 	@Override
 	public IPartitionData getPartitionData(int x, int y) {
 		return null;
+	}
+
+	@Override
+	public boolean isBuilding(int x, int y) {
+		return false;
 	}
 
 }

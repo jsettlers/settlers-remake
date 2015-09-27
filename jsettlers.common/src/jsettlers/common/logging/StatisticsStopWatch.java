@@ -12,28 +12,53 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.ai.construction;
+package jsettlers.common.logging;
 
-import jsettlers.ai.highlevel.AiPositions;
-import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.common.buildings.EBuildingType;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 
 /**
- * Assumptions: stones are placed as groups at the map, never alone without other stones
- * 
- * Algorithm: find all possible construction points within the borders of the player - calculates a score based on the distance from the most near
- * stone of the possible construction position - takes the position with the best score (lowest distance to the most near stone)
- * 
+ * This class implements a simple stop watch that records the time in milliseconds and prints
+ * the average, mean, min and max of all measured measurements.
+ *
  * @author codingberlin
  */
-public class BestStoneCutterConstructionPositionFinder extends BestWorkareaConstructionPositionFinder {
+public class StatisticsStopWatch extends StopWatch {
 
-	public BestStoneCutterConstructionPositionFinder(EBuildingType buildingType) {
-		super(buildingType);
+	private final List<Long> measurements = new Vector<Long>();
+
+	@Override
+	public long now() {
+		return System.currentTimeMillis();
 	}
 
-	protected AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId) {
-		return aiStatistics.getStonesForPlayer(playerId);
+	@Override
+	protected String getUnit() {
+		return "ms";
 	}
 
+	@Override
+	public void stop(String leadingText) {
+		measurements.add(getDiff());
+		Collections.sort(measurements);
+		System.out.println(leadingText
+						+ " -> number of measurements: " + measurements.size()
+						+ ", min: " + measurements.get(0) + " " + getUnit()
+						+ ", average: " + calculateAverage(measurements) + " " + getUnit()
+						+ ", median: " + measurements.get((int) Math.floor(measurements.size() / 2)) + " " + getUnit()
+						+ ", max: " + measurements.get(measurements.size() - 1) + " " + getUnit()
+		);
+	}
+
+	private double calculateAverage(List<Long> measurements) {
+		long sum = 0;
+		if(!measurements.isEmpty()) {
+			for (Long measurement : measurements) {
+				sum += measurement;
+			}
+			return sum / measurements.size();
+		}
+		return sum;
+	}
 }

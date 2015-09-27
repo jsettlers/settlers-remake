@@ -14,11 +14,6 @@
  *******************************************************************************/
 package jsettlers.mapcreator.main;
 
-import go.graphics.area.Area;
-import go.graphics.region.Region;
-import go.graphics.swing.AreaContainer;
-import go.graphics.swing.sound.SwingSoundPlayer;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -59,6 +54,10 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import go.graphics.area.Area;
+import go.graphics.region.Region;
+import go.graphics.swing.AreaContainer;
+import go.graphics.swing.sound.SwingSoundPlayer;
 import jsettlers.algorithms.previewimage.PreviewImageCreator;
 import jsettlers.common.buildings.EBuildingType;
 import jsettlers.common.landscape.ELandscapeType;
@@ -610,7 +609,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 			builder.redirectErrorStream(true);
 			final Process process = builder.start();
 
-			new Thread(new Runnable() {
+			Thread streamReader = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -629,7 +628,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 					}
 				}
 			}, "run game process");
-
+			streamReader.setDaemon(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -779,7 +778,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 		if (action.getActionType() == EActionType.SELECT_AREA) {
 			// IMapArea area = ((SelectAreaAction) action).getArea();
 		} else if (action instanceof DrawLineAction) {
-			if (tool != null) {
+			if (tool != null && !(tool instanceof SetStartpointTool)) {
 				DrawLineAction lineAction = (DrawLineAction) action;
 
 				ShapeType shape = getActiveShape();
@@ -789,7 +788,7 @@ public class EditorWindow implements IMapInterfaceListener, ActionFireable, Test
 				dataTester.retest();
 			}
 		} else if (action instanceof StartDrawingAction) {
-			if (tool != null) {
+			if (tool != null && !(tool instanceof SetStartpointTool)) {
 				StartDrawingAction lineAction = (StartDrawingAction) action;
 
 				ShapeType shape = getActiveShape();

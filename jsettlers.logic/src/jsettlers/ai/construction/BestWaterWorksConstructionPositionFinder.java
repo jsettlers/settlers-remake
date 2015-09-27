@@ -17,6 +17,7 @@ package jsettlers.ai.construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
@@ -38,14 +39,14 @@ public class BestWaterWorksConstructionPositionFinder implements IBestConstructi
 
 	@Override
 	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> rivers = aiStatistics.getRiversForPlayer(playerId);
+		AiPositions rivers = aiStatistics.getRiversForPlayer(playerId);
 		if (rivers.size() == 0) {
 			return null;
 		}
 		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
 		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
 			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestRiverPosition = aiStatistics.detectNearestPointFromList(point, rivers);
+				ShortPoint2D nearestRiverPosition = rivers.getNearestPoint(point);
 				int riverDistance = point.getOnGridDistTo(nearestRiverPosition);
 				scoredConstructionPositions.add(new ScoredConstructionPosition(point, riverDistance));
 			}

@@ -14,13 +14,9 @@
  *******************************************************************************/
 package jsettlers.ai.construction;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jsettlers.ai.highlevel.AiPositions;
 import jsettlers.ai.highlevel.AiStatistics;
-import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.buildings.EBuildingType;
-import jsettlers.common.position.ShortPoint2D;
 
 /**
  * Assumptions: trees are placed as groups or as a single tree on the map
@@ -30,35 +26,14 @@ import jsettlers.common.position.ShortPoint2D;
  * 
  * @author codingberlin
  */
-public class BestLumberJackConstructionPositionFinder implements IBestConstructionPositionFinder {
-
-	private EBuildingType buildingType;
-	private final short workingRadius;
+public class BestLumberJackConstructionPositionFinder extends BestWorkareaConstructionPositionFinder {
 
 	public BestLumberJackConstructionPositionFinder(EBuildingType buildingType) {
-		this.buildingType = buildingType;
-		workingRadius = buildingType.getWorkradius();
+		super(buildingType);
 	}
 
 	@Override
-	public ShortPoint2D findBestConstructionPosition(AiStatistics aiStatistics, AbstractConstructionMarkableMap constructionMap, byte playerId) {
-		List<ShortPoint2D> trees = aiStatistics.getTreesForPlayer(playerId);
-		if (trees.size() == 0) {
-			return null;
-		}
-		List<ScoredConstructionPosition> scoredConstructionPositions = new ArrayList<ScoredConstructionPosition>();
-		for (ShortPoint2D point : aiStatistics.getLandForPlayer(playerId)) {
-			if (constructionMap.canConstructAt(point.x, point.y, buildingType, playerId) && aiStatistics.southIsFreeForPlayer(point, playerId)
-					&& !aiStatistics.blocksWorkingAreaOfOtherBuilding(point)) {
-				ShortPoint2D nearestTreePosition = aiStatistics.detectNearestPointFromList(point, trees);
-				int treeDistance = point.getOnGridDistTo(nearestTreePosition);
-				if (treeDistance < workingRadius) {
-					scoredConstructionPositions.add(new ScoredConstructionPosition(point, treeDistance));
-				}
-			}
-		}
-
-		return ScoredConstructionPosition.detectPositionWithLowestScore(scoredConstructionPositions);
+	protected AiPositions getRelevantObjects(AiStatistics aiStatistics, byte playerId) {
+		return aiStatistics.getTreesForPlayer(playerId);
 	}
-
 }

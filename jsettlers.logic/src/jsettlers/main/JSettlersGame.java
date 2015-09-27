@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,6 +29,7 @@ import jsettlers.ai.highlevel.AiExecutor;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.map.IGraphicsGrid;
 import jsettlers.common.map.MapLoadException;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.common.resources.ResourceManager;
 import jsettlers.common.statistics.IStatisticable;
 import jsettlers.graphics.map.IMapInterfaceConnector;
@@ -63,8 +65,6 @@ import jsettlers.network.synchronic.random.RandomSingleton;
  * @author Andreas Eberle
  */
 public class JSettlersGame {
-	private static final SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-
 	private final Object stopMutex = new Object();
 
 	private final IGameCreator mapCreator;
@@ -212,9 +212,9 @@ public class JSettlersGame {
 				final IMapInterfaceConnector connector = startingGameListener.preLoadFinished(this);
 				GuiInterface guiInterface = new GuiInterface(connector, gameClock, networkConnector.getTaskScheduler(), mainGrid.getGuiInputGrid(),
 						this, playerId, multiplayer);
-				// This is required after the GuiInterface instantiation so that ConstructionMarksThread has it's mapArea variable initialized via the
-				// EActionType.SCREEN_CHANGE event.
-				connector.loadUIState(playerState.getUiState());
+				connector.loadUIState(playerState.getUiState()); // This is required after the GuiInterface instantiation so that ConstructionMarksThread
+				// has it's mapArea variable initialised via the EActionType.SCREEN_CHANGE event.
+
 				gameClock.startExecution();
 				gameRunning = true;
 
@@ -328,6 +328,10 @@ public class JSettlersGame {
 			return statistics;
 		}
 
+		@Override public IManaInformation getManaInformation() {
+			return mainGrid.getPartitionsGrid().getPlayer(playerId).getManaInformation();
+		}
+
 		@Override
 		public void stopGame() {
 			stop();
@@ -365,10 +369,14 @@ public class JSettlersGame {
 	}
 
 	private static String getLogFile(IGameCreator mapcreator, String suffix) {
-		final String dateAndMap = logDateFormat.format(new Date()) + "_" + mapcreator.getMapName().replace(" ", "_");
+		final String dateAndMap = getLogDateFormatter().format(new Date()) + "_" + mapcreator.getMapName().replace(" ", "_");
 		final String logFolder = "logs/" + dateAndMap + "/";
 
 		final String replayFilename = logFolder + dateAndMap + suffix;
 		return replayFilename;
+	}
+
+	private static DateFormat getLogDateFormatter() {
+		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	}
 }

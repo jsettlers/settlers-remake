@@ -14,8 +14,8 @@
  *******************************************************************************/
 package jsettlers.logic.buildings.military;
 
-import jsettlers.common.buildings.OccupyerPlace.ESoldierType;
 import jsettlers.common.movable.EMovableType;
+import jsettlers.common.movable.ESoldierClass;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.movable.interfaces.IAttackable;
 import jsettlers.logic.movable.interfaces.IAttackableMovable;
@@ -31,7 +31,7 @@ public interface IBuildingOccupyableMovable {
 
 	EMovableType getMovableType();
 
-	ESoldierType getSoldierType();
+	ESoldierClass getSoldierClass();
 
 	IAttackableMovable getMovable();
 

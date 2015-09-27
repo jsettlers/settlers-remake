@@ -43,14 +43,14 @@ public class IteratorFilterTest {
 	public void testFilterUneven() {
 		LinkedList<Integer> expected = new LinkedList<Integer>();
 		for (Integer curr : list) {
-			if (curr % 2 == 1)
+			if (curr % 2 != 0)
 				expected.add(curr);
 		}
 
 		assertEqualality(expected, new IteratorFilter<Integer>(list, new IPredicate<Integer>() {
 			@Override
 			public boolean evaluate(Integer object) {
-				return object % 2 == 1;
+				return object % 2 != 0;
 			}
 		}));
 	}

@@ -14,32 +14,38 @@
  *******************************************************************************/
 package jsettlers.input.tasks;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import jsettlers.common.movable.ESoldierType;
+
 /**
- * Actions of the gui used to send them over the network.
- * 
+ * @author codingberlin
  * @author Andreas Eberle
- * 
  */
-public enum EGuiAction {
-	BUILD,
-	SET_WORK_AREA,
-	MOVE_TO,
-	QUICK_SAVE,
-	DESTROY_MOVABLES,
-	DESTROY_BUILDING,
-	STOP_WORKING,
-	START_WORKING,
-	CONVERT,
-	SET_BUILDING_PRIORITY,
-	SET_MATERIAL_DISTRIBUTION_SETTINGS,
+public class UpgradeSoldiersGuiTask extends SimpleGuiTask {
 
-	/**
-	 * The user wants to change the order in which materials are served by bearers.
-	 * 
-	 * @see SetMaterialPrioritiesGuiTask
-	 */
-	SET_MATERIAL_PRIORITIES,
-	UPGRADE_SOLDIERS;
+	private ESoldierType soldierType;
 
-	public static final EGuiAction[] values = values();
+	public UpgradeSoldiersGuiTask(byte playerId, ESoldierType soldierType) {
+		super(EGuiAction.UPGRADE_SOLDIERS, playerId);
+		this.soldierType = soldierType;
+	}
+
+	public ESoldierType getSoldierType() {
+		return soldierType;
+	}
+
+	@Override
+	protected void serializeTask(DataOutputStream dos) throws IOException {
+		super.serializeTask(dos);
+		dos.writeInt(soldierType.ordinal);
+	}
+
+	@Override
+	protected void deserializeTask(DataInputStream dis) throws IOException {
+		super.deserializeTask(dis);
+		soldierType = ESoldierType.values[dis.readInt()];
+	}
 }

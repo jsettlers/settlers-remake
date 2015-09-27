@@ -162,7 +162,7 @@ public class FreshMapSerializer {
 			DataInputStream stream = new DataInputStream(in);
 			int version = stream.readShort();
 
-			if (!(version == VERSION || version == VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS)) {
+			if (version < VERSION_WITH_RESOURCES_BLOCKED_PARTITIONS) {
 				throw new IOException("wrong stream version, got: " + version);
 			}
 

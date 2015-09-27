@@ -12,34 +12,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *******************************************************************************/
-package jsettlers.input.tasks;
+package jsettlers.common.movable;
 
 /**
- * Actions of the gui used to send them over the network.
- * 
+ * @author codingberlin
  * @author Andreas Eberle
- * 
  */
-public enum EGuiAction {
-	BUILD,
-	SET_WORK_AREA,
-	MOVE_TO,
-	QUICK_SAVE,
-	DESTROY_MOVABLES,
-	DESTROY_BUILDING,
-	STOP_WORKING,
-	START_WORKING,
-	CONVERT,
-	SET_BUILDING_PRIORITY,
-	SET_MATERIAL_DISTRIBUTION_SETTINGS,
+public enum ESoldierType {
+	BOWMAN,
+	SWORDSMAN,
+	PIKEMAN;
 
-	/**
-	 * The user wants to change the order in which materials are served by bearers.
-	 * 
-	 * @see SetMaterialPrioritiesGuiTask
-	 */
-	SET_MATERIAL_PRIORITIES,
-	UPGRADE_SOLDIERS;
+	public static final ESoldierType[] values = ESoldierType.values();
+	public static final int NUMBER_OF_VALUES = values.length;
 
-	public static final EGuiAction[] values = values();
+	public final int ordinal;
+
+	private ESoldierType() {
+		this.ordinal = ordinal();
+	}
+
+	public ESoldierClass getSoldierClass() {
+		switch (this) {
+		case BOWMAN:
+			return ESoldierClass.BOWMAN;
+		case SWORDSMAN:
+		case PIKEMAN:
+			return ESoldierClass.INFANTRY;
+		default:
+			return null;
+		}
+	}
 }

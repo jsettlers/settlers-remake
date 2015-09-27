@@ -15,6 +15,7 @@
 package jsettlers.graphics.startscreen.interfaces;
 
 import jsettlers.common.map.IGraphicsGrid;
+import jsettlers.common.player.IManaInformation;
 import jsettlers.common.statistics.IStatisticable;
 
 /**
@@ -37,6 +38,8 @@ public interface IStartedGame {
 	 * @return
 	 */
 	IStatisticable getPlayerStatistics();
+
+	IManaInformation getManaInformation();
 
 	void setGameExitListener(IGameExitListener exitListener);
 }
