@@ -17,18 +17,21 @@ package jsettlers.ai.highlevel;
 import static jsettlers.common.buildings.EBuildingType.FARM;
 import static jsettlers.common.buildings.EBuildingType.LUMBERJACK;
 import static jsettlers.common.buildings.EBuildingType.WINEGROWER;
-import static jsettlers.common.landscape.ELandscapeType.RIVER1;
-import static jsettlers.common.landscape.ELandscapeType.RIVER2;
-import static jsettlers.common.landscape.ELandscapeType.RIVER3;
-import static jsettlers.common.landscape.ELandscapeType.RIVER4;
 import static jsettlers.common.mapobject.EMapObjectType.STONE;
 import static jsettlers.common.mapobject.EMapObjectType.TREE_ADULT;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L1;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L2;
 import static jsettlers.common.movable.EMovableType.SWORDSMAN_L3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
+import jsettlers.ai.highlevel.AiPositions.AiPositionFilter;
 import jsettlers.algorithms.construction.AbstractConstructionMarkableMap;
 import jsettlers.common.CommonConstants;
 import jsettlers.common.buildings.EBuildingType;
@@ -39,6 +42,7 @@ import jsettlers.common.map.partition.IPartitionData;
 import jsettlers.common.map.shapes.MapCircle;
 import jsettlers.common.mapobject.EMapObjectType;
 import jsettlers.common.material.EMaterialType;
+import jsettlers.common.movable.EDirection;
 import jsettlers.common.movable.EMovableType;
 import jsettlers.common.position.ShortPoint2D;
 import jsettlers.logic.buildings.Building;
@@ -46,10 +50,11 @@ import jsettlers.logic.map.grid.MainGrid;
 import jsettlers.logic.map.grid.flags.FlagsGrid;
 import jsettlers.logic.map.grid.landscape.LandscapeGrid;
 import jsettlers.logic.map.grid.movable.MovableGrid;
+import jsettlers.logic.map.grid.objects.AbstractHexMapObject;
 import jsettlers.logic.map.grid.objects.ObjectsGrid;
+import jsettlers.logic.map.grid.partition.Partition;
 import jsettlers.logic.map.grid.partition.PartitionsGrid;
 import jsettlers.logic.movable.Movable;
-import jsettlers.logic.objects.stack.StackMapObject;
 import jsettlers.logic.player.Player;
 
 /**
@@ -64,9 +69,9 @@ public class AiStatistics {
 
 	private final Queue<Building> buildings;
 	private PlayerStatistic[] playerStatistics;
-	private Map<EMapObjectType, Map<Integer, List<Integer>>> sortedCuttableObjectsInDefaultPartition;
-	private Map<EResourceType, Map<Integer, List<Integer>>> sortedResourceTypes;
-	private Map<Integer, List<Integer>> sortedRiversInDefaultPartition;
+	private Map<EMapObjectType, AiPositions> sortedCuttableObjectsInDefaultPartition;
+	private AiPositions[] sortedResourceTypes;
+	private AiPositions sortedRiversInDefaultPartition;
 	private final MainGrid mainGrid;
 	private final LandscapeGrid landscapeGrid;
 	private final ObjectsGrid objectsGrid;
@@ -88,11 +93,11 @@ public class AiStatistics {
 		for (byte i = 0; i < mainGrid.getGuiInputGrid().getNumberOfPlayers(); i++) {
 			this.playerStatistics[i] = new PlayerStatistic();
 		}
-		sortedRiversInDefaultPartition = new HashMap<Integer, List<Integer>>();
-		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, Map<Integer, List<Integer>>>();
-		sortedResourceTypes = new HashMap<EResourceType, Map<Integer, List<Integer>>>();
-		for (EResourceType type : EResourceType.values()) {
-			sortedResourceTypes.put(type, new HashMap<Integer, List<Integer>>());
+		sortedRiversInDefaultPartition = new AiPositions();
+		sortedCuttableObjectsInDefaultPartition = new HashMap<EMapObjectType, AiPositions>();
+		sortedResourceTypes = new AiPositions[EResourceType.values.length];
+		for (int i = 0; i < sortedResourceTypes.length; i++) {
+			sortedResourceTypes[i] = new AiPositions();
 		}
 
 	}
@@ -111,7 +116,7 @@ public class AiStatistics {
 		}
 		sortedRiversInDefaultPartition.clear();
 		sortedCuttableObjectsInDefaultPartition.clear();
-		for (Map<Integer, List<Integer>> xCoordinatesMap : sortedResourceTypes.values()) {
+		for (AiPositions xCoordinatesMap : sortedResourceTypes) {
 			xCoordinatesMap.clear();
 		}
 
@@ -138,12 +143,12 @@ public class AiStatistics {
 	}
 
 	private void updateBuildingsNumbers(PlayerStatistic playerStatistic, Building building, EBuildingType type) {
-		playerStatistic.totalBuildingsNumbers[type.ordinal] = playerStatistic.totalBuildingsNumbers[type.ordinal] + 1;
+		playerStatistic.totalBuildingsNumbers[type.ordinal]++;
 		if (building.getStateProgress() == 1f) {
-			playerStatistic.buildingsNumbers[type.ordinal] = playerStatistic.buildingsNumbers[type.ordinal] + 1;
+			playerStatistic.buildingsNumbers[type.ordinal]++;
 		}
 		if (!building.isOccupied()) {
-			playerStatistic.unoccupiedBuildingsNumbers[type.ordinal] = playerStatistic.unoccupiedBuildingsNumbers[type.ordinal] + 1;
+			playerStatistic.unoccupiedBuildingsNumbers[type.ordinal]++;
 		}
 	}
 
@@ -161,67 +166,81 @@ public class AiStatistics {
 
 	private void updateMapStatistics() {
 		updatePartitionIdsToBuildOn();
-		for (short x = 0; x < mainGrid.getWidth(); x++) {
-			for (short y = 0; y < mainGrid.getHeight(); y++) {
-				Integer xInteger = Integer.valueOf(x);
-				Integer yInteger = Integer.valueOf(y);
-				EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
-				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
-					if (!sortedResourceTypes.get(resourceType).containsKey(xInteger)) {
-						sortedResourceTypes.get(resourceType).put(xInteger, new ArrayList<Integer>());
-					}
-					sortedResourceTypes.get(resourceType).get(xInteger).add(yInteger);
-				}
+		updateResources();
+		short width = mainGrid.getWidth();
+		short height = mainGrid.getHeight();
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
 				Player player = partitionsGrid.getPlayerAt(x, y);
 				if (player == null) {
-					if (objectsGrid.hasCuttableObject(x, y, TREE_ADULT)) {
-						if (!sortedCuttableObjectsInDefaultPartition.containsKey(TREE_ADULT)) {
-							sortedCuttableObjectsInDefaultPartition.put(TREE_ADULT, new HashMap<Integer, List<Integer>>());
-						}
-						if (!sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).containsKey(xInteger)) {
-							sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).put(xInteger, new ArrayList<Integer>());
-						}
-						sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT).get(xInteger).add(yInteger);
-					}
-					if (objectsGrid.hasCuttableObject(x, y, STONE)) {
-						if (!sortedCuttableObjectsInDefaultPartition.containsKey(STONE)) {
-							sortedCuttableObjectsInDefaultPartition.put(STONE, new HashMap<Integer, List<Integer>>());
-						}
-						if (!sortedCuttableObjectsInDefaultPartition.get(STONE).containsKey(xInteger)) {
-							sortedCuttableObjectsInDefaultPartition.get(STONE).put(xInteger, new ArrayList<Integer>());
-						}
-						sortedCuttableObjectsInDefaultPartition.get(STONE).get(xInteger).add(yInteger);
-					}
-					if (landscapeGrid.getLandscapeTypeAt(x, y).isRiver()) {
-						if (!sortedRiversInDefaultPartition.containsKey(xInteger)) {
-							sortedRiversInDefaultPartition.put(xInteger, new ArrayList<Integer>());
-						}
-						sortedRiversInDefaultPartition.get(xInteger).add(yInteger);
-					}
+					updateFreeLand(x, y);
 				} else {
-					int playerId = partitionsGrid.getPlayerAt(x, y).playerId;
-					PlayerStatistic playerStatistic = playerStatistics[playerId];
-					ShortPoint2D point = new ShortPoint2D(x, y);
-					updateBorderlandNextToFreeLand(playerStatistic, point);
-					playerStatistic.land.add(point);
-					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.STONE)) {
-						playerStatistic.stones.add(point);
-					}
-					if (objectsGrid.hasCuttableObject(x, y, EMapObjectType.TREE_ADULT)) {
-						playerStatistic.trees.add(point);
-					}
-					if (landscapeGrid.getLandscapeTypeAt(x, y) == RIVER1 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER2
-							|| landscapeGrid.getLandscapeTypeAt(x, y) == RIVER3 || landscapeGrid.getLandscapeTypeAt(x, y) == RIVER4) {
-						playerStatistic.rivers.add(point);
-					}
-					Movable movable = movableGrid.getMovableAt(x, y);
-					if (movable != null) {
-						EMovableType movableType = movable.getMovableType();
-						if (!playerStatistic.movablePositions.containsKey(movableType)) {
-							playerStatistic.movablePositions.put(movableType, new ArrayList<ShortPoint2D>());
-						}
-						playerStatistic.movablePositions.get(movableType).add(point);
-					}
+					updatePlayerLand(x, y, player);
+				}
+			}
+		}
+	}
+
+	private void updatePlayerLand(short x, short y, Player player) {
+		int playerId = player.playerId;
+		PlayerStatistic playerStatistic = playerStatistics[playerId];
+		updateBorderlandNextToFreeLand(playerStatistic, x, y);
+		playerStatistic.land.addNoCollission(x, y);
+		AbstractHexMapObject o = objectsGrid.getObjectsAt(x, y);
+		if (o != null) {
+			if (o.hasCuttableObject(STONE)) {
+				playerStatistic.stones.addNoCollission(x, y);
+			} else if (o.hasCuttableObject(TREE_ADULT)) {
+				playerStatistic.trees.addNoCollission(x, y);
+			}
+		}
+		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
+		if (landscape.isRiver()) {
+			playerStatistic.rivers.addNoCollission(x, y);
+		}
+		Movable movable = movableGrid.getMovableAt(x, y);
+		if (movable != null) {
+			EMovableType movableType = movable.getMovableType();
+			List<ShortPoint2D> movables = playerStatistic.movablePositions.get(movableType);
+			if (movables == null) {
+				movables = new ArrayList<>();
+				playerStatistic.movablePositions.put(movableType, movables);
+			}
+			movables.add(new ShortPoint2D(x, y));
+		}
+	}
+
+	private void updateFreeLand(short x, short y) {
+		if (objectsGrid.hasCuttableObject(x, y, TREE_ADULT)) {
+			AiPositions trees = sortedCuttableObjectsInDefaultPartition.get(TREE_ADULT);
+			if (trees == null) {
+				trees = new AiPositions();
+				sortedCuttableObjectsInDefaultPartition.put(TREE_ADULT, trees);
+			}
+			trees.addNoCollission(x, y);
+		}
+		if (objectsGrid.hasCuttableObject(x, y, STONE)) {
+			AiPositions stones = sortedCuttableObjectsInDefaultPartition.get(STONE);
+			if (stones == null) {
+				stones = new AiPositions();
+				sortedCuttableObjectsInDefaultPartition.put(STONE, stones);
+			}
+			stones.addNoCollission(x, y);
+		}
+		ELandscapeType landscape = landscapeGrid.getLandscapeTypeAt(x, y);
+		if (landscape.isRiver()) {
+			sortedRiversInDefaultPartition.addNoCollission(x, y);
+		}
+	}
+
+	private void updateResources() {
+		short width = mainGrid.getWidth();
+		short height = mainGrid.getHeight();
+		for (short x = 0; x < width; x++) {
+			for (short y = 0; y < height; y++) {
+				if (landscapeGrid.getResourceAmountAt(x, y) > 0) {
+					EResourceType resourceType = landscapeGrid.getResourceTypeAt(x, y);
+					sortedResourceTypes[resourceType.ordinal].addNoCollission(x, y);
 				}
 			}
 		}
@@ -242,16 +261,17 @@ public class AiStatistics {
 		}
 	}
 
-	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, ShortPoint2D point) {
-		short west = (short) Math.max(0, point.x - BORDER_LAND_WIDTH);
-		short east = (short) Math.min(mainGrid.getWidth() - 1, point.x + BORDER_LAND_WIDTH);
-		short north = (short) Math.max(0, point.y - BORDER_LAND_WIDTH);
-		short south = (short) Math.min(mainGrid.getHeight() - 1, point.y + BORDER_LAND_WIDTH);
-		if (partitionsGrid.getPlayerAt(west, point.y) == null ||
-				partitionsGrid.getPlayerAt(east, point.y) == null ||
-				partitionsGrid.getPlayerAt(point.x, north) == null ||
-				partitionsGrid.getPlayerAt(point.x, south) == null) {
-			playerStatistic.borderLandNextToFreeLand.add(point);
+	private void updateBorderlandNextToFreeLand(PlayerStatistic playerStatistic, short x, short y) {
+		Partition myPartition = partitionsGrid.getPartitionAt(x, y);
+		for (EDirection dir : EDirection.values) {
+			int lx = x + dir.gridDeltaX * BORDER_LAND_WIDTH;
+			int ly = y + dir.gridDeltaY * BORDER_LAND_WIDTH;
+			if (mainGrid.isInBounds(lx, ly)) {
+				if (partitionsGrid.getPartitionAt(lx, ly) != myPartition) {
+					playerStatistic.borderLandNextToFreeLand.addNoCollission(x, y);
+					break;
+				}
+			}
 		}
 	}
 
@@ -282,7 +302,8 @@ public class AiStatistics {
 
 	public ShortPoint2D getNearestResourcePointForPlayer(ShortPoint2D point, EResourceType resourceType, byte playerId,
 			int currentNearestPointDistance) {
-		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes.get(resourceType), playerId, currentNearestPointDistance);
+		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourceTypes[resourceType.ordinal], playerId,
+				currentNearestPointDistance);
 	}
 
 	public ShortPoint2D getNearestResourcePointInDefaultPartitionFor(ShortPoint2D point, EResourceType resourceType,
@@ -297,72 +318,19 @@ public class AiStatistics {
 
 	public ShortPoint2D getNearestCuttableObjectPointForPlayer(ShortPoint2D point, EMapObjectType cuttableObject,
 			int currentNearestPointDistance, byte playerId) {
-		Map<Integer, List<Integer>> sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
+		AiPositions sortedResourcePoints = sortedCuttableObjectsInDefaultPartition.get(cuttableObject);
 		return getNearestPointInDefaultPartitionOutOfSortedMap(point, sortedResourcePoints, playerId, currentNearestPointDistance);
 	}
 
-	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints, byte playerId,
+	private ShortPoint2D getNearestPointInDefaultPartitionOutOfSortedMap(ShortPoint2D point, AiPositions sortedPoints, final byte playerId,
 			int currentNearestPointDistance) {
-		ShortPoint2D result = null;
-		ShortPoint2D nearestRightPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				Integer.valueOf(point.x), 1, Integer.valueOf(mainGrid.getWidth() + 1), playerId);
-		if (nearestRightPoint != null) {
-			currentNearestPointDistance = point.getOnGridDistTo(nearestRightPoint);
-			result = nearestRightPoint;
-		}
-		ShortPoint2D nearestLeftPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance,
-				Integer.valueOf(point.x - 1), -1, -1, playerId);
-		if (nearestLeftPoint != null) {
-			result = nearestLeftPoint;
-		}
-		return result;
-	}
+		return sortedPoints.getNearestPoint(point, currentNearestPointDistance, new AiPositionFilter() {
 
-	private ShortPoint2D getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(ShortPoint2D point, Map<Integer, List<Integer>> sortedPoints,
-			int currentNearestPointDistance, Integer x, int increment, int border, byte playerId) {
-		if (x.intValue() == border || Math.abs(x - point.x) > currentNearestPointDistance) {
-			return null;
-		}
-		if (!sortedPoints.containsKey(x)) {
-			return getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x + increment,
-					increment, border, playerId);
-		}
-		ShortPoint2D result = null;
-		ShortPoint2D southYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, point.y, 1, Integer.valueOf(mainGrid.getHeight() + 1), playerId);
-		if (southYPoint != null) {
-			result = southYPoint;
-			currentNearestPointDistance = point.getOnGridDistTo(southYPoint);
-		}
-		ShortPoint2D northYPoint = getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(sortedPoints.get(x), point,
-				currentNearestPointDistance, x, point.y - 1, -1, -1, playerId);
-		if (northYPoint != null) {
-			result = northYPoint;
-			currentNearestPointDistance = point.getOnGridDistTo(northYPoint);
-		}
-		if (Math.abs(point.x - (x + increment)) < currentNearestPointDistance) {
-			ShortPoint2D nextPoint = getNearestPoinInDefaultPartionOutOfSortedMapInXDirection(point, sortedPoints, currentNearestPointDistance, x
-					+ increment, increment, border, playerId);
-			if (nextPoint != null) {
-				result = nextPoint;
+			@Override
+			public boolean contains(int x, int y) {
+				return partitionsGrid.getPartitionAt(x, y).getPlayerId() == playerId;
 			}
-		}
-		return result;
-	}
-
-	private ShortPoint2D getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(List<Integer> ypsilons, ShortPoint2D point,
-			int currentNearestPointDistance, int x, int y, int increment, int border, byte playerId) {
-		if (y == border || Math.abs(y - point.y) > currentNearestPointDistance) {
-			return null;
-		}
-		if (!ypsilons.contains(Integer.valueOf(y)) || partitionsGrid.getPartitionAt(x, y).getPlayerId() != playerId) {
-			return getNearestPoinInDefaultPartitionOutOfSortedMapInYDirection(ypsilons, point, currentNearestPointDistance, x, y + increment,
-					increment, border, playerId);
-		}
-		if (point.getOnGridDistTo(new ShortPoint2D(x, y)) > currentNearestPointDistance) {
-			return null;
-		}
-		return new ShortPoint2D(x, y);
+		});
 	}
 
 	public List<ShortPoint2D> getMovablePositionsByTypeForPlayer(EMovableType movableType, byte playerId) {
@@ -395,19 +363,19 @@ public class AiStatistics {
 		return playerStatistics[playerId].buildingPositions.get(type);
 	}
 
-	public List<ShortPoint2D> getStonesForPlayer(byte playerId) {
+	public AiPositions getStonesForPlayer(byte playerId) {
 		return playerStatistics[playerId].stones;
 	}
 
-	public List<ShortPoint2D> getTreesForPlayer(byte playerId) {
+	public AiPositions getTreesForPlayer(byte playerId) {
 		return playerStatistics[playerId].trees;
 	}
 
-	public List<ShortPoint2D> getLandForPlayer(byte playerId) {
+	public AiPositions getLandForPlayer(byte playerId) {
 		return playerStatistics[playerId].land;
 	}
 
-	public List<ShortPoint2D> getBorderLandNextToFreeLandForPlayer(byte playerId) {
+	public AiPositions getBorderLandNextToFreeLandForPlayer(byte playerId) {
 		return playerStatistics[playerId].borderLandNextToFreeLand;
 	}
 
@@ -463,7 +431,7 @@ public class AiStatistics {
 		return movableGrid.getMovableAt(nearestSoldierPosition.x, nearestSoldierPosition.y);
 	}
 
-	public ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
+	public static ShortPoint2D detectNearestPointFromList(ShortPoint2D referencePoint, List<ShortPoint2D> points) {
 		if (points.isEmpty()) {
 			return null;
 		}
@@ -471,9 +439,10 @@ public class AiStatistics {
 		return detectNearestPointsFromList(referencePoint, points, 1).get(0);
 	}
 
-	public List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points, int amountOfPointsToDetect) {
+	public static List<ShortPoint2D> detectNearestPointsFromList(final ShortPoint2D referencePoint, List<ShortPoint2D> points,
+			int amountOfPointsToDetect) {
 		if (amountOfPointsToDetect <= 0) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		if (points.size() <= amountOfPointsToDetect) {
@@ -481,7 +450,8 @@ public class AiStatistics {
 		}
 
 		Collections.sort(points, new Comparator<ShortPoint2D>() {
-			@Override public int compare(ShortPoint2D o1, ShortPoint2D o2) {
+			@Override
+			public int compare(ShortPoint2D o1, ShortPoint2D o2) {
 				return o1.getOnGridDistTo(referencePoint) - o2.getOnGridDistTo(referencePoint);
 			}
 		});
@@ -509,7 +479,7 @@ public class AiStatistics {
 		return getTotalNumberOfBuildingTypeForPlayer(buildingType, playerId) - getNumberOfBuildingTypeForPlayer(buildingType, playerId);
 	}
 
-	public List<ShortPoint2D> getRiversForPlayer(byte playerId) {
+	public AiPositions getRiversForPlayer(byte playerId) {
 		return playerStatistics[playerId].rivers;
 	}
 
@@ -524,23 +494,23 @@ public class AiStatistics {
 		private Map<EBuildingType, List<ShortPoint2D>> buildingPositions;
 		private short partitionIdToBuildOn;
 		private IPartitionData materials;
-		private List<ShortPoint2D> land;
-		private List<ShortPoint2D> borderLandNextToFreeLand;
+		private AiPositions land;
+		private AiPositions borderLandNextToFreeLand;
 		private Map<EMovableType, List<ShortPoint2D>> movablePositions;
-		private List<ShortPoint2D> stones;
-		private List<ShortPoint2D> trees;
-		private List<ShortPoint2D> rivers;
+		private AiPositions stones;
+		private AiPositions trees;
+		private AiPositions rivers;
 		private int numberOfNotFinishedBuildings;
 		private int numberOfTotalBuildings;
 		private int numberOfNotOccupiedTowers;
 
 		PlayerStatistic() {
 			buildingPositions = new HashMap<EBuildingType, List<ShortPoint2D>>();
-			stones = new ArrayList<ShortPoint2D>();
-			trees = new ArrayList<ShortPoint2D>();
-			rivers = new ArrayList<ShortPoint2D>();
-			land = new ArrayList<ShortPoint2D>();
-			borderLandNextToFreeLand = new ArrayList<ShortPoint2D>();
+			stones = new AiPositions();
+			trees = new AiPositions();
+			rivers = new AiPositions();
+			land = new AiPositions();
+			borderLandNextToFreeLand = new AiPositions();
 			movablePositions = new HashMap<EMovableType, List<ShortPoint2D>>();
 			totalBuildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];
 			buildingsNumbers = new int[EBuildingType.NUMBER_OF_BUILDINGS];

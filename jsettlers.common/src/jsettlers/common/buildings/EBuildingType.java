@@ -127,6 +127,7 @@ public enum EBuildingType {
 	private final RelativePoint[] buildmarks;
 
 	private final ELandscapeType[] groundtypes;
+	private final long groundtypesFast;
 
 	private final short viewdistance;
 
@@ -168,11 +169,21 @@ public enum EBuildingType {
 
 		buildmarks = file.getBuildmarks();
 		groundtypes = file.getGroundtypes();
+		groundtypesFast = packGroundtypes(groundtypes);
 		viewdistance = file.getViewdistance();
 
 		this.numberOfConstructionMaterials = calculateNumberOfConstructionMaterials();
 
 		this.buildingAreaBitSet = new BuildingAreaBitSet(this.getProtectedTiles());
+	}
+
+	private long packGroundtypes(ELandscapeType[] groundtypes) {
+		assert ELandscapeType.values.length <= 64;
+		long res = 0;
+		for (ELandscapeType g : groundtypes) {
+			res |= (1 << g.ordinal);
+		}
+		return res;
 	}
 
 	private final byte calculateNumberOfConstructionMaterials() {
@@ -323,5 +334,16 @@ public enum EBuildingType {
 		default:
 			return false;
 		}
+	}
+
+	/**
+	 * A (fast) method that allows us to check if this landscape type is allowed.
+	 * 
+	 * @param landscapeId
+	 *            The landscape id (ordinal).
+	 * @return True if we allow that landscape as ground type.
+	 */
+	public boolean allowsLandscapeId(int landscapeId) {
+		return (groundtypesFast & (1 << landscapeId)) != 0;
 	}
 }

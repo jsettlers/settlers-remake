@@ -46,7 +46,11 @@ import static jsettlers.common.material.EMaterialType.HAMMER;
 import static jsettlers.common.material.EMaterialType.PICK;
 import static jsettlers.logic.constants.Constants.TOWER_SEARCH_RADIUS;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import jsettlers.ai.construction.BestConstructionPositionFinderFactory;
 import jsettlers.ai.construction.BuildingCount;
@@ -247,9 +251,9 @@ public class RomanWhatToDoAi implements IWhatToDoAi {
 
 	private void destroyBuildings() {
 		// destroy stonecutters
-		List<ShortPoint2D> stones = aiStatistics.getStonesForPlayer(playerId);
+		AiPositions stones = aiStatistics.getStonesForPlayer(playerId);
 		for (ShortPoint2D stoneCutterPosition : aiStatistics.getBuildingPositionsOfTypeForPlayer(STONECUTTER, playerId)) {
-			ShortPoint2D nearestStone = aiStatistics.detectNearestPointFromList(stoneCutterPosition, stones);
+			ShortPoint2D nearestStone = stones.getNearestPoint(stoneCutterPosition);
 			if (nearestStone != null && stoneCutterPosition.getOnGridDistTo(nearestStone) > STONECUTTER.getWorkradius()) {
 				taskScheduler.scheduleTask(new DestroyBuildingGuiTask(playerId, stoneCutterPosition));
 			}
