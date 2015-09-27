@@ -73,6 +73,13 @@ public interface IBuilding extends IMapObject, IPlayerable, ISelectable, ILocata
 	List<IBuildingMaterial> getMaterials();
 
 	/**
+	 * Gives information if the building cannot work.
+	 * 
+	 * @return Return true if this building cannot work.
+	 */
+	boolean cannotWork();
+
+	/**
 	 * This is a mill building. An animation is shown when {@link #isWorking()} returns true.
 	 * 
 	 * @author michael
