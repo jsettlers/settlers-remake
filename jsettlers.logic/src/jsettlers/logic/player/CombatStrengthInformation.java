@@ -22,7 +22,7 @@ public class CombatStrengthInformation implements ICombatStrengthInformation, Se
 	private final byte playerId;
 	private final PartitionsGrid partitionsGrid;
 	private final int startAmountIndex;
-	private static final float[] START_AMOUNT = {400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400};
+	private static final float[] START_AMOUNT = {652, 600, 504, 444, 396, 348, 312, 300, 276, 252, 228, 216, 204, 192, 180, 168, 163, 156, 149, 144};
 
 	public CombatStrengthInformation(byte playerId, PartitionsGrid partitionsGrid, byte sumOfPlayers) {
 		this.playerId = playerId;
@@ -48,7 +48,7 @@ public class CombatStrengthInformation implements ICombatStrengthInformation, Se
 		}
 
 		if (amountOfGold <= BORDER_50_PERCENT) {
-			return (amountOfGold / 12) / 100f;
+			return (amountOfGold / 12f) / 100f;
 		}
 		if (amountOfGold <= BORDER_85_PERCENT) {
 			for (int i = COMBAT_STRENGTH_INCREASE.length; i >= 0; i--) {
