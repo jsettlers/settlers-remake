@@ -112,7 +112,7 @@ public class DirectoryMapLister implements IMapLister {
 			name += format.format(date);
 		}
 
-		String mapFileExtension = CommonConstants.USE_SAVEGAME_COMPRESSION ? MapList.COMPRESSED_MAP_EXTENSION : MapList.MAP_EXTENSION;
+		String mapFileExtension = MapList.getMapExtension();
 
 		String actualName = name;
 		File file = new File(directory, actualName + mapFileExtension);

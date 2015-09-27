@@ -98,7 +98,11 @@ public class AutoReplayIT {
 	}
 
 	private Path getSavegamePath() {
-		return Paths.get("resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m.map");
+		String replayPath = "resources/autoreplay/" + folderName + "/savegame-" + targetTimeMinutes + "m";
+		Path uncompressed = Paths.get(replayPath + MapList.MAP_EXTENSION);
+		Path compressed = Paths.get(replayPath + MapList.COMPRESSED_MAP_EXTENSION);
+
+		return Files.exists(uncompressed) ? uncompressed : compressed;
 	}
 
 	private Path getReplayPath() {
@@ -136,12 +140,14 @@ public class AutoReplayIT {
 		Path saveDirPath = new File(ResourceManager.getSaveDirectory(), "save").toPath();
 
 		final Path[] newestFile = new Path[1];
+		final String mapExtension = MapList.getMapExtension();
+
 		Files.walkFileTree(saveDirPath, new SimpleFileVisitor<Path>() {
 			private FileTime newestCreationTime = null;
 
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				if (file.toString().endsWith(CommonConstants.USE_SAVEGAME_COMPRESSION ? MapList.COMPRESSED_MAP_EXTENSION : MapList.MAP_EXTENSION)
+				if (file.toString().endsWith(mapExtension)
 						&& (newestCreationTime == null || newestCreationTime.compareTo(attrs.creationTime()) < 0)) {
 					newestCreationTime = attrs.creationTime();
 					newestFile[0] = file;

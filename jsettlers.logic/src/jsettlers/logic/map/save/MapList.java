@@ -20,6 +20,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import jsettlers.common.CommonConstants;
 import jsettlers.common.logging.MilliStopWatch;
 import jsettlers.common.map.IMapData;
 import jsettlers.common.map.MapLoadException;
@@ -46,6 +47,15 @@ import jsettlers.logic.timer.RescheduleTimer;
 public class MapList implements IMapListerCallable {
 	public static final String MAP_EXTENSION = ".map";
 	public static final String COMPRESSED_MAP_EXTENSION = ".zmap";
+
+	/**
+	 * Gives the currently used map extension for saving a map.
+	 * 
+	 * @return
+	 */
+	public static String getMapExtension() {
+		return CommonConstants.USE_SAVEGAME_COMPRESSION ? COMPRESSED_MAP_EXTENSION : MAP_EXTENSION;
+	}
 
 	private static IMapListFactory mapListFactory = new IMapListFactory() {
 		@Override
@@ -228,4 +238,5 @@ public class MapList implements IMapListerCallable {
 		mapListFactory = factory;
 		defaultList = null;
 	}
+
 }
